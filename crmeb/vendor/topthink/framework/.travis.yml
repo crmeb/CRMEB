@@ -4,9 +4,9 @@ language: php
 matrix:
   fast_finish: true
   include:
-    - php: 7.1
     - php: 7.2
     - php: 7.3
+    - php: 8.0
 
 cache:
   directories:
@@ -19,6 +19,7 @@ services:
 
 before_install:
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo 'xdebug.mode = coverage' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - printf "\n" | pecl install -f redis
   - travis_retry composer self-update
   - mysql -e 'CREATE DATABASE test;'

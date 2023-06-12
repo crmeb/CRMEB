@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -147,19 +147,13 @@ class RuleGroup extends Rule
         // 获取当前路由规则
         $method = strtolower($request->method());
         $rules  = $this->getRules($method);
+        $option = $this->getOption();
 
-        if ($this->parent) {
-            // 合并分组参数
-            $this->mergeGroupOptions();
-            // 合并分组变量规则
-            $this->pattern = array_merge($this->parent->getPattern(), $this->pattern);
+        if (isset($option['complete_match'])) {
+            $completeMatch = $option['complete_match'];
         }
 
-        if (isset($this->option['complete_match'])) {
-            $completeMatch = $this->option['complete_match'];
-        }
-
-        if (!empty($this->option['merge_rule_regex'])) {
+        if (!empty($option['merge_rule_regex'])) {
             // 合并路由正则规则进行路由匹配检查
             $result = $this->checkMergeRuleRegex($request, $rules, $url, $completeMatch);
 
@@ -177,9 +171,11 @@ class RuleGroup extends Rule
             }
         }
 
-        if ($this->miss && in_array($this->miss->getMethod(), ['*', $method])) {
+        if (!empty($option['dispatcher'])) {
+            $result = $this->parseRule($request, '', $option['dispatcher'], $url, $option);
+        } elseif ($this->miss && in_array($this->miss->getMethod(), ['*', $method])) {
             // 未匹配所有路由的路由规则处理
-            $result = $this->parseRule($request, '', $this->miss->getRoute(), $url, $this->miss->mergeGroupOptions());
+            $result = $this->parseRule($request, '', $this->miss->getRoute(), $url, $this->miss->getOption());
         } else {
             $result = false;
         }
@@ -250,6 +246,11 @@ class RuleGroup extends Rule
      */
     public function parseGroupRule($rule): void
     {
+        if (is_string($rule) && is_subclass_of($rule, Dispatch::class)) {
+            $this->dispatcher($rule);
+            return;
+        }
+
         $origin = $this->router->getGroup();
         $this->router->setGroup($this);
 
@@ -323,7 +324,7 @@ class RuleGroup extends Rule
         }
 
         try {
-            $result = preg_match('/^(?:' . implode('|', $regex) . ')/u', $url, $match);
+            $result = preg_match('~^(?:' . implode('|', $regex) . ')~u', $url, $match);
         } catch (\Exception $e) {
             throw new Exception('route pattern error');
         }
@@ -473,6 +474,17 @@ class RuleGroup extends Rule
     }
 
     /**
+     * 设置分组的Dispatch调度
+     * @access public
+     * @param  string $dispatch 调度类
+     * @return $this
+     */
+    public function dispatcher(string $dispatch)
+    {
+        return $this->setOption('dispatcher', $dispatch);
+    }
+
+    /**
      * 获取完整分组Name
      * @access public
      * @return string
@@ -495,7 +507,7 @@ class RuleGroup extends Rule
         }
 
         return array_filter($this->rules, function ($item) use ($method) {
-            return $method == $item[0] || $item[0] == '*';
+            return $method == $item[0] || '*' == $item[0];
         });
     }
 

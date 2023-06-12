@@ -1,0 +1,12 @@
+/**
+ * 获取列表数据
+ * @param params
+ * @return {*}
+ */
+export function get{%nameStudly%}ListApi(params) {
+    return request({
+        url: '{%route%}',
+        method: 'get',
+        params,
+    });
+}

@@ -45,11 +45,13 @@ class StoreCartDao extends BaseDao
     /**
      * 搜索
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['id']) && $where['id'], function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['id']) && $where['id'], function ($query) use ($where) {
             $query->whereIn('id', $where['id']);
         })->when(isset($where['status']), function ($query) use ($where) {
             //兼容之前老用户 数据库默认值null

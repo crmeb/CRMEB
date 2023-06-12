@@ -542,6 +542,7 @@ class StoreCombinationServices extends BaseServices
             } else {
                 $pinkBool = $pinkService->pinkFail($pinkAll, $pinkT, $pinkBool);
             }
+            $pinkT = $pinkService->getPinkUserOne($pinkT['id']);
         }
         if (!empty($pinkAll)) {
             foreach ($pinkAll as $v) {

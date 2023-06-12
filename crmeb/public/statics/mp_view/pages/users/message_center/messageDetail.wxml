@@ -1,0 +1,1 @@
+<view class="msg-det data-v-8c751c9a"><view class="title data-v-8c751c9a">{{''+$root.m0+''}}</view><view class="content data-v-8c751c9a">{{''+msgData.content+''}}</view><view class="add-time data-v-8c751c9a">{{''+$root.m1+msgData.add_time+''}}</view></view>

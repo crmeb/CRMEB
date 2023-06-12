@@ -39,6 +39,7 @@ return [
         'NoticeListener' => [\app\listener\notice\NoticeListener::class], //通知->消息事件
         'NotifyListener' => [\app\listener\pay\NotifyListener::class],//支付异步回调
         'CrontabListener' => [\app\listener\crontab\SystemCrontabListener::class],//定时任务事件
+        'OrderShipping' => [\app\listener\order\OrderShippingListener::class],//定时任务事件
     ],
 ];
 

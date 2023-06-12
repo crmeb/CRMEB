@@ -35,11 +35,13 @@ class StoreIntegralDao extends BaseDao
     /**
      * 获取指定条件下的条数
      * @param array $where
+     * @param bool $search
      * @return int
+     * @throws \ReflectionException
      */
-    public function count(array $where = []): int
+    public function count(array $where = [], bool $search = true): int
     {
-        return $this->search($where)->count();
+        return $this->search($where, $search)->count();
     }
 
     /**
@@ -54,7 +56,7 @@ class StoreIntegralDao extends BaseDao
      */
     public function getList(array $where, int $page = 0, int $limit = 0, string $field = '*')
     {
-        return $this->search($where)->where('is_del', 0)
+        return $this->search($where, false)->where('is_del', 0)
             ->when(isset($where['integral_time']) && $where['integral_time'] !== '', function ($query) use ($where) {
                 list($startTime, $endTime) = explode('-', $where['integral_time']);
                 $query->where('add_time', '>', strtotime($startTime))

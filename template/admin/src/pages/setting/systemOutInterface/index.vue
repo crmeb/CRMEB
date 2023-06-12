@@ -67,7 +67,7 @@
             <span class="icon" slot="delNodeIcon">
               <!-- <Icon type="ios-cut" /> -->
             </span>
-            <template v-slot:treeNodeIcon="slotProps" class="req-method">
+            <template v-slot:treeNodeIcon="slotProps">
               <span
                 v-if="slotProps.model.method"
                 class="req-method"
@@ -90,6 +90,7 @@
               {{ formValidate.name }}
             </div>
             <div>
+              <!-- <Button type="primary" class="submission mr20" @click="debugging()">调试</Button> -->
               <Button v-if="formValidate.id" type="primary" class="submission mr20" @click="isEdit = !isEdit">{{
                 isEdit ? '返回' : '编辑'
               }}</Button>
@@ -387,23 +388,34 @@
       <label>分组名称：</label>
       <Input v-model="value" placeholder="请输入分组名称" style="width: 85%" />
     </Modal>
+    <Modal v-model="debuggingModal" :title="formValidate.name" width="70%" footer-hide :loading="loading">
+      <debugging
+        v-if="debuggingModal"
+        :formValidate="formValidate"
+        :typeList="typeList"
+        :requestTypeList="requestTypeList"
+      />
+    </Modal>
   </div>
 </template>
 
 <script>
 import { interfaceList, interfaceDet, interfaceSave, interfaceEditName, interfaceDel } from '@/api/systemOutAccount';
 import { VueTreeList, Tree, TreeNode } from 'vue-tree-list';
+import debugging from './debugging.vue';
 import { mapState } from 'vuex';
 export default {
   name: 'systemOutInterface',
   components: {
     VueTreeList,
+    debugging,
   },
   data() {
     return {
       value: '',
       isEdit: false,
       nameModal: false,
+      debuggingModal: false,
       formValidate: {},
       grid: {
         xl: 7,
@@ -504,8 +516,10 @@ export default {
     this.getInterfaceList('one');
   },
   methods: {
-    onClicksss(e) {
+    debugging() {
+      this.debuggingModal = true;
     },
+    onClicksss(e) {},
     methodsColor(newVal) {
       let method = newVal.toUpperCase();
       if (method == 'GET') {
@@ -518,12 +532,9 @@ export default {
         return '#f93e3e';
       }
     },
-    insertBefore(params) {
-    },
-    insertAfter(params) {
-    },
-    moveInto(params) {
-    },
+    insertBefore(params) {},
+    insertAfter(params) {},
+    moveInto(params) {},
     async addTableData() {
       const { row: data } = await $table.insertAt(newRow, -1);
       await $table.setActiveCell(data, 'name');
@@ -600,7 +611,6 @@ export default {
           solution: '',
         };
       }
-      console.log();
       // $table.insert(newRow).then(({ row }) => $table.setEditRow(row, -1));
       const { row: data } = await $table.insertAt(newRow, -1);
       await $table.setActiveCell(data, 'name');
@@ -799,7 +809,6 @@ export default {
     },
 
     onChangeName(params) {
-      console.log(params);
       if (params.eventType == 'blur') {
         let data = {
           name: params.newName,
@@ -816,7 +825,6 @@ export default {
     },
 
     onAddNode(params) {
-      console.log(params);
       // this.$router.push({
       //   path: '/admin/setting/system_out_interface/add',
       //   query: {
@@ -1005,6 +1013,8 @@ export default {
 
     .text-area {
       white-space: pre-wrap;
+      word-break: break-word;
+
     }
   }
 

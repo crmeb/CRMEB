@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\dao\activity\coupon;
 
@@ -145,7 +145,7 @@ class StoreCouponUserDao extends BaseDao
      */
     public function getCouponListByOrder(array $where, $order, int $page = 0, int $limit = 0)
     {
-        return $this->search($where)->with('issue')->when($page > 0 && $limit > 0, function ($qeury) use ($page, $limit) {
+        return $this->search($where, false)->with('issue')->when($page > 0 && $limit > 0, function ($qeury) use ($page, $limit) {
             $qeury->page($page, $limit);
         })->when($order != '', function ($query) use ($order) {
             $query->order($order);
@@ -172,7 +172,7 @@ class StoreCouponUserDao extends BaseDao
      */
     public function memberCouponUserGroupBymonth(array $where)
     {
-        return $this->search($where)
+        return $this->search($where, false)
             ->whereMonth('add_time')
             ->whereIn('cid', $where['couponIds'])
             ->field('count(id) as num,FROM_UNIXTIME(add_time, \'%Y-%m\') as time')

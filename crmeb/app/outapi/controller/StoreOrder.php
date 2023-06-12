@@ -88,9 +88,7 @@ class StoreOrder extends AuthController
         ]);
         $data['express_record_type'] = 1;
         $data['type'] = 1;
-
-        $this->services->delivery($order_id, $data);
-        return app('json')->success(100010);
+        return app('json')->success(100010, $this->services->delivery($order_id, $data));
     }
 
     /**

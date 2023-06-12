@@ -502,6 +502,7 @@
 			diyData() {
 				let that = this;
 				getDiy().then((res) => {
+					console.log('222', res)
 					let data = res.data;
 					that.headerSerch = data.headerSerch;
 					that.swiperBg = data.swiperBg;
@@ -534,13 +535,6 @@
 							icon: 'none',
 							duration: 2000
 						})
-						setTimeout(e => {
-							this.diyData();
-							this.getIndexData();
-							getShare().then(res => {
-								this.shareInfo = res.data;
-							});
-						}, 2000)
 					}
 					// #endif
 				});

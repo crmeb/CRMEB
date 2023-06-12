@@ -62,7 +62,6 @@
         <span v-else-if="row.user_type === 'h5'">H5</span>
         <span v-else-if="row.user_type === 'pc'">PC</span>
         <span v-else>--</span>
-
       </template>
       <template slot-scope="{ row, index }" slot="sex">
         <span v-show="row.sex === 1">男</span>

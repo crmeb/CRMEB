@@ -78,6 +78,7 @@ class Request extends \think\Request
         $farr = [
             "/<(\\/?)(script|i?frame|style|html|body|title|link|meta|object|\\?|\\%)([^>]*?)>/isU",
             "/(<[^>]*)on[a-zA-Z]+\s*=([^>]*>)/isU",
+            '/phar/is',
             "/select|join|where|drop|like|modify|rename|insert|update|table|database|alter|truncate|\'|\/\*|\.\.\/|\.\/|union|into|load_file|outfile/is"
         ];
         if (is_array($str)) {

@@ -53,11 +53,9 @@ export default {
     this.pageId = parseInt(pageId);
     let moveLink = getCookies('moveLink');
     if (Number(this.$route.query.type) === 1) {
-      this.iframeUrl = `${moveLink}/pages/index/index?type=iframeWindow`;
+      this.iframeUrl = `${moveLink}/pages/index/index?mdType=iframeWindow`;
     } else {
-      this.iframeUrl = `https://v4.wuht.net/pages/index/index?type=iframeWindow`;
-
-      // this.iframeUrl = `${location.origin}/pages/index/index?type=iframeWindow`;
+      this.iframeUrl = `${location.origin}/pages/index/index?mdType=iframeWindow`;
     }
     diyGetInfo(parseInt(pageId)).then((datas) => {
       let data = datas.data.info.value;
@@ -77,7 +75,6 @@ export default {
   methods: {
     //接收iframe值
     handleMessage(event) {
-      console.log(event.data.name)
       if (event.data.name) {
         let obj = { name: event.data.name, num: event.data.dataName };
         this.configName = obj;

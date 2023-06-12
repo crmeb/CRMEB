@@ -30,7 +30,8 @@
 			<div class="money">{{ time_price }}</div>
 			<div class="increase acea-row row-between-wrapper">
 				<div>
-					{{ time == 'date'?'':title }}{{$t(`增长率`)}}：<span :class="increase_time_status === 1 ? 'red' : 'green'">{{ increase_time_status === 1 ? "" : "-" }}{{ growth_rate }}%
+					{{ time == 'date'?'':title }}{{$t(`增长率`)}}：<span
+						:class="increase_time_status === 1 ? 'red' : 'green'">{{ increase_time_status === 1 ? "" : "-" }}{{ growth_rate }}%
 						<span class="iconfont" :class="
                 increase_time_status === 1
                   ? 'icon-xiangshang1'
@@ -38,7 +39,8 @@
               "></span></span>
 				</div>
 				<div>
-					{{ time == 'date'?'':title }}{{$t(`增长`)}}：<span :class="increase_time_status === 1 ? 'red' : 'green'">{{ increase_time_status === 1 ? "" : "-" }}{{ increase_time }}
+					{{ time == 'date'?'':title }}{{$t(`增长`)}}：<span
+						:class="increase_time_status === 1 ? 'red' : 'green'">{{ increase_time_status === 1 ? "" : "-" }}{{ increase_time }}
 						<span class="iconfont" :class="
                 increase_time_status === 1
                   ? 'icon-xiangshang1'
@@ -52,8 +54,8 @@
 				{{$t(`单位`)}}（{{where.type == 1?$t(`元.`):$t(`份`)}}）
 			</div>
 			<canvas canvas-id="canvasLineA" id="canvasLineA" class="charts" disable-scroll=true @touchstart="touchLineA"
-			 @touchmove="moveLineA" @touchend="touchEndLineA">
-			 </canvas>
+				@touchmove="moveLineA" @touchend="touchEndLineA">
+			</canvas>
 		</div>
 		<div class="public-wrapper">
 			<div class="title">
@@ -73,7 +75,9 @@
 			</div>
 		</div>
 		<!-- #ifdef H5 || APP-PLUS -->
-		<uni-calendar ref="calendar" :date="info.date" :insert="info.insert" :lunar="info.lunar" :startDate="info.startDate" :endDate="info.endDate" :range="info.range" @confirm="confirm" :showMonth="info.showMonth" />
+		<uni-calendar ref="calendar" :date="info.date" :insert="info.insert" :lunar="info.lunar"
+			:startDate="info.startDate" :endDate="info.endDate" :range="info.range" @confirm="confirm"
+			:showMonth="info.showMonth" />
 		<div class="mask" @touchmove.prevent v-show="current === true" @click="close"></div>
 		<!-- #endif -->
 		<!-- <Loading :loaded="loaded" :loading="loading"></Loading> -->
@@ -90,7 +94,7 @@
 	// #ifdef H5
 	// import 'mpvue-calendar/src/browser-style.css'
 	// #endif
-	
+
 	import {
 		getStatisticsMonth,
 		getStatisticsTime
@@ -161,7 +165,7 @@
 					range: true,
 					insert: false,
 					selected: [],
-					showMonth:false
+					showMonth: false
 				},
 				type: '',
 				before: '',
@@ -180,6 +184,7 @@
 		},
 		onLoad: function(options) {
 			this.type = options.type;
+			console.log(options)
 			if (options.before) {
 				this.before = options.before;
 			}
@@ -297,16 +302,21 @@
 						this.getIndex();
 						this.getInfo();
 						break;
-					// #ifdef MP
+						// #ifdef MP
 					case "date":
-						let star = new Date(self.before).getTime()/1000
-						let stop = new Date(self.after).getTime()/1000
+						let sArr = self.before.split('-')
+						let aArr = self.after.split('-')
+						let star = this.getTimestamp(sArr[0], sArr[1], sArr[2], 0, 0, 0)
+						let stop = this.getTimestamp(aArr[0], aArr[1], aArr[2], 23, 59, 59)
 						self.where.start = star
 						self.where.stop = stop
-						Promise.all([self.getIndex(),self.getInfo()]);
+						Promise.all([self.getIndex(), self.getInfo()]);
 						break;
-					// #endif
+						// #endif
 				}
+			},
+			getTimestamp(year, month, day, hour, min, sec) {
+				return new Date(year, month - 1, day, hour, min, sec).getTime() / 1000;
 			},
 			setType: function(type) {
 				switch (type) {
@@ -417,16 +427,16 @@
 			// 日历确定
 			confirm(e) {
 				let self = this
-				if(e.range.after && e.range.before){
-					let star = new Date(e.range.before+' 00:00:00').getTime()/1000
-					let stop = new Date(e.range.after+' 23:59:59').getTime()/1000
+				if (e.range.after && e.range.before) {
+					let star = new Date(e.range.before + ' 00:00:00').getTime() / 1000
+					let stop = new Date(e.range.after + ' 23:59:59').getTime() / 1000
 					self.where.start = star
 					self.where.stop = stop
 					self.list = [];
 					self.filter.page = 1;
 					self.loaded = false;
 					self.loading = false;
-					Promise.all([self.getIndex(),self.getInfo()]);
+					Promise.all([self.getIndex(), self.getInfo()]);
 				}
 			},
 		},
@@ -520,9 +530,9 @@
 		margin: 23upx auto 0 auto;
 		/* padding: 25upx 22upx 0 22upx; */
 	}
-	
-	.statistical-page .chart .chart-title{
-		padding:20upx 20upx 10upx;
+
+	.statistical-page .chart .chart-title {
+		padding: 20upx 20upx 10upx;
 		font-size: 26upx;
 		color: #999;
 	}

@@ -16,6 +16,7 @@ use app\services\activity\advance\StoreAdvanceServices;
 use app\services\BaseServices;
 use app\dao\order\StoreCartDao;
 use app\services\activity\coupon\StoreCouponIssueServices;
+use app\services\product\shipping\ShippingTemplatesServices;
 use app\services\shipping\ShippingTemplatesNoDeliveryServices;
 use app\services\system\SystemUserLevelServices;
 use app\services\user\member\MemberCardServices;
@@ -584,9 +585,14 @@ class StoreCartServices extends BaseServices
                 foreach ($cartList as $item) {
                     $tempIds[] = $item['productInfo']['temp_id'];
                 }
-                /** @var ShippingTemplatesNoDeliveryServices $noDeliveryServices */
-                $noDeliveryServices = app()->make(ShippingTemplatesNoDeliveryServices::class);
-                $tempIds = $noDeliveryServices->isNoDelivery(array_unique($tempIds), $cityId);
+                $tempIds = array_unique($tempIds);
+                $shippingService = app()->make(\app\services\shipping\ShippingTemplatesServices::class);
+                $tempIds = $shippingService->getColumn([['id', 'in', $tempIds], ['no_delivery', '=', 1]], 'id');
+                if ($tempIds) {
+                    /** @var ShippingTemplatesNoDeliveryServices $noDeliveryServices */
+                    $noDeliveryServices = app()->make(ShippingTemplatesNoDeliveryServices::class);
+                    $tempIds = $noDeliveryServices->isNoDelivery(array_unique($tempIds), $cityId);
+                }
             }
         }
 

@@ -21,8 +21,6 @@ class EnvTest extends TestCase
 
         $this->assertEquals('value1', $env->get('key1'));
         $this->assertEquals('value2', $env->get('key2'));
-
-        $this->assertSame(['KEY1' => 'value1', 'KEY2' => 'value2'], $env->get());
     }
 
     public function testServerEnv()

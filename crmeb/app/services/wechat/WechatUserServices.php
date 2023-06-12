@@ -83,7 +83,7 @@ class WechatUserServices extends BaseServices
      * @param string $openidType
      * @return mixed
      */
-    public function openidTouid($openid, $openidType = 'openid')
+    public function openidToUid($openid, string $openidType = 'openid')
     {
         $uid = $this->dao->value([[$openidType, '=', $openid], ['user_type', '<>', 'h5']], 'uid');
         if (!$uid)

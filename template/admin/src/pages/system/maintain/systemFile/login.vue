@@ -113,7 +113,7 @@ export default {
   align-items: center;
 }
 .trip{
-    width: 400px;
+    width: 450px;
     text-align: left;
     color: #aaa;
 }

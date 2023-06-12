@@ -21,7 +21,7 @@
           @click="selectUser(item)"
         >
           <div class="avatar">
-            <img v-lazy="item.avatar" alt="" />
+            <img v-lazy="item.wx_avatar" alt="" />
             <div class="status" :class="{ off: item.online == 0 }"></div>
           </div>
           <div class="user-info">

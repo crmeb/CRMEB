@@ -303,12 +303,12 @@ class OutStoreOrderServices extends BaseServices
      * 发货
      * @param string $orderId 订单号
      * @param array $data
-     * @return bool
+     * @return array
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function delivery(string $orderId, array $data): bool
+    public function delivery(string $orderId, array $data)
     {
         $orderInfo = $this->dao->get(['order_id' => $orderId]);
         if (!$orderInfo) {

@@ -1,0 +1,33 @@
+{
+    "name": "topthink/think-filesystem",
+    "description": "The ThinkPHP6.1 Filesystem Package",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "think\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "think\\tests\\": "tests/"
+        }
+    },
+    "require": {
+        "topthink/framework": "^6.1|^8.0",
+        "league/flysystem": "^2.0"
+    },
+    "require-dev": {
+        "mikey179/vfsstream": "^1.6",
+        "mockery/mockery": "^1.2",
+        "phpunit/phpunit": "^8.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

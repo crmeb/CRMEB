@@ -1,0 +1,5 @@
+<template slot-scope="{ row, index }" slot="{%field%}">
+  <div class="tabBox_img" v-viewer>
+    <img v-lazy="img" v-for="img in row.{%field%}" />
+  </div>
+</template>

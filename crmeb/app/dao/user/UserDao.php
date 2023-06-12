@@ -176,6 +176,7 @@ class UserDao extends BaseDao
      * 获取推广员ids
      * @param array $where
      * @return array
+     * @throws \ReflectionException
      */
     public function getAgentUserIds(array $where)
     {

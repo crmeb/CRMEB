@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "我的订单",
+  "usingComponents": {
+    "easy-loadimage": "/components/easy-loadimage/easy-loadimage",
+    "home": "/components/home/index",
+    "empty-page": "/components/emptyPage",
+    "authorize": "/components/Authorize"
+  }
+}

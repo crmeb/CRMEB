@@ -20,11 +20,22 @@ import cms from './modules/cms';
 import marketing from './modules/marketing';
 import app from './modules/app';
 import system from './modules/system';
-import BasicLayout from '@/components/main';
+import LayoutMain from '@/layout';
 import statistic from './modules/statistic';
 import frameOut from './modules/frameOut';
 import division from './modules/division';
 import settings from '@/setting';
+import crud from './modules/crud';
+
+const modulesFiles = require.context('./modules/crud', true, /\.js$/);
+
+const routers = [];
+// 将扫描到的路由信息加入路由数组中
+modulesFiles.keys().forEach((modulePath) => {
+  const value = modulesFiles(modulePath);
+  routers.push(value.default);
+});
+
 let routePre = settings.routePre;
 /**
  * 在主框架内显示
@@ -39,7 +50,7 @@ const frameIn = [
     redirect: {
       name: 'home_index',
     },
-    component: BasicLayout,
+    component: LayoutMain,
     children: [
       // {
       //   path: '/admin/system/log',
@@ -102,7 +113,7 @@ const frameIn = [
     redirect: {
       name: 'home_index',
     },
-    component: BasicLayout,
+    component: LayoutMain,
   },
   {
     path: routePre + '/widget.images/index.html',
@@ -159,6 +170,8 @@ const frameIn = [
   app,
   statistic,
   division,
+  ...routers,
+  crud,
 ];
 
 /**

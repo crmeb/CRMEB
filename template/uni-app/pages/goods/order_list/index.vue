@@ -136,8 +136,6 @@
 		<!-- #ifndef MP -->
 		<home></home>
 		<!-- #endif -->
-		<payment :payMode="payMode" :pay_close="pay_close" @onChangeFun="onChangeFun" :order_id="pay_order_id"
-			:totalPrice="totalPrice"></payment>
 	</view>
 </template>
 
@@ -150,13 +148,9 @@
 		orderPay
 	} from '@/api/order.js';
 	import {
-		getUserInfo
-	} from '@/api/user.js';
-	import {
 		openOrderSubscribe
 	} from '@/utils/SubscribeMessage.js';
 	import home from '@/components/home';
-	import payment from '@/components/payment';
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -170,7 +164,6 @@
 	import colors from '@/mixins/color.js';
 	export default {
 		components: {
-			payment,
 			home,
 			emptyPage,
 			// #ifdef MP
@@ -188,35 +181,6 @@
 				orderStatus: 9, //订单状态
 				page: 1,
 				limit: 20,
-				payMode: [{
-						name: this.$t(`微信支付`),
-						icon: 'icon-weixinzhifu',
-						value: 'weixin',
-						title: this.$t(`使用微信快捷支付`),
-						payStatus: true
-					},
-					{
-						name: this.$t(`支付宝支付`),
-						icon: 'icon-zhifubao',
-						value: 'alipay',
-						title: this.$t(`使用支付宝支付`),
-						payStatus: true
-					},
-					{
-						name: this.$t(`余额支付`),
-						icon: 'icon-yuezhifu',
-						value: 'yue',
-						title: this.$t(`可用余额`),
-						number: 0,
-						payStatus: true
-					}, {
-						"name": this.$t(`好友代付`),
-						"icon": "icon-haoyoudaizhifu",
-						value: 'friend',
-						title: this.$t(`找微信好友支付`),
-						payStatus: 1,
-					}
-				],
 				pay_close: false,
 				pay_order_id: '',
 				totalPrice: '0',
@@ -231,17 +195,6 @@
 		 */
 		onLoad: function(options) {
 			if (options.status) this.orderStatus = options.status;
-			console.log('1')
-			if (this.isLogin) {
-				this.page = 1;
-				this.orderList = []
-				this.loadend = false;
-				this.pay_close = false;
-				this.onLoadFun();
-				this.getOrderList();
-			} else {
-				toLogin();
-			}
 			let EnOptions = wx.getEnterOptionsSync();
 			if (EnOptions.scene == '1038' && EnOptions.referrerInfo.appId == 'wxef277996acc166c3' && this.initIn) {
 				// 代表从收银台小程序返回
@@ -259,10 +212,21 @@
 				}
 			}
 		},
+		onShow() {
+			if (this.isLogin) {
+				this.page = 1;
+				this.orderList = []
+				this.loadend = false;
+				this.pay_close = false;
+				this.onLoadFun();
+				this.getOrderList();
+			} else {
+				toLogin();
+			}
+		},
 		methods: {
 			onLoadFun() {
 				this.getOrderData();
-				this.getUserInfo();
 			},
 			// 授权关闭
 			authColse: function(e) {
@@ -279,24 +243,13 @@
 				action && this[action] && this[action](value);
 			},
 			/**
-			 * 获取用户信息
-			 *
-			 */
-			getUserInfo: function() {
-				let that = this;
-				getUserInfo().then(res => {
-					that.payMode[2].number = res.data.now_money;
-					that.$set(that, 'payMode', that.payMode);
-				});
-			},
-			/**
 			 * 关闭支付组件
 			 *
 			 */
 			payClose: function() {
 				this.pay_close = false;
 			},
-		
+
 			/**
 			 * 获取订单统计数据
 			 *
@@ -305,23 +258,6 @@
 				let that = this;
 				orderData().then(res => {
 					that.$set(that, 'orderData', res.data);
-					that.payMode.map(item => {
-						if (item.value == 'weixin') {
-							item.payStatus = res.data.pay_weixin_open ? true : false;
-						}
-						if (item.value == 'alipay') {
-							item.payStatus = res.data.ali_pay_status ? true : false;
-						}
-						if (item.value == 'yue') {
-							item.payStatus = res.data.yue_pay_status == 1 ? true : false;
-						}
-						if (item.value == 'friend') {
-							item.payStatus = res.data.friend_pay_status == 1 ? true : false;
-						}
-					});
-					//#ifdef MP
-					this.payMode[1].payStatus = false;
-					//#endif
 				});
 			},
 			/**
@@ -362,34 +298,6 @@
 				uni.navigateTo({
 					url: `/pages/goods/cashier/index?order_id=${order_id}&from_type=order`
 				})
-				// this.$set(this, 'pay_close', true);
-				// this.$set(this, 'pay_order_id', order_id);
-				// this.$set(this, 'totalPrice', pay_price);
-			},
-			/**
-			 * 支付成功回调
-			 *
-			 */
-			pay_complete: function() {
-				this.loadend = false;
-				this.page = 1;
-				this.$set(this, 'orderList', []);
-				this.pay_close = false;
-				uni.navigateTo({
-					url: '/pages/goods/order_pay_status/index?order_id=' + this.pay_order_id +
-						'&msg=' + this.$t(`支付成功`) + '&type=3&totalPrice=' + this.totalPrice
-				})
-				this.pay_order_id = '';
-				this.getOrderData();
-				this.getOrderList();
-			},
-			/**
-			 * 支付失败回调
-			 *
-			 */
-			pay_fail: function() {
-				this.pay_close = false;
-				this.pay_order_id = '';
 			},
 			/**
 			 * 去订单详情

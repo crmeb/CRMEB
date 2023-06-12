@@ -4,6 +4,7 @@ namespace app\services\user;
 
 use app\dao\user\UserCancelDao;
 use app\services\BaseServices;
+use app\services\kefu\service\StoreServiceServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\services\CacheService;
 
@@ -31,9 +32,13 @@ class UserCancelServices extends BaseServices
         $userServices = app()->make(UserServices::class);
         /** @var WechatUserServices $wechatUserServices */
         $wechatUserServices = app()->make(WechatUserServices::class);
+        /** @var StoreServiceServices $ServiceServices */
+        $ServiceServices = app()->make(StoreServiceServices::class);
         $userServices->update($uid, ['is_del' => 1]);
         $userServices->update(['spread_uid' => $uid], ['spread_uid' => 0, 'spread_time' => 0]);
         $wechatUserServices->update(['uid' => $uid], ['is_del' => 1]);
+        $ServiceServices->delete(['uid' => $uid]);
+        return true;
     }
 
     /**

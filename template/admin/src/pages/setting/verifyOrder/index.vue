@@ -41,8 +41,13 @@
           </Col>
           <Col span="12" class="mr">
             <FormItem label="选择门店：" label-for="store_name">
-                
-              <Select v-model="formValidate.store_id" element-id="store_id" clearable @on-change="userSearchs" style="width: 430px">
+              <Select
+                v-model="formValidate.store_id"
+                element-id="store_id"
+                clearable
+                @on-change="userSearchs"
+                style="width: 430px"
+              >
                 <Option v-for="item in storeSelectList" :value="item.id" :key="item.id">{{ item.name }}</Option>
               </Select>
             </FormItem>

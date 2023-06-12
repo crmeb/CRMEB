@@ -1,0 +1,29 @@
+{
+  "navigationBarTitleText": "专题页",
+  "usingComponents": {
+    "page-footer": "/components/pageFooter/index",
+    "coupon-window": "/components/couponWindow/index",
+    "authorize": "/components/Authorize",
+    "active-party": "/pages/index/diy/components/activeParty",
+    "header-serch": "/pages/index/diy/components/headerSerch",
+    "swipers": "/pages/index/diy/components/swipers",
+    "coupon": "/pages/index/diy/components/coupon",
+    "article-list": "/pages/index/diy/components/articleList",
+    "bargain": "/pages/index/diy/components/bargain",
+    "blank-page": "/pages/index/diy/components/blankPage",
+    "combination": "/pages/index/diy/components/combination",
+    "customer-service": "/pages/index/diy/components/customerService",
+    "good-list": "/pages/index/diy/components/goodList",
+    "guide": "/pages/index/diy/components/guide",
+    "live-broadcast": "/pages/index/diy/components/liveBroadcast",
+    "menus": "/pages/index/diy/components/menus",
+    "news": "/pages/index/diy/components/news",
+    "promotion-list": "/pages/index/diy/components/promotionList",
+    "rich-text": "/pages/index/diy/components/richText",
+    "seckill": "/pages/index/diy/components/seckill",
+    "swiper-bg": "/pages/index/diy/components/swiperBg",
+    "tab-nav": "/pages/index/diy/components/tabNav",
+    "titles": "/pages/index/diy/components/titles",
+    "picture-cube": "/pages/index/diy/components/pictureCube"
+  }
+}

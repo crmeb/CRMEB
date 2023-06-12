@@ -657,4 +657,34 @@ class PublicController
     {
         return app('json')->success(app()->make(LangCodeServices::class)->getLangVersion());
     }
+
+    /**
+     * 商城基础配置汇总接口
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/03
+     */
+    public function getMallBasicConfig()
+    {
+        $data['site_name'] = sys_config('site_name');//网站名称
+        $data['site_url'] = sys_config('site_url');//网站地址
+        $data['wap_login_logo'] = sys_config('wap_login_logo');//移动端登录logo
+        $data['record_No'] = sys_config('record_No');//备案号
+        $data['network_security'] = sys_config('network_security');//网安备案
+        $data['store_self_mention'] = sys_config('store_self_mention');//是否开启到店自提
+        $data['invoice_func_status'] = sys_config('invoice_func_status');//发票功能启用
+        $data['special_invoice_status'] = sys_config('special_invoice_status');//专用发票启用
+        $data['member_func_status'] = sys_config('member_func_status');//用户等级启用
+        $data['balance_func_status'] = sys_config('balance_func_status');//余额功能启用
+        $data['recharge_switch'] = sys_config('recharge_switch');//小程序充值开关
+        $data['member_card_status'] = sys_config('member_card_status');//是否开启付费会员
+        $data['member_price_status'] = sys_config('member_price_status');//商品会员折扣价展示启用
+        $data['ali_pay_status'] = sys_config('ali_pay_status') != '0';//支付宝是否启用
+        $data['pay_weixin_open'] = sys_config('pay_weixin_open') != '0';//微信是否启用
+        $data['yue_pay_status'] = sys_config('yue_pay_status') == 1 && sys_config('balance_func_status') != 0;//余额是否启用
+        $data['offline_pay_status'] = sys_config('offline_pay_status') == 1;//线下是否启用
+        $data['friend_pay_status'] = sys_config('friend_pay_status') == 1;//好友是否启用
+        return app('json')->success($data);
+    }
 }

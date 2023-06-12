@@ -9,6 +9,7 @@
 // +----------------------------------------------------------------------
 
 import request from '@/libs/request';
+import { getCookies } from '@/libs/util';
 
 /**
  * @description 设置 系统设置 应用设置头部
@@ -1108,6 +1109,31 @@ export function langCodeTranslate(data) {
   return request({
     url: `setting/lang_code/translate`,
     method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 代码生成
+ */
+export function codeCrud(data) {
+  return request({
+    url: `system/crud`,
+    method: 'post',
+    data,
+  });
+}
+/**
+ * @description 图片上传
+ */
+export function fileUpload(data) {
+  return request({
+    url: `file/upload`,
+    method: 'post',
+    headers: {
+      'Authori-zation': 'Bearer ' + getCookies('token'),
+      'content-type': 'multipart/form-data;' + 'Bearer ' + getCookies('token'),
+    },
     data,
   });
 }

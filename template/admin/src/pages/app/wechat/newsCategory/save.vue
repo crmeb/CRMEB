@@ -88,11 +88,7 @@
                   </div>
                 </FormItem>
                 <FormItem label="正文：" prop="content">
-                  <WangEditor
-                    style="width: 90%"
-                    :content="saveForm.content"
-                    @editorContent="getEditorContent"
-                  ></WangEditor>
+                  <WangEditor style="width: 90%" :content="content" @editorContent="getEditorContent"></WangEditor>
                 </FormItem>
               </Col>
               <Col span="24" class="ml40">
@@ -217,6 +213,7 @@ export default {
         sm: 8,
         xs: 8,
       },
+      content: '',
     };
   },
   computed: {
@@ -285,6 +282,7 @@ export default {
           let info = res.data.info;
           this.list = info.new;
           this.saveForm = this.list[this.current];
+          this.content = this.list[this.current].content;
         })
         .catch((res) => {
           this.$Message.error(res.msg);

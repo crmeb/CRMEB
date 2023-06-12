@@ -32,13 +32,23 @@ class LuckLotteryDao extends BaseDao
         return LuckLottery::class;
     }
 
-    public function search(array $data = [])
+    /**
+     * 抽奖搜索
+     * @param array $data
+     * @param bool $search
+     * @return \crmeb\basic\BaseModel
+     * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/20
+     */
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($data)->when(isset($data['id']) && $data['id'], function ($query) use ($data) {
-            $query->where('id', $data['id']);
-        })->when(isset($data['start']) && $data['start'] !== '', function ($query) use ($data) {
+        return parent::search($where, $search)->when(isset($where['id']) && $where['id'], function ($query) use ($where) {
+            $query->where('id', $where['id']);
+        })->when(isset($where['start']) && $where['start'] !== '', function ($query) use ($where) {
             $time = time();
-            switch ($data['start']) {
+            switch ($where['start']) {
                 case 0:
                     $query->where('start_time', '>', $time)->where('status', 1);
                     break;

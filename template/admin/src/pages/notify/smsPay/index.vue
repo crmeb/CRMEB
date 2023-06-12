@@ -106,7 +106,6 @@ export default {
   created() {
     this.isChecked = this.$route.query.type;
     this.onIsLogin();
-    console.log(this.$route);
   },
   methods: {
     // 查看是否登录

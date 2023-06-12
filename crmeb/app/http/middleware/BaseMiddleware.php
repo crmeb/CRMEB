@@ -21,16 +21,25 @@ use crmeb\interfaces\MiddlewareInterface;
  */
 class BaseMiddleware implements MiddlewareInterface
 {
+    /**
+     * @param Request $request
+     * @param \Closure $next
+     * @param bool $force
+     * @return mixed
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/07
+     */
     public function handle(Request $request, \Closure $next, bool $force = true)
     {
-        if (!Request::hasMacro('uid')) {
-            Request::macro('uid', function(){ return 0; });
+        if (!$request->hasMacro('uid')) {
+            $request->macro('uid', function(){ return 0; });
         }
-        if (!Request::hasMacro('adminId')) {
-            Request::macro('adminId', function(){ return 0; });
+        if (!$request->hasMacro('adminId')) {
+            $request->macro('adminId', function(){ return 0; });
         }
-        if (!Request::hasMacro('kefuId')) {
-            Request::macro('kefuId', function(){ return 0; });
+        if (!$request->hasMacro('kefuId')) {
+            $request->macro('kefuId', function(){ return 0; });
         }
 
         return $next($request);

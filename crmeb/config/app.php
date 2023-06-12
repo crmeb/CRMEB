@@ -15,6 +15,8 @@
 
 use think\facade\Env;
 
+defined('DS') || define('DS', DIRECTORY_SEPARATOR);
+
 return [
     // 应用地址
     'app_host'         => Env::get('app.host', ''),
@@ -48,4 +50,8 @@ return [
     'console_remind'   => true,
     // admin路由前缀
     'admin_prefix'     => 'admin',
+    //后台前端模板根路径
+    'admin_template_path' => dirname(app()->getRootPath()) . DS . 'template' . DS . 'admin' . DS . 'src' . DS,
+    //在保存crud的是否是否直接生成文件
+    'crud_make'        => true
 ];

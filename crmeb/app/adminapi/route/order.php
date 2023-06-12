@@ -14,6 +14,10 @@ use think\facade\Route;
  * 订单路由
  */
 Route::group('order', function () {
+    //获取快递信息
+    Route::get('kuaidi_coms', 'v1.order.StoreOrder/getKuaidiComs')->option(['real_name' => '获取快递信息']);
+    //取消商家寄件
+    Route::post('shipment_cancel_order/:id', 'v1.order.StoreOrder/shipmentCancelOrder')->option(['real_name' => '取消商家寄件']);
     //打印订单
     Route::get('print/:id', 'v1.order.StoreOrder/order_print')->name('StoreOrderPrint')->option(['real_name' => '打印订单']);
     //订单列表
@@ -42,6 +46,8 @@ Route::group('order', function () {
     Route::get('refund/:id', 'v1.order.StoreOrder/refund')->name('StoreOrderRefund')->option(['real_name' => '订单退款表单']);
     //订单退款
     Route::put('refund/:id', 'v1.order.StoreOrder/update_refund')->name('StoreOrderUpdateRefund')->option(['real_name' => '订单退款']);
+    //获取电子面单模版
+    Route::get('express/temp', 'v1.order.StoreOrder/express_temp')->option(['real_name' => '快递公司电子面单模版']);
     //获取物流信息
     Route::get('express/:id', 'v1.order.StoreOrder/get_express')->name('StoreOrderUpdateExpress')->option(['real_name' => '获取物流信息']);
     //获取物流公司
@@ -72,7 +78,6 @@ Route::group('order', function () {
     Route::post('dels', 'v1.order.StoreOrder/del_orders')->name('StoreOrderorDels')->option(['real_name' => '批量删除订单']);
     //面单默认配置信息
     Route::get('sheet_info', 'v1.order.StoreOrder/getDeliveryInfo')->option(['real_name' => '面单默认配置信息']);
-
     //获取线下付款二维码
     Route::get('offline_scan', 'v1.order.OtherOrder/offline_scan')->name('OfflineScan')->option(['real_name' => '获取线下付款二维码']);
     //线下收银列表
@@ -103,7 +108,7 @@ Route::group('order', function () {
     Route::get('delivery/list', 'v1.order.DeliveryService/get_delivery_list')->option(['real_name' => '订单列表获取配送员']);
     //电子面单模板列表
     Route::get('expr/temp', 'v1.order.StoreOrder/expr_temp')->option(['real_name' => '电子面单模板列表']);
-    Route::get('express/temp', 'v1.order.StoreOrder/express_temp')->option(['real_name' => '快递公司电子面单模版']);
+
     //更多操作打印电子面单
     Route::get('order_dump/:order_id', 'v1.order.StoreOrder/order_dump')->option(['real_name' => '更多操作打印电子面单']);
 })->middleware([
@@ -111,7 +116,7 @@ Route::group('order', function () {
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
     \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
-]);
+])->option(['mark' => 'order', 'mark_name' => '订单管理']);
 
 /**
  * 售后 相关路由
@@ -138,4 +143,4 @@ Route::group('refund', function () {
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
     \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
-]);
+])->option(['mark' => 'refund', 'mark_name' => '退款订单']);

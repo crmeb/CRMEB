@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\dao\activity\advance;
 
@@ -37,13 +37,17 @@ class StoreAdvanceDao extends BaseDao
      * @param int $page
      * @param int $limit
      * @return array
+     * @throws \ReflectionException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/20
      */
     public function getList(array $where, int $page = 0, int $limit = 0)
     {
-        return $this->search($where)
+        return $this->search($where, false)
             ->when($where['time_type'], function ($query) use ($where) {
                 if ($where['time_type'] == 1) $query->whereTime('start_time', '>', time());
                 if ($where['time_type'] == 2) $query->whereTime('start_time', '<=', time())->whereTime('stop_time', '>=', time());
@@ -57,10 +61,11 @@ class StoreAdvanceDao extends BaseDao
     /**
      * @param array $where
      * @return int
+     * @throws \ReflectionException
      */
     public function getCount(array $where)
     {
-        return $this->search($where)
+        return $this->search($where, false)
             ->when($where['time_type'], function ($query) use ($where) {
                 if ($where['time_type'] == 1) $query->whereTime('start_time', '>', time());
                 if ($where['time_type'] == 2) $query->whereTime('start_time', '<=', time())->whereTime('stop_time', '>=', time());

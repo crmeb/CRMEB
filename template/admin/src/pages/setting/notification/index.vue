@@ -7,7 +7,7 @@
         </Tabs>
       </div>
       <Row type="flex" class="mb20" v-if="currentTab == 1">
-        <Col v-bind="grid">
+        <Col>
           <Button
             v-auth="['app-wechat-template-sync']"
             icon="md-list"
@@ -26,7 +26,7 @@
           >
         </Col>
       </Row>
-      <Alert v-if="currentTab == 1" closable="true">
+      <Alert v-if="currentTab == 1" :closable="true">
         <template slot="desc">
           1、公众号：登录微信公众号后台，选择模版消息，将模版消息的所在行业修改副行业为《其他/其他》<br />
           2、小程序：登录微信小程序后台，基本设置，服务类目增加《生活服务> 百货/超市/便利店》

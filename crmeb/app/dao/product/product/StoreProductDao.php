@@ -39,7 +39,7 @@ class StoreProductDao extends BaseDao
      */
     public function getCount(array $where)
     {
-        return $this->search($where)->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
+        return $this->search($where, false)->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
             $query->whereIn('id', function ($query) use ($where) {
                 $query->name('store_product_cate')->where('cate_id', $where['sid'])->field('product_id')->select();
             });
@@ -63,7 +63,9 @@ class StoreProductDao extends BaseDao
      * @param array $where
      * @param int $page
      * @param int $limit
+     * @param string $order
      * @return array
+     * @throws \ReflectionException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -71,7 +73,7 @@ class StoreProductDao extends BaseDao
     public function getList(array $where, int $page = 0, int $limit = 0, string $order = '')
     {
         $prefix = Config::get('database.connections.' . Config::get('database.default') . '.prefix');
-        return $this->search($where)->order(($order ? $order . ' ,' : '') . 'sort desc,id desc')
+        return $this->search($where, false)->order(($order ? $order . ' ,' : '') . 'sort desc,id desc')
             ->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })->field([
@@ -79,7 +81,6 @@ class StoreProductDao extends BaseDao
                 '(SELECT count(*) FROM `' . $prefix . 'store_product_relation` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = \'collect\') as collect',
                 '(SELECT count(*) FROM `' . $prefix . 'store_product_relation` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = \'like\') as likes',
                 '(SELECT SUM(stock) FROM `' . $prefix . 'store_product_attr_value` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = 0) as stock',
-//                '(SELECT SUM(sales) FROM `' . $prefix . 'store_product_attr_value` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `type` = 0) as sales',
                 '(SELECT count(*) FROM `' . $prefix . 'store_visit` WHERE `product_id` = `' . $prefix . 'store_product`.`id` AND `product_type` = \'product\') as visitor',
             ])->select()->toArray();
     }
@@ -112,7 +113,7 @@ class StoreProductDao extends BaseDao
     public function getSearchList(array $where, int $page = 0, int $limit = 0, array $field = ['*'], array $with = ['couponId', 'description'])
     {
         if (isset($where['star'])) $with[] = 'star';
-        return $this->search($where)->with($with)->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
+        return $this->search($where, false)->with($with)->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
         })->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
             $query->whereIn('id', function ($query) use ($where) {

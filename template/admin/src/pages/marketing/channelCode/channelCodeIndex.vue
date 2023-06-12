@@ -174,7 +174,7 @@ import {
 import { scrollTop } from '@/libs/util';
 
 export default {
-  name: 'index',
+  name: 'marketing_channel_code',
   filters: {
     typeFilter(status) {
       const statusMap = {

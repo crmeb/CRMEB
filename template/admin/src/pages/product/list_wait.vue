@@ -102,12 +102,10 @@ img {
 }
 </style>
 <script>
-import mixin from './mixins';
 import expandRow from './tableExpand.vue';
 
 export default {
   name: 'product_list_wait',
-  mixins: [mixin],
   components: { expandRow },
   data() {
     return {

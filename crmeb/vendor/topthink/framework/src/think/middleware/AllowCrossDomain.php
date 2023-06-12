@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -44,7 +44,7 @@ class AllowCrossDomain
      * @param array   $header
      * @return Response
      */
-    public function handle($request, Closure $next, ?array $header = [])
+    public function handle($request, Closure $next, ? array $header = [])
     {
         $header = !empty($header) ? array_merge($this->header, $header) : $this->header;
 

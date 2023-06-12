@@ -1,0 +1,1 @@
+.empty-box{display:flex;flex-direction:column;justify-content:center;align-items:center;margin-top:200rpx}.empty-box image{width:414rpx;height:240rpx}.empty-box .txt{font-size:26rpx;color:#999}

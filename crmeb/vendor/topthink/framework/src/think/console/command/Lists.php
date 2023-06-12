@@ -25,7 +25,8 @@ class Lists extends Command
      */
     protected function configure()
     {
-        $this->setName('list')->setDefinition($this->createDefinition())->setDescription('Lists commands')->setHelp(<<<EOF
+        $this->setName('list')->setDefinition($this->createDefinition())->setDescription('Lists commands')->setHelp(
+            <<<EOF
 The <info>%command.name%</info> command lists all commands:
 
   <info>php %command.full_name%</info>

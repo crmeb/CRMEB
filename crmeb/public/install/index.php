@@ -401,12 +401,21 @@ switch ($step) {
             $ip = empty($ip) ? "0.0.0.0" : $ip;
             $password = password_hash($_POST['manager_pwd'], PASSWORD_BCRYPT);
             mysqli_query($conn, "truncate table {$dbPrefix}system_admin");
-            $addadminsql = "INSERT INTO `{$dbPrefix}system_admin` (`id`, `account`, `pwd`, `real_name`, `roles`, `last_ip`, `last_time`, `add_time`, `login_count`, `level`, `status`, `is_del`) VALUES
-(1, '" . $username . "', '" . $password . "', 'admin', '1', '" . $ip . "',$time , $time, 0, 0, 1, 0)";
+            $addadminsql = "INSERT INTO `{$dbPrefix}system_admin` (`id`, `account`, `head_pic`, `pwd`, `real_name`, `roles`, `last_ip`, `last_time`, `add_time`, `login_count`, `level`, `status`, `is_del`) VALUES
+(1, '" . $username . "', '/statics/system_images/admin_head_pic.png', '" . $password . "', 'admin', '1', '" . $ip . "',$time , $time, 0, 0, 1, 0)";
             $res = mysqli_query($conn, $addadminsql);
             $res2 = true;
             if (isset($_SERVER['SERVER_NAME'])) {
-                $site_url = '\'"http://' . $_SERVER['SERVER_NAME'] . '"\'';
+                if (isset($_SERVER['REQUEST_SCHEME'])) {
+                    $request_scheme = $_SERVER['REQUEST_SCHEME'];
+                } else {
+                    if ($_SERVER['HTTPS'] == 'on') {
+                        $request_scheme = 'https';
+                    } else {
+                        $request_scheme = 'http';
+                    }
+                }
+                $site_url = '\'"' . $request_scheme . '://' . $_SERVER['SERVER_NAME'] . '"\'';
                 $res2 = mysqli_query($conn, 'UPDATE `' . $dbPrefix . 'system_config` SET `value`=' . $site_url . ' WHERE `menu_name`="site_url"');
             }
             $arr = array('n' => 999999, 'count' => $counts, 'msg' => '安装完成', 'time' => date('Y-m-d H:i:s'));

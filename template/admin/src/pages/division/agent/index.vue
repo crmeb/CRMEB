@@ -27,6 +27,11 @@
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Row class="ivu-mt box-wrapper">
         <Col :xs="24" :sm="24" ref="rightBox">
+          <Row type="flex">
+            <Col v-bind="grid">
+              <Button type="primary" @click="groupAdd('0')" class="mr20">添加代理商</Button>
+            </Col>
+          </Row>
           <Table
             :columns="columns"
             :data="userLists"
@@ -177,11 +182,6 @@ export default {
         {
           title: '分销比例',
           slot: 'division_percent',
-          minWidth: 100,
-        },
-        {
-          title: '订单数量',
-          key: 'order_count',
           minWidth: 100,
         },
       ],

@@ -110,9 +110,9 @@
 							site_name,
 							now_money
 						} = res.data;
-						this.alipay = ali_pay_status === '1' ? true : false;
-						this.wxpay = pay_weixin_open === 1 ? true : false;
-						this.yuePay = yue_pay_status === 1 ? true : false;
+						this.alipay = ali_pay_status;
+						this.wxpay = pay_weixin_open;
+						this.yuePay = yue_pay_status;
 						this.now_money = now_money;
 						this.site_name = site_name;
 						if (!offline_pay_status) {

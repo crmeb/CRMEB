@@ -65,4 +65,4 @@ Route::group('serve', function () {
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
     \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
-]);
+])->option(['mark' => 'serve', 'mark_name' => '一号通']);

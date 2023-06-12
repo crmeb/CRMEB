@@ -145,7 +145,7 @@ class StoreOrderRefundServices extends BaseServices
                 throw new AdminException(400489);
             }
             //退拼团
-            if ($splitOrderInfo['pid'] == 0 && !$splitOrderInfo['pink_id']) {
+            if ($splitOrderInfo['pid'] == 0 && $splitOrderInfo['pink_id'] > 0) {
                 /** @var StorePinkServices $pinkServices */
                 $pinkServices = app()->make(StorePinkServices::class);
                 if (!$pinkServices->setRefundPink($splitOrderInfo)) {
@@ -268,7 +268,7 @@ class StoreOrderRefundServices extends BaseServices
             $userInfo = $userServices->get($splitOrderInfo['uid']);
             $splitOrderInfo['nickname'] = $userInfo['nickname'];
             $splitOrderInfo['phone'] = $userInfo['phone'];
-            if ($splitOrderInfo['pay_type'] == 'alipay' || $splitOrderInfo['pay_type'] == 'weixin' || $splitOrderInfo['pay_type'] == 'offline') {
+            if (in_array($orderInfo['pay_type'], ['weixin', 'alipay', 'allinpay', 'offline'])) {
                 $capitalFlowServices->setFlow($splitOrderInfo, 'refund');
             }
 
@@ -596,7 +596,7 @@ class StoreOrderRefundServices extends BaseServices
         $userInfo = $userServices->get($order['uid']);
         $order['nickname'] = $userInfo['nickname'];
         $order['phone'] = $userInfo['phone'];
-        if ($order['pay_type'] == 'alipay' || $order['pay_type'] == 'weixin' || $order['pay_type'] == 'offline') {
+        if (in_array($orderInfo['pay_type'], ['weixin', 'alipay', 'allinpay', 'offline'])) {
             $capitalFlowServices->setFlow($order, 'refund');
         }
 
@@ -956,7 +956,7 @@ class StoreOrderRefundServices extends BaseServices
                 //订单实际支付金额
                 $order_pay_price = bcsub((string)bcadd((string)$order['total_price'], (string)$order['pay_postage'], 2), (string)bcadd((string)$order['deduction_price'], (string)$order['coupon_price'], 2), 2);
                 if ($order_pay_price != $order['pay_price'] && $refund_pay_price != $order_pay_price) {//有改价
-                    $refund_price = bcmul((string)bcdiv((string)$order['pay_price'], (string)$order_pay_price, 4), (string)$refund_pay_price, 2);
+                    $refund_price = bcmul((string)bcdiv((string)$refund_pay_price, (string)$order_pay_price, 4), (string)$order['pay_price'], 2);
                 } else {
                     $refund_price = $refund_pay_price;
                 }

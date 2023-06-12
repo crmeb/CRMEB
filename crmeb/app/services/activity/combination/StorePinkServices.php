@@ -184,6 +184,7 @@ class StorePinkServices extends BaseServices
                 $v['s'] = date('s', (int)$v['stop_time']);
                 $pinkAll[] = $v['id'];//开团团长ID
                 $v['stop_time'] = (int)$v['stop_time'];
+                $v['avatar'] = set_file_url($v['avatar']);
             }
             return [$list, $pinkAll];
         }

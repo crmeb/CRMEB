@@ -48,7 +48,9 @@
         "alibabacloud/dysmsapi-20170525": "2.0.16",
         "fastknife/ajcaptcha": "^1.1",
         "volcengine/volc-sdk-php": "^1.0",
-        "workerman/crontab": "^1.0"
+        "workerman/crontab": "^1.0",
+        "topthink/think-migration": "^3.0",
+        "topthink/think-filesystem": "^2.0"
     },
     "autoload": {
         "psr-4": {

@@ -70,10 +70,11 @@ export function releasedListApi(params) {
  * @description 已发布管理--领取记录
  * @param {Number} param id {Number} 已发布优惠券id
  */
-export function releasedissueLogApi(id) {
+export function releasedissueLogApi(id, params) {
   return request({
     url: `marketing/coupon/released/issue_log/${id}`,
     method: 'get',
+    params,
   });
 }
 

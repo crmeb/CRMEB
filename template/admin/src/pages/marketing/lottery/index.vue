@@ -241,7 +241,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path:this.$routeProStr +  '/marketing/lottery/create' });
+      this.$router.push({ path: this.$routeProStr + '/marketing/lottery/create' });
     },
     // 编辑
     edit(row) {

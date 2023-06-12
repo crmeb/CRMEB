@@ -60,7 +60,7 @@ class AgentManage extends AuthController
     public function get_badge()
     {
         $where = $this->request->getMore([
-            ['data', ''],
+            ['data', '', '', 'time'],
             ['nickname', ''],
         ]);
         return app('json')->success(['res' => $this->services->getSpreadBadge($where)]);

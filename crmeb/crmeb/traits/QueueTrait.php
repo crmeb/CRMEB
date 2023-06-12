@@ -60,7 +60,6 @@ trait QueueTrait
             } else {
                 $res->$action(...$data);
             }
-
         }
     }
 

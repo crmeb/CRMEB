@@ -76,7 +76,7 @@ class SystemMenusServices extends BaseServices
         $systemRoleServices = app()->make(SystemRoleServices::class);
         $rules = $systemRoleServices->getRoleArray(['status' => 1, 'id' => $rouleId], 'rules');
         $rulesStr = Arr::unique($rules);
-        $menusList = $this->dao->getMenusRoule(['route' => $level ? $rulesStr : '']);
+        $menusList = $this->dao->getMenusRoule(['route' => $level ? $rulesStr : '', 'is_show_path' => 1]);
         $unique = $this->dao->getMenusUnique(['unique' => $level ? $rulesStr : '']);
         return [Arr::getMenuIviewList($this->getMenusData($menusList)), $unique];
     }
@@ -89,9 +89,9 @@ class SystemMenusServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getList(array $where)
+    public function getList(array $where, array $field = ['*'])
     {
-        $menusList = $this->dao->getMenusList($where);
+        $menusList = $this->dao->getMenusList($where, $field);
         $menusList = $this->getMenusData($menusList);
         return get_tree_children($menusList);
     }
@@ -120,9 +120,10 @@ class SystemMenusServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    protected function getFormCascaderMenus(int $value = 0)
+    protected function getFormCascaderMenus(int $value = 0, $auth_type = 0)
     {
-        $menuList = $this->dao->getMenusRoule(['is_del' => 0], ['id as value', 'pid', 'menu_name as label']);
+        $where = ['is_del' => 0];
+        $menuList = $this->dao->getMenusRoule($where, ['id as value', 'pid', 'menu_name as label']);
         $menuList = $this->getMenusData($menuList);
         if ($value) {
             $data = get_tree_value($menuList, $value);
@@ -144,17 +145,14 @@ class SystemMenusServices extends BaseServices
     public function createMenusForm(array $formData = [])
     {
         $field[] = Form::input('menu_name', '按钮名称', $formData['menu_name'] ?? '')->required('按钮名称必填');
-//        $field[] = Form::select('pid', '父级id', $formData['pid'] ?? 0)->setOptions($this->getFormSelectMenus())->filterable(1);
         $field[] = Form::input('menu_path', '路由名称', $formData['menu_path'] ?? '')->placeholder('请输入前台跳转路由地址')->required('请填写前台路由地址');
         $field[] = Form::input('unique_auth', '权限标识', $formData['unique_auth'] ?? '')->placeholder('不填写则后台自动生成');
-        $params = $formData['params'] ?? '';
-//        $field[] = Form::input('params', '参数', is_array($params) ? '' : $params)->placeholder('举例:a/123/b/234');
         $field[] = Form::frameInput('icon', '图标', $this->url(config('app.admin_prefix', 'admin') . '/widget.widgets/icon', ['fodder' => 'icon']), $formData['icon'] ?? '')->icon('md-add')->height('505px')->modal(['footer-hide' => true]);
         $field[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0);
-        $field[] = Form::radio('auth_type', '类型', $formData['auth_type'] ?? 1)->options([['value' => 2, 'label' => '接口'], ['value' => 1, 'label' => '菜单(包含页面按钮)']]);
-        $field[] = Form::radio('is_show', '状态', $formData['is_show'] ?? 1)->options([['value' => 0, 'label' => '关闭'], ['value' => 1, 'label' => '开启']]);
-        $field[] = Form::radio('is_show_path', '是否为前端隐藏菜单', $formData['is_show_path'] ?? 0)->options([['value' => 1, 'label' => '是'], ['value' => 0, 'label' => '否']]);
-        [$menuList, $data] = $this->getFormCascaderMenus((int)($formData['pid'] ?? 0));
+        $field[] = Form::radio('auth_type', '类型', $formData['auth_type'] ?? 1)->options([['value' => 1, 'label' => '菜单'], ['value' => 3, 'label' => '按钮'], ['value' => 2, 'label' => '接口']]);
+        $field[] = Form::radio('is_show', '权限状态', $formData['is_show'] ?? 1)->options([['value' => 1, 'label' => '开启'], ['value' => 0, 'label' => '关闭']]);
+        $field[] = Form::radio('is_show_path', '是否显示', $formData['is_show_path'] ?? 0)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
+        [$menuList, $data] = $this->getFormCascaderMenus((int)($formData['pid'] ?? 0), 3);
         $field[] = Form::cascader('menu_list', '父级id', $data)->data($menuList)->filterable(true);
         return $field;
     }
@@ -228,8 +226,11 @@ class SystemMenusServices extends BaseServices
      */
     public function delete(int $id)
     {
-        if ($this->dao->count(['pid' => $id])) {
-            throw new AdminException(400613);
+        $ids = $this->dao->column(['pid' => $id], 'id');
+        if (count($ids)) {
+            foreach ($ids as $value) {
+                $this->delete($value);
+            }
         }
         return $this->dao->delete($id);
     }
@@ -245,7 +246,7 @@ class SystemMenusServices extends BaseServices
     public function getMenus($roles): array
     {
         $field = ['menu_name', 'pid', 'id'];
-        $where = ['is_del' => 0];
+        $where = ['is_del' => 0, 'is_show_path' => 1];
         if (!$roles) {
             $menus = $this->dao->getMenusRoule($where, $field);
         } else {

@@ -68,7 +68,7 @@ export const getMenuByRouter = (list, access) => {
  * @returns {Array}
  */
 export const getBreadCrumbList = (route, homeRoute) => {
-  let homeItem = { ...homeRoute, icon: homeRoute.meta.icon };
+  let homeItem = { ...homeRoute, icon: homeRoute.meta?.icon };
   let routeMetched = route.matched;
   if (routeMetched.some((item) => item.name === homeRoute.name)) return [homeItem];
   let res = routeMetched
@@ -163,7 +163,7 @@ export const getHomeRoute = (routers, homeName = 'home') => {
 export const getNewTagList = (list, newRoute) => {
   const { name, path, meta } = newRoute;
   let newList = [...list];
-  if (newList.findIndex((item) => item.name === name) >= 0) return newList;
+  if (newList.findIndex((item) => item.path === path) >= 0) return newList;
   else newList.push({ name, path, meta });
   return newList;
 };

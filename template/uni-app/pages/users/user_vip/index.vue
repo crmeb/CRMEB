@@ -11,7 +11,7 @@
 								<view class="acea-row row-middle user-wrap">
 									<image class="image" :src="userInfo.avatar"></image>
 									<view class="text">
-										<view class="name">{{$t(userInfo.nickname)}}</view>
+										<view class="name">{{$t(userInfo.nickname || '')}}</view>
 										<view>{{$t(`商城购物可享`)}}<text class="num">{{item.discount}}</text>{{$t(`折`)}}
 										</view>
 									</view>
@@ -22,15 +22,15 @@
 								</view>
 								<template v-if="item.grade === levelInfo.grade">
 									<view class="grow-wrap">
-										<view>{{$t(`今日成长值`)}}<text class="num">{{levelInfo.today_exp}}</text>{{$t(`点`)}}
+										<view>{{$t(`今日成长值`)}}<text class="num">{{levelInfo.today_exp || ''}}</text>{{$t(`点`)}}
 										</view>
 										<view class="process">
 											<view
 												:style="{width: `${Math.floor((levelInfo.exp / item.next_exp_num) > 1 ? 100 : levelInfo.exp / item.next_exp_num * 100)}%`}"
 												class="fill"></view>
 										</view>
-										<view class="ratio"><text class="num">{{levelInfo.exp}}</text>/<text
-												class="num">{{item.next_exp_num}}</text></view>
+										<view class="ratio"><text class="num">{{levelInfo.exp || ''}}</text>/<text
+												class="num">{{item.next_exp_num || ''}}</text></view>
 									</view>
 									<navigator class="acea-row row-between-wrapper record-wrap"
 										url="/pages/users/user_vip_areer/index" hover-class="none">
@@ -49,7 +49,7 @@
 										</view>
 										<view class="ratio">
 											<text
-												class="num">{{$t(`当前`)}}<text>{{levelInfo.exp}}</text>{{$t(`点，需达到`)}}<text>{{item.exp_num}}</text>{{$t(`点解锁`)}}</text>
+												class="num">{{$t(`当前`)}}<text>{{levelInfo.exp || ''}}</text>{{$t(`点，需达到`)}}<text>{{item.exp_num || ''}}</text>{{$t(`点解锁`)}}</text>
 										</view>
 										<navigator class="acea-row row-between-wrapper record-wrap"
 											style="padding-left: 0;" url="/pages/users/user_vip_areer/index"
@@ -98,8 +98,8 @@
 					<view class="item acea-row row-middle">
 						<view class="text">
 							<view class="title">{{$t(`签到`)}}<text
-									class="mark">{{$t(`可获得`)}}{{taskInfo.sign}}{{$t(`点经验`)}}</text></view>
-							<view class="info">{{$t(`每日签到可获得经验值，已签到`)}}{{taskInfo.sign_count}}{{$t(`天`)}}</view>
+									class="mark">{{$t(`可获得`)}}{{taskInfo.sign || ''}}{{$t(`点经验`)}}</text></view>
+							<view class="info">{{$t(`每日签到可获得经验值，已签到`)}}{{taskInfo.sign_count || ''}}{{$t(`天`)}}</view>
 						</view>
 						<navigator class="link" url="/pages/users/user_sgin/index" hover-class="none">{{$t(`去签到`)}}
 						</navigator>
@@ -107,7 +107,7 @@
 					<view class="item acea-row row-middle">
 						<view class="text">
 							<view class="title">{{$t(`购买商品`)}}<text
-									class="mark">+{{taskInfo.order}}{{$t(`点经验/元`)}}</text></view>
+									class="mark">+{{taskInfo.order || ''}}{{$t(`点经验/元`)}}</text></view>
 							<view class="info">{{$t(`购买商品可获得对应的经验值`)}}</view>
 						</view>
 						<navigator class="link" open-type="switchTab" url="/pages/goods_cate/goods_cate"
@@ -116,7 +116,7 @@
 					<view class="item acea-row row-middle">
 						<view class="text">
 							<view class="title">{{$t(`邀请好友`)}}<text
-									class="mark">+{{taskInfo.invite}}{{$t(`点经验/人`)}}</text></view>
+									class="mark">+{{taskInfo.invite || ''}}{{$t(`点经验/人`)}}</text></view>
 							<view class="info">{{$t(`邀请好友注册商城可获得经验值`)}}</view>
 						</view>
 						<navigator class="link" url="/pages/users/user_spread_code/index" hover-class="none">

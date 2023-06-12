@@ -41,7 +41,7 @@
 					<!-- #ifdef APP-PLUS || MP -->
 					<view class="" :style="'width:100%;' + 'height:'+sysHeight"></view>
 					<!-- #endif -->
-					<productConSwiper :imgUrls="imgUrls"></productConSwiper>
+					<productConSwiper :imgUrls="imgUrls" @showSwiperImg="showSwiperImg"></productConSwiper>
 					<view class='wrapper'>
 						<view class='share acea-row row-between row-bottom'>
 							<view class='money font-color'>
@@ -261,6 +261,7 @@
 		<product-window :attr='attribute' :limitNum='attribute.productSelect.quota' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
 			@ChangeCartNum="ChangeCartNum" @iptCartNum="iptCartNum" @attrVal="attrVal" @getImg="showImg">
 		</product-window>
+		<swiperPrevie ref="cusSwiperImg" :list="storeInfo.images"></swiperPrevie>
 		<cus-previewImg ref="cusPreviewImg" :list="skuArr" @changeSwitch="changeSwitch"
 			@shareFriend="listenerActionSheet" />
 		<kefuIcon :ids='storeInfo.product_id' :routineContact='routineContact'></kefuIcon>
@@ -281,6 +282,7 @@
 	import authorize from '@/components/Authorize';
 	// #endif
 	import productConSwiper from '@/components/productConSwiper/index.vue'
+	import swiperPrevie from "@/components/cusPreviewImg/swiperPrevie.vue";
 	import {
 		toLogin
 	} from '@/libs/login.js';
@@ -336,7 +338,8 @@
 			cusPreviewImg,
 			parser,
 			menuIcon,
-			homeList
+			homeList,
+			swiperPrevie
 		},
 		computed: mapGetters({
 			'isLogin': 'isLogin',
@@ -518,6 +521,9 @@
 			moreNav() {
 				this.currentPage = !this.currentPage
 			},
+			showSwiperImg(index) {
+				this.$refs.cusSwiperImg.open(index);
+			},
 			qrR(res) {
 				// #ifdef H5
 				if (!this.$wechat.isWeixin() || this.shareQrcode != '1') {
@@ -601,7 +607,7 @@
 			combinationDetail() {
 				var that = this;
 				var data = that.id;
-				getCombinationDetail(data).then((res)=> {
+				getCombinationDetail(data).then((res) => {
 					that.dataShow = 1;
 					uni.setNavigationBarTitle({
 						title: res.data.storeInfo.title.substring(0, 16)

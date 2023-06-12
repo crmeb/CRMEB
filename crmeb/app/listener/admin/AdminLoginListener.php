@@ -30,6 +30,7 @@ class AdminLoginListener
             $path = root_path('runtime') . '.queue';
             $content = file_get_contents($path);
             $res = $key === $content;
+            if (sys_config('queue_open', 0) == 0) $res = true;
             unlink($path);
         } catch (\Throwable $e) {
         }

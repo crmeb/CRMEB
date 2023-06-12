@@ -1,7 +1,7 @@
 <template>
   <div>
     <Row class="ivu-mt box-wrapper">
-      <Col v-bind="grid1"  class="left-wrapper">
+      <Col v-bind="grid1" class="left-wrapper">
         <Menu :theme="theme3" :active-name="sortName" width="auto">
           <MenuGroup>
             <MenuItem
@@ -69,7 +69,14 @@
             </template>
           </Table>
           <div class="acea-row row-right page">
-            <Page :total="total" :model-value="labelFrom.page" show-elevator show-total @on-change="pageChange" :page-size="labelFrom.limit" />
+            <Page
+              :total="total"
+              :model-value="labelFrom.page"
+              show-elevator
+              show-total
+              @on-change="pageChange"
+              :page-size="labelFrom.limit"
+            />
           </div>
         </Card>
       </Col>

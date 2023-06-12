@@ -27,7 +27,17 @@ Route::group('file', function () {
     //上传图片
     Route::post('upload/[:upload_type]', 'v1.file.SystemAttachment/upload')->option(['real_name' => '上传图片']);
     //附件分类管理资源路由
-    Route::resource('category', 'v1.file.SystemAttachmentCategory')->option(['real_name' => '附件分类管理']);
+    Route::resource('category', 'v1.file.SystemAttachmentCategory')->except(['read'])->option([
+        'real_name' => [
+            'index' => '获取附件分类管理列表',
+            'create' => '获取附件分类管理表单',
+            'save' => '保存附件分类管理',
+            'edit' => '获取修改附件分类管理表单',
+            'update' => '修改附件分类管理',
+            'delete' => '删除附件分类管理'
+        ],
+        
+    ]);
     //获取上传类型
     Route::get('upload_type', 'v1.file.SystemAttachment/uploadType')->option(['real_name' => '上传类型']);
     //分片上传本地视频
@@ -37,4 +47,4 @@ Route::group('file', function () {
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
     \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
-]);
+])->option(['mark' => 'file', 'mark_name' => '素材管理']);

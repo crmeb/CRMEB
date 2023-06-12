@@ -1,0 +1,35 @@
+@import './index.scss';
+
+/* 页面宽度小于768px
+------------------------------- */
+@media screen and (max-width: $sm) {
+  .error {
+    .error-flex {
+      flex-direction: column-reverse !important;
+      height: auto !important;
+      width: 100% !important;
+    }
+    .right,
+    .left {
+      flex: unset !important;
+      display: flex !important;
+    }
+    .left-item {
+      margin: auto !important;
+    }
+    .right img {
+      max-width: 450px !important;
+      @extend .left-item;
+    }
+  }
+}
+
+/* 页面宽度大于768px小于992px
+------------------------------- */
+@media screen and (min-width: $sm) and (max-width: $md) {
+  .error {
+    .error-flex {
+      padding-left: 30px !important;
+    }
+  }
+}

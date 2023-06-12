@@ -23,7 +23,6 @@ export default [
     },
     component: () => import('@/pages/account/login'),
   },
-  // 客服
   {
     path: '/kefu',
     name: `${pre}index`,
@@ -31,6 +30,20 @@ export default [
       auth: true,
       title: '客服管理',
       kefu: true,
+    },
+    component: () => import('@/pages/kefu/index'),
+  },
+  // 客服
+  {
+    path: routePre + '/kefu',
+    name: `${pre}index`,
+    meta: {
+      auth: true,
+      title: '客服管理',
+      kefu: true,
+    },
+    redirect: {
+      name: `setting_service`,
     },
     component: () => import('@/pages/kefu/index'),
   },

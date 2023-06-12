@@ -34,20 +34,23 @@ class SystemConfigDao extends BaseDao
      * 获取某个系统配置
      * @param string $configNmae
      * @return mixed
+     * @throws \ReflectionException
      */
     public function getConfigValue(string $configNmae)
     {
-        return $this->withSearchSelect(['menu_name'], ['menu_name' => $configNmae])->value('value');
+        return $this->search(['menu_name' => $configNmae])->value('value');
     }
 
     /**
      * 获取所有配置
+     * @param array $configName
      * @return array
+     * @throws \ReflectionException
      */
     public function getConfigAll(array $configName = [])
     {
         if ($configName) {
-            return $this->withSearchSelect(['menu_name'], ['menu_name' => $configName])->column('value', 'menu_name');
+            return $this->search(['menu_name' => $configName])->column('value', 'menu_name');
         } else {
             return $this->getModel()->column('value', 'menu_name');
         }
@@ -88,6 +91,7 @@ class SystemConfigDao extends BaseDao
      * 获取上传配置中的上传类型
      * @param string $configName
      * @return array
+     * @throws \ReflectionException
      */
     public function getUploadTypeList(string $configName)
     {

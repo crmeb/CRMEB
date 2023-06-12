@@ -68,7 +68,7 @@ export default {
   },
   data() {
     return {
-      routePro:this.$routeProStr,
+      routePro: this.$routeProStr,
       currentTab: '',
       grid: {
         xl: 8,

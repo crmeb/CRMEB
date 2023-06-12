@@ -280,7 +280,6 @@ export default {
 </script>
 
 <style scoped lang="less">
-
 /deep/.ivu-card-body {
   padding: 0;
 }

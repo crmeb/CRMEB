@@ -372,3 +372,13 @@ export function downloadReplyCode(id) {
     method: 'GET',
   });
 }
+
+/**
+ * 城市列表
+ */
+export function cityList() {
+  return request({
+    url: `setting/city/full_list`,
+    method: 'GET',
+  });
+}

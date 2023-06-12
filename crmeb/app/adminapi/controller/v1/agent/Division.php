@@ -121,19 +121,24 @@ class Division extends AuthController
      * 保存代理商
      * @param UserServices $userServices
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function divisionAgentSave(UserServices $userServices)
     {
         $data = $this->request->postMore([
+            ['division_id', 0],
             ['uid', 0],
             ['division_percent', 0],
             ['division_end_time', ''],
             ['division_status', 1],
             ['edit', 0],
         ]);
-        $userInfo = $userServices->get((int)$data['uid']);
+        $userInfo = $userServices->count(['uid' => (int)$data['uid']]);
         if (!$userInfo) throw new AdminException(100100);
-        $data['division_id'] = $this->adminInfo['division_id'];
+        $divisionUserInfo = $userServices->count(['uid' => (int)$data['division_id'], 'is_division' => 1, 'division_id' => $data['division_id']]);
+        if (!$divisionUserInfo) throw new AdminException(100100);
         $this->services->divisionAgentSave($data);
         return app('json')->success(100000);
     }

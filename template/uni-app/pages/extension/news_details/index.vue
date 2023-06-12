@@ -47,6 +47,9 @@
 	import home from '@/components/home';
 	import parser from "@/components/jyf-parser/jyf-parser";
 	import colors from "@/mixins/color";
+	import {
+		userShare
+	} from "@/api/user.js";
 	export default {
 		components: {
 			shareInfo,
@@ -87,6 +90,28 @@
 		},
 		onShow: function() {
 			this.getArticleOne();
+		},
+		onShareAppMessage: function() {
+			let that = this;
+			that.$set(that, "actionSheetHidden", !that.actionSheetHidden);
+			userShare();
+			return {
+				title: this.articleInfo.title || "",
+				imageUrl: this.articleInfo.image_input.length ? this.articleInfo.image_input[0] : "",
+				path: "/pages/extension/news_details/index?id=" + that.id + "&spid=" + this.$store.state.app.uid,
+			};
+		},
+		onShareTimeline() {
+			let that = this;
+			userShare();
+			return {
+				title: this.articleInfo.title,
+				query: {
+					id: that.id,
+					spid: this.$store.state.app.uid || 0,
+				},
+				imageUrl: this.articleInfo.image_input.length ? this.articleInfo.image_input[0] : "",
+			};
 		},
 		methods: {
 			getArticleOne: function() {
@@ -149,7 +174,7 @@
 	}
 
 	.newsDetail .list .label {
-		font-size: 30rpx;
+		font-size: 24rpx;
 		color: #B1B2B3;
 		// height: 38rpx;
 		// border-radius: 3rpx;
@@ -160,7 +185,7 @@
 
 	.newsDetail .list .item {
 		margin-left: 27rpx;
-		font-size: 30rpx;
+		font-size: 24rpx;
 		color: #B1B2B3;
 	}
 
@@ -175,7 +200,7 @@
 
 	.newsDetail .conters {
 		padding: 0 30rpx;
-		font-size: 32rpx;
+		font-size: 28rpx;
 		color: #8A8B8C;
 		line-height: 1.7;
 	}

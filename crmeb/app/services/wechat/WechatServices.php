@@ -17,6 +17,7 @@ use app\dao\wechat\WechatUserDao;
 use app\services\user\UserServices;
 use app\services\user\UserVisitServices;
 use crmeb\exceptions\ApiException;
+use crmeb\services\app\MiniProgramService;
 use crmeb\services\CacheService;
 use crmeb\services\CacheService as Cache;
 use crmeb\services\app\WechatService as WechatAuthService;
@@ -51,6 +52,17 @@ class WechatServices extends BaseServices
     {
         ob_clean();
         return WechatAuthService::serve();
+    }
+
+    /**
+     * 微信公众号服务
+     * @return \think\Response
+     * @throws \EasyWeChat\Server\BadRequestException
+     */
+    public function miniServe()
+    {
+        ob_clean();
+        return MiniProgramService::serve();
     }
 
     /**

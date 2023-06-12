@@ -164,9 +164,6 @@
 		<!-- #ifndef MP -->
 		<home></home>
 		<!-- #endif -->
-		<!-- #ifdef MP -->
-		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
-		<!-- #endif -->
 	</view>
 </template>
 <style scoped lang="scss">
@@ -543,9 +540,6 @@
 	import {
 		openOrderRefundSubscribe
 	} from '@/utils/SubscribeMessage.js';
-	import {
-		getUserInfo
-	} from '@/api/user.js';
 	import home from '@/components/home';
 	import payment from '@/components/payment';
 	import orderGoods from "@/components/orderGoods";
@@ -583,31 +577,6 @@
 				isGoodsReturn: false, //是否为退款订单
 				status: {}, //订单底部按钮状态
 				isClose: false,
-				payMode: [{
-						name: this.$t(`微信支付`),
-						icon: "icon-weixinzhifu",
-						value: 'weixin',
-						title: this.$t(`使用微信快捷支付`),
-						payStatus: true,
-					},
-					// #ifdef H5 || APP-PLUS
-					{
-						name: this.$t(`支付宝支付`),
-						icon: 'icon-zhifubao',
-						value: 'alipay',
-						title: this.$t(`使用支付宝支付`),
-						payStatus: true
-					},
-					// #endif
-					{
-						name: this.$t(`余额支付`),
-						icon: "icon-yuezhifu",
-						value: 'yue',
-						title: this.$t(`可用余额`),
-						number: 0,
-						payStatus: true
-					}, 
-				],
 				pay_close: false,
 				pay_order_id: '',
 				totalPrice: '0',
@@ -624,7 +593,6 @@
 		onShow() {
 			if (this.isLogin) {
 				this.getOrderInfo();
-				this.getUserInfo();
 			} else {
 				toLogin();
 			}
@@ -703,56 +671,11 @@
 				});
 			},
 			/**
-			 * 关闭支付组件
-			 * 
-			 */
-			payClose: function() {
-				this.pay_close = false;
-			},
-			/**
-			 * 打开支付组件
-			 * 
-			 */
-			pay_open: function() {
-				this.pay_close = true;
-				this.pay_order_id = this.orderInfo.order_id;
-				this.totalPrice = this.orderInfo.pay_price;
-			},
-			/**
-			 * 支付成功回调
-			 * 
-			 */
-			pay_complete: function() {
-				this.pay_close = false;
-				this.pay_order_id = '';
-				this.getOrderInfo();
-			},
-			/**
-			 * 支付失败回调
-			 * 
-			 */
-			pay_fail: function() {
-				this.pay_close = false;
-				this.pay_order_id = '';
-			},
-			/**
 			 * 登录授权回调
 			 * 
 			 */
 			onLoadFun: function() {
 				this.getOrderInfo();
-				this.getUserInfo();
-			},
-			/**
-			 * 获取用户信息
-			 * 
-			 */
-			getUserInfo: function() {
-				let that = this;
-				getUserInfo().then(res => {
-					that.payMode[1].number = res.data.now_money;
-					that.$set(that, 'payMode', that.payMode);
-				})
 			},
 			/**
 			 * 获取订单详细信息

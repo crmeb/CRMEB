@@ -23,6 +23,9 @@
         <span class="nickname">{{ row.nickname }}</span> |
         <span class="uid">{{ row.uid }}</span>
       </template>
+      <template slot-scope="{ row, index }" slot="pay_price">
+        <span>{{ row.paid ? row.pay_price : '未支付' }}</span>
+      </template>
       <template slot-scope="{ row, index }" slot="info">
         <div class="tabBox" v-for="(val, i) in row._info" :key="i">
           <div class="tabBox_img" v-viewer>
@@ -63,13 +66,14 @@
         </div>
       </template>
       <template slot-scope="{ row, index }" slot="action">
-        <a @click="edit(row)" v-if="row._status === 1">编辑</a>
+        <a @click="edit(row)" v-if="row._status === 1 && row.is_del !== 1">编辑</a>
         <a
           @click="sendOrder(row)"
           v-if="
             (row.status === 4 || row._status === 2 || row._status === 8) &&
             row.shipping_type === 1 &&
-            (row.pinkStatus === null || row.pinkStatus === 2)
+            (row.pinkStatus === null || row.pinkStatus === 2) &&
+            row.is_del !== 1
           "
           >发送货</a
         >
@@ -81,12 +85,15 @@
         >
         <Divider
           type="vertical"
-          v-if="(row._status === 8 || row.status === 0 || row.status === 4) && row.split.length"
+          v-if="(row._status === 8 || row.status === 0 || row.status === 4) && row.split.length && row.is_del !== 1"
         />
-        <a @click="splitOrderDetail(row)" v-if="row.split.length">查看子订单</a>
+        <a @click="splitOrderDetail(row)" v-if="row.split.length && row.is_del !== 1">查看子订单</a>
         <Divider
           type="vertical"
-          v-if="(row._status === 2 && row.shipping_type === 1 && row.pinkStatus === 2) || row.split.length"
+          v-if="
+            (row._status === 2 && row.shipping_type === 1 && row.pinkStatus === 2) ||
+            (row.split.length && row.is_del !== 1)
+          "
         />
         <Divider
           type="vertical"
@@ -97,7 +104,8 @@
               row._status === 3 ||
               (row._status === 2 && !row.pinkStatus) ||
               row._status === 4 ||
-              (row.shipping_type == 2 && row.status == 0 && row.paid == 1 && row.refund_status === 0))
+              (row.shipping_type == 2 && row.status == 0 && row.paid == 1 && row.refund_status === 0)) &&
+            row.is_del !== 1
           "
         />
         <template>
@@ -110,7 +118,7 @@
               <DropdownItem
                 name="1"
                 ref="ones"
-                v-show="row._status === 1 && row.paid === 0 && row.pay_type === 'offline'"
+                v-show="row._status === 1 && row.paid === 0 && row.pay_type === 'offline' && row.is_del !== 1"
                 >确认付款</DropdownItem
               >
               <DropdownItem name="2">订单详情</DropdownItem>
@@ -139,6 +147,7 @@
               <!--                            <DropdownItem name="7"  v-show='row._status === 3'>不退款</DropdownItem>-->
               <DropdownItem name="8" v-show="row._status === 4">已收货</DropdownItem>
               <DropdownItem name="9">删除订单</DropdownItem>
+              <DropdownItem name="12" v-show="row.kuaidi_label">快递面单打印</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>
@@ -182,6 +191,7 @@
 
 <script>
 import expandRow from './tableExpand.vue';
+import printJS from 'print-js';
 import {
   orderList,
   getOrdeDatas,
@@ -257,7 +267,7 @@ export default {
         },
         {
           title: '实际支付',
-          key: 'pay_price',
+          slot: 'pay_price',
           align: 'center',
           width: 100,
         },
@@ -409,6 +419,9 @@ export default {
               this.$Message.error(res.msg);
             });
           break;
+        case '12':
+          this.printImg(row.kuaidi_label);
+          break;
         default:
           this.delfromData = {
             title: '删除订单',
@@ -419,6 +432,17 @@ export default {
           // this.modalTitleSs = '删除订单';
           this.delOrder(row, this.delfromData);
       }
+    },
+    printImg(url) {
+      printJS({
+        printable: url,
+        type: 'image',
+        documentTitle: '快递信息',
+        style: `img{
+          width: 100%;
+          height: 476px;
+        }`,
+      });
     },
     // 立即支付 /确认收货//删除单条订单
     submitModel() {

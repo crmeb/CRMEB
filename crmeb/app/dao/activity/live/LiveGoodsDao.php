@@ -31,9 +31,11 @@ class LiveGoodsDao extends BaseDao
     /**
      * @param array $where
      * @param string $field
+     * @param array $with
      * @param int $page
      * @param int $limit
      * @return array
+     * @throws \ReflectionException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException

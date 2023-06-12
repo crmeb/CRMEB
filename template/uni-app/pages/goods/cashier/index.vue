@@ -20,11 +20,11 @@
 				<view class="left acea-row row-between-wrapper">
 					<view class="iconfont" :class="item.icon"></view>
 					<view class="text">
-						<view class="name">{{item.name}}</view>
+						<view class="name">{{$t(item.name)}}</view>
 						<view class="info" v-if="item.value == 'yue'">
-							{{item.title}} <span class="money">{{$t(`￥`)}}{{ item.number }}</span>
+							{{$t(item.title)}} <span class="money">{{$t(`￥`)}}{{ item.number }}</span>
 						</view>
-						<view class="info" v-else>{{item.title}}</view>
+						<view class="info" v-else>{{$t(item.title)}}</view>
 					</view>
 				</view>
 				<view class="iconfont" :class="active==index?'icon-xuanzhong11 font-num':'icon-weixuan'"></view>
@@ -32,7 +32,7 @@
 		</view>
 		<view class="btn">
 			<view class="button acea-row row-center-wrapper" @click='goPay(number, paytype)'>{{$t(`确认支付`)}}</view>
-			<view class="wait-pay" @click="waitPay">暂不支付</view>
+			<view class="wait-pay" @click="waitPay">{{$t(`暂不支付`)}}</view>
 		</view>
 		<view v-show="false" v-html="formContent"></view>
 	</view>
@@ -46,6 +46,9 @@
 		getCashierOrder,
 		orderPay
 	} from '@/api/order.js';
+	import {
+		basicConfig
+	} from '@/api/public.js'
 	export default {
 		components: {
 			countDown,
@@ -128,7 +131,7 @@
 		onLoad(options) {
 			if (options.order_id) this.orderId = options.order_id
 			if (options.from_type) this.fromType = options.from_type
-			this.getCashierOrder()
+			this.getBasicConfig()
 		},
 		onShow() {
 			let options = wx.getEnterOptionsSync();
@@ -172,6 +175,32 @@
 			}
 		},
 		methods: {
+			getBasicConfig() {
+				basicConfig().then(res => {
+					//微信支付是否开启
+					this.cartArr[0].payStatus = res.data.pay_weixin_open || 0
+					//支付宝是否开启
+					this.cartArr[1].payStatus = res.data.ali_pay_status || 0;
+					//#ifdef MP
+					this.cartArr[1].payStatus = 0;
+					//#endif
+					//余额支付是否开启
+					this.cartArr[2].payStatus = res.data.yue_pay_status
+					if (res.data.offline_pay_status) {
+						this.cartArr[3].payStatus = 1
+					} else {
+						this.cartArr[3].payStatus = 0
+					}
+					//好友代付是否开启
+					this.cartArr[4].payStatus = res.data.friend_pay_status || 0;
+					this.getCashierOrder()
+				}).catch(err => {
+					uni.hideLoading();
+					return this.$util.Tips({
+						title: err
+					})
+				})
+			},
 			getCashierOrder() {
 				uni.showLoading({
 					title: this.$t(`创建订单中`)
@@ -182,24 +211,7 @@
 					this.payPostage = res.data.pay_postage
 					this.offlinePostage = res.data.offline_postage
 					this.invalidTime = res.data.invalid_time
-					//微信支付是否开启
-					this.cartArr[0].payStatus = res.data.wechat_pay_status || 0
-					//支付宝是否开启
-					this.cartArr[1].payStatus = res.data.ali_pay_status || 0;
-					//#ifdef MP
-					this.cartArr[1].payStatus = false;
-					//#endif
-					//余额支付是否开启
-					// that.cartArr[2].title = '可用余额:' + res.data.userInfo.now_money;
 					this.cartArr[2].number = res.data.now_money;
-					this.cartArr[2].payStatus = res.data.yue_pay_status
-					if (res.data.offline_pay_status) {
-						this.cartArr[3].payStatus = 1
-					} else {
-						this.cartArr[3].payStatus = 0
-					}
-					//好友代付是否开启
-					this.cartArr[4].payStatus = res.data.friend_pay_status || 0;
 					uni.hideLoading();
 				}).catch(err => {
 					uni.hideLoading();

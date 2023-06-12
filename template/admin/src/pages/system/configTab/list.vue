@@ -77,7 +77,7 @@
       v-model="modals2"
       scrollable
       footer-hide
-      closable
+      :closable="true"
       title="添加配置字段"
       :mask-closable="false"
       :z-index="1"

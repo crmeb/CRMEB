@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -35,17 +35,22 @@ use think\initializer\RegisterService;
  * @property Cookie     $cookie
  * @property Session    $session
  * @property Validate   $validate
- * @property Filesystem $filesystem
  */
 class App extends Container
 {
-    const VERSION = '6.0.3';
+    const VERSION = '6.1.1';
 
     /**
      * 应用调试模式
      * @var bool
      */
     protected $appDebug = false;
+
+    /**
+     * 环境变量标识
+     * @var string
+     */
+    protected $envName = '';
 
     /**
      * 应用开始时间
@@ -146,7 +151,6 @@ class App extends Container
         'session'                 => Session::class,
         'validate'                => Validate::class,
         'view'                    => View::class,
-        'filesystem'              => Filesystem::class,
         'think\DbManager'         => Db::class,
         'think\LogManager'        => Log::class,
         'think\CacheManager'      => Cache::class,
@@ -162,7 +166,7 @@ class App extends Container
      */
     public function __construct(string $rootPath = '')
     {
-        $this->thinkPath   = dirname(__DIR__) . DIRECTORY_SEPARATOR;
+        $this->thinkPath   = realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR;
         $this->rootPath    = $rootPath ? rtrim($rootPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : $this->getDefaultRootPath();
         $this->appPath     = $this->rootPath . 'app' . DIRECTORY_SEPARATOR;
         $this->runtimePath = $this->rootPath . 'runtime' . DIRECTORY_SEPARATOR;
@@ -275,6 +279,18 @@ class App extends Container
     public function getNamespace(): string
     {
         return $this->namespace;
+    }
+
+    /**
+     * 设置环境变量标识
+     * @access public
+     * @param string $name 环境标识
+     * @return $this
+     */
+    public function setEnvName(string $name)
+    {
+        $this->envName = $name;
+        return $this;
     }
 
     /**
@@ -396,6 +412,22 @@ class App extends Container
     }
 
     /**
+     * 加载环境变量定义
+     * @access public
+     * @param string $envName 环境标识
+     * @return void
+     */
+    public function loadEnv(string $envName = ''): void
+    {
+        // 加载环境变量
+        $envFile = $envName ? $this->rootPath . '.env.' . $envName : $this->rootPath . '.env';
+
+        if (is_file($envFile)) {
+            $this->env->load($envFile);
+        }
+    }
+
+    /**
      * 初始化应用
      * @access public
      * @return $this
@@ -407,10 +439,7 @@ class App extends Container
         $this->beginTime = microtime(true);
         $this->beginMem  = memory_get_usage();
 
-        // 加载环境变量
-        if (is_file($this->rootPath . '.env')) {
-            $this->env->load($this->rootPath . '.env');
-        }
+        $this->loadEnv($this->envName);
 
         $this->configExt = $this->env->get('config_ext', '.php');
 
@@ -419,13 +448,8 @@ class App extends Container
         // 加载全局初始化文件
         $this->load();
 
-        // 加载框架默认语言包
-        $langSet = $this->lang->defaultLangSet();
-
-        $this->lang->load($this->thinkPath . 'lang' . DIRECTORY_SEPARATOR . $langSet . '.php');
-
         // 加载应用默认语言包
-        $this->loadLangPack($langSet);
+        $this->loadLangPack();
 
         // 监听AppInit
         $this->event->trigger(AppInit::class);
@@ -451,25 +475,13 @@ class App extends Container
 
     /**
      * 加载语言包
-     * @param string $langset 语言
      * @return void
      */
-    public function loadLangPack($langset)
+    public function loadLangPack()
     {
-        if (empty($langset)) {
-            return;
-        }
-
-        // 加载系统语言包
-        $files = glob($this->appPath . 'lang' . DIRECTORY_SEPARATOR . $langset . '.*');
-        $this->lang->load($files);
-
-        // 加载扩展（自定义）语言包
-        $list = $this->config->get('lang.extend_list', []);
-
-        if (isset($list[$langset])) {
-            $this->lang->load($list[$langset]);
-        }
+        // 加载默认语言包
+        $langSet = $this->lang->defaultLangSet();
+        $this->lang->switchLangSet($langSet);
     }
 
     /**
@@ -590,7 +602,7 @@ class App extends Container
      * 是否运行在命令行下
      * @return bool
      */
-    public function runningInConsole()
+    public function runningInConsole(): bool
     {
         return php_sapi_name() === 'cli' || php_sapi_name() === 'phpdbg';
     }

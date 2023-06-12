@@ -185,6 +185,7 @@ class SystemConfigServices extends BaseServices
     /**
      * SystemConfigServices constructor.
      * @param SystemConfigDao $dao
+     * @param FormBuilder $builder
      */
     public function __construct(SystemConfigDao $dao, FormBuilder $builder)
     {
@@ -192,6 +193,12 @@ class SystemConfigServices extends BaseServices
         $this->builder = $builder;
     }
 
+    /**
+     * @return array|int[]|string[]
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/12
+     */
     public function getSonConfig()
     {
         $sonConfig = [];
@@ -214,6 +221,7 @@ class SystemConfigServices extends BaseServices
      * @param string $configName
      * @param null $default
      * @return mixed|null
+     * @throws \ReflectionException
      */
     public function getConfigValue(string $configName, $default = null)
     {
@@ -225,6 +233,7 @@ class SystemConfigServices extends BaseServices
      * 获取全部配置
      * @param array $configName
      * @return array
+     * @throws \ReflectionException
      */
     public function getConfigAll(array $configName = [])
     {
@@ -575,14 +584,12 @@ class SystemConfigServices extends BaseServices
 
     /**
      * 获取系统配置表单
-     * @param int $id
-     * @param array $formData
+     * @param $data
+     * @param bool $control
+     * @param array $controle_two
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \FormBuilder\Exception\FormBuilderException
      */
-
     public function formTypeShine($data, $control = false, $controle_two = [])
     {
 
@@ -813,6 +820,7 @@ class SystemConfigServices extends BaseServices
 
     /**
      * 系统配置form表单创建
+     * @param $url
      * @param int $tabId
      * @return array
      * @throws \FormBuilder\Exception\FormBuilderException
@@ -982,6 +990,10 @@ class SystemConfigServices extends BaseServices
      * @param int $type
      * @param int $tab_id
      * @return array
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function createFormRule(int $type, int $tab_id): array
     {
@@ -1115,7 +1127,8 @@ class SystemConfigServices extends BaseServices
         }
     }
 
-    /**保存平台电子面单打印信息
+    /**
+     * 保存平台电子面单打印信息
      * @param array $data
      * @return bool
      */
@@ -1132,7 +1145,7 @@ class SystemConfigServices extends BaseServices
         foreach ($data as $key => $value) {
             $this->dao->update(['menu_name' => 'config_export_' . $key], ['value' => json_encode($value)]);
         }
-        \crmeb\services\CacheService::clear();
+        $this->cacheDriver()->clear();
         return true;
     }
 
@@ -1149,7 +1162,7 @@ class SystemConfigServices extends BaseServices
             if ($banner) {
                 $banner = array_column($banner, 'pic');
                 $this->dao->update(['menu_name' => 'spread_banner'], ['value' => json_encode($banner)]);
-                \crmeb\services\CacheService::clear();
+                $this->cacheDriver()->clear();
             }
         }
         return $banner;

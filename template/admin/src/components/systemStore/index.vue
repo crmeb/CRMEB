@@ -178,8 +178,8 @@
 <script>
 import { storeApi, keyApi, storeAddApi, storeGetInfoApi } from '@/api/setting';
 import { mapState } from 'vuex';
-import city from '@/utils/city';
 import uploadPictures from '@/components/uploadPictures';
+import { cityList } from '@/api/app';
 export default {
   name: 'systemStore',
   components: { uploadPictures },
@@ -297,23 +297,7 @@ export default {
     };
   },
   created() {
-    let that = this;
-    city.map((item) => {
-      item.value = item.label;
-      if (item.children && item.children.length) {
-        item.children.map((j) => {
-          j.value = j.label;
-          if (j.children && j.children.length) {
-            j.children.map((o) => {
-              o.value = o.label;
-            });
-          }
-        });
-      }
-    });
-    setTimeout(function () {
-      that.addresData = city;
-    }, 10);
+    this.getCityList();
   },
   computed: {},
   mounted: function () {
@@ -332,6 +316,24 @@ export default {
     window.selectAdderss = this.selectAdderss;
   },
   methods: {
+    getCityList() {
+      cityList().then((res) => {
+        res.data.map((item) => {
+          item.value = item.label;
+          if (item.children && item.children.length) {
+            item.children.map((j) => {
+              j.value = j.label;
+              if (j.children && j.children.length) {
+                j.children.map((o) => {
+                  o.value = o.label;
+                });
+              }
+            });
+          }
+        });
+        this.addresData = res.data;
+      });
+    },
     cancel() {
       this.$refs['formItem'].resetFields();
       this.clearFrom();

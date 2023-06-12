@@ -35,7 +35,7 @@
 <script>
 import { mapState } from 'vuex';
 import uploadPictures from '@/components/uploadPictures';
-import settings  from '@/setting'
+import settings from '@/setting';
 export default {
   name: 'c_upload_img',
   components: {

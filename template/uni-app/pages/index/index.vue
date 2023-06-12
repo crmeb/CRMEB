@@ -26,9 +26,9 @@
 		},
 		onLoad() {
 			uni.hideTabBar()
-			uni.$on('is_diy', (data) => {
-				this.isDiy = data
-			})
+			// uni.$on('is_diy', (data) => {
+			// 	this.isDiy = data
+			// })
 			this.setOpenShare();
 		},
 		onShow() {
@@ -41,6 +41,7 @@
 			getVersion(name) {
 				uni.$emit('uploadFooter')
 				getVersion(name).then(res => {
+					console.log(res, '11')
 					this.version = res.data.version
 					this.isDiy = res.data.is_diy
 					this.loading = true
@@ -58,7 +59,16 @@
 						uni.setStorageSync('DIY_VERSION', res.data.version)
 					} else {}
 				}).catch(err => {
-					this.loading = true
+					// #ifdef APP-PLUS
+					setTimeout(e => {
+						this.getVersion(0);
+					}, 1500)
+					// #endif
+					// #ifndef APP-PLUS
+					this.$util.Tips({
+						title: err
+					});
+					// #endiff
 				})
 			},
 			// 微信分享；

@@ -326,8 +326,6 @@ class StoreProduct extends BaseModel
                     $query->whereIn('id', function ($query) use ($store_stock) {
                         $query->name('store_product_attr_value')->where('stock', '<', $store_stock)->where('stock', '>', 0)->where('type', 0)->field('product_id')->select();
                     });
-//                    $query->where(['is_show' => 1, 'is_del' => 0])->where('stock', '<=', $store_stock)->where('stock', '>', 0);
-
                 } else {
                     $query->where(['is_show' => 1, 'is_del' => 0])->where('stock', '>', 0);
                 }

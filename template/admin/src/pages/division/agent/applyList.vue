@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <Card :bordered="false" dis-hover class="ivu-mt mb10">
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -48,7 +48,6 @@
             :columns="columns"
             :data="userLists"
             ref="table"
-            class="mt25"
             :loading="loading"
             highlight-row
             no-formValidate-text="暂无数据"

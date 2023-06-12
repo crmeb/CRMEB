@@ -1,0 +1,13 @@
+@import './index.scss';
+
+/* 页面宽度小于768px
+------------------------------- */
+@media screen and (max-width: $sm) {
+  // element plus scrollbar
+  .el-scrollbar__bar.is-vertical {
+    width: 2px !important;
+  }
+  .el-scrollbar__bar.is-horizontal {
+    height: 2px !important;
+  }
+}

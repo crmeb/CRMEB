@@ -8,20 +8,20 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
-import setting  from '@/setting'
+import LayoutMain from '@/layout';
+import setting from '@/setting';
 let routePre = setting.routePre;
 
 const pre = 'order_';
 
 export default {
-  path: routePre+'/order',
+  path: routePre + '/order',
   name: 'order',
   header: 'order',
   redirect: {
     name: `${pre}list`,
   },
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
     {
       path: 'list',

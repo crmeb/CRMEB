@@ -154,6 +154,7 @@ import {
   orderSheetInfo,
   splitCartInfo,
 } from '@/api/order';
+import printJS from 'print-js';
 export default {
   name: 'orderSend',
   props: {
@@ -352,6 +353,18 @@ export default {
           this.$Message.error(res.msg);
         });
     },
+    printImg(url) {
+      printJS({
+        printable: url,
+        type: 'image',
+        documentTitle: '快递信息',
+        style: `img{
+          width: 100%;
+          height: 476px;
+        }`,
+      });
+    },
+
     // 提交
     putSend(name) {
       let data = {
@@ -385,7 +398,6 @@ export default {
           return this.$Message.error('送货人不能为空');
         }
       }
-
       if (this.splitSwitch) {
         data.datas.cart_ids = [];
         this.selectData.forEach((v) => {
@@ -401,6 +413,7 @@ export default {
             this.$emit('submitFail');
             this.reset();
             this.splitSwitch = false;
+            if (res.data.label) this.printImg(res.data.label);
           })
           .catch((res) => {
             this.$Message.error(res.msg);
@@ -413,6 +426,7 @@ export default {
             this.splitSwitch = false;
             this.$emit('submitFail');
             this.reset();
+            if (res.data.label) this.printImg(res.data.label);
           })
           .catch((res) => {
             this.$Message.error(res.msg);

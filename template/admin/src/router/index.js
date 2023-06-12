@@ -1,3 +1,10 @@
+/*
+ * @Author: From-wh from-wh@hotmail.com
+ * @Date: 2023-03-04 11:49:55
+ * @FilePath: /admin/src/router/index.js
+ * @Description:
+ *
+ */
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
@@ -16,19 +23,79 @@ import store from '@/store';
 import iView from 'iview';
 import { removeCookies, getCookies, setTitle } from '@/libs/util';
 import { includeArray } from '@/libs/auth';
+import { PrevLoading } from '@/utils/loading.js';
 
 Vue.use(Router);
+// 解决 `element ui` 导航栏重复点菜单报错问题
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch((err) => err);
+};
 
 const router = new Router({
   routes,
   mode: Setting.routerMode,
 });
+
+// 判断路由 meta.roles 中是否包含当前登录用户权限字段
+export function hasAuth(roles, route) {
+  if (route.meta && route.meta.auth) return roles.some((role) => route.meta.auth.includes(role));
+  else return true;
+}
+
+// 递归过滤有权限的路由
+export function setFilterMenuFun(routes, role) {
+  const menu = [];
+  routes.forEach((route) => {
+    const item = { ...route };
+    if (hasAuth(role, item)) {
+      if (item.children) item.children = setFilterMenuFun(item.children, role);
+      menu.push(item);
+    }
+  });
+  return menu;
+}
+
+// 递归处理多余的 layout : <router-view>，让需要访问的组件保持在第一层 layout 层。
+// 因为 `keep-alive` 只能缓存二级路由
+// 默认初始化时就执行
+export function keepAliveSplice(to) {
+  if (to.matched && to.matched.length > 2) {
+    to.matched.map((v, k) => {
+      if (v.components.default instanceof Function) {
+        v.components.default().then((components) => {
+          if (components.default.name === 'parent') {
+            to.matched.splice(k, 1);
+            router.push({ path: to.path, query: to.query });
+            keepAliveSplice(to);
+          }
+        });
+      } else {
+        if (v.components.default.name === 'parent') {
+          to.matched.splice(k, 1);
+          keepAliveSplice(to);
+        }
+      }
+    });
+  }
+}
+
+// 延迟关闭进度条
+export function delayNProgressDone(time = 300) {
+  setTimeout(() => {
+    NProgress.done();
+  }, time);
+}
+
 /**
  * 路由拦截
  * 权限验证
  */
 
 router.beforeEach(async (to, from, next) => {
+  // PrevLoading.start();
+  keepAliveSplice(to);
+
   if (to.fullPath.indexOf('kefu') != -1) {
     return next();
   }
@@ -39,8 +106,8 @@ router.beforeEach(async (to, from, next) => {
     const token = getCookies('token');
     if (token && token !== 'undefined') {
       const access = store.state.userInfo.uniqueAuth;
-      const isPermission = includeArray(to.meta.auth, access);
-      if (isPermission) {
+      const isPermission = includeArray(to.meta.auth, access); //  判断是否有权限  TODO
+      if (access.length) {
         next();
       } else {
         if (access.length == 0) {
@@ -86,6 +153,6 @@ router.afterEach((to) => {
   setTitle(to, router.app);
   // 返回页面顶端
   window.scrollTo(0, 0);
+  PrevLoading.done();
 });
-
 export default router;

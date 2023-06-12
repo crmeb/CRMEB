@@ -221,7 +221,7 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path:this.$routeProStr + '/marketing/presell/create/0' });
+      this.$router.push({ path: this.$routeProStr + '/marketing/presell/create/0' });
     },
     // 导出
     exports() {

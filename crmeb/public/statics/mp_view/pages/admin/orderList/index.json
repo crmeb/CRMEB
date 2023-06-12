@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "订单列表",
+  "usingComponents": {
+    "loading": "/components/Loading/index",
+    "price-change": "/pages/admin/components/PriceChange/index"
+  }
+}

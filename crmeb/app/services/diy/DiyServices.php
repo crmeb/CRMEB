@@ -138,21 +138,30 @@ class DiyServices extends BaseServices
 
     /**
      * @param int $id
-     * @return mixed|string|null
-     * @author 等风来
-     * @email 136327134@qq.com
-     * @date 2023/2/8
+     * @return array|mixed|\think\Model|null
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/05/08
      */
     public function getDiyVersion(int $id)
     {
         if ($id) {
-            return $this->cacheDriver()->remember('index_diy_' . $id, function () use ($id) {
-                return $this->dao->getOne(['id' => $id], 'version,is_diy');
-            });
+            $cacheKey = 'index_diy_' . $id;
+            $where = ['id' => $id];
         } else {
-            return $this->cacheDriver()->remember('index_diy_default', function () {
-                return $this->dao->getOne(['status' => 1, 'is_del' => 0], 'version,is_diy');
-            });
+            $cacheKey = 'index_diy_default';
+            $where = ['status' => 1, 'is_del' => 0];
+        }
+        $data = $this->cacheDriver()->remember($cacheKey, function () use ($where) {
+            return $this->dao->getOne($where, 'version,is_diy');
+        });
+        if (isset($data['version']) && isset($data['is_diy'])) {
+            return $data;
+        } else {
+            return $this->dao->getOne($where, 'version,is_diy');
         }
     }
 
@@ -422,6 +431,9 @@ class DiyServices extends BaseServices
      * 取单个diy小程序预览二维码
      * @param int $id
      * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getRoutineCode(int $id)
     {
@@ -431,7 +443,6 @@ class DiyServices extends BaseServices
         }
         /** @var QrcodeServices $QrcodeService */
         $QrcodeService = app()->make(QrcodeServices::class);
-        $image = $QrcodeService->getRoutineQrcodePath($id, 0, 6, [], false);
-        return $image;
+        return $QrcodeService->getRoutineQrcodePath($id, 0, 6, [], false);
     }
 }

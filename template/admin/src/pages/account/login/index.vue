@@ -73,6 +73,9 @@ import { getWorkermanUrl } from '@/api/kefu';
 import { setCookies } from '@/libs/util';
 import '@/assets/js/canvas-nest.min';
 import Verify from '@/components/verifition/Verify';
+import { PrevLoading } from '@/utils/loading.js';
+import { formatFlatteningRoutes, findFirstNonNullChildren } from '@/libs/system';
+
 export default {
   components: {
     Verify,
@@ -161,6 +164,7 @@ export default {
         .then((res) => {
           window.document.title = `${res.data.site_name} - 登录`;
           localStorage.setItem('ADMIN_TITLE', res.data.site_name || '');
+          this.$store.commit('setAdminTitle', res.data.site_name);
           let data = res.data || {};
           this.login_logo = data.login_logo ? data.login_logo : require('@/assets/images/logo.png');
           this.swiperList = data.slide.length ? data.slide : [{ slide: this.defaultSwiperList }];
@@ -208,6 +212,12 @@ export default {
           // 保存菜单信息
           this.$store.commit('menus/setopenMenus', []);
           this.$store.commit('menus/getmenusNav', data.menus);
+          this.$store.dispatch('routesList/setRoutesList', data.menus);
+          let arr = formatFlatteningRoutes(this.$router.options.routes);
+          this.formatTwoStageRoutes(arr);
+          this.$store.commit('menus/setOneLvMenus', arr);
+          let routes = formatFlatteningRoutes(data.menus);
+          this.$store.commit('menus/setOneLvRoute', routes);
 
           // 记录用户信息
           this.$store.commit('userInfo/name', data.user_info.account);
@@ -218,9 +228,6 @@ export default {
           this.$store.commit('userInfo/version', data.version);
           this.$store.commit('userInfo/newOrderAudioLink', data.newOrderAudioLink);
           this.login_captcha = 0;
-
-          // if (this.jigsaw) this.jigsaw.reset();
-
           try {
             if (data.queue === false) {
               this.$Notice.warning({
@@ -239,9 +246,9 @@ export default {
 
             this.checkSocket();
           } catch (e) {}
-          // console.log(this.findFirstNonNullChildren(res.data.menus), 1111);
-          return this.$router.replace({
-            path: this.findFirstNonNullChildren(res.data.menus).path || this.$routeProStr + '/',
+          PrevLoading.start();
+          return this.$router.push({
+            path: findFirstNonNullChildren(res.data.menus).path || this.$routeProStr + '/',
           });
         })
         .catch((res) => {
@@ -254,25 +261,18 @@ export default {
         this.loading = false;
       }, 1000);
     },
-    findFirstNonNullChildren(arr) {
-      // 如果数组为空，返回null
-      if (!arr || arr.length === 0) {
-        return null;
-      }
-      // 找到第一个对象
-      const firstObj = arr[0];
-      // 如果第一个对象没有children属性，返回该对象
-      if (!firstObj.children) {
-        return firstObj;
-      }
-
-      // 如果第一个对象的children属性是数组，
-      // 递归查找children属性中的第一个非null children属性
-      if (Array.isArray(firstObj.children)) {
-        return this.findFirstNonNullChildren(firstObj.children);
-      }
-      // 如果数组中没有非null children属性，返回null
-      return null;
+    formatTwoStageRoutes(arr) {
+      if (arr.length <= 0) return false;
+      const newArr = [];
+      const cacheList = [];
+      arr.forEach((v) => {
+        if (v && v.meta && v.meta.keepAlive) {
+          newArr.push({ ...v });
+          cacheList.push(v.name);
+          this.$store.dispatch('keepAliveNames/setCacheKeepAlive', cacheList);
+        }
+      });
+      return newArr;
     },
     checkSocket() {
       getWorkermanUrl().then((res) => {
@@ -310,6 +310,7 @@ export default {
       let expiresTimeNum = expiresTime - nowTimeNum;
       return parseFloat(parseFloat(parseFloat(expiresTimeNum / 60) / 60) / 24);
     },
+
     closefail() {
       // if (this.jigsaw) this.jigsaw.reset();
       this.$Message.error('校验错误');

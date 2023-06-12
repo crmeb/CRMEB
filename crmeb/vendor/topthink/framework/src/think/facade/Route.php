@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -56,13 +56,14 @@ use think\route\Url as UrlBuild;
  * @method static RuleItem put(string $rule, mixed $route) 注册PUT路由
  * @method static RuleItem delete(string $rule, mixed $route) 注册DELETE路由
  * @method static RuleItem patch(string $rule, mixed $route) 注册PATCH路由
+ * @method static RuleItem head(string $rule, mixed $route) 注册HEAD路由
  * @method static RuleItem options(string $rule, mixed $route) 注册OPTIONS路由
  * @method static Resource resource(string $rule, string $route) 注册资源路由
  * @method static RuleItem view(string $rule, string $template = '', array $vars = []) 注册视图路由
  * @method static RuleItem redirect(string $rule, string $route = '', int $status = 301) 注册重定向路由
  * @method static \think\Route rest(string|array $name, array|bool $resource = []) rest方法定义和修改
  * @method static array|null getRest(string $name = null) 获取rest方法定义的参数
- * @method static RuleItem miss(string|Closure $route, string $method = '*') 注册未匹配路由规则后的处理
+ * @method static RuleItem miss(string|\Closure $route, string $method = '*') 注册未匹配路由规则后的处理
  * @method static Response dispatch(\think\Request $request, Closure|bool $withRoute = true) 路由调度
  * @method static Dispatch|false check() 检测URL路由
  * @method static Dispatch url(string $url) 默认URL解析

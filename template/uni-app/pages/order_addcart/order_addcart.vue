@@ -258,18 +258,18 @@
 			this.canShow = false
 			if (this.isLogin == true) {
 				this.hotPage = 1;
-				this.hostProduct = [],
-					this.hotScroll = false,
-					this.getHostProduct();
+				this.hostProduct = []
+				this.hotScroll = false
+				this.getHostProduct();
 				this.loadend = false;
 				this.page = 1;
 				this.cartList.valid = [];
-				this.getCartList();
+				this.getCartList(1);
 				this.loadendInvalid = false;
 				this.pageInvalid = 1;
 				this.cartList.invalid = [];
 				this.getInvalidList();
-				this.getCartNum();
+				// this.getCartNum();
 				this.goodsHidden = true;
 				this.footerswitch = true;
 				this.hostProduct = [];
@@ -769,7 +769,7 @@
 					})
 				});
 			},
-			async getCartList() {
+			async getCartList(init) {
 				uni.showLoading({
 					title: this.$t(`加载中`),
 					mask: true
@@ -782,6 +782,21 @@
 				}
 				getCartCounts().then(async c => {
 					that.cartCount = c.data.count;
+					if (init) {
+						this.adding = false
+						this.$store.commit('indexData/setCartNum', c.data.count > 99 ? '..' : c.data
+							.count)
+						if (c.data.count > 0) {
+							wx.setTabBarBadge({
+								index: 2,
+								text: c.data.count + ''
+							})
+						} else {
+							wx.hideTabBarRedDot({
+								index: 2
+							})
+						}
+					}
 					for (let i = 0; i < Math.ceil(c.data.ids.length / that.limit); i++) {
 						let cartList = await this.getCartData(data)
 						let valid = cartList.valid

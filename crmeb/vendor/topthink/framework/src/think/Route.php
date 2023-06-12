@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -165,12 +165,14 @@ class Route
             // 读取路由映射文件
             $this->import(include $this->app->getRuntimePath() . 'route.php');
         }
+
+        $this->config = array_merge($this->config, $this->app->config->get('route'));
+
+        $this->init();
     }
 
     protected function init()
     {
-        $this->config = array_merge($this->config, $this->app->config->get('route'));
-
         if (!empty($this->config['middleware'])) {
             $this->app->middleware->import($this->config['middleware'], 'route');
         }
@@ -423,7 +425,7 @@ class Route
      * @param string $name   路由标识
      * @param string $domain 域名
      * @param string $method 请求类型
-     * @return RuleItem[]
+     * @return array
      */
     public function getName(string $name = null, string $domain = null, string $method = '*'): array
     {
@@ -631,6 +633,18 @@ class Route
     }
 
     /**
+     * 注册HEAD路由
+     * @access public
+     * @param string $rule  路由规则
+     * @param mixed  $route 路由地址
+     * @return RuleItem
+     */
+    public function head(string $rule, $route): RuleItem
+    {
+        return $this->rule($rule, $route, 'HEAD');
+    }
+
+    /**
      * 注册OPTIONS路由
      * @access public
      * @param string $rule  路由规则
@@ -680,7 +694,19 @@ class Route
      */
     public function redirect(string $rule, string $route = '', int $status = 301): RuleItem
     {
-        return $this->rule($rule, function () use ($status, $route) {
+        return $this->rule($rule, function (Request $request) use ($status, $route) {
+            $search  = $replace  = [];
+            $matches = $request->rule()->getVars();
+
+            foreach ($matches as $key => $value) {
+                $search[]  = '<' . $key . '>';
+                $replace[] = $value;
+
+                $search[]  = ':' . $key;
+                $replace[] = $value;
+            }
+
+            $route = str_replace($search, $replace, $route);
             return Response::create($route, 'redirect')->code($status);
         }, '*');
     }
@@ -740,7 +766,6 @@ class Route
     {
         $this->request = $request;
         $this->host    = $this->request->host(true);
-        $this->init();
 
         if ($withRoute) {
             //加载路由

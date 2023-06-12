@@ -67,7 +67,15 @@ class Order extends AuthController
         if (!$services->count(['to_uid' => $uid])) {
             return app('json')->fail(410092);
         }
-        return app('json')->success($this->services->getOrderApiList($where));
+        if ($where['status'] == -1) {
+            unset($where['status']);
+            $where['is_cancel'] = 0;
+            $refundServices = app()->make(StoreOrderRefundServices::class);
+            $data = $refundServices->refundList($where)['list'];
+        } else {
+            $data = $this->services->getOrderApiList($where);
+        }
+        return app('json')->success($data);
     }
 
     /**

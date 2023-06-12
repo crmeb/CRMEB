@@ -21,7 +21,7 @@
 					<view class='itemCom'>{{$t(`积分兑换`)}}</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'>
-					<view>{{$t(`兑换积分`)}}</view>
+					<view>{{$t(`支付积分`)}}</view>
 					<view class='itemCom'>{{order_pay_info.total_price}}</view>
 				</view>
 				<!--失败时加上这个  -->

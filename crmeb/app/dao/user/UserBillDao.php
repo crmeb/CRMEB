@@ -242,7 +242,7 @@ class UserBillDao extends BaseDao
      */
     public function getWhereSumField(array $where, string $field)
     {
-        return $this->search($where)
+        return $this->search($where, false)
             ->when(isset($where['timeKey']), function ($query) use ($where) {
                 $query->whereBetweenTime('add_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
             })
@@ -257,7 +257,7 @@ class UserBillDao extends BaseDao
      */
     public function getGroupField(array $where, string $field, string $group)
     {
-        return $this->search($where)
+        return $this->search($where, false)
             ->when(isset($where['timeKey']), function ($query) use ($where, $field, $group) {
                 $query->whereBetweenTime('add_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
                 $timeUinx = "%H";

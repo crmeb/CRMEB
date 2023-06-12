@@ -15,7 +15,16 @@ use think\facade\Route;
  */
 Route::group('freight', function () {
     //物流公司资源路由
-    Route::resource('express', 'v1.freight.Express')->name('ExpressResource')->option(['real_name' => '物流公司']);
+    Route::resource('express', 'v1.freight.Express')->except(['read'])->name('ExpressResource')->option([
+        'real_name' => [
+            'index' => '获取物流公司列表',
+            'create' => '获取物流公司表单',
+            'save' => '保存物流公司',
+            'edit' => '获取修改物流公司表单',
+            'update' => '修改物流公司',
+            'delete' => '删除物流公司'
+        ],
+    ]);
     //修改状态
     Route::put('express/set_status/:id/:status', 'v1.freight.Express/set_status')->option(['real_name' => '修改物流公司状态']);
     //同步物流快递公司
@@ -30,4 +39,4 @@ Route::group('freight', function () {
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
     \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
-]);
+])->option(['mark' => 'freight', 'mark_name' => '物流管理']);

@@ -18,6 +18,7 @@ return [
     'fileExt' => ['jpg', 'jpeg', 'png', 'gif', 'pem', 'mp3', 'wma', 'wav', 'amr', 'mp4', 'key', 'xlsx', 'xls', 'txt', 'ico'],
     //上传文件类型
     'fileMime' => [
+        'image/jpg',
         'image/jpeg',
         'image/gif',
         'image/png',

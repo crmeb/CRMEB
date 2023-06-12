@@ -136,16 +136,15 @@
 		memberOverdueTime
 	} from '@/api/user.js';
 	import {
-		orderOfflinePayType
-	} from '@/api/order.js';
-	import {
 		toLogin
 	} from '@/libs/login.js';
 	import {
 		openPaySubscribe
 	} from '@/utils/SubscribeMessage.js';
 	import dayjs from '@/plugin/dayjs/dayjs.min.js';
-
+	import {
+		basicConfig
+	} from '@/api/public.js'
 	export default {
 		components: {
 			home,
@@ -358,7 +357,7 @@
 				});
 			},
 			getOrderPayType() {
-				orderOfflinePayType().then(res => {
+				basicConfig().then(res => {
 					const {
 						ali_pay_status,
 						pay_weixin_open

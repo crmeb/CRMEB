@@ -1,0 +1,53 @@
+<?php
+/**
+ *  +----------------------------------------------------------------------
+ *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+ *  +----------------------------------------------------------------------
+ *  | Copyright (c) 2016~{%year%} https://www.crmeb.com All rights reserved.
+ *  +----------------------------------------------------------------------
+ *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+ *  +----------------------------------------------------------------------
+ *  | Author: CRMEB Team <admin@crmeb.com>
+ *  +----------------------------------------------------------------------
+ */
+
+/**
+ * {%modelName%}
+ * @author crud自动生成代码
+ * @date {%time%}
+ */
+
+namespace app\adminapi\validate\crud{%path%};
+
+
+use think\Validate;
+
+/**
+ * Class CrudValidate
+ * @date {%date%}
+ * @package app\adminapi\validate\crud{%path%}
+ */
+class {%nameCamel%}Validate extends Validate
+{
+
+    /**
+     * @var array
+     */
+    protected $rule = [
+{%rule-php%}
+    ];
+
+    /**
+     * @var array
+     */
+    protected $message = [
+{%message-php%}
+    ];
+
+    /**
+     * @var array
+     */
+    protected $scene = [
+
+    ];
+}

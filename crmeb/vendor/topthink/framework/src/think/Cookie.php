@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -158,11 +158,13 @@ class Cookie
      * Cookie删除
      * @access public
      * @param  string $name cookie名称
+     * @param  array  $options cookie参数
      * @return void
      */
-    public function delete(string $name): void
+    public function delete(string $name, array $options = []): void
     {
-        $this->setCookie($name, '', time() - 3600, $this->config);
+        $config = array_merge($this->config, array_change_key_case($options));
+        $this->setCookie($name, '', time() - 3600, $config);
     }
 
     /**

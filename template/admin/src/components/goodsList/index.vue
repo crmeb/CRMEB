@@ -4,11 +4,18 @@
       <Row type="flex" :gutter="24">
         <Col v-bind="grid" v-if="!liveStatus">
           <FormItem label="商品分类：" label-for="pid">
-            <Select v-model="formValidate.cate_id" style="width: 200px" clearable @on-change="userSearchs">
+            <!-- <Select v-model="formValidate.cate_id" style="width: 200px" clearable @on-change="userSearchs">
               <Option v-for="item in treeSelect" :value="item.id" :key="item.id"
                 >{{ item.html + item.cate_name }}
               </Option>
-            </Select>
+            </Select> -->
+            <el-cascader
+              v-model="formValidate.cate_id"
+              size="small"
+              :options="treeSelect"
+              :props="{ emitPath: false }"
+              clearable
+            ></el-cascader>
           </FormItem>
         </Col>
         <Col v-bind="grid" v-if="!type && diy">
@@ -61,7 +68,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { treeListApi, changeListApi } from '@/api/product';
+import { cascaderListApi, changeListApi } from '@/api/product';
 import { liveGoods } from '@/api/live';
 import { getProductList } from '@/api/diy';
 export default {
@@ -265,7 +272,6 @@ export default {
     } else {
       this.getList();
     }
-    console.log(this.diy);
   },
   methods: {
     productList() {
@@ -306,7 +312,7 @@ export default {
     },
     // 商品分类；
     goodsCategory() {
-      treeListApi(1)
+      cascaderListApi(1)
         .then((res) => {
           this.treeSelect = res.data;
         })
@@ -331,21 +337,18 @@ export default {
         }
         changeListApi(this.formValidate)
           .then(async (res) => {
-            console.log(this.selectIds);
-
             let data = res.data;
             if (this.selectIds.length) {
-              let arr = []
+              let arr = [];
               this.selectIds.map((item) => {
                 data.list.map((i) => {
                   if (i.id == item) {
-                    console.log(i);
                     i._checked = true;
-                    arr.push(i)
+                    arr.push(i);
                   }
                 });
               });
-              this.changeCheckbox(arr)
+              this.changeCheckbox(arr);
             }
             this.tableList = data.list;
             this.total = res.data.count;
@@ -369,13 +372,10 @@ export default {
             data.list.forEach((el) => {
               el.image = el.cover_img;
             });
-
-            console.log(this.selectIds);
             if (this.selectIds.length) {
               this.selectIds.map((item) => {
                 data.list.map((i) => {
                   if (i.id == item) {
-                    console.log(i);
                     i._checked = true;
                   }
                 });

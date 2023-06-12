@@ -1,0 +1,55 @@
+@import './index.scss';
+
+/* 页面宽度小于576px
+------------------------------- */
+@media screen and (max-width: $xs) {
+  // MessageBox 弹框
+  .el-message-box {
+    width: 80% !important;
+  }
+}
+
+/* 页面宽度小于768px
+------------------------------- */
+@media screen and (max-width: $sm) {
+  // Breadcrumb 面包屑
+  .layout-navbars-breadcrumb-hide {
+    display: none;
+  }
+  // 外链视图
+  .layout-view-link {
+    a {
+      max-width: 80%;
+      text-align: center;
+    }
+  }
+  // 菜单搜索
+  .layout-search-dialog {
+    .el-autocomplete {
+      width: 80% !important;
+    }
+  }
+}
+
+/* 页面宽度小于1000px
+------------------------------- */
+@media screen and (max-width: 1000px) {
+  // 布局配置
+  .layout-drawer-content-flex {
+    position: relative;
+    &::after {
+      content: '手机版不支持切换布局';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      text-align: center;
+      height: 140px;
+      line-height: 140px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #666666;
+    }
+  }
+}

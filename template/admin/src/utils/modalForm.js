@@ -130,27 +130,44 @@ export default function (formRequestPromise, { width = '700' } = { width: '700' 
                   },
                 },
               }),
-              h(
-                'Button',
-                {
-                  class: 'common-form-button',
-                  props: {
-                    type: 'primary',
-                    long: true,
-                  },
-                  on: {
-                    click: () => {
-                      if (btnStop) return;
-                      btnStop = true;
-                      fApi.submit();
-                      setTimeout(() => {
-                        btnStop = false;
-                      }, 1000);
+              h('div', { class: 'common-form-create-footer' }, [
+                h(
+                  'Button',
+                  {
+                    class: 'common-form-button',
+                    props: {
+                      long: false,
+                    },
+                    on: {
+                      click: () => {
+                        modalInstance.remove();
+                      },
                     },
                   },
-                },
-                ['提交'],
-              ),
+                  ['取消'],
+                ),
+                h(
+                  'Button',
+                  {
+                    class: 'common-form-button',
+                    props: {
+                      type: 'primary',
+                      long: false,
+                    },
+                    on: {
+                      click: () => {
+                        if (btnStop) return;
+                        btnStop = true;
+                        fApi.submit();
+                        setTimeout(() => {
+                          btnStop = false;
+                        }, 1000);
+                      },
+                    },
+                  },
+                  ['提交'],
+                ),
+              ]),
             ]);
           },
         });

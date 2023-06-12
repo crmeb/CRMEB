@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "订单评价",
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "grids-lottery": "/pages/goods/components/lottery/index",
+    "lottery-aleart": "/pages/goods/goods_comment_con/components/lotteryAleart",
+    "user-address": "/pages/goods/goods_comment_con/components/userAddress"
+  }
+}

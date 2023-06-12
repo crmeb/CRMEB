@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -12,12 +12,12 @@ declare (strict_types = 1);
 
 namespace think\facade;
 
-use think\Facade;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Definition as InputDefinition;
 use think\console\Output;
 use think\console\output\driver\Buffer;
+use think\Facade;
 
 /**
  * Class Console

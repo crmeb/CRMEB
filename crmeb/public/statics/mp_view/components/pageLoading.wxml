@@ -1,0 +1,1 @@
+<block wx:if="{{status}}"><view class="load">{{''+$root.m0+''}}</view></block>

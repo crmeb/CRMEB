@@ -1,0 +1,1 @@
+<view class="main"><block wx:if="{{guidePages}}"><guide vue-id="53932f30-1" advData="{{advData}}" time="{{advData.time}}" bind:__l="__l"></guide></block></view>

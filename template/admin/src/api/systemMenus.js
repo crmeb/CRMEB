@@ -21,6 +21,17 @@ export function getTable(data) {
     params: data,
   });
 }
+/**
+ * @description 权限--刷新菜单及权限
+ * @param {Object} param data {Object} 传值参数
+ */
+export function getMenusUnique(data) {
+  return request({
+    url: '/setting/menus/unique',
+    method: 'get',
+    params: data,
+  });
+}
 
 /**
  * 权限 -- 添加
@@ -75,22 +86,39 @@ export function menusDetailsApi(id) {
  * @param {Number} param data.is_show {Number} 状态值
  */
 export function isShowApi(data) {
-  let datas = {
-    is_show: data.is_show,
-  };
   return request({
     url: `/setting/menus/show/${data.id}`,
     method: 'put',
-    data: datas,
+    data,
   });
 }
 
 /**
  * @description 权限列表
  */
-export function getRuleList() {
+export function getRuleList(cate_id) {
   return request({
-    url: `/setting/ruleList`,
+    url: `/setting/ruleList?cate_id=${cate_id}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 权限列表
+ */
+export function menusBatch(data) {
+  return request({
+    url: `setting/menus/batch`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 权限分类树列表
+ */
+export function menusRuleCate(data) {
+  return request({
+    url: `setting/rule_cate`,
     method: 'get',
   });
 }

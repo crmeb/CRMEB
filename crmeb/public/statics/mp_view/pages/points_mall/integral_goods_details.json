@@ -1,0 +1,14 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "jyf-parser": "/components/jyf-parser/jyf-parser",
+    "product-con-swiper": "/components/productConSwiper/index",
+    "product-window": "/pages/points_mall/component/productWindow",
+    "user-evaluation": "/components/userEvaluation/index",
+    "kefu-icon": "/components/kefuIcon/index",
+    "count-down": "/components/countDown/index",
+    "cus-preview-img": "/components/cusPreviewImg/index",
+    "home-list": "/components/homeList/index",
+    "authorize": "/components/Authorize"
+  }
+}

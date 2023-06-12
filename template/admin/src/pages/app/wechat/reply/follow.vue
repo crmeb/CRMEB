@@ -132,9 +132,7 @@
                         </Upload>
                       </div>
                       <span v-show="formValidate.type === 'image'">文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span>
-                      <span v-show="formValidate.type === 'voice'"
-                        >文件最大2Mb，支持mp3格式,播放长度不超过60s</span
-                      >
+                      <span v-show="formValidate.type === 'voice'">文件最大2Mb，支持mp3格式,播放长度不超过60s</span>
                     </FormItem>
                   </Form>
                 </div>

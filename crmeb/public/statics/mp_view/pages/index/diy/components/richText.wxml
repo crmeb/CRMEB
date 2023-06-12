@@ -1,0 +1,1 @@
+<view hidden="{{!(!isSortType)}}"><block wx:if="{{description}}"><view class="richText" style="{{('background-color:'+bgColor+';margin:'+udConfig+'rpx '+lrConfig+'rpx;')}}"><jyf-parser class="vue-ref" vue-id="19341505-1" html="{{description}}" tag-style="{{tagStyle}}" data-ref="article" bind:__l="__l"></jyf-parser></view></block></view>

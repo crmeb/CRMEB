@@ -1,0 +1,12 @@
+/**
+ * 修改数据
+ * @param id
+ * @return {*}
+ */
+export function {%nameCamel%}UpdateApi(id, data) {
+    return request({
+        url: `{%route%}/${id}`,
+        method: 'put',
+        data
+    });
+}

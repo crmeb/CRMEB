@@ -1,0 +1,102 @@
+/* 页面切换动画
+------------------------------- */
+.slide-right-enter-active,
+.slide-right-leave-active,
+.slide-left-enter-active,
+.slide-left-leave-active {
+  will-change: transform;
+  transition: all 0.3s ease;
+}
+// slide-right
+.slide-right-enter {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+.slide-right-leave-active {
+  opacity: 0;
+  transform: translateX(20px);
+}
+// slide-left
+.slide-left-enter-from {
+  @extend .slide-right-leave-active;
+}
+.slide-left-leave-to {
+  @extend .slide-right-enter;
+}
+// opacitys
+.opacitys-enter-active,
+.opacitys-leave-active {
+  will-change: transform;
+  transition: all 0.3s ease;
+}
+.opacitys-enter,
+.opacitys-leave-active {
+  opacity: 0;
+}
+
+/* Breadcrumb 面包屑过渡动画
+------------------------------- */
+.breadcrumb-enter-active,
+.breadcrumb-leave-active {
+  // transition: all 0.3s;
+}
+.breadcrumb-enter,
+.breadcrumb-leave-active {
+  opacity: 0;
+  // transform: translateX(20px);
+}
+.breadcrumb-move {
+  // transition: all 0.3s;
+}
+.breadcrumb-leave-active {
+  position: absolute;
+}
+
+/* logo 过渡动画
+------------------------------- */
+@keyframes logoAnimation {
+  0% {
+    transform: scale(0);
+  }
+  80% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 404、401 过渡动画
+------------------------------- */
+@keyframes error-num {
+  0% {
+    transform: translateY(60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes error-img {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 左右左 link.vue
+------------------------------- */
+@keyframes toRight {
+  0% {
+    left: -5px;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: -5px;
+  }
+}

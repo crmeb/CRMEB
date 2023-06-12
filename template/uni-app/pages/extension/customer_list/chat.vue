@@ -80,8 +80,7 @@
 								</view>
 							</view>
 							<!-- 订单 -->
-							<view class="order-box" v-if="item.msn_type == 6 && item.orderInfo"
-								@click="goOrder(item)">
+							<view class="order-box" v-if="item.msn_type == 6 && item.orderInfo" @click="goOrder(item)">
 								<view class="title">{{$t(`订单号`)}}: {{ item.orderInfo.order_id }}</view>
 								<view class="info">
 									<image :src="item.orderInfo.cartInfo[0].productInfo.image"></image>
@@ -639,18 +638,19 @@
 		.footer-box {
 			display: flex;
 			align-items: center;
-			padding: 0 30rpx;
 			color: rgba(0, 0, 0, 0.8);
 			background: #f7f7f7;
 			/* #ifdef APP-PLUS */
+			padding: 0 30rpx;
 			height: 70rpx;
 			height: (70rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 			height: calc(70rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 			/* #endif */
+
 			/* #ifndef APP-PLUS */
-			height: 100rpx;
-			height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-			height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+			padding: 0 30rpx 15rpx 30rpx;
+			height: 115rpx;
+
 			/* #endif */
 			.words .icon-tupian {
 				font-size: 50rpx;

@@ -114,7 +114,7 @@ Modal.newInstance = (properties) => {
               },
               domProps: {
                 innerHTML: this.title,
-                style: 'margin-bottom: 10px;',
+                style: 'margin-bottom: 20px;border-bottom:1px solid #f2f2f2;padding-bottom:10px;',
               },
             }),
           ],

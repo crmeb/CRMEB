@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -116,6 +116,10 @@ class Config
      */
     public function has(string $name): bool
     {
+        if (false === strpos($name, '.') && !isset($this->config[strtolower($name)])) {
+            return false;
+        }
+
         return !is_null($this->get($name));
     }
 

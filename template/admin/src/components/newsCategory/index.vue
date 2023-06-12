@@ -18,8 +18,8 @@
             </Col>
           </Col>
         </Row>
-        <Row type="flex" v-show="$route.path === routePre+'/app/wechat/news_category/index'">
-          <router-link :to="routePre+'/app/wechat/news_category/save/0'">
+        <Row type="flex" v-show="$route.path === routePre + '/app/wechat/news_category/index'">
+          <router-link :to="routePre + '/app/wechat/news_category/save/0'">
             <Button type="primary" class="bnt" icon="md-add">添加图文消息</Button>
           </router-link>
         </Row>
@@ -94,7 +94,7 @@
 import vueWaterfallEasy from 'vue-waterfall-easy';
 import { wechatNewsListApi } from '@/api/app';
 import { mapState } from 'vuex';
-import settings  from '@/setting'
+import settings from '@/setting';
 export default {
   name: 'newsCategory',
   props: {
@@ -134,7 +134,7 @@ export default {
   },
   data() {
     return {
-      routePre: settings.routePre ,
+      routePre: settings.routePre,
       isDel: false,
       imgsArr: [],
       group: 0, // 当前加载的加载图片的次数

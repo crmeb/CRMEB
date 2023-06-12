@@ -221,3 +221,13 @@ export function getCategoryVersion(name) {
 		noAuth: true
 	});
 }
+
+/**
+ * 配置信息
+ * 
+ */
+export function basicConfig(name) {
+	return request.get(`basic_config`, {}, {
+		noAuth: true
+	});
+}

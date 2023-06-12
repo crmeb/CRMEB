@@ -228,8 +228,6 @@
 		<invoice-picker :inv-show="invShow" :inv-list="invList" :inv-checked="invChecked" :is-special="special_invoice"
 			:url-query="urlQuery" @inv-close="invClose" @inv-change="invChange" @inv-cancel="invCancel">
 		</invoice-picker>
-		<payment :payMode="cartArr" :pay_close="pay_close" :isCall="true" :totalPrice="totalPrice.toString()"
-			@changePayType="changePayType" @onChangeFun="onChangeFun"></payment>
 		<canvas canvas-id="canvas" v-if="canvasStatus"
 			:style="{width: canvasWidth + 'px', height: canvasHeight + 'px',position: 'absolute',left:'-100000px',top:'-100000px'}"></canvas>
 	</view>
@@ -341,6 +339,7 @@
 
 				],
 				virtual_type: 0,
+				allPrice: 0,
 				formContent: '',
 				payType: '', //支付方式
 				openType: 1, //优惠券打开方式 1=使用
@@ -388,7 +387,6 @@
 				priceGroup: {},
 				animated: false,
 				totalPrice: 0,
-				allPrice: 0,
 				integralRatio: "0",
 				pagesUrl: "",
 				orderKey: "",
@@ -516,6 +514,7 @@
 						} else if (res.data.type == 2) {
 							that.is_shipping = false;
 							that.shippingType = 1;
+							this.addressType(1)
 							this.getConfirm();
 							this.getList();
 						}
@@ -617,8 +616,8 @@
 			 * 获取门店列表数据
 			 */
 			getList: function() {
-				let longitude = uni.getStorageSync("user_longitude"); //经度
-				let latitude = uni.getStorageSync("user_latitude"); //纬度
+				let longitude = uni.getStorageSync("user_longitude") || ''; //经度
+				let latitude = uni.getStorageSync("user_latitude") || ''; //纬度
 				let data = {
 					latitude: latitude, //纬度
 					longitude: longitude, //经度
@@ -693,12 +692,11 @@
 							success: (res) => {
 								uni.setStorageSync('user_latitude', res.latitude);
 								uni.setStorageSync('user_longitude', res.longitude);
-								this.getList()
 							},
 							complete: () => {
 								this.getList()
 							}
-						});
+						})
 						// #ifdef H5	
 					}
 					// #endif
@@ -947,6 +945,7 @@
 			onAddress: function() {
 				let that = this;
 				if (this.addressInfo.real_name) {
+					this.$refs.addressWindow.getAddressList();
 					that.textareaStatus = false;
 					that.address.address = true;
 					that.pagesUrl = '/pages/users/user_address_list/index?news=' + this.news + '&cartId=' + this
@@ -955,6 +954,7 @@
 						this.pinkId +
 						'&couponId=' +
 						this.couponId;
+
 				} else {
 					uni.navigateTo({
 						url: '/pages/users/user_address/index?cartId=' + this.cartId + '&pinkId=' + this

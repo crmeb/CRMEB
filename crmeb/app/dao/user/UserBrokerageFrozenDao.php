@@ -34,11 +34,13 @@ class UserBrokerageFrozenDao extends BaseDao
     /**
      * 搜索
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['isFrozen']), function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['isFrozen']), function ($query) use ($where) {
             if ($where['isFrozen']) {
                 $query->where('frozen_time', '>', time());
             } else {

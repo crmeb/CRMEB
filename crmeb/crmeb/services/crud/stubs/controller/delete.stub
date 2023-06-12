@@ -1,0 +1,18 @@
+    /**
+     * 删除
+     * @param $id
+     * @return \think\Response
+     * @date {%date%}
+     */
+    public function delete($id)
+    {
+        if (!$id) {
+            return app('json')->fail(100100);
+        }
+
+        if ($this->service->destroy((int)$id)) {
+            return app('json')->success(100002);
+        } else {
+            return app('json')->success(100008);
+        }
+    }

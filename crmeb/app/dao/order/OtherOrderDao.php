@@ -38,11 +38,11 @@ class OtherOrderDao extends BaseDao
     public function getPayUserCount(int $time, string $channel_type = '')
     {
         return $this->getModel()->when($channel_type != '', function ($query) use ($channel_type) {
-                $query->where('channel_type', $channel_type);
-            })->field('distinct(uid),add_time')
-                ->group('uid')->having('add_time < ' . $time)
-                ->order('add_time desc')
-                ->select()->toArray();
+            $query->where('channel_type', $channel_type);
+        })->field('distinct(uid),add_time')
+            ->group('uid')->having('add_time < ' . $time)
+            ->order('add_time desc')
+            ->select()->toArray();
     }
 
     /**
@@ -161,18 +161,37 @@ class OtherOrderDao extends BaseDao
             ->page($page, $limit)->select()->toArray();
     }
 
-    public function search(array $where = [])
+    /**
+     * 其他订单搜索
+     * @param array $where
+     * @param bool $search
+     * @return \crmeb\basic\BaseModel
+     * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/20
+     */
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['name']) && $where['name'], function ($query) use($where){
-            $query->where('uid', 'in', function ($que) use($where){
+        return parent::search($where, $search)->when(isset($where['name']) && $where['name'], function ($query) use ($where) {
+            $query->where('uid', 'in', function ($que) use ($where) {
                 $nickname = trim($where['name']);
-                $que->name('user')->where('nickname', 'like', $nickname.'%')->field(['uid'])->select();
+                $que->name('user')->where('nickname', 'like', $nickname . '%')->field(['uid'])->select();
             });
         });
     }
 
-    public function count(array $where = []): int
+    /**
+     * @param array $where
+     * @param bool $search
+     * @return int
+     * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/11
+     */
+    public function count(array $where = [], bool $search = true): int
     {
-        return $this->search($where)->count();
+        return $this->search($where, $search)->count();
     }
 }

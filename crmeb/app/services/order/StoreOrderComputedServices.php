@@ -226,8 +226,8 @@ class StoreOrderComputedServices extends BaseServices
         // 可用积分
         $usable = bcsub((string)$userInfo['integral'], (string)$userBillServices->getBillSum(['uid' => $userInfo['uid'], 'is_frozen' => 1]), 0);
 
-        $SurplusIntegral = 0;
-        if ($useIntegral && $userInfo['integral'] > 0) {
+        $SurplusIntegral = $usable;
+        if ($useIntegral && $userInfo['integral'] > 0 && $other['integralRatio'] > 0) {
             //积分抵扣上限
             $integralMaxNum = sys_config('integral_max_num', 200);
             if ($integralMaxNum > 0 && $usable > $integralMaxNum) {
@@ -480,7 +480,7 @@ class StoreOrderComputedServices extends BaseServices
                 $tempId = $item['productInfo']['temp_id'] ?? 0;
                 $tempPostage = $truePostageArr[$tempId] ?? 0;
                 $tempNumber = $temp_num[$tempId]['number'] ?? 0;
-                if (!$tempId || !$tempPostage || !$tempNumber) continue;
+                if (!$tempId || !$tempPostage) continue;
                 $type = $temp_num[$tempId]['type'];
 
 

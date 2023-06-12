@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -237,11 +237,17 @@ abstract class Rule
      */
     public function getPattern(string $name = '')
     {
-        if ('' === $name) {
-            return $this->pattern;
+        $pattern = $this->pattern;
+
+        if ($this->parent) {
+            $pattern = array_merge($this->parent->getPattern(), $pattern);
         }
 
-        return $this->pattern[$name] ?? null;
+        if ('' === $name) {
+            return $pattern;
+        }
+
+        return $pattern[$name] ?? null;
     }
 
     /**
@@ -253,11 +259,26 @@ abstract class Rule
      */
     public function getOption(string $name = '', $default = null)
     {
-        if ('' === $name) {
-            return $this->option;
+        $option = $this->option;
+
+        if ($this->parent) {
+            $parentOption = $this->parent->getOption();
+
+            // 合并分组参数
+            foreach ($this->mergeOptions as $item) {
+                if (isset($parentOption[$item]) && isset($option[$item])) {
+                    $option[$item] = array_merge($parentOption[$item], $option[$item]);
+                }
+            }
+
+            $option = array_merge($parentOption, $option);
         }
 
-        return $this->option[$name] ?? $default;
+        if ('' === $name) {
+            return $option;
+        }
+
+        return $option[$name] ?? $default;
     }
 
     /**
@@ -512,6 +533,17 @@ abstract class Rule
     }
 
     /**
+     * 通过闭包检查路由是否匹配
+     * @access public
+     * @param  callable $match 闭包
+     * @return $this
+     */
+    public function match(callable $match)
+    {
+        return $this->setOption('match', $match);
+    }
+
+    /**
      * 设置路由完整匹配
      * @access public
      * @param  bool $match 是否完整匹配
@@ -552,26 +584,6 @@ abstract class Rule
     }
 
     /**
-     * 合并分组参数
-     * @access public
-     * @return array
-     */
-    public function mergeGroupOptions(): array
-    {
-        $parentOption = $this->parent->getOption();
-        // 合并分组参数
-        foreach ($this->mergeOptions as $item) {
-            if (isset($parentOption[$item]) && isset($this->option[$item])) {
-                $this->option[$item] = array_merge($parentOption[$item], $this->option[$item]);
-            }
-        }
-
-        $this->option = array_merge($parentOption, $this->option);
-
-        return $this->option;
-    }
-
-    /**
      * 解析匹配到的规则路由
      * @access public
      * @param  Request $request 请求对象
@@ -590,24 +602,31 @@ abstract class Rule
         }
 
         // 替换路由地址中的变量
-        if (is_string($route) && !empty($matches)) {
-            $search = $replace = [];
+        $extraParams = true;
+        $search      = $replace      = [];
+        $depr        = $this->router->config('pathinfo_depr');
+        foreach ($matches as $key => $value) {
+            $search[]  = '<' . $key . '>';
+            $replace[] = $value;
 
-            foreach ($matches as $key => $value) {
-                $search[]  = '<' . $key . '>';
-                $replace[] = $value;
+            $search[]  = ':' . $key;
+            $replace[] = $value;
 
-                $search[]  = ':' . $key;
-                $replace[] = $value;
+            if (strpos($value, $depr)) {
+                $extraParams = false;
             }
+        }
 
+        if (is_string($route)) {
             $route = str_replace($search, $replace, $route);
         }
 
         // 解析额外参数
-        $count = substr_count($rule, '/');
-        $url   = array_slice(explode('|', $url), $count + 1);
-        $this->parseUrlParams(implode('|', $url), $matches);
+        if ($extraParams) {
+            $count = substr_count($rule, '/');
+            $url   = array_slice(explode('|', $url), $count + 1);
+            $this->parseUrlParams(implode('|', $url), $matches);
+        }
 
         $this->vars = $matches;
 
@@ -630,7 +649,7 @@ abstract class Rule
         } elseif ($route instanceof Closure) {
             // 执行闭包
             $result = new CallbackDispatch($request, $this, $route, $this->vars);
-        } elseif (false !== strpos($route, '@') || false !== strpos($route, '::')) {
+        } elseif (false !== strpos($route, '@') || false !== strpos($route, '::') || false !== strpos($route, '\\')) {
             // 路由到类的方法
             $route  = str_replace('::', '@', $route);
             $result = $this->dispatchMethod($request, $route);
@@ -686,6 +705,13 @@ abstract class Rule
      */
     protected function checkOption(array $option, Request $request): bool
     {
+        // 检查当前路由是否匹配
+        if (isset($option['match']) && is_callable($option['match'])) {
+            if (false === $option['match']($this, $request)) {
+                return false;
+            }
+        }
+
         // 请求类型检测
         if (!empty($option['method'])) {
             if (is_string($option['method']) && false === stripos($option['method'], $request->method())) {
@@ -784,7 +810,11 @@ abstract class Rule
     protected function buildRuleRegex(string $rule, array $match, array $pattern = [], array $option = [], bool $completeMatch = false, string $suffix = ''): string
     {
         foreach ($match as $name) {
-            $replace[] = $this->buildNameRegex($name, $pattern, $suffix);
+            $value = $this->buildNameRegex($name, $pattern, $suffix);
+            if ($value) {
+                $origin[]  = $name;
+                $replace[] = $value;
+            }
         }
 
         // 是否区分 / 地址访问
@@ -797,11 +827,11 @@ abstract class Rule
             }
         }
 
-        $regex = str_replace(array_unique($match), array_unique($replace), $rule);
-        $regex = str_replace([')?/', ')/', ')?-', ')-', '\\\\/'], [')\/', ')\/', ')\-', ')\-', '\/'], $regex);
+        $regex = isset($replace) ? str_replace($origin, $replace, $rule) : $rule;
+        $regex = str_replace([')?/', ')?-'], [')/', ')-'], $regex);
 
         if (isset($hasSlash)) {
-            $regex .= '\/';
+            $regex .= '/';
         }
 
         return $regex . ($completeMatch ? '$' : '');
@@ -821,7 +851,7 @@ abstract class Rule
         $slash    = substr($name, 0, 1);
 
         if (in_array($slash, ['/', '-'])) {
-            $prefix = '\\' . $slash;
+            $prefix = $slash;
             $name   = substr($name, 1);
             $slash  = substr($name, 0, 1);
         } else {
@@ -829,7 +859,7 @@ abstract class Rule
         }
 
         if ('<' != $slash) {
-            return $prefix . preg_quote($name, '/');
+            return '';
         }
 
         if (strpos($name, '?')) {

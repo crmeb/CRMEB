@@ -101,8 +101,8 @@
           </i-switch>
         </template>
         <template slot-scope="{ row, index }" slot="action">
-<!--          <a @click="edit(row)">编辑</a>-->
-<!--          <Divider type="vertical" />-->
+          <!--          <a @click="edit(row)">编辑</a>-->
+          <!--          <Divider type="vertical" />-->
           <template>
             <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
               <a href="javascript:void(0)">
@@ -110,7 +110,7 @@
                 <Icon type="ios-arrow-down"></Icon>
               </a>
               <DropdownMenu slot="list">
-<!--                                                <DropdownItem name="1">等级任务</DropdownItem>-->
+                <!--                                                <DropdownItem name="1">等级任务</DropdownItem>-->
                 <DropdownItem name="3">编辑等级</DropdownItem>
                 <DropdownItem name="2">删除等级</DropdownItem>
               </DropdownMenu>
@@ -280,7 +280,7 @@ export default {
         .then((res) => {
           this.$Message.success(res.msg);
           this.levelLists.splice(num, 1);
-          this.total--
+          this.total--;
         })
         .catch((res) => {
           this.$Message.error(res.msg);

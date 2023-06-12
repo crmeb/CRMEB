@@ -33,6 +33,7 @@ use think\Model;
  * @method mixed delete($id, ?string $key = null) 删除
  * @method mixed save(array $data) 保存数据
  * @method mixed saveAll(array $data) 批量保存数据
+ * @method Model selectList(array $where, string $field = '*', int $page = 0, int $limit = 0, string $order = '', array $with = [], bool $search = false) 获取列表
  * @method bool bcInc($key, string $incField, string $inc, string $keyField = null, int $acc = 2) 高精度加法
  * @method bool bcDec($key, string $decField, string $dec, string $keyField = null, int $acc = 2) 高精度 减法
  * @method mixed decStockIncSales(array $where, int $num, string $stock = 'stock', string $sales = 'sales') 减库存加销量

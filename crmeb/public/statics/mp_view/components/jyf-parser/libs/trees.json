@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "trees": "/components/jyf-parser/libs/trees"
+  }
+}

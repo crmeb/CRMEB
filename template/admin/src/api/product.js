@@ -107,6 +107,16 @@ export function treeListApi(type) {
 }
 
 /**
+ * @description 商品管理-- 分类 new
+ */
+export function cascaderListApi(type) {
+  return request({
+    url: `product/category/cascader/${type}`,
+    method: 'get',
+  });
+}
+
+/**
  * @description 商品管理-- 详情
  */
 export function productInfoApi(id) {

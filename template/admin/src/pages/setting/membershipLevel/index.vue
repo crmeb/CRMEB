@@ -39,16 +39,16 @@
           </viewer>
         </template>
         <template slot-scope="{ row }" slot="one_brokerage">
-          <span>{{row.one_brokerage}}%</span>
+          <span>{{ row.one_brokerage }}%</span>
         </template>
         <template slot-scope="{ row }" slot="one_brokerage_ratio">
-           <span>{{row.one_brokerage_ratio}}%</span>
+          <span>{{ row.one_brokerage_ratio }}%</span>
         </template>
         <template slot-scope="{ row }" slot="two_brokerage">
-           <span>{{row.two_brokerage}}%</span>
+          <span>{{ row.two_brokerage }}%</span>
         </template>
         <template slot-scope="{ row }" slot="two_brokerage_ratio">
-           <span>{{row.two_brokerage_ratio}}%</span>
+          <span>{{ row.two_brokerage_ratio }}%</span>
         </template>
         <template slot-scope="{ row }" slot="status">
           <i-switch

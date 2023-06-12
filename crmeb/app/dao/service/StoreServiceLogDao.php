@@ -83,7 +83,7 @@ class StoreServiceLogDao extends BaseDao
             $query->where('id', '<', $upperId)->limit($limit)->order('id DESC');
         })->when(!$upperId, function ($query) use ($limit) {
             $query->limit($limit)->order('id DESC');
-        })->with(['user', 'service'])->select()->toArray();
+        })->with(['user'])->select()->toArray();
     }
 
     /**

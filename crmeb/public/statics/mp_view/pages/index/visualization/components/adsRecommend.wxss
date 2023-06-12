@@ -1,0 +1,1 @@
+.recommend{padding:0 30rpx;margin-top:26rpx}.recommend .pictrue{width:338rpx;height:206rpx;background-color:#ccc;border-radius:8rpx;margin-bottom:15rpx}.recommend .pictrue image{width:100%;height:100%}.recommend .pictrue .iconfont{font-size:50rpx}.recommend .pictrue:nth-last-child(1){margin-bottom:0}.recommend .pictrue:nth-last-child(2){margin-bottom:0}

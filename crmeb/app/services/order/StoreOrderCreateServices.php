@@ -223,6 +223,7 @@ class StoreOrderCreateServices extends BaseServices
         $deduction = $seckillId || $bargainId || $combinationId;
         if ($deduction) {
             $couponId = 0;
+            $gainIntegral = 0;
             $useIntegral = false;
         }
         //$shipping_type = 1 快递发货 $shipping_type = 2 门店自提

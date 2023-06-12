@@ -31,11 +31,13 @@ class WechatKeyDao extends BaseDao
     /**
      * 搜索器
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['id']), function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['id']), function ($query) use ($where) {
             $query->where('id', $where['id']);
         });
     }

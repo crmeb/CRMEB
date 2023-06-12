@@ -1,0 +1,1 @@
+.lines{padding:0 20rpx;margin-top:20rpx}.lines .item{width:100%;box-sizing:border-box;border-bottom-color:red;border-bottom-width:1px;border-bottom-style:dotted}

@@ -13,11 +13,18 @@
         <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem label="商品分类：" label-for="pid">
-              <Select v-model="artFrom.cate_id" placeholder="请选择商品分类" clearable @on-change="userSearchs">
+              <!-- <Select v-model="artFrom.cate_id" placeholder="请选择商品分类" clearable @on-change="userSearchs">
                 <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{
                   item.html + item.cate_name
                 }}</Option>
-              </Select>
+              </Select> -->
+              <el-cascader
+                v-model="artFrom.cate_id"
+                size="small"
+                :options="treeSelect"
+                :props="{ emitPath: false }"
+                clearable
+              ></el-cascader>
             </FormItem>
           </Col>
           <Col v-bind="grid">
@@ -165,11 +172,18 @@
           <Col span="24" v-if="batchType == 1">
             <Divider orientation="left">基础设置</Divider>
             <FormItem label="商品分类：" prop="cate_id">
-              <Select v-model="batchFormData.cate_id" placeholder="请选择商品分类" multiple class="perW20">
+              <!-- <Select v-model="batchFormData.cate_id" placeholder="请选择商品分类" multiple class="perW20">
                 <Option v-for="item in treeSelect" :disabled="item.pid === 0" :value="item.id" :key="item.id">{{
                   item.html + item.cate_name
                 }}</Option>
-              </Select>
+              </Select> -->
+              <el-cascader
+                v-model="batchFormData.cate_id"
+                size="small"
+                :options="treeSelect"
+                :props="{ emitPath: false }"
+                clearable
+              ></el-cascader>
             </FormItem>
           </Col>
           <Col span="24" v-if="batchType == 2">
@@ -277,7 +291,7 @@ import {
   getGoodHeade,
   getGoods,
   PostgoodsIsShow,
-  treeListApi, // 分类列表
+  cascaderListApi, // 分类列表
   productShowApi,
   productUnshowApi,
   storeProductApi,
@@ -428,7 +442,7 @@ export default {
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === (this.$routeProStr + '/product/product_list?type=5')) {
+      if (this.$route.fullPath === this.$routeProStr + '/product/product_list?type=5') {
         this.getPath();
       }
     },
@@ -437,7 +451,7 @@ export default {
   activated() {
     this.goodHeade();
     this.goodsCategory();
-    if (this.$route.fullPath === (this.$routeProStr + '/product/product_list?type=5')) {
+    if (this.$route.fullPath === this.$routeProStr + '/product/product_list?type=5') {
       this.getPath();
     } else {
       this.getDataList();
@@ -746,7 +760,7 @@ export default {
     },
     // 商品分类；
     goodsCategory() {
-      treeListApi(1)
+      cascaderListApi(1)
         .then((res) => {
           this.treeSelect = res.data;
         })

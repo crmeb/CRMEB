@@ -46,8 +46,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../../../styles/emoji-sprite';
-
 .emoji {
   width: 380px;
   height: 186px;

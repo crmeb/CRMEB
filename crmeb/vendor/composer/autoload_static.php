@@ -16,9 +16,8 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'd767e4fc2dc52fe66584ab8c6684783e' => __DIR__ . '/..' . '/adbario/php-dot-notation/src/helpers.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
-        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '65fec9ebcfbb3cbb4fd0d519687aea01' => __DIR__ . '/..' . '/danielstjules/stringy/src/Create.php',
         'abede361264e2ae69ec1eee813a101af' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/abs.php',
         '21a5860fbef5be28db5ddfbc3cca67c4' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acos.php',
@@ -97,6 +96,7 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         't' => 
         array (
             'think\\view\\driver\\' => 18,
+            'think\\migration\\' => 16,
             'think\\captcha\\' => 14,
             'think\\app\\' => 10,
             'think\\' => 6,
@@ -161,11 +161,11 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
             'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
+            'Phinx\\' => 6,
         ),
         'O' => 
         array (
             'Overtrue\\Socialite\\' => 19,
-            'Opis\\Closure\\' => 13,
             'OneSm\\' => 6,
             'OSS\\' => 4,
         ),
@@ -178,7 +178,7 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         'L' => 
         array (
             'Lizhichao\\Word\\' => 15,
-            'League\\Flysystem\\Cached\\' => 24,
+            'League\\MimeTypeDetection\\' => 25,
             'League\\Flysystem\\' => 17,
         ),
         'J' => 
@@ -258,6 +258,10 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         array (
             0 => __DIR__ . '/..' . '/topthink/think-view/src',
         ),
+        'think\\migration\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-migration/src',
+        ),
         'think\\captcha\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-captcha/src',
@@ -275,6 +279,7 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
             4 => __DIR__ . '/..' . '/topthink/think-orm/src',
             5 => __DIR__ . '/..' . '/topthink/think-queue/src',
             6 => __DIR__ . '/..' . '/topthink/think-template/src',
+            7 => __DIR__ . '/..' . '/topthink/think-filesystem/src',
         ),
         'dh2y\\qrcode\\' => 
         array (
@@ -400,13 +405,13 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
+        'Phinx\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-migration/phinx/src/Phinx',
+        ),
         'Overtrue\\Socialite\\' => 
         array (
             0 => __DIR__ . '/..' . '/overtrue/socialite/src',
-        ),
-        'Opis\\Closure\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/opis/closure/src',
         ),
         'OneSm\\' => 
         array (
@@ -432,9 +437,9 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         array (
             0 => __DIR__ . '/..' . '/lizhichao/word/Lib',
         ),
-        'League\\Flysystem\\Cached\\' => 
+        'League\\MimeTypeDetection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/flysystem-cached-adapter/src',
+            0 => __DIR__ . '/..' . '/league/mime-type-detection/src',
         ),
         'League\\Flysystem\\' => 
         array (

@@ -217,7 +217,7 @@ class SystemStorageServices extends BaseServices
                     $make->update('tengxun_appid', ['value' => json_encode($appid)], 'menu_name');
                     break;
             }
-            \crmeb\services\CacheService::clear();
+            $make->cacheDriver()->clear();
         }
     }
 
@@ -314,11 +314,11 @@ class SystemStorageServices extends BaseServices
                 break;
             case 4:// cos 腾讯云
                 $upload = UploadService::init($type);
-                $cosList = $upload->listbuckets();
-                if (isset($cosList['Name'])) {
-                    $list[] = $cosList;
-                } else {
-                    $list = $cosList;
+                $list = $upload->listbuckets();
+                if (!empty($list['Name'])) {
+                    $newList = $list;
+                    $list = [];
+                    $list[] = $newList;
                 }
                 $config = $this->getStorageConfig($type);
                 foreach ($list as $item) {
@@ -443,6 +443,9 @@ class SystemStorageServices extends BaseServices
             //是否添加过域名不存在需要绑定域名
             $domainList = $upload->getDomian($info->name, $info->region);
             $domainParse = parse_url($domain);
+            if (false === $domainParse) {
+                throw new AdminException('域名输入有误');
+            }
             if (!in_array($domainParse['host'], $domainList)) {
                 //绑定域名到云储存桶
                 $res = $upload->bindDomian($info->name, $domain, $info->region);

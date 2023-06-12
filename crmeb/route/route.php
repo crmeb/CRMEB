@@ -24,8 +24,16 @@ Route::miss(function () {
         case 'pages':
             return view(app()->getRootPath() . 'public' . DS . 'index.html');
         default:
-            if (!request()->isMobile() && is_dir(app()->getRootPath() . 'public' . DS . 'home') && !request()->get('type')) {
-                return view(app()->getRootPath() . 'public' . DS . 'home' . DS . 'index.html');
+            if (!request()->isMobile()) {
+                if (is_dir(app()->getRootPath() . 'public' . DS . 'home') && !request()->get('mdType')) {
+                    return view(app()->getRootPath() . 'public' . DS . 'home' . DS . 'index.html');
+                } else {
+                    if (request()->get('type')) {
+                        return view(app()->getRootPath() . 'public' . DS . 'index.html');
+                    } else {
+                        return view(app()->getRootPath() . 'public' . DS . 'mobile.html', ['siteName' => sys_config('site_name'), 'siteUrl' => sys_config('site_url') . '/pages/index/index']);
+                    }
+                }
             } else {
                 return view(app()->getRootPath() . 'public' . DS . 'index.html');
             }

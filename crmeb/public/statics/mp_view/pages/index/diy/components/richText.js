@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["pages/index/diy/components/richText"],{"10eb":function(n,t,e){},"24d6":function(n,t,e){"use strict";e.d(t,"b",(function(){return r})),e.d(t,"c",(function(){return a})),e.d(t,"a",(function(){return o}));var o={jyfParser:function(){return Promise.all([e.e("common/vendor"),e.e("components/jyf-parser/jyf-parser")]).then(e.bind(null,"dce2"))}},r=function(){var n=this.$createElement;this._self._c},a=[]},"30a5":function(n,t,e){"use strict";e.r(t);var o=e("a48a"),r=e.n(o);for(var a in o)["default"].indexOf(a)<0&&function(n){e.d(t,n,(function(){return o[n]}))}(a);t["default"]=r.a},a48a:function(n,t,e){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o={name:"richText",props:{dataConfig:{type:Object,default:function(){}},isSortType:{type:String|Number,default:0}},components:{"jyf-parser":function(){Promise.all([e.e("common/vendor"),e.e("components/jyf-parser/jyf-parser")]).then(function(){return resolve(e("dce2"))}.bind(null,e)).catch(e.oe)}},data:function(){return{tagStyle:{img:"width:100%;display:block;",table:"width:100%",video:"width:100%"},bgColor:this.dataConfig.bgColor.color[0].item,lrConfig:this.dataConfig.lrConfig.val,description:this.dataConfig.richText.val,udConfig:this.dataConfig.udConfig.val}},created:function(){},methods:{}};t.default=o},cca0:function(n,t,e){"use strict";var o=e("10eb"),r=e.n(o);r.a},e543:function(n,t,e){"use strict";e.r(t);var o=e("24d6"),r=e("30a5");for(var a in r)["default"].indexOf(a)<0&&function(n){e.d(t,n,(function(){return r[n]}))}(a);e("cca0");var i=e("f0c5"),c=Object(i["a"])(r["default"],o["b"],o["c"],!1,null,null,null,!1,o["a"],void 0);t["default"]=c.exports}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'pages/index/diy/components/richText-create-component',
+    {
+        'pages/index/diy/components/richText-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('543d')['createComponent'](__webpack_require__("e543"))
+        })
+    },
+    [['pages/index/diy/components/richText-create-component']]
+]);

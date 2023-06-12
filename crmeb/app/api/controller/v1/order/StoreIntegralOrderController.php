@@ -121,6 +121,7 @@ class StoreIntegralOrderController
     /**
      * 订单 查看物流
      * @param Request $request
+     * @param ExpressServices $expressServices
      * @param $uni
      * @return mixed
      */
@@ -128,6 +129,8 @@ class StoreIntegralOrderController
     {
         if (!$uni || !($order = $this->services->getUserOrderDetail($uni, $request->uid()))) return app('json')->fail(410173);
         if ($order['delivery_type'] != 'express' || !$order['delivery_id']) return app('json')->fail(410206);
+        $order['price'] = (int)$order['price'];
+        $order['total_price'] = (int)$order['total_price'];
         $cacheName = 'integral' . $order['order_id'] . $order['delivery_id'];
         return app('json')->success([
             'order' => $order,

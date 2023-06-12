@@ -18,7 +18,9 @@
           <Col span="12" class="fontColor1"
             >订单状态：{{ orderDatalist.orderInfo._status._title }}
             {{
-              orderDatalist.orderInfo.refund && orderDatalist.orderInfo.refund.length
+              orderDatalist.orderInfo.refund &&
+              orderDatalist.orderInfo.refund.length &&
+              orderDatalist.orderInfo.refund_status < 2
                 ? orderDatalist.orderInfo.is_all_refund
                   ? '退款中'
                   : '部分退款中'
@@ -55,7 +57,7 @@
           <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.back_integral)"
             >退回积分：{{ parseFloat(orderDatalist.orderInfo.back_integral) }}</Col
           >
-          <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.gain_integral)"
+          <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.gain_integral) && orderDatalist.orderInfo.paid == 1"
             >赠送积分：{{ parseFloat(orderDatalist.orderInfo.gain_integral) }}</Col
           >
           <Col span="12" class="mb10">创建时间：{{ orderDatalist.orderInfo._add_time }}</Col>

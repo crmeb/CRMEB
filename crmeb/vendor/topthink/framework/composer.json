@@ -19,22 +19,21 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.2.5",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "league/flysystem": "^1.0",
-        "league/flysystem-cached-adapter": "^1.0",
-        "opis/closure": "^3.1",
         "psr/log": "~1.0",
         "psr/container": "~1.0",
         "psr/simple-cache": "^1.0",
-        "topthink/think-orm": "^2.0",
+        "psr/http-message": "^1.0",
+        "topthink/think-orm": "^2.0|^3.0",
         "topthink/think-helper": "^3.1.1"
     },
     "require-dev": {
         "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.2",
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^7.0",
+        "guzzlehttp/psr7": "^2.1.0"
     },
     "autoload": {
         "files": [],

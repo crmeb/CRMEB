@@ -346,6 +346,9 @@ class OtherOrderServices extends BaseServices
             if ($spread_two && $spread_two_price > 0) $this->memberBrokerage($spread_two, $spread_two_price, 'get_two_member_brokerage', $orderInfo);
         }
 
+        $orderInfo['pay_type'] = $paytype;
+        // 小程序订单服务
+        event('OrderShipping', ['member', $orderInfo, 3, '', '']);
         return false !== $res;
     }
 

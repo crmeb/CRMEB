@@ -53,9 +53,11 @@ class LoginController
         [$account, $password, $spread] = $request->postMore([
             'account', 'password', 'spread'
         ], true);
-        TaskJob::dispatch('emptyYesterdayAttachment');
         if (!$account || !$password) {
             return app('json')->fail(410000);
+        }
+        if (strlen(trim($password)) < 6 || strlen(trim($password)) > 32) {
+            return app('json')->fail(400762);
         }
         return app('json')->success(410001, $this->services->login($account, $password, $spread));
     }
@@ -193,14 +195,15 @@ class LoginController
         } catch (ValidateException $e) {
             return app('json')->fail($e->getError());
         }
+        if (strlen(trim($password)) < 6 || strlen(trim($password)) > 32) {
+            return app('json')->fail(400762);
+        }
         $verifyCode = CacheService::get('code_' . $account);
         if (!$verifyCode)
             return app('json')->fail(410009);
         $verifyCode = substr($verifyCode, 0, 6);
         if ($verifyCode != $captcha)
             return app('json')->fail(410010);
-        if (strlen(trim($password)) < 6 || strlen(trim($password)) > 16)
-            return app('json')->fail(410011);
         if (md5($password) == md5('123456')) return app('json')->fail(410012);
 
         $registerStatus = $this->services->register($account, $password, $spread, 'h5');
@@ -226,6 +229,9 @@ class LoginController
         } catch (ValidateException $e) {
             return app('json')->fail($e->getError());
         }
+        if (strlen(trim($password)) < 6 || strlen(trim($password)) > 32) {
+            return app('json')->fail(400762);
+        }
         $verifyCode = CacheService::get('code_' . $account);
         if (!$verifyCode)
             return app('json')->fail(410009);
@@ -233,8 +239,6 @@ class LoginController
         if ($verifyCode != $captcha) {
             return app('json')->fail(410010);
         }
-        if (strlen(trim($password)) < 6 || strlen(trim($password)) > 16)
-            return app('json')->fail(410011);
         if ($password == '123456') return app('json')->fail(410012);
         $resetStatus = $this->services->reset($account, $password);
         if ($resetStatus) return app('json')->success(100001);

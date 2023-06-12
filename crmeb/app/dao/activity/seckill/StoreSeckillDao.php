@@ -35,11 +35,13 @@ class StoreSeckillDao extends BaseDao
     /**
      * 搜索
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    protected function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['seckllTime']), function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['seckllTime']), function ($query) use ($where) {
             [$startTime, $stopTime] = is_array($where['seckllTime']) ? $where['seckllTime'] : [time(), time() - 86400];
             $query->where('start_time', '<=', $startTime)->where('stop_time', '>=', $stopTime);
         })->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {

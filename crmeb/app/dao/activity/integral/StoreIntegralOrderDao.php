@@ -40,15 +40,17 @@ class StoreIntegralOrderDao extends BaseDao
     /**
      * 订单搜索
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
         $isDel = isset($where['is_del']) && $where['is_del'] !== '' && $where['is_del'] != -1;
         $realName = $where['real_name'] ?? '';
         $fieldKey = $where['field_key'] ?? '';
         $fieldKey = $fieldKey == 'all' ? '' : $fieldKey;
-        return parent::search($where)->when($isDel, function ($query) use ($where) {
+        return parent::search($where, $search)->when($isDel, function ($query) use ($where) {
             $query->where('is_del', $where['is_del']);
         })->when(isset($where['is_system_del']), function ($query) {
             $query->where('is_system_del', 0);
@@ -87,11 +89,13 @@ class StoreIntegralOrderDao extends BaseDao
     /**
      * 获取订单总数
      * @param array $where
+     * @param bool $search
      * @return int
+     * @throws \ReflectionException
      */
-    public function count(array $where = []): int
+    public function count(array $where = [], bool $search = true): int
     {
-        return $this->search($where)->count();
+        return $this->search($where, $search)->count();
     }
 
     /**

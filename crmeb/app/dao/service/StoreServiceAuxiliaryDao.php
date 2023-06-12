@@ -25,11 +25,13 @@ class StoreServiceAuxiliaryDao extends AuxiliaryDao
     /**
      * 搜索
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    protected function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->where('type', 0);
+        return parent::search($where, $search)->where('type', 0);
     }
 
 }

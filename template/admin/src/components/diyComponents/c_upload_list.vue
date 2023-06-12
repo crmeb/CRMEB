@@ -82,7 +82,7 @@
 import linkaddress from '@/components/linkaddress';
 
 import uploadPictures from '@/components/uploadPictures';
-import settings  from '@/setting'
+import settings from '@/setting';
 
 import vuedraggable from 'vuedraggable';
 export default {

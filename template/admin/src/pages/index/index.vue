@@ -1,5 +1,8 @@
 <template>
   <div>
+    <!-- <div class="open-image" @click="clear" v-if="openImage">
+      <img src="@/assets/images/wechat_demo.png" alt="" />
+    </div> -->
     <!--头部-->
     <base-info ref="baseInfo" />
     <!--小方块-->
@@ -37,6 +40,7 @@ export default {
   },
   data() {
     return {
+      openImage: false,
       visitType: 'day', // day, month, year
       visitDate: [new Date(), new Date()],
       force_reminder: null,
@@ -55,8 +59,12 @@ export default {
             this.authCode = data.auth_code;
             this.auth = true;
           }
+          this.openImage = true
         })
         .catch((res) => {});
+    },
+    clear() {
+      this.openImage = false;
     },
   },
 };
@@ -72,6 +80,23 @@ export default {
   .ivu-radio-group-button .ivu-radio-wrapper:before,
   .ivu-radio-group-button .ivu-radio-wrapper:after {
     display: none;
+  }
+}
+.open-image {
+  transition: none;
+  animation: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.6);
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  img {
+    width: 800px;
   }
 }
 </style>

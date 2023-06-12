@@ -1,0 +1,10 @@
+    /**
+     * 新增
+     * @date {%date%}
+     * @param array $data
+     * @return mixed
+     */
+    public function crudSave(array $data)
+    {
+        return $this->dao->save($data);
+    }

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -26,6 +26,17 @@ class Env implements ArrayAccess
      */
     protected $data = [];
 
+    /**
+     * 数据转换映射
+     * @var array
+     */
+    protected $convert = [
+        'true'  => true,
+        'false' => false,
+        'off'   => false,
+        'on'    => true,
+    ];
+
     public function __construct()
     {
         $this->data = $_ENV;
@@ -39,7 +50,7 @@ class Env implements ArrayAccess
      */
     public function load(string $file): void
     {
-        $env = parse_ini_file($file, true) ?: [];
+        $env = parse_ini_file($file, true, INI_SCANNER_RAW) ?: [];
         $this->set($env);
     }
 
@@ -57,9 +68,14 @@ class Env implements ArrayAccess
         }
 
         $name = strtoupper(str_replace('.', '_', $name));
-
         if (isset($this->data[$name])) {
-            return $this->data[$name];
+            $result = $this->data[$name];
+
+            if (is_string($result) && isset($this->convert[$result])) {
+                return $this->convert[$result];
+            }
+
+            return $result;
         }
 
         return $this->getEnv($name, $default);
@@ -159,21 +175,25 @@ class Env implements ArrayAccess
     }
 
     // ArrayAccess
+    #[\ReturnTypeWillChange]
     public function offsetSet($name, $value): void
     {
         $this->set($name, $value);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($name): bool
     {
         return $this->__isset($name);
     }
 
-    public function offsetUnset($name)
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($name): void
     {
         throw new Exception('not support: unset');
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($name)
     {
         return $this->get($name);

@@ -35,8 +35,11 @@ class Json
         if (!is_null($data))
             $res['data'] = $data;
 
-        if (is_numeric($res['msg']))
+        if (is_numeric($res['msg'])) {
+            $res['code'] = $res['msg'];
             $res['msg'] = getLang($res['msg'], $replace);
+        }
+
 
         return Response::create($res, 'json', $this->code);
     }

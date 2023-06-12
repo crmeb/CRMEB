@@ -57,7 +57,7 @@ class StoreServiceDao extends BaseDao
      */
     public function getServiceList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->with('user')->when($page && $limit, function ($query) use ($page, $limit) {
+        return $this->search($where, false)->with('user')->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
         })->when(isset($where['noId']), function ($query) use ($where) {
             $query->whereNotIn('uid', $where['noId']);
@@ -86,4 +86,20 @@ class StoreServiceDao extends BaseDao
         return $this->getModel()->whereNotIn('uid', $where['notUid'])->update($data);
     }
 
+    /**
+     * 统计数量
+     * @param array $where
+     * @param bool $search
+     * @return int
+     * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/05/10
+     */
+    public function count(array $where = [], $search = true)
+    {
+        return $this->search($where, false)->when(isset($where['noId']), function ($query) use ($where) {
+            $query->whereNotIn('uid', $where['noId']);
+        })->count();
+    }
 }

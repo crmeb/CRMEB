@@ -1,0 +1,1 @@
+<view class="data-v-6c607980"><view class="result data-v-6c607980"><view class="image-wrap data-v-6c607980"><image class="image data-v-6c607980" src="../static/offline-result.png"></image></view><view class="text data-v-6c607980">{{$root.m0}}</view></view><navigator class="link data-v-6c607980" url="/pages/index/index" open-type="switchTab">{{$root.m1}}</navigator></view>

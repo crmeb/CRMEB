@@ -1,0 +1,1 @@
+Route::get('{%route%}/:id/edit', 'crud.{%routePath%}{%controller%}/edit')->option(['real_name' => '{%menus%}获取修改表单接口']);

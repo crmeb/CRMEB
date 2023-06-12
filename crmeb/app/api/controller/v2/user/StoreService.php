@@ -40,8 +40,11 @@ class StoreService
     /**
      * 客服聊天记录
      * @param Request $request
-     * @param $toUid
+     * @param StoreServiceServices $services
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function record(Request $request, StoreServiceServices $services)
     {

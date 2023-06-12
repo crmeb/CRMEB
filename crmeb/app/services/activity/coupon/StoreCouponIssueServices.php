@@ -363,6 +363,9 @@ class StoreCouponIssueServices extends BaseServices
     public function issueUserCoupon($id, $user, bool $is_receive = false)
     {
         $issueCouponInfo = $this->dao->getInfo((int)$id);
+        if ($user->is_money_level <= 0 && $issueCouponInfo['receive_type'] == 4) {
+            throw new ApiException(400097);
+        }
         $uid = $user->uid;
         if (!$issueCouponInfo) throw new ApiException(400516);
         /** @var StoreCouponIssueUserServices $issueUserService */

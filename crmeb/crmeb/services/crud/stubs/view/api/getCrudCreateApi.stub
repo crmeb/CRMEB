@@ -1,0 +1,10 @@
+/**
+ * 获取添加表单数据
+ * @return {*}
+ */
+export function get{%nameStudly%}CreateApi() {
+    return request({
+        url: '{%route%}/create',
+        method: 'get',
+    });
+}

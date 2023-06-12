@@ -115,24 +115,25 @@ export default {
     },
     addHotTxt() {
       let val = {
-        children: [
+        chiild: [
           {
             max: 20,
             pla: '选填，不超过四个字',
             title: '标题',
-            val: 'CRMEB v4.2.2 正式发布',
+            val: '',
           },
           {
             max: 99,
             pla: '选填',
             title: '链接',
-            val: '链接',
+            val: '',
           },
         ],
       };
       if (this.name == 'newList') {
-        let obj = JSON.parse(JSON.stringify(this.datas[this.name].list[this.datas[this.name].list.length - 1]));
-        this.datas[this.name].list.push(obj);
+        let arrs = this.datas[this.name].list[this.datas[this.name].list.length - 1];
+        let obj = arrs ? JSON.parse(JSON.stringify(arrs)) : '';
+        this.datas[this.name].list.push(obj || val);
         return;
       }
       if (this.datas[this.name].list.length == 0) {

@@ -35,11 +35,13 @@ class StoreCombinationDao extends BaseDao
     /**
      * 搜索
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['pinkIngTime']), function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['pinkIngTime']), function ($query) use ($where) {
             $time = time();
             [$startTime, $stopTime] = is_array($where['pinkIngTime']) ? $where['pinkIngTime'] : [$time, $time];
             $query->where('start_time', '<=', $startTime)->where('stop_time', '>=', $stopTime);
@@ -57,17 +59,21 @@ class StoreCombinationDao extends BaseDao
                     $query->name('store_category')->where('pid', $where['cid'])->field('id')->select();
                 })->field('product_id')->select();
             });
+        })->when(isset($where['id']) && $where['id'], function ($query) use ($where) {
+            $query->where('id', $where['id']);
         });
     }
 
     /**
      * 获取指定条件下的条数
      * @param array $where
+     * @param bool $search
      * @return int
+     * @throws \ReflectionException
      */
-    public function count(array $where = []): int
+    public function count(array $where = [], bool $search = true): int
     {
-        return $this->search($where)->count();
+        return $this->search($where, $search)->count();
     }
 
     /**
@@ -100,6 +106,7 @@ class StoreCombinationDao extends BaseDao
                 $query->page($page, $limit);
             })->order('sort desc,id desc')->select()->toArray();
     }
+
     /**获取列表
      * @param array $where
      * @param int $page
@@ -144,6 +151,7 @@ class StoreCombinationDao extends BaseDao
      * @param array $ids ids 为空返回所有
      * @param array $field
      * @return array
+     * @throws \ReflectionException
      */
     public function getPinkIdsArray(array $ids = [], array $field = [])
     {
@@ -164,15 +172,18 @@ class StoreCombinationDao extends BaseDao
     {
         return $this->search($where)->with('getPrice')->page($page, $limit)->order('sort desc,id desc')->select()->toArray();
     }
+
     /**
      * 条件获取数量
      * @param array $where
      * @return int
+     * @throws \ReflectionException
      */
     public function getCount(array $where)
     {
         return $this->search($where)->count();
     }
+
     /**
      * 页面设计获取商拼团列表
      * @param array $where
@@ -183,9 +194,11 @@ class StoreCombinationDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function diyCombinationList(array $where, int $page, int $limit){
+    public function diyCombinationList(array $where, int $page, int $limit)
+    {
         return $this->search($where)->with('getCategory')->page($page, $limit)->order('sort desc,id desc')->select()->toArray();
     }
+
     /**
      * 根据id获取拼团数据
      * @param array $ids

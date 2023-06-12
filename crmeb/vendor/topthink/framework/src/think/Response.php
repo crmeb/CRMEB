@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -130,16 +130,19 @@ abstract class Response
         // 处理输出数据
         $data = $this->getContent();
 
-        if (!headers_sent() && !empty($this->header)) {
-            // 发送状态码
-            http_response_code($this->code);
-            // 发送头部信息
-            foreach ($this->header as $name => $val) {
-                header($name . (!is_null($val) ? ':' . $val : ''));
+        if (!headers_sent()) {
+            if (!empty($this->header)) {
+                // 发送状态码
+                http_response_code($this->code);
+                // 发送头部信息
+                foreach ($this->header as $name => $val) {
+                    header($name . (!is_null($val) ? ':' . $val : ''));
+                }
             }
-        }
-        if ($this->cookie) {
-            $this->cookie->save();
+
+            if ($this->cookie) {
+                $this->cookie->save();
+            }
         }
 
         $this->sendData($data);
@@ -214,7 +217,7 @@ abstract class Response
     /**
      * 是否允许请求缓存
      * @access public
-     * @return $this
+     * @return bool
      */
     public function isAllowCache()
     {

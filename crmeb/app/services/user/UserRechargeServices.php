@@ -492,6 +492,10 @@ class UserRechargeServices extends BaseServices
 
         //提醒推送
         event('NoticeListener', [['order' => $order, 'now_money' => $now_money], 'recharge_success']);
+
+        $order['pay_type'] = $other['pay_type'];
+        // 小程序订单服务
+        event('OrderShipping', ['recharge', $order, 3, '', '']);
         return true;
     }
 

@@ -86,6 +86,9 @@
 	import home from '@/components/home';
 	import colors from "@/mixins/color";
 	import payment from '@/components/payment';
+	import {
+		basicConfig
+	} from '@/api/public.js'
 	export default {
 		components: {
 			payment,
@@ -152,6 +155,7 @@
 			this.from = this.$wechat.isWeixin() ? "weixin" : "weixinh5"
 			// #endif
 			if (this.isLogin) {
+				this.getBasicConfig();
 				this.getUserInfo();
 				this.getRecharge();
 			} else {
@@ -159,6 +163,26 @@
 			}
 		},
 		methods: {
+			getBasicConfig() {
+				basicConfig().then(res => {
+					const {
+						ali_pay_status,
+						pay_weixin_open
+					} = res.data;
+					this.payMode[0].payStatus = pay_weixin_open;
+					// #ifdef APP-PLUS || H5
+					this.payMode[1].payStatus = ali_pay_status;
+					// #endif
+					//#ifdef MP
+					this.payMode[1].payStatus = false;
+					//#endif
+				}).catch(err => {
+					uni.showToast({
+						title: err,
+						icon: 'none'
+					});
+				});
+			},
 
 			/**
 			 * 选择金额

@@ -301,7 +301,7 @@ export default {
   },
   watch: {
     $route() {
-      if (this.$route.fullPath === (this.$routeProStr +'/finance/user_extract/index?status=0')) {
+      if (this.$route.fullPath === this.$routeProStr + '/finance/user_extract/index?status=0') {
         this.getPath();
       }
     },
@@ -316,7 +316,7 @@ export default {
     },
   },
   mounted() {
-    if (this.$route.fullPath === (this.$routeProStr + '/finance/user_extract/index?status=0')) {
+    if (this.$route.fullPath === this.$routeProStr + '/finance/user_extract/index?status=0') {
       this.getPath();
     } else {
       this.getList();

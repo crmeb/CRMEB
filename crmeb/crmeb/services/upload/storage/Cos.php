@@ -13,8 +13,10 @@ namespace crmeb\services\upload\storage;
 use crmeb\services\upload\BaseUpload;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\UploadException;
+use GuzzleHttp\Psr7\Utils;
 use Qcloud\Cos\Client;
 use QCloud\COSSTS\Sts;
+use crmeb\services\upload\extend\cos\Client as CrmebClient;
 
 /**
  * 腾讯云COS文件上传
@@ -44,7 +46,7 @@ class Cos extends BaseUpload
 
     /**
      * 句柄
-     * @var Client
+     * @var CrmebClient
      */
     protected $handle;
 
@@ -101,16 +103,18 @@ class Cos extends BaseUpload
 
     /**
      * 实例化cos
-     * @return Client
+     * @return CrmebClient
      */
     protected function app()
     {
-        if (!$this->accessKey || !$this->secretKey) {
-            throw new UploadException(400721);
-        }
-        $this->handle = new Client(['region' => $this->storageRegion, 'credentials' => [
-            'secretId' => $this->accessKey, 'secretKey' => $this->secretKey
-        ]]);
+        $this->handle = new CrmebClient([
+            'accessKey' => $this->accessKey,
+            'secretKey' => $this->secretKey,
+            'region' => $this->storageRegion ?: 'ap-chengdu',
+            'bucket' => $this->storageName,
+            'appid' => $this->appid,
+            'uploadUrl' => $this->uploadUrl
+        ]);
         return $this->handle;
     }
 
@@ -141,17 +145,14 @@ class Cos extends BaseUpload
             }
             $key = $this->saveFileName($fileHandle->getRealPath(), $fileHandle->getOriginalExtension());
             $body = fopen($fileHandle->getRealPath(), 'rb');
+            $body = (string)Utils::streamFor($body);
         } else {
             $key = $file;
             $body = $fileContent;
         }
         try {
             $key = $this->getUploadPath($key);
-            $this->fileInfo->uploadInfo = $this->app()->putObject([
-                'Bucket' => $this->storageName,
-                'Key' => $key,
-                'Body' => $body
-            ]);
+            $this->fileInfo->uploadInfo = $this->app()->putObject($key, $body);
             $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
             $this->fileInfo->realName = isset($fileHandle) ? $fileHandle->getOriginalName() : $key;
             $this->fileInfo->fileName = $key;
@@ -263,7 +264,7 @@ class Cos extends BaseUpload
     public function delete(string $filePath)
     {
         try {
-            return $this->app()->deleteObject(['Bucket' => $this->storageName, 'Key' => $filePath]);
+            return $this->app()->deleteObject($this->storageName, $filePath);
         } catch (\Exception $e) {
             return $this->setError($e->getMessage());
         }
@@ -379,7 +380,7 @@ class Cos extends BaseUpload
     {
         try {
             $res = $this->app()->listBuckets();
-            return $res->toArray()['Buckets'] ?? [];
+            return $res['Buckets']['Bucket'] ?? [];
         } catch (\Throwable $e) {
             return [];
         }
@@ -403,7 +404,7 @@ class Cos extends BaseUpload
         $app = $this->app();
         //检测桶
         try {
-            $app->headBucket(['Bucket' => $name . '-' . $this->appid]);
+            $app->headBucket($name);
         } catch (\Throwable $e) {
             //桶不存在返回404
             if (strstr('404', $e->getMessage())) {
@@ -412,7 +413,7 @@ class Cos extends BaseUpload
         }
         //创建桶
         try {
-            $res = $app->createBucket(['Bucket' => $name . '-' . $this->appid, 'ACL' => $acl]);
+            $res = $app->createBucket($name . '-' . $this->appid, '', $acl);
         } catch (\Throwable $e) {
             if (strstr('[curl] 6', $e->getMessage())) {
                 return $this->setError('COS:无效的区域!!');
@@ -432,7 +433,7 @@ class Cos extends BaseUpload
     public function deleteBucket(string $name)
     {
         try {
-            $res = $this->app()->deleteBucket(['Bucket' => $name]);
+            $res = $this->app()->deleteBucket($name);
             if ($res->get('RequestId')) {
                 return true;
             }
@@ -451,9 +452,7 @@ class Cos extends BaseUpload
     {
         $this->storageRegion = $region;
         try {
-            $res = $this->app()->GetBucketDomain([
-                'Bucket' => $name,
-            ]);
+            $res = $this->app()->GetBucketDomain($name);
             $domainRules = $res->toArray()['DomainRules'];
             return array_column($domainRules, 'Name');
         } catch (\Throwable $e) {
@@ -473,18 +472,15 @@ class Cos extends BaseUpload
         $this->storageRegion = $region;
         $parseDomin = parse_url($domain);
         try {
-            $res = $this->app()->putBucketDomain([
-                'Bucket' => $name,
-                'DomainRules' => [
-                    [
-                        'Name' => $parseDomin['host'],
-                        'Status' => 'ENABLED',
-                        'Type' => 'REST',
-                        'ForcedReplacement' => 'CNAME'
-                    ]
-                ]
+            $res = $this->app()->putBucketDomain($name, '', [
+                'Name' => $parseDomin['host'],
+                'Status' => 'ENABLED',
+                'Type' => 'REST',
+                'ForcedReplacement' => 'CNAME'
             ]);
-            $res = $res->toArray();
+            if (method_exists($res, 'toArray')) {
+                $res = $res->toArray();
+            }
             if ($res['RequestId'] ?? null) {
                 return true;
             }
@@ -530,17 +526,12 @@ class Cos extends BaseUpload
     {
         $this->storageRegion = $region;
         try {
-            $res = $this->app()->PutBucketCors([
-                'Bucket' => $name,
-                'CORSRules' => [
-                    [
-                        'AllowedHeaders' => ['*'],
-                        'AllowedMethods' => ['PUT', 'GET', 'POST', 'DELETE', 'HEAD'],
-                        'AllowedOrigins' => ['*'],
-                        'ExposeHeaders' => ['ETag', 'Content-Length', 'x-cos-request-id'],
-                        'MaxAgeSeconds' => 12
-                    ]
-                ]
+            $res = $this->app()->PutBucketCors($name, [
+                'AllowedHeaders' => ['*'],
+                'AllowedMethods' => ['PUT', 'GET', 'POST', 'DELETE', 'HEAD'],
+                'AllowedOrigins' => ['*'],
+                'ExposeHeaders' => ['ETag', 'Content-Length', 'x-cos-request-id'],
+                'MaxAgeSeconds' => 12
             ]);
             if (isset($res['RequestId'])) {
                 return true;

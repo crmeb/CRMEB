@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "uni-calendar-item": "/pages/admin/components/uni-calendar/uni-calendar-item"
+  }
+}

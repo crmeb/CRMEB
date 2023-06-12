@@ -19,7 +19,7 @@
             </div>
             <Alert v-if="!pageData.appId && !pageData.code">
               <template slot="desc">
-                您尚未配置小程序信息，请<router-link :to="{ path: $routeProStr +'/setting/system_config_retail/3/7' }"
+                您尚未配置小程序信息，请<router-link :to="{ path: $routeProStr + '/setting/system_config_retail/3/7' }"
                   >立即设置</router-link
                 ></template
               >
@@ -86,7 +86,7 @@ export default {
         sm: 24,
         xs: 24,
       },
-      iframeUrl: `${location.origin}/pages/index/index?type=iframeWindow`,
+      iframeUrl: `${location.origin}/pages/index/index?mdType=iframeWindow`,
       is_live: 1,
       pageData: {
         code: '',

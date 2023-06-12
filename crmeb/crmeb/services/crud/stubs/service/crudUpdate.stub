@@ -1,0 +1,11 @@
+    /**
+     * 修改
+     * @date {%date%}
+     * @param int $id
+     * @param array $data
+     * @return \crmeb\basic\BaseModel
+     */
+    public function crudUpdate(int $id, array $data)
+    {
+        return $this->dao->update($id, $data);
+    }

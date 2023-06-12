@@ -39,6 +39,7 @@
 			</view>
 			<recommend :hostProduct='hostProduct' v-if="bastList.length == 0 && page > 1"></recommend>
 		</view>
+		<home></home>
 	</view>
 </template>
 
@@ -54,17 +55,21 @@
 	} from '@/api/api.js';
 	import goodList from '@/components/goodList';
 	import recommend from '@/components/recommend';
+	import home from '@/components/home';
 	import colors from "@/mixins/color";
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		components: {
 			goodList,
-			recommend
+			recommend,
+			home
 		},
 		mixins: [colors],
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				hostProduct: [],
 				searchValue: '',
 				focus: true,
@@ -95,7 +100,11 @@
 			} else {
 				this.getHostProduct();
 			}
-
+		},
+		// 滚动监听
+		onPageScroll(e) {
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+			uni.$emit('scroll');
 		},
 		methods: {
 			searchList() {

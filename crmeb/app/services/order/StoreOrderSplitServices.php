@@ -168,9 +168,8 @@ class StoreOrderSplitServices extends BaseServices
                 }
                 $storeOrderCartInfoServices->saveAll($cart_data_all);
 
-                $new_order = $this->dao->get($new_id);
                 $storeOrderCartInfoServices->clearOrderCartInfo($new_id);
-                $this->splitComputeOrder((int)$new_id, $cart_data_all, (float)($change_price ? $order_pay_price : 0), (float)$orderInfo['pay_price'], (float)($new_order['pay_price'] ?? 0));
+                $this->splitComputeOrder((int)$new_id, $cart_data_all, (float)($change_price ? $order_pay_price : 0), (float)$orderInfo['pay_price'], (float)($order['pay_price'] ?? 0));
                 $new_order = $this->dao->get($new_id);
                 if ($key == 'new') {
                     $order = $new_order;
@@ -310,7 +309,7 @@ class StoreOrderSplitServices extends BaseServices
             if ($pre_pay_price) {//上一个已经计算 这里减法
                 $order_update['pay_price'] = bcsub((string)$pay_price, (string)$pre_pay_price, 2);
             } else {//按比例计算实际支付金额
-                $order_update['pay_price'] = bcmul((string)bcdiv((string)$pay_price, (string)$order_pay_price, 4), (string)$order_update['pay_price'], 2);
+                $order_update['pay_price'] = bcmul((string)bcdiv((string)$order_update['pay_price'], (string)$order_pay_price, 4), (string)$pay_price, 2);
             }
         }
 

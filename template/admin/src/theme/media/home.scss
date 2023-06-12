@@ -1,0 +1,35 @@
+@import './index.scss';
+
+/* 页面宽度小于1200px
+------------------------------- */
+@media screen and (max-width: $lg) {
+  .home-recommend-row {
+    .home-recommend {
+      margin-bottom: 15px;
+    }
+    & .el-col:last-of-type,
+    & .el-col:nth-last-child(2) {
+      .home-recommend {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .home-lg {
+    margin-bottom: 15px;
+  }
+}
+
+/* 页面宽度小于992px
+------------------------------- */
+@media screen and (max-width: $md) {
+  .home-recommend-row {
+    & .el-col:nth-last-child(2) {
+      margin-bottom: 15px;
+    }
+    & .el-col:last-of-type {
+      .home-recommend {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

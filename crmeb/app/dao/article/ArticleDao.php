@@ -30,9 +30,19 @@ class ArticleDao extends BaseDao
         return Article::class;
     }
 
-    public function search(array $where = [])
+    /**
+     * 文章搜索
+     * @param array $where
+     * @param bool $search
+     * @return \crmeb\basic\BaseModel
+     * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/20
+     */
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['ids']) && count($where['ids']), function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['ids']) && count($where['ids']), function ($query) use ($where) {
             $query->whereNotIn('id', $where['ids']);
         });
     }

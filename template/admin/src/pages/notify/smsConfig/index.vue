@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title" v-if="!isShowList">短信账户</span>
+      <span class="ivu-page-header-title" v-if="!isShowList"
+        >一号通账户<span class="title-tips">快速开通短信接口、物流接口、商品采集接口、电子面单接口等</span></span
+      >
       <div v-if="isShowList" class="acea-row row-between-wrapper picTxt">
         <div slot="content">
           <Avatar class="dashboard-workplace-header-avatar" :src="imgUrl" />
@@ -366,5 +368,10 @@ export default {
 .samll_font {
   text-align: center;
   padding: 0px 10px;
+}
+.title-tips {
+  font-size: 14px;
+  color: #999;
+  margin-left: 10px;
 }
 </style>

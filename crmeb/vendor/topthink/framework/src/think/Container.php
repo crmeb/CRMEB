@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -27,6 +27,7 @@ use ReflectionMethod;
 use think\exception\ClassNotFoundException;
 use think\exception\FuncNotFoundException;
 use think\helper\Str;
+use Traversable;
 
 /**
  * 容器管理类 支持PSR-11
@@ -107,11 +108,11 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 
     /**
      * 获取容器中的对象实例 不存在则创建
-     * @access public
-     * @param string     $abstract    类名或者标识
-     * @param array|true $vars        变量
-     * @param bool       $newInstance 是否每次创建新的实例
-     * @return object
+     * @template T
+     * @param string|class-string<T> $abstract    类名或者标识
+     * @param array                  $vars        变量
+     * @param bool                   $newInstance 是否每次创建新的实例
+     * @return T|object
      */
     public static function pull(string $abstract, array $vars = [], bool $newInstance = false)
     {
@@ -120,9 +121,9 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 
     /**
      * 获取容器中的对象实例
-     * @access public
-     * @param string $abstract 类名或者标识
-     * @return object
+     * @template T
+     * @param string|class-string<T> $abstract 类名或者标识
+     * @return T|object
      */
     public function get($abstract)
     {
@@ -152,8 +153,9 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
             $this->instance($abstract, $concrete);
         } else {
             $abstract = $this->getAlias($abstract);
-
-            $this->bind[$abstract] = $concrete;
+            if ($abstract != $concrete) {
+                $this->bind[$abstract] = $concrete;
+            }
         }
 
         return $this;
@@ -230,11 +232,11 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
 
     /**
      * 创建类的实例 已经存在则直接获取
-     * @access public
-     * @param string $abstract    类名或者标识
-     * @param array  $vars        变量
-     * @param bool   $newInstance 是否每次创建新的实例
-     * @return mixed
+     * @template T
+     * @param string|class-string<T> $abstract    类名或者标识
+     * @param array                  $vars        变量
+     * @param bool                   $newInstance 是否每次创建新的实例
+     * @return T|object
      */
     public function make(string $abstract, array $vars = [], bool $newInstance = false)
     {
@@ -379,8 +381,10 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
         if ($reflect->hasMethod('__make')) {
             $method = $reflect->getMethod('__make');
             if ($method->isPublic() && $method->isStatic()) {
-                $args = $this->bindParams($method, $vars);
-                return $method->invokeArgs(null, $args);
+                $args   = $this->bindParams($method, $vars);
+                $object = $method->invokeArgs(null, $args);
+                $this->invokeAfter($class, $object);
+                return $object;
             }
         }
 
@@ -437,17 +441,19 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
         $args   = [];
 
         foreach ($params as $param) {
-            $name      = $param->getName();
-            $lowerName = Str::snake($name);
-            $class     = $param->getClass();
+            $name           = $param->getName();
+            $lowerName      = Str::snake($name);
+            $reflectionType = $param->getType();
 
-            if ($class) {
-                $args[] = $this->getObjectParam($class->getName(), $vars);
+            if ($param->isVariadic()) {
+                return array_merge($args, array_values($vars));
+            } elseif ($reflectionType && $reflectionType instanceof \ReflectionNamedType && $reflectionType->isBuiltin() === false) {
+                $args[] = $this->getObjectParam($reflectionType->getName(), $vars);
             } elseif (1 == $type && !empty($vars)) {
                 $args[] = array_shift($vars);
-            } elseif (0 == $type && isset($vars[$name])) {
+            } elseif (0 == $type && array_key_exists($name, $vars)) {
                 $args[] = $vars[$name];
-            } elseif (0 == $type && isset($vars[$lowerName])) {
+            } elseif (0 == $type && array_key_exists($lowerName, $vars)) {
                 $args[] = $vars[$lowerName];
             } elseif ($param->isDefaultValueAvailable()) {
                 $args[] = $param->getDefaultValue();
@@ -517,34 +523,38 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate, C
         $this->delete($name);
     }
 
-    public function offsetExists($key)
+    #[\ReturnTypeWillChange]
+    public function offsetExists($key): bool
     {
         return $this->exists($key);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return $this->make($key);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         $this->bind($key, $value);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($key)
     {
         $this->delete($key);
     }
 
     //Countable
-    public function count()
+    public function count(): int
     {
         return count($this->instances);
     }
 
     //IteratorAggregate
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->instances);
     }

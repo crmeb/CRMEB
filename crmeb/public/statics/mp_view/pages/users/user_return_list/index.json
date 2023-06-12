@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "退货列表",
+  "usingComponents": {
+    "home": "/components/home/index",
+    "empty-page": "/components/emptyPage",
+    "authorize": "/components/Authorize"
+  }
+}

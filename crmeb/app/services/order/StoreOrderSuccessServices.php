@@ -100,6 +100,11 @@ class StoreOrderSuccessServices extends BaseServices
         event('NoticeListener', [$orderInfo, 'admin_pay_success_code']);
         // 推送订单
         event('OutPushListener', ['order_pay_push', ['order_id' => (int)$orderInfo['id']]]);
+
+        // 小程序订单管理 (自提商品)
+        if ($orderInfo['shipping_type'] == 2) {
+            event('OrderShipping', ['product', $orderInfo, 4, '', '']);
+        }
         $res = $res1 && $resPink;
         return false !== $res;
     }

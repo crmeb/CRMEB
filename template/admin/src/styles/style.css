@@ -716,6 +716,13 @@ body {
 .pt10 {
   padding-top: 10px;
 }
+.common-form-create-footer {
+  display: flex;
+  justify-content: right;
+}
+.common-form-button {
+  margin-right: 10px;
+}
 
 .pl10 {
   padding-left: 10px;

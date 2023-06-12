@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <div class="table_box">

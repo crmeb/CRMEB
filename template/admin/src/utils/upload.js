@@ -9,14 +9,11 @@ export const uploadByPieces = ({ file, pieceSize = 2, success, error, uploading 
   // 获取md5
   const readFileMD5 = () => {
     // 读取视频文件的md5
-    console.log('获取文件的MD5值');
     let fileRederInstance = new FileReader();
-    console.log('file', file);
     fileRederInstance.readAsBinaryString(file);
     fileRederInstance.addEventListener('load', (e) => {
       let fileBolb = e.target.result;
       fileMD5 = md5(fileBolb);
-      console.log('fileMD5', fileMD5);
       console.log('文件未被上传，将分片上传');
       readChunkMD5();
     });

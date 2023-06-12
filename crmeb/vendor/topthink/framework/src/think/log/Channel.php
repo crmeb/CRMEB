@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -15,6 +15,7 @@ namespace think\log;
 use Psr\Log\LoggerInterface;
 use think\contract\LogHandlerInterface;
 use think\Event;
+use think\event\LogRecord;
 use think\event\LogWrite;
 
 class Channel implements LoggerInterface
@@ -94,6 +95,9 @@ class Channel implements LoggerInterface
 
         if (!empty($msg) || 0 === $msg) {
             $this->log[$type][] = $msg;
+            if ($this->event) {
+                $this->event->trigger(new LogRecord($type, $msg));
+            }
         }
 
         if (!$this->lazy || !$lazy) {

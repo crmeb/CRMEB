@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "好友代付",
+  "usingComponents": {
+    "order-goods": "/components/orderGoods/index",
+    "payment": "/components/payment/index",
+    "home": "/components/home/index"
+  }
+}

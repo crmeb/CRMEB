@@ -11,6 +11,7 @@
 namespace app\adminapi\controller\v1\system;
 
 use think\facade\App;
+use think\facade\Db;
 use think\facade\Session;
 use app\adminapi\controller\AuthController;
 use app\services\system\SystemDatabackupServices;
@@ -51,6 +52,31 @@ class SystemDatabackup extends AuthController
     {
         $tablename = request()->param('tablename', '', 'htmlspecialchars');
         return app('json')->success($this->services->getRead($tablename));
+    }
+
+    /**
+     * 更新数据表或者表字段备注
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/11
+     */
+    public function updateMark()
+    {
+        [$table, $field, $type, $mark, $is_field] = $this->request->postMore([
+            ['table', ''],
+            ['field', ''],
+            ['type', ''],
+            ['mark', ''],
+            ['is_field', 0],
+        ], true);
+        if ($is_field == 0) {
+            $sql = "ALTER TABLE $table COMMENT '$mark'";
+        } else {
+            $sql = "ALTER TABLE $table MODIFY COLUMN $field $type COMMENT '$mark'";
+        }
+        Db::execute($sql);
+        return app('json')->success(100024);
     }
 
     /**

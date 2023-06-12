@@ -11,7 +11,9 @@
 
 namespace crmeb\services\app;
 
+use app\services\order\StoreOrderTakeServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\easywechat\orderShipping\MiniOrderService;
 use crmeb\services\SystemConfigService;
 use app\services\pay\PayNotifyServices;
 use crmeb\services\easywechat\Application;
@@ -19,6 +21,7 @@ use EasyWeChat\Payment\Order;
 use think\facade\Log;
 use crmeb\utils\Hook;
 use think\facade\Cache;
+use think\Response;
 
 /**
  * 微信小程序接口
@@ -90,7 +93,7 @@ class MiniProgramService
      */
     public static function options()
     {
-        $wechat = SystemConfigService::more(['wechat_app_appsecret', 'wechat_app_appid', 'site_url', 'routine_appId', 'routine_appsecret']);
+        $wechat = SystemConfigService::more(['wechat_app_appsecret', 'wechat_app_appid', 'site_url', 'routine_appId', 'routine_appsecret', 'wechat_token', 'wechat_encodingaeskey']);
         $payment = SystemConfigService::more(['pay_weixin_mchid', 'pay_weixin_key', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_open', 'pay_new_weixin_open', 'pay_new_weixin_mchid']);
         $config = [];
         if (request()->isApp()) {
@@ -100,6 +103,10 @@ class MiniProgramService
             $appId = isset($wechat['routine_appId']) ? trim($wechat['routine_appId']) : '';
             $appsecret = isset($wechat['routine_appsecret']) ? trim($wechat['routine_appsecret']) : '';
         }
+        $config = [
+            'token' => isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) : '',
+            'aes_key' => isset($wechat['wechat_encodingaeskey']) ? trim($wechat['wechat_encodingaeskey']) : '',
+        ];
         $config['mini_program'] = [
             'app_id' => $appId,
             'secret' => $appsecret,
@@ -847,5 +854,45 @@ class MiniProgramService
             }
         }
         return $message ?: self::MSG_CODE[$e->getCode()] ?? $e->getMessage();
+    }
+
+
+    /**
+     * @return Response
+     * @throws \EasyWeChat\Server\BadRequestException
+     */
+    public static function serve(): Response
+    {
+        $wechat = self::application(true);
+        $server = $wechat->server;
+        self::hook($server);
+        $response = $server->serve();
+        return response($response->getContent());
+    }
+
+    private static function hook($server)
+    {
+        $server->setMessageHandler(function ($message) {
+            switch ($message->MsgType) {
+                case 'event':
+                    switch (strtolower($message->Event)) {
+                        case 'trade_manage_remind_access_api':  // 小程序完成账期授权时  小程序产生第一笔交易时 已产生交易但从未发货的小程序，每天一次
+                            break;
+                        case 'trade_manage_remind_shipping':   // 曾经发过货的小程序，订单超过48小时未发货时
+                            break;
+                        case 'trade_manage_order_settlement':     // 订单完成发货时  订单结算时
+                            if (isset($message['estimated_settlement_time'])) { //订单完成发货时
+                                MiniOrderService::notifyConfirmByTradeNo($message['merchant_trade_no'], time());
+                            }
+                            if (isset($message['confirm_receive_method'])) {  // 订单结算时
+                                /** @var StoreOrderTakeServices $StoreOrderTakeServices */
+                                $storeOrderTakeServices = app()->make(StoreOrderTakeServices::class);
+                                $storeOrderTakeServices->miniOrderTakeOrder($message['merchant_trade_no']);
+                            }
+                            break;
+                    };
+                    break;
+            };
+        });
     }
 }

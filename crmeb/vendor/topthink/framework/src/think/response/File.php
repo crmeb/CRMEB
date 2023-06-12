@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -44,7 +44,9 @@ class File extends Response
             throw new Exception('file not exists:' . $data);
         }
 
-        ob_end_clean();
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
 
         if (!empty($this->name)) {
             $name = $this->name;

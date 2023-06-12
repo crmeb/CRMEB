@@ -2,9 +2,8 @@
   <div>
     <Modal
       v-model="modals"
-      width="700"
+      width="500"
       scrollable
-      footer-hide
       closable
       :title="titleFrom"
       :mask-closable="false"
@@ -14,24 +13,11 @@
     >
       <Form ref="formValidate" :model="formValidate" :label-width="110" @submit.native.prevent>
         <Row type="flex" :gutter="24">
-          <Col span="24">
-            <FormItem label="类型：">
-              <RadioGroup v-model="formValidate.auth_type" @on-change="changeRadio">
-                <Radio :label="item.value" v-for="(item, i) in optionsRadio" :key="i">
-                  <Icon type="social-apple"></Icon>
-                  <span>{{ item.label }}</span>
-                </Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex" :gutter="24">
           <Col v-bind="grid">
             <FormItem :label="!authType ? '接口名称：' : '按钮名称：'" prop="menu_name">
               <div class="add">
                 <Input v-model="formValidate.menu_name" :placeholder="!authType ? '请输入接口名称' : '请输入按钮名称'">
                 </Input>
-                <Button class="ml10 df" v-show="!authType" @click="getRuleList()" icon="ios-apps"></Button>
               </div>
             </FormItem>
           </Col>
@@ -40,38 +26,7 @@
               <Cascader :data="menuList" change-on-select v-model="formValidate.path" filterable></Cascader>
             </FormItem>
           </Col>
-          <Col v-bind="grid" v-if="!authType">
-            <FormItem label="请求方式：" prop="methods">
-              <Select v-model="formValidate.methods">
-                <Option value="">请求</Option>
-                <Option value="GET">GET</Option>
-                <Option value="POST">POST</Option>
-                <Option value="PUT">PUT</Option>
-                <Option value="DELETE">DELETE</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid" v-if="!authType">
-            <FormItem label="接口地址：">
-              <Input v-model="formValidate.api_url" placeholder="请输入接口地址" prop="api_url"></Input>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid" v-show="authType">
-            <FormItem label="路由地址：" prop="menu_path">
-              <Input v-model="formValidate.menu_path" placeholder="请输入路由地址">
-                <template #prepend>
-                  <span>{{$routeProStr}}</span>
-                </template>
-
-              </Input>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="权限标识：" prop="unique_auth">
-              <Input v-model="formValidate.unique_auth" placeholder="请输入权限标识"></Input>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid" v-show="authType">
+          <Col v-bind="grid" v-if="authType">
             <FormItem label="图标：">
               <Input
                 v-model="formValidate.icon"
@@ -81,14 +36,13 @@
               ></Input>
             </FormItem>
           </Col>
-
-          <Col v-bind="grid">
+          <Col v-bind="grid" v-if="authType">
             <FormItem label="排序：">
               <Input type="number" v-model="formValidate.sort" placeholder="请输入排序" number></Input>
             </FormItem>
           </Col>
-          <Col v-bind="grid" v-show="authType">
-            <FormItem label="隐藏菜单：">
+          <Col v-bind="grid">
+            <FormItem label="是否显示：">
               <RadioGroup v-model="formValidate.is_show_path">
                 <Radio :label="item.value" v-for="(item, i) in isShowPathRadio" :key="i">
                   <Icon type="social-apple"></Icon>
@@ -97,22 +51,12 @@
               </RadioGroup>
             </FormItem>
           </Col>
-          <Col :xs="24">
-            <FormItem label="状态：">
-              <RadioGroup v-model="formValidate.is_show">
-                <Radio :label="item.value" v-for="(item, i) in isShowRadio" :key="i">
-                  <Icon type="social-apple"></Icon>
-                  <span>{{ item.label }}</span>
-                </Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
-
-          <Col span="24">
-            <Button type="primary" long @click="handleSubmit('formValidate')" :disabled="valids">提交</Button>
-          </Col>
         </Row>
       </Form>
+      <template #footer>
+        <Button @click="modals = false">取消</Button>
+        <Button type="primary" @click="handleSubmit('formValidate')" :disabled="valids">提交</Button>
+      </template>
     </Modal>
     <Modal v-model="modal12" scrollable width="600" title="图标选择" footer-hide>
       <Input
@@ -188,11 +132,11 @@ export default {
       searchRule: '',
       iconVal: '',
       grid: {
-        xl: 12,
-        lg: 12,
-        md: 12,
-        sm: 24,
-        xs: 24,
+        xl: 22,
+        lg: 22,
+        md: 22,
+        sm: 22,
+        xs: 22,
       },
       modals: false,
       modal12: false,
@@ -308,6 +252,11 @@ export default {
         this.ruleModal = false;
       }
     },
+    changeUnique(val) {
+      let value = this.$routeProStr + val.target.value;
+      if (value.slice(0, 1) === '/') value = value.replace('/', '');
+      this.formValidate.unique_auth = value.replaceAll('/', '-');
+    },
     visible(type) {
       if (!type) {
         this.authType = true;
@@ -407,9 +356,9 @@ export default {
         .then(async (res) => {
           this.$Message.success(res.msg);
           this.modals = false;
-          this.$emit('getList');
+          this.$emit('changeMenu', this.formValidate);
           this.getAddFrom();
-          this.$store.dispatch('admin/menus/getMenusNavList');
+          // this.$store.dispatch('menus/getMenusNavList');
         })
         .catch((res) => {
           this.valids = false;
@@ -508,7 +457,7 @@ export default {
 }
 
 .rule-list {
-  background-color: #f2f2f2;
+  background-color: #f8f5f5;
   width: 32%;
   margin: 5px;
   border-radius: 3px;

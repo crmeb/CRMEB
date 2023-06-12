@@ -57,7 +57,7 @@ class StoreProductRelationServices extends BaseServices
      */
     public function getUserCollectCount(int $uid)
     {
-        return $this->dao->count(['uid' => $uid, 'tye' => 'collect']);
+        return $this->dao->count(['uid' => $uid, 'type' => 'collect']);
     }
 
     /**

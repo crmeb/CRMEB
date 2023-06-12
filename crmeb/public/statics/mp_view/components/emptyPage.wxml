@@ -1,0 +1,1 @@
+<view class="empty-box"><image src="{{imgHost+'/statics/images/empty-box.png'}}"></image><view class="txt">{{$root.m0}}</view></view>

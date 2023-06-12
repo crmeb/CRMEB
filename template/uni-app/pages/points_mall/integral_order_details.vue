@@ -22,7 +22,7 @@
 								<view class='name line1'>{{cartInfo.store_name}}</view>
 								<view class='num'>x {{cartInfo.total_num}}</view>
 							</view>
-							<view class='attr line1' v-if="cartInfo.attrInfo">{{cartInfo.attrInfo.suk}}
+							<view class='attr line1'>{{cartInfo.suk}}
 							</view>
 							<view class='money font-num'>
 								{{cartInfo.price}}{{$t(`积分`)}}

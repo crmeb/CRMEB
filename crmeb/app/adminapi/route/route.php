@@ -25,7 +25,7 @@ Route::group(function () {
     //后台登录页面数据
     Route::get('login/info', 'Login/info')->option(['real_name' => '登录信息']);
     //下载文件
-    Route::get('download', 'PublicController/download')->option(['real_name' => '下载文件']);
+    Route::get('download/:key', 'PublicController/download')->option(['real_name' => '下载文件']);
     //验证码
     Route::get('captcha_pro', 'Login/captcha')->name('')->option(['real_name' => '获取验证码']);
     //获取验证码
@@ -36,7 +36,7 @@ Route::group(function () {
     Route::get('get_workerman_url', 'PublicController/getWorkerManUrl')->option(['real_name' => '获取客服数据']);
     //测试
     Route::get('index', 'Test/index')->option(['real_name' => '测试地址']);
-})->middleware(AllowOriginMiddleware::class);
+})->middleware(AllowOriginMiddleware::class)->option(['mark' => 'login', 'mark_name' => '登录相关']);
 
 /**
  * miss 路由

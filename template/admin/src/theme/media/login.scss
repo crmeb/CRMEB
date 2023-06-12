@@ -1,0 +1,32 @@
+@import './index.scss';
+
+/* 页面宽度小于576px
+------------------------------- */
+@media screen and (max-width: $xs) {
+  .login-weaper {
+    height: 420px !important;
+    .login-left {
+      display: none !important;
+    }
+    .login-right {
+      width: 100% !important;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      .login-main {
+        width: 94% !important;
+      }
+    }
+  }
+}
+
+/* 页面宽度大于576px小于992px
+------------------------------- */
+@media screen and (min-width: $xs) and (max-width: $md) {
+  .login-left {
+    display: none !important;
+  }
+  .login-right {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+}

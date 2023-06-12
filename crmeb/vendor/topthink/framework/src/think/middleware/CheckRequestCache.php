@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -61,16 +61,23 @@ class CheckRequestCache
     public function handle($request, Closure $next, $cache = null)
     {
         if ($request->isGet() && false !== $cache) {
-            $cache = $cache ?: $this->getRequestCache($request);
+            if (false === $this->config['request_cache_key']) {
+                // 关闭当前缓存
+                $cache = false;
+            }
+
+            $cache = $cache ?? $this->getRequestCache($request);
 
             if ($cache) {
                 if (is_array($cache)) {
-                    [$key, $expire, $tag] = $cache;
+                    [$key, $expire, $tag] = array_pad($cache, 3, null);
                 } else {
-                    $key    = str_replace('|', '/', $request->url());
+                    $key    = md5($request->url(true));
                     $expire = $cache;
                     $tag    = null;
                 }
+
+                $key = $this->parseCacheKey($request, $key);
 
                 if (strtotime($request->server('HTTP_IF_MODIFIED_SINCE', '')) + $expire > $request->server('REQUEST_TIME')) {
                     // 读取缓存
@@ -111,6 +118,24 @@ class CheckRequestCache
         $except = $this->config['request_cache_except'];
         $tag    = $this->config['request_cache_tag'];
 
+        foreach ($except as $rule) {
+            if (0 === stripos($request->url(), $rule)) {
+                return;
+            }
+        }
+
+        return [$key, $expire, $tag];
+    }
+
+    /**
+     * 读取当前地址的请求缓存信息
+     * @access protected
+     * @param Request $request
+     * @param mixed   $key
+     * @return null|string
+     */
+    protected function parseCacheKey($request, $key)
+    {
         if ($key instanceof \Closure) {
             $key = call_user_func($key, $request);
         }
@@ -118,12 +143,6 @@ class CheckRequestCache
         if (false === $key) {
             // 关闭当前缓存
             return;
-        }
-
-        foreach ($except as $rule) {
-            if (0 === stripos($request->url(), $rule)) {
-                return;
-            }
         }
 
         if (true === $key) {
@@ -140,9 +159,10 @@ class CheckRequestCache
 
         if (false !== strpos($key, ':')) {
             $param = $request->param();
+
             foreach ($param as $item => $val) {
                 if (is_string($val) && false !== strpos($key, ':' . $item)) {
-                    $key = str_replace(':' . $item, $val, $key);
+                    $key = str_replace(':' . $item, (string) $val, $key);
                 }
             }
         } elseif (strpos($key, ']')) {
@@ -158,6 +178,6 @@ class CheckRequestCache
             $key = $fun($key);
         }
 
-        return [$key, $expire, $tag];
+        return $key;
     }
 }

@@ -13,7 +13,7 @@
         placeholder="请选择时间"
         style="width: 200px"
         :options="options"
-        class="mr20 "
+        class="mr20"
       ></DatePicker>
     </Card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>

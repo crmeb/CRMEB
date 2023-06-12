@@ -427,8 +427,10 @@ import editFrom from '../../../components/from/from';
 import sendFrom from '@/components/sendCoupons/index';
 import userDetails from './handle/userDetails';
 import newsCategory from '@/components/newsCategory/index';
-import city from '@/utils/city';
+// import city from '@/utils/city';
 import customerInfo from '@/components/customerInfo';
+import { cityList } from '@/api/app';
+
 export default {
   name: 'user_list',
   components: {
@@ -536,7 +538,7 @@ export default {
         { type: 'app', name: 'APP' },
       ],
       address: [],
-      addresData: city,
+      addresData: [],
       isShowSend: true,
       modal13: false,
       maxCols: 4,
@@ -688,6 +690,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getCityList();
   },
   mounted() {
     this.userGroup();
@@ -695,6 +698,11 @@ export default {
     // this.groupLists();
   },
   methods: {
+    getCityList() {
+      cityList().then((res) => {
+        this.addresData = res.data;
+      });
+    },
     setUser() {
       let data = this.$refs.userEdit.formItem;
       let ids = [];
@@ -911,7 +919,7 @@ export default {
           this.giveLevelTime(row.uid);
           break;
         case '4':
-          this.del(row, '清除 【 ' + row.nickname + ' 】的会员等级', index, 'user');
+          this.del(row, '清除 【 ' + this.tenText(row.nickname) + ' 】的会员等级', index, 'user');
           break;
         case '5':
           this.$modalForm(userSetGroup(uids)).then(() => this.getList());
@@ -923,8 +931,15 @@ export default {
           this.editS(row);
           break;
         default:
-          this.del(row, '解除【 ' + row.nickname + ' 】的上级推广人', index, 'tuiguang');
+          this.del(row, '解除【 ' + this.tenText(row.nickname) + ' 】的上级推广人', index, 'tuiguang');
       }
+    },
+    tenText(str) {
+      if (str.length > 10) {
+        //如果字符长度超过10，后面的字符就变成...可自行调整长度和代替字符
+        str = str.substr(0, 10) + '...'; //截取从第一个字符开始，往后取10个字符，剩余的用...代替
+      }
+      return str;
     },
     openLabel(row) {
       this.labelShow = true;
@@ -951,31 +966,36 @@ export default {
     },
     // 赠送会员等级
     giveLevel(id) {
-      giveLevelApi(id)
-        .then(async (res) => {
-          if (res.data.status === false) {
-            return this.$authLapse(res.data);
-          }
-          this.FromData = res.data;
-          this.$refs.edits.modals = true;
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
-        });
+      this.$modalForm(giveLevelApi(id)).then(() => this.getList(1));
+
+      // giveLevelApi(id)
+      //   .then(async (res) => {
+      //     if (res.data.status === false) {
+      //       return this.$authLapse(res.data);
+      //     }
+
+      //     this.FromData = res.data;
+      //     this.$refs.edits.modals = true;
+      //   })
+      //   .catch((res) => {
+      //     this.$Message.error(res.msg);
+      //   });
     },
     // 赠送会员等级
     giveLevelTime(id) {
-      giveLevelTimeApi(id)
-        .then(async (res) => {
-          if (res.data.status === false) {
-            return this.$authLapse(res.data);
-          }
-          this.FromData = res.data;
-          this.$refs.edits.modals = true;
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
-        });
+      this.$modalForm(giveLevelTimeApi(id)).then(() => this.getList(1));
+
+      // giveLevelTimeApi(id)
+      //   .then(async (res) => {
+      //     if (res.data.status === false) {
+      //       return this.$authLapse(res.data);
+      //     }
+      //     this.FromData = res.data;
+      //     this.$refs.edits.modals = true;
+      //   })
+      //   .catch((res) => {
+      //     this.$Message.error(res.msg);
+      //   });
     },
     // 删除
     del(row, tit, num, name) {
@@ -985,6 +1005,7 @@ export default {
         url: name === 'user' ? `user/del_level/${row.uid}` : `agent/stair/delete_spread/${row.uid}`,
         method: name === 'user' ? 'DELETE' : 'PUT',
         ids: '',
+        width: 600,
       };
       this.$modalSure(delfromData)
         .then((res) => {
@@ -1134,32 +1155,9 @@ export default {
           this.$Message.error(res.msg);
         });
     },
-    // getUserFrom(id) {
-    //   getUserData(id)
-    //     .then(async (res) => {
-    //       if (res.data.status === false) {
-    //         return this.$authLapse(res.data);
-    //       }
-    //       this.FromData = res.data;
-    //       this.$refs.edits.modals = true;
-    //     })
-    //     .catch((res) => {
-    //       this.$Message.error(res.msg);
-    //     });
-    // },
     // 获取积分余额表单
     getOtherFrom(id) {
-      editOtherApi(id)
-        .then(async (res) => {
-          if (res.data.status === false) {
-            return this.$authLapse(res.data);
-          }
-          this.FromData = res.data;
-          this.$refs.edits.modals = true;
-        })
-        .catch((res) => {
-          this.$Message.error(res.msg);
-        });
+      this.$modalForm(editOtherApi(id)).then(() => this.getList(1));
     },
     // 修改状态
     onchangeIsShow(row) {

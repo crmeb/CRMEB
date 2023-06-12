@@ -198,7 +198,7 @@ class SystemMenus extends BaseModel
      */
     public function searchRouteAttr($query, $value)
     {
-        $query->where('auth_type', 1)->where('is_show', 1)->where('is_del', 0);
+        $query->where('auth_type', 1)->where('is_del', 0);
         if ($value) {
             $query->whereIn('id', $value);
         }
@@ -231,6 +231,12 @@ class SystemMenus extends BaseModel
      */
     public function searchAuthTypeAttr($query, $value)
     {
-        $query->where('auth_type', $value);
+        if ($value !== '') {
+            if ($value == 3) {
+                $query->whereIn('auth_type', [1, 3]);
+            } else {
+                $query->where('auth_type', $value);
+            }
+        }
     }
 }

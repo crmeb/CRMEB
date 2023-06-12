@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -191,12 +191,12 @@ class RuleItem extends Rule
         }
 
         // 合并分组参数
-        $option = $this->mergeGroupOptions();
-
-        $url = $this->urlSuffixCheck($request, $url, $option);
+        $option  = $this->getOption();
+        $pattern = $this->getPattern();
+        $url     = $this->urlSuffixCheck($request, $url, $option);
 
         if (is_null($match)) {
-            $match = $this->match($url, $option, $completeMatch);
+            $match = $this->checkMatch($url, $option, $pattern, $completeMatch);
         }
 
         if (false !== $match) {
@@ -248,17 +248,17 @@ class RuleItem extends Rule
      * @access private
      * @param  string    $url URL地址
      * @param  array     $option    路由参数
-     * @param  bool      $completeMatch   路由是否完全匹配
+     * @param  array     $pattern   变量规则
+     * @param  bool      $completeMatch   是否完全匹配
      * @return array|false
      */
-    private function match(string $url, array $option, bool $completeMatch)
+    private function checkMatch(string $url, array $option, array $pattern, bool $completeMatch)
     {
         if (isset($option['complete_match'])) {
             $completeMatch = $option['complete_match'];
         }
 
-        $depr    = $this->router->config('pathinfo_depr');
-        $pattern = array_merge($this->parent->getPattern(), $this->pattern);
+        $depr = $this->router->config('pathinfo_depr');
 
         // 检查完整规则定义
         if (isset($pattern['__url__']) && !preg_match(0 === strpos($pattern['__url__'], '/') ? $pattern['__url__'] : '/^' . $pattern['__url__'] . ($completeMatch ? '$' : '') . '/', str_replace('|', $depr, $url))) {
@@ -292,7 +292,7 @@ class RuleItem extends Rule
             $regex = $this->buildRuleRegex($rule, $matches[0], $pattern, $option, $completeMatch);
 
             try {
-                if (!preg_match('/^' . $regex . '/u', $url, $match)) {
+                if (!preg_match('~^' . $regex . '~u', $url, $match)) {
                     return false;
                 }
             } catch (\Exception $e) {

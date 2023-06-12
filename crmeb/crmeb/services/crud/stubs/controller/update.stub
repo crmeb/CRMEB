@@ -1,0 +1,22 @@
+﻿    /**
+     * 修改
+     * @param $id
+     * @return \think\Response
+     * @date {%date%}
+     */
+    public function update($id)
+    {
+        if (!$id) {
+            return app('json')->fail(100100);
+        }
+
+        $data = $this->request->postMore([
+{%field-php%}
+        ]);
+
+        validate({%validateName%})->check($data);
+
+        $this->service->crudUpdate((int)$id, $data);
+
+        return app('json')->success(100001);
+    }

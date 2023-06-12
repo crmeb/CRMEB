@@ -8,8 +8,8 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
-import setting  from '@/setting'
+import LayoutMain from '@/layout';
+import setting from '@/setting';
 let routePre = setting.routePre;
 
 const meta = {
@@ -19,13 +19,13 @@ const meta = {
 const pre = 'statistic_';
 
 export default {
-  path: routePre+'/statistic',
+  path: routePre + '/statistic',
   name: 'statistic',
   header: 'statistic',
   redirect: {
     name: `${pre}product`,
   },
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
     {
       path: 'product',

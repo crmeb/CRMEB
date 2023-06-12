@@ -45,7 +45,9 @@ class StoreCategoryDao extends BaseDao
     /**
      *
      * @param array $where
+     * @param array $field
      * @return array
+     * @throws \ReflectionException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -59,6 +61,7 @@ class StoreCategoryDao extends BaseDao
      * 添加修改选择上级分类列表
      * @param array $where
      * @return array
+     * @throws \ReflectionException
      */
     public function getMenus(array $where)
     {

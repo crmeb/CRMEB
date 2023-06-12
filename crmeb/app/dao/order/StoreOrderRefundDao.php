@@ -19,14 +19,16 @@ class StoreOrderRefundDao extends BaseDao
     /**
      * 搜索器
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
         $realName = $where['real_name'] ?? '';
         $fieldKey = $where['field_key'] ?? '';
         $fieldKey = $fieldKey == 'all' ? '' : $fieldKey;
-        return parent::search($where)->when(isset($where['refund_type']) && $where['refund_type'] !== '', function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['refund_type']) && $where['refund_type'] !== '', function ($query) use ($where) {
             if ($where['refund_type'] == 0) {
                 $query->where('refund_type', '>', 0);
             } else {

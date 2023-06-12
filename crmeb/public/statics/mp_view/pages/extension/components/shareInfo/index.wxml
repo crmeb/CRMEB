@@ -1,0 +1,1 @@
+<block wx:if="{{shareInfoStatus}}"><view class="poster-first data-v-5c2a2438"><view class="mask-share data-v-5c2a2438"><image src="{{imgHost+'/statics/images/share-info.png'}}" data-event-opts="{{[['tap',[['shareInfoClose',['$event']]]],['touchmove',[['e0',['$event']]]]]}}" bindtap="__e" catchtouchmove="__e" class="data-v-5c2a2438"></image></view></view></block>

@@ -94,25 +94,33 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.maxInpt{
-    max-width 400px
-    margin-left auto
-    margin-right auto
+.maxInpt {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.page-account-container{
-    text-align center
-    padding 50px 0
+
+.page-account-container {
+  text-align: center;
+  padding: 50px 0;
 }
-.page-account-top{
-    margin-bottom 20px
+
+.page-account-top {
+  margin-bottom: 20px;
 }
-.page-account-top-tit
-    font-size 21px
-    color #1890FF
-.page-account-other
-    text-align center
-    color #1890FF
-    font-size 12px
-    span
-        cursor pointer
+
+.page-account-top-tit {
+  font-size: 21px;
+  color: #1890FF;
+}
+
+.page-account-other {
+  text-align: center;
+  color: #1890FF;
+  font-size: 12px;
+
+  span {
+    cursor: pointer;
+  }
+}
 </style>

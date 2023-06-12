@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -132,7 +132,7 @@ class Resource extends RuleGroup
 
             $ruleItem = $this->addRule(trim($prefix . $val[1], '/'), $this->route . '/' . $val[2], $val[0]);
 
-            foreach (['model', 'validate', 'middleware'] as $name) {
+            foreach (['model', 'validate', 'middleware', 'pattern'] as $name) {
                 if (isset($this->$name[$key])) {
                     call_user_func_array([$ruleItem, $name], (array) $this->$name[$key]);
                 }
@@ -213,7 +213,7 @@ class Resource extends RuleGroup
     }
 
     /**
-     * 绑定资源模型
+     * 绑定资源中间件
      * @access public
      * @param  array|string $name 资源类型或者中间件定义
      * @param  array|string $middleware 中间件定义

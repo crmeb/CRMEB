@@ -12,7 +12,7 @@
       <Button type="warning" :loading="modal_loading" @click="ok">确定</Button>
       <Button type="primary" @click="cancel">取消</Button>
     </div>
-  </Modal> 
+  </Modal>
 </template>
 
 <script>

@@ -83,9 +83,9 @@
           </i-switch>
         </template>
         <template slot-scope="{ row, index }" slot="action">
-          <a v-if="row.stop_status === 0" @click="edit(row)">编辑</a>
+          <a v-if="row.stop_status === 0" @click="edit(row, 0)">编辑</a>
           <Divider v-if="row.stop_status === 0" type="vertical" />
-          <a @click="copy(row)">复制</a>
+          <a @click="edit(row, 1)">复制</a>
           <Divider type="vertical" />
           <a @click="del(row, '删除砍价商品', index)">删除</a>
           <Divider type="vertical" />
@@ -112,7 +112,7 @@ import { bargainListApi, bargainSetStatusApi, stroeBargainApi } from '@/api/mark
 import { formatDate } from '@/utils/validate';
 import { exportBargainList } from '@/api/export';
 export default {
-  name: 'storeBargain',
+  name: 'marketing_storeBargain',
   filters: {
     formatDate(time) {
       if (time !== 0) {
@@ -234,9 +234,8 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$router.push({ path: this.$routeProStr + '/marketing/store_bargain/create/0' });
+      this.$router.push({ path: this.$routeProStr + '/marketing/store_bargain/create' });
     },
-    // 导出
     // 用户导出
     async exportList() {
       this.tableFrom.status = this.tableFrom.status || '';
@@ -267,16 +266,10 @@ export default {
         });
       });
     },
-    // 编辑
-    edit(row) {
+    // 编辑 / 复制  type 0 编辑 1 复制
+    edit(row, type) {
       this.$router.push({
-        path: this.$routeProStr + '/marketing/store_bargain/create/' + row.id + '/0',
-      });
-    },
-    // 一键复制
-    copy(row) {
-      this.$router.push({
-        path: this.$routeProStr + '/marketing/store_bargain/create/' + row.id + '/1',
+        path: this.$routeProStr + `/marketing/store_bargain/create/${row.id}/${type}`,
       });
     },
     // 删除

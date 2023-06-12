@@ -100,7 +100,7 @@ import { formatDate } from '@/utils/validate';
 import { exportSeckillList } from '@/api/export.js';
 
 export default {
-  name: 'storeSeckill',
+  name: 'marketing_storeSeckill',
   filters: {
     formatDate(time) {
       if (time !== 0) {

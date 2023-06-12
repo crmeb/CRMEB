@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["components/cusPreviewImg/swiperPrevie"],{"253a":function(t,n,e){"use strict";e.r(n);var r=e("e2ca"),u=e("25d7");for(var i in u)["default"].indexOf(i)<0&&function(t){e.d(n,t,(function(){return u[t]}))}(i);e("940b");var o=e("f0c5"),c=Object(o["a"])(u["default"],r["b"],r["c"],!1,null,"144b3e80",null,!1,r["a"],void 0);n["default"]=c.exports},"25d7":function(t,n,e){"use strict";e.r(n);var r=e("c555"),u=e.n(r);for(var i in r)["default"].indexOf(i)<0&&function(t){e.d(n,t,(function(){return r[t]}))}(i);n["default"]=u.a},"938e":function(t,n,e){},"940b":function(t,n,e){"use strict";var r=e("938e"),u=e.n(r);u.a},c555:function(t,n,e){"use strict";Object.defineProperty(n,"__esModule",{value:!0}),n.default=void 0;var r={name:"cusPreviewImg",props:{list:{type:Array,required:!0,default:function(){return[]}},circular:{type:Boolean,default:!0},duration:{type:Number,default:500}},data:function(){return{currentIndex:0,showBox:!1}},watch:{list:function(t){}},methods:{changeSwiper:function(t){this.currentIndex=t.target.current},open:function(t){this.list.length&&(this.currentIndex=t,this.showBox=!0)},close:function(){this.showBox=!1}}};n.default=r},e2ca:function(t,n,e){"use strict";e.d(n,"b",(function(){return r})),e.d(n,"c",(function(){return u})),e.d(n,"a",(function(){}));var r=function(){var t=this.$createElement,n=(this._self._c,this.showBox?this.list.length:null),e=this.showBox&&n>0?Number(this.currentIndex):null,r=this.showBox&&n>0?this.list.length:null;this.$mp.data=Object.assign({},{$root:{g0:n,m0:e,g1:r}})},u=[]}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'components/cusPreviewImg/swiperPrevie-create-component',
+    {
+        'components/cusPreviewImg/swiperPrevie-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('543d')['createComponent'](__webpack_require__("253a"))
+        })
+    },
+    [['components/cusPreviewImg/swiperPrevie-create-component']]
+]);

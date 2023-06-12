@@ -79,10 +79,16 @@
           </template>
         </vxe-table-column>
       </vxe-table>
-      <!--            <div class="acea-row row-right page">-->
-      <!--                <Page :total="total" :current="formValidate.page" show-elevator show-total @on-change="pageChange"-->
-      <!--                      :page-size="formValidate.limit"/>-->
-      <!--            </div>-->
+      <div class="acea-row row-right page">
+        <Page
+          :total="total"
+          :current="formValidate.page"
+          show-elevator
+          show-total
+          @on-change="pageChange"
+          :page-size="formValidate.limit"
+        />
+      </div>
     </Card>
   </div>
 </template>

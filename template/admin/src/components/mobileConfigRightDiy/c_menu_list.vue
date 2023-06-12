@@ -82,7 +82,7 @@
 import vuedraggable from 'vuedraggable';
 import uploadPictures from '@/components/uploadPictures';
 import linkaddress from '@/components/linkaddress';
-import settings  from '@/setting'
+import settings from '@/setting';
 export default {
   name: 'c_menu_list',
   props: {

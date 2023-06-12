@@ -58,7 +58,7 @@ class V3WechatPay extends BasePay implements PayInterface
                 'appid' => sys_config('routine_appId'),
             ],
             'web' => [
-                'appid' => sys_config('wechat_open_app_id', $wechatAppid),
+                'appid' => $wechatAppid,
             ],
             'v3_payment' => [
                 'mchid' => sys_config('pay_weixin_mchid'),

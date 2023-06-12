@@ -203,6 +203,54 @@ function flattenSiderMenu(menuList, newList) {
 
 export { flattenSiderMenu };
 
+export const findFirstNonNullChildren = (arr) => {
+  // 如果数组为空，返回null
+  if (!arr || arr.length === 0) {
+    return null;
+  }
+  // 找到第一个对象
+  const firstObj = arr[0];
+  // 如果第一个对象没有children属性，返回该对象
+  if (!firstObj.children) {
+    return firstObj;
+  }
+
+  // 如果第一个对象的children属性是数组，
+  // 递归查找children属性中的第一个非null children属性
+  if (Array.isArray(firstObj.children)) {
+    return findFirstNonNullChildren(firstObj.children);
+  }
+  // 如果数组中没有非null children属性，返回null
+  return null;
+};
+
+export const findFirstNonNullChildrenKeys = (obj, lastArr) => {
+  let ids = lastArr;
+  // 如果第一个对象没有children属性，返回该对象
+  if (!obj.children) {
+    ids.push(obj.id);
+    return ids;
+  }
+  // 如果第一个对象的children属性是数组，
+  // 递归查找children属性中的第一个非null children属性
+  if (Array.isArray(obj.children)) {
+    ids.push(obj.id);
+    return findFirstNonNullChildrenKeys(obj.children[0], ids);
+  }
+  return ids;
+};
+
+// 多级嵌套数组处理成一维数组
+export const formatFlatteningRoutes = (arr) => {
+  if (arr.length <= 0) return false;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].children) {
+      arr = arr.slice(0, i + 1).concat(arr[i].children, arr.slice(i + 1));
+    }
+  }
+  return arr;
+};
+
 /**
  * @description 判断列表1中是否包含了列表2中的某一项
  * 因为用户权限 access 为数组，includes 方法无法直接得出结论

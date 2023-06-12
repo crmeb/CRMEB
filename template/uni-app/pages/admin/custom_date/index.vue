@@ -22,6 +22,8 @@
 		},
 		methods: {
 			change(e) {
+				console.log(e)
+				
 				const {
 					before,
 					after

@@ -111,14 +111,16 @@ class WechatPay extends BasePay implements PayInterface
         $refundAccount = $opt['refund_account'] ?? 'REFUND_SOURCE_UNSETTLED_FUNDS';
         if (isset($opt['wechat'])) {
             $result = WechatService::refund($outTradeNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount);
-            if ($result['status'] != 'SUCCESS') throw new AdminException($result['status']);
+            if(isset($result['return_code']) && $result['return_code'] != 'SUCCESS') throw new AdminException($result['return_msg']);
+            if(isset($result['status']) && $result['status'] != 'SUCCESS') throw new AdminException($result['status']);
         } else {
             if ($opt['pay_new_weixin_open']) {
                 $result = MiniProgramService::miniRefund($outTradeNo, $totalFee, $refundFee, $opt);
                 if ($result['errcode'] != 0) throw new AdminException($result['errmsg']);
             } else {
                 $result = MiniProgramService::refund($outTradeNo, $refundNo, $totalFee, $refundFee, $opUserId, $refundReason, $type, $refundAccount);
-                if ($result['status'] != 'SUCCESS') throw new AdminException($result['status']);
+                if(isset($result['return_code']) && $result['return_code'] != 'SUCCESS') throw new AdminException($result['return_msg']);
+                if(isset($result['status']) && $result['status'] != 'SUCCESS') throw new AdminException($result['status']);
             }
         }
     }

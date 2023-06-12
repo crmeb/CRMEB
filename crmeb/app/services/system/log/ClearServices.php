@@ -13,6 +13,7 @@ namespace app\services\system\log;
 
 
 use app\services\BaseServices;
+use think\facade\Cache;
 
 /**
  * Class ClearServices
@@ -77,5 +78,6 @@ class ClearServices extends BaseServices
                 }
             }
         }
+        Cache::clear();
     }
 }

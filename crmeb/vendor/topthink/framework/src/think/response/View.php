@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -86,8 +86,10 @@ class View extends Response
     protected function output($data): string
     {
         // 渲染模板输出
-        return $this->view->filter($this->filter)
-            ->fetch($data, $this->vars, $this->isContent);
+        $this->view->filter($this->filter);
+        return $this->isContent ?
+        $this->view->display($data, $this->vars) :
+        $this->view->fetch($data, $this->vars);
     }
 
     /**

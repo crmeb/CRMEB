@@ -11,7 +11,12 @@
       <Row :gutter="24">
         <Col span="8" class="ivu-text-left">
           <FormItem label="订单状态：">
-            <RadioGroup v-model="orderData.status" type="button" @on-change="selectChange2(orderData.status)" style="width: 400px">
+            <RadioGroup
+              v-model="orderData.status"
+              type="button"
+              @on-change="selectChange2(orderData.status)"
+              style="width: 400px"
+            >
               <Radio label="">全部 {{ '(' + orderChartType.statusAll ? orderChartType.statusAll : 0 + ')' }}</Radio>
               <Radio label="1">未发货 {{ '(' + orderChartType.unshipped ? orderChartType.unshipped : 0 + ')' }}</Radio>
               <Radio label="2">待收货 {{ '(' + orderChartType.untake ? orderChartType.untake : 0 + ')' }}</Radio>

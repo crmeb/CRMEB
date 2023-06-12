@@ -1,0 +1,1 @@
+.title{font-size:40rpx;color:#282828;text-align:center;width:100%;padding:20rpx;box-sizing:border-box}.title.left{text-align:left}.title.right{text-align:right}.title.blod{font-weight:700}.title.italics{font-style:italic}

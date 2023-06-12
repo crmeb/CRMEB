@@ -331,8 +331,14 @@ export default {
   },
 };
 </script>
-
+<style>
+html,
+body {
+  font-size: 50px;
+}
+</style>
 <style scoped lang="stylus">
+
 .chat-list {
     display: flex;
     flex-direction: column;

@@ -131,11 +131,12 @@ class ArticleServices extends BaseServices
     /**
      * 获取数量
      * @param array $where
+     * @param bool $search
      * @return int
      */
-    public function count(array $where)
+    public function count(array $where = [], bool $search = true): int
     {
-        return $this->dao->count($where);
+        return $this->search($where, $search)->count();
     }
 
     /**获取一条数据

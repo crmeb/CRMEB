@@ -235,28 +235,28 @@ class Common extends AuthController
         if ($data['ordernum'] != 0) {
             $value[] = [
                 'title' => "您有$data[ordernum]个待发货的订单",
-                'type' => 'bulb',
+                'type' => 1,
                 'url' => '/admin/order/list?status=1'
             ];
         }
         if ($data['inventory'] != 0) {
             $value[] = [
                 'title' => "您有$data[inventory]个商品库存预警",
-                'type' => 'information',
+                'type' => 2,
                 'url' => '/admin/product/product_list?type=5',
             ];
         }
         if ($data['commentnum'] != 0) {
             $value[] = [
                 'title' => "您有$data[commentnum]条评论待回复",
-                'type' => 'bulb',
+                'type' => 3,
                 'url' => '/admin/product/product_reply?is_reply=0'
             ];
         }
         if ($data['reflectnum'] != 0) {
             $value[] = [
                 'title' => "您有$data[reflectnum]个提现申请待审核",
-                'type' => 'bulb',
+                'type' => 4,
                 'url' => '/admin/finance/user_extract/index?status=0',
             ];
         }
@@ -402,6 +402,7 @@ class Common extends AuthController
                 'info' => ''
             ]);
         }
+        $services->cacheDriver()->clear();
         return app('json')->success(100000);
     }
 

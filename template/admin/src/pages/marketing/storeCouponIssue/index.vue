@@ -157,7 +157,7 @@ import {
 } from '@/api/marketing';
 import { formatDate } from '@/utils/validate';
 export default {
-  name: 'storeCouponIssue',
+  name: 'marketing_storeCouponIssue',
   filters: {
     formatDate(time) {
       if (time !== 0) {
@@ -321,7 +321,7 @@ export default {
     },
     getReceivelist(row) {
       this.loading2 = true;
-      releasedissueLogApi(row.id)
+      releasedissueLogApi(row.id, this.receiveFrom)
         .then(async (res) => {
           let data = res.data;
           this.receiveList = data.list;

@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <div class="message">
       <Card :bordered="false" dis-hover class="">
         <div class="mb20">
@@ -384,7 +384,7 @@
         <div class="confignv"><span class="configtit">记录类型：</span>CNAME</div>
         <div class="confignv">
           <span class="configtit">记录值：</span>{{ configData.cname }}
-          <span class="copy copy-data" :data-clipboard-text="configData.cname">复制</span>
+          <span class="copy copy-data" @click="insertCopy(configData.cname)">复制</span>
         </div>
       </div>
       <div slot="footer"></div>
@@ -559,15 +559,16 @@ export default {
       this.changeTab(res.data.type.toString());
     });
   },
-  mounted: function () {
-    this.$nextTick(function () {
-      const clipboard = new ClipboardJS('.copy-data');
-      clipboard.on('success', () => {
-        this.$Message.success('复制成功');
-      });
-    });
-  },
   methods: {
+    insertCopy(text) {
+      this.$copyText(text)
+        .then((message) => {
+          this.$Message.success('复制成功');
+        })
+        .catch((err) => {
+          this.$Message.error('复制失败');
+        });
+    },
     changeSave(type) {
       saveType(type)
         .then((res) => {

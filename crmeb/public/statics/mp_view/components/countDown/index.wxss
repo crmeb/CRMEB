@@ -1,0 +1,1 @@
+.time{display:flex;justify-content:center}.red{color:var(--view-theme);margin:0 4rpx}

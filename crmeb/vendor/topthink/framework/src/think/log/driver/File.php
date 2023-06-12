@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -82,8 +82,8 @@ class File implements LogHandlerInterface
                 }
 
                 $message[] = $this->config['json'] ?
-                    json_encode(['time' => $time, 'type' => $type, 'msg' => $msg], $this->config['json_options']) :
-                    sprintf($this->config['format'], $time, $type, $msg);
+                json_encode(['time' => $time, 'type' => $type, 'msg' => $msg], $this->config['json_options']) :
+                sprintf($this->config['format'], $time, $type, $msg);
             }
 
             if (true === $this->config['apart_level'] || in_array($type, $this->config['apart_level'])) {
@@ -139,7 +139,9 @@ class File implements LogHandlerInterface
 
             try {
                 if (count($files) > $this->config['max_files']) {
+                    set_error_handler(function ($errno, $errstr, $errfile, $errline) {});
                     unlink($files[0]);
+                    restore_error_handler();
                 }
             } catch (\Exception $e) {
                 //

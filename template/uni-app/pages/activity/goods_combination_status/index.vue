@@ -1,13 +1,13 @@
 <template>
 	<div class="group-con" :style="colorStyle">
-		<div class="header acea-row row-between-wrapper">
+		<div class="header acea-row row-between-wrapper" v-if="storeCombination">
 			<div class="pictrue"><img :src="storeCombination.image" /></div>
 			<div class="text">
 				<div class="line1" v-text="storeCombination.title"></div>
 				<div class="money">
 					{{$t(`￥`)}}
 					<span class="num" v-text="storeCombination.price"></span>
-					<span class="team cart-color" v-text="storeCombination.people + $t(`人拼`)"></span>
+					<span class="team cart-color">{{storeCombination.people + $t(`人拼`)}}</span>
 				</div>
 			</div>
 			<div v-if="pinkBool === -1" class="iconfont icon-pintuanshibai"></div>
@@ -46,7 +46,8 @@
 				<div class="teamBnt bg-color-red" @click="listenerActionSheet">{{$t(`邀请好友参团`)}}</div>
 			</div>
 			<div class="teamBnt bg-color-red" v-else-if="userBool === 0 && pinkBool === 0 && count > 0" @click="pay">
-				{{$t(`我要参团`)}}</div>
+				{{$t(`我要参团`)}}
+			</div>
 			<div class="teamBnt bg-color-red" v-if="pinkBool === 1 || pinkBool === -1"
 				@click="goDetail(storeCombination.id)">{{$t(`再次开团`)}}</div>
 			<div class="cancel" @click="getCombinationRemove"
@@ -155,7 +156,9 @@
 	// #endif
 	const app = getApp();
 	import colors from '@/mixins/color.js';
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		name: NAME,
 		components: {
@@ -170,14 +173,14 @@
 		mixins: [colors],
 		data: function() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				currentPinkOrder: '', //当前拼团订单
 				isOk: 0, //判断拼团是否完成
 				pinkBool: 0, //判断拼团是否成功|0=失败,1=成功
 				userBool: 0, //判断当前用户是否在团内|0=未在,1=在
 				pinkAll: [], //团员
 				pinkT: [], //团长信息
-				storeCombination: [], //拼团产品
+				storeCombination: undefined, //拼团产品
 				storeCombinationHost: [], //拼团推荐
 				pinkId: 0,
 				count: 0, //拼团剩余人数
@@ -206,7 +209,7 @@
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false, //是否隐藏授权
 				attrTxt: this.$t(`请选择`), //属性页面提示
-				attrValue: '' ,//已选属性,
+				attrValue: '', //已选属性,
 				orderPid: 0
 			};
 		},
@@ -283,7 +286,8 @@
 					scene: scene,
 					type: 0,
 					href: `${HTTP_REQUEST_URL}${curRoute}`,
-					title: that.$t(`您的好友`) + that.userInfo.nickname + that.$t(`邀请您参团`) + that.storeCombination.title,
+					title: that.$t(`您的好友`) + that.userInfo.nickname + that.$t(`邀请您参团`) + that.storeCombination
+						.title,
 					imageUrl: that.storeCombination.small_image,
 					success: function(res) {
 						uni.showToast({
@@ -630,7 +634,9 @@
 					title: that.$t(`您的好友`) + that.userInfo.nickname + that.$t(`邀请您参团`) + that.storeCombination.title,
 					desc: that.storeCombination.title,
 					link: window.location.protocol + '//' + window.location.host +
-						'/pages/activity/goods_combination_status/index?id=' + that.pinkId,
+						'/pages/activity/goods_combination_status/index?id=' + that.pinkId + '&bargain=' + that.userInfo.uid +
+						'&spid=' +
+						that.userInfo.uid,
 					imgUrl: that.storeCombination.image
 				};
 				if (this.$wechat.isWeixin()) {

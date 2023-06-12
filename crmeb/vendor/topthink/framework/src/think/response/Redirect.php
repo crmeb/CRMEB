@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -74,9 +74,9 @@ class Redirect extends Response
      * @access public
      * @return $this
      */
-    public function remember()
+    public function remember($complete = false)
     {
-        $this->session->set('redirect_url', $this->request->url());
+        $this->session->set('redirect_url', $this->request->url($complete));
 
         return $this;
     }

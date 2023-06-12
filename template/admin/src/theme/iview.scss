@@ -1,0 +1,67 @@
+/* 防止页面切换时，滚动条高度不变的问题（滚动条高度非滚动条滚动高度）
+------------------------------- */
+
+.ivu-btn-primary {
+  background-color: var(--prev-color-primary) !important;
+  border-color: var(--prev-color-primary) !important;
+  color: #fff!important;
+}
+
+// tab 标签
+.ivu-tabs-nav .ivu-tabs-tab-active {
+  color: var(--prev-color-primary);
+}
+
+.ivu-tabs-ink-bar {
+  background-color: var(--prev-color-primary);
+}
+.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+  color: var(--prev-color-primary);
+}
+.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu) {
+  color: var(--prev-color-primary);
+}
+.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu):after {
+  background-color: var(--prev-color-primary);
+}
+// 单选卡
+.ivu-radio-group-button .ivu-radio-wrapper-checked:first-child {
+  border-color: var(--prev-color-primary);
+}
+.ivu-radio-group-button .ivu-radio-wrapper-checked {
+  color: var(--prev-color-primary);
+}
+
+// input
+.ivu-input-search {
+  background-color: var(--prev-color-primary) !important;
+  border-color: var(--prev-color-primary) !important;
+}
+
+// radio
+.ivu-radio-checked .ivu-radio-inner {
+  border-color: var(--prev-color-primary);
+}
+.ivu-radio-inner:after {
+  background-color: var(--prev-color-primary);
+}
+
+//cheakbox
+.ivu-checkbox-checked .ivu-checkbox-inner {
+  background-color: var(--prev-color-primary);
+  border-color: var(--prev-color-primary);
+}
+//switch
+.ivu-switch-checked {
+  background-color: var(--prev-color-primary);
+  border-color: var(--prev-color-primary);
+}
+
+// page
+.ivu-page-item-active {
+  border-color: var(--prev-color-primary);
+}
+.ivu-page-item-active a,
+.ivu-page-item-active:hover a {
+  color: var(--prev-color-primary);
+}

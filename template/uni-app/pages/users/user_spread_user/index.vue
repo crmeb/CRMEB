@@ -27,7 +27,7 @@
 					</view>
 				</view>
 				<view class="apply"
-					v-if="userInfo.division_open && ((userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent))">
+					v-if="userInfo.division_open && userInfo.agent_apply_open && ((userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent))">
 					<view v-if="userInfo.is_division">{{$t(`邀请码`)}}：{{userInfo.division_invite}}</view>
 					<view v-if="!userInfo.is_division && !userInfo.is_agent">
 						<navigator url='/pages/annex/settled/index' hover-class="none">

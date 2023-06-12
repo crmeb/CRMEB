@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006-2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -41,6 +41,11 @@ class Socket implements LogHandlerInterface
         'expand_level'        => ['debug'],
         // 日志头渲染回调
         'format_head'         => null,
+        // curl opt
+        'curl_opt'            => [
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT        => 10,
+        ],
     ];
 
     protected $css = [
@@ -292,8 +297,8 @@ class Socket implements LogHandlerInterface
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->config['curl_opt'][CURLOPT_CONNECTTIMEOUT] ?? 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->config['curl_opt'][CURLOPT_TIMEOUT] ?? 10);
 
         $headers = [
             "Content-Type: application/json;charset=UTF-8",

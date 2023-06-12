@@ -214,12 +214,12 @@ class Console
 
     /**
      * 获取终端模式
-     * @return string <width>x<height> 或 null
+     * @return string <width>x<height>
      */
     private function getMode()
     {
         if (!function_exists('proc_open')) {
-            return;
+            return '';
         }
 
         $descriptorspec = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
@@ -234,7 +234,8 @@ class Console
                 return $matches[2] . 'x' . $matches[1];
             }
         }
-        return;
+
+        return '';
     }
 
     private function stringWidth(string $string): int

@@ -1,0 +1,19 @@
+@import './index.scss';
+
+/* 页面宽度小于576px
+------------------------------- */
+@media screen and (max-width: $xs) {
+  .el-form-item__label {
+    width: 100% !important;
+    text-align: left !important;
+  }
+  .el-form-item__content {
+    margin-left: 0 !important;
+  }
+  .el-form-item {
+    display: unset !important;
+  }
+  .login-form .el-form-item {
+    display: block !important;
+  }
+}

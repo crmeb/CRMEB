@@ -46,7 +46,7 @@ class AgentLevelDao extends BaseDao
      */
     public function getList(array $where = [], string $field = '*', array $with = [], int $page = 0, int $limit = 0, $grade = 0)
     {
-        return $this->search($where)->when($grade, function ($query) use ($grade) {
+        return $this->search($where, false)->when($grade, function ($query) use ($grade) {
             $query->where('grade', '>=', $grade);
         })->field($field)->when($with, function ($query) use ($with) {
             $query->with($with);

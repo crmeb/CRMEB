@@ -377,7 +377,6 @@ export default {
         });
     },
     onSubmit2(formData) {
-      console.log('1')
       memberBatchSetValue(formData.id, {
         field: 'title',
         value: formData.title,

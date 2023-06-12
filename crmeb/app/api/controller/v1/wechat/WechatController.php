@@ -42,6 +42,14 @@ class WechatController
     {
         return $this->services->serve();
     }
+    /**
+     * 微信小程序公众号服务
+     * @return \think\Response
+     */
+    public function miniServe()
+    {
+        return $this->services->miniServe();
+    }
 
     /**
      * 支付异步回调

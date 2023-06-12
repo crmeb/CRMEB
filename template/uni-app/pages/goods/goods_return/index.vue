@@ -10,7 +10,8 @@
 					<view class='text acea-row row-between'>
 						<view class='name line2'>{{item.productInfo.store_name}}</view>
 						<view class='money'>
-							<view>{{$t(`￥`)}}{{(parseFloat(item.truePrice)+parseFloat(item.postage_price/item.cart_num)).toFixed(2)}}
+							<view>
+								{{$t(`￥`)}}{{(parseFloat(item.truePrice)+parseFloat(item.postage_price/item.cart_num)).toFixed(2)}}
 							</view>
 							<view class='num'>x{{item.cart_num}}</view>
 						</view>
@@ -228,7 +229,7 @@
 					text: that.RefundArray[that.index] || '',
 					refund_reason_wap_explain: value.refund_reason_wap_explain,
 					refund_reason_wap_img: that.refund_reason_wap_img.join(','),
-					refund_type: this.returnGoods ? 2 : 1,
+					refund_type: this.returnGoods == 1 ? 2 : 1,
 					uni: that.orderId,
 					cart_ids: this.cartIds
 				}).then(res => {

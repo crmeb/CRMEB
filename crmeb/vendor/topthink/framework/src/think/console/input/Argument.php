@@ -13,14 +13,37 @@ namespace think\console\input;
 
 class Argument
 {
-
+    // 必传参数
     const REQUIRED = 1;
+
+    // 可选参数
     const OPTIONAL = 2;
+
+    // 数组参数
     const IS_ARRAY = 4;
 
+    /**
+     * 参数名
+     * @var string
+     */
     private $name;
+
+    /**
+     * 参数类型
+     * @var int
+     */
     private $mode;
+
+    /**
+     * 参数默认值
+     * @var mixed
+     */
     private $default;
+
+    /**
+     * 参数描述
+     * @var string
+     */
     private $description;
 
     /**

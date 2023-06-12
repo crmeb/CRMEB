@@ -42,7 +42,7 @@
 					<!-- #ifdef APP-PLUS || MP -->
 					<view class="" :style="'width:100%;' + 'height:'+sysHeight"></view>
 					<!-- #endif -->
-					<productConSwiper :imgUrls='imgUrls'></productConSwiper>
+					<productConSwiper :imgUrls='imgUrls' @showSwiperImg="showSwiperImg"></productConSwiper>
 					<view class="bg-color">
 						<view class='nav acea-row row-between-wrapper'>
 							<view class='money'>{{$t(`￥`)}}<text class='num'>{{storeInfo.price || ''}}</text>
@@ -221,6 +221,7 @@
 		<view class="share-box" v-if="H5ShareBox">
 			<image :src="imgHost + '/statics/images/share-info.png'" @click="H5ShareBox = false"></image>
 		</view>
+		<swiperPrevie ref="cusSwiperImg" :list="storeInfo.images"></swiperPrevie>
 		<!-- #ifdef H5 || APP-PLUS -->
 		<zb-code ref="qrcode" :show="codeShow" :cid="cid" :val="codeVal" :size="size" :unit="unit"
 			:background="background" :foreground="foreground" :pdground="pdground" :icon="codeIcon" :iconSize="iconsize"
@@ -244,6 +245,7 @@
 		collectDel
 	} from '@/api/store.js';
 	import productConSwiper from '@/components/productConSwiper/index.vue'
+	import swiperPrevie from "@/components/cusPreviewImg/swiperPrevie.vue";
 	import productWindow from '@/components/productWindow/index.vue'
 	import userEvaluation from '@/components/userEvaluation/index.vue'
 	import kefuIcon from '@/components/kefuIcon';
@@ -289,6 +291,7 @@
 			menuIcon,
 			countDown,
 			cusPreviewImg,
+			swiperPrevie,
 			parser,
 			homeList,
 			// #ifdef MP
@@ -1128,6 +1131,9 @@
 					this.$set(this, "attrTxt", this.$t(`已选择`));
 					this.$set(this, "attrValue", productSelect.suk);
 				}
+			},
+			showSwiperImg(index) {
+				this.$refs.cusSwiperImg.open(index);
 			},
 		},
 		//#ifdef MP

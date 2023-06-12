@@ -39,7 +39,7 @@ class SystemCityDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getCityList(array $where,string $field = '*')
+    public function getCityList(array $where, string $field = '*')
     {
         return $this->search($where)->field($field)->select()->toArray();
     }
@@ -86,5 +86,16 @@ class SystemCityDao extends BaseDao
     public function getShippingCity()
     {
         return $this->getModel()->with('children')->where('parent_id', 0)->order('id asc')->select()->toArray();
+    }
+
+    /**
+     * 获取城市数据完整列表
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/10
+     */
+    public function fullList($field = '*')
+    {
+        return $this->getModel()->order('id asc')->field($field)->select()->toArray();
     }
 }

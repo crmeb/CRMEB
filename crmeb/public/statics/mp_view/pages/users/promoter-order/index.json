@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "推广人订单",
+  "navigationBarTextStyle": "black",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "empty-page": "/components/emptyPage",
+    "home": "/components/home/index"
+  }
+}

@@ -32,6 +32,18 @@ class SystemMenusDao extends BaseDao
     }
 
     /**
+     * @param array $menusIds
+     * @return bool
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/13
+     */
+    public function deleteMenus(array $menusIds)
+    {
+        return $this->getModel()->whereIn('id', $menusIds)->delete();
+    }
+
+    /**
      * 获取权限菜单列表
      * @param array $where
      * @param array $field
@@ -43,7 +55,7 @@ class SystemMenusDao extends BaseDao
     public function getMenusRoule(array $where, ?array $field = [])
     {
         if (!$field) {
-            $field = ['id', 'menu_name', 'icon', 'pid', 'sort', 'menu_path', 'is_show', 'header', 'is_header', 'is_show_path'];
+            $field = ['id', 'menu_name', 'icon', 'pid', 'sort', 'menu_path', 'is_show', 'header', 'is_header', 'is_show_path', 'is_show'];
         }
         return $this->search($where)->field($field)->order('sort DESC,id DESC')->failException(false)->select();
     }
@@ -76,10 +88,10 @@ class SystemMenusDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getMenusList(array $where)
+    public function getMenusList(array $where, array $field = ['*'])
     {
         $where = array_merge($where, ['is_del' => 0]);
-        return $this->search($where)->order('sort DESC,id ASC')->select();
+        return $this->search($where)->field($field)->order('sort DESC,id ASC')->select();
     }
 
     /**
@@ -100,7 +112,7 @@ class SystemMenusDao extends BaseDao
      * @param string $key
      * @return array
      */
-    public function column(array $where, string $field, string $key)
+    public function column(array $where, string $field, string $key = '')
     {
         return $this->search($where)->column($field, $key);
     }
@@ -132,5 +144,18 @@ class SystemMenusDao extends BaseDao
     {
         return $this->search(['is_show' => 1, 'auth_type' => 1, 'is_del' => 0, 'is_show_path' => 0])
             ->field('id,pid,menu_name,menu_path,unique_auth,sort')->order('sort DESC')->select();
+    }
+
+    /**
+     * @param string $path
+     * @param string $method
+     * @return bool
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/20
+     */
+    public function deleteMenu(string $path, string $method)
+    {
+        return $this->getModel()->where('api_url', $path)->where('methods', $method)->delete();
     }
 }

@@ -119,7 +119,7 @@ class StoreIntegralServices extends BaseServices
         if (!$data) {
             throw new AdminException(400337);
         }
-        if(!$data['attrs']) throw new AdminException(400337);
+        if (!$data['attrs']) throw new AdminException(400337);
         $attrs = [];
         foreach ($data['attrs'] as $k => $v) {
             $attrs[$v['product_id']][] = $v;
@@ -283,6 +283,7 @@ class StoreIntegralServices extends BaseServices
         $siteUrl = sys_config('site_url');
         $storeInfo['image'] = set_file_url($storeInfo['image'], $siteUrl);
         $storeInfo['image_base'] = set_file_url($storeInfo['image'], $siteUrl);
+        $storeInfo['product_price'] = (int)$storeInfo['product_price'];
         $storeInfo['sale_stock'] = 0;
         if ($storeInfo['stock'] > 0) $storeInfo['sale_stock'] = 1;
         $uid = $request->uid();
@@ -296,6 +297,12 @@ class StoreIntegralServices extends BaseServices
         /** @var StoreProductAttrServices $storeProductAttrServices */
         $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
         list($productAttr, $productValue) = $storeProductAttrServices->getProductAttrDetail($id, $uid, 0, 4, $storeInfo['product_id']);
+        foreach ($productValue as &$item) {
+            $item['cost'] = (int)$item['cost'];
+            $item['ot_price'] = (int)$item['ot_price'];
+            $item['price'] = (int)$item['price'];
+            $item['vip_price'] = (int)$item['vip_price'];
+        }
         $data['productAttr'] = $productAttr;
         $data['productValue'] = $productValue;
         /** @var StoreVisitServices $storeVisit */

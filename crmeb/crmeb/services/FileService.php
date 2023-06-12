@@ -11,6 +11,8 @@
 namespace crmeb\services;
 
 use crmeb\exceptions\AdminException;
+use crmeb\exceptions\CrudException;
+use crmeb\services\crud\Make;
 
 /**
  * 文件操作类
@@ -1018,9 +1020,11 @@ class FileService
                 $file = str_replace('\\', '/', $file);
                 if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) continue;
                 if (is_dir($file) === true) {
-                    $zip->addEmptyDir(str_replace($folder . '/', '', $file . '/'));
+                    $fileName = $folder ? str_replace($folder . '/', '', $file . '/') : $file . '/';
+                    $zip->addEmptyDir($fileName);
                 } else if (is_file($file) === true) {
-                    $zip->addFromString(str_replace($folder . '/', '', $file), file_get_contents($file));
+                    $fileName = $folder ? str_replace($folder . '/', '', $file) : $file;
+                    $zip->addFromString($fileName, file_get_contents($file));
                 }
             }
         } else if (is_file($source) === true) {
@@ -1044,6 +1048,47 @@ class FileService
         $zip = new \ZipArchive;
         $zip->open($source);
         return $zip->extractTo($folder);
+    }
+
+    /**
+     * 批量写入文件
+     * @param array $make
+     * @return bool
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/18
+     */
+    public static function batchMakeFiles(array $make)
+    {
+
+        $files = [];
+        $dirnames = [];
+        foreach ($make as $item) {
+            if ($item instanceof Make) {
+                $files[] = $item = $item->toArray();
+            }
+            try {
+                $dirnames[] = $dirname = dirname($item['path']);
+                if (!is_dir($dirname)) {
+                    mkdir($dirname, 0755, true);
+                }
+            } catch (\Throwable $e) {
+                if ($dirnames) {
+                    foreach ($dirnames as $dirname) {
+                        if (strstr($dirname, app()->getRootPath() . 'backup') !== false) {
+                            rmdir($dirname);
+                        }
+                    }
+                }
+                throw new \RuntimeException($e->getMessage());
+            }
+        }
+        $res = true;
+        foreach ($files as $item) {
+            $res = $res && file_put_contents($item['path'], $item['content'], LOCK_EX);
+        }
+
+        return $res;
     }
 
 }

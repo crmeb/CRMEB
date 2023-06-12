@@ -94,7 +94,7 @@
         </template>
         <template slot-scope="{ row, index }" slot="is_invoice">
           <div v-if="row.is_invoice === 1">已开票</div>
-          <div v-else>--</div>
+          <div v-else>未开票</div>
         </template>
         <template slot-scope="{ row, index }" slot="status">
           <div v-if="row.status === 0">未发货</div>

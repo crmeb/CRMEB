@@ -1,0 +1,1 @@
+<view class="data-v-2378bf68"><view class="title data-v-2378bf68">{{agreement.title||''}}</view><view class="cont data-v-2378bf68"><rich-text nodes="{{agreement.content}}"></rich-text></view></view>

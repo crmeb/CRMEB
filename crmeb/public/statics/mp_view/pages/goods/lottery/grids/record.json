@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "中奖记录",
+  "usingComponents": {
+    "empty-page": "/components/emptyPage",
+    "user-address": "/pages/goods/lottery/components/userAddress"
+  }
+}

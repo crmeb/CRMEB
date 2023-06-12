@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -37,6 +37,7 @@ class Event
         'HttpEnd'     => event\HttpEnd::class,
         'RouteLoaded' => event\RouteLoaded::class,
         'LogWrite'    => event\LogWrite::class,
+        'LogRecord'   => event\LogRecord::class,
     ];
 
     /**
@@ -215,6 +216,14 @@ class Event
 
         $result    = [];
         $listeners = $this->listener[$event] ?? [];
+
+        if (strpos($event, '.')) {
+            [$prefix, $event] = explode('.', $event, 2);
+            if (isset($this->listener[$prefix . '.*'])) {
+                $listeners = array_merge($listeners, $this->listener[$prefix . '.*']);
+            }
+        }
+
         $listeners = array_unique($listeners, SORT_REGULAR);
 
         foreach ($listeners as $key => $listener) {

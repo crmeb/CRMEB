@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -46,10 +46,11 @@ class RuleName
     public function setName(string $name, RuleItem $ruleItem, bool $first = false): void
     {
         $name = strtolower($name);
+        $item = $this->getRuleItemInfo($ruleItem);
         if ($first && isset($this->item[$name])) {
-            array_unshift($this->item[$name], $ruleItem);
+            array_unshift($this->item[$name], $item);
         } else {
-            $this->item[$name][] = $ruleItem;
+            $this->item[$name][] = $item;
         }
     }
 
@@ -179,8 +180,8 @@ class RuleName
                 $result = $this->item[$name];
             } else {
                 foreach ($this->item[$name] as $item) {
-                    $itemDomain = $item->getDomain();
-                    $itemMethod = $item->getMethod();
+                    $itemDomain = $item['domain'];
+                    $itemMethod = $item['method'];
 
                     if (($itemDomain == $domain || '-' == $itemDomain) && ('*' == $itemMethod || '*' == $method || $method == $itemMethod)) {
                         $result[] = $item;
@@ -192,4 +193,19 @@ class RuleName
         return $result;
     }
 
+    /**
+     * 获取路由信息
+     * @access protected
+     * @param  RuleItem $item 路由规则
+     * @return array
+     */
+    protected function getRuleItemInfo(RuleItem $item): array
+    {
+        return [
+            'rule'   => $item->getRule(),
+            'domain' => $item->getDomain(),
+            'method' => $item->getMethod(),
+            'suffix' => $item->getSuffix(),
+        ];
+    }
 }

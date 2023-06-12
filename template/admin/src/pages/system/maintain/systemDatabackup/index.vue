@@ -1,75 +1,84 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-    </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Table
-        ref="selection"
-        :columns="columns4"
-        :data="tabList"
-        :loading="loading3"
-        no-data-text="暂无数据"
-        highlight-row
-        size="small"
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="ImportFile(row)">导入</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除该备份', index)">删除</a>
-          <Divider type="vertical" />
-          <a @click="download(row)">下载</a>
-        </template>
-      </Table>
+    <Card :bordered="false" dis-hover class="ivu-mt listbox">
+      <Tabs class="mb30">
+        <TabPane label="数据库列表">
+          <Card :bordered="false" dis-hover class="tableBox mt10">
+            <div slot="title">
+              <!--              <span class="ivu-pl-8 mr10">数据库表列表</span>-->
+              <Button type="primary" class="mr10" @click="getBackup">备份</Button>
+              <Button type="primary" class="mr10" @click="getOptimize">优化表</Button>
+              <Button type="primary" class="mr10" @click="getRepair">修复表</Button>
+              <Button type="primary" class="mr10" @click="exportData(1)">导出文件</Button>
+            </div>
+            <Table
+              ref="selection"
+              :columns="columns"
+              :data="tabList2"
+              :loading="loading"
+              no-data-text="暂无数据"
+              @on-selection-change="onSelectTab"
+              size="small"
+              no-filtered-data-text="暂无筛选结果"
+            >
+              <template slot-scope="{ row, index }" slot="comment">
+                <div class="mark">
+                  <div v-if="row.is_edit" class="table-mark" @click="isEditMark(row)">{{ row.comment }}</div>
+                  <Input ref="mark" v-else v-model="row.comment" @on-blur="isEditBlur(row, 0)"></Input>
+                </div>
+              </template>
+              <template slot-scope="{ row }" slot="action">
+                <a @click="Info(row)">详情</a>
+              </template>
+            </Table>
+          </Card>
+          <!-- 详情模态框-->
+          <Drawer :closable="false" width="740" v-model="modals" :title="'[ ' + rows.name + ' ]' + rows.comment">
+            <Table
+              ref="selection"
+              :columns="columns2"
+              :data="tabList3"
+              :loading="loading2"
+              no-data-text="暂无数据"
+              max-height="600"
+              size="small"
+              no-filtered-data-text="暂无筛选结果"
+            >
+              <template slot-scope="{ row, index }" slot="COLUMN_COMMENT">
+                <div class="mark">
+                  <div v-if="row.is_edit" class="table-mark" @click="isEditMark(row)">{{ row.COLUMN_COMMENT }}</div>
+                  <Input ref="mark" v-else v-model="row.COLUMN_COMMENT" @on-blur="isEditBlur(row, 1)"></Input>
+                </div>
+              </template>
+            </Table>
+          </Drawer>
+        </TabPane>
+        <TabPane label="备份列表">
+          <Card :bordered="false" dis-hover class="">
+            <Table
+              ref="selection"
+              :columns="columns4"
+              :data="tabList"
+              :loading="loading3"
+              no-data-text="暂无数据"
+              highlight-row
+              size="small"
+              no-filtered-data-text="暂无筛选结果"
+            >
+              <template slot-scope="{ row, index }" slot="action">
+                <a @click="ImportFile(row)">导入</a>
+                <Divider type="vertical" />
+                <a @click="del(row, '删除该备份', index)">删除</a>
+                <Divider type="vertical" />
+                <a @click="download(row)">下载</a>
+              </template>
+            </Table>
+          </Card>
+        </TabPane>
+      </Tabs>
     </Card>
-    <Card :bordered="false" dis-hover class="ivu-mt tableBox">
-      <div slot="title">
-        <span class="ivu-pl-8 mr10">数据库表列表</span>
-        <Button type="primary" class="mr10" @click="getBackup">备份</Button>
-        <Button type="primary" class="mr10" @click="getOptimize">优化表</Button>
-        <Button type="primary" class="mr10" @click="getRepair">修复表</Button>
-        <Button type="primary" class="mr10" @click="exportData(1)">导出文件</Button>
-      </div>
-      <Table
-        ref="selection"
-        :columns="columns"
-        :data="tabList2"
-        :loading="loading"
-        highlight-row
-        no-data-text="暂无数据"
-        @on-selection-change="onSelectTab"
-        size="small"
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="Info(row)">详情</a>
-        </template>
-      </Table>
-    </Card>
-    <!-- 详情模态框-->
-    <Modal
-      v-model="modals"
-      class="tableBox"
-      scrollable
-      footer-hide
-      closable
-      :title="'[ ' + rows.name + ' ]' + rows.comment"
-      :mask-closable="false"
-      width="750"
-    >
-      <Table
-        ref="selection"
-        :columns="columns2"
-        :data="tabList3"
-        :loading="loading2"
-        no-data-text="暂无数据"
-        highlight-row
-        max-height="600"
-        size="small"
-        no-filtered-data-text="暂无筛选结果"
-      >
-      </Table>
+    <Modal v-model="markModal" title="修改备注" @on-ok="ok" @on-cancel="cancel" @on-visible-change="cancel">
+      <Input v-model="mark"></Input>
     </Modal>
   </div>
 </template>
@@ -84,9 +93,11 @@ import {
   filesListApi,
   filesDownloadApi,
   filesImportApi,
+  updateMark,
 } from '@/api/system';
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
+
 export default {
   name: 'systemDatabackup',
   data() {
@@ -125,7 +136,7 @@ export default {
           title: '操作',
           slot: 'action',
           fixed: 'right',
-          minWidth: 150,
+          minWidth: 80,
         },
       ],
       tabList2: [],
@@ -143,7 +154,7 @@ export default {
         },
         {
           title: '备注',
-          key: 'comment',
+          slot: 'comment',
           minWidth: 200,
         },
         {
@@ -174,7 +185,7 @@ export default {
           title: '操作',
           slot: 'action',
           fixed: 'right',
-          minWidth: 150,
+          minWidth: 80,
         },
       ],
       selectionList: [],
@@ -202,15 +213,23 @@ export default {
         },
         {
           title: '备注',
-          key: 'COLUMN_COMMENT',
+          slot: 'COLUMN_COMMENT',
         },
       ],
       rows: {},
       dataList: {},
       loading2: false,
       loading3: false,
+      markModal: false,
+      mark: '',
       header: {},
       Token: '',
+      changeMarkData: {
+        table: '',
+        mark: '',
+        type: '',
+        field: '',
+      },
     };
   },
   computed: {
@@ -226,6 +245,27 @@ export default {
     this.getfileList();
   },
   methods: {
+    editMark(row, type) {
+      this.changeMarkData.table = row.name || row.TABLE_NAME;
+      this.changeMarkData.field = row.COLUMN_NAME || '';
+      this.changeMarkData.type = row.COLUMN_TYPE || '';
+      this.changeMarkData.is_field = type;
+      this.markModal = true;
+    },
+    ok() {
+      this.changeMarkData.mark = this.mark;
+      updateMark(this.changeMarkData).then((res) => {
+        this.$Message.success(res.msg);
+        if (this.changeMarkData.is_field) {
+          this.Info({ name: this.changeMarkData.table, comment: this.rows.comment });
+        } else {
+          this.getList();
+        }
+      });
+    },
+    cancel() {
+      this.mark = '';
+    },
     // 导入
     ImportFile(row) {
       filesImportApi({
@@ -387,6 +427,28 @@ export default {
           this.$Message.error(res.msg);
         });
     },
+    isEditMark(row) {
+      row.is_edit = true;
+      this.$nextTick((e) => {
+        this.$refs.mark.focus();
+      });
+    },
+    isEditBlur(row, type) {
+      row.is_edit = false;
+      this.changeMarkData.table = row.name || row.TABLE_NAME;
+      this.changeMarkData.field = row.COLUMN_NAME || '';
+      this.changeMarkData.type = row.COLUMN_TYPE || '';
+      this.changeMarkData.is_field = type;
+      this.changeMarkData.mark = type ? row.COLUMN_COMMENT : row.comment;
+
+      updateMark(this.changeMarkData)
+        .then((res) => {
+          // this.$Message.success(res.msg);
+        })
+        .catch((err) => {
+          this.$Message.error(err.msg);
+        });
+    },
   },
 };
 </script>
@@ -394,4 +456,20 @@ export default {
 <style scoped lang="stylus">
 .tableBox >>> .ivu-table-header table
    border none !important
+
+.table-mark{
+  cursor: text;
+}
+.table-mark:hover{
+  border:1px solid #c2c2c2;
+  padding: 3px 5px
+}
+.mark /deep/ .ivu-input{
+    background: #fff;
+    border-radius: .39rem;
+}
+.mark /deep/ .ivu-input, .ivu-input:hover, .ivu-input:focus {
+    border: transparent;
+    box-shadow: none;
+}
 </style>

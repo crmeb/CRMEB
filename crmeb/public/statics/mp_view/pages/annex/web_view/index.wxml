@@ -1,0 +1,1 @@
+<web-view class="web-view" style="{{'width:'+(windowW+'px')+';'+('height:'+(windowH+'px')+';')}}" webview-styles="{{webviewStyles}}" src="{{url}}"></web-view>

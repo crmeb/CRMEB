@@ -1,22 +1,33 @@
 <template>
   <div id="app">
     <router-view />
+    <Setings ref="setingsRef" />
+    <Upgrade v-if="isVersion" />
   </div>
 </template>
 
 <script>
 import { on, off } from 'iview/src/utils/dom';
 import { setMatchMedia } from 'iview/src/utils/assist';
-
 import { mapMutations } from 'vuex';
-
+import Setings from '@/layout/navBars/breadcrumb/setings.vue';
+import Upgrade from '@/layout/upgrade/index.vue';
+import setting from './setting';
+import { Local } from '@/utils/storage.js';
+import config from '../package.json';
 setMatchMedia();
 
 export default {
   name: 'app',
+  components: { Setings, Upgrade },
   provide() {
     return {
       reload: this.reload,
+    };
+  },
+  data() {
+    return {
+      isVersion: false,
     };
   },
   methods: {
@@ -44,13 +55,44 @@ export default {
         this.isRouterAlive = true;
       });
     },
+    // 布局配置弹窗打开
+    openSetingsDrawer() {
+      this.bus.$on('openSetingsDrawer', () => {
+        this.$refs.setingsRef.openDrawer();
+      });
+    },
+    // 获取缓存中的布局配置
+    getLayoutThemeConfig() {
+      if (Local.get('themeConfigPrev')) {
+        this.$store.dispatch('themeConfig/setThemeConfig', Local.get('themeConfigPrev'));
+        document.documentElement.style.cssText = Local.get('themeConfigStyle');
+      } else {
+        Local.set('themeConfigPrev', this.$store.state.themeConfig.themeConfig);
+      }
+    },
+    getVersion() {
+      this.isVersion = false;
+      if (this.$route.path !== `${setting.routePre}/login` && this.$route.path !== '/') {
+        if ((Local.get('version') && Local.get('version') !== config.version) || !Local.get('version'))
+          this.isVersion = true;
+      }
+    },
   },
   mounted() {
     on(window, 'resize', this.handleWindowResize);
     this.handleMatchMedia();
+    this.openSetingsDrawer();
+    this.getLayoutThemeConfig();
+    this.$nextTick((e) => {
+      // this.getVersion();
+    });
   },
+
   beforeDestroy() {
     off(window, 'resize', this.handleWindowResize);
+  },
+  destroyed() {
+    this.bus.$off('openSetingsDrawer');
   },
 };
 </script>
@@ -69,6 +111,7 @@ body {
 }
 #app {
   .size;
+  font-family: PingFang SC, Arial, Microsoft YaHei, sans-serif;
 }
 .dialog-fade-enter-active {
   animation: anim-open 0.3s;

@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "消息中心",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "home": "/components/home/index",
+    "tui-drawer": "/components/tuiDrawer/index"
+  }
+}

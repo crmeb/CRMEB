@@ -1,0 +1,33 @@
+{
+  "component": true,
+  "usingComponents": {
+    "coupon-window": "/components/couponWindow/index",
+    "header-serch": "/pages/index/visualization/components/headerSerch",
+    "swiper-bg": "/pages/index/visualization/components/swiperBg",
+    "menus": "/pages/index/visualization/components/menus",
+    "news": "/pages/index/visualization/components/news",
+    "activity": "/pages/index/visualization/components/activity",
+    "scroll-box": "/pages/index/visualization/components/scrollBox",
+    "recommend": "/pages/index/visualization/components/recommend",
+    "popular": "/pages/index/visualization/components/popular",
+    "m-banner": "/pages/index/visualization/components/mBanner",
+    "new-goods": "/pages/index/visualization/components/newGoods",
+    "promotion": "/pages/index/visualization/components/promotion",
+    "alive": "/pages/index/visualization/components/alive",
+    "ads-recommend": "/pages/index/visualization/components/adsRecommend",
+    "coupon": "/pages/index/visualization/components/coupon",
+    "seckill": "/pages/index/visualization/components/seckill",
+    "combination": "/pages/index/visualization/components/combination",
+    "bargain": "/pages/index/visualization/components/bargain",
+    "good-list": "/pages/index/visualization/components/goodList",
+    "pic-txt": "/pages/index/visualization/components/picTxt",
+    "titles": "/pages/index/visualization/components/titles",
+    "customer-service": "/pages/index/visualization/components/customerService",
+    "tab-bar": "/pages/index/visualization/components/tabBar",
+    "tab-nav": "/pages/index/visualization/components/tabNav",
+    "loading": "/components/Loading/index",
+    "skeletons": "/pages/index/visualization/components/skeleton",
+    "index-goods": "/components/indexGoods/index",
+    "app-update": "/components/update/app-update"
+  }
+}

@@ -141,7 +141,7 @@ class QrcodeServices extends BaseServices
         /** @var SystemAttachmentServices $systemAttchment */
         $systemAttchment = app()->make(SystemAttachmentServices::class);
         try {
-            $imageInfo = $systemAttchment->getInfo(['name'=>$name]);
+            $imageInfo = $systemAttchment->getInfo(['name' => $name]);
             $siteUrl = sys_config('site_url');
             if (!$imageInfo) {
                 $codeUrl = PosterServices::setHttpType($siteUrl . $link, request()->isSsl() ? 0 : 1);//二维码链接
@@ -165,6 +165,7 @@ class QrcodeServices extends BaseServices
                 return '';
         }
     }
+
     /**
      * 获取二维码完整路径，不存在则自动生成
      * @param string $name

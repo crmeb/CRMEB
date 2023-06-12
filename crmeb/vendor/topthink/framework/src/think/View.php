@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -115,7 +115,11 @@ class View extends Manager
     {
         // 页面缓存
         ob_start();
-        ob_implicit_flush(0);
+        if (PHP_VERSION > 8.0) {
+            ob_implicit_flush(false);
+        } else {
+            ob_implicit_flush(0);
+        }
 
         // 渲染输出
         try {

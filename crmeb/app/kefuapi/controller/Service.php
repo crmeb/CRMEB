@@ -261,8 +261,11 @@ class Service extends AuthController
 
     /**
      * 聊天记录
-     * @param $uid
+     * @param Request $request
      * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function getChatList(Request $request)
     {

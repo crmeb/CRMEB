@@ -8,7 +8,7 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
+import LayoutMain from '@/layout';
 import setting from '@/setting';
 let routePre = setting.routePre;
 
@@ -25,7 +25,7 @@ export default {
   redirect: {
     name: `${pre}setSystem`,
   },
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
     {
       path: 'system_role/index',
@@ -68,14 +68,6 @@ export default {
       name: `${pre}setApp`,
       meta: {
         title: '应用设置',
-      },
-      component: () => import('@/pages/setting/setSystem/index'),
-    },
-    {
-      path: 'system_config/payment/:type?/:tab_id?',
-      name: `${pre}payment`,
-      meta: {
-        title: '支付配置',
       },
       component: () => import('@/pages/setting/setSystem/index'),
     },
@@ -138,7 +130,7 @@ export default {
       name: `${pre}config`,
       meta: {
         auth: ['setting-sms-sms-config'],
-        title: '短信账户',
+        title: '一号通账户',
       },
       component: () => import('@/pages/notify/smsConfig/index'),
     },
@@ -408,6 +400,7 @@ export default {
       meta: {
         auth: ['admin-setting-pages-diy'],
         title: '页面设计',
+        activeMenu: routePre + '/setting/pages/devise',
       },
       component: () => import('@/pages/setting/devisePage/index'),
     },
@@ -429,15 +422,6 @@ export default {
         title: '页面链接',
       },
       component: () => import('@/pages/setting/devise/links'),
-    },
-    {
-      path: 'system_group_data',
-      name: `${pre}systemGroupData`,
-      meta: {
-        auth: ['admin-setting-pages-links'],
-        title: '数据配置',
-      },
-      component: () => import('@/pages/system/group/list'),
     },
     {
       path: 'store_service/speechcraft',

@@ -473,6 +473,15 @@
 				let list = this.cartData.cartList;
 				let num = list[index];
 				let stock = list[index].trueStock;
+				console.log(num, list[index].productInfo.limit_num)
+				if (changeValue && list[index].productInfo.limit_type == 1 && num.cart_num >= list[index].productInfo
+					.limit_num) {
+					this.$set(num, 'cart_num', list[index].productInfo.limit_num)
+					this.$util.Tips({
+						title: this.$t(`最大限购数量${list[index].productInfo.limit_num}`)
+					});
+					return
+				}
 				this.ChangeCartNum(changeValue, num, stock, 0, num.product_id, index, 1);
 				if (!list.length) {
 					this.cartData.iScart = false;
@@ -595,6 +604,8 @@
 						}
 					})
 					.catch(err => {
+						console.log(that.attr)
+						that.attr.productSelect.cart_num = that.attr.productSelect.limit_num
 						return that.$util.Tips({
 							title: err
 						});

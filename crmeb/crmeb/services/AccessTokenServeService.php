@@ -52,6 +52,18 @@ class AccessTokenServeService extends HttpService
     protected $apiHost = 'http://sms.crmeb.net/api/';
 
     /**
+     * 沙盒地址
+     * @var string
+     */
+    protected $sandBoxApi = 'https://api_v2.crmeb.net/api/';
+
+    /**
+     * 沙盒模式
+     * @var bool
+     */
+    protected $sandBox = false;
+
+    /**
      * 登录接口
      */
     const USER_LOGIN = "user/login";
@@ -136,15 +148,14 @@ class AccessTokenServeService extends HttpService
      * @param bool $isHeader
      * @return array|mixed
      */
-    public function httpRequest(string $url, array $data = [], string $method = 'POST', bool $isHeader = true)
+    public function httpRequest(string $url, array $data = [], string $method = 'POST', bool $isHeader = true, array $header = [])
     {
-        $header = [];
         if ($isHeader) {
             $this->getToken();
             if (!$this->accessToken) {
                 throw new ApiException(410086);
             }
-            $header = ['Authorization:Bearer-' . $this->accessToken];
+            $header = array_merge($header, ['Authorization:Bearer-' . $this->accessToken]);
         }
 
         $res = $this->request($this->get($url), $method, $data, $header);
@@ -166,6 +177,9 @@ class AccessTokenServeService extends HttpService
      */
     public function get(string $apiUrl = '')
     {
+        if ($this->sandBox) {
+            return $this->sandBoxApi . $apiUrl;
+        }
         return $this->apiHost . $apiUrl;
     }
 }

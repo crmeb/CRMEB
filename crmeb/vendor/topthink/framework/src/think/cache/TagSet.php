@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -69,7 +69,8 @@ class TagSet
         $name = $this->handler->getCacheKey($name);
 
         foreach ($this->tag as $tag) {
-            $this->handler->push($tag, $name);
+            $key = $this->handler->getTagKey($tag);
+            $this->handler->append($key, $name);
         }
     }
 
@@ -120,9 +121,10 @@ class TagSet
         // 指定标签清除
         foreach ($this->tag as $tag) {
             $names = $this->handler->getTagItems($tag);
-
             $this->handler->clearTag($names);
-            $this->handler->delete($tag);
+
+            $key = $this->handler->getTagKey($tag);
+            $this->handler->delete($key);
         }
 
         return true;

@@ -1,0 +1,4 @@
+.menu-main{background-color:#fff}.nav{margin:0 30rpx;border-radius:12rpx}.nav .item{margin-top:26rpx;width:20%;text-align:center;font-size:24rpx}.nav .item .pictrue{width:90rpx;height:90rpx;margin:0 auto}.nav .item .pictrue.default{background-color:#ccc;border-radius:50%;text-align:center;line-height:90rpx}.nav .item .pictrue.default .iconfont{font-size:40rpx}.nav .item .pictrue ,
+.nav .item .pictrue image,
+.nav .item .pictrue .easy-loadimage,
+.nav .item .pictrue uni-image{width:90rpx;height:90rpx;border-radius:50%}.nav .item .menu-txt{margin-top:15rpx}.nav .item.four{width:25%}.nav .item.four .pictrue{width:90rpx;height:90rpx}

@@ -28,11 +28,7 @@ import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
 Vue.component('skeleton', skeleton)
 Vue.component('pageLoading', pageLoading)
 Vue.component('easyLoadimage', easyLoadimage)
-
-
 // #ifdef H5
-
-
 import {
 	parseQuery
 } from "./utils";

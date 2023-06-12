@@ -17,7 +17,7 @@
         :label-position="labelPosition"
         @submit.native.prevent
       >
-        <Row type="flex" :gutter="24" v-if="$route.path === ($routeProStr +'/setting/sms/sms_template_apply/index')">
+        <Row type="flex" :gutter="24" v-if="$route.path === $routeProStr + '/setting/sms/sms_template_apply/index'">
           <!--                    <Col v-bind="grid">-->
           <!--                        <FormItem label="模板类型：">-->
           <!--                            <Select v-model="levelFrom.type" placeholder="请选择" clearable  @on-change="userSearchs">-->
@@ -71,7 +71,7 @@
         <template
           slot-scope="{ row, index }"
           slot="is_have"
-          v-if="$route.path === ($routeProStr + '/setting/sms/sms_template_apply/commons')"
+          v-if="$route.path === $routeProStr + '/setting/sms/sms_template_apply/commons'"
         >
           <span v-show="row.status === 1">有</span>
           <span v-show="row.status === 0">没有</span>
@@ -177,9 +177,12 @@ export default {
       this.levelFrom.status = this.levelFrom.status || '';
       this.levelFrom.is_have = this.levelFrom.is_have || '';
       let data = {
-        data: this.$route.path === (this.$routeProStr +'/setting/sms/sms_template_apply/index') ? this.levelFrom : this.levelFrom2,
+        data:
+          this.$route.path === this.$routeProStr + '/setting/sms/sms_template_apply/index'
+            ? this.levelFrom
+            : this.levelFrom2,
         url:
-          this.$route.path === (this.$routeProStr + '/setting/sms/sms_template_apply/index')
+          this.$route.path === this.$routeProStr + '/setting/sms/sms_template_apply/index'
             ? 'serve/sms/temps'
             : 'notify/sms/public_temp',
       };
@@ -216,7 +219,7 @@ export default {
           minWidth: 100,
         },
       ];
-      if (this.$route.path === (this.$routeProStr + '/setting/sms/sms_template_apply/commons')) {
+      if (this.$route.path === this.$routeProStr + '/setting/sms/sms_template_apply/commons') {
         this.columns1 = Object.assign([], columns1)
           .slice(0, 6)
           .concat([

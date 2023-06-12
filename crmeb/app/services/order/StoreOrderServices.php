@@ -20,6 +20,7 @@ use app\services\other\PosterServices;
 use app\services\pay\OrderPayServices;
 use app\services\pay\PayServices;
 use app\services\product\product\StoreProductLogServices;
+use app\services\serve\ServeServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\store\SystemStoreServices;
 use app\services\user\UserInvoiceServices;
@@ -34,10 +35,12 @@ use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\exceptions\PayException;
 use crmeb\services\CacheService;
+use crmeb\services\easywechat\orderShipping\MiniOrderService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\printer\Printer;
 use crmeb\services\SystemConfigService;
 use crmeb\utils\Arr;
+use think\exception\ValidateException;
 use think\facade\Log;
 
 /**
@@ -93,7 +96,7 @@ class StoreOrderServices extends BaseServices
     {
         [$page, $limit] = $this->getPageValue();
         $data = $this->dao->getOrderList($where, $field, $page, $limit, $with);
-        $count = $this->dao->count($where);
+        $count = $this->dao->count($where, false);
         $data = $this->tidyOrderList($data);
         foreach ($data as &$item) {
             $refund_num = array_sum(array_column($item['refund'], 'refund_num'));
@@ -1429,10 +1432,17 @@ HTML;
         return bcmul(bcdiv((bcsub($nowValue, $lastValue, 2)), $lastValue, 4), 100, 2);
     }
 
+    /**
+     * 后台首页顶部统计
+     * @return array
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/03
+     */
     public function homeStatics()
     {
-        /** @var UserServices $uSercice */
-        $uSercice = app()->make(UserServices::class);
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
         /** @var StoreProductLogServices $productLogServices */
         $productLogServices = app()->make(StoreProductLogServices::class);
         //TODO 销售额
@@ -1442,22 +1452,12 @@ HTML;
         $yesterday_sales = $this->dao->todaySales('yesterday');
         //日同比
         $sales_today_ratio = $this->growth($today_sales, $yesterday_sales);
-//        //周销售额
-//        //本周
-//        $this_week_sales = $this->dao->thisWeekSales('week');
-//        //上周
-//        $last_week_sales = $this->dao->thisWeekSales('last week');
-//        //周同比
-//        $sales_week_ratio = $this->growth($this_week_sales, $last_week_sales);
         //总销售额
         $total_sales = $this->dao->totalSales('month');
         $sales = [
             'today' => $today_sales,
             'yesterday' => $yesterday_sales,
             'today_ratio' => $sales_today_ratio,
-//            'week' => $this_week_sales,
-//            'last_week' => $last_week_sales,
-//            'week_ratio' => $sales_week_ratio,
             'total' => $total_sales . '元',
             'date' => '今日'
         ];
@@ -1468,21 +1468,12 @@ HTML;
         $yesterday_visits = $productLogServices->count(['time' => 'yesterday', 'type' => 'visit']);
         //日同比
         $visits_today_ratio = $this->growth($today_visits, $yesterday_visits);
-//        //本周访问量
-//        $this_week_visits = $productLogServices->count(['time' => 'week', 'type' => 'visit']);
-//        //上周访问量
-//        $last_week_visits = $productLogServices->count(['time' => 'last week', 'type' => 'visit']);
-//        //周同比
-//        $visits_week_ratio = $this->growth($this_week_visits, $last_week_visits);
         //总访问量
         $total_visits = $productLogServices->count(['time' => 'month', 'type' => 'visit']);
         $visits = [
             'today' => $today_visits,
             'yesterday' => $yesterday_visits,
             'today_ratio' => $visits_today_ratio,
-//            'week' => $this_week_visits,
-//            'last_week' => $last_week_visits,
-//            'week_ratio' => $visits_week_ratio,
             'total' => $total_visits . 'Pv',
             'date' => '今日'
         ];
@@ -1493,46 +1484,28 @@ HTML;
         $yesterday_order = $this->dao->todayOrderVisit('yesterday', 1);
         //订单日同比
         $order_today_ratio = $this->growth($today_order, $yesterday_order);
-//        //本周订单量
-//        $this_week_order = $this->dao->todayOrderVisit('week', 2);
-//        //上周订单量
-//        $last_week_order = $this->dao->todayOrderVisit('last week', 2);
-//        //订单周同比
-//        $order_week_ratio = $this->growth($this_week_order, $last_week_order);
         //总订单量
         $total_order = $this->dao->count(['time' => 'month', 'paid' => 1, 'refund_status' => 0, 'pid' => 0]);
         $order = [
             'today' => $today_order,
             'yesterday' => $yesterday_order,
             'today_ratio' => $order_today_ratio,
-//            'week' => $this_week_order,
-//            'last_week' => $last_week_order,
-//            'week_ratio' => $order_week_ratio,
             'total' => $total_order . '单',
             'date' => '今日'
         ];
         //TODO 用户
         //今日新增用户
-        $today_user = $uSercice->todayAddVisits('today', 1);
+        $today_user = $userService->todayAddVisits('today', 1);
         //昨日新增用户
-        $yesterday_user = $uSercice->todayAddVisits('yesterday', 1);
+        $yesterday_user = $userService->todayAddVisits('yesterday', 1);
         //新增用户日同比
         $user_today_ratio = $this->growth($today_user, $yesterday_user);
-//        //本周新增用户
-//        $this_week_user = $uSercice->todayAddVisits('week', 2);
-//        //上周新增用户
-//        $last_week_user = $uSercice->todayAddVisits('last week', 2);
-//        //新增用户周同比
-//        $user_week_ratio = $this->growth($this_week_user, $last_week_user);
         //所有用户
-        $total_user = $uSercice->count(['time' => 'month']);
+        $total_user = $userService->count(['time' => 'month']);
         $user = [
             'today' => $today_user,
             'yesterday' => $yesterday_user,
             'today_ratio' => $user_today_ratio,
-//            'week' => $this_week_user,
-//            'last_week' => $last_week_user,
-//            'week_ratio' => $user_week_ratio,
             'total' => $total_user . '人',
             'date' => '今日'
         ];
@@ -2523,6 +2496,19 @@ HTML;
                 'help_status' => 1
             ];
         }
+        // 判断是否开启小程序订单管理
+        $orderData['order_shipping_open'] = false;
+        if (sys_config('order_shipping_open', 0) && MiniOrderService::isManaged() && $order['is_channel'] == 1 && $order['pay_type'] == 'weixin') {
+            // 判断是否存在子未收货子订单
+            if ($order['pid'] > 0) {
+                if ($this->checkSubOrderNotTake((int)$order['pid'], (int)$order['id'])) {
+                    $orderData['order_shipping_open'] = true;
+                }
+            } else {
+                $orderData['order_shipping_open'] = true;
+            }
+
+        }
         return $orderData;
     }
 
@@ -2672,5 +2658,77 @@ HTML;
         }
 
         return $data;
+    }
+
+    /**
+     * 取消商家寄件
+     * @param int $id
+     * @param string $msg
+     * @return array|mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/5/15
+     */
+    public function shipmentCancelOrder(int $id, string $msg)
+    {
+        $orderInfo = $this->dao->get($id);
+        if (!$orderInfo) {
+            throw new ValidateException('取消的订单不存在');
+        }
+        if (!$orderInfo->kuaidi_task_id || !$orderInfo->kuaidi_order_id) {
+            throw new ValidateException('商家寄件订单信息不存在，无法取消');
+        }
+        if ($orderInfo->status != 1) {
+            throw new ValidateException('订单状态不正确，无法取消寄件');
+        }
+
+        //发起取消商家寄件
+        $res = app()->make(ServeServices::class)->express()->shipmentCancelOrder([
+            'task_id' => $orderInfo->kuaidi_task_id,
+            'order_id' => $orderInfo->kuaidi_order_id,
+            'cancel_msg' => $msg,
+        ]);
+
+        if ($res['status'] != 200) {
+            throw new ValidateException($res['msg'] ?? '一号通：取消失败');
+        }
+
+        //订单返回原状态
+        $this->transaction(function () use ($id, $msg, $orderInfo) {
+            app()->make(StoreOrderStatusServices::class)->save([
+                'oid' => $id,
+                'change_time' => time(),
+                'change_type' => 'delivery_goods_cancel',
+                'change_message' => '已取消发货，取消原因：' . $msg
+            ]);
+
+            $orderInfo->status = 0;
+            $orderInfo->save();
+        });
+
+        return $res;
+    }
+
+    public function checkSubOrderNotSend(int $pid, int $order_id)
+    {
+        $order_count = $this->dao->getSubOrderNotSend($pid, $order_id);
+        if ($order_count > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function checkSubOrderNotTake(int $pid, int $order_id)
+    {
+        $order_count = $this->dao->getSubOrderNotTake($pid, $order_id);
+        if ($order_count > 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

@@ -26,7 +26,7 @@
         <Row type="flex" :gutter="24">
           <Col span="6" v-if="type == 1">
             <FormItem label="订单状态：" label-for="status">
-              <Select v-model="pagination.status" placeholder="请选择订单状态" clearable  @on-change="searchList">
+              <Select v-model="pagination.status" placeholder="请选择订单状态" clearable @on-change="searchList">
                 <Option value="0">未支付</Option>
                 <Option value="1">待发货</Option>
                 <Option value="2">待收货</Option>

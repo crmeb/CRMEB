@@ -8,8 +8,8 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
-import setting  from '@/setting'
+import LayoutMain from '@/layout';
+import setting from '@/setting';
 let routePre = setting.routePre;
 
 const pre = 'cms_';
@@ -21,7 +21,7 @@ export default {
   redirect: {
     name: `${pre}article`,
   },
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
     {
       path: 'article/index/:id?',
@@ -48,6 +48,7 @@ export default {
       meta: {
         auth: ['cms-article-creat'],
         title: '文章添加',
+        activeMenu: routePre + '/cms/article/index',
       },
       component: () => import('@/pages/cms/addArticle/index'),
     },

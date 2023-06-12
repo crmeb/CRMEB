@@ -2,35 +2,6 @@
 	<view>
 		<form @submit="formSubmit">
 			<view class='personal-data' :style="colorStyle">
-				<!-- <view class="wrapper">
-					<view class="title">管理我的账号</view>
-					<view class="wrapList">
-						<view class="item acea-row row-between-wrapper" :class="item.uid === userInfo.uid ? 'on' : ''" v-for="(item,index) in switchUserInfo"
-						 :key="index" @click='switchAccounts(index)'>
-							<view class="picTxt acea-row row-between-wrapper">
-								<view class="pictrue" @click.stop='uploadpic' v-if='item.uid === userInfo.uid'>
-									<image :src='item.avatar'></image>
-									<image src='../../../static/images/alter.png' class="alter"></image>
-								</view>
-								<view class="pictrue" v-else>
-									<image :src='item.avatar'></image>
-								</view>
-								<view class="text">
-									<view class="name line1">{{ item.nickname }}</view>
-									<view class="phone" v-if="item.phone && item.user_type !='h5'">绑定手机号：{{ item.phone }}</view>
-									<view class="phone" v-else-if="item.phone && item.user_type =='h5'">账号：{{ item.phone }}</view>
-									<view class="phone" v-else>暂未绑定手机号</view>
-								</view>
-							</view>
-							<view class="currentBnt acea-row row-center-wrapper font-color" v-if='item.uid === userInfo.uid'>
-								当前账号
-							</view>
-							<view class="bnt font-color acea-row row-center-wrapper" v-else>
-								使用账号
-							</view>
-						</view>
-					</view>
-				</view> -->
 				<view class='list'>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`头像`)}}</view>
@@ -63,15 +34,23 @@
 						<!-- #endif -->
 
 						<view class='input acea-row row-between-wrapper' v-else>
-							<input type='text' disabled='true' name='phone' :value='userInfo.phone' class='id'></input>
-							<text class='iconfont icon-suozi'></text>
+							<view class=""></view>
+							<view class="acea-row row-middle">
+								<input type='text' disabled='true' name='phone' :value='userInfo.phone'
+									class='id'></input>
+								<text class='iconfont icon-suozi'></text>
+							</view>
+
 						</view>
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>{{$t(`ID号`)}}</view>
 						<view class='input acea-row row-between-wrapper'>
-							<input type='text' :value='userInfo.uid' disabled='true' class='id'></input>
-							<text class='iconfont icon-suozi'></text>
+							<view class=""></view>
+							<view class="">
+								<text>{{userInfo.uid}}</text>
+								<text class='iconfont icon-suozi'></text>
+							</view>
 						</view>
 					</view>
 					<!-- #ifdef MP -->
@@ -678,10 +657,14 @@
 	}
 
 	.personal-data .list .item .input {
-		max-width: 400rpx;
+		flex: 1;
 		text-align: right;
 		color: #868686;
 		font-size: 28rpx;
+
+		input {
+			padding-right: 10rpx;
+		}
 
 		.icon-suozi {
 			margin-left: 10rpx;

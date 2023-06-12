@@ -74,7 +74,7 @@ class ExportServices extends BaseServices
      */
     public function exportOrderList($where)
     {
-        $header = ['订单号', '收货人姓名', '收货人电话', '收货地址', '商品信息', '总价格', '实际支付', '支付状态', '支付时间', '订单状态', '下单时间', '用户备注'];
+        $header = ['订单号', '收货人姓名', '收货人电话', '收货地址', '商品信息', '总价格', '实际支付', '支付状态', '支付时间', '订单状态', '下单时间', '用户备注', '商家备注', '表单信息'];
         $filename = '订单列表_' . date('YmdHis', time());
         $export = $fileKey = [];
         /** @var StoreOrderServices $orderServices */
@@ -127,6 +127,11 @@ class ExportServices extends BaseServices
                 } else if ($item['paid'] == 1 && $item['refund_status'] == 2) {
                     $item['status_name'] = '已退款';
                 }
+                $custom_form = '';
+                foreach ($item['custom_form'] as $custom_form_value) {
+                    $custom_form .= $custom_form_value['title'] . '：' . $custom_form_value['value'] . '；';
+                }
+
                 $goodsName = [];
                 foreach ($item['_info'] as $value) {
                     $_info = $value['cart_info'];
@@ -157,6 +162,8 @@ class ExportServices extends BaseServices
                     'status_name' => $item['status_name'] ?? '未知状态',
                     'add_time' => $item['add_time'],
                     'mark' => $item['mark'],
+                    'remark' => $item['remark'],
+                    'custom_form' => $custom_form,
                 ];
                 $export[] = $one_data;
                 if ($i == 0) {

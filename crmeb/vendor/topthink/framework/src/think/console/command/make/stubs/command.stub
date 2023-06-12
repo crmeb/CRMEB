@@ -15,12 +15,12 @@ class {%className%} extends Command
     {
         // 指令配置
         $this->setName('{%commandName%}')
-            ->setDescription('the {%commandName%} command');        
+            ->setDescription('the {%commandName%} command');
     }
 
     protected function execute(Input $input, Output $output)
     {
-    	// 指令输出
-    	$output->writeln('{%commandName%}');
+        // 指令输出
+        $output->writeln('{%commandName%}');
     }
 }

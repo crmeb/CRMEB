@@ -80,4 +80,21 @@ class Export extends AuthController
         }
         return app('json')->success(['isOpen' => $res]);
     }
+
+    /**
+     * @param ServeServices $services
+     * @return \think\Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/5/15
+     */
+    public function getShipmentOrderList(ServeServices $services)
+    {
+        $where = $this->request->getMore([
+            ['page', 1],
+            ['limit', 10],
+        ]);
+
+        return app('json')->success($services->express()->getShipmentOrderList($where));
+    }
 }

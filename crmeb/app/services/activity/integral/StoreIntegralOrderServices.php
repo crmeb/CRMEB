@@ -120,6 +120,8 @@ class StoreIntegralOrderServices extends BaseServices
         } else if ($order['status'] == 3) {
             $order['status_name'] = '已完成';
         }
+        $order['price'] = (int)$order['price'];
+        $order['total_price'] = (int)$order['total_price'];
         return $order;
     }
 
@@ -139,6 +141,8 @@ class StoreIntegralOrderServices extends BaseServices
             } else if ($item['status'] == 3) {
                 $item['status_name'] = '已完成';
             }
+            $item['price'] = (int)$item['price'];
+            $item['total_price'] = (int)$item['total_price'];
         }
         return $data;
     }
@@ -338,11 +342,12 @@ class StoreIntegralOrderServices extends BaseServices
         }
         $data = [];
         $attrValue = is_object($attrValue) ? $attrValue->toArray() : $attrValue;
+        $attrValue['price'] = (int)$attrValue['price'];
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);
         $data['integral'] = bcsub((string)$user['integral'], (string)$userBillServices->getBillSum(['uid' => $user['uid'], 'is_frozen' => 1]), 0);
         $data['num'] = $num;
-        $data['total_price'] = bcmul($num, $attrValue['price'], 2);
+        $data['total_price'] = bcmul($num, $attrValue['price']);
         $data['productInfo'] = $attrValue;
         return $data;
     }

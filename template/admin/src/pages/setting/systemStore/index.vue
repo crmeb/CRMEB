@@ -157,8 +157,10 @@
 <script>
 import { storeApi, keyApi, storeAddApi } from '@/api/setting';
 import { mapState } from 'vuex';
-import city from '@/utils/city';
+// import city from '@/utils/city';
 import uploadPictures from '@/components/uploadPictures';
+import { cityList } from '@/api/app';
+
 export default {
   name: 'systemStore',
   components: { uploadPictures },
@@ -182,7 +184,7 @@ export default {
     return {
       spinShow: false,
       modalMap: false,
-      addresData: city,
+      addresData: [],
       formItem: {
         name: '',
         introduction: '',
@@ -247,19 +249,7 @@ export default {
     };
   },
   created() {
-    city.map((item) => {
-      item.value = item.label;
-      if (item.children && item.children.length) {
-        item.children.map((j) => {
-          j.value = j.label;
-          if (j.children && j.children.length) {
-            j.children.map((o) => {
-              o.value = o.label;
-            });
-          }
-        });
-      }
-    });
+    this.getCityList();
     this.getKey();
     this.getFrom();
   },
@@ -288,6 +278,24 @@ export default {
     window.selectAdderss = this.selectAdderss;
   },
   methods: {
+    getCityList() {
+      cityList().then((res) => {
+        res.data.map((item) => {
+          item.value = item.label;
+          if (item.children && item.children.length) {
+            item.children.map((j) => {
+              j.value = j.label;
+              if (j.children && j.children.length) {
+                j.children.map((o) => {
+                  o.value = o.label;
+                });
+              }
+            });
+          }
+        });
+        this.addresData = res.data;
+      });
+    },
     // 选择经纬度
     selectAdderss(data) {
       this.formItem.latlng = data.latlng.lat + ',' + data.latlng.lng;

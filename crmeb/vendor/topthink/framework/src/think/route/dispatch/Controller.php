@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -113,6 +113,13 @@ class Controller extends Dispatch
             });
     }
 
+    protected function parseActions($actions)
+    {
+        return array_map(function ($item) {
+            return strtolower($item);
+        }, is_string($actions) ? explode(",", $actions) : $actions);
+    }
+
     /**
      * 使用反射机制注册控制器中间件
      * @access public
@@ -128,30 +135,34 @@ class Controller extends Dispatch
             $reflectionProperty->setAccessible(true);
 
             $middlewares = $reflectionProperty->getValue($controller);
+            $action      = $this->request->action(true);
 
             foreach ($middlewares as $key => $val) {
                 if (!is_int($key)) {
-                    if (isset($val['only']) && !in_array($this->request->action(true), array_map(function ($item) {
-                        return strtolower($item);
-                    }, is_string($val['only']) ? explode(",", $val['only']) : $val['only']))) {
-                        continue;
-                    } elseif (isset($val['except']) && in_array($this->request->action(true), array_map(function ($item) {
-                        return strtolower($item);
-                    }, is_string($val['except']) ? explode(',', $val['except']) : $val['except']))) {
-                        continue;
-                    } else {
-                        $val = $key;
+                    $middleware = $key;
+                    $options    = $val;
+                } elseif (isset($val['middleware'])) {
+                    $middleware = $val['middleware'];
+                    $options    = $val['options'] ?? [];
+                } else {
+                    $middleware = $val;
+                    $options    = [];
+                }
+
+                if (isset($options['only']) && !in_array($action, $this->parseActions($options['only']))) {
+                    continue;
+                } elseif (isset($options['except']) && in_array($action, $this->parseActions($options['except']))) {
+                    continue;
+                }
+
+                if (is_string($middleware) && strpos($middleware, ':')) {
+                    $middleware = explode(':', $middleware);
+                    if (count($middleware) > 1) {
+                        $middleware = [$middleware[0], array_slice($middleware, 1)];
                     }
                 }
 
-                if (is_string($val) && strpos($val, ':')) {
-                    $val = explode(':', $val);
-                    if (count($val) > 1) {
-                        $val = [$val[0], array_slice($val, 1)];
-                    }
-                }
-
-                $this->app->middleware->controller($val);
+                $this->app->middleware->controller($middleware);
             }
         }
     }

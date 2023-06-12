@@ -28,7 +28,7 @@ class StoreProductLogDao extends BaseDao
 
     public function getRanking($where)
     {
-        return $this->search($where)->with('storeName')
+        return $this->search($where, false)->with('storeName')
             ->field([
                 'product_id',
                 'SUM(visit_num) as visit',
@@ -47,7 +47,7 @@ class StoreProductLogDao extends BaseDao
 
     public function getRepeats($where, $product_id)
     {
-        return count($this->search($where)->where('type', 'pay')->where('product_id', $product_id)->field('count(pay_uid) as p')->group('pay_uid')->having('p>1')->select());
+        return count($this->search($where, false)->where('type', 'pay')->where('product_id', $product_id)->field('count(pay_uid) as p')->group('pay_uid')->having('p>1')->select());
     }
 
     /**

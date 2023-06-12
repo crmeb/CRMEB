@@ -131,7 +131,7 @@ import { mapState } from 'vuex';
 import { integralProductListApi, integralIsShowApi, storeSeckillApi } from '@/api/marketing';
 import { formatDate } from '@/utils/validate';
 export default {
-  name: 'storeIntegral',
+  name: 'marketing_storeIntegral',
   filters: {
     formatDate(time) {
       if (time !== 0) {

@@ -65,7 +65,7 @@ class OrderPaySuccessListener implements ListenerInterface
         }
 
         // 写入资金流水
-        if ($orderInfo['pay_type'] == 'weixin' || $orderInfo['pay_type'] == 'alipay' || $orderInfo['pay_type'] == PayServices::ALLIN_PAY) {
+        if (in_array($orderInfo['pay_type'], ['weixin', 'alipay', 'allinpay'])) {
             /** @var UserServices $userServices */
             $userServices = app()->make(UserServices::class);
             $userInfo = $userServices->get($orderInfo['uid']);

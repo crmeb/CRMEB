@@ -8,20 +8,20 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
-import setting  from '@/setting'
+import LayoutMain from '@/layout';
+import setting from '@/setting';
 let routePre = setting.routePre;
 
 const pre = 'marketing_';
 
 export default {
-  path: routePre+'/marketing',
+  path: routePre + '/marketing',
   name: 'marketing',
   header: 'marketing',
   redirect: {
     name: `${pre}storeCouponIssue`,
   },
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
     {
       path: 'store_combination/index',
@@ -48,6 +48,7 @@ export default {
       meta: {
         auth: ['marketing-store_combination-create'],
         title: '添加拼团',
+        activeMenu: routePre + '/marketing/store_combination/index',
       },
       component: () => import('@/pages/marketing/storeCombination/create'),
     },
@@ -84,6 +85,7 @@ export default {
       meta: {
         auth: ['marketing-store_coupon_issue-create'],
         title: '添加优惠券',
+        activeMenu: routePre + '/marketing/store_coupon_issue/index',
       },
       component: () => import('@/pages/marketing/storeCouponIssue/create'),
     },
@@ -130,6 +132,7 @@ export default {
       meta: {
         auth: ['marketing-store_bargain-create'],
         title: '添加砍价',
+        activeMenu: routePre + '/marketing/store_bargain/index',
       },
       component: () => import('@/pages/marketing/storeBargain/create'),
     },
@@ -166,6 +169,7 @@ export default {
       meta: {
         auth: ['marketing-store_seckill-create'],
         title: '添加秒杀',
+        activeMenu: routePre + '/marketing/store_seckill/index',
       },
       component: () => import('@/pages/marketing/storeSeckill/create'),
     },
@@ -202,6 +206,7 @@ export default {
       meta: {
         auth: ['marketing-store_integral-create'],
         title: '添加积分商品',
+        activeMenu: routePre + '/marketing/store_integral/index',
       },
       component: () => import('@/pages/marketing/storeIntegral/create'),
     },
@@ -247,6 +252,7 @@ export default {
       meta: {
         auth: true,
         title: '直播间管理',
+        activeMenu: routePre + '/marketing/live/live_room',
       },
       component: () => import('@/pages/marketing/live/creat_live'),
     },
@@ -265,6 +271,7 @@ export default {
       meta: {
         auth: true,
         title: '直播间商品管理',
+        activeMenu: routePre + '/marketing/live/live_goods',
       },
       component: () => import('@/pages/marketing/live/add_goods'),
     },
@@ -347,6 +354,7 @@ export default {
       meta: {
         auth: ['marketing-channel_code-create'],
         title: '新建渠道码',
+        activeMenu: routePre + '/marketing/channel_code/channelCodeIndex',
       },
       component: () => import('@/pages/marketing/channelCode/createCode'),
     },

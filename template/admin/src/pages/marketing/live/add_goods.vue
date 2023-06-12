@@ -155,7 +155,6 @@ export default {
       this.selectIds = this.goodsList.map((i) => {
         return i.product_id;
       });
-      console.log(this.selectIds, this.goodsList);
     },
     // 生成直播商品
     liveGoods() {

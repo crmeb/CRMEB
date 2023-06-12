@@ -1,0 +1,4 @@
+.customerService,
+.customerService-sty{position:fixed;right:20rpx;z-index:40}.customerService .pictrue,
+.customerService-sty .pictrue{width:86rpx;height:86rpx;border-radius:50%}.customerService .pictrue image,
+.customerService-sty .pictrue image{width:100%;height:100%}.customerService-sty{background-color:transparent!important}

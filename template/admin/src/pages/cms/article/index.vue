@@ -101,7 +101,7 @@ import relationList from './relation';
 import { formatDate } from '@/utils/validate';
 import goodsList from '@/components/goodsList/index';
 export default {
-  name: 'addArticle',
+  name: 'cms_article',
   data() {
     return {
       modalTitleSs: '',

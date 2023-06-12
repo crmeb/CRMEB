@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "商品分类",
+  "usingComponents": {
+    "goods-cate1": "/pages/goods_cate/goods_cate1",
+    "goods-cate2": "/pages/goods_cate/goods_cate2",
+    "goods-cate3": "/pages/goods_cate/goods_cate3",
+    "tab-bar": "/pages/index/visualization/components/tabBar"
+  }
+}

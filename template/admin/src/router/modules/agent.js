@@ -8,8 +8,8 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
-import setting  from '@/setting'
+import LayoutMain from '@/layout';
+import setting from '@/setting';
 let routePre = setting.routePre;
 
 const pre = 'agent_';
@@ -24,7 +24,7 @@ export default {
     name: `${pre}agentManage`,
   },
   meta,
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
     {
       path: 'agent_manage/index',

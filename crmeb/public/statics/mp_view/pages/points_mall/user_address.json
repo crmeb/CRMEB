@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "选择地址",
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "home": "/components/home/index"
+  }
+}

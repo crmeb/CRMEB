@@ -136,7 +136,7 @@ class SystemAdminServices extends BaseServices
             'user_info' => [
                 'id' => $adminInfo->getData('id'),
                 'account' => $adminInfo->getData('account'),
-                'head_pic' => $adminInfo->getData('head_pic'),
+                'head_pic' => get_file_link($adminInfo->getData('head_pic')),
                 'level' => $adminInfo->getData('level'),
                 'real_name' => $adminInfo->getData('real_name'),
             ],
@@ -145,7 +145,8 @@ class SystemAdminServices extends BaseServices
             'version' => get_crmeb_version(),
             'newOrderAudioLink' => get_file_link(sys_config('new_order_audio_link', '')),
             'queue' => $queue ?? true,
-            'timer' => $timer ?? true
+            'timer' => $timer ?? true,
+            'site_name' => sys_config('site_name'),
         ];
     }
 
@@ -256,6 +257,10 @@ class SystemAdminServices extends BaseServices
         }
         unset($data['conf_pwd']);
 
+        if (strlen(trim($data['pwd'])) < 6 || strlen(trim($data['pwd'])) > 32) {
+            throw new AdminException(400762);
+        }
+
         if ($this->dao->count(['account' => $data['account'], 'is_del' => 0])) {
             throw new AdminException(400596);
         }
@@ -263,6 +268,7 @@ class SystemAdminServices extends BaseServices
         $data['pwd'] = $this->passwordHash($data['pwd']);
         $data['add_time'] = time();
         $data['roles'] = implode(',', $data['roles']);
+        $data['head_pic'] = '/statics/system_images/admin_head_pic.png';
 
         return $this->transaction(function () use ($data) {
             if ($this->dao->save($data)) {
@@ -317,6 +323,11 @@ class SystemAdminServices extends BaseServices
             if ($data['conf_pwd'] != $data['pwd']) {
                 throw new AdminException(400264);
             }
+
+            if (strlen(trim($data['pwd'])) < 6 || strlen(trim($data['pwd'])) > 32) {
+                throw new AdminException(400762);
+            }
+
             $adminInfo->pwd = $this->passwordHash($data['pwd']);
         }
         //修改账号

@@ -11,19 +11,50 @@
 
 namespace think\console\input;
 
+/**
+ * 命令行选项
+ * @package think\console\input
+ */
 class Option
 {
-
-    const VALUE_NONE     = 1;
+    // 无需传值
+    const VALUE_NONE = 1;
+    // 必须传值
     const VALUE_REQUIRED = 2;
+    // 可选传值
     const VALUE_OPTIONAL = 4;
+    // 传数组值
     const VALUE_IS_ARRAY = 8;
 
-    private $name;
-    private $shortcut;
+    /**
+     * 选项名
+     * @var string
+     */
+    private $name = '';
+
+    /**
+     * 选项短名称
+     * @var string
+     */
+    private $shortcut = '';
+
+    /**
+     * 选项类型
+     * @var int
+     */
     private $mode;
+
+    /**
+     * 选项默认值
+     * @var mixed
+     */
     private $default;
-    private $description;
+
+    /**
+     * 选项描述
+     * @var string
+     */
+    private $description = '';
 
     /**
      * 构造方法
@@ -45,10 +76,10 @@ class Option
         }
 
         if (empty($shortcut)) {
-            $shortcut = null;
+            $shortcut = '';
         }
 
-        if (null !== $shortcut) {
+        if ('' !== $shortcut) {
             if (is_array($shortcut)) {
                 $shortcut = implode('|', $shortcut);
             }
@@ -83,7 +114,7 @@ class Option
      * 获取短名称
      * @return string
      */
-    public function getShortcut()
+    public function getShortcut(): string
     {
         return $this->shortcut;
     }
@@ -92,7 +123,7 @@ class Option
      * 获取选项名
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -101,7 +132,7 @@ class Option
      * 是否可以设置值
      * @return bool 类型不是 self::VALUE_NONE 的时候返回true,其他均返回false
      */
-    public function acceptValue()
+    public function acceptValue(): bool
     {
         return $this->isValueRequired() || $this->isValueOptional();
     }
@@ -110,7 +141,7 @@ class Option
      * 是否必须
      * @return bool 类型是 self::VALUE_REQUIRED 的时候返回true,其他均返回false
      */
-    public function isValueRequired()
+    public function isValueRequired(): bool
     {
         return self::VALUE_REQUIRED === (self::VALUE_REQUIRED & $this->mode);
     }
@@ -119,7 +150,7 @@ class Option
      * 是否可选
      * @return bool 类型是 self::VALUE_OPTIONAL 的时候返回true,其他均返回false
      */
-    public function isValueOptional()
+    public function isValueOptional(): bool
     {
         return self::VALUE_OPTIONAL === (self::VALUE_OPTIONAL & $this->mode);
     }
@@ -128,7 +159,7 @@ class Option
      * 选项值是否接受数组
      * @return bool 类型是 self::VALUE_IS_ARRAY 的时候返回true,其他均返回false
      */
-    public function isArray()
+    public function isArray(): bool
     {
         return self::VALUE_IS_ARRAY === (self::VALUE_IS_ARRAY & $this->mode);
     }
@@ -168,7 +199,7 @@ class Option
      * 获取描述文字
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -178,7 +209,7 @@ class Option
      * @param Option $option
      * @return bool
      */
-    public function equals(Option $option)
+    public function equals(Option $option): bool
     {
         return $option->getName() === $this->getName()
         && $option->getShortcut() === $this->getShortcut()

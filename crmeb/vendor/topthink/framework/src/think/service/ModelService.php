@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -40,6 +40,12 @@ class ModelService extends Service
             if (is_null($dateFormat)) {
                 // 设置时间戳格式
                 $model->setDateFormat($config->get('database.datetime_format', 'Y-m-d H:i:s'));
+            }
+
+            $timeField = $config->get('database.datetime_field');
+            if (!empty($timeField)) {
+                [$createTime, $updateTime] = explode(',', $timeField);
+                $model->setTimeField($createTime, $updateTime);
             }
 
         });

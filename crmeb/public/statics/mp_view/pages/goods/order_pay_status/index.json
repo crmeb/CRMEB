@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "支付成功",
+  "usingComponents": {
+    "lottery-model": "/pages/goods/order_pay_status/payLottery",
+    "authorize": "/components/Authorize"
+  }
+}

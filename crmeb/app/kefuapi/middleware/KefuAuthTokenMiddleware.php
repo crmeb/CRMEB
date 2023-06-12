@@ -27,6 +27,7 @@ class KefuAuthTokenMiddleware implements MiddlewareInterface
     /**
      * @param Request $request
      * @param \Closure $next
+     * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -34,16 +35,15 @@ class KefuAuthTokenMiddleware implements MiddlewareInterface
      */
     public function handle(Request $request, \Closure $next)
     {
-        $authInfo = null;
         $token = trim(ltrim($request->header(Config::get('cookie.token_name', 'Authori-zation')), 'Bearer'));
         /** @var LoginServices $services */
         $services = app()->make(LoginServices::class);
         $kefuInfo = $services->parseToken($token);
-        Request::macro('kefuId', function () use (&$kefuInfo) {
+        $request->macro('kefuId', function () use (&$kefuInfo) {
             return (int)$kefuInfo['id'];
         });
 
-        Request::macro('kefuInfo', function () use (&$kefuInfo) {
+        $request->macro('kefuInfo', function () use (&$kefuInfo) {
             return $kefuInfo;
         });
 

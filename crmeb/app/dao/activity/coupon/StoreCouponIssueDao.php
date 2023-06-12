@@ -34,11 +34,13 @@ class StoreCouponIssueDao extends BaseDao
 
     /**
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['type']) && $where['type'] != '', function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['type']) && $where['type'] != '', function ($query) use ($where) {
             if ($where['type'] == 'send') {
                 $query->where('receive_type', 3)->where(function ($query1) {
                     $query1->where(function ($query2) {
@@ -306,13 +308,11 @@ class StoreCouponIssueDao extends BaseDao
      */
     public function getTodayCoupon($uid)
     {
-//        return $this->getModel()->where('receive_type', 1)->where('is_del', 0)->whereDay('add_time')->select()->toArray();
         return $this->getModel()->where('status', 1)
             ->where('is_del', 0)
             ->where('remain_count > 0 OR is_permanent = 1')
             ->where(function ($query) {
                 $query->where('receive_type', 1)->whereOr('receive_type', 4);
-//                $query->where('receive_type', 1);
             })->where(function ($query) {
                 $query->where(function ($query) {
                     $query->where('start_time', '<', time())->where('end_time', '>', time());

@@ -59,7 +59,7 @@
         <div>订单编号：</div>
         <div class="conter acea-row row-middle row-right">
           {{ orderInfo.order_id }}
-          <span class="copy copy-data" :data-clipboard-text="orderInfo.order_id">复制</span>
+          <span class="copy copy-data" @click="copyText(orderInfo.order_id)">复制</span>
         </div>
       </div>
       <div class="item acea-row row-between">
@@ -115,8 +115,7 @@
         <div v-if="orderInfo.delivery_type === 'express'">快递单号：</div>
         <div v-if="orderInfo.delivery_type === 'send'">送货人电话：</div>
         <div class="conter">
-          {{ orderInfo.delivery_id
-          }}<span class="copy copy-data" :data-clipboard-text="orderInfo.delivery_id">复制</span>
+          {{ orderInfo.delivery_id }}<span class="copy copy-data" @click="copyText(orderInfo.delivery_id)">复制</span>
         </div>
       </div>
     </div>
@@ -147,7 +146,6 @@
 </template>
 <script>
 import PriceChange from '../../components/PriceChange';
-import ClipboardJS from 'clipboard';
 import { orderInfo } from '@/api/kefu';
 import { required, num } from '@/utils/validate';
 import { validatorDefaultCatch } from '@/libs/dialog';
@@ -182,13 +180,6 @@ export default {
   mounted: function () {
     // this.orderId = this.$route.params.id;
     this.getIndex();
-    this.$nextTick(function () {
-      var copybtn = document.getElementsByClassName('copy-data');
-      const clipboard = new ClipboardJS(copybtn);
-      clipboard.on('success', () => {
-        this.$dialog.success('复制成功');
-      });
-    });
   },
   methods: {
     more: function () {
@@ -205,6 +196,15 @@ export default {
     closeChange(msg) {
       this.change = msg;
     },
+    copyText(text) {
+      this.$copyText(text)
+        .then((message) => {
+          this.$Message.success('复制成功');
+        })
+        .catch((err) => {
+          this.$Message.error('复制失败');
+        });
+    },
     getIndex: function () {
       let that = this;
       orderInfo(this.$route.params.id).then(
@@ -212,13 +212,6 @@ export default {
           that.orderInfo = res.data.orderInfo;
           that.types = res.data.orderInfo._status._type;
           that.title = res.data.orderInfo._status._title;
-          this.$nextTick(function () {
-            let copybtn = document.getElementsByClassName('copy-data');
-            const clipboard = new ClipboardJS(copybtn);
-            clipboard.on('success', () => {
-              this.$dialog.success('复制成功');
-            });
-          });
         },
         (err) => {
           that.$dialog.error(err.msg);

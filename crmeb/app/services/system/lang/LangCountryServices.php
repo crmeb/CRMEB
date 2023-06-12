@@ -29,7 +29,7 @@ class LangCountryServices extends BaseServices
     public function LangCountryList(array $where = []): array
     {
         [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->selectList($where, '*', $page, $limit, 'id desc', true)->toArray();
+        $list = $this->dao->selectList($where, '*', $page, $limit, 'id desc', [], true)->toArray();
         /** @var LangTypeServices $langTypeServices */
         $langTypeServices = app()->make(LangTypeServices::class);
         $langTypeList = $langTypeServices->getColumn([], 'language_name,file_name,id', 'id');

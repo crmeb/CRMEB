@@ -33,17 +33,27 @@ class StoreOrderInvoiceDao extends BaseDao
         return StoreOrderInvoice::class;
     }
 
-    public function search(array $where = [])
+    /**
+     * 发票搜索
+     * @param array $where
+     * @param bool $search
+     * @return \crmeb\basic\BaseModel
+     * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/20
+     */
+    public function search(array $where = [], bool $search = false)
     {
         $realName = $where['real_name'] ?? '';
         $fieldKey = $where['field_key'] ?? '';
         $fieldKey = $fieldKey == 'all' ? '' : $fieldKey;
         $type = $where['type'] ?? '';
         unset($where['type']);
-        return parent::search($where)->when($type, function ($query) use ($type) {
+        return parent::search($where, $search)->when($type, function ($query) use ($type) {
             switch ($type) {
                 case 1://待开
-                    $query->where('is_invoice', 0)->where('invoice_time', 0)->where('is_refund', 0);
+                    $query->where('is_invoice', 0)->where('is_refund', 0);
                     break;
                 case 2://已开
                     $query->where('is_invoice', 1);

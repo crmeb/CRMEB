@@ -8,14 +8,14 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
-import setting  from '@/setting'
+import LayoutMain from '@/layout';
+import setting from '@/setting';
 let routePre = setting.routePre;
 
 const pre = 'system_';
 
 export default {
-  path: routePre+'/system',
+  path: routePre + '/system',
   name: 'system',
   header: 'system',
   redirect: {
@@ -24,8 +24,36 @@ export default {
   meta: {
     auth: ['admin-system'],
   },
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
+    {
+      path: 'code_generation',
+      name: `${pre}code_generation`,
+      meta: {
+        auth: ['system-config-code-generation'],
+        title: '代码生成',
+        activeMenu: routePre + '/system/code_generation_list',
+      },
+      component: () => import('@/pages/system/codeGeneration/index'),
+    },
+    {
+      path: 'code_generation_list',
+      name: `${pre}code_generation_list`,
+      meta: {
+        auth: ['system-config-code-generation-list'],
+        title: '代码生成列表',
+      },
+      component: () => import('@/pages/system/codeGeneration/list'),
+    },
+    {
+      path: 'backend_routing',
+      name: `${pre}backend_routing`,
+      meta: {
+        auth: ['system-config-backend-routing'],
+        title: '路由权限',
+      },
+      component: () => import('@/pages/system/backendRouting/index'),
+    },
     {
       path: 'file',
       name: `${pre}file`,
@@ -95,6 +123,7 @@ export default {
       meta: {
         auth: ['system-maintain-system-file'],
         title: '文件管理入口',
+        activeMenu: routePre + '/system/maintain/system_file/opendir',
       },
       component: () => import('@/pages/system/maintain/systemFile/login'),
     },
@@ -160,6 +189,15 @@ export default {
         title: '定时任务',
       },
       component: () => import('@/pages/system/crontab/index'),
+    },
+    {
+      path: 'system_menus/index',
+      name: `${pre}systemMenus`,
+      meta: {
+        auth: ['system-system-menus'],
+        title: '权限规则',
+      },
+      component: () => import('@/pages/system/systemMenus/index'),
     },
   ],
 };

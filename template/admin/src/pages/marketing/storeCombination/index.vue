@@ -114,7 +114,7 @@ import { formatDate } from '@/utils/validate';
 import { exportCombinationList } from '@/api/export.js';
 
 export default {
-  name: 'index',
+  name: 'marketing_combinalist',
   filters: {
     formatDate(time) {
       if (time !== 0) {

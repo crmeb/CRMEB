@@ -239,7 +239,7 @@ export default {
       this.$refs.goodslist.formValidate.is_virtual = 0;
       this.$refs.goodslist.getList();
       this.$refs.goodslist.goodsCategory();
-    }, 
+    },
     getCouponId(e) {
       this.formValidate.coupon_id = e.id;
       this.formValidate.coupon_title = e.coupon_title;

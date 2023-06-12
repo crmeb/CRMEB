@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "authorize": "/components/Authorize",
+    "home": "/components/home/index"
+  }
+}

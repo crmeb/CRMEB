@@ -237,6 +237,7 @@ class UserServices extends BaseServices
      * 获取分销员ids
      * @param array $where
      * @return array
+     * @throws \ReflectionException
      */
     public function getAgentUserIds(array $where)
     {
@@ -1481,7 +1482,7 @@ class UserServices extends BaseServices
         $userMoney = app()->make(UserMoneyServices::class);
 
         $user['recharge'] = $userMoney->sum([
-            ['uid', '=', $uid], ['pm', '=', 1], ['type', 'in', ['recharge', 'system_add', 'extract']]
+            ['uid', '=', $uid], ['pm', '=', 1], ['type', 'in', ['recharge', 'system_add', 'extract', 'register_system_add']]
         ], 'number');
         $user['orderStatusSum'] = bcsub((string)$user['recharge'], (string)$user['now_money'], 2);
         $user['extractTotalPrice'] = $userExtract->getExtractSum(['uid' => $uid, 'status' => 1]);//累计提现
@@ -1568,6 +1569,7 @@ class UserServices extends BaseServices
         $user['integral'] = intval($user['integral']);
         $user['is_agent_level'] = $agentLevelServices->count(['status' => 1, 'is_del' => 0]) > 0 ? 1 : 0;
         $user['division_open'] = (int)sys_config('division_status', 0);
+        $user['agent_apply_open'] = (int)sys_config('agent_apply_open', 0);
         $user['is_default_avatar'] = $user['avatar'] == sys_config('h5_avatar') ? 1 : 0;
         $user['avatar'] = strpos($user['avatar'], '/statics/system_images/') !== false ? set_file_url($user['avatar']) : $user['avatar'];
         return $user;

@@ -13,6 +13,8 @@ namespace app\adminapi\controller\v1\setting;
 
 use app\adminapi\controller\AuthController;
 use app\services\system\SystemMenusServices;
+use app\services\system\SystemRouteCateServices;
+use app\services\system\SystemRouteServices;
 use think\facade\App;
 use think\facade\Route;
 
@@ -38,14 +40,37 @@ class SystemMenus extends AuthController
     /**
      * 菜单展示列表
      * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/05/06
      */
     public function index()
     {
         $where = $this->request->getMore([
             ['is_show', ''],
             ['keyword', ''],
+            ['auth_type', ''],
         ]);
         return app('json')->success($this->services->getList($where));
+    }
+
+    /**
+     * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/14
+     */
+    public function unique()
+    {
+        $adminInfo = $this->request->adminInfo();
+        [$menus, $uniqueAuth] = app()->make(SystemMenusServices::class)->getMenusList($adminInfo['roles'], (int)$adminInfo['level']);
+        return app('json')->success(compact('menus', 'uniqueAuth'));
     }
 
     /**
@@ -95,6 +120,73 @@ class SystemMenus extends AuthController
         } else {
             return app('json')->fail(100022);
         }
+    }
+
+    /**
+     * 批量保存权限
+     * @return \think\Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/11
+     */
+    public function batchSave()
+    {
+        $menus = $this->request->post('menus', []);
+        if (!$menus) {
+            return app('json')->fail(100026);
+        }
+        $data = [];
+
+        $uniqueAuthAll = $this->services->getColumn(['is_del' => 0, 'is_show' => 1], 'unique_auth');
+        $uniqueAuthAll = array_filter($uniqueAuthAll, function ($item) {
+            return !!$item;
+        });
+        $uniqueAuthAll = array_unique($uniqueAuthAll);
+
+        $uniqueFn = function ($path) use ($uniqueAuthAll) {
+            $attPath = explode('/', $path);
+            $uniqueAuth = '';
+            if ($attPath) {
+                $pathData = [];
+                foreach ($attPath as $vv) {
+                    if (strstr($vv, '<') === false) {
+                        $pathData[] = $vv;
+                    }
+                }
+                $uniqueAuth = implode('-', $pathData);
+            }
+
+            if (in_array($uniqueAuth, $uniqueAuthAll)) {
+                $uniqueAuth .= '-' . uniqid();
+            }
+
+            array_push($uniqueAuthAll, $uniqueAuth);
+
+            return $uniqueAuth;
+        };
+
+        foreach ($menus as $menu) {
+            if (empty($menu['menu_name'])) {
+                return app('json')->fail(400198);
+            }
+            if (isset($menu['unique_auth']) && $menu['unique_auth']) {
+                $menu['unique_auth'] = explode('/', $menu['api_url']);
+            }
+            $data[] = [
+                'methods' => $menu['method'],
+                'menu_name' => $menu['menu_name'],
+                'unique_auth' => !empty($menu['unique_auth']) ? $menu['unique_auth'] : $uniqueFn($menu['api_url']),
+                'api_url' => $menu['api_url'],
+                'pid' => $menu['path'],
+                'auth_type' => 2,
+                'is_show' => 1,
+                'is_show_path' => 1,
+            ];
+        }
+
+        $this->services->saveAll($data);
+
+        return app('json')->success(100021);
     }
 
     /**
@@ -183,7 +275,7 @@ class SystemMenus extends AuthController
     }
 
     /**
-     * 显示和隐藏
+     * 权限的开启和关闭，显示和隐藏
      * @param $id
      * @return mixed
      */
@@ -193,9 +285,14 @@ class SystemMenus extends AuthController
             return app('json')->fail(100100);
         }
 
-        [$show] = $this->request->postMore([['is_show', 0]], true);
+        [$isShow, $isShowPath] = $this->request->postMore([['is_show', 0], ['is_show_path', 0]], true);
+        if ($isShow == -1) {
+            $res = $this->services->update($id, ['is_show_path' => $isShowPath]);
+        } else {
+            $res = $this->services->update($id, ['is_show' => $isShow, 'is_show_path' => $isShow]);
+        }
 
-        if ($this->services->update($id, ['is_show' => $show])) {
+        if ($res) {
             return app('json')->success(100001);
         } else {
             return app('json')->fail(100007);
@@ -216,25 +313,27 @@ class SystemMenus extends AuthController
     }
 
     /**
+     * 获取路由分类
+     * @param SystemRouteCateServices $service
+     * @return \think\Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/25
+     */
+    public function ruleCate(SystemRouteCateServices $service)
+    {
+        return app('json')->success($service->getAllList('adminapi'));
+    }
+
+    /**
      * 获取接口列表
      * @return array
      */
-    public function ruleList()
+    public function ruleList(SystemRouteServices $services)
     {
+        $cateId = request()->get('cate_id', 0);
         //获取所有的路由
-        $ruleList = Route::getRuleList();
-        $menuApiList = $this->services->getColumn(['auth_type' => 2, 'is_del' => 0], "concat(`api_url`,'_',lower(`methods`)) as rule");
-        if ($menuApiList) $menuApiList = array_column($menuApiList, 'rule');
-        $list = [];
-        foreach ($ruleList as $item) {
-            $item['rule'] = str_replace('adminapi/', '', $item['rule']);
-            if (!in_array($item['rule'] . '_' . $item['method'], $menuApiList)) {
-                $item['real_name'] = $item['option']['real_name'] ?? '';
-                unset($item['option']);
-                $item['method'] = strtoupper($item['method']);
-                $list[] = $item;
-            }
-        }
-        return app('json')->success($list);
+        $ruleList = $services->selectList(['cate_id' => $cateId, 'app_name' => 'adminapi'])->toArray();
+        return app('json')->success($ruleList);
     }
 }

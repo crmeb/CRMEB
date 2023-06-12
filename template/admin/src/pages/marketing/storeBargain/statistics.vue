@@ -5,23 +5,23 @@
         <span>
           <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
         </span>
-        <Divider type="vertical"/>
+        <Divider type="vertical" />
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
     </div>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <div>
       <Tabs v-model="currentTab" @on-click="onClickTab">
-        <TabPane v-for="(item, index) in tabs" :label="item.label" :name="item.type" :key="index"/>
+        <TabPane v-for="(item, index) in tabs" :label="item.label" :name="item.type" :key="index" />
       </Tabs>
     </div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form
-          ref="pagination"
-          :model="pagination"
-          :label-width="labelWidth"
-          label-position="right"
-          @submit.native.prevent
+        ref="pagination"
+        :model="pagination"
+        :label-width="labelWidth"
+        label-position="right"
+        @submit.native.prevent
       >
         <Row type="flex" :gutter="24">
           <Col span="6" v-if="type == 1">
@@ -38,29 +38,29 @@
           <Col span="6">
             <FormItem label="搜索：" label-for="title">
               <Input
-                  search
-                  enter-button
-                  v-model="pagination.real_name"
-                  :placeholder="type == 1 ? '请输入用户姓名|订单号|UID' : '请输入用户UID'"
-                  @on-search="searchList"
+                search
+                enter-button
+                v-model="pagination.real_name"
+                :placeholder="type == 1 ? '请输入用户姓名|订单号|UID' : '请输入用户UID'"
+                @on-search="searchList"
               />
             </FormItem>
           </Col>
         </Row>
       </Form>
       <Table
-          :columns="type ? thead2 : thead"
-          :data="tbody"
-          ref="table"
-          class="mt25"
-          :loading="loading"
-          highlight-row
-          no-userFrom-text="暂无数据"
-          no-filtered-userFrom-text="暂无筛选结果"
+        :columns="type ? thead2 : thead"
+        :data="tbody"
+        ref="table"
+        class="mt25"
+        :loading="loading"
+        highlight-row
+        no-userFrom-text="暂无数据"
+        no-filtered-userFrom-text="暂无筛选结果"
       >
         <template slot-scope="{ row }" slot="avatar">
           <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.avatar"/>
+            <img v-lazy="row.avatar" />
           </div>
         </template>
         <template slot-scope="{ row }" slot="num">
@@ -77,43 +77,43 @@
       </Table>
       <div class="acea-row row-right page">
         <Page
-            :total="total"
-            :current="pagination.page"
-            show-elevator
-            show-total
-            @on-change="pageChange"
-            :page-size="pagination.limit"
+          :total="total"
+          :current="pagination.page"
+          show-elevator
+          show-total
+          @on-change="pageChange"
+          :page-size="pagination.limit"
         />
       </div>
     </Card>
     <!-- 详情模态框-->
     <Modal
-        v-model="modals"
-        class="tableBox"
-        scrollable
-        footer-hide
-        closable
-        title="查看详情"
-        :mask-closable="false"
-        width="750"
+      v-model="modals"
+      class="tableBox"
+      scrollable
+      footer-hide
+      closable
+      title="查看详情"
+      :mask-closable="false"
+      width="750"
     >
       <Table
-          ref="selection"
-          :columns="columns2"
-          :data="tabList3"
-          :loading="loading2"
-          no-data-text="暂无数据"
-          highlight-row
-          max-height="600"
-          size="small"
-          no-filtered-data-text="暂无筛选结果"
+        ref="selection"
+        :columns="columns2"
+        :data="tabList3"
+        :loading="loading2"
+        no-data-text="暂无数据"
+        highlight-row
+        max-height="600"
+        size="small"
+        no-filtered-data-text="暂无筛选结果"
       >
         <template slot-scope="{ row }" slot="nickname">
           <span> {{ row.nickname + ' / ' + row.uid }}</span>
         </template>
         <template slot-scope="{ row }" slot="avatar">
           <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.avatar"/>
+            <img v-lazy="row.avatar" />
           </div>
         </template>
         <template slot-scope="{ row }" slot="action">
@@ -136,7 +136,7 @@ import {
 
 export default {
   name: 'index',
-  components: {cardsData},
+  components: { cardsData },
   data() {
     return {
       modals: false,
@@ -235,7 +235,7 @@ export default {
         {
           col: 8,
           count: 0,
-          name: '推广人数（人）',
+          name: '砍价人数（人）',
           className: 'ios-speedometer-outline',
         },
         {
@@ -326,14 +326,14 @@ export default {
       if (this.type == 0) {
         getbargainStatisticsPeople(this.id, this.pagination).then((res) => {
           this.loading = false;
-          const {count, list} = res.data;
+          const { count, list } = res.data;
           this.total = count;
           this.tbody = list;
         });
       } else {
         getbargainStatisticsOrder(this.id, this.pagination).then((res) => {
           this.loading = false;
-          const {count, list} = res.data;
+          const { count, list } = res.data;
           this.total = count;
           this.tbody = list;
         });
@@ -359,15 +359,15 @@ export default {
       this.modals = true;
       this.rows = row;
       bargainUserInfoApi(row.id)
-          .then(async (res) => {
-            let data = res.data;
-            this.tabList3 = data.list;
-            this.loading = false;
-          })
-          .catch((res) => {
-            this.loading = false;
-            this.$Message.error(res.msg);
-          });
+        .then(async (res) => {
+          let data = res.data;
+          this.tabList3 = data.list;
+          this.loading = false;
+        })
+        .catch((res) => {
+          this.loading = false;
+          this.$Message.error(res.msg);
+        });
     },
   },
 };

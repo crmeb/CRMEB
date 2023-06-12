@@ -14,6 +14,7 @@ namespace app\services\message\notice;
 use app\jobs\TemplateJob;
 use app\services\message\NoticeService;
 use app\services\kefu\service\StoreServiceServices;
+use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
 use think\facade\Log;
 
@@ -52,9 +53,13 @@ class WechatTemplateListService extends NoticeService
      */
     public function getOpenidByUid(int $uid)
     {
-        /** @var WechatUserServices $wechatServices */
-        $wechatServices = app()->make(WechatUserServices::class);
-        return $wechatServices->uidToOpenid($uid, 'wechat');
+        $isDel = app()->make(UserServices::class)->value(['uid' => $uid], 'is_del');
+        if ($isDel) {
+            $openid = '';
+        } else {
+            $openid = app()->make(WechatUserServices::class)->uidToOpenid($uid, 'wechat');
+        }
+        return $openid;
     }
 
     /**
@@ -71,8 +76,10 @@ class WechatTemplateListService extends NoticeService
             $this->isOpen = $this->noticeInfo['is_wechat'] === 1;
             if ($this->isOpen) {
                 $openid = $this->getOpenidByUid($uid);
-                //放入队列执行
-                TemplateJob::dispatch('doJob', ['wechat', $openid, $this->noticeInfo['mark'], $data, $link, $color]);
+                if ($openid != '') {
+                    //放入队列执行
+                    TemplateJob::dispatch('doJob', ['wechat', $openid, $this->noticeInfo['mark'], $data, $link, $color]);
+                }
             }
         } catch (\Exception $e) {
             Log::error($e->getMessage());

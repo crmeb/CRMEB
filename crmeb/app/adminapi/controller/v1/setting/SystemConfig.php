@@ -12,9 +12,9 @@ namespace app\adminapi\controller\v1\setting;
 
 use app\adminapi\controller\AuthController;
 use app\Request;
-use app\services\order\StoreOrderServices;
 use app\services\system\config\SystemConfigServices;
 use app\services\system\config\SystemConfigTabServices;
+use crmeb\services\easywechat\orderShipping\MiniOrderService;
 use think\facade\App;
 
 /**
@@ -38,8 +38,10 @@ class SystemConfig extends AuthController
 
     /**
      * 显示资源列表
-     *
      * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -58,8 +60,11 @@ class SystemConfig extends AuthController
 
     /**
      * 显示创建资源表单页.
-     * @param $type
      * @return \think\Response
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function create()
     {
@@ -72,7 +77,6 @@ class SystemConfig extends AuthController
 
     /**
      * 保存新建的资源
-     *
      * @return \think\Response
      */
     public function save()
@@ -120,7 +124,7 @@ class SystemConfig extends AuthController
         } else {
             $this->services->save($data);
         }
-        \crmeb\services\CacheService::clear();
+        $this->services->cacheDriver()->clear();
         return app('json')->success(400284);
     }
 
@@ -186,13 +190,12 @@ class SystemConfig extends AuthController
         }
         $data['value'] = json_encode($data['value']);
         $this->services->update($id, $data);
-        \crmeb\services\CacheService::clear();
+        $this->services->cacheDriver()->clear();
         return app('json')->success(100001);
     }
 
     /**
      * 删除指定资源
-     *
      * @param int $id
      * @return \think\Response
      */
@@ -201,7 +204,7 @@ class SystemConfig extends AuthController
         if (!$this->services->delete($id))
             return app('json')->fail(100008);
         else {
-            \crmeb\services\CacheService::clear();
+            $this->services->cacheDriver()->clear();
             return app('json')->success(100002);
         }
     }
@@ -218,7 +221,7 @@ class SystemConfig extends AuthController
             return app('json')->fail(100100);
         }
         $this->services->update($id, ['status' => $status]);
-        \crmeb\services\CacheService::clear();
+        $this->services->cacheDriver()->clear();
         return app('json')->success(100014);
     }
 
@@ -311,15 +314,6 @@ class SystemConfig extends AuthController
             return app('json')->fail(500029);
         }
 
-        //支付接口类型选择，如果有订单就不能再进行切换
-//        if (isset($post['pay_wechat_type'])) {
-//            /** @var StoreOrderServices $orderServices */
-//            $orderServices = app()->make(StoreOrderServices::class);
-//            if ($post['pay_wechat_type'] != -1 && $orderServices->count()) {
-//                return app('json')->fail('支付接口类型已经选择，不能再次进行切换，切换后会导致无法退款等问题。');
-//            }
-//        }
-
         if (isset($post['weixin_ckeck_file'])) {
             $from = public_path() . $post['weixin_ckeck_file'];
             $to = public_path() . array_reverse(explode('/', $post['weixin_ckeck_file']))[0];
@@ -334,9 +328,13 @@ class SystemConfig extends AuthController
             @copy($from, $toHome);
             @copy($from, $toPublic);
         }
-        if(isset($post['reward_integral']) || isset($post['reward_money'])) {
-            if($post['reward_integral'] < 0 || $post['reward_money'] < 0) return app('json')->fail(400558);
+        if (isset($post['reward_integral']) || isset($post['reward_money'])) {
+            if ($post['reward_integral'] < 0 || $post['reward_money'] < 0) return app('json')->fail(400558);
         }
+
+//        if (isset($post['order_shipping_open']) && $post['order_shipping_open'] == 1 && isset($post['order_shipping_url'])) {
+//            MiniOrderService::setMesJumpPathAndCheck($post['order_shipping_url']);
+//        }
         foreach ($post as $k => $v) {
             $config_one = $this->services->getOne(['menu_name' => $k]);
             if ($config_one) {
@@ -345,7 +343,7 @@ class SystemConfig extends AuthController
                 $this->services->update($k, ['value' => json_encode($v)], 'menu_name');
             }
         }
-        \crmeb\services\CacheService::clear();
+        $this->services->cacheDriver()->clear();
         return app('json')->success(100001);
 
     }

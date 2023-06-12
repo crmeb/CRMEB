@@ -29,6 +29,11 @@ import integralOrder from './module/integralOrder';
 import mobildConfig from './module/mobildConfig';
 import upgrade from './module/upgrade';
 import layout from './module/layout';
+import themeConfig from './module/themeConfig';
+import routesList from './module/routesList';
+import tagsViewRoutes from './module/tagsViewRoutes';
+import userInfos from './module/userInfos';
+import keepAliveNames from './module/keepAliveNames';
 
 Vue.use(Vuex);
 // 持久化储存
@@ -63,6 +68,9 @@ export default new Vuex.Store({
         mobildConfig: state.mobildConfig,
         upgrade: state.upgrade,
         layout: state.layout,
+        themeConfig: state.themeConfig,
+        routesList: state.routesList,
+        keepAliveNames: state.keepAliveNames,
       }),
       storage: window.localStorage,
     }).plugin,
@@ -85,5 +93,10 @@ export default new Vuex.Store({
     integralOrder,
     upgrade,
     layout,
+    themeConfig,
+    routesList,
+    tagsViewRoutes,
+    userInfos,
+    keepAliveNames,
   },
 });

@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -29,6 +29,12 @@ class File extends SplFileInfo
     protected $hash = [];
 
     protected $hashName;
+
+    /**
+     * 保存的文件后缀
+     * @var string
+     */
+    protected $extension;
 
     public function __construct(string $path, bool $checkPath = true)
     {
@@ -156,6 +162,16 @@ class File extends SplFileInfo
     }
 
     /**
+     * 指定保存文件的扩展名
+     * @param string $extension
+     * @return void
+     */
+    public function setExtension(string $extension): void
+    {
+        $this->extension = $extension;
+    }
+
+    /**
      * 自动生成文件名
      * @access public
      * @param string|\Closure $rule
@@ -176,12 +192,13 @@ class File extends SplFileInfo
                         $this->hashName = call_user_func($rule);
                         break;
                     default:
-                        $this->hashName = date('Ymd') . DIRECTORY_SEPARATOR . md5((string) microtime(true));
+                        $this->hashName = date('Ymd') . DIRECTORY_SEPARATOR . md5(microtime(true) . $this->getPathname());
                         break;
                 }
             }
         }
 
-        return $this->hashName . '.' . $this->extension();
+        $extension = $this->extension ?? $this->extension();
+        return $this->hashName . ($extension ? '.' . $extension : '');
     }
 }

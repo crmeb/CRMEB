@@ -157,7 +157,10 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           setCookies('moveLink', this.formItem.link);
-          this.$router.push({ path: this.$routeProStr + '/setting/pages/diy', query: { id: this.formItem.id, type: 1 } });
+          this.$router.push({
+            path: this.$routeProStr + '/setting/pages/diy',
+            query: { id: this.formItem.id, type: 1 },
+          });
         } else {
           return false;
         }

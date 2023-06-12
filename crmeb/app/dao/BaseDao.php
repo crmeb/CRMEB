@@ -46,11 +46,13 @@ abstract class BaseDao
     /**
      * 读取数据条数
      * @param array $where
+     * @param bool $search
      * @return int
+     * @throws \ReflectionException
      */
-    public function count(array $where = [])
+    public function count(array $where = [], bool $search = true)
     {
-        return $this->search($where)->count();
+        return $this->search($where, $search)->count();
     }
 
     /**
@@ -59,13 +61,34 @@ abstract class BaseDao
      * @param string $field
      * @param int $page
      * @param int $limit
+     * @param string $order
      * @param bool $search
      * @return \think\Collection
+     * @throws \ReflectionException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function selectList(array $where, string $field = '*', int $page = 0, int $limit = 0, string $order = '', bool $search = false)
+    public function selectList(array $where, string $field = '*', int $page = 0, int $limit = 0, string $order = '', array $with = [], bool $search = false)
+    {
+        return $this->selectModel($where, $field, $page, $limit, $order, $with, $search)->select();
+    }
+
+    /**
+     * @param array $where
+     * @param string $field
+     * @param int $page
+     * @param int $limit
+     * @param string $order
+     * @param array $with
+     * @param bool $search
+     * @return BaseModel
+     * @throws \ReflectionException
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/14
+     */
+    public function selectModel(array $where, string $field = '*', int $page = 0, int $limit = 0, string $order = '', array $with = [], bool $search = false)
     {
         if ($search) {
             $model = $this->search($where);
@@ -76,7 +99,9 @@ abstract class BaseDao
             $query->page($page, $limit);
         })->when($order !== '', function ($query) use ($order) {
             $query->order($order);
-        })->select();
+        })->when($with, function ($query) use ($with) {
+            $query->with($with);
+        });
     }
 
     /**
@@ -190,14 +215,14 @@ abstract class BaseDao
 
     /**
      * 获取单个字段值
-     * @param array $where
+     * @param $where
      * @param string|null $field
      * @return mixed
      */
-    public function value(array $where, ?string $field = '')
+    public function value($where, ?string $field = '')
     {
         $pk = $this->getPk();
-        return $this->getModel()->where($where)->value($field ?: $pk);
+        return $this->search($this->setWhere($where))->value($field ?: $pk);
     }
 
     /**
@@ -211,6 +236,7 @@ abstract class BaseDao
     {
         return $this->getModel()->where($where)->column($field, $key);
     }
+
 
     /**
      * 删除
@@ -228,6 +254,20 @@ abstract class BaseDao
     }
 
     /**
+     * 删除记录
+     * @param int $id
+     * @param bool $force
+     * @return bool
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/15
+     */
+    public function destroy(int $id, bool $force = false)
+    {
+        return $this->getModel()->destroy($id, $force);
+    }
+
+    /**
      * 更新数据
      * @param int|string|array $id
      * @param array $data
@@ -242,6 +282,21 @@ abstract class BaseDao
             $where = [is_null($key) ? $this->getPk() : $key => $id];
         }
         return $this->getModel()::update($data, $where);
+    }
+
+    /**
+     * @param $where
+     * @return array|mixed
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/6
+     */
+    protected function setWhere($where, ?string $key = null)
+    {
+        if (!is_array($where)) {
+            $where = [is_null($key) ? $this->getPk() : $key => $where];
+        }
+        return $where;
     }
 
     /**
@@ -291,50 +346,87 @@ abstract class BaseDao
     }
 
     /**
-     * 获取搜索器和搜索条件key
-     * @param array $withSearch
+     * 获取搜索器和搜索条件key,以及不在搜索器的条件数组
+     * @param array $where
      * @return array[]
      * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/18
      */
-    private function getSearchData(array $withSearch)
+    private function getSearchData(array $where)
     {
         $with = [];
-        $whereKey = [];
+        $otherWhere = [];
         $responses = new \ReflectionClass($this->setModel());
-        foreach ($withSearch as $fieldName) {
-            $method = 'search' . Str::studly($fieldName) . 'Attr';
+        foreach ($where as $key => $value) {
+            $method = 'search' . Str::studly($key) . 'Attr';
             if ($responses->hasMethod($method)) {
-                $with[] = $fieldName;
+                $with[] = $key;
             } else {
-                $whereKey[] = $fieldName;
+                if (!in_array($key, ['timeKey', 'store_stock', 'integral_time'])) {
+                    if (!is_array($value)) {
+                        $otherWhere[] = [$key, '=', $value];
+                    } else if (count($value) === 3) {
+                        $otherWhere[] = $value;
+                    }
+                }
             }
         }
-        return [$with, $whereKey];
+        return [$with, $otherWhere];
     }
 
     /**
      * 根据搜索器获取搜索内容
-     * @param array $withSearch
-     * @param array|null $data
+     * @param $where
+     * @param $search
      * @return BaseModel
      * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/18
      */
-    protected function withSearchSelect(array $withSearch, ?array $data = [])
+    protected function withSearchSelect($where, $search)
     {
-        [$with] = $this->getSearchData($withSearch);
-        return $this->getModel()->withSearch($with, $data);
+        [$with, $otherWhere] = $this->getSearchData($where);
+        return $this->getModel()->withSearch($with, $where)->when($search, function ($query) use ($otherWhere) {
+            $query->where($this->filterWhere($otherWhere));
+        });
+    }
+
+    /**
+     * 过滤数据表中不存在的where条件字段
+     * @param array $where
+     * @return array
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/11
+     */
+    protected function filterWhere(array $where = [])
+    {
+        $fields = $this->getModel()->getTableFields();
+        foreach ($where as $key => $item) {
+            if (!in_array($item[0], $fields)) {
+                unset($where[$key]);
+            }
+        }
+        return $where;
     }
 
     /**
      * 搜索
      * @param array $where
+     * @param bool $search
      * @return BaseModel
      * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/18
      */
-    protected function search(array $where = [])
+    public function search(array $where = [], bool $search = true)
     {
         if ($where) {
-            return $this->withSearchSelect(array_keys($where), $where);
+            return $this->withSearchSelect($where, $search);
         } else {
             return $this->getModel();
         }
@@ -365,6 +457,9 @@ abstract class BaseDao
      * @param string|null $keyField
      * @param int $acc
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function bcInc($key, string $incField, string $inc, string $keyField = null, int $acc = 2)
     {
@@ -379,6 +474,9 @@ abstract class BaseDao
      * @param string|null $keyField
      * @param int $acc
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function bcDec($key, string $decField, string $dec, string $keyField = null, int $acc = 2)
     {
@@ -445,18 +543,6 @@ abstract class BaseDao
             })->dec($stock, $num)->inc($sales, $num)->update();
         }
         return false;
-//        $field = $isQuota ? [$stock, $sales, 'quota'] : [$stock, $sales];
-//        $info = $this->getModel()->where($where)->field($field)->find();
-//        if ($info) {
-//            if ($isQuota) {
-//                $info->quota = (int)$info->quota - $num;
-//            }
-//            $info->stock = (int)$info->stock - $num;
-//            $info->sales = (int)$info->sales + $num;
-//            return $info->save();
-//        } else {
-//            return false;
-//        }
     }
 
     /**
@@ -487,22 +573,6 @@ abstract class BaseDao
             })->inc($stock, $num)->dec($sales, $salesNum)->update();
         }
         return true;
-//        $field = $isQuota ? [$stock, $sales, 'quota'] : [$stock, $sales];
-//        $info = $this->getModel()->where($where)->field($field)->find();
-//        if ($info) {
-//            if ($isQuota) {
-//                $info->quota = (int)$info->quota + $num;
-//            }
-//            $info->stock = (int)$info->stock + $num;
-//            if ((int)$info->sales > $num) {
-//                $info->sales = (int)$info->sales - $num;
-//            } else {
-//                $info->sales = 0;
-//            }
-//            return $info->save();
-//        } else {
-//            return false;
-//        }
     }
 
     /**

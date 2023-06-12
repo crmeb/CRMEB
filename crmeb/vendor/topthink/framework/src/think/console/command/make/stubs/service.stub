@@ -3,9 +3,8 @@ declare (strict_types = 1);
 
 namespace {%namespace%};
 
-class {%className%}  extends \think\Service
+class {%className%} extends \think\Service
 {
-
     /**
      * 注册服务
      *
@@ -16,7 +15,6 @@ class {%className%}  extends \think\Service
     	//
     }
 
-    
     /**
      * 执行服务
      *

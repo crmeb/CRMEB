@@ -45,7 +45,7 @@ class StoreOrderDeliveryServices extends BaseServices
      * 订单发货
      * @param int $id
      * @param array $data
-     * @return bool
+     * @return array
      */
     public function delivery(int $id, array $data)
     {
@@ -70,9 +70,9 @@ class StoreOrderDeliveryServices extends BaseServices
             // 检测快递公司编码
             /** @var ExpressServices $expressServices */
             $expressServices = app()->make(ExpressServices::class);
-           if (!$expressServices->be(['code' => $data['delivery_code']])) {
-               throw new AdminException(410324);
-           }
+            if (!$expressServices->be(['code' => $data['delivery_code']])) {
+                throw new AdminException(410324);
+            }
         }
 
         /** @var StoreOrderRefundServices $storeOrderRefundServices */
@@ -80,8 +80,7 @@ class StoreOrderDeliveryServices extends BaseServices
         if ($storeOrderRefundServices->count(['store_order_id' => $id, 'refund_type' => [1, 2, 4, 5], 'is_cancel' => 0, 'is_del' => 0])) {
             throw new AdminException(400475);
         }
-        $this->doDelivery($id, $orderInfo, $data);
-        return true;
+        return $this->doDelivery($id, $orderInfo, $data);
     }
 
     /**
@@ -431,7 +430,7 @@ class StoreOrderDeliveryServices extends BaseServices
      * @param int $id
      * @param $orderInfo
      * @param array $data
-     * @return bool
+     * @return array
      */
     public function doDelivery(int $id, $orderInfo, array $data)
     {
@@ -441,9 +440,11 @@ class StoreOrderDeliveryServices extends BaseServices
         /** @var StoreOrderCartInfoServices $orderInfoServices */
         $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
         $storeName = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id);
+        // 发货信息录入
+        $res = [];
         switch ($type) {
             case 1://快递发货
-                $this->orderDeliverGoods($id, $data, $orderInfo, $storeName);
+                $res = $this->orderDeliverGoods($id, $data, $orderInfo, $storeName);
                 event('NoticeListener', [['orderInfo' => $orderInfo, 'storeName' => $storeName, 'data' => $data], 'order_postage_success']);
                 break;
             case 2://配送
@@ -456,9 +457,17 @@ class StoreOrderDeliveryServices extends BaseServices
             default:
                 throw new AdminException(400522);
         }
+        if (!$data['delivery_id'] && !empty($res['kuaidinum'])) {
+            $data['delivery_id'] = $res['kuaidinum'];
+        }
+        if (!$data['delivery_id']) {
+            $data['delivery_id'] = uniqid();
+        }
+        // 小程序订单管理
+        event('OrderShipping', ['product', $orderInfo, $type, $data['delivery_id'], $data['delivery_name']]);
         //到期自动收货
         event('OrderDeliveryListener', [$orderInfo, $storeName, $data, $type]);
-        return true;
+        return $res;
     }
 
     /**
@@ -473,6 +482,7 @@ class StoreOrderDeliveryServices extends BaseServices
         if (!$data['delivery_name']) {
             throw new AdminException(400007);
         }
+        $dump = [];
         $data['delivery_type'] = 'express';
         if ($data['express_record_type'] == 2) {//电子面单
             if (!$data['delivery_code']) {
@@ -519,6 +529,55 @@ class StoreOrderDeliveryServices extends BaseServices
                 'cargo' => $expData['cargo'],
             ]);
             $data['delivery_id'] = $dump['kuaidinum'];
+            if (!empty($dump['label'])) {
+                $data['kuaidi_label'] = $dump['label'];
+            }
+        } else if ($data['express_record_type'] == 3) {
+            //商家寄件
+            if (!$data['delivery_code']) {
+                throw new AdminException(400476);
+            }
+            if (!$data['express_temp_id']) {
+                throw new AdminException(400527);
+            }
+            if (!$data['to_name']) {
+                throw new AdminException(400008);
+            }
+            if (!$data['to_tel']) {
+                throw new AdminException(400477);
+            }
+            if (!$data['to_addr']) {
+                throw new AdminException(400478);
+            }
+            /** @var ServeServices $expressService */
+            $expressService = app()->make(ServeServices::class);
+            $expData['kuaidicom'] = $data['delivery_code'];
+            $expData['man_name'] = $orderInfo->real_name;
+            $expData['phone'] = $orderInfo->user_phone;
+            $expData['address'] = $orderInfo->user_address;
+            $expData['send_real_name'] = $data['to_name'];
+            $expData['send_phone'] = $data['to_tel'];
+            $expData['send_address'] = $data['to_addr'];
+            $expData['temp_id'] = $data['express_temp_id'];
+            $expData['weight'] = $this->getOrderSumWeight($id);
+            $expData['cargo'] = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id, true);
+            if (!sys_config('config_shippment_open', 0)) {
+                throw new AdminException('商家寄件未开启无法寄件');
+            }
+            $dump = $expressService->express()->shippmentCreateOrder($expData);
+            $orderInfo->delivery_id = $dump['kuaidinum'] ?? '';
+            $data['express_dump'] = json_encode([
+                'com' => $expData['com'],
+                'from_name' => $expData['from_name'],
+                'from_tel' => $expData['from_tel'],
+                'from_addr' => $expData['from_addr'],
+                'temp_id' => $expData['temp_id'],
+                'cargo' => $expData['cargo'],
+            ]);
+            $data['delivery_id'] = $dump['kuaidinum'] ?? '';
+            $data['kuaidi_label'] = $dump['label'] ?? '';
+            $data['kuaidi_task_id'] = $dump['taskId'] ?? '';
+            $data['kuaidi_order_id'] = $dump['orderId'] ?? '';
         } else {
             if (!$data['delivery_id']) {
                 throw new AdminException(400531);
@@ -543,7 +602,7 @@ class StoreOrderDeliveryServices extends BaseServices
                 throw new AdminException(400529);
             }
         });
-        return true;
+        return $dump;
     }
 
     /**
@@ -610,6 +669,7 @@ class StoreOrderDeliveryServices extends BaseServices
                 /** @var StoreProductVirtualServices $virtualService */
                 $virtualService = app()->make(StoreProductVirtualServices::class);
                 $virtual = $virtualService->get(['attr_unique' => $unique, 'uid' => 0]);
+                if (!$virtual) throw new ApiException(100026);
                 $virtual->order_id = $orderInfo['order_id'];
                 $virtual->uid = $orderInfo['uid'];
                 $virtual->save();

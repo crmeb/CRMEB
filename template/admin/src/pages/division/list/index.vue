@@ -180,23 +180,18 @@ export default {
           minWidth: 150,
         },
         {
-          title: '邀请码',
-          key: 'division_invite',
-          minWidth: 150,
-        },
-        {
           title: '分销比例',
           slot: 'division_percent',
           minWidth: 100,
         },
         {
-          title: '用户数量',
-          key: 'user_count',
-          minWidth: 100,
+          title: '到期时间',
+          key: 'division_end_time',
+          minWidth: 150,
         },
         {
-          title: '订单数量',
-          key: 'order_count',
+          title: '员工数量',
+          key: 'agent_count',
           minWidth: 100,
         },
       ],

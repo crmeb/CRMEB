@@ -59,7 +59,7 @@ class StoreOrderStoreOrderStatusDao extends BaseDao
      * @param array $where
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
      */
-    protected function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
         return $this->getModel()->when(isset($where['paid']), function ($query) use ($where) {
             $query->where($this->alias . '.paid', $where['paid']);

@@ -1,0 +1,109 @@
+/* 深色模式样式
+------------------------------- */
+[data-theme='dark'] {
+  --prev-bg-menuBar: #191919 !important;
+  --prev-bg-menuBarColor: #dadada !important;
+  --prev-bg-topBar: #191919 !important;
+  --prev-bg-topBarColor: #dadada !important;
+  --prev-bg-columnsMenuBar: #191919 !important;
+  --prev-bg-columnsMenuBarColor: #dadada !important;
+  --prev-bg-main-color: #1f1f1f !important;
+  --prev-bg-color: rgba(0, 0, 0, 0.3) !important;
+  --prev-bg-white: #191919 !important;
+  --prev-color-text-black: #ffffff !important;
+  --prev-color-text-primary: #dadada !important;
+  --prev-color-text-regular: #dadada !important;
+  --prev-color-text-secondary: #a3a3a3 !important;
+  --prev-color-hover: rgba(0, 0, 0, 0.3) !important;
+  --prev-color-seting-main: #505050 !important;
+  --prev-color-seting-aside: #3c3c3c !important;
+  --prev-color-seting-header: #303030 !important;
+  --prev-border-color-hover: #616161 !important;
+  --prev-border-color-base: #333333 !important;
+  --prev-border-color-light: #333333 !important;
+  --prev-border-color-lighter: #333333 !important;
+  --prev-border-color-extra-light: #333333 !important;
+
+  // menu
+  .layout-aside {
+    border-right: 1px solid var(--prev-border-color-lighter) !important;
+  }
+
+  // drawer
+  .el-drawer {
+    border-left: 1px solid var(--prev-border-color-lighter) !important;
+  }
+
+  // button
+  .el-button--default {
+    background: var(--prev-bg-white);
+    color: var(--prev-color-text-primary);
+    border-color: var(--prev-border-color-lighter);
+    &:hover,
+    &:focus {
+      color: var(--prev-color-primary) !important;
+      background: var(--prev-color-primary-light-8) !important;
+      border-color: var(--prev-color-primary-light-6) !important;
+    }
+    &:focus {
+      border-color: var(--prev-color-primary-light-1) !important;
+    }
+    &:active {
+      border-color: var(--prev-color-primary-light-6) !important;
+    }
+  }
+
+  // tag
+  .el-tag.el-tag--info {
+    background-color: var(--prev-bg-white) !important;
+    border-color: var(--prev-border-color-light) !important;
+    color: var(--prev-color-text-regular) !important;
+  }
+
+  // switch
+  .el-switch:not(.is-checked) {
+    .el-switch__core {
+      border-color: var(--prev-border-color-base) !important;
+      background-color: var(--prev-border-color-base) !important;
+    }
+  }
+
+  // TimePicker
+  .el-time-spinner__item.active:not(.disabled) {
+    color: var(--prev-color-primary) !important;
+  }
+
+  // date
+  .el-date-table td.in-range div,
+  .el-date-table td.in-range div:hover,
+  .el-date-table.is-week-mode .el-date-table__row.current div,
+  .el-date-table.is-week-mode .el-date-table__row:hover div,
+  .el-date-table td.selected div,
+  .el-month-table td.in-range div,
+  .el-month-table td.in-range div:hover {
+    background-color: var(--prev-bg-color) !important;
+  }
+
+  // transfer
+  .el-transfer-panel,
+  .el-transfer-panel .el-transfer-panel__header {
+    background-color: var(--prev-bg-color) !important;
+  }
+
+  // loading
+  .el-loading-mask {
+    background-color: var(--prev-bg-color) !important;
+  }
+
+  // dropdown
+  .el-dropdown-menu__item:focus,
+  .el-dropdown-menu__item:not(.is-disabled):hover {
+    background-color: var(--prev-color-hover) !important;
+  }
+
+  // dialog
+  .el-dialog,
+  .el-calendar {
+    border: 1px solid var(--prev-border-color-lighter);
+  }
+}

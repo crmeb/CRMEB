@@ -6,9 +6,7 @@
           <Col v-bind="grid">
             <FormItem label="商品分类：" prop="pid" label-for="pid">
               <Select v-model="artFrom.pid" placeholder="请选择商品分类" @on-change="userSearchs" clearable>
-                <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{
-                  item.html + item.cate_name
-                }}</Option>
+                <Option v-for="item in treeSelect" :value="item.id" :key="item.id">{{ item.cate_name }}</Option>
               </Select>
             </FormItem>
           </Col>

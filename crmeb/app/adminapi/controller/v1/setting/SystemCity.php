@@ -133,11 +133,24 @@ class SystemCity extends AuthController
      */
     public function clean_cache()
     {
-        $res = CacheService::delete('CITY_LIST');
-        if ($res) {
+        $res1 = CacheService::delete('CITY_LIST');
+        $res2 = CacheService::delete('CITY_FULL_LIST');
+        if ($res1 && $res2) {
             return app('json')->success(400185);
         } else {
             return app('json')->fail(400186);
         }
+    }
+
+    /**
+     * 获取城市数据完整列表
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/04/10
+     */
+    public function fullList()
+    {
+        return app('json')->success($this->services->fullList('parent_id,name as label,city_id as value'));
     }
 }

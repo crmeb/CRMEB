@@ -11,6 +11,7 @@
 						<view>{{orderInfo.total_price}}{{$t(`积分`)}}</view>
 						<view>x{{orderInfo.total_num}}</view>
 					</view>
+					<view class='line1 gray-sty'>{{orderInfo.suk}}</view>
 				</view>
 			</view>
 			<view class='logisticsCon'>
@@ -295,5 +296,10 @@
 
 	.logistics .logisticsCon .item .text .data .time {
 		margin-left: 15rpx;
+	}
+	.gray-sty {
+		width: 100%;
+		font-size: 24rpx;
+		color: #999999;
 	}
 </style>

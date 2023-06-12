@@ -42,7 +42,7 @@
               />
             </FormItem>
           </Col>
-          <Col >
+          <Col>
             <Button type="primary" icon="ios-search" @click="userSearchs">搜索</Button>
             <Button v-auth="['export-userCommission']" class="export" icon="ios-share-outline" @click="exports"
               >导出

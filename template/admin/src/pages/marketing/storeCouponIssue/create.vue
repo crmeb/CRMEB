@@ -23,12 +23,14 @@
         </FormItem>
         <FormItem label="发送方式">
           <RadioGroup v-model="formData.receive_type">
-            <Radio :label="1">手动领取</Radio>
+            <Radio :label="1">用户领取</Radio>
             <Radio :label="2">新用户自动发放</Radio>
-            <Radio :label="3">后台赠送</Radio>
+            <Radio :label="3">系统赠送</Radio>
             <Radio :label="4">付费会员专享</Radio>
           </RadioGroup>
-          <div class="tip">手动领取：用户需要手动领取优惠券；新用户自动发放：新注册的用户自动发放；后台赠送：后台发放制定用户或者添加到商品里面用户购买该商品获得；付费会员专享：仅付费会员可以领取和使用</div>
+          <div class="tip">
+            用户领取：用户需要手动领取优惠券；新用户自动发放：新注册的用户自动发放；系统赠送：后台发放指定用户或者添加到商品里面用户购买该商品获得；付费会员专享：仅付费会员可以领取和使用
+          </div>
         </FormItem>
         <FormItem label="优惠劵类型">
           <RadioGroup v-model="formData.type">
@@ -49,9 +51,17 @@
           <div class="info">选择商品</div>
         </FormItem>
         <FormItem v-show="formData.type === 1">
-          <Select v-model="formData.category_id" style="width: 320px" multiple>
+          <!-- <Select v-model="formData.category_id" style="width: 320px" multiple>
             <Option v-for="item in categoryList" :value="item.id" :key="item.id">{{ item.cate_name }}</Option>
-          </Select>
+          </Select> -->
+          <el-cascader
+            v-model="formData.category_id"
+            size="small"
+            :options="categoryList"
+            :props="{ multiple: true, emitPath: false }"
+            clearable
+            style="width: 320px"
+          ></el-cascader>
           <div class="info">选择商品的品类</div>
         </FormItem>
         <FormItem label="使用门槛">
@@ -152,6 +162,7 @@
 import { mapState } from 'vuex';
 import goodsList from '@/components/goodsList/index';
 import { couponCategoryApi, couponSaveApi, couponDetailApi } from '@/api/marketing';
+import { cascaderListApi } from '@/api/product';
 export default {
   name: 'storeCouponCreate',
   components: {
@@ -201,10 +212,7 @@ export default {
   methods: {
     // 品类
     getCategoryList() {
-      couponCategoryApi(1).then(async (res) => {
-        res.data.forEach((val) => {
-          val.cate_name = `${val.html}${val.cate_name}`;
-        });
+      cascaderListApi(1).then(async (res) => {
         this.categoryList = res.data;
       });
     },

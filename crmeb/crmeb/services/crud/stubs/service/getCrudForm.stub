@@ -1,0 +1,23 @@
+    /**
+     * 编辑和获取表单
+     * @date {%date%}
+     * @param int $id
+     * @return array
+     */
+    public function getCrudForm(int $id = 0)
+    {
+        $url = '/crud/{%route%}';
+        $info = [];
+        if ($id) {
+            $info = $this->dao->get($id);
+            if (!$info) {
+                throw new ValidateException(100026);
+            }
+            $url .= '/' . $id;
+        }
+        $rule = [];
+
+{%form-php%}
+
+        return create_form('{%modelName%}', $rule, $url, $id ? 'PUT' : 'POST');
+    }

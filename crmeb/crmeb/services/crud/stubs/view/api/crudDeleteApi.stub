@@ -1,0 +1,11 @@
+/**
+ * 删除数据
+ * @param id
+ * @return {*}
+ */
+export function {%nameCamel%}DeleteApi(id) {
+    return request({
+        url: `{%route%}/${id}`,
+        method: 'delete'
+    });
+}

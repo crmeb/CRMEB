@@ -24,16 +24,17 @@ class SystemConfigService
 
     /**
      * 获取单个配置效率更高
-     * @param $key
-     * @param string $default
+     * @param string $key
+     * @param $default
      * @param bool $isCaChe 是否获取缓存配置
      * @return bool|mixed|string
      */
     public static function get(string $key, $default = '', bool $isCaChe = false)
     {
-        $callable = function () use ($key) {
-            /** @var SystemConfigServices $service */
-            $service = app()->make(SystemConfigServices::class);
+        /** @var SystemConfigServices $service */
+        $service = app()->make(SystemConfigServices::class);
+
+        $callable = function () use ($service, $key) {
             return $service->getConfigValue($key);
         };
 
@@ -41,7 +42,7 @@ class SystemConfigService
             if ($isCaChe) {
                 return $callable();
             }
-            return CacheService::remember(self::CACHE_SYSTEM . ':' . $key, $callable);
+            return $service->cacheDriver()->remember(self::CACHE_SYSTEM . ':' . $key, $callable);
         } catch (\Throwable $e) {
             return $default;
         }
@@ -55,16 +56,17 @@ class SystemConfigService
      */
     public static function more(array $keys, bool $isCaChe = false)
     {
-        $callable = function () use ($keys) {
-            /** @var SystemConfigServices $service */
-            $service = app()->make(SystemConfigServices::class);
+        /** @var SystemConfigServices $service */
+        $service = app()->make(SystemConfigServices::class);
+
+        $callable = function () use ($service, $keys) {
             return Arr::getDefaultValue($keys, $service->getConfigAll($keys));
         };
         try {
             if ($isCaChe)
                 return $callable();
 
-            return CacheService::remember(self::CACHE_SYSTEM . ':' . md5(implode(',', $keys)), $callable);
+            return $service->cacheDriver()->remember(self::CACHE_SYSTEM . ':' . md5(implode(',', $keys)), $callable);
         } catch (\Throwable $e) {
             return Arr::getDefaultValue($keys);
         }

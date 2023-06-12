@@ -60,11 +60,18 @@
             </Col>
             <Col span="24">
               <FormItem label="商品分类：" prop="cate_id">
-                <Select v-model="formValidate.cate_id" multiple>
+                <!-- <Select v-model="formValidate.cate_id" multiple>
                   <Option v-for="item in treeSelect" :disabled="item.pid === 0" :value="item.id" :key="item.id">{{
                     item.html + item.cate_name
                   }}</Option>
-                </Select>
+                </Select> -->
+                <el-cascader
+                  v-model="formValidate.cate_id"
+                  size="small"
+                  :options="treeSelect"
+                  :props="{ multiple: true, emitPath: false }"
+                  clearable
+                ></el-cascader>
               </FormItem>
             </Col>
             <Col v-bind="grid">
@@ -264,7 +271,7 @@
 </template>
 
 <script>
-import { crawlFromApi, treeListApi, crawlSaveApi, productGetTemplateApi, copyConfigApi } from '@/api/product';
+import { crawlFromApi, cascaderListApi, crawlSaveApi, productGetTemplateApi, copyConfigApi } from '@/api/product';
 import uploadPictures from '@/components/uploadPictures';
 import WangEditor from '@/components/wangEditor/index.vue';
 
@@ -539,7 +546,7 @@ export default {
     },
     // 商品分类；
     goodsCategory() {
-      treeListApi(1)
+      cascaderListApi(1)
         .then((res) => {
           this.treeSelect = res.data;
         })

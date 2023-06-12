@@ -1,0 +1,17 @@
+    /**
+     * 保存
+     * @return \think\Response
+     * @date {%date%}
+     */
+    public function save()
+    {
+        $data = $this->request->postMore([
+{%field-php%}
+        ]);
+
+        validate({%validateName%})->check($data);
+
+        $this->service->crudSave($data);
+
+        return app('json')->success(100021);
+    }

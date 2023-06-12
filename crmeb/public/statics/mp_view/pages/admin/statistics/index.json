@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "订单数据统计",
+  "usingComponents": {
+    "uni-calendar": "/pages/admin/components/uni-calendar/uni-calendar"
+  }
+}

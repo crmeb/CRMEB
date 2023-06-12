@@ -74,7 +74,7 @@ class WechatReplyKeyDao extends BaseDao
      * @param bool $group
      * @return \crmeb\basic\BaseModel|mixed|Model
      */
-    protected function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
         return $this->getModel()->when(isset($where['key']) && $where['key'], function ($query) use ($where) {
             $query->where($this->joinAlis . '.keys', 'LIKE', "%$where[key]%");
@@ -103,10 +103,11 @@ class WechatReplyKeyDao extends BaseDao
     /**
      * 获取条件下的条数
      * @param array $where
+     * @param bool $search
      * @return int
      */
-    public function count(array $where = []): int
+    public function count(array $where = [], bool $search = true): int
     {
-        return $this->search($where)->group($this->alias . '.id')->count();
+        return $this->search($where, $search)->group($this->alias . '.id')->count();
     }
 }

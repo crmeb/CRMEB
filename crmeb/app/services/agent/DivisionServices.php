@@ -222,9 +222,11 @@ class DivisionServices extends BaseServices
         if ($uid && !$userInfo) throw new AdminException(400214);
         $field = [];
         if ($uid) {
+            $field[] = Form::number('division_id', '事业部UID', $userInfo['division_id'] ?? '')->disabled(true)->style(['width' => '173px']);
             $field[] = Form::number('uid', '用户UID', $userInfo['uid'] ?? '')->disabled(true)->style(['width' => '173px']);
             $field[] = Form::hidden('edit', 1);
         } else {
+            $field[] = Form::number('division_id', '事业部UID')->style(['width' => '173px']);
             $field[] = Form::number('uid', '用户UID')->style(['width' => '173px']);
             $field[] = Form::hidden('edit', 0);
         }
@@ -238,20 +240,24 @@ class DivisionServices extends BaseServices
      * 保存代理商
      * @param $data
      * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function divisionAgentSave($data)
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $uid = $data['uid'];
-        $userInfo = $userServices->getUserInfo($uid, 'is_division,division_id,agent_id');
         $agentData = [
+            'division_id' => $data['division_id'],
             'division_status' => $data['division_status'],
             'division_percent' => $data['division_percent'],
             'division_change_time' => time(),
             'division_end_time' => strtotime($data['division_end_time']),
+            'division_type' => 2,
         ];
-        $division_info = $userServices->getUserInfo($userInfo['division_id'], 'division_end_time,division_percent');
+        $division_info = $userServices->getUserInfo($data['division_id'], 'division_end_time,division_percent');
         if ($division_info) {
             if ($agentData['division_percent'] > $division_info['division_percent']) throw new AdminException(400448);
             if ($agentData['division_end_time'] > $division_info['division_end_time']) throw new AdminException(400449);

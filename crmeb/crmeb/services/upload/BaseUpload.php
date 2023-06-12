@@ -369,7 +369,7 @@ abstract class BaseUpload extends BaseStorage
      * 文件流上传
      * @return mixed
      */
-    abstract public function stream(string $fileContent, string $key = null);
+    abstract public function stream($fileContent, string $key = null);
 
     /**
      * 删除文件

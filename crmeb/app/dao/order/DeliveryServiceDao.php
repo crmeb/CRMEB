@@ -41,7 +41,7 @@ class DeliveryServiceDao extends BaseDao
      */
     public function getServiceList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->when($page && $limit, function ($query) use ($page, $limit) {
+        return $this->search($where, false)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
         })->when(isset($where['noId']), function ($query) use ($where) {
             $query->where('id', '<>', $where['noId']);

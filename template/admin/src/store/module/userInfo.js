@@ -59,6 +59,9 @@ export default {
     userRealName(state, realName) {
       state.userInfo.real_name = realName;
     },
+    userRealHeadPic(state, headPic) {
+      state.userInfo.head_pic = headPic;
+    },
     uniqueAuth(state, uniqueAuth) {
       state.uniqueAuth = uniqueAuth;
     },

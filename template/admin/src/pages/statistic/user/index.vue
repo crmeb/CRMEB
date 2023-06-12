@@ -109,7 +109,6 @@ export default {
 </script>
 
 <style scoped>
-
 .ivu-form-item {
   padding-bottom: 10px;
   margin-bottom: 0;

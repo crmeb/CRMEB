@@ -101,10 +101,14 @@ class Login extends AuthController
             }
         }
 
+        if (strlen(trim($password)) < 6 || strlen(trim($password)) > 32) {
+            return app('json')->fail(400762);
+        }
+
         $this->validate(['account' => $account, 'pwd' => $password], \app\adminapi\validate\setting\SystemAdminValidata::class, 'get');
         $result = $this->services->login($account, $password, 'admin', $key);
         if (!$result) {
-            $num = CacheService::get('login_captcha',1);
+            $num = CacheService::get('login_captcha', 1);
             if ($num > 1) {
                 return app('json')->fail(400140, ['login_captcha' => 1]);
             }

@@ -275,7 +275,6 @@
 				}
 			}
 		},
-		mounted() {},
 		methods: {
 			goRouter(item) {
 				var pages = getCurrentPages();

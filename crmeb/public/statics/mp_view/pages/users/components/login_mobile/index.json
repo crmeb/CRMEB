@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "verify": "/pages/users/components/verify/index"
+  }
+}

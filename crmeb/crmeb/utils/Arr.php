@@ -66,6 +66,7 @@ class Arr
             $temp['icon'] = $v['icon'];
             $temp['header'] = $v['header'];
             $temp['is_header'] = $v['is_header'];
+            $temp['is_show'] = $v['is_show_path'];
             if ($v['is_show_path']) {
                 $temp['auth'] = ['hidden'];
             }

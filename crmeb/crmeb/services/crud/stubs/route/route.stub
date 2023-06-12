@@ -1,0 +1,7 @@
+<?php
+
+
+use think\facade\Route;
+
+{%content-php%}
+

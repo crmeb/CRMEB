@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "easy-loadimage": "/components/easy-loadimage/easy-loadimage",
+    "good-lists": "/components/goodList/index"
+  }
+}

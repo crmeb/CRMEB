@@ -57,13 +57,7 @@ class WechatService
             $appId = isset($wechat['wechat_app_appid']) ? trim($wechat['wechat_app_appid']) : '';
             $appsecret = isset($wechat['wechat_app_appsecret']) ? trim($wechat['wechat_app_appsecret']) : '';
         } else {
-            $appId = null;
-            if (request()->isPc()) {
-                $appId = sys_config('wechat_open_app_id');
-            }
-            if (!$appId) {
-                $appId = isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']) : '';
-            }
+            $appId = isset($wechat['wechat_appid']) ? trim($wechat['wechat_appid']) : '';
             $appsecret = isset($wechat['wechat_appsecret']) ? trim($wechat['wechat_appsecret']) : '';
         }
         $config = [

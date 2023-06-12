@@ -2,7 +2,7 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2019 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2021 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
@@ -87,7 +87,7 @@ class Redis extends Driver
         }
 
         if (0 != $this->options['select']) {
-            $this->handler->select($this->options['select']);
+            $this->handler->select((int) $this->options['select']);
         }
     }
 
@@ -112,8 +112,8 @@ class Redis extends Driver
     public function get($name, $default = null)
     {
         $this->readTimes++;
-
-        $value = $this->handler->get($this->getCacheKey($name));
+        $key   = $this->getCacheKey($name);
+        $value = $this->handler->get($key);
 
         if (false === $value || is_null($value)) {
             return $default;
@@ -161,7 +161,6 @@ class Redis extends Driver
     public function inc(string $name, int $step = 1)
     {
         $this->writeTimes++;
-
         $key = $this->getCacheKey($name);
 
         return $this->handler->incrby($key, $step);
@@ -177,7 +176,6 @@ class Redis extends Driver
     public function dec(string $name, int $step = 1)
     {
         $this->writeTimes++;
-
         $key = $this->getCacheKey($name);
 
         return $this->handler->decrby($key, $step);
@@ -193,7 +191,8 @@ class Redis extends Driver
     {
         $this->writeTimes++;
 
-        $result = $this->handler->del($this->getCacheKey($name));
+        $key    = $this->getCacheKey($name);
+        $result = $this->handler->del($key);
         return $result > 0;
     }
 
@@ -205,7 +204,6 @@ class Redis extends Driver
     public function clear(): bool
     {
         $this->writeTimes++;
-
         $this->handler->flushDB();
         return true;
     }
@@ -223,15 +221,16 @@ class Redis extends Driver
     }
 
     /**
-     * 追加（数组）缓存数据
+     * 追加TagSet数据
      * @access public
      * @param string $name  缓存标识
      * @param mixed  $value 数据
      * @return void
      */
-    public function push(string $name, $value): void
+    public function append(string $name, $value): void
     {
-        $this->handler->sAdd($name, $value);
+        $key = $this->getCacheKey($name);
+        $this->handler->sAdd($key, $value);
     }
 
     /**
@@ -242,7 +241,9 @@ class Redis extends Driver
      */
     public function getTagItems(string $tag): array
     {
-        return $this->handler->sMembers($tag);
+        $name = $this->getTagKey($tag);
+        $key  = $this->getCacheKey($name);
+        return $this->handler->sMembers($key);
     }
 
 }

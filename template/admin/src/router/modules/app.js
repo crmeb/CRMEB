@@ -8,8 +8,8 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +---------------------------------------------------------------------
 
-import BasicLayout from '@/components/main';
-import setting  from '@/setting'
+import LayoutMain from '@/layout';
+import setting from '@/setting';
 let routePre = setting.routePre;
 
 const pre = 'app_';
@@ -24,7 +24,7 @@ export default {
   meta: {
     auth: ['admin-app'],
   },
-  component: BasicLayout,
+  component: LayoutMain,
   children: [
     {
       path: 'wechat/setting/menus/index',
@@ -95,6 +95,7 @@ export default {
       meta: {
         auth: ['wechat-wechat-news-category-save'],
         title: '图文添加',
+        activeMenu: routePre + '/app/wechat/news_category/index',
       },
       component: () => import('@/pages/app/wechat/newsCategory/save'),
     },

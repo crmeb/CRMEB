@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace think\console\command\optimize;
 
+use Exception;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
@@ -78,13 +79,17 @@ class Schema extends Command
     {
         $reflect = new \ReflectionClass($class);
         if (!$reflect->isAbstract() && $reflect->isSubclassOf('\think\Model')) {
-            /** @var \think\Model $model */
-            $model      = new $class;
-            $connection = $model->db()->getConnection();
-            if ($connection instanceof PDOConnection) {
-                $table = $model->getTable();
-                //预读字段信息
-                $connection->getSchemaInfo($table, true);
+            try {
+                /** @var \think\Model $model */
+                $model      = new $class;
+                $connection = $model->db()->getConnection();
+                if ($connection instanceof PDOConnection) {
+                    $table = $model->getTable();
+                    //预读字段信息
+                    $connection->getSchemaInfo($table, true);
+                }
+            } catch (Exception $e) {
+
             }
         }
     }

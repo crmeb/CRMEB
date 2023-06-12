@@ -133,10 +133,10 @@
                 v-paste="handleParse"
                 v-model="chatCon"
                 type="textarea"
-                :rows="4"
+                :rows="8"
                 @on-keydown="listen($event)"
                 placeholder="请输入文字内容"
-                style="font-size: 14px"
+                style="font-size: 14px; height: 150px"
               />
               <div class="send-btn">
                 <Button class="btns" type="primary" :disabled="disabled" @click.stop="sendText">发送</Button>
@@ -628,9 +628,10 @@ export default {
 <style lang="stylus" scoped>
 @import '../../../styles/emoji-awesome/css/google.min.css';
 
-textarea.ivu-input {
+/deep/ textarea.ivu-input {
   border: none;
   resize: none;
+
 }
 
 .kefu-layouts {
@@ -645,7 +646,7 @@ textarea.ivu-input {
   display: flex;
   flex-direction: column;
   width: 1200px;
-  height: 808px;
+  height: 810px;
   margin: 0 auto;
   background: #fff;
 

@@ -1,7 +1,7 @@
 <template>
   <div class="" id="shopp-manager">
     <div class="i-layout-page-header header-title">
-      <div class=" fl_header">
+      <div class="fl_header">
         <router-link :to="{ path: $routeProStr + '/product/product_list' }"
           ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
         >
@@ -46,23 +46,33 @@
           </Col>
           <Col span="24">
             <FormItem label="商品分类：" prop="cate_id">
-              <Select v-model="formValidate.cate_id" placeholder="请选择商品分类" multiple class="perW20">
+              <!-- {{ formValidate.cate_id }}
+              <Select v-model="formValidate.cate_id" placeholder="请选择商品分类" multiple class="perW30">
                 <Option v-for="item in treeSelect" :disabled="item.pid === 0" :value="item.id" :key="item.id">{{
                   item.html + item.cate_name
                 }}</Option>
               </Select>
+              {{ formValidate.cate_id }} -->
+              <el-cascader
+                class="perW30"
+                v-model="formValidate.cate_id"
+                size="small"
+                :options="treeSelect"
+                :props="{ multiple: true, emitPath: false }"
+                clearable
+              ></el-cascader>
               <span class="addfont" @click="addCate">新增分类</span>
             </FormItem>
           </Col>
           <Col span="24">
             <FormItem label="商品名称：" prop="store_name">
-              <Input class="perW20" v-model.trim="formValidate.store_name" placeholder="请输入商品名称" />
+              <Input class="perW30" v-model.trim="formValidate.store_name" placeholder="请输入商品名称" />
             </FormItem>
           </Col>
 
           <Col span="24">
             <FormItem label="单位：" prop="unit_name">
-              <Input class="perW20" v-model="formValidate.unit_name" placeholder="请输入单位" />
+              <Input class="perW30" v-model="formValidate.unit_name" placeholder="请输入单位" />
             </FormItem>
           </Col>
           <Col span="24">
@@ -116,7 +126,7 @@
             <FormItem label="" prop="video_link">
               <Input
                 v-if="seletVideo == 1 && !formValidate.video_link"
-                class="perW20"
+                class="perW30"
                 v-model="videoLink"
                 placeholder="请输入视频链接"
               />
@@ -195,7 +205,7 @@
             <Col span="24">
               <FormItem label="选择规格：" prop="">
                 <div class="acea-row row-middle">
-                  <Select v-model="formValidate.selectRule" class="perW20">
+                  <Select v-model="formValidate.selectRule" class="perW30">
                     <Option v-for="(item, index) in ruleList" :value="item.rule_name" :key="index">{{
                       item.rule_name
                     }}</Option>
@@ -329,7 +339,7 @@
                     <template slot-scope="{ row, index }" slot="stock">
                       <InputNumber
                         v-model="oneFormBatch[0].stock"
-                        :disabled="formValidate.is_virtual == 1 && formValidate.virtual_type == 1"
+                        :disabled="formValidate.virtual_type == 1"
                         :min="0"
                         :max="99999999"
                         class="priceBox"
@@ -432,7 +442,7 @@
                     <template slot-scope="{ row, index }" slot="stock">
                       <InputNumber
                         v-model="manyFormValidate[index].stock"
-                        :disabled="formValidate.is_virtual == 1 && formValidate.virtual_type == 1"
+                        :disabled="formValidate.virtual_type == 1"
                         :min="0"
                         :max="99999999"
                         :precision="0"
@@ -642,14 +652,14 @@
           <Col span="24" v-if="formValidate.freight != 3 && formValidate.freight != 1">
             <FormItem label="" :prop="formValidate.freight != 1 ? 'freight' : ''">
               <div class="acea-row">
-                <InputNumber :min="0" v-model="formValidate.postage" placeholder="请输入金额" class="perW20 maxW" />
+                <InputNumber :min="0" v-model="formValidate.postage" placeholder="请输入金额" class="perW30 maxW" />
               </div>
             </FormItem>
           </Col>
           <Col span="24" v-if="formValidate.freight == 3">
             <FormItem label="" prop="temp_id">
               <div class="acea-row">
-                <Select v-model="formValidate.temp_id" clearable placeholder="请选择运费模板" class="perW20 maxW">
+                <Select v-model="formValidate.temp_id" clearable placeholder="请选择运费模板" class="perW30 maxW">
                   <Option v-for="(item, index) in templateList" :value="item.id" :key="index">{{ item.name }}</Option>
                 </Select>
                 <span class="addfont" @click="addTemp">新增运费模板</span>
@@ -814,14 +824,14 @@
                   placeholder="请输入一级返佣"
                   :min="0"
                   :max="9999999"
-                  class="columnsBox perW20"
+                  class="columnsBox perW30"
                   v-model="manyBrokerage"
                 ></InputNumber>
                 二级返佣：<InputNumber
                   placeholder="请输入二级返佣"
                   :min="0"
                   :max="99999999"
-                  class="columnsBox perW20"
+                  class="columnsBox perW30"
                   v-model="manyBrokerageTwo"
                 ></InputNumber>
               </span>
@@ -830,7 +840,7 @@
                   placeholder="请输入会员价"
                   :min="0"
                   :max="99999999"
-                  class="columnsBox perW20"
+                  class="columnsBox perW30"
                   v-model="manyVipPrice"
                 ></InputNumber>
               </span>
@@ -1083,13 +1093,13 @@
         >
           <Col span="24">
             <FormItem label="商品关键字：">
-              <Input class="perW20" v-model.trim="formValidate.keyword" placeholder="请输入商品关键字" />
+              <Input class="perW30" v-model.trim="formValidate.keyword" placeholder="请输入商品关键字" />
             </FormItem>
           </Col>
           <Col span="24">
             <FormItem label="商品简介：">
               <Input
-                class="perW20"
+                class="perW30"
                 v-model.trim="formValidate.store_info"
                 type="textarea"
                 :rows="3"
@@ -1104,7 +1114,7 @@
                 placeholder="请输入商品口令"
                 type="textarea"
                 :rows="3"
-                class="perW20"
+                class="perW30"
               />
             </FormItem>
           </Col>
@@ -1331,7 +1341,7 @@ import WangEditor from '@/components/wangEditor/index.vue';
 import { userLabelAddApi } from '@/api/user';
 import {
   productInfoApi,
-  treeListApi,
+  cascaderListApi,
   productAddApi,
   generateAttrApi,
   productGetRuleApi,
@@ -1823,6 +1833,10 @@ export default {
       return this.isMobile ? undefined : 15;
     },
   },
+  beforeRouteUpdate(to, from, next) {
+    this.bus.$emit('onTagsViewRefreshRouterView', this.$route.path);
+    next();
+  },
   created() {
     this.columns = this.columns2.slice(0, 8);
     this.getToken();
@@ -1968,6 +1982,7 @@ export default {
         case 1:
           this.formValidate.virtual_type = 1;
           this.formValidate.postage = 0;
+          this.formValidate.is_virtual = 1;
           this.headTab = [
             { tit: '基础信息', name: '1' },
             { tit: '规格库存', name: '2' },
@@ -2001,17 +2016,6 @@ export default {
             { tit: '其他设置', name: '5' },
           ];
           break;
-        case 1:
-          this.formValidate.virtual_type = 1;
-          this.formValidate.is_virtual = 1;
-          // this.formValidate.virtual_type  =1;
-          this.headTab = [
-            { tit: '基础信息', name: '1' },
-            { tit: '规格库存', name: '2' },
-            { tit: '商品详情', name: '3' },
-            { tit: '营销设置', name: '4' },
-            { tit: '其他设置', name: '5' },
-          ];
       }
     },
     // 新增分类
@@ -2600,7 +2604,7 @@ export default {
     },
     // 商品分类；
     goodsCategory() {
-      treeListApi(1)
+      cascaderListApi(1)
         .then((res) => {
           this.treeSelect = res.data;
         })

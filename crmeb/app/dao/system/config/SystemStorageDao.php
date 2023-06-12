@@ -64,14 +64,18 @@ class SystemStorageDao extends BaseDao
 
     /**
      * @param array $where
+     * @param bool $search
      * @return \crmeb\basic\BaseModel|mixed|\think\Model
+     * @throws \ReflectionException
      */
-    public function search(array $where = [])
+    public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where)->when(isset($where['type']), function ($query) use ($where) {
+        return parent::search($where, $search)->when(isset($where['type']), function ($query) use ($where) {
             $query->where('type', $where['type']);
         })->where('is_delete', 0)->when(isset($where['access_key']), function ($query) use ($where) {
             $query->where('access_key', $where['access_key']);
+        })->when(!empty($where['id']), function ($query) use ($where) {
+            $query->where('id', $where['id']);
         });
     }
 }

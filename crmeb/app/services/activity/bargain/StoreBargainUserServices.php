@@ -220,7 +220,7 @@ class StoreBargainUserServices extends BaseServices
     public function userBargainStatusFail($bargain_id, $is_true)
     {
         if ($is_true) {
-            $this->dao->delete(['bargain_id' => $bargain_id, 'status' => 1]);
+            $this->dao->delete(['bargain_id' => $bargain_id]);
             /** @var StoreBargainUserHelpServices $service */
             $service = app()->make(StoreBargainUserHelpServices::class);
             $service->delete(['bargain_id' => $bargain_id]);

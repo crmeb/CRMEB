@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "diy": "/pages/index/diy/index",
+    "visualization": "/pages/index/visualization/index"
+  }
+}

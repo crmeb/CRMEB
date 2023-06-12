@@ -98,23 +98,32 @@
 			}
 			// #ifdef MP
 			if (queryData.query.scene) {
-				switch (queryData.scene) {
-					//扫描小程序码
-					case 1047:
-						this.globalData.code = queryData.query.scene;
-						break;
-						//长按图片识别小程序码
-					case 1048:
-						this.globalData.code = queryData.query.scene;
-						break;
-						//手机相册选取小程序码
-					case 1049:
-						this.globalData.code = queryData.query.scene;
-						break;
-						//直接进入小程序
-					case 1001:
-						this.globalData.spid = queryData.query.scene;
-						break;
+				let param = this.$util.getUrlParams(decodeURIComponent(queryData.query.scene))
+				console.log(queryData.query.scene)
+				console.log(param)
+				if(param.pid){
+					this.$Cache.set('spread', param.pid);
+					this.globalData.spid = param.pid;
+					this.globalData.pid = param.pid;
+				}else{
+					switch (queryData.scene) {
+						//扫描小程序码
+						case 1047:
+							this.globalData.code = queryData.query.scene;
+							break;
+							//长按图片识别小程序码
+						case 1048:
+							this.globalData.code = queryData.query.scene;
+							break;
+							//手机相册选取小程序码
+						case 1049:
+							this.globalData.code = queryData.query.scene;
+							break;
+							//直接进入小程序
+						case 1001:
+							this.globalData.spid = queryData.query.scene;
+							break;
+					}
 				}
 				silenceBindingSpread(this.globalData)
 			}
@@ -123,6 +132,13 @@
 		async onLaunch(option) {
 			uni.hideTabBar()
 			let that = this;
+			// #ifdef H5
+			if (option.query.hasOwnProperty('mdType') && option.query.mdType == "iframeWindow") {
+				this.globalData.isIframe = true;
+			} else {
+				this.globalData.isIframe = false;
+			}
+			// #endif
 			colorChange('color_change').then(res => {
 				uni.setStorageSync('is_diy', res.data.is_diy)
 				uni.$emit('is_diy', res.data.is_diy)
@@ -156,7 +172,6 @@
 			getLangVersion().then(res => {
 				let version = res.data.version
 				if (version != uni.getStorageSync('LANG_VERSION')) {
-					console.log('我变了')
 					getLangJson().then(res => {
 						let value = Object.keys(res.data)[0]
 						Cache.set('locale', Object.keys(res.data)[0])
@@ -245,21 +260,7 @@
 			}
 			// #endif
 
-			// #ifdef H5
-			uni.getSystemInfo({
-				success(e) {
-					/* 窗口宽度大于420px且不在PC页面且不在移动设备时跳转至 PC.html 页面 */
-					if (e.windowWidth > 420 && !window.top.isPC && !/iOS|Android/i.test(e.system)) {
-						window.location.pathname = '/static/html/pc.html';
-					}
-				}
-			});
-			if (option.query.hasOwnProperty('type') && option.query.type == "iframeWindow") {
-				this.globalData.isIframe = true;
-			} else {
-				this.globalData.isIframe = false;
-			}
-			// #endif
+
 			// #ifdef MP
 			// 小程序静默授权
 			// if (!this.$store.getters.isLogin) {

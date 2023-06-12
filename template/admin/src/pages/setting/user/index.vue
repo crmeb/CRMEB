@@ -2,6 +2,12 @@
   <div>
     <Card :bordered="false" dis-hover class="ivu-mt">
       <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="160" label-position="right">
+        <FormItem label="头像">
+          <div class="avatar" @click="avatarMoadl = true">
+            <img v-if="formValidate.head_pic" :src="formValidate.head_pic" alt="" />
+            <img v-else src="../../../assets/images/f.png" alt="" />
+          </div>
+        </FormItem>
         <FormItem label="账号" prop="">
           <Input type="text" v-model="account" :disabled="true" class="input"></Input>
         </FormItem>
@@ -22,14 +28,19 @@
         </FormItem>
       </Form>
     </Card>
+    <Modal v-model="avatarMoadl" footer-hide title="头像上传" width="700">
+      <CropperImg v-if="avatarMoadl" @uploadImgSuccess="uploadImgSuccess"></CropperImg>
+    </Modal>
   </div>
 </template>
 
 <script>
 import { updtaeAdmin } from '@/api/user';
 import { mapState } from 'vuex';
+import CropperImg from '@/components/cropperImg';
 export default {
   name: 'setting_user',
+  components: { CropperImg },
   computed: {
     ...mapState('media', ['isMobile']),
     ...mapState('userLevel', ['categoryId']),
@@ -43,7 +54,9 @@ export default {
   data() {
     return {
       account: '',
+      avatarMoadl: false,
       formValidate: {
+        avatar: '',
         real_name: '',
         pwd: '',
         new_pwd: '',
@@ -59,15 +72,21 @@ export default {
   },
   mounted() {
     this.account = this.$store.state.userInfo.userInfo.account;
+    this.formValidate.head_pic = this.$store.state.userInfo.userInfo.head_pic;
     this.formValidate.real_name = this.$store.state.userInfo.userInfo.real_name;
   },
   methods: {
+    uploadImgSuccess(data) {
+      this.avatarMoadl = false;
+      this.formValidate.head_pic = data.src;
+    },
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
           updtaeAdmin(this.formValidate)
             .then((res) => {
               this.$store.commit('userInfo/userRealName', this.formValidate.real_name);
+              this.$store.commit('userInfo/userRealHeadPic', this.formValidate.head_pic);
               this.$Message.success(res.msg);
             })
             .catch((res) => {
@@ -84,8 +103,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .input {
   width: 400px;
+}
+.avatar {
+  width: 80px;
+  height: 80px;
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid #f2f2f2;
+  }
 }
 </style>
