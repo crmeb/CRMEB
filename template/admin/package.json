@@ -23,7 +23,7 @@
     "clipboard": "^2.0.0",
     "codemirror": "^5.38.0",
     "core-js": "^3.22.5",
-    "cos-js-sdk-v5": "^0.5.26",
+    "cos-js-sdk-v5": "^1.4.15-beta.0",
     "countup": "^1.8.2",
     "cropperjs": "^1.2.2",
     "crypto-js": "^4.1.1",
