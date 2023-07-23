@@ -39,7 +39,7 @@
     "js-md5": "^0.7.3",
     "lodash": "^4.17.10",
     "marked": "^0.3.9",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "monaco-editor": "^0.28.1",
     "monaco-editor-webpack-plugin": "^4.2.0",
     "oss": "0.0.1",
