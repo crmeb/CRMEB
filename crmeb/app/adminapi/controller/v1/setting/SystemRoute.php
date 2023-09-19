@@ -16,6 +16,7 @@ namespace app\adminapi\controller\v1\setting;
 
 use app\adminapi\controller\AuthController;
 use app\services\system\SystemRouteServices;
+use crmeb\services\CacheService;
 use think\facade\App;
 
 /**
@@ -104,6 +105,8 @@ class SystemRoute extends AuthController
             ['method', ''],
             ['type', 0],
             ['app_name', ''],
+            ['query', []],
+            ['header', []],
             ['request', []],
             ['response', []],
             ['request_example', []],
@@ -111,24 +114,25 @@ class SystemRoute extends AuthController
             ['describe', ''],
         ]);
 
-        if (!$data['name']) {
-            return app('json')->fail(500031);
-        }
-        if (!$data['path']) {
-            return app('json')->fail(500032);
-        }
-        if (!$data['method']) {
-            return app('json')->fail(500033);
-        }
-        if (!$data['app_name']) {
-            return app('json')->fail(500034);
-        }
+//        if (!$data['name']) {
+//            return app('json')->fail(500031);
+//        }
+//        if (!$data['path']) {
+//            return app('json')->fail(500032);
+//        }
+//        if (!$data['method']) {
+//            return app('json')->fail(500033);
+//        }
+//        if (!$data['app_name']) {
+//            return app('json')->fail(500034);
+//        }
         if ($id) {
             $this->services->update($id, $data);
         } else {
             $data['add_time'] = date('Y-m-d H:i:s');
             $this->services->save($data);
         }
+        CacheService::clear();
 
         return app('json')->success($id ? 100001 : 100021);
     }
@@ -162,6 +166,4 @@ class SystemRoute extends AuthController
 
         return app('json')->success(100002);
     }
-
-
 }

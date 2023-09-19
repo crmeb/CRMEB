@@ -3,9 +3,9 @@
  * @param id
  * @return {*}
  */
-export function {%nameCamel%}DeleteApi(id) {
+export function {%NAME_CAMEL%}DeleteApi(id) {
     return request({
-        url: `{%route%}/${id}`,
+        url: `{%ROUTE%}/${id}`,
         method: 'delete'
     });
 }

@@ -1,130 +1,199 @@
 <template>
   <div>
-    <Modal
-      v-model="isTemplate"
+    <el-dialog
+      :visible.sync="isTemplate"
       title="运费模版"
-      width="70%"
+      width="1000px"
       if="isTemplate"
       @on-cancel="cancel"
-      @on-visible-change="close"
+      @closed="close"
     >
       <div class="Modals">
-        <Form class="form" ref="formData" :label-width="120" label-position="right">
-          <Row :gutter="24" type="flex">
-            <Col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
-              <FormItem label="模板名称：" prop="name">
-                <Input type="text" placeholder="请输入模板名称" :maxlength="20" v-model="formData.name" />
-              </FormItem>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex">
-            <Col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
-              <FormItem label="计费方式：" props="state" label-for="state">
-                <RadioGroup class="radio" v-model="formData.type" @on-change="changeRadio" element-id="state">
-                  <Radio :label="1">按件数</Radio>
-                  <Radio :label="2">按重量</Radio>
-                  <Radio :label="3">按体积</Radio>
-                </RadioGroup>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex">
-            <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
-              <FormItem class="label" label="配送区域及运费：" props="state" label-for="state">
-                <Table
+        <el-form class="form" ref="formData" label-width="120px" label-position="right">
+          <el-row :gutter="24">
+            <el-col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
+              <el-form-item label="模板名称：" prop="name">
+                <el-input type="text" placeholder="请输入模板名称" :maxlength="20" v-model="formData.name" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="24">
+            <el-col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
+              <el-form-item label="计费方式：" props="state" label-for="state">
+                <el-radio-group class="radio" v-model="formData.type" @input="changeRadio" element-id="state">
+                  <el-radio :label="1">按件数</el-radio>
+                  <el-radio :label="2">按重量</el-radio>
+                  <el-radio :label="3">按体积</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="24">
+            <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
+              <el-form-item class="label" label="配送区域及运费：" props="state" label-for="state">
+                <el-table ref="table" :data="templateList" class="ivu-mt" empty-text="暂无数据" border>
+                  <el-table-column label="可配送区域" minWidth="100">
+                    <template slot-scope="scope">
+                      <el-input v-model="templateList[scope.$index].regionName" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    :label="formData.type === 2 ? '首件重量(KG)' : formData.type === 3 ? '首件体积(m³)' : '首件'"
+                    minWidth="100"
+                  >
+                    <template slot-scope="scope">
+                      <el-input type="number" v-model="templateList[scope.$index].first" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="运费（元）" minWidth="100">
+                    <template slot-scope="scope">
+                      <el-input type="number" v-model="templateList[scope.$index].price" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    :label="formData.type === 2 ? '续件重量(KG)' : formData.type === 3 ? '续件体积(m³)' : '续件'"
+                    minWidth="100"
+                  >
+                    <template slot-scope="scope">
+                      <el-input type="number" v-model="templateList[scope.$index].continue" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="续费（元）" minWidth="100">
+                    <template slot-scope="scope">
+                      <el-input type="number" v-model="templateList[scope.$index].continue_price" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" fixed="right" width="100">
+                    <template slot-scope="scope">
+                      <a
+                        v-if="scope.row.regionName !== '默认全国'"
+                        @click="delCity(scope.row, '配送区域', scope.$index, 1)"
+                        >删除</a
+                      >
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <el-row class="addTop">
+                  <el-col>
+                    <el-button type="primary" icon="md-add" @click="addCity(1)">添加配送区域</el-button>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="24">
+            <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
+              <el-form-item label="指定包邮：" prop="store_name" label-for="store_name">
+                <el-radio-group class="radio" v-model="formData.appoint_check">
+                  <el-radio :label="1">开启</el-radio>
+                  <el-radio :label="0">关闭</el-radio>
+                </el-radio-group>
+                <el-table
                   ref="table"
-                  :columns="columns"
-                  :data="templateList"
-                  class="ivu-mt"
-                  no-data-text="暂无数据"
-                  border
-                >
-                  <template slot-scope="{ row, index }" slot="action">
-                    <a v-if="row.regionName !== '默认全国'" @click="delCity(row, '配送区域', index, 1)">删除</a>
-                  </template>
-                </Table>
-                <Row type="flex" class="addTop">
-                  <Col>
-                    <Button type="primary" icon="md-add" @click="addCity(1)">单独添加配送区域</Button>
-                  </Col>
-                </Row>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex">
-            <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
-              <FormItem label="指定包邮：" prop="store_name" label-for="store_name">
-                <Radio-group class="radio" v-model="formData.appoint_check">
-                  <Radio :label="1">开启</Radio>
-                  <Radio :label="0">关闭</Radio>
-                </Radio-group>
-                <Table
-                  ref="table"
-                  :columns="columns2"
                   :data="appointList"
-                  class="addTop ivu-mt"
-                  no-data-text="暂无数据"
+                  class="addTop mt10"
+                  empty-text="暂无数据"
                   border
                   v-if="formData.appoint_check === 1"
                 >
-                  <template slot-scope="{ row, index }" slot="action">
-                    <a v-if="row.regionName !== '默认全国'" @click="delCity(row, '配送区域', index, 2)">删除</a>
-                  </template>
-                </Table>
-                <Row type="flex" class="addTop" v-if="formData.appoint_check === 1">
-                  <Col>
-                    <Button type="primary" icon="md-add" @click="addCity(2)">单独指定包邮</Button>
-                  </Col>
-                </Row>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex">
-            <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
-              <FormItem label="指定不送达：" prop="store_name" label-for="store_name">
-                <Radio-group class="radio" v-model="formData.no_delivery_check">
-                  <Radio :label="1">开启</Radio>
-                  <Radio :label="0">关闭</Radio>
-                </Radio-group>
-                <Table
+                  <el-table-column label="选择区域" minWidth="100">
+                    <template slot-scope="scope">
+                      <el-input v-model="appointList[scope.$index].placeName" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    :label="formData.type === 2 ? '包邮重量' : formData.type === 3 ? '包邮体积(m³)' : '包邮件数'"
+                    minWidth="100"
+                  >
+                    <template slot-scope="scope">
+                      <el-input type="number" v-model="appointList[scope.$index].a_num" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="包邮金额（元）" minWidth="100">
+                    <template slot-scope="scope">
+                      <el-input type="number" v-model="appointList[scope.$index].a_price" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" fixed="right" width="100">
+                    <template slot-scope="scope">
+                      <a
+                        v-if="scope.row.regionName !== '默认全国'"
+                        @click="delCity(scope.row, '配送区域', scope.$index, 2)"
+                        >删除</a
+                      >
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div v-if="formData.appoint_check === 1" class="free_tips">指定地区需同时满足包邮（件数/重量/体积）和包邮金额的条件，才可实现包邮</div>
+                <el-row class="addTop mt5" v-if="formData.appoint_check === 1">
+                  <el-col>
+                    <el-button type="primary" icon="md-add" @click="addCity(2)">添加包邮区域</el-button>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="24">
+            <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
+              <el-form-item label="指定不送达：" prop="store_name" label-for="store_name">
+                <el-radio-group class="radio" v-model="formData.no_delivery_check">
+                  <el-radio :label="1">开启</el-radio>
+                  <el-radio :label="0">关闭</el-radio>
+                </el-radio-group>
+                <el-table
                   ref="table"
-                  :columns="columns3"
                   :data="noDeliveryList"
-                  class="addTop ivu-mt"
-                  no-data-text="暂无数据"
+                  class="addTop mt10"
+                  empty-text="暂无数据"
                   border
                   v-if="formData.no_delivery_check === 1"
                 >
-                  <template slot-scope="{ row, index }" slot="action">
-                    <a v-if="row.regionName !== '默认全国'" @click="delCity(row, '配送区域', index, 3)">删除</a>
-                  </template>
-                </Table>
-                <Row type="flex" class="addTop" v-if="formData.no_delivery_check === 1">
-                  <Col>
-                    <Button type="primary" icon="md-add" @click="addCity(3)">单独指定不送达</Button>
-                  </Col>
-                </Row>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex">
-            <Col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
-              <FormItem label="排序：" prop="store_name" label-for="store_name">
-                <InputNumber :min="0" placeholder="输入值越大越靠前" v-model="formData.sort"></InputNumber>
-              </FormItem>
-            </Col>
-          </Row>
-          <Row :gutter="24" type="flex">
-            <Col>
-              <FormItem prop="store_name" label-for="store_name">
-                <Button type="primary" @click="handleSubmit">{{ id ? '立即修改' : '立即提交' }}</Button>
-              </FormItem>
-            </Col>
-          </Row>
-        </Form>
+                  <el-table-column label="选择区域" minWidth="100">
+                    <template slot-scope="scope">
+                      <el-input v-model="noDeliveryList[scope.$index].placeName" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" fixed="right" width="100">
+                    <template slot-scope="scope">
+                      <a
+                        v-if="scope.row.regionName !== '默认全国'"
+                        @click="delCity(scope.row, '配送区域', scope.$index, 3)"
+                        >删除</a
+                      >
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <el-row class="addTop" v-if="formData.no_delivery_check === 1">
+                  <el-col>
+                    <el-button type="primary" icon="md-add" @click="addCity(3)">添加不送达区域</el-button>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="24">
+            <el-col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
+              <el-form-item label="排序：" prop="store_name" label-for="store_name">
+                <el-input-number
+                  :controls="false"
+                  :min="0"
+                  placeholder="输入值越大越靠前"
+                  v-model="formData.sort"
+                ></el-input-number>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="24">
+            <el-col>
+              <el-form-item prop="store_name" label-for="store_name">
+                <el-button type="primary" @click="handleSubmit">{{ id ? '立即修改' : '立即提交' }}</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
       </div>
       <div slot="footer"></div>
-    </Modal>
+    </el-dialog>
     <city ref="city" @selectCity="selectCity" :type="type" :selectArr="selectArr"></city>
   </div>
 </template>
@@ -141,186 +210,6 @@ export default {
     let that = this;
     return {
       isTemplate: false,
-      columns: [
-        {
-          title: '可配送区域',
-          key: 'regionName',
-          minWidth: 100,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'text',
-                readonly: true,
-                size: 'small',
-                value: that.templateList[params.index].regionName,
-              },
-            });
-          },
-        },
-        {
-          title: '首件',
-          key: 'first',
-          minWidth: 70,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                size: 'small',
-                value: that.templateList[params.index].first, // 此处如何让数据双向绑定
-              },
-              on: {
-                'on-change': (event) => {
-                  that.templateList[params.index].first = event.target.value;
-                },
-              },
-            });
-          },
-        },
-        {
-          title: '运费（元）',
-          key: 'price',
-          minWidth: 70,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                size: 'small',
-                value: that.templateList[params.index].price, // 此处如何让数据双向绑定
-              },
-              on: {
-                'on-change': (event) => {
-                  that.templateList[params.index].price = event.target.value;
-                },
-              },
-            });
-          },
-        },
-        {
-          title: '续件',
-          key: 'continue',
-          minWidth: 70,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                size: 'small',
-                value: that.templateList[params.index].continue, // 此处如何让数据双向绑定
-              },
-              on: {
-                'on-change': (event) => {
-                  that.templateList[params.index].continue = event.target.value;
-                },
-              },
-            });
-          },
-        },
-        {
-          title: '续费（元）',
-          key: 'continue_price',
-          minWidth: 70,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                size: 'small',
-                value: that.templateList[params.index].continue_price, // 此处如何让数据双向绑定
-              },
-              on: {
-                'on-change': (event) => {
-                  that.templateList[params.index].continue_price = event.target.value;
-                },
-              },
-            });
-          },
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          minWidth: 70,
-        },
-      ],
-      columns2: [
-        {
-          title: '选择地区',
-          key: 'placeName',
-          minWidth: 250,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'text',
-                readonly: true,
-                size: 'small',
-                value: that.appointList[params.index].placeName,
-              },
-            });
-          },
-        },
-        {
-          title: '包邮件数',
-          key: 'a_num',
-          minWidth: 100,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                size: 'small',
-                value: that.appointList[params.index].a_num, // 此处如何让数据双向绑定
-              },
-              on: {
-                'on-change': (event) => {
-                  that.appointList[params.index].a_num = event.target.value;
-                },
-              },
-            });
-          },
-        },
-        {
-          title: '包邮金额（元）',
-          key: 'a_price',
-          minWidth: 100,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'number',
-                size: 'small',
-                value: that.appointList[params.index].a_price, // 此处如何让数据双向绑定
-              },
-              on: {
-                'on-change': (event) => {
-                  that.appointList[params.index].a_price = event.target.value;
-                },
-              },
-            });
-          },
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          minWidth: 100,
-        },
-      ],
-      columns3: [
-        {
-          title: '选择地区',
-          key: 'placeName',
-          minWidth: 250,
-          render: (h, params) => {
-            return h('Input', {
-              props: {
-                type: 'text',
-                readonly: true,
-                size: 'small',
-                value: that.noDeliveryList[params.index].placeName,
-              },
-            });
-          },
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          minWidth: 100,
-        },
-      ],
       templateList: [
         {
           region: [
@@ -365,10 +254,8 @@ export default {
   },
   computed: {},
   methods: {
-    close(status) {
-      if (!status) {
-        this.$emit('close');
-      }
+    close() {
+      this.$emit('close');
     },
     editFrom(id) {
       this.id = id;
@@ -384,7 +271,7 @@ export default {
           appoint_check: formData.appoint_check,
           no_delivery_check: formData.no_delivery_check,
         };
-        this.headerType();
+        // this.headerType();
       });
     },
     selectCity: function (data, type) {
@@ -430,52 +317,34 @@ export default {
       this.$refs.city.getCityList();
       this.$refs.city.addressModal = true;
     },
-    changeRadio() {
-      this.headerType();
-    },
-    headerType() {
-      let that = this;
-      if (this.formData.type === 2) {
-        that.columns[1].title = '首件重量(KG)';
-        that.columns[3].title = '续件重量(KG)';
-        that.columns2[1].title = '包邮重量(KG)';
-      } else if (this.formData.type === 3) {
-        that.columns[1].title = '首件体积(m³)';
-        that.columns[3].title = '续件体积(m³)';
-        that.columns2[1].title = '包邮体积(m³)';
-      } else {
-        that.columns[1].title = '首件';
-        that.columns[3].title = '续件';
-        that.columns2[1].title = '包邮件数';
-      }
-    },
+    changeRadio() {},
     // 提交
     handleSubmit: function () {
       let that = this;
       if (!that.formData.name.trim().length) {
-        return that.$Message.error('请填写模板名称');
+        return that.$message.error('请填写模板名称');
       }
       for (let i = 0; i < that.templateList.length; i++) {
         if (that.templateList[i].first <= 0) {
-          return that.$Message.error('首件/重量/体积应大于0');
+          return that.$message.error('首件/重量/体积应大于0');
         }
         if (that.templateList[i].price < 0) {
-          return that.$Message.error('运费应大于等于0');
+          return that.$message.error('运费应大于等于0');
         }
         if (that.templateList[i].continue <= 0) {
-          return that.$Message.error('续件/重量/体积应大于0');
+          return that.$message.error('续件/重量/体积应大于0');
         }
         if (that.templateList[i].continue_price < 0) {
-          return that.$Message.error('续费应大于等于0');
+          return that.$message.error('续费应大于等于0');
         }
       }
       if (that.formData.appoint_check === 1) {
         for (let i = 0; i < that.appointList.length; i++) {
           if (that.appointList[i].a_num <= 0) {
-            return that.$Message.error('包邮件数应大于0');
+            return that.$message.error('包邮件数应大于0');
           }
           if (that.appointList[i].a_price < 0) {
-            return that.$Message.error('包邮金额应大于等于0');
+            return that.$message.error('包邮金额应大于等于0');
           }
         }
       }
@@ -518,7 +387,7 @@ export default {
           },
         ];
         this.$emit('addSuccess');
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
       });
     },
     // 删除
@@ -539,10 +408,10 @@ export default {
       //   };
       //   this.$modalSure(delfromData)
       //     .then((res) => {
-      //       this.$Message.success(res.msg);
+      //       this.$message.success(res.msg);
       //     })
       //     .catch((res) => {
-      //       this.$Message.error(res.msg);
+      //       this.$message.error(res.msg);
       //     });
     },
     // 关闭
@@ -611,5 +480,9 @@ export default {
 
 .ivu-input-number {
   width: 100%;
+}
+.free_tips {
+  font-size: 12px;
+  color: #ccc;
 }
 </style>

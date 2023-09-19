@@ -15,6 +15,7 @@ namespace app\services\yihaotong;
 use app\dao\system\config\SystemConfigDao;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\CacheService;
 use crmeb\services\HttpService;
 use crmeb\services\sms\Sms;
 
@@ -46,7 +47,7 @@ class SmsAdminServices extends BaseServices
         return $this->transaction(function () use ($account, $password) {
             $this->dao->update('sms_account', ['value' => json_encode($account)], 'menu_name');
             $this->dao->update('sms_token', ['value' => json_encode($password)], 'menu_name');
-            $this->cacheDriver()->clear();
+            CacheService::clear();
         });
     }
 
@@ -118,7 +119,7 @@ class SmsAdminServices extends BaseServices
                         $sms->use($v['id'], $v['templateid']);
                 }
             }
-            $this->cacheDriver()->set('sms_account', $account);
+            CacheService::set('sms_account', $account);
             return true;
         } else {
             return false;

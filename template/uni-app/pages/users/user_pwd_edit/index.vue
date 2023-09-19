@@ -27,7 +27,7 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
-		<Verify @success="success" :captchaType="'blockPuzzle'" :imgSize="{ width: '330px', height: '155px' }"
+		<Verify @success="success" :captchaType="captchaType" :imgSize="{ width: '330px', height: '155px' }"
 			ref="verify"></Verify>
 	</view>
 </template>
@@ -136,7 +136,7 @@
 					phone: that.userInfo.phone,
 					type: 'reset',
 					key: that.key,
-					captchaType: 'blockPuzzle',
+					captchaType: this.captchaType,
 					captchaVerification: data.captchaVerification
 				}).then(res => {
 					this.sendCode()

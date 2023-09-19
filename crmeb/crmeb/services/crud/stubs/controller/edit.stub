@@ -2,7 +2,7 @@
      * 编辑获取数据
      * @param $id
      * @return \think\Response
-     * @date {%date%}
+     * @date {%DATE%}
      */
     public function edit($id)
     {

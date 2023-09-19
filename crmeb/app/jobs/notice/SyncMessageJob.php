@@ -2,9 +2,8 @@
 
 namespace app\jobs\notice;
 
-use app\services\message\TemplateMessageServices;
+use app\services\message\SystemNotificationServices;
 use crmeb\basic\BaseJobs;
-use crmeb\exceptions\AdminException;
 use crmeb\services\app\MiniProgramService;
 use crmeb\services\app\WechatService;
 use crmeb\traits\QueueTrait;
@@ -19,95 +18,57 @@ class SyncMessageJob extends BaseJobs
      * @param $template
      * @return bool
      */
-    public function syncSubscribe($template)
+    public function syncSubscribe($key, $data)
     {
-        $errCode = [-1, 40001, 40002, 40013, 40125, 41002, 41004, 43104, 45009, 200011, 200012, 200014];
-        /** @var TemplateMessageServices $templateMessageServices */
-        $templateMessageServices = app()->make(TemplateMessageServices::class);
-        if ($template['tempkey']) {
-            if ($template['tempid']) {
-                try {
-                    MiniProgramService::delSubscribeTemplate($template['tempid']);
-                } catch (\Throwable $e) {
-                    $wechatErr = $e->getMessage();
-                    if (is_string($wechatErr)) {
-                        Log::error('删除旧订阅消息模版失败：' . $wechatErr);
-                        return true;
-                    }
-                    if (in_array($wechatErr->getCode(), $errCode)) {
-                        Log::error('删除旧订阅消息模版失败：' . $wechatErr->getCode());
-                        return true;
-                    }
-                    Log::error('删除旧订阅消息模版失败：' . $wechatErr->getMessage());
-                    return true;
+        $works = MiniProgramService::getSubscribeTemplateKeyWords($key);
+        $kid = [];
+        if ($works) {
+            $works = array_combine(array_column($works, 'name'), $works);
+            $content = is_array($data['routine_content']) ? $data['routine_content'] : explode("\n", $data['routine_content']);
+            foreach ($content as $c) {
+                $name = explode('{{', $c)[0] ?? '';
+                if ($name && isset($works[$name])) {
+                    $kid[] = $works[$name]['kid'];
                 }
             }
+        }
+        if ($kid) {
             try {
-                $works = MiniProgramService::getSubscribeTemplateKeyWords($template['tempkey']);
+                $tempid = MiniProgramService::addSubscribeTemplate($key, $kid, $data['name']);
             } catch (\Throwable $e) {
-                $wechatErr = $e->getMessage();
-                if (is_string($wechatErr)) {
-                    Log::error('获取关键词列表失败：' . $wechatErr);
-                    return true;
-                }
-                if (in_array($wechatErr->getCode(), $errCode)) {
-                    Log::error('获取关键词列表失败：' . $wechatErr->getCode());
-                    return true;
-                }
-                Log::error('获取关键词列表失败：' . $wechatErr->getMessage());
+                Log::error('同步订阅消息失败：' . $e->getMessage());
                 return true;
             }
-            $kid = [];
-            if ($works) {
-                $works = array_combine(array_column($works, 'name'), $works);
-                $content = is_array($template['content']) ? $template['content'] : explode("\n", $template['content']);
-                foreach ($content as $c) {
-                    $name = explode('{{', $c)[0] ?? '';
-                    if ($name && isset($works[$name])) {
-                        $kid[] = $works[$name]['kid'];
-                    }
-                }
-            }
-            if ($kid) {
-                try {
-                    $tempid = MiniProgramService::addSubscribeTemplate($template['tempkey'], $kid, $template['name']);
-                } catch (\Throwable $e) {
-                    $wechatErr = $e->getMessage();
-                    if (is_string($wechatErr)) {
-                        Log::error('添加订阅消息模版失败：' . $wechatErr);
-                        return true;
-                    }
-                    if (in_array($wechatErr->getCode(), $errCode)) {
-                        Log::error('添加订阅消息模版失败：' . $wechatErr->getCode());
-                        return true;
-                    }
-                    Log::error('添加订阅消息模版失败：' . $wechatErr->getMessage());
-                    return true;
-                }
-                $templateMessageServices->update($template['id'], ['tempid' => $tempid, 'kid' => json_encode($kid), 'add_time' => time()], 'id');
-                return true;
-            }
+            app()->make(SystemNotificationServices::class)->update(['routine_tempkey' => $key], ['routine_tempid' => $tempid, 'routine_kid' => json_encode($kid)]);
+            return true;
         }
         return true;
     }
 
     /**
      * 同步公众号模版消息
-     * @param $template
+     * @param $key
+     * @param $content
      * @return bool
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/16
      */
-    public function syncWechat($template)
+    public function syncWechat($key, $content)
     {
-        /** @var TemplateMessageServices $templateMessageServices */
-        $templateMessageServices = app()->make(TemplateMessageServices::class);
+        $content = is_array($content) ? $content : explode("\n", $content);
+        $name = [];
+        foreach ($content as $c) {
+            $name[] = explode('{{', $c)[0] ?? '';
+        }
         try {
-            $res = WechatService::addTemplateId($template['tempkey']);
+            $res = WechatService::addTemplateId($key, $name);
         } catch (\Throwable $e) {
             Log::error('同步模版消息失败：' . $e->getMessage());
             return true;
         }
-        if(!$res->errcode && $res->template_id){
-            $templateMessageServices->update($template['id'],['tempid'=>$res->template_id]);
+        if (!$res->errcode && $res->template_id) {
+            app()->make(SystemNotificationServices::class)->update(['wechat_tempkey' => $key], ['wechat_tempid' => $res->template_id]);
         }
         return true;
     }

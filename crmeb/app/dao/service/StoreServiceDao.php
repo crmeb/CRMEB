@@ -96,7 +96,7 @@ class StoreServiceDao extends BaseDao
      * @email 442384644@qq.com
      * @date 2023/05/10
      */
-    public function count(array $where = [], $search = true)
+    public function count(array $where = [], bool $search = true)
     {
         return $this->search($where, false)->when(isset($where['noId']), function ($query) use ($where) {
             $query->whereNotIn('uid', $where['noId']);

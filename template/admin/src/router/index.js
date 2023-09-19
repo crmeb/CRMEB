@@ -20,7 +20,6 @@ import Router from 'vue-router';
 import routes from './routers';
 import Setting from '@/setting';
 import store from '@/store';
-import iView from 'iview';
 import { removeCookies, getCookies, setTitle } from '@/libs/util';
 import { includeArray } from '@/libs/auth';
 import { PrevLoading } from '@/utils/loading.js';
@@ -95,11 +94,9 @@ export function delayNProgressDone(time = 300) {
 router.beforeEach(async (to, from, next) => {
   // PrevLoading.start();
   keepAliveSplice(to);
-
-  if (to.fullPath.indexOf('kefu') != -1) {
+  if (to.fullPath.indexOf('kefu') != -1 || to.name == 'mobile_upload') {
     return next();
   }
-  // if (Setting.showProgressBar) iView.LoadingBar.start()
   // 判断是否需要登录才可以进入
   if (to.matched.some((_) => _.meta.auth)) {
     // 这里依据 token 判断是否登录，可视情况修改
@@ -148,7 +145,6 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 router.afterEach((to) => {
-  // if (Setting.showProgressBar) iView.LoadingBar.finish()
   // 更改标题
   setTitle(to, router.app);
   // 返回页面顶端

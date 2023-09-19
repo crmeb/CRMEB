@@ -1,13 +1,6 @@
 <template>
   <div class="layout-search-dialog">
-    <el-dialog
-      :visible.sync="isShowSearch"
-      width="300px"
-      destroy-on-close
-      :modal="false"
-      fullscreen
-      :show-close="false"
-    >
+    <el-dialog :visible.sync="isShowSearch" width="540px" destroy-on-close :modal="false" fullscreen :show-close="true">
       <el-autocomplete
         v-model="menuQuery"
         :fetch-suggestions="menuSearch"
@@ -105,5 +98,12 @@ export default {
     left: 50%;
     transform: translateX(-50%);
   }
+}
+/deep/ .el-dialog__header {
+  border: none !important;
+}
+/deep/ .el-input--small .el-input__inner {
+  height: 36px;
+  line-height: 36px;
 }
 </style>

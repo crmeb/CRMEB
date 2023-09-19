@@ -67,6 +67,7 @@ class SystemConfigTabServices extends BaseServices
             $menusValue[] = $item->getData();
         }
         $list = get_tree_children($menusValue);
+        $count = 0;
         return compact('list', 'count');
     }
 
@@ -89,6 +90,30 @@ class SystemConfigTabServices extends BaseServices
     }
 
     /**
+     * 配置分类树形数据
+     * @param $value
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/9/12
+     */
+    public function getConfigTabListForm($value)
+    {
+        $configTabList = $this->dao->getConfigTabAll([], ['id as value', 'pid', 'title as label']);
+        if ($value) {
+            $data = get_tree_value($configTabList, $value);
+        } else {
+            $data = [0];
+        }
+        $configTabList = get_tree_children($configTabList, 'children', 'value');
+        array_unshift($configTabList, ['value' => 0, 'pid' => 0, 'label' => '顶级分类']);
+        return [$configTabList, array_reverse($data)];
+    }
+
+    /**
      * 创建form表单
      * @param array $formData
      * @return array
@@ -99,16 +124,17 @@ class SystemConfigTabServices extends BaseServices
      */
     public function createConfigTabForm(array $formData = [])
     {
-        $form[] = Form::select('pid', '父级分类', isset($formData['pid']) ? (string)$formData['pid'] : '')->setOptions($this->getSelectForm())->filterable(true);
+        [$configTabList, $data] = $this->getConfigTabListForm((int)($formData['pid'] ?? 0), 3);
+        $form[] = Form::cascader('pid', '父级分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width'=>'100%']);
         $form[] = Form::input('title', '分类名称', $formData['title'] ?? '');
         $form[] = Form::input('eng_title', '分类字段英文', $formData['eng_title'] ?? '');
-        $form[] = Form::frameInput('icon', '图标', $this->url(config('app.admin_prefix', 'admin') . '/widget.widgets/icon', ['fodder' => 'icon'], true), $formData['icon'] ?? '')->icon('ios-ionic')->height('505px')->modal(['footer-hide' => true]);
+        $form[] = Form::frameInput('icon', '图标', $this->url(config('app.admin_prefix', 'admin') . '/widget.widgets/icon', ['fodder' => 'icon'], true), $formData['icon'] ?? '')->icon('el-icon-picture-outline')->height('560px')->props(['footer' => false]);
         $form[] = Form::radio('type', '类型', $formData['type'] ?? 0)->options([
             ['value' => 0, 'label' => '系统'],
             ['value' => 3, 'label' => '其它']
         ]);
         $form[] = Form::radio('status', '状态', $formData['status'] ?? 1)->options([['value' => 1, 'label' => '显示'], ['value' => 2, 'label' => '隐藏']]);
-        $form[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0);
+        $form[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0)->controls(false);
         return $form;
     }
 

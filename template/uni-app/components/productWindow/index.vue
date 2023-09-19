@@ -7,7 +7,7 @@
 					<image :src="attr.productSelect.image"></image>
 				</view>
 				<view class="text">
-					<view class="line1">
+					<view class="line2 store-name">
 						{{ attr.productSelect.store_name }}
 					</view>
 					<view class="money font-color">
@@ -19,9 +19,9 @@
 								<image src="../../static/images/svip.gif"></image>
 							</view>
 						</view>
-						<text class="stock" v-if='isShow && !type'>{{$t(`库存`)}}: {{ attr.productSelect.stock }}</text>
-						<text class='stock'
-							v-if="limitNum">{{type ? $t(`库存`) : $t(`限量`)}}:{{type ? attr.productSelect.quota : limitNum + unitName}}</text>
+						<text class="stock"
+							v-if='isShow && !type'>{{$t(`库存`)}}:{{ attr.productSelect.stock + unitName }}</text>
+						<text class='stock' v-if="limitNum && type">{{$t(`库存`) }}:{{attr.productSelect.quota}}</text>
 					</view>
 				</view>
 				<view class="iconfont icon-guanbi" @click="closeAttr"></view>
@@ -42,13 +42,16 @@
 				<view class="cart acea-row row-between-wrapper" v-if="!is_virtual">
 					<view class="title">{{$t(`数量`)}}</view>
 					<view class="carnum acea-row row-left">
+						<text class='stock' v-if="limitNum && !type">{{$t(`限购`)}}{{limitNum + unitName}}</text>
+						<text class='stock line' v-if='limitNum && !type && minQty > 1'> | </text>
+						<text class="stock" v-if='minQty > 1'>{{$t(`起购`)}}{{ minQty + unitName }}</text>
 						<view class="item reduce acea-row row-center-wrapper"
-							:class="attr.productSelect.cart_num <= 1 ? 'on' : ''"
-							v-if="attr.productSelect.cart_num <= 1">
+							:class="attr.productSelect.cart_num <= minQty ? 'on' : ''"
+							v-if="attr.productSelect.cart_num <= minQty">
 							<text class="iconfont icon-shangpinshuliang-jian"></text>
 						</view>
 						<view class="item reduce acea-row row-center-wrapper"
-							:class="attr.productSelect.cart_num <= 1 ? 'on' : ''" @click="CartNumDes" v-else>
+							:class="attr.productSelect.cart_num <= minQty ? 'on' : ''" @click="CartNumDes" v-else>
 							<text class="iconfont icon-shangpinshuliang-jian"></text>
 						</view>
 						<view class='item num acea-row row-middle'>
@@ -94,6 +97,10 @@
 				default: () => {}
 			},
 			limitNum: {
+				type: Number,
+				value: 0
+			},
+			minQty: {
 				type: Number,
 				value: 0
 			},
@@ -151,7 +158,7 @@
 			 * 
 			 */
 			bindCode: function(e) {
-				this.$emit('iptCartNum', this.attr.productSelect.cart_num);
+				this.$emit('iptCartNum', e);
 			},
 			closeAttr: function() {
 				this.$emit('myevent');
@@ -250,7 +257,7 @@
 	}
 
 	.product-window .textpic {
-		padding: 0 130rpx 0 30rpx;
+		padding: 0 80rpx 0 30rpx;
 		margin-top: 29rpx;
 		position: relative;
 	}
@@ -267,14 +274,14 @@
 	}
 
 	.product-window .textpic .text {
-		width: 410rpx;
-		font-size: 32rpx;
+		width: 470rpx;
+		font-size: 28rpx;
 		color: #202020;
 	}
 
 	.product-window .textpic .text .money {
 		font-size: 24rpx;
-		margin-top: 40rpx;
+		margin-top: 10rpx;
 	}
 
 	.product-window .textpic .text .money .num {
@@ -339,6 +346,7 @@
 	.product-window .cart {
 		margin-top: 36rpx;
 		padding: 0 30rpx;
+		align-items: center;
 	}
 
 	.product-window .cart .title {
@@ -348,7 +356,16 @@
 
 	.product-window .cart .carnum {
 		height: 54rpx;
-		margin-top: 24rpx;
+
+		.stock {
+			font-size: 20rpx;
+			line-height: 54rpx;
+			color: #aaa;
+		}
+
+		.line {
+			padding: 0 6rpx;
+		}
 	}
 
 	.product-window .cart .carnum .iconfont {

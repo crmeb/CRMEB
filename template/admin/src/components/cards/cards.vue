@@ -1,18 +1,18 @@
 <template>
   <div>
     <!--v-if="item.count && item.count!='0.00'"-->
-    <Row type="flex" align="middle" :gutter="10" class="ivu-mt">
-      <Col
-        :xl="item.col"
-        :lg="6"
-        :md="12"
+    <el-row  align="middle" :gutter="24" class="ivu-mt">
+      <el-col
+        :xl="item.col || colsize.xl"
+        :lg="colsize.lg"
+        :md="colsize.md"
         :sm="24"
         :xs="24"
         class="ivu-mb"
         v-for="(item, index) in cardLists"
         :key="index"
       >
-        <Card shadow :padding="0" class="card_cent">
+        <el-card shadow="never" class="card_cent">
           <div class="card_box">
             <div
               class="card_box_cir"
@@ -34,7 +34,7 @@
                   five1: index % 5 == 4,
                 }"
               >
-                <Icon :type="item.className" />
+                <span class="iconfont" :class="item.className"></span>
               </div>
             </div>
             <div class="card_box_txt">
@@ -42,9 +42,9 @@
               <span class="sp2" v-text="item.name"></span>
             </div>
           </div>
-        </Card>
-      </Col>
-    </Row>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -52,21 +52,65 @@
 export default {
   name: 'cards',
   data() {
-    return {};
+    return {
+      colsize:{
+        xl:4,
+        lg:8,
+        md:12
+      }
+    };
   },
   props: {
     cardLists: Array,
   },
-  methods: {},
-  created() {},
+  methods: {  },
+  created() {
+    let cardlength = this.cardLists.length
+    switch(cardlength) {
+      case 1:
+        this.colsize.xl = 24
+        this.colsize.lg = 24
+        this.colsize.md = 24
+        break;
+      case 2:
+        this.colsize.xl = 12
+        this.colsize.lg = 12
+        this.colsize.md = 12
+        break;
+      case 3:
+        this.colsize.xl = 8
+        this.colsize.lg = 8
+        this.colsize.md = 8
+        break;
+      case 4:
+        this.colsize.xl = 6
+        this.colsize.lg = 6
+        this.colsize.md = 12
+        break;
+      case 5:
+        this.colsize.xl = 8
+        this.colsize.lg = 8
+        this.colsize.md = 12
+        break;
+      default:
+        this.colsize.xl = 4
+        this.colsize.lg = 8
+        this.colsize.md = 12
+        break;
+
+    }
+    if(this.cardLists.length == 4 ) {
+      this.colsize.lg = 6
+    } else if(this.cardLists.length == 4 ) {
+      this.colsize.lg = 8
+    }  
+  },
 };
 </script>
 
 <style scoped lang="stylus">
-/*.card_cent >>> .ivu-card-body*/
-/*    width 100%*/
-/*    height 100%*/
-.card_box_cir1 >>> .ivu-icon
+
+.card_box_cir1 >>> .iconfont
    font-size: 26px
    color: #fff
  .one
@@ -95,7 +139,7 @@ export default {
     display flex
     align-items: center
     /*justify-content: center*/
-    padding: 25px
+    // padding: 25px
     box-sizing: border-box
     border-radius: 4px
     .card_box_cir

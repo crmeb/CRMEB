@@ -63,6 +63,16 @@ class SystemAttachment extends BaseModel
      */
     public function searchLikeNameAttr($query, $value)
     {
-        if ($value) $query->where('name','LIKE' ,"$value%");
+        if ($value) $query->where('name', 'LIKE', "$value%");
+    }
+
+    /**
+     * real_name模糊搜索
+     * @param Model $query
+     * @param $value
+     */
+    public function searchRealNameAttr($query, $value)
+    {
+        if ($value != '') $query->where('real_name', 'LIKE', "%$value%");
     }
 }

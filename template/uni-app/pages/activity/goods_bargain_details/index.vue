@@ -32,12 +32,12 @@
 						</view>
 					</view>
 					<view class="text acea-row row-column-around">
-						<view class="line2">{{ bargainInfo.title }}</view>
+						<view class="line2">{{ bargainInfo.title || '' }}</view>
 						<view class="money">
 							{{$t(`当前`)}}: {{$t(`￥`)}}
-							<text class="num">{{ bargainInfo.price }}</text>
+							<text class="num">{{ bargainInfo.price || '' }}</text>
 						</view>
-						<view class="successNum">{{$t(`最低`)}}:{{$t(`￥`)}}{{ bargainInfo.min_price }}</view>
+						<view class="successNum">{{$t(`最低`)}}:{{$t(`￥`)}}{{ bargainInfo.min_price || '' }}</view>
 					</view>
 				</view>
 				<!-- 进度条 -->
@@ -914,6 +914,7 @@
 	.bargain .header .time {
 		width: 440rpx;
 		font-size: 22rpx;
+		line-height:36rpx;
 		text-align: center;
 		box-sizing: border-box;
 		position: absolute;

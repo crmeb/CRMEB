@@ -90,8 +90,8 @@
     </div>
     <div class="footer-box">
       <div class="words" v-if="userToken" @click="showWords">
-        <Upload
-          :show-upload-list="false"
+        <el-upload
+          :show-file-list="false"
           :action="fileUrl"
           :before-upload="beforeUpload"
           :data="uploadData"
@@ -103,10 +103,10 @@
           style="margin-top: 1px; display: inline-block"
         >
           <span class="iconfont icontupian3"></span>
-        </Upload>
+        </el-upload>
       </div>
       <div class="input-box">
-        <Input v-model="con" placeholder="请输入内容" />
+        <el-input v-model="con" placeholder="请输入内容" />
         <span class="iconfont iconfasong" @click="sendText" :class="{ isSend: isSend }"></span>
       </div>
       <div class="emoji" @click="openBox(1)"><span class="iconfont iconbiaoqing2"></span></div>
@@ -274,10 +274,10 @@ export default {
         }, 300);
       });
       ws.$on('socket_error', () => {
-        this.$Message.error('连接失败');
+        this.$message.error('连接失败');
       });
       ws.$on('error', () => {
-        this.$Message.error('连接失败');
+        this.$message.error('连接失败');
       });
       ws.$on('to_transfer', (data) => {
         ws.send({
@@ -310,7 +310,7 @@ export default {
       this.$router.go(-1);
     },
     handleFormatError(file) {
-      this.$Message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
+      this.$message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
     },
     // 获取商品信息
     getGoodsInfo() {
@@ -320,7 +320,7 @@ export default {
           this.productInfo = res.data;
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     // 获取订单信息
@@ -366,7 +366,7 @@ export default {
           });
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
           setTimeout((res) => {
             this.$router.replace({
               path: '/kefu/mobile_feedback',
@@ -378,7 +378,7 @@ export default {
     beforeUpload(file) {
       const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
       if (!isImage) {
-        this.$Message.error('上传图片只能是 JPG、PNG 格式!');
+        this.$message.error('上传图片只能是 JPG、PNG 格式!');
       }
       this.uploadData = {
         filename: file,
@@ -394,10 +394,10 @@ export default {
     // 上传成功
     handleSuccess(res, file, fileList) {
       if (res.status === 200) {
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
         this.sendMsg(res.data.url, 3);
       } else {
-        this.$Message.error(res.msg);
+        this.$message.error(res.msg);
       }
     },
     // 滚动到底部
@@ -518,7 +518,7 @@ export default {
     // 发送消息
     sendText() {
       if (!this.isSend) {
-        this.$Message.error('请输入内容');
+        this.$message.error('请输入内容');
       }
       this.sendMsg(this.con, 1);
       this.con = '';

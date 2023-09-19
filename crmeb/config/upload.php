@@ -57,5 +57,20 @@ return [
             'AccessKeySecret' => '', //sys_config('tengxun_secretKey')
             'APPID' => '', //sys_config('tengxun_appid')
         ],
+        //oss 京东云
+        'jdoss' => [
+            'AccessKeyId' => '', // sys_config('accessKey')
+            'AccessKeySecret' => '', // sys_config('secretKey')
+        ],
+        //oss 华为云
+        'obs' => [
+            'AccessKeyId' => '', // sys_config('accessKey')
+            'AccessKeySecret' => '', // sys_config('secretKey')
+        ],
+        //oss 天翼云
+        'tyoss' => [
+            'AccessKeyId' => '', // sys_config('accessKey')
+            'AccessKeySecret' => '', // sys_config('secretKey')
+        ],
     ]
 ];

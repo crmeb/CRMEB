@@ -27,7 +27,7 @@
 				<view v-if="componentType=='VerifyPoints'">
 					<VerifyPoint :captchaType="captchaType" :type="verifyType" :figure="figure" :arith="arith"
 						:mode="mode" :vSpace="vSpace" :explain="explain" :imgSize="imgSize" :blockSize="blockSize"
-						:barSize="barSize" :defaultImg="defaultImg" ref="instance"></VerifyPoint>
+						:barSize="barSize" :defaultImg="defaultImg" ref="instance" @success="success"></VerifyPoint>
 				</view>
 			</view>
 		</view>

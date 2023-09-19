@@ -13,7 +13,6 @@
 
 namespace crmeb\services\crud;
 
-use crmeb\exceptions\CrudException;
 use think\App;
 use think\helper\Str;
 
@@ -82,6 +81,12 @@ abstract class Make
     protected $value = [];
 
     /**
+     * 参数
+     * @var array
+     */
+    protected $options = [];
+
+    /**
      * 数据库获取器后缀
      * @var string
      */
@@ -140,6 +145,18 @@ abstract class Make
             $this->basePath = $basePath;
         }
         return $this;
+    }
+
+    /**
+     * 获取字段后缀
+     * @return string
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/5/22
+     */
+    public function getAttrPrefix()
+    {
+        return $this->attrPrefix;
     }
 
     /**
@@ -234,24 +251,24 @@ abstract class Make
         $path = $options['path'] ?? '';
         [$nameData, $content] = $this->getStubContent($name);
 
-        $this->value['name'] = $nameData;
-        if (isset($this->value['nameCamel']) && !$this->value['nameCamel']) {
-            $this->value['nameCamel'] = Str::studly($name);
+        $this->value['NAME'] = $nameData;
+        if (isset($this->value['NAME_CAMEL']) && !$this->value['NAME_CAMEL']) {
+            $this->value['NAME_CAMEL'] = Str::studly($name);
         }
-        if (isset($this->value['path'])) {
-            $this->value['path'] = $this->getfolderPath($path);
+        if (isset($this->value['PATH'])) {
+            $this->value['PATH'] = $this->getfolderPath($path);
         }
-        if (isset($this->value['use-php']) && !empty($options['usePath'])) {
-            $this->value['use-php'] = "use " . str_replace('/', '\\', $options['usePath']) . ";\n";
+        if (isset($this->value['USE_PHP']) && !empty($options['usePath'])) {
+            $this->value['USE_PHP'] = "use " . str_replace('/', '\\', $options['usePath']) . ";\n";
         }
-        if (isset($this->value['modelName']) && !$this->value['modelName'] && !empty($options['modelName'])) {
-            $this->value['modelName'] = $options['modelName'];
+        if (isset($this->value['MODEL_NAME']) && !$this->value['MODEL_NAME'] && !empty($options['modelName'])) {
+            $this->value['MODEL_NAME'] = $options['modelName'];
         }
 
         $contentStr = str_replace($this->var, $this->value, $content);
-        $filePath = $this->getFilePathName($path, $this->value['nameCamel']);
+        $filePath = $this->getFilePathName($path, $this->value['NAME_CAMEL']);
 
-        $this->usePath = $this->baseDir . '\\' . $this->value['nameCamel'];
+        $this->usePath = $this->baseDir . '\\' . $this->value['NAME_CAMEL'];
         $this->setPathname($filePath);
         $this->setContent($contentStr);
 
@@ -307,14 +324,14 @@ abstract class Make
      */
     protected function setDefaultValue()
     {
-        if (isset($this->value['year'])) {
-            $this->value['year'] = date('Y');
+        if (isset($this->value['YEAR'])) {
+            $this->value['YEAR'] = date('Y');
         }
-        if (isset($this->value['time'])) {
-            $this->value['time'] = date('Y/m/d H:i:s');
+        if (isset($this->value['TIME'])) {
+            $this->value['TIME'] = date('Y/m/d H:i:s');
         }
-        if (isset($this->value['date'])) {
-            $this->value['date'] = date('Y/m/d');
+        if (isset($this->value['DATE'])) {
+            $this->value['DATE'] = date('Y/m/d');
         }
     }
 

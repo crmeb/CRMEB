@@ -1,6 +1,6 @@
 <template>
   <div class="goodClass">
-    <Card :bordered="false" dis-hover>
+    <el-card :bordered="false" shadow="never">
       <!-- <div class="title">页面设置</div> -->
       <div class="list acea-row row-top">
         <div
@@ -14,7 +14,7 @@
           <div class="name">{{ item.name }}</div>
         </div>
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -51,10 +51,10 @@ export default {
       colorChange(num == 1 ? 1 : this.activeStyle + 1, 'category')
         .then((res) => {
           this.$emit('parentFun', false);
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
           this.$emit('parentFun', false);
         });
     },
@@ -74,7 +74,7 @@ export default {
             content ' ';
             width 2px;
             height 14px;
-            background-color #1890FF;
+            background-color var(--prev-color-primary);
             left:0;
             top:3px;
         }
@@ -103,10 +103,10 @@ export default {
             }
             &.on{
                 .pictrue{
-                    border: 2px solid #1890FF;
+                    border: 2px solid var(--prev-color-primary);
                 }
                 .name{
-                    color #1890FF;
+                    color var(--prev-color-primary);
                 }
             }
         }

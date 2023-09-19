@@ -17,12 +17,14 @@ namespace app\adminapi\controller\v1\setting;
 use app\adminapi\controller\AuthController;
 use app\Request;
 use app\services\system\log\SystemFileServices;
+use app\services\system\SystemCrudDataService;
 use app\services\system\SystemCrudServices;
 use app\services\system\SystemMenusServices;
 use crmeb\services\CacheService;
+use crmeb\services\crud\enum\FormTypeEnum;
 use crmeb\services\crud\Make;
+use crmeb\services\crud\Service;
 use crmeb\services\FileService;
-use crmeb\utils\Terminal;
 use think\facade\App;
 use think\helper\Str;
 use think\Response;
@@ -49,7 +51,7 @@ class SystemCrud extends AuthController
     }
 
     /**
-     * @return \think\Response
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/4/11
@@ -60,12 +62,12 @@ class SystemCrud extends AuthController
     }
 
     /**
-     * @return \think\Response
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/4/11
      */
-    public function save($id = 0)
+    public function save(SystemCrudDataService $service, $id = 0)
     {
         $data = $this->request->postMore([
             ['pid', 0],//上级菜单id
@@ -80,30 +82,44 @@ class SystemCrud extends AuthController
             ['deleteField', []],//删除的表字段
         ]);
 
-        $fromField = $columnField = [];
+        $fromField = $searchField = $hasOneField = $columnField = $tableIndex = [];
+
+        $dictionaryids = array_column($data['tableField'], 'dictionary_id');
+        if ($dictionaryids) {
+            $dictionaryList = $service->getColumn([['id', 'in', $dictionaryids]], 'value', 'id');
+            foreach ($dictionaryList as &$value) {
+                $value = is_string($value) ? json_decode($value, true) : $value;
+            }
+        } else {
+            $dictionaryList = [];
+        }
+
         foreach ($data['tableField'] as $item) {
             //判断字段长度
-            if (in_array($item['field_type'], ['datetime', 'timestamp', 'time', 'date', 'year']) && $item['limit'] > 6) {
+            if (in_array($item['field_type'], [FormTypeEnum::DATE_TIME, 'timestamp', 'time', 'date', 'year']) && $item['limit'] > 6) {
                 return app('json')->fail('字段' . $item['field'] . '长度不能大于6');
             }
+            if ($item['field_type'] == 'enum' && !is_array($item['limit'])) {
+                return app('json')->fail('数据类型为枚举时,长度为数组类型');
+            }
             //收集列表展示数据
-            if ($item['is_table'] && !in_array($item['field_type'], ['primaryKey', 'addSoftDelete', 'addSoftDelete'])) {
+            if ($item['is_table'] && !in_array($item['field_type'], ['primaryKey', 'addSoftDelete'])) {
                 if (isset($item['primaryKey']) && !$item['primaryKey']) {
                     $columnField[] = [
                         'field' => $item['field'],
-                        'name' => $item['table_name'],
+                        'name' => $item['table_name'] ?: $item['comment'],
                         'type' => $item['from_type'],
                     ];
                 }
             }
+            $name = $item['table_name'] ?: $item['comment'];
+            $option = $item['options'] ?? (isset($item['dictionary_id']) ? ($dictionaryList[$item['dictionary_id']] ?? []) : []);
             //收集表单展示数据
             if ($item['from_type']) {
-                $name = $item['table_name'] ?: $item['comment'];
-                $option = $item['options'] ?? [];
                 if (!$name) {
                     return app('json')->fail(500048, [], ['field' => $item['field']]);
                 }
-                if (!$option && in_array($item['from_type'], ['radio', 'select'])) {
+                if (!$option && in_array($item['from_type'], [FormTypeEnum::RADIO, FormTypeEnum::SELECT])) {
                     return app('json')->fail('表单类型为radio或select时,options字段不能为空');
                 }
                 $fromField[] = [
@@ -111,8 +127,33 @@ class SystemCrud extends AuthController
                     'type' => $item['from_type'],
                     'name' => $name,
                     'required' => $item['required'],
-                    'option' => $option,
+                    'option' => $option
                 ];
+            }
+
+            //搜索
+            if (!empty($item['search'])) {
+                $searchField[] = [
+                    'field' => $item['field'],
+                    'type' => $item['from_type'],
+                    'name' => $name,
+                    'search' => $item['search'],
+                    'options' => $option
+                ];
+            }
+
+            //关联
+            if (!empty($item['hasOne'])) {
+                $hasOneField[] = [
+                    'field' => $item['field'],
+                    'hasOne' => $item['hasOne'] ?? '',
+                    'name' => $name,
+                ];
+            }
+
+            //索引
+            if (!empty($item['index'])) {
+                $tableIndex[] = $item['field'];
             }
         }
         if (!$fromField) {
@@ -122,7 +163,10 @@ class SystemCrud extends AuthController
             return app('json')->fail(500047);
         }
         $data['fromField'] = $fromField;
+        $data['tableIndex'] = $tableIndex;
         $data['columnField'] = $columnField;
+        $data['searchField'] = $searchField;
+        $data['hasOneField'] = $hasOneField;
         if (!$data['tableName']) {
             return app('json')->fail(500042);
         }
@@ -134,7 +178,7 @@ class SystemCrud extends AuthController
 
     /**
      * 获取创建文件的目录存放位置
-     * @return \think\Response
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/4/11
@@ -194,7 +238,7 @@ class SystemCrud extends AuthController
 
     /**
      * @param $id
-     * @return \think\Response
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/4/12
@@ -233,10 +277,13 @@ class SystemCrud extends AuthController
         $make = $this->services->makeFile($info->table_name, $routeName, false, [
             'menuName' => $info->name,
             'modelName' => $info->model_name,
+            'tableField' => $info->field['tableField'] ?? [],
             'key' => $key,
             'softDelete' => $softDelete,
             'fromField' => $info->field['fromField'] ?? [],
             'columnField' => $info->field['columnField'] ?? [],
+            'searchField' => $info->field['searchField'] ?? [],
+            'hasOneField' => $info->field['hasOneField'] ?? [],
         ]);
 
         $data = [];
@@ -284,9 +331,15 @@ class SystemCrud extends AuthController
             $item['default_field_type'] = $item['field_type'];
             $item['default_comment'] = $item['comment'];
             $item['default_default'] = $item['default'];
+            $item['default_default_type'] = $item['default_type'] ?? '1';
+            $item['default_type'] = $item['default_type'] ?? '1';
             $item['is_table'] = !!$item['is_table'];
             $item['required'] = !!$item['required'];
+            $item['index'] = isset($item['index']) && !!$item['index'];
             $item['primaryKey'] = isset($item['primaryKey']) ? (int)$item['primaryKey'] : 0;
+            if (!isset($item['dictionary_id'])) {
+                $item['dictionary_id'] = 0;
+            }
             $info['field']['tableField'][$key] = $item;
         }
         //对比数据库,是否有新增字段
@@ -412,7 +465,7 @@ class SystemCrud extends AuthController
 
     /**
      * 获取tree菜单
-     * @return \think\Response
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/4/11
@@ -424,8 +477,49 @@ class SystemCrud extends AuthController
     }
 
     /**
+     * 获取可以进行关联的表名
+     * @return Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/2
+     */
+    public function getAssociationTable()
+    {
+        return app('json')->success($this->services->getTableAll());
+    }
+
+    /**
+     * 获取表的详细信息
+     * @param string $tableName
+     * @return Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/2
+     */
+    public function getAssociationTableInfo(string $tableName)
+    {
+        if (!$tableName) {
+            return app('json')->fail('缺少表名');
+        }
+//        if (in_array($tableName, SystemCrudServices::NOT_CRUD_TABANAME)) {
+//            return app('json')->fail('不允许查看当前表明细');
+//        }
+        $tableInfo = $this->services->getColumnNamesList($tableName);
+
+        $data = [];
+        foreach ($tableInfo as $key => $item) {
+            $data[] = [
+                'label' => $item['comment'] ?: $key,
+                'value' => $key,
+                'leaf' => true
+            ];
+        }
+        return app('json')->success($data);
+    }
+
+    /**
      * 获取创建表数据类型
-     * @return \think\Response
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/4/11
@@ -438,7 +532,7 @@ class SystemCrud extends AuthController
     /**
      * @param SystemMenusServices $services
      * @param $id
-     * @return \think\Response
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/4/11
@@ -511,11 +605,12 @@ class SystemCrud extends AuthController
             unlink($zipName);
         }
         $makePath = $info->make_path ?? [];
+
         foreach ($makePath as $key => $item) {
             if (in_array($key, ['pages', 'router', 'api'])) {
                 $item = $zipPath . str_replace(dirname(app()->getRootPath()), '', Make::adminTemplatePath()) . $item;
             } else {
-                $item = $zipPath . DS . $item;
+                $item = $zipPath . DS . 'crmeb' . DS . $item;
             }
             $makePath[$key] = $item;
         }
@@ -542,10 +637,13 @@ class SystemCrud extends AuthController
 
         $this->services->makeFile($info->table_name, $routeName, true, [
             'menuName' => $info->name,
+            'tableFields' => $info->field['tableField'] ?? [],
             'key' => $key,
             'softDelete' => $softDelete,
             'fromField' => $info->field['fromField'] ?? [],
             'columnField' => $info->field['columnField'] ?? [],
+            'searchField' => $info->field['searchField'] ?? [],
+            'hasOneField' => $info->field['hasOneField'] ?? [],
         ], $makePath, $zipPath);
 
         if (!extension_loaded('zip')) {
@@ -590,11 +688,19 @@ class SystemCrud extends AuthController
                     $newRoute['create'] = $item['api_url'];
                 } else if (strstr($item['api_url'], 'edit')) {
                     $newRoute['edit'] = $item['api_url'];
+                } else if (strstr($item['api_url'], 'status')) {
+                    $newRoute['status'] = $item['api_url'];
                 } else {
-                    $newRoute['index'] = $item['api_url'];
+                    if (strstr($item['api_url'], '<id>')) {
+                        $newRoute['read'] = $item['api_url'];
+                    } else {
+                        $newRoute['index'] = $item['api_url'];
+                    }
                 }
             } else if ($item['methods'] == 'DELETE') {
                 $newRoute['delete'] = $item['api_url'];
+            } else if ($item['methods'] == 'PUT' && strstr($item['api_url'], 'status')) {
+                $newRoute['status'] = $item['api_url'];
             }
         }
 
@@ -614,62 +720,171 @@ class SystemCrud extends AuthController
                 'from_type' => '',
             ]
         ];
+
+        $readFields = [
+            'name' => $info->field['modelName'] ?: $info->field['menuName'],
+            'all' => [],
+        ];
         foreach ((array)$info->field['tableField'] as $item) {
             if (isset($item['primaryKey']) && $item['primaryKey']) {
                 continue;
             }
+
+            $prefix = app()->make(Service::class)->getAttrPrefix();
+            $readFields['all'][] = [
+                'field' => in_array($item['from_type'], [FormTypeEnum::FRAME_IMAGES,
+                    FormTypeEnum::DATE_TIME_RANGE,
+                    FormTypeEnum::RADIO,
+                    FormTypeEnum::SELECT,
+                    FormTypeEnum::CHECKBOX]) ? $item['field'] . $prefix : $item['field'],
+                'comment' => $item['comment'],
+                'from_type' => $item['from_type'],
+            ];
+
             if (isset($item['is_table']) && $item['is_table']) {
-                if (in_array($item['from_type'], ['frameImageOne', 'frameImages'])) {
+                $label = '';
+                if (in_array($item['from_type'], [FormTypeEnum::SWITCH, FormTypeEnum::DATE_TIME_RANGE, FormTypeEnum::FRAME_IMAGE_ONE, FormTypeEnum::FRAME_IMAGES])) {
                     $keyName = 'slot';
+                    if ($item['from_type'] == FormTypeEnum::FRAME_IMAGES) {
+                        $label = $prefix;
+                    } else if ($item['from_type'] == FormTypeEnum::DATE_TIME_RANGE) {
+                        $label = $prefix;
+                    }
+                } elseif (in_array($item['from_type'], [FormTypeEnum::RADIO, FormTypeEnum::SELECT, FormTypeEnum::CHECKBOX])) {
+                    $label = $prefix;
+                    $keyName = 'key';
                 } else {
                     $keyName = 'key';
                 }
+
                 $columns[] = [
                     'title' => $item['table_name'] ?: $item['comment'],
-                    $keyName => $item['field'],
+                    $keyName => $item['field'] . $label,
                     'from_type' => $item['from_type'],
                 ];
             }
         }
+
+        $searchField = $info->field['searchField'] ?? [];
+
+        $search = [];
+        foreach ((array)$searchField as $item) {
+            if (!$item['type']) {
+                $item['type'] = FormTypeEnum::INPUT;
+            }
+            if ($item['search'] == 'BETWEEN') {
+                $item['type'] = 'date-picker';
+            } else {
+                if (in_array($item['type'], [FormTypeEnum::CHECKBOX, FormTypeEnum::RADIO, FormTypeEnum::SELECT])) {
+                    $item['type'] = FormTypeEnum::SELECT;
+                } else {
+                    $item['type'] = FormTypeEnum::INPUT;
+                }
+            }
+
+            $search[] = [
+                'field' => $item['field'],
+                'type' => $item['type'],
+                'name' => $item['name'],
+                'option' => $item['options'] ?? [],
+            ];
+        }
+
         $route = $newRoute;
-        return app('json')->success(compact('key', 'route', 'columns'));
+        return app('json')->success(compact('key', 'route', 'columns', 'readFields', 'search'));
     }
 
     /**
-     * @return string
+     * 修改或者保存字典数据
+     * @param SystemCrudDataService $service
+     * @param int $id
+     * @return Response
      * @author 等风来
      * @email 136327134@qq.com
-     * @date 2023/4/14
+     * @date 2023/8/1
      */
-    public function npm()
+    public function saveDataDictionary(SystemCrudDataService $service, $id = 0)
     {
-        $terminal = new Terminal();
+        $data = $this->request->postMore([
+            ['name', ''],
+            ['value', []],
+        ]);
 
-        $adminPath = $terminal->adminTemplatePath();
-
-        $adminPath = dirname($adminPath);
-
-        try {
-            $dir = $adminPath . DS . 'node_modules';
-            if (!is_dir($dir)) {
-//                $terminal->run('npm-install');
-            }
-
-//            $res = $terminal->run('npm-build');
-        } catch (\Throwable $e) {
-            $terminal->echoOutputFlag($e->getMessage());
+        if (!$data['name']) {
+            return app('json')->fail('数据字段名不能为空');
+        }
+        if (!$data['value']) {
+            return app('json')->fail('数据字段内容不能为空');
+        }
+        $data['value'] = json_encode($data['value']);
+        if ($id) {
+            $service->update($id, $data);
+        } else {
+            $service->save($data);
         }
 
-        if (!is_dir($adminPath . DS . 'dist')) {
-            echo Response::create([
-                'message' => '打包失败',
-            ], 'json')->getContent();
+        return app('json')->success($id ? '修改成功' : '添加成功');
+    }
+
+    /**
+     * 查看数据字典
+     * @param SystemCrudDataService $service
+     * @param $id
+     * @return Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/7
+     */
+    public function getDataDictionaryOne(SystemCrudDataService $service, $id)
+    {
+        if (!$id) {
+            return app('json')->fail('缺少参数');
+        }
+        $info = $service->get($id);
+        if (!$info) {
+            return app('json')->fail('没有查询到数据');
+        }
+        return app('json')->success($info->toArray());
+    }
+
+    /**
+     * 获取数据字典列表
+     * @param SystemCrudDataService $service
+     * @return Response
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/1
+     */
+    public function getDataDictionary(SystemCrudDataService $service)
+    {
+        $name = $this->request->get('name', '');
+        $data = $service->getlistAll($name);
+        return app('json')->success($data);
+    }
+
+    /**
+     * 删除数据字典
+     * @param SystemCrudDataService $service
+     * @param $id
+     * @return Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/4
+     */
+    public function deleteDataDictionary(SystemCrudDataService $service, $id)
+    {
+        if (!$id) {
+            return app('json')->fail('缺少参数');
+        }
+        if ($service->delete($id)) {
+            return app('json')->success('删除成功');
+        } else {
+            return app('json')->fail('删除失败');
         }
 
-        $build = public_path() . config('app.admin_prefix');
-
-//        $this->app->make(FileService::class)->copyDir($adminPath . DS . 'dist', $build);
-
-//        echo $res;
     }
 }

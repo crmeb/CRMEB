@@ -24,7 +24,8 @@
 						</view>
 					</block>
 				</scroll-view>
-				<scroll-view v-if="coutList.length" class="scroll-view_x" scroll-x scroll-with-animation style="width:auto;overflow:hidden;">
+				<scroll-view v-if="coutList.length" class="scroll-view_x" scroll-x scroll-with-animation
+					style="width:auto;overflow:hidden;">
 					<view class="coutry-list">
 						<view class="coutry" :class='activeCou==coutry.id?"on":""' v-for="(coutry,index) in coutList"
 							:key="index" @click="getCidArticle(coutry.id,1)">
@@ -125,12 +126,12 @@
 		 */
 		onShow: function() {
 			// this.getArticleHot();
-			this.getCidArticle(0);
-			this.getArticleBanner();
-			this.getArticleCate();
 			this.status = false;
 			this.page = 1;
 			this.articleList = [];
+			this.getCidArticle(0);
+			this.getArticleBanner();
+			this.getArticleCate();
 		},
 		/**
 		 * 页面上拉触底事件的处理函数
@@ -186,28 +187,20 @@
 			tabSelect(active, e, item) {
 				this.active = active;
 				this.scrollLeft = e * 60;
-				//	this.scrollLeft = (active - 1) * 50;
+				this.$set(this, 'coutList', []);
+				this.$set(this, 'articleList', []);
 				if (this.active == 0) {
-					this.$set(this, 'coutList', []);
-					this.$set(this, 'articleList', []);
 					this.getArticleHot();
 				} else {
-					this.$set(this, 'articleList', []);
-					this.$set(this, 'coutList', []);
+					this.page = 1;
+					this.status = false;
 					if (item.children.length) {
-						this.page = 1;
-						this.status = false;
 						this.activeCou = item.children[0].id || 0
 						this.coutList = item.children || []
-						this.$set(this, 'articleList', []);
 						this.getCidArticle(this.activeCou);
 					} else {
-						this.page = 1;
-						this.status = false;
-						this.$set(this, 'articleList', []);
 						this.getCidArticle(item.id, true);
 					}
-
 				}
 			}
 		}
@@ -389,6 +382,7 @@
 		padding-top: 10rpx;
 		border-top: 1px solid #F2F2F2;
 		height: 80rpx;
+
 		.coutry {
 			// background-color: #F5F5F5;
 			border-radius: 26rpx;

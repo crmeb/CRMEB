@@ -2,11 +2,11 @@
   <div>
     <div class="i-layout-page-header">
       <router-link :to="{ path: $routeProStr + '/setting/pages/devise' }"
-        ><Button icon="ios-arrow-back" size="small" class="mr20">返回</Button></router-link
+        ><el-button size="small" class="mr20">返回</el-button></router-link
       >
       <span class="ivu-page-header-title mr20">页面设计</span>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->
         <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
@@ -17,7 +17,7 @@
         </div>
         <links></links>
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 

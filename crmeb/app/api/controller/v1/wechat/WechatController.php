@@ -42,6 +42,7 @@ class WechatController
     {
         return $this->services->serve();
     }
+
     /**
      * 微信小程序公众号服务
      * @return \think\Response
@@ -72,28 +73,6 @@ class WechatController
     public function config(Request $request)
     {
         return app('json')->success($this->services->config($request->get('url')));
-    }
-
-    /**
-     * 公众号授权登陆
-     * @param Request $request
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function auth(Request $request)
-    {
-        [$spreadId, $login_type] = $request->getMore([
-            [['spread', 'd'], 0],
-            ['login_type', ''],
-        ], true);
-        $token = $this->services->auth($spreadId, $login_type);
-        if ($token && isset($token['key'])) {
-            return app('json')->success(410022, $token);
-        } else if ($token) {
-            return app('json')->success(410001, ['userInfo' => $token['userInfo']]);
-        } else
-            return app('json')->fail(410019);
     }
 
     /**

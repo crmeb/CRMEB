@@ -69,6 +69,53 @@ export function crudDownload(id) {
   });
 }
 /**
+ * @description 数据字典列表
+ */
+export function crudDataDictionary(where) {
+  return request({
+    url: `/system/crud/data_dictionary`,
+    method: 'get',
+    params: where,
+  });
+}
+/**
+ * @description 获取可以进行关联的表名
+ */
+export function crudAssociationTable() {
+  return request({
+    url: `/system/crud/association_table`,
+    method: 'get',
+  });
+}
+/**
+ * @description 获取表的详细信息
+ */
+export function crudAssociationTableName(tableName) {
+  return request({
+    url: `/system/crud/association_table/${tableName}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 查看数据字典
+ */
+export function crudDataDictionaryList(id) {
+  return request({
+    url: `/system/crud/data_dictionary/${id}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 保存数据字典
+ */
+export function saveCrudDataDictionaryList(id, data) {
+  return request({
+    url: `/system/crud/data_dictionary/${id}`,
+    method: 'post',
+    data,
+  });
+}
+/**
  * @description 代码生成 - 文件编辑
  */
 export function crudSaveFile(id, data) {

@@ -5,6 +5,7 @@ namespace app\services\system\lang;
 use app\dao\system\lang\LangCountryDao;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use think\facade\Route as Url;
 
@@ -37,7 +38,7 @@ class LangCountryServices extends BaseServices
             if (isset($langTypeList[$item['type_id']])) {
                 $item['link_lang'] = $langTypeList[$item['type_id']]['language_name'] . '(' . $langTypeList[$item['type_id']]['file_name'] . ')';
             } else {
-                $item['link_lang'] = '';
+                $item['link_lang'] = '暂无';
             }
         }
         $count = $this->dao->count($where);
@@ -99,7 +100,7 @@ class LangCountryServices extends BaseServices
             $res = $this->dao->save($data);
         }
         if (!$res) throw new AdminException(100007);
-        $this->cacheDriver()->clear();
+        CacheService::clear();
         return true;
     }
 
@@ -112,7 +113,7 @@ class LangCountryServices extends BaseServices
     {
         $res = $this->dao->delete($id);
         if (!$res) throw new AdminException(100008);
-        $this->cacheDriver()->clear();
+        CacheService::clear();
         return true;
     }
 }

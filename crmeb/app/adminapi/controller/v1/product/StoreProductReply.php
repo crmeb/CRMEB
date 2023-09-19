@@ -100,7 +100,8 @@ class StoreProductReply extends AuthController
             ['product_score', 0],
             ['service_score', 0],
             ['product_id', 0],
-            ['add_time', 0]
+            ['add_time', 0],
+            ['suk', ''],
         ]);
         if (!$data['product_id']) {
             $data['product_id'] = $data['image']['product_id'] ?? '';

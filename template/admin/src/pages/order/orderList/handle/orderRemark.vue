@@ -1,22 +1,28 @@
 <template>
-  <Modal v-model="modals" scrollable title="请修改内容" class="order_box" :closable="false">
-    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80" @submit.native.prevent>
-      <FormItem label="备注：" prop="remark">
-        <Input
+  <el-dialog :visible.sync="modals" title="请修改内容" class="order_box" :show-close="true" width="540px">
+    <el-form
+        ref="formValidate"
+        :model="formValidate"
+        :rules="ruleValidate"
+        label-width="80px"
+        label-position="right"
+        @submit.native.prevent>
+      <el-form-item label="备注：" prop="remark">
+        <el-input
           v-model="formValidate.remark"
           :maxlength="200"
           show-word-limit
           type="textarea"
           placeholder="订单备注"
-          style="width: 100%"
+          style="width: 414px"
         />
-      </FormItem>
-    </Form>
-    <div slot="footer">
-      <Button type="primary" @click="putRemark('formValidate')">提交</Button>
-      <Button @click="cancel('formValidate')">取消</Button>
-    </div>
-  </Modal>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="cancel('formValidate')">取消</el-button>
+      <el-button type="primary" @click="putRemark('formValidate')">提交</el-button>
+    </span>
+  </el-dialog>
 </template>
 
 <script>
@@ -58,16 +64,16 @@ export default {
         if (valid) {
           (this.remarkType ? putRefundRemarkData : putRemarkData)(data)
             .then(async (res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.modals = false;
               this.$refs[name].resetFields();
               this.$emit('submitFail');
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
-          this.$Message.warning('请填写备注信息');
+          this.$message.warning('请填写备注信息');
         }
       });
     },

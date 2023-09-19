@@ -417,7 +417,7 @@ export default {
   }
 }
 .look {
-  color: #1890ff;
+  color: var(--prev-color-primary);
   margin-left: 0.2rem;
   position: relative;
 }

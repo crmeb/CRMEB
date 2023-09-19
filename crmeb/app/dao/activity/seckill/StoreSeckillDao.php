@@ -41,7 +41,7 @@ class StoreSeckillDao extends BaseDao
      */
     public function search(array $where = [], bool $search = false)
     {
-        return parent::search($where, $search)->when(isset($where['seckllTime']), function ($query) use ($where) {
+        return parent::search($where)->when(isset($where['seckllTime']), function ($query) use ($where) {
             [$startTime, $stopTime] = is_array($where['seckllTime']) ? $where['seckllTime'] : [time(), time() - 86400];
             $query->where('start_time', '<=', $startTime)->where('stop_time', '>=', $stopTime);
         })->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
@@ -67,6 +67,7 @@ class StoreSeckillDao extends BaseDao
      * 条件获取数量
      * @param array $where
      * @return int
+     * @throws \ReflectionException
      */
     public function getCount(array $where)
     {

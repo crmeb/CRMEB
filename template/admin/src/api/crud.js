@@ -40,6 +40,14 @@ export function getCreateApi(url) {
     method: 'get',
   });
 }
+
+export function getStatusApi(url, data) {
+  return request({
+    url: url,
+    method: 'put',
+    data
+  });
+}
 /**
  * @description 创建接口
  */

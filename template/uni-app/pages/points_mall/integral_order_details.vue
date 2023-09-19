@@ -413,15 +413,15 @@
 				uni.showModal({
 					title: this.$t(`确认收货`),
 					content: this.$t(`为保障权益，请收到货确认无误后，再确认收货`),
-					success: function(res) {
+					success: (res) => {
 						if (res.confirm) {
 							orderTake({
 								order_id: that.order_id
 							}).then(res => {
 								return that.$util.Tips({
-									title: this.$t(`操作成功`),
+									title: that.$t(`操作成功`),
 									icon: 'success'
-								}, function() {
+								}, () => {
 									that.getOrderInfo();
 								});
 							}).catch(err => {
@@ -626,7 +626,7 @@
 		text-align: right;
 		display: flex;
 		flex-wrap: wrap;
-		white-space:normal;
+		white-space: normal;
 	}
 
 	.order-details .wrapper .item .conter .copy {

@@ -1,64 +1,88 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="levelFrom"
-        :model="levelFrom"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="搜索：" label-for="keyword">
-              <Input
-                search
-                enter-button
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="levelFrom"
+            :model="levelFrom"
+            :label-width="labelWidth"
+            label-position="right"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="搜索：" label-for="keyword">
+            <el-input
+                clearable
                 v-model="levelFrom.name"
                 placeholder="请输入模板名称"
-                @on-search="userSearchs"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button type="primary" icon="md-add" @click="freight">添加运费模板</Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-button type="primary" @click="freight">添加运费模板</el-button>
+      <el-table
         :data="levelLists"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="icons">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.icon" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row.id)">修改</a>
-          <Divider type="vertical" v-if="row.id !== 1" />
-          <a @click="del(row, '删除分组', index)" v-if="row.id !== 1">删除</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="模板名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="计费方式" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="指定包邮" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.appoint }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="排序" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.sort }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="添加时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+         <el-table-column label="操作" fixed="right" width="100">
+          <template slot-scope="scope">
+          <a @click="edit(scope.row.id)">修改</a>
+          <el-divider direction="vertical" v-if="scope.row.id !== 1" />
+          <a @click="del(scope.row, '删除模版', index)" v-if="scope.row.id !== 1">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="levelFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="levelFrom.limit"
+          :page.sync="levelFrom.page"
+          :limit.sync="levelFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <!-- 运费模板-->
     <freight-template
       v-if="isTemplate"
@@ -91,44 +115,7 @@ export default {
         xs: 24,
       },
       loading: false,
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '模板名称',
-          key: 'name',
-          minWidth: 100,
-        },
-        {
-          title: '计费方式',
-          key: 'type',
-          minWidth: 120,
-        },
-        {
-          title: '指定包邮',
-          key: 'appoint',
-          minWidth: 120,
-        },
-        {
-          title: '排序',
-          key: 'sort',
-          minWidth: 120,
-        },
-        {
-          title: '添加时间',
-          key: 'add_time',
-          minWidth: 120,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
+
       levelFrom: {
         name: '',
         page: 1,
@@ -146,10 +133,10 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   methods: {
@@ -172,11 +159,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.levelLists.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 运费模板列表
@@ -191,12 +178,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.levelFrom.page = index;
-      this.getList();
     },
     // 编辑
     edit(id) {

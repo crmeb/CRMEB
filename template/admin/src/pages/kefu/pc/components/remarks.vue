@@ -1,22 +1,22 @@
 <template>
   <div>
-    <Form ref="formValidate" :model="formValidate" :rules="ruleInline" inline>
-      <FormItem label="备注：" prop="con" class="form-item" label-position="right" :label-width="100">
-        <Input
+    <el-form ref="formValidate" :model="formValidate" :rules="ruleInline" inline>
+      <el-form-item label="备注：" prop="con" class="form-item" label-position="right" label-width="60px">
+        <el-input
           v-model="formValidate.con"
           placeholder="请输入备注"
-          style="width: 100%"
+          style="width: 360px"
           maxlength="200"
           type="textarea"
           :rows="5"
           show-word-limit
-        ></Input>
-      </FormItem>
+        ></el-input>
+      </el-form-item>
       <div class="mask-footer">
-        <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
-        <Button @click="close">取消</Button>
+        <el-button @click="close">取消</el-button>
+        <el-button type="primary" @click="handleSubmit('formValidate')">提交</el-button>
       </div>
-    </Form>
+    </el-form>
   </div>
 </template>
 
@@ -52,11 +52,11 @@ export default {
             remark: this.formValidate.con,
           })
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.$emit('remarkSuccess');
             })
             .catch((error) => {
-              this.$Message.error(error.msg);
+              this.$message.error(error.msg);
             });
         } else {
         }

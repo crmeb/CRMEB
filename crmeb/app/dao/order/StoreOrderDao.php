@@ -269,7 +269,7 @@ class StoreOrderDao extends BaseDao
      * @return int
      * @throws \ReflectionException
      */
-    public function count(array $where = [], bool $search = true): int
+    public function count(array $where = [], bool $search = true)
     {
         return $this->search($where, $search)->count();
     }
@@ -702,7 +702,7 @@ class StoreOrderDao extends BaseDao
                 $query->field("sum($sumField) as number,FROM_UNIXTIME($group, '$timeUinx') as time");
                 $query->group("FROM_UNIXTIME($group, '$timeUinx')");
             })
-            ->order('pay_time ASC')->select()->toArray();
+            ->order('pay_time ASC,id DESC')->select()->toArray();
     }
 
     /**时间分组订单数统计
@@ -730,7 +730,7 @@ class StoreOrderDao extends BaseDao
                 $query->field("count($sumField) as number,FROM_UNIXTIME(pay_time, '$timeUinx') as time");
                 $query->group("FROM_UNIXTIME(pay_time, '$timeUinx')");
             })
-            ->order('pay_time ASC')->select()->toArray();
+            ->order('pay_time ASC,id DESC')->select()->toArray();
     }
 
     /**时间段支付订单人数
@@ -773,7 +773,7 @@ class StoreOrderDao extends BaseDao
                 $query->field("count(distinct uid) as number,FROM_UNIXTIME(pay_time, '$timeUinx') as time");
                 $query->group("FROM_UNIXTIME(pay_time, '$timeUinx')");
             })
-            ->order('pay_time ASC')->select()->toArray();
+            ->order('pay_time ASC,id DESC')->select()->toArray();
     }
 
 
@@ -941,6 +941,21 @@ class StoreOrderDao extends BaseDao
     }
 
     /**
+     * 秒杀订单统计总数
+     * @param $id
+     * @param $where
+     * @return int
+     * @throws \ReflectionException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/31
+     */
+    public function seckillCount($id, $where)
+    {
+        return $this->search($where)->where('seckill_id', $id)->count();
+    }
+
+    /**
      * 砍价订单统计
      * @param $id
      * @param $where
@@ -957,6 +972,21 @@ class StoreOrderDao extends BaseDao
             ->when($page && $limit, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })->field(['uid', 'order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->order('add_time desc')->select()->toArray();
+    }
+
+    /**
+     * 砍价订单统计数量
+     * @param $id
+     * @param $where
+     * @return int
+     * @throws \ReflectionException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/31
+     */
+    public function bargainStatisticsOrderCount($id, $where)
+    {
+        return $this->search($where)->where('bargain_id', $id)->count();
     }
 
     /**
@@ -978,16 +1008,62 @@ class StoreOrderDao extends BaseDao
             })->field(['uid', 'order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->order('add_time desc')->select()->toArray();
     }
 
+    /**
+     * 拼团订单统计数量
+     * @param $id
+     * @param $where
+     * @param int $page
+     * @param int $limit
+     * @return int
+     * @throws \ReflectionException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/31
+     */
+    public function combinationStatisticsCount($id, $where)
+    {
+        return $this->search($where)->where('combination_id', $id)->count();
+    }
+
+    /**
+     * 查找待收货的子订单
+     * @param int $pid
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/31
+     */
     public function getSubOrderNotSendList(int $pid)
     {
         return $this->getModel()->where('pid', $pid)->where('status', 1)->select()->toArray();
     }
 
+    /**
+     * 判断订单是否全部发货
+     * @param int $pid
+     * @param int $order_id
+     * @return int
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/31
+     */
     public function getSubOrderNotSend(int $pid, int $order_id)
     {
         return $this->getModel()->where('pid', $pid)->where('status', 0)->where('id', '<>', $order_id)->count();
     }
 
+    /**
+     * 判断是否存在子未收货子订单
+     * @param int $pid
+     * @param int $order_id
+     * @return int
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/31
+     */
     public function getSubOrderNotTake(int $pid, int $order_id)
     {
         return $this->getModel()->where('pid', $pid)->where('status', 1)->where('id', '<>', $order_id)->count();

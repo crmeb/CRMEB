@@ -104,6 +104,18 @@ class ExportExcel extends AuthController
     }
 
     /**
+     * 发货订单列表导出
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function orderDeliveryList()
+    {
+        return app('json')->success($this->service->exportOrderDeliveryList());
+    }
+
+    /**
      * 商品列表导出
      * @return mixed
      */

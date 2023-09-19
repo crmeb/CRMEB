@@ -1,67 +1,88 @@
 <template>
   <div class="goodList">
-    <Form ref="formValidate" :model="formValidate" :label-width="120" label-position="right" class="tabform">
-      <Row type="flex" :gutter="24">
-        <Col v-bind="grid" v-if="!liveStatus">
-          <FormItem label="商品分类：" label-for="pid">
-            <!-- <Select v-model="formValidate.cate_id" style="width: 200px" clearable @on-change="userSearchs">
-              <Option v-for="item in treeSelect" :value="item.id" :key="item.id"
-                >{{ item.html + item.cate_name }}
-              </Option>
-            </Select> -->
-            <el-cascader
-              v-model="formValidate.cate_id"
-              size="small"
-              :options="treeSelect"
-              :props="{ emitPath: false }"
-              clearable
-            ></el-cascader>
-          </FormItem>
-        </Col>
-        <Col v-bind="grid" v-if="!type && diy">
-          <FormItem label="商品类型：" label-for="pid">
-            <Select v-model="goodType" style="width: 200px" clearable @on-change="userSearchs">
-              <Option v-for="item in goodList" :value="item.activeValue" :key="item.activeValue"
-                >{{ item.title }}
-              </Option>
-            </Select>
-          </FormItem>
-        </Col>
-        <Col v-bind="grid">
-          <FormItem label="商品搜索：" label-for="store_name">
-            <Input
-              search
-              enter-button
-              placeholder="请输入商品名称/关键字/编号"
-              v-model="formValidate.store_name"
-              style="width: 250px"
-              @on-search="userSearchs"
-            />
-          </FormItem>
-        </Col>
-      </Row>
-    </Form>
-    <Table
+    <el-form ref="formValidate"
+             :model="formValidate"
+             label-width="80px"
+             label-position="right"
+             inline
+             class="tabform">
+      <el-form-item label="商品分类：" v-if="!liveStatus">
+        <el-cascader
+            v-model="formValidate.cate_id"
+            size="small"
+            :options="treeSelect"
+            :props="{ checkStrictly: true, emitPath: false }"
+            clearable
+            class="form_content_width"
+        ></el-cascader>
+      </el-form-item>
+      <el-form-item label="商品类型：" v-if="!type && diy">
+        <el-select v-model="goodType" clearable @change="userSearchs" class="form_content_width">
+          <el-option v-for="item in goodList" :value="item.activeValue" :key="item.activeValue" :label="item.title">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="商品搜索：">
+        <el-input
+            clearable
+            placeholder="请输入商品名称/关键字/编号"
+            v-model="formValidate.store_name"
+            class="form_content_width"
+        />
+        <el-button type="primary" @click="userSearchs" class="ml15">查询</el-button>
+      </el-form-item>
+    </el-form>
+    <el-table
       ref="table"
-      no-data-text="暂无数据"
-      @on-selection-change="changeCheckbox"
-      no-filtered-data-text="暂无筛选结果"
+      empty-text="暂无数据"
       max-height="400"
-      :columns="liveStatus == false ? columns4 : columns5"
+      :highlight-current-row="many !== 'many'"
       :data="tableList"
-      :loading="loading"
+      v-loading="loading"
+      @select="changeCheckbox"
+      @select-all="changeCheckbox"
     >
-      <template slot-scope="{ row, index }" slot="image">
-        <div class="tabBox_img" v-viewer>
-          <img v-lazy="row.image" />
-        </div>
-      </template>
-    </Table>
+      <el-table-column v-if="many == 'many'" type="selection" width="55"> </el-table-column>
+      <el-table-column v-else width="50">
+        <template slot-scope="scope">
+          <el-radio v-model="templateRadio" :label="scope.row.id" @change.native="getTemplateRow(scope.row)"
+            >&nbsp;</el-radio
+          >
+        </template>
+      </el-table-column>
+
+      <el-table-column label="商品ID" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="图片" width="80">
+        <template slot-scope="scope">
+          <div class="tabBox_img" v-viewer>
+            <img v-lazy="scope.row.image" />
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="商品名称" min-width="250">
+        <template slot-scope="scope">
+          <span>{{ scope.row.store_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="商品分类" min-width="150" v-if="liveStatus">
+        <template slot-scope="scope">
+          <span>{{ scope.row.cate_name }}</span>
+        </template>
+      </el-table-column>
+    </el-table>
     <div class="acea-row row-right page">
-      <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="formValidate.limit" />
-    </div>
-    <div class="footer" slot="footer" v-if="many === 'many' && !diy">
-      <Button type="primary" size="large" :loading="modal_loading" long @click="ok">提交</Button>
+      <pagination
+        v-if="total"
+        :total="total"
+        :page.sync="formValidate.page"
+        :limit.sync="formValidate.limit"
+        @pagination="pageChange"
+      />
+      <el-button type="primary" @click="ok" v-if="many === 'many' && !diy" class="ml15">提交</el-button>
     </div>
   </div>
 </template>
@@ -117,6 +138,7 @@ export default {
   },
   data() {
     return {
+      templateRadio: 0,
       modal_loading: false,
       treeSelect: [],
       formValidate: {
@@ -139,41 +161,6 @@ export default {
       tableList: [],
       currentid: 0,
       productRow: {},
-      columns4: [
-        {
-          title: '商品ID',
-          key: 'id',
-        },
-        {
-          title: '图片',
-          slot: 'image',
-        },
-        {
-          title: '商品名称',
-          key: 'store_name',
-          minWidth: 250,
-        },
-        {
-          title: '商品分类',
-          key: 'cate_name',
-          minWidth: 150,
-        },
-      ],
-      columns5: [
-        {
-          title: '商品ID',
-          key: 'id',
-        },
-        {
-          title: '图片',
-          slot: 'image',
-        },
-        {
-          title: '商品名称',
-          key: 'name',
-          minWidth: 250,
-        },
-      ],
       images: [],
       many: '',
       goodType: '',
@@ -202,54 +189,17 @@ export default {
     };
   },
   computed: {},
-  created() {
-    let radio = {
-      width: 60,
-      align: 'center',
-      render: (h, params) => {
-        let id = params.row.id;
-        let flag = false;
-        if (this.currentid === id) {
-          flag = true;
-        } else {
-          flag = false;
+  watch:{
+    ischeckbox:{
+      handler(newVal,oldVal) {
+        if(newVal){
+          this.many = 'many';
         }
-        let self = this;
-        return h('div', [
-          h('Radio', {
-            props: {
-              value: flag,
-            },
-            on: {
-              'on-change': () => {
-                self.currentid = id;
-                this.productRow = params.row;
-                this.$emit('getProductId', this.productRow);
-                if (this.productRow.id) {
-                  if (this.$route.query.fodder === 'image') {
-                    /* eslint-disable */
-                    let imageObject = {
-                      image: this.productRow.image,
-                      product_id: this.productRow.id,
-                    };
-                    form_create_helper.set('image', imageObject);
-                    form_create_helper.close('image');
-                  }
-                } else {
-                  this.$Message.warning('请先选择商品');
-                }
-              },
-            },
-          }),
-        ]);
       },
-    };
-
-    let checkbox = {
-      type: 'selection',
-      width: 60,
-      align: 'center',
-    };
+      immediate: true
+    }
+  },
+  created() {
     let many = '';
     if (this.ischeckbox) {
       many = 'many';
@@ -257,13 +207,6 @@ export default {
       many = this.$route.query.type;
     }
     this.many = many;
-    if (many === 'many') {
-      this.columns4.unshift(checkbox);
-      this.columns5.unshift(checkbox);
-    } else {
-      this.columns4.unshift(radio);
-      this.columns5.unshift(radio);
-    }
   },
   mounted() {
     this.goodsCategory();
@@ -292,8 +235,21 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
+    },
+    getTemplateRow(row) {
+      let images = [];
+      let imageObject = {
+        image: row.image,
+        product_id: row.id,
+        store_name: row.store_name,
+        temp_id: row.temp_id,
+      };
+      images.push(imageObject);
+      this.images = images;
+      this.diyVal = row;
+      this.$emit('getProductId', row);
     },
     changeCheckbox(selection) {
       let images = [];
@@ -308,7 +264,7 @@ export default {
       });
       this.images = images;
       this.diyVal = selection;
-      this.$emit('getProductDiy', selection);
+      // this.$emit('getProductId', selection);
     },
     // 商品分类；
     goodsCategory() {
@@ -317,11 +273,10 @@ export default {
           this.treeSelect = res.data;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
-    pageChange(index) {
-      this.formValidate.page = index;
+    pageChange() {
       if (this.diy) {
         this.productList();
       } else {
@@ -356,7 +311,7 @@ export default {
           })
           .catch((res) => {
             this.loading = false;
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
         liveGoods({
@@ -389,7 +344,7 @@ export default {
           })
           .catch((res) => {
             this.loading = false;
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       }
     },
@@ -400,6 +355,7 @@ export default {
           form_create_helper.set('image', imageValue.concat(this.images));
           form_create_helper.close('image');
         } else {
+          this.$refs.table.clearSelection()
           if (this.isdiy) {
             this.$emit('getProductId', this.diyVal);
           } else {
@@ -407,7 +363,7 @@ export default {
           }
         }
       } else {
-        this.$Message.warning('请先选择商品');
+        this.$message.warning('请先选择商品');
       }
     },
     // 表格搜索

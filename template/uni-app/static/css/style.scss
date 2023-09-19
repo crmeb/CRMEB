@@ -330,7 +330,7 @@
 .coupon-list .item .money .num{font-size:60rpx;}
 .coupon-list .item .text{width:470rpx;padding:6rpx 17rpx 0 24rpx;box-sizing:border-box;background-color:#fff;}
 .coupon-list .item .text .condition{font-size:30rpx;color:#282828;height:93rpx;}
-.coupon-list .item .text .data{font-size:20rpx;color:#999;height:70rpx;display: flex;flex-wrap: nowrap;}
+.coupon-list .item .text .data{font-size:20rpx;color:#999;height:50rpx;display: flex;flex-wrap: nowrap;}
 .coupon-list .item .text .data .bnt{width:136rpx;height:44rpx;border-radius:22rpx;font-size:22rpx;text-align:center;line-height:44rpx;color:#fff;}
 .coupon-list .item .text .data .bnt.gray{background:#ccc!important;}
 .coupon-list .item.svip .money{background-color: #EDBB75;}
@@ -340,7 +340,7 @@
 .coupon-list .item.svip .line1 .image{width:30rpx;height:30rpx;margin-right:10rpx;vertical-align:middle;z-index:0;}
 
 .noCommodity {
-	border-top: 7rpx solid #f5f5f5
+	// border-top: 7rpx solid #f5f5f5
 }
 
 .noCommodity .pictrue {
@@ -748,6 +748,9 @@ uni-checkbox:not([disabled]) .uni-checkbox-input:hover{
 }
 .bg-green{
 	background-color: #3CBB45;
+}
+.bg-theme{
+	background-color: var(--view-theme);
 }
 uni-toast .uni-toast {
     font-size: 30rpx;

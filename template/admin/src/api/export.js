@@ -33,6 +33,17 @@ export function exportOrderList(data) {
 }
 
 /**
+ * 发货订单列表导出
+ */
+export function exportOrderDeliveryList(data) {
+  return request({
+    url: '/export/order_delivery_list',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
  * 商品列表导出
  */
 export function exportProductList(data) {

@@ -271,7 +271,7 @@ export const getArrayFromFile = (file) => {
 /**
  * @param {Array} array 表格数据二维数组
  * @returns {Object} { columns, tableData }
- * @description 从二维数组中获取表头和表格数据，将第一行作为表头，用于在iView的表格中展示数据
+ * @description 从二维数组中获取表头和表格数据，将第一行作为表头，用于在表格中展示数据
  */
 export const getTableDataFromArray = (array) => {
   let columns = [];

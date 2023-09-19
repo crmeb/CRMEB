@@ -4,36 +4,19 @@ namespace crmeb\services\easywechat\orderShipping;
 
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
-use EasyWeChat\Core\AccessToken;
 use EasyWeChat\Core\Exceptions\HttpException;
-use think\facade\Cache;
 
 
 class OrderClient extends BaseOrder
 {
-    const redis_prefix = 'mini_order';
+    const cache_prefix = 'mini_order';
 
     const express_company = 'ZTO';   // 默认发货快递公司为（中通快递）
 
-
     /**
-     * @var \Redis
+     * @var
      */
-    protected $redis;
-
-    /**
-     * @return object|\Redis|null
-     *
-     * @date 2023/05/10
-     * @author yyw
-     */
-    protected function getRedis()
-    {
-        if (empty($this->redis)) {
-            $this->redis = Cache::store('redis')->handler();
-        }
-        return $this->redis;
-    }
+    protected $cache;
 
     /**
      * 处理联系人
@@ -102,7 +85,7 @@ class OrderClient extends BaseOrder
             ];
         }
         // 跳转路径
-//        $this->setMesJumpPath($path);
+        $this->setMesJumpPath($path);
         return $this->shipping($params);
     }
 
@@ -214,8 +197,8 @@ class OrderClient extends BaseOrder
     {
         $res = $this->isManaged();
         if ($res['is_trade_managed']) {
-            $key = self::redis_prefix . '_is_trade_managed';
-            $this->getRedis()->set($key, $res['is_trade_managed']);
+            $key = self::cache_prefix . '_is_trade_managed';
+            CacheService::set($key, $res['is_trade_managed']);
             return true;
         } else {
             return false;
@@ -232,8 +215,8 @@ class OrderClient extends BaseOrder
      */
     public function checkManaged()
     {
-        $key = self::redis_prefix . '_is_trade_managed';
-        if ($this->getRedis()->exists($key)) {
+        $key = self::cache_prefix . '_is_trade_managed';
+        if (CacheService::get($key)) {
             return true;
         } else {
             return $this->setManaged();
@@ -252,10 +235,10 @@ class OrderClient extends BaseOrder
     {
         $list = $this->getDeliveryList();
         if ($list) {
-            $key = self::redis_prefix . '_delivery_list';
+            $key = self::cache_prefix . '_delivery_list';
             $date = array_column($list['delivery_list'], 'delivery_id', 'delivery_name');
             // 创建缓存
-            $this->getRedis()->hMSet($key, $date);
+            CacheService::set($key, json_encode($date));
 
             return $date;
         } else {
@@ -274,18 +257,14 @@ class OrderClient extends BaseOrder
      */
     public function getDelivery($company_name)
     {
-        $key = self::redis_prefix . '_delivery_list';
-        if (!$this->getRedis()->exists($key)) {
+        $key = self::cache_prefix . '_delivery_list';
+        if (!CacheService::get($key)) {
             $date = $this->setDeliveryList();
-            if (!isset($date[$company_name])) {
-//                throw new AdminException('物流公司异常1');
-            }
-            $express_company = $date[$company_name];
+            $express_company = $date[$company_name] ?? '';
         } else {
-            $express_company = $this->getRedis()->hMGet($key, [$company_name])[$company_name] ?? '';
+            $express_company = json_decode(CacheService::get($key), true)[$company_name] ?? '';
         }
         if (empty($express_company)) {
-//            throw new AdminException('物流公司异常2');
             $express_company = self::express_company;
         }
 

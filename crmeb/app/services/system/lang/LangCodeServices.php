@@ -138,7 +138,7 @@ class LangCodeServices extends BaseServices
             $langStr = 'api_lang_' . str_replace('-', '_', $value);
             CacheService::delete($langStr);
         }
-        $this->cacheDriver()->clear();
+        CacheService::clear();
         return true;
     }
 
@@ -180,7 +180,7 @@ class LangCodeServices extends BaseServices
      */
     public function getLangVersion()
     {
-        return $this->cacheDriver()->remember('lang_version', function () {
+        return CacheService::remember('lang_version', function () {
             return [
                 'version' => uniqid()
             ];

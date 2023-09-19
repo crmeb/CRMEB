@@ -62,12 +62,12 @@ if (vconsole !== undefined) {
 		Cache.clear(cookieName);
 } else vconsole = Cache.get(cookieName);
 
-import VConsole from './pages/extension/components/vconsole.min.js'
+// import VConsole from './pages/extension/components/vconsole.min.js'
 
-if (vconsole !== undefined && vconsole === md5Crmeb) {
-	Cache.set(cookieName, md5Crmeb, 3600);
-	let vConsole = new VConsole();
-}
+// if (vconsole !== undefined && vconsole === md5Crmeb) {
+// 	Cache.set(cookieName, md5Crmeb, 3600);
+// 	let vConsole = new VConsole();
+// }
 
 // let snsapiBase = 'snsapi_base';
 // Auth.isWeixin() && Auth.oAuth(snsapiBase);

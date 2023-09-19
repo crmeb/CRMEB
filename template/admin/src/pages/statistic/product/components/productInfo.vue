@@ -1,10 +1,10 @@
 <template>
-  <Card :bordered="false" dis-hover class="ivu-mt">
+  <el-card :bordered="false" shadow="never" class="ivu-mt" v-loading="spinShow">
     <div class="acea-row row-between-wrapper mb20">
-      <div class="header-title">
-        商品概况
-        <Poptip word-wrap width="500" trigger="hover" placement="right-start">
-          <Icon type="ios-information-circle-outline" />
+      <div class="statics-header-title">
+        <h4>商品概况</h4>
+        <el-tooltip width="500" placement="right-start">
+          <i class="el-icon-question ml10"></i>
           <div slot="content">
             <div>商品浏览量</div>
             <div>在选定条件下，所有商品详情页被访问的次数，一个人在统计时间内访问多次记为多次</div>
@@ -12,76 +12,71 @@
             <div>商品访客数</div>
             <div>在选定条件下，访问任何商品详情页的人数，一个人在统计时间范围内访问多次只记为一个</div>
             <br />
-            <div>加购件数</div>
-            <div>在选定条件下，添加商品进入购物车的商品件数</div>
-            <br />
-            <div>下单件数</div>
-            <div>在选定条件下，成功下单的商品件数之和（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入，不剔除退款订单）</div>
-            <br />
             <div>支付件数</div>
-            <div>在选定条件下，成功付款订单的商品件数之和（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入，不剔除退款订单）</div>
+            <div>
+              在选定条件下，成功付款订单的商品件数之和（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入，不剔除退款订单）
+            </div>
             <br />
             <div>支付金额</div>
-            <div>在选定条件下，成功付款订单的商品金额之和（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入，不剔除退款订单）</div>
-            <br />
-            <div>成本金额</div>
-            <div>在选定条件下，成功付款订单的商品成本金额之和</div>
-            <br />
-            <div>退款金额</div>
-            <div>在选定条件下，成功退款的商品金额之和</div>
+            <div>
+              在选定条件下，成功付款订单的商品金额之和（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入，不剔除退款订单）
+            </div>
             <br />
             <div>退款件数</div>
             <div>在选定条件下，成功退款的商品件数之和</div>
             <br />
-            <div>访客 - 支付转化率</div>
-            <div>在选定条件下， 付款人数 / 访客数</div>
-            <br />
+            <div>退款金额</div>
+            <div>在选定条件下，成功退款的商品金额之和</div>
           </div>
-        </Poptip>
+        </el-tooltip>
       </div>
       <div class="acea-row">
-        <DatePicker
-          :editable="false"
-          :clearable="false"
-          @on-change="onchangeTime"
-          :value="timeVal"
-          format="yyyy/MM/dd"
+        <el-date-picker
+          clearable
+          v-model="timeVal"
           type="daterange"
-          placement="bottom-start"
-          placeholder="请选择时间"
-          style="width: 200px"
-          class="mr15"
-          :options="options"
-        ></DatePicker>
-        <Button type="primary" class="mr15" @click="onSeach">查询</Button>
-        <Button type="primary" @click="excel">导出</Button>
+          :editable="false"
+          @change="onchangeTime"
+          format="yyyy/MM/dd"
+          value-format="yyyy/MM/dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+          style="width: 250px"
+          class="mr20"
+        ></el-date-picker>
+        <el-button type="primary" @click="onSeach">查询</el-button>
+        <el-button type="primary" @click="excel">导出</el-button>
       </div>
     </div>
-    <div class="acea-row mb20">
-      <div class="infoBox acea-row mb30" v-for="(item, index) in list" :key="index">
-        <div
-          class="iconCrl mr15"
-          :class="{ one: index % 4 == 0, two: index % 4 == 1, three: index % 4 == 2, four: index % 4 == 3 }"
-        >
-          <i :class="item.icon" class="iconfont"></i>
-        </div>
-        <div class="info">
-          <span class="sp1" v-text="item.name"></span>
-          <span class="sp2" v-if="index === list.length - 1" v-text="item.list.num"></span>
-          <span class="sp2" v-else v-text="item.list.num"></span>
-          <span class="content-time spBlock"
-            >环比增长：<i class="content-is" :class="Number(item.list.percent) >= 0 ? 'up' : 'down'"
-              >{{ item.list.percent }}%</i
-            ><Icon
-              :color="Number(item.list.percent) >= 0 ? '#F5222D' : '#39C15B'"
-              :type="Number(item.list.percent) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
-          /></span>
-        </div>
-      </div>
+    <div class="mb20">
+      <el-row>
+        <el-col v-bind="grid" class="acea-row mb30" v-for="(item, index) in list" :key="index">
+          <div
+            class="iconCrl mr15"
+            :class="{ one: index % 4 == 0, two: index % 4 == 1, three: index % 4 == 2, four: index % 4 == 3 }"
+          >
+            <i :class="item.icon" class="iconfont"></i>
+          </div>
+          <div class="info">
+            <span class="sp1" v-text="item.name"></span>
+            <span class="sp2" v-if="index === list.length - 1" v-text="item.list.num"></span>
+            <span class="sp2" v-else v-text="item.list.num"></span>
+            <span class="content-time spBlock"
+              >环比增长：<i class="content-is" :class="Number(item.list.percent) >= 0 ? 'up' : 'down'"
+                >{{ item.list.percent }}%</i
+              >
+              <i
+                :style="{ color: Number(item.list.percent) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[Number(item.list.percent) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
+              />
+            </span>
+          </div>
+        </el-col>
+      </el-row>
     </div>
     <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
-    <Spin size="large" fix v-if="spinShow"></Spin>
-  </Card>
+  </el-card>
 </template>
 
 <script>
@@ -97,13 +92,13 @@ export default {
     return {
       spinShow: false,
       grid: {
-        xl: 8,
-        lg: 8,
+        xl: 4,
+        lg: 4,
         md: 8,
         sm: 24,
         xs: 24,
       },
-      options: this.$timeOptions,
+      pickerOptions: this.$timeOptions,
       name: '近30天',
       timeVal: [],
       dataTime: '',
@@ -139,7 +134,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join('-');
+      this.dataTime = this.timeVal ? this.timeVal.join('-') : '';
     },
     // 统计
     getStatistics() {
@@ -158,16 +153,6 @@ export default {
               list: cardLists.user,
             },
             {
-              name: '加购件数',
-              icon: 'iconjiagoujianshu',
-              list: cardLists.cart,
-            },
-            {
-              name: '下单件数',
-              icon: 'iconxiadanjianshu',
-              list: cardLists.order,
-            },
-            {
               name: '支付件数',
               icon: 'iconzhifujianshu',
               list: cardLists.pay,
@@ -178,29 +163,19 @@ export default {
               list: cardLists.payPrice,
             },
             {
-              name: '成本金额',
-              icon: 'iconchengbenjine',
-              list: cardLists.cost,
+              name: '退款件数',
+              icon: 'icontuikuanjianshu',
+              list: cardLists.refund,
             },
             {
               name: '退款金额',
               icon: 'icontuikuan',
               list: cardLists.refundPrice,
             },
-            {
-              name: '退款件数',
-              icon: 'icontuikuanjianshu',
-              list: cardLists.refund,
-            },
-            {
-              name: '访客-支付转化率',
-              icon: 'iconfangke-zhifuzhuanhuashuai',
-              list: cardLists.payPercent,
-            },
           ];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 统计图
@@ -318,7 +293,7 @@ export default {
           this.spinShow = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
           this.spinShow = false;
         });
     },
@@ -328,7 +303,7 @@ export default {
 
 <style scoped lang="less">
 .one {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 .two {
   background: #00c050;
@@ -381,7 +356,7 @@ export default {
 }
 
 .lan {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 
 .iconshangpinliulanliang {

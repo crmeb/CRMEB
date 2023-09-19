@@ -17,8 +17,8 @@
             <div class="con-item" v-for="(list, key) in item.chiild" :key="key">
               <span>{{ list.title }}</span>
               <div style="width: 100%" @click="getLink(index, key, item)">
-                <Input
-                  :icon="key && !item.link ? 'ios-arrow-forward' : ''"
+                <el-input
+                  :suffix-icon="key && !item.link ? 'el-icon-arrow-right' : ''"
                   :readonly="key && !item.link ? true : false"
                   v-model="list.val"
                   :placeholder="list.pla"
@@ -28,21 +28,21 @@
             </div>
             <div class="con-item" v-if="item.link">
               <span>{{ item.link.title }}</span>
-              <Select v-model="item.link.activeVal" style="" @on-change="sliderChange(index)">
-                <Option v-for="(item, j) in item.link.optiops" :value="item.value" :key="j">{{ item.label }} </Option>
-              </Select>
+              <el-select v-model="item.link.activeVal" style="" @change="sliderChange(index)">
+                <el-option v-for="(item, j) in item.link.optiops" :value="item.value" :key="j" :label="item.label"></el-option>
+              </el-select>
             </div>
           </div>
           <div class="delete" @click.stop="bindDelete(index)">
-            <Icon type="ios-close-circle" size="26" />
+            <i class="el-icon-circle-close" style="font-size: 24px;"></i>
           </div>
         </div>
       </draggable>
     </div>
     <div v-if="configData.list">
       <div class="add-btn" @click="addHotTxt" v-if="configData.list.length < configData.max">
-        <Button type="primary" ghost style="width: 100%; height: 40px; border-color: #1890ff; color: #1890ff"
-          >添加模块</Button
+        <el-button type="primary" ghost style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
+          >添加模块</el-button
         >
       </div>
     </div>
@@ -138,7 +138,7 @@ export default {
     },
     sliderChange(index) {
       this.configData.tabCur = index;
-      this.$emit('getConfig', { name: 'product', indexs: index });
+      // this.$emit('getConfig', { name: 'product', indexs: index });
     },
     activeBtn(index) {
       this.configData.tabCur = index;

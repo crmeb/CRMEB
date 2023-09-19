@@ -1,101 +1,116 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="pagination"
-        :model="pagination"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid" class="ivu-text-left">
-            <FormItem label="创建时间：">
-              <DatePicker
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="pagination"
+            :model="pagination"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="创建时间：">
+            <el-date-picker
+                clearable
+                v-model="timeVal"
+                type="daterange"
                 :editable="false"
-                @on-change="onchangeTime"
-                :value="timeVal"
+                @change="onchangeTime"
                 format="yyyy/MM/dd"
-                type="datetimerange"
-                placement="bottom-start"
-                placeholder="请选择时间"
-                style="width: 300px"
+                value-format="yyyy/MM/dd"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions"
+                style="width: 250px"
                 class="mr20"
-                :options="options"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="订单号：" label-for="title">
-              <Input
-                search
-                enter-button
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="订单号：" label-for="title">
+            <el-input
+                clearable
                 v-model="pagination.order_id"
                 placeholder="请输入订单号"
-                @on-search="orderSearch"
-              />
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="用户名：" label-for="title">
-              <Input search enter-button v-model="pagination.name" placeholder="请输入用户名" @on-search="nameSearch" />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button type="primary" @click="qrcodeShow">查看收款二维码</Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="thead"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item label="用户名：" label-for="title">
+            <el-input
+                clearable
+                v-model="pagination.name"
+                placeholder="请输入用户名"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="orderSearch">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+      <el-button type="primary" @click="qrcodeShow">查看收款二维码</el-button>
+      <el-table
         :data="tbody"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-      </Table>
+        <el-table-column label="订单号" min-width="180">
+          <template slot-scope="scope">
+            <span>{{ scope.row.order_id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户信息" min-width="180">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }} | {{ scope.row.uid }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="实际支付" min-width="180">
+          <template slot-scope="scope">
+            <span>{{ scope.row.pay_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="优惠价格" min-width="180">
+          <template slot-scope="scope">
+            <span>{{ scope.row.true_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="支付时间" min-width="180">
+          <template slot-scope="scope">
+            <span>{{ scope.row.pay_time }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="pagination.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="pagination.limit"
+          :page.sync="pagination.page"
+          :limit.sync="pagination.limit"
+          @pagination="getOrderList"
         />
       </div>
-    </Card>
-    <Modal v-model="modal" title="收款码" footer-hide>
-      <div>
-        <!--<div class="acea-row row-around mb10">-->
-        <!--<RadioGroup v-model="animal" @on-change="onchangeCode(animal)" style="width: 180px;">-->
-        <!--<Radio :label="0">二维码</Radio>-->
-        <!--<Radio :label="1">收款码</Radio>-->
-        <!--</RadioGroup>-->
-        <!--<div style="width: 180px;"></div>-->
-        <!--</div>-->
-        <div v-viewer class="acea-row row-around code">
-          <Spin fix v-if="spin"></Spin>
-          <div class="acea-row row-column-around row-between-wrapper">
-            <div class="QRpic">
-              <img v-lazy="qrcode && qrcode.wechat" />
-            </div>
-            <span class="mt10">{{ animal ? '公众号收款码' : '公众号二维码' }}</span>
+    </el-card>
+    <el-dialog :visible.sync="modal" title="收款码" width="540px">
+      <div v-viewer class="acea-row row-around code">
+        <div class="acea-row row-column-around row-between-wrapper">
+          <div class="QRpic">
+            <img v-lazy="qrcode && qrcode.wechat" />
           </div>
-          <div class="acea-row row-column-around row-between-wrapper">
-            <div class="QRpic">
-              <img v-lazy="qrcode && qrcode.routine" />
-            </div>
-            <span class="mt10">{{ animal ? '小程序收款码' : '小程序二维码' }}</span>
+          <span class="mt10">{{ animal ? '公众号收款码' : '公众号二维码' }}</span>
+        </div>
+        <div class="acea-row row-column-around row-between-wrapper">
+          <div class="QRpic">
+            <img v-lazy="qrcode && qrcode.routine" />
           </div>
+          <span class="mt10">{{ animal ? '小程序收款码' : '小程序二维码' }}</span>
         </div>
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -106,47 +121,6 @@ import { orderScanList, orderOfflineScan } from '@/api/order';
 export default {
   data() {
     return {
-      grid: {
-        xl: 7,
-        lg: 7,
-        md: 12,
-        sm: 24,
-        xs: 24,
-      },
-      thead: [
-        {
-          title: '订单号',
-          key: 'order_id',
-        },
-        // {
-        //     title: "订单类型",
-        //     render: (h, params) => {
-        //         return h("span", "线下支付");
-        //     }
-        // },
-        {
-          title: '用户信息',
-          key: 'nickname',
-        },
-        {
-          title: '实际支付',
-          key: 'pay_price',
-        },
-        {
-          title: '优惠价格',
-          key: 'true_price',
-        },
-        // {
-        //     title: "订单状态",
-        //     render: (h, params) => {
-        //         return h("span", "已支付");
-        //     }
-        // },
-        {
-          title: '支付时间',
-          key: 'pay_time',
-        },
-      ],
       tbody: [],
       loading: false,
       total: 0,
@@ -157,84 +131,18 @@ export default {
         order_id: '',
         add_time: '',
       },
-      options: {
-        shortcuts: [
-          {
-            text: '今天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
-              return [start, end];
-            },
-          },
-          {
-            text: '昨天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
-              );
-              end.setTime(
-                end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
-              );
-              return [start, end];
-            },
-          },
-          {
-            text: '最近7天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 6)),
-              );
-              return [start, end];
-            },
-          },
-          {
-            text: '最近30天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)),
-              );
-              return [start, end];
-            },
-          },
-          {
-            text: '本月',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
-              return [start, end];
-            },
-          },
-          {
-            text: '本年',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.setTime(new Date(new Date().getFullYear(), 0, 1)));
-              return [start, end];
-            },
-          },
-        ],
-      },
       timeVal: [],
       modal: false,
       qrcode: null,
       name: '',
       spin: false,
+      pickerOptions: this.$timeOptions,
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -251,8 +159,8 @@ export default {
     // 具体日期搜索()；
     onchangeTime(e) {
       this.pagination.page = 1;
-      this.timeVal = e;
-      this.pagination.add_time = this.timeVal[0] ? this.timeVal.join('-') : '';
+      this.timeVal = e || [];
+      this.pagination.add_time = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
       this.getOrderList();
     },
     // 订单列表
@@ -267,13 +175,8 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
-    },
-    // 分页
-    pageChange(index) {
-      this.pagination.page = index;
-      this.getOrderList();
     },
     nameSearch() {
       this.pagination.page = 1;
@@ -296,7 +199,7 @@ export default {
         })
         .catch((err) => {
           this.spin = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
   },

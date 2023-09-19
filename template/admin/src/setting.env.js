@@ -8,7 +8,7 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 /**
- * iView Admin Pro 开发配置
+ * 开发配置
  * */
 
 const env = process.env.NODE_ENV;
@@ -25,8 +25,6 @@ const Setting = {
   // 开发环境每次保存时 lint 代码，会将 lint 错误输出为编译警告
   // true || false || error
   lintOnSave: true,
-  // iView Loader 的选项
-  // 详见 https://www.iviewui.com/docs/guide/iview-loader
   iviewLoaderOptions: {
     prefix: false,
   },

@@ -3,37 +3,38 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       <span class="clear_tit">
-        <Icon type="md-information-circle" color="#ED4014" />
+        <i class="el-icon-info" style="color: #ED4014" />
         <span>清除数据请谨慎，清除就无法恢复哦！</span>
       </span>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Row type="flex" :gutter="24">
-        <Col v-bind="grid" class="mb20" v-for="(item, index) in tabList" :key="index">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-row :gutter="24">
+        <el-col v-bind="grid" class="mb20" v-for="(item, index) in tabList" :key="index">
           <div class="clear_box">
             <span class="clear_box_sp1" v-text="item.title"></span>
             <span class="clear_box_sp2" v-text="item.tlt"></span>
-            <Button
+            <el-button
               :type="item.typeName"
               v-text="item.typeName === 'primary' ? '立即更换' : '立即清理'"
               @click="onChange(item)"
-            ></Button>
+            ></el-button>
           </div>
-        </Col>
-      </Row>
-    </Card>
+        </el-col>
+      </el-row>
+    </el-card>
     <!-- 更换域名-->
-    <Modal v-model="modals" class="tableBox" scrollable closable title="更换域名" :mask-closable="false">
+    <el-dialog :visible.sync="modals" class="tableBox" title="更换域名" width="540px" :close-on-click-modal="false">
       <div class="acea-row row-column">
         <span>请输入需要替换的域名，格式为：http://域名。</span>
         <span>替换规则：会使用当前[设置]里面的[网站域名]去替换成当前您输入的域名。</span>
         <span class="mb15">替换成功后再去更换[网站域名]。</span>
-        <Input v-model="value6" type="textarea" :rows="4" placeholder="请输入网站域名..." />
+        <el-input v-model="value6" type="textarea" :rows="4" placeholder="请输入网站域名..." />
       </div>
-      <div slot="footer">
-        <Button type="primary" size="large" long @click="changeYU">确定</Button>
-      </div>
-    </Modal>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modals = false">取 消</el-button>
+        <el-button type="primary" @click="changeYU">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -146,10 +147,10 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 更换域名
@@ -157,10 +158,10 @@ export default {
       replaceSiteUrlApi({ url: this.value6 })
         .then((res) => {
           this.modals = false;
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

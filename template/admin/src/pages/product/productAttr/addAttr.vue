@@ -1,77 +1,73 @@
 <template>
-  <Modal scrollable v-model="modal" @on-cancel="onCancel" title="商品规格" width="950">
-    <Form
+  <el-dialog :visible.sync="modal" @closed="onCancel" title="商品规格" width="1000px" v-loading="spinShow">
+    <el-form
       ref="formDynamic"
       :model="formDynamic"
       :rules="rules"
       class="attrFrom"
-      :label-width="110"
+      label-width="110px"
       label-position="right"
       @submit.native.prevent
     >
-      <Row :gutter="24">
-        <Col span="24">
-          <Col span="8" class="mb15">
-            <FormItem label="规格模板名称：" prop="rule_name">
-              <Input placeholder="请输入标题名称" :maxlength="20" v-model.trim="formDynamic.rule_name" />
-            </FormItem>
-          </Col>
-        </Col>
-        <Col span="23" class="noForm" v-for="(item, index) in formDynamic.spec" :key="index">
-          <FormItem>
+      <el-row :gutter="24">
+        <el-col :span="24">
+          <el-col :span="8">
+            <el-form-item label="规格模板名称：" prop="rule_name">
+              <el-input placeholder="请输入标题名称" :maxlength="20" v-model.trim="formDynamic.rule_name" />
+            </el-form-item>
+          </el-col>
+        </el-col>
+        <el-col :span="23" class="noForm" v-for="(item, index) in formDynamic.spec" :key="index">
+          <el-form-item>
             <div class="acea-row row-middle">
-              <span class="mr5">{{ item.value }}</span
-              ><Icon type="ios-close-circle" @click="handleRemove(index)" />
+              <span class="mr5">{{ item.value }}</span>
+              <i class="el-icon-close" style="font-size: 14px" @click="handleRemove(index)"></i>
             </div>
             <div class="rulesBox">
-              <Tag
-                type="dot"
-                class=""
+              <el-tag
+                class="mr14 mb10"
                 closable
                 color="primary"
                 v-for="(j, indexn) in item.detail"
                 :key="indexn"
-                :name="j"
-                @on-close="handleRemove2(item.detail, indexn)"
-                >{{ j }}</Tag
+                @close="handleRemove2(item.detail, indexn)"
+                >{{ j }}</el-tag
               >
-              <Input
-                search
-                enter-button="添加"
+              <el-input
                 placeholder="请输入属性名称"
                 v-model.trim="item.detail.attrsVal"
-                @on-search="createAttr(item.detail.attrsVal, index)"
-                style="width: 200px"
+                @keyup.enter.native="createAttr(item.detail.attrsVal, index)"
+                class="mb10 form_content_width"
               />
             </div>
-          </FormItem>
-        </Col>
-        <Col span="24" v-if="isBtn" class="mt10">
-          <Col span="8" class="mr15">
-            <FormItem label="规格名称：">
-              <Input placeholder="请输入规格" v-model="attrsName" />
-            </FormItem>
-          </Col>
-          <Col span="8" class="mr20">
-            <FormItem label="规格值：">
-              <Input v-model="attrsVal" placeholder="请输入规格值" />
-            </FormItem>
-          </Col>
-          <Col span="2">
-            <Button type="primary" @click="createAttrName">确定</Button>
-          </Col>
-          <Col span="2">
-            <Button @click="offAttrName">取消</Button>
-          </Col>
-        </Col>
-        <Spin size="large" fix v-if="spinShow"></Spin>
-      </Row>
-      <Button type="primary" icon="md-add" @click="addBtn" v-if="!isBtn" class="ml95 mt10">添加新规格</Button>
-    </Form>
-    <div slot="footer">
-      <Button type="primary" :loading="modal_loading" @click="handleSubmit('formDynamic')">确定</Button>
-    </div>
-  </Modal>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24" v-if="isBtn" class="mt10">
+          <el-col :span="8" class="mr15">
+            <el-form-item label="规格名称：">
+              <el-input placeholder="请输入规格" v-model="attrsName" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" class="mr20">
+            <el-form-item label="规格值：">
+              <el-input v-model="attrsVal" placeholder="请输入规格值" />
+            </el-form-item>
+          </el-col>
+          <el-col span="2">
+            <el-button type="primary" @click="createAttrName">确定</el-button>
+          </el-col>
+          <el-col span="2">
+            <el-button @click="offAttrName">取消</el-button>
+          </el-col>
+        </el-col>
+      </el-row>
+      <el-button type="primary" @click="addBtn" v-if="!isBtn" class="add">添加新规格</el-button>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="onClose">取消</el-button>
+      <el-button type="primary" @click="handleSubmit('formDynamic')">确定</el-button>
+    </span>
+  </el-dialog>
 </template>
 
 <script>
@@ -115,6 +111,11 @@ export default {
       this.ids = 0;
       this.clear();
     },
+    onClose() {
+      this.ids = 0;
+      this.clear();
+      this.modal = false;
+    },
     // 添加按钮
     addBtn() {
       this.isBtn = true;
@@ -130,7 +131,7 @@ export default {
         })
         .catch((res) => {
           this.spinShow = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 提交
@@ -138,13 +139,13 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           if (this.formDynamic.spec.length === 0) {
-            return this.$Message.warning('请至少添加一条商品规格！');
+            return this.$message.warning('请至少添加一条商品规格！');
           }
           this.modal_loading = true;
           setTimeout(() => {
             ruleAddApi(this.formDynamic, this.ids)
               .then((res) => {
-                this.$Message.success(res.msg);
+                this.$message.success(res.msg);
                 setTimeout(() => {
                   this.modal = false;
                   this.modal_loading = false;
@@ -156,7 +157,7 @@ export default {
               })
               .catch((res) => {
                 this.modal_loading = false;
-                this.$Message.error(res.msg);
+                this.$message.error(res.msg);
               });
           }, 1200);
         } else {
@@ -202,7 +203,7 @@ export default {
         this.attrsVal = '';
         this.isBtn = false;
       } else {
-        this.$Message.warning('请添加规格名称或规格值');
+        this.$message.warning('请添加规格名称或规格值');
       }
     },
     // 添加属性
@@ -216,7 +217,7 @@ export default {
           return item;
         }, []);
       } else {
-        this.$Message.warning('请添加属性');
+        this.$message.warning('请添加属性');
       }
     },
   },
@@ -234,5 +235,9 @@ export default {
   >>> .ivu-form-item {
     margin-bottom: 0px !important;
   }
+}
+
+.add {
+  margin-left: 122px;
 }
 </style>

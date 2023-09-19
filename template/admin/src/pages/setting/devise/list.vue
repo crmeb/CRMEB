@@ -4,177 +4,182 @@
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right" v-if="cardShow == 1 || cardShow == 2">
-          <Button class="bnt" type="primary" @click="submit" :loading="loadingExist">保存</Button>
-          <Button class="bnt ml20" @click="reast">重置</Button>
+          <el-button class="bnt" type="primary" @click="submit" :loading="loadingExist">保存</el-button>
+          <el-button v-if="cardShow == 1" class="bnt ml20" @click="reast">重置</el-button>
         </div>
       </div>
     </div>
-
-    <Row class="ivu-mt box-wrapper">
-      <Col span="3" class="left-wrapper">
-        <Menu :theme="theme3" :active-name="1" width="auto">
-          <MenuGroup>
-            <MenuItem
-              :name="item.id"
+    <el-row class="ivu-mt" type="flex">
+      <el-col :span="3">
+        <div class="left-wrapper">
+          <div class="tree-vis">
+            <div
+              class="tab-item"
+              :class="{ active: item.id == cardShow + 1 }"
               v-for="(item, index) in menuList"
               :key="index"
-              @click.native="bindMenuItem(index)"
+              @click="bindMenuItem(index)"
             >
               {{ item.name }}
-            </MenuItem>
-          </MenuGroup>
-        </Menu>
-      </Col>
-      <Col span="21" class="right-wrapper">
-        <Card :bordered="false" dis-hover v-if="cardShow == 0">
-          <Row v-if="cardShow == 0">
-            <Col style="width: 310px; height: 550px; margin-right: 30px; position: relative" v-if="isDiy">
+            </div>
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="21">
+        <el-card :bordered="false" shadow="never" v-if="cardShow == 0">
+          <el-row v-if="cardShow == 0" type="flex">
+            <el-col class="iframe-col" v-if="isDiy">
               <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
               <div class="mask"></div>
-            </Col>
-            <Col :span="isDiy ? '' : 24" v-bind="isDiy ? grid : ''" :class="isDiy ? 'table' : ''">
+            </el-col>
+            <el-col :span="16" v-bind="isDiy ? grid : ''" :class="isDiy ? 'table' : ''">
               <div class="acea-row row-between-wrapper">
-                <Row type="flex">
-                  <Col v-bind="grid">
+                <el-row>
+                  <el-col v-bind="grid">
                     <div class="button acea-row row-middle">
-                      <Button type="primary" icon="md-add"
+                      <el-button type="primary"
                         ><a
                           class="target-add"
                           ref="target"
                           :href="`${url}${$routeProStr}/setting/pages/diy_index?id=0&name=首页&type=0`"
                           target="_blank"
                           >添加专题页
-                        </a></Button
+                        </a></el-button
                       >
                     </div>
-                  </Col>
-                </Row>
+                  </el-col>
+                </el-row>
               </div>
-              <Table
-                :columns="columns1"
+              <el-table
                 :data="list"
                 ref="table"
-                class="mt25"
-                :loading="loading"
-                highlight-row
+                class="mt14"
+                v-loading="loading"
+                highlight-current-row
                 no-userFrom-text="暂无数据"
                 no-filtered-userFrom-text="暂无筛选结果"
               >
-                <template slot-scope="{ row, index }" slot="region">
-                  <div class="font-blue">首页</div>
-                </template>
-                <template slot-scope="{ row, index }" slot="type_name">
-                  <Tag color="primary" v-if="row.is_diy">{{ row.type_name }}{{ row.id }}</Tag>
-                  <Tag color="warning" v-else>{{ row.type_name }}</Tag>
-                  <Tag color="success" v-if="row.status == 1">首页</Tag>
-                </template>
-                <template slot-scope="{ row, index }" slot="action">
-                  <div style="display: inline-block" v-if="row.status || row.is_diy" @click="edit(row)">
-                    <a
-                      v-if="row.is_diy === 1"
-                      class="target"
-                      ref="target"
-                      :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${row.id}&name=${
-                        row.template_name || 'moren'
-                      }`"
-                      target="_blank"
+                <el-table-column label="页面ID" width="80">
+                  <template slot-scope="scope">
+                    <span>{{ scope.row.id }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="模板名称" min-width="130">
+                  <template slot-scope="scope">
+                    <span>{{ scope.row.name }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="模板类型" min-width="130">
+                  <template slot-scope="scope">
+                    <el-tag type="success" size="medium" v-if="scope.row.status == 1">首页</el-tag>
+                    <el-tag
+                      type="info"
+                      size="medium"
+                      v-if="scope.row.is_diy == 1 && scope.row.status == 0"
+                      class="mr10"
+                      >{{ scope.row.type_name }}</el-tag
                     >
-                      编辑</a
+                    <el-tag type="warning" size="medium" v-if="scope.row.is_diy == 0 && scope.row.status == 0">{{
+                      scope.row.type_name
+                    }}</el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="添加时间" min-width="130">
+                  <template slot-scope="scope">
+                    <span>{{ scope.row.add_time }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="更新时间" min-width="130">
+                  <template slot-scope="scope">
+                    <span>{{ scope.row.update_time }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" fixed="right" width="210">
+                  <template slot-scope="scope">
+                    <div
+                      style="display: inline-block"
+                      v-if="scope.row.status || scope.row.is_diy"
+                      @click="edit(scope.row)"
                     >
-                    <a v-else class="target">编辑</a>
-                  </div>
-                  <Divider type="vertical" v-if="(row.status || row.is_diy) && row.id != 1 && row.status != 1" />
+                      <a
+                        v-if="scope.row.is_diy === 1"
+                        class="target"
+                        ref="target"
+                        :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${scope.row.id}&name=${
+                          scope.row.template_name || 'moren'
+                        }`"
+                        target="_blank"
+                      >
+                        编辑</a
+                      >
+                      <a v-else class="target">编辑</a>
+                    </div>
+                    <el-divider
+                      direction="vertical"
+                      v-if="(scope.row.status || scope.row.is_diy) && scope.row.id != 1 && scope.row.status != 1"
+                    />
 
-                  <div style="display: inline-block" v-if="row.id != 1 && row.status != 1">
-                    <a @click="del(row, '删除此模板', index)">删除</a>
-                  </div>
-                  <Divider type="vertical" v-if="(row.id != 1 && row.status != 1) || row.is_diy" />
-                  <div style="display: inline-block" v-if="row.is_diy">
-                    <a @click="preview(row, index)">预览</a>
-                  </div>
-                  <Divider type="vertical" v-if="row.is_diy && row.status != 1" />
-                  <div style="display: inline-block" v-if="row.status != 1">
-                    <a @click="setStatus(row, index)">设为首页</a>
-                  </div>
-
-                  <!-- <Divider type="vertical" v-if="row.status != 1" />
-                  <template>
-                    <Dropdown @on-click="changeMenu(row, index, $event)">
-                      <a href="javascript:void(0)"
-                        >更多
-                        <Icon type="ios-arrow-down"></Icon>
-                      </a>
-                      <DropdownMenu slot="list">
-                        <DropdownItem name="1" v-show="!row.type"
-                          >设置默认数据</DropdownItem
-                        >
-                        <DropdownItem name="2" v-show="!row.type"
-                          >恢复默认数据</DropdownItem
-                        >
-                        <DropdownItem name="3" v-show="row.id != 1"
-                          >删除模板</DropdownItem
-                        >
-                      </DropdownMenu>
-                    </Dropdown>
-                  </template> -->
-                </template>
-              </Table>
+                    <div style="display: inline-block" v-if="scope.row.id != 1 && scope.row.status != 1">
+                      <a @click="del(scope.row, '删除此模板', scope.$index)">删除</a>
+                    </div>
+                    <el-divider
+                      direction="vertical"
+                      v-if="(scope.row.id != 1 && scope.row.status != 1) || scope.row.is_diy"
+                    />
+                    <div style="display: inline-block" v-if="scope.row.is_diy">
+                      <a @click="preview(scope.row, scope.$index)">预览</a>
+                    </div>
+                    <el-divider direction="vertical" v-if="scope.row.is_diy && scope.row.status != 1" />
+                    <div style="display: inline-block" v-if="scope.row.status != 1">
+                      <a @click="setStatus(scope.row, scope.$index)">设为首页</a>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
               <div class="acea-row row-right page">
-                <Page
+                <pagination
+                  v-if="total"
                   :total="total"
-                  :current="diyFrom.page"
-                  show-elevator
-                  show-total
-                  @on-change="pageChange"
-                  :page-size="diyFrom.limit"
+                  :page.sync="diyFrom.page"
+                  :limit.sync="diyFrom.limit"
+                  @pagination="getList"
                 />
               </div>
-            </Col>
-          </Row>
-        </Card>
+            </el-col>
+          </el-row>
+        </el-card>
         <goodClass v-else-if="cardShow == 1" ref="category" @parentFun="getChildData"></goodClass>
         <users v-else ref="users" @parentFun="getChildData"></users>
-      </Col>
-    </Row>
-    <Modal
-      v-model="isTemplate"
-      scrollable
-      footer-hide
-      closable
-      title="开发移动端链接"
-      :z-index="1"
-      width="500"
-      @on-cancel="cancel"
-    >
+      </el-col>
+    </el-row>
+    <el-dialog :visible.sync="isTemplate" title="开发移动端链接" :z-index="1" width="540px" @closed="cancel">
       <div class="article-manager">
-        <Card :bordered="false" dis-hover class="ivu-mt">
-          <Form
+        <el-card :bordered="false" shadow="never" class="ivu-mt">
+          <el-form
             ref="formItem"
             :model="formItem"
-            :label-width="120"
+            label-width="120px"
             label-position="right"
             :rules="ruleValidate"
             @submit.native.prevent
           >
-            <Row type="flex" :gutter="24">
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="开发移动端链接：" prop="link" label-for="link">
-                    <Input v-model="formItem.link" placeholder="http://localhost:8080" />
-                  </FormItem>
-                </Col>
-              </Col>
-            </Row>
-            <Row type="flex">
-              <Col v-bind="grid">
-                <Button type="primary" class="ml20" @click="handleSubmit('formItem')" style="width: 100%">提交</Button>
-              </Col>
-            </Row>
-          </Form>
-        </Card>
+            <el-row :gutter="24">
+              <el-col :span="24">
+                <el-col v-bind="grid">
+                  <el-form-item label="开发移动端链接：" prop="link" label-for="link">
+                    <el-input v-model="formItem.link" placeholder="http://localhost:8080" />
+                  </el-form-item>
+                </el-col>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-card>
       </div>
-    </Modal>
-    <Modal v-model="modal" title="预览" footer-hide>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleSubmit('formItem')">提交</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog :visible.sync="modal" width="540px" title="预览">
       <div>
         <div v-viewer class="acea-row row-around code">
           <div class="acea-row row-column-around row-between-wrapper">
@@ -189,7 +194,7 @@
           </div>
         </div>
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -202,6 +207,7 @@ import QRCode from 'qrcodejs2';
 import goodClass from './goodClass';
 import users from './users';
 import { getCookies, setCookies } from '@/libs/util';
+import { tableDelApi } from '@api/common';
 export default {
   name: 'devise_list',
   computed: {
@@ -213,11 +219,6 @@ export default {
   },
   data() {
     return {
-      grid: {
-        sm: 10,
-        md: 12,
-        lg: 19,
-      },
       loading: false,
       theme3: 'light',
       menuList: [
@@ -234,39 +235,6 @@ export default {
           id: 3,
         },
       ],
-      columns1: [
-        {
-          title: '页面ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '模板名称',
-          key: 'name',
-          minWidth: 100,
-        },
-        {
-          title: '模板类型',
-          slot: 'type_name',
-          minWidth: 100,
-        },
-        {
-          title: '添加时间',
-          key: 'add_time',
-          minWidth: 100,
-        },
-        {
-          title: '更新时间',
-          key: 'update_time',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          // fixed: "right",
-          minWidth: 180,
-        },
-      ],
       list: [],
       iframeUrl: '',
       modal: false,
@@ -278,7 +246,7 @@ export default {
       diyFrom: {
         type: '',
         page: 1,
-        limit: 10,
+        limit: 15,
       },
       total: 0,
       formItem: {
@@ -328,10 +296,10 @@ export default {
       this.cardShow = index;
     },
     onCopy() {
-      this.$Message.success('复制预览链接成功');
+      this.$message.success('复制预览链接成功');
     },
     onError() {
-      this.$Message.error('复制预览链接失败');
+      this.$message.error('复制预览链接失败');
     },
     //生成二维码
     creatQrCode(id) {
@@ -353,13 +321,15 @@ export default {
           this.qrcodeImg = res.data.image;
         })
         .catch((err) => {
-          this.$Message.error(err);
+          this.$message.error(err);
         });
     },
     preview(row) {
       this.modal = true;
-      this.creatQrCode(row.id);
-      this.routineCode(row.id);
+      this.$nextTick((e) => {
+        this.creatQrCode(row.id);
+        this.routineCode(row.id);
+      });
     },
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
@@ -392,11 +362,11 @@ export default {
     setDefault(row) {
       setDefault(row.id)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     // 获取列表
@@ -412,16 +382,12 @@ export default {
         this.total = data.count;
       });
     },
-    pageChange(status) {
-      this.diyFrom.page = status;
-      this.getList();
-    },
     // 编辑
     edit(row) {
       this.formItem.id = row.id;
       if (!row.is_diy) {
         if (!row.status) {
-          this.$Message.error('请先设为首页在进行编辑');
+          this.$message.error('请先设为首页在进行编辑');
         } else {
           this.$router.push({
             path: this.$routeProStr + '/setting/pages/diy',
@@ -457,34 +423,38 @@ export default {
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 使用模板
     async setStatus(row) {
-      this.$Modal.confirm({
+      this.$msgbox({
         title: '提示',
-        content: '<p>是否把该模板设为首页</p>',
-        onOk: () => {
+        message: '是否把该模板设为首页',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel',
+      })
+        .then(() => {
           setStatus(row.id, {
             type: 1,
           })
             .then((res) => {
               this.refreshFrame();
-              this.$Message.success(res.msg);
-              this.$Modal.remove();
+              this.$message.success(res.msg);
               this.getList();
             })
             .catch((res) => {
-              this.$Modal.remove();
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
-        },
-      });
+        })
+        .catch(() => {});
     },
     recovery(row) {
       recovery(row.id).then((res) => {
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
         this.getList();
       });
     },
@@ -502,16 +472,25 @@ export default {
   width: 80px !important;
 }
 
+.iframe-col {
+  width: 310px;
+  height: 550px;
+  margin-right: 30px;
+  position: relative;
+}
+
 .iframe-box {
   width: 100%;
   height: 100%;
   border-radius: 10px;
   border: 1px solid #eee;
 }
-.target-add{
+
+.target-add {
   text-decoration: none;
-  color #fff
+  color: #fff;
 }
+
 .mask {
   position: absolute;
   left: 0;
@@ -554,62 +533,61 @@ export default {
   display: flex;
 }
 
-@media (max-width: 2175px) {
-  .table {
-    display: block;
-    flex: 0 0 76%;
-    max-width: 76%;
-  }
-}
+// @media (max-width: 2175px) {
+// .table {
+// display: block;
+// flex: 0 0 76%;
+// max-width: 76%;
+// }
+// }
 
-@media (max-width: 2010px) {
-  .table {
-    display: block;
-    flex: 0 0 75%;
-    max-width: 75%;
-  }
-}
+// @media (max-width: 2010px) {
+// .table {
+// display: block;
+// flex: 0 0 75%;
+// max-width: 75%;
+// }
+// }
 
-@media (max-width: 1860px) {
-  .table {
-    display: block;
-    flex: 0 0 70%;
-    max-width: 70%;
-  }
-}
+// @media (max-width: 1860px) {
+// .table {
+// display: block;
+// flex: 0 0 70%;
+// max-width: 70%;
+// }
+// }
 
-@media (max-width: 1597px) {
-  .table {
-    display: block;
-    flex: 0 0 65%;
-    max-width: 65%;
-  }
-}
+// @media (max-width: 1597px) {
+// .table {
+// display: block;
+// flex: 0 0 65%;
+// max-width: 65%;
+// }
+// }
 
-@media (max-width: 1413px) {
-  .table {
-    display: block;
-    flex: 0 0 60%;
-    max-width: 60%;
-  }
-}
+// @media (max-width: 1413px) {
+// .table {
+// display: block;
+// flex: 0 0 60%;
+// max-width: 60%;
+// }
+// }
 
-@media (max-width: 1275px) {
-  .table {
-    display: block;
-    flex: 0 0 55%;
-    max-width: 55%;
-  }
-}
+// @media (max-width: 1275px) {
+// .table {
+// display: block;
+// flex: 0 0 55%;
+// max-width: 55%;
+// }
+// }
 
-@media (max-width: 1168px) {
-  .table {
-    display: block;
-    flex: 0 0 48%;
-    max-width: 48%;
-  }
-}
-
+// @media (max-width: 1168px) {
+// .table {
+// display: block;
+// flex: 0 0 48%;
+// max-width: 48%;
+// }
+// }
 .code {
   position: relative;
 }
@@ -625,8 +603,19 @@ export default {
 }
 
 .left-wrapper {
+  padding: 20px 0 0 20px;
   background: #fff;
-  border-right: 1px solid #f2f2f2;
+  border-right: unset;
+}
+
+.tree_tit {
+  height: 50px;
+  line-height: 50px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+  text-align: center;
+  border-bottom: 1px solid #ebeef5;
 }
 
 .picCon {
@@ -658,6 +647,22 @@ export default {
     border: 1px solid #EEEEEE;
     border-radius: 50%;
     margin: 13px auto 0 auto;
+  }
+}
+
+.tree-vis {
+  display: flex;
+  flex-direction: column;
+
+  .tab-item {
+    padding: 15px 20px;
+    cursor: pointer;
+  }
+
+  .active {
+    background-color: var(--prev-bg-main-color);
+    color: var(--prev-color-primary);
+    border-right: 2px solid var(--prev-color-primary);
   }
 }
 </style>

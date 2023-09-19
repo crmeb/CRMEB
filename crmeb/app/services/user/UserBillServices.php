@@ -18,7 +18,6 @@ use app\services\order\StoreOrderServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use think\Exception;
-use think\facade\Cache;
 use crmeb\services\CacheService;
 use think\facade\Log;
 
@@ -692,7 +691,7 @@ class UserBillServices extends BaseServices
         $where = [];
         $where['not_type'] = ['gain', 'system_sub', 'deduction', 'sign'];
         $where['not_category'] = ['exp', 'integral'];
-        return $this->cacheDriver()->remember('user_type_list', function () use ($where) {
+        return CacheService::remember('user_type_list', function () use ($where) {
             return ['list' => $this->getBillType($where)];
         }, 600);
     }

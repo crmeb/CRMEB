@@ -20,7 +20,7 @@
 				<button form-type="submit" class="confirmBnt bg-color">{{$t(`确认绑定`)}}</button>
 			</view>
 		</form>
-		<Verify @success="success" :captchaType="'blockPuzzle'" :imgSize="{ width: '330px', height: '155px' }"
+		<Verify @success="success" :captchaType="captchaType" :imgSize="{ width: '330px', height: '155px' }"
 			ref="verify"></Verify>
 	</view>
 	<view class="lottie-bg" v-else>
@@ -182,7 +182,7 @@
 						phone: that.phone,
 						type: 'reset',
 						key: res.data.key,
-						captchaType: 'blockPuzzle',
+						captchaType: this.captchaType,
 						captchaVerification: data.captchaVerification
 					}).then(res => {
 						this.sendCode()

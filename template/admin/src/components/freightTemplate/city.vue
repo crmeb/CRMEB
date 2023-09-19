@@ -1,16 +1,16 @@
 <template>
   <div>
-    <Modal v-model="addressModal" title="选择可配送区域" width="50%" class="modal" :mask="true">
-      <Row :gutter="24" type="flex">
-        <Col :xl="24" :lg="24" :md="24" :sm="24" :xs="24" class="item">
+    <el-dialog :visible.sync="addressModal" title="选择可配送区域" width="50%" class="modal">
+      <el-row :gutter="24" >
+        <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24" class="item">
           <div class="acea-row row-right row-middle">
-            <Checkbox v-model="iSselect" @on-change="allCheckbox">全选</Checkbox>
+            <el-checkbox v-model="iSselect" @change="allCheckbox">全选</el-checkbox>
             <div class="empty" @click="empty">清空</div>
           </div>
-        </Col>
-      </Row>
-      <Row :gutter="24" type="flex" :loading="loading">
-        <Col
+        </el-col>
+      </el-row>
+      <el-row :gutter="24"  v-loading="loading">
+        <el-col
           :xl="6"
           :lg="6"
           :md="6"
@@ -21,37 +21,42 @@
           :key="index"
           v-if="item.isShow"
         >
-          <div @mouseenter="enter(index)" @mouseleave="leave()">
-            <Checkbox v-model="item.checked" :label="item.name" @on-change="checkedClick(index)">{{
-              item.name
-            }}</Checkbox
-            ><span class="red">({{ (item.count || 0) + '/' + item.childNum }})</span>
-            <div class="city" v-show="activeCity === index">
-              <div class="checkBox">
-                <div class="arrow"></div>
-                <div>
-                  <Checkbox
-                    v-model="city.checked"
-                    :label="city.name"
-                    @on-change="primary(index, indexn)"
-                    class="itemn"
-                    v-for="(city, indexn) in item.children"
-                    :key="indexn"
-                    v-show="city.isShow"
-                    >{{ city.name }}</Checkbox
-                  >
+          <el-popover
+              placement="top-start"
+              width="600"
+              trigger="hover"
+              :open-delay="600">
+            <div>
+              <div class="city">
+                <div class="checkBox">
+                  <div class="arrow"></div>
+                  <div>
+                    <el-checkbox
+                        v-model="city.checked"
+                        :label="city.name"
+                        @change="primary(index, indexn)"
+                        class="itemn"
+                        v-for="(city, indexn) in item.children"
+                        :key="indexn"
+                        v-show="city.isShow"
+                    >{{ city.name }}</el-checkbox
+                    >
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Col>
-      </Row>
+            <el-checkbox slot="reference" v-model="item.checked" :label="item.name" @change="checkedClick(index)">{{
+                item.name
+              }}</el-checkbox
+            ><span class="red">({{ (item.count || 0) + '/' + item.childNum }})</span>
+          </el-popover>
+        </el-col>
+      </el-row>
       <div slot="footer">
-        <Button @click="close">取消</Button>
-        <Button type="primary" @click="confirm">确定</Button>
+        <el-button @click="close">取消</el-button>
+        <el-button type="primary" @click="confirm">确定</el-button>
       </div>
-      <Spin size="large" fix v-if="loading"></Spin>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -222,7 +227,7 @@ export default {
         }
       });
       if (selectList.length === 0) {
-        return that.$Message.error('至少选择一个省份或者城市');
+        return that.$message.error('至少选择一个省份或者城市');
       } else {
         this.$emit('selectCity', selectList, this.type);
         that.addressModal = false;
@@ -287,7 +292,7 @@ export default {
 }
 
 .modal .item .city .checkBox .itemn {
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .radio {
@@ -301,5 +306,7 @@ export default {
 
 .empty {
   cursor: pointer;
+  font-size: 12px;
+  margin-left: 10px;
 }
 </style>

@@ -11,6 +11,9 @@
 namespace crmeb\services;
 
 
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
+
 class SpreadsheetExcelService
 {
     //
@@ -54,8 +57,8 @@ class SpreadsheetExcelService
             'bold' => true
         ],
         'alignment' => [
-            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
+            'horizontal' => Alignment::HORIZONTAL_CENTER,
+            'vertical' => Alignment::VERTICAL_CENTER
         ]
     ];
 
@@ -82,7 +85,7 @@ class SpreadsheetExcelService
      * @param $title string 必选
      * return string
      */
-    public static function setUtf8($title)
+    public static function setUtf8(string $title)
     {
         return iconv('utf-8', 'gb2312', $title);
     }
@@ -120,10 +123,9 @@ class SpreadsheetExcelService
      * @param $title string || array ['title'=>'','name'=>'','info'=>[]]
      * @param $Name string
      * @param $info string || array;
-     * @param $funName function($style,$A,$A2) 自定义设置头部样式
      * @return $this
      */
-    public function setExcelTile($title = '', $Name = '', $info = [], $funName = null)
+    public function setExcelTile(string $title = '', string $Name = '', $info = [])
     {
         //设置参数
         if (is_array($title)) {
@@ -150,8 +152,8 @@ class SpreadsheetExcelService
         self::$sheet->setCellValue('A1', $title);
         self::$sheet->setCellValue('A2', self::setCellInfo($info));
         //文字居中
-        self::$sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        self::$sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        self::$sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        self::$sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         //合并表头单元格
         self::$sheet->mergeCells('A1:' . self::$cells . '1');
@@ -174,8 +176,11 @@ class SpreadsheetExcelService
 
     /**
      * 设置第二行标题内容
-     * @param $info  array (['name'=>'','site'=>'','phone'=>123] || ['我是表名','我是地址','我是手机号码'] ) || string 自定义
-     * @return string
+     * @param $info
+     * @return string|void
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/7
      */
     private static function setCellInfo($info)
     {
@@ -207,10 +212,10 @@ class SpreadsheetExcelService
      * @param $data array
      * @return $this
      */
-    public static function setExcelHeader($data)
+    public static function setExcelHeader(array $data)
     {
         $span = 'A';
-        foreach ($data as $key => $value) {
+        foreach ($data as $value) {
             self::$sheet->getColumnDimension($span)->setWidth(self::$width);
             self::$sheet->setCellValue($span . self::$topNumber, $value);
             $span++;
@@ -222,7 +227,7 @@ class SpreadsheetExcelService
 
     /**
      *
-     * execl数据导出
+     * excl数据导出
      * @param  $data 需要导出的数据 格式和以前的可是一样
      *
      * 特殊处理：合并单元格需要先对数据进行处理
@@ -233,10 +238,10 @@ class SpreadsheetExcelService
             $span = '';
             $column = self::$topNumber + 1;
             // 行写入
-            foreach ($data as $key => $rows) {
+            foreach ($data as $rows) {
                 $span = 'A';
                 // 列写入
-                foreach ($rows as $keyName => $value) {
+                foreach ($rows as $value) {
                     self::$sheet->setCellValue($span . $column, $value);
                     $span++;
                 }
@@ -255,12 +260,13 @@ class SpreadsheetExcelService
 
     /**
      * 保存表格数据，直接下载
-     * @param $filename 文件名称
-     * @param $suffix 文件后缀名
-     * @param $is_save 是否保存文件
-     * @return 保存文件：return string
+     * @param string $fileName
+     * @param string $suffix 文件后缀名
+     * @param bool $is_save 是否保存文件
+     * @return string string
+     * @throws Exception
      */
-    public function excelSave($fileName = '', $suffix = 'xlsx', $is_save = false)
+    public function excelSave(string $fileName = '', string $suffix = 'xlsx', bool $is_save = false)
     {
         if (empty($fileName)) {
             $fileName = date('YmdHis') . time();

@@ -10,10 +10,6 @@ use EasyWeChat\Kernel\Traits\HasHttpRequests;
 use EasyWeChat\Payment\Application;
 use EasyWeChat\Payment\Kernel\BaseClient;
 use EasyWeChat\Payment\Merchant;
-use GuzzleHttp\Client;
-use think\Exception;
-use think\Facade\Cache;
-use think\facade\Log;
 
 class WeChatClient extends AbstractAPI
 {

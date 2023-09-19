@@ -22,3 +22,15 @@ export function upload(data, config) {
     data,
   });
 }
+/**
+ * @description 云存储 url 上传
+ * @param {Object} param data {Object} 传值参数
+ */
+export function ossUpload(url, data) {
+  return request({
+    url,
+    method: 'post',
+    file: true,
+    data,
+  });
+}

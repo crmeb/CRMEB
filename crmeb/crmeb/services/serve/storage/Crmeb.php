@@ -49,99 +49,7 @@ class Crmeb extends BaseStorage
      */
     public function getUser()
     {
-        return $this->accessToken->httpRequest('user/info');
-    }
-
-    /**
-     * 用户登录
-     * @param string $account
-     * @param string $secret
-     * @return array|mixed
-     */
-    public function login(string $account, string $secret)
-    {
-        return $this->accessToken->httpRequest('user/login', ['account' => $account, 'secret' => $secret], 'POST', false);
-    }
-
-    /**
-     * 注册平台
-     * @param array $data
-     * @return array|mixed
-     */
-    public function register(array $data)
-    {
-        return $this->accessToken->httpRequest('user/register', $data, 'POST', false);
-    }
-
-    /**
-     * 平台用户消息记录
-     * @param int $page
-     * @param int $limit
-     * @return array|mixed
-     */
-    public function userBill(int $page, int $limit)
-    {
-        return $this->accessToken->httpRequest('user/bill', ['page' => $page, 'limit' => $limit]);
-    }
-
-    /**
-     * 找回账号
-     * @param array $data
-     * @return array|mixed
-     */
-    public function forget(array $data)
-    {
-        return $this->accessToken->httpRequest('user/forget', $data, 'POST', false);
-    }
-
-    /**
-     * 修改密码
-     * @param array $data
-     * @return array|mixed
-     */
-    public function modify(array $data)
-    {
-        return $this->accessToken->httpRequest('user/modify', $data, 'POST', false);
-    }
-
-    /**
-     * 获取验证码
-     * @param string $phone
-     * @return array|mixed
-     */
-    public function code(string $phone, $type = 0)
-    {
-        return $this->accessToken->httpRequest('user/code', ['phone' => $phone, 'types' => $type], 'POST', false);
-    }
-
-    /**
-     * 验证验证码
-     * @param string $phone
-     * @return array|mixed
-     */
-    public function checkCode(string $phone, string $verify_code)
-    {
-        return $this->accessToken->httpRequest('user/code/verify', ['phone' => $phone, 'verify_code' => $verify_code], 'POST', false);
-    }
-
-    /**
-     * 套餐列表
-     * @param string $type 套餐类型：sms,短信；query,物流查询；dump,电子面单；copy,产品复制
-     * @return array|mixed
-     */
-    public function mealList(string $type)
-    {
-        return $this->accessToken->httpRequest('meal/list', ['type' => $type]);
-    }
-
-    /**
-     * 套餐支付
-     * @param array $data
-     * @return array|mixed
-     */
-    public function payMeal(array $data)
-    {
-        return $this->accessToken->httpRequest('meal/code', $data);
+        return $this->accessToken->httpRequest('v2/user/info');
     }
 
     /**
@@ -162,15 +70,5 @@ class Crmeb extends BaseStorage
             $data['status'] = $status;
         }
         return $this->accessToken->httpRequest('user/record', $data);
-    }
-
-    /**
-     * 修改手机号
-     * @param array $data
-     * @return array|mixed
-     */
-    public function modifyPhone(array $data)
-    {
-        return $this->accessToken->httpRequest('user/modify/phone', $data);
     }
 }

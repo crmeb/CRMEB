@@ -1,64 +1,82 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt mb10">
-      <Form
+    <el-card :bordered="false" shadow="never" class="ivu-mt mb10" :body-style="{padding:0}">
+      <div class="padding-add">
+      <el-form
         ref="formValidate"
         :model="formValidate"
         :label-width="labelWidth"
-        :label-position="labelPosition"
+        label-position="right"
         @submit.native.prevent
+        inline
       >
-        <Row :gutter="24" type="flex">
-          <Col span="24">
-            <FormItem label="搜索：">
-              <div class="acea-row row-middle">
-                <Input
-                  search
-                  enter-button
-                  @on-search="selChange"
-                  placeholder="请输入语言Code"
-                  element-id="name"
-                  v-model="formValidate.keyword"
-                  style="width: 30%"
-                />
-              </div>
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-    </Card>
-    <Card :bordered="false" dis-hover>
-      <Row type="flex">
-        <Col v-bind="grid">
-          <Button type="primary" icon="md-add" @click="add">添加语言地区</Button>
-        </Col>
-      </Row>
-      <Table
+        <el-form-item label="搜索：">
+          <div class="acea-row row-middle">
+            <el-input
+                clearable
+                placeholder="请输入语言Code"
+                v-model="formValidate.keyword"
+                class="form_content_width"
+            />
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="selChange">搜索</el-button >
+        </el-form-item>
+      </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never">
+      <el-row>
+        <el-col v-bind="grid">
+          <el-button type="primary" @click="add">添加语言地区</el-button>
+        </el-col>
+      </el-row>
+      <el-table
         ref="table"
-        :columns="columns"
         :data="tabList"
-        class="ivu-mt mt25"
-        :loading="loading"
-        no-data-text="暂无数据"
-        no-filtered-data-text="暂无筛选结果"
+        class="ivu-mt mt14"
+        v-loading="loading"
+        empty-text="暂无数据"
       >
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除地区语言', index)">删除</a>
-        </template>
-      </Table>
+        <el-table-column label="编号" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="浏览器语言识别码" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.code }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="语言说明" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="关联语言" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.link_lang }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="100">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除地区语言', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 <script>
@@ -81,34 +99,6 @@ export default {
       },
       total: 0,
       loading: false,
-      columns: [
-        {
-          title: '编号',
-          key: 'id',
-          width: 120,
-        },
-        {
-          title: '浏览器语言识别码',
-          key: 'code',
-          minWidth: 150,
-        },
-        {
-          title: '语言说明',
-          key: 'name',
-          minWidth: 180,
-        },
-        {
-          title: '关联语言',
-          key: 'link_lang',
-          minWidth: 180,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          width: 100,
-        },
-      ],
       tabList: [],
       code: null,
     };
@@ -116,10 +106,10 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -144,12 +134,12 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tabList.splice(num, 1);
           // this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     selChange() {
@@ -167,12 +157,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
   },
 };
@@ -188,7 +174,7 @@ export default {
 
 .Refresh {
   font-size: 12px;
-  color: #1890FF;
+  color: var(--prev-color-primary);
   cursor: pointer;
 }
 

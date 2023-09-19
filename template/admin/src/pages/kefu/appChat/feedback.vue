@@ -4,8 +4,7 @@
       <div class="feedback-header acea-row">
         <span class="sp1">商城客服已离线</span>
         <div>
-          <!--<Icon type="md-remove" color="#fff" size="18" class="mr10"/>-->
-          <Icon type="md-close" color="#fff" size="18" @click="close" />
+          <i class="el-icon-close" style="font-size: 18px;" @click="close"></i>
         </div>
       </div>
       <div v-if="!isShow">
@@ -13,27 +12,27 @@
           <div class="ft" v-text="notice"></div>
         </div>
         <div>
-          <Form :model="formItem" ref="formItem" class="pl15" :rules="ruleValidate">
-            <FormItem prop="rela_name">
-              <Input v-model="formItem.rela_name" placeholder="请输入您的姓名"></Input>
-            </FormItem>
-            <FormItem prop="phone">
-              <Input v-model="formItem.phone" placeholder="请输入您的联系电话"></Input>
-            </FormItem>
-            <FormItem prop="content">
-              <Input v-model="formItem.content" class="mb10" type="textarea" placeholder="请输入留言内容"></Input>
-            </FormItem>
-            <FormItem>
-              <Button type="primary" @click="handleSubmit('formItem')" style="width: 100%">提交留言</Button>
-            </FormItem>
-          </Form>
+          <el-form :model="formItem" ref="formItem" class="pl15" :rules="ruleValidate">
+            <el-form-item prop="rela_name">
+              <el-input v-model="formItem.rela_name" placeholder="请输入您的姓名"></el-input>
+            </el-form-item>
+            <el-form-item prop="phone">
+              <el-input v-model="formItem.phone" placeholder="请输入您的联系电话"></el-input>
+            </el-form-item>
+            <el-form-item prop="content">
+              <el-input v-model="formItem.content" class="mb10" type="textarea" placeholder="请输入留言内容"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="handleSubmit('formItem')" style="width: 100%">提交留言</el-button>
+            </el-form-item>
+          </el-form>
         </div>
       </div>
       <div class="sure" v-if="isShow">
-        <div class="sure-yuan"><Icon type="md-checkmark" color="#fff" size="30" /></div>
+        <div class="sure-yuan"></div>
         <div class="sp1 mb10">提交成功</div>
         <div class="sp2 mb30">您的信息提交成功，我们会尽快与您取得联系！</div>
-        <Button type="primary" @click="close">好的</Button>
+        <el-button type="primary" @click="close">好的</el-button>
       </div>
     </div>
     <div class="maskModel" @touchmove.prevent v-show="change === true"></div>
@@ -78,7 +77,7 @@ export default {
               this.isShow = true;
             })
             .cache((err) => {
-              this.$Message.error(err.msg);
+              this.$message.error(err.msg);
             });
         } else {
         }
@@ -94,7 +93,7 @@ export default {
           this.notice = res.data.feedback;
         })
         .cache((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
   },

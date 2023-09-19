@@ -2,7 +2,7 @@
      * 删除
      * @param $id
      * @return \think\Response
-     * @date {%date%}
+     * @date {%DATE%}
      */
     public function delete($id)
     {

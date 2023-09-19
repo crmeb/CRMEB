@@ -101,13 +101,13 @@ class SystemStoreStaffServices extends BaseServices
     public function createStoreStaffForm(array $formData = [])
     {
         if ($formData) {
-            $field[] = $this->builder->frameImage('image', '更换头像', $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image'),true), $formData['avatar'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+            $field[] = $this->builder->frameImage('image', '更换头像', $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image'),true), $formData['avatar'] ?? '')->icon('el-icon-user')->width('950px')->height('560px')->props(['footer' => false]);
         } else {
-            $field[] = $this->builder->frameImage('image', '商城用户', $this->url(config('app.admin_prefix', 'admin') . '/system.User/list', ['fodder' => 'image'], true))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
+            $field[] = $this->builder->frameImage('image', '商城用户', $this->url(config('app.admin_prefix', 'admin') . '/system.User/list', ['fodder' => 'image'], true))->icon('el-icon-user')->width('950px')->height('560px')->Props(['srcKey' => 'image', 'footer' => false]);
         }
         $field[] = $this->builder->hidden('uid', $formData['uid'] ?? 0);
         $field[] = $this->builder->hidden('avatar', $formData['avatar'] ?? '');
-        $field[] = $this->builder->select('store_id', '所属提货点', ($formData['store_id'] ?? 0))->setOptions($this->getStoreSelectFormData())->filterable(true);
+        $field[] = $this->builder->select('store_id', '所属提货点', ($formData['store_id'] ?? ''))->setOptions($this->getStoreSelectFormData())->filterable(true);
         $field[] = $this->builder->input('staff_name', '核销员名称', $formData['staff_name'] ?? '')->col(24)->required();
         $field[] = $this->builder->input('phone', '手机号码', $formData['phone'] ?? '')->col(24)->required();
         $field[] = $this->builder->radio('verify_status', '核销开关', $formData['verify_status'] ?? 1)->options([['value' => 1, 'label' => '开启'], ['value' => 0, 'label' => '关闭']]);

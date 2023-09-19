@@ -1,17 +1,17 @@
 <template>
   <div>
-    <Row type="flex">
-      <Col span="24">
+    <el-row >
+      <el-col :span="24">
         <div class="index_from page-account-container">
           <div class="page-account-top">
             <span class="page-account-top-tit">文件管理登录</span>
           </div>
-          <Form ref="formInline" :model="formInline" :rules="ruleInline" @submit.native.prevent>
-            <!-- <FormItem prop="sms_account" class="maxInpt">
-            <Input type="text" v-model="formInline.account" prefix="ios-contact-outline" placeholder="请输入手机号" />
-          </FormItem> -->
-            <FormItem prop="sms_token" class="maxInpt">
-              <Input
+          <el-form ref="formInline" :model="formInline" :rules="ruleInline" @submit.native.prevent>
+            <!-- <el-form-item prop="sms_account" class="maxInpt">
+            <el-input type="text" v-model="formInline.account" prefix="ios-contact-outline" placeholder="请输入手机号" />
+          </el-form-item> -->
+            <el-form-item prop="sms_token" class="maxInpt">
+              <el-input
                 type="password"
                 size="large"
                 v-model="formInline.password"
@@ -19,14 +19,14 @@
                 placeholder="请输入密码"
               />
               <div class="trip">提示：密码配置在 /config/filesystem.php 文件中修改 'password' => '密码'</div>
-            </FormItem>
-            <FormItem class="maxInpt">
-              <Button type="primary" long size="large" @click="handleSubmit('formInline')" class="btn">登录</Button>
-            </FormItem>
-          </Form>
+            </el-form-item>
+            <el-form-item class="maxInpt">
+              <el-button type="primary" long size="large" @click="handleSubmit('formInline')" class="btn">登录</el-button>
+            </el-form-item>
+          </el-form>
         </div>
-      </Col>
-    </Row>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -72,7 +72,7 @@ export default {
         if (valid) {
           opendirLoginApi(this.formInline)
             .then(async (res) => {
-              this.$Message.success('登录成功!');
+              this.$message.success('登录成功!');
               //   this.$emit('on-Login', res.data);
               let expires = this.getExpiresTime(res.data.expires_time);
               // 记录用户登陆信息
@@ -82,7 +82,7 @@ export default {
               });
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;
@@ -102,7 +102,7 @@ export default {
 <style scoped lang="stylus">
 
 .maxInpt{
-    max-width: 400px;
+    max-width: 500px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -113,7 +113,7 @@ export default {
   align-items: center;
 }
 .trip{
-    width: 450px;
+    width: 580px;
     text-align: left;
     color: #aaa;
 }
@@ -126,13 +126,13 @@ export default {
 }
 .page-account-top-tit{
   font-size:30px;
-  color:#1890FF;
+  color:var(--prev-color-primary);
   font-weight:500;
 }
 
 .page-account-other{
   text-align:center;
-  color:#1890FF;
+  color:var(--prev-color-primary);
   font-size:12px;
   span{
     cursor: pointe;

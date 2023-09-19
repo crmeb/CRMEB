@@ -18,8 +18,6 @@ use app\services\pay\PayServices;
 use app\services\pay\YuePayServices;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
-use crmeb\services\CacheService;
-use crmeb\services\pay\extend\allinpay\AllinPay;
 use app\Request;
 
 /**

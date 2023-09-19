@@ -11,8 +11,8 @@
 namespace app\adminapi\controller\v1\application\routine;
 
 use app\jobs\notice\SyncMessageJob;
+use app\services\message\SystemNotificationServices;
 use app\services\other\QrcodeServices;
-use app\services\message\TemplateMessageServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
 use think\exception\ValidateException;
@@ -34,9 +34,9 @@ class RoutineTemplate extends AuthController
      * 构造方法
      * WechatTemplate constructor.
      * @param App $app
-     * @param TemplateMessageServices $services
+     * @param SystemNotificationServices $services
      */
-    public function __construct(App $app, TemplateMessageServices $services)
+    public function __construct(App $app, SystemNotificationServices $services)
     {
         parent::__construct($app);
         $this->services = $services;
@@ -54,16 +54,17 @@ class RoutineTemplate extends AuthController
         if (!sys_config('routine_appId') || !sys_config('routine_appsecret')) {
             throw new AdminException(400236);
         }
-        $all = $this->services->getTemplateList(['status' => 1, 'type' => 0]);
+
         $list = MiniProgramService::getSubscribeTemplateList();
         foreach ($list->data as $v) {
             MiniProgramService::delSubscribeTemplate($v['priTmplId']);
         }
-        if ($all['list']) {
-            foreach ($all['list'] as $template) {
-                SyncMessageJob::dispatch('SyncSubscribe', [$template]);
-            }
+
+        $tempKeys = $this->services->getTempKey('routine');
+        foreach ($tempKeys as $key => $content) {
+            SyncMessageJob::dispatch('SyncSubscribe', [$key, $content]);
         }
+
         return app('json')->success(100038);
     }
 

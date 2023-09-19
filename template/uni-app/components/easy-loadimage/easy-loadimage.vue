@@ -1,6 +1,6 @@
 <template>
 	<view class="easy-loadimage" :id="uid">
-		<image class="origin-img" :src="imageSrc" mode="aspectFill" v-if="loadImg&&!isLoadError" v-show="showImg"
+		<image class="origin-img" :src="imageSrc" mode="" v-if="loadImg&&!isLoadError" v-show="showImg"
 			:class="{'no-transition':!openTransition,'show-transition':showTransition&&openTransition}"
 			@load="handleImgLoad" @error="handleImgError">
 		</image>
@@ -75,17 +75,12 @@
 				this.$nextTick(this.onScroll)
 			},
 			handleImgLoad(e) {
-				// console.log('success');
 				this.showImg = true;
-				// this.$nextTick(function(){
-				//     this.showTransition = true
-				// })
 				setTimeout(() => {
 					this.showTransition = true
 				}, 50)
 			},
 			handleImgError(e) {
-				// console.log('fail');
 				this.isLoadError = true;
 			},
 			onScroll() {

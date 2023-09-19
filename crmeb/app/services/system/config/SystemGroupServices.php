@@ -83,7 +83,7 @@ class SystemGroupServices extends BaseServices
             }
             $header[$key]['title'] = $item['name'];
         }
-        array_unshift($header, ['key' => 'id', 'title' => '编号', 'minWidth' => 35]);
+        array_unshift($header, ['key' => 'id', 'title' => '编号', 'minWidth' => 60]);
         array_push($header, ['slot' => 'status', 'title' => '是否可用', 'minWidth' => 80], ['key' => 'sort', 'title' => '排序', 'minWidth' => 80], ['slot' => 'action', 'fixed' => 'right', 'title' => '操作', 'minWidth' => 120]);
         return compact('header');
     }

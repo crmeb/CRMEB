@@ -50,7 +50,7 @@ class AliPay extends BasePay implements PayInterface
             $code = true;
         }
 
-        return AliPayService::instance()->create($body, $orderId, $totalFee, $attach, $options['uitUrl'] ?? '', $options['siteUrl'] ?? '', $code);
+        return AliPayService::instance()->create($body, $orderId, $totalFee, $attach, $options['quitUrl'] ?? '', $options['siteUrl'] ?? '', $code);
     }
 
     /**

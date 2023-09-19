@@ -14,6 +14,7 @@ namespace app\services\system\attachment;
 
 use app\services\BaseServices;
 use app\dao\system\attachment\SystemAttachmentDao;
+use app\services\product\product\CopyTaobaoServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\exceptions\UploadException;
@@ -25,6 +26,7 @@ use app\services\other\UploadService;
  * @package app\services\attachment
  * @method getYesterday() 获取昨日生成数据
  * @method delYesterday() 删除昨日生成数据
+ * @method scanUploadImage($scan_token) 获取扫码上传的图片数据
  */
 class SystemAttachmentServices extends BaseServices
 {
@@ -66,6 +68,7 @@ class SystemAttachmentServices extends BaseServices
             if ($site_url) {
                 $item['satt_dir'] = (strpos($item['satt_dir'], $site_url) !== false || strstr($item['satt_dir'], 'http') !== false) ? $item['satt_dir'] : $site_url . $item['satt_dir'];
                 $item['att_dir'] = (strpos($item['att_dir'], $site_url) !== false || strstr($item['att_dir'], 'http') !== false) ? $item['satt_dir'] : $site_url . $item['att_dir'];
+                $item['time'] = date('Y-m-d H:i:s', $item['time']);
             }
         }
         $where['module_type'] = 1;
@@ -109,7 +112,7 @@ class SystemAttachmentServices extends BaseServices
      * @param int $type
      * @return mixed
      */
-    public function upload(int $pid, string $file, int $upload_type, int $type, $menuName)
+    public function upload(int $pid, string $file, int $upload_type, int $type, $menuName, $uploadToken = '')
     {
         $realName = false;
         if ($upload_type == 0) {
@@ -139,6 +142,7 @@ class SystemAttachmentServices extends BaseServices
                     $data['module_type'] = 1;
                     $data['time'] = $fileInfo['time'] ?? time();
                     $data['pid'] = $pid;
+                    $data['scan_token'] = $uploadToken;
                     $this->dao->save($data);
                 }
                 return $res->filePath;
@@ -154,8 +158,7 @@ class SystemAttachmentServices extends BaseServices
      */
     public function move(array $data)
     {
-        $res = $this->dao->move($data);
-        if (!$res) throw new AdminException(400600);
+        $this->dao->move($data);
     }
 
     /**
@@ -281,5 +284,55 @@ class SystemAttachmentServices extends BaseServices
             }
         }
         return $res;
+    }
+
+    /**
+     * 网络图片上传
+     * @param $data
+     * @return bool
+     * @throws \Exception
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/06/13
+     */
+    public function onlineUpload($data)
+    {
+        //生成附件目录
+        if (make_path('attach', 3, true) === '') {
+            throw new AdminException(400555);
+        }
+
+        //上传图片
+        /** @var SystemAttachmentServices $systemAttachmentService */
+        $systemAttachmentService = app()->make(SystemAttachmentServices::class);
+        $siteUrl = sys_config('site_url');
+
+        foreach ($data['images'] as $image) {
+            $uploadValue = app()->make(CopyTaobaoServices::class)->downloadImage($image);
+            if (is_array($uploadValue)) {
+                //TODO 拼接图片地址
+                if ($uploadValue['image_type'] == 1) {
+                    $imagePath = $siteUrl . $uploadValue['path'];
+                } else {
+                    $imagePath = $uploadValue['path'];
+                }
+                //写入数据库
+                if (!$uploadValue['is_exists']) {
+                    $systemAttachmentService->save([
+                        'name' => $uploadValue['name'],
+                        'real_name' => $uploadValue['name'],
+                        'att_dir' => $imagePath,
+                        'satt_dir' => $imagePath,
+                        'att_size' => $uploadValue['size'],
+                        'att_type' => $uploadValue['mime'],
+                        'image_type' => $uploadValue['image_type'],
+                        'module_type' => 1,
+                        'time' => time(),
+                        'pid' => $data['pid']
+                    ]);
+                }
+            }
+        }
+        return true;
     }
 }

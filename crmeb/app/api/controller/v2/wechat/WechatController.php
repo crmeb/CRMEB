@@ -32,75 +32,38 @@ class WechatController
     }
 
     /**
-     * 公众号授权登陆
-     * @param Request $request
-     * @return mixed
+     * 公众号授权登录，返回token
+     * @param $spread
+     * @return \think\Response
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/12
      */
-    public function auth(Request $request)
+    public function authLogin($spread = '')
     {
-        [$spreadId, $login_type] = $request->getMore([
-            [['spread', 'd'], 0],
-            ['login_type', 'wechat'],
-        ], true);
-        $token = $this->services->newAuth($spreadId, $login_type);
-        if ($token && isset($token['key'])) {
-            return app('json')->success(410022, $token);
-        } else if ($token) {
-            return app('json')->success(410001, ['token' => $token['token'], 'userInfo' => $token['userInfo'], 'expires_time' => $token['params']['exp']]);
-        } else
-            return app('json')->fail(410019);
+        $data = $this->services->authLogin($spread);
+        return app('json')->success($data);
     }
 
     /**
-     * 微信公众号静默授权
-     * @param string $spread
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function silenceAuth($spread = '')
-    {
-        $token = $this->services->silenceAuth($spread);
-        if ($token && isset($token['key'])) {
-            return app('json')->success(410022, $token);
-        } else if ($token) {
-            return app('json')->success(410001, ['token' => $token['token'], 'expires_time' => $token['params']['exp']]);
-        } else
-            return app('json')->fail(410019);
-    }
-
-    /**
-     * 微信公众号静默授权
-     * @param string $spread
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function silenceAuthNoLogin($spread = '')
-    {
-        $token = $this->services->silenceAuthNoLogin($spread);
-        if ($token && isset($token['auth_login'])) {
-            return app('json')->success(410023, $token);
-        } else if ($token) {
-            return app('json')->success(410001, ['token' => $token['token'], 'userInfo' => $token['userInfo'], 'expires_time' => $token['params']['exp']]);
-        } else
-            return app('json')->fail(410019);
-    }
-
-    /**
-     * 静默授权 手机号直接注册登录
+     * 公众号授权绑定手机号
      * @param string $key
      * @param string $phone
      * @param string $captcha
-     * @return mixed
+     * @return \think\Response
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/12
      */
-    public function silenceAuthBindingPhone($key = '', $phone = '', $captcha = '')
+    public function authBindingPhone($key = '', $phone = '', $captcha = '')
     {
         //验证验证码
         $verifyCode = CacheService::get('code_' . $phone);
@@ -112,10 +75,7 @@ class WechatController
             return app('json')->fail(410010);
         }
         CacheService::delete('code_' . $phone);
-        $token = $this->services->silenceAuthBindingPhone($key, $phone);
-        if ($token) {
-            return app('json')->success(410001, $token);
-        } else
-            return app('json')->fail(410019);
+        $data = $this->services->authBindingPhone($key, $phone);
+        return app('json')->success($data);
     }
 }

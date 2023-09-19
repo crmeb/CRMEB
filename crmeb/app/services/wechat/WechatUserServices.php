@@ -68,8 +68,12 @@ class WechatUserServices extends BaseServices
 
     /**
      * 用uid获得 微信openid
-     * @param $uid
+     * @param int $uid
+     * @param string $userType
      * @return mixed
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/17
      */
     public function uidToOpenid(int $uid, string $userType = 'wechat')
     {
@@ -85,7 +89,7 @@ class WechatUserServices extends BaseServices
      */
     public function openidToUid($openid, string $openidType = 'openid')
     {
-        $uid = $this->dao->value([[$openidType, '=', $openid], ['user_type', '<>', 'h5']], 'uid');
+        $uid = $this->dao->value([$openidType => $openid, 'is_del' => 0], 'uid');
         if (!$uid)
             throw new AdminException(400710);
         return $uid;

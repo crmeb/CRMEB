@@ -177,7 +177,6 @@ export default {
     this.$el.onselectstart = function() {
       return false;
     };
-    console.log(this.defaultImg);
   },
   methods: {
     init() {
@@ -226,7 +225,6 @@ export default {
 
     // 鼠标按下
     start: function(e) {
-			console.log(e)
       e.preventDefault();
       e = e || window.event;
       if (!e.touches.length) {

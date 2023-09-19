@@ -77,10 +77,9 @@ class StoreProductAttrServices extends BaseServices
             $productVirtual = app()->make(StoreProductVirtualServices::class);
             foreach ($data['valueGroup'] as &$item) {
                 $res = $storeProductAttrValueServices->save($item);
-                if ($item['is_virtual'] && (count($item['virtual_list']) || $item['disk_info'] != '') && !$item['coupon_id']) {
+                if ($item['is_virtual'] && count($item['virtual_list']) && !$item['coupon_id'] && $item['disk_info'] == '') {
                     $productVirtual->delete(['product_id' => $id, 'attr_unique' => $item['unique'], 'uid' => 0]);
                     $sales = $productVirtual->count(['product_id' => $id, 'attr_unique' => $item['unique']]);
-                    $storeProductAttrValueServices->update(['id' => $res['id']], ['stock' => $item['stock'] - $sales, 'sales' => $sales]);
                     foreach ($item['virtual_list'] as &$items) {
                         $data = [
                             'product_id' => $id,
@@ -93,6 +92,8 @@ class StoreProductAttrServices extends BaseServices
                             $productVirtual->save($data);
                         }
                     }
+                    $allStock = $productVirtual->count(['product_id' => $id, 'attr_unique' => $item['unique']]);
+                    $storeProductAttrValueServices->update(['id' => $res['id']], ['stock' => $allStock - $sales, 'sales' => $sales]);
                 }
             }
             return true;

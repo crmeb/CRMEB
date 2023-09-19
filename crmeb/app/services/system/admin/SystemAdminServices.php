@@ -229,7 +229,7 @@ class SystemAdminServices extends BaseServices
                 $item = intval($item);
             }
         }
-        $f[] = $this->builder->select('roles', '管理员身份', $formData['roles'] ?? [])->setOptions(FormBuilder::setOptions($options))->multiple(true)->required('请选择管理员身份');
+        $f[] = $this->builder->select('roles', '管理员角色', $formData['roles'] ?? [])->setOptions(FormBuilder::setOptions($options))->multiple(true)->required('请选择管理员角色');
         $f[] = $this->builder->radio('status', '状态', $formData['status'] ?? 1)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
         return $f;
     }
@@ -378,10 +378,12 @@ class SystemAdminServices extends BaseServices
 
         $adminInfo->real_name = $data['real_name'];
         $adminInfo->head_pic = $data['head_pic'];
-        if ($adminInfo->save())
+        if ($adminInfo->save()) {
+            CacheService::clear();
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     /**

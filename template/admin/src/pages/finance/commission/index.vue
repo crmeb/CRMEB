@@ -1,79 +1,91 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="formValidate"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        class="tabform"
-        @submit.native.prevent
-      >
-        <Row :gutter="24" type="flex">
-          <Col :xl="5" :lg="8" :md="10" :sm="11" :xs="24" class="mr10">
-            <FormItem label="昵称/ID：">
-              <Input
-                enter-button
+    <el-card :bordered="false" shadow="never" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="formValidate"
+            :label-width="labelWidth"
+            label-position="right"
+            inline
+            @submit.native.prevent
+        >
+          <el-form-item label="昵称/ID：">
+            <el-input
                 placeholder="请输入"
-                element-id="nickname"
                 v-model="formValidate.nickname"
                 clearable
-              />
-            </FormItem>
-          </Col>
-          <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
-            <FormItem label="佣金范围：" class="tab_data">
-              <Input-number
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item label="佣金范围：" class="tab_data">
+            <el-input-number
+                :controls="false"
                 type="number"
                 :min="0"
-                enter-button
-                placeholder="￥"
-                element-id="price_min"
                 class="mr10"
                 v-model="formValidate.price_min"
-              />
-              <span class="mr10">一</span>
-              <Input-number
+            />
+            <span class="mr10">一</span>
+            <el-input-number
+                :controls="false"
                 type="number"
                 :min="0"
-                enter-button
-                placeholder="￥"
-                element-id="price_max"
                 v-model="formValidate.price_max"
-              />
-            </FormItem>
-          </Col>
-          <Col>
-            <Button type="primary" icon="ios-search" @click="userSearchs">搜索</Button>
-            <Button v-auth="['export-userCommission']" class="export" icon="ios-share-outline" @click="exports"
-              >导出
-            </Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="mt16">
+      <el-button v-auth="['export-userCommission']" class="export" @click="exports"
+      >导出</el-button>
+      <el-table
         ref="table"
-        :columns="columns"
         :data="tabList"
-        :loading="loading"
-        no-data-text="暂无数据"
-        no-filtered-data-text="暂无筛选结果"
+        v-loading="loading"
+        empty-text="暂无数据"
         @on-sort-change="sortChanged"
+        class="mt14"
       >
-        <!-- <template slot-scope="{ row, index }" slot="action">
-          <a @click="Info(row)">详情</a>
-        </template> -->
-      </Table>
+        <el-table-column label="用户信息" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="总佣金金额" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.sum_number }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="账户余额" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.now_money }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="账户佣金" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.brokerage_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="提现到账佣金" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.extract_price }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          :page-size="formValidate.limit"
-          @on-change="pageChange"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <commission-details ref="commission"></commission-details>
   </div>
 </template>
@@ -98,50 +110,15 @@ export default {
         page: 1, // 当前页
         limit: 20, // 每页显示条数
       },
-      columns: [
-        {
-          title: '用户信息',
-          key: 'nickname',
-          minWidth: 150,
-        },
-        {
-          title: '总佣金金额',
-          key: 'sum_number',
-          sortable: 'custom',
-          minWidth: 120,
-        },
-        {
-          title: '账户余额',
-          key: 'now_money',
-          minWidth: 100,
-        },
-        {
-          title: '账户佣金',
-          key: 'brokerage_price',
-          sortable: 'custom',
-          minWidth: 120,
-        },
-        {
-          title: '提现到账佣金',
-          key: 'extract_price',
-          minWidth: 150,
-        },
-        // {
-        //   title: '操作',
-        //   slot: 'action',
-        //   fixed: 'right',
-        //   minWidth: 100
-        // }
-      ],
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -160,12 +137,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 搜索
     userSearchs() {
@@ -185,7 +158,7 @@ export default {
           location.href = res.data[0];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 详情

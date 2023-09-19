@@ -1,0 +1,29 @@
+    /**
+     * 修改状态
+     * @param $id
+     * @return \think\Response
+     * @date {%DATE%}
+     */
+    public function status($id)
+    {
+        if (!$id) {
+            return app('json')->fail(100100);
+        }
+
+        $data = $this->request->postMore([
+            ['field', ''],
+            ['value', '']
+        ]);
+
+        $filedAll = {%FIELD_ALL_PHP%};
+
+        if (!in_array($data['field'], $filedAll)) {
+            return app('json')->fail(100100);
+        }
+
+        if ($this->service->update(['id'=> $id], [$data['field']=> $data['value']])) {
+            return app('json')->success(100001);
+        } else {
+             return app('json')->fail(100100);
+        }
+    }

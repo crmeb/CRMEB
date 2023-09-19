@@ -1,5 +1,5 @@
 <template>
-  <div class="order_detail" v-if="orderDetail.userInfo">
+  <div class="order_detail" v-if="orderDetail.userInfo" v-loading="spinShow">
     <div class="msg-box">
       <div class="box-title">收货信息</div>
       <div class="msg-wrapper">
@@ -51,28 +51,37 @@
       </div>
     </div>
     <div class="goods-box">
-      <Table :columns="columns1" :data="orderList">
-        <template slot-scope="{ row, index }" slot="id">
-          {{ row.productInfo.id }}
-        </template>
-        <template slot-scope="{ row, index }" slot="name">
-          <div class="product_info">
-            <img :src="row.productInfo.image" alt="" />
-            <p>{{ row.productInfo.store_name }}</p>
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="className">
-          {{ row.class_name }}
-        </template>
-        <template slot-scope="{ row, index }" slot="price">
-          {{ row.productInfo.price }}
-        </template>
-        <template slot-scope="{ row, index }" slot="total_num">
-          {{ row.cart_num }}
-        </template>
-      </Table>
+      <el-table :data="orderList">
+        <el-table-column label="商品ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.productInfo.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品名称" min-width="160">
+          <template slot-scope="scope">
+            <div class="product_info">
+              <img :src="scope.row.productInfo.image" alt="" />
+              <p>{{ scope.row.productInfo.store_name }}</p>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品分类" min-width="160">
+          <template slot-scope="scope">
+            <div>{{ scope.row.class_name }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品售价" min-width="160">
+          <template slot-scope="scope">
+            <div>{{ scope.row.productInfo.price }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品数量" min-width="160">
+          <template slot-scope="scope">
+            <div>{{ scope.row.cart_num }}</div>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
-    <Spin fix v-if="spinShow"></Spin>
   </div>
 </template>
 
@@ -90,30 +99,6 @@ export default {
     return {
       orderDetail: {},
       orderList: [],
-      columns1: [
-        {
-          title: '商品ID',
-          slot: 'id',
-          maxWidth: 80,
-        },
-        {
-          title: '商品名称',
-          slot: 'name',
-          minWidth: 160,
-        },
-        {
-          title: '商品分类',
-          slot: 'className',
-        },
-        {
-          title: '商品售价',
-          slot: 'price',
-        },
-        {
-          title: '商品数量',
-          slot: 'total_num',
-        },
-      ],
       spinShow: false,
     };
   },
@@ -131,7 +116,7 @@ export default {
         })
         .catch((err) => {
           this.spinShow = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
           this.$emit('detall', false);
         });
     },
@@ -139,10 +124,10 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .order_detail {
   .msg-box {
-    border-bottom: 1px solid #E8EAED;
+    border-bottom: 1px solid #e8eaed;
 
     .box-title {
       padding-top: 20px;
@@ -160,9 +145,12 @@ export default {
         .item {
           flex: 1;
           margin-bottom: 15px;
-
+          color: #606266;
+          font-size: 13px;
           span {
-            color: #333;
+            font-size: 13px;
+            font-weight: 400;
+            color: #909399;
           }
         }
       }

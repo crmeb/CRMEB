@@ -1,6 +1,6 @@
     /**
      * 修改
-     * @date {%date%}
+     * @date {%DATE%}
      * @param int $id
      * @param array $data
      * @return \crmeb\basic\BaseModel

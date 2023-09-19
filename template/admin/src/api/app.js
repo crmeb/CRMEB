@@ -382,3 +382,26 @@ export function cityList() {
     method: 'GET',
   });
 }
+
+/**
+ * @description  客服自动回复 -- 关键字 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function kefuAutoReplyListApi(params) {
+  return request({
+    url: `app/kefu/auto_reply/list`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description  客服自动回复添加编辑表单
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function kefuAutoReplyForm(id) {
+  return request({
+    url: `app/kefu/auto_reply/form/` + id,
+    method: 'get',
+  });
+}

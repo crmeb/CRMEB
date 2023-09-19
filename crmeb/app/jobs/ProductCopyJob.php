@@ -81,8 +81,6 @@ class ProductCopyJob extends BaseJobs
             $copyTaobao = app()->make(CopyTaobaoServices::class);
             /** @var StoreProductServices $StoreProductServices */
             $StoreProductServices = app()->make(StoreProductServices::class);
-            /** @var StoreProductAttrValueServices $StoreProductAttrValueServices */
-            $StoreProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
             //下载图片
             $res = $copyTaobao->downloadCopyImage($image);
             //获取缓存中的轮播图
@@ -97,12 +95,33 @@ class ProductCopyJob extends BaseJobs
                 $image = $slider_images[0];
                 $slider_images = $slider_images ? json_encode($slider_images) : '';
                 $StoreProductServices->update($id, ['slider_image' => $slider_images, 'image' => $image]);
-                $StoreProductAttrValueServices->update(['product_id' => $id], ['image' => $image]);
             } else {
                 CacheService::set('slider_images_' . $id, $slider_images);
             }
         } catch (\Throwable $e) {
             Log::error('下载商品轮播图片失败，失败原因:' . $e->getMessage() . '_' . $e->getFile() . '_' . $e->getLine());
+        }
+        return true;
+    }
+
+    /**
+     * 下载商品规格图片
+     * @param $value_id
+     * @param $value_image
+     * @return bool
+     */
+    public function copyAttrImage($value_id, $value_image)
+    {
+        try {
+            /** @var CopyTaobaoServices $copyTaobao */
+            $copyTaobao = app()->make(CopyTaobaoServices::class);
+            /** @var StoreProductAttrValueServices $StoreProductAttrValueServices */
+            $StoreProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
+            //下载图片
+            $res = $copyTaobao->downloadCopyImage($value_image);
+            $StoreProductAttrValueServices->update($value_id, ['image' => $res]);
+        } catch (\Throwable $e) {
+            Log::error('下载商品规格图片失败，失败原因:' . $e->getMessage() . '_' . $e->getFile() . '_' . $e->getLine());
         }
         return true;
     }

@@ -37,7 +37,7 @@ class TemplateJob extends BaseJobs
      * @param $color
      * @return bool|mixed
      */
-    public function doJob($type, $openid, $tempCode, $data, $link, $color)
+    public function doJob($type, $openid, $tempId, $data, $link, $color)
     {
         try {
             if (!$openid) return true;
@@ -56,15 +56,7 @@ class TemplateJob extends BaseJobs
                 }
                 $template->url($link);
             }
-            //判断小程序还是公众号，获取数据id
-            $is_type = $type == 'wechat' ? 'is_wechat' : 'is_routine';
-            $key = $is_type == 'is_wechat' ? 'wechat_' . $tempCode : 'routine_' . $tempCode;
-            $tempid = CacheService::remember($key, function () use ($type, $tempCode, $is_type) {
-                /** @var SystemNotificationServices $notifyServices */
-                $notifyServices = app()->make(SystemNotificationServices::class);
-                return $notifyServices->getNotInfo(['type' => $is_type, 'mark' => $tempCode])['tempid'];
-            });
-            return $template->send($tempid, $data);
+            return $template->send($tempId, $data);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return true;

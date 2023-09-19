@@ -22,6 +22,7 @@ use app\services\product\product\StoreProductServices;
 use app\services\system\config\SystemGroupDataServices;
 use app\services\system\config\SystemGroupServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\SystemConfigService;
 use think\facade\Route as Url;
@@ -82,8 +83,8 @@ class DiyServices extends BaseServices
             $id = $res->id;
         }
 
-        $this->cacheDriver()->clear();
-        $this->cacheDriver()->set('index_diy_' . $id, $data['version']);
+        CacheService::clear();
+        CacheService::set('index_diy_' . $id, $data['version']);
         $this->updateCacheDiyVersion();
 
         return $id;
@@ -101,7 +102,7 @@ class DiyServices extends BaseServices
         $res = $this->dao->update($id, ['is_del' => 1]);
         if (!$res) throw new AdminException(100008);
 
-        $this->cacheDriver()->clear();
+        CacheService::clear();
     }
 
     /**
@@ -114,7 +115,7 @@ class DiyServices extends BaseServices
         $this->dao->update([['id', '<>', $id]], ['status' => 0]);
         $this->dao->update($id, ['status' => 1, 'update_time' => time()]);
 
-        $this->cacheDriver()->clear();
+        CacheService::clear();
         $this->updateCacheDiyVersion();
     }
 
@@ -130,9 +131,9 @@ class DiyServices extends BaseServices
     {
         $diyInfo = $this->dao->get(['status' => 1, 'is_del' => 0], ['id', 'version']);
         if (!$diyInfo) {
-            $this->cacheDriver()->delete('index_diy_default');
+            CacheService::delete('index_diy_default');
         } else {
-            $this->cacheDriver()->set('index_diy_default', $diyInfo['version']);
+            CacheService::set('index_diy_default', $diyInfo['version']);
         }
     }
 
@@ -155,7 +156,7 @@ class DiyServices extends BaseServices
             $cacheKey = 'index_diy_default';
             $where = ['status' => 1, 'is_del' => 0];
         }
-        $data = $this->cacheDriver()->remember($cacheKey, function () use ($where) {
+        $data = CacheService::remember($cacheKey, function () use ($where) {
             return $this->dao->getOne($where, 'version,is_diy');
         });
         if (isset($data['version']) && isset($data['is_diy'])) {
@@ -177,7 +178,7 @@ class DiyServices extends BaseServices
     {
         $field = 'name,value,is_show,is_bg_color,color_picker,bg_pic,bg_tab_val,is_bg_pic,order_status,is_diy,title';
 
-        $info = $this->cacheDriver()->remember('diy_info_' . $id, function () use ($field, $id) {
+        $info = CacheService::remember('diy_info_' . $id, function () use ($field, $id) {
             if ($id) {
                 $info = $this->dao->getOne(['id' => $id], $field);
             } else {
@@ -406,7 +407,7 @@ class DiyServices extends BaseServices
      */
     public function getNavigation(string $template_name)
     {
-        $value = $this->cacheDriver()->remember('navigation', function () {
+        $value = CacheService::remember('navigation', function () {
             $value = $this->dao->value(['status' => 1], 'value');
             if (!$value) {
                 $value = $this->dao->value(['template_name' => 'default'], 'value');

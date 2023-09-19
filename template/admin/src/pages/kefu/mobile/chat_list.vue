@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="search-box">
-        <Input v-model="searchTxt" placeholder="搜索用户名称" @on-enter="bindSearch" />
+        <el-input v-model="searchTxt" placeholder="搜索用户名称" @on-enter="bindSearch" />
       </div>
     </div>
     <div class="list-box" v-if="list.length > 0">
@@ -134,7 +134,7 @@ export default {
       },
       list: [],
       page: 1,
-      limit: 10,
+      limit: 15,
       isScroll: true,
       searchTxt: '',
       isOpen: true,
@@ -230,7 +230,7 @@ export default {
             if (data.recored.is_tourist == this.tabCur) this.list.unshift(data.recored);
           }
           if (data.recored.is_tourist != this.tabCur && data.recored.id) {
-            this.$Notice.info({
+            this.$notify.info({
               title: this.tabCur ? '用户发来消息啦！' : '游客发来消息啦！',
             });
           }
@@ -294,17 +294,22 @@ export default {
     // 客服退出
     outLogin() {
       let self = this;
-      this.$Modal.confirm({
+      this.$msgbox({
         title: '退出登录确认',
-        content: '您确定退出登录当前账户吗？打开的标签页和个人设置将会保存。',
-        onOk: () => {
-          self.logoutKefu({
-            confirm: false,
-            vm: self,
-          });
-        },
-        onCancel: () => {},
-      });
+        message:'您确定退出登录当前账户吗？打开的标签页和个人设置将会保存。',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel'
+      }).then(() => {
+        self.logoutKefu({
+          confirm: false,
+          vm: self,
+        });
+      }).catch(() => {
+
+      })
     },
     // 搜索
     bindSearch(e) {

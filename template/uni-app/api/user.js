@@ -415,13 +415,6 @@ export function getlevelExpList(data) {
 	return request.get("user/level/expList", data);
 }
 
-/**
- * 修改用户信息
- * @param {Object} data
- */
-export function updateUserInfo(data) {
-	return request.post('v2/user/user_update', data);
-}
 
 /**
  * 微信直接手机号登录
@@ -715,4 +708,14 @@ export function getLangVersion() {
  */
 export function mpBindingPhone(data) {
 	return request.post('v2/routine/binding_phone', data);
+}
+
+/**
+ *  签到提醒切换
+ */
+
+export function changeRemindStatus(status) {
+	return request.get(`sign/remind/${status}`, {}, {
+		noAuth: true
+	})
 }

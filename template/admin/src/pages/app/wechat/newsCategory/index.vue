@@ -1,6 +1,8 @@
 <template>
-  <div style="height: 100%">
-    <news-category :isShow="isShow"></news-category>
+  <div>
+    <el-card>
+      <news-category :isShow="isShow"></news-category>
+    </el-card>
   </div>
 </template>
 

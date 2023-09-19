@@ -14,50 +14,72 @@
         </div>
       </div>
 
-      <div v-if="name == 'sign_day_num'" style="margin-left: 20px">
+      <div v-if="name == 'sign_day_num'" style="margin-left: 20px; flex: 1">
         <div class="table_box">
-          <div type="flex">
+          <div>
             <div v-bind="grid">
               <div class="title">签到天数设置</div>
-              <Button
+              <el-button
                 type="primary"
                 icon="md-add"
                 @click="groupAdd('添加数据')"
                 style="margin-left: 14px; margin-top: 30px"
-                >添加数据</Button
+                >添加数据</el-button
               >
             </div>
           </div>
           <div class="table">
-            <Table
-              :columns="columns1"
+            <el-table
               :data="cmsList"
               ref="table"
-              class="mt25"
-              :loading="loading"
-              highlight-row
+              class="mt14"
+              v-loading="loading"
+              highlight-current-row
               no-userFrom-text="暂无数据"
               no-filtered-userFrom-text="暂无筛选结果"
             >
-              <template slot-scope="{ row, index }" slot="status">
-                <i-switch
-                  v-model="row.status"
-                  :value="row.status"
-                  :true-value="1"
-                  :false-value="0"
-                  @on-change="onchangeIsShow(row)"
-                  size="large"
-                >
-                  <span slot="open">显示</span>
-                  <span slot="close">隐藏</span>
-                </i-switch>
-              </template>
-              <template slot-scope="{ row, index }" slot="action">
-                <a @click="edit(row, '编辑')">编辑</a>
-                <Divider type="vertical" />
-                <a @click="del(row, '删除这条信息', index)">删除</a>
-              </template>
-            </Table>
+              <el-table-column label="编号" width="80">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.id }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="第几天" min-width="80">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.day }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="获取积分" min-width="80">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.sign_num }}</span>
+                </template>
+              </el-table-column>
+
+              <el-table-column label="是否可用" min-width="80">
+                <template slot-scope="scope">
+                  <el-switch
+                    :active-value="1"
+                    :inactive-value="0"
+                    v-model="scope.row.status"
+                    :value="scope.row.status"
+                    @change="onchangeIsShow(scope.row)"
+                    size="large"
+                  >
+                  </el-switch>
+                </template>
+              </el-table-column>
+              <el-table-column label="排序" min-width="80">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.sort }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" fixed="right" width="150">
+                <template slot-scope="scope">
+                  <a @click="edit(scope.row, '编辑')">编辑</a>
+                  <el-divider direction="vertical"></el-divider>
+                  <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
         </div>
       </div>
@@ -71,7 +93,6 @@ import WangEditor from '@/components/wangEditor/index.vue';
 import Setting from '@/setting';
 import { getColorChange } from '@/api/diy';
 import { mapState } from 'vuex';
-import editFrom from '@/components/from/from';
 import { productGetTempKeysApi, uploadType } from '@/api/product';
 import {
   groupAllApi,
@@ -90,7 +111,6 @@ import { getCookies } from '@/libs/util';
 export default {
   name: 'list',
   components: {
-    editFrom,
     linkaddress,
     WangEditor,
   },
@@ -101,7 +121,7 @@ export default {
       };
     },
     labelWidth() {
-      return this.isMobile ? undefined : 120;
+      return this.isMobile ? undefined : '120px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -124,7 +144,6 @@ export default {
       a: 0, //判断的隐私协议
       guide: 0,
       bgimg: 0,
-      columns1: [],
       bgCol: '',
       name: 'sign_day_num',
       grid: {
@@ -264,7 +283,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     addBox() {
@@ -282,7 +301,7 @@ export default {
         };
       } else {
         if (this.tabList.list.length == 5) {
-          this.$Message.warning('最多添加五张呦');
+          this.$message.warning('最多添加五张呦');
         } else {
           let obj = JSON.parse(JSON.stringify(this.lastObj));
           this.tabList.list.push(obj);
@@ -295,7 +314,7 @@ export default {
       } else if (this.guide == 2) {
         this.formItem.value = this.tabList.list;
         openAdvSave(this.formItem).then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         });
       } else {
         this.loadingExist = true;
@@ -306,11 +325,11 @@ export default {
         })
           .then((res) => {
             this.loadingExist = false;
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
           })
           .catch((err) => {
             this.loadingExist = false;
-            this.$Message.error(err.msg);
+            this.$message.error(err.msg);
           });
       }
     },
@@ -321,12 +340,11 @@ export default {
           let data = res.data;
           let header = data.header;
           let index = [];
-          this.columns1 = header;
           this.loading = false;
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 编辑
@@ -350,10 +368,10 @@ export default {
       this.$modalSure(delfromData)
         .then((res) => {
           this.info();
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改是否显示
@@ -361,12 +379,12 @@ export default {
       groupDataSetApi('setting/group_data/set_status/' + row.id + '/' + row.status)
         .then(async (res) => {
           this.url = this.BaseURL + '/pages/users/user_sgin/index';
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.info();
         })
         .catch((res) => {
           this.url = this.BaseURL + '/pages/users/user_sgin/index';
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     getGroupAll() {
@@ -377,7 +395,7 @@ export default {
           this.pageId = res.data[0].id;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 提交数据
@@ -386,10 +404,10 @@ export default {
         if (valid) {
           setAgreement(this.formValidate)
             .then(async (res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;
@@ -400,7 +418,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style scoped lang="scss">
 /deep/ .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
@@ -427,7 +445,7 @@ export default {
   width: 100%;
   margin: 0 auto;
   text-align: center;
-  background-color: #FFF;
+  background-color: #fff;
   bottom: 0;
   padding: 16px;
   border-top: 3px solid #f5f7f9;
@@ -443,7 +461,7 @@ export default {
   }
 
   .goodsTitle .title {
-    border-bottom: 2px solid #1890ff;
+    border-bottom: 2px solid var(--prev-color-primary);
     padding: 0 8px 12px 5px;
     color: #000;
     font-size: 14px;
@@ -457,7 +475,7 @@ export default {
 
   .add {
     font-size: 12px;
-    color: #1890ff;
+    color: var(--prev-color-primary);
     padding: 0 12px;
     cursor: pointer;
   }
@@ -497,7 +515,7 @@ export default {
   height: 550px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0);
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
   opacity: 1;
   position: relative;
 
@@ -549,7 +567,7 @@ export default {
 
       .ok {
         background-color: #f33316;
-        color: #FFFFFF;
+        color: #ffffff;
       }
     }
 
@@ -602,7 +620,7 @@ export default {
     width: 30px;
     height: 80px;
     cursor: move;
-    color: #D8D8D8;
+    color: #d8d8d8;
   }
 
   .img-box {
@@ -650,7 +668,7 @@ export default {
 }
 
 .table {
-  width: 700px;
+  // width: 700px;
   color: #515a6e;
   font-size: 14px;
   background-color: #fff;
@@ -673,8 +691,8 @@ export default {
   margin-left: 20px;
   width: 430px;
   height: 280px;
-  background: #FFFFFF;
-  border: 1px solid #EEEEEE;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
   border-radius: 13px;
   position: relative;
 
@@ -766,7 +784,7 @@ export default {
   padding: 0 0 13px 0;
   font-weight: bold;
   font-size: 15px;
-  border-left: 2px solid #1890FF;
+  border-left: 2px solid var(--prev-color-primary);
   height: 23px;
   padding-left: 10px;
 }
@@ -792,8 +810,8 @@ export default {
   width: 100%;
 
   .save {
-    background-color: #1890FF;
-    color: #FFFFFF;
+    background-color: var(--prev-color-primary);
+    color: #ffffff;
     width: 71px;
     height: 30px;
     margin: 0 auto;
@@ -808,8 +826,8 @@ export default {
   position: relative;
   width: 310px;
   // height: 550px;
-  background: #FFFFFF;
-  border: 1px solid #EEEEEE;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
   opacity: 1;
   border-radius: 10px;
 }
@@ -855,7 +873,7 @@ export default {
   border-radius: 10px;
   // margin: 30px 15px 0px 15px
   background: rgba(0, 0, 0, 0);
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
   opacity: 1;
 
   img {
@@ -931,7 +949,7 @@ export default {
     .item {
       position: relative;
       display: flex;
-      margin-top: 20px;
+      margin-top: 14px;
 
       .move-icon {
         display: flex;
@@ -940,7 +958,7 @@ export default {
         width: 30px;
         height: 80px;
         cursor: move;
-        color: #D8D8D8;
+        color: #d8d8d8;
       }
 
       .img-box {
@@ -1003,7 +1021,7 @@ export default {
 }
 
 .iconfont {
-  color: #DDDDDD;
+  color: #dddddd;
   font-size: 28px;
 }
 
@@ -1020,7 +1038,7 @@ export default {
   height: 550px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0);
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
   opacity: 1;
   overflow: auto;
 
@@ -1031,7 +1049,7 @@ export default {
 
     .box1 {
       text-align: center;
-      color: #FFFFFF;
+      color: #ffffff;
       padding-bottom: 15px;
 
       .font1 {
@@ -1049,7 +1067,7 @@ export default {
     }
 
     .moneyBox_content {
-      background-color: #FFFFFF;
+      background-color: #ffffff;
       height: 317px;
       border-radius: 4px;
 
@@ -1096,7 +1114,7 @@ export default {
           height: 55px;
           border-radius: 9px;
           background-color: var(--color-theme);
-          color: #FFFFFF;
+          color: #ffffff;
           text-align: center;
           padding-top: 3px;
           margin-right: 3px;
@@ -1139,7 +1157,7 @@ export default {
         line-height: 40px;
         text-align: center;
         background-color: var(--color-theme);
-        color: #FFFFFF;
+        color: #ffffff;
       }
     }
   }
@@ -1149,15 +1167,12 @@ export default {
   // width 80px!important
 }
 
-
 /deep/.ivu-page-header {
   border-bottom: unset;
   position: fixed;
   z-index: 9;
   width: 100%;
 }
-
-
 
 .box-wrapper {
   display: flex;
@@ -1167,7 +1182,7 @@ export default {
   border-radius: 5px;
 }
 
-.iview-video-style {
+.box-video-style {
   width: 100%;
   height: 180px;
   border-radius: 10px;
@@ -1177,7 +1192,7 @@ export default {
   overflow: hidden;
 }
 
-.iview-video-style .iconv {
+.box-video-style .iconv {
   color: #fff;
   line-height: 180px;
   width: 50px;
@@ -1190,7 +1205,7 @@ export default {
   margin-left: -25px;
 }
 
-.iview-video-style .mark {
+.box-video-style .mark {
   position: absolute;
   width: 100%;
   height: 30px;

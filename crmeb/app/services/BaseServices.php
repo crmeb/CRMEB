@@ -11,6 +11,8 @@
 
 namespace app\services;
 
+use app\services\user\UserServices;
+use crmeb\exceptions\ApiException;
 use crmeb\utils\JwtAuth;
 use think\facade\Db;
 use think\facade\Config;
@@ -47,17 +49,6 @@ abstract class BaseServices
      * @var object
      */
     protected $dao;
-
-    /**
-     * @return \crmeb\utils\Cache
-     * @author 等风来
-     * @email 136327134@qq.com
-     * @date 2023/2/8
-     */
-    public function cacheDriver()
-    {
-        return new \crmeb\utils\Cache($this->dao->getTableName());
-    }
 
     /**
      * 获取分页配置
@@ -103,6 +94,9 @@ abstract class BaseServices
     {
         /** @var JwtAuth $jwtAuth */
         $jwtAuth = app()->make(JwtAuth::class);
+        if ($type == 'api' && !app()->make(UserServices::class)->value(['uid' => $id], 'status')) {
+            throw new ApiException(410027);
+        }
         return $jwtAuth->createToken($id, $type, ['pwd' => md5($pwd)]);
     }
 

@@ -37,6 +37,16 @@ export default {
       component: () => import('@/pages/system/codeGeneration/index'),
     },
     {
+      path: 'code_data_dictionary',
+      name: `${pre}code_data_dictionary`,
+      meta: {
+        auth: ['system-code-data_dictionary'],
+        title: '数据字典',
+        activeMenu: routePre + '/system/code_data_dictionary',
+      },
+      component: () => import('@/pages/system/codeDataDictionary/index'),
+    },
+    {
       path: 'code_generation_list',
       name: `${pre}code_generation_list`,
       meta: {
@@ -142,6 +152,7 @@ export default {
       meta: {
         auth: ['system-config-system_config_tab-list'],
         title: '配置列表',
+        activeMenu: routePre + "/system/config/system_config_tab/index"
       },
       component: () => import('@/pages/system/configTab/list'),
     },
@@ -160,6 +171,7 @@ export default {
       meta: {
         auth: ['system-config-system_config-list'],
         title: '组合数据列表',
+        activeMenu: routePre + '/system/config/system_group/index',
       },
       component: () => import('@/pages/system/group/list'),
     },

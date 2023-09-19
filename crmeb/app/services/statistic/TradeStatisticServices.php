@@ -264,7 +264,7 @@ class TradeStatisticServices extends BaseServices
         $lastOrderMoney = $this->getOrderTotalMoney($dateWhere, "sum", "", $isNum);
         $OrderCurve = $this->getOrderTotalMoney($where, "group", "add_time");
         $OrderChain = $this->countRate($OrderMoney, $lastOrderMoney);
-        $topData[2] = [
+        $topData[1] = [
             'title' => '商品支付金额',
             'desc' => '选定条件下，用户购买商品的实际支付金额，包括微信支付、余额支付、支付宝支付、线下支付金额（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入）',
             'total_money' => $OrderMoney,
@@ -281,7 +281,7 @@ class TradeStatisticServices extends BaseServices
         $lastMemberMoney = $this->getMemberTotalMoney($dateWhere, 'sum', "", $isNum);
         $memberCurve = $this->getMemberTotalMoney($where, 'group', "pay_time");
         $MemberChain = $this->countRate($memberMoney, $lastMemberMoney);
-        $topData[3] = [
+        $topData[2] = [
             'title' => '购买会员金额',
             'desc' => '选定条件下，用户成功购买付费会员的金额',
             'total_money' => $memberMoney,
@@ -303,7 +303,7 @@ class TradeStatisticServices extends BaseServices
         $RechgeAdminCurve = $this->getBillYeTotalMoney($where, 'group', "add_time");
         $RechgeTotalCurve = $this->totalArrData([$RechgeHomeCurve, $RechgeAdminCurve]);
         $RechgeChain = $this->countRate($rechgeMoneyTotal, $lastRechgeMoneyTotal);
-        $topData[4] = [
+        $topData[3] = [
             'title' => '充值金额',
             'desc' => '选定条件下，用户成功充值的金额',
             'total_money' => $rechgeMoneyTotal,
@@ -319,7 +319,7 @@ class TradeStatisticServices extends BaseServices
         $lastOfflineMoney = $this->getOfflineTotalMoney($dateWhere, 'sum', "", $isNum);
         $offlineCurve = $this->getOfflineTotalMoney($where, 'group', "pay_time");
         $offlineChain = $this->countRate($offlineMoney, $lastOfflineMoney);
-        $topData[5] = [
+        $topData[4] = [
             'title' => '线下收银金额',
             'desc' => '选定条件下，用户在线下扫码支付的金额',
             'total_money' => $offlineMoney,
@@ -346,7 +346,7 @@ class TradeStatisticServices extends BaseServices
         $lastOutYeMoney = bcadd($lastOutYeOrderMoney, $lastOutYeMemberMoney, 2);
         $outYeCurve = $this->totalArrData([$outYeOrderCurve, $outYeMemberCurve]);
         $outYeChain = $this->countRate($outYeOrderChain, $outYeMemberChain);
-        $topData[7] = [
+        $topData[6] = [
             'title' => '余额支付金额',
             'desc' => '用户下单时使用余额实际支付的金额',
             'total_money' => $outYeMoney,
@@ -363,7 +363,7 @@ class TradeStatisticServices extends BaseServices
         $lastOutExtractMoney = $this->getExtractTotalMoney($dateWhere, 'sum', "", $isNum);
         $OutExtractCurve = $this->getExtractTotalMoney($where, 'group', "add_time");
         $OutExtractChain = $this->countRate($outExtractMoney, $lastOutExtractMoney);
-        $topData[8] = [
+        $topData[7] = [
             'title' => '支付佣金金额',
             'desc' => '后台给推广员支付的推广佣金，以实际支付为准',
             'total_money' => $outExtractMoney,
@@ -379,7 +379,7 @@ class TradeStatisticServices extends BaseServices
         $lastOutOrderRefund = $this->getOrderRefundTotalMoney(['refund_type' => 6, 'time' => $dateWhere['time']], 'sum', "", $isNum);
         $outOrderRefundCurve = $this->getOrderRefundTotalMoney(['refund_type' => 6, 'time' => $where['time']], 'group', 'add_time');
         $orderRefundChain = $this->countRate($outOrderRefund, $lastOutOrderRefund);
-        $topData[9] = [
+        $topData[8] = [
             'title' => '商品退款金额',
             'desc' => '用户成功退款的商品金额',
             'total_money' => $outOrderRefund,
@@ -395,7 +395,7 @@ class TradeStatisticServices extends BaseServices
         $lastOutTotalMoney = bcadd(bcadd($lastOutYeMoney, $lastOutExtractMoney, 2), $lastOutOrderRefund, 2);
         $outTotalCurve = $this->totalArrData([$outYeCurve, $OutExtractCurve, $outOrderRefundCurve]);
         $outTotalChain = $this->countRate($outTotalMoney, $lastOutTotalMoney);
-        $topData[6] = [
+        $topData[5] = [
             'title' => '支出金额',
             'desc' => '余额支付金额、支付佣金金额、商品退款金额',
             'total_money' => $outTotalMoney,
@@ -406,25 +406,25 @@ class TradeStatisticServices extends BaseServices
         ];
         $Chain['out'] = $outTotalCurve;
 
-        /** 交易毛利金额*/
-        $jiaoyiMoney = $this->tradeTotalMoney($where, "sum");
-
-        $jiaoyiMoney = bcsub($jiaoyiMoney, $outTotalMoney, 2);
-        $lastJiaoyiMoney = $this->tradeTotalMoney($dateWhere, "sum", $isNum);
-        $lastJiaoyiMoney = bcsub($lastJiaoyiMoney, $lastOutTotalMoney, 2);
-        $jiaoyiCurve = $this->tradeGroupMoney($where, "group");
-        $jiaoyiCurve = $this->subdutionArrData($jiaoyiCurve, $outTotalCurve);
-        $jiaoyiChain = $this->countRate($jiaoyiMoney, $lastJiaoyiMoney);
-        $topData[1] = [
-            'title' => '交易毛利金额',
-            'desc' => '交易毛利金额 = 营业额 - 支出金额',
-            'total_money' => $jiaoyiMoney,
-            'rate' => $jiaoyiChain,
-            'value' => $jiaoyiCurve['y'],
-            'type' => 1,
-            'sign' => 'jiaoyi',
-        ];
-        $Chain['jiaoyi'] = $jiaoyiCurve;
+//        /** 交易毛利金额*/
+//        $jiaoyiMoney = $this->tradeTotalMoney($where, "sum");
+//
+//        $jiaoyiMoney = bcsub($jiaoyiMoney, $outTotalMoney, 2);
+//        $lastJiaoyiMoney = $this->tradeTotalMoney($dateWhere, "sum", $isNum);
+//        $lastJiaoyiMoney = bcsub($lastJiaoyiMoney, $lastOutTotalMoney, 2);
+//        $jiaoyiCurve = $this->tradeGroupMoney($where, "group");
+//        $jiaoyiCurve = $this->subdutionArrData($jiaoyiCurve, $outTotalCurve);
+//        $jiaoyiChain = $this->countRate($jiaoyiMoney, $lastJiaoyiMoney);
+//        $topData[1] = [
+//            'title' => '交易毛利金额',
+//            'desc' => '交易毛利金额 = 营业额 - 支出金额',
+//            'total_money' => $jiaoyiMoney,
+//            'rate' => $jiaoyiChain,
+//            'value' => $jiaoyiCurve['y'],
+//            'type' => 1,
+//            'sign' => 'jiaoyi',
+//        ];
+//        $Chain['jiaoyi'] = $jiaoyiCurve;
 
         /** @var 营业额 $inTotalMoney */
         $inTotalMoney = $this->tradeTotalMoney($where, "sum");
@@ -663,12 +663,12 @@ class TradeStatisticServices extends BaseServices
      */
     public function getRechargeTotalMoney(array $where, string $selectType, string $group = "", bool $isNum = false)
     {
-        /** 用户充值金额 */
         /** @var UserRechargeServices $userRechageService */
         $userRechageService = app()->make(UserRechargeServices::class);
         $rechargeSumField = "price";
         $whereInRecharge['paid'] = 1;
         $whereInRecharge['refund_price'] = '0.00';
+        $whereInRecharge['no_recharge_type'] = 'system';
         $whereInRecharge['timeKey'] = $this->TimeConvert($where['time'], $isNum);
         $whereInRecharge['store_id'] = 0;
         $totalMoney = $userRechageService->getRechargeMoneyByWhere($whereInRecharge, $rechargeSumField, $selectType, $group);

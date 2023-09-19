@@ -27,13 +27,13 @@
 				<view class="item">
 					<view class="acea-row row-middle">
 						<image src="../static/phone_1.png" style="width: 24rpx; height: 34rpx;"></image>
-						<input type="text" :placeholder="$t(`输入手机号码`)" v-model="account" maxlength="11" />
+						<input type="text" :placeholder="$t(`输入手机号码`)" v-model="account" :maxlength="11" />
 					</view>
 				</view>
 				<view class="item">
 					<view class="acea-row row-middle">
 						<image src="../static/code_2.png" style="width: 28rpx; height: 32rpx;"></image>
-						<input type="text" :placeholder="$t(`填写验证码`)" maxlength="6" class="codeIput"
+						<input type="text" :placeholder="$t(`填写验证码`)" :maxlength="6" class="codeIput"
 							v-model="captcha" />
 						<button class="code" :disabled="disabled" :class="disabled === true ? 'on' : ''" @click="code">
 							{{ text }}
@@ -94,7 +94,7 @@
 				<a href="https://www.crmeb.com">www.crmeb.com</a>
 			</view>
 		</view>
-		<Verify @success="success" :captchaType="'blockPuzzle'" :imgSize="{ width: '330px', height: '155px' }"
+		<Verify @success="success" :captchaType="captchaType" :imgSize="{ width: '330px', height: '155px' }"
 			ref="verify"></Verify>
 	</view>
 </template>
@@ -559,7 +559,7 @@
 						phone: that.account,
 						type: that.type,
 						key: that.keyCode,
-						captchaType: 'blockPuzzle',
+						captchaType: this.captchaType,
 						captchaVerification: data.captchaVerification
 					})
 					.then(res => {

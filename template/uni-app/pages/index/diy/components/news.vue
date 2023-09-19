@@ -1,6 +1,7 @@
 <template>
 	<view v-show="!isSortType">
-		<view class='news acea-row row-middle' :class="{pageOn:bgStyle===1}" v-if="itemNew.length" :style="'margin:0 '+prConfig*2+'rpx;margin-top:'+mbConfig*2+'rpx;color:'+txtColor+';background-color:'+bgColor+';'">
+		<view class='news acea-row row-middle' :class="{pageOn:bgStyle===1}" v-if="itemNew.length"
+			:style="'margin:0 '+prConfig*2+'rpx;margin-top:'+mbConfig*2+'rpx;color:'+txtColor+';background-color:'+bgColor+';'">
 			<!-- ../../../static/images/news.png -->
 			<view class='pictrue skeleton-rect'>
 				<image :src='logoConfig'></image>
@@ -14,7 +15,8 @@
 								<view class='text acea-row row-between-wrapper'>
 									<view class='newsTitle line1'
 										:style="'text-align:'+ (txtStyle==1?'center':txtStyle==2?'right':'left') +';color:'+txtColor+';'">
-										{{item.chiild[0].val}}</view>
+										{{item.chiild[0].val}}
+									</view>
 								</view>
 								<view class='iconfont icon-xiangyou'></view>
 							</view>
@@ -57,24 +59,18 @@
 		created() {},
 		mounted() {},
 		methods: {
-			jump(url){
-				uni.navigateTo({
-					url:url,
-					fail:()=>{
-						uni.switchTab({
-							url:url
-						})
-					}
-				})
+			jump(url) {
+				this.$util.JumpPath(url);
 			}
 		}
 	}
 </script>
 
 <style lang="scss">
-	.pageOn{
-	    border-radius: 12rpx!important;
+	.pageOn {
+		border-radius: 12rpx !important;
 	}
+
 	.news {
 		display: flex;
 		align-items: center;

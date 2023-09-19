@@ -1,7 +1,7 @@
 <template>
-  <Modal v-model="modals" class="paymentFooter" scrollable width="400" :z-index="99999" v-if="delfromData">
+  <el-dialog :visible.sync="modals" class="paymentFooter" width="470px" :destroy-on-close="true">
     <p slot="header" style="color: #f60">
-      <Icon type="md-alert" />
+      <i class="el-icon-warning"></i>
       <span>{{ `${delfromData.title}` }}</span>
     </p>
     <div>
@@ -9,10 +9,10 @@
       <p v-if="delfromData.info !== undefined">{{ `${delfromData.info}` }}</p>
     </div>
     <div slot="footer" class="acea-row row-right">
-      <Button type="warning" :loading="modal_loading" @click="ok">确定</Button>
-      <Button type="primary" @click="cancel">取消</Button>
+      <el-button type="primary" @click="cancel">取消</el-button>
+      <el-button type="warning" @click="ok">确定</el-button>
     </div>
-  </Modal>
+  </el-dialog>
 </template>
 
 <script>
@@ -38,14 +38,14 @@ export default {
       setTimeout(() => {
         tableDelApi(this.delfromData)
           .then(async (res) => {
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.modal_loading = false;
             this.modals = false;
             this.$emit('submitModel');
           })
           .catch((res) => {
             this.modal_loading = false;
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
             this.modals = false;
           });
       }, 2000);

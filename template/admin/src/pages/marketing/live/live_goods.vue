@@ -1,116 +1,132 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        class="tabform"
-        @submit.native.prevent
-      >
-        <Row :gutter="24" type="flex">
-          <Col span="24">
-            <FormItem label="审核状态：">
-              <RadioGroup type="button" v-model="formValidate.status" class="mr15" @on-change="selChange">
-                <Radio :label="itemn.value" v-for="(itemn, indexn) in treeData.withdrawal" :key="indexn">
-                  {{ itemn.title }}
-                </Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
-          <Col span="24">
-            <FormItem label="搜索：">
-              <Input
-                search
-                enter-button
-                @on-search="selChange"
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="formValidate"
+            :model="formValidate"
+            :label-width="labelWidth"
+            label-position="right"
+            inline
+            class="tabform"
+            @submit.native.prevent
+        >
+          <el-form-item label="审核状态：">
+            <el-select v-model="formValidate.status" clearable @change="selChange" class="form_content_width">
+              <el-option v-for="(item,index) in treeData.withdrawal" :value="item.value" :key="index" :label="item.title"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="搜索：">
+            <el-input
+                clearable
                 placeholder="请输入商品名称/ID"
-                element-id="name"
                 v-model="formValidate.kerword"
-                style="width: 30%"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button v-auth="['setting-system_menus-add']" type="primary" @click="menusAdd('添加直播间')" icon="md-add"
-              >添加商品
-            </Button>
-            <!-- <Button
-              v-auth="['setting-system_menus-add']"
-              icon="md-list"
-              type="success"
-              @click="syncGoods"
-              style="margin-left: 20px"
-              >同步商品
-            </Button> -->
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="selChange">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+      <el-button
+          v-auth="['setting-system_menus-add']"
+          type="primary"
+          @click="menusAdd('添加直播间')"
+      >添加商品
+      </el-button>
+      <!-- <el-button
+        v-auth="['setting-system_menus-add']"
+        type="success"
+        @click="syncGoods"
+        style="margin-left: 20px"
+        >同步商品
+      </el-button> -->
+      <el-table
         :data="tabList"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="name">
-          <div class="product_box">
-            <div v-viewer>
-              <img :src="row.product.image" alt="" />
+        <el-table-column label="商品ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.product_id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品名称" min-width="120">
+          <template slot-scope="scope">
+            <div class="product_box">
+              <div v-viewer>
+                <img :src="scope.row.product.image" alt="" />
+              </div>
+              <div class="txt">{{ scope.row.name }}</div>
             </div>
-            <div class="txt">{{ row.name }}</div>
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="cost_price">
-          <div>{{ row.cost_price }}</div>
-        </template>
-        <template slot-scope="{ row, index }" slot="stock">
-          <div>{{ row.product.stock }}</div>
-        </template>
-        <template slot-scope="{ row, index }" slot="status">
-          <div>{{ row.audit_status | liveStatusFilter }}</div>
-        </template>
-        <template slot-scope="{ row, index }" slot="is_mer_show">
-          <i-switch
-            v-model="row.is_show"
-            :value="row.is_show"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-            :disabled="row.audit_status != 2"
-          >
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row, '编辑')">详情</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除这条信息', index)">删除</a>
-        </template>
-      </Table>
+          </template>
+        </el-table-column>
+        <el-table-column label="直播价" min-width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="原价" min-width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.cost_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="库存" min-width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.product.stock }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="审核状态" min-width="80">
+          <template slot-scope="scope">
+            <div>{{ scope.row.audit_status | liveStatusFilter }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否显示" min-width="80">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.is_show"
+              :value="scope.row.is_show"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              :disabled="scope.row.audit_status != 2"
+              active-text="显示"
+              inactive-text="隐藏"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row, '编辑')">详情</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <!--详情-->
-    <Modal v-model="modals" title="商品详情" class="paymentFooter" scrollable width="700" :footer-hide="true">
-      <goodsFrom ref="goodsDetail" />
-    </Modal>
+    <el-dialog :visible.sync="modals" title="商品详情" class="paymentFooter" scrollable width="720px">
+      <goodsFrom ref="goodsDetail" :FormData="FormData" />
+    </el-dialog>
   </div>
 </template>
 
@@ -173,34 +189,30 @@ export default {
       loading: false,
       modals: false,
       total: 0,
+      FormData: {}
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
     this.getList();
   },
   methods: {
-    // 分页
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
-    },
     // 直播间显示隐藏
     onchangeIsShow({ id, is_show }) {
       liveGoodsShow(id, is_show)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
     // 列表数据
@@ -213,7 +225,7 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
           this.loading = false;
         });
     },
@@ -232,16 +244,22 @@ export default {
     syncGoods() {
       liveSyncGoods()
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((error) => {
-          this.$Message.error(res.msg);
+          this.$message.error(error.msg);
         });
     },
     edit(row) {
-      this.modals = true;
-      this.$refs.goodsDetail.getData(row.id);
+      liveGoodsDetail(row.id)
+          .then((res) => {
+            this.FormData = res.data;
+            this.modals = true;
+          })
+          .catch((error) => {
+            this.$message.error(error.msg);
+          });
     },
     // 删除
     del(row, tit, num) {
@@ -254,13 +272,13 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tabList.splice(num, 1);
 
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

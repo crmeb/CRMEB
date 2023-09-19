@@ -53,8 +53,8 @@ class SystemRole extends BaseModel
      */
     public function searchStatusAttr($query, $value)
     {
-        if ($value != '') {
-            $query->where('status', $value ?: 1);
+        if ($value !== '') {
+            $query->where('status', $value);
         }
     }
 

@@ -36,12 +36,12 @@ class ProductStatisticServices extends BaseServices
     public function getBasic($where)
     {
         $time = explode('-', $where['time']);
-        if (count($time) != 2) throw new AdminException(100100);
+        if (count($time) != 2) throw new AdminException('请选择时间');
         //当前数据
         $now = $this->basicInfo($where, $time);
 
         //环比数据
-        $dayNum = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
+        $dayNum = bcadd(bcdiv(bcsub(strtotime($time[1]), strtotime($time[0])), '86400'), '1');
         $lastTime = array(
             date("Y/m/d", strtotime("-$dayNum days", strtotime($time[0]))),
             date("Y/m/d", strtotime("-1 days", strtotime($time[0])))
@@ -115,7 +115,7 @@ class ProductStatisticServices extends BaseServices
     {
         $time = explode('-', $where['time']);
         if (count($time) != 2) throw new AdminException(100100);
-        $dayCount = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
+        $dayCount = bcadd(bcdiv(bcsub(strtotime($time[1]), strtotime($time[0])), '86400'), '1');
         $data = [];
         if ($dayCount == 1) {
             $data = $this->trend($time, 0, $excel);

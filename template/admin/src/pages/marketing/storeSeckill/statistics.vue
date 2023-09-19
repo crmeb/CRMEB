@@ -1,75 +1,79 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
-      <div class="fl_header">
-        <span>
-          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
-        </span>
-        <Divider type="vertical" />
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
-    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
-    <div>
-      <Tabs v-model="currentTab" @on-click="onClickTab">
-        <TabPane v-for="(item, index) in tabs" :label="item.label" :name="item.type" :key="index" />
-      </Tabs>
-    </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+    <pages-header
+      ref="pageHeader"
+      :title="$route.meta.title"
+      :backUrl="$routeProStr + '/marketing/store_seckill/index'"
+    ></pages-header>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0" class="ivu-mt-16"></cards-data>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form
         ref="pagination"
         :model="pagination"
-        :label-width="labelWidth"
+        label-width="80px"
         label-position="right"
         @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col span="6" v-if="type == 1">
-            <FormItem label="订单状态：" label-for="status">
-              <Select v-model="pagination.status" clearable placeholder="请选择订单状态" @on-change="changeStatus">
-                <Option value="0">未支付</Option>
-                <Option value="1">待发货</Option>
-                <Option value="2">待收货</Option>
-                <Option value="3">待评价</Option>
-                <Option value="4">交易完成</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col span="6">
-            <FormItem label="搜索：" label-for="title">
-              <Input
-                search
-                enter-button
-                v-model="pagination.real_name"
-                placeholder="请输入用户姓名|手机号|UID"
-                @on-search="searchList"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="type ? thead2 : thead"
+        inline
+        ><el-form-item v-if="type == 1" label="订单状态：" label-for="status">
+          <el-select
+            v-model="pagination.status"
+            clearable
+            placeholder="请选择订单状态"
+            @change="changeStatus"
+            class="form_content_width"
+          >
+            <el-option value="1" label="待发货"></el-option>
+            <el-option value="2" label="待收货"></el-option>
+            <el-option value="3" label="待评价"></el-option>
+            <el-option value="4" label="交易完成"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="订单搜索：" label-for="title">
+          <el-input
+            clearable
+            v-model="pagination.real_name"
+            placeholder="请输入用户姓名|手机号|UID"
+            class="form_content_width"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="changeStatus">查询</el-button>
+        </el-form-item>
+      </el-form>
+      <el-tabs v-model="type" @tab-click="onClickTab">
+        <el-tab-pane v-for="(item, index) in tabs" :label="item.label" :name="item.type" :key="index" />
+      </el-tabs>
+      <el-table
         :data="tbody"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-      </Table>
+        <el-table-column
+          :label="item.title"
+          :min-width="item.minWidth || 100"
+          v-for="(item, index) in type == 1 ? thead2 : thead"
+          :key="index"
+        >
+          <template slot-scope="scope">
+            <template v-if="item.key">
+              <span>{{ scope.row[item.key] }}</span>
+            </template>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="pagination.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="pagination.limit"
+          :page.sync="pagination.page"
+          :limit.sync="pagination.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -95,15 +99,15 @@ export default {
       total: 0,
       tabs: [
         {
-          type: '',
+          type: '0',
           label: '活动参与人',
         },
         {
-          type: '',
+          type: '1',
           label: '活动订单',
         },
       ],
-      currentTab: 0,
+      type: 0,
       loading: false,
       thead: [
         {
@@ -162,25 +166,25 @@ export default {
           col: 6,
           count: 0,
           name: '下单人数（人）',
-          className: 'ios-speedometer-outline',
+          className: 'iconxiadanrenshu',
         },
         {
           col: 6,
           count: 0,
           name: '支付订单额（元）',
-          className: 'ios-speedometer-outline',
+          className: 'iconzhifudingdan',
         },
         {
           col: 6,
           count: 0,
           name: '支付人数（人）',
-          className: 'ios-speedometer-outline',
+          className: 'iconzhifurenshu',
         },
         {
           col: 6,
           count: 0,
           name: '剩余库存/总库存',
-          className: 'ios-speedometer-outline',
+          className: 'iconshengyukucun',
         },
       ],
       pagination: {
@@ -195,12 +199,12 @@ export default {
   created() {
     this.id = this.$route.params.id;
     this.getStatistics(this.id);
-    this.getList(this.id);
+    this.getList();
   },
   methods: {
     changeStatus() {
       this.pagination.page = 1;
-      this.getList(this.id);
+      this.getList();
     },
     // 统计
     getStatistics(id) {
@@ -212,7 +216,7 @@ export default {
       });
     },
     // 列表
-    getList(id) {
+    getList() {
       this.loading = true;
       if (this.type == 0) {
         getseckillStatisticsPeople(this.id, this.pagination).then((res) => {
@@ -231,19 +235,14 @@ export default {
       }
     },
     // 标签切换
-    onClickTab() {
-      this.type = this.currentTab;
-      this.getList(this.id);
+    onClickTab(e) {
+      this.type = e.index;
+      this.getList();
     },
     // 搜索
     searchList() {
       this.pagination.page = 1;
-      this.getList(this.id);
-    },
-    // 分页
-    pageChange(index) {
-      this.pagination.page = index;
-      this.getList(this.id);
+      this.getList();
     },
   },
 };

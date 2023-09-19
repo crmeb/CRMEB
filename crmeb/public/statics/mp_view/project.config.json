@@ -14,7 +14,7 @@
   "compileType": "miniprogram",
   "libVersion": "",
   "appid": "wx1234567890",
-  "projectname": "CRMEB标准版",
+  "projectname": "CRMEB标准版-发行",
   "condition": {
     "search": {
       "current": -1,

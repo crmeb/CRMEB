@@ -184,7 +184,6 @@
 		},
 		onLoad: function(options) {
 			this.type = options.type;
-			console.log(options)
 			if (options.before) {
 				this.before = options.before;
 			}

@@ -29,9 +29,9 @@
           </div>
           <!-- <div class="item">
                         <span>分组</span>
-                        <Select v-model="activeUserInfo.group_id" size="small" @on-change="onChange" style="flex:1;">
-                            <Option v-for="item in userGroup" :value="item.id" :key="item.value">{{ item.group_name }}</Option>
-                        </Select>
+                        <el-select v-model="activeUserInfo.group_id" size="small" @change="onChange" style="flex:1;">
+                            <el-option v-for="item in userGroup" :value="item.id" :key="item.value">{{ item.group_name }}</el-option>
+                        </el-select>
                     </div> -->
           <div class="label-list">
             <span>分组</span>
@@ -39,7 +39,7 @@
               <div class="label-item">{{ activeUserInfo.group_name }}</div>
             </div>
             <div class="right-icon" @click.stop="isUserGroup = true">
-              <Icon type="ios-arrow-forward" size="14" />
+              <i class="el-icon-arrow-right" style="font-size: 14px"></i>
             </div>
           </div>
           <div class="label-list">
@@ -50,7 +50,7 @@
               </div>
             </div>
             <div class="right-icon" @click.stop="isUserLabel = true">
-              <Icon type="ios-arrow-forward" size="14" />
+              <i class="el-icon-arrow-right" style="font-size: 14px"></i>
             </div>
           </div>
         </div>
@@ -94,7 +94,7 @@
           </div>
         </div>
         <div class="search-box">
-          <Input
+          <el-input
             class="search_box"
             prefix="ios-search"
             @on-enter="orderSearch"
@@ -103,7 +103,7 @@
           />
         </div>
         <div v-if="orderList.length > 0">
-          <Scroll :on-reach-bottom="orderReachBottom" height="650" class="right-scroll">
+          <div v-infinite-scroll="orderReachBottom" class="right-scroll">
             <div class="order-list">
               <div class="order-item" v-for="(item, index) in orderList" :key="index">
                 <div class="head">
@@ -144,43 +144,28 @@
                   <div class="info-item"><span>实收款：</span>¥ {{ item.pay_price }}</div>
                 </div>
                 <div class="btn-wrapper">
-                  <Button
+                  <el-button
                     class="btn"
                     type="primary"
                     v-if="item._status._type == 1 && item._status._type != 0 && item.shipping_type != 2"
                     @click.stop="openDelivery(item)"
-                    >发货</Button
+                    >发货</el-button
                   >
-                  <Button
+                  <el-button
                     class="btn"
-                    type="info"
-                    ghost
-                    style="color: #1890ff; border-color: #1890ff"
+                    type="primary"
                     v-if="item.refund_status == 1"
                     @click.stop="orderRecord(item.id)"
-                    >退款</Button
+                    >退款</el-button
                   >
-                  <Button
-                    class="btn"
-                    type="info"
-                    ghost
-                    style="color: #1890ff; border-color: #1890ff"
-                    @click.stop="orderEdit(item.id)"
-                    v-if="item._status._type == 0"
-                    >改价</Button
+                  <el-button class="btn" ghost @click.stop="orderEdit(item.id)" v-if="item._status._type == 0"
+                    >改价</el-button
                   >
-                  <Button
-                    class="btn"
-                    type="info"
-                    ghost
-                    style="color: #1890ff; border-color: #1890ff"
-                    @click.stop="bindRemark(item)"
-                    >备注</Button
-                  >
+                  <el-button class="btn" ghost @click.stop="bindRemark(item)">备注</el-button>
                 </div>
               </div>
             </div>
-          </Scroll>
+          </div>
         </div>
         <empty v-if="orderList.length == 0 && orderConfig.type === ''" status="3" msg="暂无订单信息"></empty>
         <empty v-if="orderList.length == 0 && orderConfig.type === 0" status="4" msg="暂无未支付订单"></empty>
@@ -202,7 +187,7 @@
           </div>
         </div>
         <div class="search-box">
-          <Input
+          <el-input
             class="search_box"
             @on-enter="productSearch"
             v-model="storeName"
@@ -211,8 +196,8 @@
           />
         </div>
         <div class="list-wrapper" v-if="goodsConfig.buyList.length > 0">
-          <Scroll :on-reach-bottom="goodsReachBottom" height="650" class="right-scroll">
-            <div class="list-item" v-for="item in goodsConfig.buyList">
+          <div v-infinite-scroll="goodsReachBottom" class="right-scroll">
+            <div class="list-item" v-for="(item, index) in goodsConfig.buyList" :key="index">
               <div class="img-box">
                 <img :src="item.image" alt="" />
               </div>
@@ -228,36 +213,34 @@
                 </div>
               </div>
             </div>
-          </Scroll>
+          </div>
         </div>
         <empty v-else status="3" msg="暂无商品信息"></empty>
       </div>
     </template>
     <!-- 发货弹窗 -->
-    <Modal v-model="isDelivery" title="订单发送货" :footer-hide="true">
-      <delivery v-if="isDelivery" @close="deliveryClose" @ok="deliveryOk" :orderId="orderId"></delivery>
-    </Modal>
+    <el-dialog :visible.sync="isDelivery" title="订单发送货">
+      <delivery
+        v-if="isDelivery"
+        :virtualType="virtual_type"
+        @close="deliveryClose"
+        @ok="deliveryOk"
+        :orderId="orderId"
+      ></delivery>
+    </el-dialog>
     <!-- 订单备注 -->
-    <Modal
-      v-model="isRemarks"
-      title="请修改内容"
-      :footer-hide="true"
-      :mask="true"
-      width="520"
-      :closable="false"
-      class="none-radius"
-    >
+    <el-dialog :visible.sync="isRemarks" title="请修改内容" width="470px" :show-close="true" class="none-radius">
       <remarks :remarkId="remarkId" v-if="isRemarks" @close="deliveryClose" @remarkSuccess="remarkSuccess"></remarks>
-    </Modal>
+    </el-dialog>
     <!-- 用户标签 -->
-    <Modal v-model="isUserLabel" :footer-hide="true" width="320" class="label-box" :closable="false" :mask="true">
+    <el-dialog title="选择用户标签" :visible.sync="isUserLabel" width="470px" class="label-box" :show-close="true">
       <p class="label-head" slot="header">
         <span>选择用户标签</span>
       </p>
       <userLabel v-if="isUserLabel" @close="deliveryClose" :uid="uid" @editLabel="editLabel"></userLabel>
-    </Modal>
+    </el-dialog>
     <!-- 用户标签 -->
-    <Modal v-model="isUserGroup" :footer-hide="true" width="320" class="label-box" :closable="false" :mask="true">
+    <el-dialog :visible.sync="isUserGroup" title="选择分组" width="470px" class="label-box" :show-close="true">
       <p class="label-head" slot="header">
         <span>选择分组</span>
       </p>
@@ -269,7 +252,7 @@
         :uid="uid"
         @editUserLabel="editUserLabel"
       ></userGroup>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -353,6 +336,7 @@ export default {
       userGroupSelect: [],
       model1: '',
       curMenuIndex: 0,
+      virtual_type: 0,
       menuList: [
         {
           key: '',
@@ -373,7 +357,7 @@ export default {
       ],
       activeUserInfo: '', //用户详情
       curStatus: this.status,
-      limit: 10,
+      limit: 15,
       orderConfig: {
         page: 1,
         type: '',
@@ -461,6 +445,7 @@ export default {
     // 订单发货
     openDelivery(item) {
       this.orderId = item.id;
+      this.virtual_type = item.virtual_type;
       this.isDelivery = true;
     },
     // 订单发货成功
@@ -612,7 +597,7 @@ export default {
     editUserLabel(id) {
       this.isUserGroup = false;
       putGroupApi(this.uid, id).then((res) => {
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
         this.getUserInfo();
       });
     },
@@ -641,7 +626,10 @@ export default {
 /deep/.ivu-select .ivu-select-dropdown, /deep/.ivu-date-picker .ivu-select-dropdown {
   top: unset !important;
 }
-
+.right-scroll{
+  max-height: 650px;
+  overflow-y: scroll;
+}
 .right-wrapper {
   width: 280px;
 
@@ -712,7 +700,7 @@ color #6440C2, &.routine {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-    font-size: 14px;
+    font-size: 13px;
     color: #333;
 
     span {
@@ -741,8 +729,9 @@ color #6440C2, &.routine {
         margin-right: 8px;
         margin-bottom: 8px;
         padding: 0 5px;
-        color: #1890FF;
+        color: var(--prev-color-primary);
         background: rgba(24, 144, 255, 0.1);
+        font-size: 13px;
       }
     }
 
@@ -770,7 +759,7 @@ color #6440C2, &.routine {
       cursor: pointer;
 
       &.active {
-        color: #1890FF;
+        color: var(--prev-color-primary);
         font-size: 15px;
         font-weight: 600;
 
@@ -781,7 +770,7 @@ color #6440C2, &.routine {
           bottom: -12px;
           width: 100%;
           height: 2px;
-          background: #1890FF;
+          background: var(--prev-color-primary);
         }
       }
     }
@@ -816,7 +805,7 @@ color #6440C2, &.routine {
       .left {
         display: flex;
         align-items: center;
-        color: #1890FF;
+        color: var(--prev-color-primary);
 
         .font-box {
           margin-right: 5px;
@@ -871,7 +860,7 @@ color #6440C2, &.routine {
 
   .more-box {
     text-align: right;
-    color: #1890FF;
+    color: var(--prev-color-primary);
     font-size: 13px;
     padding-right: 10px;
 
@@ -900,7 +889,7 @@ color #6440C2, &.routine {
 
     .btn {
       width: 59px;
-      margin-right: 5px;
+      // margin-right: 5px;
 
       &:last-child {
         margin-right: 0;
@@ -924,7 +913,7 @@ color #6440C2, &.routine {
       cursor: pointer;
 
       &.active {
-        color: #1890FF;
+        color: var(--prev-color-primary);
 
         &::after {
           content: ' ';
@@ -933,7 +922,7 @@ color #6440C2, &.routine {
           bottom: 0;
           width: 100%;
           height: 2px;
-          background: #1890FF;
+          background: var(--prev-color-primary);
         }
       }
     }
@@ -990,7 +979,7 @@ color #6440C2, &.routine {
           color: #FF0000;
 
           .push {
-            color: #1890FF;
+            color: var(--prev-color-primary);
             cursor: pointer;
           }
         }

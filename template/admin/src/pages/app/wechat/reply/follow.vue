@@ -1,15 +1,16 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-    </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <pages-header
+        ref="pageHeader"
+        :title="$route.meta.title"
+        :backUrl="$routeProStr + '/app/wechat/reply/keyword'"></pages-header>
+    <el-card :bordered="false" shadow="never" class="ivu-mt-16">
       <!-- 公众号设置 -->
-      <Row :gutter="24" type="flex">
-        <Col span="24" class="ml40">
+      <el-row :gutter="24">
+        <el-col :span="24" class="ml40">
           <!-- 预览功能 -->
-          <Col :span="24">
-            <Col :xl="7" :lg="7" :md="22" :sm="22" :xs="22" class="left mb15">
+          <el-col :span="24">
+            <el-col :xl="7" :lg="7" :md="22" :sm="22" :xs="22" class="left mb15">
               <img class="top" src="../../../../assets/images/mobilehead.png" />
               <img class="bottom" src="../../../../assets/images/mobilefoot.png" />
               <div class="centent">
@@ -39,29 +40,29 @@
                   </div>
                 </div>
               </div>
-            </Col>
-            <Col :xl="11" :lg="12" :md="22" :sm="22" :xs="22">
-              <Col span="24" class="userAlert">
+            </el-col>
+            <el-col :xl="11" :lg="12" :md="22" :sm="22" :xs="22">
+              <el-col :span="24" class="userAlert">
                 <div class="box-card right">
-                  <Form
+                  <el-form
                     ref="formValidate"
                     :model="formValidate"
                     :rules="ruleValidate"
-                    :label-width="100"
+                    label-width="100px"
                     class="mt20"
                     @submit.native.prevent
                   >
-                    <FormItem label="关键字：" prop="val" v-if="$route.params.id">
+                    <el-form-item label="关键字：" prop="val" v-if="$route.params.id">
                       <div class="arrbox">
                         <!--:closable="$route.params.id==='0'? true : false"-->
-                        <Tag
-                          @on-close="handleClose"
+                        <el-tag
+                          @close="handleClose(item)"
                           :name="item"
                           :closable="true"
                           v-for="(item, index) in labelarr"
                           :key="index"
                           >{{ item }}
-                        </Tag>
+                        </el-tag>
                         <!--:readonly="$route.params.id!=='0'"-->
                         <input
                           class="arrbox_ip"
@@ -71,53 +72,53 @@
                           @keyup.enter="addlabel"
                         />
                       </div>
-                    </FormItem>
-                    <FormItem label="消息状态：">
-                      <RadioGroup v-model="formValidate.status">
-                        <Radio :label="1">启用</Radio>
-                        <Radio :label="0">禁用</Radio>
-                      </RadioGroup>
-                    </FormItem>
-                    <FormItem label="消息类型：" prop="type">
-                      <Select
+                    </el-form-item>
+                    <el-form-item label="消息状态：">
+                      <el-radio-group v-model="formValidate.status">
+                        <el-radio :label="1">启用</el-radio>
+                        <el-radio :label="0">禁用</el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="消息类型：" prop="type">
+                      <el-select
                         v-model="formValidate.type"
                         placeholder="请选择规则状态"
                         style="width: 90%"
-                        @on-change="RuleFactor(formValidate.type)"
+                        @change="RuleFactor(formValidate.type)"
                       >
-                        <Option value="text">文字消息</Option>
-                        <Option value="image">图片消息</Option>
-                        <Option value="news">图文消息</Option>
-                        <Option value="voice">声音消息</Option>
-                      </Select>
-                    </FormItem>
-                    <FormItem label="消息内容：" prop="content" v-if="formValidate.type === 'text'">
-                      <Input
+                        <el-option value="text" label="文字消息"></el-option>
+                        <el-option value="image" label="图片消息"></el-option>
+                        <el-option value="news" label="图文消息"></el-option>
+                        <el-option value="voice" label="声音消息"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="消息内容：" prop="content" v-if="formValidate.type === 'text'">
+                      <el-input
                         v-model="formValidate.data.content"
                         placeholder="请填写消息内容"
                         style="width: 90%"
                         type="textarea"
                         :rows="4"
-                      ></Input>
-                    </FormItem>
-                    <FormItem label="选取图文：" v-if="formValidate.type === 'news'">
-                      <Button type="info" @click="changePic">选择图文消息</Button>
-                    </FormItem>
-                    <FormItem
+                      ></el-input>
+                    </el-form-item>
+                    <el-form-item label="选取图文：" v-if="formValidate.type === 'news'">
+                      <el-button @click="changePic">选择图文消息</el-button>
+                    </el-form-item>
+                    <el-form-item
                       :label="formValidate.type === 'image' ? '图片地址：' : '语音地址：'"
                       prop="src"
                       v-if="formValidate.type === 'image' || formValidate.type === 'voice'"
                     >
                       <div class="acea-row row-middle">
-                        <Input
+                        <el-input
                           readonly="readonly"
                           placeholder="default size"
                           style="width: 75%"
                           class="mr15"
                           v-model="formValidate.data.src"
                         />
-                        <Upload
-                          :show-upload-list="false"
+                        <el-upload
+                          :show-file-list="false"
                           :action="fileUrl"
                           :on-success="handleSuccess"
                           :format="formValidate.type === 'image' ? formatImg : formatVoice"
@@ -128,28 +129,28 @@
                           class="mr20"
                           style="margin-top: 1px"
                         >
-                          <Button type="primary">上传</Button>
-                        </Upload>
+                          <el-button type="primary">上传</el-button>
+                        </el-upload>
                       </div>
                       <span v-show="formValidate.type === 'image'">文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span>
                       <span v-show="formValidate.type === 'voice'">文件最大2Mb，支持mp3格式,播放长度不超过60s</span>
-                    </FormItem>
-                  </Form>
+                    </el-form-item>
+                  </el-form>
                 </div>
-              </Col>
-              <Col :span="24">
+              </el-col>
+              <el-col :span="24">
                 <div class="acea-row row-center">
-                  <Button type="primary" class="mr20" @click="submenus('formValidate')">保存并发布 </Button>
+                  <el-button type="primary" class="mr20" @click="submenus('formValidate')">保存并发布 </el-button>
                 </div>
-              </Col>
-            </Col>
-          </Col>
-        </Col>
-      </Row>
-    </Card>
+              </el-col>
+            </el-col>
+          </el-col>
+        </el-col>
+      </el-row>
+    </el-card>
 
     <!--图文消息 -->
-    <Modal v-model="modals" scrollable title="发送消息" width="1200" height="800" footer-hide class="modelBox">
+    <el-dialog :visible.sync="modals" title="发送消息" width="1200px" :lock-scroll="false" class="modelBox">
       <news-category
         v-if="modals"
         @getCentList="getCentList"
@@ -158,7 +159,7 @@
         :contentWidth="contentWidth"
         :maxCols="maxCols"
       ></news-category>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -264,7 +265,7 @@ export default {
       }
       this.val = '';
     },
-    handleClose(event, name) {
+    handleClose(name) {
       const index = this.labelarr.indexOf(name);
       this.labelarr.splice(index, 1);
     },
@@ -307,7 +308,7 @@ export default {
           }
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 选择图文
@@ -340,20 +341,20 @@ export default {
     handleSuccess(res, file) {
       if (res.status === 200) {
         this.formValidate.data.src = res.data.src;
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
       } else {
-        this.$Message.error(res.msg);
+        this.$message.error(res.msg);
       }
     },
     handleFormatError(file) {
       if (this.formValidate.type === 'image') {
-        this.$Message.warning('请上传bmp/png/jpeg/jpg/gif格式的图片');
+        this.$message.warning('请上传bmp/png/jpeg/jpg/gif格式的图片');
       } else {
-        this.$Message.warning('请上传mp3/wma/wav/amr格式的语音');
+        this.$message.warning('请上传mp3/wma/wav/amr格式的语音');
       }
     },
     handleMaxSize(file) {
-      this.$Message.warning('请上传文件2M以内的文件');
+      this.$message.warning('请上传文件2M以内的文件');
     },
     // 保存
     submenus(name) {
@@ -375,10 +376,10 @@ export default {
           replyApi(data)
             .then(async (res) => {
               this.operation();
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;
@@ -388,29 +389,26 @@ export default {
     // 保存成功操作
     operation() {
       if (this.$route.params.id && this.$route.params.id === '0') {
-        this.$Modal.confirm({
+        this.$msgbox({
           title: '提示',
-          content: '<p>是否继续添加？</p>',
-          okText: '是',
-          cancelText: '否',
-          loading: true,
-          onOk: () => {
-            setTimeout(() => {
-              this.$Modal.remove();
-              this.labelarr = [];
-              this.val = '';
-              this.$refs['formValidate'].resetFields();
-            }, 1000);
-          },
-          onCancel: () => {
-            setTimeout(() => {
-              this.$Modal.remove();
-              this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword' });
-            }, 500);
-          },
-        });
+          message:'是否继续添加',
+          showCancelButton: true,
+          cancelButtonText: '否',
+          confirmButtonText: '是',
+          iconClass: 'el-icon-warning',
+          confirmButtonClass: 'btn-custom-cancel'
+        }).then(() => {
+          setTimeout(() => {
+            this.labelarr = [];
+            this.val = '';
+            this.$refs['formValidate'].resetFields();
+          }, 1000);
+        }).catch(() => {
+          setTimeout(() => {
+            this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword' });
+          }, 500);
+        })
       } else if (this.$route.params.id && this.$route.params.id !== '0') {
-        this.$Modal.remove();
         this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword' });
       }
     },
@@ -437,6 +435,9 @@ export default {
     text-align: left;
     box-sizing border-box;
     width: 90%;
+    .el-tag{
+      margin-right: 3px;
+    }
 }
 
 .arrbox_ip {

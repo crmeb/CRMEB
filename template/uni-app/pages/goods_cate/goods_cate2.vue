@@ -76,9 +76,9 @@
 		</view>
 		<cartList :cartData="cartData" @closeList="closeList" @ChangeCartNumDan="ChangeCartList"
 			@ChangeSubDel="ChangeSubDel" @ChangeOneDel="ChangeOneDel"></cartList>
-		<productWindow :attr="attr" :isShow='1' :iSplus='1' :iScart='1' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
-			@ChangeCartNum="ChangeCartNumDuo" @attrVal="attrVal" @iptCartNum="iptCartNum" @goCat="goCatNum"
-			id='product-window' :is_vip="is_vip"></productWindow>
+		<productWindow :attr="attr" :isShow='1' :iSplus='1' :iScart='1' :minQty="storeInfo.min_qty" @myevent="onMyEvent"
+			@ChangeAttr="ChangeAttr" @ChangeCartNum="ChangeCartNumDuo" @attrVal="attrVal" @iptCartNum="iptCartNum"
+			@goCat="goCatNum" id='product-window' :is_vip="is_vip"></productWindow>
 		<!-- </scroll-view>
 		</view> -->
 	</view>
@@ -97,7 +97,7 @@
 		cartDel
 	} from '@/api/order.js';
 	import productWindow from '@/components/productWindow';
-	import goodList from '@/components/d_goodList';
+	import goodList from '@/components/catGoodList';
 	import cartList from '@/components/cartList';
 	import {
 		mapGetters
@@ -303,7 +303,7 @@
 					this.$set(this.attr.productSelect, "price", productSelect.price);
 					this.$set(this.attr.productSelect, "stock", productSelect.stock);
 					this.$set(this.attr.productSelect, "unique", productSelect.unique);
-					this.$set(this.attr.productSelect, "cart_num", 1);
+					this.$set(this.attr.productSelect, "cart_num", this.storeInfo.min_qty);
 					this.$set(this.attr.productSelect, 'vip_price', productSelect.vip_price);
 					this.$set(this, "attrValue", value.join(","));
 				} else if (!productSelect && productAttr.length) {
@@ -333,7 +333,7 @@
 						"unique",
 						this.storeInfo.unique || ""
 					);
-					this.$set(this.attr.productSelect, "cart_num", 1);
+					this.$set(this.attr.productSelect, "cart_num", this.storeInfo.min_qty);
 					this.$set(this, "attrValue", "");
 					this.$set(this.attr.productSelect, 'vip_price', this.storeInfo.vip_price);
 				}
@@ -350,7 +350,7 @@
 					this.$set(this.attr.productSelect, "stock", productSelect.stock);
 					this.$set(this.attr.productSelect, "unique", productSelect.unique);
 					this.$set(this.attr.productSelect, 'vip_price', productSelect.vip_price);
-					this.$set(this.attr.productSelect, "cart_num", 1);
+					this.$set(this.attr.productSelect, "cart_num", this.storeInfo.min_qty);
 					this.$set(this, "attrValue", res);
 				} else if (productSelect && productSelect.stock == 0) {
 					this.$set(this.attr.productSelect, "image", productSelect.image);
@@ -379,7 +379,17 @@
 			 * 
 			 */
 			iptCartNum: function(e) {
-				this.$set(this.attr.productSelect, 'cart_num', e);
+				// this.$set(this.attr.productSelect, 'cart_num', e);
+				if (e) {
+					let number = this.storeInfo.min_qty;
+					if (Number.isInteger(parseInt(e)) && parseInt(e) >= this.storeInfo.min_qty) {
+						number = parseInt(e);
+					}
+					this.$nextTick(e => {
+						this.$set(this.attr.productSelect, "cart_num", e < 0 ? this.storeInfo.min_qty :
+							number);
+					})
+				}
 			},
 			onLoadFun() {},
 			// 产品列表
@@ -412,6 +422,7 @@
 
 			// 改变单属性购物车
 			ChangeCartNumDan(changeValue, index, item) {
+				console.log(item, 'item')
 				let num = this.tempArr[index];
 				let stock = this.tempArr[index].stock;
 				this.ChangeCartNum(changeValue, num, stock, 0, item.id);
@@ -430,7 +441,7 @@
 				this.ChangeCartNum(changeValue, num, stock, 1, this.id);
 			},
 			// 已经加入购物车时的购物加减；
-			ChangeCartList(changeValue, index) {
+			ChangeCartList(changeValue, index, isCartPop) {
 				let list = this.cartData.cartList;
 				let num = list[index];
 				let stock = list[index].trueStock;
@@ -476,8 +487,8 @@
 					}
 					if (num.cart_num < 0) {
 						if (isDuo) {
-							this.$set(this.attr.productSelect, "cart_num", 1);
-							this.$set(this, "cart_num", 1);
+							this.$set(this.attr.productSelect, "cart_num", this.storeInfo.min_qty);
+							this.$set(this, "cart_num", this.storeInfo.min_qty);
 						} else {
 							num.cart_num = 0;
 							this.$set(this, 'tempArr', this.tempArr);
@@ -524,10 +535,10 @@
 				}
 				let q = {
 					product_id: id,
-					num: duo ? that.attr.productSelect.cart_num : 1,
 					type: type,
 					unique: duo ? that.attr.productSelect.unique : cart ? unique : ""
 				};
+				if (!that.cartData.iScart) q.num = duo ? that.attr.productSelect.cart_num : this.storeInfo.min_qty
 				postCartNum(q)
 					.then(function(res) {
 						if (duo) {
@@ -571,7 +582,7 @@
 						});
 						return
 					}
-					this.tempArr[index].cart_num = 1;
+					this.tempArr[index].cart_num = this.storeInfo.min_qty;
 					this.$set(this, 'tempArr', this.tempArr);
 					this.goCat(0, item.id, 1);
 				}
@@ -634,7 +645,7 @@
 			},
 			getAllCategory: function(type) {
 				let that = this;
-				if (type|| !uni.getStorageSync('CAT2_DATA')) {
+				if (type || !uni.getStorageSync('CAT2_DATA')) {
 					getCategoryList().then(res => {
 						uni.setStorageSync('CAT2_DATA', res.data)
 						let data = res.data;
@@ -969,7 +980,7 @@
 						margin-bottom: 33rpx !important;
 
 						.pictrue {
-							height: 216rpx;
+							// height: 216rpx;
 						}
 
 						.text {

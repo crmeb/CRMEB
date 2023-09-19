@@ -174,6 +174,13 @@ export function orderTake(uni) {
 export function express(uni, type) {
 	return request.get("order/express/" + uni + `${type?'/refund':''}`);
 }
+/**
+ * 订单查询物流信息
+ * @returns {*}
+ */
+export function adminExpress(uni, type) {
+	return request.get("admin/order/express/" + uni + `${type?'/refund':''}`);
+}
 
 /**
  * 获取退款理由

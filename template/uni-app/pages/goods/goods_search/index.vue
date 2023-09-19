@@ -1,45 +1,50 @@
 <template>
-	<view :style="colorStyle">
-		<view class='searchGood'>
-			<view class='search acea-row row-between-wrapper'>
-				<view class='input acea-row row-between-wrapper'>
-					<text class='iconfont icon-sousuo'></text>
-					<input type='text' v-model='searchValue' @confirm="inputConfirm" focus :placeholder='$t(`搜索商品名称`)'
-						placeholder-class='placeholder' @input="setValue"></input>
+	<view class="wrapper" :style="colorStyle">
+		<scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-Y" @scroll="scroll">
+			<view class='searchGood'>
+				<view class='search acea-row row-between-wrapper'>
+					<view class='input acea-row row-between-wrapper'>
+						<text class='iconfont icon-sousuo'></text>
+						<input type='text' v-model='searchValue' @confirm="inputConfirm" focus
+							:placeholder='$t(`搜索商品名称`)' placeholder-class='placeholder' @input="setValue"></input>
+					</view>
+					<view class='bnt' @tap='searchBut'>{{$t(`搜索`)}}</view>
 				</view>
-				<view class='bnt' @tap='searchBut'>{{$t(`搜索`)}}</view>
-			</view>
-			<template v-if="history.length">
-				<view class='title acea-row row-between-wrapper'>
-					<view>{{$t(`搜索历史`)}}</view>
-					<view class="iconfont icon-shanchu" @click="clear"></view>
-				</view>
+				<template v-if="history.length">
+					<view class='title acea-row row-between-wrapper'>
+						<view>{{$t(`搜索历史`)}}</view>
+						<view class="iconfont icon-shanchu" @click="clear"></view>
+					</view>
+					<view class='list acea-row'>
+						<block v-for="(item,index) in history" :key="index">
+							<view class='item history-item line1' @tap='setHotSearchValue(item.keyword)'
+								v-if="item.keyword">{{item.keyword}}</view>
+						</block>
+					</view>
+				</template>
+				<view class='title'>{{$t(`热门搜索`)}}</view>
 				<view class='list acea-row'>
-					<block v-for="(item,index) in history" :key="index">
-						<view class='item history-item line1' @tap='setHotSearchValue(item.keyword)'
-							v-if="item.keyword">{{item.keyword}}</view>
+					<block v-for="(item,index) in hotSearchList" :key="index">
+						<view class='item line1' @tap='setHotSearchValue(item.val)' v-if="item.val">{{item.val}}</view>
 					</block>
 				</view>
-			</template>
-			<view class='title'>{{$t(`热门搜索`)}}</view>
-			<view class='list acea-row'>
-				<block v-for="(item,index) in hotSearchList" :key="index">
-					<view class='item line1' @tap='setHotSearchValue(item.val)' v-if="item.val">{{item.val}}</view>
-				</block>
+				<view class='line' v-if='bastList.length'></view>
+				<goodList :bastList="bastList" v-if="bastList.length > 0"></goodList>
+				<view class='loadingicon acea-row row-center-wrapper' v-if="bastList.length > 0">
+					<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
+				</view>
 			</view>
-			<view class='line' v-if='bastList.length'></view>
-			<goodList :bastList="bastList" v-if="bastList.length > 0"></goodList>
-			<view class='loadingicon acea-row row-center-wrapper' v-if="bastList.length > 0">
-				<text class='loading iconfont icon-jiazai' :hidden='loading==false'></text>{{loadTitle}}
+			<view class='noCommodity'>
+				<view class='pictrue' v-if="bastList.length == 0">
+					<image :src="imgHost + '/statics/images/noSearch.png'"></image>
+				</view>
+				<recommend :hostProduct='hostProduct' v-if="bastList.length == 0 && page > 1"></recommend>
 			</view>
-		</view>
-		<view class='noCommodity'>
-			<view class='pictrue' v-if="bastList.length == 0">
-				<image :src="imgHost + '/statics/images/noSearch.png'"></image>
-			</view>
-			<recommend :hostProduct='hostProduct' v-if="bastList.length == 0 && page > 1"></recommend>
-		</view>
+		</scroll-view>
 		<home></home>
+		<view v-if="scrollTopShow" class="back-top" @click="goTop">
+			<text class="iconfont icon-xiangshang"></text>
+		</view>
 	</view>
 </template>
 
@@ -83,7 +88,12 @@
 				loadTitle: this.$t(`加载更多`),
 				hotPage: 1,
 				isScroll: true,
-				history: []
+				history: [],
+				scrollTop: 0,
+				old: {
+					scrollTop: 0
+				},
+				scrollTopShow: false
 			};
 		},
 		onShow: function() {
@@ -107,6 +117,17 @@
 			uni.$emit('scroll');
 		},
 		methods: {
+			scroll(e) {
+				this.scrollTopShow = e.detail.scrollTop > 150
+				this.old.scrollTop = e.detail.scrollTop
+			},
+			goTop(e) {
+				// 解决view层不同步的问题
+				this.scrollTop = this.old.scrollTop
+				this.$nextTick(() => {
+					this.scrollTop = 0
+				});
+			},
 			searchList() {
 				searchList({
 					page: 1,
@@ -214,6 +235,35 @@
 		background-color: #fff !important;
 	}
 
+	.scroll-Y {
+		height: 100vh;
+	}
+
+	.wrapper {
+		position: relative;
+		max-height: 100vh;
+		overflow: hidden;
+
+		.back-top {
+			position: absolute;
+			right: 40rpx;
+			bottom: 60rpx;
+			width: 60rpx;
+			height: 60rpx;
+			border-radius: 50%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border: 1rpx solid #ccc;
+			background-color: #fff;
+
+			.icon-xiangshang {
+				color: #ccc;
+				font-weight: bold;
+			}
+		}
+	}
+
 	.noCommodity {
 		border-top-width: 0;
 	}
@@ -223,7 +273,7 @@
 	}
 
 	.searchGood .search {
-		margin-top: 20rpx;
+		padding-top: 20rpx;
 	}
 
 	.searchGood .search .input {

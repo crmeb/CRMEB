@@ -20,8 +20,8 @@ use app\services\user\UserExtractServices;
 use app\services\product\sku\StoreProductAttrValueServices;
 use app\services\system\SystemMenusServices;
 use app\services\user\UserServices;
+use crmeb\services\CacheService;
 use crmeb\services\HttpService;
-use think\facade\Cache;
 
 /**
  * 公共接口基类 主要存放公共接口
@@ -402,7 +402,7 @@ class Common extends AuthController
                 'info' => ''
             ]);
         }
-        $services->cacheDriver()->clear();
+        CacheService::clear();
         return app('json')->success(100000);
     }
 

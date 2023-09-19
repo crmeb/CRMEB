@@ -1,20 +1,5 @@
 <template>
   <div>
-    <!--        <div class="head">-->
-    <!--            客户名称：<Input search enter-button placeholder="请输入名称或者ID" style="width: 40%" @on-search="search" v-model="name" />-->
-    <!--        </div>-->
-    <!--        <Table :columns="columns1" :data="labelLists" ref="table" class="mt25"-->
-    <!--               :loading="loading" highlight-row-->
-    <!--               no-userFrom-text="暂无数据"-->
-    <!--               no-filtered-userFrom-text="暂无筛选结果">-->
-    <!--            <template slot-scope="{ row, index }" slot="avatar">-->
-    <!--                <viewer>-->
-    <!--                    <div class="tabBox_img">-->
-    <!--                        <img v-lazy="row.avatar">-->
-    <!--                    </div>-->
-    <!--                </viewer>-->
-    <!--            </template>-->
-    <!--        </Table>-->
     <div class="list-wrapper">
       <div class="user-item" v-for="(item, index) in labelLists" :key="index" @click="bindActive(item)">
         <img v-lazy="item.avatar" alt="" />
@@ -61,11 +46,11 @@ export default {
         kefuToUid: item.uid,
       })
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.$emit('close');
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
   },

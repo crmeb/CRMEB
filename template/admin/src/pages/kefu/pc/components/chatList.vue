@@ -49,10 +49,10 @@
           </div>
           <div class="right-box">
             <div class="time">{{ item.update_time | toDay }}</div>
-            <div class="num">
-              <Badge :count="item.mssage_num">
+            <div class="num" v-if="item.mssage_num > 0">
+              <el-badge :value="item.mssage_num">
                 <a href="#" class="demo-badge"></a>
-              </Badge>
+              </el-badge>
             </div>
           </div>
         </div>
@@ -101,9 +101,9 @@ export default {
             if (el.to_uid == nVal.to_uid) {
               el.online = nVal.online;
               if (nVal.online == 1) {
-                this.$Notice.info({
+                this.$notify.info({
                   title: '上线通知',
-                  desc: `${el.nickname}上线`,
+                  message: `${el.nickname}上线`,
                 });
               }
             }
@@ -200,7 +200,7 @@ export default {
               }
               arr.unshift(oldVal);
             }
-            this.$Notice.info({
+            this.$notify.info({
               title: '您有一条转接消息！',
             });
           }
@@ -227,7 +227,7 @@ export default {
           }
         }
         if (data.recored.is_tourist != this.hdTabCur && data.recored.id) {
-          this.$Notice.info({
+          this.$notify.info({
             title: this.hdTabCur ? '用户发来消息啦！' : '游客发来消息啦！',
           });
         }
@@ -320,9 +320,9 @@ export default {
                 transform translateX(-50%)
                 height 2px
                 width 100%
-                background #1890FF
+                background var(--prev-color-primary)
             &.active
-                color #1890FF
+                color var(--prev-color-primary)
                 &:after
                     display block
 
@@ -341,7 +341,7 @@ export default {
         cursor pointer
         &.active
             background #EFF0F1
-            border-left 3px solid #1890FF
+            border-left 3px solid var(--prev-color-primary)
         .avatar
             position relative
             width 40px

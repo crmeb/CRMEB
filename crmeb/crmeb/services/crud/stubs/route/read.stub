@@ -1,0 +1,1 @@
+Route::get('{%ROUTE%}/:id', 'crud.{%ROUTE_PATH%}{%CONTROLLER%}/read')->option(['real_name' => '{%MENUS%}查看接口']);

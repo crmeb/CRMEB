@@ -86,7 +86,6 @@
 		},
 		filters: {
 			typeName(type) {
-				console.log(type)
 				if (type == 2) {
 					return '积分'
 				} else if (type == 3) {

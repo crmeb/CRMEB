@@ -101,17 +101,6 @@ export function couponStatusApi(data) {
 }
 
 /**
- * @description 优惠券制作--品类
- * @param {*} type 默认 1
- */
-export function couponCategoryApi(type) {
-  return request({
-    url: `product/category/tree/${type}`,
-    method: 'get',
-  });
-}
-
-/**
  * @description 优惠券制作--保存
  */
 export function couponSaveApi(data) {
@@ -863,5 +852,36 @@ export function getbargainStatisticsOrder(id, params) {
     url: `marketing/bargain/statistics/order/${id}`,
     method: 'get',
     params,
+  });
+}
+/**
+ * 签到奖励列表
+ * @param {com} data
+ */
+export function signRewards(data) {
+  return request({
+    url: 'marketing/sign/rewards',
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * 新增签到奖励
+ * @param {com} data
+ */
+export function addSignRewards(data) {
+  return request({
+    url: 'marketing/sign/add_rewards',
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * 编辑签到奖励
+ */
+export function editSignRewards(id) {
+  return request({
+    url: 'marketing/sign/edit_rewards/' + id,
+    method: 'get',
   });
 }

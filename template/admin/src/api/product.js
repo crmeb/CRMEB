@@ -13,10 +13,11 @@ import request from '@/libs/request';
 /*
  * 获取商品表单头数量；
  * */
-export function getGoodHeade() {
+export function getGoodHeade(data) {
   return request({
     url: 'product/product/type_header',
     method: 'get',
+    params: data,
   });
 }
 
@@ -80,6 +81,19 @@ export function productShowApi(data) {
   return request({
     url: `product/product/product_show`,
     method: 'put',
+    data,
+  });
+}
+
+/**
+ * 添加虚拟评论
+ * @param {*} data
+ * @returns
+ */
+export function saveFictitiousReply(data) {
+  return request({
+    url: 'product/reply/save_fictitious_reply',
+    method: 'post',
     data,
   });
 }
@@ -331,12 +345,13 @@ export function productGetTemplateApi() {
 }
 
 /**
- * @description 商品 -- 获取运费模板
+ * @description 获取上传参数
  */
-export function productGetTempKeysApi() {
+export function productGetTempKeysApi(data) {
   return request({
     url: `product/product/get_temp_keys`,
     method: 'get',
+    params: data,
   });
 }
 
@@ -380,7 +395,7 @@ export function productUserLabel() {
   });
 }
 /**
- * @description 商品添加编辑-- 用户标签
+ * @description 上传类型
  */
 export function uploadType() {
   return request({
@@ -388,8 +403,9 @@ export function uploadType() {
     method: 'get',
   });
 }
+
 /**
- * @description 商品添加编辑-- 用户标签
+ * @description 导入卡密
  */
 export function importCard(data) {
   return request({

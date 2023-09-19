@@ -11,10 +11,9 @@
 
 namespace crmeb\services;
 
-use think\cache\Driver;
-use think\cache\TagSet;
 use think\facade\Cache;
 use think\facade\Config;
+use think\cache\TagSet;
 
 /**
  * CRMEB 缓存类
@@ -24,42 +23,10 @@ use think\facade\Config;
 class CacheService
 {
     /**
-     * 缓存队列key
-     * @var string[]
-     */
-    protected static $redisQueueKey = [
-        0 => 'product',
-        1 => 'seckill',
-        2 => 'bargain',
-        3 => 'combination',
-        6 => 'advance'
-    ];
-
-    /**
      * 过期时间
      * @var int
      */
     protected static $expire;
-
-    /**
-     * 获取缓存过期时间
-     * @param int|null $expire
-     * @return int
-     */
-    protected static function getExpire(int $expire = null): int
-    {
-        if ($expire == null) {
-            if (self::$expire) {
-                return (int)self::$expire;
-            }
-            $default = Config::get('cache.default');
-            $expire = Config::get('cache.stores.' . $default . '.expire');
-            if (!is_int($expire)) {
-                $expire = (int)$expire;
-            }
-        }
-        return self::$expire = $expire;
-    }
 
     /**
      * 写入缓存
@@ -67,10 +34,10 @@ class CacheService
      * @param mixed $value 缓存值
      * @param int|null $expire 缓存时间，为0读取系统缓存时间
      */
-    public static function set(string $name, $value, int $expire = null, string $tag = 'crmeb')
+    public static function set(string $name, $value, int $expire = 0, string $tag = 'crmeb')
     {
         try {
-            return Cache::tag($tag)->set($name, $value, $expire ?? self::getExpire($expire));
+            return Cache::tag($tag)->set($name, $value, $expire);
         } catch (\Throwable $e) {
             return false;
         }
@@ -84,10 +51,10 @@ class CacheService
      * @param string $tag
      * @return mixed|string|null
      */
-    public static function remember(string $name, $default = '', int $expire = null, string $tag = 'crmeb')
+    public static function remember(string $name, $default = '', int $expire = 0, string $tag = 'crmeb')
     {
         try {
-            return Cache::tag($tag)->remember($name, $default, $expire ?? self::getExpire($expire));
+            return Cache::tag($tag)->remember($name, $default, $expire);
         } catch (\Throwable $e) {
             try {
                 if (is_callable($default)) {
@@ -146,13 +113,21 @@ class CacheService
     }
 
     /**
+     * 指定缓存类型
+     * @param string $type
+     * @param string $tag
+     * @return TagSet
+     */
+    public static function store(string $type = 'file', string $tag = 'crmeb')
+    {
+        return Cache::store($type)->tag($tag);
+    }
+
+    /**
      * 检查锁
      * @param string $key
      * @param int $timeout
      * @return bool
-     * @author 等风来
-     * @email 136327134@qq.com
-     * @date 2022/11/22
      */
     public static function setMutex(string $key, int $timeout = 10): bool
     {
@@ -184,22 +159,6 @@ class CacheService
         Cache::store('redis')->handler()->del($readMutexKey);
     }
 
-    /**
-     * Redis缓存句柄
-     * @param null $type
-     * @return mixed
-     * @author 吴汐
-     * @email 442384644@qq.com
-     * @date 2023/02/10
-     */
-    public static function redisHandler($type = null)
-    {
-        if ($type) {
-            return Cache::store('redis')->tag($type);
-        } else {
-            return Cache::store('redis');
-        }
-    }
 
     /**
      * 数据库锁

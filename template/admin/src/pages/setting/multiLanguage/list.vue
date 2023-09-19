@@ -1,55 +1,72 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Row type="flex">
-        <Col v-bind="grid">
-          <Button type="primary" icon="md-add" @click="add">添加语言</Button>
-        </Col>
-      </Row>
-      <Table
-        :columns="columns"
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-row>
+        <el-col v-bind="grid">
+          <el-button type="primary" @click="add">添加语言</el-button>
+        </el-col>
+      </el-row>
+      <el-table
         :data="list"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="icons">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.icon" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="language_name">
-          <div class="acea-row row-middle">
-            <span>{{ row.language_name }}</span>
-            <Tag class="ml10" color="default" v-if="row.is_default">默认</Tag>
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="changeSwitch(row)"
-            size="large"
-          >
-            <span slot="open">开启</span>
-            <span slot="close">关闭</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row, '编辑语言', index)">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除语言', index)">删除</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="语言名称" min-width="200">
+          <template slot-scope="scope">
+            <div class="acea-scope.row scope.row-middle">
+              <span>{{ scope.row.language_name }}</span>
+              <el-tag class="ml10" color="default" v-if="scope.row.is_default">默认</el-tag>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="浏览器语言识别码" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.file_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" min-width="150">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="changeSwitch(scope.row)"
+              size="large"
+              active-text="开启"
+              inactive-text="关闭"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row, '编辑语言', index)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除语言', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="langFrom.limit" />
+        <pagination
+          v-if="total"
+          :total="total"
+          :page.sync="langFrom.page"
+          :limit.sync="langFrom.limit"
+          @pagination="getList"
+        />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -68,48 +85,7 @@ export default {
         xs: 24,
       },
       loading: false,
-      columns: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 200,
-        },
-        {
-          title: '语言名称',
-          slot: 'language_name',
-          minWidth: 200,
-        },
-        {
-          title: '浏览器语言识别码',
-          key: 'file_name',
-          minWidth: 200,
-        },
-        {
-          title: '状态',
-          slot: 'status',
-          width: 100,
-          filters: [
-            {
-              label: '开启',
-              value: 1,
-            },
-            {
-              label: '关闭',
-              value: 0,
-            },
-          ],
-          filterMethod(value, row) {
-            return row.status === value;
-          },
-          filterMultiple: false,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
+
       langFrom: {
         page: 1,
         limit: 15,
@@ -121,10 +97,10 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -147,12 +123,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.langFrom.page = index;
-      this.getList();
     },
     // 编辑
     edit(row) {
@@ -169,23 +141,23 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.list.splice(num, 1);
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改状态
     changeSwitch(row) {
       langTypeStatus(row.id, row.status)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
           row.status = !row.status ? 1 : 0;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

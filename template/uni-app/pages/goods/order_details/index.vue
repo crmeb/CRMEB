@@ -176,6 +176,26 @@
 				</button>
 			</div>
 			<!-- #endif -->
+			<view class='wrapper' v-if="isReturen == 1">
+				<view class='item acea-row row-between'>
+					<view>{{$t(`申请理由`)}}：</view>
+					<view class='conter'>{{orderInfo.refund_reason}}</view>
+				</view>
+				<view class='item acea-row row-between'>
+					<view>{{$t(`用户备注`)}}：</view>
+					<view class='conter'>{{orderInfo.refund_explain}}</view>
+				</view>
+				<view class='item acea-row row-between' v-if="orderInfo.refund_img.length">
+					<view>{{$t(`申请图片`)}}：</view>
+					<view class='upload acea-row row-middle'>
+						<view class='conter'>
+							<view class='pictrue' v-for="(item,index) in orderInfo.refund_img" :key="index">
+								<image :src='item'></image>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
 			<view class='wrapper'>
 				<view class='item acea-row row-between'>
 					<view>{{$t(`订单号`)}}：</view>
@@ -202,7 +222,7 @@
 					<view>{{$t(`支付方式`)}}：</view>
 					<view class='conter'>{{$t(orderInfo._status._payType)}}</view>
 				</view>
-				<view class='item acea-row row-between' v-if="orderInfo.mark">
+				<view class='item acea-row row-between' v-if="orderInfo.mark && isReturen != 1">
 					<view v-if="orderInfo.pid">{{$t(`买家备注`)}}：</view>
 					<view v-else>{{$t(`买家留言`)}}：</view>
 					<view class='conter'>{{orderInfo.mark}}</view>
@@ -216,7 +236,9 @@
 						<!-- #endif -->
 						<!-- #ifdef H5 -->
 						<view v-if="orderInfo.virtual_type == 1" class='copy copy-data'
-							:data-clipboard-text="orderInfo.remark">{{$t(`复制`)}}</view>
+							:data-clipboard-text="orderInfo.remark">
+							{{$t(`复制`)}}
+						</view>
 						<!-- #endif -->
 					</view>
 
@@ -225,14 +247,15 @@
 			<view class='wrapper' v-if="customForm && customForm.length">
 				<view class='item acea-row row-between' v-for="(item,index) in customForm" :key="index">
 					<view class='upload' v-if="item.label == 'img'">
-						<view>{{item.title}}：</view>
+						<view class="diy-from-title">{{item.title}}：</view>
 						<view class='pictrue' v-for="(img,index) in item.value" :key="index">
 							<image :src='img'></image>
 						</view>
 					</view>
-					<view v-if="item.label !== 'img'">{{item.title}}：</view>
+					<view v-if="item.label !== 'img'" class="diy-from-title">{{item.title}}：</view>
 					<view v-if="item.label !== 'img'" class='conter'>{{item.value}}</view>
 				</view>
+				<view class="copy-text" @click="copyText()">{{$t(`复制`)}}</view>
 			</view>
 			<!-- 退款订单详情 -->
 			<view class='wrapper' v-if="isGoodsReturn && orderInfo.cartInfo[0].productInfo.virtual_type != 3">
@@ -244,7 +267,7 @@
 					<view>{{$t(`联系电话`)}}：</view>
 					<view class='conter'>{{orderInfo.user_phone}}</view>
 				</view>
-				<view class='item acea-row row-between'>
+				<view class='item acea-row row-between'  v-if="orderInfo.shipping_type && orderInfo.shipping_type == 1">
 					<view>{{$t(`收货地址`)}}：</view>
 					<view class='conter'>{{orderInfo.user_address}}</view>
 				</view>
@@ -586,7 +609,6 @@
 				this.getUserInfo();
 				this.getCustomerType();
 				let opt = wx.getEnterOptionsSync();
-				console.log(opt)
 				if (opt.scene == '1038' && opt.referrerInfo.appId == 'wxef277996acc166c3') {
 					// 代表从收银台小程序返回
 					let extraData = opt.referrerInfo.extraData;
@@ -683,7 +705,6 @@
 			},
 			openSubcribe(e) {
 				let page = e;
-				console.log(page)
 				// #ifndef MP
 				uni.navigateTo({
 					url: page,
@@ -963,6 +984,17 @@
 				});
 			},
 			// #endif
+			copyText(text) {
+				let str = ''
+				this.customForm.map(e => {
+					if (e.label !== 'img') {
+						str += e.title + e.value
+					}
+				})
+				uni.setClipboardData({
+					data: str,
+				});
+			},
 			// #ifdef H5
 			copyAddress() {
 				// console.log('1111111111111')
@@ -1438,7 +1470,7 @@
 
 	.order-details .wrapper .item .conter {
 		color: #868686;
-		width: 380srpx;
+		width: 480srpx;
 		display: flex;
 		flex-wrap: nowrap;
 		justify-content: flex-end;
@@ -1914,8 +1946,27 @@
 
 	.order-details .wrapper .item .conter {
 		color: #868686;
-		width: 380rpx;
+		// width: 380rpx;
 		text-align: justify;
+		flex: 1;
+	}
+
+	.order-details .wrapper .item .conter .upload {
+		padding-bottom: 36rpx;
+	}
+
+	.order-details .wrapper .diy-from-title {
+		white-space: nowrap;
+		width: 5em;
+	}
+
+	.order-details .wrapper .item .conter .upload .pictrue {
+		margin: 22rpx 23rpx 0 0;
+		width: 156rpx;
+		height: 156rpx;
+		position: relative;
+		font-size: 24rpx;
+		color: #bbb;
 	}
 
 	.order-details .wrapper .item .conter .copy {
@@ -2144,6 +2195,15 @@
 		.refund-address {
 			color: #868686;
 		}
+	}
+
+	.copy-text {
+		width: max-content;
+		font-size: 10px;
+		border-radius: 1px;
+		border: 0.5px solid #666;
+		padding: 1px 7px;
+		margin-left: auto;
 	}
 
 	.upload .pictrue {

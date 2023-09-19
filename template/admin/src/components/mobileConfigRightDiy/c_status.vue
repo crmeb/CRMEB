@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="c_row-item" v-if="configData">
-      <Col span="8" class="c_label">{{ configData.title }}</Col>
-      <Col span="14" class="color-box">
-        <i-switch :true-value="true" :false-value="false" v-model="configData.status" @on-change="change" />
-      </Col>
+      <el-col :span="8" class="c_label">{{ configData.title }}</el-col>
+      <el-col span="14" class="color-box">
+        <el-switch :active-value="true"  :inactive-value="false" v-model="configData.status" @change="change" />
+      </el-col>
     </div>
   </div>
 </template>

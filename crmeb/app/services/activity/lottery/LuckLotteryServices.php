@@ -210,7 +210,9 @@ class LuckLotteryServices extends BaseServices
             $luckPrizeServices = app()->make(LuckPrizeServices::class);
             $data = [];
             $sort = 1;
+            $prizeStatus = false;
             foreach ($prizes as $prize) {
+                if (isset($prize['type']) && $prize['type'] == 1) $prizeStatus = true;
                 $prize = $luckPrizeServices->checkPrizeData($prize);
                 $prize['lottery_id'] = $lottery->id;
                 unset($prize['id']);
@@ -218,6 +220,9 @@ class LuckLotteryServices extends BaseServices
                 $prize['sort'] = $sort;
                 $data[] = $prize;
                 $sort++;
+            }
+            if (!$prizeStatus) {
+                throw new AdminException('必须设置至少一个未中奖');
             }
             if (!$luckPrizeServices->saveAll($data)) {
                 throw new AdminException(400536);
@@ -261,7 +266,9 @@ class LuckLotteryServices extends BaseServices
             $insert = [];
             $time = time();
             $sort = 1;
+            $prizeStatus = false;
             foreach ($newPrizes as $prize) {
+                if (isset($prize['type']) && $prize['type'] == 1) $prizeStatus = true;
                 $prize = $luckPrizeServices->checkPrizeData($prize);
                 $prize['sort'] = $sort;
                 if (isset($prize['id']) && $prize['id']) {
@@ -279,6 +286,9 @@ class LuckLotteryServices extends BaseServices
                     $insert[] = $prize;
                 }
                 $sort++;
+            }
+            if (!$prizeStatus) {
+                throw new AdminException('必须设置至少一个未中奖');
             }
             if ($insert) {
                 if (!$luckPrizeServices->saveAll($insert)) {

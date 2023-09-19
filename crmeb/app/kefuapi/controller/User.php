@@ -23,7 +23,6 @@ use app\services\user\UserLabelCateServices;
 use app\services\user\UserLabelRelationServices;
 use app\services\kefu\service\StoreServiceRecordServices;
 use think\facade\Config;
-use think\facade\Cache;
 
 /**
  * Class User
@@ -163,7 +162,7 @@ class User extends AuthController
             ['filename', 'file'],
         ]);
         if (!$data['filename']) return app('json')->fail(100100);
-        if (Cache::has('start_uploads_' . $request->kefuId()) && Cache::get('start_uploads_' . $request->kefuId()) >= 100) return app('json')->fail('非法操作');
+        if (CacheService::has('start_uploads_' . $request->kefuId()) && CacheService::get('start_uploads_' . $request->kefuId()) >= 100) return app('json')->fail('非法操作');
         $upload = UploadService::init();
         $info = $upload->to('store/comment')->validate()->move($data['filename']);
         if ($info === false) {
@@ -171,12 +170,12 @@ class User extends AuthController
         }
         $res = $upload->getUploadInfo();
         $services->attachmentAdd($res['name'], $res['size'], $res['type'], $res['dir'], $res['thumb_path'], 1, (int)sys_config('upload_type', 1), $res['time'], 2);
-        if (Cache::has('start_uploads_' . $request->kefuId()))
-            $start_uploads = (int)Cache::get('start_uploads_' . $request->kefuId());
+        if (CacheService::has('start_uploads_' . $request->kefuId()))
+            $start_uploads = (int)CacheService::get('start_uploads_' . $request->kefuId());
         else
             $start_uploads = 0;
         $start_uploads++;
-        Cache::set('start_uploads_' . $request->kefuId(), $start_uploads, 86400);
+        CacheService::set('start_uploads_' . $request->kefuId(), $start_uploads, 86400);
         $res['dir'] = path_to_url($res['dir']);
         if (strpos($res['dir'], 'http') === false) $res['dir'] = $request->domain() . $res['dir'];
         return app('json')->success(410091, ['name' => $res['name'], 'url' => $res['dir']]);

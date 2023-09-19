@@ -134,7 +134,7 @@ export default {
           // this.$store.commit('mobildConfig/UPDATEARR', { num: this.num, val: this.pageData })
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     // 获取组件参数
@@ -152,7 +152,7 @@ export default {
           this.configObj.selectList.list = res.data.list;
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     handleSubmit(name) {

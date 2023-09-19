@@ -1,33 +1,27 @@
 <template>
   <div class="code-wapper">
-    <div class="i-layout-page-header header-title">
-      <div class="fl_header">
-        <router-link :to="{ path: $routeProStr + '/system/code_generation_list' }"
-          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
-        >
-        <Divider type="vertical" />
-        <span class="ivu-page-header-title mr20" style="padding: 0">添加功能</span>
-      </div>
+    <pages-header
+      ref="pageHeader"
+      :title="$route.meta.title"
+      :backUrl="$routeProStr + '/system/code_generation_list'"
+    ></pages-header>
+    <div class="message mt10">
+      <el-card :bordered="false" shadow="never" class="">
+        <steps :stepList="headerList" :isActive="currentTab"></steps>
+      </el-card>
     </div>
-    <div class="message">
-      <Card :bordered="false" dis-hover class="">
-        <Steps :current="currentTab">
-          <Step :title="item.label" v-for="(item, index) in headerList" :key="index"></Step>
-        </Steps>
-      </Card>
-    </div>
-    <div class="pt10 tab-1" v-show="currentTab == '0'">
-      <Card :bordered="false" dis-hover class="ivu-mt">
+    <div class="pt10 tab-1" v-show="currentTab == '0'" v-loading="isLoading">
+      <el-card :bordered="false" shadow="never" class="ivu-mt">
         <FoundationForm
           ref="Foundation"
           :foundation="formItem.foundation"
           :tableField="tableField"
           @storageData="storageData"
         />
-      </Card>
+      </el-card>
     </div>
     <div class="pt10" v-show="currentTab == '1'">
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <el-card :bordered="false" shadow="never" class="ivu-mt">
         <TableForm
           ref="TableForm"
           :foundation="formItem.foundation"
@@ -35,17 +29,17 @@
           :id="id"
           @storageData="storageData"
         />
-      </Card>
+      </el-card>
     </div>
     <div class="pt10" v-show="currentTab == '2'">
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <el-card :bordered="false" shadow="never" class="ivu-mt">
         <StorageLoc :storage="formItem.storage" />
-      </Card>
+      </el-card>
     </div>
-    <Card :bordered="false" class="btn" dis-hover>
-      <Button class="mr20" @click="beforeTab">上一步</Button>
-      <Button type="primary" @click="nextTab">{{ currentTab == 2 ? '提交' : '下一步' }}</Button>
-    </Card>
+    <el-card :bordered="false" class="fixed-card" :style="{ left: `${fixBottomWidth}` }" shadow="never">
+      <el-button :disabled="!currentTab" class="mr20" @click="beforeTab">上一步</el-button>
+      <el-button type="primary" @click="nextTab">{{ currentTab == 2 ? '提交' : '下一步' }}</el-button>
+    </el-card>
   </div>
 </template>
 
@@ -58,18 +52,16 @@ import { getMenusUnique } from '@/api/systemMenus';
 import { formatFlatteningRoutes } from '@/libs/system';
 import { crudFilePath } from '@/api/systemCodeGeneration';
 import { crudDet } from '@/api/systemCodeGeneration';
+import { setStatus } from '@api/diy';
+import steps from '@/components/steps/index';
 
 export default {
   name: 'system_code_generation',
-  components: { FoundationForm, StorageLoc, TableForm },
+  components: { FoundationForm, StorageLoc, TableForm, steps },
   data() {
     return {
       currentTab: 0,
-      headerList: [
-        { label: '基础信息', value: 'foundation' },
-        { label: '字段配置', value: 'table' },
-        { label: '存放位置', value: 'storage' },
-      ],
+      headerList: ['基础信息', '字段配置', '存放位置'],
       formItem: {
         foundation: {
           pid: '',
@@ -89,8 +81,38 @@ export default {
       tableField: [],
       rowList: [],
       reqloading: false,
+      isLoading: false,
       id: '',
     };
+  },
+  computed: {
+    // 设置是否显示 tagsView
+    fixBottomWidth() {
+      let { layout, isCollapse } = this.$store.state.themeConfig.themeConfig;
+      let w;
+      if (['columns'].includes(layout)) {
+        if (isCollapse) {
+          w = '85px';
+        } else {
+          w = '265px';
+        }
+      } else if (['classic'].includes(layout)) {
+        if (isCollapse) {
+          w = '69px';
+        } else {
+          w = '190px';
+        }
+      } else if (['defaults', 'classic'].includes(layout)) {
+        if (isCollapse) {
+          w = '64px';
+        } else {
+          w = '180px';
+        }
+      } else {
+        w = '0px';
+      }
+      return w;
+    },
   },
   created() {
     if (this.$route.query.id) {
@@ -101,25 +123,31 @@ export default {
   mounted: function () {},
   methods: {
     getDetail(id) {
-      crudDet(id).then((res) => {
-        let data = res.data.crudInfo.field;
-        this.formItem.foundation.pid = Number(data.pid);
-        this.formItem.foundation.tableName = data.tableName;
-        this.formItem.foundation.modelName = data.modelName;
-        this.formItem.foundation.menuName = data.menuName;
-        this.$refs.TableForm.tableField = data.tableField;
-        this.formItem.storage = data.filePath;
-        let i = 0;
-        data.tableField.map((e) => {
-          if (e.field === 'create_time' || e.field === 'update_time') {
-            i++;
-            if (i == 2) this.$refs.TableForm.isCreate = true;
-          }
-          if (e.field === 'delete_time') {
-            this.$refs.TableForm.isDelete = true;
-          }
+      this.isLoading = true;
+      crudDet(id)
+        .then((res) => {
+          let data = res.data.crudInfo.field;
+          this.formItem.foundation.pid = Number(data.pid);
+          this.formItem.foundation.tableName = data.tableName;
+          this.formItem.foundation.modelName = data.modelName;
+          this.formItem.foundation.menuName = data.menuName;
+          this.$refs.TableForm.tableField = data.tableField;
+          this.formItem.storage = data.filePath;
+          let i = 0;
+          data.tableField.map((e) => {
+            if (e.field === 'create_time' || e.field === 'update_time') {
+              i++;
+              if (i == 2) this.$refs.TableForm.isCreate = true;
+            }
+            if (e.field === 'delete_time') {
+              this.$refs.TableForm.isDelete = true;
+            }
+          });
+          this.isLoading = false;
+        })
+        .catch((err) => {
+          this.$message.warning(err.msg);
         });
-      });
     },
     storageData(data) {
       this.formItem.storage = data;
@@ -129,7 +157,7 @@ export default {
     },
     addRow() {
       let foundation = this.formItem.foundation;
-      if (!foundation.tableName) return this.$Message.warning('请先填写表名');
+      if (!foundation.tableName) return this.$message.warning('请先填写表名');
       let data = {
         menuName: foundation.menuName,
         tableName: foundation.tableName,
@@ -149,25 +177,25 @@ export default {
               comment: '自增ID',
               required: false,
               is_table: true,
-              table_name: '',
-              limit: '10',
+              table_name: 'ID',
+              limit: '15',
               primaryKey: 1,
-              from_type: '0',
+              from_type: '',
             });
           }
           this.currentTab++;
         })
         .catch((err) => {
-          this.$Message.warning(err.msg);
+          this.$message.warning(err.msg);
         });
     },
     nextTab() {
       if (this.currentTab == 0) {
-        // if (!this.formItem.foundation.pid) return this.$Message.warning('请选择菜单');
-        if (!this.formItem.foundation.tableName) return this.$Message.warning('请输入表名');
-        if (!this.formItem.foundation.modelName) return this.$Message.warning('请输入模块名');
+        // if (!this.formItem.foundation.pid) return this.$message.warning('请选择菜单');
+        if (!this.formItem.foundation.tableName) return this.$message.warning('请输入表名');
+        if (!this.formItem.foundation.modelName) return this.$message.warning('请输入模块名');
         if (!this.formItem.foundation.isTable) {
-          if (!this.$refs.TableForm.tableField.length) return this.$Message.warning('请先添加表数据');
+          if (!this.$refs.TableForm.tableField.length) return this.$message.warning('请先添加表数据');
           if (this.$refs.TableForm.tableField.length)
             for (let i = 0; i < this.$refs.TableForm.tableField.length; i++) {
               const el = this.$refs.TableForm.tableField[i];
@@ -175,7 +203,7 @@ export default {
                 ['addSoftDelete', 'addTimestamps'].indexOf(el.field_type) === -1 &&
                 (!el.field || !el.field_type || !el.comment)
               ) {
-                return this.$Message.warning('请完善sql表数据');
+                return this.$message.warning('请完善sql表数据');
               }
             }
         }
@@ -193,25 +221,34 @@ export default {
         };
         if (this.id) {
           data.id = this.id;
-          this.$Modal.confirm({
+          this.$msgbox({
             title: '生成提醒',
-            content:
-              '重新提交会重新生成文件,<span style="color: red">删除、新增、修改</span>的字段将直接从改表中进行修改,请慎重操作！！',
-            loading: true,
-            onOk: () => {
+            message: '重新提交会重新生成文件,删除、新增、修改的字段将直接从改表中进行修改,请慎重操作！！',
+            showCancelButton: true,
+            cancelButtonText: '取消',
+            confirmButtonText: '确定',
+            iconClass: 'el-icon-warning',
+            confirmButtonClass: 'btn-custom-cancel',
+          })
+            .then(() => {
               this.saveCodeCrud(data, true);
-            },
-          });
+            })
+            .catch(() => {});
         } else {
-          this.$Modal.confirm({
+          this.$msgbox({
             title: '生成提醒',
-            content:
+            message:
               '生成后本地开发调试会直接加载生成的vue页面；如果是上线后进行生成,可以进行浏览，代码生成列表中的修改文件将不生效。需要重新打包上线！',
-            loading: true,
-            onOk: () => {
+            showCancelButton: true,
+            cancelButtonText: '取消',
+            confirmButtonText: '确定',
+            iconClass: 'el-icon-warning',
+            confirmButtonClass: 'btn-custom-cancel',
+          })
+            .then(() => {
               this.saveCodeCrud(data, true);
-            },
-          });
+            })
+            .catch(() => {});
         }
       } else {
         if (this.currentTab < 3) this.currentTab++;
@@ -221,20 +258,16 @@ export default {
       this.reqloading = true;
       codeCrud(data)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getMenusUnique();
           this.reqloading = false;
-
-          if (loading) {
-            this.$Modal.remove();
-          }
           this.$router.push({
             name: 'system_code_generation_list',
           });
         })
         .catch((err) => {
           this.reqloading = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     getMenusUnique() {
@@ -277,13 +310,14 @@ export default {
 .btn {
   position: fixed;
   bottom: 10px;
-  height: 80px;
+  // height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 88.7%;
+  width: 100%;
   background-color: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(4px);
+  z-index: 2;
 }
 .tab-1 {
   padding-bottom: 100px;
@@ -301,5 +335,7 @@ export default {
   color: #bbb;
   line-height: 16px;
   padding-top: 5px;
+  font-size: 12px;
 }
+
 </style>

@@ -138,8 +138,9 @@
 				<!-- #endif -->
 				<couponWindow :window="isCouponShow" @onColse="couponClose" :couponImage="couponObj.image"
 					:couponList="couponObj.list"></couponWindow>
-				<!-- #ifndef MP -->
-				<view v-if="site_config" class="site-config" @click="goICP">{{ site_config }}</view>
+				<!-- #ifdef H5 -->
+				<view v-if="site_config.record_No" class="site-config" @click="goICP(1)">{{ site_config.record_No }}</view>
+				<view v-if="site_config.network_security" class="site-config" @click="goICP(2)">{{ site_config.network_security }}</view>
 				<!-- #endif -->
 				<view class="uni-p-b-98"></view>
 				<!-- #ifndef H5 -->
@@ -379,7 +380,7 @@
 			// #endif
 			// #ifndef APP-PLUS
 			siteConfig().then(res => {
-				this.site_config = res.data.record_No
+				this.site_config = res.data
 			}).catch(err => {
 				console.error(err.msg);
 			});
@@ -469,15 +470,9 @@
 					this.shareInfo = res.data;
 				});
 			},
-			goICP() {
-				// #ifdef H5
-				window.open('http://beian.miit.gov.cn/');
-				// #endif
-				// #ifdef MP
-				uni.navigateTo({
-					url: `/pages/annex/web_view/index?url=https://beian.miit.gov.cn/`
-				});
-				// #endif
+			goICP(type) {
+				let url = type == 1 ? this.site_config.icp_url : this.site_config.network_security_url;
+				window.open(url);
 			},
 			bindHeighta(data) {
 				// #ifdef APP-PLUS

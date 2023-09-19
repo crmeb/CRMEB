@@ -1,21 +1,25 @@
 <template>
-  <Drawer title="订单记录" :closable="false" width="700" scrollable v-model="modals">
-    <Card :bordered="false" dis-hover>
-      <Table
-        :columns="columns"
-        border
-        :data="recordData"
-        :loading="loading"
-        no-data-text="暂无数据"
-        highlight-row
-        no-filtered-data-text="暂无筛选结果"
-      ></Table>
-      <!--            <div class="acea-row row-right page">-->
-      <!--                <Page :total="recordData.length" show-elevator show-total @on-change="pageChange"-->
-      <!--                      :page-size="page.limit"/>-->
-      <!--            </div>-->
-    </Card>
-  </Drawer>
+  <el-drawer :visible.sync="modals" title="订单记录" :wrapperClosable="false" :size="700">
+    <el-card :bordered="false" shadow="never">
+      <el-table :data="recordData" v-loading="loading" empty-text="暂无数据" highlight-current-row>
+        <el-table-column label="订单ID" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.oid }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作记录" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.change_message }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作时间" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.change_time }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+  </el-drawer>
 </template>
 
 <script>
@@ -29,28 +33,8 @@ export default {
       recordData: [],
       page: {
         page: 1, // 当前页
-        limit: 10, // 每页显示条数
+        limit: 15, // 每页显示条数
       },
-      columns: [
-        {
-          title: '订单ID',
-          key: 'oid',
-          align: 'center',
-          minWidth: 40,
-        },
-        {
-          title: '操作记录',
-          key: 'change_message',
-          align: 'center',
-          minWidth: 280,
-        },
-        {
-          title: '操作时间',
-          key: 'change_time',
-          align: 'center',
-          minWidth: 100,
-        },
-      ],
     };
   },
   methods: {
@@ -71,7 +55,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

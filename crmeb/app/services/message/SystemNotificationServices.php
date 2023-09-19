@@ -70,9 +70,6 @@ class SystemNotificationServices extends BaseServices
      */
     public function getNotInfo(array $where)
     {
-        /** @var TemplateMessageServices $TemplateMessageServices */
-        $TemplateMessageServices = app()->make(TemplateMessageServices::class);
-
         $type = $where['type'];
         unset($where['type']);
         $info = $this->dao->getOne($where);
@@ -86,16 +83,14 @@ class SystemNotificationServices extends BaseServices
                 $info['content'] = $info['sms_text'];
                 break;
             case 'is_wechat':
+                $info['tempkey'] = $info['wechat_tempkey'] ?? '';
+                $info['tempid'] = $info['wechat_tempid'] ?? '';
+                $info['content'] = $info['wechat_content'] ?? '';
+                break;
             case 'is_routine':
-                if ('is_wechat' === $type) {
-                    $wechat = $TemplateMessageServices->getOne(['id' => $info['wechat_id'], 'type' => 1]);
-                } else {
-                    $wechat = $TemplateMessageServices->getOne(['id' => $info['routine_id'], 'type' => 0]);
-                }
-                $info['templage_message_id'] = $wechat['id'] ?? '';
-                $info['tempkey'] = $wechat['tempkey'] ?? '';
-                $info['tempid'] = $wechat['tempid'] ?? '';
-                $info['content'] = $wechat['content'] ?? '';
+                $info['tempkey'] = $info['routine_tempkey'] ?? '';
+                $info['tempid'] = $info['routine_tempid'] ?? '';
+                $info['content'] = $info['routine_content'] ?? '';
                 break;
         }
         return $info;
@@ -117,8 +112,6 @@ class SystemNotificationServices extends BaseServices
         if (!$info) {
             throw new AdminException(100026);
         }
-        /** @var TemplateMessageServices $TemplateMessageServices */
-        $TemplateMessageServices = app()->make(TemplateMessageServices::class);
         $res = null;
         switch ($type) {
             case 'is_system':
@@ -140,20 +133,14 @@ class SystemNotificationServices extends BaseServices
                 $res = $this->dao->update((int)$id, $update);
                 break;
             case 'is_wechat':
-                $update['name'] = $data['name'];
-                $update['title'] = $data['title'];
                 $update['is_wechat'] = $data['is_wechat'];
-                $res1 = $this->dao->update((int)$id, $update);
-                $res2 = $TemplateMessageServices->update(['notification_id' => $id, 'type' => 1], ['tempid' => $data['tempid']]);
-                $res = $res1 && $res2;
+                $update['wechat_tempid'] = $data['tempid'];
+                $res = $this->dao->update((int)$id, $update);
                 break;
             case 'is_routine':
-                $update['name'] = $data['name'];
-                $update['title'] = $data['title'];
                 $update['is_routine'] = $data['is_routine'];
-                $res1 = $this->dao->update((int)$id, $update);
-                $res2 = $TemplateMessageServices->update(['notification_id' => $id, 'type' => 0], ['tempid' => $data['tempid']]);
-                $res = $res1 && $res2;
+                $update['routine_tempid'] = $data['tempid'];
+                $res = $this->dao->update((int)$id, $update);
                 break;
             case 'is_ent_wechat':
                 $update['name'] = $data['name'];
@@ -165,5 +152,34 @@ class SystemNotificationServices extends BaseServices
                 break;
         }
         return $res;
+    }
+
+    /**
+     * 获取tempid
+     * @param $type
+     * @return array
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/16
+     */
+    public function getTempId($type)
+    {
+        return $this->dao->getTempId($type);
+    }
+
+    /**
+     * 获取tempkey
+     * @param $type
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/16
+     */
+    public function getTempKey($type)
+    {
+        return $this->dao->getTempKey($type);
     }
 }

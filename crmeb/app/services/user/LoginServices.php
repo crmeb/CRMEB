@@ -358,7 +358,7 @@ class LoginServices extends BaseServices
         $wechatUser = app()->make(WechatUserServices::class);
         //更新用户信息
         $user = $wechatUser->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
-        $token = $this->createToken((int)$user['uid'], $userType);
+        $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             return [
                 'token' => $token['token'],

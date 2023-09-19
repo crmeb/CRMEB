@@ -71,26 +71,7 @@
 		methods: {
 			menusTap(url) {
 				goPage().then(res => {
-					if (url.indexOf("http") != -1) {
-						// #ifdef H5
-						location.href = url
-						// #endif
-					} else {
-						// uni.navigateTo({
-						// 	url: url
-						// })
-						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
-								'/pages/user/index'
-							].indexOf(url) == -1) {
-							uni.navigateTo({
-								url: url
-							})
-						} else {
-							uni.switchTab({
-								url: url
-							})
-						}
-					}
+					this.$util.JumpPath(url);
 				})
 			}
 		}

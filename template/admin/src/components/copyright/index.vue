@@ -1,6 +1,6 @@
 <template>
   <div class="ivu-global-footer i-copyright">
-    <div class="ivu-global-footer-links">
+    <div class="ivu-global-footer-links" v-if="!copyright">
       <a :href="item.href" target="_blank" v-for="(item, index) in links" :key="index">{{ item.title }}</a>
     </div>
     <div class="ivu-global-footer-copyright" v-if="copyright">{{ copyright }}</div>
@@ -33,7 +33,7 @@ export default {
           href: 'http://doc.crmeb.com',
         },
       ],
-      copyright: 'Copyright © 2014-2023',
+      copyright: '',
       version: '',
     };
   },

@@ -1,1 +1,1 @@
-Route::post('{%route%}', 'crud.{%routePath%}{%controller%}/save')->option(['real_name' => '{%menus%}保存接口']);
+Route::post('{%ROUTE%}', 'crud.{%ROUTE_PATH%}{%CONTROLLER%}/save')->option(['real_name' => '{%MENUS%}保存接口']);

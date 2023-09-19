@@ -11,12 +11,14 @@
     <div class="item box">
       <div class="box-item" v-for="(item, index) in goodsList" :key="index">
         <img :src="item.image" alt="" />
-        <Icon type="ios-close-circle" size="20" @click="bindDelete(index)" />
+        <i class="el-icon-close" @click="bindDelete(index)" style="font-size: 20px;"></i>
       </div>
-      <div class="upload-box" @click="modals = true"><Icon type="ios-camera-outline" size="36" /></div>
+      <div class="upload-box" @click="modals = true">
+        <i class="el-icon-picture-outline" style="font-size: 24px"></i>
+      </div>
     </div>
-    <Button type="primary" style="width: 100%" @click="bindSub">提交</Button>
-    <Modal v-model="modals" title="商品列表" class="paymentFooter" scrollable width="900" :footer-hide="true">
+    <el-button type="primary" style="width: 100%" @click="bindSub">提交</el-button>
+    <el-dialog :visible.sync="modals" title="商品列表" class="paymentFooter" width="1000px">
       <goods-list
         ref="goodslist"
         @getProductId="getProductId"
@@ -24,7 +26,7 @@
         :ischeckbox="true"
         :liveStatus="true"
       ></goods-list>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 

@@ -12,7 +12,6 @@ namespace crmeb\services\pay\extend\allinpay;
 
 use crmeb\exceptions\ApiException;
 use crmeb\services\HttpService;
-use think\facade\Cache;
 use think\facade\Log;
 
 /**

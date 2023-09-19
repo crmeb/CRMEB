@@ -97,7 +97,7 @@ class StorePinkServices extends BaseServices
      */
     public function getPinkMember(int $id)
     {
-        return $this->dao->getList(['k_id' => $id, 'is_refund' => 0]);
+        return $this->dao->getList(['k_id' => $id]);
     }
 
     /**
@@ -130,15 +130,16 @@ class StorePinkServices extends BaseServices
                 $res11 = $this->dao->update($id, ['k_id' => $kCount['id']], 'k_id');
                 $res12 = $this->dao->update($kCount['id'], ['stop_time' => $count['add_time'] + 86400, 'k_id' => 0]);
                 $res1 = $res11 && $res12;
-                $res2 = $this->dao->update($id, ['stop_time' => time() - 1, 'k_id' => 0, 'is_refund' => $kCount['id'], 'status' => 3]);
+                $res2 = $this->dao->update($id, ['stop_time' => time() - 1, 'k_id' => $kCount['id'], 'is_refund' => $kCount['id'], 'status' => 3]);
+                $res3 = app()->make(StoreOrderServices::class)->update(['pink_id' => $id], ['pink_id' => $kCount['id']]);
             } else {
-                $res1 = true;
-                $res2 = $this->dao->update($id, ['stop_time' => time() - 1, 'k_id' => 0, 'is_refund' => $id, 'status' => 3]);
+                $res1 = $res3 = true;
+                $res2 = $this->dao->update($id, ['stop_time' => time() - 1, 'is_refund' => $id, 'status' => 3]);
             }
             //修改结束时间为前一秒  团长ID为0
-            $res = $res1 && $res2;
+            $res = $res1 && $res2 && $res3;
         } else if ($countY) {//团员
-            $res = $this->dao->update($countY['id'], ['stop_time' => time() - 1, 'k_id' => 0, 'is_refund' => $id, 'status' => 3]);
+            $res = $this->dao->update($countY['id'], ['stop_time' => time() - 1, 'is_refund' => $id, 'status' => 3]);
         }
         return $res;
     }
@@ -157,6 +158,7 @@ class StorePinkServices extends BaseServices
         $where['cid'] = $id;
         $where['k_id'] = 0;
         $where['is_refund'] = 0;
+        $where['status'] = 1;
         $pinkList = $this->dao->pinkList($where);
         $ids = array_column($pinkList, 'id');
         $orderIdKey = array_column($pinkList, 'order_id_key');
@@ -221,10 +223,10 @@ class StorePinkServices extends BaseServices
     {
         //查找拼团团员和团长
         if ($pink['k_id']) {
-            $pinkAll = $this->dao->getPinkUserList(['k_id' => $pink['k_id'], 'is_refund' => 0]);
+            $pinkAll = $this->dao->getPinkUserList(['k_id' => $pink['k_id']]);
             $pinkT = $this->dao->getPinkUserOne($pink['k_id']);
         } else {
-            $pinkAll = $this->dao->getPinkUserList(['k_id' => $pink['id'], 'is_refund' => 0]);
+            $pinkAll = $this->dao->getPinkUserList(['k_id' => $pink['id']]);
             $pinkT = $pink;
         }
         $count = count($pinkAll) + 1;

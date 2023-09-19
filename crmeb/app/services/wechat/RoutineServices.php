@@ -15,7 +15,6 @@ namespace app\services\wechat;
 use app\services\BaseServices;
 use app\dao\wechat\WechatUserDao;
 use app\services\message\SystemNotificationServices;
-use app\services\message\TemplateMessageServices;
 use app\services\other\QrcodeServices;
 use app\services\user\LoginServices;
 use app\services\user\UserServices;
@@ -43,72 +42,92 @@ class RoutineServices extends BaseServices
     }
 
     /**
-     * 小程序授权登录
+     * 返回用户信息的缓存key，返回是否强制绑定手机号
      * @param $code
-     * @param $post_cache_key
-     * @param $login_type
-     * @param $spread_spid
-     * @param $spread_code
-     * @param $iv
-     * @param $encryptedData
+     * @param $spread
+     * @param $spid
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/12
      */
-    public function mp_auth($code, $post_cache_key, $login_type, $spread_spid, $spread_code, $iv, $encryptedData)
+    public function authType($code, $spread, $spid)
     {
-        /** @var OAuth $oauth */
-        $oauth = app()->make(OAuth::class, ['mini_program']);
-        [$userInfoCong, $userInfo] = $oauth->oauth($code, [
-            'iv' => $iv,
-            'encryptedData' => $encryptedData
-        ]);
-        $session_key = $userInfoCong['session_key'];
-        $userInfo['unionId'] = isset($userInfoCong['unionid']) ? $userInfoCong['unionid'] : '';
-        $userInfo['openId'] = $openid = $userInfoCong['openid'];
-        $userInfo['spid'] = $spread_spid;
-        $userInfo['code'] = $spread_code;
-        $userInfo['session_key'] = $session_key;
-        $userInfo['login_type'] = $login_type;
-        $createData = $this->routineOauth($userInfo);
-
-        /** @var WechatUserServices $wechatUserServices */
-        $wechatUserServices = app()->make(WechatUserServices::class);
-        $user = $wechatUserServices->getAuthUserInfo($openid, 'routine');
-        if (!$user) {
-            $user = $wechatUserServices->wechatOauthAfter($createData);
-        } else {
-            //更新用户信息
-            $wechatUserServices->wechatUpdata([$user['uid'], $createData[1]]);
+        $userInfoConfig = app()->make(OAuth::class, ['mini_program'])->oauth($code, ['silence' => true]);
+        if (!isset($userInfoConfig['openid'])) {
+            throw new ApiException(410078);
         }
-        $token = $this->createToken((int)$user['uid'], 'api');
-        if ($token) {
-            /** @var UserVisitServices $visitServices */
-            $visitServices = app()->make(UserVisitServices::class);
-            $visitServices->loginSaveVisit($user);
-            return [
-                'userInfo' => $user
-            ];
-        } else
-            throw new ApiException(410038);
+        $routineInfo = ['unionid' => $userInfoConfig['unionid'] ?? ''];
+        $info = app()->make(QrcodeServices::class)->getOne(['id' => $spread, 'status' => 1]);
+        if ($spread && $info) {
+            $spid = $info['third_id'];
+        }
+        $openid = $userInfoConfig['openid'];
+        $routineInfo['openid'] = $openid;
+        $routineInfo['spid'] = $spid;
+        $routineInfo['code'] = $spread;
+        $routineInfo['session_key'] = $userInfoConfig['session_key'];
+        $routineInfo['headimgurl'] = sys_config('h5_avatar');
+        $createData = [$openid, $routineInfo, $spid, 'routine', 'routine'];
+        $userInfoKey = md5($openid . '_' . time() . '_routine');
+        CacheService::set($userInfoKey, $createData, 7200);
+        $bindPhone = false;
+        $user = app()->make(WechatUserServices::class)->getAuthUserInfo($openid, 'routine');
+        if (sys_config('store_user_mobile') && (($user && $user['phone'] == '') || !$user)) $bindPhone = true;
+        return ['bindPhone' => $bindPhone, 'key' => $userInfoKey];
     }
 
     /**
-     * 小程序授权登录
+     * 根据缓存获取token
+     * @param $key
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/12
+     */
+    public function authLogin($key)
+    {
+        $createData = CacheService::get($key);
+        //写入用户信息
+        $user = app()->make(WechatUserServices::class)->wechatOauthAfter($createData);
+        $token = $this->createToken((int)$user['uid'], 'api');
+        if ($token) {
+            app()->make(UserVisitServices::class)->loginSaveVisit($user);
+            return [
+                'token' => $token['token'],
+                'expires_time' => $token['params']['exp'],
+                'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
+            ];
+        } else {
+            throw new ApiException(410019);
+        }
+    }
+
+    /**
+     * 自动获取手机号绑定
      * @param $code
-     * @param $spid
-     * @param $spread
      * @param $iv
      * @param $encryptedData
+     * @param $spread
+     * @param $spid
+     * @param string $key
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function newAuth($code, $spid, $spread, $iv, $encryptedData)
+    public function authBindingPhone($code, $iv, $encryptedData, $spread, $spid, $key = '')
     {
-        if (!$code) {
-            throw new ApiException(100100);
+        $wechatInfo = [];
+        $userType = $login_type = 'routine';
+        if ($key) {
+            [$openid, $wechatInfo, $spreadId, $login_type, $userType] = CacheService::get($key);
         }
+
         /** @var OAuth $oauth */
         $oauth = app()->make(OAuth::class, ['mini_program']);
         [$userInfoCong, $userInfo] = $oauth->oauth($code, [
@@ -116,38 +135,122 @@ class RoutineServices extends BaseServices
             'encryptedData' => $encryptedData
         ]);
         $session_key = $userInfoCong['session_key'];
+        if (!$userInfo || !isset($userInfo['purePhoneNumber'])) {
+            throw new ApiException(410079);
+        }
 
-        $userInfo['unionId'] = isset($userInfoCong['unionid']) ? $userInfoCong['unionid'] : '';
-        $userInfo['openId'] = $openid = $userInfoCong['openid'];
-        $userInfo['spid'] = $spid;
-        $userInfo['code'] = $spread;
-        $userInfo['session_key'] = $session_key;
-        $userInfo['login_type'] = 'routine';
-        $createData = $this->routineOauth($userInfo);
+        $spreadId = $spid ?? 0;
+        /** @var QrcodeServices $qrcode */
+        $qrcode = app()->make(QrcodeServices::class);
+        if ($spread && ($info = $qrcode->getOne(['id' => $spread, 'status' => 1]))) {
+            $spreadId = $info['third_id'];
+        }
+        $openid = $userInfoCong['openid'];
+        $wechatInfo['openid'] = $openid;
+        $wechatInfo['unionid'] = $userInfoCong['unionid'] ?? '';
+        $wechatInfo['spid'] = $spreadId;
+        $wechatInfo['code'] = $spread;
+        $wechatInfo['session_key'] = $session_key;
+        $wechatInfo['phone'] = $userInfo['purePhoneNumber'];
         /** @var WechatUserServices $wechatUserServices */
         $wechatUserServices = app()->make(WechatUserServices::class);
-        $user = $wechatUserServices->getAuthUserInfo($openid, 'routine');
-        //获取是否强制绑定手机号
-        $storeUserMobile = sys_config('store_user_mobile');
-        if ($storeUserMobile && !$user) {
-            $userInfoKey = md5($openid . '_' . time() . '_rouine');
-            CacheService::set($userInfoKey, $createData, 7200);
-            return ['key' => $userInfoKey];
-        } else if (!$user) {
-            $user = $wechatUserServices->wechatOauthAfter($createData);
-        } else {
-            //更新用户信息
-            $wechatUserServices->wechatUpdata([$user['uid'], $createData[1]]);
-        }
+        //写入用户信息
+        $user = $wechatUserServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
         $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
-            /** @var UserVisitServices $visitServices */
-            $visitServices = app()->make(UserVisitServices::class);
-            $visitServices->loginSaveVisit($user);
-            $token['userInfo'] = $user;
-            return $token;
-        } else
+            app()->make(UserVisitServices::class)->loginSaveVisit($user);
+            return [
+                'token' => $token['token'],
+                'expires_time' => $token['params']['exp'],
+                'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
+            ];
+        } else {
             throw new ApiException(410019);
+        }
+    }
+
+    /**
+     * 小程序手机号登录
+     * @param $key
+     * @param $phone
+     * @param string $spread_code
+     * @param string $spread_spid
+     * @param string $code
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/12
+     */
+    public function phoneLogin($key, $phone, $spread = '', $spid = '', $code = '')
+    {
+        if ($code == '') {
+            [$openid, $routineInfo, $spid, $login_type, $userType] = CacheService::get($key);
+            $routineInfo['phone'] = $phone;
+            $createData = [$openid, $routineInfo, $spid, $login_type, $userType];
+        } else {
+            $userInfoConfig = app()->make(OAuth::class, ['mini_program'])->oauth($code, ['silence' => true]);
+            if (!isset($userInfoConfig['openid'])) {
+                throw new ApiException(410078);
+            }
+            $routineInfo = ['unionid' => $userInfoConfig['unionid'] ?? ''];
+            $info = app()->make(QrcodeServices::class)->getOne(['id' => $spread, 'status' => 1]);
+            if ($spread && $info) {
+                $spid = $info['third_id'];
+            }
+            $openid = $userInfoConfig['openid'];
+            $routineInfo['openid'] = $openid;
+            $routineInfo['spid'] = $spid;
+            $routineInfo['code'] = $spread;
+            $routineInfo['session_key'] = $userInfoConfig['session_key'];
+            $routineInfo['headimgurl'] = sys_config('h5_avatar');
+            $createData = [$openid, $routineInfo, $spid, 'routine', 'routine'];
+        }
+        //写入用户信息
+        $user = app()->make(WechatUserServices::class)->wechatOauthAfter($createData);
+        $token = $this->createToken((int)$user['uid'], 'api');
+        if ($token) {
+            app()->make(UserVisitServices::class)->loginSaveVisit($user);
+            return [
+                'token' => $token['token'],
+                'expires_time' => $token['params']['exp'],
+                'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
+            ];
+        } else {
+            throw new ApiException(410019);
+        }
+    }
+
+    /**
+     * 小程序绑定手机号
+     * @param $code
+     * @param $iv
+     * @param $encryptedData
+     * @return bool
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/02/24
+     */
+    public function bindingPhone($code, $iv, $encryptedData)
+    {
+        [$userInfoCong, $userInfo] = app()->make(OAuth::class, ['mini_program'])->oauth($code, [
+            'iv' => $iv,
+            'encryptedData' => $encryptedData
+        ]);
+        if (!$userInfo || !isset($userInfo['purePhoneNumber'])) {
+            throw new ApiException(410079);
+        }
+        $uid = app()->make(WechatUserServices::class)->openidToUid($userInfoCong['openid']);
+        $userServices = app()->make(UserServices::class);
+        if ($userServices->count(['phone' => $userInfo['purePhoneNumber'], 'is_del' => 0])) {
+            throw new ApiException(410028);
+        }
+        $res = $userServices->update(['uid' => $uid], ['phone' => $userInfo['purePhoneNumber']]);
+        if ($res) return true;
+        throw new ApiException(410017);
     }
 
     /**
@@ -198,17 +301,7 @@ class RoutineServices extends BaseServices
         return CacheService::remember('TEMP_IDS_LIST', function () {
             /** @var SystemNotificationServices $sysNotify */
             $sysNotify = app()->make(SystemNotificationServices::class);
-            $marks = $sysNotify->getColumn([['routine_id', '>', 0]], 'routine_id', 'mark');
-            $ids = array_values($marks);
-            /** @var TemplateMessageServices $tempMsgServices */
-            $tempMsgServices = app()->make(TemplateMessageServices::class);
-            $list = $tempMsgServices->getColumn([['id', 'in', $ids]], 'tempid', 'id');
-
-            $tempIdsList = [];
-            foreach ($marks as $key => $item) {
-                $tempIdsList[$key] = $list[$item];
-            }
-            return $tempIdsList;
+            return $sysNotify->getColumn([['routine_tempid', '<>', '']], 'routine_tempid', 'mark');
         });
     }
 
@@ -229,266 +322,6 @@ class RoutineServices extends BaseServices
         }, 600) ?: [];
         return $list;
     }
-
-    /**
-     * 静默授权
-     * @param $code
-     * @param $spread
-     * @param $spid
-     * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function silenceAuth($code, $spread, $spid)
-    {
-
-        /** @var OAuth $oauth */
-        $oauth = app()->make(OAuth::class, ['mini_program']);
-        $userInfoConfig = $oauth->oauth($code, ['silence' => true]);
-        if (!isset($userInfoConfig['openid'])) {
-            throw new ApiException(410078);
-        }
-        $routineInfo = [
-            'unionid' => $userInfoConfig['unionid'] ?? ''
-        ];
-        /** @var QrcodeServices $qrcode */
-        $qrcode = app()->make(QrcodeServices::class);
-        if ($spread && ($info = $qrcode->getOne(['id' => $spread, 'status' => 1]))) {
-            $spid = $info['third_id'];
-        }
-
-        $openid = $userInfoConfig['openid'];
-        $routineInfo['openid'] = $openid;
-        $routineInfo['headimgurl'] = sys_config('h5_avatar');
-        /** @var WechatUserServices $wechatUserServices */
-        $wechatUserServices = app()->make(WechatUserServices::class);
-        $user = $wechatUserServices->getAuthUserInfo($openid, 'routine');
-        $createData = [$openid, $routineInfo, $spid, '', 'routine'];
-        //获取是否强制绑定手机号
-        $storeUserMobile = sys_config('store_user_mobile');
-        if ($storeUserMobile && !$user) {
-            $userInfoKey = md5($openid . '_' . time() . '_routine');
-            CacheService::set($userInfoKey, $createData, 7200);
-            return ['key' => $userInfoKey];
-        } else if (!$user) {
-            //写入用户信息
-            $user = $wechatUserServices->wechatOauthAfter($createData);
-            $token = $this->createToken((int)$user['uid'], 'api');
-            if ($token) {
-                $token['new_user'] = (int)sys_config('get_avatar', 0);
-                return $token;
-            } else
-                throw new ApiException(410019);
-        } else {
-            if (!$user['status']) throw new ApiException(410027);
-            //更新用户信息
-            $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spid]]);
-            $token = $this->createToken((int)$user['uid'], 'api');
-            /** @var UserVisitServices $visitServices */
-            $visitServices = app()->make(UserVisitServices::class);
-            $visitServices->loginSaveVisit($user);
-            if ($token) {
-                $token['new_user'] = 0;
-                return $token;
-            } else
-                throw new ApiException(410019);
-        }
-
-    }
-
-    /**
-     * 静默授权
-     * @param $code
-     * @param $spread
-     * @param $spid
-     * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public function silenceAuthNoLogin($code, $spread, $spid)
-    {
-        /** @var OAuth $oauth */
-        $oauth = app()->make(OAuth::class, ['mini_program']);
-        $userInfoConfig = $oauth->oauth($code, ['silence' => true]);
-        if (!isset($userInfoConfig['openid'])) {
-            throw new ApiException(410078);
-        }
-        $routineInfo = [
-            'unionid' => $userInfoConfig['unionid'] ?? ''
-        ];
-        /** @var QrcodeServices $qrcode */
-        $qrcode = app()->make(QrcodeServices::class);
-        if ($spread && ($info = $qrcode->getOne(['id' => $spread, 'status' => 1]))) {
-            $spid = $info['third_id'];
-        }
-
-        $openid = $userInfoConfig['openid'];
-        $routineInfo['openid'] = $openid;
-        $routineInfo['headimgurl'] = sys_config('h5_avatar');
-        /** @var WechatUserServices $wechatUserServices */
-        $wechatUserServices = app()->make(WechatUserServices::class);
-        $user = $wechatUserServices->getAuthUserInfo($openid, 'routine');
-        $createData = [$openid, $routineInfo, $spid, '', 'routine'];
-
-        if (!$user) {
-            $userInfoKey = md5($openid . '_' . time() . '_routine');
-            CacheService::set($userInfoKey, $createData, 7200);
-            return ['auth_login' => 1, 'key' => $userInfoKey];
-        } else {
-            //更新用户信息
-            $wechatUserServices->wechatUpdata([$user['uid'], ['code' => $spid]]);
-            $token = $this->createToken((int)$user['uid'], 'api');
-            /** @var UserVisitServices $visitServices */
-            $visitServices = app()->make(UserVisitServices::class);
-            $visitServices->loginSaveVisit($user);
-            if ($token) {
-                $token['userInfo'] = $user;
-                return $token;
-            } else
-                throw new ApiException(410019);
-        }
-
-    }
-
-    /**
-     * 手机号登录 静默授权绑定关系
-     * @param $code
-     * @param $spread
-     * @param $spid
-     * @param $phone
-     * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function silenceAuthBindingPhone($code, $spread, $spid, $phone)
-    {
-        /** @var OAuth $oauth */
-        $oauth = app()->make(OAuth::class, ['mini_program']);
-        $userInfoConfig = $oauth->oauth($code, ['silence' => true]);
-        if (!isset($userInfoConfig['openid'])) {
-            throw new ApiException(410078);
-        }
-        $routineInfo = [
-            'unionid' => $userInfoConfig['unionid'] ?? ''
-        ];
-        /** @var QrcodeServices $qrcode */
-        $qrcode = app()->make(QrcodeServices::class);
-        if ($spread && ($info = $qrcode->getOne(['id' => $spread, 'status' => 1]))) {
-            $spid = $info['third_id'];
-        }
-
-        $openid = $userInfoConfig['openid'];
-        $routineInfo['openid'] = $openid;
-        $routineInfo['headimgurl'] = sys_config('h5_avatar');
-        $routineInfo['phone'] = $phone;
-        /** @var WechatUserServices $wechatUserServices */
-        $wechatUserServices = app()->make(WechatUserServices::class);
-        $createData = [$openid, $routineInfo, $spid, '', 'routine'];
-        //写入用户信息
-        $user = $wechatUserServices->wechatOauthAfter($createData);
-        $token = $this->createToken((int)$user['uid'], 'api');
-        /** @var UserVisitServices $visitServices */
-        $visitServices = app()->make(UserVisitServices::class);
-        $visitServices->loginSaveVisit($user);
-        if ($token) {
-            $token['new_user'] = $user['new_user'];
-            return $token;
-        } else
-            throw new ApiException(410019);
-    }
-
-    /**
-     * 自动获取手机号绑定
-     * @param $code
-     * @param $iv
-     * @param $encryptedData
-     * @param $spread
-     * @param $spid
-     * @param string $key
-     * @return array
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function authBindingPhone($code, $iv, $encryptedData, $spread, $spid, $key = '')
-    {
-        $wechatInfo = [];
-        $userInfo = [];
-        $userType = $login_type = 'routine';
-        if ($key) {
-            [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData = CacheService::get($key);
-        }
-
-        /** @var OAuth $oauth */
-        $oauth = app()->make(OAuth::class, ['mini_program']);
-        [$userInfoCong, $userInfo] = $oauth->oauth($code, [
-            'iv' => $iv,
-            'encryptedData' => $encryptedData
-        ]);
-        $session_key = $userInfoCong['session_key'];
-        if (!$userInfo || !isset($userInfo['purePhoneNumber'])) {
-            throw new ApiException(410079);
-        }
-
-        $spreadId = $spid ?? 0;
-        /** @var QrcodeServices $qrcode */
-        $qrcode = app()->make(QrcodeServices::class);
-        if ($spread && ($info = $qrcode->getOne(['id' => $spread, 'status' => 1]))) {
-            $spreadId = $info['third_id'];
-        }
-        $openid = $userInfoCong['openid'];
-        $wechatInfo['openid'] = $openid;
-        $wechatInfo['unionid'] = $userInfoCong['unionid'] ?? '';
-        $wechatInfo['spid'] = $spreadId;
-        $wechatInfo['code'] = $spread;
-        $wechatInfo['session_key'] = $session_key;
-        $wechatInfo['phone'] = $userInfo['purePhoneNumber'];
-        /** @var WechatUserServices $wechatUserServices */
-        $wechatUserServices = app()->make(WechatUserServices::class);
-        //写入用户信息
-        $user = $wechatUserServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
-        $token = $this->createToken((int)$user['uid'], 'api');
-        if ($token) {
-            /** @var UserVisitServices $visitServices */
-            $visitServices = app()->make(UserVisitServices::class);
-            $visitServices->loginSaveVisit($user);
-            return [
-                'token' => $token['token'],
-                'userInfo' => $user,
-                'expires_time' => $token['params']['exp'],
-            ];
-        } else
-            throw new ApiException(410019);
-    }
-
-    /**
-     * @param $code
-     * @param $iv
-     * @param $encryptedData
-     * @return bool
-     * @author 吴汐
-     * @email 442384644@qq.com
-     * @date 2023/02/24
-     */
-    public function bindingPhone($code, $iv, $encryptedData)
-    {
-        [$userInfoCong, $userInfo] = app()->make(OAuth::class, ['mini_program'])->oauth($code, [
-            'iv' => $iv,
-            'encryptedData' => $encryptedData
-        ]);
-        if (!$userInfo || !isset($userInfo['purePhoneNumber'])) {
-            throw new ApiException(410079);
-        }
-        $uid = app()->make(WechatUserServices::class)->openidToUid($userInfoCong['openid']);
-        $userServices = app()->make(UserServices::class);
-        if ($userServices->count(['phone' => $userInfo['purePhoneNumber']])) {
-            throw new ApiException(410028);
-        }
-        $res = app()->make(UserServices::class)->update(['uid' => $uid], ['phone' => $userInfo['purePhoneNumber']]);
-        if ($res) return true;
-        throw new ApiException(410017);
-    }
-
 
     /**
      * 更新用户信息

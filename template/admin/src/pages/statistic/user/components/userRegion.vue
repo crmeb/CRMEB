@@ -1,28 +1,38 @@
 <template>
-  <Row :gutter="16">
-    <Col :xs="24" :sm="24" :md="24" :lg="18">
-      <Card :bordered="false" dis-hover class="ivu-mt-16">
+  <el-row :gutter="16">
+    <el-col :xs="24" :sm="24" :md="24" :lg="18">
+      <el-card :bordered="false" shadow="never" class="ivu-mt-16">
         <div class="acea-row row-between-wrapper">
-          <div class="header-title mb20">用户地域分布</div>
+          <h4 class="statics-header-title mb20">用户地域分布</h4>
         </div>
-        <Row>
-          <Col :xs="24" :sm="24" :md="24" :lg="10">
+        <el-row>
+          <el-col :xs="24" :sm="24" :md="24" :lg="10">
             <div class="echarts">
               <div :style="{ height: '400px', width: '100%' }" ref="myEchart"></div>
             </div>
-          </Col>
-          <Col :xs="24" :sm="24" :md="24" :lg="14">
+          </el-col>
+          <el-col :xs="24" :sm="24" :md="24" :lg="14">
             <div class="tables">
-              <Table height="400" :columns="columns1" :data="resdataList"></Table>
+              <el-table height="400" :columns="columns1" :data="resdataList">
+                <el-table-column :label="item.title" :min-width="100" v-for="(item, index) in columns1" :key="index">
+                  <template slot-scope="scope">
+                    <template v-if="item.key">
+                      <div>
+                        <span>{{ scope.row[item.key] }}</span>
+                      </div>
+                    </template>
+                  </template>
+                </el-table-column>
+              </el-table>
             </div>
-          </Col>
-        </Row>
-      </Card>
-    </Col>
-    <Col :xs="24" :sm="24" :md="24" :lg="6">
-      <Card :bordered="false" dis-hover class="ivu-mt-16">
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-col>
+    <el-col :xs="24" :sm="24" :md="24" :lg="6">
+      <el-card :bordered="false" shadow="never" class="ivu-mt-16">
         <div class="acea-row row-between-wrapper">
-          <div class="header-title mb20">用户性别比例</div>
+          <h4 class="statics-header-title mb20">用户性别比例</h4>
         </div>
         <echarts-new
           :option-data="optionData"
@@ -31,9 +41,9 @@
           width="100%"
           v-if="optionData"
         ></echarts-new>
-      </Card>
-    </Col>
-  </Row>
+      </el-card>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
@@ -185,7 +195,7 @@ export default {
           this.chinaConfigure();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     //性别
@@ -255,7 +265,7 @@ export default {
           };
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

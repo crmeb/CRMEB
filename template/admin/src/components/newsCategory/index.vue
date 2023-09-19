@@ -1,30 +1,23 @@
 <template>
   <div :style="{ height: scrollerHeight + 'px' || '' }">
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form ref="formValidate" :model="formValidate" :label-width="80" label-position="left" class="tabform">
-        <Row :gutter="24" type="flex" justify="end">
-          <Col span="24">
-            <Col v-bind="grid" class="mr">
-              <FormItem label="图文搜索：" prop="cate_name" label-for="cate_name">
-                <Input
-                  search
-                  enter-button
-                  placeholder="请输入"
-                  element-id="cate_name"
-                  v-model="formValidate.cate_name"
-                  @on-search="userSearchs"
-                />
-              </FormItem>
-            </Col>
-          </Col>
-        </Row>
-        <Row type="flex" v-show="$route.path === routePre + '/app/wechat/news_category/index'">
-          <router-link :to="routePre + '/app/wechat/news_category/save/0'">
-            <Button type="primary" class="bnt" icon="md-add">添加图文消息</Button>
-          </router-link>
-        </Row>
-      </Form>
-    </Card>
+      <div>
+        <el-form ref="formValidate" inline :model="formValidate" label-width="80px" label-position="right" class="tabform">
+          <el-form-item label="图文搜索：" prop="cate_name" label-for="cate_name">
+            <el-input
+                clearable
+                placeholder="请输入"
+                v-model="formValidate.cate_name"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <router-link :to="routePre + '/app/wechat/news_category/save/0'">
+              <el-button type="primary" class="bnt ml15">添加图文消息</el-button>
+            </router-link>
+          </el-form-item>
+        </el-form>
+      </div>
     <div class="contentBox">
       <div id="content" :style="{ top: contentTop + 'px' || '', width: contentWidth }" ref="content">
         <vue-waterfall-easy
@@ -48,28 +41,25 @@
                   @mouseenter="mouseenterOut(j)"
                   @mouseleave="mouseenterOver(j)"
                 >
-                  <Button
+                  <el-button
                     type="success"
-                    shape="circle"
-                    icon="md-create"
+                    icon="el-icon-edit"
                     v-show="props.value.new[i].isDel && isShow"
                     @click="clkk(props.value)"
-                  ></Button>
-                  <Button
+                  ></el-button>
+                  <el-button
                     type="error"
-                    shape="circle"
-                    icon="md-trash"
+                    icon="el-icon-delete"
                     v-show="props.value.new[i].isDel && isShow"
                     @click="del(props.value, '删除图文', i)"
                     style="margin-top: 5px"
-                  ></Button>
-                  <Button
+                  ></el-button>
+                  <el-button
                     type="primary"
-                    icon="md-paper-plane"
+                    icon="el-icon-s-promotion"
                     v-show="props.value.new[i].isDel && isShowSend"
-                    shape="circle"
                     @click="send(props.value, '发送', i)"
-                    >推送</Button
+                    >推送</el-button
                   >
                 </div>
                 <span class="news_sp">{{ j.title }}</span>
@@ -104,7 +94,7 @@ export default {
     },
     contentTop: {
       type: String,
-      default: '230',
+      default: '0',
     },
     contentWidth: {
       type: String,
@@ -189,10 +179,10 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     clickFn(event, { index, value }) {
@@ -212,7 +202,7 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.$nextTick(() => {
             this.imgsArr = [];
           });
@@ -220,7 +210,7 @@ export default {
           this.getData();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 删除成功
@@ -281,19 +271,18 @@ export default {
           }
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },
-  computed: {},
 };
 </script>
 
 <style scoped lang="stylus">
 .contentBox {
-  height: 100%;
+   height: 600px;
   width: 100%;
-  position: static;
+  position: relative;
 
   #content {
     position: absolute;
@@ -332,7 +321,7 @@ export default {
 
 .Refresh {
   font-size: 12px;
-  color: #1890FF;
+  color: var(--prev-color-primary);
   cursor: pointer;
   line-height: 35px;
   display: inline-block;
@@ -343,8 +332,7 @@ export default {
   height: 150px;
   overflow: hidden;
   position: relative;
-  background-size: 100%;
-  background-position: center center;
+  background-size: cover;
   border-radius: 5px 5px 0 0;
   padding: 10px;
   box-sizing: border-box;

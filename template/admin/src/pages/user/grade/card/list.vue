@@ -1,65 +1,90 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+      <el-form
         ref="formData"
         :model="table"
         :label-width="labelWidth"
-        :label-position="labelPosition"
+        label-position="right"
         inline
         @submit.native.prevent
       >
-        <FormItem label="卡号：" style="width: 200px">
-          <Input v-model="table.card_number" placeholder="请输入卡号" />
-        </FormItem>
-        <FormItem label="手机号：" style="width: 200px">
-          <Input v-model="table.phone" placeholder="请输入手机号" />
-        </FormItem>
-        <FormItem label="是否领取：" style="width: 200px">
-          <Select clearable v-model="table.is_use">
-            <Option value="1">已领取</Option>
-            <Option value="0">未领取</Option>
-          </Select>
-        </FormItem>
-        <FormItem>
-          <Button type="primary" @click="formSubmit">搜索</Button>
-        </FormItem>
-      </Form>
-      <Table
-        :columns="columns1"
+        <el-form-item label="卡号：">
+          <el-input v-model="table.card_number" placeholder="请输入卡号" class="form_content_width" />
+        </el-form-item>
+        <el-form-item label="手机号：">
+          <el-input v-model="table.phone" placeholder="请输入手机号" class="form_content_width" />
+        </el-form-item>
+        <el-form-item label="是否领取：">
+          <el-select clearable v-model="table.is_use" class="form_content_width">
+            <el-option value="1" label="已领取"></el-option>
+            <el-option value="0" label="未领取"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="formSubmit">搜索</el-button>
+        </el-form-item>
+      </el-form>
+      <el-table
         :data="data1"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">激活</span>
-            <span slot="close">冻结</span>
-          </i-switch>
-        </template>
-      </Table>
+        <el-table-column label="编号" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="卡号" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.card_number }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="密码" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.card_password }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="领取人名称" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.username ? scope.row.username : '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="领取人电话" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.phone ? scope.row.phone : '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="领取时间" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.use_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否激活" min-width="100">
+          <template slot-scope="scope">
+            <el-switch
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="table.page"
-          :page-size="table.limit"
-          show-elevator
-          show-total
-          @on-change="pageChange"
+          :page.sync="table.page"
+          :limit.sync="table.limit"
+          @pagination="getMemberCard"
         />
       </div>
-    </Card>
   </div>
 </template>
 
@@ -76,52 +101,6 @@ export default {
   },
   data() {
     return {
-      columns1: [
-        {
-          title: '编号',
-          key: 'id',
-          minWidth: 100,
-          align: 'center',
-        },
-        {
-          title: '卡号',
-          key: 'card_number',
-          minWidth: 105,
-          align: 'center',
-        },
-        {
-          title: '密码',
-          key: 'card_password',
-          align: 'center',
-          minWidth: 100,
-        },
-        {
-          title: '领取人名称',
-          key: 'username',
-          align: 'center',
-
-          minWidth: 100,
-        },
-        {
-          title: '领取人电话',
-          key: 'phone',
-          align: 'center',
-
-          minWidth: 100,
-        },
-        {
-          title: '领取时间',
-          key: 'use_time',
-          align: 'center',
-
-          minWidth: 100,
-        },
-        {
-          title: '是否激活',
-          slot: 'status',
-          minWidth: 100,
-        },
-      ],
       data1: [],
       loading: false,
       total: 0,
@@ -137,7 +116,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -154,11 +133,11 @@ export default {
       };
       memberCardStatus(data)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getMemberCard();
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     getMemberCard() {
@@ -171,17 +150,12 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     // 搜索
     formSubmit() {
       this.table.page = 1;
-      this.getMemberCard();
-    },
-    // 分页
-    pageChange(index) {
-      this.table.page = index;
       this.getMemberCard();
     },
   },

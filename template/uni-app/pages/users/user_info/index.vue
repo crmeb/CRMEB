@@ -524,11 +524,13 @@
 		color: var(--view-theme);
 		border: 1px solid var(--view-theme);
 	}
-	.personal-data{
+
+	.personal-data {
 		padding-bottom: 50rpx;
 		padding-bottom: calc(50rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		padding-bottom: calc(50rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 	}
+
 	.personal-data .wrapper {
 		margin: 10rpx 0;
 		background-color: #fff;
@@ -539,6 +541,10 @@
 		margin-bottom: 30rpx;
 		font-size: 32rpx;
 		color: #282828;
+	}
+
+	/deep/ .uni-input-input {
+		font-size: 28rpx;
 	}
 
 	.personal-data .wrapper .wrapList .item {

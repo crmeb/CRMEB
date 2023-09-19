@@ -1,25 +1,22 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form :label-width="80" @submit.native.prevent>
-        <FormItem label="协议名称：">
-          <Input v-model="agreement.title"></Input>
-        </FormItem>
-        <FormItem label="协议内容：">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form label-width="85px" @submit.native.prevent>
+        <el-form-item label="协议名称：">
+          <el-input v-model="agreement.title"></el-input>
+        </el-form-item>
+        <el-form-item label="协议内容：">
           <WangEditor :content="agreement.content" @editorContent="getEditorContent"></WangEditor>
-        </FormItem>
-        <FormItem label="开启状态：">
-          <i-switch v-model="agreement.status" size="large" :true-value="1" :false-value="0">
-            <span slot="open">开启</span>
-            <span slot="close">关闭</span>
-          </i-switch>
-        </FormItem>
-        <FormItem>
-          <Button type="primary" @click="memberAgreementSave">保存</Button>
-        </FormItem>
-      </Form>
-      <Spin fix v-if="spinShow"></Spin>
-    </Card>
+        </el-form-item>
+        <el-form-item label="开启状态：">
+          <el-switch :active-value="1"  :inactive-value="0" v-model="agreement.status" size="large">
+           </el-switch>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="memberAgreementSave">保存</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
   </div>
 </template>
 
@@ -66,22 +63,19 @@ export default {
           this.id = id;
         })
         .catch((err) => {
-          this.$Message.error(err);
+          this.$message.error(err);
           this.spinShow = false;
         });
     },
     // 保存
     memberAgreementSave() {
-      this.$Spin.show();
       memberAgreementSave(this.id, this.agreement)
         .then((res) => {
-          this.$Spin.hide();
-          this.$Message.success('保存成功');
+          this.$message.success('保存成功');
           this.memberAgreement();
         })
         .catch((err) => {
-          this.$Spin.hide();
-          this.$Message.error(err);
+          this.$message.error(err);
         });
     },
   },

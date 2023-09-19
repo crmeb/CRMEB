@@ -3,9 +3,9 @@
  * @param id
  * @return {*}
  */
-export function get{%nameStudly%}EditApi(id) {
+export function get{%NAME_STUDLY%}EditApi(id) {
     return request({
-        url: `{%route%}/${id}/edit`,
+        url: `{%ROUTE%}/${id}/edit`,
         method: 'get'
     });
 }

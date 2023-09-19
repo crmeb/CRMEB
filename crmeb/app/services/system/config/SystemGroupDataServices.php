@@ -204,7 +204,7 @@ class SystemGroupDataServices extends BaseServices
                     } else {
                         $image = '';
                     }
-                    $f[] = Form::frameImage($value["title"], $value["name"], $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => $value["title"], 'big' => 1], true), $image)->icon('ios-image')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+                    $f[] = Form::frameImage($value["title"], $value["name"], $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => $value["title"], 'big' => 1], true), $image)->icon('el-icon-picture-outline')->width('950px')->height('560px')->props(['footer' => false]);
                     break;
                 case 'uploads':
                     if ($fvalue) {
@@ -213,7 +213,7 @@ class SystemGroupDataServices extends BaseServices
                     } else {
                         $images = [];
                     }
-                    $f[] = Form::frameImages($value["title"], $value["name"], $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => $value["title"], 'big' => 1, 'type' => 'many', 'maxLength' => 5], true), $images)->maxLength(5)->icon('ios-images')->width('950px')->height('505px')->modal(['footer-hide' => true])->spin(0);
+                    $f[] = Form::frameImages($value["title"], $value["name"], $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => $value["title"], 'big' => 1, 'type' => 'many', 'maxLength' => 5], true), $images)->maxLength(5)->icon('el-icon-picture-outline')->width('950px')->height('560px')->props(['footer' => false])->spin(0);
                     break;
                 default:
                     $f[] = Form::input($value["title"], $value["name"], $fvalue);

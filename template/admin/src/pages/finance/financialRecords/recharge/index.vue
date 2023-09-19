@@ -1,102 +1,133 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mb-16">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        class="tabform"
-        @submit.native.prevent
-      >
-        <Row :gutter="24" type="flex" justify="end">
-          <Col span="24" class="ivu-text-left">
-            <FormItem label="时间选择：">
-              <RadioGroup
-                v-model="formValidate.data"
-                type="button"
-                @on-change="selectChange(formValidate.data)"
-                class="mr"
-              >
-                <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
-              </RadioGroup>
-              <DatePicker
-                :editable="false"
-                @on-change="onchangeTime"
-                :value="timeVal"
-                format="yyyy/MM/dd"
-                type="daterange"
-                placement="bottom-end"
-                placeholder="请选择时间"
-                style="width: 200px"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col span="24" class="ivu-text-left">
-            <FormItem label="支付类型：">
-              <RadioGroup v-model="formValidate.paid" type="button" @on-change="selChange">
-                <Radio label="">全部</Radio>
-                <Radio label="1">已支付</Radio>
-                <Radio label="0">未支付</Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
-          <Col span="24" class="ivu-text-left">
-            <FormItem label="搜索：">
-              <Input
-                search
-                enter-button
-                @on-search="selChange"
-                placeholder="请输入用户昵称、订单号"
-                element-id="name"
-                v-model="formValidate.nickname"
-                style="width: 30%; display: inline-table"
-                class="mr"
-              />
-              <Button v-auth="['export-userRecharge']" class="mr" icon="ios-share-outline" @click="exports"
-                >导出</Button
-              >
-              <!--                            <span class="Refresh">刷新</span><Icon type="ios-refresh" />-->
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-    </Card>
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          inline
+          @submit.native.prevent
+        >
+          <el-form-item label="时间选择：">
+            <el-date-picker
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="支付类型：">
+            <el-select
+              clearable
+              v-model="formValidate.paid"
+              placeholder="请选择"
+              @change="selChange"
+              class="form_content_width"
+            >
+              <el-option value="" label="全部"></el-option>
+              <el-option value="1" label="已支付"></el-option>
+              <el-option value="0" label="未支付"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="搜索：">
+            <el-input
+              clearable
+              placeholder="请输入用户昵称、订单号"
+              v-model="formValidate.nickname"
+              class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="selChange">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
-    <Card :bordered="false" dis-hover>
-      <div>充值记录列表</div>
-      <Table
-        ref="table"
-        :columns="columns"
-        :data="tabList"
-        class="ivu-mt"
-        :loading="loading"
-        no-data-text="暂无数据"
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row, index }" slot="right">
-          <a
-            href="javascript:void(0);"
-            v-if="row.refund_price <= 0 && row.paid && row.recharge_type != 'system'"
-            @click="refund(row)"
-            >退款</a
-          >
-          <!--                    <Divider type="vertical"  v-if="row.paid"/>-->
-          <a href="javascript:void(0);" v-if="row.paid === 0" @click="del(row, '此条充值记录', index)">删除</a>
-          <span class="refund" v-if="row.refund_price > 0">已退款</span>
-        </template>
-      </Table>
+    <el-card :bordered="false" shadow="never">
+      <el-button v-auth="['export-userRecharge']" class="mr" @click="exports">导出</el-button>
+      <el-table ref="table" :data="tabList" class="mt14" v-loading="loading" empty-text="暂无数据"
+        ><el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="头像" min-width="90">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.avatar ? scope.row.avatar : require('../../../../assets/images/moren.jpg')" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户昵称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单号" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.order_id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="支付金额" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否支付" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.paid_type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="充值类型" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row._recharge_type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="支付时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row._pay_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <a
+              href="javascript:void(0);"
+              v-if="scope.row.refund_price <= 0 && scope.row.paid && scope.row.recharge_type != 'system'"
+              @click="refund(scope.row)"
+              >退款</a
+            >
+            <!--                    <el-divider direction="vertical"  v-if="scope.row.paid"/>-->
+            <a
+              href="javascript:void(0);"
+              v-if="scope.row.paid === 0"
+              @click="del(scope.row, '此条充值记录', scope.$index)"
+              >删除</a
+            >
+            <span class="refund" v-if="scope.row.refund_price > 0">已退款</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <!-- 退款表单-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
   </div>
@@ -129,102 +160,15 @@ export default {
       total: 0,
       cardLists: [],
       loading: false,
-      columns: [
-        {
-          title: 'ID',
-          key: 'id',
-          sortable: true,
-          width: 80,
-        },
-        {
-          title: '头像',
-          key: 'avatar',
-          minWidth: 80,
-          render: (h, params) => {
-            return h('viewer', [
-              h(
-                'div',
-                {
-                  style: {
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                  },
-                },
-                [
-                  h('img', {
-                    attrs: {
-                      src: params.row.avatar ? params.row.avatar : require('../../../../assets/images/moren.jpg'),
-                    },
-                    style: {
-                      width: '100%',
-                      height: '100%',
-                    },
-                  }),
-                ],
-              ),
-            ]);
-          },
-        },
-        {
-          title: '用户昵称',
-          key: 'nickname',
-          minWidth: 150,
-        },
-        {
-          title: '订单号',
-          key: 'order_id',
-          minWidth: 150,
-        },
-        {
-          title: '支付金额',
-          key: 'price',
-          minWidth: 110,
-        },
-        {
-          title: '是否支付',
-          key: 'paid_type',
-          minWidth: 110,
-        },
-        {
-          title: '充值类型',
-          key: '_recharge_type',
-          minWidth: 100,
-        },
-        {
-          title: '支付时间',
-          key: '_pay_time',
-          minWidth: 120,
-        },
-        {
-          title: '操作',
-          slot: 'right',
-          fixed: 'right',
-          minWidth: 100,
-        },
-      ],
       tabList: [],
-      fromList: {
-        title: '选择时间',
-        custom: true,
-        fromTxt: [
-          { text: '全部', val: '' },
-          { text: '今天', val: 'today' },
-          { text: '昨天', val: 'yesterday' },
-          { text: '最近7天', val: 'lately7' },
-          { text: '最近30天', val: 'lately30' },
-          { text: '本月', val: 'month' },
-          { text: '本年', val: 'year' },
-        ],
-      },
+      pickerOptions: this.$timeOptions,
       timeVal: [],
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -246,12 +190,12 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tabList.splice(delfromData.num, 1);
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 退款
@@ -265,7 +209,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 编辑提交成功
@@ -276,7 +220,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal.join('-');
+      this.formValidate.data = this.timeVal ? this.timeVal.join('-') : '';
       this.formValidate.page = 1;
       this.getList();
       this.getUserRecharge();
@@ -307,12 +251,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 小方块
     getUserRecharge() {
@@ -326,7 +266,7 @@ export default {
           this.cardLists = data;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 导出
@@ -342,7 +282,7 @@ export default {
           location.href = res.data[0];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },
@@ -355,7 +295,7 @@ export default {
     margin-bottom 10px
 .Refresh
     font-size 12px
-    color #1890FF
+    color var(--prev-color-primary)
     cursor pointer
 .ivu-form-item
     margin-bottom 10px

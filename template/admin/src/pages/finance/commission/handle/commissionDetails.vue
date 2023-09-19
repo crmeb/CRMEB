@@ -1,8 +1,7 @@
 <template>
   <div style="width: 100%">
-    <Modal v-model="modals" scrollable footer-hide closable title="用户详情" :mask-closable="false" width="700">
-      <Spin size="large" fix v-if="spinShow"></Spin>
-      <div class="">
+    <el-dialog :visible.sync="modals" title="用户详情" :close-on-click-modal="false" width="720px">
+      <div class="" v-loading="spinShow">
         <div class="dashboard-workplace-header-tip">
           <div class="dashboard-workplace-header-tip-desc">
             <span class="dashboard-workplace-header-tip-desc-sp">姓名：{{ detailsData.nickname }}</span>
@@ -15,53 +14,75 @@
           </div>
         </div>
       </div>
-      <Divider dashed />
-      <Form ref="formValidate" :label-width="75" :label-position="labelPosition" class="tabform" @submit.native.prevent>
-        <Row :gutter="24" type="flex">
-          <!--                    <Col span="8">-->
-          <!--                        <FormItem label="订单号/昵称：">-->
-          <!--                            <Input enter-button placeholder="请输入" element-id="name" v-model="formValidate.nickname"-->
+      <el-divider direction="vertical" dashed />
+      <el-form
+        ref="formValidate"
+        label-width="75px"
+        :label-position="labelPosition"
+        class="tabform"
+        @submit.native.prevent
+      >
+        <el-row :gutter="24">
+          <!--                    <el-col :span="8">-->
+          <!--                        <el-form-item label="订单号/昵称：">-->
+          <!--                            <el-input enter-button placeholder="请输入" element-id="name" v-model="formValidate.nickname"-->
           <!--                                   clearable/>-->
-          <!--                        </FormItem>-->
-          <!--                    </Col>-->
-          <Col span="12">
-            <FormItem label="时间范围：" class="tab_data">
-              <DatePicker
+          <!--                        </el-form-item>-->
+          <!--                    </el-col>-->
+          <el-col :span="12">
+            <el-form-item label="时间范围：" class="tab_data">
+              <el-date-picker
+                  clearable
                 :editable="false"
-                style="width: 100%"
-                @on-change="onchangeTime"
+                @change="onchangeTime"
                 format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
                 type="daterange"
-                placement="bottom-end"
-                placeholder="请选择时间范围"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col span="4">
-            <Button type="primary" icon="ios-search" @click="userSearchs">搜索</Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                  style="width: 100%"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-button type="primary" @click="userSearchs">搜索</el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table
         :data="tabList"
         ref="table"
-        :loading="loading"
+        v-loading="loading"
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
         class="table"
-      ></Table>
+      >
+        <el-table-column label="佣金金额" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.number }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="获得时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row._add_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.mark }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -85,37 +106,16 @@ export default {
         limit: 20, // 每页显示条数
       },
       total: 0,
-      columns: [
-        // {
-        //     title:'昵称',
-        //     key:'nickname'
-        // },
-        {
-          title: '佣金金额',
-          key: 'number',
-          minWidth: 80,
-        },
-        {
-          title: '获得时间',
-          key: '_add_time',
-          minWidth: 150,
-        },
-        {
-          title: '备注',
-          key: 'mark',
-          minWidth: 330,
-        },
-      ],
       tabList: [],
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 100;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -141,12 +141,12 @@ export default {
             this.spinShow = false;
           } else {
             this.spinShow = false;
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           }
         })
         .catch((res) => {
           this.spinShow = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -161,12 +161,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 搜索
     userSearchs() {

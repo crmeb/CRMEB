@@ -9,7 +9,13 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-// 事件定义文件
+/** 事件定义文件
+ * 调用事件示例：
+ * @param mixed $event 事件名（或者类名）
+ * @param mixed $args  参数
+ * event($event,$args);
+ * event('OrderCreateAfterListener',$order);
+*/ 
 
 return [
     'bind' => [

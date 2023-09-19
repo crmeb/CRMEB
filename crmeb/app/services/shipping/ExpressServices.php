@@ -260,7 +260,7 @@ class ExpressServices extends BaseServices
                 $data['partner_name'] = $express['partner_name'] ?? '';
                 $data['is_code'] = $express['is_code'] ?? '';
                 $data['net'] = $express['net'] ?? '';
-                $data['is_show'] = 1;
+                $data['is_show'] = 0;
                 $data['status'] = 0;
                 if ($express['partner_id'] == 0 && $express['partner_key'] == 0 && $express['net'] == 0 && $express['check_man'] == 0 && $express['partner_name'] == 0 && $express['is_code'] == 0) {
                     $data['status'] = 1;

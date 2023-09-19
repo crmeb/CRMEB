@@ -80,6 +80,8 @@ class WechatReplyKeyDao extends BaseDao
             $query->where($this->joinAlis . '.keys', 'LIKE', "%$where[key]%");
         })->when(isset($where['type']) && $where['type'], function ($query) use ($where) {
             $query->where($this->alias . '.type', $where['type']);
+        })->when(isset($where['key_type']) && $where['key_type'] !== '', function ($query) use ($where) {
+            $query->where($this->joinAlis . '.key_type', $where['key_type']);
         })->where($this->joinAlis . '.keys', '<>', 'subscribe')
             ->where($this->joinAlis . '.keys', '<>', 'default');
     }
@@ -106,7 +108,7 @@ class WechatReplyKeyDao extends BaseDao
      * @param bool $search
      * @return int
      */
-    public function count(array $where = [], bool $search = true): int
+    public function count(array $where = [], bool $search = true)
     {
         return $this->search($where, $search)->group($this->alias . '.id')->count();
     }

@@ -122,33 +122,7 @@
 		methods: {
 			goDetail(url) {
 				goPage().then(res => {
-					let urls = url.info[1].value
-					if (urls) {
-						if (urls.indexOf("http") != -1) {
-							// #ifdef H5
-							location.href = urls
-							// #endif
-						} else {
-							if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
-									'/pages/user/index'
-								].indexOf(urls) ==
-								-1) {
-								uni.navigateTo({
-									url: urls
-								})
-							} else {
-								uni.switchTab({
-									url: urls,
-									fail() {
-										uni.reLaunch({
-											url: urls
-										})
-									}
-								})
-
-							}
-						}
-					}
+					this.$util.JumpPath(url);
 				})
 			},
 			//替换安全域名

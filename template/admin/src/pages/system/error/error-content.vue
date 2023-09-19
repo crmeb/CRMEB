@@ -1,17 +1,17 @@
 <template>
   <div>
-    <Row class="acea-row row-middle list">
-      <Col :xs="24" :sm="12" :md="12" :lg="12" class="acea-row row-right right">
+    <el-row class="acea-row row-middle list">
+      <el-col :xs="24" :sm="12" :md="12" :lg="12" class="acea-row row-right right">
         <img :src="src" :alt="code" class="pictrue" />
-      </Col>
-      <Col :xs="24" :sm="12" :md="12" :lg="12" class="acea-row row-left left">
+      </el-col>
+      <el-col :xs="24" :sm="12" :md="12" :lg="12" class="acea-row row-left left">
         <div>
           <h1 class="num">{{ code }}</h1>
           <div class="desc">{{ desc }}</div>
-          <Button type="primary" size="large" @click="backHome">返回首页</Button>
+          <el-button type="primary" size="large" @click="backHome">返回首页</el-button>
         </div>
-      </Col>
-    </Row>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <style scoped lang="less">

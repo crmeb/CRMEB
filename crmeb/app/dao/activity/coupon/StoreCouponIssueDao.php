@@ -73,6 +73,17 @@ class StoreCouponIssueDao extends BaseDao
     }
 
     /**
+     * 优惠券数量
+     * @param $where
+     * @return int
+     * @throws \ReflectionException
+     */
+    public function couponCount($where): int
+    {
+        return $this->search($where)->count();
+    }
+
+    /**
      * 获取优惠券列表
      * @param int $uid 用户ID
      * @param int $type 0通用，1分类，2商品

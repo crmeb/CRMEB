@@ -1,7 +1,7 @@
     /**
      * 创建
      * @return \think\Response
-     * @date {%date%}
+     * @date {%DATE%}
      */
     public function create()
     {

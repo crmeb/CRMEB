@@ -51,7 +51,7 @@
 							<image :src="item.image" mode="aspectFit">
 						</view>
 						<view class="text-info">
-							<view class="title line1" v-if="titleShow">{{ item.store_name }}</view>
+							<view class="title line2" v-if="titleShow">{{ item.store_name }}</view>
 							<view class="old-price" v-if="opriceShow">
 								{{$t(`￥`)}}{{ item.ot_price }}
 							</view>
@@ -84,7 +84,7 @@
 						<view class="text-info"
 							style="display: flex; flex-direction: column; justify-content: space-between;">
 							<view>
-								<view class="title line1" v-if="titleShow">{{ item.store_name }}</view>
+								<view class="title line2" v-if="titleShow">{{ item.store_name }}</view>
 								<view class="old-price" v-if="opriceShow">
 									{{$t(`￥`)}}{{ item.ot_price }}
 								</view>
@@ -313,6 +313,8 @@
 
 					.title {
 						color: #222222;
+						line-height: 34rpx;
+						height: 68rpx;
 					}
 
 					.old-price {

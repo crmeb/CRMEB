@@ -79,24 +79,17 @@ class SystemStorage extends AuthController
     }
 
     /**
-     * @param SystemConfigServices $services
      * @return mixed
      */
-    public function saveConfig(SystemConfigServices $services)
+    public function saveConfig( )
     {
         $type = (int)$this->request->post('type', 0);
-//        $services->update('upload_type', ['value' => json_encode($type)], 'menu_name');
-//        if (1 === $type) {
-//            $this->services->transaction(function () {
-//                $this->services->update(['status' => 1, 'is_delete' => 0], ['status' => 0]);
-//            });
-//        }
-//        \crmeb\services\CacheService::clear();
 
         $data = $this->request->postMore([
             ['accessKey', ''],
             ['secretKey', ''],
             ['appid', ''],
+            ['storageRegion', ''],
         ]);
 
         $this->services->saveConfig((int)$type, $data);
@@ -166,7 +159,10 @@ class SystemStorage extends AuthController
         //设置跨域规则
         try {
             $upload = UploadService::init($info->type);
-            $upload->setBucketCors($info->name, $info->region);
+            $res = $upload->setBucketCors($info->name, $info->region);
+            if (false === $res) {
+                return app('json')->fail($upload->getError());
+            }
         } catch (\Throwable $e) {
         }
 
@@ -199,6 +195,7 @@ class SystemStorage extends AuthController
     public function updateDomain($id)
     {
         $domain = $this->request->post('domain', '');
+        $cdn = $this->request->post('cdn', '');
         $data = $this->request->postMore([
             ['pri', ''],
             ['ca', '']
@@ -214,7 +211,7 @@ class SystemStorage extends AuthController
 //            return app('json')->fail('域名为HTTPS访问时，必须填写证书');
 //        }
 
-        $this->services->updateDomain($id, $domain);
+        $this->services->updateDomain($id, $domain, ['cdn' => $cdn]);
 
         return app('json')->success(100001);
     }

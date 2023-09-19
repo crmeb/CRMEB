@@ -50,7 +50,7 @@ class MemberShipDao extends BaseDao
      */
     public function getApiList(array $where)
     {
-        return $this->search()->where($where)->order('sort desc')->select()->toArray();
+        return $this->search()->where($where)->order('sort desc,id DESC')->select()->toArray();
     }
 
 

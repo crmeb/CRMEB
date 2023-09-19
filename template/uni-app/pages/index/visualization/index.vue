@@ -89,7 +89,8 @@
 		<tabBar :dataConfig="tabBar.default" :pagePath="'/pages/index/index'"
 			@click.native="bindEdit('tabBar', 'default')"></tabBar>
 		<!-- #ifdef H5 -->
-		<view v-if="site_config && !isIframe" class="site-config" @click="goICP">{{site_config}}</view>
+		<view v-if="site_config.record_No" class="site-config" @click="goICP(1)">{{ site_config.record_No }}</view>
+		<view v-if="site_config.network_security" class="site-config" @click="goICP(2)">{{ site_config.network_security }}</view>
 		<!-- #endif -->
 		<view class="uni-p-b-98"></view>
 		<couponWindow style="position: relative; z-index: 10000" :window="isCouponShow" @onColse="couponClose"
@@ -326,7 +327,7 @@
 			// #endif
 			siteConfig()
 				.then((res) => {
-					this.site_config = res.data.record_No;
+					this.site_config = res.data;
 				})
 				.catch((err) => {
 					return this.$util.Tips({
@@ -484,15 +485,9 @@
 				});
 			},
 			// #endif
-			goICP() {
-				// #ifdef H5
-				window.open("http://beian.miit.gov.cn/");
-				// #endif
-				// #ifdef MP
-				uni.navigateTo({
-					url: `/pages/annex/web_view/index?url=https://beian.miit.gov.cn/`,
-				});
-				// #endif
+			goICP(type) {
+				let url = type == 1 ? this.site_config.icp_url : this.site_config.network_security_url;
+				window.open(url);
 			},
 			onLoadFun() {},
 			reconnect() {
@@ -502,7 +497,6 @@
 			diyData() {
 				let that = this;
 				getDiy().then((res) => {
-					console.log('222', res)
 					let data = res.data;
 					that.headerSerch = data.headerSerch;
 					that.swiperBg = data.swiperBg;

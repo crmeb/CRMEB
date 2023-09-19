@@ -120,9 +120,11 @@
 							newPayList.push(item)
 						}
 					});
-					this.active = newPayList[0].index;
-					this.paytype = newPayList[0].value;
-					this.number = newPayList[0].number || 0;
+					this.$nextTick(e => {
+						this.active = newPayList[0].index;
+						this.paytype = newPayList[0].value;
+					})
+
 				},
 				immediate: true,
 				deep: true
@@ -135,7 +137,6 @@
 		},
 		onShow() {
 			let options = wx.getEnterOptionsSync();
-			console.log(options)
 			if (options.scene == '1038' && options.referrerInfo.appId == 'wxef277996acc166c3' && this.initIn) {
 				// 代表从收银台小程序返回
 				let extraData = options.referrerInfo.extraData;
@@ -206,12 +207,12 @@
 					title: this.$t(`创建订单中`)
 				});
 				getCashierOrder(this.orderId, this.fromType).then(res => {
-					console.log(res)
 					this.payPrice = this.payPriceShow = res.data.pay_price
 					this.payPostage = res.data.pay_postage
 					this.offlinePostage = res.data.offline_postage
 					this.invalidTime = res.data.invalid_time
 					this.cartArr[2].number = res.data.now_money;
+					this.number = Number(res.data.now_money) || 0;
 					uni.hideLoading();
 				}).catch(err => {
 					uni.hideLoading();
@@ -293,7 +294,7 @@
 					// #endif
 				}).then(res => {
 					let status = res.data.status,
-						orderId = res.data.result.orderId,
+						orderId = res.data.result.order_id,
 						jsConfig = res.data.result.jsConfig,
 						goPages = '/pages/goods/order_pay_status/index?order_id=' + this.orderId + '&msg=' +
 						res
@@ -336,7 +337,7 @@
 								}
 							})
 							this.jumpData = {
-								orderId: res.data.result.orderId,
+								orderId: res.data.result.order_id,
 								msg: res.msg,
 							}
 							// #endif

@@ -5,6 +5,9 @@ namespace app\api\controller\v1\order;
 use app\Request;
 use app\services\order\StoreOrderRefundServices;
 use app\services\order\StoreOrderServices;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 class StoreOrderRefundController
 {
@@ -56,9 +59,9 @@ class StoreOrderRefundController
      * @param Request $request
      * @param $uni
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function cancelApply(Request $request, $uni)
     {

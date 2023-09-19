@@ -1,35 +1,59 @@
 <template>
-  <Card :bordered="false" dis-hover>
-    <Alert closable="true">
-      <template slot="desc">
+  <el-card :bordered="false" shadow="never">
+    <el-alert closable>
+      <template slot="title">
         启动定时任务两种方式：<br />
         1、使用命令启动：php think timer start
         --d；如果更改了执行周期、编辑是否开启、删除定时任务需要重新启动下定时任务确保生效；<br />
-        2、使用接口触发定时任务，建议每分钟调用一次，接口地址 https://您的域名/api/crontab/run
+        2、使用接口触发定时任务，建议每分钟调用一次，接口地址 https://您的域名/api/crontab/run <br />
+        开发说明：新增定时任务在 /crmeb/app/services/system/crontab/CrontabRunServices.php 文件中新增任务方法代码
       </template>
-    </Alert>
-    <Button type="primary" @click="addTask">添加定时任务</Button>
-    <Table :columns="columns" :data="tableData" :loading="loading" class="ivu-mt">
-      <template slot-scope="{ row }" slot="execution_cycle">
-        <span>{{ taskTrip(row) }}</span>
-      </template>
-      <template slot-scope="{ row }" slot="is_open">
-        <i-switch v-model="row.is_open" :true-value="1" :false-value="0" size="large" @on-change="handleChange(row)">
-          <span slot="open">开启</span>
-          <span slot="close">关闭</span>
-        </i-switch>
-      </template>
-      <template slot-scope="{ row }" slot="action">
-        <a @click="edit(row.id)">编辑</a>
-        <Divider type="vertical" />
-        <a @click="handleDelete(row, '删除秒杀商品', index)">删除</a>
-      </template>
-    </Table>
+    </el-alert>
+    <el-button type="primary" @click="addTask" class="mt14">添加定时任务</el-button>
+    <el-table :data="tableData" v-loading="loading" class="ivu-mt">
+      <el-table-column label="标题" min-width="150">
+        <template slot-scope="scope">
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="任务说明" min-width="130">
+        <template slot-scope="scope">
+          <span>{{ scope.row.content }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="执行周期" min-width="130">
+        <template slot-scope="scope">
+          <span>{{ taskTrip(scope.row) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否开启" min-width="130">
+        <template slot-scope="scope">
+          <el-switch
+            class="defineSwitch"
+            :active-value="1"
+            :inactive-value="0"
+            v-model="scope.row.is_open"
+            size="large"
+            @change="handleChange(scope.row)"
+            active-text="开启"
+            inactive-text="关闭"
+          >
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="100">
+        <template slot-scope="scope">
+          <a @click="edit(scope.row.id)">编辑</a>
+          <el-divider direction="vertical"></el-divider>
+          <a @click="handleDelete(scope.row, '删除秒杀商品', scope.$index)">删除</a>
+        </template>
+      </el-table-column>
+    </el-table>
     <div class="acea-row row-right page">
-      <Page :total="total" :current="page" show-elevator show-total @on-change="pageChange" :page-size="limit" />
+      <pagination v-if="total" :total="total" :page.sync="page" :limit.sync="limit" @pagination="getList" />
     </div>
     <creatTask ref="addTask" @submitAsk="getList"></creatTask>
-  </Card>
+  </el-card>
 </template>
 
 <script>
@@ -41,44 +65,6 @@ export default {
   data() {
     return {
       loading: false,
-      columns: [
-        {
-          title: '名称',
-          key: 'name',
-          minWidth: 150,
-        },
-        {
-          title: '任务说明',
-          key: 'content',
-          minWidth: 120,
-        },
-        // {
-        //   title: '最后执行时间',
-        //   key: 'last_execution_time',
-        //   minWidth: 120,
-        // },
-        // {
-        //   title: '下次执行时间',
-        //   key: 'next_execution_time',
-        //   minWidth: 120,
-        // },
-        {
-          title: '执行周期',
-          slot: 'execution_cycle',
-          minWidth: 160,
-        },
-        {
-          title: '是否开启',
-          slot: 'is_open',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          align: 'center',
-          minWidth: 100,
-        },
-      ],
       tableData: [],
       page: 1,
       limit: 15,
@@ -122,7 +108,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     addTask() {
@@ -142,27 +128,23 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 是否开启
     handleChange({ id, is_open }) {
       showTimer(id, is_open)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.page = index;
-      this.getList();
     },
   },
 };

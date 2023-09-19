@@ -14,8 +14,8 @@
       </div>
     </div>
     <!-- <div class="footer">
-            <Button type="primary" class="btns" @click="subBtn">确定</Button>
-            <Button type="primary" class="btns" ghost @click="cancel">取消</Button>
+            <el-button type="primary" class="btns" @click="subBtn">确定</el-button>
+            <el-button type="primary" class="btns" ghost @click="cancel">取消</el-button>
         </div> -->
   </div>
 </template>
@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       activeIds: [],
-      labelLists,
+      labelLists: [],
     };
   },
   methods: {
@@ -81,7 +81,7 @@ export default {
             font-size 12px
             &.on
                 color #fff
-                background #1890FF
+                background var(--prev-color-primary)
     .footer
         display flex
         justify-content flex-end

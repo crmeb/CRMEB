@@ -11,8 +11,6 @@
 namespace app\api\controller\v1\user;
 
 use app\Request;
-use app\services\user\member\MemberCardServices;
-use app\services\user\UserServices;
 use app\services\user\UserSignServices;
 
 /**
@@ -35,31 +33,15 @@ class UserSignController
 
     /**
      * 签到 配置
-     * @param Request $request
-     * @param UserServices $userServices
      * @return mixed
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function sign_config(Request $request, UserServices $userServices)
+    public function sign_config(Request $request)
     {
-        $signConfig = sys_data('sign_day_num') ?? [];
-//        $uid = (int)$request->uid();
-//        $user = $userServices->getUserInfo($uid);
-//        //是否是付费会员
-//        if ($user['is_money_level'] > 0) {
-//            //看是否开启签到积分翻倍奖励
-//            /** @var MemberCardServices $memberCardService */
-//            $memberCardService = app()->make(MemberCardServices::class);
-//            $sign_rule_number = $memberCardService->isOpenMemberCard('sign');
-//            if ($sign_rule_number) {
-//                foreach ($signConfig as &$value) {
-//                    $value['sign_num'] = (int)$sign_rule_number * $value['sign_num'];
-//                }
-//            }
-//        }
-        return app('json')->success($signConfig);
+        $uid = (int)$request->uid();
+        return app('json')->success($this->services->signConfig($uid));
     }
 
     /**
@@ -123,6 +105,22 @@ class UserSignController
     {
         $uid = (int)$request->uid();
         return app('json')->success($this->services->getSignMonthList($uid));
+    }
+
+    /**
+     * 用户设置签到提醒
+     * @param Request $request
+     * @param $status
+     * @return \think\Response
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/9
+     */
+    public function sign_remind(Request $request, $status)
+    {
+        $uid = (int)$request->uid();
+        $this->services->setSignRemind($uid, $status);
+        return app('json')->success(100014);
     }
 
 }

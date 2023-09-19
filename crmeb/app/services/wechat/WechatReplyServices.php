@@ -17,6 +17,7 @@ use app\dao\wechat\WechatReplyDao;
 use app\services\kefu\KefuServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\app\WechatService;
+use crmeb\services\FormBuilder;
 
 /**
  * Class UserWechatuserServices
@@ -292,9 +293,9 @@ class WechatReplyServices extends BaseServices
      */
     public function tidyNews($data, $id = 0)
     {
-        if ($id != 0) {
-            $data = $data['list'][0];
-        }
+//        if ($id != 0) {
+//            $data = $data['list'][0];
+//        }
         if (!count($data)) {
             throw new AdminException(400709);
         }
@@ -346,5 +347,83 @@ class WechatReplyServices extends BaseServices
         } else if ($res['type'] == 'voice') {
             return WechatService::voiceMessage($res['data']['media_id']);
         }
+    }
+
+    /**
+     * 添加修改客服自动回复表单
+     * @param int $id
+     * @return array
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/3
+     */
+    public function autoReplyForm($id = 0)
+    {
+        $replyInfo = [];
+        if ($id) {
+            $replyInfo = $this->dao->get($id, ['*'], ['kefuKey']);
+            $replyInfo['data'] = json_decode($replyInfo['data'], true);
+        }
+        $field[] = FormBuilder::input('keys', '关键字', $replyInfo['keys'] ?? '')->col(24)->required();
+        $field[] = FormBuilder::radio('type', '回复类型', (string)($replyInfo['type'] ?? 'text'))->appendControl('text', [
+            FormBuilder::input('data', '回复内容', (string)($replyInfo['data']['content'] ?? ''))->required(),
+        ])->appendControl('image', [
+            FormBuilder::frameImage('data', '回复图片', $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => 'data'], true), (string)($replyInfo['data']['src'] ?? ''))->icon('el-icon-picture-outline')->width('950px')->height('560px')->Props(['footer' => false]),
+        ])->options([['label' => '文字消息', 'value' => 'text'], ['label' => '图片消息', 'value' => 'image']]);
+        $field[] = FormBuilder::radio('status', '状态', $replyInfo['status'] ?? 1)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
+        return create_form('客服自动回复', $field, $this->url('/app/kefu/auto_reply/save/' . $id), 'POST');
+    }
+
+    /**
+     * 保存自动回复
+     * @param $id
+     * @param $data
+     * @return bool
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/3
+     */
+    public function autoReplySave($id, $data)
+    {
+        if ($id) {
+            $this->dao->update($id, [
+                'type' => $data['type'],
+                'data' => json_encode($data['type'] == 'text' ? ['content' => $data['data']] : ['src' => $data['data']]),
+                'status' => $data['status'],
+            ]);
+            $res = app()->make(WechatKeyServices::class)->update(['reply_id' => $id], ['keys' => $data['keys']]);
+        } else {
+            $reply = $this->dao->save([
+                'type' => $data['type'],
+                'data' => json_encode($data['type'] == 'text' ? ['content' => $data['data']] : ['src' => $data['data']]),
+                'status' => $data['status'],
+            ]);
+            $res = app()->make(WechatKeyServices::class)->save([
+                'reply_id' => $reply->id,
+                'keys' => $data['keys'],
+                'key_type' => 1,
+            ]);
+        }
+        if (!$res) throw new AdminException(100006);
+        return true;
+    }
+
+    /**
+     * 删除自动回复
+     * @param $id
+     * @return bool
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/3
+     */
+    public function autoReplyDel($id)
+    {
+        $this->dao->delete($id);
+        app()->make(WechatKeyServices::class)->delete(['reply_id' => $id]);
+        return true;
     }
 }

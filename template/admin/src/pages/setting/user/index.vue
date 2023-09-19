@@ -1,36 +1,42 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="160" label-position="right">
-        <FormItem label="头像">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form
+        ref="formValidate"
+        :model="formValidate"
+        :rules="ruleValidate"
+        label-width="160px"
+        label-position="right"
+      >
+        <el-form-item label="头像：">
           <div class="avatar" @click="avatarMoadl = true">
             <img v-if="formValidate.head_pic" :src="formValidate.head_pic" alt="" />
             <img v-else src="../../../assets/images/f.png" alt="" />
           </div>
-        </FormItem>
-        <FormItem label="账号" prop="">
-          <Input type="text" v-model="account" :disabled="true" class="input"></Input>
-        </FormItem>
-        <FormItem label="姓名" prop="real_name">
-          <Input type="text" v-model="formValidate.real_name" class="input"></Input>
-        </FormItem>
-        <FormItem label="原始密码" prop="pwd">
-          <Input type="password" v-model="formValidate.pwd" class="input"></Input>
-        </FormItem>
-        <FormItem label="新密码" prop="new_pwd">
-          <Input type="password" v-model="formValidate.new_pwd" class="input"></Input>
-        </FormItem>
-        <FormItem label="确认新密码" prop="conf_pwd">
-          <Input type="password" v-model="formValidate.conf_pwd" class="input"></Input>
-        </FormItem>
-        <FormItem>
-          <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
-        </FormItem>
-      </Form>
-    </Card>
-    <Modal v-model="avatarMoadl" footer-hide title="头像上传" width="700">
+        </el-form-item>
+        <el-form-item label="账号：" prop="">
+          <el-input type="text" v-model="account" :disabled="true" class="input"></el-input>
+        </el-form-item>
+        <el-form-item label="姓名：" prop="real_name">
+          <el-input type="text" v-model="formValidate.real_name" class="input"></el-input>
+        </el-form-item>
+        <el-form-item label="原始密码：">
+          <el-input type="password" v-model="formValidate.pwd" class="input"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码：">
+          <el-input type="password" v-model="formValidate.new_pwd" class="input"></el-input>
+        </el-form-item>
+        <el-form-item label="确认新密码：">
+          <el-input type="password" v-model="formValidate.conf_pwd" class="input"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSubmit('formValidate')">提交</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <el-dialog :visible.sync="avatarMoadl" title="头像上传" width="720px">
       <CropperImg v-if="avatarMoadl" @uploadImgSuccess="uploadImgSuccess"></CropperImg>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -45,10 +51,10 @@ export default {
     ...mapState('media', ['isMobile']),
     ...mapState('userLevel', ['categoryId']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
@@ -64,9 +70,6 @@ export default {
       },
       ruleValidate: {
         real_name: [{ required: true, message: '您的姓名不能为空', trigger: 'blur' }],
-        pwd: [{ required: true, message: '请输入您的原始密码', trigger: 'blur' }],
-        new_pwd: [{ required: true, message: '请输入您的新密码', trigger: 'blur' }],
-        conf_pwd: [{ required: true, message: '请确认您的新密码', trigger: 'blur' }],
       },
     };
   },
@@ -87,14 +90,14 @@ export default {
             .then((res) => {
               this.$store.commit('userInfo/userRealName', this.formValidate.real_name);
               this.$store.commit('userInfo/userRealHeadPic', this.formValidate.head_pic);
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           if (this.formValidate.new_pwd !== this.formValidate.conf_pwd) {
-            this.$Message.error('您输入的新密码与旧密码不一致');
+            this.$message.error('您输入的新密码与旧密码不一致');
           }
         }
       });

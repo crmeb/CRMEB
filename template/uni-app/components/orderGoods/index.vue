@@ -29,7 +29,7 @@
 					</view>
 					<view class='text'>
 						<view class='acea-row row-between-wrapper'>
-							<view class='name line1'>{{item.productInfo.store_name}}</view>
+							<view class='name line2'>{{item.productInfo.store_name}}</view>
 							<view class='num'>x {{item.cart_num}}</view>
 						</view>
 						<view class='attr line1' v-if="item.productInfo.attrInfo">{{item.productInfo.attrInfo.suk}}

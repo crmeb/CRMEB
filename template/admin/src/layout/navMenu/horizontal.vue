@@ -15,7 +15,7 @@
             :key="val.path"
           >
             <template slot="title">
-              <Icon :type="val.icon ? val.icon : ''" />
+              <!-- <i class="ivu-icon" :class="val.icon ? 'el-icon-' + val.icon : ''"></i> -->
               <span>{{ $t(val.title) }}</span>
             </template>
             <SubItem :chil="val.children" />
@@ -23,7 +23,7 @@
           <template v-else-if="val.is_show">
             <el-menu-item :index="val.path" :key="val.path">
               <template slot="title" v-if="!val.isLink || (val.isLink && val.isIframe)">
-                <Icon :type="val.icon ? val.icon : ''" />
+                <!-- <i class="ivu-icon" :class="val.icon ? 'el-icon-' + val.icon : ''"></i> -->
                 {{ $t(val.title) }}
               </template>
               <template slot="title" v-else>

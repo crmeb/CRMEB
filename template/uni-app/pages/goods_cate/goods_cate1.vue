@@ -35,6 +35,16 @@
 								<view class='line'></view>
 							</view>
 							<view class='list acea-row'>
+								<navigator hover-class='none'
+									:url='"/pages/goods/goods_list/index?cid="+item.id+"&title="+item.cate_name'
+									class='item acea-row row-column row-middle'>
+									<view class='picture'>
+										<easy-loadimage mode="widthFix" :image-src="item.pic || defimg">
+										</easy-loadimage>
+										<!-- <image src="/static/images/sort-img.png" v-else></image> -->
+									</view>
+									<view class='name line1'>{{$t(`全部商品`)}}</view>
+								</navigator>
 								<block v-for="(itemn,indexn) in item.children" :key="indexn">
 									<navigator hover-class='none'
 										:url='"/pages/goods/goods_list/index?sid="+itemn.id+"&title="+itemn.cate_name'
@@ -86,6 +96,7 @@
 		},
 		data() {
 			return {
+				defimg: require('@/static/images/all_cat.png'),
 				navlist: [],
 				productList: [],
 				navActive: 0,
@@ -181,6 +192,7 @@
 				this.toView = id;
 				this.navActive = index;
 				this.$set(this, 'lock', true);
+				uni.$emit('scroll');
 			},
 			getAllCategory: function(type) {
 				let that = this;

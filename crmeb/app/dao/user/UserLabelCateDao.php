@@ -45,7 +45,7 @@ class UserLabelCateDao extends BaseDao
     {
         return $this->search($where)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
-        })->order('sort DESC')->select()->toArray();
+        })->order('sort DESC,id DESC')->select()->toArray();
     }
 
     /**
@@ -59,6 +59,6 @@ class UserLabelCateDao extends BaseDao
     {
         return $this->getModel()->when(count($with), function ($query) use ($with) {
             $query->with($with);
-        })->order('sort DESC')->select()->toArray();
+        })->order('sort DESC,id DESC')->select()->toArray();
     }
 }

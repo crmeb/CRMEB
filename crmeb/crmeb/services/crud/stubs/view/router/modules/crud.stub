@@ -1,7 +1,7 @@
 // +---------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +---------------------------------------------------------------------
-// | Copyright (c) 2016~{%year%} https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~{%YEAR%} https://www.crmeb.com All rights reserved.
 // +---------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +---------------------------------------------------------------------
@@ -17,23 +17,23 @@ const meta = {
     auth: true,
 }
 
-const pre = '{%name%}_'
+const pre = '{%NAME%}_'
 
 export default {
     path: `${routePre}`,
-    name: 'crud_{%name%}',
-    header: '{%nameHeader%}',
+    name: 'crud_{%NAME%}',
+    header: '{%NAME_HEADER%}',
     meta,
     component: LayoutMain,
     children: [
         {
-            path: '{%route%}',
+            path: '{%ROUTE%}',
             name: `${pre}list`,
             meta: {
-                auth: ['{%name%}-crud-list-index'],
-                title: '{%menus%}',
+                auth: ['{%NAME%}-crud-list-index'],
+                title: '{%MENUS%}',
             },
-            component: () => import('@/pages/crud/{%pagePath%}/index'),
+            component: () => import('@/pages/crud/{%PAGE_PATH%}/index'),
         },
     ],
 }

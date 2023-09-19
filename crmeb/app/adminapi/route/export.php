@@ -18,6 +18,8 @@ Route::group('export', function () {
     Route::get('user_list', 'v1.export.ExportExcel/userList')->option(['real_name' => '用户列表导出']);
     //订单列表
     Route::get('order_list', 'v1.export.ExportExcel/orderList')->option(['real_name' => '订单列表导出']);
+    //发货订单列表
+    Route::get('order_delivery_list', 'v1.export.ExportExcel/orderDeliveryList')->option(['real_name' => '发货订单列表导出']);
     //商品列表
     Route::get('product_list', 'v1.export.ExportExcel/productList')->option(['real_name' => '商品列表导出']);
     //砍价列表

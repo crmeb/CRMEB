@@ -15,7 +15,7 @@ namespace app\services\wechat;
 use app\dao\wechat\WechatMessageDao;
 use app\services\BaseServices;
 use crmeb\exceptions\ApiException;
-use think\facade\Cache;
+use crmeb\services\CacheService;
 
 class WechatMessageServices extends BaseServices
 {
@@ -46,9 +46,9 @@ class WechatMessageServices extends BaseServices
     public function setOnceMessage($result, $openid, $type, $unique, $cacheTime = 172800)
     {
         $cacheName = 'wechat_message_' . $type . '_' . $unique;
-        if (Cache::has($cacheName)) return true;
+        if (CacheService::has($cacheName)) return true;
         $res = $this->setMessage($result, $openid, $type);
-        if ($res) Cache::set($cacheName, 1, $cacheTime);
+        if ($res) CacheService::set($cacheName, 1, $cacheTime);
         return $res;
     }
 

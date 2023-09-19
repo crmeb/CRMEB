@@ -1,6 +1,6 @@
 {
   "name": "from-crmeb-admin",
-  "version": "2.0.0",
+  "version": "5.2.0",
   "author": "Lison<lison16new@163.com>",
   "private": false,
   "scripts": {
@@ -16,7 +16,7 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/runtime": "^7.2.0",
     "@better-scroll/core": "^2.0.5",
-    "@form-create/iview": "^2.5.27",
+    "@form-create/element-ui": "^2.5.31",
     "async-validator": "^3.4.0",
     "awe-dnd": "^0.3.4",
     "better-scroll": "^1.15.2",

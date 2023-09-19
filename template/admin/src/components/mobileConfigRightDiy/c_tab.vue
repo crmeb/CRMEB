@@ -1,16 +1,16 @@
 <template>
-  <div style="margin-bottom: 20px">
+  <div>
     <div class="title-tips" v-if="configData.tabList">
       <span>{{ configData.title }}</span
       >{{ configData.tabList[configData.tabVal].name }}
     </div>
     <div class="radio-box" :class="{ on: configData.type == 1 }">
-      <RadioGroup v-model="configData.tabVal" type="button" size="large" @on-change="radioChange($event)">
-        <Radio :label="index" v-for="(item, index) in configData.tabList" :key="index">
+      <el-radio-group v-model="configData.tabVal" type="button" @input="radioChange()">
+        <el-radio-button :label="index" v-for="(item, index) in configData.tabList" :key="index">
           <span class="iconfont-diy" :class="item.icon" v-if="item.icon"></span>
           <span v-else>{{ item.name }}</span>
-        </Radio>
-      </RadioGroup>
+        </el-radio-button>
+      </el-radio-group>
     </div>
   </div>
 </template>
@@ -55,7 +55,7 @@ export default {
       if (this.defaults.picStyle) {
         this.defaults.picStyle.tabVal = 0;
       }
-      this.$emit('getConfig', e);
+      this.$emit('getConfig', this.configData.tabVal);
     },
   },
 };
@@ -71,23 +71,23 @@ export default {
 .ivu-radio-group-button .ivu-radio-wrapper:nth-of-type(2){
     border-left 1px solid #dcdee2
 }
-.radio-box
-    /deep/.ivu-radio-group-button
-        display flex
-        width 100%
-        flex-wrap: wrap
-        .ivu-radio-wrapper
-            flex 1
-            display flex
-            align-items center
-            justify-content center
-    &.on
-        /deep/.ivu-radio-group-button
-            .ivu-radio-wrapper
-                flex unset
-                width 67px
-                margin-right 20px
-                border-radius 4px
+// .radio-box
+//     /deep/.ivu-radio-group-button
+//         display flex
+//         width 100%
+//         flex-wrap: wrap
+//         .ivu-radio-wrapper
+//             flex 1
+//             display flex
+//             align-items center
+//             justify-content center
+//     &.on
+//         /deep/.ivu-radio-group-button
+//             .ivu-radio-wrapper
+//                 flex unset
+//                 width 67px
+//                 margin-right 20px
+//                 border-radius 4px
 
 
 .title-tips

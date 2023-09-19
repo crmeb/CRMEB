@@ -11,16 +11,53 @@
 import * as qiniu from 'qiniu-js';
 import Cos from 'cos-js-sdk-v5';
 import axios from 'axios';
+import { upload, ossUpload } from '@/api/upload';
 
+const sign = (method, publicKey, privateKey, md5, contentType, date, bucketName, fileName) => {
+  const CryptoJS = require('crypto-js'); // 这里使用了crypto-js加密算法库，安装方法会在后面说明
+  const CanonicalizedResource = `/${bucketName}/${fileName}`;
+  const StringToSign = method + '\n' + md5 + '\n' + contentType + '\n' + date + '\n' + CanonicalizedResource; // 此处的md5以及date是可选的，contentType对于PUT请求是可选的，对于POST请求则是必须的
+  let Signature = CryptoJS.HmacSHA1(StringToSign, privateKey);
+  Signature = CryptoJS.enc.Base64.stringify(Signature);
+  return 'UCloud' + ' ' + publicKey + ':' + Signature;
+};
 export default {
   videoUpload(config) {
-    if (config.type === 'COS') {
-      return this.cosUpload(config.evfile, config.res.data, config.uploading);
-    } else if (config.type === 'OSS') {
-      return this.ossHttp(config.evfile, config.res, config.uploading);
-    } else {
-      return this.qiniuHttp(config.evfile, config.res, config.uploading);
+    let result;
+    switch (config.type) {
+      case 'COS':
+        result = this.cosUpload(config.evfile, config.res.data, config.uploading);
+        break;
+      case 'OSS':
+        result = this.ossHttp(config.evfile, config.res, config.uploading);
+        break;
+      case 'OBS':
+        result = this.obsHttp(config.evfile, config.res, config.uploading);
+        break;
+      case 'US3':
+        result = this.us3Http(config.evfile, config.res, config.uploading);
+        break;
+      case 'JDOSS':
+        result = this.jdHttp(config.evfile, config.res, config.uploading);
+        break;
+      case 'CTOSS':
+        result = this.obsHttp(config.evfile, config.res, config.uploading);
+        break;
+      case 'QINIU':
+        result = this.qiniuHttp(config.evfile, config.res, config.uploading);
+        break;
+      case 'local':
+        result = this.uploadMp4ToLocal(config.evfile, config.res, config.uploading);
+        break;
     }
+    return result;
+    // if (config.type === 'COS') {
+    //   return this.cosUpload(config.evfile, config.res.data, config.uploading);
+    // } else if (config.type === 'OSS') {
+    //   return this.ossHttp(config.evfile, config.res, config.uploading);
+    // } else {
+    //   return this.qiniuHttp(config.evfile, config.res, config.uploading);
+    // }
   },
   cosUpload(file, config, uploading) {
     let cos = new Cos({
@@ -145,30 +182,134 @@ export default {
         });
     });
   },
-  qiniuHttp(evfile, res, videoIng) {
-    let uptoken = res.data.token;
-    let file = evfile.target.files[0]; // Blob 对象，上传的文件
-    let Key = file.name; // 上传后文件资源名以设置的 key 为主，如果 key 为 null 或者 undefined，则文件资源名会以 hash 值作为资源名。
-    let pos = Key.lastIndexOf('.');
+  // qiniuHttp(evfile, res, videoIng) {
+  //   let uptoken = res.data.token;
+  //   let file = evfile.target.files[0]; // Blob 对象，上传的文件
+  //   let Key = file.name; // 上传后文件资源名以设置的 key 为主，如果 key 为 null 或者 undefined，则文件资源名会以 hash 值作为资源名。
+  //   let pos = Key.lastIndexOf('.');
+  //   let suffix = '';
+  //   if (pos !== -1) {
+  //     suffix = Key.substring(pos);
+  //   }
+  //   let filename = new Date().getTime() + suffix;
+  //   let fileUrl = res.data.domain + '/' + filename;
+  //   let config = {
+  //     useCdnDomain: true,
+  //   };
+  //   let putExtra = {
+  //     fname: '', // 文件原文件名
+  //     params: {}, // 用来放置自定义变量
+  //     mimeType: null, // 用来限制上传文件类型，为 null 时表示不对文件类型限制；限制类型放到数组里： ["image/png", "image/jpeg", "image/gif"]
+  //   };
+  //   let observable = qiniu.upload(file, filename, uptoken, putExtra, config);
+  //   return new Promise((resolve, reject) => {
+  //     observable.subscribe({
+  //       next: (result) => {
+  //         let progress = Math.round(result.total.loaded / result.total.size);
+  //         videoIng(true, progress);
+  //         // 主要用来展示进度
+  //       },
+  //       error: (errResult) => {
+  //         // 失败报错信息
+  //         reject({ msg: errResult });
+  //       },
+  //       complete: (result) => {
+  //         // 接收成功后返回的信息
+  //         videoIng(false, 0);
+  //         resolve({ url: fileUrl });
+  //       },
+  //     });
+  //   });
+  // },
+  obsHttp(file, res, videoIng) {
+    const fileObject = file.target.files[0];
+    const Key = fileObject.name;
+    const pos = Key.lastIndexOf('.');
     let suffix = '';
     if (pos !== -1) {
       suffix = Key.substring(pos);
     }
-    let filename = new Date().getTime() + suffix;
-    let fileUrl = res.data.domain + '/' + filename;
-    let config = {
+    const filename = new Date().getTime() + suffix;
+    const formData = new FormData();
+    const data = res.data;
+    // 注意formData里append添加的键的大小写
+    formData.append('key', filename);
+    formData.append('AccessKeyId', data.accessid);
+    formData.append('policy', data.policy);
+    formData.append('signature', data.signature);
+    formData.append('file', fileObject);
+    formData.append('success_action_status', 200);
+    const url = data.host;
+    const fileUrl = url + '/' + filename;
+    videoIng(true, 100);
+    return new Promise((resolve, reject) => {
+      axios.defaults.withCredentials = false;
+      axios
+        .post(url, formData)
+        .then(() => {
+          videoIng(false, 0);
+          resolve({ url: data.cdn ? data.cdn + '/' + filename : fileUrl });
+        })
+        .catch((res) => {
+          reject({ msg: res });
+        });
+    });
+  },
+  us3Http(file, res, videoIng) {
+    const fileObject = file.target.files[0];
+    const Key = fileObject.name;
+    const pos = Key.lastIndexOf('.');
+    let suffix = '';
+    if (pos !== -1) {
+      suffix = Key.substring(pos);
+    }
+    const filename = new Date().getTime() + suffix;
+    const data = res.data;
+
+    const auth = sign('PUT', data.accessid, data.secretKey, '', fileObject.type, '', data.storageName, filename);
+    return new Promise((resolve, reject) => {
+      axios.defaults.withCredentials = false;
+      const url = `https://${data.storageName}.cn-bj.ufileos.com/${filename}`;
+      axios
+        .put(url, fileObject, {
+          headers: {
+            Authorization: auth,
+            'content-type': fileObject.type,
+          },
+        })
+        .then((res) => {
+          videoIng(false, 0);
+          resolve({ url: data.cdn ? data.cdn + '/' + filename : url });
+        })
+        .catch((res) => {
+          reject({ msg: res });
+        });
+    });
+  },
+  qiniuHttp(evfile, res, videoIng) {
+    const uptoken = res.data.token;
+    const file = evfile.target.files[0]; // Blob 对象，上传的文件
+    const Key = file.name; // 上传后文件资源名以设置的 key 为主，如果 key 为 null 或者 undefined，则文件资源名会以 hash 值作为资源名。
+    const pos = Key.lastIndexOf('.');
+    let suffix = '';
+    if (pos !== -1) {
+      suffix = Key.substring(pos);
+    }
+    const filename = new Date().getTime() + suffix;
+    const fileUrl = res.data.domain + '/' + filename;
+    const config = {
       useCdnDomain: true,
     };
-    let putExtra = {
+    const putExtra = {
       fname: '', // 文件原文件名
       params: {}, // 用来放置自定义变量
       mimeType: null, // 用来限制上传文件类型，为 null 时表示不对文件类型限制；限制类型放到数组里： ["image/png", "image/jpeg", "image/gif"]
     };
-    let observable = qiniu.upload(file, filename, uptoken, putExtra, config);
+    const observable = qiniu.upload(file, filename, uptoken, putExtra, config);
     return new Promise((resolve, reject) => {
       observable.subscribe({
         next: (result) => {
-          let progress = Math.round(result.total.loaded / result.total.size);
+          const progress = Math.round(result.total.loaded / result.total.size);
           videoIng(true, progress);
           // 主要用来展示进度
         },
@@ -179,9 +320,33 @@ export default {
         complete: (result) => {
           // 接收成功后返回的信息
           videoIng(false, 0);
-          resolve({ url: fileUrl });
+          resolve({ url: res.data.cdn ? res.data.cdn + '/' + filename : fileUrl });
         },
       });
     });
+  },
+  // 京东云上传
+  jdHttp(evfile, r, videoIng) {
+    const fileObject = evfile.target.files[0]; // 获取的文件对象
+    const formData = new FormData();
+    formData.append('file', fileObject);
+    return new Promise((resolve, reject) => {
+      ossUpload(r.data.upload_url, formData)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          videoIng(true, 100);
+          resolve(r.data);
+        });
+    });
+  },
+  // 本地上传
+  uploadMp4ToLocal(evfile, res, videoIng) {
+    const fileObject = evfile.target.files[0]; // 获取的文件对象
+    const formData = new FormData();
+    formData.append('file', fileObject);
+    videoIng(true, 100);
+    return upload(formData);
   },
 };

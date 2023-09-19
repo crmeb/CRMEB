@@ -103,25 +103,7 @@
 			},
 			goDetail(url) {
 				goPage().then(res => {
-					let urls = url.info[1].value
-					if (urls.indexOf("http") != -1) {
-						// #ifdef H5 || APP-PLUS
-						location.href = urls
-						// #endif
-					} else {
-						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
-								'/pages/user/index'
-							].indexOf(urls) ==
-							-1) {
-							uni.navigateTo({
-								url: urls
-							})
-						} else {
-							uni.navigateTo({
-								url: urls
-							})
-						}
-					}
+					this.$util.JumpPath(urls);
 				})
 			}
 		}

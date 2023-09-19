@@ -9,7 +9,6 @@ use app\services\activity\integral\StoreIntegralOrderServices;
 use app\services\activity\integral\StoreIntegralServices;
 use app\services\product\sku\StoreProductAttrValueServices;
 use app\services\shipping\ExpressServices;
-use crmeb\services\CacheService;
 
 class StoreIntegralOrderController
 {

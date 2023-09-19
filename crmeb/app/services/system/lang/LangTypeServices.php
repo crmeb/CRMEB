@@ -5,6 +5,7 @@ namespace app\services\system\lang;
 use app\dao\system\lang\LangTypeDao;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use FormBuilder\Exception\FormBuilderException;
 use think\facade\Route as Url;
@@ -99,8 +100,8 @@ class LangTypeServices extends BaseServices
     public function setDefaultLangName()
     {
         $fileName = $this->dao->value(['is_default' => 1], 'file_name');
-        $this->cacheDriver()->set('range_name', $fileName);
-        app()->make(LangCodeServices::class)->cacheDriver()->clear();
+        CacheService::set('range_name', $fileName);
+        CacheService::clear();
     }
 
     /**

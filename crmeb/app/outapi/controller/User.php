@@ -97,8 +97,79 @@ class User extends AuthController
      * 赠送相关
      * @param int $uid
      * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function give($uid)
+    {
+        $data = $this->request->postMore([
+            ['money_status', 0],
+            ['money', 0],
+            ['integration_status', 0],
+            ['integration', 0],
+            ['days', 0],
+            ['coupon', 0]
+        ]);
+        if (!$uid) return app('json')->fail(100100);
+        if (!$this->services->otherGive((int)$uid, $data)) {
+            return app('json')->fail(100005);
+        }
+        return app('json')->success(100010);
+    }
+
+    /**
+     * 获取用户详情
+     * @param $uid
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/06/20
+     */
+    public function info($uid)
+    {
+        if (!$uid) return app('json')->fail(100100);
+        $data = $this->services->userInfo($uid);
+        return app('json')->success(compact('data'));
+    }
+
+    /**
+     * 赠送余额
+     * @param int $uid
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function giveBalance($uid)
+    {
+        $data = $this->request->postMore([
+            ['money_status', 0],
+            ['money', 0],
+            ['integration_status', 0],
+            ['integration', 0],
+            ['days', 0],
+            ['coupon', 0]
+        ]);
+        if (!$uid) return app('json')->fail(100100);
+        if (!$this->services->otherGive((int)$uid, $data)) {
+            return app('json')->fail(100005);
+        }
+        return app('json')->success(100010);
+    }
+
+    /**
+     * 赠送积分
+     * @param int $uid
+     * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function givePoint($uid)
     {
         $data = $this->request->postMore([
             ['money_status', 0],

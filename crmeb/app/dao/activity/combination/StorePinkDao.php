@@ -132,7 +132,7 @@ class StorePinkDao extends BaseDao
     public function successList(int $uid)
     {
         return $this->search(['status' => 2, 'is_refund' => 0])
-            ->where('uid', '<>', $uid)
+//            ->where('uid', '<>', $uid)
             ->select()->toArray();
     }
 

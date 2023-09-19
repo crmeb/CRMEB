@@ -1,154 +1,210 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <div class="headers">
-        <div class="search">
-          <div>
-            <span>是否显示：</span>
-            <Select v-model="formValidate.status" style="width: 200px" clearable>
-              <!-- <Option value="">全部</Option> -->
-              <Option :value="1">显示</Option>
-              <Option :value="0">不显示</Option>
-            </Select>
-          </div>
-          <div>
-            <span>等级名称：</span>
-            <Input v-model="formValidate.keyword" placeholder="请输入等级名称" style="width: 200px" />
-          </div>
-          <Button type="primary" @click="search">搜索</Button>
-          <Button type="success" icon="md-add" @click="groupAdd()" class="ml20">添加等级</Button>
-        </div>
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
+        >
+          <el-form-item label="是否显示：">
+            <el-select v-model="formValidate.status" clearable @change="search" class="form_content_width">
+              <el-option value="" label="全部"></el-option>
+              <el-option :value="1" label="显示"></el-option>
+              <el-option :value="0" label="不显示"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="等级名称：">
+            <el-input
+              clearable
+              placeholder="请输入等级名称"
+              v-model="formValidate.keyword"
+              class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="search">查询</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="groupAdd">添加等级</el-button>
+          </el-form-item>
+        </el-form>
       </div>
-      <Row type="flex">
-        <Col v-bind="grid"> </Col>
-      </Row>
-      <Table
-        :columns="columns1"
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+      <el-table
         :data="tabList"
         ref="table"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row }" slot="image">
-          <viewer>
-            <div class="tabBox-img">
-              <img v-lazy="row.image" />
+        <el-table-column label="ID" width="50">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品图片" min-width="90">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.image" />
             </div>
-          </viewer>
-        </template>
-        <template slot-scope="{ row }" slot="one_brokerage">
-          <span>{{ row.one_brokerage }}%</span>
-        </template>
-        <template slot-scope="{ row }" slot="one_brokerage_ratio">
-          <span>{{ row.one_brokerage_ratio }}%</span>
-        </template>
-        <template slot-scope="{ row }" slot="two_brokerage">
-          <span>{{ row.two_brokerage }}%</span>
-        </template>
-        <template slot-scope="{ row }" slot="two_brokerage_ratio">
-          <span>{{ row.two_brokerage_ratio }}%</span>
-        </template>
-        <template slot-scope="{ row }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="addTask(row)">等级任务</a>
-          <Divider type="vertical" />
-          <a @click="edit(row, '编辑')">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除这条信息', index)">删除</a>
-        </template>
-      </Table>
+          </template>
+        </el-table-column>
+        <el-table-column label="名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="等级" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.grade }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="一级上浮比例" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.one_brokerage }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="一级分佣比例(上浮后)" min-width="150">
+          <template slot-scope="scope">
+            <span>{{ scope.row.one_brokerage_ratio }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="二级上浮比例" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.two_brokerage }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="二级分佣比例(上浮后)" min-width="150">
+          <template slot-scope="scope">
+            <span>{{ scope.row.two_brokerage_ratio }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否显示" min-width="130">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="开启"
+              inactive-text="关闭"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="addTask(scope.row)">等级任务</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="edit(scope.row, '编辑')">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <div class="task-modal">
-      <Modal v-model="modal2" title="添加任务" footer-hide width="1000">
-        <div class="header">
-          <h4>搜索条件</h4>
-          <div class="search">
-            <div>
-              <span>是否显示：</span>
-              <Select v-model="taskData.status" style="width: 200px" clearable>
-                <!-- <Option :value="''">全部</Option> -->
-                <Option :value="1">显示</Option>
-                <Option :value="0">不显示</Option>
-              </Select>
-            </div>
-            <div>
-              <span>任务名称：</span>
-              <Input v-model="taskData.keyword" placeholder="请输入任务名称" style="width: 200px" />
-            </div>
-            <Button type="primary" @click="searchTask">搜索</Button>
-          </div>
-        </div>
+      <el-dialog :visible.sync="modal2" title="添加任务" width="1000px">
+        <el-form :model="taskData" :label-width="labelWidth" :label-position="labelPosition" inline>
+          <el-form-item label="是否显示：">
+            <el-select v-model="taskData.status" class="form_content_width" clearable>
+              <!-- <el-option :value="''">全部</el-option> -->
+              <el-option :value="1" label="显示"></el-option>
+              <el-option :value="0" label="显示">不显示</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="任务名称：">
+            <el-input v-model="taskData.keyword" placeholder="请输入任务名称" clearable class="form_content_width" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="searchTask">搜索</el-button>
+          </el-form-item>
+        </el-form>
         <div>
           <div class="add-task">
-            <Button type="primary" @click="taskAdd()">添加等级任务</Button>
+            <el-button type="primary" @click="taskAdd()">添加等级任务</el-button>
           </div>
           <div>
-            <Table
-              :columns="columns2"
+            <el-table
               :data="taskTabList"
               ref="table"
-              class="mt25"
-              :loading="taskLoading"
-              highlight-row
+              class="mt14"
+              v-loading="taskLoading"
+              highlight-current-row
               no-userFrom-text="暂无数据"
               no-filtered-userFrom-text="暂无筛选结果"
             >
-              <template slot-scope="{ row }" slot="status">
-                <i-switch
-                  v-model="row.status"
-                  :value="row.status"
-                  :true-value="1"
-                  :false-value="0"
-                  @on-change="onchangeTaskIsShow(row)"
-                  size="large"
-                >
-                  <span slot="open">开启</span>
-                  <span slot="close">关闭</span>
-                </i-switch>
-              </template>
-              <template slot-scope="{ row, index }" slot="action">
-                <a @click="editTask(row, '编辑')">编辑</a>
-                <Divider type="vertical" />
-                <a @click="delTask(row, '删除这条信息', index)">删除</a>
-              </template>
-            </Table>
-            <!-- <div class="acea-row row-right page">
-              <Page
-                :total="taskTotal"
-                :current="taskData.page"
-                show-elevator
-                show-total
-                @on-change="pageTaskChange"
-                :page-size="taskData.limit"
-              />
-            </div> -->
+              <el-table-column label="ID" width="80">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.id }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="名称" min-width="130">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.name }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="任务类型" min-width="80">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.type_name }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="限定数量" min-width="80">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.number }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="是否显示" min-width="80">
+                <template slot-scope="scope">
+                  <el-switch
+                    class="defineSwitch"
+                    :active-value="1"
+                    :inactive-value="0"
+                    v-model="scope.row.status"
+                    :value="scope.row.status"
+                    @change="onchangeTaskIsShow(scope.row)"
+                    active-text="开启"
+                    inactive-text="关闭"
+                  >
+                    <span slot="open">开启</span>
+                    <span slot="close">关闭</span>
+                  </el-switch>
+                </template>
+              </el-table-column>
+              <el-table-column label="排序" min-width="50">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.sort }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" fixed="right" width="170">
+                <template slot-scope="scope">
+                  <a @click="editTask(scope.row, '编辑')">编辑</a>
+                  <el-divider direction="vertical"></el-divider>
+                  <a @click="delTask(scope.row, '删除这条信息', scope.$index)">删除</a>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
         </div>
-      </Modal>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -300,7 +356,7 @@ export default {
   computed: {
     ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -335,7 +391,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -350,16 +406,8 @@ export default {
         })
         .catch((res) => {
           this.taskLoading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
-    },
-    pageTaskChange(index) {
-      this.taskData.page = index;
-      this.getList();
     },
     // 表格搜索
     search() {
@@ -383,22 +431,22 @@ export default {
     onchangeIsShow(row) {
       membershipSetApi(`agent/level/set_status/${row.id}/${row.status}`)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改是否显示
     onchangeTaskIsShow(row) {
       levelTaskSetApi(`agent/level_task/set_status/${row.id}/${row.status}`)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getTaskList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     //添加等级任务
@@ -433,11 +481,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tabList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 删除
@@ -451,11 +499,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.taskTabList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

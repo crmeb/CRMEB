@@ -4,12 +4,12 @@
       <span>选择模板</span>{{ datas[name].tabList[datas[name].tabVal].name }}
     </div>
     <div class="radio-box" :class="{ on: datas[name].type == 1 }">
-      <RadioGroup v-model="datas[name].tabVal" type="button" size="large" @on-change="radioChange($event)">
-        <Radio :label="index" v-for="(item, index) in datas[name].tabList" :key="index">
+      <el-radio-group v-model="datas[name].tabVal" type="button" @input="radioChange()">
+        <el-radio-button :label="index" v-for="(item, index) in datas[name].tabList" :key="index">
           <span class="iconfont" :class="item.icon" v-if="item.icon"></span>
           <span v-else>{{ item.name }}</span>
-        </Radio>
-      </RadioGroup>
+        </el-radio-button>
+      </el-radio-group>
     </div>
   </div>
 </template>
@@ -55,8 +55,8 @@ export default {
   },
   methods: {
     radioChange(e) {
-      this.$emit('getConfig', e);
-      this.$store.commit('moren/upDataGoodList', { name: this.moduleName, type: e });
+      this.$emit('getConfig', this.datas[this.name].tabVal);
+      this.$store.commit('moren/upDataGoodList', { name: this.moduleName, type: this.datas[this.name].tabVal });
     },
   },
 };

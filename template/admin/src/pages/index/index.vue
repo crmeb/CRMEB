@@ -12,7 +12,7 @@
     <!--用户-->
     <user-chart ref="userChart" />
     <!--版本升级-->
-    <upgrade v-if="force_reminder == 1" />
+    <!-- <upgrade v-if="force_reminder == 1" /> -->
   </div>
 </template>
 
@@ -21,12 +21,7 @@ import baseInfo from './components/baseInfo';
 import gridMenu from './components/gridMenu';
 import visitChart from './components/visitChart';
 import userChart from './components/userChart';
-import hotSearch from './hot-search';
-import userPreference from './user-preference';
 import { auth } from '@/api/system';
-import { Notice } from 'iview';
-import { getCookies, setCookies } from '@/libs/util';
-import { upgradeStatusApi } from '@/api/system';
 
 export default {
   name: 'index',
@@ -35,8 +30,6 @@ export default {
     gridMenu,
     visitChart,
     userChart,
-    hotSearch,
-    userPreference,
   },
   data() {
     return {

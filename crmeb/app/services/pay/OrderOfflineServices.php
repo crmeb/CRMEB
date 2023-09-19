@@ -12,6 +12,7 @@
 namespace app\services\pay;
 
 
+use app\services\activity\combination\StorePinkServices;
 use app\services\BaseServices;
 use app\services\order\StoreOrderDeliveryServices;
 use app\services\order\StoreOrderInvoiceServices;
@@ -70,8 +71,14 @@ class OrderOfflineServices extends BaseServices
         $orderInfo['phone'] = $userInfo['phone'];
         $capitalFlowServices->setFlow($orderInfo, 'order');
 
+        // 拼团订单创建拼团
+        if ($orderInfo['combination_id']) {
+            $tidyOrder = app()->make(StoreOrderServices::class)->tidyOrder($orderInfo->toArray(), true);
+            app()->make(StorePinkServices::class)->createPink($tidyOrder);
+        }
+
         //虚拟商品自动发货
-        if($orderInfo['virtual_type'] > 0){
+        if ($orderInfo['virtual_type'] > 0) {
             /** @var StoreOrderDeliveryServices $orderDeliveryServices */
             $orderDeliveryServices = app()->make(StoreOrderDeliveryServices::class);
             $orderDeliveryServices->virtualSend($orderInfo);

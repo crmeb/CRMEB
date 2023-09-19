@@ -15,6 +15,9 @@ use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductReplyServices;
 use app\services\product\product\StoreProductServices;
 use app\services\user\UserServices;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 /**
  * 商品类
@@ -39,9 +42,9 @@ class StoreProductController
      * @param Request $request
      * @param StoreCategoryServices $services
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function lst(Request $request, StoreCategoryServices $services)
     {
@@ -99,9 +102,9 @@ class StoreProductController
      * @param $id
      * @param int $type
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function detail(Request $request, $id, $type = 0)
     {
@@ -113,9 +116,9 @@ class StoreProductController
      * 为你推荐
      * @param Request $request
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function product_hot(Request $request)
     {
@@ -129,9 +132,9 @@ class StoreProductController
      * @param Request $request
      * @param $type
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function groom_list(Request $request, $type)
     {
@@ -173,9 +176,9 @@ class StoreProductController
      * @param Request $request
      * @param $id
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function reply_list(Request $request, $id)
     {

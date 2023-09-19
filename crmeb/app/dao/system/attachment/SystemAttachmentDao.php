@@ -92,4 +92,20 @@ class SystemAttachmentDao extends BaseDao
     {
         $this->getModel()->whereTime('time', 'yesterday')->where('module_type', 2)->delete();
     }
+
+    /**
+     * 获取扫码上传的图片数据
+     * @param $scan_token
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/06/13
+     */
+    public function scanUploadImage($scan_token)
+    {
+        return $this->getModel()->where('scan_token', $scan_token)->field('att_dir,att_id')->select()->toArray();
+    }
 }

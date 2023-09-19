@@ -17,6 +17,7 @@ use crmeb\exceptions\ApiException;
 use crmeb\exceptions\AuthException;
 use think\db\exception\DbException;
 use think\exception\Handle;
+use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\facade\Env;
 use think\facade\Log;
@@ -81,6 +82,9 @@ class AdminApiExceptionHandle extends Handle
      */
     public function render($request, Throwable $e): Response
     {
+        if ($e instanceof HttpResponseException) {
+            return parent::render($request, $e);
+        }
         $massageData = Env::get('app_debug', false) ? [
             'message' => $e->getMessage(),
             'file' => $e->getFile(),

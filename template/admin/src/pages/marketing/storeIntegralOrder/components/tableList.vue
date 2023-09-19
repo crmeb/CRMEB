@@ -1,70 +1,86 @@
 <template>
   <div>
-    <Table
-      :columns="columns"
+    <el-table
       :data="orderList"
       ref="table"
-      :loading="loading"
-      highlight-row
-      no-data-text="暂无数据"
-      no-filtered-data-text="暂无筛选结果"
-      @on-selection-change="onSelectTab"
-      @on-select-all="selectAll"
-      @on-select-all-cancel="selectAll"
-      @on-select-cancel="onSelectCancel"
+      v-loading="loading"
+      highlight-current-row
+      empty-text="暂无数据"
+      @select="selectAll"
+      @select-all="selectAll"
       class="orderData"
     >
-      <template slot-scope="{ row, index }" slot="order_id">
-        <span v-text="row.order_id" style="display: block"></span>
-        <span v-show="row.is_del == 1" style="color: #ed4014; display: block">用户已删除</span>
-      </template>
-      <template slot-scope="{ row, index }" slot="nickname">
-        <a @click="showUserInfo(row)">{{ row.nickname }}/{{ row.uid }}</a>
-      </template>
-      <template slot-scope="{ row, index }" slot="info">
-        <div class="tabBox">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.image" />
-          </div>
-          <span class="tabBox_tit"> {{ row.store_name + ' | ' }}{{ row.suk ? row.suk : '' }} </span>
-          <span class="tabBox_pice">{{ '积分' + row.total_price + ' x ' + row.total_num }}</span>
-        </div>
-      </template>
-      <template slot-scope="{ row, index }" slot="action">
-        <!--        <a @click="edit(row)" v-if="row.status === 1">编辑</a>-->
-        <a @click="sendOrder(row)" v-if="row.status === 1">发送货</a>
-        <a @click="delivery(row)" v-if="row.status === 2">配送信息</a>
-        <Divider type="vertical" v-if="row.status === 1 || row.status === 2" />
-        <template>
-          <Dropdown @on-click="changeMenu(row, $event)" :transfer="true">
-            <a href="javascript:void(0)">
-              更多
-              <Icon type="ios-arrow-down"></Icon>
-            </a>
-            <DropdownMenu slot="list">
-              <DropdownItem name="2">订单详情</DropdownItem>
-              <DropdownItem name="3">订单记录</DropdownItem>
-              <DropdownItem name="11" v-show="row.status >= 1 && row.express_dump">电子面单打印</DropdownItem>
-              <DropdownItem name="10" v-show="row.status >= 1">小票打印</DropdownItem>
-              <!-- <DropdownItem name="10" v-show="row._status >= 2">订单打印</DropdownItem> -->
-              <DropdownItem name="4" v-show="row.status !== 4">订单备注</DropdownItem>
-              <DropdownItem name="8" v-show="row.status === 2">已收货</DropdownItem>
-              <!-- <DropdownItem name="9">删除订单</DropdownItem> -->
-            </DropdownMenu>
-          </Dropdown>
+      <!-- <el-table-column type="selection" width="55"> </el-table-column> -->
+      <el-table-column label="订单号" min-width="150">
+        <template slot-scope="scope">
+          <span v-text="scope.row.order_id" style="display: block"></span>
+          <span v-show="scope.row.is_del == 1" style="color: #ed4014; display: block">用户已删除</span>
         </template>
-      </template>
-    </Table>
+      </el-table-column>
+      <el-table-column label="用户信息" min-width="100">
+        <template slot-scope="scope">
+          {{ scope.row.nickname }}/{{ scope.row.uid }}
+        </template>
+      </el-table-column>
+      <el-table-column label="商品信息" min-width="330">
+        <template slot-scope="scope">
+          <div class="tabBox">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.image" />
+            </div>
+            <span class="tabBox_tit"> {{ scope.row.store_name + ' | ' }}{{ scope.row.suk ? scope.row.suk : '' }} </span>
+            <span class="tabBox_pice">{{ '积分' + scope.row.total_price + ' x ' + scope.row.total_num }}</span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="兑换积分" min-width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.total_price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="订单状态" min-width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.status_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="下单时间" min-width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.add_time }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="150">
+        <template slot-scope="scope">
+          <a @click="sendOrder(scope.row)" v-if="scope.row.status === 1">发送货</a>
+          <a @click="delivery(scope.row)" v-if="scope.row.status === 2">配送信息</a>
+          <el-divider direction="vertical" v-if="scope.row.status === 1 || scope.row.status === 2" />
+          <template>
+            <el-dropdown size="small" @command="changeMenu(scope.row, $event)" :transfer="true">
+              <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
+
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="2">订单详情</el-dropdown-item>
+                <el-dropdown-item command="3">订单记录</el-dropdown-item>
+                <el-dropdown-item command="11" v-show="scope.row.status >= 1 && scope.row.express_dump"
+                  >电子面单打印</el-dropdown-item
+                >
+                <!-- <el-dropdown-item command="10" v-show="scope.row.status >= 1">小票打印</el-dropdown-item> -->
+                <!-- <el-dropdown-item name="10" v-show="scope.row._status >= 2">订单打印</el-dropdown-item> -->
+                <el-dropdown-item command="4" v-show="scope.row.status !== 4">订单备注</el-dropdown-item>
+                <el-dropdown-item command="8" v-show="scope.row.status === 2">已收货</el-dropdown-item>
+                <el-dropdown-item command="9" v-show="scope.row.is_del === 1">删除订单</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </template>
+      </el-table-column>
+    </el-table>
     <div class="acea-row row-right page">
-      <Page
-        :total="page.total"
-        :current="page.pageNum"
-        show-elevator
-        show-total
-        @on-change="pageChange"
-        :page-size="page.pageSize"
-        @on-page-size-change="limitChange"
-        show-sizer
+      <pagination
+        v-if="total"
+        :total="total"
+        :page.sync="page.pageNum"
+        :limit.sync="page.pageSize"
+        @pagination="getList"
       />
     </div>
     <!-- 编辑 退款 退积分 不退款-->
@@ -123,59 +139,8 @@ export default {
       orderCards: [],
       loading: false,
       orderId: 0,
-      columns: [
-        {
-          type: 'expand',
-          width: 30,
-          render: (h, params) => {
-            return h(expandRow, {
-              props: {
-                row: params.row,
-              },
-            });
-          },
-        },
-        {
-          title: '订单号',
-          align: 'center',
-          slot: 'order_id',
-          minWidth: 150,
-        },
-        {
-          title: '用户信息',
-          slot: 'nickname',
-          minWidth: 100,
-        },
-        {
-          title: '商品信息',
-          slot: 'info',
-          minWidth: 330,
-        },
-        {
-          title: '兑换积分',
-          key: 'total_price',
-          minWidth: 70,
-        },
-        {
-          title: '订单状态',
-          key: 'status_name',
-          minWidth: 100,
-        },
-        {
-          title: '下单时间',
-          key: 'add_time',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 150,
-          align: 'center',
-        },
-      ],
+      total: 0, // 总条数
       page: {
-        total: 0, // 总条数
         pageNum: 1, // 当前页
         pageSize: 10, // 每页显示条数
       },
@@ -287,11 +252,11 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.getList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           // this.modalTitleSs = '修改确认收货';
           break;
@@ -305,12 +270,12 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.$emit('changeGetTabs');
               this.getList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           break;
         case '11':
@@ -323,11 +288,11 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.getList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           break;
         default:
@@ -343,14 +308,6 @@ export default {
     },
     // 立即支付 /确认收货//删除单条订单
     submitModel() {
-      this.getList();
-    },
-    pageChange(index) {
-      this.page.pageNum = index;
-      this.getList();
-    },
-    limitChange(limit) {
-      this.page.pageSize = limit;
       this.getList();
     },
     // 订单列表
@@ -381,13 +338,13 @@ export default {
             return item;
           });
           this.orderCards = data.stat;
-          this.page.total = data.count;
+          this.total = data.count;
           this.$emit('on-changeCards', data.stat);
           this.loading = false;
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 全选
@@ -408,19 +365,14 @@ export default {
       if (row.is_del === 1) {
         this.$modalSure(data)
           .then((res) => {
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.getList();
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
-        const title = '错误！';
-        const content = '<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>';
-        this.$Modal.error({
-          title: title,
-          content: content,
-        });
+        this.$message.error('您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！');
       }
     },
     // 获取编辑表单数据
@@ -435,7 +387,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 获取详情表单数据
@@ -455,7 +407,7 @@ export default {
           }
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改成功
@@ -479,7 +431,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     change(status) {},

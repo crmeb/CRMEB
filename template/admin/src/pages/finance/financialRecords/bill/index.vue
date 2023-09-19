@@ -3,77 +3,102 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form
         ref="formValidate"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
-        class="tabform"
         @submit.native.prevent
       >
-        <Row :gutter="24" type="flex">
-          <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
-            <FormItem label="关键字：">
-              <Input enter-button placeholder="请输入" element-id="name" v-model="formValidate.nickname" />
-            </FormItem>
-          </Col>
-          <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
-            <FormItem label="时间范围：" class="tab_data">
-              <DatePicker
+        <el-row :gutter="24">
+          <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
+            <el-form-item label="关键字：">
+              <el-input enter-button placeholder="请输入" element-id="name" v-model="formValidate.nickname" />
+            </el-form-item>
+          </el-col>
+          <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
+            <el-form-item label="时间范围：" class="tab_data">
+              <el-date-picker
+                  clearable
                 :editable="false"
-                style="width: 80%"
-                @on-change="onchangeTime"
+                @change="onchangeTime"
                 format="yyyy/MM/dd"
+                value-format="yyyy/MM/dd"
                 type="daterange"
-                placement="bottom-end"
-                placeholder="请选择时间"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
-            <FormItem label="筛选类型：" class="tab_data">
-              <Select v-model="formValidate.type" style="width: 200px; height: 32px" clearable>
-                <Option v-for="(item, index) in billList" :key="index" :value="item.type">{{ item.title }}</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col span="6">
-            <FormItem>
-              <Button type="primary" icon="ios-search" @click="userSearchs">搜索</Button>
-              <Button v-auth="['export-userFinance']" class="export" icon="ios-share-outline" @click="exports"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                  style="width: 80%"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
+            <el-form-item label="筛选类型：" class="tab_data">
+              <el-select v-model="formValidate.type" style="width: 200px; height: 32px" clearable>
+                <el-option
+                  v-for="(item, index) in billList"
+                  :key="index"
+                  :value="item.type"
+                  :label="item.title"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item>
+              <el-button type="primary" @click="userSearchs">搜索</el-button>
+              <el-button v-auth="['export-userFinance']" class="export" @click="exports"
                 >导出
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        ref="table"
-        highlight-row
-        :columns="columns"
-        :data="tabList"
-        :loading="loading"
-        no-data-text="暂无数据"
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row }" slot="number">
-          <div :class="[row.pm === 1 ? 'green' : 'red']">
-            {{ row.pm === 1 ? row.number : '-' + row.number }}
-          </div>
-        </template>
-      </Table>
+              </el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table ref="table" highlight-current-row :data="tabList" v-loading="loading" empty-text="暂无数据">
+        <el-table-column label="用户ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.uid }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="昵称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="金额" min-width="130">
+          <template slot-scope="scope">
+            <div :class="[scope.row.pm === 1 ? 'green' : 'red']">
+              {{ scope.row.pm === 1 ? scope.row.number : '-' + scope.row.number }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="类型" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.title }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.mark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          :page-size="formValidate.limit"
-          @on-change="pageChange"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -97,52 +122,12 @@ export default {
       loading: false,
       tabList: [],
       total: 0,
-      columns: [
-        {
-          title: '用户ID',
-          key: 'uid',
-          sortable: true,
-          width: 80,
-        },
-        {
-          title: '昵称',
-          key: 'nickname',
-          minWidth: 150,
-        },
-        {
-          title: '金额',
-          minWidth: 150,
-          slot: 'number',
-          // render: (h, params) => {
-          //     return h('div', {
-          //         style: {
-          //             color: '#FF5722'
-          //         }
-          //     })
-          // }
-        },
-        {
-          title: '类型',
-          key: 'title',
-          minWidth: 100,
-        },
-        {
-          title: '备注',
-          key: 'mark',
-          minWidth: 150,
-        },
-        {
-          title: '创建时间',
-          key: 'add_time',
-          minWidth: 200,
-        },
-      ],
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -165,7 +150,7 @@ export default {
           this.billList = res.data.list;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -180,12 +165,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 搜索
     userSearchs() {
@@ -206,7 +187,7 @@ export default {
           location.href = res.data[0];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

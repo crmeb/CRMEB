@@ -1,0 +1,19 @@
+    /**
+     * 查看
+     * @param $id
+     * @return \think\Response
+     * @date {%DATE%}
+     */
+    public function read($id)
+    {
+        if (!$id) {
+            return app('json')->fail(100100);
+        }
+
+        $info = $this->service->get($id, [{%FIELD%}], {%WITH%});
+        if (!$info) {
+            return app('json')->fail(100100);
+        }
+
+        return app('json')->success($info->toArray());
+    }

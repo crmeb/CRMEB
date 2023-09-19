@@ -78,12 +78,12 @@ class ViewRouter extends Make
             throw new CrudException(500045);
         }
 
-        $this->value['menus'] = $menus;
-        $this->value['name'] = $nameData;
-        $this->value['route'] = $route;
-        $this->value['pagePath'] = $pagePath;
-        if (isset($this->value['path'])) {
-            $this->value['path'] = $this->getfolderPath($path);
+        $this->value['MENUS'] = $menus;
+        $this->value['NAME'] = $nameData;
+        $this->value['ROUTE'] = $route;
+        $this->value['PAGE_PATH'] = $pagePath;
+        if (isset($this->value['PATH'])) {
+            $this->value['PATH'] = $this->getfolderPath($path);
         }
 
         $contentStr = str_replace($this->var, $this->value, $content);

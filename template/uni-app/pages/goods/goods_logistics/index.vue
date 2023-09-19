@@ -51,7 +51,8 @@
 
 <script>
 	import {
-		express
+		express,
+		adminExpress
 	} from '@/api/order.js';
 	import {
 		getProductHot
@@ -82,7 +83,8 @@
 				product: [],
 				orderInfo: {},
 				expressList: [],
-				hostProduct: []
+				hostProduct: [],
+				is_admin: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -103,6 +105,7 @@
 			});
 			this.orderId = options.orderId;
 			this.type = options.type;
+			this.is_admin = options.is_admin || 0;
 			if (this.isLogin) {
 				this.getExpress();
 				this.get_host_product();
@@ -142,7 +145,8 @@
 			},
 			getExpress: function() {
 				let that = this;
-				express(that.orderId, that.type).then(function(res) {
+				let met = this.is_admin ? adminExpress : express
+				met(that.orderId, that.type).then(function(res) {
 					let result = res.data.express.result || {};
 					that.$set(that, 'product', res.data.order.cartInfo || []);
 					that.$set(that, 'orderInfo', res.data.order);

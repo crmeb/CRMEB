@@ -1,5 +1,11 @@
 @import './index.scss';
 
+.el-row {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  box-sizing: border-box;
+}
 /* 页面宽度小于1200px
 ------------------------------- */
 @media screen and (max-width: $lg) {

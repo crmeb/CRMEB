@@ -16,6 +16,9 @@ use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\order\OtherOrderServices;
 use app\services\other\AgreementServices;
 use app\services\user\member\MemberCardServices;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 /** 会员卡
  * Class MemberCardController
@@ -40,9 +43,9 @@ class MemberCardController
      * 会员卡主页数据接口
      * @param Request $request
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function index(Request $request)
     {
@@ -91,9 +94,9 @@ class MemberCardController
      * 会员券接口
      * @param Request $request
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function memberCouponList(Request $request)
     {

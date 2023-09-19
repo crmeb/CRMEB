@@ -70,7 +70,7 @@ class FeiEYun extends BasePrinter
         $this->printerContent .= '名称           单价  数量 金额<BR>';
         $this->printerContent .= '--------------------------------<BR>';
         foreach ($product as $item) {
-            $name = $item['productInfo']['store_name'];
+            $name = $item['productInfo']['store_name'] . " | " . $item['productInfo']['attrInfo']['suk'];
             $price = $item['truePrice'];
             $num = $item['cart_num'];
             $prices = bcmul((string)$item['cart_num'], (string)$item['truePrice'], 2);

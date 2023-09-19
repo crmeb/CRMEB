@@ -174,6 +174,18 @@ Route::group('system', function () {
         Route::get('crud/menus', 'v1.setting.SystemCrud/getMenus')->option(['real_name' => '获取菜单TREE形数据']);
         //获取CRUD文件存放
         Route::post('crud/file_path', 'v1.setting.SystemCrud/getFilePath')->option(['real_name' => '获取CRUD文件存放']);
+        //获取数据字典列表
+        Route::get('crud/data_dictionary', 'v1.setting.SystemCrud/getDataDictionary')->option(['real_name' => '获取数据字典列表']);
+        //查看数据字典
+        Route::get('crud/data_dictionary/:id', 'v1.setting.SystemCrud/getDataDictionaryOne')->option(['real_name' => '查看数据字典']);
+        //修改或者保存字典数据
+        Route::post('crud/data_dictionary/[:id]', 'v1.setting.SystemCrud/saveDataDictionary')->option(['real_name' => '修改或者保存字典数据']);
+        //删除数据字典
+        Route::delete('crud/data_dictionary/:id', 'v1.setting.SystemCrud/deleteDataDictionary')->option(['real_name' => '删除数据字典']);
+        //获取可以进行关联的表名
+        Route::get('crud/association_table', 'v1.setting.SystemCrud/getAssociationTable')->option(['real_name' => '获取可以进行关联的表名']);
+        //获取表的详细信息
+        Route::get('crud/association_table/:tableName', 'v1.setting.SystemCrud/getAssociationTableInfo')->option(['real_name' => '获取表的详细信息']);
         //删除CRUD
         Route::delete('crud/:id', 'v1.setting.SystemCrud/delete')->option(['real_name' => '删除CRUD']);
         //查看CRUD

@@ -1,12 +1,12 @@
     /**
      * 编辑和获取表单
-     * @date {%date%}
+     * @date {%DATE%}
      * @param int $id
      * @return array
      */
     public function getCrudForm(int $id = 0)
     {
-        $url = '/crud/{%route%}';
+        $url = '/crud/{%ROUTE%}';
         $info = [];
         if ($id) {
             $info = $this->dao->get($id);
@@ -17,7 +17,7 @@
         }
         $rule = [];
 
-{%form-php%}
+{%FORM_PHP%}
 
-        return create_form('{%modelName%}', $rule, $url, $id ? 'PUT' : 'POST');
+        return create_form('{%MODEL_NAME%}', $rule, $url, $id ? 'PUT' : 'POST');
     }

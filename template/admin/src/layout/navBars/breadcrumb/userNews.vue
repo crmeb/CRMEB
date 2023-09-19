@@ -1,27 +1,30 @@
 <template>
   <div class="layout-navbars-breadcrumb-user-news">
     <div class="head-box">
-      <div class="head-box-title">{{ $t('message.user.newTitle') }}</div>
-      <div class="head-box-btn" v-if="newsList.length > 0" @click="onAllReadClick">{{ $t('message.user.newBtn') }}</div>
+      <div class="head-box-title">系统通知</div>
+      <div class="head-box-btn" v-if="newsList.length > 0" @click="onAllReadClick">全部已读</div>
     </div>
     <div class="content-box">
       <template v-if="newsList.length > 0">
-        <div class="content-box-item" v-for="(v, k) in newsList" :key="k">
-          <div>{{ v.type | msgType }}</div>
-          <div class="content-box-msg">
-            {{ v.title }}
+        <div class="content-box-item" v-for="(v, k) in newsList" :key="k" @click="jumpUrl(v.url)">
+          <img class="icon" :src="icon(v.type)" alt="" />
+          <div class="content-box-right">
+            <div class="content-box-type">{{ v.type | msgType }}</div>
+            <div class="content-box-msg">
+              {{ v.title }}
+            </div>
           </div>
+
           <!-- <div class="content-box-time">{{ v.time }}</div> -->
         </div>
       </template>
       <div class="content-box-empty" v-else>
         <div class="content-box-empty-margin">
-          <i class="el-icon-s-promotion"></i>
-          <div class="mt15">{{ $t('message.user.newDesc') }}</div>
+          <img class="no-msg" src="@/assets/images/no-msg.png" alt="" />
+          <div class="mt15">暂无通知</div>
         </div>
       </div>
     </div>
-    <!-- <div class="foot-box" @click="onGoToGiteeClick" v-if="newsList.length > 0">{{ $t('message.user.newGo') }}</div> -->
   </div>
 </template>
 
@@ -36,8 +39,10 @@ export default {
     return {
       newsList: [],
       newOrderAudioLink: null,
+      messageList: [],
     };
   },
+  props: ['vm'],
   mounted() {
     this.getNotict();
     this.newOrderAudioLink = newOrderAudioLink;
@@ -52,10 +57,9 @@ export default {
       });
 
       ws.$on('NEW_ORDER', function (data) {
-        that.$Notice.info({
+        that.$notify.info({
           title: '新订单',
-          duration: 8,
-          desc: '您有一个新的订单,ID为(' + data.order_id + '),请注意查看',
+          message: '您有一个新的订单,ID为(' + data.order_id + '),请注意查看',
         });
         if (this.newOrderAudioLink) this.newOrderAudioLink.play();
         that.messageList.push({
@@ -67,10 +71,9 @@ export default {
         });
       });
       ws.$on('NEW_REFUND_ORDER', function (data) {
-        that.$Notice.warning({
+        that.$notify.info({
           title: '退款订单提醒',
-          duration: 8,
-          desc: '您有一个订单申请退款,ID为(' + data.order_id + '),请注意查看',
+          message: '您有一个订单申请退款,ID为(' + data.order_id + '),请注意查看',
         });
         if (window.newOrderAudioLink) this.newOrderAudioLink.play();
         that.messageList.push({
@@ -82,10 +85,14 @@ export default {
         });
       });
       ws.$on('WITHDRAW', function (data) {
-        that.$Notice.warning({
+        // that.$Notice.warning({
+        //   title: '提现提醒',
+        //   duration: 8,
+        //   desc: '有用户申请提现,编号为(' + data.id + '),请注意查看',
+        // });
+        that.$notify.info({
           title: '提现提醒',
-          duration: 8,
-          desc: '有用户申请提现,编号为(' + data.id + '),请注意查看',
+          message: '有用户申请提现,编号为(' + data.id + '),请注意查看',
         });
         that.messageList.push({
           title: '退款订单提醒',
@@ -96,10 +103,9 @@ export default {
         });
       });
       ws.$on('STORE_STOCK', function (data) {
-        that.$Notice.warning({
+        that.$notify.info({
           title: '库存预警',
-          duration: 8,
-          desc: '商品ID为(' + data.id + ')的库存不足啦,请注意查看~',
+          message: '商品ID为(' + data.id + ')的库存不足啦,请注意查看~',
         });
         that.messageList.push({
           title: '库存预警',
@@ -110,10 +116,9 @@ export default {
         });
       });
       ws.$on('PAY_SMS_SUCCESS', function (data) {
-        that.$Notice.info({
+        that.$notify.info({
           title: '短信充值成功',
-          duration: 8,
-          desc: '恭喜您充值' + data.price + '元，获得' + data.number + '条短信',
+          message: '恭喜您充值' + data.price + '元，获得' + data.number + '条短信',
         });
         that.messageList.push({
           title: '短信充值成功',
@@ -137,10 +142,10 @@ export default {
           typeName = '库存报警';
           break;
         case 3:
-          typeName = '库存报警';
+          typeName = '评论回复';
           break;
         case 4:
-          typeName = '库存报警';
+          typeName = '提现申请';
           break;
         default:
           typeName = '其它';
@@ -152,6 +157,7 @@ export default {
     // 全部已读点击
     onAllReadClick() {
       this.newsList = [];
+      this.$emit('haveNews', !!this.newsList.length);
     },
     // 前往通知中心点击
     onGoToGiteeClick() {},
@@ -163,8 +169,13 @@ export default {
         })
         .catch(() => {});
     },
-    jumpUrl(url) {
-      this.$router.push({ path: url });
+    jumpUrl(path) {
+      this.vm.$router.push({
+        path,
+      });
+    },
+    icon(type) {
+      return require(`@/assets/images/news-${type}.png`);
     },
   },
 };
@@ -172,19 +183,29 @@ export default {
 
 <style scoped lang="scss">
 .layout-navbars-breadcrumb-user-news {
+  width: 320px;
+  padding: 8px 14px 14px;
   .head-box {
     display: flex;
-    border-bottom: 1px solid var(--prev-border-color-lighter);
+    // border-bottom: 1px solid var(--prev-border-color-lighter);
     box-sizing: border-box;
     color: var(--prev-color-text-primary);
     justify-content: space-between;
-    height: 35px;
+    // height: 35px;
     align-items: center;
+    .head-box-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333333;
+      line-height: 13px;
+    }
     .head-box-btn {
       color: var(--prev-color-primary);
       font-size: 13px;
       cursor: pointer;
       opacity: 0.8;
+      font-weight: 400;
+      line-height: 13px;
       &:hover {
         opacity: 1;
       }
@@ -193,27 +214,54 @@ export default {
   .content-box {
     font-size: 13px;
     .content-box-item {
-      padding-top: 12px;
+      padding-top: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
       &:last-of-type {
-        padding-bottom: 12px;
+        // padding-bottom: 12px;
+      }
+      .icon {
+        width: 26px;
+        height: 26px;
+        margin-right: 10px;
+      }
+      .content-box-right {
+      }
+      .content-box-type {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333333;
+        line-height: 13px;
       }
       .content-box-msg {
-        color: var(--prev-color-text-secondary);
-        margin-top: 5px;
-        margin-bottom: 5px;
+        margin-top: 6px;
+        font-size: 13px;
+        font-weight: 400;
+        color: #666666;
+        line-height: 13px;
       }
       .content-box-time {
         color: var(--prev-color-text-secondary);
       }
     }
     .content-box-empty {
-      height: 260px;
+      width: 292px;
+      // height: 200px;
       display: flex;
+      align-items: center;
+      justify-content: center;
       .content-box-empty-margin {
-        margin: auto;
         text-align: center;
+        font-size: 13px;
+        color: #999999;
         i {
+          color: var(--prev-color-primary);
           font-size: 60px;
+        }
+        .no-msg {
+          width: 180px;
+          height: 138px;
         }
       }
     }

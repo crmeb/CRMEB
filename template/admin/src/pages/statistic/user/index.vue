@@ -1,41 +1,49 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header">
-      <Form ref="formInline" :model="formInline" inline>
-        <FormItem class="mr20">
-          用户渠道:
-          <Select v-model="channel_type" style="width: 300px" placeholder="用户渠道" @on-change="changeTxt">
-            <Option value="all">全部</Option>
-            <Option value="wechat">公众号</Option>
-            <Option value="routine">小程序</Option>
-            <Option value="h5">H5</Option>
-            <Option value="pc">PC</Option>
-          </Select>
-        </FormItem>
-        <FormItem>
-          选择时间:
-          <DatePicker
-            :editable="false"
-            :clearable="false"
-            @on-change="onchangeTime"
-            :value="timeVal"
-            format="yyyy/MM/dd"
-            type="daterange"
-            placement="bottom-start"
-            placeholder="请选择时间"
-            style="width: 300px"
-            class="mr20"
-            :options="options"
-          ></DatePicker>
-        </FormItem>
-        <FormItem>
-          <Button type="primary" @click="handleSubmit('formInline')">查询</Button>
-        </FormItem>
-        <FormItem>
-          <Button type="primary" @click="excel">导出</Button>
-        </FormItem>
-      </Form>
-    </div>
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form ref="formInline" label-width="80px" label-position="right" :model="formInline" inline>
+          <el-form-item label="用户渠道：">
+            <el-select
+              clearable
+              v-model="channel_type"
+              placeholder="请选择用户渠道"
+              @change="changeTxt"
+              class="form_content_width"
+            >
+              <el-option value="all" label="全部"></el-option>
+              <el-option value="wechat" label="公众号"></el-option>
+              <el-option value="routine" label="小程序"></el-option>
+              <el-option value="h5" label="H5"></el-option>
+              <el-option value="pc" label="PC"></el-option>
+              <el-option value="app" label="APP"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="选择时间:">
+            <el-date-picker
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSubmit('formInline')">查询</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="excel">导出</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
     <user-info :formInline="formInline" ref="userInfos" key="1"></user-info>
     <wechet-info :formInline="formInline" ref="wechetInfos" v-if="isShow" key="2"></wechet-info>
     <user-region :formInline="formInline" ref="userRegions" key="3"></user-region>
@@ -57,7 +65,6 @@ export default {
   },
   data() {
     return {
-      options: this.$timeOptions,
       formInline: {
         channel_type: '',
         data: '',
@@ -65,6 +72,7 @@ export default {
       channel_type: 'all',
       timeVal: [],
       isShow: false,
+      pickerOptions: this.$timeOptions,
     };
   },
   created() {
@@ -89,7 +97,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formInline.data = this.timeVal.join('-');
+      this.formInline.data = this.timeVal ? this.timeVal.join('-') : '';
     },
     handleSubmit() {
       this.$refs.userInfos.getStatistics();

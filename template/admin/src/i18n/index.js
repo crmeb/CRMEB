@@ -21,9 +21,6 @@ import pagesHomeZhtw from '@/i18n/pages/home/zh-tw.js';
 import pagesLoginZhcn from '@/i18n/pages/login/zh-cn.js';
 import pagesLoginEn from '@/i18n/pages/login/en.js';
 import pagesLoginZhtw from '@/i18n/pages/login/zh-tw.js';
-import iviewZhCnLocale from 'iview/src/locale/lang/zh-CN';
-import iviewEnUsLocale from 'iview/src/locale/lang/en-US';
-import iviewZhTwLocale from 'iview/src/locale/lang/zh-TW';
 // 使用插件
 Vue.use(VueI18n);
 
@@ -36,7 +33,6 @@ Vue.use(VueI18n);
 const messages = {
   'zh-cn': {
     ...zhcnLocale,
-    ...iviewZhCnLocale,
     message: {
       ...nextZhcn,
       ...pagesHomeZhcn,
@@ -45,7 +41,6 @@ const messages = {
   },
   en: {
     ...enLocale,
-    ...iviewEnUsLocale,
     message: {
       ...nextEn,
       ...pagesHomeEn,
@@ -54,7 +49,6 @@ const messages = {
   },
   'zh-tw': {
     ...zhtwLocale,
-    ...iviewZhTwLocale,
     message: {
       ...nextZhtw,
       ...pagesHomeZhtw,

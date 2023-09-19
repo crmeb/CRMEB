@@ -17,16 +17,16 @@
 					<span class="pictrue_log_big pictrue_log_class"
 						v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
 				</view>
-				<view class='name line1'>{{item.store_name}}</view>
+				<view class='name line2'>{{item.store_name}}</view>
 				<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.price}}</text></view>
-				<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">
+				<!-- <view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.base">
 					{{$t(`￥`)}}{{item.vip_price}}
 					<image src='/static/images/jvip.png' class="jvip"></image>
 				</view>
 				<view class='vip-money' v-if="item.vip_price && item.vip_price > 0 && item.is_vip">
 					{{$t(`￥`)}}{{item.vip_price}}
 					<image src='/static/images/vip.png'></image>
-				</view>
+				</view> -->
 			</view>
 		</view>
 	</view>
@@ -129,6 +129,8 @@
 		color: #282828;
 		margin-top: 20rpx;
 		padding: 0 10rpx;
+		line-height: 34rpx;
+		height: 68rpx;
 	}
 
 	.recommend .recommendList .item .money {

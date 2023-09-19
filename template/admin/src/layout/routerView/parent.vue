@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div :class="isTagHistory ? 'h100' : 'h101'">
     <transition :name="setTransitionName" mode="out-in">
       <keep-alive :include="keepAliveNameList">
         <router-view :key="refreshRouterViewKey" />
@@ -18,7 +18,15 @@ export default {
       keepAliveNameNewList: [],
     };
   },
-  computed: {},
+  computed: {
+    // 设置主界面切换动画
+    setTransitionName() {
+      return this.$store.state.themeConfig.themeConfig.animation;
+    },
+    isTagHistory() {
+      return this.$store.state.themeConfig.themeConfig.isTagsview;
+    },
+  },
   created() {
     this.keepAliveNameList = this.getKeepAliveNames();
     this.bus.$on('onTagsViewRefreshRouterView', (path) => {
@@ -31,12 +39,7 @@ export default {
       });
     });
   },
-  computed: {
-    // 设置主界面切换动画
-    setTransitionName() {
-      return this.$store.state.themeConfig.themeConfig.animation;
-    },
-  },
+
   methods: {
     // 获取路由缓存列表（name），默认路由全部缓存
     getKeepAliveNames() {

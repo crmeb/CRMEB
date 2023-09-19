@@ -5,11 +5,11 @@
         <div style="width: 375px">
           <div class="title-box">商品详情</div>
           <div class="swiper-box">
-            <Carousel autoplay v-model="value2" loop arrow="never">
-              <CarouselItem v-for="(item, index) in goodsInfo.slider_image" :key="index">
+            <el-carousel autoplay v-model="value2" loop arrow="never">
+              <el-carousel-item v-for="(item, index) in goodsInfo.slider_image" :key="index">
                 <div class="demo-carousel"><img :src="item" alt="" /></div>
-              </CarouselItem>
-            </Carousel>
+              </el-carousel-item>
+            </el-carousel>
           </div>
           <div class="goods_info">
             <div class="number-wrapper">

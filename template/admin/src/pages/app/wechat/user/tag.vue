@@ -1,24 +1,40 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="save_from ivu-mt">
-      <Button type="primary" icon="md-add" @click="add">{{ '添加' + $route.meta.title }}</Button>
-      <Table
-        :columns="columns1"
+    <el-card :bordered="false" shadow="never" class="save_from ivu-mt">
+      <el-button type="primary" @click="add">{{ '添加' + $route.meta.title }}</el-button>
+      <el-table
         :data="tabList"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除标签', index)">删除</a>
-        </template>
-      </Table>
-    </Card>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="标签名" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="人数" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.count }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除标签', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 </template>
 
@@ -31,38 +47,14 @@ import {
   wechatGroupCreateApi,
   wechatGroupEditApi,
 } from '@/api/app';
-import editFrom from '@/components/from/from';
 export default {
   name: 'tag',
-  components: { editFrom },
   data() {
     return {
       FromData: null,
       loading: false,
       tabList: [],
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '标签名',
-          key: 'name',
-          minWidth: 200,
-        },
-        {
-          title: '人数',
-          key: 'count',
-          minWidth: 120,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 150,
-        },
-      ],
+
     };
   },
   watch: {
@@ -112,11 +104,11 @@ export default {
       }
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tabList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -136,7 +128,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange(index) {

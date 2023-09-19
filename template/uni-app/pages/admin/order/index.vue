@@ -99,7 +99,8 @@
 				loading: false
 			}
 		},
-		onLoad() {
+		onShow() {
+			this.clear();
 			this.getIndex();
 			this.getList();
 			// this.$scroll(this.$refs.container, () => {
@@ -107,6 +108,11 @@
 			// });
 		},
 		methods: {
+			clear(){
+				this.loaded = false;
+				this.list = []
+				this.where.page = 1;
+			},
 			getIndex: function() {
 				var that = this;
 				getStatisticsInfo().then(

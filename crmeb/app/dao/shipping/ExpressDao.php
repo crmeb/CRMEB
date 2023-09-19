@@ -42,7 +42,7 @@ class ExpressDao extends BaseDao
      */
     public function getExpressList(array $where, string $field, int $page, int $limit)
     {
-        return $this->search($where)->field($field)->order('sort DESC,id DESC')
+        return $this->search($where)->field($field)->order('sort DESC,is_show DESC,id ASC')
             ->when($page > 0 && $limit > 0, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })->select()->toArray();

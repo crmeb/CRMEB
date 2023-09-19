@@ -97,11 +97,11 @@ class StoreCategoryServices extends BaseServices
         if ($show !== '') $where['is_show'] = $show;
         if (!$type) $where['pid'] = 0;
         $data = get_tree_children($this->dao->getTierList($where, ['id', 'id as value', 'cate_name as label', 'cate_name as title', 'pid']), 'children', 'id');
-        foreach ($data as &$item) {
-            if (!isset($item['children'])) {
-                $item['disabled'] = true;
-            }
-        }
+//        foreach ($data as &$item) {
+//            if (!isset($item['children'])) {
+//                $item['disabled'] = true;
+//            }
+//        }
         return $data;
     }
 
@@ -114,7 +114,7 @@ class StoreCategoryServices extends BaseServices
     {
         $res = $this->dao->update($id, ['is_show' => $is_show]);
         $res = $res && $this->dao->update($id, ['is_show' => $is_show], 'pid');
-        $this->cacheDriver()->clear();
+        CacheService::clear();
         if (!$res) {
             throw new AdminException(100005);
         }
@@ -156,8 +156,8 @@ class StoreCategoryServices extends BaseServices
             $f[] = Form::select('pid', '上级分类', (int)($info['pid'] ?? ''))->setOptions($this->menus())->filterable(1);
         }
         $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(8)->required();
-        $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
-        $f[] = Form::frameImage('big_pic', '分类大图(468*340)', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+        $f[] = Form::frameImage('pic', '分类图标(180*180)', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'pic')), $info['pic'] ?? '')->icon('el-icon-picture-outline')->width('950px')->height('560px')->props(['footer' => false]);
+        $f[] = Form::frameImage('big_pic', '分类大图(468*340)', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'big_pic')), $info['big_pic'] ?? '')->icon('el-icon-picture-outline')->width('950px')->height('560px')->props(['footer' => false]);
         $f[] = Form::number('sort', '排序', (int)($info['sort'] ?? 0))->min(0)->precision(0);
         $f[] = Form::radio('is_show', '状态', $info['is_show'] ?? 1)->options([['label' => '显示', 'value' => 1], ['label' => '隐藏', 'value' => 0]]);
         return $f;
@@ -207,7 +207,7 @@ class StoreCategoryServices extends BaseServices
         $res = $this->dao->save($data);
         if (!$res) throw new AdminException(100006);
 
-        $this->cacheDriver()->clear();
+        CacheService::clear();
 
         return (int)$res->id;
     }
@@ -246,7 +246,7 @@ class StoreCategoryServices extends BaseServices
             if (!$res) throw new AdminException(100007);
         });
 
-        $this->cacheDriver()->clear();
+        CacheService::clear();
     }
 
     /**
@@ -261,7 +261,7 @@ class StoreCategoryServices extends BaseServices
         $res = $this->dao->delete($id);
         if (!$res) throw new AdminException(100008);
 
-        $this->cacheDriver()->clear();
+        CacheService::clear();
     }
 
     /**
@@ -272,7 +272,7 @@ class StoreCategoryServices extends BaseServices
      */
     public function getCategoryVersion()
     {
-        return $this->cacheDriver()->remember('category_version', function () {
+        return CacheService::remember('category_version', function () {
             return [
                 'is_diy' => app()->make(DiyServices::class)->value(['status' => 1], 'is_diy'),
                 'version' => uniqid()
@@ -313,7 +313,7 @@ class StoreCategoryServices extends BaseServices
         if ($limit) {
             return $this->dao->getALlByIndex($where, 'id,cate_name,pid,pic', $limit);
         } else {
-            return $this->cacheDriver()->remember('CATEGORY', function () {
+            return CacheService::remember('CATEGORY', function () {
                 return $this->dao->getCategory();
             });
         }
@@ -342,7 +342,7 @@ class StoreCategoryServices extends BaseServices
      */
     public function getCategoryList(array $where)
     {
-        return $this->cacheDriver()->remember('CATEGORY_LIST', function () use ($where) {
+        return CacheService::remember('CATEGORY_LIST', function () use ($where) {
             return $this->dao->getALlByIndex($where, 'id, cate_name, pid, pic, big_pic, sort, is_show, add_time');
         }, 86400);
     }

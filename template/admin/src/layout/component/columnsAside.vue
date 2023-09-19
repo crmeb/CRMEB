@@ -13,7 +13,7 @@
           :title="$t(v.title)"
         >
           <div :class="setColumnsAsidelayout" v-if="!v.isLink || (v.isLink && v.isIframe)">
-            <Icon :type="v.icon" />
+            <i :class="'el-icon-' + v.icon"></i>
             <div class="font12">
               {{
                 $t(v.title) && $t(v.title).length >= 4
@@ -24,13 +24,13 @@
           </div>
           <div :class="setColumnsAsidelayout" v-else>
             <a :href="v.isLink" target="_blank">
-              <Icon :type="v.icon" />
+              <i :class="'el-icon-' + v.icon"></i>
               <div class="font12">
                 {{
                   $t(v.title) && $t(v.title).length >= 4
                     ? $t(v.title).substr(0, setColumnsAsidelayout === 'columns-vertical' ? 4 : 3)
                     : $t(v.title)
-                }}1
+                }}
               </div>
             </a>
           </div>
@@ -42,8 +42,9 @@
 </template>
 
 <script>
-import { getMenuSider, getHeaderName } from '@/libs/system';
+import { getMenuSider, getHeaderName, findFirstNonNullChildren } from '@/libs/system';
 import Logo from '@/layout/logo/index.vue';
+import { mapState } from 'vuex';
 
 export default {
   name: 'layoutColumnsAside',
@@ -54,7 +55,6 @@ export default {
       liIndex: 0,
       difference: 0,
       routeSplit: [],
-      activePath: '',
     };
   },
   computed: {
@@ -72,6 +72,7 @@ export default {
     routesList() {
       this.$store.state.routesList.routesList;
     },
+    ...mapState('menu', ['activePath']),
   },
   beforeDestroy() {
     this.bus.$off('routesListChange');
@@ -93,8 +94,11 @@ export default {
     // 菜单高亮点击事件
     onColumnsAsideMenuClick(v) {
       let { path, redirect } = v;
-      if (path) this.$router.push(path);
-      else this.$router.push(path);
+      if (v.children) {
+        this.$router.push(findFirstNonNullChildren(v.children).path);
+      } else {
+        this.$router.push(path);
+      }
       // 一个路由设置自动收起菜单
       if (!v.children || v.children.length <= 1) this.$store.state.themeConfig.themeConfig.isCollapse = true;
       else if (v.children.length > 1) this.$store.state.themeConfig.themeConfig.isCollapse = false;
@@ -130,11 +134,10 @@ export default {
     },
     // 传送当前子级数据到菜单中
     setSendChildren(path) {
-      const currentPathSplit = path.split('/');
       let currentData = {};
       this.columnsAsideList.map((v, k) => {
+        v['k'] = k;
         if (v.path === path) {
-          v['k'] = k;
           currentData['item'] = [{ ...v }];
           //   currentData['children'] = [{ ...v }];
           if (v.children) currentData['children'] = v.children;
@@ -183,14 +186,15 @@ export default {
     $route: {
       handler(to) {
         this.setColumnsMenuHighlight(to.path);
-        // this.setColumnsAsideMove();
         let HeadName = getHeaderName(to, this.columnsAsideList);
         let asideList = getMenuSider(this.columnsAsideList, HeadName)[0]?.children;
         const resData = this.setSendChildren(HeadName);
-        if (resData.length <= 0) return false;
-        this.onColumnsAsideDown(resData.item[0].k);
-        this.bus.$emit('oneCatName', resData.item[0].title);
-        this.bus.$emit('setSendColumnsChildren', asideList || []);
+        if (resData.item) {
+          this.onColumnsAsideDown(resData.item[0].k);
+          this.bus.$emit('oneCatName', resData.item[0].title);
+        } else {
+          this.onColumnsAsideDown(0);
+        }
         this.$store.commit('menus/childMenuList', asideList || []);
       },
       deep: true,

@@ -1,37 +1,41 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="roleData"
-        :model="roleData"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="规则状态：">
-              <Select v-model="roleData.is_show" placeholder="请选择" clearable @on-change="getData">
-                <Option value="1">显示</Option>
-                <Option value="0">不显示</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="按钮名称：" prop="status2" label-for="status2">
-              <Input v-model="roleData.keyword" search enter-button placeholder="请输入按钮名称" @on-search="getData" />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button type="primary" @click="menusAdd('添加规则')" icon="md-add">添加规则 </Button>
-          </Col>
-        </Row>
-      </Form>
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form
+          ref="roleData"
+          :model="roleData"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
+        >
+          <el-form-item label="规则状态：">
+            <el-select
+              v-model="roleData.is_show"
+              placeholder="请选择"
+              clearable
+              @change="getData"
+              class="form_content_width"
+            >
+              <el-option value="1" label="显示"></el-option>
+              <el-option value="0" label="不显示"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="按钮名称：" prop="status2" label-for="status2">
+            <el-input clearable v-model="roleData.keyword" placeholder="请输入按钮名称" class="form_content_width" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="getData">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-button type="primary" @click="menusAdd('添加规则')">添加规则 </el-button>
       <vxe-table
         :border="false"
-        class="vxeTable mt25"
+        class="vxeTable mt14"
         highlight-hover-row
         highlight-current-row
         :loading="loading"
@@ -52,69 +56,58 @@
         </vxe-table-column>
         <vxe-table-column field="flag" title="规则状态" min-width="120">
           <template v-slot="{ row }">
-            <i-switch
+            <el-switch
+              :active-value="1"
+              :inactive-value="0"
               v-model="row.is_show"
               :value="row.is_show"
-              :true-value="1"
-              :false-value="0"
-              @on-change="onchangeIsShow(row)"
+              @change="onchangeIsShow(row)"
               size="large"
             >
-              <span slot="open">开启</span>
-              <span slot="close">关闭</span>
-            </i-switch>
+            </el-switch>
           </template>
         </vxe-table-column>
         <vxe-table-column field="mark" title="备注" min-width="120"></vxe-table-column>
-        <vxe-table-column field="date" title="操作" align="right" width="250" fixed="right">
+        <vxe-table-column field="date" title="操作" width="230" fixed="right">
           <template v-slot="{ row }">
             <span>
               <a @click="addRoute(row)" v-if="row.auth_type === 1 || row.auth_type === 3">选择权限</a>
-              <Divider type="vertical" v-if="row.auth_type === 1 || row.auth_type === 3"/>
-              <a @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1">添加下级</a>
+              <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3" />
+              <a @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1 || row.auth_type === 3">添加下级</a>
               <!-- <a @click="addE(row, '添加规则')" v-else>添加规则</a> -->
             </span>
-            <Divider type="vertical" v-if="row.auth_type === 1" />
+            <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3"></el-divider>
             <a @click="edit(row, '编辑')">编辑</a>
-            <Divider type="vertical" />
+            <el-divider direction="vertical"></el-divider>
             <a @click="del(row, '删除规则')">删除</a>
           </template>
         </vxe-table-column>
       </vxe-table>
-    </Card>
+    </el-card>
     <menus-from
-      :formValidate="formValidate"
+      :formVal="formValidate"
       :titleFrom="titleFrom"
       @getList="getList"
       @changeMenu="getMenusUnique"
       ref="menusFrom"
       @clearFrom="clearFrom"
     ></menus-from>
-    <Modal
-      v-model="ruleModal"
-      scrollable
-      width="1100"
-      title="权限列表"
-      @on-ok="addRouters"
-      @on-cancel="ruleModal = false"
-      @on-visible-change="modalchange"
-    >
+    <el-dialog :visible.sync="ruleModal" width="1100px" title="权限列表" @closed="modalchange">
       <div class="search-rule">
-        <Alert
-          >1.接口可多选，可重复添加；<br>2.添加路由按照路由规则进行添加，即可在开发工具->接口管理里面点击同步；<br>3.同步完成即可在此选择对应的接口；</Alert
-        >
-        <Input
-          class="mr10"
+        <el-alert>
+          <template slot="title">
+            1.接口可多选，可重复添加；<br />2.添加路由按照路由规则进行添加，即可在开发工具->接口管理里面点击同步；<br />3.同步完成即可在此选择对应的接口；
+          </template>
+        </el-alert>
+        <el-input
+          class="mr10 mt10 form_content_width"
           v-model="searchRule"
           placeholder="输入关键词搜索"
           clearable
-          style="width: 300px"
           ref="search"
-          @on-enter="searchRules"
-          @on-clear="searchRules"
         />
-        <Button class="mr10" type="primary" @click="searchRules">搜索</Button>
-        <Button @click="init">重置</Button>
+        <el-button class="mr10" type="primary" @click="searchRules">搜索</el-button>
+        <el-button @click="init">重置</el-button>
       </div>
       <div class="route-list">
         <div class="tree">
@@ -144,10 +137,11 @@
           </div>
         </div>
       </div>
-      <!-- <Tabs v-model="routeType" @on-click="changTab">
-        <TabPane :label="item.name" :name="'' + index" v-for="(item, index) in foundationList" :key="item"></TabPane>
-      </Tabs> -->
-    </Modal>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="ruleModal = false">取 消</el-button>
+        <el-button type="primary" @click="addRouters">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -163,7 +157,7 @@ import {
   getMenusUnique,
   menusRuleCate,
 } from '@/api/systemMenus';
-import formCreate from '@form-create/iview';
+import formCreate from '@form-create/element-ui';
 import menusFrom from './components/menusFrom';
 import { formatFlatteningRoutes, findFirstNonNullChildren, findFirstNonNullChildrenKeys } from '@/libs/system';
 
@@ -197,7 +191,18 @@ export default {
       tableData: [],
       FromData: null,
       icons: '',
-      formValidate: {},
+      formValidate: {
+        auth_type: '',
+        menu_name: '',
+        path: '',
+        api_url: '',
+        menu_path: '',
+        methods: '',
+        unique_auth: '',
+        mark: '',
+        sort: '',
+        is_show: 0,
+      },
       titleFrom: '',
       modalTitleSs: '',
       routeType: '0',
@@ -214,7 +219,7 @@ export default {
   computed: {
     ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -235,9 +240,10 @@ export default {
       menusBatch(data)
         .then((res) => {
           this.getData();
+          this.ruleModal = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     selectRule(data) {
@@ -320,11 +326,11 @@ export default {
       };
       isShowApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.$store.dispatch('menus/getMenusNavList');
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 请求列表
@@ -339,7 +345,9 @@ export default {
     },
     // 添加子菜单
     addE(row, title) {
-      this.formValidate = {};
+      this.formValidate = {
+        is_show: 0,
+      };
       let pid = row.id.toString();
       if (pid) {
         menusDetailsApi(row.id)
@@ -347,15 +355,15 @@ export default {
             this.formValidate.path = res.data.path;
             this.formValidate.path.push(row.id);
             this.formValidate.pid = pid;
-            this.$refs.menusFrom.modals = true;
             this.$refs.menusFrom.valids = false;
             this.titleFrom = title;
             this.formValidate.auth_type = 1;
-            this.formValidate.is_show = 0;
             this.formValidate.is_show_path = 0;
+            this.$refs.menusFrom.getAddFrom();
+            this.$refs.menusFrom.modals = true;
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
         this.formValidate.pid = pid;
@@ -363,15 +371,8 @@ export default {
         this.$refs.menusFrom.valids = false;
         this.titleFrom = title;
         this.formValidate.auth_type = 1;
-        this.formValidate.is_show = 0;
         this.formValidate.is_show_path = 0;
       }
-      // this.formValidate.pid = row.id.toString();
-      // this.$refs.menusFrom.modals = true;
-      // this.$refs.menusFrom.valids = false;
-      // this.titleFrom = title;
-      // this.formValidate.auth_type = 1;
-      // this.formValidate.is_show = '0';
     },
     // 删除
     del(row, tit) {
@@ -384,13 +385,13 @@ export default {
 
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getData();
           this.getMenusUnique();
           // this.$store.dispatch('menus/getMenusNavList');
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 规则详情
@@ -401,7 +402,7 @@ export default {
           this.$refs.menusFrom.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 编辑
@@ -414,9 +415,10 @@ export default {
     },
     // 添加
     menusAdd(title) {
-      this.formValidate = {};
+      // this.formValidate = {};
       this.$refs.menusFrom.modals = true;
       this.$refs.menusFrom.valids = false;
+      this.$refs.menusFrom.getAddFrom();
       // this.formValidate = Object.assign(this.$data, this.$options.formValidate());
       this.titleFrom = title;
       this.formValidate.auth_type = 1;
@@ -432,7 +434,7 @@ export default {
     //         this.spinShow = false;
     //     }).catch(res => {
     //         this.spinShow = false;
-    //         this.$Message.error(res.msg);
+    //         this.$message.error(res.msg);
     //     })
     // },
     // 列表
@@ -446,7 +448,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     getMenusUnique() {
@@ -537,7 +539,7 @@ export default {
 }
 
 .rule-list:hover {
-  background-color: #badbfb;
+  background-color: var(--prev-bg-menu-hover-ba-color);
 }
 
 .rule-list div {
@@ -545,7 +547,7 @@ export default {
 }
 
 .select-rule {
-  background-color: #badbfb;
+  background-color: var(--prev-bg-menu-hover-ba-color);
 }
 .route-list {
   display: flex;
@@ -559,5 +561,14 @@ export default {
       padding-left: 14px !important;
     }
   }
+}
+.el-dropdown-link {
+  cursor: pointer;
+  color: var(--prev-color-primary);
+  font-size: 12px;
+  margin-left: 6px;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
 }
 </style>

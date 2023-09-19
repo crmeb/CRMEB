@@ -43,7 +43,7 @@ class UserLabel extends AuthController
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function index($label_cate = 0)
+    public function index($label_cate = '')
     {
         return app('json')->success($this->services->getList(['label_cate' => $label_cate]));
     }

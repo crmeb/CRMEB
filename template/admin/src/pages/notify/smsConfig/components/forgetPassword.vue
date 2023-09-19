@@ -1,106 +1,116 @@
 <template>
-  <Row type="flex" justify="center" align="middle">
-    <Col span="20" style="margin-top: 70px" class="mb50">
-      <Steps :current="current">
-        <Step title="验证账号信息"></Step>
-        <Step title="修改账户密码"></Step>
-        <Step title="登录"></Step>
-      </Steps>
-    </Col>
-    <Col span="24">
+  <el-row justify="center" align="middle">
+    <el-col :span="20" style="margin-top: 70px" class="mb50">
+      <steps :stepList="stepList" :isActive="current"></steps>
+    </el-col>
+    <el-col :span="24">
       <div class="index_from page-account-container">
-        <Form ref="formInline" :model="formInline" :rules="ruleInline" @submit.native.prevent>
+        <el-form ref="formInline" :model="formInline" :rules="ruleInline" @submit.native.prevent>
           <template v-if="current === 0">
-            <FormItem prop="phone" class="maxInpt">
-              <Input
+            <el-form-item prop="phone" class="maxInpt">
+              <el-input
                 type="text"
                 v-model="formInline.phone"
                 prefix="ios-contact-outline"
                 placeholder="请输入手机号"
                 size="large"
               />
-            </FormItem>
-            <FormItem prop="verify_code" class="maxInpt">
+            </el-form-item>
+            <el-form-item prop="verify_code" class="maxInpt">
               <div class="code">
-                <Input
+                <el-input
                   type="text"
                   v-model="formInline.verify_code"
                   prefix="ios-keypad-outline"
                   placeholder="请输入验证码"
                   size="large"
                 />
-                <Button :disabled="!this.canClick" @click="cutDown" size="large">{{ cutNUm }}</Button>
+                <el-button :disabled="!this.canClick" @click="cutDown" size="large">{{ cutNUm }}</el-button>
               </div>
-            </FormItem>
+            </el-form-item>
           </template>
           <template v-if="current === 1">
-            <FormItem prop="password" class="maxInpt">
-              <Input
+            <el-form-item prop="password" class="maxInpt">
+              <el-input
                 type="password"
                 v-model="formInline.password"
                 prefix="ios-lock-outline"
                 placeholder="请输入新密码"
                 size="large"
               />
-            </FormItem>
-            <FormItem prop="checkPass" class="maxInpt">
-              <Input
+            </el-form-item>
+            <el-form-item prop="checkPass" class="maxInpt">
+              <el-input
                 type="password"
                 v-model="formInline.checkPass"
                 prefix="ios-lock-outline"
                 placeholder="请验证新密码"
                 size="large"
               />
-            </FormItem>
+            </el-form-item>
           </template>
           <template v-if="current === 2">
-            <FormItem prop="phone" class="maxInpt">
-              <Input type="text" v-model="formInline.phone" prefix="ios-contact-outline" placeholder="请输入手机号" />
-            </FormItem>
-            <FormItem prop="password" class="maxInpt">
-              <Input type="password" v-model="formInline.password" prefix="ios-lock-outline" placeholder="请输入密码" />
-            </FormItem>
+            <el-form-item prop="phone" class="maxInpt">
+              <el-input
+                type="text"
+                v-model="formInline.phone"
+                prefix="ios-contact-outline"
+                placeholder="请输入手机号"
+              />
+            </el-form-item>
+            <el-form-item prop="password" class="maxInpt">
+              <el-input
+                type="password"
+                v-model="formInline.password"
+                prefix="ios-lock-outline"
+                placeholder="请输入密码"
+              />
+            </el-form-item>
           </template>
-          <FormItem class="maxInpt">
-            <Button
+          <el-form-item class="maxInpt">
+            <el-button
               v-if="current === 0"
               type="primary"
               long
               size="large"
               @click="handleSubmit1('formInline', current)"
               class="mb20"
-              >下一步</Button
+              >下一步</el-button
             >
-            <Button
+            <el-button
               v-if="current === 1"
               type="primary"
               long
               size="large"
               @click="handleSubmit2('formInline', current)"
               class="mb20"
-              >提交</Button
+              >提交</el-button
             >
-            <Button
+            <el-button
               v-if="current === 2"
               type="primary"
               long
               size="large"
               @click="handleSubmit('formInline', current)"
               class="mb20"
-              >登录</Button
+              >登录</el-button
             >
-            <Button long size="large" @click="returns('formInline')" class="btn">返回 </Button>
-          </FormItem>
-        </Form>
+            <el-button long size="large" @click="returns('formInline')" class="btn">返回 </el-button>
+          </el-form-item>
+        </el-form>
       </div>
-    </Col>
-  </Row>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
 import { captchaApi, configApi, serveModifyApi, checkCaptchaApi } from '@/api/setting';
+
+import steps from '@/components/steps/index';
+
 export default {
   name: 'forgetPassword',
+  components: { steps },
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {
@@ -154,6 +164,7 @@ export default {
         password: [{ validator: validatePass, trigger: 'blur' }],
         checkPass: [{ validator: validatePass2, trigger: 'blur' }],
       },
+      stepList: ['验证账号信息', '修改账户密码', '登录'],
     };
   },
   methods: {
@@ -168,10 +179,10 @@ export default {
         };
         captchaApi(data)
           .then(async (res) => {
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
         let time = setInterval(() => {
           this.cutNUm--;
@@ -182,7 +193,7 @@ export default {
           }
         }, 1000);
       } else {
-        this.$Message.warning('请填写手机号!');
+        this.$message.warning('请填写手机号!');
       }
     },
     handleSubmit1(name, current) {
@@ -193,7 +204,7 @@ export default {
               this.current = 1;
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;
@@ -206,11 +217,11 @@ export default {
         if (valid) {
           serveModifyApi(this.formInline)
             .then(async (res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.current = 2;
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;
@@ -226,11 +237,11 @@ export default {
             password: this.formInline.password,
           })
             .then(async (res) => {
-              this.$Message.success('登录成功!');
+              this.$message.success('登录成功!');
               this.$emit('on-Login');
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;

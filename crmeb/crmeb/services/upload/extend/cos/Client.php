@@ -14,6 +14,7 @@
 namespace crmeb\services\upload\extend\cos;
 
 use crmeb\exceptions\UploadException;
+use crmeb\services\upload\XML;
 
 /**
  * Class Client

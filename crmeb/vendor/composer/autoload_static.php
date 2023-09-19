@@ -19,6 +19,7 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '65fec9ebcfbb3cbb4fd0d519687aea01' => __DIR__ . '/..' . '/danielstjules/stringy/src/Create.php',
+        'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         'abede361264e2ae69ec1eee813a101af' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/abs.php',
         '21a5860fbef5be28db5ddfbc3cca67c4' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acos.php',
         '1546e3f9d127f2a9bb2d1b6c31c26ef1' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acosh.php',
@@ -77,9 +78,9 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         'aa53dcba601214d17ad405b7c291b7e8' => __DIR__ . '/..' . '/markbaker/matrix/classes/src/operations/multiply.php',
         '75c79eb1b25749b05a47976f32b0d8a2' => __DIR__ . '/..' . '/markbaker/matrix/classes/src/operations/divideby.php',
         '6ab8ad87a734f276a6bcd5a0fe1289be' => __DIR__ . '/..' . '/markbaker/matrix/classes/src/operations/divideinto.php',
-        'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         '0d0b82117c23db94c492fee02b2ed01f' => __DIR__ . '/..' . '/songshenzong/support/src/StringsHelpers.php',
         'd96a90b43bcdea846705672ffd4e9294' => __DIR__ . '/..' . '/songshenzong/support/src/BashEchoHelpers.php',
+        '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
         '9e090711773bfc38738f5dbaee5a7f14' => __DIR__ . '/..' . '/overtrue/wechat/src/Payment/helpers.php',
         '841780ea2e1d6545ea3a253239d59c05' => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu/functions.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
@@ -232,6 +233,7 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         ),
         'A' => 
         array (
+            'Aws\\' => 4,
             'Alipay\\EasySDK\\' => 15,
             'AlibabaCloud\\Tea\\XML\\' => 21,
             'AlibabaCloud\\Tea\\Utils\\' => 23,
@@ -274,12 +276,12 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         array (
             0 => __DIR__ . '/..' . '/topthink/framework/src/think',
             1 => __DIR__ . '/..' . '/topthink/think-factory/src',
-            2 => __DIR__ . '/..' . '/topthink/think-helper/src',
-            3 => __DIR__ . '/..' . '/topthink/think-image/src',
-            4 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            5 => __DIR__ . '/..' . '/topthink/think-queue/src',
-            6 => __DIR__ . '/..' . '/topthink/think-template/src',
-            7 => __DIR__ . '/..' . '/topthink/think-filesystem/src',
+            2 => __DIR__ . '/..' . '/topthink/think-filesystem/src',
+            3 => __DIR__ . '/..' . '/topthink/think-helper/src',
+            4 => __DIR__ . '/..' . '/topthink/think-image/src',
+            5 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            6 => __DIR__ . '/..' . '/topthink/think-queue/src',
+            7 => __DIR__ . '/..' . '/topthink/think-template/src',
         ),
         'dh2y\\qrcode\\' => 
         array (
@@ -556,6 +558,10 @@ class ComposerStaticInitf16474ac994ccc25392f403933800b79
         'Carbon\\' => 
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
+        ),
+        'Aws\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/aws/aws-sdk-php/src',
         ),
         'Alipay\\EasySDK\\' => 
         array (

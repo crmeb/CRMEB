@@ -370,7 +370,7 @@ class StoreOrderDeliveryServices extends BaseServices
      * @email 442384644@qq.com
      * @date 2023/02/21
      */
-    public function splitDelivery(int $id, array $data)
+    public function splitDelivery(int $id, array $data, $delivery_code = true)
     {
         $orderInfo = $this->dao->get($id, ['*'], ['pink']);
         if (!$orderInfo) {
@@ -391,7 +391,7 @@ class StoreOrderDeliveryServices extends BaseServices
             throw new AdminException(400475);
         }
 
-        if ($data['type'] == 1) {
+        if ($data['type'] == 1 && $delivery_code) {
             // 检测快递公司编码
             /** @var ExpressServices $expressServices */
             $expressServices = app()->make(ExpressServices::class);
@@ -440,6 +440,15 @@ class StoreOrderDeliveryServices extends BaseServices
         /** @var StoreOrderCartInfoServices $orderInfoServices */
         $orderInfoServices = app()->make(StoreOrderCartInfoServices::class);
         $storeName = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id);
+
+        if (isset($data['pickup_time']) && count($data['pickup_time']) == 2) {
+            $data['pickup_start_time'] = $data['pickup_time'][0];
+            $data['pickup_end_time'] = $data['pickup_time'][1];
+        } else {
+            $data['pickup_start_time'] = '';
+            $data['pickup_end_time'] = '';
+        }
+
         // 发货信息录入
         $res = [];
         switch ($type) {
@@ -561,47 +570,81 @@ class StoreOrderDeliveryServices extends BaseServices
             $expData['temp_id'] = $data['express_temp_id'];
             $expData['weight'] = $this->getOrderSumWeight($id);
             $expData['cargo'] = $orderInfoServices->getCarIdByProductTitle((int)$orderInfo->id, true);
-            if (!sys_config('config_shippment_open', 0)) {
-                throw new AdminException('商家寄件未开启无法寄件');
-            }
+            $expData['day_type'] = $data['day_type'];
+            $expData['pickup_start_time'] = $data['pickup_start_time'];
+            $expData['pickup_end_time'] = $data['pickup_end_time'];
+//            if (!sys_config('config_shippment_open', 0)) {
+//                throw new AdminException('商家寄件未开启无法寄件');
+//            }
             $dump = $expressService->express()->shippmentCreateOrder($expData);
+            Log::error('商家寄件返回数据：' . json_encode($dump));
             $orderInfo->delivery_id = $dump['kuaidinum'] ?? '';
             $data['express_dump'] = json_encode([
-                'com' => $expData['com'],
-                'from_name' => $expData['from_name'],
-                'from_tel' => $expData['from_tel'],
-                'from_addr' => $expData['from_addr'],
+                'com' => $expData['kuaidicom'],
+                'from_name' => $expData['send_real_name'],
+                'from_tel' => $expData['send_phone'],
+                'from_addr' => $expData['send_address'],
                 'temp_id' => $expData['temp_id'],
                 'cargo' => $expData['cargo'],
             ]);
             $data['delivery_id'] = $dump['kuaidinum'] ?? '';
             $data['kuaidi_label'] = $dump['label'] ?? '';
-            $data['kuaidi_task_id'] = $dump['taskId'] ?? '';
-            $data['kuaidi_order_id'] = $dump['orderId'] ?? '';
+            $data['kuaidi_task_id'] = $dump['task_id'] ?? '';
+            $data['kuaidi_order_id'] = $dump['order_id'] ?? '';
         } else {
             if (!$data['delivery_id']) {
                 throw new AdminException(400531);
             }
             $orderInfo->delivery_id = $data['delivery_id'];
         }
-        $data['status'] = 1;
-        $orderInfo->delivery_type = $data['delivery_type'];
-        $orderInfo->delivery_name = $data['delivery_name'];
-        $orderInfo->status = $data['status'];
-        /** @var StoreOrderStatusServices $services */
-        $services = app()->make(StoreOrderStatusServices::class);
-        $this->transaction(function () use ($id, $data, $services) {
-            $res = $this->dao->update($id, $data);
-            $res = $res && $services->save([
-                    'oid' => $id,
-                    'change_time' => time(),
-                    'change_type' => 'delivery_goods',
-                    'change_message' => '已发货 快递公司：' . $data['delivery_name'] . ' 快递单号：' . $data['delivery_id']
-                ]);
-            if (!$res) {
-                throw new AdminException(400529);
-            }
-        });
+        if ($data['express_record_type'] != 3) {
+            $data['status'] = 1;
+            $orderInfo->delivery_type = $data['delivery_type'];
+            $orderInfo->delivery_name = $data['delivery_name'];
+            $orderInfo->status = $data['status'];
+            /** @var StoreOrderStatusServices $services */
+            $services = app()->make(StoreOrderStatusServices::class);
+            $this->transaction(function () use ($id, $data, $services) {
+                $res = $this->dao->update($id, $data);
+                $res = $res && $services->save([
+                        'oid' => $id,
+                        'change_time' => time(),
+                        'change_type' => 'delivery_goods',
+                        'change_message' => '已发货 快递公司：' . $data['delivery_name'] . ' 快递单号：' . $data['delivery_id']
+                    ]);
+                if (!$res) {
+                    throw new AdminException(400529);
+                }
+            });
+        } else {
+
+            $update = [
+                'is_stock_up' => 1,
+                'delivery_type' => $data['delivery_type'],
+                'delivery_name' => $data['delivery_name'],
+                'delivery_code' => $data['delivery_code'],
+                'delivery_id' => $data['delivery_id'],
+                'kuaidi_label' => $data['kuaidi_label'],
+                'kuaidi_task_id' => $data['kuaidi_task_id'],
+                'kuaidi_order_id' => $data['kuaidi_order_id'],
+                'express_dump' => $data['express_dump']
+            ];
+
+            /** @var StoreOrderStatusServices $services */
+            $services = app()->make(StoreOrderStatusServices::class);
+            $this->transaction(function () use ($id, $data, $services, $update) {
+                $res = $this->dao->update($id, $update);
+                $res = $res && $services->save([
+                        'oid' => $id,
+                        'change_time' => time(),
+                        'change_type' => 'stock_up_goods',
+                        'change_message' => '备货中 快递公司：' . $data['delivery_name'] . ' 快递单号：' . $data['delivery_id']
+                    ]);
+                if (!$res) {
+                    throw new AdminException(400529);
+                }
+            });
+        }
         return $dump;
     }
 

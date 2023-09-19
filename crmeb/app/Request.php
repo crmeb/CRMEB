@@ -33,7 +33,8 @@ class Request extends \think\Request
      * 不过滤变量名
      * @var array
      */
-    protected $except = ['menu_path', 'api_url', 'unique_auth', 'description', 'custom_form', 'content'];
+    protected $except = ['menu_path', 'api_url', 'unique_auth',
+        'description', 'custom_form', 'content', 'tableField'];
 
     /**
      * 获取请求的数据
@@ -59,7 +60,12 @@ class Request extends \think\Request
                     $name = is_array($param[1]) ? $param[0] . '/a' : $param[0];
                     $keyName = $param[0];
                 }
-                $p[$suffix == true ? $i++ : ($param[3] ?? $keyName)] = $this->filterWord(is_string($this->param($name, $param[1], $param[2])) ? trim($this->param($name, $param[1], $param[2])) : $this->param($name, $param[1], $param[2]), $filter && !in_array($keyName, $this->except));
+
+                $p[$suffix == true ? $i++ : ($param[3] ?? $keyName)] = $this->filterWord(
+                    is_string($this->param($name, $param[1], $param[2])) ?
+                        trim($this->param($name, $param[1], $param[2])) :
+                        $this->param($name, $param[1], $param[2]),
+                    $filter && !in_array($keyName, $this->except));
             }
         }
         return $p;
@@ -85,12 +91,34 @@ class Request extends \think\Request
             foreach ($str as &$v) {
                 if (is_array($v)) {
                     foreach ($v as &$vv) {
-                        if (!is_array($vv)) $vv = preg_replace($farr, '', $vv);
+                        if (!is_array($vv)) {
+                            $vv = $this->replaceWord($farr, $vv);
+                        }
                     }
                 } else {
-                    $v = preg_replace($farr, '', $v);
+                    $v = $this->replaceWord($farr, $v);
                 }
             }
+        } else {
+            $str = $this->replaceWord($farr, $str);
+        }
+        return $str;
+    }
+
+    /**
+     * 替换
+     * @param $farr
+     * @param $str
+     * @return array|string|string[]|null
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/9/19
+     */
+    public function replaceWord($farr, $str)
+    {
+        if (parse_url($str, PHP_URL_HOST)) {
+            $url = parse_url($str);
+            $str = $url['scheme'] . '://' . $url['host'] . preg_replace($farr, '', $url['path']);
         } else {
             $str = preg_replace($farr, '', $str);
         }

@@ -19,6 +19,8 @@ use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\crud\Controller;
 use crmeb\services\crud\Dao;
+use crmeb\services\crud\enum\FormTypeEnum;
+use crmeb\services\crud\enum\SearchEnum;
 use crmeb\services\crud\Make;
 use crmeb\services\crud\Model;
 use crmeb\services\crud\Route;
@@ -31,6 +33,7 @@ use crmeb\services\FileService;
 use Phinx\Db\Adapter\AdapterFactory;
 use think\facade\Db;
 use think\helper\Str;
+use think\migration\db\Column;
 use think\migration\db\Table;
 
 /**
@@ -52,31 +55,36 @@ class SystemCrudServices extends BaseServices
         'system_crud', 'wechat_key', 'user_label_relation', 'user_brokerage_frozen',
         'user_brokerage', 'store_product_cate', 'store_bargain_user_help', 'shipping_templates_region',
         'shipping_templates_no_delivery', 'shipping_templates_free', 'other_order_status', 'lang_code',
-        'lang_country', 'app_version', 'user', 'wechat_user', 'template_message', 'store_order', 'other_order',
-        'store_order_cart_info', 'store_order_economize', 'store_order_invoice', 'store_order_refund',
+        'lang_country', 'app_version', 'user', 'wechat_user', 'template_message', 'store_order',
+        'other_order', 'store_order_cart_info', 'store_order_economize', 'store_order_invoice', 'store_order_refund',
         'store_order_status', 'store_pink', 'agent_level', 'agent_level_task', 'agent_level_task_record',
         'agreement', 'app_version', 'article', 'article_category', 'article_content', 'auxiliary', 'cache',
         'capital_flow', 'category', 'diy', 'express', 'lang_type', 'live_anchor', 'live_goods', 'live_room',
-        'live_room_goods', 'luck_lottery', 'luck_lottery_record', 'luck_prize', 'member_card', 'member_card_batch',
-        'member_right', 'member_ship', 'message_system', 'other_order', 'other_order_status', 'out_account', 'out_interface',
-        'page_categroy', 'page_link', 'qrcode', 'shipping_templates', 'shipping_templates_free', 'shipping_templates_no_delivery',
-        'shipping_templates_region', 'sms_record', 'store_advance', 'store_bargain', 'store_bargain_user', 'store_bargain_user_help',
-        'store_cart', 'store_category', 'store_combination', 'store_coupon_issue', 'store_coupon_issue_user', 'store_coupon_product',
-        'store_coupon_user', 'store_integral', 'store_integral_order', 'store_integral_order_status', 'store_order', 'store_order_cart_info',
-        'store_order_economize', 'store_order_invoice', 'store_order_refund', 'store_order_status', 'store_pink', 'store_product',
-        'store_product_attr', 'store_product_attr_result', 'store_product_attr_value', 'store_product_cate', 'store_product_coupon',
-        'store_product_description', 'store_product_log', 'store_product_relation', 'store_service', 'store_service_feedback',
+        'live_room_goods', 'luck_lottery', 'luck_lottery_record', 'luck_prize', 'member_card',
+        'member_card_batch', 'member_right', 'member_ship', 'message_system', 'other_order',
+        'other_order_status', 'out_account', 'out_interface', 'page_categroy', 'page_link', 'qrcode',
+        'shipping_templates', 'shipping_templates_free', 'shipping_templates_no_delivery',
+        'shipping_templates_region', 'sms_record', 'store_advance', 'store_bargain', 'store_bargain_user',
+        'store_bargain_user_help', 'store_cart', 'store_category', 'store_combination', 'store_coupon_issue',
+        'store_coupon_issue_user', 'store_coupon_product', 'store_coupon_user', 'store_integral',
+        'store_integral_order', 'store_integral_order_status', 'store_order', 'store_order_cart_info',
+        'store_order_economize', 'store_order_invoice', 'store_order_refund', 'store_order_status',
+        'store_pink', 'store_product', 'store_product_attr', 'store_product_attr_result',
+        'store_product_attr_value', 'store_product_cate', 'store_product_coupon', 'store_product_description',
+        'store_product_log', 'store_product_relation', 'store_service', 'store_service_feedback',
         'store_product_reply', 'store_product_rule', 'store_product_virtual', 'store_seckill', 'store_seckill_time',
-        'store_service_log', 'store_service_record', 'store_service_speechcraft', 'store_visit', 'system_attachment',
-        'system_attachment_category', 'system_city', 'system_config', 'system_config_tab', 'system_file', 'system_file_info',
-        'system_group', 'system_group_data', 'system_log', 'system_notice', 'system_notice_admin', 'system_notification',
-        'system_role', 'system_route', 'system_route_cate', 'system_storage', 'system_store', 'system_store_staff',
-        'system_timer', 'system_user_level', 'template_message', 'upgrade_log', 'user', 'user_address',
-        'user_bill', 'user_brokerage', 'user_brokerage_frozen', 'user_cancel', 'user_enter', 'user_extract',
-        'user_friends', 'user_group', 'user_invoice', 'user_label', 'user_label_relation', 'user_level', 'user_money',
-        'user_notice', 'user_notice_see', 'user_recharge', 'user_search', 'user_sign', 'user_spread',
-        'user_visit', 'wechat_key', 'wechat_media', 'wechat_message', 'wechat_news_category', 'wechat_qrcode',
-        'wechat_qrcode_cate', 'wechat_qrcode_record', 'wechat_reply', 'wechat_user'
+        'store_service_log', 'store_service_record', 'store_service_speechcraft', 'store_visit',
+        'system_attachment', 'system_attachment_category', 'system_city', 'system_config',
+        'system_config_tab', 'system_file', 'system_file_info', 'system_group', 'system_group_data',
+        'system_log', 'system_notice', 'system_notice_admin', 'system_notification',
+        'system_role', 'system_route', 'system_route_cate', 'system_storage', 'system_store',
+        'system_store_staff', 'system_timer', 'system_user_level', 'template_message', 'upgrade_log',
+        'user', 'user_address', 'user_bill', 'user_brokerage', 'user_brokerage_frozen', 'user_cancel',
+        'user_enter', 'user_extract', 'user_friends', 'user_group', 'user_invoice', 'user_label',
+        'user_label_relation', 'user_level', 'user_money', 'user_notice', 'user_notice_see',
+        'user_recharge', 'user_search', 'user_sign', 'user_spread', 'user_visit', 'wechat_key',
+        'wechat_media', 'wechat_message', 'wechat_news_category', 'wechat_qrcode', 'wechat_qrcode_cate',
+        'wechat_qrcode_record', 'wechat_reply', 'wechat_user', 'system_crud_data', 'admins',
     ];
 
     //表字符集
@@ -121,6 +129,7 @@ class SystemCrudServices extends BaseServices
             'biginteger' => 'bigint',
             'tinyint' => 'boolean',
         ];
+
         return [
             'types' => [
                 'varchar',
@@ -128,7 +137,7 @@ class SystemCrudServices extends BaseServices
                 'text',
                 'longtext',
                 'tinytext',
-//                'enum',
+                'enum',
                 'blob',
                 'binary',
                 'varbinary',
@@ -146,54 +155,121 @@ class SystemCrudServices extends BaseServices
                 'float',
 
                 'json',
-
-//                'addTimestamps',
-//                'addSoftDelete',
             ],
             'form' => [
                 [
-                    'value' => '',
-                    'label' => '请选择',
-                ],
-                [
-                    'value' => 'input',
+                    'value' => FormTypeEnum::INPUT,
                     'label' => '输入框',
+                    'field_type' => 'varchar',
+                    'limit' => 255
                 ],
                 [
-                    'value' => 'number',
+                    'value' => FormTypeEnum::NUMBER,
                     'label' => '数字输入框',
+                    'field_type' => 'int',
+                    'limit' => 11
                 ],
                 [
-                    'value' => 'textarea',
+                    'value' => FormTypeEnum::TEXTAREA,
                     'label' => '多行文本框',
+                    'field_type' => 'text',
+                    'limit' => null
                 ],
                 [
-                    'value' => 'dateTime',
+                    'value' => FormTypeEnum::DATE_TIME,
                     'label' => '单选日期时间',
+                    'field_type' => 'varchar',
+                    'limit' => 200
                 ],
-//                [
-//                    'value' => 'dateTimeRange',
-//                    'label' => '日期时间区间选择',
-//                ],
-//                [
-//                    'value' => 'checkbox',
-//                    'label' => '多选框',
-//                ],
                 [
-                    'value' => 'radio',
+                    'value' => FormTypeEnum::DATE_TIME_RANGE,
+                    'label' => '日期时间区间选择',
+                    'field_type' => 'varchar',
+                    'limit' => 200
+                ],
+                [
+                    'value' => FormTypeEnum::CHECKBOX,
+                    'label' => '多选框',
+                    'field_type' => 'varchar',
+                    'limit' => 200
+                ],
+                [
+                    'value' => FormTypeEnum::RADIO,
                     'label' => '单选框',
+                    'field_type' => 'int',
+                    'limit' => 11
                 ],
                 [
-                    'value' => 'select',
+                    'value' => FormTypeEnum::SWITCH,
+                    'label' => '开关',
+                    'field_type' => 'int',
+                    'limit' => 11
+                ],
+                [
+                    'value' => FormTypeEnum::SELECT,
                     'label' => '下拉框',
+                    'field_type' => 'int',
+                    'limit' => 11
                 ],
                 [
-                    'value' => 'frameImageOne',
-                    'label' => '单图选择'
+                    'value' => FormTypeEnum::FRAME_IMAGE_ONE,
+                    'label' => '单图选择',
+                    'field_type' => 'varchar',
+                    'limit' => 200
                 ],
                 [
-                    'value' => 'frameImages',
-                    'label' => '多图选择'
+                    'value' => FormTypeEnum::FRAME_IMAGES,
+                    'label' => '多图选择',
+                    'field_type' => 'varchar',
+                    'limit' => 200
+                ],
+            ],
+            'search_type' => [
+                [
+                    'value' => SearchEnum::SEARCH_TYPE_EQ,
+                    'label' => '等于搜索',
+                ],
+                [
+                    'value' => SearchEnum::SEARCH_TYPE_LTEQ,
+                    'label' => '小于等于搜索',
+                ],
+                [
+                    'value' => SearchEnum::SEARCH_TYPE_GTEQ,
+                    'label' => '大于等于搜索',
+                ],
+                [
+                    'value' => SearchEnum::SEARCH_TYPE_NEQ,
+                    'label' => '不等于搜索',
+                ],
+                [
+                    'value' => SearchEnum::SEARCH_TYPE_LIKE,
+                    'label' => '模糊搜索',
+                ],
+                [
+                    'value' => SearchEnum::SEARCH_TYPE_BETWEEN,
+                    'label' => '用来时间区间搜索',
+                ],
+            ],
+            'default_type' => [
+                [
+                    'value' => '-1',
+                    'label' => '无',
+                    'disabled' => false,
+                ],
+                [
+                    'value' => '1',
+                    'label' => '自定义',
+                    'disabled' => true,
+                ],
+                [
+                    'value' => '2',
+                    'label' => 'NULL',
+                    'disabled' => false,
+                ],
+                [
+                    'value' => '3',
+                    'label' => 'CURRENT_TIMESTAMP',
+                    'disabled' => false,
                 ],
             ],
             'rule' => $rule
@@ -269,6 +345,33 @@ class SystemCrudServices extends BaseServices
     }
 
     /**
+     * 获取当前数据库所有表名
+     * @return mixed
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/2
+     */
+    public function getTableAll()
+    {
+        $sql = "SELECT TABLE_NAME, TABLE_COMMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?";
+
+        $tableAll = Db::query($sql, [config('database.connections.mysql.database')]);
+
+        $data = [];
+        foreach ($tableAll as $item) {
+            $item['TABLE_NAME'] = str_replace(config('database.connections.mysql.prefix'), '', $item['TABLE_NAME']);
+//            if (!in_array($item['TABLE_NAME'], self::NOT_CRUD_TABANAME)) {
+            $data[] = [
+                'value' => $item['TABLE_NAME'],
+                'label' => $item['TABLE_COMMENT'] ?: $item['TABLE_NAME'],
+            ];
+//            }
+        }
+
+        return $data;
+    }
+
+    /**
      * @param array $data
      * @return array
      * @author 等风来
@@ -305,18 +408,47 @@ class SystemCrudServices extends BaseServices
      * @email 136327134@qq.com
      * @date 2023/4/24
      */
-    protected function updateAlter(string $tableName, string $field, string $changeFiled, string $type, $limit = '', string $default = '', string $comment = '', array $options = [])
+    protected function updateAlter(string $tableName, string $field, string $changeFiled, string $prevFiled, string $type, $limit = '', string $default = '', string $comment = '', array $options = [])
     {
         $tableName = $this->getTableName($tableName);
         $comment = addslashes($comment);
         $field = addslashes($field);
         $changeFiled = addslashes($changeFiled);
+        $prevFiled = addslashes($prevFiled);
         $type = addslashes($type);
         $default = addslashes($default);
-        if (in_array(strtolower($type), ['text', 'longtext', 'tinytext'])) {
-            $sql = "ALTER TABLE `$tableName` CHANGE `$field` `$changeFiled` $type CHARACTER SET utf8mb4 COLLATE " . self::TABLR_COLLATION . " NULL COMMENT '$comment';";
+        if ($prevFiled) {
+            $after = "AFTER `$prevFiled`";
         } else {
-            $sql = "ALTER TABLE `$tableName` CHANGE `$field` `$changeFiled` $type($limit) NOT NULL DEFAULT '$default' COMMENT '$comment';";
+            $after = "";
+        }
+        if (isset($options['default_type'])) {
+            switch ($options['default_type']) {
+                case '-1':
+                    $default = 'NULL';
+                    break;
+                case '1'://自定义
+                    $default = "NOT NULL DEFAULT '$default'";
+                    break;
+                case '2'://为null
+                    $default = 'NULL DEFAULT NULL';
+                    break;
+                case '3'://时间
+                    $default = 'NULL DEFAULT CURRENT_TIMESTAMP';
+                    break;
+            }
+        }
+        if (in_array(strtolower($type), ['text', 'longtext', 'tinytext'])) {
+            $sql = "ALTER TABLE `$tableName` CHANGE `$field` `$changeFiled` $type CHARACTER SET utf8mb4 COLLATE " . self::TABLR_COLLATION . " NULL COMMENT '$comment' $after;";
+        } else if (strtolower($type) == 'enum') {
+            $enum = [];
+            foreach ($options['options'] as $option) {
+                $enum[] = "'$option'";
+            }
+            $enumStr = implode(',', $enum);
+            $sql = "ALTER TABLE `$tableName` CHANGE `$field` `$changeFiled` $type($enumStr) $default COMMENT '$comment' $after;";
+        } else {
+            $sql = "ALTER TABLE `$tableName` CHANGE `$field` `$changeFiled` $type($limit) $default COMMENT '$comment' $after;";
         }
         return Db::execute($sql);
     }
@@ -349,10 +481,26 @@ class SystemCrudServices extends BaseServices
         } else {
             $after = "";
         }
+        if (isset($options['default_type'])) {
+            switch ($options['default_type']) {
+                case '-1':
+                    $default = 'NULL';
+                    break;
+                case '1'://自定义
+                    $default = "NOT NULL DEFAULT '$default'";
+                    break;
+                case '2'://为null
+                    $default = 'NULL DEFAULT NULL';
+                    break;
+                case '3'://时间
+                    $default = 'NULL DEFAULT CURRENT_TIMESTAMP';
+                    break;
+            }
+        }
         if (in_array(strtolower($type), ['text', 'longtext', 'tinytext'])) {
             $sql = "ALTER TABLE `$tableName` ADD `$field` $type NULL COMMENT '$comment' $after;";
         } else {
-            $defaultSql = "NOT NULL DEFAULT '$default'";
+            $defaultSql = $default;
             //处理时间字段默认值
             if (in_array(strtolower($type), ['datetime', 'timestamp', 'time', 'date', 'year'])) {
                 switch ($field) {
@@ -365,7 +513,20 @@ class SystemCrudServices extends BaseServices
                         break;
                 }
             }
-            $limitSql = $limit ? '(' . $limit . ')' : '';
+
+            //兼容枚举字段
+            if (strtolower($type) == 'enum') {
+                $enum = [];
+                foreach ($options['options'] as $option) {
+                    $enum[] = "'$option'";
+                }
+                $enumStr = implode(',', $enum);
+
+                $limitSql = $enumStr ? '(' . $enumStr . ')' : '';
+            } else {
+                $limitSql = $limit ? '(' . $limit . ')' : '';
+            }
+
             $sql = "ALTER TABLE `$tableName` ADD `$field` $type$limitSql $defaultSql COMMENT '$comment' $after;";
         }
         return Db::execute($sql);
@@ -421,19 +582,21 @@ class SystemCrudServices extends BaseServices
 
         $columns = $this->getColumnNamesList($tableName);
         $fieldAll = array_column($columns, 'name');
-        $prevFiled = $columns[count($columns) - 1]['name'] ?? '';
+
         //对比数据库字段
-        foreach ($tableField as $item) {
-            if ($item['primaryKey']) {
+        foreach ($tableField as $i => $item) {
+            if ($item['primaryKey'] || $item['field'] == 'delete_time') {
                 continue;
             }
 
+            $prevFiled = $i ? ($tableField[$i - 1]['field'] ?? 'id') : 'id';
             //前台新增的字段进行添加
             if (!(isset($item['default_field']) &&
                 isset($item['default_field_type']) &&
                 isset($item['default_limit']) &&
                 isset($item['default_comment']) &&
-                isset($item['default_default']))
+                isset($item['default_default']) &&
+                isset($item['default_default_type']))
             ) {
                 if (!in_array($item['field'], $fieldAll)) {
                     $addAlter[] = [
@@ -443,6 +606,8 @@ class SystemCrudServices extends BaseServices
                         'type' => $item['field_type'],
                         'comment' => $item['comment'],
                         'default' => $item['default'],
+                        'default_type' => $item['default_type'],
+                        'values' => $item['field_type'] == 'enum' ? $item['limit'] : [],
                     ];
                 }
                 continue;
@@ -457,6 +622,8 @@ class SystemCrudServices extends BaseServices
                         'type' => $item['field_type'],
                         'comment' => $item['comment'],
                         'default' => $item['default'],
+                        'default_type' => $item['default_type'],
+                        'values' => $item['field_type'] == 'enum' ? $item['limit'] : [],
                     ];
                     continue;
                 }
@@ -467,34 +634,38 @@ class SystemCrudServices extends BaseServices
             }
 
             //数据库表存在的,字段,并且被修改
-            if ($item['default_field'] != $item['field'] ||
-                $item['default_field_type'] != $item['field_type'] ||
-                $item['default_limit'] != $item['limit'] ||
-                $item['default_comment'] != $item['comment'] ||
-                $item['default_default'] != $item['default']) {
+            if (!in_array($item['field'], ['id', 'create_time', 'update_time'])) {
                 $updateAlter[] = [
                     'default_field' => $item['default_field'],
+                    'prev_filed' => $prevFiled,
                     'field' => $item['field'],
                     'limit' => $item['limit'],
                     'type' => $item['field_type'],
                     'comment' => $item['comment'],
                     'default' => $item['default'],
+                    'default_type' => $item['default_type'],
+                    'values' => $item['field_type'] == 'enum' ? $item['limit'] : [],
                 ];
             }
         }
-        //更新数据库字段
-        foreach ($updateAlter as $item) {
-            $this->updateAlter($tableName, $item['default_field'], $item['field'], $item['type'], $item['limit'], $item['default'], $item['comment']);
-        }
         //添加字段
         foreach ($addAlter as $item) {
-            $this->addAlter($tableName, $item['field'], $item['prev_filed'], $item['type'], $item['limit'], $item['default'], $item['comment']);
+            $this->addAlter($tableName, $item['field'], $item['prev_filed'], $item['type'], $item['limit'], $item['default'], $item['comment'], [
+                'options' => $item['values'],
+                'default_type' => $item['default_type'],
+            ]);
         }
         //删除多余字段
         foreach ($deleteField as $item) {
             $this->deleteAlter($tableName, $item);
         }
-
+        //更新数据库字段
+        foreach ($updateAlter as $item) {
+            $this->updateAlter($tableName, $item['default_field'], $item['field'], $item['prev_filed'], $item['type'], $item['limit'], $item['default'], $item['comment'], [
+                'options' => $item['values'],
+                'default_type' => $item['default_type'],
+            ]);
+        }
     }
 
     /**
@@ -544,10 +715,6 @@ class SystemCrudServices extends BaseServices
                 $data['softDelete'] = true;
             }
         }
-
-        //读取字段
-        //读取数据库字段信息
-        $tableInfo = $this->getTableInfo($tableName);
 
         //获取主键
         foreach ($tableField as $value) {
@@ -653,8 +820,26 @@ class SystemCrudServices extends BaseServices
                 ],
                 [
                     'path' => $routeName . '/<id>',
+                    'method' => 'GET',
+                    'name' => $modelName . '查看数据接口',
+                    'app_name' => 'adminapi',
+                    'cate_id' => $cateId,
+                    'unique_auth' => '',
+                    'add_time' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'path' => $routeName . '/<id>',
                     'method' => 'PUT',
                     'name' => $modelName . '修改接口',
+                    'app_name' => 'adminapi',
+                    'cate_id' => $cateId,
+                    'unique_auth' => '',
+                    'add_time' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'path' => $routeName . '/status/<id>',
+                    'method' => 'PUT',
+                    'name' => $modelName . '修改状态接口',
                     'app_name' => 'adminapi',
                     'cate_id' => $cateId,
                     'unique_auth' => '',
@@ -812,8 +997,18 @@ class SystemCrudServices extends BaseServices
             if (isset($item['limit'])) {
                 $option['limit'] = (int)$item['limit'];
             }
-            if (isset($item['default'])) {
-                $option['default'] = $item['default'];
+            if (isset($item['default']) && isset($item['default_type'])) {
+                switch ($item['default_type']) {
+                    case '1'://自定义
+                        $option['default'] = $item['default'];
+                        break;
+                    case '2'://为null
+                        $option['null'] = true;
+                        break;
+                    case '3'://时间
+                        $option['default'] = Db::raw('CURRENT_TIMESTAMP');
+                        break;
+                }
             }
             //创建伪删除
             if ($item['field_type'] === 'addSoftDelete') {
@@ -831,6 +1026,11 @@ class SystemCrudServices extends BaseServices
                 //判断字段类型
                 if ($fieldType == 'boolean' && isset($option['default']) && $option['default'] === '') {
                     unset($option['default']);
+                }
+                //兼容枚举字段
+                if ($fieldType == 'enum') {
+                    unset($option['limit']);
+                    $option['values'] = $item['limit'];
                 }
                 $table->addColumn($item['field'], $this->changeTabelRule($item['field_type']), $option);
             }
@@ -884,14 +1084,17 @@ class SystemCrudServices extends BaseServices
         $dao->setFilePathName($filePath['dao'] ?? '')->setbasePath($basePath)->handle($tableName, [
             'usePath' => $model->getUsePath(),
             'modelName' => $options['modelName'] ?? '',
+            'searchField' => $options['searchField'] ?? [],
         ]);
         //生成service
         $service = app()->make(Service::class);
         $service->setFilePathName($filePath['service'] ?? '')->setbasePath($basePath)->handle($tableName, [
             'field' => $options['fromField'],
+            'columnField' => $options['columnField'],
             'key' => $options['key'],
             'usePath' => $dao->getUsePath(),
             'modelName' => $options['modelName'] ?? '',
+            'hasOneField' => $options['hasOneField'] ?? [],
         ]);
         //生成验证器
         $validate = app()->make(Validate::class);
@@ -904,6 +1107,8 @@ class SystemCrudServices extends BaseServices
         $controller->setFilePathName($filePath['controller'] ?? '')->setbasePath($basePath)->handle($tableName, [
             'usePath' => $service->getUsePath(),
             'modelName' => $options['modelName'] ?? '',
+            'searchField' => $options['searchField'] ?? [],
+            'columnField' => $options['columnField'] ?? [],
             'validateName' => '\\' . str_replace('/', '\\', $validate->getUsePath()) . 'Validate::class',
             'field' => array_column($options['fromField'], 'field'),
         ]);
@@ -918,16 +1123,20 @@ class SystemCrudServices extends BaseServices
         $viewRouter->setFilePathName($filePath['router'] ?? '')->setbasePath($basePath)->handle($tableName, [
             'route' => $routeName,
             'menuName' => $options['menuName'],
+            'modelName' => $options['modelName'] ?? $options['menuName'],
         ]);
         //生成前台接口
         $viewApi = app()->make(ViewApi::class);
         $viewApi->setFilePathName($filePath['api'] ?? '')->setbasePath($basePath)->handle($tableName, [
             'route' => $routeName,
         ]);
+
         //生成前台页面
         $viewPages = app()->make(ViewPages::class);
         $viewPages->setFilePathName($filePath['pages'] ?? '')->setbasePath($basePath)->handle($tableName, [
             'field' => $options['columnField'],
+            'tableFields' => $options['tableField'] ?? [],
+            'searchField' => $options['searchField'] ?? [],
             'route' => $routeName,
             'key' => $options['key'],
             'pathApiJs' => '@/' . str_replace('\\', '/', str_replace([Make::adminTemplatePath(), '.js'], '', $viewApi->getPath())),

@@ -36,6 +36,12 @@ Route::group(function () {
     Route::get('get_workerman_url', 'PublicController/getWorkerManUrl')->option(['real_name' => '获取客服数据']);
     //测试
     Route::get('index', 'Test/index')->option(['real_name' => '测试地址']);
+
+    //扫码上传图片
+    Route::post('image/scan_upload', 'PublicController/scanUpload')->option(['real_name' => '扫码上传图片']);
+    //路由导入
+    Route::get('route/import_api', 'PublicController/import')->option(['real_name' => '路由导入']);
+
 })->middleware(AllowOriginMiddleware::class)->option(['mark' => 'login', 'mark_name' => '登录相关']);
 
 /**

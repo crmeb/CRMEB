@@ -12,7 +12,9 @@ namespace app\adminapi\controller\v1\order;
 
 use app\adminapi\controller\AuthController;
 use app\adminapi\validate\order\StoreOrderValidate;
+use app\jobs\OrderExpressJob;
 use app\services\serve\ServeServices;
+use crmeb\services\FileService;
 use app\services\order\{StoreOrderCartInfoServices,
     StoreOrderDeliveryServices,
     StoreOrderRefundServices,
@@ -242,7 +244,7 @@ class StoreOrder extends AuthController
             ['delivery_id', ''],//快递单号
             ['delivery_code', ''],//快递公司编码
 
-            ['express_record_type', 2],//发货记录类型
+            ['express_record_type', 2],//发货记录类型:2=电子面单；3=商家寄件
             ['express_temp_id', ""],//电子面单模板
             ['to_name', ''],//寄件人姓名
             ['to_tel', ''],//寄件人电话
@@ -252,7 +254,10 @@ class StoreOrder extends AuthController
             ['sh_delivery_id', ''],//送货人电话
             ['sh_delivery_uid', ''],//送货人ID
 
-            ['fictitious_content', '']//虚拟发货内容
+            ['fictitious_content', ''],//虚拟发货内容
+
+            ['day_type', 0], //顺丰传 0今天，1明天，2后台
+            ['pickup_time', []],//开始时间 9:00，结束时间 10:00  开始时间和结束时间之间不能小于一个小时
         ]);
         return app('json')->success(100010, $services->delivery((int)$id, $data));
     }
@@ -286,7 +291,11 @@ class StoreOrder extends AuthController
 
             ['fictitious_content', ''],//虚拟发货内容
 
-            ['cart_ids', []]
+            ['cart_ids', []],
+
+            ['day_type', 0], //顺丰传 0今天，1明天，2后台
+            ['pickup_time', []],//开始时间 9:00，结束时间 10:00  开始时间和结束时间之间不能小于一个小时
+            ['service_type', ''],//快递业务类型
         ]);
         if (!$id) {
             return app('json')->fail(100100);
@@ -301,6 +310,58 @@ class StoreOrder extends AuthController
         }
         $services->splitDelivery((int)$id, $data);
         return app('json')->success(100010);
+    }
+
+    /**
+     * 获取寄件预扣金额
+     * @param ServeServices $services
+     * @return \think\Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/6/16
+     */
+    public function getPrice(ServeServices $services)
+    {
+        $data = $this->request->postMore([
+            ['kuaidicom', ''],
+            ['send_address', ''],
+            ['orderId', ''],
+            ['service_type', ''],
+            ['cart_ids', []],
+        ]);
+
+        $orderInfo = $this->services->get($data['orderId'], ['user_address', 'cart_id']);
+        if (!$orderInfo) {
+            return app('json')->fail('订单没有查询到');
+        }
+        $weight = '0';
+        if ($data['cart_ids']) {
+            $cartIds = array_column($data['cart_ids'], 'cart_id');
+            $cartList = app()->make(StoreOrderCartInfoServices::class)->getColumn([
+                ['cart_id', 'in', $cartIds]
+            ], 'cart_info', 'cart_id');
+            foreach ($data['cart_ids'] as $cart) {
+                if (!isset($cart['cart_id']) || !$cart['cart_id'] || !isset($cart['cart_num']) || !$cart['cart_num']) {
+                    return app('json')->fail(400159);
+                }
+                if (isset($cartList[$cart['cart_id']])) {
+                    $value = is_string($cartList[$cart['cart_id']]) ? json_decode($cartList[$cart['cart_id']], true) : $cartList[$cart['cart_id']];
+                    $weightnew = bcmul($value['attrInfo']['weight'], (string)$cart['cart_num'], 2);
+                    $weight = bcadd($weightnew, $weight, 2);
+                }
+            }
+        } else {
+            $orderCartInfoList = app()->make(StoreOrderCartInfoServices::class)->getCartInfoPrintProduct($data['orderId']);
+            foreach ($orderCartInfoList as $item) {
+                $weightnew = bcmul($item['attrInfo']['weight'], (string)$item['cart_num'], 2);
+                $weight = bcadd($weightnew, $weight, 2);
+            }
+        }
+        $data['address'] = $orderInfo['user_address'];
+        if ($weight > 0) {
+            $data['weight'] = $weight;
+        }
+        return app('json')->success($services->express()->getPrice($data));
     }
 
     /**
@@ -465,7 +526,7 @@ class StoreOrder extends AuthController
      */
     public function order_info($id)
     {
-        if (!$id || !($orderInfo = $this->services->get($id, [], ['refund']))) {
+        if (!$id || !($orderInfo = $this->services->get($id, [], ['refund', 'invoice']))) {
             return app('json')->fail(400118);
         }
         /** @var UserServices $services */
@@ -802,5 +863,24 @@ class StoreOrder extends AuthController
         } else {
             return app('json')->fail('取消失败');
         }
+    }
+
+    /**
+     * 导入批量发货
+     * @return \think\Response|void
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public function importExpress()
+    {
+        [$file] = $this->request->getMore([
+            ['file', '']
+        ], true);
+        if (!$file) return app('json')->fail(400168);
+        $file = public_path() . substr($file, 1);
+        $expressData = app()->make(FileService::class)->readExcel($file, 'express', 2);
+        foreach ($expressData as $item) {
+            OrderExpressJob::dispatch([$item]);
+        }
+        return app('json')->success('批量发货成功');
     }
 }

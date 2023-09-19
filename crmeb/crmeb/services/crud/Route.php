@@ -15,6 +15,7 @@ namespace crmeb\services\crud;
 
 
 use crmeb\exceptions\CrudException;
+use crmeb\services\crud\enum\ActionEnum;
 use think\helper\Str;
 
 class Route extends Make
@@ -43,7 +44,6 @@ class Route extends Make
     public function handle(string $name, array $options = [])
     {
         $path = $options['path'] ?? '';
-        $action = $options['action'] ?? [];
         $route = $options['route'] ?? '';
         $controller = $options['controller'] ?? $name;
         $routePath = $options['routePath'] ?? '';
@@ -51,15 +51,52 @@ class Route extends Make
         if (!$route) {
             throw new CrudException(500045);
         }
-        if (!$action) {
-            $action = ['index', 'create', 'save', 'edit', 'update', 'delete'];
-        }
 
+        return $this->setRouteContent($route, $routePath, $controller, $menus)
+            ->setRoute($name, $path);
+    }
+
+    /**
+     * 设置路由模板内容
+     * @param string $name
+     * @param string $path
+     * @return $this
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/12
+     */
+    protected function setRoute(string $name, string $path)
+    {
+        $content = file_get_contents($this->getStub());
+
+        $contentStr = str_replace($this->var, $this->value, $content);
+
+        $filePath = $this->getFilePathName($path, strtolower($name));
+
+        $this->setPathname($filePath);
+        $this->setContent($contentStr);
+
+        return $this;
+    }
+
+    /**
+     * 设置路由页面内容
+     * @param string $route
+     * @param string $routePath
+     * @param string $controller
+     * @param string $menus
+     * @return $this
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/12
+     */
+    protected function setRouteContent(string $route, string $routePath, string $controller, string $menus)
+    {
         $var = [
-            '{%route%}',
-            '{%controller%}',
-            '{%routePath%}',
-            '{%menus%}',
+            '{%ROUTE%}',
+            '{%CONTROLLER%}',
+            '{%ROUTE_PATH%}',
+            '{%MENUS%}',
         ];
 
         $value = [
@@ -70,24 +107,11 @@ class Route extends Make
         ];
 
         $routeContent = "";
-        foreach ($action as $item) {
+        foreach (ActionEnum::ACTION_ALL as $item) {
             $routeContent .= file_get_contents($this->getStub($item)) . "\r\n";
         }
 
-        if ($var && $value) {
-            $routeContent = str_replace($var, $value, $routeContent);
-        }
-
-        $content = file_get_contents($this->getStub());
-
-        $this->value['content-php'] = $routeContent;
-
-        $contentStr = str_replace($this->var, $this->value, $content);
-
-        $filePath = $this->getFilePathName($path, strtolower($name));
-
-        $this->setPathname($filePath);
-        $this->setContent($contentStr);
+        $this->value['CONTENT_PHP'] = str_replace($var, $value, $routeContent);
 
         return $this;
     }
@@ -110,7 +134,7 @@ class Route extends Make
     /**
      * 设置模板
      * @param string $type
-     * @return mixed|string|string[]
+     * @return string|string[]
      * @author 等风来
      * @email 136327134@qq.com
      * @date 2023/3/14
@@ -125,8 +149,10 @@ class Route extends Make
             'save' => $routePath . 'save.stub',
             'edit' => $routePath . 'edit.stub',
             'update' => $routePath . 'update.stub',
+            'status' => $routePath . 'status.stub',
             'delete' => $routePath . 'delete.stub',
             'route' => $routePath . 'route.stub',
+            'read' => $routePath . 'read.stub',
         ];
 
         return $type ? $stubs[$type] : $stubs;

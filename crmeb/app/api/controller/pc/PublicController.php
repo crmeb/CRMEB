@@ -51,6 +51,8 @@ class PublicController
         $data['site_keywords'] = sys_config('site_keywords');
         $data['site_description'] = sys_config('site_description');
         $data['network_security'] = sys_config('network_security');
+        $data['network_security_url'] = sys_config('network_security_url');
+        $data['icp_url'] = sys_config('icp_url');
         $logoUrl = sys_config('pc_logo');
         if (strstr($logoUrl, 'http') === false && $logoUrl) {
             $logoUrl = sys_config('site_url') . $logoUrl;

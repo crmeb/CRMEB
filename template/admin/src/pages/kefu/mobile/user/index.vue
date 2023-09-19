@@ -162,7 +162,7 @@ export default {
     confirm(res) {
       putGroupApi(this.$route.params.uid, res[0].value)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getUserInfo();
         })
         .catch((err) => {

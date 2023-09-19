@@ -1,10 +1,10 @@
 <template>
-  <Card :bordered="false" dis-hover class="ivu-mt-16">
+  <el-card :bordered="false" shadow="never" class="ivu-mt-16" v-loading="spinShow">
     <div class="acea-row row-between-wrapper">
-      <div class="header-title mb20">
+      <div class="statics-header-title mb20">
         公众号用户概括
-        <Poptip word-wrap width="500" trigger="hover" placement="right-start">
-          <Icon type="ios-information-circle-outline" />
+        <el-tooltip effect="light" word-wrap width="500" trigger="hover" placement="right-start">
+          <i class="el-icon-info"></i>
           <div slot="content">
             <div>新增关注用户数</div>
             <div>在选定条件下，关注公众号的用户数量，包括首次关注和再次关注的用户</div>
@@ -21,7 +21,7 @@
             <div>累积取关用户数</div>
             <div>筛选时间截止时，取消关注公众号的用户数量</div>
           </div>
-        </Poptip>
+        </el-tooltip>
       </div>
     </div>
     <div class="acea-row mb20">
@@ -47,8 +47,7 @@
       </div>
     </div>
     <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
-    <Spin size="large" fix v-if="spinShow"></Spin>
-  </Card>
+  </el-card>
 </template>
 
 <script>
@@ -95,11 +94,11 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join('-');
+      this.dataTime = this.timeVal ? this.timeVal.join('-') : '';
       this.name = this.dataTime;
       this.getStatistics();
       this.getTrend();
-      // this.userFrom.user_time = this.timeVal.join('-')
+      // this.userFrom.user_time = this.timeVal ? this.timeVal.join('-') : ''
     },
     // 统计
     getStatistics() {
@@ -135,7 +134,7 @@ export default {
           ];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 统计图
@@ -233,7 +232,7 @@ export default {
           this.spinShow = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
           this.spinShow = false;
         });
     },
@@ -243,7 +242,7 @@ export default {
 
 <style scoped lang="less">
 .one {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 .two {
   background: #00c050;
@@ -296,7 +295,7 @@ export default {
 }
 
 .lan {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 
 .iconshangpinliulanliang {

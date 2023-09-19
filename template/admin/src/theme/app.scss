@@ -16,15 +16,15 @@
   --prev-bg-columnsMenuBarColor: #e6e6e6;
   --prev-bg-columnsMenuActiveColor: #ffffff;
   --prev-bg-menu-hover-ba-color: rgba(0, 0, 0, 0.2);
-  --prev-bg-menu-active-color: #409eff;
-  --prev-bg-main-color: #f8f8f8;
+  --prev-bg-menu-active-color: #0256ff;
+  --prev-bg-main-color: #F0F2F5;
   --prev-bg-color: #f5f7fa;
   --prev-bg-white: #ffffff;
-  --prev-color-primary: #409eff;
+  --prev-color-primary: #0256ff;
   --prev-color-text-white: #ffffff;
   --prev-color-text-black: #000000;
-  --prev-color-text-primary: #303133;
-  --prev-color-text-regular: #606266;
+  --prev-color-text-primary: #606266;
+  --prev-color-text-regular: #303133;
   --prev-color-text-secondary: #909399;
   --prev-color-text-placeholder: #c0c4cc;
   --prev-color-hover: rgba(0, 0, 0, 0.04);
@@ -38,6 +38,7 @@
   --prev-border-color-extra-light: #f2f6fc;
   --prev-tag-active-color: #fff;
   --prev-MenuActiveColor: #fff;
+  --prev-table-header-bag: #f2f6ff;
 }
 
 html,
@@ -92,20 +93,20 @@ body,
   }
   .layout-aside-width-default {
     width: 180px !important;
-    transition: width 0.3s ease;
+    transition: width 0.2s ease;
     box-shadow: 1px 1px 4px rgba(0, 21, 41, 0.08);
   }
   .layout-aside-width64 {
     width: 64px !important;
-    transition: width 0.3s ease;
+    transition: width 0.2s ease;
   }
   .layout-aside-width1 {
-    width: 1px !important;
-    transition: width 0.3s ease;
+    width: 0px !important;
+    transition: width 0.2s ease;
   }
   .layout-scrollbar {
     @extend .el-scrollbar;
-    padding: 15px;
+    padding: 16px;
   }
   .layout-mian-height-50 {
     height: calc(100vh - 50px);
@@ -163,6 +164,11 @@ body,
 }
 .h100 {
   height: 100% !important;
+  min-height: calc(100vh - 185px);
+}
+.h101 {
+  height: 100% !important;
+  min-height: calc(100vh - 150px);
 }
 .vh100 {
   height: 100vh !important;

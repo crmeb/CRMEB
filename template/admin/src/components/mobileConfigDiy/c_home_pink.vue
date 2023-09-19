@@ -1,5 +1,5 @@
 <template>
-  <div class="mobile-config pro">
+  <div class="mobile-config">
     <div v-for="(item, key) in rCom" :key="key">
       <component
         :is="item.components.name"

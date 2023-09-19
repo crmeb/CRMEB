@@ -117,7 +117,9 @@
 		goShopDetail
 	} from '@/libs/order.js';
 	import colors from "@/mixins/color";
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		components: {
 			// swipers
@@ -125,7 +127,7 @@
 		mixins: [colors],
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				autoplay: true,
 				circular: true,
 				interval: 3000,
@@ -189,24 +191,7 @@
 			},
 			goPages(item) {
 				let url = item.link;
-				if (url.indexOf("http") != -1) {
-					// #ifdef H5
-					location.href = url
-					// #endif
-				} else {
-					if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index',
-							'/pages/index/index'
-						]
-						.indexOf(url) == -1) {
-						uni.navigateTo({
-							url: url
-						})
-					} else {
-						uni.switchTab({
-							url: url
-						})
-					}
-				}
+				this.$util.JumpPath(url);
 			},
 			jump(url) {
 				uni.navigateTo({

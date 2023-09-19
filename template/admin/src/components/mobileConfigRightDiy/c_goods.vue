@@ -17,15 +17,7 @@
       </draggable>
     </div>
 
-    <Modal
-      v-model="modals"
-      title="商品列表"
-      footerHide
-      class="paymentFooter"
-      scrollable
-      width="900"
-      @on-cancel="cancel"
-    >
+    <el-dialog :visible.sync="modals" title="商品列表" class="paymentFooter" width="900" @closed="cancel">
       <goods-list
         ref="goodslist"
         :ischeckbox="true"
@@ -33,7 +25,7 @@
         @getProductId="getProductId"
         v-if="modals"
       ></goods-list>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 

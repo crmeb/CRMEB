@@ -1,25 +1,28 @@
 <template>
   <div @resize="handleResize">
-    <Row :gutter="24">
-      <Col san="24" class="ivu-mb">
-        <Card :bordered="false" dis-hover class="dashboard-console-visit">
-          <div slot="title">
-            <Row type="flex" justify="center" align="middle">
-              <Col span="8">
-                <Avatar icon="ios-podium" size="small" style="color: #1890ff; background-color: #e6f7ff" />
-                <span class="ivu-pl-8">订单</span>
-              </Col>
-              <Col span="16" class="ivu-text-right">
-                <RadioGroup v-model="visitDate" type="button" class="ivu-mr-8" @on-change="handleChangeVisitType">
-                  <Radio label="thirtyday">30天</Radio>
-                  <Radio label="week">周</Radio>
-                  <Radio label="month">月</Radio>
-                  <Radio label="year">年</Radio>
-                </RadioGroup>
-              </Col>
-            </Row>
+    <el-row :gutter="24">
+      <el-col san="24" class="ivu-mb">
+        <el-card :bordered="false" shadow="never" class="dashboard-console-visit">
+          <div>
+            <el-row justify="center" align="middle">
+              <el-col :span="8" class="card-title">
+                <el-avatar
+                  icon="el-icon-s-marketing"
+                  size="small"
+                  style="color: var(--prev-color-primary); background-color: #e6f7ff"
+                ></el-avatar>
+                <h4 class="ivu-pl-8">订单</h4>
+              </el-col>
+              <el-col :span="16" class="ivu-text-right">
+                <el-radio-group v-model="visitDate" type="button" class="ivu-mr-8" @input="handleChangeVisitType">
+                  <el-radio-button label="thirtyday">30天</el-radio-button>
+                  <el-radio-button label="week">周</el-radio-button>
+                  <el-radio-button label="month">月</el-radio-button>
+                  <el-radio-button label="year">年</el-radio-button>
+                </el-radio-group>
+              </el-col>
+            </el-row>
           </div>
-          <h4>订单量趋势</h4>
           <echarts-from
             ref="visitChart"
             :series="series"
@@ -27,9 +30,9 @@
             v-if="infoList"
             :yAxisData="yAxisData"
           ></echarts-from>
-        </Card>
-      </Col>
-    </Row>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>
@@ -104,7 +107,7 @@ export default {
             ]);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 时间改变
@@ -135,5 +138,9 @@ export default {
 }
 .ivu-pl-8 {
   padding-left: 8px !important;
+}
+.card-title {
+    display: flex;
+  align-items: center;
 }
 </style>

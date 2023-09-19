@@ -29,7 +29,7 @@
 							<image :src='item.image'></image>
 						</view>
 						<view class='text acea-row row-column-around'>
-							<view class='name line1'>{{item.title}}</view>
+							<view class='name line2'>{{item.title}}</view>
 							<view class='money font-color'>{{$t(`￥`)}}
 								<text class='num font-color'>{{item.price}}</text>
 								<text class="y_money">{{$t(`￥`)}}{{item.ot_price}}</text>
@@ -308,7 +308,7 @@
 		width: 460rpx;
 		font-size: 30rpx;
 		color: #333;
-		height: 166rpx;
+		height: 200rpx;
 	}
 
 	.flash-sale .list .item .text .name {

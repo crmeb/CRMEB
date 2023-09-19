@@ -3,7 +3,7 @@
  *  +----------------------------------------------------------------------
  *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
  *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~{%year%} https://www.crmeb.com All rights reserved.
+ *  | Copyright (c) 2016~{%YEAR%} https://www.crmeb.com All rights reserved.
  *  +----------------------------------------------------------------------
  *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
  *  +----------------------------------------------------------------------
@@ -12,41 +12,41 @@
  */
 
 /**
- * {%modelName%}
+ * {%MODEL_NAME%}
  * @author crud自动生成代码
- * @date {%time%}
+ * @date {%DATE%}
  */
 
-namespace app\adminapi\controller\crud{%path%};
+namespace app\adminapi\controller\crud{%PATH%};
 
 use app\adminapi\controller\AuthController;
 use think\facade\App;
-{%use-php%}
+{%USE_PHP%}
 /**
- * Class {%nameCamel%}
- * @date {%date%}
- * @package app\adminapi\controller\crud{%path%}
+ * Class {%NAME_CAMEL%}
+ * @date {%DATE%}
+ * @package app\adminapi\controller\crud{%PATH%}
  */
-class {%nameCamel%} extends AuthController
+class {%NAME_CAMEL%} extends AuthController
 {
 
     /**
-     * @var {%nameCamel%}Services
+     * @var {%NAME_CAMEL%}Services
      */
     protected $service;
 
     /**
-     * {%nameCamel%}Controller constructor.
+     * {%NAME_CAMEL%}Controller constructor.
      * @param App $app
-     * @param {%nameCamel%}Services $service
+     * @param {%NAME_CAMEL%}Services $service
      */
-    public function __construct(App $app, {%nameCamel%}Services $service)
+    public function __construct(App $app, {%NAME_CAMEL%}Services $service)
     {
         parent::__construct($app);
         $this->service = $service;
     }
 
 
-{%content-php%}
+{%CONTENT_PHP%}
 
 }

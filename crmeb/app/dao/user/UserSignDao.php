@@ -63,4 +63,47 @@ class UserSignDao extends BaseDao
     {
         return $this->search($where)->field($field)->order('id desc')->group($group)->page($page, $limit)->select()->toArray();
     }
+
+    /**
+     * 获取周或者月的累积签到次数
+     * @param $type
+     * @param $uid
+     * @return int
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/1
+     */
+    public function getCumulativeDays($type, $uid)
+    {
+        return $this->getModel()->where('uid', $uid)->where(function ($query) use ($type) {
+            if ($type == 1) {
+                $query->whereWeek('add_time');
+            } elseif($type == 0) {
+                $query->whereMonth('add_time');
+            }
+        })->count();
+    }
+
+    /**
+     * 获取本周或者本月的签到列表
+     * @param $type
+     * @param $uid
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/8
+     */
+    public function getUserSignList($type, $uid): array
+    {
+        return $this->getModel()->where('uid', $uid)->where(function ($query) use ($type) {
+            if ($type == 1) {
+                $query->whereWeek('add_time');
+            } else {
+                $query->whereMonth('add_time');
+            }
+        })->order('id asc')->select()->toArray();
+    }
 }

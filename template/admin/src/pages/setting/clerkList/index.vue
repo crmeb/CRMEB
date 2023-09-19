@@ -1,76 +1,106 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="artFrom"
-        :model="artFrom"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid" class="mr">
-            <FormItem label="提货点名称：" label-for="store_name">
-              <Select v-model="artFrom.store_id" element-id="store_id" clearable @on-change="userSearchs">
-                <Option v-for="item in storeSelectList" :value="item.id" :key="item.id">{{ item.name }}</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <!--<Col v-bind="grid" class="mr">-->
-          <!--<Button type="primary" class="mr15" @click="userSearchs">搜索</Button>-->
-          <!--</Col>-->
-        </Row>
-      </Form>
-      <Row type="flex">
-        <Col v-bind="grid">
-          <Button v-auth="['merchant-store_staff-create']" type="primary" icon="md-add" @click="add">添加核销员</Button>
-        </Col>
-      </Row>
-      <Table
-        :columns="columns"
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="artFrom"
+            :model="artFrom"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="提货点名称：">
+              <el-select v-model="artFrom.store_id" clearable @change="userSearchs" class="form_content_width">
+                <el-option
+                    v-for="item in storeSelectList"
+                    :value="item.id"
+                    :key="item.id"
+                    :label="item.name"
+                ></el-option>
+              </el-select>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+        <el-button v-auth="['merchant-store_staff-create']" type="primary" @click="add"
+        >添加核销员</el-button>
+      <el-table
         :data="storeLists"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="avatar">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.avatar" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row.id, row.status)"
-            size="large"
-            >>
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row.id)">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除核销员', index)">删除</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="头像" min-width="90">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.avatar" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="微信名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="核销员名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.staff_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="所属提货点" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="添加时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" min-width="150">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row.id, scope.row.status)"
+              size="large"
+              active-text="开启"
+              inactive-text="关闭"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row.id)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除核销员', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="artFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="artFrom.limit"
+          :page.sync="artFrom.page"
+          :limit.sync="artFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -90,7 +120,7 @@ export default {
     ...mapState('media', ['isMobile']),
     ...mapState('userLevel', ['categoryId']),
     labelWidth() {
-      return this.isMobile ? undefined : 85;
+      return this.isMobile ? undefined : '90px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -108,53 +138,9 @@ export default {
       artFrom: {
         page: 1,
         limit: 15,
-        store_id: 0,
+        store_id: '',
       },
       loading: false,
-      columns: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-          sortable: true,
-        },
-        {
-          title: '微信名称',
-          key: 'nickname',
-          minWidth: 100,
-        },
-        {
-          title: '头像',
-          slot: 'avatar',
-          minWidth: 100,
-        },
-        {
-          title: '核销员名称',
-          key: 'staff_name',
-          minWidth: 100,
-        },
-        {
-          title: '所属提货点',
-          key: 'name',
-          minWidth: 100,
-        },
-        {
-          title: '添加时间',
-          key: 'add_time',
-          minWidth: 100,
-        },
-        {
-          title: '状态',
-          slot: 'status',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
       storeLists: [],
       storeSelectList: [],
       total: 0,
@@ -181,16 +167,12 @@ export default {
           that.total = res.data.count;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 搜索；
     userSearchs() {
       this.artFrom.page = 1;
-      this.getList();
-    },
-    pageChange(index) {
-      this.artFrom.page = index;
       this.getList();
     },
     // 删除
@@ -204,11 +186,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.storeLists.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 添加核销员；
@@ -218,7 +200,7 @@ export default {
     onchangeIsShow(id, is_show) {
       let that = this;
       storeStaffSetShowApi(id, is_show).then((res) => {
-        that.$Message.success(res.msg);
+        that.$message.success(res.msg);
         that.getList();
       });
     },

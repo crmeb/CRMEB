@@ -80,7 +80,7 @@ class DownloadImage
         } else {
             $ext = $this->getImageExtname($name)['ext_name'];
         }
-        if (in_array($ext, ['php', 'js', 'html'])) {
+        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'])) {
             throw new AdminException(400558);
         }
         if (strstr($url, 'http://') === false && strstr($url, 'https://') === false) {

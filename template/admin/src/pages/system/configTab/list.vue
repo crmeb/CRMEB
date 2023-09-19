@@ -1,105 +1,137 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
-      <div class="fl_header">
-        <router-link :to="{ path: $routeProStr + '/system/config/system_config_tab/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
-        >
-        <Divider type="vertical" />
-        <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>
-      </div>
-    </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Row type="flex">
-        <Col v-bind="grid">
-          <Button type="primary" @click="goIndex" class="mr20">配置分类</Button>
-          <Button type="primary" icon="md-add" @click="configureAdd">添加配置</Button>
-        </Col>
-      </Row>
-      <Divider dashed />
-      <Table
-        :columns="columns1"
+    <pages-header
+      ref="pageHeader"
+      title="配置列表"
+      :backUrl="$routeProStr + '/system/config/system_config_tab/index'"
+    ></pages-header>
+    <el-card :bordered="false" shadow="never" class="mt16">
+      <el-row>
+        <el-col v-bind="grid">
+          <el-button type="primary" @click="goIndex">配置分类</el-button>
+          <el-button type="primary" @click="configureAdd">添加配置</el-button>
+        </el-col>
+      </el-row>
+      <el-table
         :data="classList"
         ref="table"
-        :loading="loading"
+        v-loading="loading"
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
+        class="mt14"
       >
-        <template slot-scope="{ row, index }" slot="values">
-          <span
-            v-if="row.type === 'text' || row.type === 'textarea' || row.type === 'radio' || row.type === 'checkbox'"
-            >{{ row.value }}</span
-          >
-          <div class="valBox acea-row" v-if="row.type === 'upload' && row.upload_type === 3">
-            <div v-if="row.value.length">
-              <div class="valPicbox acea-row row-column-around" v-for="(item, index) in row.value" :key="index">
-                <div class="valPicbox_pic"><Icon type="md-document" /></div>
-                <span class="valPicbox_sp">{{ item.filename }}</span>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="配置名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.info }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="字段变量" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.menu_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="字段类型" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="值" min-width="130">
+          <template slot-scope="scope">
+            <span
+              v-if="
+                scope.row.type === 'text' ||
+                scope.row.type === 'textarea' ||
+                scope.row.type === 'radio' ||
+                scope.row.type === 'checkbox'
+              "
+              >{{ scope.row.value }}</span
+            >
+            <div class="valBox acea-row" v-if="scope.row.type === 'upload' && scope.row.upload_type === 3">
+              <div v-if="scope.row.value.length">
+                <div
+                  class="valPicbox acea-scope.row scope.row-column-around"
+                  v-for="(item, index) in scope.row.value"
+                  :key="index"
+                >
+                  <div class="valPicbox_pic"><i class="el-icon-document" /></div>
+                  <span class="valPicbox_sp">{{ item.filename }}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="valBox acea-row" v-if="row.type === 'upload' && row.upload_type !== 3">
-            <div v-if="row.value.length">
-              <div class="valPicbox acea-row row-column-around" v-for="(item, index) in row.value" :key="index">
-                <div class="valPicbox_pic"><img v-lazy="item.filepath" /></div>
-                <span class="valPicbox_sp">{{ item.filename }}</span>
+            <div class="valBox acea-row" v-if="scope.row.type === 'upload' && scope.row.upload_type !== 3">
+              <div v-if="scope.row.value.length">
+                <div class="valPicbox acea-row row-column-around" v-for="(item, index) in scope.row.value" :key="index">
+                  <div class="valPicbox_pic"><img v-lazy="item.filepath" /></div>
+                  <span class="valPicbox_sp">{{ item.filename }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="statuss">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除分类', index)">删除</a>
-        </template>
-      </Table>
-      <!--            <div class="acea-row row-right page">-->
-      <!--                <Page :total="total" show-elevator show-total @on-change="pageChange"-->
-      <!--                      :page-size="formValidate.limit"/>-->
-      <!--            </div>-->
-    </Card>
+            <span v-if="scope.row.type === 'switch'">{{ scope.row.value == 1 ? '开启' : '关闭' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否显示" min-width="130">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="显示"
+              inactive-text="隐藏"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="120">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除分类', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
 
     <!-- 新建 表单-->
-    <Modal
-      v-model="modals2"
-      scrollable
-      footer-hide
-      :closable="true"
-      title="添加配置字段"
-      :mask-closable="false"
-      :z-index="1"
-      width="700"
+    <el-dialog
+      :visible.sync="modals2"
+      :title="`${rowId ? '修改' : '添加'}配置字段`"
+      :close-on-click-modal="false"
+      :show-close="true"
+      width="720px"
     >
-      <Tabs v-model="typeFrom.type" @on-click="onhangeTab" class="tabsName">
-        <TabPane label="文本框 " name="0"></TabPane>
-        <TabPane label="多行文本框" name="1"></TabPane>
-        <TabPane label="单选框" name="2"></TabPane>
-        <TabPane label="文件上传" name="3"></TabPane>
-        <TabPane label="多选框" name="4"></TabPane>
-        <TabPane label="下拉框" name="5"></TabPane>
-      </Tabs>
+      <el-tabs v-if="!rowId" v-model="typeFrom.type" @tab-click="onhangeTab" class="tabsName">
+        <el-tab-pane label="文本框 " name="0"></el-tab-pane>
+        <el-tab-pane label="多行文本框" name="1"></el-tab-pane>
+        <el-tab-pane label="单选框" name="2"></el-tab-pane>
+        <el-tab-pane label="文件上传" name="3"></el-tab-pane>
+        <el-tab-pane label="多选框" name="4"></el-tab-pane>
+        <el-tab-pane label="下拉框" name="5"></el-tab-pane>
+        <el-tab-pane label="开关" name="6"></el-tab-pane>
+      </el-tabs>
       <form-create
         v-if="rules.length != 0"
         :rule="rules"
+        v-model="fapi"
+        :option="config"
         @submit="onSubmit"
         class="formBox"
         ref="fc"
         handleIcon="false"
       ></form-create>
-    </Modal>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modals2 = false">取消</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
+      </span>
+    </el-dialog>
     <!-- 编辑表单-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
   </div>
@@ -107,7 +139,7 @@
 
 <script>
 import { configTabListApi, configTabAddApi, configTabEditApi, configSetStatusApi } from '@/api/system';
-import formCreate from '@form-create/iview';
+import formCreate from '@form-create/element-ui';
 import editFrom from '@/components/from/from';
 import request from '@/libs/request';
 export default {
@@ -129,45 +161,27 @@ export default {
         page: 1,
         limit: 20,
       },
+      config: {
+        form: {
+          labelWidth: '100px',
+        },
+        resetBtn: false,
+        submitBtn: false,
+        global: {
+          upload: {
+            props: {
+              onSuccess(res, file) {
+                if (res.status === 200) {
+                  file.url = res.data.src;
+                } else {
+                  this.$message.error(res.msg);
+                }
+              },
+            },
+          },
+        },
+      },
       total: 0,
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '配置名称',
-          key: 'info',
-          minWidth: 130,
-        },
-        {
-          title: '字段变量',
-          key: 'menu_name',
-          minWidth: 140,
-        },
-        {
-          title: '字段类型',
-          key: 'type',
-          minWidth: 90,
-        },
-        {
-          title: '值',
-          slot: 'values',
-          minWidth: 230,
-        },
-        {
-          title: '是否显示',
-          slot: 'statuss',
-          minWidth: 90,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
       FromData: null,
       FromRequestData: {},
       modalTitleSs: '',
@@ -178,6 +192,8 @@ export default {
         tab_id: this.$route.params.id,
       },
       rules: [],
+      fapi: null,
+      rowId: 0,
     };
   },
   watch: {
@@ -194,9 +210,11 @@ export default {
   },
   methods: {
     // 点击tab
-    onhangeTab(name) {
-      this.typeFrom.type = name;
+    onhangeTab() {
       this.classAdd();
+    },
+    submitForm() {
+      this.fapi.submit();
     },
     // 新增表单
     classAdd() {
@@ -211,11 +229,12 @@ export default {
           this.modals2 = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 编辑表单
     edit(row) {
+      this.rowId = row.id;
       configTabEditApi(row.id)
         .then(async (res) => {
           if (res.data.status === false) {
@@ -228,7 +247,7 @@ export default {
           this.modals2 = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 提交表单
@@ -239,7 +258,7 @@ export default {
         data: formData,
       })
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           setTimeout(() => {
             this.modals2 = false;
           }, 1000);
@@ -248,7 +267,7 @@ export default {
           }, 1500);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改成功
@@ -264,6 +283,8 @@ export default {
     // 添加配置
     configureAdd() {
       // this.modals2 = true;
+      this.rowId = 0;
+      this.typeFrom.type = 0;
       this.classAdd();
     },
     // 列表
@@ -279,7 +300,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange(index) {
@@ -297,21 +318,21 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.classList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改是否显示
     onchangeIsShow(row) {
       configSetStatusApi(row.id, row.status)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

@@ -1,62 +1,52 @@
 <template>
   <div class="box">
     <div class="c_row-item" v-if="this.$route.query.type !== 2">
-      <Col class="label" span="4"> 模板名称 </Col>
-      <Col span="19" class="slider-box">
-        <Input v-model="name" placeholder="选填不超过15个字" maxlength="15" @on-change="changName" />
-      </Col>
+      <el-col class="label" :span="4"> 模板名称 </el-col>
+      <el-col :span="19" class="slider-box">
+        <el-input v-model="name" placeholder="选填不超过15个字" maxlength="15" @input="changName" />
+      </el-col>
     </div>
     <div class="c_row-item">
-      <Col class="label" span="4"> 页面标题 </Col>
-      <Col span="19" class="slider-box">
-        <Input v-model="value" placeholder="选填不超过30个字" maxlength="30" @on-change="changVal" />
-      </Col>
+      <el-col class="label" :span="4"> 页面标题 </el-col>
+      <el-col :span="19" class="slider-box">
+        <el-input v-model="value" placeholder="选填不超过30个字" maxlength="30" @input="changVal" />
+      </el-col>
     </div>
     <div class="c_row-item">
-      <Col class="label" span="4"> 页面状态 </Col>
-      <Col span="19" class="slider-box">
-        <i-switch v-model="isShow" @on-change="changeState" />
-      </Col>
+      <el-col class="label" :span="4"> 页面状态 </el-col>
+      <el-col :span="19" class="slider-box">
+        <el-switch :active-value="1" :inactive-value="0" v-model="isShow" @change="changeState" />
+      </el-col>
     </div>
     <div class="c_row-item acea-row row-top">
-      <Col class="label" span="4"> 背景设置 </Col>
-      <Col span="19" class="slider-box">
+      <el-col class="label" :span="4"> 背景设置 </el-col>
+      <el-col :span="19" class="slider-box">
         <div class="acea-row row-between row-top color">
-          <Checkbox v-model="bgColor" @on-change="bgColorTap">背景色</Checkbox>
-          <ColorPicker v-model="colorPicker" @on-change="colorPickerTap(colorPicker)" />
+          <el-checkbox v-model="bgColor" @change="bgColorTap">背景色</el-checkbox>
+          <el-color-picker v-model="colorPicker" @change="colorPickerTap(colorPicker)"></el-color-picker>
         </div>
         <div class="acea-row row-between row-top color">
-          <Checkbox v-model="bgPic" @on-change="bgPicTap">背景图</Checkbox>
-          <RadioGroup v-model="tabVal" type="button" @on-change="radioTap">
-            <Radio :label="index" v-for="(item, index) in picList" :key="index">
+          <el-checkbox v-model="bgPic" @change="bgPicTap">背景图</el-checkbox>
+          <el-radio-group v-model="tabVal" type="button" @input="radioTap">
+            <el-radio-button :label="index" v-for="(item, index) in picList" :key="index">
               <span class="iconfont-diy" :class="item"></span>
-            </Radio>
-          </RadioGroup>
+            </el-radio-button>
+          </el-radio-group>
         </div>
         <div v-if="bgPic">
           <div class="title">建议尺寸：690 * 240px</div>
           <div class="boxs" @click="modalPicTap('单选')">
             <img :src="bgPicUrl" alt="" v-if="bgPicUrl" />
             <div class="upload-box" v-else>
-              <Icon type="ios-camera-outline" size="36" />
+              <i class="el-icon-picture-outline" style="font-size: 24px"></i>
             </div>
             <div class="replace" v-if="bgPicUrl">更换图片</div>
-            <!--<span class="iconfont-diy icondel_1" @click.stop="bindDelete" v-if="bgPicUrl"></span>-->
           </div>
         </div>
-      </Col>
+      </el-col>
     </div>
     <div>
-      <Modal
-        v-model="modalPic"
-        width="950px"
-        scrollable
-        footer-hide
-        closable
-        title="上传背景图"
-        :mask-closable="false"
-        :z-index="1"
-      >
+      <el-dialog :visible.sync="modalPic" width="1024px" title="上传背景图" :close-on-click-modal="false" :z-index="1">
         <uploadPictures
           :isChoice="isChoice"
           @getPic="getPic"
@@ -64,7 +54,7 @@
           :gridPic="gridPic"
           v-if="modalPic"
         ></uploadPictures>
-      </Modal>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -139,10 +129,10 @@ export default {
       this.$store.commit('mobildConfig/UPRADIO', val);
     },
     changVal(val) {
-      this.$store.commit('mobildConfig/UPTITLE', val.target.value);
+      this.$store.commit('mobildConfig/UPTITLE', val);
     },
     changName(val) {
-      this.$store.commit('mobildConfig/UPNAME', val.target.value);
+      this.$store.commit('mobildConfig/UPNAME', val);
     },
     changeState(val) {
       this.$store.commit('mobildConfig/UPSHOW', val);

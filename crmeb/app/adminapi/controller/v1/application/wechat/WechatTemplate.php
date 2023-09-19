@@ -12,8 +12,8 @@ namespace app\adminapi\controller\v1\application\wechat;
 
 use app\adminapi\controller\AuthController;
 use app\jobs\notice\SyncMessageJob;
+use app\services\message\SystemNotificationServices;
 use crmeb\exceptions\AdminException;
-use app\services\message\TemplateMessageServices;
 use crmeb\services\app\WechatService;
 use think\facade\App;
 
@@ -28,9 +28,9 @@ class WechatTemplate extends AuthController
      * 构造方法
      * WechatTemplate constructor.
      * @param App $app
-     * @param TemplateMessageServices $services
+     * @param SystemNotificationServices $services
      */
-    public function __construct(App $app, TemplateMessageServices $services)
+    public function __construct(App $app, SystemNotificationServices $services)
     {
         parent::__construct($app);
         $this->services = $services;
@@ -48,13 +48,16 @@ class WechatTemplate extends AuthController
         if (!sys_config('wechat_appid') || !sys_config('wechat_appsecret')) {
             throw new AdminException(400248);
         }
-        $all = $this->services->getTemplateList(['status' => 1, 'type' => 1]);
-        $list = WechatService::getPrivateTemplates();
-        foreach ($list->template_list as $v) {
-            WechatService::deleleTemplate($v['template_id']);
+
+        $tempIds = $this->services->getTempId('wechat');
+        foreach ($tempIds as $v) {
+            WechatService::deleleTemplate($v);
         }
-        foreach ($all['list'] as $template) {
-            SyncMessageJob::dispatch('SyncWechat', [$template]);
+
+        $tempKeys = $this->services->getTempKey('wechat');
+
+        foreach ($tempKeys as $key => $content) {
+            SyncMessageJob::dispatch('SyncWechat', [$key, $content['wechat_content']]);
         }
         return app('json')->success(100038);
     }

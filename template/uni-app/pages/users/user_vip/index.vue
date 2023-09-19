@@ -49,7 +49,7 @@
 										</view>
 										<view class="ratio">
 											<text
-												class="num">{{$t(`当前`)}}<text>{{levelInfo.exp || ''}}</text>{{$t(`点，需达到`)}}<text>{{item.exp_num || ''}}</text>{{$t(`点解锁`)}}</text>
+												class="num">{{$t(`当前`)}}<text>{{levelInfo.exp || 0}}</text>{{$t(`点，需达到`)}}<text>{{item.exp_num || ''}}</text>{{$t(`点解锁`)}}</text>
 										</view>
 										<navigator class="acea-row row-between-wrapper record-wrap"
 											style="padding-left: 0;" url="/pages/users/user_vip_areer/index"

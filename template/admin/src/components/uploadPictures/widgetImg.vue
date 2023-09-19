@@ -5,9 +5,17 @@
       @getPicD="getPicD"
       :gridPic="gridPic"
       :gridBtn="gridBtn"
+      :isIframe="isIframe"
       v-if="this.$route.query.fodder === 'dialog' || this.$route.query.type === 'many'"
     ></upload-from>
-    <upload-from :isChoice="isChoice" @getPic="getPic" :gridPic="gridPic" :gridBtn="gridBtn" v-else></upload-from>
+    <upload-from
+      :isChoice="isChoice"
+      :isIframe="isIframe"
+      @getPic="getPic"
+      :gridPic="gridPic"
+      :gridBtn="gridBtn"
+      v-else
+    ></upload-from>
   </div>
 </template>
 
@@ -21,6 +29,7 @@ export default {
     return {
       isChoice: '单选',
       isChoiceD: '多选',
+      isIframe: true, //是否全屏打开选择图片
       gridPic: {
         xl: 4,
         lg: 4,

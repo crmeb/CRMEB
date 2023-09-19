@@ -19,7 +19,6 @@ use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\ApiException;
 use crmeb\services\CacheService;
 use crmeb\services\oauth\OAuth;
-use think\facade\Cache;
 
 class LoginServices extends BaseServices
 {
@@ -31,7 +30,7 @@ class LoginServices extends BaseServices
      */
     public function scanLogin(string $key)
     {
-        $hasKey = Cache::has($key);
+        $hasKey = CacheService::has($key);
         if ($hasKey === false) {
             $status = 0;//不存在需要刷新二维码
         } else {

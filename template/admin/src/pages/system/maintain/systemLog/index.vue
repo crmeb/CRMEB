@@ -1,102 +1,103 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <div class="table_box">
-        <Form
-          ref="formValidate"
-          :label-width="labelWidth"
-          :label-position="labelPosition"
-          class="tabform"
-          @submit.native.prevent
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="formValidate"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+            class="tabform"
         >
-          <Row :gutter="24" type="flex" justify="end">
-            <Col span="24" class="ivu-text-left">
-              <FormItem :label="fromList.title + '：'">
-                <RadioGroup
-                  type="button"
-                  v-model="formValidate.data"
-                  class="mr15"
-                  @on-change="selectChange(formValidate.data)"
-                >
-                  <Radio :label="itemn.val" v-for="(itemn, indexn) in fromList.fromTxt" :key="indexn">
-                    {{ itemn.text }}
-                  </Radio>
-                </RadioGroup>
-                <DatePicker
-                  :editable="false"
-                  @on-change="onchangeTime"
-                  :value="timeVal"
-                  format="yyyy/MM/dd"
-                  type="daterange"
-                  placement="bottom-end"
-                  placeholder="请选择时间"
-                  style="width: 200px"
-                ></DatePicker>
-              </FormItem>
-            </Col>
-            <Col span="24" class="ivu-text-left">
-              <Col :xl="5" :lg="12" :md="12" :sm="24" :xs="24" class="sex_box">
-                <FormItem label="名称：">
-                  <Select v-model="formValidate.admin_id" style="width: 90%" clearable @on-change="userSearchs">
-                    <Option :value="item.id" v-for="(item, index) in dataList" :key="index">{{
-                      item.real_name
-                    }}</Option>
-                  </Select>
-                </FormItem>
-              </Col>
-              <!--<Col :xl="5" :lg="12" :md="12" :sm="24" :xs="24">-->
-              <!--<FormItem label="行为：">-->
-              <!--<Input  placeholder="请输入行为" v-model="formValidate.pages" style="width: 90%;" clearable></Input>-->
-              <!--</FormItem>-->
-              <!--</Col>-->
-              <Col :xl="5" :lg="12" :md="12" :sm="24" :xs="24" class="subscribe_box">
-                <FormItem label="链接：">
-                  <Input placeholder="请输入链接" v-model="formValidate.path" style="width: 90%" clearable></Input>
-                </FormItem>
-              </Col>
-              <Col :xl="5" :lg="12" :md="12" :sm="24" :xs="24" class="subscribe_box">
-                <FormItem label="IP：">
-                  <Input placeholder="请输入IP" v-model="formValidate.ip" style="width: 90%" clearable></Input>
-                </FormItem>
-              </Col>
-              <Col :xl="3" :lg="12" :md="3" :sm="24" :xs="24" class="btn_box">
-                <!--<FormItem>-->
-                <Button type="primary" icon="ios-search" label="default" class="userSearch" @click="userSearchs"
-                  >搜索</Button
-                >
-                <!--</FormItem>-->
-              </Col>
-            </Col>
-          </Row>
-        </Form>
+          <el-form-item :label="fromList.title + '：'">
+            <el-date-picker
+                clearable
+                :editable="false"
+                @change="onchangeTime"
+                v-model="timeVal"
+                format="yyyy/MM/dd"
+                type="daterange"
+                value-format="yyyy/MM/dd"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                style="width:250px;"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="名称：">
+            <el-select v-model="formValidate.admin_id" clearable @change="userSearchs" class="form_content_width">
+              <el-option
+                  :value="item.id"
+                  v-for="(item, index) in dataList"
+                  :key="index"
+                  :label="item.real_name"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="链接：">
+            <el-input
+                placeholder="请输入链接"
+                v-model="formValidate.path"
+                class="form_content_width"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="IP：">
+            <el-input placeholder="请输入IP"
+              v-model="formValidate.ip"
+              clearable
+              class="form_content_width"
+              ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" class="userSearch" @click="userSearchs">搜索</el-button >
+          </el-form-item>
+        </el-form>
       </div>
-      <Table
-        ref="selection"
-        :columns="columns4"
-        :data="tabList"
-        :loading="loading"
-        no-data-text="暂无数据"
-        highlight-row
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row }" slot="nickname">
-          <span>{{ row.admin_id + ' / ' + row.admin_name }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="add_time">
-          <span> {{ row.add_time | formatDate }}</span>
-        </template>
-      </Table>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-table ref="selection" :data="tabList" v-loading="loading" empty-text="暂无数据" highlight-current-row>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="ID/名称" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.admin_id + ' / ' + scope.row.admin_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="链接" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.path }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作ip" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.ip }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="类型" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作时间" min-width="100">
+          <template slot-scope="scope">
+            <span> {{ scope.row.add_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -142,50 +143,14 @@ export default {
       loading: false,
       tabList: [],
       total: 0,
-      columns4: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: 'ID/名称',
-          slot: 'nickname',
-          minWidth: 100,
-        },
-        // {
-        //     title: '行为',
-        //     key: 'page',
-        //     minWidth: 150
-        // },
-        {
-          title: '链接',
-          key: 'path',
-          minWidth: 300,
-        },
-        {
-          title: '操作ip',
-          key: 'ip',
-          minWidth: 150,
-        },
-        {
-          title: '类型',
-          key: 'type',
-          minWidth: 100,
-        },
-        {
-          title: '操作时间',
-          slot: 'add_time',
-          minWidth: 150,
-        },
-      ],
+
       dataList: [],
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -199,7 +164,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal.join('-');
+      this.formValidate.data = this.timeVal ? this.timeVal.join('-') : '';
       this.formValidate.page = 1;
       this.getList();
     },
@@ -217,7 +182,7 @@ export default {
           this.dataList = res.data.info;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -232,12 +197,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 搜索
     userSearchs() {

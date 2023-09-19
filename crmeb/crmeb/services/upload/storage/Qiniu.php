@@ -80,6 +80,11 @@ class Qiniu extends BaseUpload
     ];
 
     /**
+     * @var string
+     */
+    protected $cdn;
+
+    /**
      * 初始化
      * @param array $config
      * @return mixed|void
@@ -91,6 +96,7 @@ class Qiniu extends BaseUpload
         $this->secretKey = $config['secretKey'] ?? null;
         $this->uploadUrl = $this->checkUploadUrl($config['uploadUrl'] ?? '');
         $this->storageName = $config['storageName'] ?? null;
+        $this->cdn = $config['cdn'] ?? null;
         $this->storageRegion = $config['storageRegion'] ?? null;
     }
 
@@ -120,7 +126,7 @@ class Qiniu extends BaseUpload
             return $this->setError('上传的文件不存在');
         }
         if ($this->validate) {
-            if (!in_array(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION), $this->validate['fileExt'])) {
+            if (!in_array(strtolower(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION)), $this->validate['fileExt'])) {
                 return $this->setError('不合法的文件后缀');
             }
             if (filesize($fileHandle) > $this->validate['filesize']) {
@@ -172,7 +178,7 @@ class Qiniu extends BaseUpload
             }
             $this->fileInfo->uploadInfo = $result;
             $this->fileInfo->realName = $key;
-            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->filePath = ($this->cdn ?: $this->uploadUrl) . '/' . $key;
             $this->fileInfo->fileName = $key;
             $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);
             $this->thumb($this->fileInfo->filePath);
@@ -281,9 +287,10 @@ class Qiniu extends BaseUpload
     {
         $token = $this->app()->uploadToken($this->storageName);
         $domain = $this->uploadUrl;
+        $cdn = $this->cdn;
         $key = $this->saveFileName(NULL, 'mp4');
         $type = 'QINIU';
-        return compact('token', 'domain', 'key', 'type');
+        return compact('token', 'domain', 'key', 'type', 'cdn');
     }
 
     /**

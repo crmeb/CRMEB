@@ -33,15 +33,6 @@ export default {
       component: () => import('@/pages/order/orderList/index'),
     },
     {
-      path: 'split_list',
-      name: `${pre}split_list`,
-      meta: {
-        auth: ['admin-order-storeOrder-index'],
-        title: '子订单列表',
-      },
-      component: () => import('@/pages/order/orderList/splitList.vue'),
-    },
-    {
       path: 'offline',
       name: `${pre}offline`,
       meta: {

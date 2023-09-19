@@ -236,7 +236,6 @@
             }
         },
 		mounted() {
-			console.log(this.defaultImg)
 		}
   }
 </script>

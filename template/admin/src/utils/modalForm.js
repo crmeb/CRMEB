@@ -1,181 +1,106 @@
-// +----------------------------------------------------------------------
-// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2016~2023 https://www.crmeb.com All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
-// +----------------------------------------------------------------------
-// | Author: CRMEB Team <admin@crmeb.com>
-// +----------------------------------------------------------------------
-
 import request from '@/libs/request';
-import Modal from './modal';
 import Vue from 'vue';
-import { Message, Spin, Notice } from 'iview';
-let modalInstance;
-let btnStop = false;
 
-function getModalInstance(render = undefined) {
-  modalInstance =
-    modalInstance ||
-    Modal.newInstance({
-      closable: true,
-      maskClosable: false,
-      footerHide: true,
-      render: render,
-      // zIndex: 2000,
-    });
+let fApi;
+let unique = 1;
+import formCreate from '@form-create/element-ui';
 
-  return modalInstance;
-}
-
-function alert(options) {
-  const render = 'render' in options ? options.render : undefined;
-  let instance = getModalInstance(render);
-
-  options.onRemove = function () {
-    modalInstance = null;
-  };
-
-  instance.show(options);
-}
-
-export default function (formRequestPromise, { width = '700' } = { width: '700' }) {
-  return new Promise((resolve) => {
-    const msg = Message.loading({
-      content: 'Loading...',
-      duration: 0,
-    });
+const uniqueId = () => ++unique;
+export default function modalForm(formRequestPromise, config = {}) {
+  const h = this.$createElement;
+  return new Promise((resolve, reject) => {
     formRequestPromise
       .then(({ data }) => {
-        if (data.status === false) {
-          msg();
-          return Notice.warning({
-            title: data.title,
-            duration: 3,
-            desc: data.info,
-            render: (h) => {
-              return h('div', [
-                h(
-                  'a',
-                  {
-                    attrs: {
-                      href: 'http://www.crmeb.com',
-                    },
-                  },
-                  data.info,
-                ),
-              ]);
-            },
-          });
-        }
-        data.config = {};
+        if (!data.config) data.config = {};
+        data.config.submitBtn = false;
+        data.config.resetBtn = false;
+        if (!data.config.form) data.config.form = {};
+        if (!data.config.formData) data.config.formData = {};
+        data.config.formData = { ...data.config.formData, ...config.formData };
+        data.config.form.labelWidth = '105px';
         data.config.global = {
           upload: {
             props: {
-              onSuccess(res, file) {
-                if (res.status === 200) {
-                  file.url = res.data.src;
-                } else {
-                  Message.error(res.msg);
+              onSuccess(rep, file) {
+                if (rep.status === 200) {
+                  file.url = rep.data.src;
                 }
               },
             },
           },
           frame: {
             props: {
-              closeBtn: false,
-              okBtn: false,
+              onLoad(e) {
+                console.log(e, 'rep');
+                e.fApi = fApi;
+              },
+            },
+          },
+          inputNumber: {
+            props: {
+              controls: false,
             },
           },
         };
-        data.config.onSubmit = (formData, $f) => {
-          $f.btn.loading(true);
-          $f.btn.disabled(true);
-          request[data.method.toLowerCase()](data.action, formData)
-            .then((res) => {
-              modalInstance.remove();
-              Message.success(res.msg || '提交成功');
-              resolve(res);
-            })
-            .catch((err) => {
-              Message.error(err.msg || '提交失败');
-            })
-            .finally(() => {
-              $f.btn.loading(false);
-              $f.btn.disabled(false);
-            });
-        };
-        data.config.submitBtn = false;
-        data.config.resetBtn = false;
-        if (!data.config.form) data.config.form = {};
-        // data.config.form.labelWidth = 100
-        let fApi;
         data = Vue.observable(data);
-        alert({
+        data.rules.forEach((e) => {
+          e.title += '：';
+        });
+        this.$msgbox({
           title: data.title,
-          width,
-          loading: false,
-          render: function (h) {
-            return h('div', { class: 'common-form-create' }, [
-              h('formCreate', {
-                props: {
-                  rule: data.rules,
-                  option: data.config,
+          showCancelButton: true,
+          customClass: config.class || 'modal-form',
+          mask: false,
+          closeOnClickModal: false,
+          message: h('div', { class: 'common-form-create', key: uniqueId() }, [
+            h('formCreate', {
+              props: {
+                rule: data.rules,
+                option: data.config,
+              },
+              on: {
+                mounted: ($f) => {
+                  fApi = $f;
                 },
-                on: {
-                  mounted: ($f) => {
-                    fApi = $f;
-                    msg();
-                  },
+              },
+            }),
+          ]),
+          beforeClose: (action, instance, done) => {
+            const fn = () => {
+              setTimeout(() => {
+                instance.confirmButtonLoading = false;
+              }, 500);
+            };
+
+            if (action === 'confirm') {
+              instance.confirmButtonLoading = true;
+              fApi.submit(
+                (formData) => {
+                  request[data.method.toLowerCase()](data.action, formData)
+                    .then((res) => {
+                      done();
+                      this.$message.success(res.msg || '提交成功');
+                      resolve(res);
+                    })
+                    .catch((err) => {
+                      this.$message.error(err.msg || '提交失败');
+                      reject(err);
+                    })
+                    .finally(() => {
+                      fn();
+                    });
                 },
-              }),
-              h('div', { class: 'common-form-create-footer' }, [
-                h(
-                  'Button',
-                  {
-                    class: 'common-form-button',
-                    props: {
-                      long: false,
-                    },
-                    on: {
-                      click: () => {
-                        modalInstance.remove();
-                      },
-                    },
-                  },
-                  ['取消'],
-                ),
-                h(
-                  'Button',
-                  {
-                    class: 'common-form-button',
-                    props: {
-                      type: 'primary',
-                      long: false,
-                    },
-                    on: {
-                      click: () => {
-                        if (btnStop) return;
-                        btnStop = true;
-                        fApi.submit();
-                        setTimeout(() => {
-                          btnStop = false;
-                        }, 1000);
-                      },
-                    },
-                  },
-                  ['提交'],
-                ),
-              ]),
-            ]);
+                () => fn(),
+              );
+            } else {
+              fn();
+              done();
+            }
           },
         });
       })
-      .catch((res) => {
-        Spin.hide();
-        msg();
-        Message.error(res.msg || '表单加载失败');
+      .catch((e) => {
+        this.$message.error(e.message || '--');
       });
   });
 }

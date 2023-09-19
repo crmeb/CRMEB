@@ -1,12 +1,12 @@
 <template>
   <div class="slider-box">
     <div class="c_row-item">
-      <Col class="label" span="4" v-if="configData.title">
+      <el-col class="label" :span="4" v-if="configData.title">
         {{ configData.title }}
-      </Col>
-      <Col span="18" class="slider-box">
-        <Slider v-model="configData.val" show-input @on-change="sliderChange($event)" :min="configData.min"></Slider>
-      </Col>
+      </el-col>
+      <el-col :span="18" class="slider-box">
+        <el-slider v-model="configData.val" show-input @change="sliderChange($event)" :min="configData.min"></el-slider>
+      </el-col>
     </div>
   </div>
 </template>

@@ -12,7 +12,7 @@
 			<view class="sub_btn" @click="loginBtn">{{$t(`立即登录`)}}</view>
 		</view>
 
-		<Verify @success="success" :captchaType="'blockPuzzle'" :imgSize="{ width: '330px', height: '155px' }"
+		<Verify @success="success" :captchaType="captchaType" :imgSize="{ width: '330px', height: '155px' }"
 			ref="verify"></Verify>
 	</view>
 </template>
@@ -75,7 +75,7 @@
 					registerVerify({
 						phone: that.account,
 						key: res.data.key,
-						captchaType: 'blockPuzzle',
+						captchaType: this.captchaType,
 						captchaVerification: data.captchaVerification
 					}).then(res => {
 						that.$util.Tips({

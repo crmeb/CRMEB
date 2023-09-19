@@ -119,7 +119,6 @@
 				});
 			},
 			goPay: function(number, paytype) {
-				console.log(paytype)
 				if (this.isCall) {
 					return this.$emit('onChangeFun', {
 						action: 'payCheck',
@@ -145,7 +144,6 @@
 						complete: () => {}
 					});
 				}
-				console.log('11111')
 				orderPay({
 					uni: that.order_id,
 					paytype: paytype,
@@ -168,7 +166,6 @@
 					// #endif
 				}).then(res => {
 					let jsConfig = res.data.result.jsConfig;
-					console.log(paytype)
 					if (res.data.status == 'ALLINPAY_PAY') {
 						uni.hideLoading();
 						// #ifdef MP

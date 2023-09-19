@@ -28,7 +28,7 @@
 						<view class="info">
 							<view class="name line1" v-if="titleShow">{{item.title}}</view>
 							<view class="price-box">
-								<!-- <text v-if="pinkShow" class="tips" :style="'background-color:'+txtColor+';color:'+themeColor+';'">{{$t(`拼团价`)}}</text> -->
+								<text v-if="pinkShow" class="tips" :style="'background-color:'+txtColor+';color:'+themeColor+';'">{{$t(`拼团价`)}}</text>
 								<text v-if="priceShow" class="price" :style="'color:'+themeColor+';'"><text>{{$t(`￥`)}}</text>{{item.price}}</text>
 							</view>
 						</view>

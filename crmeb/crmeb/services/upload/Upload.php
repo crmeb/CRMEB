@@ -20,6 +20,8 @@ use think\facade\Config;
  * @mixin \crmeb\services\upload\storage\OSS
  * @mixin \crmeb\services\upload\storage\COS
  * @mixin \crmeb\services\upload\storage\Qiniu
+ * @mixin \crmeb\services\upload\storage\Jdoss
+ * @mixin \crmeb\services\upload\storage\Tyoss
  */
 class Upload extends BaseManager
 {

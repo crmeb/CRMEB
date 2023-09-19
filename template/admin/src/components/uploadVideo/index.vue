@@ -1,19 +1,19 @@
 <template>
   <div>
     <div class="mt20 ml20">
-      <Input class="perW35" v-model="videoLink" placeholder="请输入视频链接" />
+      <el-input class="perW35" v-model="videoLink" placeholder="请输入视频链接" />
       <input type="file" ref="refid" style="display: none" @change="zh_uploadFile_change" />
-      <Button
+      <el-button
         v-if="upload_type !== '1' || videoLink"
         type="primary"
         icon="ios-cloud-upload-outline"
         class="ml10"
         @click="zh_uploadFile"
-        >{{ videoLink ? '确认添加' : '上传视频' }}</Button
+        >{{ videoLink ? '确认添加' : '上传视频' }}</el-button
       >
-      <Upload
+      <el-upload
         v-if="upload_type === '1' && !videoLink"
-        :show-upload-list="false"
+        :show-file-list="false"
         :action="fileUrl"
         class="ml10"
         :before-upload="videoSaveToUrl"
@@ -22,10 +22,10 @@
         :multiple="true"
         style="display: inline-block"
       >
-        <Button type="primary" icon="ios-cloud-upload-outline">上传视频</Button>
-      </Upload>
+        <el-button type="primary" icon="ios-cloud-upload-outline">上传视频</el-button>
+      </el-upload>
       <Progress :percent="progress" :stroke-width="5" v-if="upload.videoIng" />
-      <div class="iview-video-style" v-if="formValidate.video_link">
+      <div class="video-style" v-if="formValidate.video_link">
         <video
           style="width: 100%; height: 100% !important; border-radius: 10px"
           :src="formValidate.video_link"
@@ -34,11 +34,11 @@
           您的浏览器不支持 video 标签。
         </video>
         <div class="mark"></div>
-        <Icon type="ios-trash-outline" class="iconv" @click="delVideo" />
+        <i class="el-icon-delete iconv" @click="delVideo"></i>
       </div>
     </div>
     <div class="mt50 ml20">
-      <Button type="primary" @click="uploads">确认</Button>
+      <el-button type="primary" @click="uploads">确认</el-button>
     </div>
   </div>
 </template>
@@ -88,9 +88,9 @@ export default {
     handleSuccess(res, file, fileList) {
       if (res.status === 200) {
         this.formValidate.video_link = res.data.src;
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
       } else {
-        this.$Message.error(res.msg);
+        this.$message.error(res.msg);
       }
     },
     videoSaveToUrl(file) {
@@ -102,7 +102,7 @@ export default {
           this.progress = 100;
         },
         error: (e) => {
-          this.$Message.error(e.msg);
+          this.$message.error(e.msg);
         },
         uploading: (chunk, allChunk) => {
           this.videoIng = true;
@@ -134,9 +134,13 @@ export default {
     zh_uploadFile_change(evfile) {
       let that = this;
       if (evfile.target.files[0].type !== 'video/mp4') {
-        return that.$Message.error('只能上传mp4文件');
+        return that.$message.error('只能上传mp4文件');
       }
-      productGetTempKeysApi().then((res) => {
+      let types = {
+        key: evfile.target.files[0].name,
+        contentType: evfile.target.files[0].type,
+      };
+      productGetTempKeysApi(types).then((res) => {
         that.$videoCloud
           .videoUpload({
             type: res.data.type,
@@ -148,10 +152,10 @@ export default {
           })
           .then((res) => {
             that.formValidate.video_link = res.url;
-            that.$Message.success('视频上传成功');
+            that.$message.success('视频上传成功');
           })
           .catch((res) => {
-            that.$Message.error(res);
+            that.$message.error(res);
           });
       });
     },
@@ -163,7 +167,7 @@ export default {
 </script>
 
 <style scoped>
-.iview-video-style {
+.video-style {
   width: 40%;
   height: 180px;
   border-radius: 10px;
@@ -172,7 +176,7 @@ export default {
   position: relative;
   overflow: hidden;
 }
-.iview-video-style .iconv {
+.video-style .iconv {
   color: #fff;
   line-height: 180px;
   width: 50px;
@@ -184,7 +188,7 @@ export default {
   left: 50%;
   margin-left: -25px;
 }
-.iview-video-style .mark {
+.video-style .mark {
   position: absolute;
   width: 100%;
   height: 30px;

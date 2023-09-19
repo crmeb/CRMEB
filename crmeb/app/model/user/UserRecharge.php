@@ -87,6 +87,16 @@ class UserRecharge extends BaseModel
         $query->where('recharge_type', $value);
     }
 
+    /**
+     * 不等于充值类型
+     * @param Model $query
+     * @param $value
+     */
+    public function searchNoRechargeTypeAttr($query, $value)
+    {
+        $query->where('recharge_type', '<>', $value);
+    }
+
     /**退款金额
      * @param $query
      * @param $value

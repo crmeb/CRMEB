@@ -12,15 +12,17 @@
 namespace crmeb\services\app;
 
 use app\services\order\StoreOrderTakeServices;
+use app\services\pay\PayServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\CacheService;
 use crmeb\services\easywechat\orderShipping\MiniOrderService;
 use crmeb\services\SystemConfigService;
 use app\services\pay\PayNotifyServices;
 use crmeb\services\easywechat\Application;
 use EasyWeChat\Payment\Order;
+use think\facade\Event;
 use think\facade\Log;
 use crmeb\utils\Hook;
-use think\facade\Cache;
 use think\Response;
 
 /**
@@ -366,14 +368,14 @@ class MiniProgramService
     public static function paymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $trade_type = 'JSAPI', $options = [])
     {
         $key = 'pay_' . $out_trade_no;
-        $result = Cache::get($key);
+        $result = CacheService::get($key);
         if ($result) {
             return $result;
         } else {
             $order = self::paymentOrder($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $trade_type, $options);
             $result = self::paymentService()->prepare($order);
             if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS') {
-                Cache::set($key, $result->prepay_id, 7000);
+                CacheService::set($key, $result->prepay_id, 7000);
                 return $result->prepay_id;
             } else {
                 if ($result->return_code == 'FAIL') {
@@ -403,14 +405,14 @@ class MiniProgramService
     public static function newPaymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $options = [])
     {
         $key = 'pay_' . $out_trade_no;
-        $result = Cache::get($key);
+        $result = CacheService::get($key);
         if ($result) {
             return $result;
         } else {
             $order = self::paymentOrder($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $options);
             $result = self::application()->minipay->createorder($order);
             if ($result->errcode === 0) {
-                Cache::set($key, $result->payment_params, 7000);
+                CacheService::set($key, $result->payment_params, 7000);
                 return $result->payment_params;
             } else {
                 exception('微信支付错误返回：' . '[' . $result->errcode . ']' . $result->errmsg);
@@ -876,6 +878,35 @@ class MiniProgramService
             switch ($message->MsgType) {
                 case 'event':
                     switch (strtolower($message->Event)) {
+                        case 'funds_order_pay':  // 小程序支付管理的
+                            if (($count = strpos($message['order_info']['trade_no'], '_')) !== false) {
+                                $trade_no = substr($message['order_info']['trade_no'], $count + 1);
+                            } else {
+                                $trade_no = $message['order_info']['trade_no'];
+                            }
+                            $prefix = substr($trade_no, 0, 2);
+                            //处理一下参数
+                            switch ($prefix) {
+                                case 'cp':
+                                    $data['attach'] = 'Product';
+                                    break;
+                                case 'hy':
+                                    $data['attach'] = 'Member';
+                                    break;
+                                case 'cz':
+                                    $data['attach'] = 'UserRecharge';
+                                    break;
+                            }
+                            $data['out_trade_no'] = $message['order_info']['trade_no'];
+                            $data['transaction_id'] = $message['order_info']['transaction_id'];
+                            $data['opneid'] = $message['FromUserName'];
+                            if (Event::until('NotifyListener', [$data, PayServices::WEIXIN_PAY])) {
+                                $response = 'success';
+                            } else {
+                                $response = 'faild';
+                            }
+                            Log::error(['data' => $data, 'res' => $response, 'message' => $message]);
+                            break;
                         case 'trade_manage_remind_access_api':  // 小程序完成账期授权时  小程序产生第一笔交易时 已产生交易但从未发货的小程序，每天一次
                             break;
                         case 'trade_manage_remind_shipping':   // 曾经发过货的小程序，订单超过48小时未发货时

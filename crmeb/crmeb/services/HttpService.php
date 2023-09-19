@@ -88,8 +88,13 @@ class HttpService
         $method = strtoupper($method);
         //请求方式
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-        //post请求
-        if ($method == 'POST') curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        //携带参数
+        if ($method == 'POST') {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        } elseif ($method == 'GET' && count($data)) {
+            $url .= '?' . http_build_query($data);
+            curl_setopt($curl, CURLOPT_URL, $url);
+        }
         //超时时间
         curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
         //设置header头

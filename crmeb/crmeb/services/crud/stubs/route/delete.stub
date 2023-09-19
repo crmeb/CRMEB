@@ -1,1 +1,1 @@
-Route::delete('{%route%}/:id', 'crud.{%routePath%}{%controller%}/delete')->option(['real_name' => '{%menus%}删除接口']);
+Route::delete('{%ROUTE%}/:id', 'crud.{%ROUTE_PATH%}{%CONTROLLER%}/delete')->option(['real_name' => '{%MENUS%}删除接口']);

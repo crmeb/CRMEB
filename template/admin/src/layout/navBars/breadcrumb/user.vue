@@ -8,20 +8,21 @@
     </div>
 
     <div class="layout-navbars-breadcrumb-user-icon">
-      <el-popover
+      <el-tooltip
+        effect="light"
         placement="bottom"
         trigger="click"
         v-model="isShowUserNewsPopover"
         :width="300"
-        popper-class="el-popover-pupop-user-news"
+        popper-class="el-tooltip-pupop-user-news"
       >
-        <el-badge :is-dot="isDot" @click.stop="openNews" slot="reference">
+        <el-badge :is-dot="isDot" @click.stop="openNews">
           <i class="el-icon-bell" :title="$t('message.user.title4')"></i>
         </el-badge>
-        <transition name="el-zoom-in-top">
-          <UserNews v-show="isShowUserNewsPopover" @haveNews="initIsDot" />
+        <transition name="el-zoom-in-top" slot="content">
+          <UserNews :vm="this" v-show="isShowUserNewsPopover" @haveNews="initIsDot"></UserNews>
         </transition>
-      </el-popover>
+      </el-tooltip>
     </div>
     <div class="layout-navbars-breadcrumb-user-icon mr10" @click="onScreenfullClick">
       <i
@@ -36,12 +37,7 @@
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <!-- <el-dropdown-item :command="homePath">{{ $t('message.user.dropdown1') }}</el-dropdown-item> -->
         <el-dropdown-item command="user">{{ $t('message.user.dropdown6') }}</el-dropdown-item>
-        <!-- <el-dropdown-item command="wareHouse">{{ $t('message.user.dropdown6') }}</el-dropdown-item> -->
-        <!-- <el-dropdown-item command="/personal">{{ $t('message.user.dropdown2') }}</el-dropdown-item> -->
-        <!-- <el-dropdown-item command="/404">{{ $t('message.user.dropdown3') }}</el-dropdown-item> -->
-        <!-- <el-dropdown-item command="/401">{{ $t('message.user.dropdown4') }}</el-dropdown-item> -->
         <el-dropdown-item divided command="logOut">{{ $t('message.user.dropdown5') }}</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -69,7 +65,6 @@ export default {
       isShowUserNewsPopover: false,
       disabledI18n: 'zh-cn',
       disabledSize: '',
-      homePath: `${settings.routePre}/home`,
       isDot: false,
     };
   },
@@ -192,7 +187,7 @@ export default {
                 instance.confirmButtonText = this.$t('message.user.logOutExit');
                 AccountLogout().then((res) => {
                   done();
-                  this.$Message.success('您已成功退出');
+                  this.$message.success('您已成功退出');
                   this.$store.commit('clearAll');
                   // localStorage.clear();
                   // sessionStorage.clear();

@@ -194,16 +194,19 @@ class UserMoneyServices extends BaseServices
 
     /**
      * 余额统计基础
-     * @param $where
      * @return array
+     * @throws \ReflectionException
      */
-    public function getBasic($where)
+    public function getBasic()
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $data['now_balance'] = $userServices->sum(['status' => 1], 'now_money', true);
-        $data['add_balance'] = $this->dao->sum(['pm' => 1], 'number', true);
-        $data['sub_balance'] = $this->dao->sum(['pm' => 0], 'number', true);
+        $data['add_balance'] = $this->dao->sum([
+            ['pm', '=', 1],
+            ['type', 'in', ['system_add', 'recharge', 'extract', 'lottery_add', 'register_system_add']]
+        ], 'number', false);
+        $data['sub_balance'] = bcsub($data['add_balance'], $data['now_balance'], 2);
         return $data;
     }
 
@@ -215,7 +218,7 @@ class UserMoneyServices extends BaseServices
     public function getTrend($where)
     {
         $time = explode('-', $where['time']);
-        if (count($time) != 2) throw new AdminException(100100);
+        if (count($time) != 2) throw new AdminException('请选择时间');
         $dayCount = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
         $data = [];
         if ($dayCount == 1) {

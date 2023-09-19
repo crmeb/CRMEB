@@ -1,5 +1,5 @@
 <template>
-  <div class="mobile-config pro">
+  <div class="mobile-config">
     <div v-for="(item, key) in rCom" :key="key">
       <component
         :is="item.components.name"
@@ -148,7 +148,7 @@ export default {
           this.configObj.productList.list = res.data.list;
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
   },

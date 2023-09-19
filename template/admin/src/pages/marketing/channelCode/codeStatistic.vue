@@ -1,35 +1,40 @@
 <template>
-  <div>
-    <div class="i-layout-page-header header-title">
+  <div v-loading="spinShow">
+    <!-- <div class="i-layout-page-header header-title">
       <div class="fl_header">
         <span>
-          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
+          <el-button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</el-button>
         </span>
-        <Divider type="vertical" />
+        <el-divider direction="vertical"></el-divider>
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
-    </div>
-    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    </div> -->
+    <pages-header
+      ref="pageHeader"
+      :title="$route.meta.title"
+      :backUrl="$routeProStr + '/marketing/channel_code/channelCodeIndex'"
+    ></pages-header>
+    <cards-data class="mt16" :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
       <div class="table-head">
         <h3>关注趋势</h3>
-        <DatePicker
+        <el-date-picker
           :editable="false"
-          :clearable="false"
-          @on-change="onchangeTime"
-          :value="timeVal"
+          clearable
+          @change="onchangeTime"
+          v-model="timeVal"
+          :picker-options="pickerOptions"
           format="yyyy/MM/dd"
           type="daterange"
-          placement="bottom-start"
-          placeholder="请选择时间"
-          style="width: 200px"
-          :options="options"
+          value-format="yyyy/MM/dd"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
           class="mr20"
-        ></DatePicker>
+        ></el-date-picker>
       </div>
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
-    </Card>
-    <Spin size="large" fix v-if="spinShow"></Spin>
+    </el-card>
   </div>
 </template>
 
@@ -46,6 +51,7 @@ export default {
   data() {
     return {
       timeVal: [],
+      pickerOptions:this.$timeOptions,
       style: { height: '400px' },
       infoList: {},
       infoList2: {},
@@ -95,34 +101,7 @@ export default {
         },
       ],
       optionData: {},
-      spinShow: false,
-      options: this.$timeOptions,
-      columns: [
-        {
-          title: '序号',
-          type: 'index',
-          width: 60,
-          align: 'center',
-        },
-        {
-          title: '来源',
-          key: 'name',
-          minWidth: 80,
-          align: 'center',
-        },
-        {
-          title: '金额',
-          width: 180,
-          key: 'value',
-          align: 'center',
-        },
-        {
-          title: '占比率',
-          slot: 'percent',
-          minWidth: 100,
-          align: 'center',
-        },
-      ],
+      spinShow: false
     };
   },
   created() {
@@ -169,7 +148,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.time = this.timeVal.join('-');
+      this.formValidate.time = this.timeVal ? this.timeVal.join('-') : '';
       this.name = this.formValidate.time;
       this.wechatQrcodeStatistic();
     },

@@ -1,12 +1,12 @@
 <template>
   <div class="base-header">
     <div class="left-header-wrapper">
-      <Input
+      <el-input
         class="search_box"
         prefix="ios-search"
         placeholder="搜索用户名称"
         @on-enter="bindSearch"
-        @on-change="inputChange"
+        @change="inputChange"
       />
       <div class="user_info">
         <img v-lazy="kefuInfo.avatar" alt="" />
@@ -102,17 +102,22 @@ export default {
     // 退出登录
     outLogin() {
       let self = this;
-      this.$Modal.confirm({
+      this.$msgbox({
         title: '退出登录确认',
-        content: '您确定退出登录当前账户吗？打开的标签页和个人设置将会保存。',
-        onOk: () => {
+        message:'您确定退出登录当前账户吗？打开的标签页和个人设置将会保存。',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确认',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel'
+      }).then(() => {
           self.logoutKefu({
             confirm: false,
             vm: self,
           });
-        },
-        onCancel: () => {},
-      });
+      }).catch(() => {
+
+      })
     },
     // 搜索
     bindSearch(e) {

@@ -170,9 +170,6 @@ class ArticleCategory extends AuthController
     public function getTreeList()
     {
         $list = $this->service->getTreeList();
-        foreach ($list as &$item) {
-            $item['disabled'] = !$item['status'] || $item['is_del'];
-        }
         return app('json')->success($list);
     }
 }

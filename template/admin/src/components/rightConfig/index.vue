@@ -12,7 +12,7 @@
         ></component>
       </div>
       <div style="text-align: center" v-if="rCom.length">
-        <Button type="primary" style="width: 100%; margin: 0 auto; height: 40px" @click="saveConfig">保存</Button>
+        <el-button type="primary" style="width: 100%; margin: 0 auto; height: 40px" @click="saveConfig">保存</el-button>
       </div>
     </div>
   </div>
@@ -139,19 +139,19 @@ export default {
           let list = data.tabBar.default.tabBarList.list;
           for (let i = 0; i < list.length; i++) {
             if (list[i].link == '/pages/storeList/index' || list[i].link == 'pages/storeList/index') {
-              return this.$Message.error('请先开启您的周边功能(/pages/storeList/index)');
+              return this.$message.error('请先开启您的周边功能(/pages/storeList/index)');
             }
           }
         }
         if (data.tabBar.default.tabBarList.list.length < 2) {
-          return this.$Message.error('您最少应添加2个导航');
+          return this.$message.error('您最少应添加2个导航');
         }
       }
 
       diySave(this.pageId, {
         value: data,
       }).then((res) => {
-        this.$Message.success('保存成功');
+        this.$message.success('保存成功');
       });
     },
     // 对象转数组

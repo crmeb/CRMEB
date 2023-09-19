@@ -13,9 +13,7 @@
         >
       </div>
       <div class="search-box">
-        <Input placeholder="搜索快捷回复" style="width: 100%" v-model="searchTxt" @on-enter="bindSearch">
-          <Icon type="ios-search" slot="suffix" />
-        </Input>
+        <el-input placeholder="搜索快捷回复" style="width: 100%" v-model="searchTxt" />
       </div>
     </div>
     <div class="main">
@@ -34,11 +32,11 @@
           >
             <p>{{ item.name }}</p>
             <template v-if="tabCur">
-              <span class="iconfont iconDot" @click.top="bindEdit(item, index)"></span>
+              <span class="iconfont iconDot" @click.top="bindEdit(item, scope.$index)"></span>
 
               <div class="edit-wrapper" v-show="item.isEdit">
                 <div class="edit-item" @click="editSort(item)">编辑</div>
-                <div class="edit-item" @click="delSort(item, '删除分类', index)">删除</div>
+                <div class="edit-item" @click="delSort(item, '删除分类', scope.$index)">删除</div>
               </div>
               <div class="edit-bg" v-show="item.isEdit" @click.stop="item.isEdit = false"></div>
             </template>
@@ -46,10 +44,10 @@
         </vue-scroll>
       </div>
       <div class="right-box">
-        <Scroll :on-reach-bottom="handleReachBottom" class="right-scroll" height="360">
+        <div v-infinite-scroll="handleReachBottom" class="right-scroll">
           <div class="msg-item add-box" v-if="tabCur" style="margin-top: 0">
             <div class="box2">
-              <Input
+              <el-input
                 class="input-box"
                 v-model="addMsg.title"
                 placeholder="输入标题（选填）"
@@ -58,17 +56,17 @@
               />
               <div class="conBox" :class="{ active: addMsg.isEdit }">
                 <div class="content">
-                  <Input v-model="addMsg.message" type="textarea" :rows="4" placeholder="请输入内容" />
+                  <el-input v-model="addMsg.message" type="textarea" :rows="4" placeholder="请输入内容" />
                 </div>
                 <div class="bom">
                   <div class="select">
-                    <Select v-model="addMsg.cateId" style="width: 100px" size="small">
-                      <Option v-for="item in sortList" :value="item.id" :key="item.id">{{ item.name }} </Option>
-                    </Select>
+                    <el-select v-model="addMsg.cateId" style="width: 100px" size="small">
+                      <el-option v-for="item in sortList" :value="item.id" :key="item.id">{{ item.name }} </el-option>
+                    </el-select>
                   </div>
                   <div class="btns-box">
-                    <Button @click.stop="addMsg.isEdit = false">取消</Button>
-                    <Button type="primary" @click.stop="bindAdd">保存</Button>
+                    <el-button @click.stop="addMsg.isEdit = false">取消</el-button>
+                    <el-button type="primary" @click.stop="bindAdd">保存</el-button>
                   </div>
                 </div>
               </div>
@@ -86,39 +84,40 @@
               </div>
             </div>
             <div class="box2" v-else>
-              <Input class="input-box" v-model="item.title" placeholder="输入标题（选填）" style="width: 100%" />
+              <el-input class="input-box" v-model="item.title" placeholder="输入标题（选填）" style="width: 100%" />
               <div class="content">
-                <Input v-model="item.message" type="textarea" :rows="4" placeholder="请输入内容" />
+                <el-input v-model="item.message" type="textarea" :rows="4" placeholder="请输入内容" />
               </div>
               <div class="bom">
                 <div class="select">
-                  <Select v-model="cateId" style="width: 100px" size="small">
-                    <Option v-for="item in sortList" :value="item.id" :key="item.id">{{ item.name }} </Option>
-                  </Select>
+                  <el-select v-model="cateId" style="width: 100px" size="small">
+                    <el-option v-for="item in sortList" :value="item.id" :key="item.id" :label="item.name"></el-option>
+                  </el-select>
                 </div>
                 <div class="btns-box">
-                  <Button @click.stop="item.isEdit = false">取消</Button>
-                  <Button type="primary" @click.stop="updataMsg(item)">保存</Button>
+                  <el-button @click.stop="item.isEdit = false">取消</el-button>
+                  <el-button type="primary" @click.stop="updataMsg(item)">保存</el-button>
                 </div>
               </div>
             </div>
           </div>
-        </Scroll>
+        </div>
       </div>
     </div>
-    <Modal v-model="isAddSort" :title="maskTitle" width="304" :mask="false" class="class-box" :footer-hide="true">
+    <el-dialog :visible.sync="isAddSort" :title="maskTitle" width="304px" class="class-box">
       <div class="item">
         <span>分组名称：</span>
-        <Input v-model="classTitle" placeholder="分组名称" />
+        <el-input v-model="classTitle" placeholder="分组名称" />
       </div>
       <div class="item">
         <span>分组排序：</span>
-        <Input v-model="classSort" placeholder="输入排序" />
+        <el-input v-model="classSort" placeholder="输入排序" />
       </div>
-      <div class="btn">
-        <Button type="primary" style="background: #1890ff; width: 100%" @click="addServiceCate">确定</Button>
-      </div>
-    </Modal>
+      <div class="btn"></div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="addServiceCate">确定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -164,7 +163,7 @@ export default {
       },
       isScroll: true,
       page: 1,
-      limit: 10,
+      limit: 15,
       tabCur: 1,
       tabList: [
         {
@@ -294,7 +293,7 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.isScroll = true;
           this.page = 1;
           this.list = [];
@@ -302,7 +301,7 @@ export default {
           this.serviceCate();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 获取分类
@@ -351,11 +350,11 @@ export default {
         message: item.message,
       })
         .then((res) => {
-          this.$Message.success('修改成功');
+          this.$message.success('修改成功');
           item.isEdit = false;
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
           item.isEdit = true;
         });
     },
@@ -384,7 +383,7 @@ export default {
           this.addMsg.message = '';
           this.addMsg.cateId = '';
           this.addMsg.isEdit = false;
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           res.data.isEdit = false;
           this.page = 1;
           this.list = [];
@@ -392,7 +391,7 @@ export default {
           this.serviceCate();
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
     // 删除
@@ -407,11 +406,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.list.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 添加分类
@@ -424,7 +423,7 @@ export default {
           .then((res) => {
             this.classTitle = '';
             this.classSort = '';
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.isAddSort = false;
             this.page = 1;
             this.list = [];
@@ -434,7 +433,7 @@ export default {
           .catch((error) => {
             this.classTitle = '';
             this.classSort = '';
-            this.$Message.error(res.msg);
+            this.$message.error(error.msg);
           });
       } else {
         addServiceCate({
@@ -444,7 +443,7 @@ export default {
           .then((res) => {
             this.classTitle = '';
             this.classSort = '';
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.isAddSort = false;
             this.page = 1;
             this.list = [];
@@ -454,7 +453,7 @@ export default {
           .catch((error) => {
             this.classTitle = '';
             this.classSort = '';
-            this.$Message.error(res.msg);
+            this.$message.error(error.msg);
           });
       }
     },
@@ -478,7 +477,6 @@ export default {
 
 <style lang="stylus" scoped>
 .head {
-  padding: 15px 14px 0;
 
   .tab-bar {
     display: flex;
@@ -523,8 +521,8 @@ export default {
 
       &.on {
         background: #F0FAFE;
-        color: #1890FF;
-        border-right: 2px solid #1890FF;
+        color: var(--prev-color-primary);
+        border-right: 2px solid var(--prev-color-primary);
 
         .iconDot {
           z-index: 1;

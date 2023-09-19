@@ -1,168 +1,223 @@
 <template>
   <div>
-    <Table
-      :columns="columns"
+    <el-tabs v-model="currentTab" @tab-click="onClickTab" v-if="tablists">
+      <el-tab-pane :label="'全部订单（' + (tablists.all || 0) + '）'" name="" />
+      <el-tab-pane :label="'普通订单（' + (tablists.general || 0) + '）'" name="1" />
+      <el-tab-pane :label="'拼团订单（' + (tablists.pink || 0) + '）'" name="2" />
+      <el-tab-pane :label="'秒杀订单（' + (tablists.seckill || 0) + '）'" name="3" />
+      <el-tab-pane :label="'砍价订单（' + (tablists.bargain || 0) + '）'" name="4" />
+      <el-tab-pane :label="'预售订单（' + (tablists.advance || 0) + '）'" name="5" />
+    </el-tabs>
+    <div class="acea-row">
+      <el-button v-auth="['order-write']" type="primary" class="mr14" @click="writeOff"> 订单核销 </el-button>
+      <el-upload class="mr14" :action="expressUrl" :headers="header" :on-success="upExpress">
+        <el-button class="export" type="primary">批量发货</el-button>
+      </el-upload>
+      <el-button v-auth="['order-dels']" @click="delAll">批量删除</el-button>
+      <el-button v-auth="['export-storeOrder']" class="export" @click="exportList">订单导出</el-button>
+      <el-button class="export" @click="exportDeliveryList">发货单导出</el-button>
+    </div>
+    <el-table
       :data="orderList"
       ref="table"
-      :loading="loading"
-      highlight-row
-      no-data-text="暂无数据"
-      no-filtered-data-text="暂无筛选结果"
-      @on-select="handleSelectRow"
-      @on-select-cancel="handleCancelRow"
-      @on-select-all="handleSelectAll"
-      @on-select-all-cancel="handleSelectAll"
-      class="orderData mt25"
+      v-loading="loading"
+      empty-text="暂无数据"
+      @select="handleSelectRow"
+      @select-all="handleSelectAll"
+      class="orderData mt14"
     >
-      <template slot-scope="{ row, index }" slot="order_id">
-        <div>{{ row.order_id }}</div>
-        <div class="pink_name">{{ row.pink_name }}</div>
-        <span v-show="row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
-      </template>
-      <template slot-scope="{ row, index }" slot="nickname">
-        <span class="nickname">{{ row.nickname }}</span> |
-        <span class="uid">{{ row.uid }}</span>
-      </template>
-      <template slot-scope="{ row, index }" slot="pay_price">
-        <span>{{ row.paid ? row.pay_price : '未支付' }}</span>
-      </template>
-      <template slot-scope="{ row, index }" slot="info">
-        <div class="tabBox" v-for="(val, i) in row._info" :key="i">
-          <div class="tabBox_img" v-viewer>
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <expandRow :row="scope.row"></expandRow>
+        </template>
+      </el-table-column>
+      <el-table-column type="selection" width="55"> </el-table-column>
+      <el-table-column label="订单号 | 类型" width="200">
+        <template slot-scope="scope">
+          <div>{{ scope.row.order_id }}</div>
+          <div class="pink_name">{{ scope.row.pink_name }}</div>
+          <span v-show="scope.row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="商品信息" min-width="250">
+        <template slot-scope="scope">
+          <div class="tab" v-for="(item, i) in scope.row._info" :key="i">
             <img
               v-lazy="
-                val.cart_info.productInfo.attrInfo
-                  ? val.cart_info.productInfo.attrInfo.image
-                  : val.cart_info.productInfo.image
+                item.cart_info.productInfo.attrInfo
+                  ? item.cart_info.productInfo.attrInfo.image
+                  : item.cart_info.productInfo.image
               "
             />
+            <el-tooltip placement="top" :open-delay="300">
+              <div slot="content">
+                <div>
+                  <span>商品名称：</span>
+                  <span>{{ item.cart_info.productInfo.store_name || '--' }}</span>
+                </div>
+                <div>
+                  <span>规格名称：</span>
+                  <span>{{
+                    item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.suk : '---'
+                  }}</span>
+                </div>
+                <div>
+                  <span>价格：</span>
+                  <span>¥{{ item.cart_info.truePrice || '--' }}</span>
+                </div>
+                <div>
+                  <span>数量：</span>
+                  <span>{{ item.cart_info.cart_num || '--' }}</span>
+                </div>
+              </div>
+              <span class="line2 w-250">{{ item.cart_info.productInfo.store_name }}</span>
+            </el-tooltip>
           </div>
-          <span class="tabBox_tit"
-            >{{ val.cart_info.productInfo.store_name + ' | '
-            }}{{ val.cart_info.productInfo.attrInfo ? val.cart_info.productInfo.attrInfo.suk : '' }}</span
-          >
-          <span class="tabBox_pice">{{ '￥' + val.cart_info.truePrice + ' x ' + val.cart_info.cart_num }}</span>
-        </div>
-      </template>
-      <template slot-scope="{ row, index }" slot="statusName">
-        <div v-html="row.status_name.status_name" class="pt5"></div>
-        <div v-if="!row.is_all_refund && row.refund.length" class="trip">部分退款中</div>
-        <div
-          v-if="row.refund_status == 0 && row.is_all_refund && row.refund.length && row.refund_type != 6"
-          class="trip"
-        >
-          退款中
-        </div>
-        <div class="img">
-          <div
-            v-viewer
-            v-if="row.status_name.pics"
-            class="pictrue"
-            v-for="(item, index) in row.status_name.pics || []"
-            :key="index"
-          >
-            <img v-lazy="item" :src="item" />
-          </div>
-        </div>
-      </template>
-      <template slot-scope="{ row, index }" slot="action">
-        <a @click="edit(row)" v-if="row._status === 1 && row.is_del !== 1">编辑</a>
-        <a
-          @click="sendOrder(row)"
-          v-if="
-            (row.status === 4 || row._status === 2 || row._status === 8) &&
-            row.shipping_type === 1 &&
-            (row.pinkStatus === null || row.pinkStatus === 2) &&
-            row.is_del !== 1
-          "
-          >发送货</a
-        >
-        <a @click="delivery(row)" v-if="row._status === 4 && !row.split.length">配送信息</a>
-        <a
-          @click="bindWrite(row)"
-          v-if="row.shipping_type == 2 && row.status == 0 && row.paid == 1 && row.refund_status === 0"
-          >立即核销</a
-        >
-        <Divider
-          type="vertical"
-          v-if="(row._status === 8 || row.status === 0 || row.status === 4) && row.split.length && row.is_del !== 1"
-        />
-        <a @click="splitOrderDetail(row)" v-if="row.split.length && row.is_del !== 1">查看子订单</a>
-        <Divider
-          type="vertical"
-          v-if="
-            (row._status === 2 && row.shipping_type === 1 && row.pinkStatus === 2) ||
-            (row.split.length && row.is_del !== 1)
-          "
-        />
-        <Divider
-          type="vertical"
-          v-if="
-            row.refund_type !== 4 &&
-            row.refund_type !== 5 &&
-            (row._status === 1 ||
-              row._status === 3 ||
-              (row._status === 2 && !row.pinkStatus) ||
-              row._status === 4 ||
-              (row.shipping_type == 2 && row.status == 0 && row.paid == 1 && row.refund_status === 0)) &&
-            row.is_del !== 1
-          "
-        />
-        <template>
-          <Dropdown @on-click="changeMenu(row, $event)" :transfer="true">
-            <a href="javascript:void(0)"
-              >更多
-              <Icon type="ios-arrow-down"></Icon>
-            </a>
-            <DropdownMenu slot="list">
-              <DropdownItem
-                name="1"
-                ref="ones"
-                v-show="row._status === 1 && row.paid === 0 && row.pay_type === 'offline' && row.is_del !== 1"
-                >确认付款</DropdownItem
-              >
-              <DropdownItem name="2">订单详情</DropdownItem>
-              <DropdownItem name="3">订单记录</DropdownItem>
-              <DropdownItem name="11" v-show="row._status >= 3 && row.express_dump">电子面单打印</DropdownItem>
-              <DropdownItem name="10" v-show="row._status >= 2">小票打印</DropdownItem>
-              <DropdownItem
-                name="4"
-                v-show="
-                  row._status !== 1 ||
-                  (row._status === 3 && row.use_integral > 0 && row.use_integral >= row.back_integral)
-                "
-                >订单备注</DropdownItem
-              >
-              <!-- <DropdownItem
-                name="5"
-                v-show="
-                  row._status !== 1 &&
-                  (parseFloat(row.pay_price) > parseFloat(row.refund_price) ||
-                    (row.pay_price == 0 &&
-                      [0, 1].indexOf(row.refund_status) !== -1))
-                "
-                >立即退款</DropdownItem
-              > -->
-              <!--                            <DropdownItem name="6"  v-show='row._status !==1 && (row.use_integral > 0 && row.use_integral >= row.back_integral) '>退积分</DropdownItem>-->
-              <!--                            <DropdownItem name="7"  v-show='row._status === 3'>不退款</DropdownItem>-->
-              <DropdownItem name="8" v-show="row._status === 4">已收货</DropdownItem>
-              <DropdownItem name="9">删除订单</DropdownItem>
-              <DropdownItem name="12" v-show="row.kuaidi_label">快递面单打印</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
         </template>
-      </template>
-    </Table>
+      </el-table-column>
+      <el-table-column label="用户信息" min-width="150">
+        <template slot-scope="scope">
+          <span class="nickname">{{ scope.row.nickname }} | {{ scope.row.uid }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="实际支付" min-width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.paid ? scope.row.pay_price : '未支付' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="支付方式" min-width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.pay_type_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="支付时间" min-width="150">
+        <template slot-scope="scope">
+          <span>{{ scope.row._pay_time }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="订单状态" min-width="100">
+        <template slot-scope="scope">
+          <div v-html="scope.row.status_name.status_name" class="pt5"></div>
+          <div v-if="!scope.row.is_all_refund && scope.row.refund.length" class="trip">部分退款中</div>
+          <div
+            v-if="
+              scope.row.refund_status == 0 &&
+              scope.row.is_all_refund &&
+              scope.row.refund.length &&
+              scope.row.refund_type != 6
+            "
+            class="trip"
+          >
+            退款中
+          </div>
+          <div class="img">
+            <template v-if="scope.row.status_name.pics">
+              <div v-viewer class="pictrue" v-for="(item, index) in scope.row.status_name.pics || []" :key="index">
+                <img v-lazy="item" :src="item" />
+              </div>
+            </template>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" fixed="right" width="130">
+        <template slot-scope="scope">
+          <a @click="edit(scope.row)" v-if="scope.row._status === 1 && scope.row.is_del !== 1">编辑</a>
+          <a
+            @click="sendOrder(scope.row)"
+            v-if="
+              (scope.row.status === 4 || scope.row._status === 2 || scope.row._status === 8) &&
+              scope.row.shipping_type === 1 &&
+              (scope.row.pinkStatus === null || scope.row.pinkStatus === 2) &&
+              scope.row.is_del !== 1
+            "
+            >发送货</a
+          >
+          <a @click="delivery(scope.row)" v-if="scope.row._status === 4 && !scope.row.split.length">配送信息</a>
+          <a
+            @click="bindWrite(scope.row)"
+            v-if="
+              scope.row.shipping_type == 2 &&
+              scope.row.status == 0 &&
+              scope.row.paid == 1 &&
+              scope.row.refund_status === 0
+            "
+            >立即核销</a
+          >
+          <el-divider
+            direction="vertical"
+            v-if="
+              (scope.row._status === 2 && scope.row.shipping_type === 1 && scope.row.pinkStatus === 2) ||
+              (scope.row.split.length && scope.row.is_del !== 1)
+            "
+          />
+          <el-divider
+            direction="vertical"
+            v-if="
+              scope.row.refund_type !== 4 &&
+              scope.row.refund_type !== 5 &&
+              (scope.row._status === 1 ||
+                scope.row._status === 3 ||
+                (scope.row._status === 2 && !scope.row.pinkStatus) ||
+                scope.row._status === 4 ||
+                (scope.row.shipping_type == 2 &&
+                  scope.row.status == 0 &&
+                  scope.row.paid == 1 &&
+                  scope.row.refund_status === 0)) &&
+              scope.row.is_del !== 1
+            "
+          />
+          <template>
+            <el-dropdown size="small" @command="changeMenu(scope.row, $event)" :transfer="true">
+              <span class="el-dropdown-link"> 更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  command="1"
+                  v-show="
+                    scope.row._status === 1 &&
+                    scope.row.paid === 0 &&
+                    scope.row.pay_type === 'offline' &&
+                    scope.row.is_del !== 1
+                  "
+                  >确认付款</el-dropdown-item
+                >
+                <el-dropdown-item command="2">订单详情</el-dropdown-item>
+                <el-dropdown-item command="11" v-show="scope.row._status >= 3 && scope.row.express_dump"
+                  >电子面单打印</el-dropdown-item
+                >
+                <el-dropdown-item command="10" v-show="scope.row._status >= 2">小票打印</el-dropdown-item>
+                <el-dropdown-item
+                  command="4"
+                  v-show="
+                    scope.row._status !== 1 ||
+                    (scope.row._status === 3 &&
+                      scope.row.use_integral > 0 &&
+                      scope.row.use_integral >= scope.row.back_integral)
+                  "
+                  >订单备注</el-dropdown-item
+                >
+                <!-- <el-dropdown-item
+                command="5"
+                v-show="
+                  scope.row._status !== 1 &&
+                  (parseFloat(scope.row.pay_price) > parseFloat(scope.row.refund_price) ||
+                    (scope.row.pay_price == 0 &&
+                      [0, 1].indexOf(scope.row.refund_status) !== -1))
+                "
+                >立即退款</el-dropdown-item
+              > -->
+                <!--                            <el-dropdown-item command="6"  v-show='scope.row._status !==1 && (scope.row.use_integral > 0 && scope.row.use_integral >= scope.row.back_integral) '>退积分</el-dropdown-item>-->
+                <!--                            <el-dropdown-item command="7"  v-show='scope.row._status === 3'>不退款</el-dropdown-item>-->
+                <el-dropdown-item command="8" v-show="scope.row._status === 4">已收货</el-dropdown-item>
+                <el-dropdown-item command="9">删除订单</el-dropdown-item>
+                <el-dropdown-item command="12" v-show="scope.row.kuaidi_label">快递面单打印</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </template>
+      </el-table-column>
+    </el-table>
     <div class="acea-row row-right page">
-      <Page
-        :total="page.total"
-        :current="page.pageNum"
-        show-elevator
-        show-total
-        @on-change="pageChange"
-        :page-size="page.pageSize"
-        @on-page-size-change="limitChange"
-      />
+      <pagination v-if="total" :total="total" :page.sync="page.page" :limit.sync="page.limit" @pagination="getList" />
     </div>
     <!-- 编辑 退款 退积分 不退款-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
@@ -170,8 +225,8 @@
     <details-from ref="details" :orderDatalist="orderDatalist" :orderId="orderId"></details-from>
     <!-- 备注 -->
     <order-remark ref="remarks" :orderId="orderId" @submitFail="submitFail"></order-remark>
-    <!-- 记录 -->
-    <order-record ref="record"></order-record>
+    <!-- 取消寄件 -->
+    <order-shipment ref="shipment" :orderId="orderId" @submitFail="submitFail"></order-shipment>
     <!-- 发送货 -->
     <order-send
       ref="send"
@@ -183,9 +238,42 @@
       @clearId="
         () => {
           orderId = 0;
+          virtual_type = null;
         }
       "
     ></order-send>
+    <!--    -->
+    <el-dialog
+      :visible.sync="modals2"
+      title="订单核销"
+      class="paymentFooter"
+      :show-close="true"
+      width="540px"
+      @closed="changeModal"
+    >
+      <el-form
+        ref="writeOffFrom"
+        :model="writeOffFrom"
+        :rules="writeOffRules"
+        label-width="80px"
+        label-position="right"
+        class="tabform"
+        @submit.native.prevent
+      >
+        <el-form-item prop="code" label="核销码：">
+          <el-input
+            style="width: 414px"
+            type="text"
+            placeholder="请输入12位核销码"
+            v-model.number="writeOffFrom.code"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button type="primary" @click="ok('writeOffFrom')">立即核销</el-button>
+        <el-button @click="del('writeOffFrom')">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -201,13 +289,20 @@ import {
   refundIntegral,
   getDistribution,
   writeUpdate,
+  shipmentCancelOrder,
+  putWrite,
+  importExpress,
 } from '@/api/order';
 import { mapState, mapMutations } from 'vuex';
 import editFrom from '../../../../components/from/from';
 import detailsFrom from '../handle/orderDetails';
 import orderRemark from '../handle/orderRemark';
-import orderRecord from '../handle/orderRecord';
 import orderSend from '../handle/orderSend';
+import orderShipment from '../handle/orderShipment';
+import { exportOrderList, exportOrderDeliveryList } from '@api/export';
+import Setting from '@/setting';
+import { getCookies } from '@/libs/util';
+import { serveOpnOtherApi } from '@api/setting';
 
 export default {
   name: 'table_list',
@@ -216,11 +311,29 @@ export default {
     editFrom,
     detailsFrom,
     orderRemark,
-    orderRecord,
     orderSend,
+    orderShipment,
   },
   data() {
+    const codeNum = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('请填写核销码'));
+      }
+      // 模拟异步验证效果
+      if (!Number.isInteger(value)) {
+        callback(new Error('请填写12位数字'));
+      } else {
+        const reg = /\b\d{12}\b/;
+        if (!reg.test(value)) {
+          callback(new Error('请填写12位数字'));
+        } else {
+          callback();
+        }
+      }
+    };
     return {
+      expressUrl: Setting.apiBaseURL + '/file/upload/1',
+      header: {},
       delfromData: {},
       modal: false,
       orderList: [],
@@ -231,100 +344,64 @@ export default {
       virtual_type: 0,
       status: 0,
       pay_type: '',
-      columns: [
-        {
-          type: 'expand',
-          width: 30,
-          render: (h, params) => {
-            return h(expandRow, {
-              props: {
-                row: params.row,
-              },
-            });
-          },
-        },
-        {
-          type: 'selection',
-          width: 40,
-          align: 'center',
-        },
-        {
-          title: '订单号 | 类型',
-          align: 'center',
-          slot: 'order_id',
-          width: 200,
-        },
-        {
-          title: '用户昵称 | ID',
-          slot: 'nickname',
-          align: 'center',
-          width: 150,
-        },
-        {
-          title: '商品信息',
-          slot: 'info',
-          minWidth: 330,
-        },
-        {
-          title: '实际支付',
-          slot: 'pay_price',
-          align: 'center',
-          width: 100,
-        },
-        {
-          title: '支付方式',
-          key: 'pay_type_name',
-          width: 80,
-        },
-        {
-          title: '支付时间',
-          key: '_pay_time',
-          align: 'center',
-          minWidth: 75,
-          maxWidth: 160,
-        },
-        {
-          title: '订单状态',
-          key: 'statusName',
-          slot: 'statusName',
-          align: 'center',
-          width: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          width: 170,
-          align: 'center',
-        },
-      ],
+
+      total: 0, // 总条数
       page: {
-        total: 0, // 总条数
-        pageNum: 1, // 当前页
-        pageSize: 10, // 每页显示条数
+        page: 1, // 当前页
+        limit: 15, // 每页显示条数
       },
       data: [],
       FromData: null,
       orderDatalist: null,
       // modalTitleSs: '',
-      selectedIds: new Set(), //选中合并项的id
+      selectedIds: [], //选中合并项的id
+      currentTab: '',
+      spinShow: false,
+      tablists: {
+        all: '0',
+        general: '0',
+        pink: '0',
+        seckill: '0',
+        bargain: '0',
+        advance: '0',
+      },
+      writeOffRules: {
+        code: [{ validator: codeNum, trigger: 'blur', required: true }],
+      },
+      writeOffFrom: {
+        code: '',
+        confirm: 0,
+      },
+      modals2: false,
     };
   },
   computed: {
-    ...mapState('order', ['orderPayType', 'orderStatus', 'orderTime', 'orderNum', 'fieldKey', 'orderType']),
+    ...mapState('order', [
+      'orderPayType',
+      'orderStatus',
+      'orderTime',
+      'real_name',
+      'fieldKey',
+      'orderType',
+      'delIdList',
+      'isDels',
+    ]),
   },
   mounted() {},
   created() {
+    this.getTabs();
+    this.onChangeTabs('');
     this.getList();
+    this.getToken();
   },
   watch: {
     orderType: function () {
-      this.page.pageNum = 1;
+      this.page.page = 1;
       this.getList();
     },
   },
   methods: {
-    ...mapMutations('order', ['getIsDel', 'getisDelIdListl']),
+    ...mapMutations('order', ['onChangeTabs', 'getIsDel', 'getisDelIdListl']),
     // 操作
     changeMenu(row, name) {
       this.orderId = row.id;
@@ -338,21 +415,17 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.$emit('changeGetTabs');
               this.getList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           // this.modalTitleSs = '修改立即支付';
           break;
         case '2':
           this.getData(row.id);
-          break;
-        case '3':
-          this.$refs.record.modals = true;
-          this.$refs.record.getList(row.id);
           break;
         case '4':
           this.$refs.remarks.modals = true;
@@ -376,11 +449,11 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.getList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           // this.modalTitleSs = '修改确认收货';
           break;
@@ -394,12 +467,12 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.$emit('changeGetTabs');
               this.getList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           break;
         case '11':
@@ -412,11 +485,11 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.getList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           break;
         case '12':
@@ -433,6 +506,10 @@ export default {
           this.delOrder(row, this.delfromData);
       }
     },
+    shipmentClear(row) {
+      this.orderId = row.id;
+      this.$refs.shipment.modals = true;
+    },
     printImg(url) {
       printJS({
         printable: url,
@@ -448,25 +525,17 @@ export default {
     submitModel() {
       this.getList();
     },
-    pageChange(index) {
-      this.page.pageNum = index;
-      this.getList();
-    },
-    limitChange(limit) {
-      this.page.pageSize = limit;
-      this.getList();
-    },
     // 订单列表
     getList(res) {
-      this.page.pageNum = res === 1 ? 1 : this.page.pageNum;
+      this.page.page = res === 1 ? 1 : this.page.page;
       this.loading = true;
       orderList({
-        page: this.page.pageNum,
-        limit: this.page.pageSize,
+        page: this.page.page,
+        limit: this.page.limit,
         status: this.orderStatus,
         pay_type: this.orderPayType,
         data: this.orderTime,
-        real_name: this.orderNum,
+        real_name: this.real_name,
         field_key: this.fieldKey,
         type: this.orderType === 0 ? '' : this.orderType,
       })
@@ -474,7 +543,7 @@ export default {
           let data = res.data;
           this.orderList = data.data;
           this.orderCards = data.stat;
-          this.page.total = data.count;
+          this.total = data.count;
           this.$nextTick(() => {
             //确保dom加载完毕
             this.setChecked();
@@ -484,7 +553,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 全选
@@ -497,20 +566,11 @@ export default {
     // },
     //全选和取消全选时触发
     handleSelectAll(selection) {
-      if (selection.length === 0) {
-        //获取table的数据；
-        let data = this.$refs.table.data;
-        data.forEach((item) => {
-          if (this.selectedIds.has(item.id)) {
-            this.selectedIds.delete(item.id);
-          }
-        });
-      } else {
-        selection.forEach((item) => {
-          this.selectedIds.add(item.id);
-        });
-      }
-      this.isDel(selection);
+      let ids = [];
+      selection.map((e) => {
+        ids.push(e.id);
+      });
+      this.selectedIds = ids;
       this.$nextTick(() => {
         //确保dom加载完毕
         this.setChecked();
@@ -518,8 +578,11 @@ export default {
     },
     //  选中某一行
     handleSelectRow(selection, row) {
-      this.isDel(selection);
-      this.selectedIds.add(row.id);
+      let ids = [];
+      selection.map((e) => {
+        ids.push(e.id);
+      });
+      this.selectedIds = ids;
       this.$nextTick(() => {
         //确保dom加载完毕
         this.setChecked();
@@ -562,19 +625,14 @@ export default {
       if (row.is_del === 1) {
         this.$modalSure(data)
           .then((res) => {
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.getList();
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
-        const title = '错误！';
-        const content = '<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>';
-        this.$Modal.error({
-          title: title,
-          content: content,
-        });
+        this.$message.error('您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！');
       }
     },
     splitOrderDetail(row) {
@@ -589,15 +647,11 @@ export default {
     getOrderData(id) {
       getOrdeDatas(id)
         .then(async (res) => {
-          if (res.data.status === false) {
-            return this.$authLapse(res.data);
-          }
-          this.$authLapse(res.data);
           this.FromData = res.data;
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 获取详情表单数据
@@ -617,7 +671,7 @@ export default {
           }
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改成功
@@ -640,7 +694,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 不退款表单数据
@@ -653,11 +707,11 @@ export default {
     // 发送货
     sendOrder(row) {
       this.$refs.send.total_num = row.total_num;
+      this.virtual_type = row.virtual_type;
       this.$refs.send.modals = true;
       this.orderId = row.id;
       this.status = row._status;
       this.pay_type = row.pay_type;
-      this.virtual_type = row.virtual_type;
       this.$refs.send.getList();
       this.$refs.send.getDeliveryList();
       this.$nextTick((e) => {
@@ -672,7 +726,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     change(status) {},
@@ -685,29 +739,194 @@ export default {
     // 核销订单
     bindWrite(row) {
       let self = this;
-      this.$Modal.confirm({
+      this.$msgbox({
         title: '提示',
-        content: '确定要核销该订单吗？',
-        cancelText: '取消',
-        closable: true,
-        maskClosable: true,
-        onOk: function () {
+        message: '确定要核销该订单吗？',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel',
+      })
+        .then(() => {
           writeUpdate(row.order_id)
             .then((res) => {
-              self.$Message.success(res.msg);
+              self.$message.success(res.msg);
               self.getList();
             })
             .catch((res) => {
-              self.$Message.error(res.msg);
+              self.$message.error(res.msg);
             });
-        },
+        })
+        .catch(() => {});
+    },
+    // 订单类型  @on-changeTabs="getChangeTabs"
+    getTabs() {
+      this.spinShow = true;
+      this.$store
+        .dispatch('order/getOrderTabs', {
+          data: '',
+        })
+        .then((res) => {
+          this.tablists = res.data;
+          // this.onChangeChart(this.tablists)
+          this.spinShow = false;
+        })
+        .catch((res) => {
+          this.spinShow = false;
+          this.$message.error(res.msg);
+        });
+    },
+    onClickTab() {
+      this.onChangeTabs(Number(this.currentTab));
+      this.$store.dispatch('order/getOrderTabs', { type: this.currentTab });
+    },
+    // 批量删除
+    delAll() {
+      if (this.delIdList.length === 0) {
+        this.$message.error('请先选择删除的订单！');
+      } else {
+        if (this.isDels) {
+          let idss = {
+            ids: this.delIdList,
+          };
+          let delfromData = {
+            title: '删除订单',
+            url: `/order/dels`,
+            method: 'post',
+            ids: idss,
+          };
+          this.$modalSure(delfromData)
+            .then((res) => {
+              this.$message.success(res.msg);
+              this.$emit('getList');
+            })
+            .catch((res) => {
+              this.$message.error(res.msg);
+            });
+        } else {
+          this.$message.error('您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！');
+        }
+      }
+    },
+    // 下载批量发货模版
+    async exportDeliveryList() {
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let deliveryData = { page: 1, limit: 200 };
+      for (let i = 0; i < deliveryData.page + 1; i++) {
+        let expressData = await this.getDeliveryData(deliveryData);
+        if (!fileName) fileName = expressData.filename;
+        if (!filekey.length) {
+          filekey = expressData.fileKey;
+        }
+        if (!th.length) th = expressData.header;
+        if (expressData.export.length) {
+          data = data.concat(expressData.export);
+          deliveryData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
+    },
+    getDeliveryData(deliveryData) {
+      return new Promise((resolve, reject) => {
+        exportOrderDeliveryList(deliveryData).then((res) => {
+          resolve(res.data);
+        });
       });
+    },
+    // 上传头部token
+    getToken() {
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
+    },
+    upExpress(data) {
+      importExpress({ file: data.data.src })
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.getList();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    // 导出
+    async exportList() {
+      let [th, filekey, data, fileName] = [[], [], [], ''];
+      let excelData = {};
+      excelData.page = 1;
+      excelData.limit = 200;
+      excelData.ids = this.delIdList;
+      excelData.type = this.orderType === 0 ? '' : this.orderType;
+      for (let i = 0; i < excelData.page + 1; i++) {
+        let lebData = await this.getExcelData(excelData);
+        if (!fileName) fileName = lebData.filename;
+        if (!filekey.length) {
+          filekey = lebData.fileKey;
+        }
+        if (!th.length) th = lebData.header;
+        if (lebData.export.length) {
+          data = data.concat(lebData.export);
+          excelData.page++;
+        } else {
+          this.$exportExcel(th, filekey, fileName, data);
+          return;
+        }
+      }
+    },
+    getExcelData(excelData) {
+      return new Promise((resolve, reject) => {
+        exportOrderList(excelData).then((res) => {
+          resolve(res.data);
+        });
+      });
+    },
+    // 订单核销
+    writeOff() {
+      this.modals2 = true;
+    },
+    // 订单核销
+    ok(name) {
+      if (!this.writeOffFrom.code) {
+        this.$message.warning('请先验证订单！');
+      } else {
+        this.writeOffFrom.confirm = 1;
+        putWrite(this.writeOffFrom)
+          .then(async (res) => {
+            if (res.status === 200) {
+              this.$message.success(res.msg);
+              this.modals2 = false;
+              this.$refs[name].resetFields();
+              this.$emit('getList', 1);
+            } else {
+              this.$message.error(res.msg);
+            }
+          })
+          .catch((res) => {
+            this.$message.error(res.msg);
+          });
+      }
+    },
+    del(name) {
+      this.modals2 = false;
+      this.writeOffFrom.code = '';
+      this.$refs[name].resetFields();
+    },
+    changeModal() {
+      this.writeOffFrom.code = '';
     },
   },
 };
 </script>
 
 <style scoped lang="stylus">
+/deep/ .el-upload-list{
+  display: none;
+}
+/deep/ .el-tabs__item {
+  height: 54px;
+  line-height: 54px;
+}
 img {
   height: 36px;
   display: block;
@@ -761,14 +980,20 @@ img {
   color: #666;
 }
 
-.img {
+.tab {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
 
   img {
-    width: 30px;
-    height: 30px;
-    margin-right: 3px;
+    width: 36px;
+    height: 36px;
+    margin-right: 10px;
   }
+}
+.w-250 {
+  max-width: 250px;
+}
+.w-120 {
+  width: 120px;
 }
 </style>

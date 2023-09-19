@@ -1,7 +1,7 @@
 <template>
   <div class="mobile-page">
     <div v-if="isUpdate">
-      <Divider />
+      <el-divider direction="vertical" />
       <div class="title">布局</div>
       <div class="tip">选定布局区域，在下方添加图片，建议添加比例一致的图片</div>
       <div class="advert">
@@ -203,7 +203,7 @@ export default {
             img {
                 width 100%;
                 height 100%;
-                border 1px solid #1890ff;
+                border 1px solid var(--prev-color-primary);
             }
         }
 
@@ -221,12 +221,12 @@ export default {
 
                 &.on{
                     img{
-                        border:1px solid #1890ff!important
+                        border:1px solid var(--prev-color-primary)!important
                     }
 
                    .empty-box{
-                       border:1px solid #1890ff!important
-                       color #1890ff
+                       border:1px solid var(--prev-color-primary)!important
+                       color var(--prev-color-primary)
                    }
                 }
 
@@ -282,12 +282,12 @@ export default {
 
                 &.on{
                     img{
-                        border:1px solid #1890ff!important
+                        border:1px solid var(--prev-color-primary)!important
                     }
 
                     .empty-box{
-                        border:1px solid #1890ff!important
-                        color #1890ff
+                        border:1px solid var(--prev-color-primary)!important
+                        color var(--prev-color-primary)
                     }
                 }
 
@@ -297,12 +297,12 @@ export default {
 
                     &.on{
                         img{
-                            border:1px solid #1890ff!important
+                            border:1px solid var(--prev-color-primary)!important
                         }
 
                         .empty-box{
-                            border:1px solid #1890ff!important
-                            color #1890ff
+                            border:1px solid var(--prev-color-primary)!important
+                            color var(--prev-color-primary)
                         }
                     }
                 }
@@ -359,12 +359,12 @@ export default {
 
                 &.on{
                     img{
-                        border:1px solid #1890ff!important
+                        border:1px solid var(--prev-color-primary)!important
                     }
 
                     .empty-box{
-                        border:1px solid #1890ff!important
-                        color #1890ff
+                        border:1px solid var(--prev-color-primary)!important
+                        color var(--prev-color-primary)
                     }
                 }
 

@@ -3,7 +3,7 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div style="float: right">
-        <Button class="bnt" type="primary" @click="onsubmit('formValidate')">保存</Button>
+        <el-button class="bnt" type="primary" @click="onsubmit('formValidate')">保存</el-button>
       </div>
     </div>
     <div class="box-wrapper">
@@ -22,13 +22,13 @@
       </div>
       <div style="margin-left: 40px">
         <div class="table_box">
-          <div type="flex">
+          <div >
             <div v-bind="grid">
               <div class="title">隐私权限页面展示：</div>
             </div>
           </div>
           <div>
-            <Form
+            <el-form
               class="form"
               ref="formValidate"
               :model="formValidate"
@@ -37,14 +37,14 @@
               @submit.native.prevent
             >
               <div class="goodsTitle acea-row"></div>
-              <FormItem label="" style="margin: 0px">
+              <el-form-item label="" style="margin: 0px">
                 <WangEditor
                   style="width: 90%"
                   :content="formValidate.content"
                   @editorContent="getEditorContent"
                 ></WangEditor>
-              </FormItem>
-            </Form>
+              </el-form-item>
+            </el-form>
           </div>
         </div>
       </div>
@@ -58,7 +58,6 @@ import WangEditor from '@/components/wangEditor/index.vue';
 import Setting from '@/setting';
 import { getColorChange } from '@/api/diy';
 import { mapState } from 'vuex';
-import editFrom from '@/components/from/from';
 import { productGetTempKeysApi, uploadType } from '@/api/product';
 import {
   groupAllApi,
@@ -73,7 +72,6 @@ import {
   setAgreement,
   getOpenAdv,
 } from '@/api/system';
-import draggable from 'vuedraggable';
 import uploadPictures from '@/components/uploadPictures';
 import linkaddress from '@/components/linkaddress';
 import { getCookies } from '@/libs/util';
@@ -81,8 +79,6 @@ import { getCookies } from '@/libs/util';
 export default {
   name: 'list',
   components: {
-    editFrom,
-    draggable,
     uploadPictures,
     linkaddress,
     WangEditor,
@@ -94,7 +90,7 @@ export default {
       };
     },
     labelWidth() {
-      return this.isMobile ? undefined : 120;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -207,7 +203,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     getContent(val) {
@@ -218,10 +214,10 @@ export default {
       this.formValidate.content = this.content;
       setAgreement(this.formValidate)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     //详情
@@ -236,7 +232,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },
@@ -264,7 +260,7 @@ export default {
   }
 
   .goodsTitle .title {
-    border-bottom: 2px solid #1890ff;
+    border-bottom: 2px solid var(--prev-color-primary);
     padding: 0 8px 12px 5px;
     color: #000;
     font-size: 14px;
@@ -278,7 +274,7 @@ export default {
 
   .add {
     font-size: 12px;
-    color: #1890ff;
+    color: var(--prev-color-primary);
     padding: 0 12px;
     cursor: pointer;
   }
@@ -416,7 +412,7 @@ export default {
   padding: 0 0 13px 0;
   font-weight: bold;
   font-size: 15px;
-  border-left: 2px solid #1890FF;
+  border-left: 2px solid var(--prev-color-primary);
   height: 23px;
   padding-left: 10px;
 }
@@ -435,7 +431,7 @@ export default {
   width: 100%;
 
   .save {
-    background-color: #1890FF;
+    background-color: var(--prev-color-primary);
     color: #FFFFFF;
     width: 71px;
     height: 30px;

@@ -11,7 +11,7 @@
 namespace crmeb\utils;
 
 
-use think\facade\Cache;
+use crmeb\services\CacheService;
 use think\facade\Config;
 use think\Response;
 
@@ -113,7 +113,7 @@ class Captcha
             'value' => $bag,
             'key' => $hash,
         ];
-        Cache::set('captcha_' . $key, $generator, $this->expire);
+        CacheService::set('captcha_' . $key, $generator, $this->expire);
         return $generator;
     }
 
@@ -127,14 +127,14 @@ class Captcha
     {
         $code = mb_strtolower(trim($code), 'UTF-8');
         $name = 'captcha_' . $code;
-        if (!Cache::has($name) || !($generator = Cache::get($name))) {
+        if (!CacheService::has($name) || !($generator = CacheService::get($name))) {
             return false;
         }
         $key = $generator['key'] ?? '';
         $res = password_verify($code, $key);
 
         if ($res) {
-            Cache::delete($name);
+            CacheService::delete($name);
         }
 
         return $res;

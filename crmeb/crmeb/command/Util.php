@@ -58,7 +58,7 @@ class Util extends Command
                 if (!$filePath) {
                     return $output->error('缺少导入文件地址');
                 }
-                $this->import($filePath);
+                app()->make(SystemRouteServices::class)->import($filePath);
                 break;
         }
 
@@ -105,129 +105,5 @@ class Util extends Command
         });
     }
 
-    /**
-     * 导入数据
-     * @param string $filePath
-     * @return mixed
-     * @author 等风来
-     * @email 136327134@qq.com
-     * @date 2023/4/26
-     */
-    protected function import(string $filePath)
-    {
-        $preg = '/\{+[a-zA-Z0-9]+\}/';
 
-        $res = file_get_contents(app()->getRootPath() . $filePath);
-
-        $data = json_decode($res, true)['apiCollection'][0]['items'];
-
-        $route = [];
-        foreach ($data as $item) {
-            foreach ($item['items'] as $value) {
-                if (isset($value['api'])) {
-                    $path = str_replace('//', '/', str_replace('{}', '', $value['api']['path']));
-                    $paramePath = $this->getPathValue($value['api']['parameters']['path'] ?? []);
-                    if (strstr($path, ':') !== false) {
-                        $path = str_replace(':', '', $path);
-                    }
-                    if (preg_match_all($preg, $path, $matches)) {
-                        $paramePathMatche = [];
-                        if (isset($matches[0]) && $matches[0]) {
-                            foreach ($matches[0] as $v) {
-                                $paramePathMatche[] = str_replace(['{', '}'], ['<', '>'], $v);
-                            }
-                        }
-                        if ($paramePathMatche) {
-                            $paramePath = implode('/', $paramePathMatche);
-                        }
-                    }
-                    if ($path[0] === '/') {
-                        $path = substr($path, 1);
-                    }
-                    $route[] = [
-                        'method' => strtoupper($value['api']['method']),
-                        'path' => $path . $paramePath,
-                        'request_type' => $value['api']['requestBody']['type'],
-                        'request' => $this->getRequest($value['api']['requestBody']['parameters'] ?? []),
-                        'response' => $this->getResponse($value['api']['responses'][0]['jsonSchema']['properties'] ?? []),
-                    ];
-                }
-            }
-        }
-
-        return app()->make(SystemRouteServices::class)->importData($route);
-    }
-
-    /**
-     * 获取请求返回数据
-     * @param array $options
-     * @param string $parentId
-     * @return array
-     * @author 等风来
-     * @email 136327134@qq.com
-     * @date 2023/4/26
-     */
-    protected function getResponse(array $options, $parentId = '')
-    {
-        $response = [];
-        foreach ($options as $key => $option) {
-            $id = uniqid();
-            $response[] = [
-                'attribute' => $key,
-                'type' => $option['type'],
-                'trip' => '',
-                'id' => $id,
-                'parentId' => $parentId,
-            ];
-            if (isset($option['properties'])) {
-                $response = array_merge($response, $this->getResponse($option['properties'], $id));
-            }
-        }
-
-        return $response;
-    }
-
-    /**
-     * 获取请求数据
-     * @param array $options
-     * @return array
-     * @author 等风来
-     * @email 136327134@qq.com
-     * @date 2023/4/26
-     */
-    protected function getRequest(array $options)
-    {
-        $request = [];
-        foreach ($options as $option) {
-            $request[] = [
-                'attribute' => $option['name'],
-                'type' => $option['type'] === 'text' ? 'string' : $option['type'],
-                'must' => 0,
-                'trip' => $option['description'],
-                'id' => $option['id'],
-            ];
-        }
-        return $request;
-    }
-
-    /**
-     * 处理path路径
-     * @param array $options
-     * @return string
-     * @author 等风来
-     * @email 136327134@qq.com
-     * @date 2023/4/26
-     */
-    protected function getPathValue(array $options)
-    {
-        $path = [];
-        foreach ($options as $option) {
-            if (strstr($option['name'], '?') !== false) {
-                $option['name'] = str_replace('?', '', $option['name']) . '?';
-            }
-            $path[] = '<' . $option['name'] . '>';
-        }
-
-        return implode('/', $path);
-    }
 }

@@ -246,6 +246,7 @@ class UserServices extends BaseServices
         $where['spread_open'] = 1;
         if (isset($where['nickname']) && $where['nickname'] !== '') {
             $where['like'] = $where['nickname'];
+            unset($where['nickname']);
         }
         if (isset($where['data']) && $where['data']) {
             $where['time'] = $where['data'];
@@ -881,7 +882,7 @@ class UserServices extends BaseServices
                 }
                 return $menus;
             };
-            $field[] = Form::select('group_id', '用户分组', $user->getData('group_id'))->setOptions(FormBuilder::setOptions($setOptionUserGroup))->filterable(true);
+            $field[] = Form::select('group_id', '用户分组', $user->getData('group_id') != 0 ? $user->getData('group_id') : '')->setOptions(FormBuilder::setOptions($setOptionUserGroup))->filterable(true);
         } else {
             $setOptionUserGroup = function () use ($userGroup) {
                 $menus = [];
@@ -1042,10 +1043,10 @@ class UserServices extends BaseServices
         }
         $timeDiff = $userInfo['is_ever_level'] == 1 ? '永久' : date('Y-m-d H:i:s', $userInfo['overdue_time']);
         $dayDiff = $userInfo['overdue_time'] > time() ? intval(($userInfo['overdue_time'] - time()) / 86400) : 0;
-        $field[] = Form::input('time_diff', '到期时间', $timeDiff)->style(['width' => '200px'])->readonly(true);
+        $field[] = Form::input('time_diff', '到期时间', $timeDiff)->readonly(true);
         if ($userInfo['is_ever_level'] == 0) {
-            $field[] = Form::input('day_diff', '剩余天数', $dayDiff)->style(['width' => '200px'])->readonly(true);
-            $field[] = Form::number('days', '增加时长(天)')->precision(0)->style(['width' => '200px'])->required();
+            $field[] = Form::input('day_diff', '剩余天数', $dayDiff)->readonly(true);
+            $field[] = Form::number('days', '增加时长(天)')->precision(0)->required();
         }
         return create_form('赠送付费会员时长', $field, Url::buildUrl('/user/save_give_level_time/' . $id), 'PUT');
     }
@@ -1311,7 +1312,7 @@ class UserServices extends BaseServices
             case 'integral':
                 /** @var UserBillServices $services */
                 $services = app()->make(UserBillServices::class);
-                return $services->getIntegralList($id, [], 'title,number,balance,mark,add_time,frozen_time');
+                return $services->getIntegralList($id, [], 'title,number,balance,mark,add_time,frozen_time,pm');
             case 'sign':
                 /** @var UserBillServices $services */
                 $services = app()->make(UserBillServices::class);
@@ -1482,7 +1483,7 @@ class UserServices extends BaseServices
         $userMoney = app()->make(UserMoneyServices::class);
 
         $user['recharge'] = $userMoney->sum([
-            ['uid', '=', $uid], ['pm', '=', 1], ['type', 'in', ['recharge', 'system_add', 'extract', 'register_system_add']]
+            ['uid', '=', $uid], ['pm', '=', 1], ['type', 'in', ['recharge', 'system_add', 'extract', 'register_system_add', 'lottery_add']]
         ], 'number');
         $user['orderStatusSum'] = bcsub((string)$user['recharge'], (string)$user['now_money'], 2);
         $user['extractTotalPrice'] = $userExtract->getExtractSum(['uid' => $uid, 'status' => 1]);//累计提现
@@ -1682,7 +1683,7 @@ class UserServices extends BaseServices
                 $check = true;
             }
         } elseif (sys_config('brokerage_bindind') == 2) {
-            if ($userInfo['add_time'] == $userInfo['last_time']) {
+            if ($userInfo['add_time'] == $userInfo['last_time'] && $userInfo['spread_uid'] == 0) {
                 $check = true;
             }
         }
@@ -2041,6 +2042,18 @@ class UserServices extends BaseServices
         if (!$userInfo) {
             return false;
         }
+
+        //根据手机号码查询此用户注销过，不反推广佣金
+        if ($userInfo['phone'] != '' && $this->dao->getCount(['phone' => $userInfo['phone'], 'is_del' => 1])) {
+            return false;
+        }
+        //根据openid查询此用户注销过，不反推广佣金
+        $wechatUserServices = app()->make(WechatUserServices::class);
+        $openidArray = $wechatUserServices->getColumn(['uid' => $uid], 'openid', 'id');
+        if ($wechatUserServices->getCount([['openid', 'in', $openidArray], ['is_del', '=', 1]])) {
+            return false;
+        }
+
         if (!$spread_user) {
             $spread_user = $this->dao->getOne(['uid' => $spread_uid, 'status' => 1]);
         }

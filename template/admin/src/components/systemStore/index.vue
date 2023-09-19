@@ -1,152 +1,142 @@
 <template>
   <div>
-    <Modal
-      v-model="isTemplate"
-      scrollable
-      footer-hide
-      closable
+    <el-dialog
+      :visible.sync="isTemplate"
       :title="formItem.id ? '编辑提货点' : '添加提货点'"
-      :z-index="1"
-      @on-cancel="cancel"
+      width="720px"
+      @closed="cancel"
     >
-      <div class="article-manager">
-        <Card :bordered="false" dis-hover class="ivu-mt">
-          <Form
-            ref="formItem"
-            :model="formItem"
-            :label-width="120"
-            label-position="right"
-            :rules="ruleValidate"
-            @submit.native.prevent
-          >
-            <Row type="flex" :gutter="24">
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="提货点名称：" prop="name" label-for="name">
-                    <Input v-model="formItem.name" placeholder="请输入提货点名称" />
-                  </FormItem>
-                </Col>
-              </Col>
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="提货点简介：" label-for="introduction">
-                    <Input v-model="formItem.introduction" placeholder="请输入提货点简介" />
-                  </FormItem>
-                </Col>
-              </Col>
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="提货点手机号：" label-for="phone" prop="phone">
-                    <Input v-model="formItem.phone" placeholder="请输入提货点手机号" />
-                  </FormItem>
-                </Col>
-              </Col>
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="提货点地址：" label-for="address" prop="address">
-                    <Cascader
-                      :data="addresData"
-                      :value="formItem.address"
-                      v-model="formItem.address"
-                      @on-change="handleChange"
-                    ></Cascader>
-                  </FormItem>
-                </Col>
-              </Col>
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="详细地址：" label-for="detailed_address" prop="detailed_address">
-                    <Input v-model="formItem.detailed_address" placeholder="请输入详细地址" />
-                  </FormItem>
-                </Col>
-              </Col>
-              <!--<Col span="24">-->
-              <!--<Col v-bind="grid">-->
-              <!--<FormItem label="核销时效：" label-for="valid_time">-->
-              <!--<DatePicker @on-change="onchangeDate" :value="formItem.valid_time" v-model="formItem.valid_time" format="yyyy/MM/dd" type="daterange" split-panels placeholder="请选择核销时效" ></DatePicker>-->
-              <!--</FormItem>-->
-              <!--</Col>-->
-              <!--</Col>-->
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="提货点营业：" label-for="day_time" prop="day_time">
-                    <TimePicker
-                      type="timerange"
-                      @on-change="onchangeTime"
-                      v-model="formItem.day_time"
-                      format="HH:mm:ss"
-                      :value="formItem.day_time"
-                      placement="bottom-end"
-                      placeholder="请选择营业时间"
-                    ></TimePicker>
-                  </FormItem>
-                </Col>
-              </Col>
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="提货点logo：" prop="image">
-                    <div class="picBox" @click="modalPicTap('单选', 'logo')">
-                      <div class="pictrue" v-if="formItem.image">
-                        <img v-lazy="formItem.image" />
-                      </div>
-                      <div class="upLoad acea-row row-center-wrapper" v-else>
-                        <Icon type="ios-camera-outline" size="26" />
-                      </div>
+      <div class="article-manager" v-loading="spinShow">
+        <el-form
+          ref="formItem"
+          :model="formItem"
+          label-width="110px"
+          label-position="right"
+          :rules="ruleValidate"
+          @submit.native.prevent
+        >
+          <el-row :gutter="24">
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="提货点名称：" prop="name" label-for="name">
+                  <el-input v-model="formItem.name" placeholder="请输入提货点名称" />
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="提货点简介：" label-for="introduction">
+                  <el-input v-model="formItem.introduction" placeholder="请输入提货点简介" />
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="提货点手机号：" label-for="phone" prop="phone">
+                  <el-input v-model="formItem.phone" placeholder="请输入提货点手机号" />
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="提货点地址：" label-for="address" prop="address">
+                  <el-cascader
+                    :options="addresData"
+                    :value="formItem.address"
+                    v-model="formItem.address"
+                    @change="handleChange"
+                    style="width: 100%"
+                  ></el-cascader>
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="详细地址：" label-for="detailed_address" prop="detailed_address">
+                  <el-input v-model="formItem.detailed_address" placeholder="请输入详细地址" />
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <!--<el-col :span="24">-->
+            <!--<el-col v-bind="grid">-->
+            <!--<el-form-item label="核销时效：" label-for="valid_time">-->
+            <!--<DatePicker @change="onchangeDate" :value="formItem.valid_time" v-model="formItem.valid_time" format="yyyy/MM/dd" type="daterange" split-panels placeholder="请选择核销时效" ></DatePicker>-->
+            <!--</el-form-item>-->
+            <!--</el-col>-->
+            <!--</el-col>-->
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="提货点营业：" label-for="day_time" prop="day_time">
+                  <el-time-picker
+                    is-range
+                    @change="onchangeTime"
+                    v-model="formItem.day_time"
+                    format="HH:mm:ss"
+                    value-format="HH:mm:ss"
+                    range-separator="-"
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                    placeholder="选择时间范围"
+                    style="width: 100%"
+                  ></el-time-picker>
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="提货点logo：" prop="image">
+                  <div class="picBox" @click="modalPicTap('单选', 'logo')">
+                    <div class="pictrue" v-if="formItem.image">
+                      <img v-lazy="formItem.image" />
                     </div>
-                  </FormItem>
-                </Col>
-              </Col>
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="提货点大图：" prop="oblong_image">
-                    <div class="picBox" @click="modalPicTap('单选', 'oblong')">
-                      <div class="pictrue" v-if="formItem.oblong_image">
-                        <img v-lazy="formItem.oblong_image" />
-                      </div>
-                      <div class="upLoad acea-row row-center-wrapper" v-else>
-                        <Icon type="ios-camera-outline" size="26" />
-                      </div>
+                    <div class="upLoad acea-row row-center-wrapper" v-else>
+                      <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
-                  </FormItem>
-                </Col>
-              </Col>
-              <Col span="24">
-                <Col v-bind="grid">
-                  <FormItem label="经纬度：" label-for="status2" prop="latlng">
-                    <Tooltip>
-                      <Input
-                        search
-                        enter-button="查找位置"
-                        v-model="formItem.latlng"
-                        style="width: 100%"
-                        placeholder="请查找位置"
-                        @on-search="onSearch"
-                      />
-                      <div slot="content">请点击查找位置选择位置</div>
-                    </Tooltip>
-                  </FormItem>
-                </Col>
-              </Col>
-            </Row>
-            <Row type="flex">
+                  </div>
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="提货点大图：" prop="oblong_image">
+                  <div class="picBox" @click="modalPicTap('单选', 'oblong')">
+                    <div class="pictrue" v-if="formItem.oblong_image">
+                      <img v-lazy="formItem.oblong_image" />
+                    </div>
+                    <div class="upLoad acea-row row-center-wrapper" v-else>
+                      <i class="el-icon-picture-outline" style="font-size: 24px"></i>
+                    </div>
+                  </div>
+                </el-form-item>
+              </el-col>
+            </el-col>
+            <el-col :span="24">
+              <el-col v-bind="grid">
+                <el-form-item label="经纬度：" label-for="status2" prop="latlng">
+                  <el-tooltip>
+                    <el-input v-model="formItem.latlng" style="width: 100%" placeholder="请查找位置">
+                      <el-button type="primary" slot="append" @click="onSearch">查找位置</el-button>
+                    </el-input>
+                    <div slot="content">请点击查找位置选择位置</div>
+                  </el-tooltip>
+                </el-form-item>
+              </el-col>
+            </el-col>
+          </el-row>
+          <!-- <el-row>
               <div class="btn">
-                <Button type="primary" long @click="handleSubmit('formItem')">{{
+                <el-button type="primary" long @click="handleSubmit('formItem')">{{
                   formItem.id ? '修改' : '提交'
-                }}</Button>
+                }}</el-button>
               </div>
-            </Row>
-            <Spin size="large" fix v-if="spinShow"></Spin>
-          </Form>
-        </Card>
+            </el-row> -->
+        </el-form>
 
-        <Modal
-          v-model="modalPic"
-          width="950px"
-          scrollable
-          footer-hide
-          closable
+        <el-dialog
+          :visible.sync="modalPic"
+          width="1024px"
           :title="modalTitle"
-          :mask-closable="false"
+          :close-on-click-modal="false"
           :z-index="888"
         >
           <uploadPictures
@@ -156,22 +146,23 @@
             :gridPic="gridPic"
             v-if="modalPic"
           ></uploadPictures>
-        </Modal>
+        </el-dialog>
 
-        <Modal
-          v-model="modalMap"
-          scrollable
-          footer-hide
-          closable
+        <el-dialog
+          :visible.sync="modalMap"
           title="请选择地址"
-          :mask-closable="false"
+          :close-on-click-modal="false"
           :z-index="1"
+          width="720px"
           class="mapBox"
         >
-          <iframe id="mapPage" width="100%" height="100%" frameborder="0" v-bind:src="keyUrl"></iframe>
-        </Modal>
+          <iframe id="mapPage" width="100%" height="600px" frameborder="0" v-bind:src="keyUrl"></iframe>
+        </el-dialog>
       </div>
-    </Modal>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" long @click="handleSubmit('formItem')">{{ formItem.id ? '修改' : '提交' }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -222,7 +213,7 @@ export default {
         address2: [],
         detailed_address: '',
         valid_time: [],
-        day_time: [],
+        day_time: ['', ''],
         latlng: '',
         id: 0,
       },
@@ -273,7 +264,7 @@ export default {
       keyUrl: '',
       grid: {
         xl: 20,
-        lg: 20,
+        lg: 24,
         md: 20,
         sm: 24,
         xs: 24,
@@ -340,7 +331,7 @@ export default {
     },
     clearFrom() {
       this.formItem.introduction = '';
-      this.formItem.day_time = [];
+      this.formItem.day_time = ['', ''];
       this.formItem.oblong_image = '';
       this.formItem.id = 0;
     },
@@ -361,11 +352,12 @@ export default {
           let info = res.data.info || null;
           that.formItem = info || that.formItem;
           that.formItem.address = info.address2;
+          that.formItem.day_time = info.day_time.split('-');
           that.spinShow = false;
         })
         .catch(function (res) {
           that.spinShow = false;
-          that.$Message.error(res.msg);
+          that.$message.error(res.msg);
         });
     },
     // 选择图片
@@ -408,7 +400,7 @@ export default {
             this.modalMap = true;
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
         this.modalMap = true;
@@ -420,14 +412,14 @@ export default {
         if (valid) {
           storeAddApi(this.formItem)
             .then(async (res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.isTemplate = false;
               this.$parent.getList();
               this.$refs[name].resetFields();
               this.clearFrom();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;

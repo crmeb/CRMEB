@@ -3,9 +3,9 @@
  * @param params
  * @return {*}
  */
-export function get{%nameStudly%}ListApi(params) {
+export function get{%NAME_STUDLY%}ListApi(params) {
     return request({
-        url: '{%route%}',
+        url: '{%ROUTE%}',
         method: 'get',
         params,
     });

@@ -1,9 +1,9 @@
 <template>
-  <Card :bordered="false" dis-hover class="ivu-mt">
-    <Row>
-      <Col v-if="statisticsData" class="br" v-bind="grid">
+  <el-card :bordered="false" shadow="never" class="ivu-mt">
+    <el-row>
+      <el-col v-if="statisticsData" class="br" v-bind="grid">
         <div>
-          <div class="title mb15">今日订单金额</div>
+          <h4 class="title mb15">今日订单金额</h4>
           <div class="price">
             ￥<i>{{ statisticsData.left.series[0].money }}</i>
           </div>
@@ -17,8 +17,8 @@
           :option-data="optionData"
           :styles="style"
         />
-      </Col>
-      <Col v-if="statisticsData" v-bind="grid">
+      </el-col>
+      <el-col v-if="statisticsData" v-bind="grid">
         <div class="pl25">
           <div class="toDay">
             <span class="toDay-title spBlock mb10">今日订单数</span>
@@ -29,9 +29,9 @@
               <i class="content-is" :class="Number(statisticsData.right.today.series[0].rate) >= 0 ? 'up' : 'down'"
                 >{{ Math.floor(statisticsData.right.today.series[0].rate) }}%</i
               >
-              <Icon
-                :color="Number(statisticsData.right.today.series[0].rate) >= 0 ? '#F5222D' : '#39C15B'"
-                :type="Number(statisticsData.right.today.series[0].rate) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
+              <i
+                  :style="{'color':Number(statisticsData.right.today.series[0].rate) >= 0 ? '#F5222D' : '#39C15B'}"
+                  :class="[Number(statisticsData.right.today.series[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
               />
             </span>
             <echarts-new
@@ -51,9 +51,9 @@
               <i class="content-is" :class="Number(statisticsData.right.month[0].rate) >= 0 ? 'up' : 'down'"
                 >{{ Math.floor(statisticsData.right.month[0].rate) }}%</i
               >
-              <Icon
-                :color="Number(statisticsData.right.month[0].rate) >= 0 ? '#F5222D' : '#39C15B'"
-                :type="Number(statisticsData.right.month[0].rate) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
+              <i
+                  :style="{'color':Number(statisticsData.right.month[0].rate) >= 0 ? '#F5222D' : '#39C15B'}"
+                  :class="[Number(statisticsData.right.month[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
               />
             </span>
           </div>
@@ -66,9 +66,9 @@
               <i class="content-is" :class="Number(statisticsData.right.today.series[1].rate) >= 0 ? 'up' : 'down'"
                 >{{ Math.floor(statisticsData.right.today.series[1].rate) }}%</i
               >
-              <Icon
-                :color="Number(statisticsData.right.today.series[1].rate) >= 0 ? '#F5222D' : '#39C15B'"
-                :type="Number(statisticsData.right.today.series[1].rate) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
+              <i
+                  :style="{'color':Number(statisticsData.right.today.series[1].rate) >= 0 ? '#F5222D' : '#39C15B'}"
+                  :class="[Number(statisticsData.right.today.series[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
               />
             </span>
             <echarts-new
@@ -88,16 +88,16 @@
               <i class="content-is" :class="Number(statisticsData.right.month[1].rate) >= 0 ? 'up' : 'down'"
                 >{{ Math.floor(statisticsData.right.month[1].rate) }}%</i
               >
-              <Icon
-                :color="Number(statisticsData.right.month[1].rate) >= 0 ? '#F5222D' : '#39C15B'"
-                :type="Number(statisticsData.right.month[1].rate) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
+              <i
+                  :style="{'color':Number(statisticsData.right.month[1].rate) >= 0 ? '#F5222D' : '#39C15B'}"
+                  :class="[Number(statisticsData.right.month[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
               />
             </span>
           </div>
         </div>
-      </Col>
-    </Row>
-  </Card>
+      </el-col>
+    </el-row>
+  </el-card>
 </template>
 
 <script>
@@ -430,7 +430,7 @@ export default {
         })
         .catch((res) => {
           this.listLoading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     getOrder() {},

@@ -18,30 +18,22 @@ Route::group('v2', function () {
     //无需授权接口
     Route::group(function () {
         Route::group(function () {
-
-
-            //公众号授权登录
-            Route::get('wechat/auth', 'v2.wechat.WechatController/auth')->option(['real_name' => '公众号授权登录']);
-            //小程序授权
-            Route::get('wechat/routine_auth', 'v2.wechat.AuthController/auth')->option(['real_name' => '小程序授权']);
-            //小程序静默授权
-            Route::get('wechat/silence_auth', 'v2.wechat.AuthController/silenceAuthNoLogin')->option(['real_name' => '小程序静默授权']);
-            //小程序静默授权登陆
-            Route::get('wechat/silence_auth_login', 'v2.wechat.AuthController/silenceAuth')->option(['real_name' => '小程序静默授权登陆']);
-            //公众号静默授权
-            Route::get('wechat/wx_silence_auth', 'v2.wechat.WechatController/silenceAuthNoLogin')->option(['real_name' => '公众号静默授权']);
-            //公众号静默授权登陆
-            Route::get('wechat/wx_silence_auth_login', 'v2.wechat.WechatController/silenceAuth')->option(['real_name' => '公众号静默授权登陆']);
-            //是否强制绑定手机号
-            Route::get('bind_status', 'v2.PublicController/bindPhoneStatus')->option(['real_name' => '是否强制绑定手机号']);
+            //小程序登录页面自动加载，返回用户信息的缓存key，返回是否强制绑定手机号
+            Route::get('routine/auth_type', 'v2.wechat.AuthController/authType')->option(['real_name' => '小程序页面登录类型']);
+            //小程序授权登录，返回token
+            Route::get('routine/auth_login', 'v2.wechat.AuthController/authLogin')->option(['real_name' => '小程序授权登录']);
             //小程序授权绑定手机号
-            Route::post('auth_bindind_phone', 'v2.wechat.AuthController/authBindingPhone')->option(['real_name' => '小程序授权绑定手机号']);
+            Route::post('routine/auth_binding_phone', 'v2.wechat.AuthController/authBindingPhone')->option(['real_name' => '小程序授权绑定手机号']);
+            //小程序手机号直接登录
+            Route::post('routine/phone_login', 'v2.wechat.AuthController/phoneLogin')->option(['real_name' => '手机号直接登录']);
             //小程序授权后绑定手机号
             Route::post('routine/binding_phone', 'v2.wechat.AuthController/BindingPhone')->option(['real_name' => '小程序授权后绑定手机号']);
-            //小程序手机号登录直接绑定
-            Route::post('phone_silence_auth', 'v2.wechat.AuthController/silenceAuthBindingPhone')->option(['real_name' => '小程序手机号登录直接绑定']);
-            //微信手机号登录直接绑定
-            Route::post('phone_wx_silence_auth', 'v2.wechat.WechatController/silenceAuthBindingPhone')->option(['real_name' => '微信手机号登录直接绑定']);
+
+            //公众号授权登录，返回token
+            Route::get('wechat/auth_login', 'v2.wechat.WechatController/authLogin')->option(['real_name' => '公众号授权登录']);
+            //公众号授权绑定手机号
+            Route::post('wechat/auth_binding_phone', 'v2.wechat.WechatController/authBindingPhone')->option(['real_name' => '小程序授权绑定手机号']);
+
         })->option(['mark' => 'wechat_auto', 'mark_name' => '微信授权']);
 
         Route::group(function () {
@@ -59,8 +51,6 @@ Route::group('v2', function () {
 
         Route::post('reset_cart', 'v2.store.StoreCartController/resetCart')->name('resetCart')->option(['real_name' => '清除购物车', 'mark' => 'cart', 'mark_name' => '购物车']);
         Route::get('new_coupon', 'v2.store.StoreCouponsController/getNewCoupon')->name('getNewCoupon')->option(['real_name' => '获取新人券', 'mark' => 'coupons', 'mark_name' => '优惠券']);//获取新人券
-//        Route::get('get_today_coupon', 'v2.store.StoreCouponsController/getTodayCoupon');//新优惠券弹窗接口
-        Route::post('user/user_update', 'v2.wechat.AuthController/updateInfo')->option(['real_name' => '修改用户信息', 'mark' => 'user', 'mark_name' => '用户']);
         Route::post('order/product_coupon/:orderId', 'v2.store.StoreCouponsController/getOrderProductCoupon')->option(['real_name' => '获取订单下管理的优惠券', 'mark' => 'coupons', 'mark_name' => '优惠券']);
         Route::get('user/service/record', 'v2.user.StoreService/record')->name('userServiceRecord')->option(['real_name' => '客服聊天记录', 'parent' => 'user', 'cate_name' => '客服']);//客服聊天记录
         Route::get('cart_list', 'v2.store.StoreCartController/getCartList')->option(['real_name' => '获取购物车列表', 'mark' => 'cart', 'mark_name' => '购物车']);

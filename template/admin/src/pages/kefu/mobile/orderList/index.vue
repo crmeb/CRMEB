@@ -8,7 +8,7 @@
         <div class="item" :class="where.type === -1 ? 'on' : ''" @click="changeStatus(-1)">退款中</div>
       </div>
       <div class="input-box">
-        <Input placeholder="搜索订单编号" v-model="where.search" @on-enter="bindSearch" />
+        <el-input placeholder="搜索订单编号" v-model="where.search" @on-enter="bindSearch" />
       </div>
     </div>
 

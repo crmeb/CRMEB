@@ -1,70 +1,86 @@
 <template>
-  <Row :gutter="24" class="dashboard-console-grid">
-    <Col v-bind="grid" class="ivu-mb" v-auth="['admin-user-user-index']">
-      <Card :bordered="false">
+  <el-row :gutter="16" class="dashboard-console-grid">
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['admin-user-user-index']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/user/list' }">
-          <Icon type="md-people" color="#69c0ff" />
+          <div class="icon">
+            <i class="iconfont iconyonghuguanli" style="color: #0256ff"></i>
+          </div>
           <p>用户管理</p>
         </router-link>
-      </Card>
-    </Col>
-    <Col v-bind="grid" class="ivu-mb" v-auth="['setting-system-config']">
-      <Card :bordered="false">
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['setting-system-config']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/setting/system_config' }">
-          <Icon type="md-settings" color="#95de64" />
+          <div class="icon">
+            <i class="iconfont iconxitongshezhi" style="color: #9fdb1d"></i>
+          </div>
           <p>系统设置</p>
         </router-link>
-      </Card>
-    </Col>
-    <Col v-bind="grid" class="ivu-mb" v-auth="['admin-store-storeProuduct-index']">
-      <Card :bordered="false">
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['admin-store-storeProuduct-index']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/product/product_list' }">
-          <Icon type="md-cart" color="#ff9c6e" />
+          <div class="icon">
+            <i class="iconfont iconshangpin" style="color: #0fc6c2"></i>
+          </div>
           <p>商品</p>
         </router-link>
-      </Card>
-    </Col>
-    <Col v-bind="grid" class="ivu-mb" v-auth="['admin-order-storeOrder-index']">
-      <Card :bordered="false">
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['admin-order-storeOrder-index']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/order/list' }">
-          <Icon type="md-clipboard" color="#b37feb" />
+          <div class="icon">
+            <i class="iconfont icondingdanguanli" style="color: #b37feb"></i>
+          </div>
           <p>订单管理</p>
         </router-link>
-      </Card>
-    </Col>
-    <Col v-bind="grid" class="ivu-mb" v-auth="['setting-sms']">
-      <Card :bordered="false">
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['setting-sms']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/setting/sms/sms_config/index' }">
-          <Icon type="md-mail" color="#ffd666" />
+          <div class="icon">
+            <i class="iconfont iconduanxinpeizhi" style="color: #f7ba1e"></i>
+          </div>
           <p>短信配置</p>
         </router-link>
-      </Card>
-    </Col>
-    <Col v-bind="grid" class="ivu-mb" v-auth="['cms-article-index']">
-      <Card :bordered="false">
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['cms-article-index']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/cms/article/index' }">
-          <Icon type="md-card" color="#5cdbd3" />
+          <div class="icon">
+            <i class="iconfont iconwenzhangguanli" style="color: #7da2ff"></i>
+          </div>
           <p>文章管理</p>
         </router-link>
-      </Card>
-    </Col>
-    <Col v-bind="grid" class="ivu-mb" v-auth="['agent-agent-manage']">
-      <Card :bordered="false">
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['agent-agent-manage']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/agent/agent_manage/index' }">
-          <Icon type="md-pricetags" color="#ff85c0" />
+          <div class="icon">
+            <i class="iconfont iconfenxiaoguanli" style="color: #ff7d00"></i>
+          </div>
           <p>分销管理</p>
         </router-link>
-      </Card>
-    </Col>
-    <Col v-bind="grid" class="ivu-mb" v-auth="['marketing-store_coupon-index']">
-      <Card :bordered="false">
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['marketing-store_coupon-index']">
+      <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/marketing/store_coupon_issue/index' }">
-          <Icon type="md-cash" color="#ffc069" />
+          <div class="icon">
+            <i class="iconfont iconyouhuiquan4" style="color: #0fc6c2"></i>
+          </div>
           <p>优惠券</p>
         </router-link>
-      </Card>
-    </Col>
-  </Row>
+      </el-card>
+    </el-col>
+  </el-row>
 </template>
 <script>
 export default {
@@ -72,31 +88,53 @@ export default {
     return {
       grid: {
         xl: 3,
-        lg: 6,
+        lg: 3,
         md: 6,
-        sm: 8,
-        xs: 8,
+        sm: 6,
+        xs: 12,
       },
     };
   },
 };
 </script>
 <style lang="less">
+.el-tag {
+  color: var(--prev-color-primary) !important;
+  background-color: #fff !important;
+  border-color: var(--prev-color-primary-light-6) !important;
+}
 .dashboard-console-grid {
   text-align: center;
   .ivu-card-body {
     padding: 0;
   }
+  .icon {
+    width: 48px;
+    height: 48px;
+    background-color: #f6f6f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   i {
-    font-size: 32px;
+    font-size: 24px;
   }
   a {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     color: inherit;
     padding: 16px;
   }
   p {
     margin-top: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #333333;
+    line-height: 22px;
+    white-space: nowrap;
   }
 }
 </style>

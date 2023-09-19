@@ -37,7 +37,6 @@ use app\Request;
 use crmeb\services\CacheService;
 use app\services\other\UploadService;
 use crmeb\services\workerman\ChannelService;
-use think\facade\Cache;
 
 /**
  * 公共类
@@ -117,6 +116,9 @@ class PublicController
     public function getSiteConfig()
     {
         $data['record_No'] = sys_config('record_No');
+        $data['icp_url'] = sys_config('icp_url');
+        $data['network_security'] = sys_config('network_security');
+        $data['network_security_url'] = sys_config('network_security_url');
         return app('json')->success($data);
     }
 
@@ -217,8 +219,8 @@ class PublicController
     /**
      * 图片上传
      * @param Request $request
+     * @param SystemAttachmentServices $services
      * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function upload_image(Request $request, SystemAttachmentServices $services)
     {
@@ -226,7 +228,7 @@ class PublicController
             ['filename', 'file'],
         ]);
         if (!$data['filename']) return app('json')->fail(100100);
-        if (Cache::has('start_uploads_' . $request->uid()) && Cache::get('start_uploads_' . $request->uid()) >= 100) return app('json')->fail(100101);
+        if (CacheService::has('start_uploads_' . $request->uid()) && CacheService::get('start_uploads_' . $request->uid()) >= 100) return app('json')->fail(100101);
         $upload = UploadService::init();
         $info = $upload->to('store/comment')->validate()->move($data['filename']);
         if ($info === false) {
@@ -234,12 +236,12 @@ class PublicController
         }
         $res = $upload->getUploadInfo();
         $services->attachmentAdd($res['name'], $res['size'], $res['type'], $res['dir'], $res['thumb_path'], 1, (int)sys_config('upload_type', 1), $res['time'], 3);
-        if (Cache::has('start_uploads_' . $request->uid()))
-            $start_uploads = (int)Cache::get('start_uploads_' . $request->uid());
+        if (CacheService::has('start_uploads_' . $request->uid()))
+            $start_uploads = (int)CacheService::get('start_uploads_' . $request->uid());
         else
             $start_uploads = 0;
         $start_uploads++;
-        Cache::set('start_uploads_' . $request->uid(), $start_uploads, 86400);
+        CacheService::set('start_uploads_' . $request->uid(), $start_uploads, 86400);
         $res['dir'] = path_to_url($res['dir']);
         if (strpos($res['dir'], 'http') === false) $res['dir'] = $request->domain() . $res['dir'];
         return app('json')->success(100009, ['name' => $res['name'], 'url' => $res['dir']]);
@@ -643,7 +645,8 @@ class PublicController
      */
     public function getVersion()
     {
-        return app('json')->success(['version' => get_crmeb_version()]);
+        $version = parse_ini_file(app()->getRootPath() . '.version');
+        return app('json')->success(['version' => $version['version'], 'version_code' => $version['version_code']]);
     }
 
     /**
@@ -685,6 +688,9 @@ class PublicController
         $data['yue_pay_status'] = sys_config('yue_pay_status') == 1 && sys_config('balance_func_status') != 0;//余额是否启用
         $data['offline_pay_status'] = sys_config('offline_pay_status') == 1;//线下是否启用
         $data['friend_pay_status'] = sys_config('friend_pay_status') == 1;//好友是否启用
+        $data['wechat_auth_switch'] = (int)in_array(1, sys_config('routine_auth_type'));//微信登录开关
+        $data['phone_auth_switch'] = (int)in_array(2, sys_config('routine_auth_type'));//手机号登录开关
+        $data['wechat_status'] = sys_config('wechat_appid') != '' && sys_config('wechat_appsecret') != '';//公众号是否配置
         return app('json')->success($data);
     }
 }

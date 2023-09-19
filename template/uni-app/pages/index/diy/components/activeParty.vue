@@ -54,16 +54,7 @@
 		methods: {
 			goDetail(item) {
 				let urls = item.info[2].value
-				if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index']
-					.indexOf(urls) == -1) {
-					uni.navigateTo({
-						url: urls
-					})
-				} else {
-					uni.switchTab({
-						url: urls
-					})
-				}
+				this.$util.JumpPath(urls);
 			}
 		}
 	}

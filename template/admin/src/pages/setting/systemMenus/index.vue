@@ -1,37 +1,38 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="roleData"
-        :model="roleData"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <!-- <Col v-bind="grid">
-            <FormItem label="规则状态：">
-              <Select v-model="roleData.is_show" placeholder="请选择" clearable @on-change="getData">
-                <Option value="1">显示</Option>
-                <Option value="0">不显示</Option>
-              </Select>
-            </FormItem>
-          </Col> -->
-          <Col v-bind="grid">
-            <FormItem label="按钮名称：" prop="status2" label-for="status2">
-              <Input v-model="roleData.keyword" search enter-button placeholder="请输入按钮名称" @on-search="getData" />
-            </FormItem>
-          </Col>
-        </Row>
-        <!-- <Row type="flex">
-          <Col v-bind="grid">
-            <Button type="primary" @click="menusAdd('添加规则')" icon="md-add">添加规则 </Button>
-          </Col>
-        </Row> -->
-      </Form>
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="roleData"
+            :model="roleData"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="按钮名称：" prop="status2" label-for="status2">
+            <el-input
+                clearable
+                v-model="roleData.keyword"
+                placeholder="请输入按钮名称"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="getData">查询</el-button>
+          </el-form-item>
+          <!-- <el-row >
+            <el-col v-bind="grid">
+              <el-button type="primary" @click="menusAdd('添加规则')">添加规则 </el-button>
+            </el-col>
+          </el-row> -->
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
       <vxe-table
         :border="false"
-        class="vxeTable mt25"
+        class="vxeTable"
         highlight-hover-row
         highlight-current-row
         :loading="loading"
@@ -52,17 +53,15 @@
         <vxe-table-column field="sort" title="排序" width="150"></vxe-table-column>
         <vxe-table-column field="flag" title="是否显示" width="150">
           <template v-slot="{ row }">
-            <i-switch
+            <el-switch
+              :active-value="1"
+              :inactive-value="0"
               v-model="row.is_show_path"
               :value="row.is_show_path"
-              :true-value="1"
-              :false-value="0"
-              @on-change="onchangeIsShow(row)"
+              @change="onchangeIsShow(row)"
               size="large"
             >
-              <span slot="open">显示</span>
-              <span slot="close">隐藏</span>
-            </i-switch>
+            </el-switch>
           </template>
         </vxe-table-column>
         <vxe-table-column field="date" title="操作" align="center" width="150" fixed="right">
@@ -71,7 +70,7 @@
           </template>
         </vxe-table-column>
       </vxe-table>
-    </Card>
+    </el-card>
     <menus-from
       :formValidate="formValidate"
       :titleFrom="titleFrom"
@@ -80,20 +79,12 @@
       ref="menusFrom"
       @clearFrom="clearFrom"
     ></menus-from>
-    <Modal
-      v-model="ruleModal"
-      scrollable
-      width="1100"
-      title="权限列表"
-      @on-ok="addRouters"
-      @on-cancel="ruleModal = false"
-      @on-visible-change="modalchange"
-    >
+    <el-dialog :visible.sync="ruleModal" width="1100px" title="权限列表" @closed="modalchange">
       <div class="search-rule">
-        <Alert
-          >基础接口，可多选，并且添加后不会再展示出现；删除权限后才会出现；公共接口，可多选，并且添加后会继续展示；</Alert
-        >
-        <Input
+        <el-alert
+          title="基础接口，可多选，并且添加后不会再展示出现；删除权限后才会出现；公共接口，可多选，并且添加后会继续展示；"
+        ></el-alert>
+        <el-input
           class="mr10"
           v-model="searchRule"
           placeholder="输入关键词搜索"
@@ -103,8 +94,8 @@
           @on-enter="searchRules"
           @on-clear="searchRules"
         />
-        <Button class="mr10" type="primary" @click="searchRules">搜索</Button>
-        <Button @click="init">重置</Button>
+        <el-button class="mr10" type="primary" @click="searchRules">搜索</el-button>
+        <el-button @click="init">重置</el-button>
       </div>
       <div class="route-list">
         <div class="tree">
@@ -134,10 +125,14 @@
           </div>
         </div>
       </div>
-      <!-- <Tabs v-model="routeType" @on-click="changTab">
-        <TabPane :label="item.name" :name="'' + index" v-for="(item, index) in foundationList" :key="item"></TabPane>
-      </Tabs> -->
-    </Modal>
+      <!-- <el-tabs v-model="routeType" @on-click="changTab">
+        <el-tab-pane :label="item.name" :name="'' + index" v-for="(item, index) in foundationList" :key="item"></el-tab-pane>
+      </el-tabs> -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="ruleModal = false">取 消</el-button>
+        <el-button type="primary" @click="addRouters">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -153,7 +148,7 @@ import {
   getMenusUnique,
   menusRuleCate,
 } from '@/api/systemMenus';
-import formCreate from '@form-create/iview';
+import formCreate from '@form-create/element-ui';
 import menusFrom from './components/menusFrom';
 import { formatFlatteningRoutes, findFirstNonNullChildren, findFirstNonNullChildrenKeys } from '@/libs/system';
 
@@ -206,7 +201,7 @@ export default {
   computed: {
     ...mapState('admin/layout', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -229,7 +224,7 @@ export default {
           this.getData();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     selectRule(data) {
@@ -313,11 +308,11 @@ export default {
       };
       isShowApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.$store.dispatch('menus/getMenusNavList');
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 请求列表
@@ -348,7 +343,7 @@ export default {
             this.formValidate.is_show_path = 0;
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
         this.formValidate.pid = pid;
@@ -377,13 +372,13 @@ export default {
 
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getData();
           this.getMenusUnique();
           // this.$store.dispatch('menus/getMenusNavList');
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 规则详情
@@ -394,7 +389,7 @@ export default {
           this.$refs.menusFrom.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 编辑
@@ -426,7 +421,7 @@ export default {
     //         this.spinShow = false;
     //     }).catch(res => {
     //         this.spinShow = false;
-    //         this.$Message.error(res.msg);
+    //         this.$message.error(res.msg);
     //     })
     // },
     // 列表
@@ -439,11 +434,10 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     changeMenu(data) {
-      console.log(data)
       this.changeData(this.tableData, data);
       this.getMenusUnique();
     },
@@ -454,7 +448,6 @@ export default {
           arrKey.map((el) => {
             e[el] = data[el];
           });
-          console.log(e);
         } else if (e.children) {
           this.changeData(e.children, data);
         }

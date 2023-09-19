@@ -5,10 +5,10 @@
       :visible.sync="getThemeConfig.isDrawer"
       direction="rtl"
       destroy-on-close
-      size="300px"
+      size="320px"
       @close="onDrawerClose"
     >
-      <el-scrollbar class="layout-breadcrumb-seting-bar">
+      <el-scrollbar class="layout-breadcrumb-seting-bar el-main">
         <!-- 布局切换 -->
         <el-divider :content-position="contentPosotion">{{ $t('message.layout.sixTitle') }}</el-divider>
         <div class="layout-drawer-content-flex">
@@ -25,12 +25,8 @@
                 <main class="el-main"></main>
               </section>
             </section>
-            <!-- <div class="layout-tips-warp" :class="{ 'layout-tips-warp-active': getThemeConfig.layout === 'defaults' }">
-              <div class="layout-tips-box">
-                <p class="layout-tips-txt">{{ $t('message.layout.sixDefaults') }}</p>
-              </div>
-            </div> -->
           </div>
+
           <!-- columns 布局 -->
           <div
             class="layout-drawer-content-item"
@@ -45,11 +41,6 @@
                 <main class="el-main"></main>
               </section>
             </section>
-            <!-- <div class="layout-tips-warp" :class="{ 'layout-tips-warp-active': getThemeConfig.layout === 'columns' }">
-              <div class="layout-tips-box">
-                <p class="layout-tips-txt">{{ $t('message.layout.sixColumns') }}</p>
-              </div>
-            </div> -->
           </div>
           <!-- classic 布局 -->
           <div
@@ -66,11 +57,6 @@
                 </section>
               </section>
             </section>
-            <!-- <div class="layout-tips-warp" :class="{ 'layout-tips-warp-active': getThemeConfig.layout === 'classic' }">
-              <div class="layout-tips-box">
-                <p class="layout-tips-txt">{{ $t('message.layout.sixClassic') }}</p>
-              </div>
-            </div> -->
           </div>
 
           <!-- transverse 布局 -->
@@ -87,39 +73,8 @@
                 </section>
               </section>
             </section>
-            <!-- <div
-              class="layout-tips-warp"
-              :class="{ 'layout-tips-warp-active': getThemeConfig.layout === 'transverse' }"
-            >
-              <div class="layout-tips-box">
-                <p class="layout-tips-txt">{{ $t('message.layout.sixTransverse') }}</p>
-              </div>
-            </div> -->
           </div>
         </div>
-        <!-- 全局主题 -->
-        <!-- <el-divider :content-position="contentPosotion">{{ $t('message.layout.oneTitle') }}</el-divider>
-        <div class="layout-breadcrumb-seting-bar-flex">
-          <div class="layout-breadcrumb-seting-bar-flex-label">primary</div>
-          <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-color-picker v-model="getThemeConfig.primary" size="small" @change="onColorPickerChange">
-            </el-color-picker>
-          </div>
-        </div>
-        <div class="layout-breadcrumb-seting-bar-flex">
-          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.menuBag') }}</div>
-          <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-color-picker v-model="getThemeConfig.menuBgColor" size="small" @change="onMenuBgColorChange">
-            </el-color-picker>
-          </div>
-        </div>
-        <div class="layout-breadcrumb-seting-bar-flex mt15">
-          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsDark') }}</div>
-          <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isIsDark" :width="35" @change="onAddDarkChange"></el-switch>
-          </div>
-        </div> -->
-
         <!-- 界面设置 -->
         <el-divider :content-position="contentPosotion">{{ $t('message.layout.threeTitle') }}</el-divider>
         <div class="layout-breadcrumb-seting-bar-flex mb10">
@@ -144,22 +99,23 @@
             </el-select>
           </div>
         </div>
-        <div class="layout-breadcrumb-seting-bar-flex">
+
+        <div class="layout-breadcrumb-seting-bar-flex" v-if="getThemeConfig.layout === 'columns' || getThemeConfig.layout === 'defaults'">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsCollapse') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isCollapse" :width="35" @change="setLocalThemeConfig"></el-switch>
+            <el-switch v-model="getThemeConfig.isCollapse" :width="35" @change="setLocalThemeConfig"> </el-switch>
           </div>
         </div>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsUniqueOpened') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isUniqueOpened" :width="35" @change="setLocalThemeConfig"></el-switch>
+            <el-switch v-model="getThemeConfig.isUniqueOpened" :width="35" @change="setLocalThemeConfig"> </el-switch>
           </div>
         </div>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsFixedHeader') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isFixedHeader" :width="35" @change="setLocalThemeConfig"></el-switch>
+            <el-switch v-model="getThemeConfig.isFixedHeader" :width="35" @change="setLocalThemeConfig"> </el-switch>
           </div>
         </div>
 
@@ -168,7 +124,7 @@
         <div class="layout-breadcrumb-seting-bar-flex">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsShowLogo') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isShowLogo" :width="35" @change="setLocalThemeConfig"></el-switch>
+            <el-switch v-model="getThemeConfig.isShowLogo" :width="35" @change="setLocalThemeConfig"> </el-switch>
           </div>
         </div>
         <div
@@ -182,77 +138,53 @@
               :disabled="getThemeConfig.layout === 'classic' || getThemeConfig.layout === 'transverse'"
               :width="35"
               @change="setLocalThemeConfig"
-            ></el-switch>
+            >
+            </el-switch>
           </div>
         </div>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsBreadcrumbIcon') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isBreadcrumbIcon" :width="35" @change="setLocalThemeConfig"></el-switch>
+            <el-switch v-model="getThemeConfig.isBreadcrumbIcon" :width="35" @change="setLocalThemeConfig"> </el-switch>
           </div>
         </div>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsTagsview') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isTagsview" :width="35" @change="setLocalThemeConfig"></el-switch>
+            <el-switch v-model="getThemeConfig.isTagsview" :width="35" @change="setLocalThemeConfig"> </el-switch>
           </div>
         </div>
-        <!-- <div class="layout-breadcrumb-seting-bar-flex mt15">
-          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsTagsviewIcon') }}</div>
-          <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch
-              v-model="getThemeConfig.isTagsviewIcon"
-              :disabled="!getThemeConfig.isTagsview"
-              :width="35"
-              @change="setLocalThemeConfig"
-            ></el-switch>
-          </div>
-        </div> -->
-        <!-- <div class="layout-breadcrumb-seting-bar-flex mt15">
-          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsCacheTagsView') }}</div>
-          <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isCacheTagsView" :width="35" @change="setLocalThemeConfig"></el-switch>
-          </div>
-        </div> -->
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsFooter') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isFooter" :width="35" @change="setLocalThemeConfig"></el-switch>
+            <el-switch v-model="getThemeConfig.isFooter" :width="35" @change="setLocalThemeConfig"> </el-switch>
           </div>
         </div>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsGrayscale') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch
-              v-model="getThemeConfig.isGrayscale"
-              :width="35"
-              @change="onAddFilterChange('grayscale')"
-            ></el-switch>
+            <el-switch v-model="getThemeConfig.isGrayscale" :width="35" @change="onAddFilterChange('grayscale')">
+            </el-switch>
           </div>
         </div>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsInvert') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-switch v-model="getThemeConfig.isInvert" :width="35" @change="onAddFilterChange('invert')"></el-switch>
+            <el-switch v-model="getThemeConfig.isInvert" :width="35" @change="onAddFilterChange('invert')"> </el-switch>
           </div>
         </div>
-
+        <!-- 暗黑模式 -->
+        <!-- <div class="layout-breadcrumb-seting-bar-flex mt15">
+          <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsDark') }}</div>
+          <div class="layout-breadcrumb-seting-bar-flex-value">
+            <el-switch v-model="getThemeConfig.isIsDark" :width="35" @change="onAddDarkChange"> </el-switch>
+          </div>
+        </div> -->
         <!-- 其它设置 -->
         <el-divider :content-position="contentPosotion">{{ $t('message.layout.fiveTitle') }}</el-divider>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveTagsStyle') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <!-- <el-select
-              v-model="getThemeConfig.tagsStyle"
-              placeholder="请选择"
-              size="mini"
-              style="width: 90px"
-              @change="setLocalThemeConfig"
-            >
-              <el-option label="风格1" value="tags-style-one"></el-option>
-              <el-option label="风格2" value="tags-style-four"></el-option>
-              <el-option label="风格3" value="tags-style-five"></el-option>
-            </el-select> -->
             <el-radio-group
               v-model="getThemeConfig.tagsStyle"
               :disabled="!getThemeConfig.isTagsview"
@@ -268,7 +200,7 @@
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveAnimation') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-radio-group v-model="getThemeConfig.animation" size="mini" @change="setLocalThemeConfig">
+            <el-radio-group v-model="getThemeConfig.animation" size="mini" @input="setLocalThemeConfig">
               <el-radio-button label="slide-left">左滑</el-radio-button>
               <el-radio-button label="opacitys">透明</el-radio-button>
               <el-radio-button label="slide-right">右滑</el-radio-button>
@@ -281,7 +213,7 @@
         >
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideStyle') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-radio-group v-model="getThemeConfig.columnsAsideStyle" size="mini" @change="setLocalThemeConfig">
+            <el-radio-group v-model="getThemeConfig.columnsAsideStyle" size="mini" @input="setLocalThemeConfig">
               <el-radio-button label="columns-round">圆角</el-radio-button>
               <el-radio-button label="columns-card">卡片</el-radio-button>
             </el-radio-group>
@@ -293,33 +225,12 @@
         >
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideLayout') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-radio-group v-model="getThemeConfig.columnsAsideLayout" size="mini" @change="setLocalThemeConfig">
+            <el-radio-group v-model="getThemeConfig.columnsAsideLayout" size="mini" @input="setLocalThemeConfig">
               <el-radio-button label="columns-horizontal">水平</el-radio-button>
               <el-radio-button label="columns-vertical">垂直</el-radio-button>
             </el-radio-group>
           </div>
         </div>
-        <!-- <div class="copy-config">
-          <el-alert :title="$t('message.layout.tipText')" type="warning" :closable="false"> </el-alert>
-          <el-button
-            size="small"
-            class="copy-config-btn"
-            icon="el-icon-document-copy"
-            type="primary"
-            ref="copyConfigBtnRef"
-            @click="onCopyConfigClick"
-            >{{ $t('message.layout.copyText') }}
-          </el-button>
-          <el-button
-            size="small"
-            class="copy-config-btn-reset"
-            type="info"
-            icon="el-icon-refresh-right"
-            @click="onResetConfigClick"
-          >
-            {{ $t('message.layout.resetText') }}
-          </el-button>
-        </div> -->
       </el-scrollbar>
     </el-drawer>
   </div>
@@ -346,7 +257,6 @@ export default {
   },
   created() {
     // 判断当前布局是否不相同，不相同则初始化当前布局的样式，防止监听窗口大小改变时，布局配置logo、菜单背景等部分布局失效问题
-    if (!Local.get('frequency')) this.initSetLayoutChange();
     Local.set('frequency', 1);
     // 监听窗口大小改变，非默认布局，设置成默认布局（适配移动端）
     this.bus.$on('layoutMobileResize', (res) => {
@@ -354,7 +264,6 @@ export default {
       this.$store.state.themeConfig.themeConfig.layout = res.layout;
       this.$store.state.themeConfig.themeConfig.isDrawer = false;
       this.$store.state.themeConfig.themeConfig.isCollapse = false;
-      this.initSetLayoutChange();
     });
     this.setLocalTheme(this.$store.state.themeConfig.themeConfig.themeStyle);
   },
@@ -364,7 +273,7 @@ export default {
   methods: {
     // 全局主题
     onColorPickerChange() {
-      if (!this.getThemeConfig.primary) return;
+      // if (!this.getThemeConfig.primary) return;
       // 颜色加深
       // document.documentElement.style.setProperty('--prev-color-primary', this.getThemeConfig.primary);
       // 颜色变浅
@@ -378,98 +287,113 @@ export default {
     },
     setLocalTheme(val) {
       let themeSelect = themeList[val];
-      if (['theme-1', 'theme-3', 'theme-5', 'theme-7'].includes(val)) {
-        // 这几个为黑色背景主题
-        themeSelect['--prev-border-color-lighter'] = '#ebeef5';
 
-        if (['classic', 'transverse'].includes(this.getThemeConfig.layout)) {
-          themeSelect['--prev-bg-topBar'] = '#282c34';
-          themeSelect['--prev-bg-topBarColor'] = '#fff';
-          themeSelect['--prev-bg-menuBarColor'] = '#fff';
-          themeSelect['--prev-MenuActiveColor'] = '#fff';
-          if (val == 'theme-1') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#1890ff';
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-border-color-lighter'] = '#282c34';
-          } else if (val == 'theme-3') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#41b584';
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-border-color-lighter'] = '#282c34';
-          } else if (val == 'theme-5') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#6954f0';
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-border-color-lighter'] = '#282c34';
-          } else if (val == 'theme-7') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#f34d37';
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-border-color-lighter'] = '#282c34';
-          }
-        } else if (this.getThemeConfig.layout === 'columns') {
-          themeSelect['--prev-bg-topBar'] = '#fff';
-          themeSelect['--prev-bg-topBarColor'] = '#515a6e';
-          themeSelect['--prev-bg-menuBar'] = '#fff';
-          themeSelect['--prev-bg-menuBarColor'] = '#303133';
+      themeSelect['--prev-border-color-lighter'] = '#ebeef5';
+      console.log(this.getThemeConfig.layout);
+      if (['classic', 'transverse'].includes(this.getThemeConfig.layout)) { //第三和第四种布局
+        themeSelect['--prev-bg-topBar'] = '#282c34';
+        themeSelect['--prev-bg-topBarColor'] = '#fff';
+        themeSelect['--prev-bg-menuBarColor'] = '#fff';
+        themeSelect['--prev-MenuActiveColor'] = '#fff';
+        if (val == 'theme-1') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#0256FF';
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else if (val == 'theme-3') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#41b584';
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else if (val == 'theme-5') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#6954f0';
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else if (val == 'theme-7') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#f34d37';
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else {
           themeSelect['--prev-border-color-lighter'] = '#ebeef5';
 
-          if (val == 'theme-1') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#e8f4ff';
-            themeSelect['--prev-color-primary'] = '#1890ff';
-            themeSelect['--prev-MenuActiveColor'] = '#1890ff';
-          } else if (val == 'theme-3') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#ecf8f3';
-            themeSelect['--prev-color-primary'] = '#41b584';
-            themeSelect['--prev-MenuActiveColor'] = '#41b584';
-          } else if (val == 'theme-5') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#f0eefe';
-            themeSelect['--prev-color-primary'] = '#6954f0';
-            themeSelect['--prev-MenuActiveColor'] = '#6954f0';
-          } else if (val == 'theme-7') {
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#feedeb';
-            themeSelect['--prev-color-primary'] = '#f34d37';
-            themeSelect['--prev-MenuActiveColor'] = '#f34d37';
-          }
-        } else {
-          if (val == 'theme-1') {
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#1890ff';
-            themeSelect['--prev-color-primary'] = '#1890ff';
-            themeSelect['--prev-bg-topBarColor'] = '#282c34';
-            themeSelect['--prev-bg-topBar'] = '#fff';
-            themeSelect['--prev-bg-menuBarColor'] = '#fff';
-            themeSelect['--prev-MenuActiveColor'] = '#fff';
-          } else if (val == 'theme-3') {
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#41b584';
-            themeSelect['--prev-color-primary'] = '#41b584';
-            themeSelect['--prev-bg-topBar'] = '#fff';
-            themeSelect['--prev-bg-topBarColor'] = '#282c34';
-            themeSelect['--prev-bg-menuBarColor'] = '#fff';
-            themeSelect['--prev-MenuActiveColor'] = '#fff';
-          } else if (val == 'theme-5') {
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#6954f0';
-            themeSelect['--prev-bg-topBarColor'] = '#282c34';
-            themeSelect['--prev-color-primary'] = '#6954f0';
-            themeSelect['--prev-bg-topBar'] = '#fff';
-
-            themeSelect['--prev-bg-menuBarColor'] = '#fff';
-            themeSelect['--prev-MenuActiveColor'] = '#fff';
-          } else if (val == 'theme-7') {
-            themeSelect['--prev-bg-menuBar'] = '#282c34';
-            themeSelect['--prev-bg-topBar'] = '#fff';
-            themeSelect['--prev-bg-topBarColor'] = '#282c34';
-            themeSelect['--prev-bg-menu-hover-ba-color'] = '#f34d37';
-            themeSelect['--prev-color-primary'] = '#f34d37';
-            themeSelect['--prev-bg-menuBarColor'] = '#fff';
-            themeSelect['--prev-MenuActiveColor'] = '#fff';
-          }
+          themeSelect['--prev-bg-topBar'] = '#fff';
+          themeSelect['--prev-bg-topBarColor'] = '#515a6e';
+          themeSelect['--prev-bg-menuBarColor'] = '#515a6e';
+          themeSelect['--prev-MenuActiveColor'] = '#515a6e';
         }
-      } else {
+      } else if (this.getThemeConfig.layout === 'columns') { //第二种布局
+        themeSelect['--prev-bg-topBar'] = '#fff';
+        themeSelect['--prev-bg-topBarColor'] = '#515a6e';
+        themeSelect['--prev-bg-menuBar'] = '#fff';
+        themeSelect['--prev-bg-menuBarColor'] = '#303133';
         themeSelect['--prev-border-color-lighter'] = '#ebeef5';
+        if (val == 'theme-1') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#e8f4ff';
+          themeSelect['--prev-color-primary'] = '#0256FF';
+          themeSelect['--prev-MenuActiveColor'] = '#0256FF';
+        } else if (val == 'theme-3') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#ecf8f3';
+          themeSelect['--prev-color-primary'] = '#41b584';
+          themeSelect['--prev-MenuActiveColor'] = '#41b584';
+        } else if (val == 'theme-5') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#f0eefe';
+          themeSelect['--prev-color-primary'] = '#6954f0';
+          themeSelect['--prev-MenuActiveColor'] = '#6954f0';
+        } else if (val == 'theme-7') {
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#feedeb';
+          themeSelect['--prev-color-primary'] = '#f34d37';
+          themeSelect['--prev-MenuActiveColor'] = '#f34d37';
+        }
+      } else { //默认布局
+        if (val == 'theme-1') {
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-color-primary'] = '#0256FF';
+          themeSelect['--prev-bg-topBarColor'] = '#282c34';
+          themeSelect['--prev-bg-topBar'] = '#fff';
+          themeSelect['--prev-bg-menuBarColor'] = '#fff';
+          themeSelect['--prev-MenuActiveColor'] = '#fff';
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#0256FF';
+        } else if (val == 'theme-3') {
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-color-primary'] = '#41b584';
+          themeSelect['--prev-bg-topBar'] = '#fff';
+          themeSelect['--prev-bg-topBarColor'] = '#282c34';
+          themeSelect['--prev-bg-menuBarColor'] = '#fff';
+          themeSelect['--prev-MenuActiveColor'] = '#fff';
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#41b584';
+        } else if (val == 'theme-5') {
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-bg-topBarColor'] = '#282c34';
+          themeSelect['--prev-color-primary'] = '#6954f0';
+          themeSelect['--prev-bg-topBar'] = '#fff';
+          themeSelect['--prev-bg-menuBarColor'] = '#fff';
+          themeSelect['--prev-MenuActiveColor'] = '#fff';
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#6954f0';
+        } else if (val == 'theme-7') {
+          themeSelect['--prev-bg-menuBar'] = '#282c34';
+          themeSelect['--prev-bg-topBar'] = '#fff';
+          themeSelect['--prev-bg-topBarColor'] = '#282c34';
+          themeSelect['--prev-color-primary'] = '#f34d37';
+          themeSelect['--prev-bg-menuBarColor'] = '#fff';
+          themeSelect['--prev-MenuActiveColor'] = '#fff';
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#f34d37';
+        }
+      }
+      if (['theme-1', 'theme-2'].includes(val)) {
+        this.$store.state.themeConfig.themeConfig.primary = '#0256FF'; //蓝黑蓝白
+      } else if (['theme-3', 'theme-4'].includes(val)) {
+        this.$store.state.themeConfig.themeConfig.primary = '#41a584'; //绿黑绿白
+      } else if (['theme-5', 'theme-6'].includes(val)) {
+        this.$store.state.themeConfig.themeConfig.primary = '#6954f0'; //紫黑紫白
+      } else if (['theme-7', 'theme-8'].includes(val)) {
+        this.$store.state.themeConfig.themeConfig.primary = '#f34d37'; //红黑红白
+      } else {
+        this.$store.state.themeConfig.themeConfig.primary = '#0256FF'; //默认蓝
       }
       for (let key in themeSelect) {
         document.documentElement.style.setProperty(key, themeSelect[key]);
       }
+      this.$nextTick((e) => {
+        this.onColorPickerChange();
+      });
     },
     onMenuBgColorChange() {
       if (!this.getThemeConfig.menuBgColor) return;
@@ -547,33 +471,7 @@ export default {
       this.$store.state.themeConfig.themeConfig.layout = layout;
       this.$store.state.themeConfig.themeConfig.isDrawer = false;
       this.$store.state.themeConfig.themeConfig.columnsAsideStyle = 'columns-card';
-      // this.initSetLayoutChange();
       this.setLocalTheme(this.$store.state.themeConfig.themeConfig.themeStyle);
-    },
-    // 设置布局切换，重置主题样式
-    initSetLayoutChange() {
-      // if (this.$store.state.themeConfig.themeConfig.layout === 'classic') {
-      //   this.onBgColorPickerChange('menuBar', '#282c34');
-      //   this.onBgColorPickerChange('menuBarColor', '#ffffff');
-      //   this.onBgColorPickerChange('topBar', '#282c34');
-      //   this.onBgColorPickerChange('topBarColor', '#ffffff');
-      // } else if (this.$store.state.themeConfig.themeConfig.layout === 'transverse') {
-      //   this.onBgColorPickerChange('menuBarColor', '#ffffff');
-      //   this.onBgColorPickerChange('topBar', '#282c34');
-      //   this.onBgColorPickerChange('topBarColor', '#fff');
-      //   // this.onBgColorPickerChange('bgTopBarColor', '#ccc');
-      // } else if (this.$store.state.themeConfig.themeConfig.layout === 'columns') {
-      //   this.onBgColorPickerChange('menuBar', '#282c34');
-      //   this.onBgColorPickerChange('menuBarColor', '#fff');
-      //   this.onBgColorPickerChange('topBar', '#ffffff');
-      //   this.onBgColorPickerChange('topBarColor', '#606266');
-      //   this.onBgColorPickerChange('columnsMenuBar', '#282c34');
-      // } else {
-      //   this.onBgColorPickerChange('menuBar', '#282c34');
-      //   this.onBgColorPickerChange('menuBarColor', '#ffffff');
-      //   this.onBgColorPickerChange('topBar', '#ffffff');
-      //   this.onBgColorPickerChange('topBarColor', '#606266');
-      // }
     },
     // 菜单 / 顶栏背景等
     onBgColorPickerChange(bg, rgb) {
@@ -616,14 +514,18 @@ body .v-modal {
 .mr5 {
   margin-right: 5px;
 }
+/deep/ .el-drawer__header {
+  margin-bottom: 0;
+}
 /deep/ .el-radio-button--mini .el-radio-button__inner {
   padding: 7px 8px;
 }
 .layout-breadcrumb-seting-bar {
-  height: calc(100vh - 50px);
+  // height: calc(100vh - 50px);
   padding: 0 15px;
   ::v-deep .el-scrollbar__view {
-    overflow-x: hidden !important;
+    // overflow-x: auto !important;
+    overflow-x: hidden;
   }
   .layout-breadcrumb-seting-bar-flex {
     display: flex;

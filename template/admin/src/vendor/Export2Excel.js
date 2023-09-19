@@ -33,7 +33,7 @@ function generateArray(table) {
         }
       });
 
-      //Handle Row Span
+      //Handle el-row Span
       if (rowspan || colspan) {
         rowspan = rowspan || 1;
         colspan = colspan || 1;

@@ -706,7 +706,6 @@
 							let obj = res.data.productValue[key];
 							that.skuArr.push(obj);
 						}
-						console.log(that.skuArr)
 						that.$set(that, "selectSku", that.skuArr[0]);
 						var navList = [that.$t(`商品`), that.$t(`评价`), that.$t(`详情`)];
 						if (goodArray.length) {

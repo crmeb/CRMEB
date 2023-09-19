@@ -35,4 +35,14 @@ class WechatKey extends BaseModel
      * @var string
      */
     protected $name = 'wechat_key';
+
+    public function searchKeysAttr($query, $value)
+    {
+        if ($value) $query->where('keys', $value);
+    }
+
+    public function searchKeysLikeAttr($query, $value)
+    {
+        if ($value) $query->where('keys', 'like', '%' . $value . '%');
+    }
 }

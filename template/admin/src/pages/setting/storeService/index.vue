@@ -1,169 +1,161 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Row type="flex" class="mb20">
-        <Col span="24">
-          <Button v-auth="['setting-store_service-add']" type="primary" icon="md-add" @click="add" class="mr10"
-            >添加客服</Button
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-row class="mb20">
+        <el-col :span="24">
+          <el-button v-auth="['setting-store_service-add']" type="primary" @click="add" class="mr10"
+            >添加客服</el-button
           >
-        </Col>
-      </Row>
-      <Table
-        :columns="columns1"
+        </el-col>
+      </el-row>
+      <el-table
         :data="tableList"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="avatar">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.avatar" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">开启</span>
-            <span slot="close">关闭</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="stop_time">
-          <span> {{ row.stop_time | formatDate }}</span>
-        </template>
-
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除客服', index)">删除</a>
-          <Divider type="vertical" v-if="row.status" />
-          <a @click="goChat(row)" v-if="row.status">进入工作台</a>
-        </template>
-      </Table>
-      <div class="acea-row row-right page">
-        <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="tableFrom.limit" />
-      </div>
-    </Card>
-
-    <!--添加客户-->
-    <!--<Modal v-model="modals" scrollable   closable title="添加客服"  width="1000"  @on-cancel="cancel">-->
-    <!--<Form ref="formValidate" :model="formValidate" :label-width="labelWidth" :label-position="labelPosition" @submit.native.prevent>-->
-    <!--<Row :gutter="24" type="flex">-->
-    <!--<Col span="24" class="ivu-text-left">-->
-    <!--<FormItem label="选择时间：">-->
-    <!--<RadioGroup v-model="formValidate.data" type="button" @on-change="selectChange(formValidate.data)"-->
-    <!--class="mr">-->
-    <!--<Radio :label=item.val v-for="(item,i) in fromList.fromTxt" :key="i">{{item.text}}</Radio>-->
-    <!--</RadioGroup>-->
-    <!--<DatePicker @on-change="onchangeTime" :value="timeVal" format="yyyy/MM/dd" type="daterange"-->
-    <!--placement="bottom-end" placeholder="请选择时间" style="width: 200px;"></DatePicker>-->
-    <!--</FormItem>-->
-    <!--</Col>-->
-    <!--<Col span="12" class="ivu-text-left">-->
-    <!--<FormItem label="用户名称：" >-->
-    <!--<Input search enter-button  placeholder="请输入用户名称" v-model="formValidate.nickname" style="width: 90%;" @on-search="userSearchs"></Input>-->
-    <!--</FormItem>-->
-    <!--</Col>-->
-    <!--<Col span="12" class="ivu-text-left">-->
-    <!--<FormItem label="用户类型：" >-->
-    <!--<Select v-model="formValidate.type" style="width:90%;" @on-change="userSearchs">-->
-    <!--<Option value="">全部用户</Option>-->
-    <!--<Option value="wechat">公众号</Option>-->
-    <!--<Option value="routine">小程序</Option>-->
-    <!--</Select>-->
-    <!--</FormItem>-->
-    <!--</Col>-->
-    <!--</Row>-->
-    <!--</Form>-->
-    <!--<Table :loading="loading2" highlight-row no-userFrom-text="暂无数据" max-height="400"-->
-    <!--@on-selection-change="onSelectTab"-->
-    <!--no-filtered-userFrom-text="暂无筛选结果" ref="selection" :columns="columns4" :data="tableList2">-->
-    <!--<template slot-scope="{ row, index }" slot="headimgurl">-->
-    <!--<viewer>-->
-    <!--<div class="tabBox_img">-->
-    <!--<img v-lazy="row.headimgurl">-->
-    <!--</div>-->
-    <!--</viewer>-->
-    <!--</template>-->
-    <!--<template slot-scope="{ row, index }" slot="user_type">-->
-    <!--<span>{{ row.user_type | typeFilter }}</span>-->
-    <!--</template>-->
-    <!--<template slot-scope="{ row, index }" slot="sex">-->
-    <!--<span v-show="row.sex ===1">男</span>-->
-    <!--<span v-show="row.sex ===2">女</span>-->
-    <!--<span v-show="row.sex ===0">保密</span>-->
-    <!--</template>-->
-    <!--<template slot-scope="{ row, index }" slot="country">-->
-    <!--<span>{{row.country + row.province + row.city}}</span>-->
-    <!--</template>-->
-    <!--<template slot-scope="{ row, index }" slot="subscribe">-->
-    <!--<span v-text="row.subscribe === 1?'关注':'未关注'"></span>-->
-    <!--</template>-->
-    <!--</Table>-->
-    <!--<div class="acea-row row-right page">-->
-    <!--<Page :total="total2" :current="formValidate.page" show-elevator show-total @on-change="pageChange2"-->
-    <!--:page-size="formValidate.limit"/>-->
-    <!--</div>-->
-    <!--<div slot="footer">-->
-    <!--<Button  type="primary"  @click="putRemark">提交</Button>-->
-    <!--</div>-->
-    <!--</Modal>-->
-
-    <!--聊天记录-->
-    <Modal v-model="modals3" footer-hide scrollable closable title="聊天记录" width="700">
-      <div v-if="isChat" class="modelBox">
-        <Table
-          :loading="loading3"
-          highlight-row
-          no-userFrom-text="暂无数据"
-          no-filtered-userFrom-text="暂无筛选结果"
-          :columns="columns3"
-          :data="tableList3"
-        >
-          <template slot-scope="{ row, index }" slot="headimgurl">
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="客服头像" min-width="90">
+          <template slot-scope="scope">
             <div class="tabBox_img" v-viewer>
-              <img v-lazy="row.headimgurl" />
+              <img v-lazy="scope.row.avatar" />
             </div>
           </template>
-          <template slot-scope="{ row, index }" slot="action">
-            <a @click="look(row)">查看对话</a>
+        </el-table-column>
+        <el-table-column label="客服名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.wx_name }}</span>
           </template>
-        </Table>
+        </el-table-column>
+        <el-table-column label="客服状态" min-width="130">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="开启"
+              inactive-text="关闭"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="添加时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除客服', scope.$index)">删除</a>
+            <el-divider direction="vertical" v-if="scope.row.status" />
+            <a @click="goChat(scope.row)" v-if="scope.row.status">进入工作台</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="acea-row row-right page">
+        <pagination
+          v-if="total"
+          :total="total"
+          :page.sync="tableFrom.page"
+          :limit.sync="tableFrom.limit"
+          @pagination="getList"
+        />
+      </div>
+    </el-card>
+
+    <!--聊天记录-->
+    <el-dialog :visible.sync="modals3" title="聊天记录" width="720px">
+      <div v-if="isChat" class="modelBox">
+        <el-table
+          v-loading="loading3"
+          highlight-current-row
+          no-userFrom-text="暂无数据"
+          no-filtered-userFrom-text="暂无筛选结果"
+          :data="tableList3"
+        >
+          <el-table-column label="用户名称" width="200">
+            <template slot-scope="scope">
+              <span>{{ scope.row.nickname }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="客服头像" min-width="90">
+            <template slot-scope="scope">
+              <div class="tabBox_img" v-viewer>
+                <img v-lazy="scope.row.headimgurl" />
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" fixed="right" width="170">
+            <template slot-scope="scope">
+              <a @click="look(scope.row)">查看对话</a>
+            </template>
+          </el-table-column>
+        </el-table>
         <div class="acea-row row-right page">
-          <Page :total="total3" show-elevator show-total @on-change="pageChange3" :page-size="formValidate3.limit" />
+          <pagination
+            v-if="total3"
+            :total="total3"
+            :page.sync="formValidate3.page"
+            :limit.sync="formValidate3.limit"
+            @pagination="getListRecord"
+          />
         </div>
       </div>
       <div v-if="!isChat">
-        <Button type="primary" @click="isChat = true">返回聊天记录</Button>
-        <Table
-          :loading="loading5"
-          highlight-row
+        <el-button type="primary" @click="isChat = true">返回聊天记录</el-button>
+        <el-table
+          v-loading="loading5"
+          highlight-current-row
           no-userFrom-text="暂无数据"
-          class="mt20"
+          class="mt14"
           no-filtered-userFrom-text="暂无筛选结果"
-          :columns="columns5"
           :data="tableList5"
         >
-          <template slot-scope="{ row, index }" slot="avatar">
-            <div class="tabBox_img" v-viewer>
-              <img v-lazy="row.avatar" />
-            </div>
-          </template>
-          <template slot-scope="{ row, index }" slot="action">
-            <a @click="look(row)">查看对话</a>
-          </template>
-        </Table>
+          <el-table-column label="用户名称" min-width="200">
+            <template slot-scope="scope">
+              <span>{{ scope.row.nickname }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户头像" min-width="90">
+            <template slot-scope="scope">
+              <div class="tabBox_img" v-viewer>
+                <img v-lazy="scope.row.avatar" />
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="发送消息" min-width="200">
+            <template slot-scope="scope">
+              <span>{{ scope.row.msn }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="发送时间" min-width="200">
+            <template slot-scope="scope">
+              <span>{{ scope.row.add_time }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
         <div class="acea-row row-right page">
-          <Page :total="total5" show-elevator show-total @on-change="pageChange5" :page-size="formValidate5.limit" />
+          <pagination
+            v-if="total5"
+            :total="total5"
+            :page.sync="formValidate5.page"
+            :limit.sync="formValidate5.limit"
+            @pagination="getChatlist"
+          />
         </div>
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -196,10 +188,10 @@ export default {
     ...mapState('media', ['isMobile']),
     ...mapState('userLevel', ['categoryId']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
@@ -213,21 +205,6 @@ export default {
       loading3: false,
       modals3: false,
       tableList3: [],
-      columns3: [
-        {
-          title: '用户名称',
-          key: 'nickname',
-          width: 200,
-        },
-        {
-          title: '客服头像',
-          slot: 'headimgurl',
-        },
-        {
-          title: '操作',
-          slot: 'action',
-        },
-      ],
       formValidate5: {
         page: 1,
         limit: 15,
@@ -238,26 +215,6 @@ export default {
       total5: 0,
       loading5: false,
       tableList5: [],
-      columns5: [
-        {
-          title: '用户名称',
-          key: 'nickname',
-          width: 200,
-        },
-        {
-          title: '用户头像',
-          slot: 'avatar',
-        },
-        {
-          title: '发送消息',
-          key: 'msn',
-          width: 250,
-        },
-        {
-          title: '发送时间',
-          key: 'add_time',
-        },
-      ],
       FromData: null,
       formValidate: {
         page: 1,
@@ -289,86 +246,6 @@ export default {
       },
       loading: false,
       tableList: [],
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '微信用户名称',
-          key: 'nickname',
-          minWidth: 120,
-        },
-        {
-          title: '客服头像',
-          slot: 'avatar',
-          minWidth: 60,
-        },
-        {
-          title: '客服名称',
-          key: 'wx_name',
-          minWidth: 120,
-        },
-        {
-          title: '客服状态',
-          slot: 'status',
-          minWidth: 120,
-        },
-        {
-          title: '添加时间',
-          key: 'add_time',
-          minWidth: 120,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 150,
-        },
-      ],
-      columns4: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center',
-        },
-        {
-          title: 'ID',
-          key: 'uid',
-          width: 80,
-        },
-        {
-          title: '微信用户名称',
-          key: 'nickname',
-          minWidth: 160,
-        },
-        {
-          title: '客服头像',
-          slot: 'headimgurl',
-          minWidth: 60,
-        },
-        {
-          title: '用户类型',
-          slot: 'user_type',
-          width: 100,
-        },
-        {
-          title: '性别',
-          slot: 'sex',
-          minWidth: 60,
-        },
-        {
-          title: '地区',
-          slot: 'country',
-          minWidth: 120,
-        },
-        {
-          title: '是否关注公众号',
-          slot: 'subscribe',
-          minWidth: 120,
-        },
-      ],
       loading2: false,
       total2: 0,
       addFrom: {
@@ -404,7 +281,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
     getExpiresTime(expiresTime) {
@@ -440,7 +317,7 @@ export default {
             })
             .catch((res) => {
               this.loading2 = false;
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           resolve();
         }, 2000);
@@ -467,12 +344,8 @@ export default {
         })
         .catch((res) => {
           this.loading5 = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange5(index) {
-      this.formValidate5.page = index;
-      this.getChatlist();
     },
     // 修改成功
     submitFail() {
@@ -497,12 +370,8 @@ export default {
         })
         .catch((res) => {
           this.loading3 = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange3(index) {
-      this.formValidate3.page = index;
-      this.getListRecord();
     },
     // 编辑
     edit(row) {
@@ -527,7 +396,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal.join('-');
+      this.formValidate.data = this.timeVal ? this.timeVal.join('-') : '';
       this.formValidate.page = 1;
       this.getListService();
     },
@@ -552,7 +421,7 @@ export default {
         })
         .catch((res) => {
           tkefucreateApihis.loading2 = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange2(pageIndex) {
@@ -576,11 +445,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tableList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -595,12 +464,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.tableFrom.page = index;
-      this.getList();
     },
     // 修改是否显示
     onchangeIsShow(row) {
@@ -610,27 +475,27 @@ export default {
       };
       kefusetStatusApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 添加客服
     putRemark() {
       if (this.addFrom.uids.length === 0) {
-        return this.$Message.warning('请选择要添加的客服');
+        return this.$message.warning('请选择要添加的客服');
       }
       kefuAddApi(this.addFrom)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.modals = false;
           this.getList();
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

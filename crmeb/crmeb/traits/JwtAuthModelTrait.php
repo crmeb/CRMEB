@@ -11,14 +11,13 @@
 
 namespace crmeb\traits;
 
-
-use Firebase\JWT\BeforeValidException;
-use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
-use Firebase\JWT\SignatureInvalidException;
 use think\facade\Env;
-use UnexpectedValueException;
 
+/**
+ * Trait JwtAuthModelTrait
+ * @package crmeb\traits
+ */
 trait JwtAuthModelTrait
 {
     /**
@@ -49,12 +48,9 @@ trait JwtAuthModelTrait
      * @param string $jwt
      * @return array
      *
-     * @throws UnexpectedValueException     Provided JWT was invalid
-     * @throws SignatureInvalidException    Provided JWT was invalid because the signature verification failed
-     * @throws BeforeValidException         Provided JWT is trying to be used before it's eligible as defined by 'nbf'
-     * @throws BeforeValidException         Provided JWT is trying to be used before it's been created as defined by 'iat'
-     * @throws ExpiredException             Provided JWT has since expired, as defined by the 'exp' claim
-     *
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function parseToken(string $jwt): array
     {

@@ -29,6 +29,12 @@
 import { liveGoodsDetail } from '@/api/live';
 export default {
   name: 'live_detail',
+  props:{
+    FormData:{
+      type: Object,
+      default: ()=> {}
+    }
+  },
   data() {
     return {
       option: {
@@ -36,7 +42,7 @@ export default {
           labelWidth: '150px',
         },
       },
-      FormData: {},
+      // FormData: {},
       loading: false,
     };
   },
@@ -49,7 +55,7 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
           this.loading = false;
         });
     },
@@ -86,7 +92,7 @@ export default {
   height: 80px;
 }
 .box-container .list .blue {
-  color: #1890ff;
+  color: var(--prev-color-primary);
 }
 .box-container .list.image {
   margin-bottom: 40px;

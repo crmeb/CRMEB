@@ -41,7 +41,6 @@
 			getVersion(name) {
 				uni.$emit('uploadFooter')
 				getVersion(name).then(res => {
-					console.log(res, '11')
 					this.version = res.data.version
 					this.isDiy = res.data.is_diy
 					this.loading = true
@@ -68,7 +67,7 @@
 					this.$util.Tips({
 						title: err
 					});
-					// #endiff
+					// #endif
 				})
 			},
 			// 微信分享；

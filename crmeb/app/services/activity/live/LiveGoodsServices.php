@@ -96,6 +96,7 @@ class LiveGoodsServices extends BaseServices
                 @unlink($path);
             } catch (\Throwable $e) {
                 Log::error('添加直播商品图片错误，原因：' . $e->getMessage());
+                @unlink($path);
                 $coverImgUrl = $data['cover_img'];
             }
             $res = MiniProgramService::addGoods($coverImgUrl, $data['name'], $data['price_type'], $data['url'], floatval($data['price']));

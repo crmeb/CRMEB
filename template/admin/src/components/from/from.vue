@@ -1,39 +1,35 @@
 <template>
   <div v-if="FromData">
-    <Modal
-      v-model="modals"
-      scrollable
-      footer-hide
-      closable
-      :title="FromData.title"
-      :z-index="1"
-      width="700"
-      @on-cancel="cancel"
-    >
+    <el-dialog :visible.sync="modals" :title="FromData.title" :z-index="1" width="720px" @closed="cancel">
       <template>
         <div class="radio acea-row row-middle" v-if="FromData.action === '/marketing/coupon/save.html'">
           <div class="name ivu-form-item-content">优惠券类型</div>
-          <Radio-group v-model="type" @on-change="couponsType">
-            <Radio :label="0">通用券</Radio>
-            <Radio :label="1">品类券</Radio>
-            <Radio :label="2">商品券</Radio>
-          </Radio-group>
+          <el-radio-group v-model="type" @input="couponsType">
+            <el-radio :label="0">通用券</el-radio>
+            <el-radio :label="1">品类券</el-radio>
+            <el-radio :label="2">商品券</el-radio>
+          </el-radio-group>
         </div>
       </template>
       <form-create
         :option="config"
-        :rule="Array.from(FromData.rules)"
+        :rule="Array.from(this.FromData.rules)"
+        v-model="fapi"
         @submit="onSubmit"
         class="formBox"
         ref="fc"
         handleIcon="false"
       ></form-create>
-    </Modal>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="modals = false">取 消</el-button>
+        <el-button type="primary" @click="formSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import formCreate from '@form-create/iview';
+import formCreate from '@form-create/element-ui';
 import request from '@/libs/request';
 import { mapState } from 'vuex';
 export default {
@@ -54,12 +50,25 @@ export default {
       default: true,
     },
   },
+  watch: {
+    FromData() {
+      this.FromData.rules.forEach((e) => {
+        e.title += '：';
+      });
+    },
+  },
   data() {
     return {
       modals: false,
       type: 0,
       loading: false,
+      fapi: null,
       config: {
+        form: {
+          labelWidth: '100px',
+        },
+        resetBtn: false,
+        submitBtn: false,
         global: {
           upload: {
             props: {
@@ -67,7 +76,7 @@ export default {
                 if (res.status === 200) {
                   file.url = res.data.src;
                 } else {
-                  this.Message.error(res.msg);
+                  this.$message.error(res.msg);
                 }
               },
             },
@@ -79,6 +88,9 @@ export default {
   methods: {
     couponsType() {
       this.$parent.addType(this.type);
+    },
+    formSubmit() {
+      this.fapi.submit();
     },
     // 提交表单 group
     onSubmit(formData) {
@@ -93,7 +105,7 @@ export default {
       })
         .then((res) => {
           if (this.update) this.$parent.getList();
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.modals = false;
           setTimeout(() => {
             this.$emit('submitFail');
@@ -102,7 +114,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 关闭按钮
@@ -115,14 +127,9 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.v-transfer-dom >>> .ivu-modal-content-drag {
-  z-index: 2 !important;
-}
-
 .radio {
   margin-bottom: 14px;
 }
-
 .radio >>> .name {
   width: 125px;
   text-align: right;

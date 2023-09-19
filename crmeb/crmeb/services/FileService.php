@@ -11,7 +11,6 @@
 namespace crmeb\services;
 
 use crmeb\exceptions\AdminException;
-use crmeb\exceptions\CrudException;
 use crmeb\services\crud\Make;
 
 /**
@@ -40,8 +39,8 @@ class FileService
     }
 
     /**
-     * @param $filename 写入文件名
-     * @param $writetext 保存内容
+     * @param string $filename 写入文件名
+     * @param string $writetext 保存内容
      * @param string $openmod 打开方式
      * @return bool
      */
@@ -944,13 +943,16 @@ class FileService
         return is_writable($file);
     }
 
-    /**读取excel文件内容
+    /**
+     * 读取excel文件内容
      * @param $filePath
+     * @param $type
+     * @param int $row_num
      * @param string $suffix
-     * @return bool
+     * @return mixed
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    public function readExcel($filePath, $row_num = 1, $suffix = 'Xlsx')
+    public function readExcel($filePath, $type, int $row_num = 1, string $suffix = 'Xlsx')
     {
         if (!$filePath) return false;
         $pathInfo = pathinfo($filePath, PATHINFO_EXTENSION);
@@ -959,6 +961,7 @@ class FileService
         $readModel = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($suffix);
         // 创建读操作
         // 打开文件 载入excel表格
+
         try {
             $spreadsheet = $readModel->load($filePath);
             $sheet = $spreadsheet->getActiveSheet();
@@ -971,14 +974,31 @@ class FileService
             // 用于存储表格数据
             $data = [];
             for ($i = $row_num; $i <= $highestRow; $i++) {
-                $t1 = $this->objToStr($sheet->getCellByColumnAndRow(1, $i)->getValue()) ?? '';
-                $t2 = $this->objToStr($sheet->getCellByColumnAndRow(2, $i)->getValue());
-                if ($t2) {
-                    $data[] = [
-                        'key' => $t1,
-                        'value' => $t2
-                    ];
+                if ($type == 'card') {
+                    $t1 = $this->objToStr($sheet->getCellByColumnAndRow(1, $i)->getValue()) ?? '';
+                    $t2 = $this->objToStr($sheet->getCellByColumnAndRow(2, $i)->getValue());
+                    if ($t2) {
+                        $data[] = [
+                            'key' => $t1,
+                            'value' => $t2
+                        ];
+                    }
                 }
+                if ($type == 'express') {
+                    $t1 = $this->objToStr($sheet->getCellByColumnAndRow(1, $i)->getValue());
+                    $t3 = $this->objToStr($sheet->getCellByColumnAndRow(3, $i)->getValue());
+                    $t4 = $this->objToStr($sheet->getCellByColumnAndRow(4, $i)->getValue());
+                    $t5 = $this->objToStr($sheet->getCellByColumnAndRow(5, $i)->getValue());
+                    if ($t3 && $t4 && $t5) {
+                        $data[] = [
+                            'id' => $t1,
+                            'delivery_name' => $t3,
+                            'delivery_code' => $t4,
+                            'delivery_id' => $t5,
+                        ];
+                    }
+                }
+
             }
             return $data;
         } catch (\Exception $e) {

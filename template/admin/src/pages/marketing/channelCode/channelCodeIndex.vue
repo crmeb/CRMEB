@@ -1,164 +1,185 @@
 <template>
   <div>
-    <Row class="ivu-mt box-wrapper" ref="warpper">
-      <Col span="3" class="left-wrapper">
-        <Menu :theme="theme3" :active-name="sortName" width="auto">
-          <MenuGroup>
-            <MenuItem
-              :name="item.id"
-              class="menu-item"
-              :class="index === current ? 'showOn' : ''"
-              v-for="(item, index) in labelSort"
-              :key="index"
-              @click.native="bindMenuItem(item, index)"
-            >
-              {{ item.cate_name }}
-              <div class="icon-box" v-if="index != 0">
-                <Icon type="ios-more" size="24" @click.stop="showMenu(item)" />
-              </div>
-              <div class="right-menu ivu-poptip-inner" v-show="item.status" v-if="index != 0">
-                <div class="ivu-poptip-body" @click="labelEdit(item)">
-                  <div class="ivu-poptip-body-content">
-                    <div class="ivu-poptip-body-content-inner">编辑分类</div>
-                  </div>
-                </div>
-                <div class="ivu-poptip-body" @click="deleteSort(item, '删除分类', index)">
-                  <div class="ivu-poptip-body-content">
-                    <div class="ivu-poptip-body-content-inner">删除分类</div>
-                  </div>
-                </div>
-              </div>
-            </MenuItem>
-          </MenuGroup>
-        </Menu>
-      </Col>
-      <Col span="21" ref="rightBox">
-        <Card :bordered="false" dis-hover>
-          <Row type="flex" class="mb20">
-            <Col span="20">
-              <Button v-auth="['marketing-channel_code-create']" type="primary" icon="md-add" @click="add" class="mr10"
-                >新建二维码</Button
+    <el-row class="ivu-mt box-wrapper" ref="warpper">
+      <el-col :span="4" class="left-wrapper">
+        <div class="tree_tit" @click="addSort">
+          <i class="el-icon-circle-plus"></i>
+          添加分组
+        </div>
+        <div class="tree">
+          <el-tree
+            :data="labelSort"
+            node-key="id"
+            default-expand-all
+            highlight-current
+            :expand-on-click-node="false"
+            @node-click="bindMenuItem"
+            :current-node-key="treeId"
+          >
+            <span class="custom-tree-node" slot-scope="{ data }">
+              <span class="file-name">
+                <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
+                {{ data.cate_name }}</span
               >
-              <Button
-                v-auth="['marketing-channel_code-create']"
-                type="success"
-                icon="md-add"
-                @click="addSort"
-                style="margin-left: 10px"
-                >添加分组</Button
-              >
-            </Col>
-            <Col span="4">
-              <Input
+              <span v-if="data.id">
+                <el-dropdown @command="(command) => clickMenu(data, command)">
+                  <i class="el-icon-more el-icon--right"></i>
+                  <template slot="dropdown">
+                    <el-dropdown-menu>
+                      <el-dropdown-item command="1">编辑分组</el-dropdown-item>
+                      <el-dropdown-item v-if="data.id" command="2">删除分组</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </span>
+            </span>
+          </el-tree>
+        </div>
+      </el-col>
+      <el-col :span="20" ref="rightBox">
+        <el-card :bordered="false" shadow="never">
+          <el-row class="mb14">
+            <el-col :span="20">
+              <el-button v-auth="['marketing-channel_code-create']" type="primary" @click="add">新建二维码</el-button>
+              <!-- <el-button v-auth="['marketing-channel_code-create']" type="success" @click="addSort">添加分组</el-button> -->
+            </el-col>
+            <el-col :span="4">
+              <el-input
                 v-model="tableFrom.name"
                 search
                 @on-search="userSearchs"
                 enter-button="搜索"
                 placeholder="请输入二维码名称"
               />
-            </Col>
-          </Row>
-          <Table
-            :columns="columns1"
+            </el-col>
+          </el-row>
+          <el-table
             :data="tableList"
-            :loading="loading"
-            highlight-row
+            v-loading="loading"
+            highlight-current-row
             no-userFrom-text="暂无数据"
             no-filtered-userFrom-text="暂无筛选结果"
           >
-            <template slot-scope="{ row, index }" slot="image">
-              <div class="tabBox_img" v-viewer>
-                <img v-lazy="row.image" />
-              </div>
-            </template>
-            <template slot-scope="{ row, index }" slot="avatar">
-              <div class="tabBox_img" v-viewer>
-                <img v-lazy="row.avatar" />
-              </div>
-            </template>
-            <template slot-scope="{ row, index }" slot="label_name">
-              <div v-if="row.label_name.length">
-                <Tag :checkable="false" color="primary" v-for="(item, index) in row.label_name" :key="index">{{
-                  item
-                }}</Tag>
-              </div>
-              <div v-else>--</div>
-            </template>
-            <template slot-scope="{ row, index }" slot="add_time">
-              <span v-if="row.stop === 0"> 永久 </span>
-              <span v-if="row.stop === 1">
-                <div>{{ row.add_time }}</div>
-                <div>-</div>
-                <div>{{ row.end_time }}</div>
-              </span>
-              <span v-if="row.stop === -1">已过期</span>
-            </template>
-            <template slot-scope="{ row, index }" slot="status">
-              <i-switch
-                v-model="row.status"
-                :value="row.status"
-                :true-value="1"
-                :false-value="0"
-                :disabled="row.lottery_status == 2 ? true : false"
-                @on-change="onchangeIsShow(row)"
-                size="large"
-              >
-                <span slot="open">开启</span>
-                <span slot="close">关闭</span>
-              </i-switch>
-            </template>
-
-            <template slot-scope="{ row, index }" slot="action">
-              <a @click="edit(row)">编辑</a>
-              <Divider type="vertical" />
-              <a @click="del(row, '删除二维码', index)">删除</a>
-              <Divider type="vertical" />
-              <Dropdown @on-click="changeMenu(row, $event)" :transfer="true">
-                <a href="javascript:void(0)"
-                  >更多
-                  <Icon type="ios-arrow-down"></Icon>
-                </a>
-                <DropdownMenu slot="list">
-                  <DropdownItem name="1">下载</DropdownItem>
-                  <DropdownItem name="2">统计</DropdownItem>
-                  <DropdownItem name="3">用户列表</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </template>
-          </Table>
+            <el-table-column label="二维码" width="80">
+              <template slot-scope="scope">
+                <div class="tabBox_img" v-viewer>
+                  <img v-lazy="scope.row.image" />
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="二维码名称" min-width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="总关注数" min-width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.follow }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="昨日新增关注" min-width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.y_follow }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="用户标签" min-width="80">
+              <template slot-scope="scope">
+                <el-tag class="label-name" v-for="(item, index) in scope.row.label_name" :key="index">{{ item }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="时间" min-width="80">
+              <template slot-scope="scope">
+                <span v-if="scope.row.stop === 0"> 永久 </span>
+                <span v-if="scope.row.stop === 1">
+                  <div>{{ scope.row.add_time }}</div>
+                  <div>-</div>
+                  <div>{{ scope.row.end_time }}</div>
+                </span>
+                <span v-if="scope.row.stop === -1">已过期</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="关联推广员" min-width="80">
+              <template slot-scope="scope">
+                <div class="tabBox_img" v-viewer>
+                  <img v-lazy="scope.row.avatar" />
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" min-width="80">
+              <template slot-scope="scope">
+                <el-switch
+                  :active-value="1"
+                  :inactive-value="0"
+                  v-model="scope.row.status"
+                  :value="scope.row.status"
+                  :disabled="scope.row.lottery_status == 2 ? true : false"
+                  @change="onchangeIsShow(scope.row)"
+                  size="large"
+                  active-text="开启"
+                  inactive-text="关闭"
+                >
+                </el-switch>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="170">
+              <template slot-scope="scope">
+                <a @click="edit(scope.row)">编辑</a>
+                <el-divider direction="vertical"></el-divider>
+                <a @click="del(scope.row, '删除二维码', scope.$index)">删除</a>
+                <el-divider direction="vertical"></el-divider>
+                <el-dropdown size="small" @command="changeMenu(scope.row, $event)" :transfer="true">
+                  <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="1">下载</el-dropdown-item>
+                    <el-dropdown-item command="2">统计</el-dropdown-item>
+                    <el-dropdown-item command="3">用户列表</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </template>
+            </el-table-column>
+          </el-table>
           <div class="acea-row row-right page">
-            <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="tableFrom.limit" />
+            <pagination
+              v-if="total"
+              :total="total"
+              :page.sync="tableFrom.page"
+              :limit.sync="tableFrom.limit"
+              @pagination="getList"
+            />
           </div>
-        </Card>
-      </Col>
-    </Row>
-    <Modal v-model="modals" scrollable footer-hide closable title="渠道码用户列表" :mask-closable="false" width="900">
-      <Table
-        ref="selection"
-        :columns="columns4"
-        :data="tabList"
-        no-data-text="暂无数据"
-        highlight-row
-        max-height="400"
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row, index }" slot="avatar">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.avatar" />
-          </div>
-        </template>
-      </Table>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-dialog :visible.sync="modals" title="渠道码用户列表" :close-on-click-modal="false" width="900px">
+      <el-table ref="selection" :data="tabList" empty-text="暂无数据" highlight-current-row max-height="400">
+        <el-table-column label="UID" min-width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.uid }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户头像" min-width="120">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.avatar" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户昵称" min-width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total2"
           :total="total2"
-          show-elevator
-          show-total
-          :loading="loading2"
-          @on-change="pageChangeUser"
-          :page-size="userData.limit"
+          :page.sync="userData.page"
+          :limit.sync="userData.limit"
+          @pagination="getUserList"
         />
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -187,14 +208,15 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
     return {
+      treeId: '',
       isChat: true,
       formValidate3: {
         page: 1,
@@ -204,7 +226,6 @@ export default {
       loading3: false,
       modals3: false,
       tabList: [],
-
       formValidate5: {
         page: 1,
         limit: 15,
@@ -212,8 +233,6 @@ export default {
         to_uid: 0,
         id: 0,
       },
-      total2: 0,
-      loading2: false,
       tableList5: [],
       FromData: null,
       formValidate: {
@@ -240,77 +259,6 @@ export default {
       timeVal: [],
       loading: false,
       tableList: [],
-      columns4: [
-        {
-          title: 'UID',
-          key: 'uid',
-          minWidth: 120,
-        },
-        {
-          title: '用户头像',
-          slot: 'avatar',
-          minWidth: 120,
-        },
-        {
-          title: '用户昵称',
-          key: 'nickname',
-          minWidth: 120,
-        },
-      ],
-      columns1: [
-        {
-          title: '二维码',
-          slot: 'image',
-          width: 80,
-          align: 'center',
-        },
-        {
-          title: '二维码名称',
-          key: 'name',
-          minWidth: 80,
-          align: 'center',
-        },
-        {
-          title: '总关注数',
-          key: 'follow',
-          minWidth: 80,
-          align: 'center',
-        },
-        {
-          title: '昨日新增关注',
-          key: 'y_follow',
-          minWidth: 80,
-          align: 'center',
-        },
-        {
-          title: '用户标签',
-          slot: 'label_name',
-          minWidth: 80,
-        },
-        {
-          title: '时间',
-          slot: 'add_time',
-          width: 140,
-          align: 'center',
-        },
-        {
-          title: '关联推广员',
-          slot: 'avatar',
-          minWidth: 60,
-        },
-        {
-          title: '状态',
-          slot: 'status',
-          minWidth: 60,
-          align: 'center',
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 150,
-        },
-      ],
       loading2: false,
       total2: 0,
       addFrom: {
@@ -328,10 +276,6 @@ export default {
   },
   activated() {
     this.getUserLabelAll();
-    this.$nextTick(() => {
-      let scrollElem = document.querySelector('.content-wrapper');
-      scrollElem.scrollTo({ top: 0, behavior: 'smooth' });
-    });
   },
   mounted() {},
   methods: {
@@ -355,7 +299,7 @@ export default {
       }
     },
     downLoadCode(url) {
-      if (!url) return this.$Message.warning('暂无二维码');
+      if (!url) return this.$message.warning('暂无二维码');
       var image = new Image();
       image.src = url;
       // 解决跨域 Canvas 污染问题
@@ -375,11 +319,6 @@ export default {
         a.dispatchEvent(event); // 触发a的单击事件
       };
     },
-    // 用列表翻页
-    pageChangeUser(index) {
-      this.userData.page = index;
-      this.getUserList();
-    },
     // 获取渠道码用户列表
     getUserList() {
       getUserList(this.userData)
@@ -396,7 +335,7 @@ export default {
         .catch((res) => {
           this.loading = false;
           this.tabList = [];
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
 
@@ -428,7 +367,10 @@ export default {
     labelEdit(item) {
       this.$modalForm(wechatQrcodeCreate(item.id)).then(() => this.getUserLabelAll(1));
     },
-    deleteSort(row, tit, num) {
+    deleteSort(row, tit) {
+      let num = this.labelSort.findIndex((e) => {
+        return e.id == row.id;
+      });
       let delfromData = {
         title: tit,
         num: num,
@@ -438,13 +380,13 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.labelSort.splice(num, 1);
           this.labelSort = [];
           this.getUserLabelAll();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 显示标签小菜单
@@ -502,7 +444,7 @@ export default {
         })
         .catch((res) => {
           this.loading2 = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 搜索
@@ -521,11 +463,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tableList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -540,12 +482,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.tableFrom.page = index;
-      this.getList();
     },
     // 修改是否显示
     onchangeIsShow(row) {
@@ -555,11 +493,19 @@ export default {
       };
       wechatQrcodeStatusApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
+    },
+    // 点击菜单
+    clickMenu(data, name) {
+      if (name == 1) {
+        this.labelEdit(data);
+      } else if (name == 2) {
+        this.deleteSort(data, '删除分类');
+      }
     },
   },
 };
@@ -589,7 +535,9 @@ export default {
     width: 100% !important;
   }
 }
-
+.label-name{
+  margin: 2px 2px;
+}
 .trees-coadd {
   width: 100%;
   height: 385px;

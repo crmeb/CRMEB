@@ -14,6 +14,7 @@
 namespace crmeb\services\crud;
 
 use crmeb\exceptions\CrudException;
+use crmeb\services\crud\enum\ActionEnum;
 use think\App;
 use think\helper\Str;
 
@@ -69,39 +70,72 @@ class ViewApi extends Make
     public function handle(string $name, array $options = [])
     {
         $path = $options['path'] ?? '';
-        $action = $options['action'] ?? [];
-        if (!$action) {
-            $action = ['index', 'create', 'save', 'edit', 'update', 'delete'];
-        }
         $route = $options['route'] ?? '';
         if (!$route) {
             throw new CrudException(500045);
         }
 
+        return $this->setJsContent($name, $route)
+            ->setApi($name, $path);
+    }
+
+    /**
+     * 设置页面JS内容
+     * @param string $name
+     * @param string $route
+     * @return $this
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/12
+     */
+    protected function setJsContent(string $name, string $route)
+    {
         $contentJs = '';
 
-        foreach ($action as $item) {
+        foreach (ActionEnum::ACTION_ALL as $item) {
             $contentJs .= file_get_contents($this->getStub($item)) . "\n";
         }
 
-        $nameCamel = Str::studly($name);
+        $var = [
+            '{%ROUTE%}',
+            '{%NAME_CAMEL%}',
+            '{%NAME_STUDLY%}',
+        ];
 
-        if ($contentJs) {
-            $var = ['{%name%}', '{%route%}', '{%nameCamel%}', '{%nameStudly%}'];
-            $value = [$name, $route, $nameCamel, Str::studly($name)];
-            $contentJs = str_replace($var, $value, $contentJs);
-        }
+        $value = [
+            $route,
+            Str::camel($name),
+            Str::studly($name),
+        ];
 
-        $this->value['content-js'] = $contentJs;
+        $contentJs = str_replace($var, $value, $contentJs);
 
+
+        $this->value['CONTENT_JS'] = $contentJs;
+
+        return $this;
+    }
+
+    /**
+     * 设置页面api内容
+     * @param string $name
+     * @param string $path
+     * @return $this
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/8/12
+     */
+    protected function setApi(string $name, string $path)
+    {
         //生成api
-        [$className, $content] = $this->getStubContent($name, $this->name);
+        [, $content] = $this->getStubContent($name, $this->name);
 
         $contentStr = str_replace($this->var, $this->value, $content);
         $filePath = $this->getFilePathName($path, Str::camel($name));
 
         $this->setPathname($filePath);
         $this->setContent($contentStr);
+
         return $this;
     }
 
@@ -133,7 +167,9 @@ class ViewApi extends Make
             'index' => $servicePath . 'getCrudListApi.stub',
             'create' => $servicePath . 'getCrudCreateApi.stub',
             'save' => $servicePath . 'crudSaveApi.stub',
+            'status' => $servicePath . 'crudStatusApi.stub',
             'edit' => $servicePath . 'getCrudEditApi.stub',
+            'read' => $servicePath . 'getCrudReadApi.stub',
             'delete' => $servicePath . 'crudDeleteApi.stub',
             'update' => $servicePath . 'crudUpdateApi.stub',
             'api' => $servicePath . 'crud.stub',

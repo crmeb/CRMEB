@@ -46,6 +46,26 @@ class SystemRoute extends BaseModel
         }
     }
 
+    public function setQueryAttr($value)
+    {
+        return json_encode($value);
+    }
+
+    public function getQueryAttr($value)
+    {
+        return json_decode($value, true);
+    }
+
+    public function setHeaderAttr($value)
+    {
+        return json_encode($value);
+    }
+
+    public function getHeaderAttr($value)
+    {
+        return json_decode($value, true);
+    }
+
     public function setRequestAttr($value)
     {
         return json_encode($value);

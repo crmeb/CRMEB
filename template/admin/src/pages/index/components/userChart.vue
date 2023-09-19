@@ -1,11 +1,15 @@
 <template>
   <div @resize="handleResize">
-    <Row :gutter="24">
-      <Col :xl="16" :lg="12" :md="24" :sm="24" :xs="24" class="ivu-mb dashboard-console-visit">
-        <Card :bordered="false" dis-hover>
-          <div slot="title">
-            <Avatar icon="ios-pulse" size="small" style="color: #1890ff; background-color: #e6f7ff" />
-            <span class="ivu-pl-8">用户</span>
+    <el-row :gutter="16">
+      <el-col :xl="16" :lg="12" :md="24" :sm="24" :xs="24" class="ivu-mb dashboard-console-visit">
+        <el-card :bordered="false" shadow="never">
+          <div class="card-title">
+            <el-avatar
+              icon="el-icon-user-solid"
+              size="small"
+              style="color: var(--prev-color-primary); background-color: #e6f7ff"
+            ></el-avatar>
+            <h4 class="ivu-pl-8">用户</h4>
           </div>
           <echarts-from
             ref="userChart"
@@ -14,18 +18,22 @@
             :series="series"
             v-if="infoList && series.length !== 0"
           ></echarts-from>
-        </Card>
-      </Col>
-      <Col :xl="8" :lg="12" :md="24" :sm="24" :xs="24">
-        <Card :bordered="false" dis-hover class="dashboard-console-visit">
-          <div slot="title">
-            <Avatar icon="ios-analytics" size="small" style="color: #1890ff; background-color: #e6f7ff" />
-            <span class="ivu-pl-8">购买用户统计</span>
+        </el-card>
+      </el-col>
+      <el-col :xl="8" :lg="12" :md="24" :sm="24" :xs="24">
+        <el-card :bordered="false" shadow="never" class="dashboard-console-visit">
+          <div class="card-title">
+            <el-avatar
+              icon="el-icon-s-marketing"
+              size="small"
+              style="color: var(--prev-color-primary); background-color: #e6f7ff"
+            ></el-avatar>
+            <h4 class="ivu-pl-8">购买用户统计</h4>
           </div>
           <echarts-from ref="visitChart" :infoList="infoList" :echartsTitle="circle"></echarts-from>
-        </Card>
-      </Col>
-    </Row>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -74,7 +82,7 @@ export default {
           this.bing_xdata = res.bing_xdata;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     getRank() {
@@ -84,7 +92,7 @@ export default {
           this.lists = data.list;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 监听页面宽度变化，刷新表格
@@ -135,5 +143,9 @@ export default {
   white-space: nowrap;
   width: 84%;
   margin-bottom: -7px;
+}
+.card-title {
+  display: flex;
+  align-items: center;
 }
 </style>

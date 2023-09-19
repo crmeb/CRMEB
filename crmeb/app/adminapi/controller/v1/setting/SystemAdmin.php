@@ -169,9 +169,13 @@ class SystemAdmin extends AuthController
             ['new_pwd', ''],
             ['conf_pwd', ''],
         ]);
-        if (!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,}$/', $data['new_pwd'])) {
-            return app('json')->fail(400183);
+
+        if ($data['pwd']) {
+            if (!preg_match('/^(?![^a-zA-Z]+$)(?!\D+$).{6,}$/', $data['new_pwd'])) {
+                return app('json')->fail(400183);
+            }
         }
+
         if ($this->services->updateAdmin($this->adminId, $data))
             return app('json')->success(100001);
         else

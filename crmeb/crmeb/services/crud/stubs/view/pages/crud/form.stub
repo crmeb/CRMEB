@@ -1,0 +1,17 @@
+    <el-card shadow="never" class="ivu-mt" :body-style="{padding:0}">
+        <div class="padding-add">
+           <el-form
+             ref="curlFrom"
+             :model="from"
+             :label-width="labelWidth"
+             :label-position="labelPosition"
+             inline
+             @submit.native.prevent
+           >
+{%CONTENT_FORM_VUE%}
+              <el-form-item>
+                 <el-button type="primary" @click="searchs">查询</el-button>
+              </el-form-item>
+           </el-form>
+        </div>
+    </el-card>

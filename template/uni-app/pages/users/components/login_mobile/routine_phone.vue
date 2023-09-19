@@ -23,7 +23,7 @@
 	import {
 		getLogo,
 		silenceAuth,
-		getUserPhone
+		routineBindingPhone
 	} from '@/api/public';
 	export default {
 		name: 'routine_phone',
@@ -68,7 +68,7 @@
 			},
 			// 小程序获取手机号码回调
 			getUserPhoneNumber(encryptedData, iv, code) {
-				getUserPhone({
+				routineBindingPhone({
 						encryptedData: encryptedData,
 						iv: iv,
 						code: code,

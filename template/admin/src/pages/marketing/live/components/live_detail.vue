@@ -97,7 +97,7 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
           this.loading = false;
         });
     },
@@ -129,7 +129,7 @@ export default {
   color: #606266;
 }
 .box-container .list .blue {
-  color: #1890ff;
+  color: var(--prev-color-primary);
 }
 .box-container .list.image {
   margin-bottom: 40px;

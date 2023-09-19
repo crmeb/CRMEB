@@ -96,8 +96,26 @@ class StoreOrderRefundDao extends BaseDao
     }
 
     /**
+     * 退款订单数量
+     * @param array $where
+     * @param bool $search
+     * @return int
+     * @throws \ReflectionException
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/06/19
+     */
+    public function count(array $where = [], bool $search = false)
+    {
+        return $this->search($where, $search)->count();
+    }
+
+    /**
      * 根据时间获取
      * @param array $where
+     * @param string $sum_field
+     * @param string $selectType
+     * @param string $group
      * @return float|int
      */
     public function getOrderRefundMoneyByWhere(array $where, string $sum_field, string $selectType, string $group = "")

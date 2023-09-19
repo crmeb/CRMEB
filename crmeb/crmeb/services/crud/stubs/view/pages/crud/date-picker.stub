@@ -1,0 +1,14 @@
+<el-form-item label="{%NAME%}:">
+    <el-date-picker
+        :editable="false"
+        clearabl
+        @change="searchs"
+        v-model="from.{%FIELD%}"
+        format="yyyy/MM/dd"
+        type="daterange"
+        value-format="yyyy/MM/dd"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        style="width:250px;"
+    ></el-date-picker>
+</el-form-item>

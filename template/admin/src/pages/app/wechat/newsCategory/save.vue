@@ -1,17 +1,13 @@
 <template>
   <div class="newsBox">
-    <div class="i-layout-page-header header-title">
-      <div class="fl_header">
-        <router-link :to="{ path: $routeProStr + '/app/wechat/news_category/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text" v-show="$route.params.id">返回</Button></router-link
-        >
-        <Divider type="vertical" />
-        <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>
-      </div>
-    </div>
-    <Card :bordered="false" dis-hover class="save_from ivu-mt">
-      <Row type="flex" :gutter="24">
-        <Col :xl="6" :lg="6" :md="12" :sm="24" :xs="24">
+    <pages-header
+      ref="pageHeader"
+      :title="$route.meta.title"
+      :backUrl="$routeProStr + '/app/wechat/news_category/index'"
+    ></pages-header>
+    <el-card :bordered="false" shadow="never" class="save_from mt16">
+      <el-row :gutter="24">
+        <el-col :xl="6" :lg="6" :md="12" :sm="24" :xs="24">
           <!--                    v-if="list.length!=0"-->
           <div v-for="(item, i) in list" :key="i">
             <div
@@ -28,7 +24,7 @@
                   backgroundSize: '100% 100%',
                 }"
               >
-                <Button type="error" shape="circle" icon="md-trash" @click="del(i)" v-show="isDel"></Button>
+                <el-button type="error" icon="el-icon-delete" @click="del(i)" v-show="isDel"></el-button>
               </div>
               <span class="news_sp">{{ item.title }}</span>
             </div>
@@ -37,21 +33,15 @@
               <div class="news_cent_img ivu-mr-8">
                 <img :src="item.image_input ? item.image_input : baseImg" />
               </div>
-              <Button type="error" shape="circle" icon="md-trash" @click="del(i)"></Button>
+              <el-button type="error" icon="el-icon-delete" @click="del(i)"></el-button>
             </div>
           </div>
           <!-- <div class="acea-row row-center-wrapper">
-            <Button
-              icon="ios-download-outline"
-              class="mt20"
-              type="primary"
-              @click="handleAdd"
-              >添加图文</Button
-            >
+            <el-button class="mt20" type="primary" @click="handleAdd">添加图文</el-button>
           </div> -->
-        </Col>
-        <Col :xl="18" :lg="18" :md="12" :sm="24" :xs="24">
-          <Form
+        </el-col>
+        <el-col :xl="18" :lg="18" :md="12" :sm="24" :xs="24">
+          <el-form
             class="saveForm"
             ref="saveForm"
             :model="saveForm"
@@ -60,52 +50,43 @@
             :label-position="labelPosition"
             @submit.native.prevent
           >
-            <Row :gutter="24" type="flex">
-              <Col span="24" class="ml40">
-                <FormItem label="标题：" prop="title">
-                  <Input style="width: 60%" v-model="saveForm.title" type="text" placeholder="请输入文章标题" />
-                </FormItem>
-              </Col>
-              <Col span="24" class="ml40">
-                <FormItem label="作者：" prop="author">
-                  <Input style="width: 60%" v-model="saveForm.author" type="text" placeholder="请输入作者名称" />
-                </FormItem>
-              </Col>
-              <Col span="24" class="ml40">
-                <FormItem label="摘要：" prop="synopsis">
-                  <Input style="width: 60%" v-model="saveForm.synopsis" type="textarea" placeholder="请输入摘要" />
-                </FormItem>
-              </Col>
-              <Col span="24" class="ml40">
-                <FormItem label="图文封面：" prop="image_input">
+            <el-row :gutter="24">
+              <el-col :span="24" class="ml40">
+                <el-form-item label="标题：" prop="title">
+                  <el-input style="width: 60%" v-model="saveForm.title" type="text" placeholder="请输入文章标题" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24" class="ml40">
+                <el-form-item label="作者：" prop="author">
+                  <el-input style="width: 60%" v-model="saveForm.author" type="text" placeholder="请输入作者名称" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24" class="ml40">
+                <el-form-item label="摘要：" prop="synopsis">
+                  <el-input style="width: 60%" v-model="saveForm.synopsis" type="textarea" placeholder="请输入摘要" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24" class="ml40">
+                <el-form-item label="图文封面：" prop="image_input">
                   <div class="picBox" @click="modalPicTap('单选')">
                     <div class="pictrue" v-if="saveForm.image_input">
                       <img :src="saveForm.image_input" />
                     </div>
                     <div class="upLoad acea-row row-center-wrapper" v-else>
-                      <Icon type="ios-camera-outline" size="26" />
+                      <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
                   </div>
-                </FormItem>
-                <FormItem label="正文：" prop="content">
+                </el-form-item>
+                <el-form-item label="正文：" prop="content">
                   <WangEditor style="width: 90%" :content="content" @editorContent="getEditorContent"></WangEditor>
-                </FormItem>
-              </Col>
-              <Col span="24" class="ml40">
-                <FormItem>
-                  <Button type="primary" class="submission" @click="subFrom('saveForm')">提交</Button>
-                </FormItem>
-              </Col>
-              <Modal
-                v-model="modalPic"
-                width="950px"
-                scrollable
-                footer-hide
-                closable
-                title="上传文章图"
-                :mask-closable="false"
-                :z-index="888"
-              >
+                </el-form-item>
+              </el-col>
+              <el-col :span="24" class="ml40">
+                <el-form-item>
+                  <el-button type="primary" class="submission" @click="subFrom('saveForm')">提交</el-button>
+                </el-form-item>
+              </el-col>
+              <el-dialog :visible.sync="modalPic" width="1024px" title="上传文章图" :close-on-click-modal="false">
                 <uploadPictures
                   :isChoice="isChoice"
                   @getPic="getPic"
@@ -113,12 +94,12 @@
                   :gridPic="gridPic"
                   v-if="modalPic"
                 ></uploadPictures>
-              </Modal>
-            </Row>
-          </Form>
-        </Col>
-      </Row>
-    </Card>
+              </el-dialog>
+            </el-row>
+          </el-form>
+        </el-col>
+      </el-row>
+    </el-card>
   </div>
 </template>
 
@@ -219,7 +200,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 120;
+      return this.isMobile ? undefined : '100px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -265,11 +246,12 @@ export default {
         /* eslint-disable */
         if (index === this.current) return (this.saveForm = this.list[this.current]);
       });
+      this.content = this.saveForm.content;
     },
     // 删除
     del(i) {
       if (i === 0) {
-        this.$Message.warning('不能再删除了');
+        this.$message.warning('不能再删除了');
       } else {
         this.list.splice(i, 1);
         this.saveForm = {};
@@ -285,7 +267,7 @@ export default {
           this.content = this.list[this.current].content;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 提交数据
@@ -298,7 +280,7 @@ export default {
           };
           wechatNewsAddApi(data)
             .then(async (res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               setTimeout(() => {
                 this.$router.push({
                   path: this.$routeProStr + '/app/wechat/news_category/index',
@@ -306,7 +288,7 @@ export default {
               }, 500);
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;
@@ -316,42 +298,42 @@ export default {
     check() {
       for (let index in this.list) {
         if (!this.list[index].title) {
-          this.$Message.warning('请输入文章的标题');
+          this.$message.warning('请输入文章的标题');
           return false;
         } else if (!this.list[index].author) {
-          this.$Message.warning('请输入文章的作者');
+          this.$message.warning('请输入文章的作者');
           return false;
         } else if (!this.list[index].synopsis) {
-          this.$Message.warning('请输入文章的摘要');
+          this.$message.warning('请输入文章的摘要');
           return false;
         } else if (!this.list[index].image_input) {
-          this.$Message.warning('请输入文章的图文封面');
+          this.$message.warning('请输入文章的图文封面');
           return false;
         } else if (!this.list[index].content) {
-          this.$Message.warning('请输入文章的内容');
+          this.$message.warning('请输入文章的内容');
           return false;
         } else {
           return true;
         }
       }
       // if(!this.saveForm.title){
-      //     this.$Message.warning('请输入文章的标题');
+      //     this.$message.warning('请输入文章的标题');
       //     return false;
       // }
       // else if(!this.saveForm.author){
-      //     this.$Message.warning('请输入文章的作者');
+      //     this.$message.warning('请输入文章的作者');
       //     return false;
       // }
       // else if(!this.saveForm.synopsis){
-      //     this.$Message.warning('请输入文章的摘要');
+      //     this.$message.warning('请输入文章的摘要');
       //     return false;
       // }
       // else if(!this.saveForm.image_input){
-      //     this.$Message.warning('请输入文章的图文封面');
+      //     this.$message.warning('请输入文章的图文封面');
       //     return false;
       // }
       // else if(!this.saveForm.content){
-      //     this.$Message.warning('请输入文章的内容');
+      //     this.$message.warning('请输入文章的内容');
       //     return false;
       // }else{
       //     return true
@@ -483,7 +465,7 @@ export default {
 
 .Refresh {
   font-size: 12px;
-  color: #1890FF;
+  color: var(--prev-color-primary);
   cursor: pointer;
   line-height: 35px;
   display: inline-block;

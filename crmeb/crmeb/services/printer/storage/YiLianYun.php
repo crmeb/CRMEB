@@ -72,7 +72,7 @@ class YiLianYun extends BasePrinter
         foreach ($product as $item) {
             $goodsStr .= '<tr>';
             $price = bcmul((string)$item['cart_num'], (string)$item['truePrice'], 2);
-            $goodsStr .= "<td>{$item['productInfo']['store_name']}</td><td>{$item['cart_num']}</td><td>{$item['truePrice']}</td><td>{$price}</td>";
+            $goodsStr .= "<td>{$item['productInfo']['store_name']} | {$item['productInfo']['attrInfo']['suk']}</td><td>{$item['cart_num']}</td><td>{$item['truePrice']}</td><td>{$price}</td>";
             $goodsStr .= '</tr>';
             unset($price);
         }

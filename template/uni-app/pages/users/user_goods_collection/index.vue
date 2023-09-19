@@ -197,7 +197,7 @@
 					})
 				} else {
 					this.$util.Tips({
-						title: that.$t(`该商品已下架`)
+						title: this.$t(`该商品已下架`)
 					})
 				}
 

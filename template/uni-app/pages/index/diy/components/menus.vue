@@ -1,12 +1,16 @@
 <template>
-	<view v-show="!isSortType && menus.length" :class="bgStyle?'borderRadius15':''" :style="{background:bgColor,margin:'0 '+prConfig*2+'rpx',marginTop:mbConfig*2+'rpx'}">
+	<view v-show="!isSortType && menus.length" :class="bgStyle?'borderRadius15':''"
+		:style="{background:bgColor,margin:'0 '+prConfig*2+'rpx',marginTop:mbConfig*2+'rpx'}">
 		<view v-if="isMany">
 			<view class="swiper">
-				<swiper :interval="interval" :duration="duration" :style="'height:'+(navHigh*2+17)+'rpx;'" @change='bannerfun'>
+				<swiper :interval="interval" :duration="duration" :style="'height:'+(navHigh*2+17)+'rpx;'"
+					@change='bannerfun'>
 					<block>
 						<swiper-item v-for="(item,indexw) in menuList" :key="indexw">
 							<view class="nav acea-row" :id="'nav' + indexw">
-								<view :style="'color:' + titleColor" class="item" :class="number===1?'four':number===2?'five':''" v-for="(itemn,indexn) in item.list" :key="indexn" @click="menusTap(itemn.info[1].value)">
+								<view :style="'color:' + titleColor" class="item"
+									:class="number===1?'four':number===2?'five':''" v-for="(itemn,indexn) in item.list"
+									:key="indexn" @click="menusTap(itemn.info[1].value)">
 									<view class="pictrue skeleton-radius" :class="menuStyle?'':'on'">
 										<image :src="itemn.img" mode="aspectFill"></image>
 									</view>
@@ -18,7 +22,8 @@
 				</swiper>
 			</view>
 			<view class="dot acea-row row-center-wrapper" v-if="docConfig<2">
-				<view class="dot-item" :class="{ 'line_dot-item': docConfig === 0,'': docConfig === 1}" :style="active==index?'background:'+ dotColor:''" v-for="(item,index) in menuList"></view>
+				<view class="dot-item" :class="{ 'line_dot-item': docConfig === 0,'': docConfig === 1}"
+					:style="active==index?'background:'+ dotColor:''" v-for="(item,index) in menuList"></view>
 			</view>
 		</view>
 		<view class="nav oneNav" v-else>
@@ -98,7 +103,7 @@
 				}
 			}
 			this.$nextTick(() => {
-				if (this.menuList.length&&this.isMany) {
+				if (this.menuList.length && this.isMany) {
 					let that = this
 					// #ifdef H5
 					that.menuHeight()
@@ -106,7 +111,7 @@
 					// #ifndef H5
 					setTimeout(() => {
 						that.menuHeight()
-					},100)
+					}, 100)
 					// #endif
 				}
 			})
@@ -115,7 +120,7 @@
 			bannerfun(e) {
 				this.active = e.detail.current;
 			},
-			menuHeight(){
+			menuHeight() {
 				let that = this;
 				const query = uni.createSelectorQuery().in(this);
 				query.select('#nav0').boundingClientRect(data => {
@@ -135,27 +140,7 @@
 				this.$set(this, 'menuList', goodArray);
 			},
 			menusTap(url) {
-				if (url.indexOf("http") != -1) {
-					// #ifdef H5
-					location.href = url
-					// #endif
-					// #ifdef MP || APP-PLUS
-					uni.navigateTo({
-						url: `/pages/annex/web_view/index?url=${url}`
-					});
-					// #endif
-				} else {
-					if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index']
-						.indexOf(url) == -1) {
-						uni.navigateTo({
-							url: url
-						})
-					} else {
-						uni.reLaunch({
-							url: url
-						})
-					}
-				}
+				this.$util.JumpPath(url);
 			}
 		}
 	};
@@ -165,7 +150,7 @@
 	.dot {
 		width: 100%;
 		padding-bottom: 20rpx;
-	
+
 		.instruct {
 			width: 50rpx;
 			height: 36rpx;
@@ -176,14 +161,14 @@
 			font-size: 24rpx;
 			text-align: center;
 		}
-	
+
 		.dot-item {
 			width: 10rpx;
 			height: 10rpx;
 			background: rgba(0, 0, 0, .4);
 			border-radius: 50%;
 			margin: 0 4px;
-	
+
 			&.line_dot-item {
 				width: 20rpx;
 				height: 5rpx;
@@ -191,10 +176,12 @@
 			}
 		}
 	}
+
 	.nav {
-		&.oneNav{
+		&.oneNav {
 			padding-bottom: 25rpx;
 		}
+
 		.item {
 			margin-top: 30rpx;
 			width: 160rpx;
@@ -230,6 +217,7 @@
 		z-index: 20;
 		position: relative;
 		overflow: hidden;
+
 		.nav {
 			.item {
 				width: 33.3333%;

@@ -396,7 +396,7 @@ class UserBrokerageServices extends BaseServices
         }
         /** @var UserExtractServices $userExtractService */
         $userExtractService = app()->make(UserExtractServices::class);
-        $userExtract = $userExtractService->getColumn(['uid' => $uid], 'fail_msg', 'id');
+        $userExtract = $userExtractService->getColumn(['uid' => $uid], 'fail_msg,extract_type', 'id');
         $list = $this->dao->getList($where, '*', $page, $limit);
         $count = $this->dao->count($where);
         $times = [];
@@ -404,7 +404,21 @@ class UserBrokerageServices extends BaseServices
             foreach ($list as &$item) {
                 $item['time'] = $item['time_key'] = $item['add_time'] ? date('Y-m', (int)$item['add_time']) : '';
                 $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i', (int)$item['add_time']) : '';
-                $item['fail_msg'] = $item['type'] == 'extract_fail' ? $userExtract[$item['link_id']] : '';
+                $item['fail_msg'] = $item['type'] == 'extract_fail' ? $userExtract[$item['link_id']]['fail_msg'] : '';
+                if ($type == 4) {
+                    $extract_type = $userExtract[$item['link_id']]['extract_type'] ?? '';
+                    if ($extract_type == 'alipay') {
+                        $item['extract_type'] = '支付宝';
+                    } elseif ($extract_type == 'weixin') {
+                        $item['extract_type'] = '微信';
+                    } elseif ($extract_type == 'bank') {
+                        $item['extract_type'] = '银行卡';
+                    } else {
+                        $item['extract_type'] = '余额';
+                    }
+                } else {
+                    $item['extract_type'] = '';
+                }
             }
             $times = array_merge(array_unique(array_column($list, 'time_key')));
         }

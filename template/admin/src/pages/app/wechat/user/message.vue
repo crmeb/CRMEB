@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
       <div class="table_box">
-        <Form
+        <el-form
           ref="formValidate"
           :model="formValidate"
           :label-width="labelWidth"
@@ -10,72 +10,97 @@
           class="tabform"
           @submit.native.prevent
         >
-          <Row :gutter="24" type="flex" justify="end">
-            <Col span="24" class="ivu-text-left">
-              <FormItem label="时间选择：">
-                <RadioGroup
+          <el-row :gutter="24" justify="end">
+            <el-col :span="24" class="ivu-text-left">
+              <el-form-item label="时间选择：">
+                <el-radio-group
                   v-model="formValidate.data"
                   type="button"
-                  @on-change="selectChange(formValidate.data)"
+                  @change="selectChange(formValidate.data)"
                   class="mr"
                 >
-                  <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
-                </RadioGroup>
-                <DatePicker
+                  <el-radio-button :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{
+                    item.text
+                  }}</el-radio-button>
+                </el-radio-group>
+                <el-date-picker
+                    clearable
                   :editable="false"
-                  @on-change="onchangeTime"
+                  @change="onchangeTime"
                   :value="timeVal"
-                  format="yyyy/MM/dd"
+                  value-format="yyyy/MM/dd"
                   type="daterange"
                   placement="bottom-end"
-                  placeholder="请选择时间"
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
                   style="width: 200px"
-                ></DatePicker>
-              </FormItem>
-            </Col>
-            <Col span="24" class="ivu-text-left">
-              <Col :xl="7" :lg="10" :md="12" :sm="24" :xs="24">
-                <FormItem label="操作名称：">
-                  <Select v-model="formValidate.type" style="width: 90%" clearable>
-                    <Option :value="1">男</Option>
-                    <Option :value="2">女</Option>
-                    <Option :value="0">保密</Option>
-                  </Select>
-                </FormItem>
-              </Col>
-              <Col :xl="7" :lg="10" :md="12" :sm="24" :xs="24">
-                <FormItem label="操作用户：">
-                  <Input placeholder="请输入用户名称" v-model="formValidate.nickname" style="width: 90%"></Input>
-                </FormItem>
-              </Col>
-              <Col :xl="3" :lg="4" :md="12" :sm="24" :xs="24" class="btn_box">
-                <FormItem>
-                  <Button type="primary" icon="ios-search" label="default" class="userSearch" @click="userSearchs"
-                    >搜索</Button
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24" class="ivu-text-left">
+              <el-col :xl="7" :lg="10" :md="12" :sm="24" :xs="24">
+                <el-form-item label="操作名称：">
+                  <el-select v-model="formValidate.type" style="width: 90%" clearable>
+                    <el-option :value="1" label="男"></el-option>
+                    <el-option :value="2" label="女"></el-option>
+                    <el-option :value="0" label="保密"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xl="7" :lg="10" :md="12" :sm="24" :xs="24">
+                <el-form-item label="操作用户：">
+                  <el-input placeholder="请输入用户名称" v-model="formValidate.nickname" style="width: 90%"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :xl="3" :lg="4" :md="12" :sm="24" :xs="24" class="btn_box">
+                <el-form-item>
+                  <el-button type="primary" label="default" class="userSearch" @click="userSearchs"
+                    >搜索</el-button
                   >
-                </FormItem>
-              </Col>
-            </Col>
-          </Row>
-        </Form>
+                </el-form-item>
+              </el-col>
+            </el-col>
+          </el-row>
+        </el-form>
       </div>
-      <Table
-        ref="selection"
-        :columns="columns4"
-        :data="tabList"
-        :loading="loading"
-        no-data-text="暂无数据"
-        highlight-row
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row, index }" slot="add_time">
-          <span> {{ row.add_time ? row.add_time : '' | formatDate }}</span>
-        </template>
-      </Table>
+      <el-table ref="selection" :data="tabList" v-loading="loading" empty-text="暂无数据" highlight-current-row>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作用户" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="关联内容" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.headimgurl }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作时间" min-width="130">
+          <template slot-scope="scope">
+            <span> {{ scope.row.add_time ? scope.row.add_time : '' | formatDate }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="formValidate.limit" />
+        <pagination
+          v-if="total"
+          :total="total"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
+        />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -119,40 +144,13 @@ export default {
       loading: false,
       tabList: [],
       total: 0,
-      columns4: [
-        {
-          title: 'ID',
-          width: 80,
-          key: 'id',
-        },
-        {
-          title: '操作用户',
-          key: 'nickname',
-          minWidth: 120,
-        },
-        {
-          title: '操作名称',
-          key: 'type_name',
-          minWidth: 120,
-        },
-        {
-          title: '关联内容',
-          key: 'headimgurl',
-          minWidth: 150,
-        },
-        {
-          title: '操作时间',
-          slot: 'add_time',
-          minWidth: 150,
-        },
-      ],
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     ...mapState('order', ['orderChartType']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -165,7 +163,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal.join('-');
+      this.formValidate.data = this.timeVal ? this.timeVal.join('-') : '';
       this.getList();
     },
     // 选择时间
@@ -187,12 +185,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 搜索
     userSearchs() {

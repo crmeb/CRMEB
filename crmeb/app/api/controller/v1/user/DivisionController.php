@@ -9,6 +9,9 @@ use app\services\agent\DivisionAgentApplyServices;
 use app\services\other\AgreementServices;
 use app\services\user\UserServices;
 use crmeb\services\CacheService;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 class DivisionController
 {
@@ -51,9 +54,9 @@ class DivisionController
      * 申请详情
      * @param Request $request
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function applyInfo(Request $request)
     {
@@ -66,9 +69,9 @@ class DivisionController
      * 移动端获取规则
      * @param AgreementServices $agreementServices
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function getAgentAgreement(AgreementServices $agreementServices)
     {
@@ -80,9 +83,9 @@ class DivisionController
      * 员工列表
      * @param Request $request
      * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      */
     public function getStaffList(Request $request)
     {

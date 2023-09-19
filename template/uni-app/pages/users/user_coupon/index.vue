@@ -199,6 +199,8 @@
 		color: #ffffff;
 		font-size: 24rpx;
 	}
+	.coupon-list .item{
+	}
 	.coupon-list .item .text{
 		padding: 14rpx 10rpx;
 	}
@@ -209,7 +211,7 @@
 	.coupon-list .item .text .condition .name {
 		font-size: 24rpx;
 		font-weight: 500;
-		line-height: 34rpx;
+		line-height: 44rpx;
 		/* display: flex;
 		align-items: center; */
 	}
@@ -264,7 +266,7 @@
 			border-bottom: 5rpx solid transparent;
 			font-size: 30rpx;
 			color: #999999;
-
+			
 			&.on {
 				border-bottom-color: var(--view-theme);
 				color: #282828;

@@ -47,7 +47,7 @@ class PageCategoryDao extends BaseDao
     {
         return $this->search($where)->field($field)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page();
-        })->order('sort desc')->select()->toArray();
+        })->order('sort desc,id DESC')->select()->toArray();
     }
 
 }

@@ -1,39 +1,42 @@
 <template>
-  <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form ref="formValidate" :model="formValidate" class="tabform" @submit.native.prevent>
-        <Row :gutter="24" type="flex">
-          <Col span="24">
-            <FormItem label="订单时间：">
-              <RadioGroup
+  <div v-loading="spinShow">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form ref="formValidate" :model="formValidate" class="tabform" @submit.native.prevent>
+        <el-row :gutter="24">
+          <el-col :span="24">
+            <el-form-item label="订单时间：">
+              <el-radio-group
                 v-model="formValidate.data"
                 type="button"
-                @on-change="selectChange(formValidate.data)"
+                @change="selectChange(formValidate.data)"
                 class="mr"
               >
-                <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
-              </RadioGroup>
-              <DatePicker
+                <el-radio-button :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{
+                  item.text
+                }}</el-radio-button>
+              </el-radio-group>
+              <el-date-picker
                 :editable="false"
-                @on-change="onchangeTime"
-                :value="timeVal"
+                clearable
+                @change="onchangeTime"
+                v-model="timeVal"
                 format="yyyy/MM/dd"
                 type="daterange"
-                placement="bottom-end"
-                placeholder="请选择时间"
-                style="width: 200px"
-              ></DatePicker>
-            </FormItem> </Col
-        ></Row>
-      </Form>
-    </Card>
+                value-format="yyyy/MM/dd"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              ></el-date-picker>
+            </el-form-item> </el-col
+        ></el-row>
+      </el-form>
+    </el-card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
-    <Spin size="large" fix v-if="spinShow"></Spin>
     <div class="code-row-bg">
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      <el-card :bordered="false" shadow="never" class="ivu-mt">
         <div class="acea-row row-between-wrapper">
-          <div class="header-title">积分来源</div>
+          <div class="statics-header-title">积分来源</div>
           <div>切换样式</div>
         </div>
         <echarts-new
@@ -43,10 +46,10 @@
           width="100%"
           v-if="optionData"
         ></echarts-new>
-      </Card>
-      <Card :bordered="false" dis-hover class="ivu-mt">
+      </el-card>
+      <el-card :bordered="false" shadow="never" class="ivu-mt">
         <div class="acea-row row-between-wrapper">
-          <div class="header-title">积分消耗</div>
+          <div class="statics-header-title">积分消耗</div>
           <div>切换样式</div>
         </div>
         <echarts-new
@@ -56,7 +59,7 @@
           width="100%"
           v-if="optionData"
         ></echarts-new>
-      </Card>
+      </el-card>
     </div>
   </div>
 </template>
@@ -138,7 +141,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join('-');
+      this.dataTime = this.timeVal ? this.timeVal.join('-') : '';
       this.name = this.dataTime;
     },
     // 统计图
@@ -236,7 +239,7 @@ export default {
           this.spinShow = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
           this.spinShow = false;
         });
     },

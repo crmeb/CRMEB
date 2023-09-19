@@ -41,9 +41,27 @@ class WechatReply extends BaseModel
      */
     public static $replyType = ['text', 'image', 'news', 'voice'];
 
-
+    /**
+     * 公众号自动回复关联
+     * @return \think\model\relation\HasMany
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/3
+     */
     public function wechatKeys()
     {
         return $this->hasMany(WechatKey::class, 'reply_id', 'id');
+    }
+
+    /**
+     * 客服自动回复关联
+     * @return \think\model\relation\HasOne
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/3
+     */
+    public function kefuKey()
+    {
+        return $this->hasOne(WechatKey::class, 'reply_id', 'id')->bind(['keys']);
     }
 }

@@ -69,6 +69,11 @@ class Cos extends BaseUpload
     protected $storageRegion;
 
     /**
+     * @var string
+     */
+    protected $cdn;
+
+    /**
      * 水印位置
      * @var string[]
      */
@@ -98,6 +103,7 @@ class Cos extends BaseUpload
         $this->uploadUrl = $this->checkUploadUrl($config['uploadUrl'] ?? '');
         $this->storageName = $config['storageName'] ?? null;
         $this->storageRegion = $config['storageRegion'] ?? null;
+        $this->cdn = $config['cdn'] ?? null;
         $this->waterConfig['watermark_text_font'] = 'simfang仿宋.ttf';
     }
 
@@ -133,7 +139,7 @@ class Cos extends BaseUpload
                 return $this->setError('上传的文件不存在');
             }
             if ($this->validate) {
-                if (!in_array(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION), $this->validate['fileExt'])) {
+                if (!in_array(strtolower(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION)), $this->validate['fileExt'])) {
                     return $this->setError('不合法的文件后缀');
                 }
                 if (filesize($fileHandle) > $this->validate['filesize']) {
@@ -153,7 +159,7 @@ class Cos extends BaseUpload
         try {
             $key = $this->getUploadPath($key);
             $this->fileInfo->uploadInfo = $this->app()->putObject($key, $body);
-            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->filePath = ($this->cdn ?: $this->uploadUrl) . '/' . $key;
             $this->fileInfo->realName = isset($fileHandle) ? $fileHandle->getOriginalName() : $key;
             $this->fileInfo->fileName = $key;
             $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);
@@ -304,6 +310,7 @@ class Cos extends BaseUpload
         // 获取临时密钥，计算签名
         $result = $sts->getTempKeys($config);
         $result['url'] = $this->uploadUrl . '/';
+        $result['cdn'] = $this->cdn;
         $result['type'] = 'COS';
         $result['bucket'] = $this->storageName;
         $result['region'] = $this->storageRegion;
@@ -433,14 +440,11 @@ class Cos extends BaseUpload
     public function deleteBucket(string $name)
     {
         try {
-            $res = $this->app()->deleteBucket($name);
-            if ($res->get('RequestId')) {
-                return true;
-            }
+            $this->app()->deleteBucket($name);
+            return true;
         } catch (\Throwable $e) {
             return $this->setError($e->getMessage());
         }
-        return false;
     }
 
     /**
@@ -452,8 +456,8 @@ class Cos extends BaseUpload
     {
         $this->storageRegion = $region;
         try {
-            $res = $this->app()->GetBucketDomain($name);
-            $domainRules = $res->toArray()['DomainRules'];
+            $res = $this->app()->getBucketDomain($name);
+            $domainRules = $res['DomainRules'];
             return array_column($domainRules, 'Name');
         } catch (\Throwable $e) {
         }
@@ -526,11 +530,11 @@ class Cos extends BaseUpload
     {
         $this->storageRegion = $region;
         try {
-            $res = $this->app()->PutBucketCors($name, [
-                'AllowedHeaders' => ['*'],
-                'AllowedMethods' => ['PUT', 'GET', 'POST', 'DELETE', 'HEAD'],
-                'AllowedOrigins' => ['*'],
-                'ExposeHeaders' => ['ETag', 'Content-Length', 'x-cos-request-id'],
+            $res = $this->app()->putBucketCors($name, [
+                'AllowedHeader' => ['*'],
+                'AllowedMethod' => ['PUT', 'GET', 'POST', 'DELETE', 'HEAD'],
+                'AllowedOrigin' => ['*'],
+                'ExposeHeader' => ['ETag', 'Content-Length', 'x-cos-request-id'],
                 'MaxAgeSeconds' => 12
             ]);
             if (isset($res['RequestId'])) {

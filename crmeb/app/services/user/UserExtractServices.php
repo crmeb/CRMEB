@@ -157,7 +157,7 @@ class UserExtractServices extends BaseServices
      */
     public function changeSuccess(int $id, $userExtract)
     {
-        $extractNumber = $userExtract['extract_price'];
+        $extractNumber = bcsub($userExtract['extract_price'], $userExtract['extract_fee'], 2);
         /** @var WechatUserServices $wechatServices */
         $wechatServices = app()->make(WechatUserServices::class);
         /** @var UserServices $userServices */
@@ -208,14 +208,14 @@ class UserExtractServices extends BaseServices
             //v3商家转账到零钱
             if (sys_config('pay_wechat_type')) {
                 $pay = new Pay('v3_wechat_pay');
-                $res = $pay->merchantPay($openid, $insertData['order_id'], $userExtract['extract_price'], [
+                $res = $pay->merchantPay($openid, $insertData['order_id'], $extractNumber, [
                     'type' => $type,
                     'batch_name' => '提现佣金到零钱',
-                    'batch_remark' => '您于' . date('Y-m-d H:i:s') . '提现.' . $userExtract['extract_price'] . '元'
+                    'batch_remark' => '您于' . date('Y-m-d H:i:s') . '提现.' . $extractNumber . '元'
                 ]);
             } else {
                 // 微信提现
-                $res = WechatService::merchantPay($openid, $insertData['order_id'], $userExtract['extract_price'], '提现佣金到零钱');
+                $res = WechatService::merchantPay($openid, $insertData['order_id'], $extractNumber, '提现佣金到零钱');
             }
 
             if (!$res) {
@@ -274,9 +274,10 @@ class UserExtractServices extends BaseServices
         /** @var UserBrokerageServices $userBrokerageServices */
         $userBrokerageServices = app()->make(UserBrokerageServices::class);
         $where['pm'] = 1;
-        $extract_statistics['brokerage_count'] = $userBrokerageServices->getUsersBokerageSum($where);
+        $brokerage_count = $userBrokerageServices->getUsersBokerageSum($where);
+        $extract_statistics['brokerage_count'] = bcadd((string)$brokerage_count, (string)$extract_statistics['price'], 2);
         //未提现金额
-        $extract_statistics['brokerage_not'] = $extract_statistics['brokerage_count'] > $extract_statistics['priced'] ? bcsub((string)$extract_statistics['brokerage_count'], (string)$extract_statistics['priced'], 2) : 0.00;
+        $extract_statistics['brokerage_not'] = $extract_statistics['brokerage_count'] > $extract_statistics['priced'] ? bcsub((string)$brokerage_count, (string)$extract_statistics['priced'], 2) : 0.00;
         return compact('extract_statistics', 'list');
     }
 
@@ -299,6 +300,7 @@ class UserExtractServices extends BaseServices
             $f[] = Form::input('alipay_code', '支付宝账号', $UserExtract['alipay_code']);
         } else if ($UserExtract['extract_type'] == 'weixin') {
             $f[] = Form::input('wechat', '微信号', $UserExtract['wechat']);
+        } else if ($UserExtract['extract_type'] == 'balance') {
         } else {
             $f[] = Form::input('bank_code', '银行卡号', $UserExtract['bank_code']);
             $f[] = Form::input('bank_address', '开户行', $UserExtract['bank_address']);
@@ -400,6 +402,7 @@ class UserExtractServices extends BaseServices
         $data['extractBank'] = explode("\n", is_array($extractBank) ? ($extractBank[0] ?? $extractBank) : $extractBank);
         $data['minPrice'] = sys_config('user_extract_min_price');//提现最低金额
         $data['brokerageType'] = sys_config('brokerage_type', 0);//到账方式
+        $data['withdrawal_fee'] = sys_config('withdrawal_fee', 0);//提现手续费
         return $data;
     }
 
@@ -460,10 +463,12 @@ class UserExtractServices extends BaseServices
         if ($data['money'] <= 0) {
             throw new ApiException(400664);
         }
+        $data['extract_price'] = bcmul($data['money'], '1', 2);
         $insertData = [
             'uid' => $user['uid'],
             'extract_type' => $data['extract_type'],
-            'extract_price' => $data['money'],
+            'extract_price' => $data['extract_price'],
+            'extract_fee' => bcmul((string)$data['extract_price'], bcdiv((string)sys_config('withdrawal_fee', '0'), '100', 4), 2),
             'add_time' => time(),
             'balance' => $user['brokerage_price'],
             'status' => 0
@@ -477,17 +482,18 @@ class UserExtractServices extends BaseServices
         if (isset($data['weixin'])) $insertData['wechat'] = $data['weixin'];
         else $insertData['wechat'] = $user['nickname'];
         $mark = '';
+        $feeMark = sys_config('withdrawal_fee', 0) == 0 ? '' : '，手续费' . $insertData['extract_fee'] . '元';
         if ($data['extract_type'] == 'alipay') {
             $insertData['alipay_code'] = $data['alipay_code'];
             $insertData['qrcode_url'] = $data['qrcode_url'];
-            $mark = '使用支付宝提现' . $insertData['extract_price'] . '元';
+            $mark = '使用支付宝提现' . $insertData['extract_price'] . '元' . $feeMark;
         } else if ($data['extract_type'] == 'bank') {
-            $mark = '使用银联卡' . $insertData['bank_code'] . '提现' . $insertData['extract_price'] . '元';
+            $mark = '使用银联卡' . $insertData['bank_code'] . '提现' . $insertData['extract_price'] . '元' . $feeMark;
         } else if ($data['extract_type'] == 'weixin') {
             $insertData['qrcode_url'] = $data['qrcode_url'];
-            $mark = '使用微信提现' . $insertData['extract_price'] . '元';
+            $mark = '使用微信提现' . $insertData['extract_price'] . '元' . $feeMark;
             if (sys_config('brokerage_type', 0) && $openid) {
-                if ($data['money'] < 1) {
+                if ($data['extract_price'] < 1) {
                     throw new ApiException(400665);
                 }
             }
@@ -496,7 +502,7 @@ class UserExtractServices extends BaseServices
             if (!$res1 = $this->dao->save($insertData)) {
                 throw new ApiException(410121);
             }
-            $balance = bcsub((string)$user['brokerage_price'], (string)$data['money'], 2) ?? 0;
+            $balance = bcsub((string)$user['brokerage_price'], $data['extract_price'], 2) ?? 0;
             if (!$userService->update($uid, ['brokerage_price' => $balance], 'uid')) {
                 throw new ApiException(410121);
             }
@@ -504,7 +510,7 @@ class UserExtractServices extends BaseServices
             //保存佣金记录
             /** @var UserBrokerageServices $userBrokerageServices */
             $userBrokerageServices = app()->make(UserBrokerageServices::class);
-            $userBrokerageServices->income('extract', $uid, ['mark' => $mark, 'number' => $data['money']], $balance, $res1['id']);
+            $userBrokerageServices->income('extract', $uid, ['mark' => $mark, 'number' => $data['extract_price']], $balance, $res1['id']);
             return $res1;
         });
 
@@ -516,7 +522,7 @@ class UserExtractServices extends BaseServices
         $systemAdmin = app()->make(SystemAdminServices::class);
         $systemAdmin->adminNewPush();
         //消息
-        event('NoticeListener', [['nickname' => $user['nickname'], 'money' => $data['money']], 'kefu_send_extract_application']);
+        event('NoticeListener', [['nickname' => $user['nickname'], 'money' => $data['extract_price']], 'kefu_send_extract_application']);
 
         return true;
     }

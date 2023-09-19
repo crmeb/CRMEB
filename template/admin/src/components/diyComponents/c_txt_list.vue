@@ -10,31 +10,31 @@
           <div class="content">
             <div class="con-item" v-for="(list, key) in item.chiild" :key="key">
               <div class="dif" v-if="list.title === '链接'">
-                <Col class="label">
+                <el-col class="label" :span="4">
                   <span>{{ list.title }}</span>
-                </Col>
-                <Col class="slider-box">
+                </el-col>
+                <el-col class="slider-box">
                   <div class="input-box" @click="getLink(index, key)">
-                    <Input
+                    <el-input
                       v-model="list.val"
                       :placeholder="list.pla"
                       :maxlength="list.max"
-                      icon="ios-arrow-forward"
+                      suffix-icon="el-icon-arrow-right"
                       readonly
                     />
                   </div>
-                </Col>
+                </el-col>
               </div>
               <div class="dif" v-else>
-                <Col class="label">
+                <el-col class="label" :span="4">
                   <span>{{ list.title }}</span>
-                </Col>
-                <Col span="19" class="slider-box">
-                  <Input v-model="list.val" :placeholder="list.pla" :maxlength="list.max" style="text-align: right" />
-                </Col>
+                </el-col>
+                <el-col :span="19" class="slider-box">
+                  <el-input v-model="list.val" :placeholder="list.pla" :maxlength="list.max" style="text-align: right" />
+                </el-col>
               </div>
               <!-- <span>{{ list.title }}</span>
-              <Input
+              <el-input
                 v-model="list.val"
                 :placeholder="list.pla"
                 :maxlength="list.max"
@@ -42,21 +42,21 @@
             </div>
             <div class="con-item" v-if="item.link">
               <span>{{ item.link.title }}</span>
-              <Select v-model="item.link.activeVal" style="">
-                <Option v-for="(item, j) in item.link.optiops" :value="item.value" :key="j">{{ item.label }} </Option>
-              </Select>
+              <el-select v-model="item.link.activeVal" style="">
+                <el-option v-for="(item, j) in item.link.optiops" :value="item.value" :key="j" :label="item.label"></el-option>
+              </el-select>
             </div>
           </div>
           <div class="delete" @click.stop="bindDelete(index)" v-if="datas[name].max > 1">
-            <Icon type="ios-close-circle" size="26" />
+            <i class="el-icon-circle-close" style="font-size: 24px;"></i>
           </div>
         </div>
       </draggable>
     </div>
     <div v-if="datas[name]">
       <div class="add-btn" @click="addHotTxt" v-if="datas[name].list.length < datas[name].max">
-        <Button type="primary" ghost style="width: 100%; height: 40px; border-color: #1890ff; color: #1890ff"
-          >添加模块</Button
+        <el-button type="primary" ghost style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
+          >添加模块</el-button
         >
       </div>
     </div>

@@ -63,6 +63,7 @@ class Reply extends AuthController
             ['key', ''],
             ['type', ''],
         ]);
+        $where['key_type'] = 0;
         $list = $this->services->getKeyAll($where);
         return app('json')->success($list);
     }

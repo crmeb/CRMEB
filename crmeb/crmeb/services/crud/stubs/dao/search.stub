@@ -1,0 +1,15 @@
+    /**
+     * 搜索
+     * @param array $where
+     * @return \crmeb\basic\BaseModel
+     * @throws \ReflectionException
+     * @date {%DATE%}
+     */
+    public function searchCrudModel(array $where = [], $field = ['*'], string $order = '', array $with = [])
+    {
+        return $this->getModel()->field($field)->when($order !== '', function ($query) use ($order) {
+            $query->order($order);
+        })->when($with, function ($query) use ($with) {
+            $query->with($with);
+        }){%CONTENT_SEARCH_PHP%}
+    }

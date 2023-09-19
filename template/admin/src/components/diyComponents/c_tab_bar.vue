@@ -18,16 +18,16 @@
             </div>
           </div>
           <div class="c_row-item">
-            <Col class="label" span="4"> 名称 </Col>
-            <Col span="19" class="slider-box">
-              <Input v-model="item.name" placeholder="选填不超过10个字" />
-            </Col>
+            <el-col class="label" :span="4"> 名称 </el-col>
+            <el-col :span="19" class="slider-box">
+              <el-input v-model="item.name" placeholder="选填不超过10个字" />
+            </el-col>
           </div>
           <div class="c_row-item">
-            <Col class="label" span="4"> 链接 </Col>
-            <Col span="19" class="slider-box">
-              <Input v-model="item.link" placeholder="选填不超过10个字" />
-            </Col>
+            <el-col class="label" :span="4"> 链接 </el-col>
+            <el-col :span="19" class="slider-box">
+              <el-input v-model="item.link" placeholder="选填不超过10个字" />
+            </el-col>
           </div>
         </div>
         <div class="del-box" @click="deleteMenu(index)">
@@ -36,21 +36,21 @@
       </div>
     </draggable>
     <div class="add-btn" v-if="datas[name].list.length < 5">
-      <Button
+      <el-button
         type="primary"
         ghost
-        style="width: 100%; height: 40px; border-color: #1890ff; color: #1890ff"
+        style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
         @click="addMenu"
         >添加图文导航
-      </Button>
+      </el-button>
     </div>
     <div>
-      <Modal
+      <el-dialog
         v-model="modalPic"
         width="950px"
         scrollable
         footer-hide
-        closable
+        :show-close="true"
         title="上传商品图"
         :mask-closable="false"
         :z-index="888"
@@ -62,7 +62,7 @@
           :gridPic="gridPic"
           v-if="modalPic"
         ></uploadPictures>
-      </Modal>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -136,17 +136,22 @@ export default {
       }
     },
     deleteMenu(index) {
-      this.$Modal.confirm({
+      this.$msgbox({
         title: '提示',
-        content: '是否确定删除该菜单',
-        onOk: () => {
-          if (this.configData[this.configNum][this.name].list.length == 1) {
-            this.lastObj = this.configData[this.configNum][this.name].list[0];
-          }
-          this.configData[this.configNum][this.name].list.splice(index, 1);
-        },
-        onCancel: () => {},
-      });
+        message:'是否确定删除该菜单',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '删除',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel'
+      }).then(() => {
+        if (this.configData[this.configNum][this.name].list.length == 1) {
+          this.lastObj = this.configData[this.configNum][this.name].list[0];
+        }
+        this.configData[this.configNum][this.name].list.splice(index, 1);
+      }).catch(() => {
+
+      })
     },
     // 点击图文封面
     modalPicTap(title, index, select) {

@@ -1,25 +1,22 @@
 <template>
-  <Modal
-    v-model="modals"
-    scrollable
-    footer-hide
-    closable
+  <el-dialog
+    :visible.sync="modals"
     title="选择商品"
-    :mask-closable="false"
-    width="950"
-    @on-cancel="handleReset"
+    :close-on-click-modal="false"
+    width="1000px"
+    @closed="handleReset"
   >
-    <Form
+    <el-form
       ref="levelFrom"
       :model="levelFrom"
       :label-width="labelWidth"
       :label-position="labelPosition"
       @submit.native.prevent
     >
-      <Row type="flex" :gutter="24">
-        <Col v-bind="grid">
-          <FormItem label="商品名称：" prop="status2" label-for="status2">
-            <Input
+      <el-row :gutter="24">
+        <el-col v-bind="grid">
+          <el-form-item label="商品名称：" prop="status2" label-for="status2">
+            <el-input
               search
               enter-button
               v-model="levelFrom.name"
@@ -27,56 +24,59 @@
               @on-search="userSearchs"
               style="width: 100%"
             />
-          </FormItem>
-        </Col>
-      </Row>
-    </Form>
-    <Divider dashed />
-    <Table
-      :columns="columns1"
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <el-divider direction="vertical" dashed />
+    <el-table
       :data="levelLists"
       ref="table"
-      :loading="loading"
+      v-loading="loading"
       no-userFrom-text="暂无数据"
       no-filtered-userFrom-text="暂无筛选结果"
     >
       <template slot-scope="{ row, index }" slot="is_shows">
-        <i-switch
+        <el-switch
+          :active-value="1"
+          :inactive-value="0"
           v-model="row.is_show"
           :value="row.is_show"
-          :true-value="1"
-          :false-value="0"
           size="large"
-          @on-change="onchangeIsShow(row)"
+          @change="onchangeIsShow(row)"
         >
-          <span slot="open">显示</span>
-          <span slot="close">隐藏</span>
-        </i-switch>
+        </el-switch>
       </template>
       <template slot-scope="{ row, index }" slot="is_musts">
-        <i-switch
+        <el-switch
+          :active-value="1"
+          :inactive-value="0"
           v-model="row.is_must"
           :value="row.is_must"
-          :true-value="1"
-          :false-value="0"
           size="large"
-          @on-change="onchangeIsMust(row)"
+          @change="onchangeIsMust(row)"
+          active-text="全部完成"
+          inactive-text="达成其一"
         >
-          <span slot="open">全部完成</span>
-          <span slot="close">达成其一</span>
-        </i-switch>
+        </el-switch>
       </template>
       <template slot-scope="{ row, index }" slot="action">
         <a @click="edit(row)">编辑 | </a>
         <a @click="del(row, '删除任务')"> 删除</a>
       </template>
-    </Table>
+    </el-table>
     <div class="acea-row row-right page">
-      <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="levelFrom.limit" />
+      <pagination
+        v-if="total"
+        :total="total"
+        :page.sync="levelFrom.page"
+        :limit.sync="levelFrom.limit"
+        @pagination="getList"
+      />
     </div>
     <!-- 新建 编辑表单-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail" :titleType="titleType"></edit-from>
-  </Modal>
+  </el-dialog>
 </template>
 
 <script>
@@ -115,7 +115,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange(index) {

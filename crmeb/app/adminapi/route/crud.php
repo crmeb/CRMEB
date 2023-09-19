@@ -32,4 +32,4 @@ Route::group(function () {
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
     \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
-])->option(['mark' => 'crud', 'mark_name' => '代码生成']);
+])->option(['mark' => 'crud', 'mark_name' => '生成代码路由']);

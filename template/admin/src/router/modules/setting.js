@@ -113,6 +113,7 @@ export default {
       meta: {
         auth: ['setting-notification'],
         title: '消息编辑',
+        activeMenu: routePre + '/setting/notification/index',
       },
       component: () => import('@/pages/setting/notification/notificationEdit'),
     },
@@ -442,6 +443,15 @@ export default {
       component: () => import('@/pages/setting/storeService/feedback'),
     },
     {
+      path: 'store_service/auto_reply',
+      name: `${pre}auto_reply`,
+      meta: {
+        auth: ['admin-setting-store_service-auto_reply'],
+        title: '自动回复',
+      },
+      component: () => import('@/pages/setting/storeService/autoReply'),
+    },
+    {
       path: 'system_group_data/pc/:id',
       name: `${pre}groupDataPc`,
       meta: {
@@ -647,6 +657,78 @@ export default {
         title: '地区关联语言',
       },
       component: () => import('@/pages/setting/multiLanguage/country'),
+    },
+    {
+      path: 'yihaotong_config/:type?/:tab_id?',
+      name: `${pre}yihaotong_config`,
+      meta: {
+        ...meta,
+        title: '一号通配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'lang_config/:type?/:tab_id?',
+      name: `${pre}lang_config`,
+      meta: {
+        ...meta,
+        title: '翻译配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'kefu_config/:type?/:tab_id?',
+      name: `${pre}kefu_config`,
+      meta: {
+        ...meta,
+        title: '客服配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'recharge_config/:type?/:tab_id?',
+      name: `${pre}recharge_config`,
+      meta: {
+        ...meta,
+        title: '充值配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'member_config/:type?/:tab_id?',
+      name: `${pre}member_config`,
+      meta: {
+        ...meta,
+        title: '付费会员配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'user_config/:type?/:tab_id?',
+      name: `${pre}user_config`,
+      meta: {
+        ...meta,
+        title: '用户配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'order_config/:type?/:tab_id?',
+      name: `${pre}order_config`,
+      meta: {
+        ...meta,
+        title: '订单配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'sign_config/:type?/:tab_id?',
+      name: `${pre}sign_config`,
+      meta: {
+        ...meta,
+        title: '签到配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
     },
   ],
 };

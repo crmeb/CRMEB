@@ -2,9 +2,9 @@
   <div class="upgrade-dialog">
     <el-dialog
       :visible.sync="isUpgrade"
-      width="300px"
+      width="470px"
       destroy-on-close
-      :show-close="false"
+      :show-close="true"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
     >

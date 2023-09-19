@@ -3,9 +3,9 @@
  * @param data
  * @return {*}
  */
-export function {%nameCamel%}SaveApi(data) {
+export function {%NAME_CAMEL%}SaveApi(data) {
     return request({
-        url: '{%route%}',
+        url: '{%ROUTE%}',
         method: 'post',
         data
     });

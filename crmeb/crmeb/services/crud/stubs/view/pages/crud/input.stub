@@ -1,0 +1,7 @@
+        <el-form-item label="{%NAME%}：" label-for="{%FIELD%}">
+            <el-input
+                v-model="from.{%FIELD%}"
+                placeholder="请输入{%NAME%}"
+                class="form_content_width"
+            />
+        </el-form-item>

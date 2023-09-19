@@ -4,7 +4,7 @@
       <div class="section-hd">基本信息</div>
       <div class="section-bd">
         <div class="item">
-          <div>用户编号：</div>
+          <div>用户ID：</div>
           <div class="value">{{ psInfo.uid }}</div>
         </div>
         <div class="item">
@@ -149,7 +149,7 @@ export default {
 
     &-hd {
       padding-left: 10px;
-      border-left: 3px solid #1890ff;
+      border-left: 3px solid var(--prev-color-primary);
       font-weight: 500;
       font-size: 14px;
       line-height: 16px;
@@ -166,7 +166,7 @@ export default {
       display: flex;
       margin: 16px 30px 0 0;
       font-size: 13px;
-      color: #606266;
+      color: #666;
 
       &:nth-child(3n + 3) {
         margin: 16px 0 0;

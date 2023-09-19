@@ -60,7 +60,7 @@
 				default: () => {}
 			},
 		},
-		mixins:[colors],
+		mixins: [colors],
 		watch: {
 			dataConfig: {
 				immediate: true,
@@ -92,24 +92,7 @@
 		methods: {
 			gopage(url) {
 				goPage().then(res => {
-					if (url.indexOf("http") != -1) {
-						// #ifdef H5
-						location.href = url
-						// #endif
-					} else {
-						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
-								'/pages/user/index'
-							].indexOf(url) ==
-							-1) {
-							uni.navigateTo({
-								url: url
-							})
-						} else {
-							uni.navigateTo({
-								url: url
-							})
-						}
-					}
+					this.$util.JumpPath(url);
 				})
 			}
 		}
@@ -117,10 +100,11 @@
 </script>
 
 <style lang="scss">
-	.new{
+	.new {
 		background-color: #fff;
 		padding: 20rpx 0;
 	}
+
 	.news {
 		height: 60rpx;
 		padding: 0 26rpx;

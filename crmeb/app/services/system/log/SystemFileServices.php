@@ -281,6 +281,7 @@ class SystemFileServices extends BaseServices
             $navList[$key]['children'] = [];
             $navList[$key]['path'] = $value['path'];
             $navList[$key]['isDir'] = $value['isDir'];
+            $navList[$key]['isLeaf'] = !$value['isDir'];
             $navList[$key]['pathname'] = $value['pathname'];
             $navList[$key]['contextmenu'] = true;
             $list[$key]['mark'] = $markList[str_replace(root_path(), '/', $value['pathname'])] ?? '';
@@ -344,7 +345,7 @@ class SystemFileServices extends BaseServices
     {
         $filepath = $this->formatPath($filepath);
         if (!FileClass::isWritable($filepath)) {
-            throw new AdminException(400611);
+            throw new AdminException('请检查目录权限，需要给全部文件777WWW权限');
         }
         return FileClass::writeFile($filepath, $comment);
     }

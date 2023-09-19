@@ -57,6 +57,7 @@ export default {
       name: `${pre}storeCombinationStatistics`,
       meta: {
         title: '拼团统计',
+        activeMenu: routePre + '/marketing/store_combination/index',
       },
       component: () => import('@/pages/marketing/storeCombination/statistics'),
     },
@@ -141,6 +142,7 @@ export default {
       name: `${pre}storeBargainStatistics`,
       meta: {
         title: '砍价统计',
+        activeMenu: routePre + '/marketing/store_bargain/index',
       },
       component: () => import('@/pages/marketing/storeBargain/statistics'),
     },
@@ -178,6 +180,7 @@ export default {
       name: `${pre}storeSeckillStatistics`,
       meta: {
         title: '秒杀统计',
+        activeMenu: routePre + '/marketing/store_seckill/index',
       },
       component: () => import('@/pages/marketing/storeSeckill/statistics'),
     },
@@ -209,15 +212,6 @@ export default {
         activeMenu: routePre + '/marketing/store_integral/index',
       },
       component: () => import('@/pages/marketing/storeIntegral/create'),
-    },
-    {
-      path: 'store_integral/add_store_integral',
-      name: `${pre}addStoreIntegral`,
-      meta: {
-        auth: ['marketing-store_integral-create'],
-        title: '批量添加积分商品',
-      },
-      component: () => import('@/pages/marketing/storeIntegral/addStoreIntegral'),
     },
     {
       path: 'store_integral/order_list',
@@ -364,6 +358,7 @@ export default {
       meta: {
         auth: ['marketing-channel_code-statistic'],
         title: '二维码统计',
+        activeMenu: routePre + '/marketing/channel_code/channelCodeIndex',
       },
       component: () => import('@/pages/marketing/channelCode/codeStatistic'),
     },
@@ -389,7 +384,6 @@ export default {
       path: 'recharge',
       name: `${pre}recharge`,
       meta: {
-        auth: ['marketing-recharge-index'],
         title: '充值配置',
       },
       component: () => import('@/pages/marketing/recharge/index'),
@@ -398,16 +392,22 @@ export default {
       path: 'sign',
       name: `${pre}sign`,
       meta: {
-        auth: ['marketing-sign-index'],
         title: '签到配置',
       },
       component: () => import('@/pages/marketing/sign/index'),
     },
     {
-      path: `member/system_config/:type?/:tab_id?`,
-      name: `${pre}member`,
+      path: 'sign_rewards',
+      name: `${pre}sign_rewards`,
       meta: {
-        auth: ['marketing-member-system_config'],
+        title: '签到奖励',
+      },
+      component: () => import('@/pages/marketing/sign/rewards'),
+    },
+    {
+      path: `member_config/:type?/:tab_id?`,
+      name: `${pre}member_config`,
+      meta: {
         title: '会员配置',
       },
       component: () => import('@/pages/setting/setSystem/index'),

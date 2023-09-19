@@ -51,9 +51,9 @@ class ShippingTemplatesNoDeliveryDao extends BaseDao
      * @param string $key
      * @return array
      */
-    public function getShippingArray(array $where, string $field, string $key)
+    public function getShippingArray(array $where)
     {
-        return $this->search($where)->column($field, $key);
+        return $this->search($where)->select()->toArray();
     }
 
     /**

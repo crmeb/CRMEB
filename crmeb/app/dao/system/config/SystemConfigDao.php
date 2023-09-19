@@ -68,7 +68,7 @@ class SystemConfigDao extends BaseDao
      */
     public function getConfigList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->page($page, $limit)->order('sort desc,id desc')->select()->toArray();
+        return $this->search($where)->page($page, $limit)->order('sort desc,id asc')->select()->toArray();
     }
 
     /**
@@ -84,7 +84,7 @@ class SystemConfigDao extends BaseDao
     {
         $where['tab_id'] = $tabId;
         if ($status == 1) $where['status'] = $status;
-        return $this->search($where)->order('sort desc')->select()->toArray();
+        return $this->search($where)->order('sort desc,id ASC')->select()->toArray();
     }
 
     /**

@@ -10,15 +10,15 @@
     <div class="main">
       <div class="title">我要反馈</div>
       <div class="input-box">
-        <Input type="text" placeholder="请输入您的姓名" v-model="name" />
+        <el-input type="text" placeholder="请输入您的姓名" v-model="name" />
       </div>
       <div class="input-box">
-        <Input type="text" placeholder="请输入您的联系电话" v-model="phone" />
+        <el-input type="text" placeholder="请输入您的联系电话" v-model="phone" />
       </div>
       <div class="input-box">
-        <Input type="textarea" placeholder="请填写内容" v-model="con" />
+        <el-input type="textarea" placeholder="请填写内容" v-model="con" />
       </div>
-      <Button class="sub_btn" @click="subMit" :disabled="isDisabled">提交</Button>
+      <el-button class="sub_btn" @click="subMit" :disabled="isDisabled">提交</el-button>
     </div>
   </div>
 </template>
@@ -47,13 +47,13 @@ export default {
     },
     subMit() {
       if (!this.name) {
-        return this.$Message.error('请填写姓名');
+        return this.$message.error('请填写姓名');
       }
       if (!this.phone || !/^1(3|4|5|7|8|9|6)\d{9}$/i.test(this.phone)) {
-        return this.$Message.error('请填写正确的手机号码');
+        return this.$message.error('请填写正确的手机号码');
       }
       if (!this.con) {
-        return this.$Message.error('请填写内容');
+        return this.$message.error('请填写内容');
       }
       this.isDisabled = true;
       feedbackFromApi({
@@ -62,11 +62,11 @@ export default {
         content: this.con,
       })
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.$router.go(-1);
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
   },

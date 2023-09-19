@@ -1,95 +1,145 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="tableFrom"
-        :model="tableFrom"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="秒杀状态：">
-              <Select placeholder="请选择" clearable v-model="tableFrom.status" @on-change="userSearchs">
-                <Option value="1">开启</Option>
-                <Option value="0">关闭</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="商品搜索：" label-for="store_name">
-              <Input
-                search
-                enter-button
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="tableFrom"
+            :model="tableFrom"
+            :label-width="labelWidth"
+            label-position="right"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="秒杀状态：">
+            <el-select placeholder="请选择" clearable v-model="tableFrom.status" @change="userSearchs" class="form_content_width">
+              <el-option value="1" label="开启"></el-option>
+              <el-option value="0" label="关闭"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="商品搜索：" label-for="store_name">
+            <el-input
                 placeholder="请输入商品名称，ID"
                 v-model="tableFrom.store_name"
-                @on-search="userSearchs"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex" class="mb20">
-          <Col v-bind="grid">
-            <Button v-auth="['marketing-store_seckill-create']" type="primary" icon="md-add" @click="add" class="mr10"
-              >添加秒杀商品</Button
-            >
-            <Button v-auth="['export-storeSeckill']" class="export" icon="ios-share-outline" @click="exports"
-              >导出</Button
-            >
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+      <el-button
+          v-auth="['marketing-store_seckill-create']"
+          type="primary"
+          @click="add"
+      >添加秒杀商品</el-button>
+      <el-button v-auth="['export-storeSeckill']" class="export" @click="exports">导出</el-button>
+      <el-table
         :data="tableList"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
+        class="mt14"
       >
-        <template slot-scope="{ row, index }" slot="image">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.image" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="stop_time">
-          <span> {{ row.stop_time | formatDate }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">开启</span>
-            <span slot="close">关闭</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a v-if="row.stop_status === 0" @click="edit(row)">编辑</a>
-          <Divider v-if="row.stop_status === 0" type="vertical" />
-          <a @click="copy(row)">复制</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除秒杀商品', index)">删除</a>
-          <Divider type="vertical" />
-          <a @click="viewInfo(row)">统计</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品图片" min-width="90">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.image" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="活动标题" min-width="130">
+          <template slot-scope="scope">
+            <el-tooltip placement="top" :open-delay="600">
+              <div slot="content">{{ scope.row.title }}</div>
+              <span class="line2">{{ scope.row.title }}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column label="活动简介" min-width="100">
+          <template slot-scope="scope">
+            <el-tooltip placement="top" :open-delay="600">
+              <div slot="content">{{ scope.row.info }}</div>
+              <span class="line2">{{ scope.row.info }}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column label="原价" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.ot_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="秒杀价" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="限量" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.quota_show }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="限量剩余" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.quota }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="秒杀状态" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.start_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="结束时间" min-width="100">
+          <template slot-scope="scope">
+            <span> {{ scope.row.stop_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" min-width="100">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="开启"
+              inactive-text="关闭"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a v-if="scope.row.stop_status === 0" @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical" v-if="scope.row.stop_status === 0" />
+            <a @click="copy(scope.row)">复制</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除秒杀商品', scope.$index)">删除</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="viewInfo(scope.row)">统计</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="tableFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="tableFrom.limit"
+          :page.sync="tableFrom.page"
+          :limit.sync="tableFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -195,10 +245,10 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   activated() {
@@ -262,11 +312,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tableList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     viewInfo(row) {
@@ -287,12 +337,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.tableFrom.page = index;
-      this.getList();
     },
     // 表格搜索
     userSearchs() {
@@ -309,10 +355,10 @@ export default {
         .then(async (res) => {
           this.getList();
 
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

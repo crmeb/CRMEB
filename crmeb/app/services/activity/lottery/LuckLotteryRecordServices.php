@@ -212,7 +212,7 @@ class LuckLotteryRecordServices extends BaseServices
                     /** @var StoreCouponIssueServices $couponIssueService */
                     $couponIssueService = app()->make(StoreCouponIssueServices::class);
                     try {
-                        $couponIssueService->issueUserCoupon($prize['coupon_id'], $userInfo, true);
+                        $couponIssueService->issueUserCoupon($prize['coupon_id'], $userInfo);
                     } catch (\Throwable $e) {
                         Log::error('抽奖领取优惠券失败，原因：' . $e->getMessage());
                     }

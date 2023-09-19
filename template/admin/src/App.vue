@@ -2,20 +2,18 @@
   <div id="app">
     <router-view />
     <Setings ref="setingsRef" />
-    <Upgrade v-if="isVersion" />
+    <!-- 检测版本更新 -->
+    <!-- <Upgrade v-if="isVersion" /> -->
   </div>
 </template>
 
 <script>
-import { on, off } from 'iview/src/utils/dom';
-import { setMatchMedia } from 'iview/src/utils/assist';
 import { mapMutations } from 'vuex';
 import Setings from '@/layout/navBars/breadcrumb/setings.vue';
 import Upgrade from '@/layout/upgrade/index.vue';
 import setting from './setting';
 import { Local } from '@/utils/storage.js';
 import config from '../package.json';
-setMatchMedia();
 
 export default {
   name: 'app',
@@ -79,17 +77,12 @@ export default {
     },
   },
   mounted() {
-    on(window, 'resize', this.handleWindowResize);
     this.handleMatchMedia();
     this.openSetingsDrawer();
     this.getLayoutThemeConfig();
     this.$nextTick((e) => {
       // this.getVersion();
     });
-  },
-
-  beforeDestroy() {
-    off(window, 'resize', this.handleWindowResize);
   },
   destroyed() {
     this.bus.$off('openSetingsDrawer');
@@ -113,32 +106,32 @@ body {
   .size;
   font-family: PingFang SC, Arial, Microsoft YaHei, sans-serif;
 }
-.dialog-fade-enter-active {
-  animation: anim-open 0.3s;
-}
-.dialog-fade-leave-active {
-  animation: anim-close 0.3s;
-}
-@keyframes anim-open {
-  0% {
-    transform: translate3d(100%, 0, 0);
-    opacity: 0;
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-    opacity: 1;
-  }
-}
-@keyframes anim-close {
-  0% {
-    transform: translate3d(0, 0, 0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate3d(100%, 0, 0);
-    opacity: 0;
-  }
-}
+// .dialog-fade-enter-active {
+//   animation: anim-open 0.3s;
+// }
+// .dialog-fade-leave-active {
+//   animation: anim-close 0.3s;
+// }
+// @keyframes anim-open {
+//   0% {
+//     transform: translate3d(100%, 0, 0);
+//     opacity: 0;
+//   }
+//   100% {
+//     transform: translate3d(0, 0, 0);
+//     opacity: 1;
+//   }
+// }
+// @keyframes anim-close {
+//   0% {
+//     transform: translate3d(0, 0, 0);
+//     opacity: 1;
+//   }
+//   100% {
+//     transform: translate3d(100%, 0, 0);
+//     opacity: 0;
+//   }
+// }
 .ivu-modal-wrap /deep/ .connect_customerServer_img {
   display: none;
 }

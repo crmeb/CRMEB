@@ -296,7 +296,7 @@
 								},
 								fail: function(res) {
 									that.$util.Tips({
-										title: that.$t(`enable_file_access`)
+										title: that.$t(`保存失败`)
 									});
 								}
 							});

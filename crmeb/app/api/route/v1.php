@@ -18,9 +18,10 @@ Route::group(function () {
     Route::any('wechat/serve', 'v1.wechat.WechatController/serve')->option(['real_name' => '公众号服务']);//公众号服务
     Route::any('wechat/miniServe', 'v1.wechat.WechatController/miniServe')->option(['real_name' => '小程序服务']);//公众号服务
     Route::any('pay/notify/:type', 'v1.PayController/notify')->option(['real_name' => '支付回调']);//支付回调
+    Route::any('order_call_back', 'v1.order.StoreOrderController/callBack')->option(['real_name' => '商家寄件回调']);//商家寄件回调
     Route::get('get_script', 'v1.PublicController/getScript')->option(['real_name' => '获取统计代码']);//获取统计代码
     Route::get('version', 'v1.PublicController/getVersion')->option(['real_name' => '获取代码版本号']);
-})->option(['mark' => 'serve', 'mark_name' => '服务接口']);
+})->middleware(\app\http\middleware\AllowOriginMiddleware::class)->option(['mark' => 'serve', 'mark_name' => '服务接口']);
 
 Route::group(function () {
     //apple快捷登陆
@@ -80,6 +81,7 @@ Route::group(function () {
     Route::get('admin/order/delivery_info', 'v1.admin.StoreOrderController/getDeliveryInfo')->name('getDeliveryInfo')->option(['real_name' => '获取电子面单默认信息']);//获取电子面单默认信息
     Route::get('admin/order/export_temp', 'v1.admin.StoreOrderController/getExportTemp')->name('getExportTemp')->option(['real_name' => '获取电子面单模板获取']);//获取电子面单模板获取
     Route::get('admin/order/export_all', 'v1.admin.StoreOrderController/getExportAll')->name('getExportAll')->option(['real_name' => '获取物流公司']);//获取物流公司
+    Route::get('admin/order/express/:uni/[:type]', 'v1.admin.StoreOrderController/express')->name('orderExpress')->option(['real_name' => '订单查看物流']); //订单查看物流
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)
     ->middleware(\app\api\middleware\StationOpenMiddleware::class)
     ->middleware(\app\api\middleware\AuthTokenMiddleware::class, true)
@@ -155,6 +157,7 @@ Route::group(function () {
         Route::get('sign/config', 'v1.user.UserSignController/sign_config')->name('signConfig')->option(['real_name' => '签到配置']);//签到配置
         Route::get('sign/list', 'v1.user.UserSignController/sign_list')->name('signList')->option(['real_name' => '签到列表']);//签到列表
         Route::get('sign/month', 'v1.user.UserSignController/sign_month')->name('signIntegral')->option(['real_name' => '签到列表（年月）']);//签到列表（年月）
+        Route::get('sign/remind/:status', 'v1.user.UserSignController/sign_remind')->name('signRemind')->option(['real_name' => '签到提醒开关']);//签到列表（年月）
         Route::post('sign/user', 'v1.user.UserSignController/sign_user')->name('signUser')->option(['real_name' => '签到用户信息']);//签到用户信息
         Route::post('sign/integral', 'v1.user.UserSignController/sign_integral')->name('signIntegral')->option(['real_name' => '公众号授权登录'])->middleware(BlockerMiddleware::class);//签到
     })->option(['mark' => 'sign', 'mark_name' => '签到']);

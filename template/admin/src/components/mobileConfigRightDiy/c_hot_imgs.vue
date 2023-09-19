@@ -5,20 +5,19 @@
       <draggable class="dragArea list-group" :list="defaults.menu" group="people" handle=".move-icon">
         <div class="item" v-for="(item, index) in defaults.menu" :key="index">
           <div class="move-icon">
-            <Icon type="ios-keypad-outline" size="22" />
+            <i class="el-icon-s-grid" style="font-size: 22px" />
           </div>
           <div class="img-box" @click="modalPicTap('单选', index)">
             <img :src="item.img" alt="" v-if="item.img" />
-            <div class="upload-box" v-else><Icon type="ios-camera-outline" size="36" /></div>
+            <div class="upload-box" v-else>
+              <i class="el-icon-picture-outline" style="font-size: 24px" />
+            </div>
             <div>
-              <Modal
-                v-model="modalPic"
-                width="950px"
-                scrollable
-                footer-hide
-                closable
+              <el-dialog
+                :visible.sync="modalPic"
+                width="1024px"
                 title="上传图片"
-                :mask-closable="false"
+                :close-on-click-modal="false"
                 :z-index="1"
               >
                 <uploadPictures
@@ -28,14 +27,14 @@
                   :gridPic="gridPic"
                   v-if="modalPic"
                 ></uploadPictures>
-              </Modal>
+              </el-dialog>
             </div>
           </div>
           <div class="info">
             <div class="info-item" v-for="(infos, key) in item.info" :key="key">
               <span>{{ infos.title }}</span>
               <div class="input-box">
-                <Input v-model="infos.value" :placeholder="infos.tips" :maxlength="infos.max" />
+                <el-input v-model="infos.value" :placeholder="infos.tips" :maxlength="infos.max" />
               </div>
             </div>
           </div>
@@ -43,7 +42,7 @@
       </draggable>
     </div>
     <div class="add-btn" v-if="defaults.menu.length < 4">
-      <Button style="width: 100%; height: 40px" @click="addBox">添加板块</Button>
+      <el-button style="width: 100%; height: 40px" @click="addBox">添加板块</el-button>
     </div>
   </div>
 </template>
@@ -193,14 +192,14 @@ export default {
 .hot_imgs
     border-top 1px solid rgba(0,0,0,0.05)
     .title
-        padding 13px 0
+        padding: 0 0 13px 0;
         color #999
         font-size 12px
         border-bottom 1px solid rgba(0,0,0,0.05)
     .list-box
         .item
             display flex
-            margin-top 20px
+            margin-top 14px
             .move-icon
                 display flex
                 align-items center

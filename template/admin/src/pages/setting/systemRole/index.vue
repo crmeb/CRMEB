@@ -1,123 +1,150 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="状态：" label-for="status">
-              <Select v-model="formValidate.status" placeholder="请选择" @on-change="userSearchs" clearable>
-                <Option value="1">显示</Option>
-                <Option value="0">不显示</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="身份昵称：" label-for="role_name">
-              <Input
-                search
-                enter-button
-                placeholder="请输入身份昵称"
-                v-model="formValidate.role_name"
-                @on-search="userSearchs"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button v-auth="['setting-system_role-add']" type="primary" icon="md-add" @click="add('添加')"
-              >添加身份</Button
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
+        >
+          <el-form-item label="状态：" label-for="status">
+            <el-select
+              v-model="formValidate.status"
+              placeholder="请选择"
+              @change="userSearchs"
+              clearable
+              class="form_content_width"
             >
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+              <el-option value="1" label="显示"></el-option>
+              <el-option value="0" label="不显示"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="身份昵称：" label-for="role_name">
+            <el-input
+              clearable
+              placeholder="请输入身份昵称"
+              v-model="formValidate.role_name"
+              class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" v-loading="spinShow">
+      <el-button v-auth="['setting-system_role-add']" type="primary" @click="add('添加')">添加身份</el-button>
+      <el-table
         :data="tableList"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="is_shows">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row, '编辑')">编辑</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除', index)">删除</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" min-width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="身份昵称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.role_name }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="权限" min-width="1000">
+          <template slot-scope="scope">
+            <span class="line1">{{ scope.row.rules }}</span>
+          </template>
+        </el-table-column> -->
+        <el-table-column label="状态" min-width="120">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="显示"
+              inactive-text="隐藏"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="120">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row, '编辑')">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <!-- 新增编辑-->
-    <Modal
-      v-model="modals"
-      @on-cancel="onCancel"
-      scrollable
-      footer-hide
-      closable
+    <el-dialog
+      :visible.sync="modals"
       :title="`${modelTit}身份`"
-      :mask-closable="false"
-      width="600"
+      :close-on-click-modal="false"
+      :show-close="true"
+      width="540px"
+      @closed="closed"
     >
-      <Form
+      <el-form
         ref="formInline"
         :model="formInline"
         :rules="ruleValidate"
-        :label-width="100"
+        label-width="100px"
         :label-position="labelPosition2"
         @submit.native.prevent
       >
-        <FormItem label="身份名称：" label-for="role_name" prop="role_name">
-          <Input placeholder="请输入身份昵称" v-model="formInline.role_name" />
-        </FormItem>
-        <FormItem label="是否开启：" prop="status">
-          <RadioGroup v-model="formInline.status">
-            <Radio :label="1">开启</Radio>
-            <Radio :label="0">关闭</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="权限：">
+        <el-form-item label="身份名称：" label-for="role_name" prop="role_name">
+          <el-input placeholder="请输入身份昵称" v-model="formInline.role_name" />
+        </el-form-item>
+        <el-form-item label="是否开启：" prop="status">
+          <el-radio-group v-model="formInline.status">
+            <el-radio :label="1">开启</el-radio>
+            <el-radio :label="0">关闭</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="权限：">
           <div class="trees-coadd">
             <div class="scollhide">
               <div class="iconlist">
-                <Tree :data="menusList" show-checkbox ref="tree"></Tree>
+                <el-tree
+                  :data="menusList"
+                  node-key="id"
+                  show-checkbox
+                  highlight-current
+                  ref="tree"
+                  :default-checked-keys="selectIds"
+                  :props="defaultProps"
+                ></el-tree>
               </div>
             </div>
           </div>
-        </FormItem>
-        <Spin size="large" fix v-if="spinShow"></Spin>
-        <Button type="primary" size="large" long @click="handleSubmit('formInline')">提交</Button>
-      </Form>
-    </Modal>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onCancel">取 消</el-button>
+        <el-button type="primary" @click="handleSubmit('formInline')">提 交</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -144,35 +171,6 @@ export default {
         page: 1,
         limit: 20,
       },
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '身份昵称',
-          key: 'role_name',
-          minWidth: 120,
-        },
-        {
-          title: '权限',
-          key: 'rules',
-          tooltip: true,
-          width: 1000,
-        },
-        {
-          title: '状态',
-          slot: 'is_shows',
-          minWidth: 120,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
       tableList: [],
       formInline: {
         role_name: '',
@@ -181,6 +179,7 @@ export default {
         id: 0,
       },
       menusList: [],
+      selectIds: [],
       modelTit: '',
       ruleValidate: {
         role_name: [{ required: true, message: '请输入身份昵称', trigger: 'blur' }],
@@ -189,15 +188,19 @@ export default {
         //     { required: true, validator: validateStatus, trigger: 'change' }
         // ]
       },
+      defaultProps: {
+        children: 'children',
+        label: 'title',
+      },
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
     labelPosition2() {
       return this.isMobile ? 'top' : 'right';
@@ -207,6 +210,15 @@ export default {
     this.getList();
   },
   methods: {
+    closed() {
+      this.formInline = {
+        role_name: '',
+        status: 0,
+        checked_menus: [],
+        id: 0,
+      };
+      this.selectIds = [];
+    },
     // 添加
     add(name) {
       this.formInline.id = 0;
@@ -225,11 +237,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tableList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 修改是否显示
@@ -240,10 +252,10 @@ export default {
       };
       roleSetStatusApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -259,12 +271,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 表格搜索
     userSearchs() {
@@ -303,7 +311,7 @@ export default {
         })
         .catch((res) => {
           this.spinShow = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 详情
@@ -314,12 +322,16 @@ export default {
           let data = res.data;
           this.formInline = data.role || this.formInline;
           this.formInline.checked_menus = this.formInline.rules;
-          this.tidyRes(data.menus);
+          this.selectIds = this.formInline.rules.split(',');
+          this.$nextTick((e) => {
+            this.tidyRes(data.menus);
+            // this.$refs.tree.setCheckedKeys(Array(arr));
+          });
           this.spinShow = false;
         })
         .catch((res) => {
           this.spinShow = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     tidyRes(menus) {
@@ -327,11 +339,10 @@ export default {
       menus.map((menu) => {
         if (menu.title === '主页') {
           menu.checked = true;
-          menu.disableCheckbox = true;
+          // menu.disabled = true;
           if (menu.children.length) {
             menu.children.map((v) => {
-              v.checked = true;
-              v.disableCheckbox = true;
+              // v.disabled = true;
             });
           }
           data.push(menu);
@@ -362,20 +373,20 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           this.formInline.checked_menus = [];
-          this.$refs.tree.getCheckedAndIndeterminateNodes().map((node) => {
+          this.$refs.tree.getCheckedNodes().map((node) => {
             this.formInline.checked_menus.push(node.id);
           });
-          if (this.formInline.checked_menus.length === 0) return this.$Message.warning('请至少选择一个权限');
+          if (this.formInline.checked_menus.length === 0) return this.$message.warning('请至少选择一个权限');
           roleCreatApi(this.formInline)
             .then(async (res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.modals = false;
               this.getList();
               this.$refs[name].resetFields();
               this.formInline.checked_menus = [];
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
           return false;
@@ -385,6 +396,8 @@ export default {
     onCancel() {
       this.$refs['formInline'].resetFields();
       this.formInline.checked_menus = [];
+      this.selectIds = [];
+      this.modals = false;
     },
   },
 };

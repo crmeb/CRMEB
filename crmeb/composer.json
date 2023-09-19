@@ -50,7 +50,8 @@
         "volcengine/volc-sdk-php": "^1.0",
         "workerman/crontab": "^1.0",
         "topthink/think-migration": "^3.0",
-        "topthink/think-filesystem": "^2.0"
+        "topthink/think-filesystem": "^2.0",
+        "aws/aws-sdk-php": "^3.173"
     },
     "autoload": {
         "psr-4": {

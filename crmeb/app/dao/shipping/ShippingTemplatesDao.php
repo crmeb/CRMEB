@@ -53,7 +53,7 @@ class ShippingTemplatesDao extends BaseDao
      */
     public function getShippingList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->order('sort DESC')->page($page, $limit)->select()->toArray();
+        return $this->search($where)->order('sort DESC,id DESC')->page($page, $limit)->select()->toArray();
     }
 
     /**

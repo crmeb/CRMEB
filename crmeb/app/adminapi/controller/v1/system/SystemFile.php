@@ -115,7 +115,7 @@ class SystemFile extends AuthController
         $comment = $this->request->param('comment');
         $filepath = $this->request->param('filepath');
         if (empty($filepath)) {
-            return app('json')->fail(410087);
+            return app('json')->fail('文件路径不存在');
         }
         $res = $this->services->savefile($filepath, $comment);
         if ($res) {

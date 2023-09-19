@@ -26,47 +26,47 @@ class Chuanglan extends BaseSms
     /**
      * 开通
      */
-    const SMS_OPEN = 'sms_v2/open';
+    const SMS_OPEN = 'v2/sms_v2/open';
 
     /**
      * 修改签名
      */
-    const SMS_MODIFY = 'sms_v2/modify';
+    const SMS_MODIFY = 'v2/sms_v2/modify';
 
     /**
      * 用户信息
      */
-    const SMS_INFO = 'sms_v2/info';
+    const SMS_INFO = 'v2/sms_v2/info';
 
     /**
      * 发送短信
      */
-    const SMS_SEND = 'sms_v2/send';
+    const SMS_SEND = 'v2/sms_v2/send';
 
     /**
      * 短信模板
      */
-    const SMS_TEMPS = 'sms_v2/temps';
+    const SMS_TEMPS = 'v2/sms_v2/temps';
 
     /**
      * 申请模板
      */
-    const SMS_APPLY = 'sms_v2/apply';
+    const SMS_APPLY = 'v2/sms_v2/apply';
 
     /**
      * 模板记录
      */
-    const SMS_APPLYS = 'sms_v2/applys';
+    const SMS_APPLYS = 'v2/sms_v2/applys';
 
     /**
      * 发送记录
      */
-    const SMS_RECORD = 'sms_v2/record';
+    const SMS_RECORD = 'v2/sms_v2/record';
 
     /**
      * 获取短信发送状态
      */
-    const SMS_STSTUS = 'sms/status';
+    const SMS_STSTUS = 'v2/sms/status';
 
     /**
      * 短信签名

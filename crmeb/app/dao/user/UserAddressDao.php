@@ -44,6 +44,6 @@ class UserAddressDao extends BaseDao
      */
     public function getList(array $where, string $field = '*', int $page, int $limit): array
     {
-        return $this->search($where)->field($field)->page($page, $limit)->order('is_default DESC')->select()->toArray();
+        return $this->search($where)->field($field)->page($page, $limit)->order('is_default DESC,id DESC')->select()->toArray();
     }
 }

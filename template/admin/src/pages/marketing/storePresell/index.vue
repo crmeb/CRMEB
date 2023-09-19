@@ -1,115 +1,150 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form
         ref="tableFrom"
         :model="tableFrom"
         :label-width="labelWidth"
         :label-position="labelPosition"
         @submit.native.prevent
       >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="预售活动状态：">
-              <Select placeholder="请选择活动状态" v-model="tableFrom.time_type" clearable @on-change="userSearchs">
-                <Option value="0">全部</Option>
-                <Option value="1">未开始</Option>
-                <Option value="2">正在进行</Option>
-                <Option value="3">已结束</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="预售商品状态：">
-              <Select placeholder="请选择商品状态" v-model="tableFrom.status" clearable @on-change="userSearchs">
-                <Option value="">全部</Option>
-                <Option value="1">上架</Option>
-                <Option value="0">下架</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="商品搜索：" label-for="title">
-              <Input
+        <el-row :gutter="24">
+          <el-col v-bind="grid">
+            <el-form-item label="预售活动状态：">
+              <el-select placeholder="请选择活动状态" v-model="tableFrom.time_type" clearable @change="userSearchs">
+                <el-option value="0" label="全部"></el-option>
+                <el-option value="1" label="未开始"></el-option>
+                <el-option value="2" label="正在进行"></el-option>
+                <el-option value="3" label="已结束"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col v-bind="grid">
+            <el-form-item label="预售商品状态：">
+              <el-select placeholder="请选择商品状态" v-model="tableFrom.status" clearable @change="userSearchs">
+                <el-option value="" label="全部"></el-option>
+                <el-option value="1" label="上架"></el-option>
+                <el-option value="0" label="下架"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col v-bind="grid">
+            <el-form-item label="商品搜索：" label-for="title">
+              <el-input
                 search
                 enter-button
                 placeholder="请输入商品名称/ID"
                 v-model="tableFrom.title"
                 @on-search="userSearchs"
               />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex" class="mb20">
-          <Col v-bind="grid">
-            <Button v-auth="['marketing-store_bargain-create']" type="primary" icon="md-add" @click="add" class="mr10"
-              >添加预售商品</Button
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row class="mb20">
+          <el-col v-bind="grid">
+            <el-button
+              v-auth="['marketing-store_bargain-create']"
+              type="primary"
+              icon="md-add"
+              @click="add"
+              class="mr10"
+              >添加预售商品</el-button
             >
-            <!-- <Button
+            <!-- <el-button
               v-auth="['export-storeBargain']"
               class="export"
               icon="ios-share-outline"
               @click="exports"
-              >导出</Button
+              >导出</el-button
             > -->
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table
         :data="tableList"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="is_fail">
-          <Icon type="md-checkmark" v-if="row.is_fail === 1" color="#0092DC" size="14" />
-          <Icon type="md-close" v-else color="#ed5565" size="14" />
-        </template>
-        <template slot-scope="{ row, index }" slot="image">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.image" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="bargain_min_price">
-          <span>{{ row.bargain_min_price }}~{{ row.bargain_max_price }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="stop_time">
-          <div>起: {{ row.start_time | formatDate }}</div>
-          <div>止: {{ row.stop_time | formatDate }}</div>
-        </template>
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">上架</span>
-            <span slot="close">下架</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <Divider v-if="row.stop_status === 0" type="vertical" />
-          <Divider type="vertical" />
-          <a @click="del(row, '删除预售商品', index)">删除</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="预售图片" min-width="90">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.image" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="预售名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.title }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="预售价格" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="已售商品数" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.sales }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="限量" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.quota_show }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="限量剩余" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.quota }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="活动时间" min-width="130">
+          <template slot-scope="scope">
+            <div>起: {{ scope.row.start_time | formatDate }}</div>
+            <div>止: {{ scope.row.stop_time | formatDate }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="预售状态" min-width="130">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="上架"
+              inactive-text="下架"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row)">编辑</a>
+            <el-divider v-if="scope.row.stop_status === 0" direction="vertical" />
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '删除预售商品', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="tableFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="tableFrom.limit"
+          :page.sync="tableFrom.page"
+          :limit.sync="tableFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -130,59 +165,6 @@ export default {
   data() {
     return {
       loading: false,
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '预售图片',
-          slot: 'image',
-          minWidth: 90,
-        },
-        {
-          title: '预售名称',
-          key: 'title',
-          minWidth: 130,
-        },
-        {
-          title: '预售价格',
-          key: 'price',
-          minWidth: 100,
-        },
-        {
-          title: '已售商品数',
-          key: 'sales',
-          minWidth: 100,
-        },
-        {
-          title: '限量',
-          key: 'quota_show',
-          minWidth: 100,
-        },
-        {
-          title: '限量剩余',
-          key: 'quota',
-          minWidth: 100,
-        },
-        {
-          title: '活动时间',
-          slot: 'stop_time',
-          minWidth: 150,
-        },
-        {
-          title: '预售状态',
-          slot: 'status',
-          minWidth: 130,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 130,
-        },
-      ],
       tableList: [],
       grid: {
         xl: 7,
@@ -209,7 +191,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 100;
+      return this.isMobile ? undefined : '100px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'left';
@@ -235,7 +217,7 @@ export default {
           location.href = res.data[0];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 编辑
@@ -261,11 +243,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tableList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -281,12 +263,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.tableFrom.page = index;
-      this.getList();
     },
     // 表格搜索
     userSearchs() {
@@ -302,10 +280,10 @@ export default {
       advanceSetStatusApi(data)
         .then(async (res) => {
           this.getList();
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

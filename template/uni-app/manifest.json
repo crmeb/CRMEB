@@ -1,8 +1,8 @@
 {
-    "name" : "CRMEB标准版",
+    "name" : "CRMEB标准版-发行",
     "appid" : "__UNI__A3F1ED4",
     "description" : "CRMEB标准版",
-    "versionName" : "5.0.0",
+    "versionName" : "5.1.0",
     "versionCode" : 510,
     "transformPx" : false,
     /* 5+App特有相关 */
@@ -202,7 +202,8 @@
             "onLocationChange",
             "startLocationUpdateBackground",
             "chooseAddress"
-        ]
+        ],
+        "__usePrivacyCheck__" : true
     },
     "mp-alipay" : {
         "usingComponents" : true

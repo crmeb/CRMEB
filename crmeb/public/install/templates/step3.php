@@ -190,7 +190,7 @@
                 $('#J_install_tip_manager').html('<span for="dbname" generated="true" class="tips_error" style="">请输入管理账号</span>');
                 return false;
             }
-            if (!(/^[a-zA-Z]{0,}$/.test(manager))) {
+            if (!(/^[a-zA-Z0-9]{0,32}$/.test(manager))) {
                 $('#J_install_tip_manager').html('<span generated="true" class="tips_error" style="">账号必须为英文或者数字</span>');
                 return false;
             } else {

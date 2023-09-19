@@ -1,102 +1,111 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt mb10">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row :gutter="24" type="flex">
-          <Col span="6">
-            <FormItem label="订单时间：">
-              <!-- <dateRadio @selectDate="onSelectDate"></dateRadio> -->
-              <DatePicker
-                :editable="false"
-                @on-change="onchangeTime"
-                :value="timeVal"
-                format="yyyy/MM/dd"
-                type="daterange"
-                placement="bottom-start"
-                placeholder="请选择时间"
-                style="width: 100%"
-                :options="options"
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="formValidate"
+            :model="formValidate"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="订单时间：">
+            <el-date-picker
                 clearable
+                v-model="timeVal"
+                type="daterange"
+                :editable="false"
+                @change="onchangeTime"
+                format="yyyy/MM/dd"
+                value-format="yyyy/MM/dd"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions"
+                style="width: 250px"
                 class="mr20"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col span="6">
-            <FormItem label="交易类型：">
-              <Select
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="交易类型：">
+            <el-select
                 type="button"
                 v-model="formValidate.trading_type"
-                class="mr15"
-                @on-change="selChange"
-                style="width: 100%"
+                @change="selChange"
+                class="form_content_width"
                 clearable
-              >
-                <Option
+            >
+              <el-option
                   :label="item"
                   :value="Object.keys(withdrawal)[index]"
                   v-for="(item, index) in Object.values(withdrawal)"
                   :key="index"
-                  >{{ item }}</Option
-                >
-              </Select>
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-    </Card>
-    <Card :bordered="false" dis-hover>
-      <Table
-        ref="table"
-        :columns="columns"
-        :data="tabList"
-        class="ivu-mt"
-        :loading="loading"
-        no-data-text="暂无数据"
-        no-filtered-data-text="暂无筛选结果"
-      >
-        <template slot-scope="{ row }" slot="extract_price">
-          <div>{{ row.extract_price }}</div>
-        </template>
-        <template slot-scope="{ row }" slot="pay_type">
-          <div v-for="item in payment" :key="item.value">
-            <span v-if="row.pay_type == item.value"> {{ item.title }} </span>
-          </div>
-        </template>
-        <template slot-scope="{ row }" slot="number">
-          <div v-if="row.pm" class="z-price">+ {{ row.number }}</div>
-          <div v-else class="f-price">- {{ row.number }}</div>
-        </template>
-        <template slot-scope="{ row }" slot="add_time">
-          <span> {{ row.add_time | formatDate }}</span>
-        </template>
-        <template slot-scope="{ row }" slot="set">
-          <a class="item" @click="setMark(row)">备注</a>
-        </template>
-      </Table>
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="mt16">
+      <el-table ref="table" :data="tabList" class="ivu-mt" v-loading="loading" empty-text="暂无数据">
+        <el-table-column label="ID" min-width="50">
+          <template slot-scope="scope">
+            <div>{{ scope.row.id }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="关联订单" min-width="100">
+          <template slot-scope="scope">
+            <div>{{ scope.row.relation }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="交易时间" min-width="100">
+          <template slot-scope="scope">
+            <div>{{ scope.row.add_time }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="交易积分" min-width="80">
+          <template slot-scope="scope">
+            <div v-if="scope.row.pm" class="z-price">+ {{ scope.row.number }}</div>
+            <div v-else class="f-price">- {{ scope.row.number }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户" min-width="80">
+          <template slot-scope="scope">
+            <div>{{ scope.row.nickname }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="交易类型" min-width="100">
+          <template slot-scope="scope">
+            <div>{{ scope.row.type_name }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="100">
+          <template slot-scope="scope">
+            <div>{{ scope.row.mark }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" width="100">
+          <template slot-scope="scope">
+            <a class="item" @click="setMark(scope.row)">修改备注</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <!-- 拒绝通过-->
-    <Modal v-model="modals" scrollable closable title="备注" :mask-closable="false">
-      <Input v-model="mark_msg.mark" type="textarea" :rows="4" placeholder="请输入备注" />
+    <el-dialog :visible.sync="modals" title="备注" :close-on-click-modal="false" width="470px">
+      <el-input v-model="mark_msg.mark" type="textarea" :rows="4" placeholder="请输入备注" />
       <div slot="footer">
-        <Button type="primary" size="large" long :loading="modal_loading" @click="oks">确定</Button>
+        <el-button type="primary" size="small" @click="oks">确定</el-button>
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -119,57 +128,13 @@ export default {
     return {
       images: ['1.jpg', '2.jpg'],
       modal_loading: false,
-      options: this.$timeOptions,
-
+      pickerOptions: this.$timeOptions,
       mark_msg: {
         mark: '',
       },
       modals: false,
       total: 0,
       loading: false,
-      columns: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 50,
-        },
-        {
-          title: '关联订单',
-          key: 'relation',
-          minWidth: 120,
-        },
-        {
-          title: '交易时间',
-          key: 'add_time',
-          minWidth: 90,
-        },
-        {
-          title: '交易积分',
-          slot: 'number',
-          minWidth: 100,
-        },
-        {
-          title: '用户',
-          key: 'nickname',
-          minWidth: 80,
-        },
-        {
-          title: '交易类型',
-          key: 'type_name',
-          minWidth: 100,
-        },
-        {
-          title: '备注',
-          key: 'mark',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'set',
-          fixed: 'right',
-          width: 100,
-        },
-      ],
       tabList: [],
       withdrawal: [],
       selectIndexTime: '',
@@ -210,10 +175,10 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
@@ -226,14 +191,14 @@ export default {
       this.mark_msg.mark = this.mark_msg.mark.trim();
       setPointRecordMark(this.extractId, this.mark_msg)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.modal_loading = false;
           this.modals = false;
           this.getList();
         })
         .catch((res) => {
           this.modal_loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 备注
@@ -254,7 +219,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.time = this.timeVal.join('-');
+      this.formValidate.time = this.timeVal ? this.timeVal.join('-') : '';
       this.formValidate.page = 1;
       this.getList();
     },
@@ -277,12 +242,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 编辑提交成功
     submitFail() {
@@ -298,7 +259,7 @@ export default {
 
 .Refresh {
   font-size: 12px;
-  color: #1890FF;
+  color: var(--prev-color-primary);
   cursor: pointer;
 }
 

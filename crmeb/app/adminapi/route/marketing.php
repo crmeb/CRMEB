@@ -198,6 +198,20 @@ Route::group('marketing', function () {
         Route::post('lottery/record/deliver', 'v1.marketing.lottery.LuckLotteryRecord/deliver')->option(['real_name' => '抽奖中奖发货、备注处理']);
     })->option(['parent' => 'marketing', 'cate_name' => '抽奖活动']);
 
+    /** 每日签到 */
+    Route::group(function () {
+        //签到奖励列表
+        Route::get('sign/rewards', 'v1.marketing.SignRewards/index')->option(['real_name' => '签到奖励列表']);
+        //添加签到奖励
+        Route::get('sign/add_rewards', 'v1.marketing.SignRewards/addRewards')->option(['real_name' => '添加签到奖励']);
+        //编辑签到奖励
+        Route::get('sign/edit_rewards/:id', 'v1.marketing.SignRewards/editRewards')->option(['real_name' => '保存签到奖励']);
+        //保存签到奖励
+        Route::post('sign/save_rewards/:id', 'v1.marketing.SignRewards/saveRewards')->option(['real_name' => '保存签到奖励']);
+        //删除签到奖励
+        Route::delete('sign/del_rewards/:id', 'v1.marketing.SignRewards/delRewards')->option(['real_name' => '删除签到奖励']);
+    })->option(['parent' => 'marketing', 'cate_name' => '每日签到']);
+
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

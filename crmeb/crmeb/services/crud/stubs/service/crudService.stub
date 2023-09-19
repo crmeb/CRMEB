@@ -3,7 +3,7 @@
  *  +----------------------------------------------------------------------
  *  | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
  *  +----------------------------------------------------------------------
- *  | Copyright (c) 2016~{%year%} https://www.crmeb.com All rights reserved.
+ *  | Copyright (c) 2016~{%YEAR%} https://www.crmeb.com All rights reserved.
  *  +----------------------------------------------------------------------
  *  | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
  *  +----------------------------------------------------------------------
@@ -12,34 +12,34 @@
  */
 
 /**
- * {%modelName%}
+ * {%MODEL_NAME%}
  * @author crud自动生成代码
- * @date {%time%}
+ * @date {%TIME%}
  */
 
-namespace app\services\crud{%path%};
+namespace app\services\crud{%PATH%};
 
 use app\services\BaseServices;
 use think\exception\ValidateException;
-{%use-php%}
+{%USE_PHP%}
 
 /**
  * Class CrudService
- * @date {%date%}
- * @package app\services\crud{%path%}
+ * @date {%DATE%}
+ * @package app\services\crud{%PATH%}
  */
-class {%nameCamel%}Services extends BaseServices
+class {%NAME_CAMEL%}Services extends BaseServices
 {
 
     /**
-     * {%nameCamel%}Services constructor.
-     * @param {%nameCamel%}Dao $dao
+     * {%NAME_CAMEL%}Services constructor.
+     * @param {%NAME_CAMEL%}Dao $dao
      */
-    public function __construct({%nameCamel%}Dao $dao)
+    public function __construct({%NAME_CAMEL%}Dao $dao)
     {
         $this->dao = $dao;
     }
 
-{%content-php%}
+{%CONTENT_PHP%}
 
 }

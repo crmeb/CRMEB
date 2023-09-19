@@ -36,36 +36,25 @@ class UserStatisticServices extends BaseServices
     public function getBasic($where)
     {
         $time = explode('-', $where['time']);
-        if (count($time) != 2) throw new AdminException(100100);
+        if (count($time) != 2) throw new AdminException('请选择时间');
         /** @var UserVisitServices $userVisit */
         $userVisit = app()->make(UserVisitServices::class);
         /** @var UserServices $user */
         $user = app()->make(UserServices::class);
         /** @var StoreOrderServices $order */
         $order = app()->make(StoreOrderServices::class);
-        /** @var UserRechargeServices $recharge */
-        $recharge = app()->make(UserRechargeServices::class);
         /** @var OtherOrderServices $otherOrder */
         $otherOrder = app()->make(OtherOrderServices::class);
 
-        $toEndtime = implode('-', [0, $time[1]]);
-        $cumulativeUserWhere = ['time' => $toEndtime, 'user_type' => $where['channel_type']];
-        $cumulativeRechargePeopleWhere = ['time' => $toEndtime, 'timeKey' => 'pay_time', 'channel_type' => $where['channel_type']];
-        $cumulativePayPeopleWhere = ['time' => $toEndtime, 'timeKey' => 'pay_time', 'paid' => 1, 'channel_type' => $where['channel_type']];
+        $toEndTime = implode('-', [0, $time[1]]);
+        $cumulativeUserWhere = ['time' => $toEndTime, 'user_type' => $where['channel_type']];
 
         $now['people'] = $userVisit->getDistinctCount($where, 'uid');//访客数
         $now['browse'] = $userVisit->count($where);//访问量
         $now['newUser'] = $user->count($where + ['user_type' => $where['channel_type']]);//新增用户数
         $now['payPeople'] = $order->getDistinctCount($where + ['paid' => 1], 'uid');//成交用户数
-        $now['payPercent'] = bcmul((string)($now['people'] > 0 ? bcdiv($now['payPeople'], $now['people'], 4) : 0), '100', 2);//访问-付款转化率
         $now['payUser'] = $otherOrder->getDistinctCount($where, 'uid');//激活付费会员数
-        $now['rechargePeople'] = $recharge->getDistinctCount($where + ['timeKey' => 'pay_time'], 'uid');//充值用户数
-        $totalPayPrice = $order->sum($where + ['paid' => 1], 'pay_price', true);
-        $now['payPrice'] = floatval($now['payPeople'] > 0 ? bcdiv($totalPayPrice, $now['payPeople'], 2) : 0);//客单价
         $now['cumulativeUser'] = $user->count($cumulativeUserWhere);//累计用户数
-        $now['cumulativePayUser'] = count($otherOrder->getPayUserCount(strtotime($time[1]), $where['channel_type']));//到截至日期有付费会员状态的会员数
-        $now['cumulativeRechargePeople'] = $recharge->getDistinctCount($cumulativeRechargePeopleWhere, 'uid');//累计充值用户数
-        $now['cumulativePayPeople'] = $order->getDistinctCount($cumulativePayPeopleWhere, 'uid');//累计成交用户数
 
 
         $dayNum = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
@@ -74,23 +63,14 @@ class UserStatisticServices extends BaseServices
             date("Y/m/d", strtotime("-1 days", strtotime($time[0])))
         ];
         $where['time'] = implode('-', $lastTime);
-        $toEndtime = implode('-', [0, $lastTime[1]]);
+        $toEndTime = implode('-', [0, $lastTime[1]]);
         $last['people'] = $userVisit->getDistinctCount($where, 'uid');//访客数
         $last['browse'] = $userVisit->count($where);//访问量
         $last['newUser'] = $user->count($where + ['user_type' => $where['channel_type']]);//新增用户数
         $last['payPeople'] = $order->getDistinctCount($where + ['paid' => 1], 'uid');//成交用户数
-        $last['payPercent'] = bcmul((string)($last['people'] > 0 ? bcdiv($last['payPeople'], $last['people'], 4) : 0), '100', 2);//访问-付款转化率
         $last['payUser'] = $otherOrder->getDistinctCount($where, 'uid');//激活付费会员数
-        $last['rechargePeople'] = $recharge->getDistinctCount($where + ['timeKey' => 'pay_time'], 'uid');//充值用户数
-        $totalPayPrice = $order->sum($where + ['paid' => 1], 'pay_price', true);
-        $last['payPrice'] = floatval($last['payPeople'] > 0 ? bcdiv($totalPayPrice, $last['payPeople'], 2) : 0);//客单价
-        $cumulativeUserWhere['time'] = $toEndtime;
+        $cumulativeUserWhere['time'] = $toEndTime;
         $last['cumulativeUser'] = $user->count($cumulativeUserWhere);//累计用户数
-        $last['cumulativePayUser'] = count($otherOrder->getPayUserCount(strtotime($lastTime[1]) + 86400, $where['channel_type']));//到截至日期有付费会员状态的会员数
-        $cumulativeRechargePeopleWhere['time'] = $toEndtime;
-        $last['cumulativeRechargePeople'] = $recharge->getDistinctCount($cumulativeRechargePeopleWhere, 'uid');//累计充值用户数
-        $cumulativePayPeopleWhere['time'] = $toEndtime;
-        $last['cumulativePayPeople'] = $order->getDistinctCount($cumulativePayPeopleWhere, 'uid');//累计成交用户数
 
         //组合数据，计算环比
         $data = [];
@@ -114,7 +94,7 @@ class UserStatisticServices extends BaseServices
         $time = explode('-', $where['time']);
         $channelType = $where['channel_type'];
         if (count($time) != 2) throw new AdminException(100100);
-        $dayCount = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
+        $dayCount = bcadd(bcdiv(bcsub(strtotime($time[1]), strtotime($time[0])), '86400'), '1');
         $data = [];
         if ($dayCount == 1) {
             $data = $this->trend($time, $channelType, 0, $excel);
@@ -144,8 +124,6 @@ class UserStatisticServices extends BaseServices
         $userVisit = app()->make(UserVisitServices::class);
         /** @var StoreOrderServices $order */
         $order = app()->make(StoreOrderServices::class);
-        /** @var UserRechargeServices $recharge */
-        $recharge = app()->make(UserRechargeServices::class);
         /** @var OtherOrderServices $otherOrder */
         $otherOrder = app()->make(OtherOrderServices::class);
 
@@ -176,33 +154,19 @@ class UserStatisticServices extends BaseServices
         $visitPeople = array_column($userVisit->getTrendData($time, $channelType, $timeType, 'count(distinct(uid))'), 'num', 'days');
         $newPeople = array_column($user->getTrendData($time, $channelType, $timeType), 'num', 'days');
         $paidPeople = array_column($order->getTrendData($time, $channelType, $timeType, 'count(distinct(uid))'), 'num', 'days');
-        $rechargePeople = array_column($recharge->getTrendData($time, $channelType, $timeType), 'num', 'days');
+        $visitNum = array_column($userVisit->getTrendData($time, $channelType, $timeType, 'count(id)'), 'num', 'days');
         $vipPeople = array_column($otherOrder->getTrendData($time, $channelType, $timeType), 'num', 'days');
         if ($excel) {
             $data = [];
             $browsePeople = array_column($userVisit->getTrendData($time, $channelType, $timeType, 'count(id)'), 'num', 'days');
-            $paidPrice = array_column($order->getTrendData($time, $channelType, $timeType, 'sum(pay_price)'), 'num', 'days');
             foreach ($xAxis as &$item) {
-                if (isset($paidPeople[$item]) && isset($visitPeople[$item])) {
-                    $changes = bcmul(bcdiv((string)$paidPeople[$item], (string)$visitPeople[$item], 4), 100, 2);
-                    $changes = $changes > 100 ? 100 : $changes;
-                } else {
-                    $changes = 0;
-                }
                 $data[] = [
                     'time' => $item,
                     'user' => $visitPeople[$item] ?? 0,
                     'browse' => $browsePeople[$item] ?? 0,
                     'new' => $newPeople[$item] ?? 0,
                     'paid' => $paidPeople[$item] ?? 0,
-                    'changes' => $changes,
                     'vip' => $vipPeople[$item] ?? 0,
-                    'recharge' => $rechargePeople[$item] ?? 0,
-                    'payPrice' => isset($paidPrice[$item]) && isset($paidPeople[$item]) ? bcdiv((string)$paidPrice[$item], (string)$paidPeople[$item], 2) : 0,
-//                    'cumulativeUser' => $user->getCount($userWhere),
-//                    'cumulativeVip' => $otherOrder->getPayUserCount($endTime, $channelType),
-//                    'cumulativeRecharge' => $recharge->getCount($rechargeWhere),
-//                    'cumulativePaid' => $order->getCount($payWhere),
                 ];
             }
             /** @var ExportServices $exportService */
@@ -214,8 +178,8 @@ class UserStatisticServices extends BaseServices
             foreach ($xAxis as $item) {
                 $data['新增用户数'][] = isset($newPeople[$item]) ? intval($newPeople[$item]) : 0;
                 $data['访客数'][] = isset($visitPeople[$item]) ? intval($visitPeople[$item]) : 0;
+                $data['浏览量'][] = isset($visitNum[$item]) ? intval($visitNum[$item]) : 0;
                 $data['成交用户数'][] = isset($paidPeople[$item]) ? intval($paidPeople[$item]) : 0;
-                $data['充值用户'][] = isset($rechargePeople[$item]) ? intval($rechargePeople[$item]) : 0;
                 $data['新增付费用户数'][] = isset($vipPeople[$item]) ? intval($vipPeople[$item]) : 0;
             }
             foreach ($data as $key => $item) {
@@ -258,7 +222,7 @@ class UserStatisticServices extends BaseServices
             ['subscribe_time', '<>', '']
         ]);
 
-        $dayNum = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
+        $dayNum = bcadd(bcdiv(bcsub(strtotime($time[1]), strtotime($time[0])), '86400'), '1');
         $lastTime = array(
             date("Y/m/d", strtotime("-$dayNum days", strtotime($time[0]))),
             date("Y/m/d", strtotime("-1 days", strtotime($time[0])))
@@ -302,9 +266,8 @@ class UserStatisticServices extends BaseServices
     public function getWechatTrend($where)
     {
         $time = explode('-', $where['time']);
-        $channelType = $where['channel_type'];
         if (count($time) != 2) throw new AdminException(100100);
-        $dayCount = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
+        $dayCount = bcadd(bcdiv(bcsub(strtotime($time[1]), strtotime($time[0])), '86400'), '1');
         $data = [];
         if ($dayCount == 1) {
             $data = $this->wechatTrend($time, 0);

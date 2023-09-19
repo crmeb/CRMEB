@@ -12,6 +12,7 @@ namespace app\adminapi\controller\v1\file;
 
 use app\adminapi\controller\AuthController;
 use app\services\system\attachment\SystemAttachmentServices;
+use crmeb\services\CacheService;
 use think\facade\App;
 
 /**
@@ -43,7 +44,8 @@ class SystemAttachment extends AuthController
     public function index()
     {
         $where = $this->request->getMore([
-            ['pid', 0]
+            ['pid', 0],
+            ['real_name', '']
         ]);
         return app('json')->success($this->service->getImageList($where));
     }
@@ -134,5 +136,67 @@ class SystemAttachment extends AuthController
         ]);
         $res = $this->service->videoUpload($data, $_FILES['file']);
         return app('json')->success($res);
+    }
+
+    /**
+     * 获取扫码上传页面链接以及参数
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/06/13
+     */
+    public function scanUploadQrcode()
+    {
+        [$pid] = $this->request->getMore([
+            ['pid', 0]
+        ], true);
+        $uploadToken = md5(time());
+        CacheService::set('scan_upload', $uploadToken, 600);
+        $url = sys_config('site_url') . '/app/upload?pid=' . $pid . '&token=' . $uploadToken;
+        return app('json')->success(['url' => $url]);
+    }
+
+    /**
+     * 删除二维码
+     * @return \think\Response
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/6/26
+     */
+    public function removeUploadQrcode()
+    {
+        CacheService::delete('scan_upload');
+        return app('json')->success();
+    }
+
+    /**
+     * 获取扫码上传的图片数据
+     * @param $scan_token
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/06/13
+     */
+    public function scanUploadImage($scan_token)
+    {
+        return app('json')->success($this->service->scanUploadImage($scan_token));
+    }
+
+    /**
+     * 网络图片上传
+     * @return \think\Response
+     * @throws \Exception
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/06/13
+     */
+    public function onlineUpload()
+    {
+        $data = $this->request->postMore([
+            ['pid', 0],
+            ['images', []]
+        ]);
+        $this->service->onlineUpload($data);
+        return app('json')->success(100032);
     }
 }

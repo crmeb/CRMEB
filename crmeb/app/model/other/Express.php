@@ -41,11 +41,10 @@ class Express extends BaseModel
      * 物流公司是否显示
      * @param Model $query
      * @param $value
-     * @param $data
      */
-    public function searchIsShowAttr($query, $value, $data)
+    public function searchIsShowAttr($query, $value)
     {
-        $query->where('is_show', $value);
+        if ($value !== '') $query->where('is_show', $value);
     }
 
     /**
@@ -72,7 +71,7 @@ class Express extends BaseModel
 
     public function searchCodeAttr($query, $value)
     {
-        if ($value === '') {
+        if ($value !== '') {
             $query->where('code', $value);
         }
     }

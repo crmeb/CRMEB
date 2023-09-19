@@ -7,12 +7,12 @@
 		</view>
 		<view class="advertItem02 acea-row" v-if="style==1">
 			<view class="item" v-for="(item,index) in picList" :key="index" @click="goDetail(item)">
-				<image :src="item.image" mode="aspectFill" :style="'height:'+ imageH +'rpx;'"></image>
+				<image :src="item.image" mode="widthFix" :style="'height:'+ imageH +'rpx;'"></image>
 			</view>
 		</view>
 		<view class="advertItem02 advertItem03 acea-row" v-if="style==2">
 			<view class="item" v-for="(item,index) in picList" :key="index" @click="goDetail(item)">
-				<image :src="item.image" mode="aspectFill" :style="'height:'+ imageH +'rpx;'"></image>
+				<image :src="item.image" mode="widthFix":style="'height:'+ imageH +'rpx;'"></image>
 			</view>
 		</view>
 		<view class="advertItem04 acea-row" v-if="style==3">
@@ -106,27 +106,7 @@
 			},
 			goDetail(url) {
 				let urls = url.link
-				if (urls.indexOf("http") != -1) {
-					// #ifdef H5
-					location.href = urls
-					// #endif
-					// #ifdef MP || APP-PLUS
-					uni.navigateTo({
-						url: `/pages/annex/web_view/index?url=${urls}`
-					});
-					// #endif
-				} else {
-					if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index']
-						.indexOf(urls) == -1) {
-						uni.navigateTo({
-							url: urls
-						})
-					} else {
-						uni.reLaunch({
-							url: urls
-						})
-					}
-				}
+				this.$util.JumpPath(urls);
 			}
 		}
 	}

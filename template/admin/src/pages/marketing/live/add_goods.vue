@@ -1,16 +1,11 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
-      <div class="fl_header">
-        <span>
-          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
-        </span>
-        <Divider type="vertical" />
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-      </div>
-    </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+    <pages-header
+        ref="pageHeader"
+        :title="$route.meta.title"
+        :backUrl="$routeProStr + '/marketing/live/live_goods'"></pages-header>
+    <el-card :bordered="false" shadow="never" class="mt16">
+      <el-form
         ref="formValidate"
         :model="formValidate"
         :label-width="labelWidth"
@@ -18,62 +13,79 @@
         class="tabform"
         @submit.native.prevent
       >
-        <Row :gutter="24" type="flex">
-          <Col span="24">
-            <FormItem label="选择商品：">
+        <el-row :gutter="24">
+          <el-col :span="24">
+            <el-form-item label="选择商品：">
               <div class="box">
                 <div class="box-item" v-for="(item, index) in goodsList" :key="index">
                   <img :src="item.image" alt="" />
-                  <Icon type="ios-close-circle" size="20" @click="bindDelete(index, item)" />
+                  <i class="el-icon-error" @click="bindDelete(index, item)" style="font-size: 16px;"></i>
                 </div>
-                <div class="upload-box" @click="selectGoods">
-                  <Icon type="ios-camera-outline" size="36" />
+                <div class="upload-box acea-row row-center-wrapper" @click="selectGoods">
+                  <i class="el-icon-goods" style="font-size: 24px"></i>
                 </div>
               </div>
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
       <div class="active-btn" v-if="goodsList.length > 0">
-        <Button type="success" @click="liveGoods">生成直播商品</Button>
+        <el-button type="success" @click="liveGoods">生成直播商品</el-button>
       </div>
       <div class="table-box" v-if="isShowBox">
-        <Table
-          :columns="columns1"
+        <el-table
           :data="tabList"
           ref="table"
-          class="mt25"
-          :loading="loading"
+          class="mt14"
+          v-loading="loading"
           no-userFrom-text="暂无数据"
           no-filtered-userFrom-text="暂无筛选结果"
         >
-          <template slot-scope="{ row, index }" slot="img">
-            <div class="product_box">
-              <img :src="row.image" alt="" />
-              <span>{{ row.store_name }}</span>
-            </div>
-          </template>
-          <template slot-scope="{ row, index }" slot="action">
-            <a @click="del(row, index)">删除</a>
-          </template>
-        </Table>
+          <el-table-column label="商品ID" width="80">
+            <template slot-scope="scope">
+              <span>{{ scope.row.id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="商品信息" min-width="90">
+            <template slot-scope="scope">
+              <div class="product_box">
+                <img :src="scope.row.image" alt="" />
+                <span>{{ scope.row.store_name }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="直播售价" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.price }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="库存" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.stock }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" fixed="right" width="80">
+            <template slot-scope="scope">
+              <a @click="del(scope.row, scope.$index)">删除</a>
+            </template>
+          </el-table-column>
+        </el-table>
 
         <div class="sub_btn">
-          <Button type="primary" style="width: 8%" @click="bindSub" :disabled="disabled" :loading="loadings"
-            >提交</Button
+          <el-button type="primary" style="width: 8%" @click="bindSub" :disabled="disabled" :loading="loadings"
+            >提交</el-button
           >
         </div>
       </div>
-    </Card>
-    <Modal v-model="modals" title="商品列表" class="paymentFooter" scrollable width="900" :footer-hide="true">
+    </el-card>
+    <el-dialog :visible.sync="modals" title="商品列表" class="paymentFooter" width="1000px">
       <goods-list
         ref="goodslist"
         :selectIds="selectIds"
         @getProductId="getProductId"
-        v-if="modals"
         :ischeckbox="true"
       ></goods-list>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -89,7 +101,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 100;
+      return this.isMobile ? undefined : '100px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -103,58 +115,15 @@ export default {
       goodsList: [],
       tempGoods: {},
       formValidate: {},
-      columns1: [
-        { key: 'id', title: '商品ID' },
-        { slot: 'img', title: '商品信息' },
-        { key: 'price', title: '直播售价' },
-        // {
-        //   key: 'price',
-        //   title: '直播售价',
-        //   render: (h, params) => {
-        //     return h('Input', {
-        //       props: {
-        //         type: 'number',
-        //         value: params.row.price,
-        //       },
-        //       on: {
-        //         input: (val) => {
-        //           this.tabList[params.index].price = val;
-        //         },
-        //       },
-        //     });
-        //   },
-        // },
-        // {
-        //   key: 'cost_price',
-        //   title: '直播原价',
-        //   render: (h, params) => {
-        //     return h('Input', {
-        //       props: {
-        //         type: 'number',
-        //         value: params.row.cost_price,
-        //       },
-        //       on: {
-        //         input: (val) => {
-        //           this.tabList[params.index].cost_price = val;
-        //         },
-        //       },
-        //     });
-        //   },
-        // },
-        { key: 'stock', title: '库存' },
-        { slot: 'action', fixed: 'right', title: '操作' },
-      ],
       tabList: [],
       disabled: false,
       loadings: false,
+      selectIds:[]
     };
   },
   methods: {
     selectGoods() {
       this.modals = true;
-      this.selectIds = this.goodsList.map((i) => {
-        return i.product_id;
-      });
     },
     // 生成直播商品
     liveGoods() {
@@ -170,16 +139,17 @@ export default {
           this.isShowBox = true;
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
-    getProductId(data) {
-      this.goodsList = data;
-      this.$nextTick((res) => {
-        setTimeout(() => {
-          this.modals = false;
-        }, 300);
-      });
+    //对象数组去重；
+    unique(arr) {
+      const res = new Map();
+      return arr.filter((arr) => !res.has(arr.product_id) && res.set(arr.product_id, 1));
+    },
+    getProductId(productList) {
+      this.modals = false;
+      this.goodsList = this.unique(this.goodsList.concat(productList));
     },
     bindDelete(index, item) {
       this.goodsList.splice(index, 1);
@@ -205,7 +175,7 @@ export default {
         goods_info: this.tabList,
       })
         .then((res) => {
-          this.$Message.success('添加成功');
+          this.$message.success('添加成功');
           this.disabled = false;
           setTimeout(() => {
             this.$router.push({ path: this.$routeProStr + '/marketing/live/live_goods' });
@@ -213,7 +183,7 @@ export default {
         })
         .catch((error) => {
           this.disabled = false;
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
   },
@@ -222,12 +192,13 @@ export default {
 
 <style lang="stylus" scoped>
 .upload-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  background: #ccc;
+  width: 58px;
+  height: 58px;
+  line-height: 58px;
+  border: 1px dotted rgba(0,0,0,0.1);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.02);
+  cursor: pointer;
 }
 
 .box {
@@ -238,7 +209,7 @@ export default {
     position: relative;
     margin-right: 20px;
 
-    .ivu-icon {
+    .el-icon-error {
       position: absolute;
       right: -10px;
       top: -8px;
@@ -255,6 +226,7 @@ export default {
     img {
       width: 100%;
       height: 100%;
+      cursor: pointer;
     }
   }
 }

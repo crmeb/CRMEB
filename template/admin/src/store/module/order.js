@@ -34,6 +34,7 @@ export default {
     delIdList: [],
     iconsaaaa: '',
     orderPayType: '',
+    real_name: ''
     // modelLists: function
   },
   mutations: {
@@ -74,7 +75,12 @@ export default {
     getfieldKey(state, fieldKey) {
       state.fieldKey = fieldKey;
     },
-
+    /**
+     * @description 搜索关键词
+     * */
+    setOrderKeyword(state, real_name){
+      state.real_name = real_name;
+    },
     /**
      * @description tab切换，选择订单状态
      */

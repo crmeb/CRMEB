@@ -1,130 +1,157 @@
 <template>
   <div class="article-manager">
-    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col span="24">
-            <FormItem label="时间选择：">
-              <RadioGroup
-                v-model="formValidate.data"
-                type="button"
-                @on-change="selectChange(formValidate.data)"
-                class="mr"
-              >
-                <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
-              </RadioGroup>
-              <DatePicker
-                :editable="false"
-                @on-change="onchangeTime"
-                :value="timeVal"
-                format="yyyy/MM/dd"
+    <el-card :bordered="false" shadow="never" class="ivu-mt ivu-mb-16" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="formValidate"
+            :model="formValidate"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="时间选择：">
+            <el-date-picker
+                clearable
+                v-model="timeVal"
                 type="daterange"
-                placement="bottom-end"
-                placeholder="请选择时间"
-                style="width: 200px"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="拼团状态：">
-              <Select v-model="formValidate.status" placeholder="请选择" clearable @on-change="userSearchs">
-                <Option :value="1">进行中</Option>
-                <Option :value="2">已完成</Option>
-                <Option :value="3">未完成</Option>
-              </Select>
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+                :editable="false"
+                @change="onchangeTime"
+                format="yyyy/MM/dd"
+                value-format="yyyy/MM/dd"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions"
+                style="width: 250px"
+                class="mr20"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="拼团状态：">
+            <el-select v-model="formValidate.status" placeholder="请选择" clearable @change="userSearchs" class="form_content_width">
+              <el-option :value="1" label="进行中"></el-option>
+              <el-option :value="2" label="已完成"></el-option>
+              <el-option :value="3" label="未完成"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-table
         :data="tableList"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="avatar">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.avatar" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="nickname">
-          <span> {{ row.nickname + ' / ' + row.uid }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="title">
-          <span> {{ row.title + ' / ' + row.cid }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="add_time">
-          <span> {{ row.add_time | formatDate }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="stop_time">
-          <span> {{ row.stop_time | formatDate }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="status">
-          <Tag color="blue" v-show="row.status === 1">进行中</Tag>
-          <Tag color="cyan" v-show="row.status === 2">已完成</Tag>
-          <Tag color="volcano" v-show="row.status === 3">未完成</Tag>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="Info(row)">查看详情</a>
-        </template>
-      </Table>
+        <el-table-column label="头像" min-width="90">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.avatar" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="开团团长" min-width="150">
+          <template slot-scope="scope">
+            <span> {{ scope.row.nickname + ' / ' + scope.row.uid }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="开团时间" min-width="150">
+          <template slot-scope="scope">
+            <span> {{ scope.row.add_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="拼团商品" min-width="180">
+          <template slot-scope="scope">
+            <span> {{ scope.row.title + ' / ' + scope.row.cid }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="几人团" min-width="80">
+          <template slot-scope="scope">
+            <span> {{ scope.row.people }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="几人参加" min-width="80">
+          <template slot-scope="scope">
+            <span> {{ scope.row.count_people }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="结束时间" min-width="120">
+          <template slot-scope="scope">
+            <span> {{ scope.row.stop_time | formatDate }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" min-width="120">
+          <template slot-scope="scope">
+            <el-tag type="info" v-show="scope.row.status === 1">进行中</el-tag>
+            <el-tag v-show="scope.row.status === 2">已完成</el-tag>
+            <el-tag type="warning" v-show="scope.row.status === 3">未完成</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="100">
+          <template slot-scope="scope">
+            <a @click="Info(scope.row)">查看详情</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
 
     <!-- 详情模态框-->
-    <Modal
-      v-model="modals"
-      class="tableBox"
-      scrollable
-      footer-hide
-      closable
-      title="查看详情"
-      :mask-closable="false"
-      width="750"
-    >
-      <Table
+    <el-dialog :visible.sync="modals" class="tableBox" title="查看详情" :close-on-click-modal="false" width="720px">
+      <el-table
         ref="selection"
-        :columns="columns2"
         :data="tabList3"
-        :loading="loading2"
-        no-data-text="暂无数据"
-        highlight-row
+        v-loading="loading2"
+        empty-text="暂无数据"
+        highlight-current-row
         max-height="600"
         size="small"
-        no-filtered-data-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="nickname">
-          <span> {{ row.nickname + ' / ' + row.uid }}</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="avatar">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.avatar" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <Tag color="volcano" v-show="row.is_refund != 0">已退款</Tag>
-          <Tag color="cyan" v-show="row.is_refund === 0">未退款</Tag>
-        </template>
-      </Table>
-    </Modal>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户名称" min-width="100">
+          <template slot-scope="scope">
+            <span> {{ scope.row.nickname + ' / ' + scope.row.uid }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户头像" min-width="150">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.avatar" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单编号" min-width="100">
+          <template slot-scope="scope">
+            <span> {{ scope.row.order_id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="金额" min-width="100">
+          <template slot-scope="scope">
+            <span> {{ scope.row.total_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单状态" min-width="100">
+          <template slot-scope="scope">
+            <el-tag v-show="scope.row.is_refund != 0">已退款</el-tag>
+            <el-tag type="danger" v-show="scope.row.is_refund === 0">未退款</el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -148,26 +175,7 @@ export default {
     return {
       cardLists: [],
       modals: false,
-      fromList: {
-        title: '选择时间',
-        custom: true,
-        fromTxt: [
-          { text: '全部', val: '' },
-          { text: '今天', val: 'today' },
-          { text: '昨天', val: 'yesterday' },
-          { text: '最近7天', val: 'lately7' },
-          { text: '最近30天', val: 'lately30' },
-          { text: '本月', val: 'month' },
-          { text: '本年', val: 'year' },
-        ],
-      },
-      grid: {
-        xl: 7,
-        lg: 10,
-        md: 12,
-        sm: 12,
-        xs: 24,
-      },
+      pickerOptions: this.$timeOptions,
       loading: false,
       formValidate: {
         status: '',
@@ -175,94 +183,19 @@ export default {
         page: 1,
         limit: 15,
       },
-      columns1: [
-        {
-          title: '头像',
-          slot: 'avatar',
-          minWidth: 150,
-        },
-        {
-          title: '开团团长',
-          slot: 'nickname',
-          minWidth: 150,
-        },
-        {
-          title: '开团时间',
-          slot: 'add_time',
-          minWidth: 150,
-        },
-        {
-          title: '拼团商品',
-          slot: 'title',
-          minWidth: 400,
-        },
-        {
-          title: '几人团',
-          key: 'people',
-          minWidth: 120,
-        },
-        {
-          title: '几人参加',
-          key: 'count_people',
-          minWidth: 100,
-        },
-        {
-          title: '结束时间',
-          slot: 'stop_time',
-          minWidth: 150,
-        },
-        {
-          title: '状态',
-          slot: 'status',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 170,
-        },
-      ],
+
       tableList: [],
       total: 0,
       timeVal: [],
       loading2: false,
       tabList3: [],
-      columns2: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '用户名称',
-          slot: 'nickname',
-          minWidth: 100,
-        },
-        {
-          title: '用户头像',
-          slot: 'avatar',
-        },
-        {
-          title: '订单编号',
-          key: 'order_id',
-        },
-        {
-          title: '金额',
-          key: 'total_price',
-        },
-        {
-          title: '订单状态',
-          slot: 'action',
-        },
-      ],
       rows: {},
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -281,7 +214,7 @@ export default {
           this.cardLists = data.res;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 查看详情
@@ -296,16 +229,16 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 具体日期
     onchangeTime(e) {
-      this.timeVal = e;
+      this.timeVal = e || [];
       if (this.timeVal[0] === '') {
         this.formValidate.data = '';
       } else {
-        this.formValidate.data = this.timeVal.join('-');
+        this.formValidate.data = this.timeVal ? this.timeVal.join('-') : '';
       }
       this.formValidate.page = 1;
       this.getList();
@@ -330,7 +263,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange(index) {

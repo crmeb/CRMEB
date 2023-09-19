@@ -121,7 +121,7 @@ class DivisionAgentApplyServices extends BaseServices
         $field[] = Form::hidden('id', $id);
         if ($type) {
             $field[] = Form::number('division_percent', '佣金比例', '')->placeholder('代理商佣金比例1-100')->info('填写1-100，如填写50代表返佣50%,但是不能高于上级事业部的比例')->style(['width' => '173px'])->min(0)->max(100)->required();
-            $field[] = Form::date('division_end_time', '到期时间', '')->placeholder('代理商代理到期时间')->required();
+            $field[] = Form::date('division_end_time', '到期时间', '')->placeholder('代理商代理到期时间');
             $field[] = Form::radio('division_status', '代理状态', 1)->options([['label' => '开通', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
             $title = '同意申请';
         } else {

@@ -1,241 +1,224 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="pagination"
-        :model="pagination"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Col span="24" class="ivu-text-left">
-          <FormItem label="订单状态：">
-            <RadioGroup
-              v-model="pagination.refund_type"
-              type="button"
-              @on-change="selectChange2(pagination.refund_type)"
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="pagination"
+            :model="pagination"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="订单状态：">
+            <el-select
+                v-model="pagination.refund_type"
+                clearable
+                class="form_content_width"
+                @change="selectChange2"
+                placeholder="全部"
             >
-              <Radio v-for="(item, index) in num" :key="index" :label="index">{{ item.name }}</Radio>
-            </RadioGroup>
-          </FormItem>
-        </Col>
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid" class="ivu-text-left">
-            <FormItem label="退款时间：">
-              <DatePicker
-                :editable="false"
-                @on-change="onchangeTime"
-                :value="timeVal"
-                format="yyyy/MM/dd"
+              <el-option
+                  v-for="(item,index) in num"
+                  :value="index"
+                  :key="index"
+                  :label="item.name"
+              >{{item.name}}</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="退款时间：">
+<!--            <el-date-picker-->
+<!--                clearable-->
+<!--                :editable="false"-->
+<!--                @change="onchangeTime"-->
+<!--                v-model="timeVal"-->
+<!--                format="yyyy/MM/dd"-->
+<!--                type="daterange"-->
+<!--                value-format="yyyy/MM/dd"-->
+<!--                start-placeholder="开始日期"-->
+<!--                end-placeholder="结束日期"-->
+<!--                style="width:250px;"-->
+<!--            ></el-date-picker>-->
+            <el-date-picker
+                clearable
+                v-model="timeVal"
                 type="daterange"
-                placement="bottom-start"
-                placeholder="请选择时间"
-                style="width: 200px"
+                :editable="false"
+                @change="onchangeTime"
+                format="yyyy/MM/dd"
+                value-format="yyyy/MM/dd"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions"
+                style="width: 250px"
                 class="mr20"
-                :options="options"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="订单号：" label-for="title">
-              <Input
-                search
-                enter-button
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="订单号：" label-for="title">
+            <el-input
+                clearable
                 v-model="pagination.order_id"
                 placeholder="请输入订单号"
-                @on-search="orderSearch"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="thead"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="orderSearch">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+      <el-table
         :data="tbody"
         ref="table"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="order_id">
-          <span v-text="row.order_id" style="display: block"></span>
-          <span v-show="row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
-        </template>
-        <template slot-scope="{ row, index }" slot="user">
-          <div>用户名：{{ row.nickname }}</div>
-          <div>用户ID：{{ row.uid }}</div>
-        </template>
-        <template slot-scope="{ row, index }" slot="refund_type">
-          <div v-if="row.refund_type == 1">仅退款</div>
-          <div v-else-if="row.refund_type == 2">退货退款</div>
-          <div v-else-if="row.refund_type == 3">
-            <div>拒绝退款</div>
-            <div>原因：{{ row.refuse_reason }}</div>
-          </div>
-          <div v-else-if="row.refund_type == 4">商品待退货</div>
-          <div v-else-if="row.refund_type == 5">
-            <div>退货待收货</div>
-            <div>单号：{{ row.refund_express }}</div>
-          </div>
-          <div v-else-if="row.refund_type == 6">已退款</div>
-        </template>
-        <template slot-scope="{ row, index }" slot="info">
-          <div class="tabBox" v-for="(val, i) in row._info" :key="i">
-            <div class="tabBox_img" v-viewer>
-              <img
-                v-lazy="
-                  val.cart_info.productInfo.attrInfo
-                    ? val.cart_info.productInfo.attrInfo.image
-                    : val.cart_info.productInfo.image
-                "
-              />
-            </div>
-            <span class="tabBox_tit"
-              >{{ val.cart_info.productInfo.store_name + ' | '
-              }}{{ val.cart_info.productInfo.attrInfo ? val.cart_info.productInfo.attrInfo.suk : '' }}</span
-            >
-            <span class="tabBox_pice">{{ '￥' + val.cart_info.truePrice + ' x ' + val.cart_info.cart_num }}</span>
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="order_info">
-          <div>订单金额：{{ row.pay_price }}</div>
-          <div>付款方式：{{ row.pay_type_name }}</div>
-          <div>订单状态：<span v-html="row.status_name.status_name"></span></div>
-        </template>
-        <template slot-scope="{ row, index }" slot="statusName">
-          <div v-html="row.refund_reason" class="pt5"></div>
-          <div class="pictrue-box" v-if="row.refund_img.length">
-            <div v-viewer v-for="(item, index) in row.refund_img || []" :key="index">
-              <img class="pictrue mr10" v-lazy="item" :src="item" />
-            </div>
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <!--          <a @click="edit(row)" v-if="row._status === 1">编辑</a>-->
-          <!--          <a-->
-          <!--            @click="sendOrder(row)"-->
-          <!--            v-if="-->
-          <!--              row._status === 2 && row.shipping_type === 1 && !row.pinkStatus-->
-          <!--            "-->
-          <!--            >发送货</a-->
-          <!--          >-->
-          <!--          <a-->
-          <!--            @click="sendOrder(row)"-->
-          <!--            v-if="-->
-          <!--              row._status === 2 &&-->
-          <!--              row.shipping_type === 1 &&-->
-          <!--              row.pinkStatus === 2-->
-          <!--            "-->
-          <!--            >发送货</a-->
-          <!--          >-->
-          <!--          <a @click="delivery(row)" v-if="row._status === 4">配送信息</a>-->
-          <!--          <a-->
-          <!--            @click="bindWrite(row)"-->
-          <!--            v-if="-->
-          <!--              row.shipping_type == 2 &&-->
-          <!--              row.status == 0 &&-->
-          <!--              row.paid == 1 &&-->
-          <!--              row.refund_status === 0-->
-          <!--            "-->
-          <!--            >立即核销</a-->
-          <!--          >-->
-          <!--          <Divider-->
-          <!--            type="vertical"-->
-          <!--            v-if="-->
-          <!--              row._status === 2 &&-->
-          <!--              row.shipping_type === 1 &&-->
-          <!--              row.pinkStatus === 2-->
-          <!--            "-->
-          <!--          />-->
-          <!--          <Divider-->
-          <!--            type="vertical"-->
-          <!--            v-if="-->
-          <!--              row._status === 1 ||-->
-          <!--              (row._status === 2 && !row.pinkStatus) ||-->
-          <!--              row._status === 4 ||-->
-          <!--              (row.shipping_type == 2 &&-->
-          <!--                row.status == 0 &&-->
-          <!--                row.paid == 1 &&-->
-          <!--                row.refund_status === 0)-->
-          <!--            "-->
-          <!--          />-->
-          <template>
-            <Dropdown @on-click="changeMenu(row, $event)" :transfer="true">
-              <a href="javascript:void(0)"
-                >更多
-                <Icon type="ios-arrow-down"></Icon>
-              </a>
-              <DropdownMenu slot="list">
-                <DropdownItem
-                  name="1"
-                  ref="ones"
-                  v-show="row._status === 1 && row.paid === 0 && row.pay_type === 'offline'"
-                  >立即支付</DropdownItem
-                >
-                <DropdownItem name="2">订单详情</DropdownItem>
-                <!-- <DropdownItem name="3">订单记录</DropdownItem> -->
-                <!--                <DropdownItem-->
-                <!--                  name="11"-->
-                <!--                  v-show="row._status >= 3 && row.express_dump"-->
-                <!--                  >电子面单打印</DropdownItem-->
-                <!--                >-->
-                <!--                <DropdownItem name="10" v-show="row._status >= 2"-->
-                <!--                  >小票打印</DropdownItem-->
-                <!--                >-->
-                <DropdownItem
-                  name="4"
-                  v-show="
-                    row._status !== 1 ||
-                    (row._status === 3 && row.use_integral > 0 && row.use_integral >= row.back_integral)
-                  "
-                  >售后备注</DropdownItem
-                >
-                <DropdownItem
-                  name="5"
-                  v-show="
-                    [1, 2, 5].includes(row.refund_type) &&
-                    (parseFloat(row.pay_price) > parseFloat(row.refunded_price) || row.pay_price == 0)
-                  "
-                  >{{ row.refund_type == 2 ? '同意退货' : '立即退款' }}</DropdownItem
-                >
-                <!--                <DropdownItem-->
-                <!--                  name="6"-->
-                <!--                  v-show="-->
-                <!--                    row._status !== 1 &&-->
-                <!--                    row.use_integral > 0 &&-->
-                <!--                    row.use_integral >= row.back_integral-->
-                <!--                  "-->
-                <!--                  >退积分</DropdownItem-->
-                <!--                >-->
-                <DropdownItem name="7" v-show="[1, 2].includes(row.refund_type) && row.is_pink_cancel === 0"
-                  >不退款</DropdownItem
-                >
-                <DropdownItem name="8" v-show="row.is_del == 1">删除订单</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+        <el-table-column label="退款订单号" min-width="150">
+          <template slot-scope="scope">
+            <span v-text="scope.row.order_id" style="display: block"></span>
+            <span v-show="scope.row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
           </template>
-        </template>
-      </Table>
+        </el-table-column>
+        <el-table-column label="原订单号" min-width="150">
+          <template slot-scope="scope">
+            <span v-text="scope.row.store_order_order_id" style="display: block"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品信息" min-width="250">
+          <template slot-scope="scope">
+            <div class="tab" v-for="(item,i) in scope.row._info" :key="i">
+              <img v-lazy="item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.image : item.cart_info.productInfo.image" />
+              <el-tooltip placement="top" :open-delay="300">
+                <div slot="content">
+                  <div>
+                    <span>商品名称：</span>
+                    <span>{{ item.cart_info.productInfo.store_name  || '--' }}</span>
+                  </div>
+                  <div>
+                    <span>规格名称：</span>
+                    <span>{{ item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.suk : '---' }}</span>
+                  </div>
+                  <div>
+                    <span>价格：</span>
+                    <span>¥{{ item.cart_info.truePrice || '--' }}</span>
+                  </div>
+                  <div>
+                    <span>数量：</span>
+                    <span>{{ item.cart_info.cart_num || '--' }}</span>
+                  </div>
+                </div>
+                <span class="line2 w-250">{{ item.cart_info.productInfo.store_name }}</span>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户信息" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="实际支付" min-width="70">
+          <template slot-scope="scope">
+            <span>{{ scope.row.pay_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="发起退款时间" min-width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="退款状态" min-width="100">
+          <template slot-scope="scope">
+            <div v-if="scope.row.refund_type == 1">仅退款</div>
+            <div v-else-if="scope.row.refund_type == 2">退货退款</div>
+            <div v-else-if="scope.row.refund_type == 3">
+              <div>拒绝退款</div>
+              <div>原因：{{ scope.row.refuse_reason }}</div>
+            </div>
+            <div v-else-if="scope.row.refund_type == 4">商品待退货</div>
+            <div v-else-if="scope.row.refund_type == 5">
+              <div>退货待收货</div>
+              <div>单号：{{ scope.row.refund_express }}</div>
+            </div>
+            <div v-else-if="scope.row.refund_type == 6">已退款</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单状态" min-width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.store_order_status }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="退款信息" min-width="120">
+          <template slot-scope="scope">
+            <div v-html="scope.row.refund_reason" class="pt5"></div>
+            <div class="pictrue-box" v-if="scope.row.refund_img.length">
+              <div v-viewer v-for="(item, index) in scope.row.refund_img || []" :key="index">
+                <img class="pictrue mr10" v-lazy="item" :src="item" />
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="80">
+          <template slot-scope="scope">
+            <el-dropdown size="small" @command="changeMenu(scope.row, $event)">
+              <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  command="1"
+                  ref="ones"
+                  v-show="scope.row._status === 1 && scope.row.paid === 0 && scope.row.pay_type === 'offline'"
+                  >立即支付</el-dropdown-item
+                >
+                <el-dropdown-item command="2">订单详情</el-dropdown-item>
+                <el-dropdown-item
+                  command="4"
+                  v-show="
+                    scope.row._status !== 1 ||
+                    (scope.row._status === 3 &&
+                      scope.row.use_integral > 0 &&
+                      scope.row.use_integral >= scope.row.back_integral)
+                  "
+                  >售后备注</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="5"
+                  v-show="
+                    [1, 2, 5].includes(scope.row.refund_type) &&
+                    (parseFloat(scope.row.pay_price) > parseFloat(scope.row.refunded_price) || scope.row.pay_price == 0)
+                  "
+                  >{{ scope.row.refund_type == 2 ? '同意退货' : '立即退款' }}</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="7"
+                  v-show="[1, 2].includes(scope.row.refund_type) && scope.row.is_pink_cancel === 0"
+                  >不退款</el-dropdown-item
+                >
+                <el-dropdown-item command="8" v-show="scope.row.is_del == 1">删除订单</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="pagination.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="pagination.limit"
+          :page.sync="pagination.page"
+          :limit.sync="pagination.limit"
+          @pagination="getOrderList"
         />
       </div>
-    </Card>
+    </el-card>
     <!-- 编辑 退款 退积分 不退款-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
     <!-- 详情 -->
     <details-from ref="detailss" :orderDatalist="orderDatalist" :orderId="orderId" :is_refund="1"></details-from>
     <!-- 备注 -->
     <order-remark ref="remarks" remarkType="refund" :orderId="orderId" @submitFail="submitFail"></order-remark>
-    <!-- 记录 -->
-    <order-record ref="record"></order-record>
   </div>
 </template>
 
@@ -257,68 +240,18 @@ import {
 import editFrom from '@/components/from/from';
 import detailsFrom from '../orderList/handle/orderDetails';
 import orderRemark from '../orderList/handle/orderRemark';
-import orderRecord from '../orderList/handle/orderRecord';
+import timeOptions from "@/libs/timeOptions";
 export default {
-  components: { editFrom, detailsFrom, orderRemark, orderRecord },
+  components: { editFrom, detailsFrom, orderRemark },
   data() {
     return {
       grid: {
         xl: 7,
-        lg: 7,
+        lg: 8,
         md: 12,
         sm: 24,
         xs: 24,
       },
-      thead: [
-        {
-          title: '订单号',
-          align: 'center',
-          slot: 'order_id',
-          minWidth: 150,
-        },
-        {
-          title: '用户信息',
-          key: 'nickname',
-          minWidth: 100,
-        },
-        {
-          title: '商品信息',
-          slot: 'info',
-          minWidth: 330,
-        },
-        {
-          title: '实际支付',
-          key: 'pay_price',
-          minWidth: 70,
-        },
-        {
-          title: '发起退款时间',
-          key: 'add_time',
-          minWidth: 100,
-        },
-        {
-          title: '退款状态',
-          slot: 'refund_type',
-          minWidth: 100,
-        },
-        {
-          title: '退款信息',
-          slot: 'statusName',
-          minWidth: 120,
-        },
-        {
-          title: '售后备注',
-          key: 'remark',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 150,
-          align: 'center',
-        },
-      ],
       tbody: [],
       num: [],
       orderDatalist: null,
@@ -334,85 +267,19 @@ export default {
         time: '',
         refund_type: 0,
       },
-      options: {
-        shortcuts: [
-          {
-            text: '今天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()));
-              return [start, end];
-            },
-          },
-          {
-            text: '昨天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
-              );
-              end.setTime(
-                end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
-              );
-              return [start, end];
-            },
-          },
-          {
-            text: '最近7天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 6)),
-              );
-              return [start, end];
-            },
-          },
-          {
-            text: '最近30天',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(
-                start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 29)),
-              );
-              return [start, end];
-            },
-          },
-          {
-            text: '本月',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
-              return [start, end];
-            },
-          },
-          {
-            text: '本年',
-            value() {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.setTime(new Date(new Date().getFullYear(), 0, 1)));
-              return [start, end];
-            },
-          },
-        ],
-      },
       timeVal: [],
       modal: false,
       qrcode: null,
       name: '',
       spin: false,
+      pickerOptions: timeOptions,
     };
   },
   computed: {
     ...mapState('order', ['orderChartType']),
     // ...mapState("admin/layout", ["isMobile"]),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -429,8 +296,8 @@ export default {
     // 具体日期搜索()；
     onchangeTime(e) {
       this.pagination.page = 1;
-      this.timeVal = e;
-      this.pagination.time = this.timeVal[0] ? this.timeVal.join('-') : '';
+      this.timeVal = e || [];
+      this.pagination.time = this.timeVal[0] ? this.timeVal ? this.timeVal.join('-') : '' : '';
       this.getOrderList();
     },
     // 操作
@@ -446,20 +313,16 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.getOrderList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           // this.modalTitleSs = '修改立即支付';
           break;
         case '2':
           this.getData(row.order_id);
-          break;
-        case '3':
-          this.$refs.record.modals = true;
-          this.$refs.record.getList(row.id);
           break;
         case '4':
           this.$refs.remarks.modals = true;
@@ -493,12 +356,12 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.$emit('changeGetTabs');
               this.getOrderList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           break;
         case '11':
@@ -511,11 +374,11 @@ export default {
           };
           this.$modalSure(this.delfromData)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.getOrderList();
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           break;
         default:
@@ -539,11 +402,11 @@ export default {
         };
         this.$modalSure(this.delfromData)
           .then((res) => {
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.getOrderList();
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
         this.$modalForm(getNewRefundFrom(id)).then(() => {
@@ -560,7 +423,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 获取详情表单数据
@@ -568,19 +431,19 @@ export default {
       getDataInfoNew(id)
         .then(async (res) => {
           this.orderDatalist = res.data;
-          if (this.orderDatalist.orderInfo.refund_img.length) {
-            try {
-              this.orderDatalist.orderInfo.refund_img = JSON.parse(this.orderDatalist.orderInfo.refund_img);
-            } catch (e) {
-              this.orderDatalist.orderInfo.refund_img = [];
-            }
-          }
+          // if (this.orderDatalist.orderInfo.refund_img.length) {
+          //   try {
+          //     this.orderDatalist.orderInfo.refund_img = this.orderDatalist.orderInfo.refund_img;
+          //   } catch (e) {
+          //     this.orderDatalist.orderInfo.refund_img = [];
+          //   }
+          // }
           this.$nextTick((e) => {
             this.$refs.detailss.modals = true;
           });
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 删除单条订单
@@ -588,19 +451,14 @@ export default {
       if (row.is_del === 1) {
         this.$modalSure(data)
           .then((res) => {
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.getOrderList();
           })
           .catch((res) => {
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           });
       } else {
-        const title = '错误！';
-        const content = '<p>您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！</p>';
-        this.$Modal.error({
-          title: title,
-          content: content,
-        });
+        this.$message.error('您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！');
       }
     },
     // 修改成功
@@ -610,7 +468,6 @@ export default {
     // 订单选择状态
     selectChange2(tab) {
       this.pagination.page = 1;
-      this.pagination.refund_type = tab;
       this.getOrderList(tab);
     },
     // 不退款表单数据
@@ -633,13 +490,8 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
-    },
-    // 分页
-    pageChange(index) {
-      this.pagination.page = index;
-      this.getOrderList();
     },
     nameSearch() {
       this.pagination.page = 1;
@@ -658,7 +510,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },
@@ -716,5 +568,21 @@ export default {
 .pictrue {
   width: 25px;
   height: 25px;
+}
+.tab {
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 36px;
+    height: 36px;
+    margin-right: 10px;
+  }
+}
+.w-250 {
+  max-width: 250px;
+}
+.w-120 {
+  width: 120px;
 }
 </style>

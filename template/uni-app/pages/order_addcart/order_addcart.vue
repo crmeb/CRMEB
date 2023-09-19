@@ -35,7 +35,7 @@
 										<image v-else :src='item.productInfo.image'></image>
 									</view>
 									<view class='text'>
-										<view class='line1' :class="item.attrStatus?'':'reColor'">
+										<view class='line2' :class="item.attrStatus?'':'reColor'">
 											{{item.productInfo.store_name}}
 										</view>
 										<view class='infor line1' v-if="item.productInfo.attrInfo">

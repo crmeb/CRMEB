@@ -1,11 +1,14 @@
 <template>
-  <Card :bordered="false" dis-hover class="ivu-mt-16">
+  <el-card :bordered="false" shadow="never" class="ivu-mt-16" v-loading="spinShow">
     <div class="acea-row row-between-wrapper">
-      <div class="header-title mb20">
-        用户概况
-        <Poptip word-wrap width="500" trigger="hover" placement="right-start">
-          <Icon type="ios-information-circle-outline" />
+      <div class="statics-header-title mb20">
+        <h4>用户概况</h4>
+        <el-tooltip placement="right-start">
+          <i class="el-icon-question ml10"></i>
           <div slot="content">
+            <div>累积用户数</div>
+            <div>商城的总用户</div>
+            <br />
             <div>访客数</div>
             <div>在选定条件下，访问商城页面的去重人数</div>
             <br />
@@ -18,36 +21,15 @@
             <div>成交用户数</div>
             <div>在选定条件下，下单并支付成功的用户</div>
             <br />
-            <div>访客-支付转化率</div>
-            <div>在选定条件下，全部成交客户数 / 商城访客数</div>
-            <br />
-            <div>激活付费会员数</div>
-            <div>在选定条件下，通过各种方式成为付费会员的用户数</div>
-            <br />
-            <div>充值用户数</div>
-            <div>在选定条件下，成功充值的用户</div>
-            <br />
-            <div>客单价</div>
-            <div>在选定条件下，用户支付的总金额 / 支付人数</div>
-            <br />
-            <div>累积用户数</div>
-            <div>商城的总用户</div>
-            <br />
-            <div>累积付费会员数</div>
+            <div>付费会员数</div>
             <div>筛选时间截止时，具有商城付费会员身份的用户数</div>
-            <br />
-            <div>累积充值用户数</div>
-            <div>筛选时间截止时，商城成功充值过的用户</div>
-            <br />
-            <div>累积成交用户数</div>
-            <div>筛选时间截止时，下单并支付成功的用户</div>
           </div>
-        </Poptip>
+        </el-tooltip>
       </div>
     </div>
-    <div class="mb20" style="padding-left: 25px">
-      <Row>
-        <Col v-bind="grid" v-for="(item, index) in list" :key="index">
+    <div class="mb20">
+      <el-row>
+        <el-col v-bind="grid" v-for="(item, index) in list" :key="index">
           <div class="acea-row mb30 fwn">
             <div class="iconCrl mr15" :class="item.colors">
               <i class="iconfont" :class="item.icon"></i>
@@ -59,18 +41,19 @@
               <span class="content-time spBlock"
                 >环比增长：<i class="content-is" :class="Number(item.list.percent) >= 0 ? 'up' : 'down'"
                   >{{ item.list.percent }}%</i
-                ><Icon
-                  :color="Number(item.list.percent) >= 0 ? '#F5222D' : '#39C15B'"
-                  :type="Number(item.list.percent) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
-              /></span>
+                >
+                <i
+                  :style="{ color: Number(item.list.percent) >= 0 ? '#F5222D' : '#39C15B' }"
+                  :class="[Number(item.list.percent) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
+                />
+              </span>
             </div>
           </div>
-        </Col>
-      </Row>
+        </el-col>
+      </el-row>
     </div>
     <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
-    <Spin size="large" fix v-if="spinShow"></Spin>
-  </Card>
+  </el-card>
 </template>
 
 <script>
@@ -97,7 +80,7 @@ export default {
       spinShow: false,
       grid: {
         xl: 4,
-        lg: 8,
+        lg: 4,
         md: 12,
         sm: 24,
         xs: 24,
@@ -122,7 +105,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join('-');
+      this.dataTime = this.timeVal ? this.timeVal.join('-') : '';
       this.name = this.dataTime;
     },
     // 统计
@@ -131,6 +114,12 @@ export default {
         .then(async (res) => {
           const cardLists = res.data;
           this.list = [
+            {
+              name: '累计用户',
+              icon: 'iconleijiyonghu',
+              list: cardLists.cumulativeUser,
+              colors: 'four',
+            },
             {
               name: '访客数',
               icon: 'iconfangkeshu',
@@ -156,57 +145,15 @@ export default {
               colors: 'four',
             },
             {
-              name: '访客-支付转化率',
-              icon: 'iconfangke-zhifuzhuanhuashuai',
-              list: cardLists.payPercent,
-              colors: 'three',
-            },
-            {
               name: '付费会员数',
               icon: 'iconfufeihuiyuanshu',
               list: cardLists.payUser,
               colors: 'four',
             },
-            {
-              name: '充值用户数',
-              icon: 'iconchongzhiyonghushu',
-              list: cardLists.rechargePeople,
-              colors: 'two',
-            },
-            {
-              name: '客单价',
-              icon: 'iconkedanjia',
-              list: cardLists.payPrice,
-              colors: 'one',
-            },
-            {
-              name: '累计用户',
-              icon: 'iconleijiyonghu',
-              list: cardLists.cumulativeUser,
-              colors: 'four',
-            },
-            {
-              name: '累计付费会员数',
-              icon: 'iconfufeihuiyuanshu',
-              list: cardLists.cumulativePayUser,
-              colors: 'one',
-            },
-            {
-              name: '累计充值用户数',
-              icon: 'iconchongzhiyonghushu',
-              list: cardLists.cumulativeRechargePeople,
-              colors: 'four',
-            },
-            {
-              name: '累计成交用户数',
-              icon: 'iconchengjiaoyonghushu',
-              list: cardLists.cumulativePayPeople,
-              colors: 'three',
-            },
           ];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 统计图
@@ -304,7 +251,7 @@ export default {
           this.spinShow = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
           this.spinShow = false;
         });
     },
@@ -314,7 +261,7 @@ export default {
 
 <style scoped lang="less">
 .one {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 .two {
   background: #00c050;
@@ -365,7 +312,7 @@ export default {
 }
 
 .lan {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 
 .iconshangpinliulanliang {

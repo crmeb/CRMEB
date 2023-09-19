@@ -17,7 +17,6 @@
 			}
 		},
 		onLoad(option) {
-			console.log(option)
 			this.url = option.url;
 			try {
 				const res = uni.getSystemInfoSync();

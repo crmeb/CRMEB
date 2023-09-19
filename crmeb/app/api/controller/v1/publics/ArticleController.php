@@ -10,7 +10,6 @@
 // +----------------------------------------------------------------------
 namespace app\api\controller\v1\publics;
 
-use app\Request;
 use app\services\article\ArticleServices;
 
 /**

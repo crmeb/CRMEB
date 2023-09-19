@@ -18,7 +18,7 @@
 				
 			</form> -->
 			<view class='search acea-row row-between-wrapper'>
-				<view class='input'><input :placeholder='$t(`点击搜索会员名称`)' placeholder-class='placeholder'
+				<view class='input'><input :placeholder='$t(`点击搜索名称`)' placeholder-class='placeholder'
 						v-model="keyword" @confirm="submitForm" confirm-type='search' name="search"></input></view>
 				<button class='iconfont icon-sousuo2' @click="submitForm"></button>
 			</view>

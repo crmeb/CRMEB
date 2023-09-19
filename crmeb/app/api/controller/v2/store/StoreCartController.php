@@ -66,7 +66,7 @@ class StoreCartController
     {
         list($product_id, $num, $unique, $type) = $request->postMore([
             ['product_id', 0],
-            ['num', 0],
+            ['num', 1],
             ['unique', ''],
             ['type', -1]
         ], true);

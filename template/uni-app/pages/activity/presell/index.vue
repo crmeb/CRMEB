@@ -41,11 +41,13 @@
 										<text class="price">{{$t(`￥`)}} <text>{{ item.price }}</text></text>
 									</view>
 									<text class="iconfont icon-yushouanniu"></text>
-									<view v-if="active != 1" class='order_btn'>{{ active === 2  ? $t(`立即预定`) : $t(`已结束`) }}
+									<view v-if="active != 1" class='order_btn'>
+										{{ active === 2  ? $t(`立即预定`) : $t(`已结束`) }}
 									</view>
 									<view v-else class="unStartBtn">
 										<text>{{$t(`开售时间`)}}</text>
-										<view>{{ new Date(item.presale_start_time*1000).getMonth()+1 }}/{{ new Date(item.presale_start_time*1000).getDate() }}
+										<view>
+											{{ new Date(item.presale_start_time*1000).getMonth()+1 }}/{{ new Date(item.presale_start_time*1000).getDate() }}
 											{{ new Date(item.presale_start_time*1000).getHours()<10?'0'+ 
 										new Date(item.presale_start_time*1000).getHours():new Date(item.presale_start_time*1000).getHours() || '00'}}:
 											{{ new Date(item.presale_start_time*1000).getMinutes()<10?"0" + new Date(item.presale_start_time*1000).getMinutes():
@@ -56,6 +58,12 @@
 							</view>
 						</view>
 					</block>
+					<view class='noCommodity' v-if="presellList.length == 0">
+						<view class='emptyBox'>
+							<image :src="imgHost + '/statics/images/no-thing.png'"></image>
+							<view class="tips">{{$t(`暂无商品，去看点别的吧`)}}</view>
+						</view>
+					</view>
 				</view>
 			</view>
 
@@ -74,6 +82,9 @@
 	import home from '@/components/home/index.vue'
 	import colors from "@/mixins/color";
 	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
+	import {
 		colorChange
 	} from '@/api/api.js';
 	export default {
@@ -83,6 +94,7 @@
 		mixins: [colors],
 		data() {
 			return {
+				imgHost: HTTP_REQUEST_URL,
 				topImage: '',
 				presellList: [],
 				timeList: [{
@@ -176,7 +188,6 @@
 				if (that.pageloading) return;
 				this.pageloading = true
 				getPresellList(data).then(res => {
-					console.log(res);
 					var presellList = res.data.list;
 					var loadend = presellList.length < that.limit;
 					that.page++;
@@ -219,7 +230,23 @@
 	}
 
 	.noCommodity {
-		border-top: none;
+		padding-bottom: 30rpx;
+		padding: 200rpx 0;
+
+		.emptyBox {
+			text-align: center;
+			padding-top: 20rpx;
+
+			.tips {
+				color: #aaa;
+				font-size: 26rpx;
+			}
+
+			image {
+				width: 414rpx;
+				height: 304rpx;
+			}
+		}
 	}
 
 	.flash-sale {
@@ -392,7 +419,8 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		.icon-yushouanniu{
+
+		.icon-yushouanniu {
 			position: absolute;
 			right: 82rpx;
 			width: 44%;
@@ -402,6 +430,7 @@
 			z-index: 98;
 			color: var(--view-theme);
 		}
+
 		.presell_price {
 			float: left;
 			width: 55%;
@@ -417,6 +446,7 @@
 			align-items: center;
 			justify-content: center;
 			flex-direction: column;
+
 			.presell_text {
 				display: block;
 				color: #E93323;
@@ -456,6 +486,7 @@
 			font-size: 20rpx;
 			z-index: 999;
 			padding: 4rpx 0;
+
 			text {
 				font-size: 22rpx;
 			}

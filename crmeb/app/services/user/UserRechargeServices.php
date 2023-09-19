@@ -144,28 +144,28 @@ class UserRechargeServices extends BaseServices
                 'name' => '充值总金额',
                 'field' => '元',
                 'count' => $data['sumPrice'],
-                'className' => 'logo-yen',
+                'className' => 'iconjiaoyijine',
                 'col' => 6,
             ],
             [
                 'name' => '充值退款金额',
                 'field' => '元',
                 'count' => $data['sumRefundPrice'],
-                'className' => 'logo-usd',
+                'className' => 'iconshangpintuikuanjine',
                 'col' => 6,
             ],
             [
                 'name' => '支付宝充值金额',
                 'field' => '元',
                 'count' => $data['sumAlipayPrice'],
-                'className' => 'logo-bitcoin',
+                'className' => 'iconzhifubao',
                 'col' => 6,
             ],
             [
                 'name' => '微信充值金额',
                 'field' => '元',
                 'count' => $data['sumWeixinPrice'],
-                'className' => 'ios-bicycle',
+                'className' => 'iconweixinzhifu',
                 'col' => 6,
             ],
         ];
@@ -233,11 +233,19 @@ class UserRechargeServices extends BaseServices
 
         try {
             $recharge_type = $UserRecharge['recharge_type'];
+
+            if (sys_config('pay_wechat_type')) {
+                $drivers = 'v3_wechat_pay';
+                $trade_no = $UserRecharge['trade_no'];
+            } else {
+                $drivers = 'wechat_pay';
+                $trade_no = $UserRecharge['order_id'];
+            }
             /** @var Pay $pay */
-            $pay = app()->make(Pay::class);
+            $pay = app()->make(Pay::class, [$drivers]);
             if ($recharge_type == 'weixin') {
                 $refund_data['wechat'] = true;
-                $pay->refund($UserRecharge['order_id'], $refund_data);
+                $pay->refund($trade_no, $refund_data);
             } else {
                 $refund_data['trade_no'] = $UserRecharge['trade_no'];
                 $refund_data['order_id'] = $UserRecharge['order_id'];

@@ -98,7 +98,7 @@ class DivisionServices extends BaseServices
         }
         $field[] = Form::hidden('aid', $adminInfo['id'] ?? 0);
         $field[] = Form::number('division_percent', '佣金比例', $userInfo['division_percent'] ?? '')->placeholder('区域代理佣金比例1-100')->info('填写1-100，如填写50代表返佣50%')->style(['width' => '173px'])->min(0)->max(100)->required();
-        $field[] = Form::date('division_end_time', '到期时间', ($userInfo['division_end_time'] ?? '') != 0 ? date('Y-m-d H:i:s', $userInfo['division_end_time']) : '')->placeholder('区域代理到期时间')->required();
+        $field[] = Form::date('division_end_time', '到期时间', ($userInfo['division_end_time'] ?? '') != 0 ? date('Y-m-d H:i:s', $userInfo['division_end_time']) : '')->placeholder('区域代理到期时间');
         $field[] = Form::radio('division_status', '代理状态', $userInfo['division_status'] ?? 1)->options([['label' => '开通', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
         $field[] = Form::input('account', '管理账号', $adminInfo['account'] ?? '')->required('请填写管理员账号');
         $field[] = Form::input('pwd', '管理密码')->type('password')->placeholder('请填写管理员密码');
@@ -231,7 +231,7 @@ class DivisionServices extends BaseServices
             $field[] = Form::hidden('edit', 0);
         }
         $field[] = Form::number('division_percent', '佣金比例', $userInfo['division_percent'] ?? '')->placeholder('代理商佣金比例1-100')->info('填写1-100，如填写50代表返佣50%,但是不能高于上级事业部的比例')->style(['width' => '173px'])->min(0)->max(100)->required();
-        $field[] = Form::date('division_end_time', '到期时间', ($userInfo['division_end_time'] ?? '') != 0 ? date('Y-m-d H:i:s', $userInfo['division_end_time']) : '')->placeholder('代理商代理到期时间')->required();
+        $field[] = Form::date('division_end_time', '到期时间', ($userInfo['division_end_time'] ?? '') != 0 ? date('Y-m-d H:i:s', $userInfo['division_end_time']) : '')->placeholder('代理商代理到期时间');
         $field[] = Form::radio('division_status', '代理状态', $userInfo['division_status'] ?? 1)->options([['label' => '开通', 'value' => 1], ['label' => '关闭', 'value' => 0]]);
         return create_form('代理商', $field, Route::buildUrl('/agent/division/agent/save'), 'POST');
     }
@@ -256,6 +256,8 @@ class DivisionServices extends BaseServices
             'division_change_time' => time(),
             'division_end_time' => strtotime($data['division_end_time']),
             'division_type' => 2,
+            'is_agent' => 1,
+            'agent_id' => $uid
         ];
         $division_info = $userServices->getUserInfo($data['division_id'], 'division_end_time,division_percent');
         if ($division_info) {

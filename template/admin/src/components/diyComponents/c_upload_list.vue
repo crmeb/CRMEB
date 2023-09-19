@@ -12,10 +12,10 @@
           <div class="img-box" @click="modalPicTap('单选', index)">
             <img :src="item.img" alt="" v-if="item.img" />
             <div class="upload-box" v-else>
-              <Icon type="ios-camera-outline" size="36" />
+              <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
             </div>
             <div v-if="!datas[name].isDelete" class="delect-btn" @click.stop="bindDelete(item, index)">
-              <Icon type="md-close-circle" size="26" />
+              <i class="el-icon-circle-close" style="font-size: 24px;"></i>
             </div>
           </div>
           <div class="info">
@@ -23,11 +23,11 @@
               <div class="info-item" v-if="infos.title === '链接'">
                 <span>{{ infos.title }}</span>
                 <div class="input-box" @click="getLink(index, key)">
-                  <Input
+                  <el-input
                     v-model="infos.value"
                     :placeholder="infos.tips"
                     :maxlength="infos.maxlength"
-                    icon="ios-arrow-forward"
+                    suffix-icon="el-icon-arrow-right"
                     readonly
                   />
                 </div>
@@ -35,7 +35,12 @@
               <div v-else class="info-item">
                 <span>{{ infos.title }}</span>
                 <div class="input-box">
-                  <Input v-model="infos.value" :placeholder="infos.tips" :maxlength="infos.maxlength" width="250px" />
+                  <el-input
+                    v-model="infos.value"
+                    :placeholder="infos.tips"
+                    :maxlength="infos.maxlength"
+                    width="250px"
+                  />
                 </div>
               </div>
             </div>
@@ -43,14 +48,11 @@
         </div>
       </draggable>
       <div>
-        <Modal
-          v-model="modalPic"
+        <el-dialog
+          :visible.sync="modalPic"
           width="950px"
-          scrollable
-          footer-hide
-          closable
           title="上传商品图"
-          :mask-closable="false"
+          :close-on-click-modal="false"
           :z-index="888"
         >
           <uploadPictures
@@ -60,18 +62,18 @@
             :gridPic="gridPic"
             v-if="modalPic"
           ></uploadPictures>
-        </Modal>
+        </el-dialog>
       </div>
     </div>
     <template v-if="datas[name]">
       <div class="add-btn" v-if="datas[name].list.length < datas[name].max || datas[name].max == ''">
-        <Button
+        <el-button
           type="primary"
           ghost
-          style="width: 100%; height: 40px; border-color: #1890ff; color: #1890ff"
+          style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
           @click="addBox"
           >添加图片
-        </Button>
+        </el-button>
       </div>
     </template>
     <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
@@ -259,7 +261,7 @@ export default {
     .item {
       position: relative;
       display: flex;
-      margin-top: 20px;
+      margin-top: 14px;
 
       .move-icon {
         display: flex;

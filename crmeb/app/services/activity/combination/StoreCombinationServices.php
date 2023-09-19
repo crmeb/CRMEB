@@ -224,7 +224,7 @@ class StoreCombinationServices extends BaseServices
         $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '日常售价', 'key' => 'r_price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '库存', 'key' => 'stock', 'align' => 'center', 'minWidth' => 80];
-        $header[] = ['title' => '限量', 'key' => 'quota', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '限量', 'slot' => 'quota', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '重量(KG)', 'key' => 'weight', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '体积(m³)', 'key' => 'volume', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '商品编号', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
@@ -393,11 +393,11 @@ class StoreCombinationServices extends BaseServices
 
         /** @var StorePinkServices $pinkService */
         $pinkService = app()->make(StorePinkServices::class);
-        list($pink, $pindAll) = $pinkService->getPinkList($id, true);//拼团列表
+        list($pink, $pinkAll) = $pinkService->getPinkList($id, true);//拼团列表
         $data['pink_ok_list'] = $pinkService->getPinkOkList($uid);
         $data['pink_ok_sum'] = $pinkService->getPinkOkSumTotalNum();
         $data['pink'] = $pink;
-        $data['pindAll'] = $pindAll;
+        $data['pinkAll'] = $pinkAll;
 
         /** @var StoreOrderServices $storeOrderServices */
         $storeOrderServices = app()->make(StoreOrderServices::class);
@@ -662,8 +662,7 @@ class StoreCombinationServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0];
         $list = $orderServices->combinationStatisticsOrder($id, $where, $page, $limit);
-        $where['combination_id'] = $id;
-        $count = $orderServices->count($where);
+        $count = $orderServices->combinationStatisticsCount($where);
         foreach ($list as &$item) {
             if ($item['status'] == 0) {
                 if ($item['paid'] == 0) {

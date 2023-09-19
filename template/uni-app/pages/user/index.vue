@@ -72,10 +72,7 @@
 									</view>
 								</view>
 								<view class="num" v-if="userInfo.phone" @click="goEdit()">
-									<view class="num-txt">ID：{{userInfo.uid}}</view>
-									<!-- <view class="icon">
-										<image src="/static/images/edit.png" mode=""></image>
-									</view> -->
+									<view class="num-txt">{{userInfo.phone}}</view>
 								</view>
 								<!-- #ifdef MP -->
 								<button class="phone" v-if="!userInfo.phone && isLogin" open-type="getPhoneNumber"
@@ -290,7 +287,6 @@
 		getMenuList,
 		getUserInfo,
 		setVisit,
-		updateUserInfo,
 		mpBindingPhone
 	} from '@/api/user.js';
 	import {
@@ -479,16 +475,6 @@
 				//#ifdef H5
 				Auth.isWeixin() && Auth.toAuth('snsapi_userinfo', '/pages/user/index');
 				//#endif
-			},
-			getRoutineUserInfo(e) {
-				updateUserInfo({
-					userInfo: e.detail.userInfo
-				}).then(res => {
-					this.getUserInfo();
-					return this.$util.Tips(this.$t('更新用户信息成功'));
-				}).catch(res => {
-
-				})
 			},
 			editSuccess() {
 				this.editModal = false
@@ -1034,7 +1020,7 @@
 						flex-direction: column;
 						justify-content: space-between;
 						margin-left: 20rpx;
-						padding: 15rpx 0;
+						padding: 20rpx 0;
 
 						.name {
 							display: flex;
@@ -1290,11 +1276,12 @@
 
 		.phone {
 			color: #fff;
-			background-color: #CCC;
+			background-color: #ffffff80;
 			border-radius: 15px;
 			width: max-content;
-			font-size: 28rpx;
-			padding: 0 10px;
+			font-size: 24rpx;
+			padding: 2px 10px;
+			margin-top: 8rpx;
 		}
 
 		.order-status-num {

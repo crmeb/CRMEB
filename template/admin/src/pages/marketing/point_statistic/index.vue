@@ -1,86 +1,110 @@
 <template>
-  <div>
-    <Card :bordered="false" dis-hover class="ivu-mb-16">
-      <dateRadio @selectDate="onSelectDate"></dateRadio>
-      <DatePicker
-        :editable="false"
-        :clearable="false"
-        @on-change="onchangeTime"
-        :value="timeVal"
-        format="yyyy/MM/dd"
-        type="daterange"
-        placement="bottom-start"
-        placeholder="请选择时间"
-        style="width: 200px"
-        :options="options"
-        class="mr20"
-      ></DatePicker>
-    </Card>
+  <div v-loading="spinShow">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16">
+      <div class="acea-row row-middle">
+        <span class="label_text">时间选择：</span>
+        <el-date-picker
+            clearable
+            v-model="timeVal"
+            type="daterange"
+            :editable="false"
+            @change="onchangeTime"
+            format="yyyy/MM/dd"
+            value-format="yyyy/MM/dd"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :picker-options="pickerOptions"
+            style="width: 250px"
+            class="mr20"
+        ></el-date-picker>
+      </div>
+    </el-card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
-    <Card :bordered="false" dis-hover>
-      <h3>积分使用趋势</h3>
+    <el-card :bordered="false" shadow="never">
+      <h4>积分使用趋势</h4>
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
-    </Card>
-    <Spin size="large" fix v-if="spinShow"></Spin>
+    </el-card>
     <div class="code-row-bg">
-      <Card :bordered="false" dis-hover class="ivu-mt mt10 mr10">
+      <el-card :bordered="false" shadow="never" class="ivu-mt mt10 mr10">
         <div class="acea-row row-between-wrapper">
-          <h3 class="header-title">积分来源分析</h3>
+          <h4 class="statics-header-title">积分来源分析</h4>
           <div class="change-style" @click="echartLeft = !echartLeft">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartLeft" ref="visitChart" :infoList="infoList" echartsTitle="circle"></echarts-from>
-          <Table
+          <el-table
             v-show="!echartLeft"
             ref="selection"
-            :columns="columns"
             :data="tabList"
-            :loading="loading"
-            no-data-text="暂无数据"
-            highlight-row
-            no-filtered-data-text="暂无筛选结果"
+            v-loading="loading"
+            empty-text="暂无数据"
+            highlight-current-row
           >
-            <template slot-scope="{ row }" slot="percent">
-              <div class="percent-box">
-                <div class="line">
-                  <div class="bg"></div>
-                  <div class="percent" :style="'width:' + row.percent + '%;'"></div>
+            <el-table-column type="index" width="60"> </el-table-column>
+            <el-table-column label="来源" min-width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="金额" width="180">
+              <template slot-scope="scope">
+                <span>{{ scope.row.value }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="占比率" min-width="100">
+              <template slot-scope="scope">
+                <div class="percent-box">
+                  <div class="line">
+                    <div class="bg"></div>
+                    <div class="percent" :style="'width:' + scope.row.percent + '%;'"></div>
+                  </div>
+                  <div class="num">{{ scope.row.percent }}%</div>
                 </div>
-                <div class="num">{{ row.percent }}%</div>
-              </div>
-            </template>
-          </Table>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
-      </Card>
-      <Card :bordered="false" dis-hover class="ivu-mt mt10">
+      </el-card>
+      <el-card :bordered="false" shadow="never" class="ivu-mt mt10">
         <div class="acea-row row-between-wrapper">
-          <h3 class="header-title">积分消耗</h3>
+          <h4 class="statics-header-title">积分消耗</h4>
           <div class="change-style" @click="echartRight = !echartRight">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartRight" ref="visitChart" :infoList="infoList2" echartsTitle="circle"></echarts-from>
-          <Table
+          <el-table
             v-show="!echartRight"
             ref="selection"
-            :columns="columns"
-            :data="tabList2"
-            :loading="loading2"
-            no-data-text="暂无数据"
-            highlight-row
-            no-filtered-data-text="暂无筛选结果"
+            :data="tabList"
+            v-loading="loading"
+            empty-text="暂无数据"
+            highlight-current-row
           >
-            <template slot-scope="{ row }" slot="percent">
-              <div class="percent-box">
-                <div class="line">
-                  <div class="bg"></div>
-                  <div class="percent" :style="'width:' + row.percent + '%;'"></div>
+            <el-table-column type="index" width="60"> </el-table-column>
+            <el-table-column label="来源" min-width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="金额" width="180">
+              <template slot-scope="scope">
+                <span>{{ scope.row.value }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="占比率" min-width="100">
+              <template slot-scope="scope">
+                <div class="percent-box">
+                  <div class="line">
+                    <div class="bg"></div>
+                    <div class="percent" :style="'width:' + scope.row.percent + '%;'"></div>
+                  </div>
+                  <div class="num">{{ scope.row.percent }}%</div>
                 </div>
-                <div class="num">{{ row.percent }}%</div>
-              </div>
-            </template>
-          </Table>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
-      </Card>
+      </el-card>
     </div>
   </div>
 </template>
@@ -106,70 +130,32 @@ export default {
       echartRight: false,
       loading: false,
       loading2: false,
-      fromList: {
-        title: '选择时间',
-        custom: true,
-        fromTxt: [
-          { text: '全部', val: '' },
-          { text: '今天', val: 'today' },
-          { text: '本周', val: 'week' },
-          { text: '本月', val: 'month' },
-          { text: '本季度', val: 'quarter' },
-          { text: '本年', val: 'year' },
-        ],
-      },
       formValidate: {
         time: '',
       },
       cardLists: [
         {
-          col: 6,
+          col: 8,
           count: 0,
           name: '当前积分',
-          className: 'md-rose',
+          className: 'icondangqianjifen',
         },
         {
-          col: 6,
+          col: 8,
           count: 0,
           name: '累计总积分',
-          className: 'ios-speedometer-outline',
+          className: 'iconleijijifen',
         },
         {
-          col: 6,
+          col: 8,
           count: 0,
           name: '累计消耗积分',
-          className: 'ios-speedometer-outline',
+          className: 'iconxiaohaojifen',
         },
       ],
       optionData: {},
       spinShow: false,
-      options: this.$timeOptions,
-      columns: [
-        {
-          title: '序号',
-          type: 'index',
-          width: 60,
-          align: 'center',
-        },
-        {
-          title: '来源',
-          key: 'name',
-          minWidth: 80,
-          align: 'center',
-        },
-        {
-          title: '金额',
-          width: 180,
-          key: 'value',
-          align: 'center',
-        },
-        {
-          title: '占比率',
-          slot: 'percent',
-          minWidth: 100,
-          align: 'center',
-        },
-      ],
+      pickerOptions: this.$timeOptions,
       tabList: [],
       tabList2: [],
     };
@@ -220,7 +206,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.time = this.timeVal.join('-');
+      this.formValidate.time = this.timeVal ? this.timeVal.join('-') : '';
       this.name = this.formValidate.time;
       this.getPointBasic();
       this.getPointTrend();
@@ -320,7 +306,7 @@ export default {
           this.spinShow = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
           this.spinShow = false;
         });
     },
@@ -368,12 +354,12 @@ export default {
   position: absolute;
   border-radius: 5px;
   height: 8px;
-  background-color: cornflowerblue;
+  background-color: var(--prev-color-primary);
   z-index: 9999;
 }
 .num {
   white-space: nowrap;
   margin: 0 10px;
-  width: 30px;
+  width: 20px;
 }
 </style>

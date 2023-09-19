@@ -75,14 +75,14 @@ class LiveAnchorServices extends BaseServices
             $field[] = Form::input('name', '主播名称', '')->maxlength(20)->required('请填写名称');
             $field[] = Form::input('wechat', '主播微信号', '')->maxlength(32)->required('请填写微信号');
             $field[] = Form::input('phone', '主播手机号', '')->maxlength(20)->required('请填写手机号');
-            $field[] = Form::frameImage('cover_img', '主播图像', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'cover_img')), '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->appendValidate(Validate::str()->required('请选择图像'));
+            $field[] = Form::frameImage('cover_img', '主播图像', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'cover_img')), '')->icon('el-icon-picture-outline')->width('950px')->height('560px')->Props(['footer' => false])->appendValidate(Validate::str()->required('请选择图像'));
         } else {
             $title = '修改主播';
             $field[] = Form::hidden('id', $anchor->getData('id'));
             $field[] = Form::input('name', '主播名称', $anchor->getData('name'))->maxlength(20)->required('请填写名称');
             $field[] = Form::input('wechat', '主播微信号', $anchor->getData('wechat'))->maxlength(32)->required('请填写微信号');
             $field[] = Form::input('phone', '主播手机号', $anchor->getData('phone'))->maxlength(20)->required('请填写手机号');
-            $field[] = Form::frameImage('cover_img', '主播图像', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'cover_img')), $anchor->getData('cover_img'))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->appendValidate(Validate::str()->required('请选择图像'));
+            $field[] = Form::frameImage('cover_img', '主播图像', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'cover_img')), $anchor->getData('cover_img'))->icon('el-icon-picture-outline')->width('950px')->height('560px')->Props(['footer' => false])->appendValidate(Validate::str()->required('请选择图像'));
         }
         return create_form($title, $field, $this->url('/live/anchor/save'), 'POST');
     }

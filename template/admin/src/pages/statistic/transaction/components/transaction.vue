@@ -1,19 +1,18 @@
 <template>
-  <Card :bordered="false" dis-hover class="ivu-mt-16">
+  <el-card :bordered="false" shadow="never" class="ivu-mt-16" v-loading="spinShow">
     <div class="acea-row row-between-wrapper mb20">
-      <div class="header-title">
-        交易概况
-        <Poptip word-wrap width="500" trigger="hover" placement="right-start">
-          <Icon type="ios-information-circle-outline" />
+      <div class="statics-header-title">
+        <h4>交易概况</h4>
+        <el-tooltip placement="right-start">
+          <i class="el-icon-question ml10"></i>
           <div slot="content">
             <div>营业额</div>
             <div>商品支付金额、充值金额、购买付费会员金额、线下收银金额</div>
             <br />
-            <div>交易毛利金额</div>
-            <div>交易毛利金额 = 营业额 - 支出金额</div>
-            <br />
             <div>商品支付金额</div>
-            <div>选定条件下，用户购买商品的实际支付金额，包括微信支付、余额支付、支付宝支付、线下支付金额（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入）</div>
+            <div>
+              选定条件下，用户购买商品的实际支付金额，包括微信支付、余额支付、支付宝支付、线下支付金额（拼团商品在成团之后计入，线下支付订单在后台确认支付后计入）
+            </div>
             <br />
             <div>购买会员金额</div>
             <div>选定条件下，用户成功购买付费会员的金额</div>
@@ -36,24 +35,25 @@
             <div>商品退款金额</div>
             <div>用户成功退款的商品金额</div>
           </div>
-        </Poptip>
+        </el-tooltip>
       </div>
       <div class="acea-row">
-        <DatePicker
-          :editable="false"
-          :clearable="false"
-          @on-change="onchangeTime"
-          :value="timeVal"
-          format="yyyy/MM/dd"
-          type="daterange"
-          placement="bottom-start"
-          placeholder="请选择时间"
-          style="width: 200px"
-          class="mr20"
-          :options="options"
-        ></DatePicker>
-        <Button type="primary" class="mr20" @click="onSeach">查询</Button>
-        <Button type="primary" @click="excel">导出</Button>
+        <el-date-picker
+            clearable
+            v-model="timeVal"
+            type="daterange"
+            :editable="false"
+            @change="onchangeTime"
+            format="yyyy/MM/dd"
+            value-format="yyyy/MM/dd"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :picker-options="pickerOptions"
+            style="width: 250px"
+            class="mr20"
+        ></el-date-picker>
+        <el-button type="primary"  @click="onSeach">查询</el-button>
+        <el-button type="primary" @click="excel">导出</el-button>
       </div>
     </div>
     <div class="acea-row mb20">
@@ -76,19 +76,18 @@
             v-if="index === list.length - 1"
             v-text="item.money ? (parseInt(item.money * 100) / 100).toFixed(2) : '0.00'"
           ></span>
-          <span class="sp2" v-else v-text="item.money ? (parseInt(item.money * 100) / 100).toFixed(2) : '0.00'"></span>
+          <span class="sp2" v-else v-text="item.money ? item.money : '0.00'"></span>
           <span class="content-time spBlock"
             >环比增长：<i class="content-is" :class="Number(item.rate) >= 0 ? 'up' : 'down'">{{ item.rate }}%</i
-            ><Icon
-              :color="Number(item.rate) >= 0 ? '#F5222D' : '#39C15B'"
-              :type="Number(item.rate) >= 0 ? 'md-arrow-dropup' : 'md-arrow-dropdown'"
+            ><i
+              :style="{'color':Number(item.rate) >= 0 ? '#F5222D' : '#39C15B'}"
+              :class="[Number(item.rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
           /></span>
         </div>
       </div>
     </div>
     <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
-    <Spin size="large" fix v-if="spinShow"></Spin>
-  </Card>
+  </el-card>
 </template>
 
 <script>
@@ -109,7 +108,7 @@ export default {
         sm: 24,
         xs: 24,
       },
-      options: this.$timeOptions,
+      pickerOptions: this.$timeOptions,
       name: '近30天',
       timeVal: [],
       dataTime: '',
@@ -137,7 +136,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.dataTime = this.timeVal.join('-');
+      this.dataTime = this.timeVal ? this.timeVal.join('-') : '';
       this.name = this.dataTime;
     },
     // 统计
@@ -167,7 +166,7 @@ export default {
           this.spinShow = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
           this.spinShow = false;
         });
     },
@@ -343,7 +342,7 @@ export default {
           // this.TrendList =
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },
@@ -352,7 +351,7 @@ export default {
 
 <style scoped lang="less">
 .one {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 .two {
   background: #00c050;
@@ -405,7 +404,7 @@ export default {
 }
 
 .lan {
-  background: #1890ff;
+  background: var(--prev-color-primary);
 }
 
 .iconshangpinliulanliang {

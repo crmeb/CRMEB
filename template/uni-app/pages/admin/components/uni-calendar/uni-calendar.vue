@@ -1,7 +1,9 @@
 <template>
 	<view class="uni-calendar" @touchmove.stop.prevent="clean">
-		<view v-if="!insert&&show" class="uni-calendar__mask" :class="{'uni-calendar--mask-show':aniMaskShow}" @click="clean"></view>
-		<view v-if="insert || show" class="uni-calendar__content" :class="{'uni-calendar--fixed':!insert,'uni-calendar--ani-show':aniMaskShow}">
+		<view v-if="!insert&&show" class="uni-calendar__mask" :class="{'uni-calendar--mask-show':aniMaskShow}"
+			@click="clean"></view>
+		<view v-if="insert || show" class="uni-calendar__content"
+			:class="{'uni-calendar--fixed':!insert,'uni-calendar--ani-show':aniMaskShow}">
 			<view v-if="!insert" class="uni-calendar__header uni-calendar--fixed-top">
 				<view class="uni-calendar__header-btn-box" @click="close">
 					<text class="uni-calendar__header-text uni-calendar--fixed-width">{{$t(`取消`)}}</text>
@@ -14,7 +16,8 @@
 				<view class="uni-calendar__header-btn-box" @click="pre">
 					<view class="uni-calendar__header-btn uni-calendar--left"></view>
 				</view>
-				<text class="uni-calendar__header-text">{{ (nowDate.year||'') +$t(`年`)+( nowDate.month||'') +$t(`月`)}}</text>
+				<text
+					class="uni-calendar__header-text">{{ (nowDate.year||'') +$t(`年`)+( nowDate.month||'') +$t(`月`)}}</text>
 				<view class="uni-calendar__header-btn-box" @click="next">
 					<view class="uni-calendar__header-btn uni-calendar--right"></view>
 				</view>
@@ -49,7 +52,8 @@
 				</view>
 				<view class="uni-calendar__weeks" v-for="(item,weekIndex) in weeks" :key="weekIndex">
 					<view class="uni-calendar__weeks-item" v-for="(weeks,weeksIndex) in item" :key="weeksIndex">
-						<uni-calendar-item :weeks="weeks" :calendar="calendar" :selected="selected" :lunar="lunar" @change="choiceDate"></uni-calendar-item>
+						<uni-calendar-item :weeks="weeks" :calendar="calendar" :selected="selected" :lunar="lunar"
+							@change="choiceDate"></uni-calendar-item>
 					</view>
 				</view>
 			</view>
@@ -160,9 +164,9 @@
 			open() {
 				this.show = true
 				this.$nextTick(() => {
-					setTimeout(()=>{
+					setTimeout(() => {
 						this.aniMaskShow = true
-					},50)
+					}, 50)
 				})
 			},
 			close() {
@@ -222,6 +226,8 @@
 				this.cale.setDate(this.date)
 				this.weeks = this.cale.weeks
 				this.nowDate = this.calendar = this.cale.getInfo(this.date)
+				this.cale.multipleStatus.before = this.nowDate.fullDate
+				this.cale.multipleStatus.after = this.nowDate.fullDate
 				this.change()
 			},
 			pre() {
@@ -400,6 +406,7 @@
 		border-bottom-style: solid;
 		border-bottom-width: 1px;
 	}
+
 	.uni-calendar__weeks-day-text {
 		font-size: 14px;
 	}

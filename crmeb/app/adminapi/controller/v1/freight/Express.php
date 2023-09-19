@@ -43,7 +43,8 @@ class Express extends AuthController
     public function index()
     {
         $where = $this->request->getMore([
-            ['keyword', '']
+            ['keyword', ''],
+            ['is_show', '']
         ]);
         return app('json')->success($this->services->getExpressList($where));
     }

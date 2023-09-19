@@ -78,7 +78,13 @@ class StoreOrderWriteOffServices extends BaseServices
                 case 2://自提订单
                     /** @var SystemStoreStaffServices $storeStaffServices */
                     $storeStaffServices = app()->make(SystemStoreStaffServices::class);
-                    $isAuth = $storeStaffServices->getCount(['uid' => $uid, 'verify_status' => 1, 'status' => 1]) > 0;
+                    $staffInfo = $storeStaffServices->get(['uid' => $uid, 'verify_status' => 1, 'status' => 1]);
+                    if ($staffInfo) {
+                        $isAuth = true;
+                        $orderInfo->store_id = $staffInfo->store_id;
+                    } else {
+                        $isAuth = false;
+                    }
                     break;
             }
             if (!$isAuth) {

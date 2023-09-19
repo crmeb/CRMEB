@@ -69,6 +69,12 @@ class V3WechatPay extends BasePay implements PayInterface
                 'notify_url' => trim(sys_config('site_url')) . '/api/pay/notify/v3wechat',
             ]
         ];
+
+        $config['v3_payment']['mer_type'] = $merType = sys_config('mer_type');
+        if ($merType) {
+            $config['v3_payment']['sub_mch_id'] = trim(sys_config('pay_sub_merchant_id'));
+        }
+
         $this->instance = new Application($config);
     }
 

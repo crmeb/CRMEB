@@ -1,19 +1,20 @@
 <template>
   <div class="slider-box">
     <div class="c_row-item">
-      <Col class="label" span="4" v-if="configData.title">
+      <el-col class="label" :span="4" v-if="configData.title">
         {{ configData.title }}
-      </Col>
-      <Col span="19" class="slider-box">
-        <Cascader
-          :data="configData.list"
+      </el-col>
+      <el-col :span="19" class="slider-box">
+        <el-cascader
+          :options="configData.list"
           placeholder="请选择商品分类"
-          change-on-select
           v-model="configData.activeValue"
           filterable
-          @on-change="sliderChange"
-        ></Cascader>
-      </Col>
+          @change="sliderChange"
+          :props="{ multiple: true, checkStrictly: true, emitPath: false }"
+          clearable
+        ></el-cascader>
+      </el-col>
     </div>
   </div>
 </template>
@@ -71,5 +72,8 @@ export default {
 .c_row-item {
   margin-top: 20px;
   margin-bottom: 20px;
+  .label{
+    color: #999;
+  }
 }
 </style>

@@ -14,8 +14,6 @@ namespace app\api\controller\v1;
 use app\Request;
 use app\services\message\notice\SmsService;
 use app\services\wechat\WechatServices;
-use think\facade\Cache;
-use app\jobs\TaskJob;
 use think\facade\Config;
 use crmeb\services\CacheService;
 use app\services\user\LoginServices;
@@ -81,7 +79,7 @@ class LoginController
     public function verifyCode()
     {
         $unique = password_hash(uniqid(true), PASSWORD_BCRYPT);
-        Cache::set('sms.key.' . $unique, 0, 300);
+        CacheService::set('sms.key.' . $unique, 0, 300);
         $time = sys_config('verify_expire_time', 1);
         return app('json')->success(['key' => $unique, 'expire_time' => $time]);
     }
@@ -98,7 +96,7 @@ class LoginController
         $key = app('session')->get('captcha.key');
         $uni = $request->get('key');
         if ($uni) {
-            Cache::set('sms.key.cap.' . $uni, $key, 300);
+            CacheService::set('sms.key.cap.' . $uni, $key, 300);
         }
         return $rep;
     }
@@ -113,14 +111,14 @@ class LoginController
     protected function checkCaptcha($uni, string $code): bool
     {
         $cacheName = 'sms.key.cap.' . $uni;
-        if (!Cache::has($cacheName)) {
+        if (!CacheService::has($cacheName)) {
             return false;
         }
-        $key = Cache::get($cacheName);
+        $key = CacheService::get($cacheName);
         $code = mb_strtolower($code, 'UTF-8');
         $res = password_verify($code, $key);
         if ($res) {
-            Cache::delete($cacheName);
+            CacheService::delete($cacheName);
         }
         return $res;
     }
@@ -144,13 +142,13 @@ class LoginController
         $keyName = 'sms.key.' . $key;
         $nowKey = 'sms.' . date('YmdHi');
 
-        if (!Cache::has($keyName)) {
+        if (!CacheService::has($keyName)) {
             return app('json')->fail(410003);
         }
 
         $total = 1;
-        if (Cache::has($nowKey)) {
-            $total = Cache::get($nowKey);
+        if (CacheService::has($nowKey)) {
+            $total = CacheService::get($nowKey);
             if ($total > Config::get('sms.maxMinuteCount', 20))
                 return app('json')->success(410006);
         }
@@ -171,7 +169,7 @@ class LoginController
         $smsCode = $this->services->verify($services, $phone, $type, $time, app()->request->ip());
         if ($smsCode) {
             CacheService::set('code_' . $phone, $smsCode, $time * 60);
-            Cache::set($nowKey, $total, 61);
+            CacheService::set($nowKey, $total, 61);
             return app('json')->success(410007);
         } else {
             return app('json')->fail(410008);

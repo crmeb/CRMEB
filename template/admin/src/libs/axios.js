@@ -10,7 +10,6 @@
 
 import axios from 'axios';
 import store from '@/store';
-// import { Spin } from 'iview'
 const addErrorLog = (errorInfo) => {
   const {
     statusText,
@@ -43,7 +42,6 @@ class HttpRequest {
   destroy(url) {
     delete this.queue[url];
     if (!Object.keys(this.queue).length) {
-      // Spin.hide()
     }
   }
   interceptors(instance, url) {

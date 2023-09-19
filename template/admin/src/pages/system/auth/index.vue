@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
       <div class="auth acea-row row-between-wrapper">
         <div class="acea-row row-middle">
-          <Icon type="ios-bulb-outline" class="iconIos blue" />
+          <i class="iconfont iconshangyeshouquan iconIos blue" />
           <div class="text" v-if="status === 1">
             <div>商业授权</div>
             <div class="code">授权码：{{ authCode }}</div>
@@ -13,14 +13,14 @@
             <div class="code">未授权</div>
           </div>
         </div>
-        <!-- <Button class="grey" @click="toCrmeb()" v-if="status === 1">进入官网</Button> -->
+        <!-- <el-button class="grey" @click="toCrmeb()" v-if="status === 1">进入官网</el-button> -->
         <div>
-          <Button type="primary" @click="toCrmeb()" v-if="status === 1">进入官网</Button>
-          <Button type="primary" @click="payment('bz')" v-if="status !== 1">购买授权</Button>
+          <el-button type="primary" @click="toCrmeb()" v-if="status === 1">进入官网</el-button>
+          <el-button type="primary" @click="payment('bz')" v-if="status !== 1">购买授权</el-button>
         </div>
       </div>
-    </Card>
-    <Card :bordered="false" dis-hover class="ivu-mt" v-if="!copyright && status == 1">
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="mt16" v-if="!copyright && status == 1">
       <!-- v-if="copyright == '0' && status == 1" -->
       <div class="auth acea-row row-between-wrapper">
         <div class="acea-row row-middle">
@@ -31,19 +31,19 @@
             <div class="pro_price" v-if="productStatus">￥{{ price }}</div>
           </div>
         </div>
-        <Button type="primary" @click="payment('copyright')">立即购买</Button>
+        <el-button type="primary" @click="payment('copyright')">立即购买</el-button>
       </div>
-    </Card>
-    <Card :bordered="false" dis-hover class="ivu-mt" v-if="copyright">
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt" v-if="copyright">
       <div class="auth acea-row row-between-wrapper">
         <div class="acea-row row-middle">
           <span class="iconfont iconbanquan iconIos blue"></span>
           <div class="acea-row row-middle">
             <span class="update">修改授权信息:</span>
-            <Input style="width: 460px" v-model="copyrightText" />
+            <el-input style="width: 460px" v-model="copyrightText" />
           </div>
         </div>
-        <Button type="primary" @click="saveCopyRight">保存</Button>
+        <el-button type="primary" @click="saveCopyRight">保存</el-button>
       </div>
       <div class="authorized">
         <div>
@@ -57,30 +57,12 @@
         </div>
       </div>
       <span class="prompt">建议尺寸：宽290px*高100px</span>
-    </Card>
+    </el-card>
 
-    <Modal
-      v-model="isTemplate"
-      scrollable
-      footer-hide
-      closable
-      title="商业授权"
-      :z-index="1"
-      width="447"
-      @on-cancel="cancel"
-    >
-      <iframe width="100%" height="580" :src="iframeUrl" frameborder="0"></iframe>
-    </Modal>
-    <Modal
-      v-model="modalPic"
-      width="960px"
-      scrollable
-      footer-hide
-      closable
-      title="上传授权图片"
-      :mask-closable="false"
-      :z-index="1"
-    >
+    <el-dialog :visible.sync="isTemplate" title="商业授权" width="480px" @closed="cancel">
+      <iframe width="100%" height="780" :src="iframeUrl" frameborder="0"></iframe>
+    </el-dialog>
+    <el-dialog :visible.sync="modalPic" width="1024px" title="上传授权图片" :close-on-click-modal="false">
       <uploadPictures
         :isChoice="isChoice"
         @getPic="getPic"
@@ -88,7 +70,7 @@
         :gridPic="gridPic"
         v-if="modalPic"
       ></uploadPictures>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -105,7 +87,7 @@ export default {
     ...mapState('admin/layout', ['isMobile']),
     ...mapState('admin/userLevel', ['categoryId']),
     labelWidth() {
-      return this.isMobile ? undefined : 85;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -184,7 +166,6 @@ export default {
     getCrmebCopyRight() {
       getCrmebCopyRight().then((res) => {
         this.getAuth();
-        return this.$Message.success(res.msg);
       });
     },
     //保存版权信息
@@ -193,7 +174,7 @@ export default {
         copyright: this.copyrightText,
         copyright_img: this.authorizedPicture,
       }).then((res) => {
-        return this.$Message.success(res.msg);
+        return this.$message.success(res.msg);
       });
     },
     // 选择图片
@@ -237,7 +218,7 @@ export default {
           }
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     toCrmeb() {
@@ -250,14 +231,14 @@ export default {
           this.productStatus = true;
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
       crmebProduct({ type: 'pro' })
         .then((res) => {
           this.proPrice = res.data.attr.price;
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     payment(product) {
@@ -281,7 +262,7 @@ export default {
   destroyed() {},
 };
 </script>
-<style scoped lang="stylus">
+<style scoped lang="scss">
 .auth {
   padding: 9px 16px 9px 10px;
 }
@@ -308,16 +289,16 @@ export default {
   font-size: 14px;
   font-family: PingFangSC-Semibold, PingFang SC;
   font-weight: 600;
-  color: #F5222D;
+  color: #f5222d;
   line-height: 18px;
 }
 
 .auth .blue {
-  color: #1890FF !important;
+  color: var(--prev-color-primary) !important;
 }
 
 .auth .red {
-  color: #ED4014 !important;
+  color: #ed4014 !important;
 }
 
 .authorized {
@@ -330,7 +311,7 @@ export default {
     height: 60px;
     background: rgba(0, 0, 0, 0.02);
     border-radius: 4px;
-    border: 1px solid #DDDDDD;
+    border: 1px solid #dddddd;
   }
 }
 
@@ -401,7 +382,8 @@ export default {
   font-size: 12px;
 }
 
-.ivu-input-group-prepend, .ivu-input-group-append {
+.ivu-input-group-prepend,
+.ivu-input-group-append {
   background-color: #fff;
 }
 
@@ -415,7 +397,7 @@ export default {
   justify-content: center;
   width: 180px;
   height: 180px;
-  border: 1px solid #E5E5E6;
+  border: 1px solid #e5e5e6;
 }
 
 .qrcode_desc {
@@ -443,8 +425,12 @@ export default {
 }
 
 .active_tab {
-  border-bottom: 2px solid #1495ED;
-  color: #1495ED;
+  border-bottom: 2px solid #1495ed;
+  color: #1495ed;
   font-weight: 600;
+}
+iframe {
+  height: 370px;
+  overflow: hidden;
 }
 </style>

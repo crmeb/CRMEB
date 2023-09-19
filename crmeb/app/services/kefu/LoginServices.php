@@ -15,12 +15,9 @@ namespace app\services\kefu;
 use crmeb\exceptions\AuthException;
 use crmeb\services\oauth\OAuth;
 use crmeb\utils\JwtAuth;
-use Firebase\JWT\ExpiredException;
-use think\facade\Cache;
 use app\services\BaseServices;
 use crmeb\services\CacheService;
 use app\dao\service\StoreServiceDao;
-use crmeb\services\app\WechatOpenService;
 use app\services\wechat\WechatUserServices;
 
 /**
@@ -85,11 +82,9 @@ class LoginServices extends BaseServices
     public function parseToken(string $token)
     {
         $noCli = !request()->isCli();
-        /** @var CacheService $cacheService */
-        $cacheService = app()->make(CacheService::class);
         //检测token是否过期
         $md5Token = md5($token);
-        if (!$token || !$cacheService->has($md5Token) || !($cacheService->get($md5Token, '', NULL, 'kefu'))) {
+        if (!$token || !CacheService::has($md5Token) || !(CacheService::get($md5Token, '', NULL, 'kefu'))) {
             throw new AuthException(110005);
         }
         if ($token === 'undefined') {
@@ -105,14 +100,14 @@ class LoginServices extends BaseServices
         try {
             $jwtAuth->verifyToken();
         } catch (\Throwable $e) {
-            $noCli && $cacheService->delete($md5Token);
+            $noCli && CacheService::delete($md5Token);
             throw new AuthException(110006);
         }
 
         //获取管理员信息
         $adminInfo = $this->dao->get($id);
         if (!$adminInfo || !$adminInfo->id) {
-            $noCli && $cacheService->delete($md5Token);
+            $noCli && CacheService::delete($md5Token);
             throw new AuthException(110007);
         }
 
@@ -169,7 +164,7 @@ class LoginServices extends BaseServices
      */
     public function scanLogin(string $key)
     {
-        $hasKey = Cache::has($key);
+        $hasKey = CacheService::has($key);
         if ($hasKey === false) {
             $status = 0;//不存在需要刷新二维码
         } else {

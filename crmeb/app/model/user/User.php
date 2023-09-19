@@ -69,10 +69,10 @@ class User extends BaseModel
         return app('request')->ip();
     }
 
-    protected function getPhoneAttr($value)
-    {
-        return $value && app('request')->hasMacro('adminInfo') && app('request')->adminInfo()['level'] != 0 ? substr_replace($value, '****', 3, 4) : $value;
-    }
+//    protected function getPhoneAttr($value)
+//    {
+//        return $value && app('request')->hasMacro('adminInfo') && app('request')->adminInfo()['level'] != 0 ? substr_replace($value, '****', 3, 4) : $value;
+//    }
 
     /**
      * 链接会员登陆设置表
@@ -223,7 +223,7 @@ class User extends BaseModel
      */
     public function searchLikeAttr($query, $value)
     {
-        $query->where('account|nickname|phone|real_name|uid', 'LIKE', "%$value%");
+        $query->where('account|nickname|phone|real_name|uid', 'like', '%' . $value . '%');
     }
 
     /**

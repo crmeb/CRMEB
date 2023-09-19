@@ -1,72 +1,100 @@
 <template>
   <div>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form
         ref="tableFrom"
         :model="tableFrom"
         :label-width="labelWidth"
         :label-position="labelPosition"
         @submit.native.prevent
       >
-        <Row :gutter="24" type="flex">
-          <Col :xl="6" :lg="10" :md="10" :sm="24" :xs="24">
-            <FormItem label="搜索：" label-for="store_name">
-              <Input
+        <el-row :gutter="24">
+          <el-col :xl="6" :lg="10" :md="10" :sm="24" :xs="24">
+            <el-form-item label="搜索：" label-for="store_name">
+              <el-input
                 search
                 enter-button
                 placeholder="请输入用户ID,标题"
                 v-model="tableFrom.nickname"
                 @on-search="userSearchs"
               />
-            </FormItem>
-          </Col>
-          <Col :xl="6" :lg="10" :md="10" :sm="24" :xs="24">
-            <FormItem label="选择时间：" label-for="user_time">
-              <DatePicker
+            </el-form-item>
+          </el-col>
+          <el-col :xl="6" :lg="10" :md="10" :sm="24" :xs="24">
+            <el-form-item label="选择时间：" label-for="user_time">
+              <el-date-picker
+                  clearable
                 :editable="false"
-                clearable
-                @on-change="onchangeTime"
+                @change="onchangeTime"
                 v-model="timeVal"
-                :value="timeVal"
                 format="yyyy/MM/dd"
                 type="daterange"
-                placement="bottom-end"
-                placeholder="选择时间"
+                value-format="yyyy-MM-dd"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
                 class="perW100"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-          <Col :xl="4" :lg="4" :md="4" :sm="24" :xs="24">
-            <Button v-auth="['export-userPoint']" class="export" icon="ios-share-outline" @click="exports">导出</Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :xl="4" :lg="4" :md="4" :sm="24" :xs="24">
+            <el-button v-auth="['export-userPoint']" class="export" icon="ios-share-outline" @click="exports"
+              >导出</el-button
+            >
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table
         :data="tableList"
         ref="table"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row }" slot="number">
-          <div v-if="row.pm" class="z-price">+ {{ row.number }}</div>
-          <div v-else class="f-price">- {{ row.number }}</div>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="标题" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.title }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="积分变动" min-width="130">
+          <template slot-scope="scope">
+            <div v-if="scope.row.pm" class="z-price">+ {{ scope.row.number }}</div>
+            <div v-else class="f-price">- {{ scope.row.number }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="变动后积分" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.balance }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.mark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="添加时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="tableFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="tableFrom.limit"
+          :page.sync="tableFrom.page"
+          :limit.sync="tableFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -91,43 +119,6 @@ export default {
       cardLists: [],
       loading: false,
       delfromData: {},
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '标题',
-          key: 'title',
-          minWidth: 130,
-        },
-        {
-          title: '积分变动',
-          slot: 'number',
-          minWidth: 100,
-        },
-        {
-          title: '变动后积分',
-          key: 'balance',
-          minWidth: 100,
-        },
-        {
-          title: '备注',
-          key: 'mark',
-          minWidth: 100,
-        },
-        {
-          title: '用户名称',
-          key: 'nickname',
-          minWidth: 150,
-        },
-        {
-          title: '添加时间',
-          key: 'add_time',
-          minWidth: 100,
-        },
-      ],
       tableList: [],
       grid: {
         xl: 7,
@@ -150,10 +141,10 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   created() {
@@ -173,7 +164,7 @@ export default {
           });
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 具体日期
@@ -196,12 +187,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.tableFrom.page = index;
-      this.getList();
     },
     // 表格搜索
     userSearchs() {
@@ -221,7 +208,7 @@ export default {
           location.href = res.data[0];
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

@@ -16,6 +16,7 @@ namespace app\services\system;
 
 use app\dao\system\SystemRouteDao;
 use app\services\BaseServices;
+use crmeb\services\CacheService;
 use crmeb\services\FormBuilder;
 use think\exception\ValidateException;
 use think\helper\Str;
@@ -84,7 +85,7 @@ class SystemRouteServices extends BaseServices
      */
     public function getTreeList(string $appName = 'adminapi', string $name = '')
     {
-        return $this->cacheDriver()->remember('ROUTE_LIST' . strtoupper($appName), function () use ($name, $appName) {
+        return CacheService::remember('ROUTE_LIST' . strtoupper($appName), function () use ($name, $appName) {
             $list = app()->make(SystemRouteCateServices::class)
                 ->selectList(['app_name' => $appName], '*', 0, 0, 'id asc,sort desc', [
                     'children' => function ($query) use ($name, $appName) {
@@ -126,9 +127,12 @@ class SystemRouteServices extends BaseServices
             $id = $this->dao->value(['method' => $item['method'], 'path' => $item['path']], 'id');
             if ($id) {
                 $this->dao->update($id, [
+                    'query' => $item['query'],
+                    'header' => $item['header'],
                     'request' => $item['request'],
                     'response' => $item['response'],
                     'request_type' => $item['request_type'],
+                    'response_example' => $item['response_example'],
                 ]);
             }
         }
@@ -201,6 +205,9 @@ class SystemRouteServices extends BaseServices
     {
         $oneId = app()->make(SystemRouteCateServices::class)->value(['app_name' => $app, 'name' => $cateName, 'pid' => 0], 'id');
         if (!$oneId) {
+            //修复重复同步后反复增加二级文件夹
+            $id = app()->make(SystemRouteCateServices::class)->value(['app_name' => $app, 'name' => $cateName, 'pid' => $pid], 'id');
+            if ($id) return $id;
             $res = app()->make(SystemRouteCateServices::class)->save([
                 'app_name' => $app,
                 'name' => $cateName,
@@ -295,7 +302,7 @@ class SystemRouteServices extends BaseServices
                 $delete[] = $item['id'];
                 $deleteData[] = [
                     'path' => $item['path'],
-                    'methods' => $item['method']
+                    'method' => $item['method']
                 ];
             }
         }
@@ -309,7 +316,7 @@ class SystemRouteServices extends BaseServices
                 app()->make(SystemMenusServices::class)->deleteMenu($item['path'], $item['method']);
             }
         }
-        $this->cacheDriver()->clear();
+        CacheService::clear();
     }
 
     /**
@@ -376,5 +383,208 @@ class SystemRouteServices extends BaseServices
         ];
 
         return create_form($id ? '修改路由' : '添加路由', $rule, $url, $id ? 'PUT' : 'POST');
+    }
+
+
+    /**
+     * 导入数据
+     * @param string $filePath
+     * @return mixed
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/26
+     */
+    public function import(string $filePath)
+    {
+        $preg = '/\{+[a-zA-Z0-9]+\}/';
+
+        $res = file_get_contents(app()->getRootPath() . $filePath);
+
+        $res = json_decode($res, true);
+        $data = $res['apiCollection'][0]['items'];
+
+        $route = [];
+        foreach ($data as $item) {
+            foreach ($item['items'] as $value) {
+                if (isset($value['api'])) {
+                    $path = str_replace('//', '/', str_replace('{}', '', $value['api']['path']));
+                    $paramePath = $this->getPathValue($value['api']['parameters']['path'] ?? []);
+                    if (strstr($path, ':') !== false) {
+                        $path = str_replace(':', '', $path);
+                    }
+                    if (preg_match_all($preg, $path, $matches)) {
+                        $paramePathMatche = [];
+                        if (isset($matches[0]) && $matches[0]) {
+                            foreach ($matches[0] as $v) {
+                                $paramePathMatche[] = str_replace(['{', '}'], ['<', '>'], $v);
+                            }
+                        }
+                        if ($paramePathMatche) {
+                            $paramePath = implode('/', $paramePathMatche);
+                        }
+                    }
+                    if ($path[0] === '/') {
+                        $path = substr($path, 1);
+                    }
+                    $route[] = [
+                        'method' => strtoupper($value['api']['method']),
+                        'path' => $path . $paramePath,
+                        'request_type' => $value['api']['requestBody']['type'],
+                        'query' => $this->getParameters($value['api'], $res['commonParameters'] ?: []),
+                        'header' => $this->getParameters($value['api'], $res['commonParameters'] ?: [], 'header'),
+                        'request' => $this->getRequest($value['api']['requestBody'] ?? []),
+                        'response' => $this->getResponse($value['api']['responses'][0]['jsonSchema']['properties'] ?? []),
+                        'response_example' => $this->getResponseExample($value['api']['responseExamples'] ?? []),
+                    ];
+                }
+            }
+        }
+
+        return $this->importData($route);
+    }
+
+    protected function getParameters(array $api, array $commonParameters = [], string $type = 'query', $parentId = '')
+    {
+        $parameters = [];
+        // 获取参数
+        if (!empty($api['parameters'][$type])) {
+            foreach ($api['parameters'][$type] as $key => $option) {
+                $id = uniqid();
+                $parameters[] = [
+                    'attribute' => $option['name'],
+                    'type' => $option['type'],
+                    'trip' => $option['description'] ?? '',
+                    'value' => $option['example'] ?? '',
+                    'must' => empty($option['enable']) ? "0" : "1",
+                    'id' => $id,
+                    'parentId' => $parentId,
+                ];
+            }
+        }
+        // 获取公共参数
+        if (!empty($api['commonParameters'][$type]) && !empty($commonParameters['parameters'][$type])) {
+            foreach ($api['commonParameters'][$type] as $key => $option) {
+                // 获取common参数
+                foreach ($commonParameters['parameters'][$type] as $parameter) {
+                    if ($parameter['name'] == $option['name']) {
+                        $id = uniqid();
+                        $parameters[] = [
+                            'attribute' => $parameter['name'],
+                            'type' => $parameter['type'],
+                            'trip' => $parameter['description'] ?? '',
+                            'value' => $parameter['defaultValue'] ?? '',
+                            'must' => empty($parameter['enable']) ? '0' : "1",
+                            'id' => $id,
+                            'parentId' => $parentId,
+                        ];
+                    }
+                }
+            }
+        }
+        return $parameters;
+    }
+
+    /**
+     * 获取请求返回数据
+     * @param array $options
+     * @param string $parentId
+     * @return array
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/26
+     */
+    protected function getResponse(array $options, $parentId = '')
+    {
+        $response = [];
+        foreach ($options as $key => $option) {
+            $id = uniqid();
+            $response[] = [
+                'attribute' => $key,
+                'type' => $option['type'],
+                'trip' => $option['description'] ?? '',
+                'id' => $id,
+                'parentId' => $parentId,
+            ];
+
+            if (isset($option['items']['properties'])) {
+                $option['properties'] = $option['items']['properties'];
+            }
+            if (isset($option['properties'])) {
+                $response = array_merge($response, $this->getResponse($option['properties'], $id));
+            }
+        }
+
+        return $response;
+    }
+
+    /**
+     * 获取请求数据
+     * @param array $options
+     * @return array
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/26
+     */
+    protected function getRequest(array $options)
+    {
+        $parameters = $options['parameters'] ?? [];
+        $jsonSchema = $options['jsonSchema']['properties'] ?? [];
+
+        $request = [];
+        foreach ($parameters as $option) {
+            $request[] = [
+                'attribute' => $option['name'],
+                'type' => $option['type'] === 'text' ? 'string' : $option['type'],
+                'must' => 0,
+                'trip' => $option['description'],
+                'id' => $option['id'],
+            ];
+        }
+        foreach ($jsonSchema as $key => $json_option) {
+            $request[] = [
+                'attribute' => $key,
+                'type' => $json_option['type'] === 'text' ? 'string' : $json_option['type'],
+                'must' => 0,
+                'trip' => $json_option['description'] ?? '',
+                'id' => uniqid(),
+            ];
+        }
+        return $request;
+    }
+
+    /**
+     * 处理path路径
+     * @param array $options
+     * @return string
+     * @author 等风来
+     * @email 136327134@qq.com
+     * @date 2023/4/26
+     */
+    protected function getPathValue(array $options)
+    {
+        $path = [];
+        foreach ($options as $option) {
+            if (strstr($option['name'], '?') !== false) {
+                $option['name'] = str_replace('?', '', $option['name']) . '?';
+            }
+            $path[] = '<' . $option['name'] . '>';
+        }
+
+        return implode('/', $path);
+    }
+
+    protected function getResponseExample($options)
+    {
+        $example = [];
+
+        foreach ($options as $option) {
+            if (empty($examples)) {
+                $example[] = [
+                    'name' => $option['name'],
+                    'data' => json_decode($option['data'], true),
+                ];
+            }
+        }
+        return $example;
     }
 }

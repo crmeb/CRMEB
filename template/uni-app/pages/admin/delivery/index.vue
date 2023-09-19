@@ -22,14 +22,15 @@
 			<view class="item acea-row row-between-wrapper">
 				<view>{{$t(`发货方式`)}}</view>
 				<view class="mode acea-row row-middle row-right">
-					<view class="goods" :class="active === index ? 'on' : ''" v-for="(item, index) in types"
-						:key="index" @click="changeType(item, index)">
+					<view class="goods" :class="active === item.key ? 'on' : ''"
+						v-for="item in virtualType == 3? types.slice(2,3):types.slice(0,3)" :key="item.key"
+						@click="changeType(item, item.key)">
 						{{ item.title }}<span class="iconfont icon-xuanzhong2"></span>
 					</view>
 				</view>
 			</view>
 			<block v-if="logistics.length>0">
-				<view class="list" v-show="active === 0">
+				<view class="list" v-show="active === 1">
 					<view class="item acea-row row-between-wrapper" v-if="delivery.config_export_open == 1">
 						<view>{{$t(`发货类型`)}}</view>
 						<view class="mode acea-row row-middle row-right">
@@ -101,7 +102,7 @@
 				</view>
 			</block>
 
-			<view class="list" v-show="active === 1">
+			<view class="list" v-show="active === 2">
 				<view class="item acea-row row-between-wrapper">
 					<view>{{$t(`送货人`)}}</view>
 					<view class="select-box" v-if="postPeople.length>0">
@@ -113,7 +114,7 @@
 					</view>
 				</view>
 			</view>
-			<textarea v-show="active === 2" v-model="fictitious_content" class="textarea" @blur="bindTextAreaBlur"
+			<textarea v-show="active === 3" v-model="fictitious_content" class="textarea" @blur="bindTextAreaBlur"
 				:placeholder="$t(`备注`)" :maxlength="500" auto-height />
 		</view>
 		<view style="height:1.2rem;"></view>
@@ -164,7 +165,7 @@
 					},
 				],
 				curExpress: 1,
-				active: 0,
+				active: 1,
 				order_id: "",
 				delivery: [],
 				logistics: [],
@@ -179,6 +180,7 @@
 				to_addr: "", // 发货人地址	
 				postPeople: [], //配送人
 				postIndex: 0,
+				virtualType: 0,
 				fictitious_content: '',
 				// #ifdef H5
 				isWeixin: this.$wechat.isWeixin()
@@ -196,6 +198,8 @@
 		},
 		onLoad: function(option) {
 			this.order_id = option.id;
+			this.virtualType = option.virtualType;
+			if (this.virtualType == 3) this.active = 3
 			this.getIndex();
 			this.getLogistics();
 			this.orderDeliveryInfo()
@@ -294,7 +298,7 @@
 				save.delivery_type = delivery_name;
 				save.delivery_code = that.logistics[that.seIndex].code
 				save.delivery_name = that.logistics[that.seIndex].id
-				save.type = that.active + 1
+				save.type = that.active
 				if (delivery_type == 1 && this.curExpress == 1) {
 					if (!delivery_id) {
 						return this.$util.Tips({

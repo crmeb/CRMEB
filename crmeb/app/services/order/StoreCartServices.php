@@ -321,7 +321,10 @@ class StoreCartServices extends BaseServices
         //购物车修改数量检查限购
         /** @var StoreProductServices $productServices */
         $productServices = app()->make(StoreProductServices::class);
-        $limitInfo = $productServices->get($carInfo->product_id, ['is_limit', 'limit_type', 'limit_num']);
+        $limitInfo = $productServices->get($carInfo->product_id, ['is_limit', 'limit_type', 'limit_num', 'min_qty']);
+        if ($number < $limitInfo['min_qty']) {
+            throw new ApiException('不能小于起购数量');
+        }
         if ($limitInfo['is_limit']) {
             if ($limitInfo['limit_type'] == 1 && $number > $limitInfo['limit_num']) {
                 throw new ApiException(410239, ['limit' => $limitInfo['limit_num']]);
@@ -465,6 +468,9 @@ class StoreCartServices extends BaseServices
                 $cart->cart_num = $num;
             } elseif ($type == 0) {
                 $cart->cart_num = $cart->cart_num - $num;
+                if ($cart->cart_num < $productServices->value(['id' => $productId], 'min_qty')) {
+                    throw new ApiException('不能小于起购数量');
+                }
             } elseif ($type == 1) {
                 $cart->cart_num = $cart->cart_num + $num;
             }
@@ -556,14 +562,7 @@ class StoreCartServices extends BaseServices
      */
     public function handleCartList(int $uid, array $cartList, array $addr = [], int $shipping_type = 1)
     {
-        if (!$cartList) {
-            return [$cartList, [], []];
-        }
-        /** @var StoreProductServices $productServices */
-        $productServices = app()->make(StoreProductServices::class);
-        /** @var MemberCardServices $memberCardService */
-        $memberCardService = app()->make(MemberCardServices::class);
-        $vipStatus = $memberCardService->isOpenMemberCard('vip_price', false);
+        if (!$cartList) return [$cartList, [], []];
         $tempIds = [];
         $userInfo = [];
         $discount = 100;
@@ -578,6 +577,12 @@ class StoreCartServices extends BaseServices
                 $discount = $systemLevel->value(['id' => $userInfo['level'], 'is_del' => 0, 'is_show' => 1], 'discount') ?: 100;
             }
         }
+
+        //付费会员是否开启，用户是否是付费会员，两个都满足，订单计算金额才会按照付费会员计算。
+        /** @var MemberCardServices $memberCardService */
+        $memberCardService = app()->make(MemberCardServices::class);
+        $vipStatus = $memberCardService->isOpenMemberCard('vip_price', false) && $userInfo['is_money_level'] > 0;
+
         //不送达运费模板
         if ($shipping_type == 1 && $addr) {
             $cityId = (int)($addr['city_id'] ?? 0);
@@ -596,6 +601,8 @@ class StoreCartServices extends BaseServices
             }
         }
 
+        /** @var StoreProductServices $productServices */
+        $productServices = app()->make(StoreProductServices::class);
         $valid = $invalid = [];
         foreach ($cartList as &$item) {
             $item['productInfo']['express_delivery'] = false;

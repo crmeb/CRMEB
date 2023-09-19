@@ -38,7 +38,7 @@ class AutoCommentJob extends BaseJobs
                 'uid' => $item['uid'],
                 'oid' => $item['oid'],
                 'unique' => $item['unique'],
-                'product_id' => $item['product_id'],
+                'product_id' => json_decode($item['cart_info'],true)['product_id'],
                 'reply_type' => 'product',
                 'nickname' => $userInfos[$item['uid']]['nickname'],
                 'avatar' => $userInfos[$item['uid']]['avatar'],

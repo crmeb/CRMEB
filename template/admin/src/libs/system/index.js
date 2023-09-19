@@ -21,10 +21,11 @@ function getHeaderName(to, menuList) {
     menus.forEach((item) => allMenus.push(item));
   });
   const currentMenu = allMenus.find((item) => {
-    if (item.path === to.path) {
+    let path = to.meta && to.meta.activeMenu ? to.meta.activeMenu : to.path;
+    if (item.path === path) {
       return true;
     } else {
-      return to.path === getPath(to, item.path);
+      return path === getPath(to, item.path);
     }
   });
   return currentMenu ? currentMenu.header : null;

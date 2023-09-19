@@ -1,47 +1,33 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
-      <div class="fl_header">
-        <span>
-          <Button icon="ios-arrow-back" size="small" type="text" @click="$router.go(-1)">返回</Button>
-        </span>
-        <Divider type="vertical" />
-        <span class="ivu-page-header-title">{{ $route.query.id ? '编辑渠道码' : '添加渠道码' }}</span>
-      </div>
-    </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form :model="formData" :label-width="150" :rules="ruleValidate">
-        <FormItem label="二维码名称">
-          <Input v-model="formData.name" placeholder="请输入二维码名称"></Input>
-        </FormItem>
-        <FormItem label="二维码分组" :label-width="150">
-          <Select v-model="formData.cate_id" style="width: 320px">
-            <Option :value="item.id" v-for="(item, index) in labelSort" :key="index">{{ item.cate_name }}</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="用户标签" :label-width="150">
-          <!-- <Select
-            v-model="formData.label_id"
-            placeholder="请选择用户标签"
-            multiple
-            class="perW20"
-            style="width: 320px"
-          >
-            <Option
-              v-for="item in labelSelect"
+    <pages-header
+      ref="pageHeader"
+      :title="$route.meta.title"
+      :backUrl="$routeProStr + '/marketing/channel_code/channelCodeIndex'"
+    ></pages-header>
+    <el-card :bordered="false" shadow="never" class="mt16">
+      <el-form :model="formData" label-width="100px" :rules="ruleValidate">
+        <el-form-item label="二维码名称：">
+          <el-input clearable v-model="formData.name" placeholder="请输入二维码名称" class="content_width"></el-input>
+        </el-form-item>
+        <el-form-item label="二维码分组：">
+          <el-select clearable v-model="formData.cate_id" class="content_width">
+            <el-option
               :value="item.id"
-              :key="item.id"
-              >{{ item.label_name }}</Option
-            >
-          </Select>
-          <span class="addfont" @click="addLabel">新增标签</span> -->
+              v-for="(item, index) in labelSort"
+              :key="index"
+              :label="item.cate_name"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="用户标签：">
           <div style="display: flex">
             <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
               <div style="width: 90%">
                 <div v-if="dataLabel.length">
-                  <Tag closable v-for="(item, index) in dataLabel" @on-close="closeLabel(item)" :key="index">{{
+                  <el-tag closable v-for="(item, index) in dataLabel" @close="closeLabel(item)" :key="index">{{
                     item.label_name
-                  }}</Tag>
+                  }}</el-tag>
                 </div>
                 <span class="span" v-else>选择用户关联标签</span>
               </div>
@@ -49,105 +35,103 @@
             </div>
             <span class="addfont" @click="addLabel">新增标签</span>
           </div>
-        </FormItem>
-        <FormItem label="关联推广员" :label-width="150">
+        </el-form-item>
+        <el-form-item label="关联推广员：">
           <div class="picBox" @click="customer">
             <div class="pictrue" v-if="formData.avatar">
               <img v-lazy="formData.avatar" />
             </div>
             <div class="upLoad acea-row row-center-wrapper" v-else>
-              <Icon type="ios-camera-outline" size="26" />
+              <i class="el-icon-user" style="font-size: 24px"></i>
             </div>
           </div>
           <div class="trip">扫码注册的新用户,将自动成为此推广员的下级,与分销推广功能一致</div>
-        </FormItem>
-        <FormItem label="有效期">
-          <RadioGroup v-model="isReceiveTime">
-            <Radio :label="0">永久</Radio>
-            <Radio :label="1">有效期</Radio>
-          </RadioGroup>
-          <span v-show="isReceiveTime">
-            <InputNumber
+        </el-form-item>
+        <el-form-item label="有效期：">
+          <el-radio-group v-model="isReceiveTime">
+            <el-radio :label="0">永久</el-radio>
+            <el-radio :label="1">有效期</el-radio>
+          </el-radio-group>
+          <div v-show="isReceiveTime">
+            <el-input-number
+              :controls="false"
               :min="1"
               :max="10000"
               :precision="0"
               v-model="formData.time"
               placeholder="请输入天数"
-              style="width: 100px"
-            ></InputNumber>
+              class="content_width"
+            ></el-input-number>
             天
-          </span>
+          </div>
           <div class="trip">临时码过期后不能再扫码,永久二维码最大创建数量为10万个</div>
-        </FormItem>
-        <FormItem label="回复内容">
-          <Row>
-            <Col span="4">
-              <Menu theme="light" style="width: 150px" :active-name="formData.type" @on-select="selectMenu">
-                <MenuItem name="text">文字内容</MenuItem>
-                <!-- <MenuItem name="url">网址链接</MenuItem> -->
-                <!-- <MenuItem name="3">小程序</MenuItem> -->
-                <MenuItem name="voice">声音消息</MenuItem>
-                <MenuItem name="image">图片消息</MenuItem>
-                <MenuItem name="news">图文消息</MenuItem>
-              </Menu>
-            </Col>
-            <Col span="18">
-              <FormItem label="消息内容：" prop="content" v-if="formData.type === 'text' || formData.type === 'url'">
-                <textarea
-                  v-model="formData.content.content"
-                  :placeholder="formData.type === 'text' ? '请填写消息内容' : '请填写网址链接'"
-                  style="width: 50%"
-                ></textarea>
-              </FormItem>
-              <FormItem label="选取图文：" v-if="formData.type === 'news'">
-                <Button type="info" @click="modals = true">选择图文消息</Button>
-                <div class="news-box" v-if="formData.content.list.title">
-                  <img class="news_pic" :src="formData.content.list.image_input[0]" />
-                  <span>{{ formData.content.list.title }}</span>
-                </div>
-              </FormItem>
-              <FormItem
-                :label="formData.type === 'image' ? '图片地址：' : '语音地址：'"
-                prop="src"
-                v-if="formData.type === 'image' || formData.type === 'voice'"
-              >
-                <div class="acea-row row-middle">
-                  <Input
-                    readonly="readonly"
-                    placeholder="请填入链接地址"
-                    style="width: 75%"
-                    class="mr15"
-                    v-model="formData.content.src"
-                  />
-                  <Upload
-                    :show-upload-list="false"
-                    :action="fileUrl"
-                    :on-success="handleSuccess"
-                    :format="formData.type === 'image' ? formatImg : formatVoice"
-                    :max-size="2048"
-                    :headers="header"
-                    :on-format-error="handleFormatError"
-                    :on-exceeded-size="handleMaxSize"
-                    class="mr20"
-                    style="margin-top: 1px"
-                  >
-                    <Button type="primary">上传</Button>
-                  </Upload>
-                </div>
-                <span v-show="formData.type === 'image'">文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span>
-                <span v-show="formData.type === 'voice'">文件最大2Mb，支持mp3格式,播放长度不超过60s</span>
-              </FormItem>
-            </Col>
-          </Row>
-        </FormItem>
-      </Form>
-      <Button class="submit" type="primary" @click="save" :loading="loading" :disabled="disabled">立即提交</Button>
-    </Card>
-    <Modal v-model="customerShow" scrollable title="请选择商城用户" :closable="false" width="800">
+        </el-form-item>
+        <el-form-item label="回复内容：">
+          <el-radio-group v-model="formData.type">
+            <el-radio label="text">文字内容</el-radio>
+            <el-radio label="voice">声音消息</el-radio>
+            <el-radio label="image">图片消息</el-radio>
+            <el-radio label="news">图文消息</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="消息内容：" prop="content" v-if="formData.type === 'text' || formData.type === 'url'">
+          <el-input
+            type="textarea"
+            rows="2"
+            clearable
+            v-model="formData.content.content"
+            :placeholder="formData.type === 'text' ? '请填写消息内容' : '请填写网址链接'"
+            class="content_width"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="选取图文：" v-if="formData.type === 'news'">
+          <el-button @click="modals = true">选择图文消息</el-button>
+          <div class="news-box" v-if="formData.content.list.title">
+            <img class="news_pic" :src="formData.content.list.image_input[0]" />
+            <span>{{ formData.content.list.title }}</span>
+            <i class="el-icon-error del_icon" @click="delContent"></i>
+          </div>
+        </el-form-item>
+        <el-form-item
+          :label="formData.type === 'image' ? '图片地址：' : '语音地址：'"
+          prop="src"
+          v-if="formData.type === 'image' || formData.type === 'voice'"
+        >
+          <div class="acea-row row-middle">
+            <el-input
+              readonly="readonly"
+              placeholder="请填入链接地址"
+              class="content_width mr15"
+              v-model="formData.content.src"
+            />
+            <el-upload
+              :show-file-list="false"
+              :action="fileUrl"
+              :on-success="handleSuccess"
+              :format="formData.type === 'image' ? formatImg : formatVoice"
+              :max-size="2048"
+              :headers="header"
+              :on-format-error="handleFormatError"
+              :on-exceeded-size="handleMaxSize"
+              class="mr20"
+              style="margin-top: 1px"
+            >
+              <el-button type="primary">上传</el-button>
+            </el-upload>
+          </div>
+          <span v-show="formData.type === 'image'">文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span>
+          <span v-show="formData.type === 'voice'">文件最大2Mb，支持mp3格式,播放长度不超过60s</span>
+        </el-form-item>
+      </el-form>
+      <el-button class="submit" type="primary" @click="save" :loading="loading" :disabled="disabled"
+        >立即提交</el-button
+      >
+    </el-card>
+    <el-dialog :visible.sync="customerShow" title="请选择商城用户" :show-close="true" width="720px">
       <customerInfo v-if="customerShow" @imageObject="imageObject"></customerInfo>
-    </Modal>
+    </el-dialog>
     <!--图文消息 -->
-    <Modal v-model="modals" scrollable title="发送消息" width="1200" height="800" footer-hide class="modelBox">
+    <el-dialog :visible.sync="modals" title="发送消息" width="1200px" class="modelBox">
       <news-category
         v-if="modals"
         @getCentList="getCentList"
@@ -156,18 +140,18 @@
         :contentWidth="contentWidth"
         :maxCols="maxCols"
       ></news-category>
-    </Modal>
-    <Modal
-      v-model="labelShow"
+    </el-dialog>
+    <el-dialog
+      :visible.sync="labelShow"
       scrollable
       title="请选择用户标签"
       :closable="false"
-      width="500"
+      width="540px"
       :footer-hide="true"
       :mask-closable="false"
     >
       <userLabel ref="userLabel" @activeData="activeData" @close="labelClose"></userLabel>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -197,12 +181,11 @@ export default {
       customerShow: false,
       labelShow: false,
       disabled: false,
-      modals: false,
       maxCols: 4,
       labelSelect: [],
 
       scrollerHeight: '600',
-      contentTop: '130',
+      contentTop: '10',
       contentWidth: '98%',
       formatImg: ['jpg', 'jpeg', 'png', 'bmp', 'gif'],
       formatVoice: ['mp3', 'wma', 'wav', 'amr'],
@@ -269,7 +252,7 @@ export default {
     },
     openLabel(row) {
       this.labelShow = true;
-      this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.dataLabel)));
+      if (this.dataLabel.length) this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.dataLabel)));
     },
     closeLabel(label) {
       let index = this.dataLabel.indexOf(this.dataLabel.filter((d) => d.id == label.id)[0]);
@@ -299,7 +282,7 @@ export default {
           this.labelSelect = res.data.list;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     imageObject(e) {
@@ -311,24 +294,27 @@ export default {
       this.formData.content.list = val.new[0];
       this.modals = false;
     },
+    delContent() {
+      this.formData.content.list = {};
+    },
     // 上传成功
     handleSuccess(res, file) {
       if (res.status === 200) {
         this.formData.content.src = res.data.src;
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
       } else {
-        this.$Message.error(res.msg);
+        this.$message.error(res.msg);
       }
     },
     handleFormatError(file) {
       if (this.formData.type === 'image') {
-        this.$Message.warning('请上传bmp/png/jpeg/jpg/gif格式的图片');
+        this.$message.warning('请上传bmp/png/jpeg/jpg/gif格式的图片');
       } else {
-        this.$Message.warning('请上传mp3/wma/wav/amr格式的语音');
+        this.$message.warning('请上传mp3/wma/wav/amr格式的语音');
       }
     },
     handleMaxSize(file) {
-      this.$Message.warning('请上传文件2M以内的文件');
+      this.$message.warning('请上传文件2M以内的文件');
     },
     // 上传头部token
     getToken() {
@@ -347,13 +333,13 @@ export default {
     // 创建
     save() {
       if (!this.formData.name) {
-        return this.$Message.error('请输入二维码名称');
+        return this.$message.error('请输入二维码名称');
       }
       if (!this.formData.cate_id) {
-        return this.$Message.error('请选择分组');
+        return this.$message.error('请选择分组');
       }
       if (!this.dataLabel.length) {
-        return this.$Message.error('请选择用户标签');
+        return this.$message.error('请选择用户标签');
       } else {
         let ids = [];
         this.dataLabel.map((i) => {
@@ -362,28 +348,28 @@ export default {
         this.formData.label_id = ids;
       }
       if (!this.formData.uid) {
-        return this.$Message.error('请选择推广员');
+        return this.$message.error('请选择推广员');
       }
       if (this.isReceiveTime) {
         if (this.formData.time < 1) {
-          return this.$Message.error('使用有效期限不能小于1天');
+          return this.$message.error('使用有效期限不能小于1天');
         }
       } else {
         this.formData.time = 0;
       }
       if (this.formData.type === 'text' || this.formData.type === 'url') {
         if (!this.formData.content.content.trim()) {
-          return this.$Message.error('请输入内容');
+          return this.$message.error('请输入内容');
         }
       }
       if (this.formData.type === 'voice' || this.formData.type === 'image') {
         if (!this.formData.content.src.trim()) {
-          return this.$Message.error('请先上传消息');
+          return this.$message.error('请先上传消息');
         }
       }
       if (this.formData.type === 'news') {
         if (!this.formData.content.list.title.trim()) {
-          return this.$Message.error('请选择图文消息');
+          return this.$message.error('请选择图文消息');
         }
       }
       this.disabled = false;
@@ -391,7 +377,7 @@ export default {
       wechatQrcodeSaveApi(this.id, this.formData)
         .then((res) => {
           this.disabled = true;
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           setTimeout(() => {
             this.$router.push({
               path: this.$routeProStr + '/marketing/channel_code/channelCodeIndex',
@@ -400,7 +386,7 @@ export default {
         })
         .catch((err) => {
           this.disabled = true;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
   },
@@ -408,6 +394,9 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+.content_width{
+  width:460px;
+}
 .info {
   color: #888;
   font-size: 12px;
@@ -543,7 +532,7 @@ textarea {
   display: inline-block;
   font-size: 13px;
   font-weight: 400;
-  color: #1890FF;
+  color: var(--prev-color-primary);
   margin-left: 14px;
   cursor: pointer;
   margin-left: 10px;
@@ -562,19 +551,25 @@ textarea {
   background-color: #f2f2f2;
   padding: 10px;
   border-radius: 10px;
-  margin-left: 65px;
   margin-top: 20px;
+  position relative
 
   .news_pic {
     width: 100%;
     height: 150px;
   }
+  .del_icon{
+    position absolute
+    right -8px
+    top -8px
+    cursor pointer
+  }
 }
 
 .labelInput {
   border: 1px solid #dcdee2;
-  width: 320px;
-  padding: 0 8px;
+  width: 460px;
+  padding: 0 15px;
   border-radius: 5px;
   min-height: 30px;
   cursor: pointer;

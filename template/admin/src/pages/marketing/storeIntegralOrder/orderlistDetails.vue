@@ -1,14 +1,18 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover>
-      <table-form
-        ref="orderData"
-        :is-all="isAll"
-        :auto-disabled="autoDisabled"
-        :form-selection="selection"
-        @getList="getData"
-        @order-data="orderDatas"
-      />
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+      <div class="padding-add">
+        <table-form
+            ref="orderData"
+            :is-all="isAll"
+            :auto-disabled="autoDisabled"
+            :form-selection="selection"
+            @getList="getData"
+            @order-data="orderDatas"
+        />
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="mt16">
       <table-list
         ref="table"
         :where="orderData"
@@ -21,7 +25,7 @@
         @order-select="orderSelect"
         @updata="updata"
       />
-    </Card>
+    </el-card>
   </div>
 </template>
 

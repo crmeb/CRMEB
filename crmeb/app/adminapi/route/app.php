@@ -129,6 +129,18 @@ Route::group('app', function () {
         Route::get('wechat/kefu/record/:id', 'v1.kefu.StoreService/chat_user')->option(['real_name' => '聊天记录']);
         //查看对话
         Route::get('wechat/kefu/chat_list', 'v1.kefu.StoreService/chat_list')->option(['real_name' => '查看对话']);
+
+        //客服自动回复列表
+        Route::get('kefu/auto_reply/list', 'v1.kefu.StoreServiceAutoReply/autoReplyList')->option(['real_name' => '客服自动回复列表']);
+        //客服自动回复添加修改表单
+        Route::get('kefu/auto_reply/form/:id', 'v1.kefu.StoreServiceAutoReply/autoReplyForm')->option(['real_name' => '客服自动回复添加修改表单']);
+        //客服自动回复添加修改保存
+        Route::post('kefu/auto_reply/save/:id', 'v1.kefu.StoreServiceAutoReply/autoReplySave')->option(['real_name' => '客服自动回复添加修改保存']);
+        //客服自动回复修改状态
+        Route::put('kefu/auto_reply/status/:id/:status', 'v1.kefu.StoreServiceAutoReply/autoReplyStatus')->option(['real_name' => '客服自动回复修改状态']);
+        //客服自动回复删除
+        Route::delete('kefu/auto_reply/del/:id', 'v1.kefu.StoreServiceAutoReply/autoReplyDel')->option(['real_name' => '客服自动回复删除']);
+
     })->option(['parent' => 'app', 'cate_name' => '客服相关']);
 
 })->middleware([

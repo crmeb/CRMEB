@@ -39,10 +39,11 @@ class SystemConfigService
         };
 
         try {
-            if ($isCaChe) {
-                return $callable();
-            }
-            return $service->cacheDriver()->remember(self::CACHE_SYSTEM . ':' . $key, $callable);
+            return $callable();
+//            if ($isCaChe) {
+//                return $callable();
+//            }
+//            return CacheService::remember($key, $callable);
         } catch (\Throwable $e) {
             return $default;
         }
@@ -66,7 +67,7 @@ class SystemConfigService
             if ($isCaChe)
                 return $callable();
 
-            return $service->cacheDriver()->remember(self::CACHE_SYSTEM . ':' . md5(implode(',', $keys)), $callable);
+            return CacheService::remember(md5(implode(',', $keys)), $callable);
         } catch (\Throwable $e) {
             return Arr::getDefaultValue($keys);
         }

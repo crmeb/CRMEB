@@ -1,0 +1,12 @@
+/**
+ * 修改状态
+ * @param id
+ * @return {*}
+ */
+export function {%NAME_CAMEL%}StatusApi(id, data) {
+    return request({
+        url: `{%ROUTE%}/status/${id}`,
+        method: 'put',
+        data
+    });
+}

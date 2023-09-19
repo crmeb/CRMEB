@@ -1,7 +1,6 @@
 <template>
   <div style="width: 100%">
-    <Drawer title="用户详情" :closable="false" width="1100" scrollable v-model="modals" @on-visible-change="draChange">
-      <Spin size="large" fix v-if="spinShow"></Spin>
+    <el-drawer :visible.sync="modals" title="用户详情" :wrapperClosable="false" :size="1100" @closed="draChange">
       <div class="acea-row head">
         <div class="avatar mr15"><img :src="psInfo.avatar" /></div>
         <div class="dashboard-workplace-header-tip">
@@ -12,62 +11,64 @@
             }}</span>
           </div>
         </div>
-        <div class="edit-btn">
-          <Button v-if="!isEdit" type="primary" @click="edit">编辑</Button>
-          <Button v-if="isEdit" class="mr20" @click="edit">取消</Button>
-          <Button v-if="isEdit" type="primary" @click="editSave">保存</Button>
+        <div class="edit-btn" v-if="!this.psInfo.is_del">
+          <el-button v-if="!isEdit" type="primary" @click="edit">编辑</el-button>
+          <el-button v-if="isEdit" @click="edit">取消</el-button>
+          <el-button v-if="isEdit" type="primary" @click="editSave">保存</el-button>
         </div>
       </div>
-
-      <Row type="flex" justify="space-between" class="mt25">
-        <!-- <Col span="4" class="user_menu">
-          <Menu :theme="theme2" :active-name="activeName" @on-select="changeType">
-            <MenuItem :name="item.val" v-for="(item, index) in list" :key="index">
-              
-            </MenuItem>
-          </Menu>
-        </Col> -->
-        <Col span="24">
-          <Tabs class="mb20" :value="activeName" @on-click="changeType">
-            <TabPane :name="item.val" v-for="(item, index) in list" :key="index" :label="item.label"></TabPane>
-          </Tabs>
-        </Col>
-
-        <Col span="24">
-          <template v-if="activeName === 'user'">
-            <userEditForm ref="editForm" :userId="userId" @success="getDetails(userId)" v-if="isEdit"></userEditForm>
-            <user-info :ps-info="psInfo" v-else></user-info>
-          </template>
-          <template v-else>
-            <Table
-              :columns="columns"
-              :data="userLists"
-              max-height="400"
-              ref="table"
-              :loading="loading"
-              no-userFrom-text="暂无数据"
-              no-filtered-userFrom-text="暂无筛选结果"
-            >
-              <template slot-scope="{ row }" slot="number">
-                <div :class="row.pm ? 'plusColor' : 'reduceColor'">
-                  {{ row.pm ? '+' + row.number : '-' + row.number }}
+      <el-row justify="space-between" class="mt14">
+        <el-col :span="24">
+          <el-tabs type="border-card" v-model="activeName" @tab-click="changeTab">
+            <el-tab-pane name="user" label="用户信息">
+              <userEditForm ref="editForm" :userId="userId" @success="getDetails(userId)" v-if="isEdit"></userEditForm>
+              <user-info :ps-info="psInfo" v-else></user-info>
+            </el-tab-pane>
+            <el-tab-pane :name="item.val" v-for="(item, index) in list" :key="index" :label="item.label">
+              <template>
+                <el-table
+                  class="mt20"
+                  :data="userLists"
+                  max-height="400"
+                  ref="table"
+                  v-loading="loading"
+                  no-userFrom-text="暂无数据"
+                  no-filtered-userFrom-text="暂无筛选结果"
+                >
+                  <el-table-column :label="item.title" min-width="120" v-for="(item, index) in columns" :key="index">
+                    <template slot-scope="scope">
+                      <template v-if="item.key">
+                        <div>
+                          <span>{{ scope.row[item.key] }}</span>
+                        </div>
+                      </template>
+                      <template v-else-if="item.slot === 'number'">
+                        <div :class="scope.row.pm ? 'plusColor' : 'reduceColor'">
+                          {{ scope.row.pm ? '+' + scope.row.number : '-' + scope.row.number }}
+                        </div>
+                      </template>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div class="acea-row row-right page">
+                  <pagination
+                    v-if="total"
+                    :total="total"
+                    :page.sync="userFrom.page"
+                    :limit.sync="userFrom.limit"
+                    @pagination="changeType"
+                  />
                 </div>
               </template>
-            </Table>
-            <div class="acea-row row-right page">
-              <Page
-                :total="total"
-                :current="userFrom.page"
-                show-elevator
-                show-total
-                @on-change="pageChange"
-                :page-size="userFrom.limit"
-              />
-            </div>
-          </template>
-        </Col>
-      </Row>
-    </Drawer>
+            </el-tab-pane>
+          </el-tabs>
+        </el-col>
+
+        <!-- <el-col :span="24">
+          
+        </el-col> -->
+      </el-row>
+    </el-drawer>
   </div>
 </template>
 
@@ -84,7 +85,6 @@ export default {
       isEdit: false,
       theme2: 'light',
       list: [
-        { val: 'user', label: '用户信息' },
         { val: 'order', label: '消费记录' },
         { val: 'integral', label: '积分明细' },
         { val: 'sign', label: '签到记录' },
@@ -118,10 +118,8 @@ export default {
     editSave() {
       this.$refs.editForm.setUser();
     },
-    draChange(status) {
-      if (!status) {
-        this.isEdit = false;
-      }
+    draChange() {
+      this.isEdit = false;
     },
     // 会员详情
     getDetails(id) {
@@ -139,25 +137,24 @@ export default {
             this.spinShow = false;
           } else {
             this.spinShow = false;
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           }
         })
         .catch((res) => {
           this.spinShow = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
-    pageChange(index) {
-      this.userFrom.page = index;
-      this.changeType(this.userFrom.type);
+    changeTab(tab) {
+      this.activeName = tab.name;
+      this.changeType();
     },
     // tab选项
-    changeType(name) {
+    changeType() {
       this.loading = true;
-      this.userFrom.type = name;
-      this.activeName = name;
+      this.userFrom.type = this.activeName;
       this.isEdit = false;
-      if (name == 'user') return;
+      if (this.activeName == 'user') return;
       if (this.userFrom.type === '') {
         this.userFrom.type = 'order';
       }
@@ -210,7 +207,7 @@ export default {
                   },
                   {
                     title: '积分变化',
-                    key: 'number',
+                    slot: 'number',
                     minWidth: 120,
                   },
                   {
@@ -334,12 +331,12 @@ export default {
             this.loading = false;
           } else {
             this.loading = false;
-            this.$Message.error(res.msg);
+            this.$message.error(res.msg);
           }
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },
@@ -357,8 +354,46 @@ export default {
     height: 100%;
   }
 }
+/deep/.el-drawer__body {
+  padding: 20px 0;
+}
+/deep/.el-tabs--border-card > .el-tabs__content {
+  padding: 0 35px;
+}
+/deep/.el-tabs--border-card > .el-tabs__header,
+/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
+  border: none;
+  height: 40px;
+}
+/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+  border: none;
+  border-top: 2px solid var(--prev-color-primary);
+  font-size: 13px;
+  font-weight: 500;
+  color: #303133;
+  line-height: 16px;
+}
+/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+  border: none;
+}
+/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+  margin-top: 0;
+  transition: none;
+  height: 40px !important;
+  line-height: 40px !important;
+  width: 92px !important;
+  font-size: 13px;
+  font-weight: 400;
+  color: #303133;
+  line-height: 16px;
+}
+/deep/.el-tabs--border-card {
+  border: none;
+  box-shadow: none;
+}
 .head {
   position: relative;
+  padding: 0 35px;
   .edit-btn {
     position: absolute;
     right: 10px;

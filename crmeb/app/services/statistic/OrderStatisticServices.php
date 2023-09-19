@@ -28,6 +28,8 @@ class OrderStatisticServices extends BaseServices
      */
     public function getBasic($where)
     {
+        $time = explode('-', $where['time']);
+        if (count($time) != 2) throw new AdminException('请选择时间');
         /** @var StoreOrderServices $orderService */
         $orderService = app()->make(StoreOrderServices::class);
         $data['pay_price'] = $orderService->sum(['paid' => 1, 'pid' => 0, 'time' => $where['time']], 'pay_price', true);
@@ -45,8 +47,8 @@ class OrderStatisticServices extends BaseServices
     public function getTrend($where)
     {
         $time = explode('-', $where['time']);
-        if (count($time) != 2) throw new AdminException(100100);
-        $dayCount = (strtotime($time[1]) - strtotime($time[0])) / 86400 + 1;
+        if (count($time) != 2) throw new AdminException('请选择时间');
+        $dayCount = bcadd(bcdiv(bcsub(strtotime($time[1]), strtotime($time[0])), '86400'), '1');
         $data = [];
         if ($dayCount == 1) {
             $data = $this->trend($time, 0);
@@ -67,16 +69,10 @@ class OrderStatisticServices extends BaseServices
      * @param false $excel
      * @return array
      */
-    public function trend($time, $num, $excel = false)
+    public function trend($time, $num)
     {
-        /** @var StoreVisitServices $storeVisit */
-        $storeVisit = app()->make(StoreVisitServices::class);
         /** @var StoreOrderServices $storeOrder */
         $storeOrder = app()->make(StoreOrderServices::class);
-        /** @var StoreCartServices $storeCart */
-        $storeCart = app()->make(StoreCartServices::class);
-        /** @var UserBillServices $userBillServices */
-        $userBillServices = app()->make(UserBillServices::class);
 
         if ($num == 0) {
             $xAxis = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];

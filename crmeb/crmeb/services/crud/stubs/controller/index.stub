@@ -1,9 +1,12 @@
     /**
      * 列表
-     * @date {%date%}
+     * @date {%DATE%}
      * @return \think\Response
      */
     public function index()
     {
-        return app('json')->success($this->service->getCrudListIndex());
+        $where = $this->request->getMore([
+{%FIELD_SEARCH_PHP%}
+        ]);
+        return app('json')->success($this->service->getCrudListIndex($where));
     }

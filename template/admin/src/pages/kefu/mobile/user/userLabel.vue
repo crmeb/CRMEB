@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="footer">
-        <Button type="primary" class="btn" @click="subBtn">确定</Button>
+        <el-button type="primary" class="btn" @click="subBtn">确定</el-button>
       </div>
     </div>
     <div class="maskModel" @touchmove.prevent v-show="change === true"></div>
@@ -84,11 +84,11 @@ export default {
         un_label_ids: unLaberids,
       })
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.$emit('editLabel', false);
         })
         .catch((error) => {
-          this.$Message.error(error.msg);
+          this.$message.error(error.msg);
         });
     },
     close: function () {
@@ -134,6 +134,10 @@ export default {
     margin-bottom: 0.25rem;
   }
 }
+.label-box {
+  margin-bottom: 10px;
+}
+
 .priceTitle {
   position: relative;
   text-align: center;

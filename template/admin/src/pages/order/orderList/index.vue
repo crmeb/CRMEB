@@ -1,15 +1,6 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover>
-      <Tabs class="mb20" v-model="currentTab" @on-click="onClickTab" v-if="tablists">
-        <TabPane v-for="(item, index) in tabs" :label="item.label" :name="item.type" :key="index" />
-      </Tabs>
-      <productlist-details
-        v-if="currentTab === 'article' || 'project' || 'app'"
-        ref="productlist"
-      ></productlist-details>
-      <Spin size="large" fix v-if="spinShow"></Spin>
-    </Card>
+    <productlist-details v-if="currentTab === 'article' || 'project' || 'app'" ref="productlist"></productlist-details>
   </div>
 </template>
 
@@ -26,87 +17,39 @@ export default {
       tabs: [
         {
           type: '',
-          label: (h) => {
-            return h('div', [
-              h('span', '全部订单'),
-              h('Badge', {
-                props: {
-                  count: Number(this.tablists.all),
-                  'overflow-count': 999999,
-                },
-              }),
-            ]);
-          },
+          label: '全部订单',
+          value: Number(this.tablists?.all) || 0,
+          max: 999999,
         },
         {
           type: '1',
-          label: (h) => {
-            return h('div', [
-              h('span', '普通订单'),
-              h('Badge', {
-                props: {
-                  count: Number(this.tablists.general),
-                  'overflow-count': 999999,
-                },
-              }),
-            ]);
-          },
+          label: '普通订单',
+          value: Number(this.tablists?.general) || 0,
+          max: 999999,
         },
         {
           type: '2',
-          label: (h) => {
-            return h('div', [
-              h('span', '拼团订单'),
-              h('Badge', {
-                props: {
-                  count: Number(this.tablists.pink),
-                  'overflow-count': 999999,
-                },
-              }),
-            ]);
-          },
+          label: '拼团订单',
+          value: Number(this.tablists?.pink) || 0,
+          max: 999999,
         },
         {
           type: '3',
-          label: (h) => {
-            return h('div', [
-              h('span', '秒杀订单'),
-              h('Badge', {
-                props: {
-                  count: Number(this.tablists.seckill),
-                  'overflow-count': 999999,
-                },
-              }),
-            ]);
-          },
+          label: '秒杀订单',
+          value: Number(this.tablists?.seckill) || 0,
+          max: 999999,
         },
         {
           type: '4',
-          label: (h) => {
-            return h('div', [
-              h('span', '砍价订单'),
-              h('Badge', {
-                props: {
-                  count: Number(this.tablists.bargain),
-                  'overflow-count': 999999,
-                },
-              }),
-            ]);
-          },
+          label: '砍价订单',
+          value: Number(this.tablists?.bargain) || 0,
+          max: 999999,
         },
         {
           type: '5',
-          label: (h) => {
-            return h('div', [
-              h('span', '预售订单'),
-              h('Badge', {
-                props: {
-                  count: Number(this.tablists.advance),
-                  'overflow-count': 999999,
-                },
-              }),
-            ]);
-          },
+          label: '预售订单',
+          value: Number(this.tablists?.advance) || 0,
+          max: 999999,
         },
       ],
       spinShow: false,
@@ -121,7 +64,6 @@ export default {
     this.getOrderTime('');
     this.getOrderNum('');
     this.getfieldKey('');
-    this.onChangeTabs('');
     this.getisDelIdListl('');
     this.getIsDel(1);
   },
@@ -131,16 +73,12 @@ export default {
     this.getOrderTime('');
     this.getOrderNum('');
     this.getfieldKey('');
-    this.onChangeTabs('');
     this.getisDelIdListl('');
     this.getIsDel(1);
   },
-  mounted() {
-    this.getTabs();
-  },
+  mounted() {},
   methods: {
     ...mapMutations('order', [
-      'onChangeTabs',
       'getOrderStatus',
       'getOrderTime',
       'getOrderNum',
@@ -150,32 +88,6 @@ export default {
       'getIsDel',
       // 'onChangeChart'
     ]),
-    // 订单类型  @on-changeTabs="getChangeTabs"
-    getTabs() {
-      this.spinShow = true;
-      this.$store
-        .dispatch('order/getOrderTabs', {
-          data: '',
-        })
-        .then((res) => {
-          this.tablists = res.data;
-          // this.onChangeChart(this.tablists)
-          this.spinShow = false;
-        })
-        .catch((res) => {
-          this.spinShow = false;
-          this.$Message.error(res.msg);
-        });
-    },
-    onClickTab() {
-      this.onChangeTabs(Number(this.currentTab));
-      // this.$store.dispatch("order/getOrderTabs", {
-      //   data: "",
-      //   type: Number(this.currentTab),
-      // });
-      // this.$refs.productlist.getChangeTabs();
-      this.$store.dispatch('order/getOrderTabs', { type: this.currentTab });
-    },
   },
 };
 </script>
@@ -192,13 +104,7 @@ export default {
   margin-bottom: 0px !important;
 }
 
-/deep/ .ivu-badge-count-alone {
-  top: -7px;
-  right: 2px;
-}
-
-.i-layout-page-header /deep/ .ivu-badge-count {
-  line-height: 14px;
-  height: 15px;
+/deep/ .el-badge__content.is-fixed {
+  top: 7px;
 }
 </style>

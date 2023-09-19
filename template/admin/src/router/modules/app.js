@@ -35,24 +35,6 @@ export default {
       },
       component: () => import('@/pages/app/wechat/menus/index'),
     },
-    // {
-    //   path: 'wechat/setting/template/index',
-    //   name: `${pre}wechatTemplate`,
-    //   meta: {
-    //     auth: ['application-wechat-template'],
-    //     title: '微信模板消息'
-    //   },
-    //   component: () => import('@/pages/app/routine/routineTemplate/index')
-    // },
-    {
-      path: 'wechat/wechat_user/user/index',
-      name: `${pre}wechatUser`,
-      meta: {
-        auth: ['wechat-wechat-user-user'],
-        title: '微信用户',
-      },
-      component: () => import('@/pages/app/wechat/user/user'),
-    },
     {
       path: 'wechat/wechat_user/user/tag',
       name: `${pre}tag`,

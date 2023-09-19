@@ -1,86 +1,102 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <div class="ivu-mt tabbox">
-        <Tabs @on-click="onClickTab" class="mb20">
-          <TabPane label="日账单" name="day" />
-          <TabPane label="周账单" name="week" />
-          <TabPane label="月账单" name="month" />
-        </Tabs>
-        <Form
+    <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form
           ref="formValidate"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.native.prevent
         >
-          <FormItem label="创建时间：">
-            <DatePicker
-              :editable="false"
-              :clearable="false"
-              @on-change="onchangeTime"
-              :value="timeVal"
-              format="yyyy/MM/dd"
+          <el-form-item label="创建时间：">
+            <el-date-picker
+              clearable
+              v-model="timeVal"
               type="daterange"
-              placement="bottom-start"
-              placeholder="请选择时间"
-              style="width: 200px"
-              :options="options"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
               class="mr20"
-            ></DatePicker>
-          </FormItem>
-        </Form>
+            ></el-date-picker>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0 20px 20px' }">
+      <div class="ivu-mt">
+        <el-tabs v-model="tab" @tab-click="onClickTab">
+          <el-tab-pane label="日账单" name="day" />
+          <el-tab-pane label="周账单" name="week" />
+          <el-tab-pane label="月账单" name="month" />
+        </el-tabs>
       </div>
       <div class="table">
-        <Table
-          :columns="columns"
+        <el-table
           :data="orderList"
           ref="table"
-          class="mt25"
-          :loading="loading"
-          highlight-row
+          v-loading="loading"
+          highlight-current-row
           no-userFrom-text="暂无数据"
           no-filtered-userFrom-text="暂无筛选结果"
         >
-          <template slot-scope="{ row }" slot="income_price">
-            <span style="color: #f5222d">￥{{ row.income_price }}</span>
-          </template>
-          <template slot-scope="{ row }" slot="exp_price">
-            <span style="color: #00c050">￥{{ row.exp_price }}</span>
-          </template>
-          <template slot-scope="{ row }" slot="entry_price">
-            <span>￥{{ row.entry_price }}</span>
-          </template>
-          <template slot-scope="{ row }" slot="action">
-            <a @click="Info(row)">账单详情</a>
-            <Divider type="vertical" />
-            <a @click="download(row)">下载</a>
-          </template>
-        </Table>
+          <el-table-column label="ID" width="80">
+            <template slot-scope="scope">
+              <span>{{ scope.row.id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="标题" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.title }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="日期" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.add_time }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="收入金额" min-width="130">
+            <template slot-scope="scope">
+              <span style="color: #f5222d">￥{{ scope.row.income_price }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="支出金额" min-width="130">
+            <template slot-scope="scope">
+              <span style="color: #00c050">￥{{ scope.row.exp_price }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="入账金额" min-width="130">
+            <template slot-scope="scope">
+              <span>￥{{ scope.row.entry_price }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" fixed="right" width="170">
+            <template slot-scope="scope">
+              <a @click="Info(scope.row)">账单详情</a>
+              <el-divider direction="vertical"></el-divider>
+              <a @click="download(scope.row)">下载</a>
+            </template>
+          </el-table-column>
+        </el-table>
         <div class="acea-row row-right page">
-          <Page
+          <pagination
+            v-if="total"
             :total="total"
-            :current="formValidate.page"
-            show-elevator
-            show-total
-            @on-change="pageChange"
-            :page-size="formValidate.limit"
+            :page.sync="formValidate.page"
+            :limit.sync="formValidate.limit"
+            @pagination="getList"
           />
         </div>
       </div>
-    </Card>
-    <Modal
-      v-model="modals"
-      scrollable
-      footer-hide
-      closable
-      title="账单详情"
-      :mask-closable="false"
-      @on-cancel="cancel"
-      width="1000"
-    >
+    </el-card>
+    <el-dialog :visible.sync="modals" title="账单详情" width="1000px">
       <commission-details v-if="modals" ref="commission" :ids="ids" :time="formValidate.time"></commission-details>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -98,58 +114,11 @@ export default {
   data() {
     return {
       modals: false,
-      options: this.$timeOptions,
+      pickerOptions: this.$timeOptions,
       ids: '',
-      grid: {
-        xl: 7,
-        lg: 7,
-        md: 12,
-        sm: 24,
-        xs: 24,
-      },
       total: 0,
       loading: false,
       tab: 'day',
-      staff: [],
-      columns: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 60,
-        },
-        {
-          title: '标题',
-          key: 'title',
-          minWidth: 80,
-        },
-        {
-          title: '日期',
-          key: 'add_time',
-          minWidth: 80,
-        },
-        {
-          title: '收入金额',
-          slot: 'income_price',
-          minWidth: 80,
-        },
-        {
-          title: '支出金额',
-          slot: 'exp_price',
-          minWidth: 80,
-        },
-        {
-          title: '入账金额',
-          slot: 'entry_price',
-          minWidth: 80,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-          align: 'center',
-        },
-      ],
       orderList: [
         {
           id: '1',
@@ -167,41 +136,21 @@ export default {
         limit: 15,
       },
       timeVal: [],
-      fromList: {
-        title: '选择时间',
-        custom: true,
-        fromTxt: [
-          { text: '全部', val: '' },
-          { text: '昨天', val: 'yesterday' },
-          { text: '今天', val: 'today' },
-          { text: '本周', val: 'week' },
-          { text: '本月', val: 'month' },
-          { text: '本季度', val: 'quarter' },
-          { text: '本年', val: 'year' },
-        ],
-      },
     };
   },
   computed: {
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   mounted() {
     this.onClickTab(this.tab);
-    this.staffApi();
   },
   methods: {
-    staffApi() {
-      staffListInfo().then((res) => {
-        this.staff = res.data;
-      });
-    },
-    onClickTab(e) {
-      this.tab = e;
+    onClickTab() {
       this.getList();
     },
     search() {
@@ -231,14 +180,9 @@ export default {
     },
     // 具体日期
     onchangeTime(e) {
-      this.timeVal = e;
-      this.formValidate.time = this.timeVal[0] ? this.timeVal.join('-') : '';
+      this.timeVal = e || [];
+      this.formValidate.time = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
       this.formValidate.page = 1;
-      this.getList();
-    },
-    //分页
-    pageChange(status) {
-      this.formValidate.page = status;
       this.getList();
     },
     // 账单详情
@@ -280,6 +224,10 @@ export default {
 </script>
 
 <style scoped lang="less">
+/deep/ .el-tabs__item {
+  height: 54px !important;
+  line-height: 54px !important;
+}
 /deep/.ivu-card-body {
   padding: 0;
 }
@@ -300,15 +248,12 @@ export default {
   .btns {
     width: 99px;
     height: 32px;
-    background: #1890ff;
+    background: var(--prev-color-primary);
     border-radius: 4px;
     text-align: center;
     line-height: 32px;
     color: #ffffff;
     cursor: pointer;
   }
-}
-.table {
-  padding: 0px 30px 15px 30px;
 }
 </style>

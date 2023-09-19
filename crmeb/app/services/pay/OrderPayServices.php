@@ -106,7 +106,7 @@ class OrderPayServices
      */
     public function beforePay(array $orderInfo, string $payType, array $options = [])
     {
-        $wehcat = $payType == PayServices::WEIXIN_PAY;
+        $wechat = $payType == PayServices::WEIXIN_PAY;
 
         $payType = $this->getPayType($payType);
 
@@ -136,8 +136,8 @@ class OrderPayServices
                 $options['openid'] = $openid;
                 break;
             case PayServices::ALLIN_PAY:
-                if ($wehcat) {
-                    $options['wechat'] = $wehcat;
+                if ($wechat) {
+                    $options['wechat'] = $wechat;
                 }
                 break;
         }

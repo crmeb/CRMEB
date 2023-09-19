@@ -14,6 +14,7 @@ use app\services\system\config\SystemConfigServices;
 use app\services\yihaotong\SmsAdminServices;
 use app\services\serve\ServeServices;
 use app\adminapi\controller\AuthController;
+use crmeb\services\CacheService;
 use think\facade\App;
 
 /**
@@ -65,7 +66,7 @@ class SmsConfig extends AuthController
     public function is_login(ServeServices $services)
     {
         $configServices = app()->make(SystemConfigServices::class);
-        $sms_info = $configServices->cacheDriver()->get('sms_account');
+        $sms_info = CacheService::get('sms_account');
         $data = ['status' => false, 'info' => ''];
         if ($sms_info) {
             try {
@@ -81,14 +82,14 @@ class SmsConfig extends AuthController
             }
             return app('json')->success($data);
         } else {
-            $configServices->cacheDriver()->clear();
+            CacheService::clear();
             $account = sys_config('sms_account');
             $password = sys_config('sms_token');
             //没有退出登录 清空这两个数据 自动登录
             if ($account && $password) {
                 $res = $services->user()->login($account, $password);
                 if ($res) {
-                    $configServices->cacheDriver()->set('sms_account', $account);
+                    CacheService::set('sms_account', $account);
                     $data['status'] = true;
                     $data['info'] = $account;
                 }
@@ -104,10 +105,9 @@ class SmsConfig extends AuthController
      */
     public function logout()
     {
-        $configServices = app()->make(SystemConfigServices::class);
-        $configServices->cacheDriver()->delete('sms_account');
+        CacheService::delete('sms_account');
         $this->services->updateSmsConfig('', '');
-        $configServices->cacheDriver()->clear();
+        CacheService::clear();
         return app('json')->success(100042);
     }
 

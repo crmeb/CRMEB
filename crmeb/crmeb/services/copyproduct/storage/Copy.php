@@ -24,11 +24,11 @@ class Copy extends BaseCopyProduct
     /**
      * 是否开通
      */
-    const PRODUCT_OPEN = 'copy/open';
+    const PRODUCT_OPEN = 'v2/copy/open';
     /**
      * 获取详情
      */
-    const PRODUCT_GOODS = 'copy/goods';
+    const PRODUCT_GOODS = 'v2/copy/goods';
 
     /** 初始化
      * @param array $config
@@ -49,12 +49,13 @@ class Copy extends BaseCopyProduct
     /** 复制商品
      * @param string $url
      * @param array $options
+     * @param string $yihaotongCopyAppid
      * @return mixed
      */
     public function goods(string $url, array $options = [])
     {
         $param['url'] = $url;
-        return $this->accessToken->httpRequest(self::PRODUCT_GOODS, $param);
+        return $this->accessToken->httpRequest(self::PRODUCT_GOODS, $param, 'post');
     }
 
 

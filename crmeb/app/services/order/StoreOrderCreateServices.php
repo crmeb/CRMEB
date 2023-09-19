@@ -17,8 +17,6 @@ use app\services\activity\combination\StorePinkServices;
 use app\services\agent\AgentLevelServices;
 use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\agent\DivisionServices;
-use app\services\pay\PayServices;
-use app\services\pc\OrderServices;
 use app\services\product\product\StoreCategoryServices;
 use app\services\shipping\ShippingTemplatesFreeServices;
 use app\services\shipping\ShippingTemplatesRegionServices;
@@ -292,7 +290,8 @@ class StoreOrderCreateServices extends BaseServices
             //记录自提人电话和姓名
             /** @var UserServices $userService */
             $userService = app()->make(UserServices::class);
-            $userService->update(['uid' => $uid], ['real_name' => $orderInfo['real_name'], 'record_phone' => $orderInfo['user_phone']]);
+            $realName = $userService->value(['uid' => $uid], 'real_name');
+            if ($realName == '') $userService->update(['uid' => $uid], ['real_name' => $orderInfo['real_name'], 'record_phone' => $orderInfo['user_phone']]);
             //积分抵扣
             if ($priceData['usedIntegral'] > 0) {
                 $this->deductIntegral($userInfo, $useIntegral, $priceData, (int)$userInfo['uid'], $order['id']);

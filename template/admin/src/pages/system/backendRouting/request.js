@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Setting from '@/setting';
 import { getCookies, removeCookies } from '@/libs/util';
-import { Message } from 'iview';
+import { Message } from 'element-ui';
 
 const service = axios.create({
   baseURL: location.protocol + '//' + location.hostname,

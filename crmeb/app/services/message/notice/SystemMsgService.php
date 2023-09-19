@@ -24,25 +24,6 @@ use think\facade\Log;
  */
 class SystemMsgService extends NoticeService
 {
-
-    /**
-     * 判断是否开启权限
-     * @var bool
-     */
-    private $isOpen = true;
-
-    /**
-     * 是否开启权限
-     * @param string $mark
-     * @return $this
-     */
-    public function isOpen(string $mark)
-    {
-        $this->isOpen = $this->noticeInfo['is_system'] === 1;
-        return $this;
-
-    }
-
     /**
      * 发送消息
      * @param int $uid
@@ -51,9 +32,8 @@ class SystemMsgService extends NoticeService
      */
     public function sendMsg(int $uid, $data)
     {
-        $this->isOpen = $this->noticeInfo['is_system'] === 1;
         try {
-            if ($this->isOpen) {
+            if ($this->noticeInfo['is_system'] == 1) {
                 $title = $this->noticeInfo['system_title'];
                 $str = $this->noticeInfo['system_text'];
                 foreach ($data as $key => $item) {
@@ -91,7 +71,7 @@ class SystemMsgService extends NoticeService
         $StoreServiceServices = app()->make(StoreServiceServices::class);
         $adminList = $StoreServiceServices->getStoreServiceOrderNotice();
         try {
-            if ($this->isOpen) {
+            if ($this->noticeInfo['is_system'] == 1) {
                 $save = [];
                 $title = $this->noticeInfo['system_title'];
                 $str = $this->noticeInfo['system_text'];

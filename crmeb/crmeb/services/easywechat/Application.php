@@ -18,6 +18,7 @@ use crmeb\services\easywechat\orderShipping\OrderClient;
 use crmeb\services\easywechat\subscribe\ProgramProvider;
 use crmeb\services\easywechat\v3pay\PayClient;
 use crmeb\services\easywechat\wechatlive\ProgramProvider as LiveProgramProvider;
+use crmeb\services\easywechat\wechatTemplate\ProgramProvider as TemplateProvider;
 use crmeb\services\easywechat\v3pay\ServiceProvider as V3PayServiceProvider;
 use crmeb\services\easywechat\orderShipping\ServiceProvider as OrderServiceProvider;
 
@@ -43,7 +44,8 @@ class Application extends \EasyWeChat\Foundation\Application
         ProgramProvider::class,
         V3PayServiceProvider::class,
         \crmeb\services\easywechat\Open3rd\ProgramProvider::class,
-        OrderServiceProvider::class
+        OrderServiceProvider::class,
+        TemplateProvider::class
     ];
 
     /**

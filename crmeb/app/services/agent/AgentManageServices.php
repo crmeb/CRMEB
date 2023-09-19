@@ -88,9 +88,12 @@ class AgentManageServices extends BaseServices
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $uids = $userServices->getAgentUserIds($where);
+
         //分销员人数
         $data['uids'] = $uids;
         $data['sum_count'] = count($uids);
+
+        //发展会员人数以及用户的可提现金额
         $data['spread_sum'] = 0;
         $data['extract_price'] = 0;
         if ($data['sum_count']) {
@@ -101,9 +104,9 @@ class AgentManageServices extends BaseServices
             $frozenPrices = app()->make(UserBrokerageFrozenServices::class);
             $data['extract_price'] = bcsub((string)$userServices->getSumBrokerage(['uid' => $uids]), $frozenPrices->getSumFrozenBrokerage($uids), 2);
         }
-        //分销员人数
+
+        //订单总数，订单金额，提现次数
         $data['order_count'] = 0;
-        $data['pay_price'] = 0;
         $data['pay_price'] = 0;
         $data['extract_count'] = 0;
         if ($data['sum_count']) {
@@ -116,42 +119,43 @@ class AgentManageServices extends BaseServices
             //提现次数
             $data['extract_count'] = app()->make(UserExtractServices::class)->getCount([['uid', 'in', $uids], ['status', '=', 1]]);
         }
+
         return [
             [
                 'name' => '分销员人数(人)',
                 'count' => $data['sum_count'],
-                'className' => 'md-contacts',
-                'col' => 6,
+                'className' => 'iconfaqirenshu',
+                'col' => 4,
             ],
             [
                 'name' => '推广用户数量(人)',
                 'count' => $data['spread_sum'],
-                'className' => 'md-contact',
-                'col' => 6,
+                'className' => 'icontuiguangrenshu',
+                'col' => 4,
             ],
             [
                 'name' => '订单数(单)',
                 'count' => $data['order_count'],
-                'className' => 'md-cart',
-                'col' => 6,
+                'className' => 'icondingdanliang',
+                'col' => 4,
             ],
             [
                 'name' => '订单金额(元)',
                 'count' => $data['pay_price'],
-                'className' => 'md-bug',
-                'col' => 6,
+                'className' => 'icondingdanjine',
+                'col' => 4,
             ],
             [
                 'name' => '提现次数(次)',
                 'count' => $data['extract_count'],
-                'className' => 'md-basket',
-                'col' => 6,
+                'className' => 'iconzhichujine',
+                'col' => 4,
             ],
             [
                 'name' => '未提现金额(元)',
                 'count' => $data['extract_price'],
-                'className' => 'ios-at-outline',
-                'col' => 6,
+                'className' => 'iconjiaoyijine',
+                'col' => 4,
             ],
         ];
     }

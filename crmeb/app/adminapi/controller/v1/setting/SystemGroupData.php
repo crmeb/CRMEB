@@ -109,6 +109,10 @@ class SystemGroupData extends AuthController
                 }
             }
         }
+        if ($group && $group['config_name'] == 'user_recharge_quota') {
+            if ($params['price'] <= 0) return app('json')->fail('售价必须大于0');
+            if ($params['give_money'] < 0) return app('json')->fail('赠送不能小于0');
+        }
         $this->services->checkSeckillTime($services, $gid, $params);
         $this->checkSign($services, $gid, $params);
         $fields = json_decode($group['fields'], true) ?? [];
@@ -175,6 +179,11 @@ class SystemGroupData extends AuthController
         $groupData = $this->services->get($id);
         $fields = $services->getValueFields((int)$groupData["gid"]);
         $params = request()->post();
+        $group = $services->getOne(['id' => $params['gid']], 'id,config_name,fields');
+        if ($group && $group['config_name'] == 'user_recharge_quota') {
+            if ($params['price'] <= 0) return app('json')->fail('售价必须大于0');
+            if ($params['give_money'] < 0) return app('json')->fail('赠送不能小于0');
+        }
         $this->services->checkSeckillTime($services, $groupData["gid"], $params, $id);
         $this->checkSign($services, $groupData["gid"], $params);
         $value = [];
@@ -229,7 +238,6 @@ class SystemGroupData extends AuthController
         \crmeb\services\CacheService::clear();
         return app('json')->success(100014);
     }
-
 
 
     /**

@@ -3,13 +3,13 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
       <!-- 公众号设置 -->
-      <Row :gutter="24" type="flex">
-        <Col span="24" class="ml40">
+      <el-row :gutter="24">
+        <el-col :span="24" class="ml40">
           <!-- 预览功能 -->
-          <Col :span="24">
-            <Col :xl="7" :lg="7" :md="22" :sm="22" :xs="22" class="left mb15">
+          <el-col :span="24">
+            <el-col :xl="7" :lg="7" :md="22" :sm="22" :xs="22" class="left mb15">
               <img class="top" src="../../../../assets/images/mobilehead.png" />
               <img class="bottom" src="@/assets/images/mobilefoot.png" />
               <div style="background: #f4f5f9; min-height: 438px; position: absolute; top: 63px; width: 320px"></div>
@@ -17,7 +17,7 @@
                 <div class="li" v-for="(item, indx) in list" :key="indx" :class="{ active: item === formValidate }">
                   <div>
                     <div class="add" @click="add(item, indx)">
-                      <Icon type="ios-add" />
+                      <i class="el-icon-plus"></i>
                       <div class="arrow"></div>
                     </div>
                     <div class="tianjia">
@@ -35,87 +35,82 @@
                   <div class="text" @click="gettem(item, indx, null)">{{ item.name || '一级菜单' }}</div>
                 </div>
                 <div class="li" v-show="list.length < 3">
-                  <div class="text" @click="addtext"><Icon type="ios-add" /></div>
+                  <div class="text" @click="addtext"><i class="el-icon-plus"></i></div>
                 </div>
               </div>
-            </Col>
-            <Col :xl="11" :lg="12" :md="22" :sm="22" :xs="22">
-              <Tabs value="name1" v-if="checkedMenuId !== null">
-                <TabPane label="菜单信息" name="name1">
-                  <Col span="24" class="userAlert">
+            </el-col>
+            <el-col :xl="11" :lg="12" :md="22" :sm="22" :xs="22">
+              <el-tabs value="name1" v-if="checkedMenuId !== null">
+                <el-tab-pane label="菜单信息" name="name1">
+                  <el-col :span="24" class="userAlert">
                     <div class="box-card right">
-                      <Alert show-icon closable class="spwidth"> 已添加子菜单，仅可设置菜单名称</Alert>
-                      <Form
+                      <el-alert type="info" show-icon closable title="已添加子菜单，仅可设置菜单名称"></el-alert>
+                      <el-form
                         ref="formValidate"
                         :model="formValidate"
                         :rules="ruleValidate"
-                        :label-width="100"
+                        label-width="100px"
                         class="mt20"
                       >
-                        <FormItem label="菜单名称" prop="name">
-                          <Input v-model="formValidate.name" placeholder="请填写菜单名称" class="spwidth"></Input>
-                        </FormItem>
-                        <FormItem label="规则状态" prop="type">
-                          <Select v-model="formValidate.type" placeholder="请选择规则状态" class="spwidth">
-                            <Option value="click">关键字</Option>
-                            <Option value="view">跳转网页</Option>
-                            <Option value="miniprogram">小程序</Option>
-                          </Select>
-                        </FormItem>
+                        <el-form-item label="菜单名称" prop="name">
+                          <el-input v-model="formValidate.name" placeholder="请填写菜单名称" class="spwidth"></el-input>
+                        </el-form-item>
+                        <el-form-item label="规则状态" prop="type">
+                          <el-select v-model="formValidate.type" placeholder="请选择规则状态" class="spwidth">
+                            <el-option value="click" label="关键字"></el-option>
+                            <el-option value="view" label="跳转网页"></el-option>
+                            <el-option value="miniprogram" label="小程序"></el-option>
+                          </el-select>
+                        </el-form-item>
                         <div v-if="formValidate.type === 'click'">
-                          <FormItem label="关键字" prop="key">
-                            <Input v-model="formValidate.key" placeholder="请填写关键字" class="spwidth"></Input>
-                          </FormItem>
+                          <el-form-item label="关键字" prop="key">
+                            <el-input v-model="formValidate.key" placeholder="请填写关键字" class="spwidth"></el-input>
+                          </el-form-item>
                         </div>
                         <div v-if="formValidate.type === 'miniprogram'">
-                          <FormItem label="appid" prop="appid">
-                            <Input v-model="formValidate.appid" placeholder="请填写appid" class="spwidth"></Input>
-                          </FormItem>
-                          <FormItem label="小程序路径" prop="pagepath">
-                            <Input
+                          <el-form-item label="appid" prop="appid">
+                            <el-input v-model="formValidate.appid" placeholder="请填写appid" class="spwidth"></el-input>
+                          </el-form-item>
+                          <el-form-item label="小程序路径" prop="pagepath">
+                            <el-input
                               v-model="formValidate.pagepath"
                               placeholder="请填写小程序路径"
                               class="spwidth"
-                            ></Input>
-                          </FormItem>
-                          <FormItem label="备用网页" prop="url">
-                            <Input v-model="formValidate.url" placeholder="请填写备用网页" class="spwidth"></Input>
-                          </FormItem>
+                            ></el-input>
+                          </el-form-item>
+                          <el-form-item label="备用网页" prop="url">
+                            <el-input
+                              v-model="formValidate.url"
+                              placeholder="请填写备用网页"
+                              class="spwidth"
+                            ></el-input>
+                          </el-form-item>
                         </div>
                         <div v-if="formValidate.type === 'view'">
-                          <FormItem label="跳转地址" prop="url">
-                            <Input v-model="formValidate.url" placeholder="请填写跳转地址" class="spwidth"></Input>
-                          </FormItem>
+                          <el-form-item label="跳转地址" prop="url">
+                            <el-input
+                              v-model="formValidate.url"
+                              placeholder="请填写跳转地址"
+                              class="spwidth"
+                            ></el-input>
+                          </el-form-item>
                         </div>
-                      </Form>
+                      </el-form>
                     </div>
-                  </Col>
-                </TabPane>
-                <Button size="small" type="error" slot="extra" @click="deltMenus">删除</Button>
-              </Tabs>
-              <Col :span="24" v-if="isTrue">
-                <Button type="primary" style="display: block; margin: 10px auto" @click="submenus('formValidate')"
-                  >保存并发布</Button
+                  </el-col>
+                </el-tab-pane>
+              </el-tabs>
+              <el-col :span="24" v-if="isTrue">
+                <el-button size="small" type="danger" @click="deltMenus">删除</el-button>
+                <el-button type="primary" @click="submenus('formValidate')"
+                  >保存并发布</el-button
                 >
-              </Col>
-            </Col>
-          </Col>
-        </Col>
-      </Row>
-    </Card>
-
-    <Modal v-model="modal2" width="360">
-      <p slot="header" style="color: #f60; text-align: center">
-        <Icon type="ios-information-circle"></Icon>
-        <span>删除</span>
-      </p>
-      <div style="text-align: center">
-        <p>确定删除吗？</p>
-      </div>
-      <div slot="footer">
-        <Button type="error" size="large" long @click="del">确定</Button>
-      </div>
-    </Modal>
+              </el-col>
+            </el-col>
+          </el-col>
+        </el-col>
+      </el-row>
+    </el-card>
   </div>
 </template>
 
@@ -184,7 +179,7 @@ export default {
           this.list = data.menus;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 点击保存提交
@@ -208,13 +203,13 @@ export default {
       };
       MenuApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.checkedMenuId = null;
           this.formValidate = {};
           this.isTrue = false;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 点击元素
@@ -235,6 +230,9 @@ export default {
         this.checkedMenuId = id;
         this.parentMenuId = index;
         this.isTrue = true;
+      }else{
+        this.$message.warning('二级菜单最多只能添加5个!');
+        return false;
       }
     },
     // 增加一级
@@ -254,22 +252,22 @@ export default {
       if (this.checkedMenuId === null) return true;
       if (!this.isTrue) return true;
       if (!this.formValidate.name) {
-        this.$Message.warning('请输入按钮名称!');
+        this.$message.warning('请输入按钮名称!');
         return false;
       }
       if (this.formValidate.type === 'click' && !this.formValidate.key) {
-        this.$Message.warning('请输入关键字!');
+        this.$message.warning('请输入关键字!');
         return false;
       }
       if (this.formValidate.type === 'view' && !reg.test(this.formValidate.url)) {
-        this.$Message.warning('请输入正确的跳转地址!');
+        this.$message.warning('请输入正确的跳转地址!');
         return false;
       }
       if (
         this.formValidate.type === 'miniprogram' &&
         (!this.formValidate.appid || !this.formValidate.pagepath || !this.formValidate.url)
       ) {
-        this.$Message.warning('请填写完整小程序配置!');
+        this.$message.warning('请填写完整小程序配置!');
         return false;
       }
       return true;
@@ -277,9 +275,44 @@ export default {
     // 删除
     deltMenus() {
       if (this.isTrue) {
-        this.modal2 = true;
+        this.$confirm('确认删除此菜单吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          beforeClose(action, instance, done) {
+            if (action == 'confirm') {
+              instance.$refs.confirm.$el.onclick = a();
+              function a(e) {
+                e = e || window.event;
+                if (e.detail != 0) {
+                  done();
+                }
+              };
+            } else {
+              done();
+            }
+          },
+        }).then(() => {
+          this.parentMenuId === null
+              ? this.list.splice(this.checkedMenuId, 1)
+              : this.list[this.parentMenuId].sub_button.splice(this.checkedMenuId, 1);
+          this.parentMenuId = null;
+          this.formValidate = {
+            name: '',
+            type: 'click',
+            appid: '',
+            url: '',
+            key: '',
+            pagepath: '',
+            id: 0,
+          };
+          this.isTrue = true;
+          this.modal2 = false;
+          this.checkedMenuId = null;
+          this.$refs['formValidate'].resetFields();
+          }).catch(() => {});
       } else {
-        this.$Message.warning('请选择菜单!');
+        this.$message.warning('请选择菜单!');
       }
     },
     // 确认删除
@@ -313,6 +346,9 @@ export default {
   -khtml-user-select: none; /*早期浏览器*/
   user-select: none;
 }
+ /deep/ .el-card__body {
+  padding: 60px 20px;
+}
 .left {
   min-width: 390px;
   min-height: 550px;
@@ -333,23 +369,25 @@ export default {
 .textbot {
   position: absolute;
   bottom: 0px;
-  left: 82px;
+  left: 55px;
   width: 100%;
 }
 .active {
-  border: 1px solid #44b549 !important;
-  color: #44b549 !important;
+  border: 1px solid var(--prev-color-primary) !important;
+  color: var(--prev-color-primary) !important;
 }
 .li {
   float: left;
-  width: 93px;
+  width: 92px;
+  height: 48px;
   line-height: 48px;
-  border: 1px solid #e7e7eb;
+  border-left: 1px solid #e7e7eb;
   background: #fafafa;
   text-align: center;
   cursor: pointer;
   color: #999;
   position: relative;
+  
 }
 .text {
   height: 50px;
@@ -367,8 +405,8 @@ export default {
   position: absolute;
   bottom: 65px;
   width: 100%;
-  line-height: 48px;
-  border: 1px solid #e7e7eb;
+  line-height: 40px;
+  // border: 1px solid #e7e7eb;
   background: #fafafa;
 }
 .arrow {
@@ -380,21 +418,25 @@ export default {
   height: 0;
   font-size: 0;
   border: solid 8px;
-  border-color: #fff #f4f5f9 #f4f5f9 #f4f5f9;
+  border-color: #fafafa #f4f5f9 #f4f5f9 #f4f5f9;
 }
 .tianjia {
   position: absolute;
-  bottom: 115px;
+  bottom: 107px;
   width: 100%;
   line-height: 48px;
   background: #fafafa;
+  :first-child {
+    border:none
+  }
 }
 .addadd {
   width: 100%;
-  line-height: 48px;
-  border: 1px solid #e7e7eb;
+  line-height: 40px;
+  border-top: 1px solid #f0f0f0;
   background: #fafafa;
-  height: 48px;
+  height: 40px;
+  
 }
 .right {
   background: #fff;

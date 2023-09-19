@@ -17,3 +17,13 @@
     display: block !important;
   }
 }
+.el-form-item__label {
+  color: var(--prev-color-text-regular);
+  font-size: 12px !important;
+}
+.el-radio__label {
+  font-size: 12px !important;
+}
+.el-input__inner {
+  font-size: 12px !important;
+}

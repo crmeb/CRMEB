@@ -17,6 +17,7 @@ use app\services\wechat\WechatMessageServices;
 use app\services\wechat\WechatReplyServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
+use crmeb\services\CacheService;
 use crmeb\services\easywechat\Application;
 use EasyWeChat\Message\Article;
 use EasyWeChat\Message\Image;
@@ -26,12 +27,11 @@ use EasyWeChat\Message\Text;
 use EasyWeChat\Message\Video;
 use EasyWeChat\Message\Voice;
 use EasyWeChat\Payment\Order;
+use EasyWeChat\Payment\Payment;
 use EasyWeChat\Server\Guard;
 use Symfony\Component\HttpFoundation\Request;
 use think\facade\Event;
-use think\facade\Log;
 use think\Response;
-use think\facade\Cache;
 use crmeb\services\SystemConfigService;
 
 /**
@@ -52,7 +52,16 @@ class WechatService
     public static function options()
     {
         $wechat = SystemConfigService::more(['wechat_appid', 'wechat_app_appid', 'wechat_app_appsecret', 'wechat_appsecret', 'wechat_token', 'wechat_encodingaeskey', 'wechat_encode']);
-        $payment = SystemConfigService::more(['pay_weixin_mchid', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_key', 'pay_weixin_open']);
+        $payment = SystemConfigService::more(['pay_weixin_mchid',
+            'pay_weixin_client_cert',
+            'pay_weixin_client_key',
+            'pay_weixin_key',
+            'pay_weixin_open',
+            'pay_sub_app_id',
+            'pay_sub_merchant_id',
+            'mer_type'
+        ]);
+
         if (request()->isApp()) {
             $appId = isset($wechat['wechat_app_appid']) ? trim($wechat['wechat_app_appid']) : '';
             $appsecret = isset($wechat['wechat_app_appsecret']) ? trim($wechat['wechat_app_appsecret']) : '';
@@ -80,6 +89,10 @@ class WechatService
                 'key_path' => substr(public_path(parse_url($payment['pay_weixin_client_key'])['path']), 0, strlen(public_path(parse_url($payment['pay_weixin_client_key'])['path'])) - 1),
                 'notify_url' => trim(sys_config('site_url')) . '/api/pay/notify/wechat'
             ];
+
+            if (isset($payment['mer_type']) && $payment['mer_type']) {
+                $config['payment']['sub_mch_id'] = trim($payment['pay_sub_merchant_id']);
+            }
         }
         return $config;
     }
@@ -142,35 +155,6 @@ class WechatService
                             break;
                         case 'view':
                             $response = $messageService->wechatEventView($message);
-                            break;
-                        case 'funds_order_pay':
-                            if (($count = strpos($message['order_info']['trade_no'], '_')) !== false) {
-                                $trade_no = substr($message['order_info']['trade_no'], $count + 1);
-                            } else {
-                                $trade_no = $message['order_info']['trade_no'];
-                            }
-                            $prefix = substr($trade_no, 0, 2);
-                            //处理一下参数
-                            switch ($prefix) {
-                                case 'cp':
-                                    $data['attach'] = 'Product';
-                                    break;
-                                case 'hy':
-                                    $data['attach'] = 'Member';
-                                    break;
-                                case 'cz':
-                                    $data['attach'] = 'UserRecharge';
-                                    break;
-                            }
-                            $data['out_trade_no'] = $message['order_info']['trade_no'];
-                            $data['transaction_id'] = $message['order_info']['transaction_id'];
-                            $data['opneid'] = $message['FromUserName'];
-                            if (Event::until('NotifyListener', [$data, PayServices::WEIXIN_PAY])) {
-                                $response = 'success';
-                            } else {
-                                $response = 'faild';
-                            }
-                            Log::error(['data' => $data, 'res' => $response, 'message' => $message]);
                             break;
                     }
                     break;
@@ -301,17 +285,24 @@ class WechatService
     }
 
     /**
-     * 模板消息接口
-     * @return \EasyWeChat\Notice\Notice
+     * 发送模版消息
+     * @param $openid
+     * @param $templateId
+     * @param array $data
+     * @param null $url
+     * @param null $defaultColor
+     * @return mixed
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/17
      */
-    public static function noticeService()
-    {
-        return self::application()->notice;
-    }
-
     public static function sendTemplate($openid, $templateId, array $data, $url = null, $defaultColor = null)
     {
-        $notice = self::noticeService()->to($openid)->template($templateId)->andData($data);
+        $notice = self::application()->new_notice->to($openid)->template($templateId)->andData($data);
+        if (sys_config('wechat_template_to_miniprogram') == 1) $notice->setMiniprogram([
+            'appid' => sys_config('routine_appId'),
+            'pagepath' => str_replace(sys_config('site_url'), '', $url)
+        ]);
         if ($url !== null) $notice->url($url);
         if ($defaultColor !== null) $notice->defaultColor($defaultColor);
         return $notice->send();
@@ -320,31 +311,11 @@ class WechatService
 
     /**
      * 支付
-     * @return \EasyWeChat\Payment\Payment
+     * @return Payment
      */
     public static function paymentService()
     {
         return self::application()->payment;
-    }
-
-    public static function downloadBill($day, $type = 'ALL')
-    {
-//        $payment = self::paymentService();
-//        $merchant = $payment->getMerchant();
-//        $params = [
-//            'appid' => $merchant->app_id,
-//            'bill_date'=>$day,
-//            'bill_type'=>strtoupper($type),
-//            'mch_id'=> $merchant->merchant_id,
-//            'nonce_str' => uniqid()
-//        ];
-//        $params['sign'] = \EasyWeChat\Payment\generate_sign($params, $merchant->key, 'md5');
-//        $xml = XML::build($params);
-//        dump(self::paymentService()->downloadBill($day)->getContents());
-//        dump($payment->getHttp()->request('https://api.mch.weixin.qq.com/pay/downloadbill','POST',[
-//            'body' => $xml,
-//            'stream'=>true
-//        ])->getBody()->getContents());
     }
 
     public static function userTagService()
@@ -426,14 +397,14 @@ class WechatService
     public static function paymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $trade_type = 'JSAPI', $options = [])
     {
         $key = 'pay_' . $out_trade_no;
-        $result = Cache::get($key);
+        $result = CacheService::get($key);
         if ($result) {
             return $result;
         } else {
             $order = self::paymentOrder($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $trade_type, $options);
             $result = self::paymentService()->prepare($order);
             if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS') {
-                Cache::set($key, $result, 7000);
+                CacheService::set($key, $result, 7000);
                 return $result;
             } else {
                 if ($result->return_code == 'FAIL') {
@@ -463,14 +434,14 @@ class WechatService
     public static function newPaymentPrepare($openid, $out_trade_no, $total_fee, $attach, $body, $detail = '', $options = [])
     {
         $key = 'pay_' . $out_trade_no;
-        $result = Cache::get($key);
+        $result = CacheService::get($key);
         if ($result) {
             return $result;
         } else {
             $order = self::paymentOrder($openid, $out_trade_no, $total_fee, $attach, $body, $detail, $options);
             $result = self::application()->minipay->createorder($order);
             if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS') {
-                Cache::set($key, $result, 7000);
+                CacheService::set($key, $result, 7000);
                 return $result;
             } else {
                 if ($result->return_code == 'FAIL') {
@@ -843,17 +814,22 @@ class WechatService
      */
     public static function setIndustry($industryOne, $industryTwo)
     {
-        return self::application()->notice->setIndustry($industryOne, $industryTwo);
+        return self::application()->new_notice->setIndustry($industryOne, $industryTwo);
     }
 
     /**
      * 获得添加模版ID
-     * @param $template_id_short
+     * @param $key
+     * @param $name
+     * @return mixed
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/8/16
      */
-    public static function addTemplateId($template_id_short)
+    public static function addTemplateId($key, $name)
     {
         try {
-            return self::application()->notice->addTemplate($template_id_short);
+            return self::application()->new_notice->addTemplate($key, $name);
         } catch (\Exception $e) {
             throw new AdminException(self::getMessage($e->getMessage()));
         }
@@ -866,7 +842,7 @@ class WechatService
     public static function getPrivateTemplates()
     {
         try {
-            return self::application()->notice->getPrivateTemplates();
+            return self::application()->new_notice->getPrivateTemplates();
         } catch (\Exception $e) {
             throw new AdminException(self::getMessage($e->getMessage()));
         }
@@ -878,7 +854,7 @@ class WechatService
     public static function deleleTemplate($template_id)
     {
         try {
-            return self::application()->notice->deletePrivateTemplate($template_id);
+            return self::application()->new_notice->deletePrivateTemplate($template_id);
         } catch (\Exception $e) {
             throw new AdminException(self::getMessage($e->getMessage()));
         }

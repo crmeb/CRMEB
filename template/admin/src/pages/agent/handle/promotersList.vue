@@ -1,107 +1,145 @@
 <template>
   <div>
-    <Modal
-      v-model="modals"
-      scrollable
-      footer-hide
-      closable
+    <el-dialog
+      :visible.sync="modals"
       :title="listTitle === 'man' ? '统计推广人列表' : '推广订单'"
-      :mask-closable="false"
-      width="900"
-      @on-cancel="onCancel"
+      :close-on-click-modal="false"
+      width="1000px"
+      @closed="onCancel"
     >
       <div class="table_box">
-        <Form
+        <el-form
           ref="formValidate"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
-          class="tabform"
           @submit.native.prevent
+          inline
         >
-          <Row :gutter="24" type="flex" justify="end">
-            <Col span="24" class="ivu-text-left">
-              <FormItem label="时间选择：">
-                <RadioGroup
-                  v-model="formValidate.data"
-                  type="button"
-                  @on-change="selectChange(formValidate.data)"
-                  class="mr"
-                >
-                  <Radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</Radio>
-                </RadioGroup>
-                <DatePicker
-                  :editable="false"
-                  @on-change="onchangeTime"
-                  :value="timeVal"
-                  format="yyyy/MM/dd"
-                  type="daterange"
-                  placement="bottom-end"
-                  placeholder="请选择时间"
-                  style="width: 200px"
-                ></DatePicker>
-              </FormItem>
-            </Col>
-            <Col span="24" class="ivu-text-left">
-              <Col :xl="15" :lg="15" :md="20" :sm="24" :xs="24">
-                <FormItem label="用户类型：">
-                  <RadioGroup v-model="formValidate.type" type="button" @on-change="userSearchs" class="mr">
-                    <Radio
-                      :label="item.val"
-                      v-for="(item, i) in listTitle === 'man' ? fromList.fromTxt2 : fromList.fromTxt3"
-                      :key="i"
-                    >
-                      {{ item.text }}
-                    </Radio>
-                  </RadioGroup>
-                </FormItem>
-              </Col>
-              <Col :xl="15" :lg="15" :md="20" :sm="24" :xs="24" v-if="listTitle === 'man'">
-                <FormItem label="搜索：">
-                  <Input
-                    search
-                    enter-button
-                    placeholder="请输入请姓名、电话、UID"
-                    v-model="formValidate.nickname"
-                    style="width: 90%"
-                    @on-search="userSearchs"
-                  ></Input>
-                </FormItem>
-              </Col>
-              <Col :xl="15" :lg="15" :md="20" :sm="24" :xs="24" v-if="listTitle === 'order'">
-                <FormItem label="订单号：">
-                  <Input
-                    search
-                    enter-button
-                    placeholder="请输入请订单号"
-                    v-model="formValidate.order_id"
-                    style="width: 90%"
-                    @on-search="userSearchs"
-                  ></Input>
-                </FormItem>
-              </Col>
-            </Col>
-          </Row>
-        </Form>
+          <el-form-item label="时间选择：">
+            <el-date-picker
+              clearable
+              :editable="false"
+              @change="onchangeTime"
+              v-model="timeVal"
+              value-format="yyyy/MM/dd"
+              type="daterange"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="width: 250px"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="用户类型：">
+            <el-select v-model="formValidate.type" clearable class="form_content_width">
+              <el-option
+                v-for="(item, i) in listTitle === 'man' ? fromList.fromTxt2 : fromList.fromTxt3"
+                :key="i"
+                :value="item.val"
+                :label="item.text"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="搜索：" v-if="listTitle === 'man'">
+            <el-input
+              clearable
+              placeholder="请输入请姓名、电话、UID"
+              v-model="formValidate.nickname"
+              class="form_content_width"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="订单号：" v-if="listTitle === 'order'">
+            <el-input
+              clearable
+              placeholder="请输入请订单号"
+              v-model="formValidate.order_id"
+              class="form_content_width"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
       </div>
-      <Table
+      <el-table
         ref="selection"
-        :columns="columns4"
         :data="tabList"
-        :loading="loading"
-        no-data-text="暂无数据"
-        highlight-row
+        v-loading="loading"
+        empty-text="暂无数据"
+        highlight-current-row
         max-height="400"
-        no-filtered-data-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="add_time">
-          <div>{{ row.spread_time | formatDate }}</div>
+        <template v-if="listTitle === 'man'">
+          <el-table-column label="UID" width="80">
+            <template slot-scope="scope">
+              <span>{{ scope.row.uid }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="头像" min-width="90">
+            <template slot-scope="scope">
+              <div class="tabBox_img" v-viewer>
+                <img v-lazy="scope.row.avatar ? scope.row.avatar : require('../../../assets/images/moren.jpg')" />
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户信息" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.nickname }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="是否推广员" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.promoter_name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="推广人数" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.spread_count }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="订单数" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.order_count }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="绑定时间" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.spread_time | formatDate }}</span>
+            </template>
+          </el-table-column>
         </template>
-      </Table>
+        <template v-else>
+          <el-table-column label="订单ID" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.order_id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户信息" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.user_info }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="时间" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row._add_time }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="返佣金额" min-width="130">
+            <template slot-scope="scope">
+              <span>{{ scope.row.brokerage_price || 0 }}</span>
+            </template>
+          </el-table-column>
+        </template>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="formValidate.limit" />
+        <pagination
+          v-if="total"
+          :total="total"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="pageChange"
+        />
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -171,7 +209,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 100;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -180,7 +218,7 @@ export default {
   methods: {
     onCancel() {
       this.formValidate = {
-        limit: 7,
+        limit: 15,
         page: 1,
         nickname: '',
         data: '',
@@ -188,11 +226,12 @@ export default {
         order_id: '',
         uid: 0,
       };
+      this.timeVal = [];
     },
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal.join('-');
+      this.formValidate.data = this.timeVal ? this.timeVal.join('-') : '';
       this.getList(this.rowsList, this.listTitle);
     },
     // 选择时间
@@ -218,106 +257,15 @@ export default {
           let data = res.data;
           this.tabList = data.list;
           this.total = data.count;
-          if (this.listTitle === 'man') {
-            this.columns4 = [
-              {
-                title: 'UID',
-                minWidth: 80,
-                key: 'uid',
-              },
-              {
-                title: '头像',
-                key: 'avatar',
-                minWidth: 80,
-                render: (h, params) => {
-                  return h('viewer', [
-                    h(
-                      'div',
-                      {
-                        style: {
-                          width: '36px',
-                          height: '36px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                        },
-                      },
-                      [
-                        h('img', {
-                          attrs: {
-                            src: params.row.avatar ? params.row.avatar : require('../../../assets/images/moren.jpg'),
-                          },
-                          style: {
-                            width: '100%',
-                            height: '100%',
-                          },
-                        }),
-                      ],
-                    ),
-                  ]);
-                },
-              },
-              {
-                title: '用户信息',
-                key: 'nickname',
-                minWidth: 120,
-              },
-              {
-                title: '是否推广员',
-                key: 'promoter_name',
-                minWidth: 100,
-              },
-              {
-                title: '推广人数',
-                key: 'spread_count',
-                sortable: true,
-                minWidth: 90,
-              },
-              {
-                title: '订单数',
-                key: 'order_count',
-                sortable: true,
-                minWidth: 90,
-              },
-              {
-                title: '绑定时间',
-                slot: 'add_time',
-                sortable: true,
-                minWidth: 130,
-              },
-            ];
-          } else {
-            this.columns4 = [
-              {
-                title: '订单ID',
-                key: 'order_id',
-              },
-              {
-                title: '用户信息',
-                key: 'user_info',
-              },
-              {
-                title: '时间',
-                key: '_add_time',
-              },
-              {
-                title: '返佣金额',
-                key: 'brokerage_price',
-                render: (h, params) => {
-                  return h('viewer', [h('span', params.row.brokerage_price || 0)]);
-                },
-              },
-            ];
-          }
           this.loading = false;
         })
         .catch((res) => {
           this.loading = false;
           this.tabList = [];
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
-    pageChange(index) {
-      this.formValidate.page = index;
+    pageChange() {
       this.getList(this.rowsList, this.listTitle);
     },
     // 搜索

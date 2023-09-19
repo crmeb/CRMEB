@@ -43,7 +43,7 @@ class MemberCardBatchServices extends BaseServices
         $list = $this->dao->getList($where, $page, $limit);
 
         if ($list) {
-            foreach($list as &$v){
+            foreach ($list as &$v) {
                 $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
                 //$v['qrcode'] = json_decode($v['qrcode'], true);
             }
@@ -67,22 +67,22 @@ class MemberCardBatchServices extends BaseServices
         /**
          * 具体时间段试用，业务需要打开即可
          */
-/*        $use_start_time = strtotime($data['use_start_time']);
-        $use_end_time = strtotime($data['use_end_time']);
-        if (!$use_start_time) {
-            $use_start_time = strtotime(date('Y-m-d 00:00:00', strtotime('+1 day')));
-        }else{
-            $use_start_time = strtotime($data['use_start_time']);
-        }
-        if (!$use_end_time) {
-            $use_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('+1 day')));
-        }else{
-            $use_end_time = strtotime($data['use_end_time']);
-        }
-        if ($use_end_time < time()) throw new AdminException("体验结束时间不能小于当天");
-        if ($use_end_time < $use_start_time) throw new AdminException("体验结束时间不能小于体验开始时间");
-        $data['use_start_time'] = $use_start_time;
-        $data['use_end_time'] = $use_end_time;*/
+//        $use_start_time = strtotime($data['use_start_time']);
+//        $use_end_time = strtotime($data['use_end_time']);
+//        if (!$use_start_time) {
+//            $use_start_time = strtotime(date('Y-m-d 00:00:00', strtotime('+1 day')));
+//        } else {
+//            $use_start_time = strtotime($data['use_start_time']);
+//        }
+//        if (!$use_end_time) {
+//            $use_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('+1 day')));
+//        } else {
+//            $use_end_time = strtotime($data['use_end_time']);
+//        }
+//        if ($use_end_time < time()) throw new AdminException("体验结束时间不能小于当天");
+//        if ($use_end_time < $use_start_time) throw new AdminException("体验结束时间不能小于体验开始时间");
+//        $data['use_start_time'] = $use_start_time;
+//        $data['use_end_time'] = $use_end_time;
         $data['use_day'] = abs(ceil($data['use_day']));
         $data['total_num'] = abs(ceil($data['total_num']));
         $data['add_time'] = time();
@@ -113,8 +113,8 @@ class MemberCardBatchServices extends BaseServices
     {
         if (!is_numeric($id) || !$id) throw new AdminException(100100);
         if (!isset($data['field']) || !isset($data['value']) || !$data['field']) throw new AdminException(100100);
-        /**  */
         $this->dao->update($id, [$data['field'] => $data['value']]);
+        app()->make(MemberCardServices::class)->update(['card_batch_id' => $id], ['status' => $data['value']]);
     }
 
 

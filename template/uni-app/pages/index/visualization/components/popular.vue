@@ -223,9 +223,7 @@
 			},
 			gopage(url) {
 				goPage().then(res => {
-					uni.navigateTo({
-						url: url
-					})
+					this.$util.JumpPath(url);
 				})
 			}
 		}

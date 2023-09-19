@@ -1,91 +1,104 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="levelFrom"
-        :model="formValidate"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="回复类型：" prop="type" label-for="type">
-              <Select
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="levelFrom"
+            :model="formValidate"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="回复类型：" prop="type" label-for="type">
+            <el-select
                 v-model="formValidate.type"
                 placeholder="请选择"
-                element-id="type"
                 clearable
-                @on-change="userSearchs"
-              >
-                <Option value="text">文字消息</Option>
-                <Option value="image">图片消息</Option>
-                <Option value="news">图文消息</Option>
-                <Option value="voice">声音消息</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="关键字：" prop="key" label-for="key">
-              <Input
-                search
-                enter-button
+                @change="userSearchs"
+                class="form_content_width"
+            >
+              <el-option value="text" label="文字消息"></el-option>
+              <el-option value="image" label="图片消息"></el-option>
+              <el-option value="news" label="图文消息"></el-option>
+              <el-option value="voice" label="声音消息"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="关键字：" prop="key" label-for="key">
+            <el-input
+                clearable
                 v-model="formValidate.key"
                 placeholder="请输入关键字"
-                @on-search="userSearchs"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button type="primary" icon="md-add" @click="add">添加关键字</Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-button type="primary" @click="add">添加关键字</el-button>
+      <el-table
         :data="tabList"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row)">编辑</a>
-          <!--<Divider type="vertical" />-->
-          <!--<a @click="download(row)">下载二维码</a>-->
-          <Divider type="vertical" />
-          <a @click="del(row, '关键字回复', index)">删除</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="关键字" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.key }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="回复类型" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否显示" min-width="130">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="显示"
+              inactive-text="隐藏"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="del(scope.row, '关键字回复', scope.$index)">删除</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="formValidate.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="formValidate.limit"
+          :page.sync="formValidate.page"
+          :limit.sync="formValidate.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
-    <Modal v-model="modal" title="二维码" footer-hide>
+    </el-card>
+    <el-dialog :visible.sync="modal" title="二维码">
       <div class="acea-row row-around">
         <div class="acea-row row-column-around row-between-wrapper">
           <div v-viewer class="QRpic">
@@ -93,7 +106,7 @@
           </div>
         </div>
       </div>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -158,7 +171,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -177,12 +190,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.formValidate.page = index;
-      this.getList();
     },
     // 修改是否显示
     onchangeIsShow(row) {
@@ -192,10 +201,10 @@ export default {
       };
       keywordsetStatusApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 表格搜索
@@ -221,25 +230,22 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tabList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 下载二维码
     download(row) {
-      this.$Spin.show();
       downloadReplyCode(row.id)
         .then((res) => {
-          this.$Spin.hide();
           this.modal = true;
           this.qrcode = res.data.url;
         })
         .catch((err) => {
-          this.$Spin.hide();
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
   },

@@ -5,20 +5,16 @@
     <div class="box" @click="modalPicTap('单选')">
       <img :src="configData.url" alt="" v-if="configData.url" />
       <div class="upload-box" v-else>
-        <Icon type="ios-camera-outline" size="36" />
+        <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
       </div>
       <span class="iconfont-diy icondel_1" @click.stop="bindDelete" v-if="configData.url && configData.type"></span>
     </div>
     <div>
-      <Modal
-        v-model="modalPic"
-        width="950px"
-        scrollable
-        footer-hide
-        closable
+      <el-dialog
+        :visible.sync="modalPic"
+        width="1024px"
         :title="configData.header ? configData.header : '上传图片'"
-        :mask-closable="false"
-        :z-index="1"
+        :close-on-click-modal="false"
       >
         <uploadPictures
           :isChoice="isChoice"
@@ -27,7 +23,7 @@
           :gridPic="gridPic"
           v-if="modalPic"
         ></uploadPictures>
-      </Modal>
+      </el-dialog>
     </div>
   </div>
 </template>

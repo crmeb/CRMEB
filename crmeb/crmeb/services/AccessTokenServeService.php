@@ -32,11 +32,6 @@ class AccessTokenServeService extends HttpService
     protected $secret;
 
     /**
-     * @var Cache|null
-     */
-    protected $cache;
-
-    /**
      * @var string
      */
     protected $accessToken;
@@ -66,24 +61,18 @@ class AccessTokenServeService extends HttpService
     /**
      * 登录接口
      */
-    const USER_LOGIN = "user/login";
+    const USER_LOGIN = "v2/user/login";
 
 
     /**
      * AccessTokenServeService constructor.
      * @param string $account
      * @param string $secret
-     * @param Cache|null $cache
      */
-    public function __construct(string $account, string $secret, $cache = null)
+    public function __construct(string $account, string $secret)
     {
-        if (!$cache) {
-            /** @var CacheService $cache */
-            $cache = app()->make(CacheService::class);
-        }
         $this->account = $account;
         $this->secret = $secret;
-        $this->cache = $cache;
     }
 
     /**
@@ -93,8 +82,8 @@ class AccessTokenServeService extends HttpService
     public function getConfig()
     {
         return [
-            'account' => $this->account,
-            'secret' => $this->secret
+            'access_key' => $this->account,
+            'secret_key' => $this->secret
         ];
     }
 
@@ -105,11 +94,11 @@ class AccessTokenServeService extends HttpService
      */
     public function getToken()
     {
-        $accessTokenKey = md5($this->account . '_' . $this->secret . $this->cacheTokenPrefix);
-        $cacheToken = $this->cache->get($accessTokenKey);
+        $accessTokenKey = md5($this->account . '_v2_' . $this->secret . $this->cacheTokenPrefix);
+        $cacheToken = CacheService::get($accessTokenKey);
         if (!$cacheToken) {
             $getToken = $this->getTokenFromServer();
-            $this->cache->set($accessTokenKey, $getToken['access_token'], 300);
+            CacheService::set($accessTokenKey, $getToken['access_token'], $getToken['expires_in'] - 60);
             $cacheToken = $getToken['access_token'];
         }
         $this->accessToken = $cacheToken;
@@ -125,8 +114,8 @@ class AccessTokenServeService extends HttpService
     public function getTokenFromServer()
     {
         $params = [
-            'account' => $this->account,
-            'secret' => $this->secret,
+            'access_key' => $this->account,
+            'secret_key' => $this->secret,
         ];
         $response = $this->postRequest($this->get(self::USER_LOGIN), $params);
         $response = json_decode($response, true);

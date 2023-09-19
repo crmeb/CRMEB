@@ -12,12 +12,14 @@
 namespace crmeb\basic;
 
 use crmeb\traits\ModelTrait;
+use think\db\Query;
 use think\Model;
 
 /**
  * Class BaseModel
  * @package crmeb\basic
  * @mixin ModelTrait
+ * @mixin Query
  */
 class BaseModel extends Model
 {

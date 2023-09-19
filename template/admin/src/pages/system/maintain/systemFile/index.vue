@@ -3,21 +3,47 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Table
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-table
         ref="selection"
-        :columns="columns4"
         :data="tabList"
-        :loading="loading"
-        no-data-text="暂无数据"
-        highlight-row
-        no-filtered-data-text="暂无筛选结果"
+        v-loading="loading"
+        empty-text="暂无数据"
+        highlight-current-row
+        
       >
-        <template slot-scope="{ row }" slot="nickname">
-          <span>{{ row.admin_id + ' / ' + row.admin_name }}</span>
-        </template>
-      </Table>
-    </Card>
+        <el-table-column label="类型" width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="文件地址" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.filename }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="校验码" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.cthash }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="上次访问时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.atime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="上次修改时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.mtime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="上次改变时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.ctime }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 </template>
 
@@ -29,38 +55,6 @@ export default {
     return {
       loading: false,
       tabList: [],
-      columns4: [
-        {
-          title: '类型',
-          key: 'type',
-          minWidth: 100,
-        },
-        {
-          title: '文件地址',
-          key: 'filename',
-          minWidth: 250,
-        },
-        {
-          title: '校验码',
-          key: 'cthash',
-          minWidth: 200,
-        },
-        {
-          title: '上次访问时间',
-          key: 'atime',
-          minWidth: 150,
-        },
-        {
-          title: '上次修改时间',
-          key: 'mtime',
-          minWidth: 150,
-        },
-        {
-          title: '上次改变时间',
-          key: 'ctime',
-          minWidth: 150,
-        },
-      ],
     };
   },
   created() {
@@ -78,7 +72,7 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

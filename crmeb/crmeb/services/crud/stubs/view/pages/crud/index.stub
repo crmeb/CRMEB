@@ -1,40 +1,49 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Row type="flex">
-        <Col v-bind="grid">
-          <Button v-auth="['{%auth%}-add']" type="primary" icon="md-add" @click="add">添加{%menus%}</Button>
-        </Col>
-      </Row>
-      <Table
-          :columns="columns"
+{%CONTENT_SEARCH_VUE%}
+    <el-card shadow="never" dis-hover class="ivu-mt {%CLASS_NAME%}">
+      <el-row type="flex">
+        <el-col v-bind="grid">
+          <el-button v-auth="['{%AUTH%}-add']" type="primary" icon="md-add" @click="add">添加{%MENUS%}</el-button>
+        </el-col>
+      </el-row>
+      <el-table
           :data="dataList"
           ref="table"
           class="mt25"
           :loading="loading"
-          highlight-row
-          no-userFrom-text="暂无数据"
-          no-filtered-userFrom-text="暂无筛选结果"
+          highlight-current-row
       >
-{%content-table-vue%}
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row.id)">修改</a>
-          <Divider type="vertical" />
-          <a @click="del(row, '删除{%menus%}', index)">删除</a>
-        </template>
-      </Table>
+{%CONTENT_TABLE_VUE%}
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+              <a @click="show(scope.row)">详情</a>
+              <el-divider direction="vertical" />
+              <a @click="edit(scope.row.id)">修改</a>
+              <el-divider direction="vertical" />
+              <a @click="del(scope.row, '删除{%MENUS%}', scope.$index)">删除</a>
+            </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="from.limit" />
+        <pagination :total="total"  @pagination="pageChange"  :limit.sync="from.limit" :page.sync="from.page" />
       </div>
-    </Card>
+    </el-card>
+
+    <el-dialog title="查看详情" :visible.sync="dialogTableVisible" v-if='dialogTableVisible'>
+        <el-descriptions title="{%MODEL_NAME%}">
+{%CONTENT_DESCRIPTIONS_VUE%}
+        </el-descriptions>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import { {%nameCamel%}SaveApi, {%nameCamel%}DeleteApi, {%nameCamel%}UpdateApi, get{%nameStudly%}CreateApi, get{%nameStudly%}EditApi, get{%nameStudly%}ListApi} from '{%pathApiJs%}';
+import { {%NAME_CAMEL%}SaveApi, {%NAME_CAMEL%}StatusApi, {%NAME_CAMEL%}DeleteApi, {%NAME_CAMEL%}UpdateApi, get{%NAME_STUDLY%}CreateApi, get{%NAME_STUDLY%}EditApi, get{%NAME_STUDLY%}ListApi, get{%NAME_STUDLY%}ReadApi} from '{%PATH_API_JS%}';
 export default {
-  name: '{%componentName%}',
+  name: '{%COMPONENT_NAME%}',
   data() {
     return {
       grid: {
@@ -45,31 +54,20 @@ export default {
         xs: 24,
       },
       loading: false,
-      columns: [
-        {
-          title: 'ID',
-          key: '{%key%}',
-          width: 80,
-        },{%content-vue%}
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
-      from: {
+      from: {{%FROM_DATA_CONTENT_VUE%}
         page: 1,
         limit: 15,
       },
       dataList: [],
       total: 0,
+      dialogTableVisible: false,
+      info: {},
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '75px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'left';
@@ -79,14 +77,37 @@ export default {
     this.getList();
   },
   methods: {
+    show(row) {
+        get{%NAME_STUDLY%}ReadApi(row.id).then(res => {
+           this.dialogTableVisible = true;
+           this.info = res.data;
+        }).catch(res => {
+          this.$Message.error(res.msg);
+        })
+    },
+    //修改状态
+    updateStatus(row, field) {
+        {%NAME_CAMEL%}StatusApi(row.id, {field: field, value: row[field]})
+        .then(async (res) => {
+          this.$message.success(res.msg);
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
     // 添加
     add() {
-      this.$modalForm(get{%nameStudly%}CreateApi()).then(() => this.getList());
+      this.$modalForm(get{%NAME_STUDLY%}CreateApi()).then(() => this.getList());
+    },
+    // 表格搜索
+    searchs() {
+      this.from.page = 1;
+      this.getList();
     },
     //列表
     getList() {
       this.loading = true;
-      get{%nameStudly%}ListApi(this.from)
+      get{%NAME_STUDLY%}ListApi(this.from)
           .then(async (res) => {
             let data = res.data;
             this.dataList = data.list;
@@ -105,14 +126,14 @@ export default {
     },
     // 修改
     edit(id) {
-      this.$modalForm(get{%nameStudly%}EditApi(id)).then(() => this.getList());
+      this.$modalForm(get{%NAME_STUDLY%}EditApi(id)).then(() => this.getList());
     },
     // 删除
     del(row, tit, num) {
       let delfromData = {
         title: tit,
         num: num,
-        url: `{%route%}/${row.id}`,
+        url: `{%ROUTE%}/${row.id}`,
         method: 'DELETE',
         ids: '',
       };

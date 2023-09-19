@@ -1124,6 +1124,24 @@ export function codeCrud(data) {
   });
 }
 /**
+ * @description 扫码上传链接获取
+ */
+export function scanUploadQrcode(pid) {
+  return request({
+    url: `file/scan_upload/qrcode?pid=${pid}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 扫码上传图片获取
+ */
+export function scanUploadGet(scan_token) {
+  return request({
+    url: `file/scan_upload/image/${scan_token}`,
+    method: 'get',
+  });
+}
+/**
  * @description 图片上传
  */
 export function fileUpload(data) {
@@ -1133,6 +1151,19 @@ export function fileUpload(data) {
     headers: {
       'Authori-zation': 'Bearer ' + getCookies('token'),
       'content-type': 'multipart/form-data;' + 'Bearer ' + getCookies('token'),
+    },
+    data,
+  });
+}
+/**
+ * @description 扫码图片上传
+ */
+export function scanUpload(data) {
+  return request({
+    url: `image/scan_upload`,
+    method: 'post',
+    headers: {
+      'content-type': 'multipart/form-data;',
     },
     data,
   });

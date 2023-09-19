@@ -27,12 +27,20 @@ class PayClient extends BaseClient
 {
     //app支付
     const API_APP_APY_URL = 'v3/pay/transactions/app';
-    //二维码支付截图
+    //app支付-服务商模式
+    const API_APP_APY_PARTNER_URL = 'v3/pay/partner/transactions/app';
+    //Native下单API
     const API_NATIVE_URL = 'v3/pay/transactions/native';
+    //Native下单API-服务商模式
+    const API_NATIVE_PARTNER_URL = 'v3/pay/partner/transactions/native';
     //h5支付接口
     const API_H5_URL = 'v3/pay/transactions/h5';
+    //h5支付接口-服务商模式
+    const API_H5_PARTNER_URL = 'v3/pay/partner/transactions/h5';
     //jsapi支付接口
     const API_JSAPI_URL = 'v3/pay/transactions/jsapi';
+    //jsapi支付接口-服务商模式
+    const API_JSAPI_PARTNER_URL = 'v3/pay/partner/transactions/jsapi';
     //发起商家转账API
     const API_BATCHES_URL = 'v3/transfer/batches';
     //退款
@@ -160,27 +168,65 @@ class PayClient extends BaseClient
             $data['payer'] = $payer;
         }
 
-        $url = '';
-        switch ($type) {
-            case 'h5':
-                $url = self::API_H5_URL;
-                $data['scene_info'] = [
-                    'payer_client_ip' => request()->ip(),
-                    'h5_info' => [
-                        'type' => 'Wap'
-                    ]
-                ];
-                break;
-            case 'native':
-                $url = self::API_NATIVE_URL;
-                break;
-            case 'app':
-                $url = self::API_APP_APY_URL;
-                break;
-            case 'jsapi':
-                $url = self::API_JSAPI_URL;
-                break;
+        //服务商支付模式
+        if ($this->app['config']['v3_payment']['mer_type']) {
+
+            $mchid = $data['mchid'];
+            $appid = $data['appid'];
+            unset($data['mchid'], $data['appid'], $data['payer']);
+            $data['sp_appid'] = $appid;
+            $data['sp_mchid'] = $mchid;
+            $data['sub_mchid'] = $this->app['config']['v3_payment']['sub_mch_id'];
+            if (!empty($payer['openid'])) {
+                $data['payer']['sp_openid'] = $payer['openid'];
+            }
+
+            $url = '';
+            switch ($type) {
+                case 'h5':
+                    $url = self::API_H5_PARTNER_URL;
+                    $data['scene_info'] = [
+                        'payer_client_ip' => request()->ip(),
+                        'h5_info' => [
+                            'type' => 'Wap'
+                        ]
+                    ];
+                    break;
+                case 'native':
+                    $url = self::API_NATIVE_PARTNER_URL;
+                    break;
+                case 'app':
+                    $url = self::API_APP_APY_PARTNER_URL;
+                    break;
+                case 'jsapi':
+                    $url = self::API_JSAPI_PARTNER_URL;
+                    break;
+            }
+
+        } else {
+            $url = '';
+            switch ($type) {
+                case 'h5':
+                    $url = self::API_H5_URL;
+                    $data['scene_info'] = [
+                        'payer_client_ip' => request()->ip(),
+                        'h5_info' => [
+                            'type' => 'Wap'
+                        ]
+                    ];
+                    break;
+                case 'native':
+                    $url = self::API_NATIVE_URL;
+                    break;
+                case 'app':
+                    $url = self::API_APP_APY_URL;
+                    break;
+                case 'jsapi':
+                    $url = self::API_JSAPI_URL;
+                    break;
+            }
         }
+
 
         if (!$url) {
             throw new PayException('缺少请求地址');
@@ -299,6 +345,12 @@ class PayClient extends BaseClient
 
         if ($refundReason) {
             $data['reason'] = $refundReason;
+        }
+
+        //服务商支付退款
+        $merType = $this->app['config']['v3_payment']['mer_type'];
+        if ($merType) {
+            $data['sub_mchid'] = $this->app['config']['v3_payment']['sub_mch_id'];
         }
 
         $res = $this->request(self::API_REFUND_URL, 'POST', ['json' => $data]);

@@ -35,6 +35,7 @@ use crmeb\services\CacheService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\pay\Pay;
 use crmeb\services\workerman\ChannelService;
+use think\facade\Db;
 
 
 /**
@@ -434,18 +435,22 @@ class StoreOrderRefundServices extends BaseServices
         /** @var StoreOrderStatusServices $statusService */
         $statusService = app()->make(StoreOrderStatusServices::class);
         $res = true;
-        //取消的订单退回优惠券
-        if ($type == 'cancel' && $order['coupon_id'] && $order['coupon_price']) {
+        //取消或者退款的订单退回优惠券
+        if ($order['coupon_id'] && $order['coupon_price']) {
             /** @var StoreCouponUserServices $couponUserServices */
             $couponUserServices = app()->make(StoreCouponUserServices::class);
-            $res = $couponUserServices->recoverCoupon((int)$order['coupon_id']);
-            $statusService->save([
-                'oid' => $order['id'],
-                'change_type' => 'coupon_back',
-                'change_message' => '商品退优惠券',
-                'change_time' => time()
-            ]);
+            //未支付取消订单，或者退优惠券开关打开之后的主订单以及最后一个子订单退还优惠券
+            if ($type == 'cancel' || (sys_config('coupon_return_open', 1) && ($order['pid'] == 0 || $this->storeOrderServices->count(['pid' => $order['pid'], 'refund_status' => 0]) == 1))) {
+                $res = $couponUserServices->recoverCoupon((int)$order['coupon_id']);
+                $statusService->save([
+                    'oid' => $order['id'],
+                    'change_type' => 'coupon_back',
+                    'change_message' => '商品退优惠券',
+                    'change_time' => time()
+                ]);
+            }
         }
+
         //回退积分
         $order = $this->regressionIntegral($order);
         $statusService->save([
@@ -596,7 +601,7 @@ class StoreOrderRefundServices extends BaseServices
         $userInfo = $userServices->get($order['uid']);
         $order['nickname'] = $userInfo['nickname'];
         $order['phone'] = $userInfo['phone'];
-        if (in_array($orderInfo['pay_type'], ['weixin', 'alipay', 'allinpay', 'offline'])) {
+        if (in_array($order['pay_type'], ['weixin', 'alipay', 'allinpay', 'offline'])) {
             $capitalFlowServices->setFlow($order, 'refund');
         }
 
@@ -683,7 +688,7 @@ class StoreOrderRefundServices extends BaseServices
 
             $storeOrderServices->update($oid, ['refund_status' => 0, 'refund_type' => 3]);
             //处理订单商品cart_info
-            $this->cancelOrderRefundCartInfo($id, $oid, $orderRefundInfo);
+            $this->cancelOrderRefundCartInfo($id, $oid, $orderRefundInfo, '不退款原因:' . ($data['refund_reason'] ?? ''));
             //记录
             /** @var StoreOrderStatusServices $statusService */
             $statusService = app()->make(StoreOrderStatusServices::class);
@@ -694,6 +699,7 @@ class StoreOrderRefundServices extends BaseServices
                 'change_time' => time()
             ]);
         });
+        $orderRefundInfo['refuse_reason'] = $data['refuse_reason'];
         event('NoticeListener', [['orderInfo' => $orderRefundInfo], 'send_order_refund_no_status']);
         return true;
     }
@@ -1062,6 +1068,8 @@ class StoreOrderRefundServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, $page, $limit);
         $count = $this->dao->count($where);
+        $orderInfoList = $this->storeOrderServices->getColumn([['id', 'in', array_column($list, 'store_order_id')]], 'order_id,status', 'id');
+        $store_order_status = [-2 => '已退款', -1 => '退款中', '未发货', '待收货', '待评价', '已完成'];
         if ($list) {
             foreach ($list as &$item) {
                 $item['paid'] = 1;
@@ -1095,6 +1103,8 @@ class StoreOrderRefundServices extends BaseServices
                     '_type' => $_type,
                     '_title' => $_title,
                 ];
+                $item['store_order_order_id'] = $orderInfoList[$item['store_order_id']]['order_id'];
+                $item['store_order_status'] = $store_order_status[$orderInfoList[$item['store_order_id']]['status']];
             }
         }
         $data['list'] = $list;
@@ -1272,7 +1282,7 @@ class StoreOrderRefundServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function cancelOrderRefundCartInfo(int $id, int $oid, $orderRefundInfo = [])
+    public function cancelOrderRefundCartInfo(int $id, int $oid, $orderRefundInfo = [], string $title = '')
     {
         if (!$orderRefundInfo) {
             $orderRefundInfo = $this->dao->get(['id' => $id, 'is_cancel' => 0]);
@@ -1301,7 +1311,7 @@ class StoreOrderRefundServices extends BaseServices
         $statusService->save([
             'oid' => $oid,
             'change_type' => 'cancel_refund_order',
-            'change_message' => '取消退款',
+            'change_message' => $title ?: '取消退款',
             'change_time' => time()
         ]);
 

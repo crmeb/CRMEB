@@ -13,14 +13,15 @@ export default {
 		return {
 			disabled: false,
 			text: this.$t('验证码'),
-			runTime: undefined
+			runTime: undefined,
+			captchaType: 'clickWord'
 		};
 	},
 	methods: {
 		sendCode() {
 			if (this.disabled) return;
 			this.disabled = true;
-			let n = 20;
+			let n = 60;
 			this.text = this.$t('剩余') + n + "s";
 			this.runTime = setInterval(() => {
 				n = n - 1;

@@ -1,16 +1,16 @@
     /**
      * 保存
      * @return \think\Response
-     * @date {%date%}
+     * @date {%DATE%}
      */
     public function save()
     {
         $data = $this->request->postMore([
-{%field-php%}
+{%FIELD_PHP%}
         ]);
 
-        validate({%validateName%})->check($data);
-
+        validate({%VALIDATE_NAME%})->check($data);
+{%OTHER_PHP%}
         $this->service->crudSave($data);
 
         return app('json')->success(100021);

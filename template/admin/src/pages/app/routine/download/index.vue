@@ -3,7 +3,7 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->
         <div>
@@ -17,13 +17,13 @@
               <div class="line"></div>
               <div class="right title">小程序设置</div>
             </div>
-            <Alert v-if="!pageData.appId && !pageData.code">
-              <template slot="desc">
+            <el-alert v-if="!pageData.appId && !pageData.code">
+              <template slot="title">
                 您尚未配置小程序信息，请<router-link :to="{ path: $routeProStr + '/setting/system_config_retail/3/7' }"
                   >立即设置</router-link
                 ></template
               >
-            </Alert>
+            </el-alert>
             <div class="content-box">
               <div class="left">小程序名称：</div>
               <div class="right">{{ pageData.routine_name || '未命名' }}</div>
@@ -31,17 +31,17 @@
             <div class="content-box">
               <div class="left">小程序码：</div>
               <div class="right">
-                <Button type="primary" @click="downLoadCode(pageData.code)">下载小程序码</Button>
+                <el-button type="primary" @click="downLoadCode(pageData.code)">下载小程序码</el-button>
               </div>
             </div>
             <div class="content-box">
               <div class="left">小程序包：</div>
               <div class="right">
                 <span>是否已开通小程序直播</span>
-                <RadioGroup class="rad" size="large" v-model="is_live">
-                  <Radio :label="0">未开通</Radio>
-                  <Radio :label="1">已开通</Radio>
-                </RadioGroup>
+                <el-radio-group class="rad" size="large" v-model="is_live">
+                  <el-radio :label="0">未开通</el-radio>
+                  <el-radio :label="1">已开通</el-radio>
+                </el-radio-group>
               </div>
             </div>
             <div class="content-box last">
@@ -53,13 +53,13 @@
                   查看如何开通直播功能
                 </div>
 
-                <Button class="mt10" type="primary" @click="downLoad()">下载小程序包</Button>
+                <el-button class="mt10" type="primary" @click="downLoad()">下载小程序包</el-button>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -107,10 +107,10 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   methods: {
@@ -122,11 +122,11 @@ export default {
           window.open(res.data.url);
         })
         .catch((err) => {
-          this.$Message.warning(err.msg);
+          this.$message.warning(err.msg);
         });
     },
     downLoadCode(url) {
-      if (!url) return this.$Message.warning('暂无小程序码');
+      if (!url) return this.$message.warning('暂无小程序码');
       var image = new Image();
       image.src = url;
       // 解决跨域 Canvas 污染问题
@@ -199,7 +199,7 @@ export default {
 .line {
   width: 3px;
   height: 16px;
-  background-color: #1890FF;
+  background-color: var(--prev-color-primary);
   margin-right: 11px;
 }
 

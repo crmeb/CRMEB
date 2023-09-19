@@ -1,0 +1,1 @@
+Route::put('{%ROUTE%}/status/:id', 'crud.{%ROUTE_PATH%}{%CONTROLLER%}/status')->option(['real_name' => '{%MENUS%}修改状态接口']);

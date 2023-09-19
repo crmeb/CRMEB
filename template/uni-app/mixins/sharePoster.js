@@ -190,7 +190,6 @@ export const sharePoster = {
 			// #endif
 			// #ifdef H5 || APP-PLUS
 			arr2 = [that.posterbackgd, that.storeImageBase64, that.PromotionCode];
-			console.log(arr2)
 			if (!that.storeImageBase64)
 				return that.$util.Tips({
 					title: i18n.t(`正在下载海报,请稍后再试`),

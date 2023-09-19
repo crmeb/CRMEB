@@ -1,90 +1,120 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <div class="mb20">
-        <Tabs v-model="artFrom.type" @on-click="onClickTab">
-          <TabPane :label="headeNum.show.name + '(' + headeNum.show.num + ')'" name="0" />
-          <TabPane :label="headeNum.hide.name + '(' + headeNum.hide.num + ')'" name="1" />
-          <TabPane :label="headeNum.recycle.name + '(' + headeNum.recycle.num + ')'" name="2" />
-        </Tabs>
-      </div>
-      <Form
-        ref="artFrom"
-        :model="artFrom"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid" class="mr">
-            <FormItem label="提货点搜索：" label-for="store_name">
-              <Input
-                search
-                enter-button
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="artFrom"
+            :model="artFrom"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+            inline
+        >
+          <el-form-item label="提货点搜索：">
+            <el-input
+                clearable
                 placeholder="请输入提货点名称,电话"
                 v-model="artFrom.keywords"
-                @on-search="userSearchs"
-              />
-            </FormItem>
-          </Col>
-          <!--                    <Col v-bind="grid">-->
-          <!--                        <Button class="mr">导出</Button>-->
-          <!--                    </Col>-->
-        </Row>
-      </Form>
-      <Row type="flex" v-auth="['setting-merchant-system_store-save']">
-        <Col v-bind="grid">
-          <Button v-auth="['setting-merchant-system_store-save']" type="primary" icon="md-add" @click="add"
-            >添加提货点</Button
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '0 20px 20px' }">
+      <div v-if="headeNum.show.name">
+        <el-tabs v-model="artFrom.type" @tab-click="onClickTab">
+          <el-tab-pane :label="headeNum.show.name + '(' + headeNum.show.num + ')'" name="0" />
+          <el-tab-pane :label="headeNum.hide.name + '(' + headeNum.hide.num + ')'" name="1" />
+          <el-tab-pane :label="headeNum.recycle.name + '(' + headeNum.recycle.num + ')'" name="2" />
+        </el-tabs>
+      </div>
+      <el-row v-auth="['setting-merchant-system_store-save']">
+        <el-col v-bind="grid">
+          <el-button v-auth="['setting-merchant-system_store-save']" type="primary" @click="add"
+            >添加提货点</el-button
           >
-        </Col>
-      </Row>
-      <Table
-        :columns="columns"
+        </el-col>
+      </el-row>
+      <el-table
         :data="storeLists"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="image">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.image" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="is_show">
-          <i-switch
-            v-model="row.is_show"
-            :value="row.is_show"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row.id, row.is_show)"
-            size="large"
-            >>
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="edit(row.id)">编辑</a>
-          <Divider type="vertical" />
-          <a v-if="row.is_del == 0" @click="del(row, '删除提货点', index)">删除</a>
-          <a v-else @click="del(row, '恢复提货点', index)">恢复</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="提货点图片" min-width="90">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.image" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="提货点名称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="提货点电话" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.phone }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="地址" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.detailed_address }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="营业时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.day_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否显示" min-width="130">
+          <template slot-scope="scope">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.is_show"
+              :value="scope.row.is_show"
+              @change="onchangeIsShow(scope.row.id, scope.row.is_show)"
+              size="large"
+              active-text="显示"
+              inactive-text="隐藏"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="edit(scope.row.id)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a v-if="scope.row.is_del == 0" @click="del(scope.row, '删除提货点', scope.$index)">删除</a>
+            <a v-else @click="del(scope.row, '恢复提货点', index)">恢复</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="artFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="artFrom.limit"
+          :page.sync="artFrom.page"
+          :limit.sync="artFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <system-store ref="template"></system-store>
   </div>
 </template>
@@ -100,10 +130,10 @@ export default {
     ...mapState('media', ['isMobile']),
     ...mapState('userLevel', ['categoryId']),
     labelWidth() {
-      return this.isMobile ? undefined : 85;
+      return this.isMobile ? undefined : '90px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
@@ -127,50 +157,6 @@ export default {
         keywords: '',
       },
       loading: false,
-      columns: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-          sortable: true,
-        },
-        {
-          title: '提货点图片',
-          slot: 'image',
-          minWidth: 100,
-        },
-        {
-          title: '提货点名称',
-          key: 'name',
-          minWidth: 100,
-        },
-        {
-          title: '提货点电话',
-          key: 'phone',
-          minWidth: 100,
-        },
-        {
-          title: '地址',
-          key: 'detailed_address',
-          minWidth: 100,
-        },
-        {
-          title: '营业时间',
-          key: 'day_time',
-          minWidth: 100,
-        },
-        {
-          title: '是否显示',
-          slot: 'is_show',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
       storeLists: [],
       total: 0,
     };
@@ -188,7 +174,7 @@ export default {
           that.headeNum = res.data.count;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     getList() {
@@ -201,7 +187,7 @@ export default {
           that.total = res.data.count;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 搜索；
@@ -215,10 +201,6 @@ export default {
       this.artFrom.keywords = '';
       this.getList();
     },
-    pageChange(index) {
-      this.artFrom.page = index;
-      this.getList();
-    },
     // 删除
     del(row, tit, num) {
       let delfromData = {
@@ -230,12 +212,12 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.storeLists.splice(num, 1);
           this.storeHeade();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 添加提货点；
@@ -245,7 +227,7 @@ export default {
     onchangeIsShow(id, is_show) {
       let that = this;
       storeSetShowApi(id, is_show).then((res) => {
-        that.$Message.success(res.msg);
+        that.$message.success(res.msg);
         that.getList();
         that.storeHeade();
       });
@@ -259,6 +241,10 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+/deep/ .el-tabs__item {
+  height: 54px !important;
+  line-height: 54px !important;
+}
 .tabBox_img
     width 36px
     height 36px

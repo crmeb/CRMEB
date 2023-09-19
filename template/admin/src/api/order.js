@@ -167,7 +167,7 @@ export function getNewRefundFrom(id) {
  */
 export function getExpressData(status) {
   return request({
-    url: `/order/express_list?status=` + status,
+    url: `/order/express_list?status=${status || ''}`,
     method: 'get',
   });
 }
@@ -503,6 +503,28 @@ export function otherBatchDelivery(data) {
   });
 }
 /**
+ * @description 商家寄件金额计算
+ * @param {Object} param data {Object} 传值参数
+ */
+export function orderPrice(data) {
+  return request({
+    url: 'order/price',
+    method: 'post',
+    data,
+  });
+}
+/**
+ * @description 取消商家寄件
+ * @param {Object} param data {Object} 传值参数
+ */
+export function shipmentCancelOrder(id, data) {
+  return request({
+    url: `order/shipment_cancel_order/${id}`,
+    method: 'post',
+    data: data,
+  });
+}
+/**
  * @description 重新执行
  * @param {Object} param data {Object} 传值参数
  */
@@ -535,6 +557,17 @@ export function stopWrongQueue(id) {
 }
 
 /**
+ * @description 上架寄件快递列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function kuaidiComsList() {
+  return request({
+    url: `order/kuaidi_coms`,
+    method: 'get',
+  });
+}
+
+/**
  * @description 修改退款订单备注信息
  * @param {Number} param data.id {Number} 订单id
  * @param {String} param data.remark {String} 备注信息
@@ -544,5 +577,16 @@ export function putRefundRemarkData(data) {
     url: `/refund/remark/${data.id}`,
     method: 'put',
     data: data.remark,
+  });
+}
+
+/**
+ * @description 导入发货单
+ */
+export function importExpress(data) {
+  return request({
+    url: '/order/delivery/import_express',
+    method: 'get',
+    params: data,
   });
 }

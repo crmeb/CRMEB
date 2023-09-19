@@ -1,6 +1,6 @@
     /**
      * 新增
-     * @date {%date%}
+     * @date {%DATE%}
      * @param array $data
      * @return mixed
      */

@@ -63,7 +63,6 @@ import { resetSize } from "../utils/util";
 		getAjcaptcha,
 		ajcaptchaCheck
 	} from '@/api/api.js';
-//  "captchaType":"blockPuzzle",
 export default {
   name: "VerifySlide",
   props: {
@@ -226,7 +225,6 @@ export default {
 
     // 鼠标按下
     start: function(e) {
-			console.log(e)
       e.preventDefault();
       e = e || window.event;
       if (!e.touches.length) {
@@ -376,61 +374,23 @@ export default {
       }, 300);
     },
 		// 请求背景图片和验证图片
-				getPictrue() {
-					let data = {
-						captchaType: this.captchaType,
-						clientUid: uni.getStorageSync('slider'),
-						ts: Date.now(), // 现在的时间戳
-					}
-					getAjcaptcha(data).then((result) => {
-						let res = result.data
-						this.backImgBase = res.originalImageBase64
-						this.blockBackImgBase = res.jigsawImageBase64
-						this.backToken = res.token
-						this.secretKey = res.secretKey
-					}).catch(() => {
-						this.backImgBase = null
-						this.blockBackImgBase = null
-					})
-				},
-    // 请求背景图片和验证图片
-  //   getPictrue() {
-  //     console.log("sssss");
-  //     const data = {
-  //       captchaType: this.captchaType,
-  //       clientUid: localStorage.getItem("slider"),
-  //       ts: Date.now() // 现在的时间戳
-  //     };
-  //     console.log(data);
-  //     this.$axios
-  //       .get(`ajcaptcha`, { params: data })
-  //       .then(res => {
-  //         this.backImgBase = res.data.originalImageBase64;
-  //         this.blockBackImgBase = res.data.jigsawImageBase64;
-  //         this.backToken = res.data.token;
-  //         this.secretKey = res.data.secretKey;
-  //         this.$emit("getSuccess");
-  //       })
-  //       .catch(err => {
-  //         this.tipWords = err.msg;
-  //         this.backImgBase = null;
-  //         this.blockBackImgBase = null;
-  //         this.$emit("getSuccess");
-  //       });
-		
-  //     // ajCaptcha(data)
-  //     //   .then(res => {
-  //     //     this.backImgBase = res.data.originalImageBase64;
-  //     //     this.blockBackImgBase = res.data.jigsawImageBase64;
-  //     //     this.backToken = res.data.token;
-  //     //     this.secretKey = res.data.secretKey;
-  //     //   })
-  //     //   .catch(res => {
-  //     //     this.tipWords = res.msg;
-  //     //     this.backImgBase = null;
-  //     //     this.blockBackImgBase = null;
-  //     //   });
-  //   }
+		getPictrue() {
+			let data = {
+				captchaType: this.captchaType,
+				clientUid: uni.getStorageSync('slider'),
+				ts: Date.now(), // 现在的时间戳
+			}
+			getAjcaptcha(data).then((result) => {
+				let res = result.data
+				this.backImgBase = res.originalImageBase64
+				this.blockBackImgBase = res.jigsawImageBase64
+				this.backToken = res.token
+				this.secretKey = res.secretKey
+			}).catch(() => {
+				this.backImgBase = null
+				this.blockBackImgBase = null
+			})
+		},
   }
 };
 </script>
@@ -491,13 +451,15 @@ export default {
 		bottom: 0px;
 		width: 100%;
 		height: 30px;
-		background-color: rgb(17, 200, 26, 0.5);;
+		background-color: rgb(17, 200, 26, 0.5);
+		;
 		line-height: 30px;
 		color: #fff;
 	}
 
 	.suc-bg {
-		background-color: rgb(17, 200, 26, 0.5);;
+		background-color: rgb(17, 200, 26, 0.5);
+		;
 		filter: progid:DXImageTransform.Microsoft.gradient(startcolorstr=#7f5CB85C, endcolorstr=#7f5CB85C);
 	}
 

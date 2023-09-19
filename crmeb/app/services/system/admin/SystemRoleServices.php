@@ -17,6 +17,7 @@ use app\Request;
 use app\services\BaseServices;
 use app\services\system\SystemMenusServices;
 use crmeb\exceptions\AuthException;
+use crmeb\services\CacheService;
 
 /**
  * Class SystemRoleServices
@@ -103,7 +104,7 @@ class SystemRoleServices extends BaseServices
         }
 
         // 获取所有接口类型以及对应的接口
-        $allAuth = $this->cacheDriver()->remember('all_auth', function () {
+        $allAuth = CacheService::remember('all_auth', function () {
             /** @var SystemMenusServices $menusService */
             $menusService = app()->make(SystemMenusServices::class);
             $allList = $menusService->getColumn([['api_url', '<>', ''], ['auth_type', '=', 2]], 'api_url,methods');
@@ -138,7 +139,7 @@ class SystemRoleServices extends BaseServices
     {
         if (empty($rules)) return [];
         $cacheName = md5($cachePrefix . '_' . $type . '_' . implode('_', $rules));
-        return $this->cacheDriver()->remember($cacheName, function () use ($rules, $type) {
+        return CacheService::remember($cacheName, function () use ($rules, $type) {
             /** @var SystemMenusServices $menusService */
             $menusService = app()->make(SystemMenusServices::class);
             $authList = $menusService->getColumn([['id', 'IN', $this->getRoleIds($rules)], ['auth_type', '=', $type]], 'api_url,methods');

@@ -4,11 +4,14 @@
 			<view class="ChangePassword">
 				<view class="list">
 					<view class="item">
-						<input type='number' :placeholder='$t(`填写手机号码`)' placeholder-class='placeholder' v-model="phone"></input>
+						<input type='number' :placeholder='$t(`填写手机号码`)' placeholder-class='placeholder'
+							v-model="phone"></input>
 					</view>
 					<view class="item acea-row row-between-wrapper">
-						<input type='number' :placeholder='$t(`填写验证码`)' placeholder-class='placeholder' class="codeIput" v-model="captcha"></input>
-						<button class="code font-num" :class="disabled === true ? 'on' : ''" :disabled='disabled' @click="code">
+						<input type='number' :placeholder='$t(`填写验证码`)' placeholder-class='placeholder' class="codeIput"
+							v-model="captcha"></input>
+						<button class="code font-num" :class="disabled === true ? 'on' : ''" :disabled='disabled'
+							@click="code">
 							{{ text }}
 						</button>
 					</view>
@@ -17,8 +20,8 @@
 			</view>
 		</form>
 
-		<Verify @success="success" :captchaType="'blockPuzzle'"
-			:imgSize="{ width: '330px', height: '155px' }" ref="verify"></Verify>
+		<Verify @success="success" :captchaType="captchaType" :imgSize="{ width: '330px', height: '155px' }"
+			ref="verify"></Verify>
 
 	</view>
 </template>
@@ -43,7 +46,7 @@
 	// #endif
 	import colors from '@/mixins/color.js';
 	export default {
-		mixins: [sendVerifyCode,colors],
+		mixins: [sendVerifyCode, colors],
 		components: {
 			// #ifdef MP
 			authorize,
@@ -52,19 +55,19 @@
 		},
 		data() {
 			return {
-				phone:'',
-				captcha:'',
+				phone: '',
+				captcha: '',
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false, //是否隐藏授权
 				key: '',
-				authKey:'',
-				type:0
+				authKey: '',
+				type: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
 		onLoad(options) {
 			if (this.isLogin) {
-				verifyCode().then(res=>{
+				verifyCode().then(res => {
 					this.$set(this, 'key', res.data.key)
 				});
 				this.authKey = options.key || '';
@@ -75,7 +78,7 @@
 			this.type = options.type || 0
 		},
 		methods: {
-			onLoadFun:function(){},
+			onLoadFun: function() {},
 			// 授权关闭
 			authColse: function(e) {
 				this.isShowAuth = e
@@ -91,7 +94,7 @@
 				if (!that.captcha) return that.$util.Tips({
 					title: that.$t(`请填写验证码`)
 				});
-				if(this.type == 0){
+				if (this.type == 0) {
 					bindingUserPhone({
 						phone: that.phone,
 						captcha: that.captcha
@@ -143,11 +146,11 @@
 							title: err
 						});
 					})
-				}else{
+				} else {
 					updatePhone({
 						phone: that.phone,
 						captcha: that.captcha,
-					}).then(res=>{
+					}).then(res => {
 						return that.$util.Tips({
 							title: res.msg,
 							icon: 'success'
@@ -155,29 +158,30 @@
 							tab: 5,
 							url: '/pages/users/user_info/index'
 						});
-					}).catch(error=>{
+					}).catch(error => {
 						return that.$util.Tips({
 							title: error,
 						});
 					})
 				}
 			},
-			success(data){
+			success(data) {
 				this.$refs.verify.hide()
 				let that = this;
-				verifyCode().then(res=>{
-					registerVerify(that.phone, 'reset', res.data.key, 'blockPuzzle',data.captchaVerification).then(res => {
-						that.$util.Tips({
-							title: res.msg
+				verifyCode().then(res => {
+					registerVerify(that.phone, 'reset', res.data.key, this.captchaType, data.captchaVerification)
+						.then(res => {
+							that.$util.Tips({
+								title: res.msg
+							});
+							that.sendCode();
+						}).catch(err => {
+							return that.$util.Tips({
+								title: err
+							});
 						});
-						that.sendCode();
-					}).catch(err => {
-						return that.$util.Tips({
-							title: err
-						});
-					});
 				});
-		
+
 			},
 			/**
 			 * 发送验证码
@@ -192,7 +196,7 @@
 					title: that.$t(`请输入正确的手机号码`)
 				});
 				this.$refs.verify.show();
-				return ;
+				return;
 			}
 		}
 	}

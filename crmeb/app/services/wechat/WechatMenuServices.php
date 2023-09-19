@@ -53,7 +53,7 @@ class WechatMenuServices extends BaseServices
     {
         try {
             WechatService::menuService()->add($buttons);
-            if ($this->dao->count(['key' => 'wechat_menus', 'result' => json_encode($buttons)])) {
+            if ($this->dao->count(['key' => 'wechat_menus'])) {
                 $this->dao->update('wechat_menus', ['result' => json_encode($buttons), 'add_time' => time()], 'key');
             } else {
                 $this->dao->save(['key' => 'wechat_menus', 'result' => json_encode($buttons), 'add_time' => time()]);

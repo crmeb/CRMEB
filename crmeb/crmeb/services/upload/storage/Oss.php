@@ -79,6 +79,11 @@ class Oss extends BaseUpload
     ];
 
     /**
+     * @var string
+     */
+    protected $cdn;
+
+    /**
      * 初始化
      * @param array $config
      * @return mixed|void
@@ -90,6 +95,7 @@ class Oss extends BaseUpload
         $this->secretKey = $config['secretKey'] ?? null;
         $this->uploadUrl = $this->checkUploadUrl($config['uploadUrl'] ?? '');
         $this->storageName = $config['storageName'] ?? null;
+        $this->cdn = $config['cdn'] ?? null;
         $this->storageRegion = $config['storageRegion'] ?? null;
     }
 
@@ -124,7 +130,7 @@ class Oss extends BaseUpload
             return $this->setError('上传的文件不存在');
         }
         if ($this->validate) {
-            if (!in_array(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION), $this->validate['fileExt'])) {
+            if (!in_array(strtolower(pathinfo($fileHandle->getOriginalName(), PATHINFO_EXTENSION)), $this->validate['fileExt'])) {
                 return $this->setError('不合法的文件后缀');
             }
             if (filesize($fileHandle) > $this->validate['filesize']) {
@@ -143,7 +149,7 @@ class Oss extends BaseUpload
             }
             $this->fileInfo->uploadInfo = $uploadInfo;
             $this->fileInfo->realName = $fileHandle->getOriginalName();
-            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->filePath = ($this->cdn ?: $this->uploadUrl) . '/' . $key;
             $this->fileInfo->fileName = $key;
             $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);
             $this->authThumb && $this->thumb($this->fileInfo->filePath);
@@ -174,7 +180,7 @@ class Oss extends BaseUpload
             }
             $this->fileInfo->uploadInfo = $uploadInfo;
             $this->fileInfo->realName = $key;
-            $this->fileInfo->filePath = $this->uploadUrl . '/' . $key;
+            $this->fileInfo->filePath = ($this->cdn ?: $this->uploadUrl) . '/' . $key;
             $this->fileInfo->fileName = $key;
             $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);
             $this->thumb($this->fileInfo->filePath);
@@ -290,6 +296,7 @@ class Oss extends BaseUpload
         return [
             'accessid' => $this->accessKey,
             'host' => $this->uploadUrl,
+            'cdn' => $this->cdn,
             'policy' => $base64Policy,
             'signature' => $signature,
             'expire' => time() + 30,

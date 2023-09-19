@@ -1,0 +1,9 @@
+    /**
+     * {%NAME%}一对一关联
+     * @date {%DATE%}
+     * @return \think\model\relation\HasOne
+     */
+    public function {%FIELD%}HasOne()
+    {
+        return $this->hasOne({%CLASS%}, '{%FOREIGN_KEY%}', '{%LOCAL_KEY%}');
+    }

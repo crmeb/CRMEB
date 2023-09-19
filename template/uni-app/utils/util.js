@@ -748,8 +748,8 @@ export default {
 		return 0
 	},
 	/*
-	* 获取当前时间
-	*/
+	 * 获取当前时间
+	 */
 	getNowTime() {
 		let today = new Date();
 		let year = today.getFullYear(); // 获取当前年份
@@ -995,6 +995,50 @@ export default {
 			}
 			return status;
 		},
-	}
+	},
+	/**
+	 * 跳转路径封装函数
+	 * @param url 跳转路径
+	 */
+	JumpPath: function(url) {
+		let arr = url.split('@APPID=');
+		if (arr.length > 1) {
+			//#ifdef MP
+			uni.navigateToMiniProgram({
+				appId: arr[arr.length - 1], // 此为生活缴费appid
+				path: arr[0], // 此为生活缴费首页路径
+				envVersion: "release",
+				success: res => {
+					console.log("打开成功", res);
+				},
+				fail: err => {}
+			})
+			//#endif
+			//#ifndef MP
+			this.Tips({
+				title: 'h5与app端不支持跳转外部小程序'
+			});
+			//#endif
+		} else {
+			if (url.indexOf("http") != -1) {
+				uni.navigateTo({
+					url: `/pages/annex/web_view/index?url=${url}`
+				});
+			} else {
+				if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart', '/pages/user/index',
+						'/pages/index/index'
+					]
+					.indexOf(url) == -1) {
+					uni.navigateTo({
+						url
+					})
+				} else {
+					uni.switchTab({
+						url
+					})
+				}
+			}
+		}
+	},
 
 }

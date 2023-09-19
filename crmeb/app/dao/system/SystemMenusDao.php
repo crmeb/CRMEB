@@ -128,7 +128,7 @@ class SystemMenusDao extends BaseDao
     public function menusSelect(array $where, $type = 1)
     {
         if ($type == 1) {
-            return $this->search($where)->field('id,pid,menu_name,menu_path,unique_auth,sort')->order('sort DESC')->select();
+            return $this->search($where)->field('id,pid,menu_name,menu_path,unique_auth,sort')->order('sort DESC,id DESC')->select();
         } else {
             return $this->search($where)->group('pid')->column('pid');
         }
@@ -143,7 +143,7 @@ class SystemMenusDao extends BaseDao
     public function getSearchList()
     {
         return $this->search(['is_show' => 1, 'auth_type' => 1, 'is_del' => 0, 'is_show_path' => 0])
-            ->field('id,pid,menu_name,menu_path,unique_auth,sort')->order('sort DESC')->select();
+            ->field('id,pid,menu_name,menu_path,unique_auth,sort')->order('sort DESC,id DESC')->select();
     }
 
     /**

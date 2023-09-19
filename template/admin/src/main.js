@@ -14,19 +14,15 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import store from './store';
-
-import ViewUI from 'view-design';
 Vue.prototype.bus = new Vue();
 import Router from 'vue-router';
 import Auth from '@/libs/wechat';
-import 'view-design/dist/styles/iview.css';
 import { i18n } from '@/i18n/index.js';
 
 import config from '@/config';
 import importDirective from '@/directive';
 import { directive as clickOutside } from 'v-click-outside-x';
 import installPlugin from '@/plugin';
-import './index.less';
 import '@/assets/icons/iconfont.css';
 import '@/assets/iconfont/iconfont.css';
 import '@/theme/index.scss';
@@ -53,16 +49,15 @@ import 'vue-happy-scroll/docs/happy-scroll.css';
 import VueAwesomeSwiper from 'vue-awesome-swiper';
 // 懒加载
 import VueLazyload from 'vue-lazyload';
-import VXETable from 'vxe-table';
+import VXETable, { t } from 'vxe-table';
 import Viewer from 'v-viewer';
 import VueDND from 'awe-dnd';
-import formCreate from '@form-create/iview';
+import formCreate from '@form-create/element-ui';
 import modalForm from '@/utils/modalForm';
 import exportExcel from '@/utils/newToExcel.js';
 import videoCloud from '@/utils/videoCloud';
 import { modalSure } from '@/utils/public';
 import { authLapse } from '@/utils/authLapse';
-import auth from '@/utils/auth';
 import VueCodeMirror from 'vue-codemirror';
 import schema from 'async-validator';
 import dialog from '@/libs/dialog';
@@ -70,16 +65,19 @@ import timeOptions from '@/libs/timeOptions';
 import scroll from '@/libs/loading';
 import * as tools from '@/libs/tools';
 import VueTreeList from 'vue-tree-list';
+import Pagination from '@/components/Pagination';
+import pagesHeader from '@/components/pagesHeader';
 
+// 全局组件挂载
+Vue.component('Pagination', Pagination);
+Vue.component('pagesHeader', pagesHeader);
 // 复制到粘贴板插件
 import VueClipboard from 'vue-clipboard2';
 
 VueClipboard.config.copyText = true;
 Vue.use(VueClipboard);
 Vue.use(VueTreeList);
-// 版本升级
-import upgrade from '@/components/upGrade/index.vue';
-Vue.component('upgrade', upgrade);
+
 //日期
 import moment from 'moment';
 Vue.prototype.$moment = moment;
@@ -88,10 +86,6 @@ moment.locale('zh-cn');
 // 全局过滤
 import * as filters from './filters'; // global filters modalTemplates
 
-const routerPush = Router.prototype.push;
-Router.prototype.push = function push(location) {
-  return routerPush.call(this, location).catch((error) => error);
-};
 import settings from '@/setting';
 
 Vue.prototype.$routeProStr = settings.routePre;
@@ -110,14 +104,25 @@ Vue.prototype.$validator = function (rule) {
   return new schema(rule);
 };
 Vue.prototype.$tools = tools;
-Vue.use(ViewUI, {
-  i18n: (key, value) => i18n.t(key, value),
+
+const messages = ['success', 'warning', 'info', 'error'];
+
+messages.forEach((type) => {
+  Element.Message[type] = (options) => {
+    console.log(options, 'optionss');
+    if (typeof options === 'string') {
+      options = {
+        message: options,
+      };
+      // 默认配置
+      options.duration = 2000;
+      options.showClose = false;
+    }
+    options.type = type;
+    return Element.Message(options);
+  };
 });
-
-Vue.use(Element, { i18n: (key, value) => i18n.t(key, value), size: globalComponentSize });
-
-// Vue.use(ViewUI);
-Vue.use(auth);
+Vue.use(Element, { i18n: (key, value) => i18n.t(key, value), size: 'small' });
 Vue.use(formCreate);
 Vue.use(VueCodeMirror);
 Vue.use(VueDND);
@@ -187,7 +192,7 @@ new Vue({
   watch: {
     // 监听路由 控制侧边栏显示 标记当前顶栏菜单（如需要）
     $route(to, from) {
-      const onRoutes = to.meta.activeMenu ? to.meta.activeMenu : '';
+      const onRoutes = to.meta.activeMenu ? to.meta.activeMenu : to.meta.path;
       this.$store.commit('menu/setActivePath', onRoutes);
       if (to.name == 'crud_crud') {
         this.$store.state.menus.oneLvRoutes.map((e) => {

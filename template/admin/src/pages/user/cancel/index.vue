@@ -1,77 +1,101 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form
         ref="levelFrom"
         :model="levelFrom"
         :label-width="labelWidth"
         :label-position="labelPosition"
         @submit.native.prevent
       >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="状态：" label-for="status1">
-              <!-- <Select
-                v-model="levelFrom.status"
-                placeholder="请选择"
-                clearable
-                element-id="status1"
-                @on-change="userSearchs"
-              >
-                <Option value="0">待审核</Option>
-                <Option value="1">通过</Option>
-                <Option value="1">拒绝</Option>
-              </Select> -->
-              <RadioGroup v-model="levelFrom.status" type="button" @on-change="userSearchs(levelFrom.status)">
-                <Radio label="">全部</Radio>
-                <Radio label="0">待审核</Radio>
-                <Radio label="1">通过</Radio>
-                <Radio label="2">拒绝</Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="用户搜索：" label-for="title">
-              <Input
+        <el-row :gutter="24">
+          <el-col v-bind="grid">
+            <el-form-item label="状态：" label-for="status1">
+              <el-radio-group v-model="levelFrom.status" type="button" @input="userSearchs(levelFrom.status)">
+                <el-radio-button label="">全部</el-radio-button>
+                <el-radio-button label="0">待审核</el-radio-button>
+                <el-radio-button label="1">通过</el-radio-button>
+                <el-radio-button label="2">拒绝</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col v-bind="grid">
+            <el-form-item label="用户搜索：" label-for="title">
+              <el-input
                 search
                 enter-button
                 v-model="levelFrom.keywords"
                 placeholder="请输入用户昵称/ID/手机号"
                 @on-search="userSearchs"
               />
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table
         :data="levelLists"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="agree(row)">同意</a>
-          <Divider type="vertical" />
-          <a @click="refuse(row)">拒绝</a>
-          <Divider type="vertical" />
-          <a @click="remark(row)">备注</a>
-        </template>
-      </Table>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="昵称" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="手机号" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.phone }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.status }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="申请时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="审核时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.up_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="130">
+          <template slot-scope="scope">
+            <span>{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="170">
+          <template slot-scope="scope">
+            <a @click="agree(scope.row)">同意</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="refuse(scope.row)">拒绝</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="remark(scope.row)">备注</a>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="levelFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="levelFrom.limit"
+          :page.sync="levelFrom.page"
+          :limit.sync="levelFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <!-- 等级任务-->
     <remark ref="remark" @submitFail="submitFail"></remark>
   </div>
@@ -96,49 +120,6 @@ export default {
       },
       id: '',
       loading: false,
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '昵称',
-          key: 'name',
-          minWidth: 100,
-        },
-        {
-          title: '手机号',
-          key: 'phone',
-          minWidth: 100,
-        },
-        {
-          title: '状态',
-          key: 'status',
-          minWidth: 120,
-        },
-        {
-          title: '申请时间',
-          key: 'add_time',
-          minWidth: 100,
-        },
-        {
-          title: '审核时间',
-          key: 'up_time',
-          minWidth: 100,
-        },
-        {
-          title: '备注',
-          key: 'remark',
-          minWidth: 100,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
       levelFrom: {
         status: '',
         keywords: '',
@@ -155,7 +136,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -176,11 +157,11 @@ export default {
       };
       this.$modalSure(this.delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     refuse(row) {
@@ -192,11 +173,11 @@ export default {
       };
       this.$modalSure(this.delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     submitFail(text) {
@@ -207,12 +188,12 @@ export default {
       userCancelSetMark(data)
         .then((res) => {
           this.$refs.remark.modals = false;
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.getList();
         })
         .catch((err) => {
           this.$refs.remark.modals = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
 
@@ -228,12 +209,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.levelFrom.page = index;
-      this.getList();
     },
     // 表格搜索
     userSearchs() {

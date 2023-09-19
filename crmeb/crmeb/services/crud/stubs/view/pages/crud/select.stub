@@ -1,0 +1,11 @@
+        <el-form-item label="{%NAME%}：" label-for="{%FIELD%}">
+            <el-select
+                v-model="from.{%FIELD%}"
+                placeholder="请选择"
+                clearable
+                @change="searchs"
+                class="form_content_width"
+            >
+{%CONTENT_SELECT_OPTION_VUE%}
+            </el-select>
+        </el-form-item>

@@ -1,22 +1,22 @@
 <template>
   <div class="content" v-if="interfaceData">
     <div class="head">
-      <Input v-model="interfaceData.url">
+      <el-input v-model="interfaceData.url">
         <template #prepend>
-          <Select v-model="interfaceData.method" style="width: 120px">
-            <Option v-for="(item, index) in requestTypeList" :key="index" :value="item.value">{{ item.label }}</Option>
-          </Select>
+          <el-select v-model="interfaceData.method" style="width: 120px">
+            <el-option v-for="(item, index) in requestTypeList" :key="index" :value="item.value" :label="item.label"></el-option>
+          </el-select>
         </template>
-      </Input>
-      <Button class="ml20" type="primary" @click="requestData">请求</Button>
-      <Button class="ml10 copy-btn" type="success" @click="insertCopy()">复制</Button>
+      </el-input>
+      <el-button class="ml20" type="primary" @click="requestData">请求</el-button>
+      <el-button class="ml10 copy-btn" type="success" @click="insertCopy()">复制</el-button>
     </div>
     <div class="params">
-      <Tabs class="mt10" v-model="paramsType" @on-click="changeTab">
-        <TabPane label="Params" name="Params"> </TabPane>
-        <TabPane label="Body" name="Body"> </TabPane>
-        <TabPane label="Header" name="Header"> </TabPane>
-      </Tabs>
+      <el-tabs class="mt10" v-model="paramsType" @tab-click="changeTab">
+        <el-tab-pane label="Params" name="Params"> </el-tab-pane>
+        <el-tab-pane label="Body" name="Body"> </el-tab-pane>
+        <el-tab-pane label="Header" name="Header"> </el-tab-pane>
+      </el-tabs>
       <div v-show="paramsType === 'Params'">
         <vxe-table
           class="mt10"
@@ -71,7 +71,7 @@
             </template>
           </vxe-column>
         </vxe-table>
-        <Button class="mt10" type="primary" @click="insertEvent('xTable')">添加参数</Button>
+        <el-button class="mt10" type="primary" @click="insertEvent('xTable')">添加参数</el-button>
       </div>
       <div v-show="paramsType === 'Body'">
         <vxe-table
@@ -127,7 +127,7 @@
             </template>
           </vxe-column>
         </vxe-table>
-        <Button class="mt10" type="primary" @click="insertEvent('yTable')">添加参数</Button>
+        <el-button class="mt10" type="primary" @click="insertEvent('yTable')">添加参数</el-button>
       </div>
       <div v-show="paramsType === 'Header'">
         <vxe-table
@@ -173,7 +173,7 @@
             </template>
           </vxe-column>
         </vxe-table>
-        <Button class="mt10" type="primary" @click="insertEvent('zTable')">添加参数</Button>
+        <el-button class="mt10" type="primary" @click="insertEvent('zTable')">添加参数</el-button>
         <h4 class="mt10 title">全局Header参数</h4>
         <vxe-table
           class="mt10"
@@ -267,10 +267,10 @@ export default {
     insertCopy() {
       this.$copyText(this.codes)
         .then((message) => {
-          this.$Message.success('复制成功');
+          this.$message.success('复制成功');
         })
         .catch((err) => {
-          this.$Message.error('复制失败');
+          this.$message.error('复制失败');
         });
     },
     async requestData() {
@@ -335,8 +335,8 @@ export default {
       }
       return x;
     },
-    changeTab(name) {
-      if (name === 'Header') {
+    changeTab() {
+      if (this.paramsType === 'Header') {
         if (!this.interfaceData.headerData) {
           this.insertEvent('zTable', {
             attribute: 'Content-Type',

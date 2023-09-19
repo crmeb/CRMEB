@@ -1,10 +1,10 @@
     /**
-     * {%name%}获取器
-     * @date {%date%}
+     * {%NAME%}获取器
+     * @date {%DATE%}
      * @param string $value
      * @return string
      */
-    public function get{%field%}Attr($value)
+    public function get{%FIELD%}Attr($value)
     {
-{%content-php%}
+{%CONTENT_PHP%}
     }

@@ -1,61 +1,62 @@
 <template>
   <div class="table_box">
-    <Form
+    <el-form
       ref="DataList"
       :model="DataList"
       :rules="rules"
-      :label-width="80"
+      label-width="85px"
       :label-position="labelPosition"
       class="tabform"
     >
-      <Row :gutter="24" type="flex" justify="end">
-        <Col span="24" class="ivu-text-left">
-          <FormItem label="订单状态：">
-            <RadioGroup v-model="DataList.status" type="button" @on-change="selectChange(DataList.status)">
-              <Radio :label="item.label" v-for="(item, i) in typeName" :key="i">{{
+      <el-row :gutter="24" justify="end">
+        <el-col :span="24" class="ivu-text-left">
+          <el-form-item label="订单状态：">
+            <el-radio-group v-model="DataList.status" type="button" @input="selectChange(DataList.status)">
+              <el-radio-button :label="item.label" v-for="(item, i) in typeName" :key="i">{{
                 item.name + '(' + item.num + ')'
-              }}</Radio>
-            </RadioGroup>
-          </FormItem>
-        </Col>
-        <Col span="24" class="ivu-text-left">
-          <Col v-bind="grid">
-            <FormItem label="创建时间：">
-              <RadioGroup v-model="DataList.data" type="button" @on-change="timeChange(DataList.data)">
-                <Radio label="today">今天</Radio>
-                <Radio label="yesterday">昨天</Radio>
-                <Radio label="lately7">最近7天</Radio>
-                <Radio label="lately30">最近30天</Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem class="tab_data">
-              <DatePicker
+              }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24" class="ivu-text-left">
+          <el-col v-bind="grid">
+            <el-form-item label="创建时间：">
+              <el-radio-group v-model="DataList.data" type="button" @input="timeChange(DataList.data)">
+                <el-radio-button label="today">今天</el-radio-button>
+                <el-radio-button label="yesterday">昨天</el-radio-button>
+                <el-radio-button label="lately7">最近7天</el-radio-button>
+                <el-radio-button label="lately30">最近30天</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col v-bind="grid">
+            <el-form-item class="tab_data">
+              <el-date-picker
                 :editable="false"
-                :value="value2"
-                format="yyyy/MM/dd"
+                v-model="value2"
+                value-format="yyyy/MM/dd"
                 type="daterange"
-                placement="bottom-end"
-                placeholder="Select date"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
                 style="width: 200px"
-              ></DatePicker>
-            </FormItem>
-          </Col>
-        </Col>
-        <Col span="24" class="ivu-text-left" v-if="$route.path === routePro + '/echarts/trade/order'">
-          <FormItem label="订单类型：">
-            <RadioGroup v-model="currentTab" type="button" @on-change="onClickTab(currentTab)">
-              <Radio label="">全部</Radio>
-              <Radio label="1">普通</Radio>
-              <Radio label="2">拼团</Radio>
-              <Radio label="3">砍价</Radio>
-              <Radio label="4">秒杀</Radio>
-            </RadioGroup>
-          </FormItem>
-        </Col>
-      </Row>
-    </Form>
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-col>
+        <el-col :span="24" class="ivu-text-left" v-if="$route.path === routePro + '/echarts/trade/order'">
+          <el-form-item label="订单类型：">
+            <el-radio-group v-model="currentTab" type="button" @input="onClickTab(currentTab)">
+              <el-radio-button label="">全部</el-radio-button>
+              <el-radio-button label="1">普通</el-radio-button>
+              <el-radio-button label="2">拼团</el-radio-button>
+              <el-radio-button label="3">砍价</el-radio-button>
+              <el-radio-button label="4">秒杀</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
   </div>
 </template>
 
@@ -137,6 +138,6 @@ export default {
     margin-bottom 10px
 .Refresh
     font-size 12px
-    color #1890FF
+    color var(--prev-color-primary)
     cursor pointer
 </style>

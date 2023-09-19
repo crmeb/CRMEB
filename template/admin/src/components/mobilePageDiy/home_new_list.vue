@@ -246,13 +246,19 @@ export default {
         display flex
         align-items center
         justify-content space-between
-        padding 10px
+        padding 7px
         background-color #fff
         margin 0 10px
         &:nth-last-child(1)
             margin-bottom 0!important
         &.on
             flex-flow row-reverse
+            .info{
+              .time{  
+                  text-align: left;
+              }
+            }
+
         .img-box
             width:125px;
             height:78px;
@@ -269,6 +275,8 @@ export default {
             .time
                 color #999999
                 font-size 12px
+                text-align: right ;
+
         .empty-box
             width:125px;
             height:78px;

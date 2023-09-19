@@ -1,86 +1,164 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form :model="gradeFrom" :label-width="labelWidth" :label-position="labelPosition" @submit.native.prevent>
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="批次名称：" label-for="title">
-              <Input
-                search
-                enter-button
-                v-model="gradeFrom.title"
-                placeholder="请输入批次名称"
-                @on-search="userSearchs"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button type="primary" icon="md-add" @click="addBatch" class="mr20">添加批次</Button>
-            <Button @click="getMemberScan">下载二维码</Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        class="mt25"
-        :columns="columns"
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form
+          :model="gradeFrom"
+          inline
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+        >
+          <el-form-item label="批次名称：" label-for="title">
+            <el-input clearable v-model="gradeFrom.title" placeholder="请输入批次名称" class="form_content_width" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="mt16">
+      <el-button type="primary" @click="addBatch">添加批次</el-button>
+      <el-button @click="getMemberScan">卡密使用页面二维码</el-button>
+      <el-table
+        class="mt14"
         :data="tbody"
-        :loading="loading"
-        highlight-row
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="status">
-          <i-switch
-            v-model="row.status"
-            :value="row.status"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">激活</span>
-            <span slot="close">冻结</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <template>
-            <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
-              <a href="javascript:void(0)">
-                更多
-                <Icon type="ios-arrow-down"></Icon>
-              </a>
-              <DropdownMenu slot="list">
-                <DropdownItem name="1">编辑批次名</DropdownItem>
-                <DropdownItem name="2">查看卡列表</DropdownItem>
-                <DropdownItem name="3">导出</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+        <el-table-column label="编号" width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
           </template>
-        </template>
-      </Table>
+        </el-table-column>
+        <el-table-column label="批次名称" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.title }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="体验天数" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.use_day }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="发卡总数量" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.total_num }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="使用数量" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.use_num }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="制卡时间" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否激活" min-width="100">
+          <template slot-scope="scope">
+            <el-switch
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="制卡时间" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.add_time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="120">
+          <template slot-scope="scope">
+            <el-dropdown size="small" @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
+              <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="1">编辑批次名</el-dropdown-item>
+                <el-dropdown-item command="2">查看卡列表</el-dropdown-item>
+                <el-dropdown-item command="3">导出</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="gradeFrom.page"
-          :page-size="gradeFrom.limit"
-          show-elevator
-          show-total
-          @on-change="pageChange"
+          :page.sync="gradeFrom.page"
+          :limit.sync="gradeFrom.limit"
+          @pagination="getMemberBatch"
         />
       </div>
-    </Card>
-    <Modal v-model="modal" title="添加批次" footer-hide>
-      <form-create v-model="fapi" :rule="rule" @submit="onSubmit"></form-create>
-    </Modal>
-    <Modal v-model="cardModal" title="卡列表" footer-hide width="1000">
+    </el-card>
+    <el-dialog :visible.sync="modal" width="540px" :title="`${formValidate.id ? '编辑' : '添加'}批次`">
+      <!-- <form-create v-model="fapi" :rule="rule" @submit="onSubmit"></form-create> -->
+      <el-form ref="formValidate" :model="formValidate" label-width="80px" @submit.native.prevent>
+        <el-form-item label="批次名称：">
+          <el-input placeholder="请输入批次名称" element-id="unit_name" v-model="formValidate.title" class="w100" />
+        </el-form-item>
+        <el-form-item label="备注：" v-if="formValidate.id">
+          <el-input type="textarea" placeholder="请输入备注" v-model="formValidate.remark" class="w100" />
+        </el-form-item>
+        <template v-if="!formValidate.id">
+          <el-form-item label="制卡数量：">
+            <el-input-number
+              :controls="false"
+              placeholder="请输入制卡数量"
+              element-id="sort"
+              :precision="0"
+              :max="100000"
+              :min="1"
+              v-model="formValidate.total_num"
+              class="perW10"
+            />
+          </el-form-item>
+          <el-form-item label="体验天数：">
+            <el-input-number
+              :controls="false"
+              placeholder="请输入体验天数"
+              element-id="sort"
+              :precision="0"
+              :max="100000"
+              :min="1"
+              v-model="formValidate.use_day"
+              class="perW10"
+            />
+          </el-form-item>
+          <el-form-item label="是否激活：">
+            <el-radio-group element-id="status" v-model="formValidate.status">
+              <el-radio :label="1" class="radio">激活</el-radio>
+              <el-radio :label="0">冻结</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="备注：">
+            <el-input type="textarea" placeholder="请输入备注" v-model="formValidate.remark" class="w100" />
+          </el-form-item>
+        </template>
+      </el-form>
+      <div class="acea-row row-right">
+        <el-button @click="modal = false">取消</el-button>
+        <el-button type="primary" @click="onSubmit()">提交</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog :visible.sync="cardModal" title="卡列表" width="1000px">
       <cardList v-if="cardModal" :id="id"></cardList>
-    </Modal>
-    <Modal v-model="modal2" title="编辑批次名" footer-hide>
-      <form-create :rule="rule2" @submit="onSubmit2"></form-create>
-    </Modal>
-    <Modal v-model="modal3" title="二维码" footer-hide>
+    </el-dialog>
+    <el-dialog :visible.sync="modal3" title="二维码" width="540px">
       <div v-if="qrcode" class="acea-row row-around">
         <div v-if="qrcode && qrcode.wechat_img" class="acea-row row-column-around row-between-wrapper">
           <div v-viewer class="QRpic">
@@ -95,8 +173,7 @@
           <span class="mt10">小程序二维码</span>
         </div>
       </div>
-      <Spin v-else></Spin>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -120,45 +197,6 @@ export default {
         sm: 24,
         xs: 24,
       },
-      columns: [
-        {
-          title: '编号',
-          key: 'id',
-        },
-        {
-          title: '批次名称',
-          key: 'title',
-        },
-        {
-          title: '体验天数',
-          key: 'use_day',
-        },
-        {
-          title: '发卡总数量',
-          key: 'total_num',
-        },
-        {
-          title: '使用数量',
-          key: 'use_num',
-        },
-        {
-          title: '制卡时间',
-          key: 'add_time',
-        },
-        {
-          title: '是否激活',
-          slot: 'status',
-        },
-        {
-          title: '备注',
-          key: 'remark',
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-        },
-      ],
       tbody: [],
       total: 0,
       gradeFrom: {
@@ -168,105 +206,16 @@ export default {
       },
       loading: false,
       modal: false,
-      rule: [
-        {
-          type: 'input',
-          field: 'title',
-          title: '批次名称',
-          validate: [
-            {
-              required: true,
-              message: '请输入批次名称',
-              trigger: 'blur',
-            },
-          ],
-        },
-        {
-          type: 'InputNumber',
-          field: 'total_num',
-          title: '制卡数量',
-          value: 1,
-          props: {
-            min: 1,
-            precision: 0,
-            max: 100000,
-          },
-          on: {
-            'on-change': (data) => {
-              if (data > 100000) {
-                this.$nextTick((e) => {
-                  this.rule[1].value = 100000;
-                });
-              }
-            },
-          },
-        },
-        {
-          type: 'InputNumber',
-          field: 'use_day',
-          title: '体验天数',
-          value: 1,
-          props: {
-            min: 1,
-            precision: 0,
-            max: 100000,
-          },
-          on: {
-            'on-change': (data) => {
-              if (data > 100000) {
-                this.$nextTick((e) => {
-                  this.rule[2].value = 100000;
-                });
-              }
-            },
-          },
-        },
-        {
-          type: 'radio',
-          field: 'status',
-          title: '是否激活',
-          value: '0',
-          options: [
-            {
-              value: '0',
-              label: '冻结',
-            },
-            {
-              value: '1',
-              label: '激活',
-            },
-          ],
-        },
-        {
-          type: 'input',
-          field: 'remark',
-          title: '备注',
-          props: {
-            type: 'textarea',
-          },
-        },
-      ],
+
+      formValidate: {
+        id: 0,
+        title: '',
+        total_num: 1,
+        use_day: 1,
+        status: 1,
+        remark: '',
+      },
       modal2: false,
-      rule2: [
-        {
-          type: 'hidden',
-          field: 'id',
-          value: '',
-        },
-        {
-          type: 'input',
-          field: 'title',
-          title: '批次名称',
-          value: '',
-          validate: [
-            {
-              required: true,
-              message: '请输入批次名称',
-              trigger: 'blur',
-            },
-          ],
-        },
-      ],
       modal3: false,
       qrcode: null,
       fapi: {},
@@ -275,7 +224,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -296,7 +245,7 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     // 批次名称查询
@@ -311,10 +260,10 @@ export default {
         value: row.status,
       })
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     // 导出
@@ -340,9 +289,9 @@ export default {
     changeMenu(row, name) {
       switch (name) {
         case '1':
-          this.rule2[0].value = row.id;
-          this.rule2[1].value = row.title;
-          this.modal2 = true;
+          this.formValidate.id = row.id;
+          this.formValidate.title = row.title;
+          this.modal = true;
           break;
         case '2':
           this.id = row.id;
@@ -353,55 +302,51 @@ export default {
           break;
       }
     },
-    // 分页
-    pageChange(index) {
-      this.gradeFrom.page = index;
-      this.getMemberBatch();
-    },
     // 添加批次弹窗
     addBatch() {
-      this.fapi.resetFields();
+      // this.fapi.resetFields();
       this.modal = true;
+      this.formValidate.id = 0;
+      this.formValidate.title = '';
     },
     // 提交批次
-    onSubmit(formData) {
-      memberBatchSave(0, formData)
-        .then((res) => {
-          this.modal = false;
-          this.$Message.success(res.msg);
-          this.getMemberBatch();
-          this.fapi.resetFields();
+    onSubmit() {
+      if (this.formValidate.id) {
+        memberBatchSetValue(this.formValidate.id, {
+          field: 'title',
+          value: this.formValidate.id,
+          remark: this.formValidate.remark,
         })
-        .catch((err) => {
-          this.$Message.error(err.msg);
-        });
+          .then((res) => {
+            this.modal = false;
+            this.$message.success(res.msg);
+            this.getMemberBatch();
+          })
+          .catch((err) => {
+            this.$message.error(err.msg);
+          });
+      } else {
+        memberBatchSave(this.formValidate.id, this.formValidate)
+          .then((res) => {
+            this.modal = false;
+            this.$message.success(res.msg);
+            this.getMemberBatch();
+          })
+          .catch((err) => {
+            this.$message.error(err.msg);
+          });
+      }
     },
-    onSubmit2(formData) {
-      memberBatchSetValue(formData.id, {
-        field: 'title',
-        value: formData.title,
-      })
-        .then((res) => {
-          this.modal2 = false;
-          this.$Message.success(res.msg);
-          this.getMemberBatch();
-        })
-        .catch((err) => {
-          this.$Message.error(err.msg);
-        });
-    },
+    onSubmit2(formData) {},
     // 会员卡二维码
     getMemberScan() {
-      this.$Spin.show();
       userMemberScan()
         .then((res) => {
-          this.$Spin.hide();
           this.qrcode = res.data;
           this.modal3 = true;
         })
         .catch((err) => {
-          this.$Spin.hide();
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
   },
@@ -409,6 +354,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.el-input-number--small {
+  width: 100%;
+}
 .QRpic {
   width: 180px;
   height: 180px;
@@ -417,5 +365,8 @@ export default {
     width: 100%;
     height: 100%;
   }
+}
+.w414 {
+  width: 414px;
 }
 </style>

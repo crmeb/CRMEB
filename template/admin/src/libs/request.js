@@ -9,7 +9,7 @@
 // +---------------------------------------------------------------------
 
 import axios from 'axios';
-import { Message } from 'iview';
+import { Message } from 'element-ui';
 import { getCookies, removeCookies } from '@/libs/util';
 import Setting from '@/setting';
 import router from '@/router';

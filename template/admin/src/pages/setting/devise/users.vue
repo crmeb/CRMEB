@@ -1,6 +1,6 @@
 <template>
   <div class="users">
-    <Card :bordered="false" dis-hover>
+    <el-card :bordered="false" shadow="never">
       <div class="acea-row row-top">
         <div class="left" :style="colorStyle">
           <div class="header" :class="userData.status == 3 ? 'bgColor' : ''">
@@ -82,7 +82,7 @@
               </div>
             </div>
           </div>
-          <div class="carousel dotted" :class="current == 1 ? 'solid' : ''" @click="currentShow(1)">
+          <div class="carousel dotted" :class="current == 5 ? 'solid' : ''" @click="currentShow(5)">
             <swiper :options="swiperOption" class="swiperimg" v-if="userData.routine_my_banner.length">
               <swiper-slide class="swiperimg" v-for="(item, index) in userData.routine_my_banner" :key="index">
                 <img :src="item.pic" />
@@ -122,76 +122,68 @@
         <div class="right">
           <div class="title">页面设置</div>
           <div class="c_row-item">
-            <Col class="label" span="4"> 页面风格： </Col>
-            <Col span="20" class="slider-box">
-              <RadioGroup v-model="userData.status">
-                <Radio :label="1">
-                  <Icon></Icon>
+            <el-col class="label" :span="4"> 页面风格： </el-col>
+            <el-col :span="20" class="slider-box">
+              <el-radio-group v-model="userData.status">
+                <el-radio :label="1">
                   <span>样式1</span>
-                </Radio>
-                <Radio :label="2">
-                  <Icon></Icon>
+                </el-radio>
+                <el-radio :label="2">
                   <span>样式2</span>
-                </Radio>
-                <Radio :label="3">
-                  <Icon></Icon>
+                </el-radio>
+                <el-radio :label="3">
                   <span>样式3</span>
-                </Radio>
-              </RadioGroup>
-            </Col>
+                </el-radio>
+              </el-radio-group>
+            </el-col>
           </div>
           <div class="c_row-item" v-if="current == 4">
-            <Col class="label" span="4"> 订单中心： </Col>
-            <Col span="20" class="slider-box">
-              <RadioGroup v-model="userData.order_status" @on-change="orderStyle">
-                <Radio :label="1">
-                  <Icon></Icon>
+            <el-col class="label" :span="4"> 订单中心： </el-col>
+            <el-col :span="20" class="slider-box">
+              <el-radio-group v-model="userData.order_status" @input="orderStyle">
+                <el-radio :label="1">
                   <span>样式1</span>
-                </Radio>
-                <Radio :label="2">
-                  <Icon></Icon>
+                </el-radio>
+                <el-radio :label="2">
                   <span>样式2</span>
-                </Radio>
-                <Radio :label="3">
-                  <Icon></Icon>
+                </el-radio>
+                <el-radio :label="3">
                   <span>样式3</span>
-                </Radio>
-                <Radio :label="4">
-                  <Icon></Icon>
+                </el-radio>
+                <el-radio :label="4">
                   <span>样式4</span>
-                </Radio>
-                <Radio :label="5">
-                  <Icon></Icon>
+                </el-radio>
+                <el-radio :label="5">
                   <span>样式5</span>
-                </Radio>
-              </RadioGroup>
-            </Col>
+                </el-radio>
+              </el-radio-group>
+            </el-col>
           </div>
-          <div class="c_row-item acea-row row-top" v-if="current == 1">
-            <Col class="label" span="4"> 广告位： </Col>
-            <Col span="20" class="slider-box">
-              <i-switch v-model="userData.my_banner_status" style="margin-bottom: 12px" />
+          <div class="c_row-item acea-row row-top" v-if="current == 5">
+            <el-col class="label" :span="4"> 广告位： </el-col>
+            <el-col :span="20" class="slider-box">
+              <el-switch :active-value="1"  :inactive-value="0" v-model="userData.my_banner_status" style="margin-bottom: 12px" />
               <div class="info">建议尺寸：690 * 240px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
-              <uploadPic :listData="userData.routine_my_banner" :type="2"></uploadPic>
-            </Col>
+              <uploadPic :listData="userData.routine_my_banner" :type="5"></uploadPic>
+            </el-col>
           </div>
           <div class="c_row-item acea-row row-top" v-if="current == 2">
-            <Col class="label" span="4"> 我的服务： </Col>
-            <Col span="20" class="slider-box">
+            <el-col class="label" :span="4"> 我的服务： </el-col>
+            <el-col :span="20" class="slider-box">
               <div class="info">建议尺寸：86 * 86px，拖拽图片可调整图片显示顺序哦</div>
-              <uploadPic :listData="MyMenus"></uploadPic>
-            </Col>
+              <uploadPic :listData="MyMenus" :type="2"></uploadPic>
+            </el-col>
           </div>
           <div class="c_row-item acea-row row-top" v-if="current == 3">
-            <Col class="label" span="4"> 商家管理： </Col>
-            <Col span="20" class="slider-box">
+            <el-col class="label" :span="4"> 商家管理： </el-col>
+            <el-col :span="20" class="slider-box">
               <div class="info">建议尺寸：86 * 86px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
               <uploadPic :listData="storeMenu" :type="1"></uploadPic>
-            </Col>
+            </el-col>
           </div>
         </div>
       </div>
-    </Card>
+    </el-card>
   </div>
 </template>
 
@@ -377,10 +369,10 @@ export default {
       memberSave(this.userData)
         .then((res) => {
           this.$emit('parentFun', false);
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
           this.$emit('parentFun', false);
         });
     },
@@ -562,7 +554,7 @@ export default {
   .left {
     background: #F7F7F7;
     width: 310px;
-    height: 550px;
+    height: 690px;
     overflow-x: hidden;
     overflow-y: auto;
     padding-bottom: 1px;
@@ -801,7 +793,7 @@ export default {
         position: absolute;
         width: 2px;
         height: 14px;
-        background: #1890FF;
+        background: var(--prev-color-primary);
         top: 50%;
         margin-top: -7px;
         left: -8px;

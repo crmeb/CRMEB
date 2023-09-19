@@ -12,7 +12,7 @@
           :title="$t(v.title)"
         >
           <div :class="setColumnsAsidelayout" v-if="!v.isLink || (v.isLink && v.isIframe)">
-            <Icon :type="v.icon" />
+            <i :class="'el-icon-' + v.icon"></i>
             <div class="font12">
               {{
                 $t(v.title) && $t(v.title).length >= 4
@@ -23,13 +23,13 @@
           </div>
           <div :class="setColumnsAsidelayout" v-else>
             <a :href="v.isLink" target="_blank">
-              <Icon :type="v.icon" />
+              <i :class="'el-icon-' + v.icon"></i>
               <div class="font12">
                 {{
                   $t(v.title) && $t(v.title).length >= 4
                     ? $t(v.title).substr(0, setColumnsAsidelayout === 'columns-vertical' ? 4 : 3)
                     : $t(v.title)
-                }}1
+                }}
               </div>
             </a>
           </div>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { getMenuSider, getHeaderName } from '@/libs/system';
+import { getMenuSider, getHeaderName, findFirstNonNullChildren } from '@/libs/system';
 import Logo from '@/layout/logo/index.vue';
 
 export default {
@@ -109,8 +109,11 @@ export default {
     // 菜单高亮点击事件
     onColumnsAsideMenuClick(v) {
       let { path, redirect } = v;
-      if (path) this.$router.push(path);
-      else this.$router.push(path);
+      if (v.children) {
+        this.$router.push(findFirstNonNullChildren(v.children).path);
+      } else {
+        this.$router.push(path);
+      }
       // 一个路由设置自动收起菜单
       if (!v.children || v.children.length <= 1) this.$store.state.themeConfig.themeConfig.isCollapse = true;
       else if (v.children.length > 1) this.$store.state.themeConfig.themeConfig.isCollapse = false;
@@ -146,11 +149,11 @@ export default {
     },
     // 传送当前子级数据到菜单中
     setSendChildren(path) {
-      const currentPathSplit = path.split('/');
+      // const currentPathSplit = path.split('/');
       let currentData = {};
       this.columnsAsideList.map((v, k) => {
+        v['k'] = k;
         if (v.path === path) {
-          v['k'] = k;
           currentData['item'] = [{ ...v }];
           //   currentData['children'] = [{ ...v }];
           if (v.children) currentData['children'] = v.children;
@@ -175,7 +178,7 @@ export default {
       // const routeFirst = `/${this.routeSplit[0]}`;
       const currentSplitRoute = this.columnsAsideList.find((v) => v.path === path);
       if (!currentSplitRoute) {
-        // this.onColumnsAsideDown(0);
+        this.onColumnsAsideDown(0);
         return false;
       }
       // 延迟拿值，防止取不到
@@ -305,7 +308,7 @@ export default {
       margin-top: 5px;
       transform: translatey(0%);
       z-index: 0;
-      transition: 0.3s ease-in-out;
+      transition: 0.2s ease-in-out;
       border-radius: 3px;
     }
     .columns-card {

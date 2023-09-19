@@ -21,7 +21,7 @@
 <script>
 const app = getApp();
 import Cache from '../utils/cache';
-import { getLogo, silenceAuth, getUserPhone } from '../api/public';
+import { getLogo, silenceAuth, routineBindingPhone } from '../api/public';
 import { LOGO_URL, EXPIRES_TIME, USER_INFO, STATE_R_KEY } from '../config/cache';
 import { mapGetters } from 'vuex';
 import Routine from '../libs/routine';
@@ -123,7 +123,7 @@ export default {
 				});
 		},
 		getUserPhoneNumber(encryptedData, iv, code) {
-			getUserPhone({
+			routineBindingPhone({
 				encryptedData: encryptedData,
 				iv: iv,
 				code: code,

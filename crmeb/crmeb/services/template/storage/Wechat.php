@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace crmeb\services\template\storage;
 
-use app\services\message\TemplateMessageServices;
+use app\services\message\SystemNotificationServices;
 use crmeb\services\template\BaseMessage;
 use crmeb\services\app\WechatService;
 use think\facade\Log;
@@ -35,9 +35,7 @@ class Wechat extends BaseMessage
      */
     public function getTempId(string $templateId)
     {
-        /** @var TemplateMessageServices $services */
-        $services = app()->make(TemplateMessageServices::class);
-        return $services->getTempId($templateId, 1);
+        return app()->make(SystemNotificationServices::class)->value(['wechat_tempkey' => $templateId], 'wechat_tempid');
     }
 
     /**
@@ -59,7 +57,7 @@ class Wechat extends BaseMessage
             $this->clear();
             return $res;
         } catch (\Exception $e) {
-            $this->isLog() && Log::error('发送给openid为:' . $this->openId . '微信模板消息失败,模板id为:' . $tempid . ';错误原因为:' . $e->getMessage());
+            Log::error('发送给openid为:' . $this->openId . '微信模板消息失败,模板id为:' . $tempid . ';错误原因为:' . $e->getMessage());
             return $this->setError($e->getMessage());
         }
     }

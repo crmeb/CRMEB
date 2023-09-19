@@ -1,16 +1,14 @@
 <template>
   <div class="slider-box">
     <div class="c_row-item">
-      <Col class="label" span="4" v-if="configData.title">
+      <el-col class="label" :span="4" v-if="configData.title">
         {{ configData.title }}
-      </Col>
-      <Col span="19" class="slider-box">
-        <Select v-model="configData.activeValue" @on-change="sliderChange">
-          <Option v-for="(item, index) in configData.list" :value="item.activeValue" :key="index">{{
-            item.title
-          }}</Option>
-        </Select>
-      </Col>
+      </el-col>
+      <el-col :span="19" class="slider-box">
+        <el-select v-model="configData.activeValue" @change="sliderChange">
+          <el-option v-for="(item, index) in configData.list" :value="item.activeValue" :key="index" :label="item.title"></el-option>
+        </el-select>
+      </el-col>
     </div>
   </div>
 </template>

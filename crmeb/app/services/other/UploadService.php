@@ -13,6 +13,7 @@ namespace app\services\other;
 
 use app\services\system\config\SystemStorageServices;
 use crmeb\exceptions\UploadException;
+use crmeb\services\CacheService;
 use crmeb\services\SystemConfigService;
 use crmeb\services\upload\Upload;
 use crmeb\utils\DownloadImage;
@@ -63,6 +64,25 @@ class UploadService
                     'appid' => sys_config('tengxun_appid'),
                 ];
                 break;
+            case 5://京东云
+                $config = [
+                    'accessKey' => sys_config('jd_accessKey'),
+                    'secretKey' => sys_config('jd_secretKey'),
+                    'storageRegion' => sys_config('jd_storageRegion'),
+                ];
+                break;
+            case 6://华为云
+                $config = [
+                    'accessKey' => sys_config('hw_accessKey'),
+                    'secretKey' => sys_config('hw_secretKey'),
+                ];
+                break;
+            case 7://天翼云
+                $config = [
+                    'accessKey' => sys_config('ty_accessKey'),
+                    'secretKey' => sys_config('ty_secretKey'),
+                ];
+                break;
             case 1:
                 break;
             default:
@@ -76,7 +96,8 @@ class UploadService
             $res = $make->getConfig($type);
             $config['uploadUrl'] = $res['domain'];
             $config['storageName'] = $res['name'];
-            $config['storageRegion'] = $res['region'];
+            if (5 !== $type) $config['storageRegion'] = $res['region'];
+            $config['cdn'] = $res['cdn'];
         }
 
         $thumb = SystemConfigService::more(['thumb_big_height', 'thumb_big_width', 'thumb_mid_height', 'thumb_mid_width', 'thumb_small_height', 'thumb_small_width',]);
@@ -115,8 +136,8 @@ class UploadService
         $fileHost = $fileArr['scheme'] . '://' . $fileArr['host'];
         /** @var SystemStorageServices $storageServices */
         $storageServices = app()->make(SystemStorageServices::class);
-        $storageArr = $storageServices->cacheDriver()->remember('storage_list', function () use ($storageServices) {
-            return $storageServices->selectList([], 'domain')->toArray();
+        $storageArr = CacheService::remember('storage_list', function () use ($storageServices) {
+            return $storageServices->selectList([], 'domain,type')->toArray();
         });
         foreach ($storageArr as $item) {
             if ($fileHost == $item['domain']) {

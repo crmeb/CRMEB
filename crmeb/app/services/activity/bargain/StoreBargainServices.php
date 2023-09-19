@@ -1029,8 +1029,7 @@ class StoreBargainServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0];
         $list = $orderServices->bargainStatisticsOrder($id, $where, $page, $limit);
-        $where['bargain_id'] = $id;
-        $count = $orderServices->count($where);
+        $count = $orderServices->bargainStatisticsOrderCount($where);
         foreach ($list as &$item) {
             if ($item['status'] == 0) {
                 if ($item['paid'] == 0) {

@@ -14,6 +14,7 @@ use app\adminapi\controller\AuthController;
 use app\Request;
 use app\services\system\config\SystemConfigServices;
 use app\services\system\config\SystemConfigTabServices;
+use crmeb\services\CacheService;
 use crmeb\services\easywechat\orderShipping\MiniOrderService;
 use think\facade\App;
 
@@ -97,6 +98,7 @@ class SystemConfig extends AuthController
             ['sort', 0],
             ['status', 0]
         ]);
+        if (is_array($data['config_tab_id'])) $data['config_tab_id'] = end($data['config_tab_id']);
         if (!$data['info']) return app('json')->fail(400274);
         if (!$data['menu_name']) return app('json')->fail(400275);
         if (!$data['desc']) return app('json')->fail(400276);
@@ -124,7 +126,7 @@ class SystemConfig extends AuthController
         } else {
             $this->services->save($data);
         }
-        $this->services->cacheDriver()->clear();
+        CacheService::clear();
         return app('json')->success(400284);
     }
 
@@ -185,12 +187,13 @@ class SystemConfig extends AuthController
             ['sort', 0],
             ['status', 0]
         ]);
+        if (is_array($data['config_tab_id'])) $data['config_tab_id'] = end($data['config_tab_id']);
         if (!$this->services->get($id)) {
             return app('json')->fail(100026);
         }
         $data['value'] = json_encode($data['value']);
         $this->services->update($id, $data);
-        $this->services->cacheDriver()->clear();
+        CacheService::clear();
         return app('json')->success(100001);
     }
 
@@ -204,7 +207,7 @@ class SystemConfig extends AuthController
         if (!$this->services->delete($id))
             return app('json')->fail(100008);
         else {
-            $this->services->cacheDriver()->clear();
+            CacheService::clear();
             return app('json')->success(100002);
         }
     }
@@ -221,7 +224,7 @@ class SystemConfig extends AuthController
             return app('json')->fail(100100);
         }
         $this->services->update($id, ['status' => $status]);
-        $this->services->cacheDriver()->clear();
+        CacheService::clear();
         return app('json')->success(100014);
     }
 
@@ -329,12 +332,33 @@ class SystemConfig extends AuthController
             @copy($from, $toPublic);
         }
         if (isset($post['reward_integral']) || isset($post['reward_money'])) {
-            if ($post['reward_integral'] < 0 || $post['reward_money'] < 0) return app('json')->fail(400558);
+            if ($post['reward_money'] < 0) return app('json')->fail('赠送余额不能小于0元');
+            if ($post['reward_integral'] < 0) return app('json')->fail('赠送积分不能小于0');
+        }
+        
+        if (isset($post['sign_give_point'])) {
+            if (!is_int($post['sign_give_point']) || $post['sign_give_point'] < 0) return app('json')->fail('签到赠送积分请填写大于等于0的整数');
+        }
+        if (isset($post['sign_give_exp'])) {
+            if (!is_int($post['sign_give_exp']) || $post['sign_give_exp'] < 0) return app('json')->fail('签到赠送经验请填写大于等于0的整数');
+        }
+        if (isset($post['integral_frozen'])) {
+            if (!ctype_digit($post['integral_frozen']) || $post['integral_frozen'] < 0) return app('json')->fail('积分冻结天数请填写大于等于0的整数');
+        }
+        if (isset($post['store_free_postage'])) {
+            if (!is_int($post['store_free_postage']) || $post['store_free_postage'] < 0) return app('json')->fail('满额包邮请填写大于等于0的整数');
+        }
+        if (isset($post['withdrawal_fee'])) {
+            if ($post['withdrawal_fee'] < 0 || $post['withdrawal_fee'] > 100) return app('json')->fail('提现手续费范围在0-100之间');
+        }
+        if (isset($post['routine_auth_type']) && count($post['routine_auth_type']) == 0) return app('json')->fail('微信和手机号登录开关至少开启一个');
+        if (isset($post['integral_max_num'])) {
+            if (!ctype_digit($post['integral_max_num']) || $post['integral_max_num'] < 0) return app('json')->fail('积分抵扣上限请填写大于等于0的整数');
+        }
+        if (isset($post['customer_phone'])) {
+            if (!ctype_digit($post['customer_phone']) || strlen($post['customer_phone']) > 11) return app('json')->fail('客服手机号为11位数字');
         }
 
-//        if (isset($post['order_shipping_open']) && $post['order_shipping_open'] == 1 && isset($post['order_shipping_url'])) {
-//            MiniOrderService::setMesJumpPathAndCheck($post['order_shipping_url']);
-//        }
         foreach ($post as $k => $v) {
             $config_one = $this->services->getOne(['menu_name' => $k]);
             if ($config_one) {
@@ -343,7 +367,7 @@ class SystemConfig extends AuthController
                 $this->services->update($k, ['value' => json_encode($v)], 'menu_name');
             }
         }
-        $this->services->cacheDriver()->clear();
+        CacheService::clear();
         return app('json')->success(100001);
 
     }
@@ -366,6 +390,7 @@ class SystemConfig extends AuthController
             $config_tab = [];
         } else {
             $config_tab = $services->getConfigTab($pid);
+            if (empty($config_tab)) $config_tab[] = $services->get($pid, ['id', 'id as value', 'title as label', 'pid', 'icon', 'type']);
         }
         return app('json')->success(compact('config_tab'));
     }

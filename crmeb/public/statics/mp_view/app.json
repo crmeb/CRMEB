@@ -53,6 +53,7 @@
         "user_invoice_list/index",
         "user_invoice_form/index",
         "wechat_login/index",
+        "binding_phone/index",
         "retrievePassword/index",
         "user_info/index",
         "user_get_coupon/index",
@@ -217,6 +218,7 @@
     "startLocationUpdateBackground",
     "chooseAddress"
   ],
+  "__usePrivacyCheck__": true,
   "usingComponents": {
     "skeleton": "/components/skeleton/index",
     "page-loading": "/components/pageLoading",

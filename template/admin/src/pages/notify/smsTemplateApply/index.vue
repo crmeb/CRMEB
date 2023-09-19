@@ -3,91 +3,98 @@
     <div class="i-layout-page-header header_top">
       <div class="i-layout-page-header fl_header">
         <router-link :to="{ path: $routeProStr + '/setting/sms/sms_config/index' }"
-          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
+          ><el-button size="small" type="text">返回</el-button></router-link
         >
-        <Divider type="vertical" />
+        <el-divider direction="vertical"></el-divider>
         <span class="ivu-page-header-title mr20" style="padding: 0">{{ $route.meta.title }}</span>
       </div>
     </div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
+    <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-form
         ref="levelFrom"
         :model="levelFrom"
         :label-width="labelWidth"
         :label-position="labelPosition"
         @submit.native.prevent
       >
-        <Row type="flex" :gutter="24" v-if="$route.path === $routeProStr + '/setting/sms/sms_template_apply/index'">
-          <!--                    <Col v-bind="grid">-->
-          <!--                        <FormItem label="模板类型：">-->
-          <!--                            <Select v-model="levelFrom.type" placeholder="请选择" clearable  @on-change="userSearchs">-->
-          <!--                                <Option value="1">验证码</Option>-->
-          <!--                                <Option value="2">通知</Option>-->
-          <!--                                <Option value="3">推广</Option>-->
-          <!--                            </Select>-->
-          <!--                        </FormItem>-->
-          <!--                    </Col>-->
-          <!--                    <Col v-bind="grid">-->
-          <!--                        <FormItem label="模板状态：">-->
-          <!--                            <Select v-model="levelFrom.status" placeholder="请选择" clearable  @on-change="userSearchs">-->
-          <!--                                <Option value="1">可用</Option>-->
-          <!--                                <Option value="0">不可用</Option>-->
-          <!--                            </Select>-->
-          <!--                        </FormItem>-->
-          <!--                    </Col>-->
-          <!--                    <Col v-bind="grid">-->
-          <!--                        <FormItem label="模板名称：" >-->
-          <!--                            <Input search enter-button  v-model="levelFrom.title" placeholder="请输入模板名称" @on-search="userSearchs"/>-->
-          <!--                        </FormItem>-->
-          <!--                    </Col>-->
-          <Col span="24">
-            <Button type="primary" icon="md-add" @click="add">申请模板</Button>
-          </Col>
-        </Row>
-        <Row type="flex" :gutter="24" v-else>
-          <Col v-bind="grid">
-            <FormItem label="是否拥有：">
-              <Select v-model="levelFrom.is_have" placeholder="请选择" clearable @on-change="userSearchs">
-                <Option value="1">有</Option>
-                <Option value="0">没有</Option>
-              </Select>
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+        <el-row :gutter="24" v-if="$route.path === $routeProStr + '/setting/sms/sms_template_apply/index'">
+          <!--                    <el-col v-bind="grid">-->
+          <!--                        <el-form-item label="模板类型：">-->
+          <!--                            <el-select v-model="levelFrom.type" placeholder="请选择" clearable  @change="userSearchs">-->
+          <!--                                <el-option value="1">验证码</el-option>-->
+          <!--                                <el-option value="2">通知</el-option>-->
+          <!--                                <el-option value="3">推广</el-option>-->
+          <!--                            </el-select>-->
+          <!--                        </el-form-item>-->
+          <!--                    </el-col>-->
+          <!--                    <el-col v-bind="grid">-->
+          <!--                        <el-form-item label="模板状态：">-->
+          <!--                            <el-select v-model="levelFrom.status" placeholder="请选择" clearable  @change="userSearchs">-->
+          <!--                                <el-option value="1">可用</el-option>-->
+          <!--                                <el-option value="0">不可用</el-option>-->
+          <!--                            </el-select>-->
+          <!--                        </el-form-item>-->
+          <!--                    </el-col>-->
+          <!--                    <el-col v-bind="grid">-->
+          <!--                        <el-form-item label="模板名称：" >-->
+          <!--                            <el-input search enter-button  v-model="levelFrom.title" placeholder="请输入模板名称" @on-search="userSearchs"/>-->
+          <!--                        </el-form-item>-->
+          <!--                    </el-col>-->
+          <el-col :span="24">
+            <el-button type="primary" @click="add">申请模板</el-button>
+          </el-col>
+        </el-row>
+        <el-row :gutter="24" v-else>
+          <el-col v-bind="grid">
+            <el-form-item label="是否拥有：">
+              <el-select v-model="levelFrom.is_have" placeholder="请选择" clearable @change="userSearchs">
+                <el-option value="1" label="有"></el-option>
+                <el-option value="0" label="没有"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table
         :data="levelLists"
         ref="table"
-        class="mt25"
-        :loading="loading"
+        class="mt14"
+        v-loading="loading"
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="status">
-          <span v-show="row.status === 1">可用</span>
-          <span v-show="row.status === 0">不可用</span>
-        </template>
-        <template
-          slot-scope="{ row, index }"
-          slot="is_have"
-          v-if="$route.path === $routeProStr + '/setting/sms/sms_template_apply/commons'"
-        >
-          <span v-show="row.status === 1">有</span>
-          <span v-show="row.status === 0">没有</span>
-        </template>
-      </Table>
+        <el-table-column :label="item.title" :min-width="item.minWidth" v-for="(item, index) in columns" :key="index">
+          <template slot-scope="scope">
+            <template v-if="item.key">
+              <div>
+                <span>{{ scope.row[item.key] }}</span>
+              </div>
+            </template>
+            <template v-else-if="item.slot === 'status'">
+              <span v-show="scope.row.status === 1">可用</span>
+              <span v-show="scope.row.status === 0">不可用</span>
+            </template>
+            <template
+              v-else-if="
+                item.slot === 'is_have' && $route.path === $routeProStr + '/setting/sms/sms_template_apply/commons'
+              "
+            >
+              <span v-show="scope.row.status === 1">有</span>
+              <span v-show="scope.row.status === 0">没有</span>
+            </template>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="levelFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="levelFrom.limit"
+          :page.sync="levelFrom.page"
+          :limit.sync="levelFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
 
     <!-- 新建表单-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
@@ -147,7 +154,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -161,14 +168,14 @@ export default {
         .then(async (res) => {
           let data = res.data;
           if (!data.status) {
-            this.$Message.warning('请先登录');
+            this.$message.warning('请先登录');
             this.$router.push(this.$routeProStr + '/setting/sms/sms_config/index?url=' + this.$route.path);
           } else {
             this.getList();
           }
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 等级列表
@@ -191,7 +198,7 @@ export default {
           title: 'ID',
           key: 'id',
           sortable: true,
-          width: 80,
+          minWidth: 80,
         },
         {
           title: '模板ID',
@@ -241,12 +248,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.levelFrom.page = index;
-      this.getList();
     },
     // 添加
     add() {
@@ -256,7 +259,7 @@ export default {
           this.$refs.edits.modals = true;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 表格搜索

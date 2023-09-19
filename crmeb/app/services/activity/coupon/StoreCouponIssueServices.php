@@ -23,6 +23,7 @@ use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder;
+use think\facade\Db;
 
 /**
  *
@@ -64,7 +65,7 @@ class StoreCouponIssueServices extends BaseServices
         foreach ($list as &$item) {
             $item['use_time'] = date('Y-m-d', $item['start_use_time']) . ' ~ ' . date('Y-m-d', $item['end_use_time']);
         }
-        $count = $this->dao->count($where);
+        $count = $this->dao->couponCount($where);
         return compact('list', 'count');
     }
 
@@ -89,6 +90,14 @@ class StoreCouponIssueServices extends BaseServices
     public function saveCoupon($data)
     {
         if ($data['start_time'] && $data['start_use_time']) {
+
+            if ($data['start_time'] < date('Y-m-d 00:00:00')) {
+                throw new AdminException('开始领取时间不能小于当前时间');
+            }
+            if ($data['start_use_time'] < date('Y-m-d 00:00:00')) {
+                throw new AdminException('开始使用时间不能小于当前时间');
+            }
+
             if ($data['start_use_time'] < $data['start_time']) {
                 throw new AdminException(400513);
             }
@@ -108,7 +117,7 @@ class StoreCouponIssueServices extends BaseServices
 
         if ($data['end_time'] && $data['end_use_time']) {
             if ($data['end_use_time'] < $data['end_time']) {
-                throw new AdminException(400514);
+                throw new AdminException('用户领取数量不能大于优惠券发布数量');
             }
         }
 
@@ -372,9 +381,13 @@ class StoreCouponIssueServices extends BaseServices
         $issueUserService = app()->make(StoreCouponIssueUserServices::class);
         /** @var StoreCouponUserServices $couponUserService */
         $couponUserService = app()->make(StoreCouponUserServices::class);
-        $this->transaction(function () use ($issueUserService, $uid, $id, $couponUserService, $issueCouponInfo) {
+        $this->transaction(function () use ($issueUserService, $uid, $id, $couponUserService, $issueCouponInfo, $is_receive) {
             $issueUserService->save(['uid' => $uid, 'issue_coupon_id' => $id, 'add_time' => time()]);
-            $couponUserService->addUserCoupon($uid, $issueCouponInfo, "send");
+            $couponUserService->addUserCoupon($uid, $issueCouponInfo, $is_receive ? 'get' : 'send');
+            if ($issueCouponInfo['total_count'] > 0 && $is_receive) {
+                $issueCouponInfo['remain_count'] -= 1;
+                $issueCouponInfo->save();
+            }
         });
     }
 

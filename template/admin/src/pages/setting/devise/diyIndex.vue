@@ -2,24 +2,16 @@
   <div class="diy-page">
     <div class="i-layout-page-header header-title">
       <div class="fl_header">
-        <!-- <router-link :to="{ path: $routeProStr + '/setting/pages/devise' }"
-          ><Button icon="ios-arrow-back" size="small" type="text">返回</Button></router-link
-        > -->
-        <!-- <Divider type="vertical" /> -->
         <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>
         <div class="rbtn">
-          <!-- <Button v-if="pageId !== 0" class="bnt" @click="setmoren" :loading="loading">保存默认</Button>
-          <Button v-if="pageId !== 0" class="bnt ml20" @click="getmoren" :loading="loading">恢复默认</Button> -->
-          <!-- <div class="data" @click="setmoren">设置默认</div>
-            <div class="data" @click="getmoren">恢复默认</div> -->
-          <Button class="bnt ml20" type="info" @click="preview" :loading="loading">预览</Button>
-          <Button class="bnt ml20" type="primary" @click="saveConfig(0)" :loading="loading">保存</Button>
-          <Button class="ml20" type="error" @click="closeWindow" :loading="loading">关闭</Button>
+          <el-button class="ml20 header-btn look" @click="preview" :loading="loading">预览</el-button>
+          <el-button class="ml20 header-btn close" @click="closeWindow" :loading="loading">关闭</el-button>
+          <el-button class="ml20 header-btn save" @click="saveConfig(0)" :loading="loading">保存</el-button>
         </div>
       </div>
     </div>
 
-    <Card :bordered="false" dis-hover class="ivu-mt" style="margin: 0 10px">
+    <el-card :bordered="false" shadow="never">
       <div class="diy-wrapper">
         <!-- 左侧 -->
         <div class="left">
@@ -39,8 +31,8 @@
               <div class="tips" @click="item.isOpen = !item.isOpen">
                 {{ item.title }}
 
-                <Icon type="ios-arrow-forward" size="16" v-if="!item.isOpen" />
-                <Icon type="ios-arrow-down" size="16" v-else />
+                <i class="el-icon-arrow-right" style="font-size: 16px" v-if="!item.isOpen" />
+                <i type="ios-el-icon-arrow-down" style="font-size: 16px" v-else />
               </div>
               <draggable
                 class="dragArea list-group"
@@ -58,7 +50,7 @@
                     search: element.cname == '搜索框',
                     navbar: element.cname == '商品分类',
                   }"
-                  v-for="(element, index) in item.list"
+                  v-for="element in item.list"
                   :key="element.id"
                   @click="addDom(element, 1)"
                   v-show="item.isOpen"
@@ -72,10 +64,13 @@
               </draggable>
             </div>
           </div>
-          <!--                    <div style="padding: 0 20px"><Button type="primary" style="width: 100%" @click="saveConfig">保存</Button></div>-->
+          <!--                    <div style="padding: 0 20px"><el-button type="primary" style="width: 100%" @click="saveConfig">保存</el-button></div>-->
           <div class="wrapper" v-else :style="'height:' + (clientHeight - 200) + 'px;'">
             <div class="link-item" v-for="(item, index) in urlList" :key="index">
-              <div class="name">{{ item.name }}</div>
+              <div class="acea-row row-between-wrapper">
+                <div class="name">{{ item.name }}</div>
+                <span class="copy_btn" @click="onCopy(item.example)">复制</span>
+              </div>
               <div class="link-txt">地址：{{ item.url }}</div>
               <div class="params">
                 <span class="txt">参数：</span>
@@ -83,7 +78,6 @@
               </div>
               <div class="lable">
                 <p class="txt">例如：{{ item.example }}</p>
-                <Button size="small" @click="onCopy(item.example)">复制 </Button>
               </div>
             </div>
           </div>
@@ -93,10 +87,12 @@
           class="wrapper-con"
           style="flex: 1; background: #f0f2f5; display: flex; justify-content: center; padding-top: 20px; height: 100%"
         >
-          <div class="acticon">
-            <Button class="bnt mb10" @click="showTitle">页面设置</Button>
-            <Button class="bnt mb10" @click="nameModal = true">另存模板</Button>
-            <Button class="bnt" @click="reast">重置</Button>
+          <div class="acticons">
+            <el-button class="bnt mb10" @click="showTitle">页面设置</el-button>
+            <span></span>
+            <el-button class="bnt mb10" @click="nameModal = true">另存模板</el-button>
+            <span></span>
+            <el-button class="bnt" @click="reast">重置</el-button>
           </div>
           <div class="content">
             <div class="contxt" style="display: flex; flex-direction: column; overflow: hidden; height: 100%">
@@ -126,7 +122,7 @@
                       (colorTxt ? colorPickerTxt : '') +
                       ';background-image: url(' +
                       (picTxt ? picUrlTxt : '') +
-                      ');height:calc(100vh - 200px)'
+                      ');height: calc(100vh - 155px);'
                     "
                     ref="imgContainer"
                   >
@@ -159,9 +155,9 @@
                         ></component>
                         <div class="delete-box">
                           <div class="handleType">
-                            <Tooltip content="删除当前模块" placement="top">
+                            <el-tooltip content="删除当前模块" placement="top">
                               <div class="iconfont iconshanchu2" @click.stop="bindDelete(item, key)"></div>
-                            </Tooltip>
+                            </el-tooltip>
 
                             <div class="iconfont iconfuzhi" @click.stop="bindAddDom(item, 0, key)"></div>
                             <div
@@ -210,15 +206,8 @@
           </div>
         </div>
       </div>
-    </Card>
-    <!--<div class="foot-box">-->
-    <!--<Button @click="reast">重置</Button>-->
-    <!--<Button type="primary" @click="saveConfig" :loading="loading"-->
-    <!--&gt;保存-->
-    <!--</Button-->
-    <!--&gt;-->
-    <!--</div>-->
-    <Modal v-model="modal" title="预览" footer-hide>
+    </el-card>
+    <el-dialog :visible.sync="modal" width="540px" title="预览">
       <div>
         <div v-viewer class="acea-row row-around code">
           <div class="acea-row row-column-around row-between-wrapper">
@@ -233,10 +222,14 @@
           </div>
         </div>
       </div>
-    </Modal>
-    <Modal v-model="nameModal" title="设置模版名称" :closable="false" @on-ok="saveModal" @on-cancel="nameModal = false">
-      <Input v-model="saveName" placeholder="请输入模版名称"></Input>
-    </Modal>
+    </el-dialog>
+    <el-dialog :visible.sync="nameModal" width="470px" title="设置模版名称" :show-close="true">
+      <el-input v-model="saveName" placeholder="请输入模版名称"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="nameModal = false">取 消</el-button>
+        <el-button type="primary" @click="saveModal">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -249,6 +242,7 @@ import footPage from '@/components/pagesFoot';
 import { mapState } from 'vuex';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcodejs2';
+import { writeUpdate } from '@api/order';
 
 let idGlobal = 0;
 export default {
@@ -375,7 +369,7 @@ export default {
   },
   methods: {
     saveModal() {
-      if (!this.saveName) return this.$Message.warning('请先输入模板名称');
+      if (!this.saveName) return this.$message.warning('请先输入模板名称');
       this.saveConfig(1, this.saveName);
     },
     //小程序二维码
@@ -385,7 +379,7 @@ export default {
           this.qrcodeImg = res.data.image;
         })
         .catch((err) => {
-          this.$Message.error(err);
+          this.$message.error(err);
         });
     },
     preview(row) {
@@ -407,23 +401,22 @@ export default {
       });
     },
     closeWindow() {
-      this.$Modal.confirm({
-        title: '确定关闭当前页吗？',
-        content: '关闭页面前请先保存数据，未保存的话数据会丢失',
-        okText: '确定',
-        cancelText: '取消',
-        loading: true,
-        onOk: () => {
+      this.$msgbox({
+        title: '提示',
+        message: '关闭页面前请先保存数据，未保存的话数据会丢失',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel',
+      })
+        .then(() => {
           setTimeout(() => {
             // this.saveConfig();
-            this.$Modal.remove();
             window.close();
           }, 1000);
-        },
-        onCancel: () => {
-          this.$Modal.remove();
-        },
-      });
+        })
+        .catch(() => {});
     },
     leftRemove({ to, from, item, clone, oldIndex, newIndex }) {
       if (this.isSearch && newIndex == 0) {
@@ -446,49 +439,59 @@ export default {
     onCopy(copyData) {
       this.$copyText(copyData)
         .then((message) => {
-          this.$Message.success('复制成功');
+          this.$message.success('复制成功');
         })
         .catch((err) => {
-          this.$Message.error('复制失败');
+          this.$message.error('复制失败');
         });
     },
     onError() {
-      this.$Message.error('复制失败');
+      this.$message.error('复制失败');
     },
     //设置默认数据
     setmoren() {
-      this.$Modal.confirm({
+      this.$msgbox({
         title: '保存为默认数据',
-        content: '您确定将当前设计设为默认数据吗？',
-        onOk: () => {
+        message: '您确定将当前设计设为默认数据吗',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel',
+      })
+        .then(() => {
           setDefault(this.pageId)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
             })
             .catch((err) => {
-              this.$Message.error(err.msg);
+              this.$message.error(err.msg);
             });
-        },
-        onCancel: () => {},
-      });
+        })
+        .catch(() => {});
     },
     //恢复默认
     getmoren() {
-      this.$Modal.confirm({
+      this.$msgbox({
         title: '恢复默认数据',
-        content: '您确定恢复为之前保存的默认数据吗？',
-        onOk: () => {
+        message: '您确定恢复为之前保存的默认数据吗',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '确定',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel',
+      })
+        .then(() => {
           recovery(this.pageId)
             .then((res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.reload();
             })
             .catch((err) => {
-              this.$Message.error(err.msg);
+              this.$message.error(err.msg);
             });
-        },
-        onCancel: () => {},
-      });
+        })
+        .catch(() => {});
     },
     // 获取url
     getUrlList() {
@@ -542,11 +545,11 @@ export default {
       // 中间拖拽排序
       if (evt.moved) {
         if (evt.moved.element.name == 'search_box' || evt.moved.element.name == 'nav_bar') {
-          return this.$Message.warning('该组件禁止拖拽');
+          return this.$message.warning('该组件禁止拖拽');
         }
 
         // if (evt.moved.element.name == "nav_bar") {
-        //     return this.$Message.warning("该组件禁止拖拽");
+        //     return this.$message.warning("该组件禁止拖拽");
         // }
         evt.moved.oldNum = this.mConfig[evt.moved.oldIndex].num;
         evt.moved.newNum = this.mConfig[evt.moved.newIndex].num;
@@ -608,15 +611,15 @@ export default {
         }
       }
       if (item.name == 'search_box' || item.name == 'nav_bar') {
-        return this.$Message.warning('该组件禁止移动');
+        return this.$message.warning('该组件禁止移动');
       }
       // if (item.name == "nav_bar") {
-      //     return this.$Message.warning("该组件禁止移动");
+      //     return this.$message.warning("该组件禁止移动");
       // }
       if (type) {
         // if(this.mConfig[index-1].name  == "search_box" || this.mConfig[index-1].name  == "nav_bar"){
         if (this.mConfig[index - 1].name == 'search_box') {
-          return this.$Message.warning('搜索框必须为顶部');
+          return this.$message.warning('搜索框必须为顶部');
         }
         this.swapArray(this.mConfig, index - 1, index);
       } else {
@@ -648,11 +651,11 @@ export default {
     // 组件添加
     addDomCon(item, type, index) {
       if (item.name == 'search_box') {
-        if (this.isSearch) return this.$Message.error('该组件只能添加一次');
+        if (this.isSearch) return this.$message.error('该组件只能添加一次');
         this.isSearch = true;
       }
       if (item.name == 'nav_bar') {
-        if (this.isTab) return this.$Message.error('该组件只能添加一次');
+        if (this.isTab) return this.$message.error('该组件只能添加一次');
         this.isTab = true;
       }
       idGlobal += 1;
@@ -715,7 +718,6 @@ export default {
     },
     // 点击显示相应的配置
     bindconfig(item, index) {
-      console.log(item, index);
       this.rConfig = [];
       let tempItem = JSON.parse(JSON.stringify(item));
       this.rConfig.push(tempItem);
@@ -799,7 +801,6 @@ export default {
     //     });
     // },
     diySaveDate(val, init, name) {
-      console.log(init, name);
       saveDiy(init ? 0 : this.pageId, {
         type: this.pageType,
         value: val,
@@ -818,17 +819,17 @@ export default {
             this.pageId = res.data.id;
           }
           this.saveName = '';
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 保存配置
     saveConfig(init, name) {
       if (this.mConfig.length == 0) {
-        return this.$Message.error('暂未添加任何组件，保存失败！');
+        return this.$message.error('暂未添加任何组件，保存失败！');
       }
       this.loading = true;
       let val = this.$store.state.mobildConfig.defaultArray;
@@ -909,19 +910,24 @@ export default {
     // 重置
     reast() {
       if (this.pageId == 0) {
-        this.$Message.error('新增页面，无法重置');
+        this.$message.error('新增页面，无法重置');
       } else {
-        this.$Modal.confirm({
+        this.$msgbox({
           title: '提示',
-          content: '<p>重置会恢复到上次保存的数据，确定不保存当前操作吗？</p>',
-          onOk: () => {
+          message: '重置会恢复到上次保存的数据，确定不保存当前操作吗？',
+          showCancelButton: true,
+          cancelButtonText: '取消',
+          confirmButtonText: '确定',
+          iconClass: 'el-icon-warning',
+          confirmButtonClass: 'btn-custom-cancel',
+        })
+          .then(() => {
             this.mConfig = [];
             this.rConfig = [];
             this.activeIndex = -99;
             this.getDefaultConfig();
-          },
-          onCancel: () => {},
-        });
+          })
+          .catch(() => {});
       }
     },
   },
@@ -949,8 +955,51 @@ export default {
   },
 };
 </script>
+<style>
+.el-main {
+  padding: 0px !important;
+}
 
-<style scoped lang="stylus">
+.header-title {
+  background: var(--prev-color-primary);
+  border-radius: 0;
+  margin-bottom: 0;
+  padding: 16px;
+}
+.ivu-page-header-title {
+  color: #fff;
+  font-size: 16px;
+}
+</style>
+<style scoped lang="scss">
+/deep/ .el-card__body {
+  padding: 0;
+}
+/deep/ .el-button--small {
+  // border-radius: 0;
+  border-radius: 4px;
+}
+.look,
+.look:hover,
+.look:focus,
+.look:active,
+.close,
+.close:hover,
+.close:focus,
+.close:active {
+  background: var(--prev-color-primary);
+  color: #fff;
+  border-color: #fff;
+}
+
+.save,
+.save:hover,
+.save:active,
+.save:focus {
+  background: #fff;
+  color: var(--prev-color-primary);
+  border-color: var(--prev-color-primary);
+}
 
 .ysize {
   background-size: 100%;
@@ -969,18 +1018,21 @@ export default {
 }
 
 .wrapper-con {
-  position relative
-  .acticon{
-    position absolute
-    right: 20px
-    top 20px
+  position: relative;
+  .acticons {
+    position: absolute;
+    right: 20px;
+    top: 20px;
     display: flex;
     flex-direction: column;
-    z-index: 1000;
+    z-index: 1;
+    .el-button + .el-button {
+      margin-left: 0;
+    }
   }
   /* min-width 700px; */
 }
-.main .content-wrapper{
+.main .content-wrapper {
   padding: 0 !important;
 }
 .defaultData {
@@ -1030,7 +1082,8 @@ export default {
   display: none;
 }
 
-.left:hover::-webkit-scrollbar-thumb, .right-box:hover::-webkit-scrollbar-thumb {
+.left:hover::-webkit-scrollbar-thumb,
+.right-box:hover::-webkit-scrollbar-thumb {
   display: block;
 }
 
@@ -1052,15 +1105,17 @@ export default {
   height: 40px;
   text-align: center;
   line-height: 40px;
-  border: 1px dashed #1890ff;
-  color: #1890ff;
+  border: 1px dashed var(--prev-color-primary);
+  color: var(--prev-color-primary);
   background-color: #edf4fb;
 }
 
 .scroll-box .conter {
   display: none !important;
 }
-
+.conter {
+  margin-top: 3px;
+}
 .dragClass {
   background-color: #fff;
 }
@@ -1081,7 +1136,7 @@ export default {
   min-width: 1100px;
   display: flex;
   justify-content: space-between;
-  height: 100%;
+  height: calc(100vh - 62px);
   .left {
     min-width: 300px;
     max-width: 300px;
@@ -1132,13 +1187,16 @@ export default {
 
     .link-item {
       padding: 10px;
-      border-bottom: 1px solid #F5F5F5;
+      border-bottom: 1px solid #f5f5f5;
       font-size: 12px;
       color: #323232;
 
       .name {
         font-size: 14px;
-        color: #1890FF;
+        color: var(--prev-color-primary);
+      }
+      .copy_btn {
+        cursor: pointer;
       }
 
       .link-txt {
@@ -1148,7 +1206,7 @@ export default {
 
       .params {
         margin-top: 5px;
-        color: #1CBE6B;
+        color: #1cbe6b;
         word-break: break-all;
 
         .txt {
@@ -1234,7 +1292,8 @@ export default {
         padding: 10px 0;
       }
 
-      &:hover, &.on {
+      &:hover,
+      &.on {
         /* cursor: move; */
         .delete-box {
           /* display: block; */
@@ -1291,7 +1350,8 @@ export default {
         }
       }
 
-      &:hover, &.on {
+      &:hover,
+      &.on {
         /* cursor: move; */
         .delete-box {
           /* display: block; */
@@ -1340,15 +1400,18 @@ export default {
             right: -43px;
             top: 0;
             width: 36px;
-            height: 143px;
+            height: 111px;
             border-radius: 4px;
-            background-color: #1890ff;
+            background-color: var(--prev-color-primary);
             cursor: pointer;
             color: #fff;
             font-weight: bold;
             text-align: center;
             padding: 4px 0;
-
+            .el-tooltip {
+              background-color: inherit;
+              color: inherit;
+            }
             .iconfont {
               padding: 5px 0;
 
@@ -1442,9 +1505,8 @@ export default {
 
 /deep/ .ivu-card-body {
   width: 100%;
-  padding:0;
+  padding: 0;
   height: calc(100vh - 73px);
-
 }
 
 .rbtn {

@@ -23,7 +23,7 @@
 	export default {
 		data() {
 			return {
-				autoplay: false,
+				autoplay: true,
 				duration: 500,
 				jumpover: this.$t(`跳过`),
 				experience: this.$t(`立即体验`),
@@ -70,22 +70,8 @@
 			jump(url) {
 				if (url) {
 					clearInterval(this.timecount)
-					if (url.indexOf("http") != -1) {
-						uni.navigateTo({
-							url: `/pages/annex/web_view/index?url=${url}`
-						});
-					} else {
-						uni.reLaunch({
-							url: url,
-							fail: () => {
-								uni.switchTab({
-									url
-								})
-							}
-						})
-					}
+					this.$util.JumpPath(url);
 				}
-
 			},
 		}
 	}

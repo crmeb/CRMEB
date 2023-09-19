@@ -1,9 +1,9 @@
 <template>
   <div class="c_row-item">
-    <Col class="c_label">{{ configData.title }}</Col>
-    <Col>
-      <i-switch v-model="configData.val" />
-    </Col>
+    <el-col class="c_label">{{ configData.title }}</el-col>
+    <el-col class="acea-row row-right row-middle">
+      <el-switch :active-value="1"  :inactive-value="0" v-model="configData.val" />
+    </el-col>
   </div>
 </template>
 

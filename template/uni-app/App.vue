@@ -3,11 +3,14 @@
 		checkLogin
 	} from './libs/login';
 	import {
-		HTTP_REQUEST_URL
+		HTTP_REQUEST_URL,
+		SYSTEM_VERSION
 	} from './config/app';
 	import {
 		getShopConfig,
-		silenceAuth
+		silenceAuth,
+		getSystemVersion,
+		basicConfig
 	} from '@/api/public';
 	import Auth from '@/libs/wechat.js';
 	import Routine from './libs/routine.js';
@@ -15,12 +18,8 @@
 		silenceBindingSpread
 	} from "@/utils";
 	import {
-		getCartCounts,
-	} from '@/api/order.js';
-	import {
 		colorChange,
 		getCrmebCopyRight,
-
 	} from '@/api/api.js';
 	import {
 		getLangJson,
@@ -32,15 +31,15 @@
 	import colors from '@/mixins/color.js';
 	import Cache from '@/utils/cache';
 	let green =
-		'--view-theme: rgba(66,202,77,1);--view-theme-16: #42CA4D;--view-priceColor:#FF7600;--view-minorColor:rgba(108, 198, 94, 0.5);--view-minorColorT:rgba(66, 202, 77, 0.1);--view-bntColor:#FE960F;--view-op-ten: rgba(66,202,77, 0.1);--view-main-start:#70E038; --view-main-over:#42CA4D;--view-op-point-four: rgba(66,202,77, 0.04);'
+		'--view-theme: rgba(66,202,77,1);--view-theme-16: #42CA4D;--view-priceColor:#FF7600;--view-minorColor:rgba(108, 198, 94, 0.5);--view-minorColorT:rgba(66, 202, 77, 0.1);--view-bntColor:#FE960F;--view-op-ten: rgba(66,202,77, 0.1);--view-main-start:#70E038; --view-main-over:#42CA4D;--view-op-point-four: rgba(66,202,77, 0.04);--view-op-point-eight: rgba(66,202,77, 0.8);--view-linear:linear-gradient(180deg, rgba(66,202,77,0.2) 0%, rgba(255,255,255,0) 100%);'
 	let red =
-		'--view-theme: rgba(233,51,35,1);--view-theme-16: #e93323;--view-priceColor:#e93323;--view-minorColor:rgba(233, 51, 35, 0.5);--view-minorColorT:rgba(233, 51, 35, 0.1);--view-bntColor:#FE960F;--view-op-ten: rgba(233,51,35, 0.1);--view-main-start:#FF6151; --view-main-over:#e93323;--view-op-point-four: rgba(233,51,35, 0.04);'
+		'--view-theme: rgba(233,51,35,1);--view-theme-16: #e93323;--view-priceColor:#e93323;--view-minorColor:rgba(233, 51, 35, 0.5);--view-minorColorT:rgba(233, 51, 35, 0.1);--view-bntColor:#FE960F;--view-op-ten: rgba(233,51,35, 0.1);--view-main-start:#FF6151; --view-main-over:#e93323;--view-op-point-four: rgba(233,51,35, 0.04);--view-op-point-eight: rgba(233,51,35, 0.8);--view-linear:linear-gradient(180deg, rgba(232,58,35,0.2) 0%, rgba(255,255,255,0) 100%)'
 	let blue =
-		'--view-theme: rgba(29,176,252,1);--view-theme-16:#1db0fc;--view-priceColor:#FD502F;--view-minorColor:rgba(58, 139, 236, 0.5);--view-minorColorT:rgba(9, 139, 243, 0.1);--view-bntColor:#22CAFD;--view-op-ten: rgba(29,176,252, 0.1);--view-main-start:#40D1F4; --view-main-over:#1DB0FC;--view-op-point-four: rgba(29,176,252, 0.04);'
+		'--view-theme: rgba(29,176,252,1);--view-theme-16:#1db0fc;--view-priceColor:#FD502F;--view-minorColor:rgba(58, 139, 236, 0.5);--view-minorColorT:rgba(9, 139, 243, 0.1);--view-bntColor:#22CAFD;--view-op-ten: rgba(29,176,252, 0.1);--view-main-start:#40D1F4; --view-main-over:#1DB0FC;--view-op-point-four: rgba(29,176,252, 0.04);--view-op-point-eight: rgba(29,176,252, 0.8);--view-linear:linear-gradient(180deg, rgba(29,176,252,0.2) 0%, rgba(255,255,255,0) 100%);'
 	let pink =
-		'--view-theme: rgba(255,68,143,1);--view-theme-16:#ff448f;--view-priceColor:#FF448F;--view-minorColor:rgba(255, 68, 143, 0.5);--view-minorColorT:rgba(255, 68, 143, 0.1);--view-bntColor:#282828;--view-op-ten: rgba(255,68,143, 0.1);--view-main-start:#FF67AD; --view-main-over:#FF448F;--view-op-point-four: rgba(255,68,143, 0.04);'
+		'--view-theme: rgba(255,68,143,1);--view-theme-16:#ff448f;--view-priceColor:#FF448F;--view-minorColor:rgba(255, 68, 143, 0.5);--view-minorColorT:rgba(255, 68, 143, 0.1);--view-bntColor:#282828;--view-op-ten: rgba(255,68,143, 0.1);--view-main-start:#FF67AD; --view-main-over:#FF448F;--view-op-point-four: rgba(255,68,143, 0.04);--view-op-point-eight: rgba(255,68,143, 0.8);--view-linear:linear-gradient(180deg, rgba(255,68,143,0.2) 0%, rgba(255,255,255,0) 100%);'
 	let orange =
-		'--view-theme: rgba(254,92,45,1); --view-theme-16:#FE5C2D;--view-priceColor:#FE5C2D;--view-minorColor:rgba(254, 92, 45, 0.5);--view-minorColorT:rgba(254, 92, 45, 0.1);--view-bntColor:#FDB000;--view-op-ten: rgba(254,92,45, 0.1);--view-main-start:#FF9445; --view-main-over:#FE5C2D;--view-op-point-four: rgba(254,92,45, 0.04);'
+		'--view-theme: rgba(254,92,45,1); --view-theme-16:#FE5C2D;--view-priceColor:#FE5C2D;--view-minorColor:rgba(254, 92, 45, 0.5);--view-minorColorT:rgba(254, 92, 45, 0.1);--view-bntColor:#FDB000;--view-op-ten: rgba(254,92,45, 0.1);--view-main-start:#FF9445; --view-main-over:#FE5C2D;--view-op-point-four: rgba(254,92,45, 0.04);--view-op-point-eight: rgba(254,92,45, 0.8);--view-linear:linear-gradient(180deg, rgba(254,92,45,0.2) 0%, rgba(255,255,255,0) 100%);'
 
 	export default {
 		globalData: {
@@ -99,13 +98,11 @@
 			// #ifdef MP
 			if (queryData.query.scene) {
 				let param = this.$util.getUrlParams(decodeURIComponent(queryData.query.scene))
-				console.log(queryData.query.scene)
-				console.log(param)
-				if(param.pid){
+				if (param.pid) {
 					this.$Cache.set('spread', param.pid);
 					this.globalData.spid = param.pid;
 					this.globalData.pid = param.pid;
-				}else{
+				} else {
 					switch (queryData.scene) {
 						//扫描小程序码
 						case 1047:
@@ -139,9 +136,13 @@
 				this.globalData.isIframe = false;
 			}
 			// #endif
+			basicConfig().then(res => {
+				uni.setStorageSync('BASIC_CONFIG', res.data);
+			})
 			colorChange('color_change').then(res => {
 				uni.setStorageSync('is_diy', res.data.is_diy)
 				uni.$emit('is_diy', res.data.is_diy)
+				uni.setStorageSync('color_status', res.data.status)
 				switch (res.data.status) {
 					case 1:
 						uni.setStorageSync('viewColor', blue)
@@ -181,6 +182,7 @@
 				}
 				uni.setStorageSync('LANG_VERSION', version)
 			})
+
 			// #ifdef APP-PLUS || H5
 			uni.getSystemInfo({
 				success: function(res) {
@@ -282,6 +284,19 @@
 			getCrmebCopyRight().then(res => {
 				uni.setStorageSync('copyRight', res.data)
 			})
+			// #ifdef MP
+			getSystemVersion().then(res => {
+				if (res.data.version_code < SYSTEM_VERSION) {
+					uni.showModal({
+						title: '提示',
+						content: '请重新打包并上传小程序',
+						success: function(res) {
+							if (res.confirm) {}
+						}
+					});
+				}
+			})
+			// #endif
 		},
 		// #ifdef H5
 		onHide() {

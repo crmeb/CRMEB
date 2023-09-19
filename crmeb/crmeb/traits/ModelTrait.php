@@ -33,7 +33,7 @@ trait ModelTrait
                 $endTime = $value[1] ?? 0;
                 if ($startTime || $endTime) {
                     if ($startTime == $endTime || $endTime == strtotime(date('Y-m-d', $endTime))) {
-                        $endTime = $endTime + 86400;
+                        $endTime = $endTime + 86399;
                     }
                     $query->whereBetween($timeKey, [$startTime, $endTime]);
                 }
@@ -66,7 +66,7 @@ trait ModelTrait
                             $endTime = trim($endTime) ? strtotime($endTime) : 0;
                             if ($startTime && $endTime) {
                                 if ($startTime == $endTime || $endTime == strtotime(date('Y-m-d', $endTime))) {
-                                    $endTime = $endTime + 86400;
+                                    $endTime = $endTime + 86399;
                                 }
                                 $query->whereBetween($timeKey, [$startTime, $endTime]);
                             } else if (!$startTime && $endTime) {

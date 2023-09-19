@@ -42,11 +42,11 @@ class WechatReplyDao extends BaseDao
     public function getKey($key)
     {
         $res = $this->getModel()->whereIn('id', function ($query) use ($key) {
-            $query->name('wechat_key')->where('keys', $key)->field(['reply_id'])->select();
+            $query->name('wechat_key')->where('keys', $key)->where('key_type', 0)->field(['reply_id'])->select();
         })->where('status', '1')->find();
         if (empty($res)) {
             $res = $this->getModel()->whereIn('id', function ($query) use ($key) {
-                $query->name('wechat_key')->where('keys', 'default')->field(['reply_id'])->select();
+                $query->name('wechat_key')->where('keys', 'default')->where('key_type', 0)->field(['reply_id'])->select();
             })->where('status', '1')->find();
         }
         return $res;

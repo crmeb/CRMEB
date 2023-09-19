@@ -15,7 +15,7 @@ namespace crmeb\services\easywechat\v3pay;
 
 
 use crmeb\exceptions\PayException;
-use think\facade\Cache;
+use crmeb\services\CacheService;
 
 /**
  * Class Certficates
@@ -31,10 +31,9 @@ trait Certficates
      */
     public function getCertficatescAttr(string $key = null)
     {
-        $driver = Cache::store('file');
         $cacheKey = '_wx_v3' . $this->app['config']['v3_payment']['serial_no'];
-        if ($driver->has($cacheKey)) {
-            $res = $driver->get($cacheKey);
+        if (CacheService::has($cacheKey)) {
+            $res = CacheService::get($cacheKey);
             if ($key && $res) {
                 return $res[$key] ?? null;
             } else {
@@ -42,7 +41,7 @@ trait Certficates
             }
         }
         $certficates = $this->getCertficates();
-        $driver->set($cacheKey, $certficates, 3600 * 24 * 30);
+        CacheService::set($cacheKey, $certficates, 3600 * 24 * 30);
         if ($key && $certficates) {
             return $certficates[$key] ?? null;
         }

@@ -270,25 +270,35 @@
 					return that.$util.Tips({
 						title: that.$t(`缺少订单号无法取消订单`)
 					});
-				orderCancel(order_id)
-					.then(res => {
-						return that.$util.Tips({
-								title: res.msg,
-								icon: 'success'
-							},
-							function() {
-								that.orderList.splice(index, 1);
-								that.$set(that, 'orderList', that.orderList);
-								that.$set(that.orderData, 'unpaid_count', that.orderData.unpaid_count - 1);
-								that.getOrderData();
-							}
-						);
-					})
-					.catch(err => {
-						return that.$util.Tips({
-							title: err
-						});
-					});
+				uni.showModal({
+					title: this.$t(`提示`),
+					content: this.$t(`确认取消该订单`),
+					success: function(res) {
+						if (res.confirm) {
+							orderCancel(order_id)
+								.then(res => {
+									return that.$util.Tips({
+											title: res.msg,
+											icon: 'success'
+										},
+										function() {
+											that.orderList.splice(index, 1);
+											that.$set(that, 'orderList', that.orderList);
+											that.$set(that.orderData, 'unpaid_count', that
+												.orderData.unpaid_count - 1);
+											that.getOrderData();
+										}
+									);
+								})
+								.catch(err => {
+									return that.$util.Tips({
+										title: err
+									});
+								});
+						} else if (res.cancel) {}
+					}
+				});
+
 			},
 			/**
 			 * 打开支付组件

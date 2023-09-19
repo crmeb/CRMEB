@@ -86,11 +86,9 @@ class ShippingTemplatesNoDeliveryServices extends BaseServices
     {
         $freeIdList = $this->dao->getShippingGroupArray(['temp_id' => $tempId], 'uniqid', 'uniqid', '');
         $freeData = [];
-        $infos = $this->dao->getShippingArray(['uniqid' => $freeIdList, 'temp_id' => $tempId], '*', 'uniqid');
         foreach ($freeIdList as $uniqid) {
-            $info = $infos[$uniqid];
             $freeData[] = [
-                'place' => $this->getNoDeliveryTemp($uniqid, $info['province_id']),
+                'place' => $this->getNoDeliveryTemp($uniqid),
             ];
         }
         foreach ($freeData as &$item) {
@@ -102,10 +100,9 @@ class ShippingTemplatesNoDeliveryServices extends BaseServices
     /**
      * 获取不送达的省份
      * @param string $uniqid
-     * @param int $provinceId
      * @return array
      */
-    public function getNoDeliveryTemp(string $uniqid, int $provinceId)
+    public function getNoDeliveryTemp(string $uniqid)
     {
         /** @var ShippingTemplatesNoDeliveryCityServices $service */
         $service = app()->make(ShippingTemplatesNoDeliveryCityServices::class);
@@ -115,7 +112,7 @@ class ShippingTemplatesNoDeliveryServices extends BaseServices
             $childrenData[] = [
                 'city_id' => $item['province_id'],
                 'name' => $item['name'] ?? '全国',
-                'children' => $this->getCityTemp($uniqid, $provinceId)
+                'children' => $this->getCityTemp($uniqid, $item['province_id'])
             ];
         }
         return $childrenData;

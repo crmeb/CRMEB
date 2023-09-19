@@ -54,7 +54,7 @@ class Express extends BaseManager
         if (!$this->config) {
             $this->config = Config::get($this->configFile . '.stores.' . $this->name, []);
         }
-        $handleAccessToken = new AccessTokenServeService($this->config['account'] ?? '', $this->config['secret'] ?? '', app()->cache);
+        $handleAccessToken = new AccessTokenServeService($this->config['account'] ?? '', $this->config['secret'] ?? '');
         $handle = Container::getInstance()->invokeClass($class, [$this->name, $handleAccessToken, $this->configFile]);
         $this->config = [];
         return $handle;

@@ -45,7 +45,7 @@ export default {
         this.$store.state.themeConfig.themeConfig.isCollapse
       )
         return;
-      if (this.$store.state.themeConfig.themeConfig.layout === 'transverse') return false;
+      if (this.$store.state.themeConfig.themeConfig.layout === 'transverse' || this.$store.state.themeConfig.themeConfig.layout === 'classic') return false;
       this.$store.state.themeConfig.themeConfig.isCollapse = !this.$store.state.themeConfig.themeConfig.isCollapse;
     },
     getLogo() {

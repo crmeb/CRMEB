@@ -190,7 +190,7 @@ class OtherOrderDao extends BaseDao
      * @email 442384644@qq.com
      * @date 2023/04/11
      */
-    public function count(array $where = [], bool $search = true): int
+    public function count(array $where = [], bool $search = true)
     {
         return $this->search($where, $search)->count();
     }

@@ -20,7 +20,8 @@ use think\Container;
 /**
  * Class Product
  * @package crmeb\services\copyproduct
- * @mixin \crmeb\services\copyproduct\CopyProduct
+ * @mixin \crmeb\services\copyproduct\storage\Copy
+ * @mixin \crmeb\services\copyproduct\storage\Copy99api
  */
 class CopyProduct extends BaseManager
 {

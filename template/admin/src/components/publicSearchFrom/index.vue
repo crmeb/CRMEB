@@ -1,58 +1,59 @@
 <template>
   <div>
-    <Form ref="orderData" :label-width="80" label-position="right" class="tabform">
-      <Row :gutter="24" type="flex" v-for="(item, index) in fromList" :key="index">
-        <Col :xl="8" :lg="8" :md="8" :sm="24" :xs="24">
-          <FormItem :label="item.title + '：'">
-            <RadioGroup type="button" v-model="date">
-              <Radio :label="itemn.text" v-for="(itemn, indexn) in item.fromTxt" :key="indexn"
-                >{{ itemn.text }}{{ item.num }}</Radio
+    <el-form ref="orderData" label-width="85px" label-position="right" class="tabform">
+      <el-row :gutter="24" v-for="(item, index) in fromList" :key="index">
+        <el-col :xl="8" :lg="8" :md="8" :sm="24" :xs="24">
+          <el-form-item :label="item.title + '：'">
+            <el-radio-group type="button" v-model="date">
+              <el-radio-button :label="itemn.text" v-for="(itemn, indexn) in item.fromTxt" :key="indexn"
+                >{{ itemn.text }}{{ item.num }}</el-radio-button
               >
-            </RadioGroup>
-          </FormItem>
-        </Col>
-        <Col v-if="item.custom">
-          <FormItem class="tab_data">
-            <DatePicker
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col v-if="item.custom">
+          <el-form-item class="tab_data">
+            <el-date-picker
               :editable="false"
-              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
               type="daterange"
-              placement="bottom-end"
-              placeholder="请选择时间"
+              range-separator="-"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
               style="width: 200px"
-            ></DatePicker>
-          </FormItem>
-        </Col>
-      </Row>
-      <Row :gutter="24" type="flex" v-if="isExist.existOne">
-        <Col span="10" class="mr">
-          <FormItem :label="searchFrom.title + '：'" prop="real_name" label-for="real_name">
-            <Input search enter-button :placeholder="searchFrom.place" element-id="name" />
-          </FormItem>
-        </Col>
-        <Col>
-          <Button class="mr">导出</Button>
-          <span class="Refresh">刷新</span><Icon type="ios-refresh" />
-        </Col>
-      </Row>
-      <Row :gutter="24" type="flex" class="withdrawal" v-if="isExist.existTwo">
-        <Col span="2.5" class="item">
-          <TreeSelect v-model="withdrawalTxt" :data="treeData.withdrawal" class="perW160" @on-change="changeTree" />
-        </Col>
-        <Col span="2.5" class="item">
-          <TreeSelect v-model="paymentTxt" :data="treeData.payment" class="perW160" @on-change="changeTree" />
-        </Col>
-        <Col span="6" class="item">
-          <Input search enter-button placeholder="微信名称、姓名、支付宝账号、银行卡号" element-id="name" />
-        </Col>
-      </Row>
-    </Form>
+            ></el-date-picker>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="24" v-if="isExist.existOne">
+        <el-col span="10" class="mr">
+          <el-form-item :label="searchFrom.title + '：'" prop="real_name" label-for="real_name">
+            <el-input search enter-button :placeholder="searchFrom.place" element-id="name" />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-button class="mr">导出</el-button>
+          <span class="Refresh">刷新</span>
+        </el-col>
+      </el-row>
+      <el-row :gutter="24" class="withdrawal" v-if="isExist.existTwo">
+        <el-col span="2.5" class="item">
+          <TreeSelect v-model="withdrawalTxt" :data="treeData.withdrawal" class="perW160" @change="changeTree" />
+        </el-col>
+        <el-col span="2.5" class="item">
+          <TreeSelect v-model="paymentTxt" :data="treeData.payment" class="perW160" @change="changeTree" />
+        </el-col>
+        <el-col :span="6" class="item">
+          <el-input search enter-button placeholder="微信名称、姓名、支付宝账号、银行卡号" element-id="name" />
+        </el-col>
+      </el-row>
+    </el-form>
   </div>
 </template>
 <style scoped lang="stylus">
 .Refresh
     font-size 12px
-    color #1890FF
+    color var(--prev-color-primary)
     cursor pointer
 .ivu-form-item
     margin-bottom 10px

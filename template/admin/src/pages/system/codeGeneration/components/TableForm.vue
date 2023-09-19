@@ -1,124 +1,269 @@
 <template>
   <div class="main">
-    <Alert closable>
-      crud生成说明
-      <template #desc>
+    <el-alert closable class="mb14">
+      <template v-slot:title>crud生成说明</template>
+      <template>
         <p>
           1、字段配置中表存在生成的字段为表内列的信息,并且主键、伪删除字段不允许设置为列，主键默认展示在列表中，伪删除字段不允许展示
         </p>
         <p>2、在字段配置中新建表时，主键不需要增加列，会自动增加一行主键id</p>
-        <p>
-          3、在字段配置中新建表时，字段类型为addTimestamps会自动创建create_time、update_time字段，字段类型为：timestamp
-        </p>
-        <p>
-          4、在字段配置中新建表时，字段类型为addSoftDelete会字段创建delete_time字段，字段类型为：timestamp，作用是伪删除
-        </p>
-        <p>5、在字段配置中，表单类型为不生成时创建后不会生成对应的表单项</p>
-        <p>6、添加字段id、create_time、update_time、delete_time为不可用字段</p>
+        <p>3、在字段配置中，表单类型为不生成时创建后不会生成对应的表单项</p>
+        <p>4、添加字段id、create_time、update_time、delete_time为不可用字段</p>
       </template>
-    </Alert>
-    <div class="df">
-      <Button class="mr20" type="primary" @click="addRow">添加一行</Button>
-      <Checkbox class="mr10" v-model="isCreate" @on-change="addCreate">添加与修改时间</Checkbox>
-      <Checkbox class="mr10" v-model="isDelete" @on-change="addDelete">伪删除</Checkbox>
+    </el-alert>
+    <div class="df mb14">
+      <el-button class="mr20" type="primary" @click="addRow">添加一行</el-button>
+      <el-checkbox class="mr10" v-model="isCreate" @change="addCreate">添加与修改时间</el-checkbox>
+      <el-checkbox class="mr10" v-model="isDelete" @change="addDelete">伪删除</el-checkbox>
     </div>
     <div>
-      <Table
+      <el-table
         ref="selection"
-        :columns="columns"
         :data="tableField"
-        no-data-text="暂无数据"
-        highlight-row
-        :loading="loading"
+        empty-text="暂无数据"
+        highlight-current-row
+        v-loading="loading"
         max-height="600"
         size="small"
-        no-filtered-data-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="field">
-          <Input
-            :disabled="disabledInput(index)"
-            v-model="tableField[index].field"
-            @on-blur="changeField(index)"
-          ></Input>
-        </template>
-        <template slot-scope="{ row, index }" slot="field_type">
-          <Select
-            v-model="tableField[index].field_type"
-            :disabled="disabledInput(index)"
-            @on-change="changeItemField($event, index)"
-          >
-            <Option v-for="item in columnTypeList" :value="item" :key="item">{{ item }}</Option>
-          </Select>
-        </template>
-        <template slot-scope="{ row, index }" slot="limit">
-          <Input v-model="tableField[index].limit" :disabled="disabledInput(index)"></Input>
-        </template>
-        <template slot-scope="{ row, index }" slot="default">
-          <Input v-model="tableField[index].default" :disabled="disabledInput(index)"></Input>
-        </template>
-        <template slot-scope="{ row, index }" slot="comment">
-          <Input
-            v-model="tableField[index].comment"
-            :disabled="disabledInput(index)"
-            @on-change="(e) => changeComment(e, index)"
-          ></Input>
-        </template>
-        <template slot-scope="{ row, index }" slot="required">
-          <Checkbox v-model="tableField[index].required" :disabled="disabledInput(index)"></Checkbox>
-        </template>
-        <template slot-scope="{ row, index }" slot="is_table">
-          <Checkbox v-model="tableField[index].is_table" :disabled="disabledInput(index)"></Checkbox>
-        </template>
-        <template slot-scope="{ row, index }" slot="table_name">
-          <Input v-model="tableField[index].table_name" :disabled="disabledInput(index)"></Input>
-        </template>
-        <template slot-scope="{ row, index }" slot="from_type">
-          <Select v-model="tableField[index].from_type" :disabled="disabledInput(index)">
-            <Option v-for="item in fromTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-          </Select>
-        </template>
-        <template slot-scope="{ row, index }" slot="options">
-          <div class="table-options" v-if="['select', 'radio', 'checkbox'].includes(tableField[index].from_type)">
-            <Select>
-              <Option v-for="item in tableField[index].options" :value="item.value" :key="item.value">{{
-                item.label
-              }}</Option>
-            </Select>
-            <Icon class="create" type="md-create" @click="eidtOptions(index)" />
-          </div>
-          <div v-else>--</div>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a v-if="!tableField[index].primaryKey && !disabledInput(index)" @click="del(row, index)">删除</a>
-          <span v-else>--</span>
-        </template>
-      </Table>
+        <el-table-column label="" min-width="40">
+          <template slot-scope="scope">
+            <div class="drag" v-if="!disabledInput(scope.$index)">
+              <img class="handle" src="@/assets/images/drag-icon.png" alt="" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="表单名" min-width="130">
+          <template slot-scope="scope">
+            <el-input
+              v-model="scope.row.table_name"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
+              @change="(e) => changeComment(e, scope.$index)"
+            ></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="表单类型" min-width="130">
+          <template slot-scope="scope">
+            <el-select
+              clearable
+              v-model="scope.row.from_type"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
+              @change="(e) => fromTypeChange(e, scope.$index)"
+            >
+              <el-option
+                v-for="item in fromTypeList"
+                :value="item.value"
+                :key="item.value"
+                :label="item.label"
+              ></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column label="数据字典" min-width="130">
+          <template slot-scope="scope">
+            <div class="table-options" v-if="['select', 'radio', 'checkbox'].includes(scope.row.from_type)">
+              <el-select clearable v-model="scope.row.dictionary_id">
+                <el-option
+                  v-for="item in dictionaryList"
+                  :value="item.id"
+                  :key="item.id"
+                  :label="item.name"
+                ></el-option>
+              </el-select>
+              <i class="el-icon-edit create" @click="eidtOptions(scope.$index)" />
+            </div>
+            <div v-else>--</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="必填" width="50">
+          <template slot-scope="scope">
+            <el-checkbox
+              v-model="scope.row.required"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
+            ></el-checkbox>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="查询方式" min-width="130">
+          <template slot-scope="scope">
+            <el-select
+              clearable
+              v-model="scope.row.search"
+              :disabled="disabledInput(scope.$index)"
+              slot="prepend"
+              placeholder="请选择"
+            >
+              <el-option
+                :label="item.label"
+                :value="item.value"
+                v-for="item in searchType"
+                :key="item.value"
+              ></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column label="列表" width="50">
+          <template slot-scope="scope">
+            <el-checkbox
+              v-model="scope.row.is_table"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
+            ></el-checkbox>
+          </template>
+        </el-table-column>
+        <el-table-column label="字段名称" min-width="120">
+          <template slot-scope="scope">
+            <el-input
+              :disabled="disabledInput(scope.$index)"
+              v-model="scope.row.field"
+              @blur="changeField(scope.$index)"
+            ></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="字段类型" min-width="130">
+          <template slot-scope="scope">
+            <el-select
+              v-model="scope.row.field_type"
+              :disabled="disabledInput(scope.$index)"
+              clearable
+              @change="changeItemField($event, scope.$index)"
+            >
+              <el-option v-for="item in columnTypeList" :value="item" :key="item" :label="item"></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column label="长度" min-width="80">
+          <template slot-scope="scope">
+            <el-input
+              v-if="scope.row.field_type !== 'enum'"
+              v-model="scope.row.limit"
+              :disabled="disabledInput(scope.$index)"
+            ></el-input>
+            <el-select
+              v-else
+              v-model="scope.row.limit"
+              multiple
+              filterable
+              allow-create
+              clearable
+              default-first-option
+              placeholder="请添加"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column label="默认值" min-width="180">
+          <template slot-scope="scope">
+            <el-input
+              class="input-with-select"
+              v-model="scope.row.default"
+              :disabled="disabledInput(scope.$index) || scope.row.default_type !== '1'"
+            >
+              <el-select
+                class="code-table-sel"
+                clearable
+                v-model="scope.row.default_type"
+                slot="prepend"
+                :disabled="disabledInput(scope.$index)"
+                placeholder="请选择"
+                style="width: 100px"
+              >
+                <el-option
+                  :label="item.label"
+                  :value="item.value"
+                  v-for="item in defaultType"
+                  :key="item.value"
+                ></el-option>
+              </el-select>
+            </el-input>
+            <!-- <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> -->
+          </template>
+        </el-table-column>
+        <el-table-column label="字段描述" min-width="130">
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.comment" :disabled="disabledInput(scope.$index)"></el-input>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="关联表" min-width="130">
+          <template slot-scope="scope">
+            <el-cascader
+              clearable
+              filterable
+              v-model="scope.row.hasOne"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
+              :options="associationTable"
+              :props="props"
+            ></el-cascader>
+          </template>
+        </el-table-column>
+        <el-table-column label="索引" width="50">
+          <template slot-scope="scope">
+            <el-checkbox
+              v-model="scope.row.index"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
+            ></el-checkbox>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="100">
+          <template slot-scope="scope">
+            <a v-if="!scope.row.primaryKey && !disabledInput(scope.$index)" @click="del(row, scope.$index)">删除</a>
+            <span v-else>--</span>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
-    <Modal
-      v-model="optionsModal"
-      scrollable
+    <el-dialog
+      :visible.sync="optionsModal"
       title="字典配置"
-      closable
-      :mask-closable="false"
-      width="400px"
-      @on-ok="addOptions"
-      @on-cancel="optionsModal = false"
+      @close="beforeChange"
+      :close-on-click-modal="false"
+      width="600px"
     >
       <div class="options-list">
-        <div class="item" v-for="(item, index) in optionsList" :key="index">
-          <Input class="mr10" v-model="item.label" placeholder="label" style="width: 150px" />
-          <Input class="mr10" v-model="item.value" placeholder="value" style="width: 150px" />
-          <Icon v-if="index == optionsList.length - 1" class="add" type="md-add-circle" @click="addOneOptions" />
-          <Icon v-if="index > 0" class="add" type="md-remove-circle" @click="delOneOptions(index)" />
-        </div>
+        <el-form ref="form" :inline="true" label-width="80px">
+          <div class="mb10">
+            <el-form-item label="字典名称：">
+              <el-input class="mr10" v-model="dictionaryName" placeholder="字典名称" style="width: 310px" />
+            </el-form-item>
+          </div>
+          <div class="item" v-for="(item, index) in optionsList" :key="index">
+            <el-form-item label="数据名称：">
+              <el-input class="mr10" v-model="item.label" placeholder="label" style="width: 150px" />
+            </el-form-item>
+            <el-form-item label="数据值：">
+              <el-input class="mr10" v-model="item.value" placeholder="value" style="width: 150px" />
+            </el-form-item>
+            <div style="display: inline-block; margin-bottom: 14px">
+              <i
+                v-if="index == optionsList.length - 1"
+                class="el-icon-circle-plus-outline add"
+                title="新增"
+                @click="addOneOptions"
+              />
+              <i v-if="index > 0" class="el-icon-remove-outline delete" title="删除" @click="delOneOptions(index)" />
+            </div>
+          </div>
+        </el-form>
       </div>
-    </Modal>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="optionsModal = false">取 消</el-button>
+        <el-button type="primary" @click="addOptions">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { crudMenus, crudColumnType, crudFilePath } from '@/api/systemCodeGeneration';
-
+import {
+  crudMenus,
+  crudColumnType,
+  crudDataDictionary,
+  crudFilePath,
+  crudAssociationTable,
+  crudAssociationTableName,
+  crudDataDictionaryList,
+  saveCrudDataDictionaryList,
+} from '@/api/systemCodeGeneration';
+import Sortable from 'sortablejs';
 export default {
   name: '',
   props: {
@@ -140,80 +285,83 @@ export default {
       optionsModal: false,
       isCreate: false,
       isDelete: false,
-      columns: [
-        {
-          title: '字段名称',
-          slot: 'field',
-          minWidth: 100,
-        },
-        {
-          title: '字段类型',
-          slot: 'field_type',
-          minWidth: 100,
-        },
-        {
-          title: '长度',
-          slot: 'limit',
-          minWidth: 100,
-        },
-        {
-          title: '默认值',
-          slot: 'default',
-          minWidth: 100,
-        },
-        {
-          title: '字段描述',
-          slot: 'comment',
-          minWidth: 100,
-        },
-        {
-          title: '列表',
-          slot: 'is_table',
-          width: 70,
-          align: 'center',
-        },
-        {
-          title: '列表名',
-          slot: 'table_name',
-          minWidth: 120,
-          align: 'center',
-        },
-        {
-          title: '表单类型',
-          slot: 'from_type',
-          minWidth: 100,
-        },
-        {
-          title: '字典配置',
-          slot: 'options',
-          minWidth: 100,
-        },
-        {
-          title: '必填',
-          slot: 'required',
-          width: 70,
-          align: 'center',
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          width: 70,
-          align: 'center',
-        },
-      ],
       fromTypeList: [],
       loading: false,
       tableField: [],
       optionsList: [],
       index: 0,
       deleteField: [],
+      searchType: [],
+      dictionaryName: '', // 字典名称
+      defaultType: [], // 默认类型
+      associationTable: [], // 关联表
+      dictionaryList: [],
+      props: {
+        lazy: true,
+        options: this.associationTable,
+        checkStrictly: true,
+        lazyLoad(node, resolve) {
+          const { value } = node;
+          if (value) {
+            crudAssociationTableName(value).then((res) => {
+              resolve(res.data);
+            });
+          }
+          // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+        },
+      },
     };
   },
   created() {
     this.getCrudMenus();
   },
-  mounted() {},
+  mounted() {
+    this.$nextTick((e) => {
+      this.setSort();
+    });
+  },
   methods: {
+    beforeChange() {
+      this.getCrudDataDictionary();
+    },
+    setSort() {
+      // ref一定跟table上面的ref一致
+      const el = this.$refs.selection.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0];
+      this.sortable = Sortable.create(el, {
+        ghostClass: 'sortable-ghost',
+        handle: '.handle',
+        setData: function (dataTransfer) {
+          dataTransfer.setData('Text', '');
+        },
+        // 监听拖拽事件结束时触发
+        onEnd: (evt) => {
+          if (evt.newIndex === 0) {
+            setTimeout(() => {
+              this.elChangeExForArray(evt.oldIndex, evt.newIndex, this.tableField, true);
+            }, 100);
+          } else {
+            this.elChangeExForArray(evt.oldIndex, evt.newIndex, this.tableField);
+          }
+        },
+      });
+    },
+    elChangeExForArray(index1, index2, array, init) {
+      const arr = array;
+      const temp = array[index1];
+      const tempt = array[index2];
+      if (init) {
+        arr[index2] = tempt;
+        arr[index1] = temp;
+      } else {
+        arr[index1] = tempt;
+        arr[index2] = temp;
+      }
+      this.tableField = [];
+      this.$nextTick((e) => {
+        console.log(arr);
+        this.tableField = arr;
+      });
+    },
     disabledInput(index) {
       let fieldInfo = this.tableField[index];
       let res = ['addTimestamps', 'addSoftDelete'].includes(this.tableField[index].field_type);
@@ -242,11 +390,27 @@ export default {
     },
     eidtOptions(i) {
       this.index = i;
-      this.optionsList = this.tableField[i].options || [{ label: '', value: '' }];
+      this.dictionaryId = this.tableField[i].dictionary_id || 0;
       this.optionsModal = true;
+      if (this.dictionaryId) {
+        crudDataDictionaryList(this.dictionaryId).then((res) => {
+          this.dictionaryName = res.data.name;
+          this.optionsList = res.data.value || [{ label: '', value: '' }];
+        });
+      } else {
+        this.optionsList = [{ label: '', value: '' }];
+      }
     },
     addOptions() {
-      this.$set(this.tableField[this.index], 'options', this.optionsList);
+      // this.$set(this.tableField[this.index], 'options', this.optionsList);
+      let d = {
+        name: this.dictionaryName,
+        value: this.optionsList,
+      };
+      saveCrudDataDictionaryList(this.dictionaryId, d).then((res) => {
+        this.optionsModal = false;
+        this.getCrudDataDictionary();
+      });
     },
     changeRadio(status) {
       this.tableField = [];
@@ -261,7 +425,7 @@ export default {
       for (let i = 0; i < this.tableField.length; i++) {
         const el = this.tableField[i];
         if ((!el.field || !el.field_type) && !['addTimestamps', 'addSoftDelete'].includes(el.field_type)) {
-          return this.$Message.warning('请先完善上一条数据');
+          return this.$message.warning('请先完善上一条数据');
         }
         if (
           el.is_table &&
@@ -269,7 +433,7 @@ export default {
           !Number(el.primaryKey) &&
           !['addTimestamps', 'addSoftDelete'].includes(el.field_type)
         ) {
-          return this.$Message.warning('请输入列表名');
+          return this.$message.warning('请输入列表名');
         }
       }
       let i = this.tableField.length;
@@ -287,13 +451,18 @@ export default {
         field: '',
         field_type: '',
         default: '',
+        default_type: '-1',
         comment: '',
         required: false,
         is_table: true,
         table_name: '',
         limit: '',
         primaryKey: 0,
-        from_type: '0',
+        from_type: '',
+        search: '',
+        dictionary_id: 0,
+        hasOne: [],
+        index: false,
       });
       // this.tableField.push();
     },
@@ -305,32 +474,42 @@ export default {
           this.$nextTick((e) => {
             this.isCreate = false;
           });
-          return this.$Message.warning('已存在 create_time或update_time');
+          return this.$message.warning('已存在 create_time或update_time');
         }
         let data = [
           {
             field: 'create_time',
             field_type: 'timestamp',
             default: '',
+            default_type: '-1',
             comment: '添加时间',
             required: false,
-            is_table: true,
+            is_table: false,
             table_name: '添加时间',
             limit: '',
             primaryKey: 0,
-            from_type: '0',
+            from_type: '',
+            search: '',
+            dictionary_id: 0,
+            hasOne: [],
+            index: false,
           },
           {
             field: 'update_time',
             field_type: 'timestamp',
+            default_type: '-1',
             default: '',
             comment: '修改时间',
             required: false,
-            is_table: true,
+            is_table: false,
             table_name: '修改时间',
             limit: '',
             primaryKey: 0,
-            from_type: '0',
+            from_type: '',
+            search: '',
+            dictionary_id: 0,
+            hasOne: [],
+            index: false,
           },
         ];
         this.tableField = [...this.tableField, ...data];
@@ -344,20 +523,25 @@ export default {
         let haveDel = this.tableField.findIndex((e) => e.field === 'delete_time');
         if (haveDel > 0) {
           this.isDelete = false;
-          return this.$Message.warning('已存在 delete_time');
+          return this.$message.warning('已存在 delete_time');
         }
         let data = [
           {
             field: 'delete_time',
             field_type: 'timestamp',
             default: '',
+            default_type: '-1',
             comment: '伪删除',
             required: false,
             is_table: false,
             table_name: '伪删除',
             limit: '',
             primaryKey: 0,
-            from_type: '0',
+            from_type: '',
+            search: '',
+            dictionary_id: 0,
+            hasOne: [],
+            index: false,
           },
         ];
         this.tableField = [...this.tableField, ...data];
@@ -367,12 +551,11 @@ export default {
       }
     },
     changeField(index) {
-      console.log(this.tableField[index].field)
       if (this.tableField[index].field) {
         for (let i = 0; i < this.tableField.length; i++) {
           const e = this.tableField[i];
           if (['id', 'create_time', 'update_time', 'delete_time'].includes(this.tableField[index].field)) {
-            this.$Message.warning('列表中已存在该字段名称');
+            this.$message.warning('列表中已存在该字段名称');
             this.tableField[index].field = '';
             return;
           }
@@ -380,16 +563,40 @@ export default {
       }
     },
     changeComment(e, index) {
-      this.tableField[index].table_name = e.target.value;
+      if (!this.tableField[index].comment) this.tableField[index].comment = e;
+    },
+    fromTypeChange(e, index) {
+      this.fromTypeList.map((item) => {
+        if (item.value == e) {
+          this.tableField[index].limit = item.limit || '';
+          this.tableField[index].field_type = item.field_type || '';
+        }
+      });
+      // if (!this.tableField[index].comment) this.tableField[index].comment = e;
     },
     getCrudMenus() {
       crudMenus().then((res) => {
-        console.log(res);
         this.menusList = res.data;
       });
       crudColumnType().then((res) => {
         this.columnTypeList = res.data.types;
         this.fromTypeList = res.data.form;
+        this.defaultType = res.data.default_type;
+        this.searchType = res.data.search_type;
+      });
+      this.getCrudDataDictionary();
+      crudAssociationTable().then((res) => {
+        this.associationTable = res.data;
+      });
+    },
+    getCrudDataDictionary() {
+      crudDataDictionary().then((res) => {
+        this.dictionaryList = res.data;
+      });
+    },
+    getCrudAssociationTableName(name) {
+      crudAssociationTableName(name).then((res) => {
+        console.log(res);
       });
     },
     del(row, index) {
@@ -410,35 +617,66 @@ export default {
   },
 };
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .form-width {
   width: 500px;
 }
-.item{
-  display flex
-  margin-bottom 10px
-  .row{
-    width 140px
-    margin-right 10px
+.item {
+  display: flex;
+  margin-bottom: 10px;
+  .row {
+    width: 140px;
+    margin-right: 10px;
   }
 }
-.table-options{
-  display flex
-  align-items center
-  .create{
+.table-options {
+  display: flex;
+  align-items: center;
+  .create {
     font-size: 16px;
-    margin-left 10px
-    cursor pointer
+    margin-left: 10px;
+    cursor: pointer;
   }
 }
-.options-list{
-  .item{
-    display flex
-    align-items center
-    .add{
-      font-size: 24px
-      color #2d8cf0
+.options-list {
+  .item {
+    display: flex;
+    align-items: center;
+    .add {
+      font-size: 18px;
+      cursor: pointer;
+      margin-right: 5px;
+      // color: #2d8cf0;
+    }
+    .delete {
+      font-size: 18px;
+      cursor: pointer;
+      color: #fb0144;
     }
   }
+}
+/deep/ .el-input-group__prepend .el-select {
+  width: 85px;
+}
+.drag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .handle {
+    width: 9px;
+    height: 15px;
+  }
+}
+.code-table-sel /deep/ .el-input__inner {
+  border: none;
+  border-color: transparent;
+  background-color: transparent;
+}
+/deep/ .el-input-group__prepend div.el-select .el-input__inner {
+  height: 28px !important;
+  line-height: 28px !important;
+}
+/deep/.el-input-group__prepend div.el-select .el-input--small .el-input__icon {
+  line-height: 28px;
 }
 </style>

@@ -455,10 +455,20 @@
 				{
 					"path": "wechat_login/index",
 					"style": {
-						"navigationBarTitleText": "账户登录",
+						"navigationBarTitleText": "",
 						"navigationStyle": "custom",
 						"app-plus": {
-							"scrollIndicator": false //禁用原生导航栏
+							"scrollIndicator": "none"
+						}
+					}
+				}, 
+				{
+					"path": "binding_phone/index",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"app-plus": {
+							"scrollIndicator": "none"
 						}
 					}
 				},
@@ -951,7 +961,13 @@
 					}
 				}
 				// #endif
-			]
+			],
+			"plugins": {
+				"live-player-plugin": {
+					"version": "1.3.5",
+					"provider": "wx2b03c6e691cd7370"
+				}
+			}
 		},
 		{
 			"root": "pages/goods_details",

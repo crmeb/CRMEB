@@ -3,5 +3,5 @@
 
 use think\facade\Route;
 
-{%content-php%}
+{%CONTENT_PHP%}
 

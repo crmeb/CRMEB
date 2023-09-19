@@ -1,106 +1,107 @@
 <template>
   <div>
-    <Modal
-      v-model="modals"
-      width="850"
-      scrollable
-      footer-hide
-      closable
-      :title="titleFrom"
-      :mask-closable="false"
-      @on-cancel="handleReset"
-    >
-      <Form ref="formValidate" :model="formValidate" :label-width="100" :rules="ruleValidate" @submit.native.prevent>
-        <Row type="flex" :gutter="24">
-          <Col span="24">
-            <FormItem label="数据组名称：" prop="name">
-              <Input v-model="formValidate.name" placeholder="请输入数据组名称" style="width: 90%"></Input>
-            </FormItem>
-          </Col>
-          <Col span="24">
-            <FormItem label="数据字段：" prop="config_name">
-              <Input v-model="formValidate.config_name" placeholder="请输入数据字段" style="width: 90%"></Input>
-            </FormItem>
-          </Col>
-          <Col span="24">
-            <FormItem label="数据简介：" prop="info">
-              <Input v-model="formValidate.info" placeholder="请输入数据简介" style="width: 90%"></Input>
-            </FormItem>
-          </Col>
-          <Col span="24">
-            <FormItem label="数类型：" prop="cate_id">
-              <RadioGroup v-model="formValidate.cate_id">
-                <Radio :label="0">默认</Radio>
-                <Radio :label="1">数据</Radio>
-              </RadioGroup>
-            </FormItem>
-          </Col>
-          <Col span="24" v-for="(item, index) in formValidate.typelist" :key="index">
-            <Col v-bind="grid">
-              <FormItem
+    <el-dialog :visible.sync="modals" width="720px" :title="titleFrom" :close-on-click-modal="false">
+      <el-form
+        ref="formValidate"
+        :model="formValidate"
+        label-width="100px"
+        :rules="ruleValidate"
+        @submit.native.prevent
+      >
+        <el-row :gutter="24">
+          <el-col :span="24">
+            <el-form-item label="数据组名称：" prop="name">
+              <el-input v-model="formValidate.name" placeholder="请输入数据组名称" style="width: 90%"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="数据字段：" prop="config_name">
+              <el-input v-model="formValidate.config_name" placeholder="请输入数据字段" style="width: 90%"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="数据简介：" prop="info">
+              <el-input v-model="formValidate.info" placeholder="请输入数据简介" style="width: 90%"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="数类型：" prop="cate_id">
+              <el-radio-group v-model="formValidate.cate_id">
+                <el-radio :label="0">默认</el-radio>
+                <el-radio :label="1">数据</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" v-for="(item, index) in formValidate.typelist" :key="index">
+            <el-col v-bind="grid">
+              <el-form-item
                 :label="'字段' + (index + 1) + '：'"
+                label-width="90px"
                 :prop="'typelist.' + index + '.name.value'"
                 :rules="{ required: true, message: '请输入字段名称：姓名', trigger: 'blur' }"
               >
-                <Input v-model="item.name.value" placeholder="字段名称：姓名"></Input>
-              </FormItem>
-            </Col>
-            <Col v-bind="grid" class="goupBox">
-              <FormItem
+                <el-input v-model="item.name.value" placeholder="字段名称：姓名"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col v-bind="grid" class="goupBox">
+              <el-form-item
+                  label-width="0"
                 :prop="'typelist.' + index + '.title.value'"
                 :rules="{ required: true, message: '请输入字段配置名', trigger: 'blur' }"
               >
-                <Input v-model="item.title.value" placeholder="字段配置名：name"></Input>
-              </FormItem>
-            </Col>
-            <Col v-bind="grid" prop="type" class="goupBox mr15">
-              <FormItem
+                <el-input v-model="item.title.value" placeholder="字段配置名：name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col v-bind="grid" prop="type" class="goupBox mr15">
+              <el-form-item
                 :prop="'typelist.' + index + '.type.value'"
                 :rules="{ required: true, message: '请选择字段类型', trigger: 'change' }"
+                label-width="0"
               >
-                <i-select placeholder="字段类型" v-model="item.type.value">
-                  <i-option value="input">文本框</i-option>
-                  <i-option value="textarea">多行文本框</i-option>
-                  <i-option value="radio">单选框</i-option>
-                  <i-option value="checkbox">多选框</i-option>
-                  <i-option value="select">下拉选择</i-option>
-                  <i-option value="upload">单图</i-option>
-                  <i-option value="uploads">多图</i-option>
-                </i-select>
-              </FormItem>
-            </Col>
-            <Col span="1">
-              <Icon type="ios-close-circle-outline" class="cur" @click="delGroup(index)" />
-            </Col>
-            <Col
-              span="24"
+                <el-select placeholder="字段类型" v-model="item.type.value">
+                  <el-option value="input">文本框</el-option>
+                  <el-option value="textarea">多行文本框</el-option>
+                  <el-option value="radio">单选框</el-option>
+                  <el-option value="checkbox">多选框</el-option>
+                  <el-option value="select">下拉选择</el-option>
+                  <el-option value="upload">单图</el-option>
+                  <el-option value="uploads">多图</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col span="1">
+              <i class="el-icon-close cur" @click="delGroup(index)"></i>
+            </el-col>
+            <el-col
+              :span="24"
               v-if="item.type.value === 'radio' || item.type.value === 'checkbox' || item.type.value === 'select'"
             >
-              <FormItem
+              <el-form-item
                 :prop="'typelist.' + index + '.param.value'"
                 :rules="{ required: true, message: '请输入参数方式', trigger: 'blur' }"
               >
-                <Input
+                <el-input
                   type="textarea"
                   :rows="4"
                   :placeholder="item.param.placeholder"
                   v-model="item.param.value"
                   style="width: 90%"
-                ></Input>
-              </FormItem>
-            </Col>
-          </Col>
-          <Col>
-            <FormItem>
-              <Button type="primary" @click="addType">添加字段</Button>
-            </FormItem>
-          </Col>
-          <Col span="24">
-            <Button type="primary" long @click="handleSubmit('formValidate')" :disabled="valids">提交</Button>
-          </Col>
-        </Row>
-      </Form>
-    </Modal>
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-col>
+          <el-col>
+            <el-form-item>
+              <el-button type="primary" @click="addType">添加字段</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleReset">取 消</el-button>
+        <el-button type="primary" @click="handleSubmit('formValidate')" :disabled="valids">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -189,7 +190,7 @@ export default {
           this.formValidate = res.data.info;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 提交
@@ -201,22 +202,22 @@ export default {
       };
       this.$refs[name].validate((valid) => {
         if (valid) {
-          if (this.formValidate.typelist.length === 0) return this.$Message.error('请添加字段名称：姓名！');
+          if (this.formValidate.typelist.length === 0) return this.$message.error('请添加字段名称：姓名！');
           groupAddApi(data)
             .then(async (res) => {
-              this.$Message.success(res.msg);
+              this.$message.success(res.msg);
               this.modals = false;
               this.$refs[name].resetFields();
               this.formValidate.typelist = [];
               this.$emit('getList');
             })
             .catch((res) => {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
         } else {
-          if (!this.formValidate.name) return this.$Message.error('请添加数据组名称！');
-          if (!this.formValidate.config_name) return this.$Message.error('请添加数据字段！');
-          if (!this.formValidate.info) return this.$Message.error('请添加数据简介！');
+          if (!this.formValidate.name) return this.$message.error('请添加数据组名称！');
+          if (!this.formValidate.config_name) return this.$message.error('请添加数据字段！');
+          if (!this.formValidate.info) return this.$message.error('请添加数据简介！');
         }
       });
     },

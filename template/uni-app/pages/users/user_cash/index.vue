@@ -32,12 +32,16 @@
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>{{$t(`提现`)}}</view>
-							<view class='input'><input :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
+							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
 						<view class='tip'>
 							{{$t(`当前可提现金额`)}}: <text
-								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
+								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}}</text>，{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
+						</view>
+						<view class='tip'>
+							{{$t(`提现手续费: `)}}<text class="price">{{withdrawal_fee}}%</text>，{{$t(`实际到账: `)}}<text
+								class="price">{{$t(`￥`)}}{{true_money}}</text>
 						</view>
 						<view class='tip'>
 							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
@@ -54,7 +58,7 @@
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>{{$t(`提现`)}}</view>
-							<view class='input'><input :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
+							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between' v-if="!brokerageType">
@@ -64,8 +68,7 @@
 									<image :src="qrcodeUrlW"></image>
 									<text class='iconfont icon-guanbi1 fontcolor' @click='DelPicW'></text>
 								</view>
-								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("W")'
-									v-else>
+								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("W")' v-else>
 									<text class='iconfont icon-icon25201'></text>
 									<view>{{$t(`上传图片`)}}</view>
 								</view>
@@ -74,6 +77,10 @@
 						<view class='tip'>
 							{{$t(`当前可提现金额`)}}: <text
 								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
+						</view>
+						<view class='tip'>
+							{{$t(`提现手续费: `)}}<text class="price">{{withdrawal_fee}}%</text>，{{$t(`实际到账: `)}}<text
+								class="price">{{$t(`￥`)}}{{true_money}}</text>
 						</view>
 						<view class='tip'>
 							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
@@ -90,7 +97,7 @@
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>{{$t(`提现`)}}</view>
-							<view class='input'><input :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
+							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between'>
@@ -100,8 +107,7 @@
 									<image :src="qrcodeUrlZ"></image>
 									<text class='iconfont icon-guanbi1 fontcolor' @click='DelPicZ'></text>
 								</view>
-								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("Z")'
-									v-else>
+								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("Z")' v-else>
 									<text class='iconfont icon-icon25201'></text>
 									<view>{{$t(`上传图片`)}}</view>
 								</view>
@@ -110,6 +116,10 @@
 						<view class='tip'>
 							{{$t(`当前可提现金额`)}}: <text
 								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
+						</view>
+						<view class='tip'>
+							{{$t(`提现手续费: `)}}<text class="price">{{withdrawal_fee}}%</text>，{{$t(`实际到账: `)}}<text
+								class="price">{{$t(`￥`)}}{{true_money}}</text>
 						</view>
 						<view class='tip'>
 							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
@@ -162,7 +172,9 @@
 				qrcodeUrlW: "",
 				qrcodeUrlZ: "",
 				prevent: false, //避免重复提交成功多次
-				brokerageType: 0 // 佣金到账方式
+				brokerageType: 0, // 佣金到账方式
+				withdrawal_fee: 0, //提现手续费
+				true_money: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -186,6 +198,17 @@
 			}
 		},
 		methods: {
+			inputNum: function(e) {
+				let val = e.detail.value;
+				let dot = val.indexOf('.');
+				if (dot > -1) {
+					this.moneyMaxLeng = dot + 3;
+				} else {
+					this.moneyMaxLeng = 8
+				}
+				this.true_money = Math.floor((this.$util.$h.Mul(val, this.$util.$h.Div(this.$util.$h.Sub(100, this
+					.withdrawal_fee), 100))) * 100) / 100 || 0;
+			},
 			// uploadpicW(){
 			// 	this.uploadpic(this.qrcodeUrlW);
 			// },
@@ -230,10 +253,11 @@
 					let array = res.data.extractBank;
 					array.unshift('请选择银行');
 					array.forEach((v, i) => {
-					    array.splice(i,1,that.$t(v))
+						array.splice(i, 1, that.$t(v))
 					})
 					that.$set(that, 'array', array);
 					that.minPrice = res.data.minPrice;
+					that.withdrawal_fee = res.data.withdrawal_fee;
 					that.brokerageType = res.data.brokerageType ? parseInt(res.data.brokerageType) : 0;
 				});
 			},
@@ -294,7 +318,7 @@
 					value.bankname = that.array[that.index];
 				} else if (that.currentTab == 1) { //微信
 					value.extract_type = 'weixin';
-					
+
 					// 自动提现隐藏账号
 					if (!that.brokerageType && !value.name.trim()) return this.$util.Tips({
 						title: this.$t(`请填写微信号`)

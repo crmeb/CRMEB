@@ -13,11 +13,7 @@
         <div class="chat-content">
           <div class="chat-body">
             <happy-scroll size="5" resize hide-horizontal :scroll-top="scrollTop" @vertical-start="scrollHandler">
-              <div style="width: 600px; padding: 20px" id="chat_scroll" ref="scrollBox">
-                <Spin v-show="isLoad">
-                  <Icon type="ios-loading" size="18" class="demo-spin-icon-load"></Icon>
-                  <div>Loading</div>
-                </Spin>
+              <div style="width: 600px; padding: 20px" id="chat_scroll" ref="scrollBox" v-loading="isLoad">
                 <div
                   class="chat-item"
                   v-for="(item, index) in records"
@@ -51,12 +47,7 @@
                             <div class="name line1">
                               {{ item.productInfo.store_name }}
                             </div>
-                            <div class="sku">
-                              库存：{{ item.productInfo.stock }} 销量：{{
-                                parseInt(item.productInfo.sales) +
-                                parseInt(item.productInfo.ficti ? item.productInfo.ficti : 0)
-                              }}
-                            </div>
+                            <div class="sku">库存：{{ item.productInfo.stock }} 销量：{{ item.productInfo.sales }}</div>
                             <div class="price-box">
                               <div class="num">¥ {{ item.productInfo.price }}</div>
                               <a herf="javascript:;" class="more" @click.stop="lookGoods(item)">查看商品 ></a>
@@ -95,8 +86,8 @@
                   <span class="iconfont iconbiaoqing1"></span>
                 </div>
                 <div class="icon-item">
-                  <Upload
-                    :show-upload-list="false"
+                  <el-upload
+                    :show-file-list="false"
                     :headers="header"
                     :data="uploadData"
                     :on-success="handleSuccess"
@@ -105,7 +96,7 @@
                     :action="upload"
                   >
                     <span class="iconfont icontupian1"></span>
-                  </Upload>
+                  </el-upload>
                 </div>
                 <div class="icon-item" @click.stop.stop="isMsg = true">
                   <span class="iconfont iconliaotian"></span>
@@ -129,17 +120,18 @@
               </div>
             </div>
             <div class="textarea-box" style="position: relative">
-              <Input
+              <el-input
+                ref="chatInput"
                 v-paste="handleParse"
                 v-model="chatCon"
                 type="textarea"
-                :rows="8"
+                :rows="7"
                 @on-keydown="listen($event)"
                 placeholder="请输入文字内容"
                 style="font-size: 14px; height: 150px"
               />
               <div class="send-btn">
-                <Button class="btns" type="primary" :disabled="disabled" @click.stop="sendText">发送</Button>
+                <el-button class="btns" type="primary" :disabled="disabled" @click.stop="sendText">发送</el-button>
               </div>
             </div>
           </div>
@@ -154,9 +146,9 @@
         </div>
       </div>
       <!-- 用户标签 -->
-      <Modal v-model="isMsg" :mask="true" class="none-radius isMsgbox" width="600" :footer-hide="true">
+      <el-dialog :visible.sync="isMsg" title="客服话术" class="none-radius isMsgbox" width="720px">
         <msgWindow v-if="isMsg" @close="msgClose" @activeTxt="activeTxt"></msgWindow>
-      </Modal>
+      </el-dialog>
       <!-- 商品弹窗 -->
       <div v-if="isProductBox">
         <div class="bg" @click.stop="isProductBox = false"></div>
@@ -164,9 +156,9 @@
       </div>
       <!-- 订单详情 -->
       <div v-if="isOrder">
-        <Modal v-model="isOrder" title="订单信息" width="700" :footer-hide="true" :mask="true" class="none-radius">
+        <el-dialog :visible.sync="isOrder" title="订单信息" width="720px" class="none-radius">
           <orderDetail :orderId="orderId"></orderDetail>
-        </Modal>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -347,10 +339,10 @@ export default {
           // mp3.play();
         });
         ws.$on('socket_error', () => {
-          this.$Message.error('连接失败');
+          this.$message.error('连接失败');
         });
         ws.$on('err_tip', (data) => {
-          this.$Message.error(data.msg);
+          this.$message.error(data.msg);
         });
         //用户上线提醒广播
         ws.$on('user_online', (data) => {
@@ -378,7 +370,7 @@ export default {
   },
   methods: {
     handleFormatError(file) {
-      this.$Message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
+      this.$message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
     },
     bindEnter(e) {},
     //微信截图上传图片时触发
@@ -415,10 +407,10 @@ export default {
     // 上传成功
     handleSuccess(res, file, fileList) {
       if (res.status === 200) {
-        this.$Message.success(res.msg);
+        this.$message.success(res.msg);
         this.sendMsg(res.data.url, 3);
       } else {
-        this.$Message.error(res.msg);
+        this.$message.error(res.msg);
       }
     },
     //订单详情
@@ -442,10 +434,11 @@ export default {
       if (e.shiftKey && e.keyCode == 13) {
       } else if (e.keyCode == 13) {
         if (e.target.value == '') {
-          return this.$Message.error('请输入消息');
+          return this.$message.error('请输入消息');
         }
         this.sendMsg(e.target.value, 1);
         this.chatCon = '';
+        this.$nextTick(() => this.$refs.chatInput.focus());
       }
     },
     // 输入框选择表情
@@ -500,6 +493,7 @@ export default {
     sendText() {
       this.sendMsg(this.chatCon, 1);
       this.chatCon = '';
+      this.$nextTick(() => this.$refs.chatInput.focus());
     },
 
     // 统一发送处理
@@ -611,7 +605,7 @@ export default {
     transferPeople(data) {
       this.transferId = data.id;
       this.isTransfer = false;
-      this.$Message.success('转接成功');
+      this.$message.success('转接成功');
       Socket.then((ws) => {
         ws.send({
           type: 'to_chat',
@@ -744,7 +738,7 @@ export default {
 
                   .more {
                     font-size: 12px;
-                    color: #1890FF;
+                    color: var(--prev-color-primary);
                   }
                 }
 
@@ -943,5 +937,12 @@ export default {
 }
 .emoji-box::-webkit-scrollbar {
   width: 0;
+}
+.textarea-box /deep/ .ivu-input:focus{
+  box-shadow: none;
+}
+.textarea-box /deep/ .el-textarea__inner{
+  border:none;
+  resize: none;
 }
 </style>

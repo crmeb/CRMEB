@@ -71,7 +71,7 @@ class StoreCouponService extends BaseServices
                 $f[] = Form::select('category_id', '选择品类')->setOptions(Form::setOptions($options))->filterable(1)->col(12);
                 break;
             case 2://商品券
-                $f[] = Form::frameImages('image', '商品', Url::buildUrl(config('app.admin_prefix', 'admin') . '/store.StoreProduct/index', array('fodder' => 'image', 'type' => 'many')))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->props(['srcKey' => 'image']);
+                $f[] = Form::frameImages('image', '商品', Url::buildUrl(config('app.admin_prefix', 'admin') . '/store.StoreProduct/index', array('fodder' => 'image', 'type' => 'many')))->icon('el-icon-picture-outline')->width('950px')->height('560px')->props(['srcKey' => 'image', 'footer' => false]);
                 $f[] = Form::hidden('product_id', '');
                 break;
         }

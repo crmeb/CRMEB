@@ -1,79 +1,112 @@
 <template>
   <div>
-    <Row class="ivu-mt box-wrapper">
-      <Col v-bind="grid1" class="left-wrapper">
-        <Menu :theme="theme3" :active-name="sortName" width="auto">
-          <MenuGroup>
-            <MenuItem
-              :name="item.id"
-              class="menu-item"
-              :class="index === current ? 'showOn' : ''"
-              v-for="(item, index) in labelSort"
-              :key="index"
-              @click.native="bindMenuItem(item, index)"
-            >
-              {{ item.name }}
-              <div class="icon-box" v-if="item.id != 0">
-                <Icon type="ios-more" size="24" @click.stop="showMenu(item)" />
-              </div>
-              <div class="right-menu ivu-poptip-inner" v-show="item.status" v-if="item.id != 0">
-                <div class="ivu-poptip-body" @click="labelEdit(item)">
-                  <div class="ivu-poptip-body-content"><div class="ivu-poptip-body-content-inner">编辑小组</div></div>
-                </div>
-                <div class="ivu-poptip-body" @click="deleteSort(item, '删除分类', index)">
-                  <div class="ivu-poptip-body-content"><div class="ivu-poptip-body-content-inner">删除小组</div></div>
-                </div>
-              </div>
-            </MenuItem>
-          </MenuGroup>
-        </Menu>
-      </Col>
-      <Col v-bind="grid2" ref="rightBox">
-        <Card :bordered="false" dis-hover>
-          <Row type="flex" class="mb20">
-            <Col span="24">
-              <Button v-auth="['setting-store_service-add']" type="primary" icon="md-add" @click="add" class="mr10"
-                >添加话术</Button
+    <el-row class="ivu-mt box-wrapper">
+      <el-col v-bind="grid1" class="left-wrapper">
+        <div class="tree_tit" @click="addSort">
+          <i class="el-icon-circle-plus"></i>
+          添加分类
+        </div>
+        <div class="tree">
+          <el-tree
+            :data="labelSort"
+            node-key="id"
+            default-expand-all
+            highlight-current
+            :expand-on-click-node="false"
+            @node-click="bindMenuItem"
+            :current-node-key="treeId"
+          >
+            <span class="custom-tree-node" slot-scope="{ data }">
+              <span class="file-name">
+                <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
+                {{ data.name }}</span
               >
-              <Button
-                v-auth="['setting-store_service-add']"
-                type="success"
-                icon="md-add"
-                @click="addSort"
-                style="margin-left: 10px"
-                >添加分类</Button
-              >
-            </Col>
-          </Row>
-          <Table
-            :columns="columns1"
+              <span v-show="data.id !== '' && data.id !== 0">
+                <el-dropdown @command="(command) => clickMenu(data, command)">
+                  <i class="el-icon-more el-icon--right"></i>
+                  <template slot="dropdown">
+                    <el-dropdown-menu>
+                      <el-dropdown-item command="1">编辑分类</el-dropdown-item>
+                      <el-dropdown-item v-if="data.id" command="2">删除分类</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </span>
+            </span>
+          </el-tree>
+        </div>
+      </el-col>
+      <el-col v-bind="grid2" ref="rightBox">
+        <el-card :bordered="false" shadow="never">
+          <el-row class="mb14">
+            <el-col :span="24">
+              <el-button v-auth="['setting-store_service-add']" type="primary" @click="add">添加话术</el-button>
+              <!-- <el-button v-auth="['setting-store_service-add']" type="success" @click="addSort">添加分类</el-button> -->
+            </el-col>
+          </el-row>
+          <el-table
             :data="tableList"
-            :loading="loading"
-            highlight-row
+            v-loading="loading"
+            highlight-current-row
             no-userFrom-text="暂无数据"
             no-filtered-userFrom-text="暂无筛选结果"
           >
-            <template slot-scope="{ row, index }" slot="avatar">
-              <div class="tabBox_img" v-viewer>
-                <img v-lazy="row.avatar" />
-              </div>
-            </template>
-            <template slot-scope="{ row, index }" slot="add_time">
-              <span> {{ row.add_time }}</span>
-            </template>
-
-            <template slot-scope="{ row, index }" slot="action">
-              <a @click="edit(row)">编辑</a>
-              <Divider type="vertical" />
-              <a @click="del(row, '删除客服', index)">删除</a>
-            </template>
-          </Table>
+            <el-table-column label="ID" width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="分类" min-width="120">
+              <template slot-scope="scope">
+                <span>{{ scope.row.cate_name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="标题" min-width="120">
+              <template slot-scope="scope">
+                <el-tooltip placement="top" :open-delay="600">
+                  <div slot="content">{{ scope.row.title }}</div>
+                  <span class="line2">{{ scope.row.title }}</span>
+                </el-tooltip>
+              </template>
+            </el-table-column>
+            <el-table-column label="详情" min-width="120">
+              <template slot-scope="scope">
+                <el-tooltip placement="top" :open-delay="600">
+                  <div slot="content">{{ scope.row.message }}</div>
+                  <span class="line2">{{ scope.row.message }}</span>
+                </el-tooltip>
+              </template>
+            </el-table-column>
+            <el-table-column label="排序" min-width="120">
+              <template slot-scope="scope">
+                <span>{{ scope.row.sort }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="添加时间" min-width="150">
+              <template slot-scope="scope">
+                <span>{{ scope.row.add_time }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="170">
+              <template slot-scope="scope">
+                <a @click="edit(scope.row)">编辑</a>
+                <el-divider direction="vertical"></el-divider>
+                <a @click="del(scope.row, '删除客服', scope.$index)">删除</a>
+              </template>
+            </el-table-column>
+          </el-table>
           <div class="acea-row row-right page">
-            <Page :total="total" show-elevator show-total @on-change="pageChange" :page-size="tableFrom.limit" />
+            <pagination
+              v-if="total"
+              :total="total"
+              :page.sync="tableFrom.page"
+              :limit.sync="tableFrom.limit"
+              @pagination="getList"
+            />
           </div>
-        </Card>
-      </Col>
-    </Row>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -101,14 +134,15 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 80;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
-      return this.isMobile ? 'top' : 'left';
+      return this.isMobile ? 'top' : 'right';
     },
   },
   data() {
     return {
+      treeId: '',
       grid1: {
         xl: 4,
         lg: 4,
@@ -189,86 +223,7 @@ export default {
       },
       loading: false,
       tableList: [],
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '分类',
-          key: 'cate_name',
-          minWidth: 120,
-        },
-        {
-          title: '标题',
-          key: 'title',
-          minWidth: 120,
-        },
-        {
-          title: '详情',
-          key: 'message',
-          minWidth: 320,
-        },
-        {
-          title: '排序',
-          key: 'sort',
-          minWidth: 60,
-        },
-        {
-          title: '添加时间',
-          slot: 'add_time',
-          minWidth: 120,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 150,
-        },
-      ],
-      columns4: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center',
-        },
-        {
-          title: 'ID',
-          key: 'uid',
-          width: 80,
-        },
-        {
-          title: '微信用户名称',
-          key: 'nickname',
-          minWidth: 160,
-        },
-        {
-          title: '客服头像',
-          slot: 'headimgurl',
-          minWidth: 60,
-        },
-        {
-          title: '用户类型',
-          slot: 'user_type',
-          width: 100,
-        },
-        {
-          title: '性别',
-          slot: 'sex',
-          minWidth: 60,
-        },
-        {
-          title: '地区',
-          slot: 'country',
-          minWidth: 120,
-        },
-        {
-          title: '是否关注公众号',
-          slot: 'subscribe',
-          minWidth: 120,
-        },
-      ],
+
       loading2: false,
       total2: 0,
       addFrom: {
@@ -314,7 +269,10 @@ export default {
     labelEdit(item) {
       this.$modalForm(speechcraftcateEdit(item.id)).then(() => this.getUserLabelAll(1));
     },
-    deleteSort(row, tit, num) {
+    deleteSort(row, tit) {
+      let num = this.labelSort.findIndex((e) => {
+        return e.id == row.id;
+      });
       let delfromData = {
         title: tit,
         num: num,
@@ -324,14 +282,22 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.labelSort.splice(num, 1);
           this.labelSort = [];
           this.getUserLabelAll();
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
+    },
+    // 点击菜单
+    clickMenu(data, name) {
+      if (name == 1) {
+        this.labelEdit(data);
+      } else if (name == 2) {
+        this.deleteSort(data, '删除分类');
+      }
     },
     // 显示标签小菜单
     showMenu(item) {
@@ -355,7 +321,7 @@ export default {
     cancel() {
       this.formValidate = {
         page: 1,
-        limit: 10,
+        limit: 15,
         data: '',
         type: '',
         nickname: '',
@@ -380,7 +346,7 @@ export default {
             })
             .catch((res) => {
               this.loading2 = false;
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
             });
           resolve();
         }, 2000);
@@ -407,7 +373,7 @@ export default {
         })
         .catch((res) => {
           this.loading5 = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange5(index) {
@@ -437,7 +403,7 @@ export default {
         })
         .catch((res) => {
           this.loading3 = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange3(index) {
@@ -464,7 +430,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e;
-      this.formValidate.data = this.timeVal.join('-');
+      this.formValidate.data = this.timeVal ? this.timeVal.join('-') : '';
       this.formValidate.page = 1;
       this.getListService();
     },
@@ -490,7 +456,7 @@ export default {
         })
         .catch((res) => {
           this.loading2 = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     pageChange2(pageIndex) {
@@ -514,11 +480,11 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.tableList.splice(num, 1);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 列表
@@ -533,12 +499,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.tableFrom.page = index;
-      this.getList();
     },
     // 修改是否显示
     onchangeIsShow(row) {
@@ -548,26 +510,26 @@ export default {
       };
       kefusetStatusApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 添加客服
     putRemark() {
       if (this.addFrom.uids.length === 0) {
-        return this.$Message.warning('请选择要添加的客服');
+        return this.$message.warning('请选择要添加的客服');
       }
       kefuAddApi(this.addFrom)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.modals = false;
           this.getList();
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
   },

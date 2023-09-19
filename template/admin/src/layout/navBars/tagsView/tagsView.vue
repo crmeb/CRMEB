@@ -65,7 +65,7 @@ export default {
       },
       tagsRefsIndex: 0,
       tagsRoutePath: this.$route.path,
-      tagsViewRoutesList: [],
+      // tagsViewRoutesList: [],
       dropdownList: [
         { id: 0, txt: 'message.tagsView.refresh', affix: false, icon: 'el-icon-refresh-right' },
         { id: 1, txt: 'message.tagsView.close', affix: false, icon: 'el-icon-close' },
@@ -87,13 +87,15 @@ export default {
     tagsViewList() {
       return this.$store.state.app.tagNavList;
     },
+    tagsViewRoutesList() {
+      return this.$store.state.app.tagNavList;
+    },
   },
   created() {
     // 监听非本页面调用 0 刷新当前，1 关闭当前，2 关闭其它，3 关闭全部
     this.bus.$on('onCurrentContextmenuClick', (data) => {
       this.onCurrentContextmenuClick(data);
     });
-    this.tagsViewRoutesList = this.$store.state.app.tagNavList;
   },
   mounted() {
     if (!this.$store.state.app.tagNavList.length) {
@@ -149,6 +151,7 @@ export default {
     tagsViewmoveToCurrentTag() {
       this.$nextTick(() => {
         const tagsRefs = this.$refs.tagsRefs;
+        if (!tagsRefs) return;
         if (tagsRefs.length <= 0) return false;
         // 当前 li 元素
         let liDom = tagsRefs[this.tagsRefsIndex];
@@ -227,8 +230,8 @@ export default {
     // 获取 vuex 中的 tagsViewRoutes 列表
     getTagsViewRoutes() {
       this.tagsRoutePath = this.$route.path;
-      // if (!this.$store.state.themeConfig.themeConfig.isCacheTagsView) Session.remove('tagsViewList');
-      this.tagsViewRoutesList = this.$store.state.menus.oneLvMenus;
+      this.setTagNavList(this.$store.state.menus.oneLvMenus);
+
       this.initTagsViewList();
     },
     // 存储 tagsViewList 到浏览器临时缓存中，页面刷新时，保留记录
@@ -324,7 +327,9 @@ export default {
     closeOtherTagsView(path, query) {
       let tagsViewList = [];
       this.tagsViewRoutesList.map((v) => {
-        if ((v.meta && v.meta.isAffix) || v.path === path) tagsViewList.push({ ...v });
+        if ((v.meta && v.meta.isAffix) || v.path === path) {
+          tagsViewList.push({ ...v });
+        }
       });
       this.addBrowserSetSession(tagsViewList);
       this.$router.push({ path, query });
@@ -469,7 +474,7 @@ export default {
       }
     }
     .is-active {
-      color: var(--prev-color-primary-light-9);
+      color: var(--prev-color-primary-light-3);
       transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
       border-color: transparent;
       &::before {
@@ -553,7 +558,7 @@ export default {
     .is-active {
       @extend .tags-style-five-svg;
       background: var(--prev-color-primary-light-9) !important;
-      color: var(--prev-tag-active-color) !important;
+      color: var(--prev-color-primary) !important;
       z-index: 1;
     }
   }

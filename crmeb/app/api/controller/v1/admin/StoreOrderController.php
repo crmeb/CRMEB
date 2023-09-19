@@ -46,6 +46,84 @@ class StoreOrderController
         $this->service = $services;
     }
 
+
+    /**
+     * 订单 查看物流
+     * @param StoreOrderCartInfoServices $services
+     * @param ExpressServices $expressServices
+     * @param $uni
+     * @param string $type
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function express(StoreOrderServices $orderServices, StoreOrderCartInfoServices $services, ExpressServices $expressServices, $uni, $type = '')
+    {
+        if ($type == 'refund') {
+            /** @var StoreOrderRefundServices $refundService */
+            $refundService = app()->make(StoreOrderRefundServices::class);
+            $order = $refundService->refundDetail($uni);
+            $express = $order['refund_express'];
+            $cacheName = $uni . $express;
+            $orderInfo = [];
+            $info = [];
+            $cartNew = [];
+            foreach ($order['cart_info'] as $k => $cart) {
+                $cartNew['cart_num'] = $cart['cart_num'];
+                $cartNew['truePrice'] = $cart['truePrice'];
+                $cartNew['postage_price'] = $cart['postage_price'];
+                $cartNew['productInfo']['image'] = $cart['productInfo']['image'];
+                $cartNew['productInfo']['store_name'] = $cart['productInfo']['store_name'];
+                $cartNew['productInfo']['unit_name'] = $cart['productInfo']['unit_name'] ?? '';
+                array_push($info, $cartNew);
+                unset($cart);
+            }
+            $orderInfo['cartInfo'] = $info;
+            $orderInfo['delivery_id'] = $express;
+            $orderInfo['delivery_name'] = $order['refund_express_name'];
+            $orderInfo['delivery_code'] = '';
+        } else {
+            if (!$uni || !($order = $orderServices->getUserOrderDetail($uni, 0, []))) {
+                return app('json')->fail(410173);
+            }
+            if ($type != 'refund' && ($order['delivery_type'] != 'express' || !$order['delivery_id'])) {
+                return app('json')->fail(410206);
+            }
+            $express = $type == 'refund' ? $order['refund_express'] : $order['delivery_id'];
+            $cacheName = $uni . $express;
+            $orderInfo = [];
+            $cartInfo = $services->getCartColunm(['oid' => $order['id']], 'cart_info', 'unique');
+            $info = [];
+            $cartNew = [];
+            foreach ($cartInfo as $k => $cart) {
+                $cart = json_decode($cart, true);
+                $cartNew['cart_num'] = $cart['cart_num'];
+                $cartNew['truePrice'] = $cart['truePrice'];
+                $cartNew['postage_price'] = $cart['postage_price'];
+                $cartNew['productInfo']['image'] = $cart['productInfo']['image'];
+                $cartNew['productInfo']['store_name'] = $cart['productInfo']['store_name'];
+                $cartNew['productInfo']['unit_name'] = $cart['productInfo']['unit_name'] ?? '';
+                array_push($info, $cartNew);
+                unset($cart);
+            }
+            $orderInfo['delivery_id'] = $express;
+            $orderInfo['delivery_name'] = $type == 'refund' ? '用户退回' : $order['delivery_name'];;
+            $orderInfo['delivery_code'] = $type == 'refund' ? '' : $order['delivery_code'];
+            $orderInfo['delivery_type'] = $order['delivery_type'];
+            $orderInfo['user_address'] = $order['user_address'];
+            $orderInfo['user_mark'] = $order['mark'];
+            $orderInfo['cartInfo'] = $info;
+        }
+        return app('json')->success([
+            'order' => $orderInfo,
+            'express' => [
+                'result' => ['list' => $expressServices->query($cacheName, $orderInfo['delivery_id'], $orderInfo['delivery_code'], $order['user_phone'])
+                ]
+            ]
+        ]);
+    }
+
     /**
      * 订单数据统计
      * @param StoreOrderServices $services
@@ -163,7 +241,8 @@ class StoreOrderController
             ['sh_delivery_id', ''],//送货人电话
             ['sh_delivery_uid', ''],//送货人ID
 
-            ['fictitious_content', '']//虚拟发货内容
+            ['fictitious_content', ''],//虚拟发货内容
+            ['pickup_time', []]
         ]);
         if ($data['delivery_type']) {
             $data['delivery_name'] = $data['delivery_type'];

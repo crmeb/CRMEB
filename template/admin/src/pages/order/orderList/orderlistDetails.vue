@@ -4,8 +4,12 @@
       :cardLists="cardLists"
       v-if="cardLists.length >= 0"
     ></cards-data> -->
-    <table-form @getList="getData" />
-    <table-list ref="table" @on-changeCards="getCards" @changeGetTabs="changeGetTabs" />
+    <el-card :bordered="false" shadow="never" :body-style="{padding:0}">
+      <table-form @getList="getData" />
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0 20px 20px' }">
+      <table-list ref="table" @on-changeCards="getCards" @changeGetTabs="changeGetTabs" />
+    </el-card>
   </div>
 </template>
 

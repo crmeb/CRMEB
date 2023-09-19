@@ -74,7 +74,7 @@
 							<view class='stock'>
 								{{$t(`累计销售`)}}：{{storeInfo.total?storeInfo.total:0}}{{$t(storeInfo.unit_name) || ''}}
 							</view>
-							<view>{{$t(`限量`)}}:
+							<view>{{$t(`限量剩余`)}}:
 								{{ storeInfo.quota ? storeInfo.quota : 0 }}{{$t(storeInfo.unit_name) || ''}}
 							</view>
 						</view>

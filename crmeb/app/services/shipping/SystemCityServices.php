@@ -86,6 +86,7 @@ class SystemCityServices extends BaseServices
                 $data['parent_name'] = $parent_name;
                 if ($is_add) {
                     $data['children'] = [];
+                    $data['hasChildren'] = [];
                     $data['_loading'] = false;
                 }
                 $arr [] = $data;
@@ -180,6 +181,7 @@ class SystemCityServices extends BaseServices
                 unset($menu['parent_id']);
                 unset($data[$k]);
                 $menu['children'] = $this->fullListTree($data, $menu['value']);
+                if(!count($menu['children'])) unset($menu['children']);
                 $navList[] = $menu;
             }
         }

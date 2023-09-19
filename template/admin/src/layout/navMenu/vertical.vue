@@ -10,30 +10,16 @@
       :collapse-transition="true"
     >
       <template v-for="val in menuList">
-        <el-submenu
-          :index="val.path"
-          v-if="val.is_show && val.children && val.children.length > 0"
-          :key="val.path"
-        >
+        <el-submenu :index="val.path" v-if="val.is_show && val.children && val.children.length > 0" :key="val.path">
           <template slot="title">
-            <Icon
-              :class="
-                ['defaults', 'classic'].includes(getThemeConfig.layout) && getThemeConfig.isCollapse ? 'center' : 'mr10'
-              "
-              :type="val.icon ? val.icon : ''"
-            />
-            <span>{{ $t(val.title) }} </span>
+            <i class="ivu-icon" :class="val.icon ? 'el-icon-' + val.icon : ''"></i>
+            <span>{{ $t(val.title) }}</span>
           </template>
           <SubItem :chil="val.children" />
         </el-submenu>
         <template v-else-if="val.is_show">
           <el-menu-item :index="val.path" :key="val.path">
-            <Icon
-              :class="
-                ['defaults', 'classic'].includes(getThemeConfig.layout) && getThemeConfig.isCollapse ? 'center' : 'mr10'
-              "
-              :type="val.icon ? val.icon : ''"
-            />
+            <i class="ivu-icon" :class="val.icon ? 'el-icon-' + val.icon : ''"></i>
             <template slot="title" v-if="!val.isLink || (val.isLink && val.isIframe)">
               <span>{{ $t(val.title) }}</span>
             </template>
@@ -103,4 +89,9 @@ export default {
   margin-right: 0 !important;
   margin-left: 5px;
 }
+// /deep/.el-submenu__title {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
 </style>

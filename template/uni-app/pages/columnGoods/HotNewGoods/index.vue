@@ -96,23 +96,7 @@
 			goPages(item) {
 				let url = item.link || '';
 				goPage().then(res => {
-					if (url.indexOf('http') != -1) {
-						// #ifdef H5
-						location.href = url;
-						// #endif
-					} else {
-						if (['/pages/goods_cate/goods_cate', '/pages/order_addcart/order_addcart',
-								'/pages/user/index'
-							].indexOf(url) == -1) {
-							uni.navigateTo({
-								url: url
-							});
-						} else {
-							uni.navigateTo({
-								url: url
-							});
-						}
-					}
+					this.$util.JumpPath(url);
 				});
 			},
 			getIndexGroomList() {
@@ -188,6 +172,7 @@
 		color: #666;
 		background-color: #f5f5f5;
 	}
+
 	.acea-row {
 		flex-wrap: nowrap !important;
 	}

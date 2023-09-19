@@ -618,7 +618,7 @@
 						'<img style="max-width:100%;height:auto;float:left;display:block" ');
 					that.attribute.productSelect.num = res.data.storeInfo.num;
 					that.pink = res.data.pink;
-					that.pindAll = res.data.pindAll;
+					that.pinkAll = res.data.pinkAll;
 					that.reply = res.data.reply ? [res.data.reply] : [];
 					that.replyCount = res.data.replyCount;
 					that.itemNew = res.data.pink_ok_list;
@@ -671,7 +671,6 @@
 					}, 500);
 
 				}).catch(function(err) {
-					console.log(err)
 					that.$util.Tips({
 						title: err
 					}, {

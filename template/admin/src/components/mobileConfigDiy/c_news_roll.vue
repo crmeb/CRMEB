@@ -1,6 +1,6 @@
 <template>
   <div class="mobile-config">
-    <Form ref="formInline">
+    <el-form ref="formInline">
       <div v-for="(item, key) in rCom" :key="key">
         <component
           :is="item.components.name"
@@ -14,7 +14,7 @@
         ></component>
       </div>
       <rightBtn :activeIndex="activeIndex" :configObj="configObj"></rightBtn>
-    </Form>
+    </el-form>
   </div>
 </template>
 

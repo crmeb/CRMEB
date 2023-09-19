@@ -91,9 +91,9 @@ class StoreServiceServices extends BaseServices
     public function createServiceForm(array $formData = [])
     {
         if ($formData) {
-            $field[] = $this->builder->frameImage('avatar', '客服头像', $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => 'avatar'], true), $formData['avatar'] ?? '')->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true]);
+            $field[] = $this->builder->frameImage('avatar', '客服头像', $this->url(config('app.admin_prefix', 'admin') . '/widget.images/index', ['fodder' => 'avatar'], true), $formData['avatar'] ?? '')->icon('el-icon-user')->width('950px')->height('560px')->props(['footer' => false]);
         } else {
-            $field[] = $this->builder->frameImage('image', '选择用户', $this->url(config('app.admin_prefix', 'admin') . '/system.user/list', ['fodder' => 'image'], true))->icon('ios-add')->width('950px')->height('505px')->modal(['footer-hide' => true])->Props(['srcKey' => 'image']);
+            $field[] = $this->builder->frameImage('image', '选择用户', $this->url(config('app.admin_prefix', 'admin') . '/system.user/list', ['fodder' => 'image'], true))->icon('el-icon-user')->width('950px')->height('560px')->Props(['srcKey' => 'image', 'footer' => false]);
             $field[] = $this->builder->hidden('uid', 0);
             $field[] = $this->builder->hidden('avatar', '');
         }
@@ -108,10 +108,10 @@ class StoreServiceServices extends BaseServices
             $field[] = $this->builder->input('password', '登录密码')->type('password')->col(24)->required();
             $field[] = $this->builder->input('true_password', '确认密码')->type('password')->col(24)->required();
         }
-        $field[] = $this->builder->switches('status', '客服状态', (int)($formData['status'] ?? 1))->appendControl(1, [
-            $this->builder->switches('customer', '手机订单管理', $formData['customer'] ?? 0)->falseValue(0)->trueValue(1)->openStr('打开')->closeStr('关闭')->size('large'),
-            $this->builder->switches('notify', '订单通知', $formData['notify'] ?? 0)->falseValue(0)->trueValue(1)->openStr('打开')->closeStr('关闭')->size('large'),
-        ])->falseValue(0)->trueValue(1)->openStr('开启')->closeStr('关闭')->size('large');
+        $field[] = $this->builder->switches('status', '客服状态', (string)($formData['status'] ?? 1))->appendControl('1', [
+            $this->builder->switches('customer', '手机订单管理', (string)($formData['customer'] ?? 0)),
+            $this->builder->switches('notify', '订单通知', (string)($formData['notify'] ?? 0)),
+        ])->activeValue('1')->inactiveValue('0');
         return $field;
     }
 

@@ -87,8 +87,9 @@ export default {
         if (type === 'push')
           if (i < 1) state.tagNavList.push(router);
           else {
-            if (router.name === homeName) state.tagNavList.unshift(router);
-            else state.tagNavList.splice(1, 0, router);
+            return;
+            // if (router.name === homeName) state.tagNavList.unshift(router);
+            // else state.tagNavList.splice(1, 0, router);
           }
         setTagNavListInLocalstorage([...state.tagNavList]);
       }

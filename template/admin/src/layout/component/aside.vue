@@ -1,7 +1,7 @@
 <template>
   <el-aside class="layout-aside" :class="setCollapseWidth" v-if="clientWidth > 1000">
     <Logo v-if="setShowLogo && menuList.length && getThemeConfig.layout !== 'columns'" />
-    <div v-if="menuList.length && !getThemeConfig.isCollapse && getThemeConfig.layout == 'columns'" class="cat-name">
+    <div v-if="menuList.length && getThemeConfig.layout == 'columns'" class="cat-name">
       {{ adminTitle || catName }}
     </div>
     <el-scrollbar class="flex-auto" ref="layoutAsideRef">
@@ -48,7 +48,7 @@ export default {
       layout === 'classic' || layout === 'columns' ? (asideBrColor = 'layout-el-aside-br-color') : '';
 
       if (layout === 'columns') {
-        // 分栏布局，菜单收起时宽度给 1px
+        // 分栏布局，菜单收起时宽度给 1px / 暂为0px
         if (isCollapse) {
           return ['layout-aside-width1', asideBrColor];
         } else {

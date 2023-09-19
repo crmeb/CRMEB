@@ -91,7 +91,7 @@ class StoreProductAttrValueServices extends BaseServices
      */
     public function getSkuArray(array $where)
     {
-        return $this->dao->getColumn($where, 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota', 'suk');
+        return $this->dao->getColumn($where, 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota,unique', 'suk');
     }
 
     /**

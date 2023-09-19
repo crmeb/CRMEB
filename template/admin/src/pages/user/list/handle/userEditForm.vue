@@ -1,45 +1,46 @@
 <template>
   <div class="user-info">
-    <Form ref="formItem" :rules="ruleValidate" :model="formItem" :label-width="100" @submit.native.prevent>
+    <el-form ref="formItem" :rules="ruleValidate" :model="formItem" label-width="100px" @submit.native.prevent>
       <div class="section">
         <div class="section-hd">基本信息</div>
         <div class="section-bd">
           <div class="item">
-            <FormItem label="用户ID：">
-              <Input class="form-sty" disabled v-model="formItem.uid" placeholder="请输入编号"></Input>
-            </FormItem>
+            <el-form-item label="用户ID：">
+              <el-input class="form-sty" disabled v-model="formItem.uid" placeholder="请输入编号"></el-input>
+            </el-form-item>
           </div>
           <div class="item">
-            <FormItem label="真实姓名：" prop="real_name">
-              <Input class="form-sty" v-model.trim="formItem.real_name" placeholder="请输入真实姓名"></Input>
-            </FormItem>
+            <el-form-item label="真实姓名：" prop="real_name">
+              <el-input class="form-sty" v-model.trim="formItem.real_name" placeholder="请输入真实姓名"></el-input>
+            </el-form-item>
           </div>
           <div class="item">
-            <FormItem label="手机号码：" prop="phone">
-              <Input class="form-sty" v-model="formItem.phone" placeholder="请输入手机号码"></Input>
-            </FormItem>
+            <el-form-item label="手机号码：" prop="phone">
+              <el-input class="form-sty" v-model="formItem.phone" placeholder="请输入手机号码"></el-input>
+            </el-form-item>
           </div>
           <div class="item">
-            <FormItem label="生日：">
-              <DatePicker
+            <el-form-item label="生日：">
+              <el-date-picker
+                clearable
                 class="form-sty"
                 type="date"
-                :value="formItem.birthday"
+                v-model="formItem.birthday"
                 placeholder="请选择生日"
                 format="yyyy-MM-dd"
-                @on-change="formItem.birthday = $event"
-              ></DatePicker>
-            </FormItem>
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
+            </el-form-item>
           </div>
           <div class="item">
-            <FormItem label="身份证号：">
-              <Input class="form-sty" v-model.trim="formItem.card_id" placeholder="请输入身份证号"></Input>
-            </FormItem>
+            <el-form-item label="身份证号：">
+              <el-input class="form-sty" v-model.trim="formItem.card_id" placeholder="请输入身份证号"></el-input>
+            </el-form-item>
           </div>
           <div class="item">
-            <FormItem label="用户地址：">
-              <Input class="form-sty" v-model="formItem.addres" placeholder="请输入用户地址"></Input>
-            </FormItem>
+            <el-form-item label="用户地址：">
+              <el-input class="form-sty" v-model="formItem.addres" placeholder="请输入用户地址"></el-input>
+            </el-form-item>
           </div>
         </div>
       </div>
@@ -47,24 +48,24 @@
         <div class="section-hd">密码</div>
         <div class="section-bd">
           <div class="item">
-            <FormItem label="登录密码：" prop="pwd">
-              <Input
+            <el-form-item label="登录密码：" prop="pwd">
+              <el-input
                 class="form-sty"
                 type="password"
                 v-model="formItem.pwd"
                 placeholder="请输入登录密码（修改用户可不填写，不填写不修改原密码）"
-              ></Input>
-            </FormItem>
+              ></el-input>
+            </el-form-item>
           </div>
           <div class="item">
-            <FormItem label="确认密码：" prop="true_pwd">
-              <Input
+            <el-form-item label="确认密码：" prop="true_pwd">
+              <el-input
                 class="form-sty"
                 type="password"
                 v-model="formItem.true_pwd"
                 placeholder="请输入确认密码（修改用户可不填写，不填写不修改原密码）"
-              ></Input>
-            </FormItem>
+              ></el-input>
+            </el-form-item>
           </div>
         </div>
       </div>
@@ -72,32 +73,43 @@
         <div class="section-hd">用户概况</div>
         <div class="section-bd">
           <div class="item">
-            <FormItem label="用户等级：">
-              <Select v-model="formItem.level" class="form-sty" clearable>
-                <Option v-for="(item, index) in infoData.levelInfo" :key="index" :value="item.id">{{
-                  item.name
-                }}</Option>
-              </Select>
-            </FormItem>
+            <el-form-item label="用户等级：">
+              <el-select v-model="formItem.level" class="form-sty" clearable>
+                <el-option
+                  v-for="(item, index) in infoData.levelInfo"
+                  :key="index"
+                  :value="item.id"
+                  :label="item.name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
           </div>
           <div class="item">
-            <FormItem label="用户分组：">
-              <Select v-model="formItem.group_id" class="form-sty" clearable>
-                <Option v-for="(item, index) in infoData.groupInfo" :key="index" :value="item.id">{{
-                  item.group_name
-                }}</Option>
-              </Select>
-            </FormItem>
+            <el-form-item label="用户分组：">
+              <el-select v-model="formItem.group_id" class="form-sty" clearable>
+                <el-option
+                  v-for="(item, index) in infoData.groupInfo"
+                  :key="index"
+                  :value="item.id"
+                  :label="item.group_name"
+                ></el-option>
+              </el-select>
+            </el-form-item>
           </div>
           <div class="item lang">
-            <FormItem label="用户标签：">
+            <el-form-item label="用户标签：">
               <div style="display: flex">
                 <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
                   <div style="width: 90%">
                     <div v-if="dataLabel.length">
-                      <Tag closable v-for="(item, index) in dataLabel" :key="index" @on-close="closeLabel(item)">{{
-                        item.label_name
-                      }}</Tag>
+                      <el-tag
+                        closable
+                        v-for="(item, index) in dataLabel"
+                        :key="index"
+                        @close="closeLabel(item)"
+                        class="mr10"
+                        >{{ item.label_name }}</el-tag
+                      >
                     </div>
                     <span class="span" v-else>选择用户关联标签</span>
                   </div>
@@ -105,33 +117,33 @@
                 </div>
                 <span class="addfont" @click="addLabel">新增标签</span>
               </div>
-            </FormItem>
+            </el-form-item>
           </div>
           <div class="item lang">
-            <FormItem label="推广资格：">
-              <RadioGroup v-model="formItem.spread_open" class="form-sty">
-                <Radio :label="1">开启</Radio>
-                <Radio :label="0">关闭</Radio>
-              </RadioGroup>
+            <el-form-item label="推广资格：">
+              <el-radio-group v-model="formItem.spread_open" class="form-sty">
+                <el-radio :label="1">开启</el-radio>
+                <el-radio :label="0">关闭</el-radio>
+              </el-radio-group>
               <div class="tip">关闭用户的推广资格后，在任何分销模式下该用户都无分销权限</div>
-            </FormItem>
+            </el-form-item>
           </div>
           <div class="item lang">
-            <FormItem label="推广权限：">
-              <RadioGroup v-model="formItem.is_promoter" class="form-sty">
-                <Radio :label="1">开启</Radio>
-                <Radio :label="0">关闭</Radio>
+            <el-form-item label="推广权限：">
+              <el-radio-group v-model="formItem.is_promoter" class="form-sty">
+                <el-radio :label="1">开启</el-radio>
+                <el-radio :label="0">关闭</el-radio>
                 <div class="tip">指定分销模式下，开启或关闭用户的推广权限</div>
-              </RadioGroup>
-            </FormItem>
+              </el-radio-group>
+            </el-form-item>
           </div>
           <div class="item lang">
-            <FormItem label="用户状态：">
-              <RadioGroup v-model="formItem.status" class="form-sty">
-                <Radio :label="1">开启</Radio>
-                <Radio :label="0">锁定</Radio>
-              </RadioGroup>
-            </FormItem>
+            <el-form-item label="用户状态：">
+              <el-radio-group v-model="formItem.status" class="form-sty">
+                <el-radio :label="1">开启</el-radio>
+                <el-radio :label="0">锁定</el-radio>
+              </el-radio-group>
+            </el-form-item>
           </div>
         </div>
       </div>
@@ -139,20 +151,20 @@
         <div class="section-hd">用户备注</div>
         <div class="section-bd">
           <div class="item">
-            <FormItem label="用户备注：">
-              <Input
+            <el-form-item label="用户备注：">
+              <el-input
                 class="form-sty"
                 type="textarea"
                 :rows="5"
                 v-model="formItem.mark"
                 placeholder="请输入用户备注"
-              ></Input>
-            </FormItem>
+              ></el-input>
+            </el-form-item>
           </div>
         </div>
       </div>
-    </Form>
-    <Modal v-model="labelShow" scrollable title="请选择用户标签" :closable="false" width="500" :footer-hide="true">
+    </el-form>
+    <el-dialog :visible.sync="labelShow" title="请选择用户标签" :modal="false" :show-close="true" width="540px">
       <userLabel
         v-if="labelShow"
         :only_get="true"
@@ -160,7 +172,7 @@
         @close="labelClose"
         @activeData="activeData"
       ></userLabel>
-    </Modal>
+    </el-dialog>
   </div>
 </template>
 
@@ -251,27 +263,27 @@ export default {
         ids.push(i.id);
       });
       data.label_id = ids;
-      // if (!data.real_name) return this.$Message.warning("请输入真实姓名");
-      // if (!data.phone) return this.$Message.warning("请输入手机号");
-      // if (!data.pwd) return this.$Message.warning("请输入密码");
-      // if (!data.true_pwd) return this.$Message.warning("请输入确认密码");
+      // if (!data.real_name) return this.$message.warning("请输入真实姓名");
+      // if (!data.phone) return this.$message.warning("请输入手机号");
+      // if (!data.pwd) return this.$message.warning("请输入密码");
+      // if (!data.true_pwd) return this.$message.warning("请输入确认密码");
       if (data.uid) {
         editUser(data)
           .then((res) => {
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
             this.$emit('success');
           })
           .catch((err) => {
-            this.$Message.error(err.msg);
+            this.$message.error(err.msg);
           });
       } else {
         setUser(data)
           .then((res) => {
             this.$emit('success');
-            this.$Message.success(res.msg);
+            this.$message.success(res.msg);
           })
           .catch((err) => {
-            this.$Message.error(err.msg);
+            this.$message.error('err.msg');
           });
       }
     },
@@ -307,7 +319,7 @@ export default {
           }
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error('res.msg');
         });
     },
     // 标签弹窗关闭
@@ -345,10 +357,11 @@ export default {
 .labelInput {
   border: 1px solid #dcdee2;
   width: 300px;
-  padding: 0 8px;
+  padding: 0 15px;
   border-radius: 5px;
   min-height: 30px;
   cursor: pointer;
+  font-size: 12px;
 
   .span {
     color: #c5c8ce;
@@ -372,7 +385,7 @@ export default {
 
     &-hd {
       padding-left: 10px;
-      border-left: 3px solid #1890ff;
+      border-left: 3px solid var(--prev-color-primary);
       font-weight: 500;
       font-size: 14px;
       line-height: 16px;
@@ -389,7 +402,7 @@ export default {
       display: flex;
       margin: 16px 0px 0 0;
       font-size: 13px;
-      color: #606266;
+      color: #666;
 
       &:nth-child(3n + 3) {
         margin: 16px 0 0;
@@ -404,7 +417,7 @@ export default {
         display: inline-block;
         font-size: 13px;
         font-weight: 400;
-        color: #1890ff;
+        color: var(--prev-color-primary);
         margin-left: 14px;
         cursor: pointer;
         margin-left: 10px;

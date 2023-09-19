@@ -15,11 +15,7 @@
       <div class="main">
         <div class="chat">
           <div class="record" @scroll="onScroll" ref="record">
-            <div id="chat_scroll" ref="scrollBox">
-              <Spin v-show="loading">
-                <Icon type="ios-loading" size="18" class="demo-spin-icon-load"></Icon>
-                <div>Loading</div>
-              </Spin>
+            <div id="chat_scroll" ref="scrollBox" v-loading="loading">
               <ul>
                 <template v-for="item in records">
                   <li :key="item.id" :class="{ right: item.uid === serviceData.tourist_uid }" :id="`chat_${item.id}`">
@@ -49,7 +45,10 @@
                           </div>
                           <div class="attr">
                             <span>库存：{{ item.productInfo.stock }}</span>
-                            <span>销量：{{ item.productInfo.sales }}</span>
+                            <span>销量：{{
+                                parseInt(item.productInfo.sales) +
+                                parseInt(item.productInfo.ficti ? item.productInfo.ficti : 0)
+                              }}</span>
                           </div>
                           <div class="group">
                             <div class="money">￥{{ item.productInfo.price }}</div>
@@ -92,8 +91,8 @@
                   <span class="iconfont iconbiaoqing1"></span>
                 </button>
                 <button title="图片" v-if="kufuToken">
-                  <Upload
-                    :show-upload-list="false"
+                  <el-upload
+                    :show-file-list="false"
                     :action="uploadAction"
                     :before-upload="beforeUpload"
                     :format="['jpg', 'jpeg', 'png', 'gif']"
@@ -103,7 +102,7 @@
                     :on-error="uploadError"
                   >
                     <span class="iconfont icontupian1"></span>
-                  </Upload>
+                  </el-upload>
                 </button>
               </div>
               <!--                            <div>-->
@@ -310,10 +309,10 @@ export default {
         });
       });
       ws.$on('socket_error', () => {
-        this.$Message.error('连接失败');
+        this.$message.error('连接失败');
       });
       ws.$on('err_tip', (data) => {
-        this.$Message.error(data.msg);
+        this.$message.error(data.msg);
       });
       ws.$on('success', (data) => {
         this.is_tourist = 0;
@@ -374,7 +373,7 @@ export default {
           }
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
           this.change = true;
         });
     },
@@ -456,7 +455,7 @@ export default {
           });
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
           this.loading = false;
         });
     },
@@ -561,13 +560,13 @@ export default {
       return promise;
     },
     handleFormatError(file) {
-      this.$Message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
+      this.$message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
     },
     uploadSuccess(res) {
       this.sendMsg(res.data.url, 3);
     },
     uploadError(error) {
-      this.$Message.error(error);
+      this.$message.error(error);
     },
   },
 };
@@ -606,7 +605,7 @@ li {
       height: 50px;
       padding-right: 15px;
       padding-left: 20px;
-      background: linear-gradient(270deg, #1890ff 0%, #3875ea 100%);
+      background: linear-gradient(270deg, var(--prev-color-primary) 0%, #3875ea 100%);
 
       .image {
         width: 36px;
@@ -812,7 +811,7 @@ li {
 
             a {
               font-size: 12px;
-              color: #1890ff;
+              color: var(--prev-color-primary);
             }
           }
         }
@@ -844,10 +843,10 @@ li {
           }
 
           &:hover {
-            color: #1890ff;
+            color: var(--prev-color-primary);
 
             .iconfont {
-              color: #1890ff;
+              color: var(--prev-color-primary);
             }
           }
         }

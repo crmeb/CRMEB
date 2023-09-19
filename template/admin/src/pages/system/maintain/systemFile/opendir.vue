@@ -1,91 +1,105 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" v-loading="spinShow">
       <div v-if="isShowList" class="backs-box">
         <div class="backs">
-          <span class="back" @click="goBack(false)"><Icon type="md-arrow-round-back" class="icon" /></span>
+          <span class="back" @click="goBack(false)">
+            <i class="el-icon-back icon" />
+          </span>
           <span class="item" v-for="(item, index) in routeList" :key="index" @click="jumpRoute(item)">
             <span class="key">{{ item.key }}</span>
-            <Icon class="forward" v-if="index < routeList.length - 1" type="ios-arrow-forward" />
+            <i class="forward el-icon-arrow-right" v-if="index < routeList.length - 1" />
           </span>
         </div>
-        <span class="refresh" @click="refreshRoute"><Icon type="md-refresh" class="icon" /></span>
+        <span class="refresh" @click="refreshRoute">
+          <i class="el-icon-refresh-right icon" />
+        </span>
       </div>
-      <Table
+      <el-table
         v-if="isShowList"
         ref="selection"
-        :columns="columns4"
         :data="tabList"
-        :loading="loading"
-        no-data-text="暂无数据"
-        class="mt20"
-        no-filtered-data-text="暂无筛选结果"
+        v-loading="loading"
+        empty-text="暂无数据"
+        class="mt14"
       >
-        <template slot-scope="{ row }" slot="filename">
-          <div @click="currentChange(row)">
-            <Icon type="ios-folder-outline" v-if="row.isDir" class="mr5" />
-            <Icon type="ios-document-outline" v-else class="mr5" />
-            <span>{{ row.filename }}</span>
-          </div>
-        </template>
-        <template slot-scope="{ row }" slot="isWritable">
-          <span v-text="row.isWritable ? '是' : '否'"></span>
-        </template>
-        <template slot-scope="{ row, index }" slot="mark">
-          <div class="mark">
-            <div v-if="row.is_edit" class="table-mark" @click="isEditMark(row)">{{ row.mark }}</div>
-            <Input ref="mark" v-else v-model="row.mark" @on-blur="isEditBlur(row)"></Input>
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <a @click="open(row)" v-if="row.isDir">打开</a>
-          <a @click="edit(row)" v-else>编辑</a>
-          <!-- <Divider type="vertical" />
-          <a @click.stop="mark(row)">备注</a> -->
-        </template>
-      </Table>
-    </Card>
-    <Modal
-      :class-name="className"
-      v-model="modals"
-      scrollable
-      footer-hide
-      closable
-      :mask-closable="false"
+        <el-table-column label="文件/文件夹名" min-width="150">
+          <template slot-scope="scope">
+            <div class="file-name" @click="currentChange(scope.row)">
+              <i v-if="scope.row.isDir" class="el-icon-folder mr5" />
+              <i v-else class="el-icon-document mr5" />
+              <span>{{ scope.row.filename }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="文件/文件夹大小" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.size }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="更新时间" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.mtime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" min-width="120">
+          <template slot-scope="scope">
+            <div class="mark">
+              <div v-if="scope.row.is_edit" class="table-mark" @click="isEditMark(scope.row)">{{ scope.row.mark }}</div>
+              <el-input ref="mark" v-else v-model="scope.row.mark" @blur="isEditBlur(scope.row)"></el-input>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="60">
+          <template slot-scope="scope">
+            <el-button type="text" @click="open(scope.row)" v-if="scope.row.isDir">打开</el-button>
+            <el-button type="text" @click="edit(scope.row)" v-else>编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+    <el-dialog
+      :visible.sync="modals"
+      :custom-class="className"
+      :close-on-click-modal="false"
       width="80%"
-      :before-close="editModalChange"
+      @close="editModalChange"
+      append-to-body
+      :title="editorIndex[indexEditor].title"
     >
       <p slot="header" class="diy-header" ref="diyHeader">
         <span>{{ title }}</span>
-        <Icon
+        <i
           @click="winChanges"
           class="diy-header-icon"
-          :type="className ? 'ios-contract' : 'ios-qr-scanner'"
-          size="20"
+          :class="className ? 'el-icon-cpu' : 'el-icon-full-screen'"
+          style="font-size: 20px"
         />
       </p>
       <div style="height: 100%">
-        <Button type="primary" id="savefile" class="diy-button" @click="savefile(indexEditor)">保存</Button>
-        <Button id="refresh" class="diy-button" @click="refreshfile">刷新</Button>
+        <el-button type="primary" id="savefile" class="diy-button" @click="savefile(indexEditor)">保存</el-button>
+        <el-button id="refresh" class="diy-button" @click="refreshfile">刷新</el-button>
 
         <div class="file-box">
           <div class="show-info">
             <div class="show-text" :title="navItem.pathname">目录: {{ navItem.pathname }}</div>
             <div class="diy-button-list">
-              <Button class="diy-button" @click="goBack(true)">返回上一级</Button>
-              <Button class="diy-button" @click="getList(true, true)">刷新</Button>
+              <el-button class="diy-button" @click="goBack(true)">返回上一级</el-button>
+              <el-button class="diy-button" @click="getList(true, true)">刷新</el-button>
             </div>
           </div>
           <div class="file-left">
-            <Tree
+            <el-tree
               class="diy-tree-render"
               :data="navList"
-              :render="renderContent"
-              :load-data="loadData"
-              @on-contextmenu="handleContextMenu"
+              :render-content="renderContent"
+              :load="loadData"
+              @node-contextmenu="handleContextMenu"
               expand-node
+              lazy
+              :props="props"
             >
-              <template transfer slot="contextMenu">
+              <!-- <template transfer slot="contextMenu">
                 <DropdownItem v-if="contextData && contextData.isDir" @click.native="handleContextCreateFolder()"
                   >新建文件夹</DropdownItem
                 >
@@ -94,21 +108,21 @@
                 >
                 <DropdownItem @click.native="handleContextRename()">重命名</DropdownItem>
                 <DropdownItem @click.native="handleContextDelFolder()" style="color: #ed4014">删除</DropdownItem>
-              </template>
-            </Tree>
+              </template> -->
+            </el-tree>
           </div>
           <div class="file-fix"></div>
           <div class="file-content">
-            <Tabs
+            <el-tabs
               type="card"
               v-model="indexEditor"
               style="height: 100%"
-              @on-click="toggleEditor"
+              @tab-click="toggleEditor"
               :animated="false"
               closable
-              @on-tab-remove="handleTabRemove"
+              @tab-remove="handleTabRemove"
             >
-              <TabPane
+              <el-tab-pane
                 v-for="value in editorIndex"
                 :key="value.index"
                 :name="value.index.toString()"
@@ -116,34 +130,33 @@
                 :icon="value.icon"
                 v-if="value.tab"
               >
-                <div ref="container" :id="'container_' + value.index" style="height: 100%; min-height: 560px"></div>
-              </TabPane>
-            </Tabs>
+                <div ref="container" :id="'container_' + value.index" style="height: 100%; min-height: 580px"></div>
+              </el-tab-pane>
+            </el-tabs>
           </div>
-          <Spin size="large" fix v-if="spinShow"></Spin>
         </div>
       </div>
-    </Modal>
+    </el-dialog>
 
     <div v-show="formShow" class="diy-from">
       <div class="diy-from-header">
         {{ formTitle
         }}<span :title="contextData ? contextData.pathname : ''">{{ contextData ? contextData.pathname : '' }}</span>
       </div>
-      <Form ref="formInline" :model="formFile" :rules="ruleInline" inline>
-        <FormItem prop="filename" class="diy-file">
-          <Input type="text" class="diy-file" v-model="formFile.filename" placeholder="请输入名字">
-            <Icon type="ios-folder-open-outline" slot="prepend"></Icon>
-          </Input>
-        </FormItem>
-        <FormItem>
-          <Button class="diy-button" @click="handleSubmit('formInline')">确定</Button>
-        </FormItem>
-        <FormItem>
-          <Button class="diy-button" @click="formExit()">取消</Button>
-        </FormItem>
+      <el-form ref="formInline" :model="formFile" :rules="ruleInline" inline>
+        <el-form-item prop="filename" class="diy-file">
+          <el-input type="text" class="diy-file" v-model="formFile.filename" placeholder="请输入名字">
+            <i class="el-icon-folder-opened" slot="prepend"></i>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button class="diy-button" @click="handleSubmit('formInline')">确定</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button class="diy-button" @click="formExit()">取消</el-button>
+        </el-form-item>
         <div class="form-mask" v-show="formShow"></div>
-      </Form>
+      </el-form>
     </div>
   </div>
 </template>
@@ -200,41 +213,7 @@ export default {
       spinShow: false,
       loading: false,
       tabList: [],
-      columns4: [
-        {
-          title: '文件/文件夹名',
-          slot: 'filename',
-          minWidth: 150,
-          back: '返回上级',
-          sortable: true,
-        },
-        // {
-        //   title: '文件/文件夹路径',
-        //   key: 'real_path',
-        //   minWidth: 150,
-        // },
-        {
-          title: '文件/文件夹大小',
-          key: 'size',
-          minWidth: 100,
-        },
-        {
-          title: '更新时间',
-          key: 'mtime',
-          minWidth: 150,
-          sortable: true,
-        },
-        {
-          title: '备注',
-          slot: 'mark',
-          minWidth: 150,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          width: 100,
-        },
-      ],
+
       formItem: {
         //记录当前路径信息，获取文件列表时使用
         dir: '',
@@ -258,6 +237,11 @@ export default {
       formTitle: '', //表单标题
       fileToken: getCookies('file_token'),
       routeList: [], //  打开文件路径
+      props: {
+        label: 'title',
+        children: 'children',
+        isLeaf: 'isLeaf',
+      },
     };
   },
 
@@ -265,7 +249,7 @@ export default {
     loginFrom,
   },
   mounted() {
-    this.initEditor();
+    // this.initEditor();
   },
   created() {
     this.getList();
@@ -380,7 +364,7 @@ export default {
       this.dir = row.path;
       // 创建代码容器
       if (this.editorList.length <= 0) {
-        this.initEditor();
+        // this.initEditor();
       }
       this.openfile(row.pathname, false);
     },
@@ -416,7 +400,7 @@ export default {
             that.editorIndex[index].icon = '';
             that.editorList[index].isSave = true;
           }
-          that.$Message.success(res.msg);
+          that.$message.success(res.msg);
           that.$Modal.remove();
         })
         .catch((res) => {
@@ -436,11 +420,11 @@ export default {
     },
     // 侧边栏异步加载
     loadData(item, callback) {
-      if (item.isDir) {
+      if (!item.data.isLeaf) {
         this.formItem = {
-          dir: item.path,
+          dir: item.data.path,
           superior: 0,
-          filedir: item.title,
+          filedir: item.data.title,
           fileToken: this.fileToken,
         };
         opendirListApi(this.formItem)
@@ -449,7 +433,7 @@ export default {
           })
           .catch((res) => {
             if (res.status == 110008) {
-              this.$Message.error(res.msg);
+              this.$message.error(res.msg);
               this.isShowLogn = true;
               this.isShowList = false;
               this.loading = false;
@@ -460,7 +444,7 @@ export default {
       }
     },
     // 自定义显示
-    renderContent(h, { root, node, data }) {
+    renderContent(h, { node, data, root }) {
       let that = this;
       return h(
         'span',
@@ -487,7 +471,7 @@ export default {
           h('span', [
             h('Icon', {
               props: {
-                type: data.isDir ? 'md-folder' : 'ios-document-outline',
+                type: !data.isLeaf ? 'md-folder' : 'ios-document-outline',
               },
               style: {
                 marginRight: '8px',
@@ -520,8 +504,8 @@ export default {
           return e.pathname === data.pathname;
         });
         if (i > -1) {
-          that.toggleEditor(i);
           that.indexEditor = i.toString();
+          that.toggleEditor();
         } else {
           let index = that.editorIndex.length;
           // 创建tabs
@@ -575,14 +559,14 @@ export default {
             .then(async (res) => {
               that.loopDel(that.navList, that.contextData.nodeKey);
               that.$Modal.remove();
-              that.$Message.success('删除成功');
+              that.$message.success('删除成功');
             })
             .catch((res) => {
               that.catchFun(res);
             });
         },
         onCancel: () => {
-          that.$Message.info('取消删除');
+          that.$message.info('取消删除');
         },
       });
     },
@@ -600,19 +584,25 @@ export default {
         filepath: path,
         fileToken: this.fileToken,
       };
+
       openfileApi(params)
         .then(async (res) => {
-          let data = res.data;
-          that.code = data.content;
-          // 保存相对信息
-          that.editorList[that.indexEditor].path = path;
-          that.editorList[that.indexEditor].oldCode = that.code;
-          //改变属性
-          that.changeModel(data.mode, that.code);
           if (!is_edit) {
             that.modals = true;
             that.spinShow = false;
+            this.initEditor();
           }
+          let data = res.data;
+          that.code = data.content;
+          // 保存相对信息
+
+          that.editorList[that.indexEditor].oldCode = that.code;
+          this.$nextTick((e) => {
+            that.editorList[that.indexEditor || 0].path = path;
+            that.editorList[that.indexEditor || 0].pathname = path;
+          });
+          //改变属性
+          that.changeModel(data.mode, that.code);
         })
         .catch((res) => {
           that.catchFun(res);
@@ -656,7 +646,7 @@ export default {
         that.editorList.push({
           editor: that.editor,
           oldCode: that.code,
-          path: '',
+          path: this.pathname,
           isSave: true,
           index: that.indexEditor,
         });
@@ -707,7 +697,7 @@ export default {
                   };
                   that.getListItem(dataItem);
                   if (that.formShow) that.formShow = false;
-                  that.$Message.success('创建成功');
+                  that.$message.success('创建成功');
                 })
                 .catch((res) => {
                   that.catchFun(res);
@@ -729,7 +719,7 @@ export default {
                   };
                   that.getListItem(dataItem);
                   if (that.formShow) that.formShow = false;
-                  that.$Message.success('创建成功');
+                  that.$message.success('创建成功');
                 })
                 .catch((res) => {
                   that.catchFun(res);
@@ -744,7 +734,7 @@ export default {
               rename(data)
                 .then(async (res) => {
                   that.$set(that.contextData, 'title', that.formFile.filename);
-                  that.$Message.success('修改成功');
+                  that.$message.success('修改成功');
                   if (that.formShow) that.formShow = false;
                 })
                 .catch((res) => {
@@ -753,7 +743,7 @@ export default {
               break;
           }
         } else {
-          this.$Message.error('Fail!');
+          this.$message.error('Fail!');
         }
       });
     },
@@ -770,15 +760,15 @@ export default {
      */
     catchFun(res) {
       if (res.status) {
-        if (res.status == 400) this.$Message.error(res.msg);
+        if (res.status == 400) this.$message.error(res.msg);
         if (res.status == 110008) {
-          // this.$Message.error(res.msg);
+          // this.$message.error(res.msg);
           this.isShowLogn = true;
           this.isShowList = false;
           this.loading = false;
         }
       } else {
-        // this.$Message.error('文件编码不被兼容，无法正确读取文件!');
+        // this.$message.error('文件编码不被兼容，无法正确读取文件!');
       }
       //关闭蒙版层
       if (this.spinShow) this.spinShow = false;
@@ -809,8 +799,8 @@ export default {
      * 切换选项卡
      * @param {Object} index
      */
-    toggleEditor(index) {
-      index = Number(index);
+    toggleEditor() {
+      let index = Number(this.indexEditor);
       this.code = this.editorList[index].oldCode; //设置文件打开时的代码
       this.editor = this.editorList[index].editor; //设置编辑器实例
     },
@@ -832,10 +822,10 @@ export default {
       };
       markSave(this.fileToken, data)
         .then((res) => {
-          // this.$Message.success(res.msg);
+          // this.$message.success(res.msg);
         })
         .catch((err) => {
-          this.$Message.error(err.msg);
+          this.$message.error(err.msg);
         });
     },
     handleTabRemove(index) {
@@ -854,7 +844,7 @@ export default {
             that.savefile(index);
           },
           onCancel: () => {
-            that.$Message.info('取消保存');
+            that.$message.info('取消保存');
           },
         });
       }
@@ -868,7 +858,7 @@ export default {
             // 保存当前文件
             that.savefile(index, true);
           } else {
-            that.$Message.info(`已取消${that.editorIndex[index].title}文件保存`);
+            that.$message.info(`已取消${that.editorIndex[index].title}文件保存`);
           }
         }
         // 销毁当前编辑器
@@ -966,6 +956,9 @@ export default {
     // height: 32px;
   }
 }
+.file-name{
+  cursor pointer
+}
 .backs {
   cursor: pointer;
   display: inline-block;
@@ -977,7 +970,7 @@ export default {
     height: 100%;
     background: #fff;
     border-right: 1px solid #cfcfcf;
-    padding: 2px 8px 0 10px;
+    padding: 6px 8px 0 10px;
     font-size: 16px;
     font-weight: bold;
   }
@@ -1020,7 +1013,7 @@ export default {
 .file-box {
   .file-left {
     position: absolute;
-    top: 53px;
+    top: 58px;
     left: 0;
     height: 90%;
     // height: 100%;
@@ -1028,8 +1021,7 @@ export default {
     width: 25%;
     max-width: 250px;
     overflow: auto;
-    background-color: #222222;
-    box-shadow: #000000 -6px 0 6px -6px inset;
+    background-color: #292929;
   }
 
   .file-fix {
@@ -1040,7 +1032,7 @@ export default {
     // bottom: 0px;
     // overflow: auto;
     min-height: 600px;
-    background-color: #222222;
+    background-color: #292929;
   }
 }
 
@@ -1056,11 +1048,11 @@ export default {
   }
 }
 
->>>.ivu-modal-body {
-  padding: 0;
+>>>.el-dialog__body {
+  padding: 0 !important;
 }
 
->>>.ivu-modal-content {
+>>>.el-dialog__body {
   background-color: #292929;
 }
 
@@ -1097,11 +1089,11 @@ export default {
   border:1px solid #c2c2c2;
   padding: 3px 5px
 }
-.mark /deep/ .ivu-input{
+.mark /deep/ .el-input__inner{
     background: #fff;
     border-radius: .39rem;
 }
-.mark /deep/ .ivu-input, .ivu-input:hover, .ivu-input:focus {
+.mark /deep/ .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
     border: transparent;
     box-shadow: none;
 }
@@ -1155,6 +1147,7 @@ export default {
   .diy-button {
     width: 50%;
     height: 25px;
+    line-height: 8px;
   }
 
   .diy-button-list {
@@ -1194,7 +1187,12 @@ body >>>.ivu-select-dropdown {
     background-color: #2f2f2f !important;
   }
 }
-
+>>>.el-tabs__item{
+  background-color: #fff;
+}
+>>>.el-tree{
+  background-color: #292929 !important;
+}
 .file-box {
   .file-left::-webkit-scrollbar {
     width: 4px;
@@ -1285,13 +1283,13 @@ body >>>.ivu-select-dropdown {
 
 .ivu-tabs {
   .ivu-tabs-content-animated {
-    min-height: 560px;
+    min-height: 580px;
     height: 73vh;
     margin-top: -1px;
   }
 
   .ivu-tabs-tabpane {
-    min-height: 560px;
+    min-height: 580px;
     height: 73vh;
     margin-top: -1px;
   }

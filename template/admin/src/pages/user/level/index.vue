@@ -1,134 +1,129 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover class="ivu-mt">
-      <Form
-        ref="levelFrom"
-        :model="levelFrom"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-        @submit.native.prevent
-      >
-        <Row type="flex" :gutter="24">
-          <Col v-bind="grid">
-            <FormItem label="状态：" label-for="status1">
-              <Select
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+      <div class="padding-add">
+        <el-form
+            ref="levelFrom"
+            :model="levelFrom"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            inline
+            @submit.native.prevent
+        >
+          <el-form-item label="等级状态：" label-for="status1">
+            <el-select
                 v-model="levelFrom.is_show"
                 placeholder="请选择"
                 clearable
                 element-id="status1"
-                @on-change="userSearchs"
-              >
-                <Option value="1">显示</Option>
-                <Option value="0">不显示</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col v-bind="grid">
-            <FormItem label="等级名称：" label-for="title">
-              <Input
-                search
-                enter-button
+                @change="userSearchs"
+                class="form_content_width"
+            >
+              <el-option value="1" label="显示"></el-option>
+              <el-option value="0" label="不显示"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="等级名称：" label-for="title">
+            <el-input
+                clearable
                 v-model="levelFrom.title"
                 placeholder="请输入等级名称"
-                @on-search="userSearchs"
-              />
-            </FormItem>
-          </Col>
-        </Row>
-        <Row type="flex">
-          <Col v-bind="grid">
-            <Button v-auth="['admin-user-level_add']" type="primary" icon="md-add" @click="add">添加用户等级</Button>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        :columns="columns1"
+                class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+      <el-button v-auth="['admin-user-level_add']" type="primary" @click="add"
+      >添加用户等级</el-button>
+      <el-table
         :data="levelLists"
         ref="table"
-        class="mt25"
-        :loading="loading"
-        highlight-row
+        class="mt14"
+        v-loading="loading"
+        highlight-current-row
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
       >
-        <template slot-scope="{ row, index }" slot="level_icons">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.icon" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="icons">
-          <div class="tabBox_img" v-viewer>
-            <img v-lazy="row.image" />
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="is_forevers">
-          <i-switch
-            v-model="row.is_forever"
-            :value="row.is_forever"
-            :true-value="1"
-            :false-value="0"
-            :disabled="true"
-            size="large"
-          >
-            <span slot="open">永久</span>
-            <span slot="close">非永久</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="is_pays">
-          <i-switch
-            v-model="row.is_pay"
-            :value="row.is_pay"
-            :true-value="1"
-            :false-value="0"
-            :disabled="true"
-            size="large"
-          >
-            <span slot="open">付费</span>
-            <span slot="close">免费</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="is_shows">
-          <i-switch
-            v-model="row.is_show"
-            :value="row.is_show"
-            :true-value="1"
-            :false-value="0"
-            @on-change="onchangeIsShow(row)"
-            size="large"
-          >
-            <span slot="open">显示</span>
-            <span slot="close">隐藏</span>
-          </i-switch>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <!--          <a @click="edit(row)">编辑</a>-->
-          <!--          <Divider type="vertical" />-->
-          <template>
-            <Dropdown @on-click="changeMenu(row, $event, index)" :transfer="true">
-              <a href="javascript:void(0)">
-                更多
-                <Icon type="ios-arrow-down"></Icon>
-              </a>
-              <DropdownMenu slot="list">
-                <!--                                                <DropdownItem name="1">等级任务</DropdownItem>-->
-                <DropdownItem name="3">编辑等级</DropdownItem>
-                <DropdownItem name="2">删除等级</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+        <el-table-column label="ID" width="80">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
           </template>
-        </template>
-      </Table>
+        </el-table-column>
+        <el-table-column label="等级图标" min-width="100">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.icon" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="等级背景图" min-width="100">
+          <template slot-scope="scope">
+            <div class="tabBox_img" v-viewer>
+              <img v-lazy="scope.row.image" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="等级名称" min-width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="等级" min-width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.grade }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="享受折扣" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.discount }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="经验值要求" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.exp_num }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否显示" min-width="100">
+          <template slot-scope="scope">
+            <el-switch
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.is_show"
+              :value="scope.row.is_show"
+              size="large"
+              @change="onchangeIsShow(scope.row)"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="scope">
+            <el-dropdown size="small" @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
+              <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
+              <el-dropdown-menu slot="dropdown">
+                <!--                                                <el-dropdown-item name="1">等级任务</el-dropdown-item>-->
+                <el-dropdown-item command="3">编辑等级</el-dropdown-item>
+                <el-dropdown-item command="2">删除等级</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="acea-row row-right page">
-        <Page
+        <pagination
+          v-if="total"
           :total="total"
-          :current="levelFrom.page"
-          show-elevator
-          show-total
-          @on-change="pageChange"
-          :page-size="levelFrom.limit"
+          :page.sync="levelFrom.page"
+          :limit.sync="levelFrom.limit"
+          @pagination="getList"
         />
       </div>
-    </Card>
+    </el-card>
     <!-- 等级任务-->
     <task-list ref="tasks"></task-list>
   </div>
@@ -137,10 +132,9 @@
 import { mapState, mapMutations } from 'vuex';
 import { levelListApi, setShowApi, createApi } from '@/api/user';
 import taskList from './handle/task';
-import editFrom from '@/components/from/from';
 export default {
   name: 'user_level',
-  components: { editFrom, taskList },
+  components: { taskList },
   data() {
     return {
       grid: {
@@ -151,74 +145,6 @@ export default {
         xs: 24,
       },
       loading: false,
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '等级图标',
-          slot: 'level_icons',
-          minWidth: 100,
-        },
-        {
-          title: '等级背景图',
-          slot: 'icons',
-          minWidth: 100,
-        },
-        {
-          title: '等级名称',
-          key: 'name',
-          minWidth: 120,
-        },
-        {
-          title: '等级',
-          key: 'grade',
-          minWidth: 100,
-        },
-        {
-          title: '享受折扣',
-          key: 'discount',
-          minWidth: 100,
-        },
-        {
-          title: '经验值要求',
-          key: 'exp_num',
-          minWidth: 100,
-        },
-        // {
-        //     title: '有效时间',
-        //     key: 'valid_date',
-        //     minWidth: 120
-        // },
-        // {
-        //     title: '是否永久',
-        //     slot: 'is_forevers',
-        //     minWidth: 130
-        // },
-        // {
-        //     title: '是否付费',
-        //     slot: 'is_pays',
-        //     minWidth: 120
-        // },
-        {
-          title: '是否显示',
-          slot: 'is_shows',
-          minWidth: 80,
-        },
-        // {
-        //   title: '等级说明',
-        //   key: 'explain',
-        //   minWidth: 120,
-        // },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 80,
-        },
-      ],
       levelFrom: {
         is_show: '',
         title: '',
@@ -243,7 +169,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : 75;
+      return this.isMobile ? undefined : '80px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -278,12 +204,12 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
           this.levelLists.splice(num, 1);
           this.total--;
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 删除成功
@@ -298,10 +224,10 @@ export default {
       };
       setShowApi(data)
         .then(async (res) => {
-          this.$Message.success(res.msg);
+          this.$message.success(res.msg);
         })
         .catch((res) => {
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 等级列表
@@ -317,12 +243,8 @@ export default {
         })
         .catch((res) => {
           this.loading = false;
-          this.$Message.error(res.msg);
+          this.$message.error(res.msg);
         });
-    },
-    pageChange(index) {
-      this.levelFrom.page = index;
-      this.getList();
     },
     // 添加
     add() {

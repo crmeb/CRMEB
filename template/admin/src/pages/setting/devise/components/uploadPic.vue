@@ -9,20 +9,20 @@
           <div class="img-box" @click="modalPicTap('单选', index)">
             <img :src="item.pic" alt="" v-if="item.pic && item.pic != ''" />
             <div class="upload-box" v-else>
-              <Icon type="ios-camera-outline" size="36" />
+              <i class="el-icon-picture-outline" style="font-size: 24px"></i>
             </div>
           </div>
           <div class="info">
             <div class="info-item" v-if="item.hasOwnProperty('name')">
-              <span>{{ type == 1 ? '管理名称：' : type == 2 ? '广告名称' : '服务名称：' }}</span>
+              <span>{{ type == 1 ? '管理名称：' : type == 5 ? '广告名称' : '服务名称：' }}</span>
               <div class="input-box">
-                <Input v-model="item.name" :placeholder="type == 2 ? '请输入名称' : '服务中心'" :maxlength="4" />
+                <el-input v-model="item.name" :placeholder="type == 5 ? '请输入名称' : '服务中心'" :maxlength="4" />
               </div>
             </div>
             <div class="info-item">
               <span>链接地址：</span>
               <div class="input-box" @click="getLink(index)">
-                <Input v-model="item.url" icon="ios-arrow-forward" readonly placeholder="选择链接" />
+                <el-input v-model="item.url" readonly placeholder="选择链接" suffix-icon="el-icon-arrow-right" />
               </div>
             </div>
           </div>
@@ -32,16 +32,7 @@
         </div>
       </draggable>
       <div>
-        <Modal
-          v-model="modalPic"
-          width="950px"
-          scrollable
-          footer-hide
-          closable
-          title="上传商品图"
-          :mask-closable="false"
-          :z-index="1"
-        >
+        <el-dialog :visible.sync="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false">
           <uploadPictures
             :isChoice="isChoice"
             @getPic="getPic"
@@ -49,17 +40,13 @@
             :gridPic="gridPic"
             v-if="modalPic"
           ></uploadPictures>
-        </Modal>
+        </el-dialog>
       </div>
     </div>
     <template v-if="listData">
-      <div class="add-btn" v-if="(type != 1 && type != 2) || (type == 2 && listData.length < 5)">
-        <Button
-          type="primary"
-          ghost
-          style="width: 100px; height: 30px; background: #1890ff; color: #fff; font-size: 13px"
-          @click="addBox"
-          >添加板块</Button
+      <div class="add-btn" v-if="(type == 2) || (type == 5 && listData.length < 5)">
+        <el-button type="primary" ghost style="width: 100px; color: #fff; font-size: 13px" @click="addBox"
+          >添加{{ type == 5 ? '广告' : '服务'}}</el-button
         >
       </div>
     </template>
@@ -199,7 +186,7 @@ export default {
 
   // border-top 1px solid rgba(0,0,0,0.05)
   .title {
-    padding: 13px 0;
+    padding: 0 0 13px 0;
     color: #999;
     font-size: 12px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -209,9 +196,9 @@ export default {
     .item {
       position: relative;
       display: flex;
-      margin-top: 20px;
+      margin-top: 10px;
       border: 1px dashed rgba(0, 0, 0, 0.15);
-      padding: 18px 10px 18px 0;
+      padding-right: 10px;
       border-radius: 6px;
 
       .move-icon {
@@ -224,9 +211,10 @@ export default {
 
       .img-box {
         position: relative;
-        width: 70px;
-        height: 70px;
-
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        line-height: 130px;
         img {
           width: 100%;
           height: 100%;
@@ -236,7 +224,7 @@ export default {
       .info {
         flex: 1;
         margin-left: 16px;
-
+        padding-top: 10px;
         .info-item {
           display: flex;
           align-items: center;
@@ -263,8 +251,8 @@ export default {
 
       .delect-btn {
         position: absolute;
-        right: -11px;
-        top: -15px;
+        right: -13px;
+        top: -13px;
 
         .iconfont-diy {
           font-size: 25px;

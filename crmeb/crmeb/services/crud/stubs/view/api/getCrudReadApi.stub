@@ -1,0 +1,11 @@
+/**
+ * 获取数据
+ * @param id
+ * @return {*}
+ */
+export function get{%NAME_STUDLY%}ReadApi(id) {
+    return request({
+        url: `{%ROUTE%}/${id}`,
+        method: 'get'
+    });
+}

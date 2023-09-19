@@ -20,11 +20,14 @@
 								<block v-for="(child,indexn) in item.child" :key="indexn">
 									<view class='itemn acea-row row-between-wrapper'>
 										<view class="title">
-											<view class='name line1'>{{$t(child.title)}}</view>
+											<view class='name line1'>{{type == 1 ? $t(child.mark) : $t(child.title)}}</view>
 											<view>{{child.add_time}}</view>
 											<view class="fail-msg" v-if="child.fail_msg">
 												{{$t(`原因`)}}：{{child.fail_msg}}
 											</view>
+											<!-- <view class="fail-msg" v-else-if="child.extract_type">
+												{{$t(`提现方式`)}}：{{child.extract_type}}
+											</view> -->
 										</view>
 										<view class='num font-color' v-if="child.pm == 1">+{{child.number}}</view>
 										<view class='num' v-else>-{{child.number}}</view>

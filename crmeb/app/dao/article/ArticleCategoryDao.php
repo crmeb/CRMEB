@@ -59,7 +59,7 @@ class ArticleCategoryDao extends BaseDao
     public function getArticleCategory()
     {
         return $this->search(['hidden' => 0, 'is_del' => 0, 'status' => 1, 'pid' => 0])->with(['children'])
-            ->order('sort DESC')
+            ->order('sort DESC,id DESC')
             ->field('id,pid,title')
             ->select()->toArray();
     }
@@ -77,7 +77,7 @@ class ArticleCategoryDao extends BaseDao
             ->where('hidden', 0)
             ->where('is_del', 0)
             ->where('status', 1)
-            ->order('sort DESC')
+            ->order('sort DESC,id DESC')
             ->field('id,pid,title')
             ->select()->toArray();
     }
@@ -91,5 +91,23 @@ class ArticleCategoryDao extends BaseDao
     public function getMenus(array $where)
     {
         return $this->search($where)->order('sort desc,id desc')->column('title,pid,id,is_del,status');
+    }
+
+    /**
+     * 树形列表
+     * @param array $where
+     * @param array $field
+     * @return array
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/9/7
+     */
+    public function getTreeList(array $where, array $field)
+    {
+        return $this->search($where)->field($field)->order('sort desc,id desc')->select()->toArray();
     }
 }
