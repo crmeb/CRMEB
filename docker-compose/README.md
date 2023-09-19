@@ -3,7 +3,7 @@
 docker 官网下载
 https://www.docker.com/products/docker-desktop
 
-或命令安装 
+或命令安装  
 ```
 curl -sSL https://get.daocloud.io/docker | sh
 ```
