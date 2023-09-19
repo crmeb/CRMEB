@@ -287,7 +287,7 @@ class CopyTaobaoServices extends BaseServices
         } else {
             $ext = $this->getImageExtname($name)['ext_name'];
         }
-        if (in_array($ext, ['php', 'js', 'html'])) {
+        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'])) {
             throw new AdminException(400558);
         }
         //TODO 获取远程文件所采用的方法
