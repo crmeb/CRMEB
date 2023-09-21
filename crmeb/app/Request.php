@@ -119,7 +119,7 @@ class Request extends \think\Request
         if (parse_url($str, PHP_URL_HOST)) {
             $url = parse_url($str);
             $host = $url['scheme'] . '://' . $url['host'];
-            $str = $host . preg_replace($farr, '', preg_replace($host, '', $str));
+            $str = $host . preg_replace($farr, '', str_replace($host, '', $str));
         } else {
             $str = preg_replace($farr, '', $str);
         }
