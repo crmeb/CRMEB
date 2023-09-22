@@ -116,7 +116,7 @@ class Request extends \think\Request
      */
     public function replaceWord($farr, $str)
     {
-        if (parse_url($str, PHP_URL_HOST)) {
+        if (filter_var($str, FILTER_VALIDATE_URL)) {
             $url = parse_url($str);
             $host = $url['scheme'] . '://' . $url['host'];
             $str = $host . preg_replace($farr, '', str_replace($host, '', $str));
