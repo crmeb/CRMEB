@@ -15,6 +15,7 @@ namespace crmeb\utils;
 use app\services\other\UploadService;
 use crmeb\exceptions\AdminException;
 use think\Image;
+use think\facade\Config;
 
 /**
  * 下载图片到本地
@@ -80,7 +81,7 @@ class DownloadImage
         } else {
             $ext = $this->getImageExtname($name)['ext_name'];
         }
-        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'])) {
+        if (!in_array($ext, Config::get('upload.fileExt'))) {
             throw new AdminException(400558);
         }
         if (strstr($url, 'http://') === false && strstr($url, 'https://') === false) {

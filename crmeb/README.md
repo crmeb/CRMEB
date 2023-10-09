@@ -1,4 +1,4 @@
-CRMEB v4.5 后端程序目录
+CRMEB v5 后端程序目录
 ===============
 
 > 运行环境要求PHP7.1-7.4。
@@ -8,12 +8,10 @@ CRMEB v4.5 后端程序目录
 ## 一键安装
 上传你的代码，站点入口目录设置/public
 在浏览器中输入你的域名或IP（例如：www.yourdomain.com）,
-安装程序会自动执行安装。期间系统会提醒你输入数据库信息以完成安装，安装完成后建议删除install目录下index.php文件或将其改名。
+安装程序会自动执行安装。期间系统会提醒你输入数据库信息以完成安装，安装完成后建议删除install目录。
 
 后台访问地址：
 1.域名/admin
-2.域名/index.php/admin
-3.域名/index.php?s=/admin
 公众号和H5首页访问地址：
 1.域名/
 
@@ -37,32 +35,39 @@ DEFAULT_TIMEZONE = Asia/Shanghai
 [DATABASE]
 TYPE = mysql
 HOSTNAME = 127.0.0.1 #数据库连接地址
+HOSTPORT = 3306 #数据库端口
 DATABASE = test #数据库名称
 USERNAME = username #数据库登录账号
 PASSWORD = password #数据库登录密码
-HOSTPORT = 3306 #数据库端口
-CHARSET = utf8
+PREFIX = eb_
+CHARSET = utf8mb4
 DEBUG = true
 
 [LANG]
 default_lang = zh-cn
 
+[CACHE]
+DRIVER = file #缓存类型，redis/file
+CACHE_PREFIX = cache_xxxx: #缓存前缀
+CACHE_TAG_PREFIX = cache_tag_xxxx: #缓存类型前缀
+
 [REDIS]
-REDIS_HOSTNAME = 127.0.0.1 # redis链接地址
+REDIS_HOSTNAME = 127.0.0.1 #redis链接地址
 PORT = 6379 #端口号
 REDIS_PASSWORD = 123456 #密码
 SELECT = 0 #数据库
+
+[QUEUE]
+QUEUE_NAME = xxxx #队列前缀
 ~~~
 3.修改目录权限（linux系统）777
-/public
-/runtime
+/crmeb
+/template
+
 4.后台登录：
 http://域名/admin
 默认账号：admin 密码：crmeb.com
-## 消息队列
-```sh
-php think queue:listen --queue
-```
+
 
 ## 消息队列
 ```sh

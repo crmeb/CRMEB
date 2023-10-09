@@ -18,6 +18,7 @@ use app\services\system\attachment\SystemAttachmentCategoryServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
 use app\services\other\UploadService;
+use think\facade\Config;
 
 /**
  *
@@ -288,7 +289,7 @@ class CopyTaobaoServices extends BaseServices
         } else {
             $ext = $this->getImageExtname($name)['ext_name'];
         }
-        if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'])) {
+        if (!in_array($ext, Config::get('upload.fileExt'))) {
             throw new AdminException(400558);
         }
         //TODO 获取远程文件所采用的方法
