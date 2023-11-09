@@ -559,7 +559,8 @@ class StoreOrderController
             'unique' => $unique,
             'product_id' => $productId,
             'add_time' => time(),
-            'reply_type' => 'product'
+            'reply_type' => 'product',
+            'suk' => $cartInfo['cart_info']['productInfo']['attrInfo']['suk']
         ]);
 
         $res = $replyServices->save($group);

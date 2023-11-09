@@ -14,7 +14,7 @@
     </el-row>
   </div>
 </template>
-<style scoped lang="less">
+<style scoped lang="scss">
 .list {
   height: 80%;
   min-height: 500px;

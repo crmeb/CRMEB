@@ -264,7 +264,7 @@ class WechatUserServices extends BaseServices
 
     /**
      * 微信授权成功后
-     * @param array $data
+     * @param $data
      * @return array|mixed|\think\Model|null
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -273,8 +273,9 @@ class WechatUserServices extends BaseServices
      * @email 442384644@qq.com
      * @date 2023/02/24
      */
-    public function wechatOauthAfter(array $data)
+    public function wechatOauthAfter($data)
     {
+        if (!$data) throw new ApiException('用户信息获取失败，请刷新页面重试');
         [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $data;
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);

@@ -13,7 +13,7 @@ CRMEB开源商城系统PHP版
         <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
     </a>
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-5.1-blue.svg" />
+        <img src="https://img.shields.io/badge/Edition-5.2-blue.svg" />
     </a>
      <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
         <img src="https://img.shields.io/badge/Download-240m-red.svg" />
@@ -115,9 +115,9 @@ Redis
 
 账号：demo 密码：crmeb.com
 
-H5端：http://v5.crmeb.net/（移动端打开）
+H5端：http://v5.crmeb.net/ （移动端打开）
 
-PC端：http://v5.crmeb.net/（电脑端打开）
+PC端：http://v5.crmeb.net/ （电脑端打开）
 
 APP下载：http://app.crmeb.cn/bzv （苹果手机直接在APP Store里搜索CRMEB下载）
 
@@ -152,6 +152,9 @@ APP下载：http://app.crmeb.cn/bzv （苹果手机直接在APP Store里搜索CR
 做开源，帮助更多人！CRMEB开源项目，不仅让开发者从中受益，也在公益活动中帮助了很多人，对此，我们很荣幸，也乐此不疲！
 
 So~~想要用CRMEB开源商城系统做公益项目的朋友，可以来免费申请商业版系统哦！有需要的朋友，快去找官方客服咨询吧！
+
+![输入图片说明](readme/pic/gongyi1.jpg)
+![输入图片说明](readme/pic/gongyi2.jpg)
 
 ---
 ###  💎 捐赠

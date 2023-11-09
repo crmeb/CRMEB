@@ -3,10 +3,10 @@ services:
   # mysql 容器
   mysql:
     container_name: crmeb_mysql #指定容器名
-    image: daocloud.io/library/mysql:5.7.5-m15 #M1芯片可以采用这个镜像
-    # image: mysql:5.7 #一般电脑可以用这个镜像
+#    image: daocloud.io/library/mysql:5.7.5-m15 #M1芯片可以采用这个镜像
+    image: mysql:5.7 #一般电脑可以用这个镜像
     ports:
-      - 3306:3306
+      - 3336:3306
     # 环境变量
     environment:
       TZ: Asia/Shanghai
@@ -31,7 +31,7 @@ services:
     networks:
       app_net:
         # 固定子网ip，网段必须在子网络192.168.*.*
-        ipv4_address: 192.168.10.1
+        ipv4_address: 192.168.10.11
   # redis 容器
   redis:
     container_name: crmeb_redis
@@ -99,7 +99,7 @@ networks: #网络配置
   app_net: #网络名称
     driver: bridge
     ipam: #网络配置
+      driver: default
       config:
-        - subnet: 192.168.0.0/16 #IP区间
-          gateway: 192.168.10.100
+        - subnet: 192.168.10.0/24 #IP区间
 

@@ -3,11 +3,12 @@
 		<view class="address-window" :class="address.address==true?'on':''">
 			<view class='title'>{{$t(`选择地址`)}}<text class='iconfont icon-guanbi' @tap='close'></text></view>
 			<view class='list'>
-				<view class='item acea-row row-between-wrapper' :class='active==index?"font-num":""' v-for="(item,index) in addressList"
-				 @tap='tapAddress(index,item.id)' :key='index'>
+				<view class='item acea-row row-between-wrapper' :class='active==index?"font-num":""'
+					v-for="(item,index) in addressList" @tap='tapAddress(index,item.id)' :key='index'>
 					<text class='iconfont icon-ditu' :class='active==index?"font-num":""'></text>
 					<view class='address'>
-						<view class='name' :class='active==index?"font-num":""'>{{item.real_name}}<text class='phone'>{{item.phone}}</text></view>
+						<view class='name' :class='active==index?"font-num":""'>{{item.real_name}}<text
+								class='phone'>{{item.phone}}</text></view>
 						<view class='line1'>{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</view>
 					</view>
 					<text class='iconfont icon-complete' :class='active==index?"font-num":""'></text>
@@ -27,7 +28,9 @@
 	import {
 		getAddressList
 	} from '@/api/user.js';
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
 		props: {
 			pagesUrl: {
@@ -50,7 +53,7 @@
 		},
 		data() {
 			return {
-				imgHost:HTTP_REQUEST_URL,
+				imgHost: HTTP_REQUEST_URL,
 				active: 0,
 				//地址列表
 				addressList: [],
@@ -89,6 +92,9 @@
 					}
 					that.$set(that, 'addressList', addressList);
 					that.is_loading = false;
+					if (addressList.length) {
+						this.$emit('onHaveAddressList', true)
+					}
 				})
 			}
 		}

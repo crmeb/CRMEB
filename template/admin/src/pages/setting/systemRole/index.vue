@@ -129,11 +129,13 @@
                 <el-tree
                   :data="menusList"
                   node-key="id"
+                  check-strictly
                   show-checkbox
                   highlight-current
                   ref="tree"
                   :default-checked-keys="selectIds"
                   :props="defaultProps"
+                  @check="clickDeal"
                 ></el-tree>
               </div>
             </div>
@@ -149,7 +151,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
-import { roleListApi, roleSetStatusApi, menusListApi, roleCreatApi, roleInfoApi } from '@/api/setting';
+import { roleListApi, roleSetStatusApi, menusListApi, roleCreateApi, roleInfoApi } from '@/api/setting';
 export default {
   name: 'systemrRole',
   data() {
@@ -322,8 +324,8 @@ export default {
           let data = res.data;
           this.formInline = data.role || this.formInline;
           this.formInline.checked_menus = this.formInline.rules;
-          this.selectIds = this.formInline.rules.split(',');
           this.$nextTick((e) => {
+            this.selectIds = this.formInline.rules.split(',');
             this.tidyRes(data.menus);
             // this.$refs.tree.setCheckedKeys(Array(arr));
           });
@@ -334,6 +336,68 @@ export default {
           this.$message.error(res.msg);
         });
     },
+    forChildrenChecked(arr, status, pid) {
+      if (arr.length) {
+        let len = arr.length;
+        for (var j = 0; j < len; j++) {
+          var childNode = this.$refs.tree.getNode(arr[j].id).data;
+          if (status) {
+            this.$refs.tree.setChecked(childNode.id, true);
+            childNode.checked = true;
+          }
+          if (!status) {
+            this.$refs.tree.setChecked(childNode.id, false);
+            childNode.checked = false;
+          }
+          if (childNode.children.length) {
+            this.forChildrenChecked(childNode.children, status);
+          }
+        }
+      }
+    },
+
+    clickDeal(currentObj, treeStatus, ccc) {
+      // 用于：父子节点严格互不关联时，父节点勾选变化时通知子节点同步变化，实现单向关联。
+      let selected = treeStatus.checkedKeys.indexOf(currentObj.id); // -1未选中
+      // 选中
+      if (selected !== -1) {
+        // 子节点只要被选中父节点就被选中
+        this.selectedParent(currentObj);
+        // 统一处理子节点为相同的勾选状态
+        this.uniteChildSame(currentObj, true);
+      } else {
+        // 未选中 处理子节点全部未选中
+        if (currentObj.children.length !== 0) {
+          this.uniteChildSame(currentObj, false);
+        }
+        let selParent = false;
+        let parentNode = currentObj.pid ? this.$refs.tree.getNode(currentObj.pid).data : undefined;
+        if (parentNode && parentNode.children.length) {
+          for (let i = 0; i < parentNode.children.length; i++) {
+            console.log(treeStatus.checkedKeys, parentNode.children[i].id);
+            if (treeStatus.checkedKeys.includes(parentNode.children[i].id)) {
+              selParent = true;
+            }
+          }
+        }
+        if (!selParent && currentObj.pid) this.$refs.tree.setChecked(currentObj.pid, false);
+      }
+    },
+    // 统一处理子节点为相同的勾选状态
+    uniteChildSame(treeList, isSelected) {
+      this.$refs.tree.setChecked(treeList.id, isSelected);
+      for (let i = 0; i < treeList.children.length; i++) {
+        this.uniteChildSame(treeList.children[i], isSelected);
+      }
+    },
+    // 统一处理父节点为选中
+    selectedParent(currentObj) {
+      let currentNode = this.$refs.tree.getNode(currentObj);
+      if (currentNode.parent.key !== undefined) {
+        this.$refs.tree.setChecked(currentNode.parent, true);
+        this.selectedParent(currentNode.parent);
+      }
+    },
     tidyRes(menus) {
       let data = [];
       menus.map((menu) => {
@@ -342,7 +406,7 @@ export default {
           // menu.disabled = true;
           if (menu.children.length) {
             menu.children.map((v) => {
-              // v.disabled = true;
+              v.checked = true;
             });
           }
           data.push(menu);
@@ -357,6 +421,10 @@ export default {
         checkMenus = ',' + this.formInline.checked_menus + ',';
       data.title = menu.title;
       data.id = menu.id;
+      data.pid = menu.pid;
+      data.children = menu.children;
+      data.checked = menu.checked;
+
       if (menu.children && menu.children.length > 0) {
         data.children = [];
         menu.children.map((child) => {
@@ -372,12 +440,12 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.formInline.checked_menus = [];
-          this.$refs.tree.getCheckedNodes().map((node) => {
-            this.formInline.checked_menus.push(node.id);
-          });
+          this.formInline.checked_menus = [
+            ...this.$refs.tree.getCheckedKeys(),
+            ...this.$refs.tree.getHalfCheckedKeys(),
+          ];
           if (this.formInline.checked_menus.length === 0) return this.$message.warning('请至少选择一个权限');
-          roleCreatApi(this.formInline)
+          roleCreateApi(this.formInline)
             .then(async (res) => {
               this.$message.success(res.msg);
               this.modals = false;

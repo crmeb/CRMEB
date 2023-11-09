@@ -19,12 +19,12 @@
 						<view class="pic-number-pic">
 							{{ item.price }}<span class="pic-number"> {{$t(`元`)}}</span>
 						</view>
-						<view class="pic-number">{{$t(`赠送`)}}：{{ item.give_money }} {{$t(`元`)}} </view>
+						<view class="pic-number">{{$t(`赠送`)}}: {{ item.give_money }} {{$t(`元`)}} </view>
 					</view>
 					<view class="pic-box pic-box-color acea-row row-center-wrapper"
 						:class="activePic == picList.length ? 'pic-box-color-active' : ''"
 						@click="picCharge(picList.length)">
-						<input type="number" :placeholder="$t(`其他`)" v-model="money"
+						<input type="digit" @input="replaceInput" :placeholder="$t(`其他`)" v-model="money"
 							class="pic-box-money pic-number-pic"
 							:placeholder-class="activePic == picList.length ? 'active' :''"
 							:class="activePic == picList.length ? 'pic-box-color-active' : ''" />
@@ -163,6 +163,12 @@
 			}
 		},
 		methods: {
+			replaceInput(event) {
+			    // 必须在nextTick中
+			    this.$nextTick(() => {
+			        this.money = event.target.value.match(/^\d*(\.?\d{0,2})/g)[0]
+			    })
+			},
 			getBasicConfig() {
 				basicConfig().then(res => {
 					const {

@@ -84,15 +84,9 @@ module.exports = {
     config.resolve.alias
       .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
       .set('_c', resolve('src/components'));
-    // 使用 iView Loader
     config.module
       .rule('vue')
       .test(/\.vue$/)
-      .use('iview-loader')
-      .loader('iview-loader')
-      .tap(() => {
-        return Setting.iviewLoaderOptions;
-      })
       .end();
     // 重新设置 alias
     config.resolve.alias.set('@api', resolve('src/api'));

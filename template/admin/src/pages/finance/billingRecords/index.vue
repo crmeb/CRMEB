@@ -223,12 +223,12 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
-/deep/ .el-tabs__item {
+<style scoped lang="scss">
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-/deep/.ivu-card-body {
+::v-deep.ivu-card-body {
   padding: 0;
 }
 

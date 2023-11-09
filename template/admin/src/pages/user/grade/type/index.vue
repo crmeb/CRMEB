@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" @click="addType">添加类型</el-button>
+      <!-- <el-button type="primary" @click="addType">添加类型</el-button> -->
       <el-table
         class="mt14"
         :data="tbody"
@@ -35,6 +35,19 @@
             <span>{{ scope.row.pre_price }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="是否开启" min-width="100">
+          <template slot-scope="scope">
+            <el-switch
+              :active-value="0"
+              :inactive-value="1"
+              v-model="scope.row.is_del"
+              :value="scope.row.is_del"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
         <el-table-column label="排序" min-width="90">
           <template slot-scope="scope">
             <span>{{ scope.row.sort }}</span>
@@ -43,13 +56,13 @@
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
             <a href="javascript:" @click="editType(scope.row)">编辑</a>
-            <el-divider direction="vertical" v-if="scope.row.type !== 'free' && scope.row.type !== 'ever'" />
+            <!-- <el-divider direction="vertical" v-if="scope.row.type !== 'free' && scope.row.type !== 'ever'" />
             <a
               v-if="scope.row.type !== 'free' && scope.row.type !== 'ever'"
               href="javascript:"
               @click="del(scope.row, '删除类型', scope.$index)"
               >删除</a
-            >
+            > -->
           </template>
         </el-table-column>
       </el-table>

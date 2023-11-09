@@ -660,7 +660,7 @@ body {
 
             }
 
-            >>> .ivu-input, .ivu-input:hover, .ivu-input:focus {
+            ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
                 border transparent
                 box-shadow: none;
             }
@@ -775,10 +775,10 @@ body {
                 border-radius: .32rem;
                 overflow hidden
 
-                >>> .ivu-input{
+                ::v-deep .ivu-input{
                     background #F5F6F9
                 }
-                >>> .ivu-input, .ivu-input:hover, .ivu-input:focus {
+                ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
                     border transparent
                     box-shadow: none;
                 }

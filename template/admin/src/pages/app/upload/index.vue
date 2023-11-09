@@ -201,7 +201,7 @@ export default {
   background-color: #fff;
 }
 
-/deep/ .el-upload-list--picture-card .el-upload-list__item {
+::v-deep .el-upload-list--picture-card .el-upload-list__item {
   // width: 113px;
   // height: 113px;
   // line-height: 113px;
@@ -212,12 +212,12 @@ export default {
   padding-top: 31.3%;
   aspect-ratio: 1 / 1;
 }
-/deep/ .el-upload-list--picture-card .el-upload-list__item > div {
+::v-deep .el-upload-list--picture-card .el-upload-list__item > div {
   // position: relative;
   width: 100%;
   height: 100%;
 }
-/deep/ .el-upload--picture-card {
+::v-deep .el-upload--picture-card {
   width: 100%;
   height: 100%;
   display: flex;
@@ -226,7 +226,7 @@ export default {
   align-items: center;
   background: #f9f9f9;
 }
-/deep/ .el-upload-list--picture-card .el-upload-list__item img {
+::v-deep .el-upload-list--picture-card .el-upload-list__item img {
   width: 100%;
   height: 100%;
   border-radius: 6px;
@@ -244,7 +244,7 @@ export default {
   color: #282828;
   opacity: 0.5;
 }
-/deep/ .el-upload--picture-card:hover,
+::v-deep .el-upload--picture-card:hover,
 .el-upload:focus {
   border-color: #c0ccda;
 }
@@ -253,7 +253,7 @@ export default {
   padding-left: 100px;
   flex-wrap: wrap;
 }
-.none-card /deep/ .el-upload--picture-card {
+.none-card ::v-deep .el-upload--picture-card {
   display: none !important;
 }
 .footer {

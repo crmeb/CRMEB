@@ -281,7 +281,7 @@ export default {
                         font-size 13px
                     .input-box
                         flex 1
-                       /deep/ .ivu-input
+                       ::v-deep .ivu-input
                             font-size 13px!important
             .delect-btn
                 position absolute

@@ -99,7 +99,7 @@ export default {
 .ivu-text-right {
   text-align: right;
 }
-/deep/.el-card__header {
+::v-deep.el-card__header {
   border-bottom: none !important;
   padding-bottom: 0;
 }

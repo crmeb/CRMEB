@@ -305,9 +305,8 @@ class StoreOrderComputedServices extends BaseServices
      * @param array $userInfo
      * @return array
      */
-    public function getOrderPriceGroup($storeFreePostage, $cartInfo, $addr, $userInfo = [])
+    public function getOrderPriceGroup($storeFreePostage, $cartInfo, $addr, $userInfo = [], $shipping_type = 1)
     {
-        $sumPrice = $totalPrice = $costPrice = $vipPrice = 0;
         $storePostage = 0;
         $storePostageDiscount = 0;
         $isStoreFreePostage = false;//是否满额包邮
@@ -321,12 +320,17 @@ class StoreOrderComputedServices extends BaseServices
         // 判断商品包邮和固定运费
         foreach ($cartInfo as $key => &$item) {
             $item['postage_price'] = 0;
-            if ($item['productInfo']['freight'] == 1) {
-                $item['postage_price'] = 0;
-            } elseif ($item['productInfo']['freight'] == 2) {
-                $item['postage_price'] = bcmul((string)$item['productInfo']['postage'], (string)$item['cart_num'], 2);
-                $item['origin_postage_price'] = bcmul((string)$item['productInfo']['postage'], (string)$item['cart_num'], 2);
-                $storePostage = bcadd((string)$storePostage, (string)$item['postage_price'], 2);
+            if ($shipping_type == 1) {
+                if ($item['productInfo']['freight'] == 1) {
+                    $item['postage_price'] = 0;
+                } elseif ($item['productInfo']['freight'] == 2) {
+                    $item['postage_price'] = bcmul((string)$item['productInfo']['postage'], (string)$item['cart_num'], 2);
+                    $item['origin_postage_price'] = bcmul((string)$item['productInfo']['postage'], (string)$item['cart_num'], 2);
+                    $storePostage = bcadd((string)$storePostage, (string)$item['postage_price'], 2);
+                }
+                if ($sumPrice >= $storeFreePostage) {
+                    $item['postage_price'] = $item['origin_postage_price'] = $storePostage = 0;
+                }
             }
         }
         $postageArr = [];

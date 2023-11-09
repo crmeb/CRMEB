@@ -55,6 +55,7 @@ body,
 .layout-container {
   width: 100%;
   height: 100%;
+
   .layout-aside {
     background: var(--prev-bg-menuBar);
     // box-shadow: 0px 0 1px rgba(0, 21, 41, 1%);
@@ -64,13 +65,16 @@ body,
     display: flex;
     flex-direction: column;
     overflow-x: hidden !important;
+
     .el-scrollbar__view {
       overflow: hidden;
     }
   }
+
   .layout-header {
     padding: 0 !important;
   }
+
   .layout-main {
     padding: 0 !important;
     overflow: hidden;
@@ -78,9 +82,11 @@ body,
     background-color: var(--prev-bg-main-color);
     position: relative;
   }
+
   .el-scrollbar {
     width: 100%;
   }
+
   .layout-view-bg-white {
     background: var(--prev-bg-white);
     width: 100%;
@@ -88,34 +94,42 @@ body,
     border-radius: 4px;
     border: 1px solid var(--prev-border-color-lighter);
   }
+
   .layout-el-aside-br-color {
     // border-right: 1px solid rgb(238, 238, 238);
   }
+
   .layout-aside-width-default {
     width: 180px !important;
     transition: width 0.2s ease;
     box-shadow: 1px 1px 4px rgba(0, 21, 41, 0.08);
   }
+
   .layout-aside-width64 {
     width: 64px !important;
     transition: width 0.2s ease;
   }
+
   .layout-aside-width1 {
     width: 0px !important;
     transition: width 0.2s ease;
   }
+
   .layout-scrollbar {
     @extend .el-scrollbar;
     padding: 16px;
   }
+
   .layout-mian-height-50 {
     height: calc(100vh - 50px);
   }
+
   .layout-columns-warp {
     flex: 1;
     display: flex;
     overflow: hidden;
   }
+
   .layout-hide {
     display: none;
   }
@@ -132,50 +146,62 @@ body,
 .flex {
   display: flex;
 }
+
 .flex-auto {
   flex: 1;
 }
+
 .flex-center {
   @extend .flex;
   flex-direction: column !important;
   width: 100%;
   overflow: hidden;
 }
+
 .flex-margin {
   margin: auto;
 }
+
 .flex-warp {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
   margin: 0 -5px;
+
   .flex-warp-item {
     padding: 5px;
+
     .flex-warp-item-box {
       width: 100%;
       height: 100%;
     }
   }
 }
+
 /* 宽高 100%
 ------------------------------- */
 .w100 {
   width: 100% !important;
 }
+
 .h100 {
   height: 100% !important;
   min-height: calc(100vh - 185px);
 }
+
 .h101 {
   height: 100% !important;
   min-height: calc(100vh - 150px);
 }
+
 .vh100 {
   height: 100vh !important;
 }
+
 .max100vh {
   max-height: 100vh !important;
 }
+
 .min100vh {
   min-height: 100vh !important;
 }
@@ -185,15 +211,19 @@ body,
 .color-primary {
   color: var(--prev-color-primary);
 }
+
 .color-success {
   color: var(--prev-color-success);
 }
+
 .color-warning {
   color: var(--prev-color-warning);
 }
+
 .color-danger {
   color: var(--prev-color-danger);
 }
+
 .color-info {
   color: var(--prev-color-info);
 }
@@ -205,14 +235,28 @@ body,
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .two-text-overflow {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
+
 .overflow {
   overflow: hidden !important;
+}
+
+.p30 {
+  padding: 30px;
+}
+
+.p20 {
+  padding: 20px;
+}
+
+.p40 {
+  padding: 40px;
 }
 
 /* 字体大小全局样式
@@ -229,24 +273,31 @@ body,
   .mt#{$i} {
     margin-top: #{$i}px !important;
   }
+
   .mr#{$i} {
     margin-right: #{$i}px !important;
   }
+
   .mb#{$i} {
     margin-bottom: #{$i}px !important;
   }
+
   .ml#{$i} {
     margin-left: #{$i}px !important;
   }
+
   .pt#{$i} {
     padding-top: #{$i}px !important;
   }
+
   .pr#{$i} {
     padding-right: #{$i}px !important;
   }
+
   .pb#{$i} {
     padding-bottom: #{$i}px !important;
   }
+
   .pl#{$i} {
     padding-left: #{$i}px !important;
   }

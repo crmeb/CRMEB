@@ -50,11 +50,11 @@ export default {
   height 100%
   background: #fff;
 }
-/deep/ .el-card__body{
+::v-deep .el-card__body{
   min-height: 700px;
   padding 16px 16px 16px 0
 }
-/deep/ .conter .pictrueList{
+::v-deep .conter .pictrueList{
   max-width 100%
 }
 </style>

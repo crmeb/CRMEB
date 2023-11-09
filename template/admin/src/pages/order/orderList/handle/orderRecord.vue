@@ -66,5 +66,5 @@ export default {
 .ivu-table-wrapper
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
-.order_box >>> .ivu-table th{background: #f8f8f9 !important;}
+.order_box ::v-deep .ivu-table th{background: #f8f8f9 !important;}
 </style>

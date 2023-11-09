@@ -106,7 +106,7 @@ class SystemRole extends AuthController
         if (!$role) {
             return app('json')->fail(100100);
         }
-        $menus = $services->getMenus($this->adminInfo['level'] == 0 ? [] : $this->adminInfo['roles']);
+        $menus = $services->getMenus($this->adminInfo['level'] == 0 ? [] : $this->adminInfo['roles'], explode(',', $role['rules']));
         return app('json')->success(['role' => $role->toArray(), 'menus' => $menus]);
     }
 

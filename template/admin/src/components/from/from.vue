@@ -130,7 +130,7 @@ export default {
 .radio {
   margin-bottom: 14px;
 }
-.radio >>> .name {
+.radio ::v-deep .name {
   width: 125px;
   text-align: right;
   padding-right: 12px;

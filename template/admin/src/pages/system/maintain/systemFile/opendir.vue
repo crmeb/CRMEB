@@ -888,11 +888,11 @@ export default {
 };
 </script>
 <style scoped>
-.file-left /deep/ .ivu-tree-title {
+.file-left ::v-deep .ivu-tree-title {
   font-weight: 500;
   font-family: SourceHanSansSC-regular, '微软雅黑', Arial, Helvetica, sans-serif;
 }
-.file-content /deep/ .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+.file-content ::v-deep .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
   border-bottom: 1px solid orange;
 }
 </style>
@@ -900,27 +900,27 @@ export default {
 .file-left {
   padding-left: 10px;
 
-  >>>.ivu-icon-ios-arrow-forward {
+  ::v-deep.ivu-icon-ios-arrow-forward {
     font-size: 18px !important;
   }
 
   color: #cccccc;
 
-  >>>.ivu-icon-ios-folder-outline {
+  ::v-deep.ivu-icon-ios-folder-outline {
     font-size: 14px !important;
   }
 
-  >>>.ivu-icon-ios-document-outline {
+  ::v-deep.ivu-icon-ios-document-outline {
     font-size: 18px !important;
   }
 }
 
->>>.ivu-icon-md-folder {
+::v-deep.ivu-icon-md-folder {
   font-size: 18px !important;
   color: #d6ab34 !important;
 }
 
->>> .ivu-table-row {
+::v-deep .ivu-table-row {
   cursor: pointer;
 }
 
@@ -996,7 +996,7 @@ export default {
 
 }
 
->>>.CodeMirror {
+::v-deep.CodeMirror {
   height: 70vh !important;
 }
 
@@ -1048,11 +1048,11 @@ export default {
   }
 }
 
->>>.el-dialog__body {
+::v-deep.el-dialog__body {
   padding: 0 !important;
 }
 
->>>.el-dialog__body {
+::v-deep.el-dialog__body {
   background-color: #292929;
 }
 
@@ -1089,11 +1089,11 @@ export default {
   border:1px solid #c2c2c2;
   padding: 3px 5px
 }
-.mark /deep/ .el-input__inner{
+.mark ::v-deep .el-input__inner{
     background: #fff;
     border-radius: .39rem;
 }
-.mark /deep/ .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
+.mark ::v-deep .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
     border: transparent;
     box-shadow: none;
 }
@@ -1165,16 +1165,16 @@ export default {
   }
 }
 
-body >>>.ivu-select-dropdown {
+body ::v-deep.ivu-select-dropdown {
   background: #fff;
 }
 
 .diy-tree-render {
-  >>>li {
+  ::v-deepli {
     overflow: hidden;
   }
 
-  >>>.ivu-tree-title {
+  ::v-deep.ivu-tree-title {
     width: 90%;
     max-width: 250px;
     padding: 0;
@@ -1182,15 +1182,15 @@ body >>>.ivu-select-dropdown {
   }
 }
 
->>>.ivu-tree-children {
+::v-deep.ivu-tree-children {
   .ivu-tree-title:hover {
     background-color: #2f2f2f !important;
   }
 }
->>>.el-tabs__item{
+::v-deep.el-tabs__item{
   background-color: #fff;
 }
->>>.el-tree{
+::v-deep.el-tree{
   background-color: #292929 !important;
 }
 .file-box {
@@ -1231,7 +1231,7 @@ body >>>.ivu-select-dropdown {
 }
 
 // 自定义方法缩小
->>>.diy-fullscreen {
+::v-deep.diy-fullscreen {
   overflow: hidden;
 
   .ivu-modal {
@@ -1269,7 +1269,7 @@ body >>>.ivu-select-dropdown {
   }
 }
 
->>>.ivu-modal {
+::v-deep.ivu-modal {
   top: 70px;
 }
 
@@ -1299,17 +1299,17 @@ body >>>.ivu-select-dropdown {
   color: #f00;
 }
 
->>>body .ivu-select-dropdown .ivu-dropdown-transfer {
+::v-deepbody .ivu-select-dropdown .ivu-dropdown-transfer {
   background: red !important;
 }
 
 // 导航栏右键样式 无效
-.file-left /deep/ .ivu-select-dropdown.ivu-dropdown-transfer .ivu-dropdown-menu .ivu-dropdown-item:hover {
+.file-left ::v-deep .ivu-select-dropdown.ivu-dropdown-transfer .ivu-dropdown-menu .ivu-dropdown-item:hover {
   background-color: #e5e5e5 !important;
 }
 
 // 选项卡头部
->>>.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container {
+::v-deep.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container {
   background-color: #333;
 }
 </style>

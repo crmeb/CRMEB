@@ -14,8 +14,8 @@ namespace crmeb\utils;
 
 use app\services\other\UploadService;
 use crmeb\exceptions\AdminException;
-use think\Image;
 use think\facade\Config;
+use think\Image;
 
 /**
  * 下载图片到本地

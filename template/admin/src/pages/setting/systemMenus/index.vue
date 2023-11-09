@@ -497,7 +497,7 @@ export default {
     font-size: 20px;
   }
 }
-/deep/ .vxe-table--render-default .vxe-table--border-line {
+::v-deep .vxe-table--render-default .vxe-table--border-line {
   z-index: 2 !important;
 }
 .rule {
@@ -562,7 +562,7 @@ export default {
     width: 200px;
     overflow-y: scroll;
     max-height: 600px;
-    /deep/ .el-tree-node__children .el-tree-node .el-tree-node__content {
+    ::v-deep .el-tree-node__children .el-tree-node .el-tree-node__content {
       padding-left: 14px !important;
     }
   }

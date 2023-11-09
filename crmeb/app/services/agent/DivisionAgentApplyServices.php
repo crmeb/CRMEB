@@ -14,9 +14,9 @@ use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\services\FormBuilder as Form;
 use app\services\other\UploadService;
+use think\facade\Config;
 use think\facade\Log;
 use think\facade\Route;
-use think\facade\Config;
 
 class DivisionAgentApplyServices extends BaseServices
 {

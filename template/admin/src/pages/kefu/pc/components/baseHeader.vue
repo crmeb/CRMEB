@@ -2,11 +2,12 @@
   <div class="base-header">
     <div class="left-header-wrapper">
       <el-input
+        v-model="value"
         class="search_box"
         prefix="ios-search"
         placeholder="搜索用户名称"
-        @on-enter="bindSearch"
-        @change="inputChange"
+        @change="bindSearch"
+        @input="inputChange"
       />
       <div class="user_info">
         <img v-lazy="kefuInfo.avatar" alt="" />
@@ -79,6 +80,7 @@ export default {
       ],
       curIndex: 0,
       isOnline: false,
+      value: '',
     };
   },
   mounted() {
@@ -104,28 +106,28 @@ export default {
       let self = this;
       this.$msgbox({
         title: '退出登录确认',
-        message:'您确定退出登录当前账户吗？打开的标签页和个人设置将会保存。',
+        message: '您确定退出登录当前账户吗？打开的标签页和个人设置将会保存。',
         showCancelButton: true,
         cancelButtonText: '取消',
         confirmButtonText: '确认',
         iconClass: 'el-icon-warning',
-        confirmButtonClass: 'btn-custom-cancel'
-      }).then(() => {
+        confirmButtonClass: 'btn-custom-cancel',
+      })
+        .then(() => {
           self.logoutKefu({
             confirm: false,
             vm: self,
           });
-      }).catch(() => {
-
-      })
+        })
+        .catch(() => {});
     },
     // 搜索
     bindSearch(e) {
-      this.$emit('search', e.target.value);
+      this.$emit('search', e);
     },
     // inputChange
     inputChange(e) {
-      this.bus.$emit('change', e.target.value);
+      this.bus.$emit('change', e);
     },
   },
 };

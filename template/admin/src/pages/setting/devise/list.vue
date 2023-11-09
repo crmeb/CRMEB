@@ -9,149 +9,122 @@
         </div>
       </div>
     </div>
-    <el-row class="ivu-mt" type="flex">
-      <el-col :span="3">
-        <div class="left-wrapper">
-          <div class="tree-vis">
-            <div
-              class="tab-item"
-              :class="{ active: item.id == cardShow + 1 }"
-              v-for="(item, index) in menuList"
-              :key="index"
-              @click="bindMenuItem(index)"
-            >
-              {{ item.name }}
-            </div>
+    <el-card class="h100" :bordered="false" shadow="never" v-if="cardShow == 0">
+      <div class="acea-row">
+        <div class="iframe-col">
+          <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
+          <div class="mask"></div>
+        </div>
+        <div class="table-box">
+          <div class="acea-row row-between-wrapper">
+            <el-row>
+              <el-col>
+                <div class="button acea-row row-middle">
+                  <el-button type="primary"
+                    ><a
+                      class="target-add"
+                      ref="target"
+                      :href="`${url}${$routeProStr}/setting/pages/diy_index?id=0&name=首页&type=0`"
+                      target="_blank"
+                      >添加专题页
+                    </a></el-button
+                  >
+                </div>
+              </el-col>
+            </el-row>
+          </div>
+          <el-table
+            :data="list"
+            ref="table"
+            class="mt14"
+            v-loading="loading"
+            highlight-current-row
+            no-userFrom-text="暂无数据"
+            no-filtered-userFrom-text="暂无筛选结果"
+          >
+            <el-table-column label="页面ID" width="80">
+              <template slot-scope="scope">
+                <span>{{ scope.row.id }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="模板名称" min-width="130">
+              <template slot-scope="scope">
+                <span>{{ scope.row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="模板类型" min-width="130">
+              <template slot-scope="scope">
+                <el-tag type="success" size="medium" v-if="scope.row.status == 1">首页</el-tag>
+                <el-tag type="info" size="medium" v-if="scope.row.is_diy == 1 && scope.row.status == 0" class="mr10">{{
+                  scope.row.type_name
+                }}</el-tag>
+                <el-tag type="warning" size="medium" v-if="scope.row.is_diy == 0 && scope.row.status == 0">{{
+                  scope.row.type_name
+                }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="添加时间" min-width="130">
+              <template slot-scope="scope">
+                <span>{{ scope.row.add_time }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="更新时间" min-width="130">
+              <template slot-scope="scope">
+                <span>{{ scope.row.update_time }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="210">
+              <template slot-scope="scope">
+                <div style="display: inline-block" v-if="scope.row.status || scope.row.is_diy" @click="edit(scope.row)">
+                  <a
+                    v-if="scope.row.is_diy === 1"
+                    class="target"
+                    ref="target"
+                    :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${scope.row.id}&name=${
+                      scope.row.template_name || 'moren'
+                    }`"
+                    target="_blank"
+                  >
+                    编辑</a
+                  >
+                  <a v-else class="target">编辑</a>
+                </div>
+                <el-divider
+                  direction="vertical"
+                  v-if="(scope.row.status || scope.row.is_diy) && scope.row.id != 1 && scope.row.status != 1"
+                />
+
+                <div style="display: inline-block" v-if="scope.row.id != 1 && scope.row.status != 1">
+                  <a @click="del(scope.row, '删除此模板', scope.$index)">删除</a>
+                </div>
+                <el-divider
+                  direction="vertical"
+                  v-if="(scope.row.id != 1 && scope.row.status != 1) || scope.row.is_diy"
+                />
+                <div style="display: inline-block" v-if="scope.row.is_diy">
+                  <a @click="preview(scope.row, scope.$index)">预览</a>
+                </div>
+                <el-divider direction="vertical" v-if="scope.row.is_diy && scope.row.status != 1" />
+                <div style="display: inline-block" v-if="scope.row.status != 1">
+                  <a @click="setStatus(scope.row, scope.$index)">设为首页</a>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="acea-row row-right page">
+            <pagination
+              v-if="total"
+              :total="total"
+              :page.sync="diyFrom.page"
+              :limit.sync="diyFrom.limit"
+              @pagination="getList"
+            />
           </div>
         </div>
-      </el-col>
-      <el-col :span="21">
-        <el-card :bordered="false" shadow="never" v-if="cardShow == 0">
-          <el-row v-if="cardShow == 0" type="flex">
-            <el-col class="iframe-col" v-if="isDiy">
-              <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
-              <div class="mask"></div>
-            </el-col>
-            <el-col :span="16" v-bind="isDiy ? grid : ''" :class="isDiy ? 'table' : ''">
-              <div class="acea-row row-between-wrapper">
-                <el-row>
-                  <el-col v-bind="grid">
-                    <div class="button acea-row row-middle">
-                      <el-button type="primary"
-                        ><a
-                          class="target-add"
-                          ref="target"
-                          :href="`${url}${$routeProStr}/setting/pages/diy_index?id=0&name=首页&type=0`"
-                          target="_blank"
-                          >添加专题页
-                        </a></el-button
-                      >
-                    </div>
-                  </el-col>
-                </el-row>
-              </div>
-              <el-table
-                :data="list"
-                ref="table"
-                class="mt14"
-                v-loading="loading"
-                highlight-current-row
-                no-userFrom-text="暂无数据"
-                no-filtered-userFrom-text="暂无筛选结果"
-              >
-                <el-table-column label="页面ID" width="80">
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.id }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="模板名称" min-width="130">
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.name }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="模板类型" min-width="130">
-                  <template slot-scope="scope">
-                    <el-tag type="success" size="medium" v-if="scope.row.status == 1">首页</el-tag>
-                    <el-tag
-                      type="info"
-                      size="medium"
-                      v-if="scope.row.is_diy == 1 && scope.row.status == 0"
-                      class="mr10"
-                      >{{ scope.row.type_name }}</el-tag
-                    >
-                    <el-tag type="warning" size="medium" v-if="scope.row.is_diy == 0 && scope.row.status == 0">{{
-                      scope.row.type_name
-                    }}</el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column label="添加时间" min-width="130">
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.add_time }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="更新时间" min-width="130">
-                  <template slot-scope="scope">
-                    <span>{{ scope.row.update_time }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作" fixed="right" width="210">
-                  <template slot-scope="scope">
-                    <div
-                      style="display: inline-block"
-                      v-if="scope.row.status || scope.row.is_diy"
-                      @click="edit(scope.row)"
-                    >
-                      <a
-                        v-if="scope.row.is_diy === 1"
-                        class="target"
-                        ref="target"
-                        :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${scope.row.id}&name=${
-                          scope.row.template_name || 'moren'
-                        }`"
-                        target="_blank"
-                      >
-                        编辑</a
-                      >
-                      <a v-else class="target">编辑</a>
-                    </div>
-                    <el-divider
-                      direction="vertical"
-                      v-if="(scope.row.status || scope.row.is_diy) && scope.row.id != 1 && scope.row.status != 1"
-                    />
-
-                    <div style="display: inline-block" v-if="scope.row.id != 1 && scope.row.status != 1">
-                      <a @click="del(scope.row, '删除此模板', scope.$index)">删除</a>
-                    </div>
-                    <el-divider
-                      direction="vertical"
-                      v-if="(scope.row.id != 1 && scope.row.status != 1) || scope.row.is_diy"
-                    />
-                    <div style="display: inline-block" v-if="scope.row.is_diy">
-                      <a @click="preview(scope.row, scope.$index)">预览</a>
-                    </div>
-                    <el-divider direction="vertical" v-if="scope.row.is_diy && scope.row.status != 1" />
-                    <div style="display: inline-block" v-if="scope.row.status != 1">
-                      <a @click="setStatus(scope.row, scope.$index)">设为首页</a>
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-              <div class="acea-row row-right page">
-                <pagination
-                  v-if="total"
-                  :total="total"
-                  :page.sync="diyFrom.page"
-                  :limit.sync="diyFrom.limit"
-                  @pagination="getList"
-                />
-              </div>
-            </el-col>
-          </el-row>
-        </el-card>
-        <goodClass v-else-if="cardShow == 1" ref="category" @parentFun="getChildData"></goodClass>
-        <users v-else ref="users" @parentFun="getChildData"></users>
-      </el-col>
-    </el-row>
+      </div>
+    </el-card>
+    <goodClass v-else-if="cardShow == 1" ref="category" @parentFun="getChildData"></goodClass>
+    <users v-else ref="users" @parentFun="getChildData"></users>
     <el-dialog :visible.sync="isTemplate" title="开发移动端链接" :z-index="1" width="540px" @closed="cancel">
       <div class="article-manager">
         <el-card :bordered="false" shadow="never" class="ivu-mt">
@@ -165,7 +138,7 @@
           >
             <el-row :gutter="24">
               <el-col :span="24">
-                <el-col v-bind="grid">
+                <el-col>
                   <el-form-item label="开发移动端链接：" prop="link" label-for="link">
                     <el-input v-model="formItem.link" placeholder="http://localhost:8080" />
                   </el-form-item>
@@ -200,14 +173,11 @@
 
 <script>
 import Setting from '@/setting';
-import ClipboardJS from 'clipboard';
-import { diyList, diyDel, setStatus, recovery, getRoutineCode, getDiyCreate, setDefault } from '@/api/diy';
+import { diyList, diyDel, setStatus, recovery, getRoutineCode, setDefault } from '@/api/diy';
 import { mapState } from 'vuex';
 import QRCode from 'qrcodejs2';
 import goodClass from './goodClass';
 import users from './users';
-import { getCookies, setCookies } from '@/libs/util';
-import { tableDelApi } from '@api/common';
 export default {
   name: 'devise_list',
   computed: {
@@ -260,11 +230,17 @@ export default {
       url: window.location.origin,
     };
   },
+  watch: {
+    $route() {
+      this.cardShow = this.$route.params.type;
+    },
+  },
   created() {
+    this.cardShow = this.$route.params.type;
     this.getList();
     this.iframeUrl = `${location.origin}/pages/index/index?mdType=iframeWindow`;
   },
-  mounted: function () {},
+  mounted() {},
   methods: {
     cancel() {
       this.$refs['formItem'].resetFields();
@@ -467,7 +443,9 @@ export default {
   background-color: #fff;
   padding-bottom: 50px;
 }
-
+::v-deep.el-card__body{
+  padding: 40px;
+}
 .bnt {
   width: 80px !important;
 }
@@ -500,39 +478,41 @@ export default {
   background-color: rgba(0, 0, 0, 0);
 }
 
-/deep/.ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title {
+::v-deep.ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title {
   text-align: center;
 }
 
-/deep/.i-layout-page-header {
+::v-deep.i-layout-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/deep/.ivu-page-header {
+::v-deep.ivu-page-header {
   border-bottom: unset;
   position: fixed;
   z-index: 9;
   width: 100%;
 }
 
-/deep/ .ivu-menu-vertical .ivu-menu-item-group-title {
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
 
-/deep/ .ivu-menu-vertical.ivu-menu-light:after {
+::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
 
-/deep/ .ivu-menu {
+::v-deep .ivu-menu {
   z-index: 0 !important;
 }
 
-/deep/ .ivu-row {
+::v-deep .ivu-row {
   display: flex;
 }
-
+.table-box{
+  flex: 1 !important;
+}
 // @media (max-width: 2175px) {
 // .table {
 // display: block;

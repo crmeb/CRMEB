@@ -13,8 +13,10 @@ namespace app\services\order;
 
 
 use app\dao\order\StoreOrderDao;
+use app\services\activity\bargain\StoreBargainServices;
 use app\services\activity\combination\StoreCombinationServices;
 use app\services\activity\combination\StorePinkServices;
+use app\services\activity\seckill\StoreSeckillServices;
 use app\services\BaseServices;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserBillServices;
@@ -351,10 +353,12 @@ class StoreOrderTakeServices extends BaseServices
             }
         }
         if (isset($orderInfo['seckill_id']) && $orderInfo['seckill_id']) {
-            return true;
+            $seckill_commission = app()->make(StoreSeckillServices::class)->value(['id' => $orderInfo['seckill_id']], 'is_commission');
+            if (!$seckill_commission) return true;
         }
         if (isset($orderInfo['bargain_id']) && $orderInfo['bargain_id']) {
-            return true;
+            $bargain_commission = app()->make(StoreBargainServices::class)->value(['id' => $orderInfo['bargain_id']], 'is_commission');
+            if (!$bargain_commission) return true;
         }
         //绑定失效
         if (isset($orderInfo['spread_uid']) && $orderInfo['spread_uid'] == -1) {

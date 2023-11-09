@@ -130,7 +130,7 @@ export default {
   },
 };
 </script>
-<style lang="less">
+<style lang="scss">
 .i-quill-no-border {
   .ql-toolbar.ql-snow {
     border: none;

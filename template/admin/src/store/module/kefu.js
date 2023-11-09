@@ -11,7 +11,6 @@
 import { AccountLogoutKefu } from '@/api/kefu';
 import { getCookies, removeCookies, setCookies } from '@/libs/util';
 import router from '@/router';
-import { Modal } from 'view-design';
 import { Socket } from '@/libs/socket';
 export default {
   namespaced: true,

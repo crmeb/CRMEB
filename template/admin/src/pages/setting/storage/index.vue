@@ -242,7 +242,7 @@
                     </el-form-item>
                   </div>
                   <div class="flex">
-                    <el-form-item class="contentIput" label="水印横坐标偏移量："  label-width="120px" prop="name">
+                    <el-form-item class="contentIput" label="水印横坐标偏移量：" label-width="120px" prop="name">
                       <el-input
                         class="topIput"
                         type="number"
@@ -745,20 +745,20 @@ export default {
   },
 };
 </script>
-<style scoped lang="less">
-/deep/ .el-tabs__item {
+<style scoped lang="scss">
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
 .ivu-input-group > .ivu-input:last-child,
-/deep/.ivu-input-group-append {
+::v-deep.ivu-input-group-append {
   background: none;
   color: #999999;
 }
-/deep/.ivu-input-group .ivu-input {
+::v-deep.ivu-input-group .ivu-input {
   border-right: 0px !important;
 }
-.content /deep/.ivu-form .ivu-form-item-label {
+.content ::v-deep.ivu-form .ivu-form-item-label {
   width: 133px;
 }
 .topIput {
@@ -802,7 +802,7 @@ export default {
     }
   }
   .content {
-    /deep/.ivu-form-item-label {
+    ::v-deep.ivu-form-item-label {
       width: 120px;
     }
     .flex {
@@ -843,14 +843,14 @@ export default {
 }
 </style>
 <style scoped>
-.message /deep/ .ivu-table-header thead tr th {
+.message ::v-deep .ivu-table-header thead tr th {
   padding: 8px 16px;
 }
 .ivu-radio-wrapper {
   margin-right: 15px;
   font-size: 12px !important;
 }
-.message /deep/ .ivu-tabs-tab {
+.message ::v-deep .ivu-tabs-tab {
   border-radius: 0 !important;
 }
 .table-box {

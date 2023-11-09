@@ -89,6 +89,19 @@ class StoreCouponIssueServices extends BaseServices
      */
     public function saveCoupon($data)
     {
+        if ($data['id']) {
+            $res = $this->dao->update($data['id'], [
+                'coupon_title' => $data['coupon_title'],
+                'title' => $data['coupon_title'],
+                'total_count' => $data['total_count'],
+                'remain_count' => $data['total_count'],
+                'receive_limit' => $data['receive_limit'],
+                'status' => $data['status'],
+            ]);
+            if (!$res) throw new AdminException(100007);
+            return (int)$data['id'];
+        }
+
         if ($data['start_time'] && $data['start_use_time']) {
 
             if ($data['start_time'] < date('Y-m-d 00:00:00')) {

@@ -112,6 +112,8 @@ Route::group('order', function () {
     Route::get('delivery/list', 'v1.order.DeliveryService/get_delivery_list')->option(['real_name' => '订单列表获取配送员']);
     //电子面单模板列表
     Route::get('expr/temp', 'v1.order.StoreOrder/expr_temp')->option(['real_name' => '电子面单模板列表']);
+    //打印发货单
+    Route::get('print/shipping/:order_id', 'v1.order.StoreOrder/printShipping')->option(['real_name' => '打印发货单']);
 
     //更多操作打印电子面单
     Route::get('order_dump/:order_id', 'v1.order.StoreOrder/order_dump')->option(['real_name' => '更多操作打印电子面单']);

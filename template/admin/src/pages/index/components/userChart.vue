@@ -114,7 +114,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .dashboard-console-visit {
   ul {
     li {

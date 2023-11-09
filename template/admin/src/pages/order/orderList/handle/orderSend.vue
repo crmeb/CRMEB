@@ -7,6 +7,13 @@
     width="1000px"
     @closed="changeModal"
   >
+    <el-alert class="mb10" type="warning" :closable="false">
+      <template slot="title">
+        <p>用户姓名：{{ userSendmsg.real_name }}</p>
+        <p>用户电话：{{ userSendmsg.user_phone }}</p>
+        <p>用户地址：{{ userSendmsg.user_address }}</p>
+      </template>
+    </el-alert>
     <el-form
       v-if="modals"
       ref="formItem"
@@ -295,6 +302,7 @@ export default {
       ruleValidate: { sh_delivery: [{ required: true, message: '请输入送货人', trigger: 'change' }] },
       deliveryErrorMsg: '',
       isLoading: true,
+      userSendmsg: {},
     };
   },
   watch: {

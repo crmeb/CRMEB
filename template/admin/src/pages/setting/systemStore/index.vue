@@ -385,6 +385,6 @@ export default {
     .iconfont
         color: #898989;
 
-.mapBox >>> .ivu-modal-body
+.mapBox ::v-deep .ivu-modal-body
     height: 640px !important;
 </style>

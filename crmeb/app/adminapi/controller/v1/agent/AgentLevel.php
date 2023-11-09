@@ -69,13 +69,13 @@ class AgentLevel extends AuthController
             ['name', ''],
             ['grade', 0],
             ['image', ''],
-            ['one_brokerage', 0],
-            ['two_brokerage', 0],
+            ['one_brokerage_percent', 0],
+            ['two_brokerage_percent', 0],
             ['status', 0]]);
         if (!$data['name']) return app('json')->fail(400200);
         if (!$data['grade']) return app('json')->fail(400201);
         if (!$data['image']) return app('json')->fail(400202);
-        if ($data['two_brokerage'] > $data['one_brokerage']) {
+        if ($data['two_brokerage_percent'] > $data['one_brokerage_percent']) {
             return app('json')->fail(400203);
         }
         $grade = $this->services->get(['grade' => $data['grade'], 'is_del' => 0]);
@@ -121,13 +121,13 @@ class AgentLevel extends AuthController
             ['name', ''],
             ['grade', 0],
             ['image', ''],
-            ['one_brokerage', 0],
-            ['two_brokerage', 0],
+            ['one_brokerage_percent', 0],
+            ['two_brokerage_percent', 0],
             ['status', 0]]);
         if (!$data['name']) return app('json')->fail(400200);
         if (!$data['grade']) return app('json')->fail(400201);
         if (!$data['image']) return app('json')->fail(400202);
-        if ($data['two_brokerage'] > $data['one_brokerage']) {
+        if ($data['two_brokerage_percent'] > $data['one_brokerage_percent']) {
             return app('json')->fail(400203);
         }
         if (!$levelInfo = $this->services->getLevelInfo((int)$id)) return app('json')->fail(400206);
@@ -139,8 +139,8 @@ class AgentLevel extends AuthController
         $levelInfo->name = $data['name'];
         $levelInfo->grade = $data['grade'];
         $levelInfo->image = $data['image'];
-        $levelInfo->one_brokerage = $data['one_brokerage'];
-        $levelInfo->two_brokerage = $data['two_brokerage'];
+        $levelInfo->one_brokerage_percent = $data['one_brokerage_percent'];
+        $levelInfo->two_brokerage_percent = $data['two_brokerage_percent'];
         $levelInfo->status = $data['status'];
         $levelInfo->save();
         return app('json')->success(100001);

@@ -215,7 +215,6 @@ export default {
           this.$store.commit('menus/setOneLvMenus', arr);
           let routes = formatFlatteningRoutes(data.menus);
           this.$store.commit('menus/setOneLvRoute', routes);
-
           // 记录用户信息
           this.$store.commit('userInfo/name', data.user_info.account);
           this.$store.commit('userInfo/avatar', data.user_info.head_pic);
@@ -458,7 +457,7 @@ a:link, a:visited, a:hover, a:active {
   color: #0366D6;
 }
 
-.index_from >>> .ivu-input-large {
+.index_from ::v-deep .ivu-input-large {
   font-size: 14px !important;
 }
 
@@ -468,10 +467,10 @@ a:link, a:visited, a:hover, a:active {
 .pull-right {
     float: right!important;
 }
-/deep/ .el-button--primary{
+::v-deep .el-button--primary{
   border:none;
 }
-/deep/ .el-button{
+::v-deep .el-button{
   padding: 13px 20px !important;
 }
 .pull-right {

@@ -32,7 +32,7 @@
           <el-col :span="12">
             <el-form-item label="时间范围：" class="tab_data">
               <el-date-picker
-                  clearable
+                clearable
                 :editable="false"
                 @change="onchangeTime"
                 format="yyyy-MM-dd"
@@ -40,7 +40,7 @@
                 type="daterange"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                  style="width: 100%"
+                style="width: 100%"
               ></el-date-picker>
             </el-form-item>
           </el-col>
@@ -173,7 +173,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="scss">
 .table {
   .ivu-table-default {
     overflow-y: auto;

@@ -25,7 +25,7 @@
                   > -->
                   <span class="file-name">
                     <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
-                    <span class="name line1">{{ data.name }}</span>
+                    <span class="name line1">{{ data.title }}</span>
                   </span>
                   <span>
                     <el-dropdown @command="(command) => clickMenu(data, command)">
@@ -133,18 +133,8 @@
                     <span class="operate" @click="lookImg(item)" v-if="item.isShowEdit">查看</span>
                   </div>
                 </div>
-                <!-- <div class="nameStyle" v-show="item.realName && item.real_name">
-                    {{ item.real_name }}
-                  </div> -->
               </div>
             </div>
-            <!--<Col class="mb20" v-bind="gridPic"-->
-            <!--v-for="(item, index) in pictrueList" :key="index" >-->
-            <!--<div class="pictrueList_pic">-->
-            <!--<img :class="item.isSelect ? 'on': '' " v-lazy="item.satt_dir"-->
-            <!--@click.stop="changImage(item, index, pictrueList)"/>-->
-            <!--</div>-->
-            <!--</Col>-->
           </div>
           <el-table
             v-if="lietStyle == 'table'"
@@ -197,7 +187,7 @@
             v-if="total"
             :total="total"
             :pageCount="9"
-            layout="total, prev, pager, next, jumper"
+            layout="total, prev, pager, next"
             :page.sync="fileData.page"
             @pagination="pageChange"
             :limit.sync="fileData.limit"
@@ -386,6 +376,7 @@ export default {
     },
     uploadSuccess() {
       this.fileData.page = 1;
+      this.initData();
       this.getFileList();
     },
     uploadModal() {
@@ -485,11 +476,6 @@ export default {
         data.flag2 = false;
       }
     },
-    // onClick(root, node, data, e) {
-    //   e.preventDefault();
-
-    //   data.flag2 = !data.flag2;
-    // },
     // 点击树
     appendBtn(data) {
       this.treeId = data.id;
@@ -520,16 +506,6 @@ export default {
           this.$message.error(res.msg);
         });
     },
-    // 确认删除树
-    // submitModel () {
-    //     if (this.tits === '图片') {
-    //         this.getFileList();
-    //         this.checkPicList = [];
-    //     } else {
-    //         this.getList();
-    //         this.checkPicList = [];
-    //     }
-    // },
     // 编辑树表单
     editPic(data) {
       this.$modalForm(categoryEditApi(data.id)).then(() => this.getList());
@@ -541,7 +517,7 @@ export default {
     // 分类列表树
     getList(type) {
       let data = {
-        name: '全部图片',
+        title: '全部图片',
         id: '',
         pid: 0,
       };
@@ -858,7 +834,7 @@ export default {
     right: 0;
     top: 0;
   }
-  /deep/ .el-badge__content.is-fixed {
+  ::v-deep .el-badge__content.is-fixed {
     top: 13px;
     right: 25px;
   }
@@ -884,7 +860,7 @@ export default {
     .isTree {
       min-height: 374px;
       max-height: 550px;
-      /deep/ .file-name {
+      ::v-deep .file-name {
         display: flex;
         align-items: center;
         .name {
@@ -896,17 +872,17 @@ export default {
           margin-right: 8px;
         }
       }
-      /deep/ .el-tree-node {
+      ::v-deep .el-tree-node {
         margin-right: 16px;
       }
-      /deep/ .el-tree-node__children .el-tree-node {
+      ::v-deep .el-tree-node__children .el-tree-node {
         margin-right: 0;
       }
-      /deep/ .el-tree-node__content {
+      ::v-deep .el-tree-node__content {
         width: 100%;
         height: 36px;
       }
-      /deep/ .custom-tree-node {
+      ::v-deep .custom-tree-node {
         flex: 1;
         display: flex;
         align-items: center;
@@ -917,11 +893,11 @@ export default {
         color: rgba(0, 0, 0, 0.6);
         line-height: 13px;
       }
-      /deep/ .is-current {
+      ::v-deep .is-current {
         background: #f1f9ff !important;
         color: var(--prev-color-primary) !important;
       }
-      /deep/ .is-current .custom-tree-node {
+      ::v-deep .is-current .custom-tree-node {
         color: var(--prev-color-primary) !important;
       }
     }
@@ -932,7 +908,7 @@ export default {
   }
 }
 
-.treeSel >>> .ivu-select-dropdown-list {
+.treeSel ::v-deep .ivu-select-dropdown-list {
   padding: 0 5px !important;
   box-sizing: border-box;
   width: 200px;
@@ -1022,7 +998,7 @@ export default {
   display: inline-block;
 }
 
-.bnt /deep/ .ivu-tree-children {
+.bnt ::v-deep .ivu-tree-children {
   padding: 5px 0;
 }
 

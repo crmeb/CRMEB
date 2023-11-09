@@ -103,8 +103,8 @@
 		<!-- #ifdef MP -->
 		<authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize>
 		<!-- #endif -->
-		<Verify @success="success" :captchaType="captchaType" :imgSize="{ width: '330px', height: '155px' }"
-			ref="verify"></Verify>
+		<Verify ref="verify" @success="successVerify" :captchaType="captchaType" :imgSize="{ width: '330px', height: '155px' }"
+			></Verify>
 	</view>
 	<view class="settledSuccessMain" v-else-if='status == 0'>
 		<view class="settledSuccessful">
@@ -264,19 +264,7 @@
 				});
 				this.$refs.verify.show()
 			},
-			// 获取验证码api
-			// code() {
-			// 	let that = this
-			// 	getCodeApi().then(res => {
-			// 		that.keyCode = res.data.key;
-			// 		this.code()
-			// 	}).catch(res => {
-			// 		that.$util.Tips({
-			// 			title: res
-			// 		});
-			// 	});
-			// },
-			success(data) {
+			successVerify(data) {
 				this.$refs.verify.hide()
 				getCodeApi()
 					.then(res => {

@@ -55,7 +55,7 @@
 				productGap: this.dataConfig.productGap.val,
 				priceShow: this.dataConfig.priceShow.val, //是否显示价格
 				bntShow: this.dataConfig.bntShow.val, //是否显示按钮
-				bgStyle: this.dataConfig.bgStyle.val,//设置背景样式
+				bgStyle: this.dataConfig.bgStyle.type,//设置背景样式
 				prConfig: this.dataConfig.prConfig.val//设置背景边距
 			};
 		},

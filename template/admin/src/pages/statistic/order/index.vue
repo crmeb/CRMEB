@@ -46,7 +46,7 @@
                 <span>{{ scope.row.name }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="金额" min-width="130">
+            <el-table-column label="订单数" min-width="130">
               <template slot-scope="scope">
                 <span>{{ scope.row.value }}</span>
               </template>

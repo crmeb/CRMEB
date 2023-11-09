@@ -241,7 +241,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }

@@ -109,6 +109,6 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.Modals >>> .input
+.Modals ::v-deep .input
   margin-right 10px;
 </style>

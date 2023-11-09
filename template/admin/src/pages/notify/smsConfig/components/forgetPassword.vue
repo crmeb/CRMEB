@@ -255,7 +255,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .maxInpt {
   max-width: 400px;
   margin-left: auto;

@@ -56,7 +56,7 @@
 						@click.stop="evaluateTap(item.unique,orderId)">
 						{{$t(`评价`)}}</view>
 					<view class='logistics'
-						v-if="paid === 1 && refund_status === 0 && item.refund_num !=item.cart_num && !is_confirm && isShow && (virtualType == 0 || (virtualType > 0 && statusType == 1))"
+						v-if="paid === 1 && refund_status === 0 && item.refund_num !=item.cart_num && !is_confirm && is_refund_available && isShow && (virtualType == 0 || (virtualType > 0 && statusType == 1))"
 						@click.stop="openSubcribe(item)">
 						{{$t(`申请退款`)}}</view>
 					<view class="rig-btn" v-if="status_type === 2 && index === cartInfo.length - 1 || !split">
@@ -157,6 +157,10 @@
 				default: 0,
 			},
 			isShow: {
+				type: Boolean,
+				default: true,
+			},
+			is_refund_available: {
 				type: Boolean,
 				default: true,
 			},

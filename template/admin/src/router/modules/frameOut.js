@@ -177,4 +177,12 @@ export default [
     },
     component: () => import('@/pages/app/upload'),
   },
+  {
+    path: routePre + '/order/print',
+    name: `order-print-print`,
+    meta: {
+      title: '配货单打印',
+    },
+    component: () => import('@/pages/order/print/index'),
+  },
 ];

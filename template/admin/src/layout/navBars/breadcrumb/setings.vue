@@ -296,7 +296,7 @@ export default {
         themeSelect['--prev-bg-menuBarColor'] = '#fff';
         themeSelect['--prev-MenuActiveColor'] = '#fff';
         if (val == 'theme-1') {
-          themeSelect['--prev-bg-menu-hover-ba-color'] = '#0256FF';
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#e8f4ff';
           themeSelect['--prev-bg-menuBar'] = '#282c34';
           themeSelect['--prev-border-color-lighter'] = '#282c34';
         } else if (val == 'theme-3') {
@@ -514,10 +514,10 @@ body .v-modal {
 .mr5 {
   margin-right: 5px;
 }
-/deep/ .el-drawer__header {
+::v-deep .el-drawer__header {
   margin-bottom: 0;
 }
-/deep/ .el-radio-button--mini .el-radio-button__inner {
+::v-deep .el-radio-button--mini .el-radio-button__inner {
   padding: 7px 8px;
 }
 .layout-breadcrumb-seting-bar {

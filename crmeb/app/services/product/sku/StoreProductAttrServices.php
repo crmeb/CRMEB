@@ -75,6 +75,7 @@ class StoreProductAttrServices extends BaseServices
         } else {
             /** @var StoreProductVirtualServices $productVirtual */
             $productVirtual = app()->make(StoreProductVirtualServices::class);
+            $cardStock = 0;
             foreach ($data['valueGroup'] as &$item) {
                 $res = $storeProductAttrValueServices->save($item);
                 if ($item['is_virtual'] && count($item['virtual_list']) && !$item['coupon_id'] && $item['disk_info'] == '') {
@@ -94,8 +95,10 @@ class StoreProductAttrServices extends BaseServices
                     }
                     $allStock = $productVirtual->count(['product_id' => $id, 'attr_unique' => $item['unique']]);
                     $storeProductAttrValueServices->update(['id' => $res['id']], ['stock' => $allStock - $sales, 'sales' => $sales]);
+                    $cardStock = $cardStock + ($allStock - $sales);
                 }
             }
+            if ($cardStock > 0) $storeProductService->update($id, ['stock' => $cardStock]);
             return true;
         }
     }

@@ -57,6 +57,7 @@ class User extends AuthController
             ['field_key', ''],
             ['isMember', '']
         ]);
+        $where['label_id'] = stringToIntArray($where['label_id']);
         return app('json')->success($this->services->index($where));
     }
 

@@ -9,13 +9,14 @@
       <el-tab-pane :label="'预售订单（' + (tablists.advance || 0) + '）'" name="5" />
     </el-tabs>
     <div class="acea-row">
-      <el-button v-auth="['order-write']" type="primary" class="mr14" @click="writeOff"> 订单核销 </el-button>
-      <el-upload class="mr14" :action="expressUrl" :headers="header" :on-success="upExpress">
+      <el-button v-auth="['order-write']" type="primary" @click="writeOff">订单核销</el-button>
+      <el-button type="primary" @click="batchShipmentModal = true">批量发货</el-button>
+      <!-- <el-upload class="mr14" :action="expressUrl" :headers="header" :on-success="upExpress">
         <el-button class="export" type="primary">批量发货</el-button>
-      </el-upload>
+      </el-upload> -->
       <el-button v-auth="['order-dels']" @click="delAll">批量删除</el-button>
       <el-button v-auth="['export-storeOrder']" class="export" @click="exportList">订单导出</el-button>
-      <el-button class="export" @click="exportDeliveryList">发货单导出</el-button>
+      <!-- <el-button class="export" @click="exportDeliveryList">发货单导出</el-button> -->
     </div>
     <el-table
       :data="orderList"
@@ -23,7 +24,7 @@
       v-loading="loading"
       empty-text="暂无数据"
       @select="handleSelectRow"
-      @select-all="handleSelectAll"
+      @select-all="handleSelectRow"
       class="orderData mt14"
     >
       <el-table-column type="expand">
@@ -62,11 +63,11 @@
                   }}</span>
                 </div>
                 <div>
-                  <span>价格：</span>
+                  <span>支付价格：</span>
                   <span>¥{{ item.cart_info.truePrice || '--' }}</span>
                 </div>
                 <div>
-                  <span>数量：</span>
+                  <span>购买数量：</span>
                   <span>{{ item.cart_info.cart_num || '--' }}</span>
                 </div>
               </div>
@@ -195,21 +196,13 @@
                   "
                   >订单备注</el-dropdown-item
                 >
-                <!-- <el-dropdown-item
-                command="5"
-                v-show="
-                  scope.row._status !== 1 &&
-                  (parseFloat(scope.row.pay_price) > parseFloat(scope.row.refund_price) ||
-                    (scope.row.pay_price == 0 &&
-                      [0, 1].indexOf(scope.row.refund_status) !== -1))
-                "
-                >立即退款</el-dropdown-item
-              > -->
+                <!-- <el-dropdown-item command="5" v-show="!scope.row.refund.length">立即退款</el-dropdown-item> -->
                 <!--                            <el-dropdown-item command="6"  v-show='scope.row._status !==1 && (scope.row.use_integral > 0 && scope.row.use_integral >= scope.row.back_integral) '>退积分</el-dropdown-item>-->
                 <!--                            <el-dropdown-item command="7"  v-show='scope.row._status === 3'>不退款</el-dropdown-item>-->
                 <el-dropdown-item command="8" v-show="scope.row._status === 4">已收货</el-dropdown-item>
                 <el-dropdown-item command="9">删除订单</el-dropdown-item>
                 <el-dropdown-item command="12" v-show="scope.row.kuaidi_label">快递面单打印</el-dropdown-item>
+                <el-dropdown-item command="13" v-show="scope.row.paid">配货单打印</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -274,6 +267,31 @@
         <el-button @click="del('writeOffFrom')">取消</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      :visible.sync="batchShipmentModal"
+      title="批量发货"
+      class="paymentFooter"
+      :show-close="true"
+      width="540px"
+      @closed="changeModal"
+    >
+      <!-- <el-upload :action="expressUrl" :headers="header" :on-success="upExpress">
+        <el-button class="export" type="primary">批量发货</el-button>
+      </el-upload> -->
+      <el-alert type="warning" :closable="false">
+        <p>步骤一 导出发货单</p>
+        <p>步骤二 发货单中填写物流单号</p>
+        <p>步骤三 将发货单上传</p>
+      </el-alert>
+      <div class="acea-row row-middle mb10 mt10">
+        <el-button @click="exportDeliveryList">导出发货单</el-button>
+        <div class="pl20 tips"></div>
+      </div>
+      <el-upload class="upload-demo" drag :action="expressUrl" :headers="header" :on-success="upExpress">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">批量发货单,拖入上传或<em>点击上传</em></div>
+      </el-upload>
+    </el-dialog>
   </div>
 </template>
 
@@ -303,6 +321,7 @@ import { exportOrderList, exportOrderDeliveryList } from '@api/export';
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import { serveOpnOtherApi } from '@api/setting';
+import createWorkBook from '@/vendor/newToExcel.js';
 
 export default {
   name: 'table_list',
@@ -332,6 +351,7 @@ export default {
       }
     };
     return {
+      batchShipmentModal: false,
       expressUrl: Setting.apiBaseURL + '/file/upload/1',
       header: {},
       delfromData: {},
@@ -402,6 +422,7 @@ export default {
   },
   methods: {
     ...mapMutations('order', ['onChangeTabs', 'getIsDel', 'getisDelIdListl']),
+    batchShipment() {},
     // 操作
     changeMenu(row, name) {
       this.orderId = row.id;
@@ -434,12 +455,12 @@ export default {
         case '5':
           this.getRefundData(row.id);
           break;
-        case '6':
-          this.getRefundIntegral(row.id);
-          break;
-        case '7':
-          this.getNoRefundData(row.id);
-          break;
+        // case '6':
+        //   this.getRefundIntegral(row.id);
+        //   break;
+        // case '7':
+        //   this.getNoRefundData(row.id);
+        //   break;
         case '8':
           this.delfromData = {
             title: '修改确认收货',
@@ -494,6 +515,15 @@ export default {
           break;
         case '12':
           this.printImg(row.kuaidi_label);
+          break;
+        case '13':
+          let pathInfo = this.$router.resolve({
+            path: '/admin/order/print',
+            query: {
+              id: row.order_id,
+            },
+          });
+          window.open(pathInfo.href, '_blank');
           break;
         default:
           this.delfromData = {
@@ -556,42 +586,12 @@ export default {
           this.$message.error(res.msg);
         });
     },
-    // 全选
-    // onSelectTab (selection) {
-    //     let isDel = selection.some(item => {
-    //         return item.is_del === 1
-    //     });
-    //     this.getIsDel(isDel);
-    //     this.getisDelIdListl(selection);
-    // },
-    //全选和取消全选时触发
-    handleSelectAll(selection) {
+    handleSelectRow(selection) {
       let ids = [];
       selection.map((e) => {
         ids.push(e.id);
       });
       this.selectedIds = ids;
-      this.$nextTick(() => {
-        //确保dom加载完毕
-        this.setChecked();
-      });
-    },
-    //  选中某一行
-    handleSelectRow(selection, row) {
-      let ids = [];
-      selection.map((e) => {
-        ids.push(e.id);
-      });
-      this.selectedIds = ids;
-      this.$nextTick(() => {
-        //确保dom加载完毕
-        this.setChecked();
-      });
-    },
-    //  取消某一行
-    handleCancelRow(selection, row) {
-      this.isDel(selection);
-      this.selectedIds.delete(row.id);
       this.$nextTick(() => {
         //确保dom加载完毕
         this.setChecked();
@@ -634,14 +634,6 @@ export default {
       } else {
         this.$message.error('您选择的的订单存在用户未删除的订单，无法删除用户未删除的订单！');
       }
-    },
-    splitOrderDetail(row) {
-      this.$router.push({
-        path: 'split_list',
-        query: {
-          id: row.id,
-        },
-      });
     },
     // 获取编辑表单数据
     getOrderData(id) {
@@ -706,6 +698,13 @@ export default {
     },
     // 发送货
     sendOrder(row) {
+      if (row.user_address) {
+        this.$refs.send.userSendmsg = {
+          real_name: row.real_name,
+          user_address: row.user_address,
+          user_phone: row.user_phone,
+        };
+      }
       this.$refs.send.total_num = row.total_num;
       this.virtual_type = row.virtual_type;
       this.$refs.send.modals = true;
@@ -728,13 +727,6 @@ export default {
         .catch((res) => {
           this.$message.error(res.msg);
         });
-    },
-    change(status) {},
-    // 数据导出；
-    exportData: function () {
-      this.$refs.table.exportCsv({
-        filename: '商品列表',
-      });
     },
     // 核销订单
     bindWrite(row) {
@@ -852,27 +844,27 @@ export default {
     },
     // 导出
     async exportList() {
-      let [th, filekey, data, fileName] = [[], [], [], ''];
-      let excelData = {};
-      excelData.page = 1;
-      excelData.limit = 200;
-      excelData.ids = this.delIdList;
-      excelData.type = this.orderType === 0 ? '' : this.orderType;
-      for (let i = 0; i < excelData.page + 1; i++) {
-        let lebData = await this.getExcelData(excelData);
-        if (!fileName) fileName = lebData.filename;
-        if (!filekey.length) {
-          filekey = lebData.fileKey;
-        }
-        if (!th.length) th = lebData.header;
+      let excelData = {
+          page: 1,
+          limit: 100,
+          status: this.orderStatus,
+          pay_type: this.orderPayType,
+          data: this.orderTime,
+          real_name: this.real_name,
+          field_key: this.fieldKey,
+          type: this.orderType === 0 ? '' : this.orderType,
+          ids: this.delIdList,
+        },
+        data = [],
+        lebData = {};
+      for (let i = 1; i < excelData.page + 1; i++) {
+        lebData = await this.getExcelData(excelData);
         if (lebData.export.length) {
           data = data.concat(lebData.export);
-          excelData.page++;
-        } else {
-          this.$exportExcel(th, filekey, fileName, data);
-          return;
+          if (lebData.export.length == excelData.limit) excelData.page++;
         }
       }
+      createWorkBook(lebData.header, lebData.filename, data, '', lebData.filename);
     },
     getExcelData(excelData) {
       return new Promise((resolve, reject) => {
@@ -920,13 +912,18 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/ .el-upload-list{
+::v-deep .el-upload ,::v-deep .el-upload-dragger{
+  width: 100%;
+}
+::v-deep .el-upload-list {
   display: none;
 }
-/deep/ .el-tabs__item {
+
+::v-deep .el-tabs__item {
   height: 54px;
   line-height: 54px;
 }
+
 img {
   height: 36px;
   display: block;
@@ -959,7 +956,7 @@ img {
   }
 }
 
-.orderData >>>.ivu-table-cell {
+.orderData ::v-deep.ivu-table-cell {
   padding-left: 0 !important;
 }
 
@@ -990,10 +987,16 @@ img {
     margin-right: 10px;
   }
 }
+
 .w-250 {
   max-width: 250px;
 }
+
 .w-120 {
   width: 120px;
+}
+.tips{
+    color: #c0c4cc;
+  font-size: 12px;
 }
 </style>

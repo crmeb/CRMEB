@@ -296,7 +296,6 @@
               v-if="manyFormValidate.length && formValidate.header.length !== 0 && attrs.length !== 0"
             >
               <!-- 批量设置-->
-
               <el-col :span="24" v-if="[0, 3].includes(formValidate.virtual_type)">
                 <el-form-item label="批量设置：" class="labeltop">
                   <el-table :data="oneFormBatch" border>
@@ -315,7 +314,7 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
-                            @click="modalPicTap('dan', 'duopi', index)"
+                            @click="modalPicTap('dan', 'duopi', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
                               <img v-lazy="oneFormBatch[0].pic" />
@@ -363,25 +362,25 @@
                         </template>
                         <template v-else-if="item.slot === 'fictitious'">
                           <el-button
-                            v-if="!row.coupon_id && formValidate.virtual_type == 2"
-                            @click="addGoodsCoupon(index, 'oneFormBatch')"
+                            v-if="!scope.row.coupon_id && formValidate.virtual_type == 2"
+                            @click="addGoodsCoupon(scope.$index, 'oneFormBatch')"
                             >添加优惠券</el-button
                           >
                           <span
                             class="see"
-                            v-else-if="row.coupon_id && formValidate.virtual_type == 2"
-                            @click="see(row, 'manyFormValidate', index)"
-                            >{{ row.coupon_name }}</span
+                            v-else-if=" formValidate.virtual_type == 2 && scope.row.coupon_id "
+                            @click="see(scope.row, 'manyFormValidate', scope.$index)"
+                            >{{ scope.row.coupon_name }}</span
                           >
                           <el-button
-                            v-else-if="!row.virtual_list.length && formValidate.virtual_type == 1"
-                            @click="addVirtual(index, 'oneFormBatch')"
+                            v-else-if="!scope.row.virtual_list.length && formValidate.virtual_type == 1"
+                            @click="addVirtual(scope.$index, 'oneFormBatch')"
                             >添加卡密</el-button
                           >
                           <span
                             class="see"
-                            v-else-if="row.virtual_list.length && formValidate.virtual_type == 1"
-                            @click="see(row, 'oneFormBatch', index)"
+                            v-else-if="scope.row.virtual_list.length && formValidate.virtual_type == 1"
+                            @click="see(scope.row, 'oneFormBatch', scope.$index)"
                             >已设置</span
                           >
                         </template>
@@ -508,25 +507,25 @@
                         </template>
                         <template v-else-if="item.slot === 'fictitious'">
                           <el-button
-                            v-if="!row.coupon_id && formValidate.virtual_type == 2"
+                            v-if="!scope.row.coupon_id && formValidate.virtual_type == 2"
                             @click="addGoodsCoupon(scope.$index, 'manyFormValidate')"
                             >添加优惠券</el-button
                           >
                           <span
                             class="see"
-                            v-else-if="row.coupon_id && formValidate.virtual_type == 2"
-                            @click="see(row, 'manyFormValidate', scope.$index)"
-                            >{{ row.coupon_name }}</span
+                            v-else-if="scope.row.coupon_id && formValidate.virtual_type == 2"
+                            @click="see(scope.row, 'manyFormValidate', scope.$index)"
+                            >{{ scope.row.coupon_name }}</span
                           >
                           <el-button
-                            v-else-if="!row.virtual_list && !row.stock && formValidate.virtual_type == 1"
-                            @click="addVirtual(index, 'manyFormValidate')"
+                            v-else-if="!scope.row.virtual_list && !scope.row.stock && formValidate.virtual_type == 1"
+                            @click="addVirtual(scope.$index, 'manyFormValidate')"
                             >添加卡密</el-button
                           >
                           <span
                             class="see"
-                            v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
-                            @click="see(row, 'manyFormValidate', scope.$index)"
+                            v-else-if="(scope.row.virtual_list.length || scope.row.stock) && formValidate.virtual_type == 1"
+                            @click="see(scope.row, 'manyFormValidate', scope.$index)"
                             >已设置</span
                           >
                         </template>
@@ -614,7 +613,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="24" v-if="formValidate.virtual_type == 0">
-              <el-form-item label="重量（KG）：">
+              <el-form-item label="重量(KG)：">
                 <el-input-number
                   :controls="false"
                   v-model="oneFormValidate[0].weight"
@@ -691,7 +690,6 @@
             <el-form-item label="物流方式：" prop="logistics">
               <el-checkbox-group v-model="formValidate.logistics" @change="logisticsBtn">
                 <el-checkbox label="1">快递</el-checkbox>
-
                 <el-checkbox label="2">到店核销</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -1541,6 +1539,7 @@ export default {
           bar_code: '',
           weight: 0,
           volume: 0,
+          virtual_list: [],
         },
       ],
       // 规格数据
@@ -1646,12 +1645,6 @@ export default {
           slot: 'bar_code',
           align: 'center',
           minWidth: 120,
-        },
-        {
-          title: '虚拟商品',
-          slot: 'fictitious',
-          align: 'center',
-          minWidth: 95,
         },
         {
           title: '操作',
@@ -2531,6 +2524,7 @@ export default {
           bar_code: '',
           weight: 0,
           volume: 0,
+          virtual_list: [],
         },
       ];
     },
@@ -3006,7 +3000,7 @@ export default {
 };
 </script>
 <style scoped lang="stylus">
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
@@ -3041,7 +3035,7 @@ export default {
   color: #d8d8d8;
 }
 
-.maxW /deep/.ivu-select-dropdown {
+.maxW ::v-deep.ivu-select-dropdown {
   max-width: 600px;
 }
 
@@ -3051,7 +3045,7 @@ export default {
 }
 
 .noLeft {
-  >>> .ivu-form-item-content {
+  ::v-deep .ivu-form-item-content {
     margin-left: 0 !important;
   }
 }
@@ -3205,7 +3199,7 @@ export default {
 }
 
 .labeltop {
-  >>> .ivu-form-item-label {
+  ::v-deep .ivu-form-item-label {
     float: none !important;
     display: inline-block !important;
     margin-left: 120px !important;
@@ -3313,7 +3307,7 @@ export default {
 }
 </style>
 <style scoped lang="stylus">
-/deep/.ivu-date-picker {
+::v-deep.ivu-date-picker {
   width: 300px;
 }
 
@@ -3375,7 +3369,7 @@ export default {
 
 .addfont {
   display: inline-block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--prev-color-primary);
   margin-left: 14px;
@@ -3459,27 +3453,27 @@ export default {
   }
 }
 
-#shopp-manager /deep/.ivu-form-item-content {
+#shopp-manager ::v-deep.ivu-form-item-content {
   line-height: 33px !important;
 }
 
-#selectvideo /deep/.ivu-form-item-content {
+#selectvideo ::v-deep.ivu-form-item-content {
   line-height: 0px !important;
 }
 
 .progress {
   margin-top: 10px;
 }
-.labelInput /deep/ .el-tag{
+.labelInput ::v-deep .el-tag{
   color: #606266;
   background-color: #F0F2F5;
   border-color: #F0F2F5;
   margin-right: 6px;
 }
-.labelInput /deep/ .el-tag .el-tag__close{
+.labelInput ::v-deep .el-tag .el-tag__close{
   color: #909399;
 }
-.labelInput /deep/.el-tag .el-tag__close:hover{
+.labelInput ::v-deep.el-tag .el-tag__close:hover{
   color: #fff;
   background-color: #909399;
 }

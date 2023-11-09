@@ -168,26 +168,26 @@ export default {
 .order_box2
    position absolute
    z-index 999999999
-.order_box >>> .ivu-modal-header
+.order_box ::v-deep .ivu-modal-header
    padding 30x 16px !important
-.order_box >>> .ivu-card
+.order_box ::v-deep .ivu-card
     font-size 12px !important
-.fontColor1 >>> .ivu-description-term
+.fontColor1 ::v-deep .ivu-description-term
     color red !important
-.fontColor1 >>> .ivu-description-detail
+.fontColor1 ::v-deep .ivu-description-detail
     color red !important
     padding-bottom 14px !important
-.fontColor2 >>> .ivu-description-detail
+.fontColor2 ::v-deep .ivu-description-detail
     color #733AF9 !important
-.order_box >>> .ivu-description-term
+.order_box ::v-deep .ivu-description-term
     padding-bottom 10px !important
-.order_box >>> .ivu-description-detail
+.order_box ::v-deep .ivu-description-detail
     padding-bottom 10px !important
-.order_box >>> .ivu-modal-body
+.order_box ::v-deep .ivu-modal-body
     padding: 0 16px !important
-.fontColor3 >>> .ivu-description-term
+.fontColor3 ::v-deep .ivu-description-term
     color #f1a417 !important
-.fontColor3 >>> .ivu-description-detail
+.fontColor3 ::v-deep .ivu-description-detail
     color #f1a417 !important
 .tabBox_img
     width 100px

@@ -35,7 +35,7 @@ export default {
       meta: {
         auth: ['admin-index-index'],
         title: '主页',
-        isAffix: true,
+        isAffix: false,
       },
       component: () => import('@/pages/index/index'),
     },

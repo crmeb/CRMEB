@@ -151,11 +151,11 @@ class FeiEYun extends BasePrinter
             unset($price);
         }
         $this->printerContent .= '--------------------------------<BR>';
-        $this->printerContent .= '合计：' . number_format($orderInfo['total_price'], 1) . '元<BR>';
-        $this->printerContent .= '邮费：' . number_format($orderInfo['pay_postage'], 1) . '元<BR>';
-        $this->printerContent .= '优惠：' . number_format($orderInfo['coupon_price'], 1) . '元<BR>';
-        $this->printerContent .= '抵扣：' . number_format($orderInfo['deduction_price'], 1) . '元<BR>';
-        $this->printerContent .= '实际支付：' . number_format($orderInfo['pay_price'], 1) . '元<BR>';
+        $this->printerContent .= '合计：' . number_format($orderInfo['total_price'], 2) . '元<BR>';
+        $this->printerContent .= '邮费：' . number_format($orderInfo['pay_postage'], 2) . '元<BR>';
+        $this->printerContent .= '优惠：' . number_format($orderInfo['coupon_price'], 2) . '元<BR>';
+        $this->printerContent .= '抵扣：' . number_format($orderInfo['deduction_price'], 2) . '元<BR>';
+        $this->printerContent .= '实际支付：' . number_format($orderInfo['pay_price'], 2) . '元<BR>';
         $this->printerContent .= '<QR>' . $config['url'] . '</QR>';//把解析后的二维码生成的字符串用标签套上即可自动生成二维码
         return $this;
     }

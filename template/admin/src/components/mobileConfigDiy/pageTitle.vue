@@ -12,12 +12,12 @@
         <el-input v-model="value" placeholder="选填不超过30个字" maxlength="30" @input="changVal" />
       </el-col>
     </div>
-    <div class="c_row-item">
+    <!-- <div class="c_row-item">
       <el-col class="label" :span="4"> 页面状态 </el-col>
       <el-col :span="19" class="slider-box">
         <el-switch :active-value="1" :inactive-value="0" v-model="isShow" @change="changeState" />
       </el-col>
-    </div>
+    </div> -->
     <div class="c_row-item acea-row row-top">
       <el-col class="label" :span="4"> 背景设置 </el-col>
       <el-col :span="19" class="slider-box">
@@ -157,7 +157,7 @@ export default {
   background: #ccc;
 }
 
-/deep/.ivu-input {
+::v-deep.ivu-input {
   font-size: 13px !important;
 }
 
@@ -211,7 +211,7 @@ export default {
   }
 }
 
-.ivu-color-picker /deep/ .ivu-select-dropdown {
+.ivu-color-picker ::v-deep .ivu-select-dropdown {
   position: absolute;
   // width: 300px !important;
   left: 34px !important;

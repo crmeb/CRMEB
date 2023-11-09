@@ -90,15 +90,15 @@ export default {
 };
 </script>
 <style scoped lang="stylus">
-.product_tabs >>> .ivu-tabs-bar {
+.product_tabs ::v-deep .ivu-tabs-bar {
   margin-bottom: 0px !important;
 }
 
-.product_tabs >>> .ivu-page-header-content {
+.product_tabs ::v-deep .ivu-page-header-content {
   margin-bottom: 0px !important;
 }
 
-.product_tabs >>> .ivu-page-header-breadcrumb {
+.product_tabs ::v-deep .ivu-page-header-breadcrumb {
   margin-bottom: 0px !important;
 }
 </style>

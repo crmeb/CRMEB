@@ -132,6 +132,7 @@ class CopyTaobaoServices extends BaseServices
             $productInfo['temp_id'] = 1;
             $productInfo['freight'] = 3;
             $productInfo['recommend'] = [];
+            $productInfo['logistics'] = ['1', '2'];
             $data['productInfo'] = $productInfo;
             return $data;
         } else {

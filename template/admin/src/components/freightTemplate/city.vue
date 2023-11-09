@@ -308,5 +308,8 @@ export default {
   cursor: pointer;
   font-size: 12px;
   margin-left: 10px;
+  line-height: 19px;
+  color: var(--prev-color-text-primary);
+  font-weight: 500;
 }
 </style>

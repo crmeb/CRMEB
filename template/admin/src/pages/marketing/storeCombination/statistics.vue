@@ -387,7 +387,7 @@ export default {
   margin-bottom: 6px;
 }
 
-/deep/ .ivu-tabs-nav-scroll{
+::v-deep .ivu-tabs-nav-scroll{
   background-color: #fff;
   padding-top 5px
 }

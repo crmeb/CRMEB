@@ -210,7 +210,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .active {
   background: #0091ff;
   box-shadow: 0px 6px 20px 0px rgba(0, 145, 255, 0.3);

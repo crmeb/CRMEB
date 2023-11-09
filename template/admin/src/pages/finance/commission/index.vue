@@ -20,7 +20,6 @@
           <el-form-item label="佣金范围：" class="tab_data">
             <el-input-number
                 :controls="false"
-                type="number"
                 :min="0"
                 class="mr10"
                 v-model="formValidate.price_min"
@@ -28,7 +27,6 @@
             <span class="mr10">一</span>
             <el-input-number
                 :controls="false"
-                type="number"
                 :min="0"
                 v-model="formValidate.price_max"
             />
@@ -190,7 +188,7 @@ export default {
   margin-left: 10px;
 }
 
-.tab_data >>> .ivu-form-item-content {
+.tab_data ::v-deep .ivu-form-item-content {
   display: flex !important;
 }
 </style>

@@ -307,10 +307,10 @@ class PublicController
             ['image', ''],
             ['code', ''],
         ], true);
-        if ($imageUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $imageUrl) && strpos($imageUrl, "phar://") !== false) {
+        if ($imageUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $imageUrl) && strpos(strtolower($imageUrl), "phar://") !== false) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
-        if ($codeUrl !== '' && !(preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $codeUrl) || strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') !== false) && strpos($codeUrl, "phar://") !== false) {
+        if ($codeUrl !== '' && !(preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $codeUrl) || strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') !== false) && strpos(strtolower($codeUrl), "phar://") !== false) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
         try {
@@ -319,7 +319,9 @@ class PublicController
                 if (!$codeTmp) {
                     $putCodeUrl = put_image($codeUrl);
                     $code = $putCodeUrl ? image_to_base64(app()->request->domain(true) . '/' . $putCodeUrl) : false;
-                    $code ?? unlink($_SERVER["DOCUMENT_ROOT"] . '/' . $putCodeUrl);
+                    if ($putCodeUrl) {
+                        unlink($_SERVER["DOCUMENT_ROOT"] . '/' . $putCodeUrl);
+                    }
                 }
                 return $code;
             });
@@ -328,7 +330,9 @@ class PublicController
                 if (!$imageTmp) {
                     $putImageUrl = put_image($imageUrl);
                     $image = $putImageUrl ? image_to_base64(app()->request->domain(true) . '/' . $putImageUrl) : false;
-                    $image ?? unlink($_SERVER["DOCUMENT_ROOT"] . '/' . $putImageUrl);
+                    if ($putImageUrl) {
+                        unlink($_SERVER["DOCUMENT_ROOT"] . '/' . $putImageUrl);
+                    }
                 }
                 return $image;
             });

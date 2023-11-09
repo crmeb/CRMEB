@@ -145,7 +145,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.middleTop /deep/.ivu-modal-wrap .ivu-modal{
+.middleTop ::v-deep.ivu-modal-wrap .ivu-modal{
     top:50%!important;
     margin-top:-350px;
 }

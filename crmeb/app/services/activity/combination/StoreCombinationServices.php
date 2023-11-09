@@ -662,7 +662,7 @@ class StoreCombinationServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0];
         $list = $orderServices->combinationStatisticsOrder($id, $where, $page, $limit);
-        $count = $orderServices->combinationStatisticsCount($where);
+        $count = $orderServices->combinationStatisticsCount($id, $where);
         foreach ($list as &$item) {
             if ($item['status'] == 0) {
                 if ($item['paid'] == 0) {

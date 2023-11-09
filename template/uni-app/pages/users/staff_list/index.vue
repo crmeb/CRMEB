@@ -298,7 +298,72 @@
 					that.page = page + 1;
 					that.$set(that, 'recordList', recordListNew);
 				});
-			}
+			},
+			downloadFilestoreImage(url) {
+				return new Promise((resolve, reject) => {
+					let that = this;
+					uni.downloadFile({
+						url: url,
+						success: function(res) {
+							resolve(res.tempFilePath);
+						},
+						fail: function() {
+							return that.$util.Tips({
+								title: ''
+							});
+						}
+					});
+				})
+			},
+			savePosterPath() {
+				let that = this;
+				that.downloadFilestoreImage(that.codeSrc).then(url=>{
+					uni.getSetting({
+						success(res) {
+							if (!res.authSetting['scope.writePhotosAlbum']) {
+								uni.authorize({
+									scope: 'scope.writePhotosAlbum',
+									success() {
+										uni.saveImageToPhotosAlbum({
+											filePath: url,
+											success: function(res) {
+												that.posterImageClose();
+												that.$util.Tips({
+													title: that.$t(`保存成功`),
+													icon: 'success'
+												});
+											},
+											fail: function(res) {
+												that.$util.Tips({
+													title: that.$t(`保存失败`)
+												});
+											}
+										});
+									}
+								});
+							} else {
+								uni.saveImageToPhotosAlbum({
+									filePath: url,
+									success: function(res) {
+										that.posterImageClose();
+										that.$util.Tips({
+											title: that.$t(`保存成功`),
+											icon: 'success'
+										});
+									},
+									fail: function(res) {
+										console.log(res)
+										that.$util.Tips({
+											title: that.$t(`保存失败`)
+										});
+									}
+								});
+							}
+						}
+					});
+				})
+				
+			},
 		},
 		onReachBottom: function() {
 			this.userSpreadNewList();

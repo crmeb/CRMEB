@@ -10,6 +10,22 @@
           @submit.native.prevent
           inline
         >
+          <el-form-item label="优惠券名称：" label-for="coupon_title">
+            <el-input v-model="tableFrom.coupon_title" placeholder="请输入优惠券名称" class="form_content_width" />
+          </el-form-item>
+          <el-form-item label="优惠券类型：" label-for="coupon_type">
+            <el-select
+              v-model="tableFrom.coupon_type"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
+              <el-option value="0" label="通用券"></el-option>
+              <el-option value="1" label="品类券"></el-option>
+              <el-option value="2" label="商品券"></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="是否有效：" label-for="status">
             <el-select
               v-model="tableFrom.status"
@@ -36,9 +52,6 @@
               <el-option value="3" label="后台赠送"></el-option>
               <el-option value="4" label="付费会员专享"></el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item label="优惠券名称：" label-for="coupon_title">
-            <el-input v-model="tableFrom.coupon_title" placeholder="请输入优惠券名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="userSearchs">查询</el-button>
@@ -130,9 +143,11 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="150">
+        <el-table-column label="操作" fixed="right" width="200">
           <template slot-scope="scope">
             <a @click="receive(scope.row)">领取记录</a>
+            <el-divider direction="vertical"></el-divider>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a @click="copy(scope.row)">复制</a>
             <el-divider direction="vertical"></el-divider>
@@ -222,6 +237,7 @@ export default {
 
       tableFrom: {
         status: '',
+        coupon_type: '',
         coupon_title: '',
         receive_type: '',
         page: 1,
@@ -339,6 +355,12 @@ export default {
     copy(data) {
       this.$router.push({
         path: this.$routeProStr + `/marketing/store_coupon_issue/create/${data.id}`,
+      });
+    },
+    // 复制
+    edit(data) {
+      this.$router.push({
+        path: this.$routeProStr + `/marketing/store_coupon_issue/create/${data.id}/1`,
       });
     },
     // 是否开启

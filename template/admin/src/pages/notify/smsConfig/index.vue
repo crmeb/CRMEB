@@ -221,11 +221,11 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
-/deep/ .layout-container .layout-scrollbar {
+<style lang="scss" scoped>
+::v-deep .layout-container .layout-scrollbar {
   padding: 0;
 }
-/deep/ .ivu-card-body {
+::v-deep .ivu-card-body {
   padding: 0;
 }
 .picTxt {
@@ -303,14 +303,13 @@ export default {
   }
 }
 
-@aaa: ~'>>>';
 .conBox {
-  @{aaa} .ivu-page-header-extra {
+  ::v-deep .ivu-page-header-extra {
     width: auto !important;
     min-width: 457px;
   }
 
-  @{aaa} .ivu-page-header {
+  ::v-deep .ivu-page-header {
     padding: 16px 0px 0 32px !important;
   }
 }

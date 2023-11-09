@@ -2,7 +2,7 @@
 	<view :style="colorStyle">
 		<view class="product-window"
 			:class="(attr.cartAttr === true ? 'on' : '') + ' ' + (iSbnt?'join':'') + ' ' + (iScart?'joinCart':'')">
-			<view class="textpic acea-row row-between-wrapper">
+			<view class="textpic acea-row row-between-wrapper"  @touchmove.stop.prevent="moveHandle">
 				<view class="pictrue" @click="showImg()">
 					<image :src="attr.productSelect.image"></image>
 				</view>
@@ -19,9 +19,11 @@
 								<image src="../../static/images/svip.gif"></image>
 							</view>
 						</view>
+						
 						<text class="stock"
-							v-if='isShow && !type'>{{$t(`库存`)}}:{{ attr.productSelect.stock + unitName }}</text>
-						<text class='stock' v-if="limitNum && type">{{$t(`库存`) }}:{{attr.productSelect.quota}}</text>
+							v-if='isShow && !type'>{{$t(`库存`)}} {{ attr.productSelect.stock + unitName }}</text>
+						<text class='stock' v-if="limitNum && type">{{$t(`库存`) }} {{attr.productSelect.quota + unitName}}</text>
+						<text class="stock" v-if='minQty > 1 && is_virtual'>{{$t(`起购`)}} {{ minQty + unitName }}</text>
 					</view>
 				</view>
 				<view class="iconfont icon-guanbi" @click="closeAttr"></view>
@@ -83,7 +85,8 @@
 			<view class="joinBnt bg-color" v-if="iScart && attr.productSelect.stock" @click="goCat">{{$t(`确定`)}}</view>
 			<view class="joinBnt on" v-else-if="iScart && !attr.productSelect.stock">{{$t(`已售罄`)}}</view>
 		</view>
-		<view class="mask" @touchmove.prevent :hidden="attr.cartAttr === false" @click="closeAttr"></view>
+		<view class="mask" @touchmove.stop.prevent="moveHandle" :hidden="attr.cartAttr === false" @click="closeAttr">
+		</view>
 	</view>
 </template>
 
@@ -144,6 +147,7 @@
 
 		},
 		methods: {
+			moveHandle() {},
 			getpreviewImage: function() {
 				uni.previewImage({
 					urls: this.attr.productSelect.image.split(','),

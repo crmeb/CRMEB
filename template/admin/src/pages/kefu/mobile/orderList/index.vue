@@ -424,12 +424,12 @@ export default {
         margin: .2rem auto;
         background: #F5F6F9;
         border-radius: .39rem;
-        >>> .ivu-input{
+        ::v-deep .ivu-input{
             font-size: .28rem !important;
             background: #F5F6F9;
             border-radius: .39rem;
         }
-        >>> .ivu-input, .ivu-input:hover, .ivu-input:focus {
+        ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
             border: transparent;
             box-shadow: none;
         }

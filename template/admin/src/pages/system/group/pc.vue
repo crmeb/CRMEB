@@ -8,7 +8,7 @@
         </div>
       </div>
     </div>
-    <el-card :bordered="false" shadow="never">
+    <el-card :bordered="false" shadow="never" class="h100">
       <el-row class="box-wrapper">
         <el-col :xs="24" :sm="24" :md="6" :lg="3">
           <div class="left_box">
@@ -460,11 +460,11 @@ export default {
 }
 </style>
 <style scoped lang="scss">
-/deep/ .ivu-menu-vertical .ivu-menu-item-group-title {
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
 
-/deep/ .ivu-menu-vertical.ivu-menu-light:after {
+::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
 .ivu-mt {
@@ -834,11 +834,11 @@ export default {
   margin-bottom: 10px;
 }
 
-/deep/.ivu-form-item-content {
+::v-deep.ivu-form-item-content {
   margin-left: 0px !important;
 }
 
-/deep/.i-layout-page-header {
+::v-deep.i-layout-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;

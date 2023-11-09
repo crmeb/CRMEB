@@ -557,7 +557,7 @@ export default {
     width: 200px;
     overflow-y: scroll;
     max-height: 600px;
-    /deep/ .el-tree-node__children .el-tree-node .el-tree-node__content {
+    ::v-deep .el-tree-node__children .el-tree-node .el-tree-node__content {
       padding-left: 14px !important;
     }
   }

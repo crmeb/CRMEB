@@ -353,7 +353,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .labelInput {
   border: 1px solid #dcdee2;
   width: 300px;
@@ -415,7 +415,7 @@ export default {
       }
       .addfont {
         display: inline-block;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 400;
         color: var(--prev-color-primary);
         margin-left: 14px;

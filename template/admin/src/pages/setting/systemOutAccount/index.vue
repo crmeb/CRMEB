@@ -551,7 +551,7 @@ w .trip {
   color: #aaa;
   line-height: 20px;
 }
-.setting-style /deep/ .ivu-form-item {
+.setting-style ::v-deep .ivu-form-item {
   margin-bottom: 14px;
 }
 </style>

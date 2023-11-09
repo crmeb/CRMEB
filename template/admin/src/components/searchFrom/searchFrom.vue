@@ -128,11 +128,11 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.tab_data >>> .ivu-form-item-content
+.tab_data ::v-deep .ivu-form-item-content
     margin-left 0 !important
-.table_box >>> .ivu-divider-horizontal
+.table_box ::v-deep .ivu-divider-horizontal
     margin-top 0px !important
-.table_box >>> .ivu-form-item
+.table_box ::v-deep .ivu-form-item
     margin-bottom: 15px !important;
 .tabform
     margin-bottom 10px

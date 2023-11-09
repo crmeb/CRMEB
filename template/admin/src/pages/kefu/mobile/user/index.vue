@@ -176,7 +176,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .userBox {
   background: #f0f1f2;
 }

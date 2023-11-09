@@ -1101,7 +1101,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
@@ -1134,7 +1134,7 @@ export default {
 }
 
 .userFrom {
-  >>> .ivu-form-item-content {
+  ::v-deep .ivu-form-item-content {
     margin-left: 0px !important;
   }
 }
@@ -1175,7 +1175,7 @@ img {
 }
 
 .modelBox {
-  >>> .ivu-modal-body {
+  ::v-deep .ivu-modal-body {
     padding: 0 16px 16px 16px !important;
   }
 }
@@ -1185,7 +1185,7 @@ img {
 }
 
 .listbox {
-  >>> .ivu-divider-horizontal {
+  ::v-deep .ivu-divider-horizontal {
     margin: 0 !important;
   }
 }

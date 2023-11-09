@@ -189,7 +189,7 @@ export default {
   margin-bottom: 10px;
   cursor: pointer;
 }
-.monaco-box /deep/ .el-textarea__inner{
+.monaco-box ::v-deep .el-textarea__inner{
   height: 600px;
 }
 </style>

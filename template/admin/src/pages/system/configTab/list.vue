@@ -363,7 +363,7 @@ export default {
     height: 100%;
   }
 
-  >>> .ivu-icon-md-document {
+  ::v-deep .ivu-icon-md-document {
     font-size: 70px;
     color: #dadada;
   }

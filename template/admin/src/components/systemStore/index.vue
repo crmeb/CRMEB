@@ -461,7 +461,7 @@ export default {
   }
 }
 
-.mapBox >>> .ivu-modal-body {
+.mapBox ::v-deep .ivu-modal-body {
   height: 640px !important;
 }
 

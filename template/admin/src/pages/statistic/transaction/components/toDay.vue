@@ -30,8 +30,10 @@
                 >{{ Math.floor(statisticsData.right.today.series[0].rate) }}%</i
               >
               <i
-                  :style="{'color':Number(statisticsData.right.today.series[0].rate) >= 0 ? '#F5222D' : '#39C15B'}"
-                  :class="[Number(statisticsData.right.today.series[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
+                :style="{ color: Number(statisticsData.right.today.series[0].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.today.series[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
               />
             </span>
             <echarts-new
@@ -52,8 +54,10 @@
                 >{{ Math.floor(statisticsData.right.month[0].rate) }}%</i
               >
               <i
-                  :style="{'color':Number(statisticsData.right.month[0].rate) >= 0 ? '#F5222D' : '#39C15B'}"
-                  :class="[Number(statisticsData.right.month[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
+                :style="{ color: Number(statisticsData.right.month[0].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.month[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
               />
             </span>
           </div>
@@ -67,8 +71,10 @@
                 >{{ Math.floor(statisticsData.right.today.series[1].rate) }}%</i
               >
               <i
-                  :style="{'color':Number(statisticsData.right.today.series[1].rate) >= 0 ? '#F5222D' : '#39C15B'}"
-                  :class="[Number(statisticsData.right.today.series[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
+                :style="{ color: Number(statisticsData.right.today.series[1].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.today.series[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
               />
             </span>
             <echarts-new
@@ -89,8 +95,10 @@
                 >{{ Math.floor(statisticsData.right.month[1].rate) }}%</i
               >
               <i
-                  :style="{'color':Number(statisticsData.right.month[1].rate) >= 0 ? '#F5222D' : '#39C15B'}"
-                  :class="[Number(statisticsData.right.month[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
+                :style="{ color: Number(statisticsData.right.month[1].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.month[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
               />
             </span>
           </div>
@@ -439,7 +447,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .up,
 .el-icon-caret-top,
 .content-is {

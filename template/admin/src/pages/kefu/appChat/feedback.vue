@@ -4,7 +4,7 @@
       <div class="feedback-header acea-row">
         <span class="sp1">商城客服已离线</span>
         <div>
-          <i class="el-icon-close" style="font-size: 18px;" @click="close"></i>
+          <i class="el-icon-close" style="font-size: 18px" @click="close"></i>
         </div>
       </div>
       <div v-if="!isShow">
@@ -100,7 +100,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .maskModel {
   z-index: 7777 !important;
 }

@@ -223,5 +223,6 @@
     "skeleton": "/components/skeleton/index",
     "page-loading": "/components/pageLoading",
     "easy-loadimage": "/components/easy-loadimage/easy-loadimage"
-  }
+  },
+  "sitemapLocation": "sitemap.json"
 }

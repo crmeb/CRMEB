@@ -28,7 +28,7 @@
                 <el-form-item label="活动时间：">
                   <div class="acea-row row-middle">
                     <el-date-picker
-                      clearable
+                      v-model="formValidate.period"
                       :editable="false"
                       type="datetimerange"
                       format="yyyy-MM-dd HH:mm"
@@ -38,7 +38,6 @@
                       end-placeholder="结束日期"
                       @change="onchangeTime"
                       style="width: 460px"
-                      v-model="formValidate.period"
                     ></el-date-picker>
                   </div>
                 </el-form-item>
@@ -210,7 +209,7 @@
                       <template slot-scope="scope">
                         <div
                           class="acea-row scope.row-middle scope.row-center-wrapper"
-                          @click="modalPicTap('dan', 'goods', index)"
+                          @click="modalPicTap('dan', 'goods', scope.$index)"
                         >
                           <div class="pictrue pictrueTab" v-if="scope.row.image">
                             <img v-lazy="scope.row.image" />
@@ -674,9 +673,7 @@ export default {
     },
     // 具体日期
     onchangeTime(e) {
-      this.$nextTick(() => {
-        this.$set(this.formValidate, 'period', e);
-      });
+      this.$set(this.formValidate, 'period', e);
     },
     // 详情
     getInfo(e) {
@@ -690,11 +687,14 @@ export default {
             this.formValidate.is_svip = res.data.is_svip;
             this.content = res.data.is_content ? res.data.content : '';
             this.formValidate.factor = res.data.factor.toString();
-            this.formValidate.period = [
+            // setTimeout(() => {
+            //   this.formValidate.period = ;
+
+            // }, 2000);
+            this.$set(this.formValidate, 'period', [
               this.formatDate(res.data.start_time) || '',
               this.formatDate(res.data.end_time) || '',
-            ];
-
+            ]);
             this.specsData = res.data.prize;
             this.getProbability();
           } else {
@@ -796,9 +796,11 @@ export default {
               },
             ];
           }
+          this.$nextTick((e) => {
+            this.spinShow = false;
+          });
         })
         .catch((err) => {});
-      this.spinShow = false;
     },
     // 下一步
     next(name) {
@@ -870,6 +872,7 @@ export default {
     },
     // 获取单张图片信息
     getPic(pc) {
+      console.log(pc, this.tableIndex, this.picTit, this.specsData);
       switch (this.picTit) {
         case 'danFrom':
           this.formValidate.image = pc.att_dir;
@@ -1001,7 +1004,7 @@ export default {
 .content_width{
   width:460px;
 }
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
@@ -1014,7 +1017,7 @@ export default {
   color: #999;
 }
 
-.maxW /deep/.ivu-select-dropdown {
+.maxW ::v-deep.ivu-select-dropdown {
   max-width: 600px;
 }
 

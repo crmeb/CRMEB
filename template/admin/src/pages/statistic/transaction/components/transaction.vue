@@ -39,20 +39,20 @@
       </div>
       <div class="acea-row">
         <el-date-picker
-            clearable
-            v-model="timeVal"
-            type="daterange"
-            :editable="false"
-            @change="onchangeTime"
-            format="yyyy/MM/dd"
-            value-format="yyyy/MM/dd"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            :picker-options="pickerOptions"
-            style="width: 250px"
-            class="mr20"
+          clearable
+          v-model="timeVal"
+          type="daterange"
+          :editable="false"
+          @change="onchangeTime"
+          format="yyyy/MM/dd"
+          value-format="yyyy/MM/dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+          style="width: 250px"
+          class="mr20"
         ></el-date-picker>
-        <el-button type="primary"  @click="onSeach">查询</el-button>
+        <el-button type="primary" @click="onSeach">查询</el-button>
         <el-button type="primary" @click="excel">导出</el-button>
       </div>
     </div>
@@ -80,7 +80,7 @@
           <span class="content-time spBlock"
             >环比增长：<i class="content-is" :class="Number(item.rate) >= 0 ? 'up' : 'down'">{{ item.rate }}%</i
             ><i
-              :style="{'color':Number(item.rate) >= 0 ? '#F5222D' : '#39C15B'}"
+              :style="{ color: Number(item.rate) >= 0 ? '#F5222D' : '#39C15B' }"
               :class="[Number(item.rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom']"
           /></span>
         </div>
@@ -349,7 +349,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .one {
   background: var(--prev-color-primary);
 }

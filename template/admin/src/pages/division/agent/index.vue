@@ -336,11 +336,11 @@ export default {
   }
 }
 
-/deep/ .ivu-menu-vertical .ivu-menu-item-group-title {
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
 
-/deep/ .ivu-menu-vertical.ivu-menu-light:after {
+::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
 

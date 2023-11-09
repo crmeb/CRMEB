@@ -113,7 +113,7 @@ export default {
       color #808695
       display block
         margin: 12px 0
-.clear_box >>> .ivu-btn-error
+.clear_box ::v-deep .ivu-btn-error
     color: #fff;
     background-color: #ED4014;
     border-color: #ED4014;

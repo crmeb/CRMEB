@@ -87,6 +87,7 @@ class StoreBargain extends AuthController
             ['postage', 0],//邮费
             ['custom_form', ''],
             ['virtual_type', 0],
+            ['is_commission', 0],
         ]);
         $this->validate($data, \app\adminapi\validate\marketing\StoreBargainValidate::class, 'save');
         if ($data['section_time']) {

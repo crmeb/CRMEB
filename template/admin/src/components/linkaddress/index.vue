@@ -818,35 +818,35 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/ .el-dialog__body {
+::v-deep .el-dialog__body {
   //padding: 20px 10px 10px 10px !important;
 }
-/deep/ .el-tree-node__content {
+::v-deep .el-tree-node__content {
   height: 30px;
 }
-/deep/.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+::v-deep.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
   background-color: var(--prev-bg-menu-hover-ba-color) !important;
   border-right: 2px solid var(--prev-color-primary);
 }
-/deep/.ivu-tree-title-selected, /deep/.ivu-tree-title-selected:hover, /deep/.ivu-tree-title:hover {
+::v-deep.ivu-tree-title-selected, ::v-deep.ivu-tree-title-selected:hover, ::v-deep.ivu-tree-title:hover {
   background-color: unset;
   color: var(--prev-color-primary);
 }
 
-/deep/.ivu-table-cell-tree {
+::v-deep.ivu-table-cell-tree {
   border: 0;
   font-size: 15px;
   background-color: unset;
 }
-/deep/ .el-table .cell {
+::v-deep .el-table .cell {
   display: flex;
   align-items: center;
 }
-/deep/.ivu-table-cell-tree .ivu-icon-ios-add:before {
+::v-deep.ivu-table-cell-tree .ivu-icon-ios-add:before {
   content: '\F11F';
 }
 
-/deep/.ivu-table-cell-tree .ivu-icon-ios-remove:before {
+::v-deep.ivu-table-cell-tree .ivu-icon-ios-remove:before {
   content: '\F116';
 }
 
@@ -905,7 +905,7 @@ export default {
   }
 }
 .radioGroup {
-  /deep/.ivu-radio-wrapper {
+  ::v-deep.ivu-radio-wrapper {
     margin-right: 30px;
   }
 }
@@ -986,10 +986,10 @@ export default {
       }
     }
   }
-  /deep/ .el-table .cell {
+  ::v-deep .el-table .cell {
     padding-right:0;
   }
-  /deep/ .page {
+  ::v-deep .page {
     margin-top:10px;
   }
 

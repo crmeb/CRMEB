@@ -590,3 +590,14 @@ export function importExpress(data) {
     params: data,
   });
 }
+
+/**
+ * @description 配货单-打印
+ * @param id  订单id
+ */
+export function distributionOrder(id) {
+  return request({
+    url: `/order/print/shipping/${id}`,
+    method: 'get',
+  });
+}

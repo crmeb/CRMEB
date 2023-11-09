@@ -37,11 +37,14 @@
         </el-form>
       </div>
     </el-card>
-    <el-alert class="mt10" :closable="true" title="使用说明">
-      <template>
-        1、前端页面：添加用户端页面语言，添加完成之后状态码为中文文字，前端页面使用 $t(`xxxx`)，js文件中使用
-        this.t(`xxxx`) 或者使用 that.t(`xxxx`)<br />
-        2、后端接口：添加后端接口语言，添加完成之后状态码为6位数字，后台抛错或者控制器返回文字的时候直接填写状态码数字
+    <el-alert type="warning" :closable="false">
+      <template slot="title">
+        <p class="alert_title">页面语言</p>
+        添加页面语言，添加完成之后状态码为中文文字，移动端页面使用 $t(`xxxx`)，js文件中使用 this.t(`xxxx`) 或者使用
+        that.t(`xxxx`) 实现语言的切换<br />
+        <br />
+        <p class="alert_title">接口语言</p>
+        添加接口语言，添加完成之后状态码为6位数字，接口返回提示信息时，直接返回对应的错误码即可实现语言的切换
       </template>
     </el-alert>
     <el-card class="mt14" :bordered="false" shadow="never">
@@ -338,15 +341,15 @@ export default {
   margin-bottom: 10px;
 }
 
-.status >>> .item ~ .item {
+.status ::v-deep .item ~ .item {
   margin-left: 6px;
 }
 
-.status >>> .statusVal {
+.status ::v-deep .statusVal {
   margin-bottom: 7px;
 }
 
-/* .ivu-mt >>> .ivu-table-header */
+/* .ivu-mt ::v-deep .ivu-table-header */
 /* border-top:1px dashed #ddd!important */
 .type {
   padding: 3px 0;
@@ -365,7 +368,7 @@ export default {
   }
 }
 
-.mb20 /deep/ .ivu-table-wrapper > .ivu-spin-fix {
+.mb20 ::v-deep .ivu-table-wrapper > .ivu-spin-fix {
   border: none;
 }
 </style>

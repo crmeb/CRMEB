@@ -102,9 +102,7 @@
               </el-tabs>
               <el-col :span="24" v-if="isTrue">
                 <el-button size="small" type="danger" @click="deltMenus">删除</el-button>
-                <el-button type="primary" @click="submenus('formValidate')"
-                  >保存并发布</el-button
-                >
+                <el-button type="primary" @click="submenus('formValidate')">保存并发布</el-button>
               </el-col>
             </el-col>
           </el-col>
@@ -230,7 +228,7 @@ export default {
         this.checkedMenuId = id;
         this.parentMenuId = index;
         this.isTrue = true;
-      }else{
+      } else {
         this.$message.warning('二级菜单最多只能添加5个!');
         return false;
       }
@@ -287,30 +285,32 @@ export default {
                 if (e.detail != 0) {
                   done();
                 }
-              };
+              }
             } else {
               done();
             }
           },
-        }).then(() => {
-          this.parentMenuId === null
+        })
+          .then(() => {
+            this.parentMenuId === null
               ? this.list.splice(this.checkedMenuId, 1)
               : this.list[this.parentMenuId].sub_button.splice(this.checkedMenuId, 1);
-          this.parentMenuId = null;
-          this.formValidate = {
-            name: '',
-            type: 'click',
-            appid: '',
-            url: '',
-            key: '',
-            pagepath: '',
-            id: 0,
-          };
-          this.isTrue = true;
-          this.modal2 = false;
-          this.checkedMenuId = null;
-          this.$refs['formValidate'].resetFields();
-          }).catch(() => {});
+            this.parentMenuId = null;
+            this.formValidate = {
+              name: '',
+              type: 'click',
+              appid: '',
+              url: '',
+              key: '',
+              pagepath: '',
+              id: 0,
+            };
+            this.isTrue = true;
+            this.modal2 = false;
+            this.checkedMenuId = null;
+            this.$refs['formValidate'].resetFields();
+          })
+          .catch(() => {});
       } else {
         this.$message.warning('请选择菜单!');
       }
@@ -338,7 +338,7 @@ export default {
   },
 };
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 * {
   -moz-user-select: none; /*火狐*/
   -webkit-user-select: none; /*webkit浏览器*/
@@ -346,7 +346,7 @@ export default {
   -khtml-user-select: none; /*早期浏览器*/
   user-select: none;
 }
- /deep/ .el-card__body {
+::v-deep .el-card__body {
   padding: 60px 20px;
 }
 .left {
@@ -387,7 +387,6 @@ export default {
   cursor: pointer;
   color: #999;
   position: relative;
-  
 }
 .text {
   height: 50px;
@@ -427,7 +426,7 @@ export default {
   line-height: 48px;
   background: #fafafa;
   :first-child {
-    border:none
+    border: none;
   }
 }
 .addadd {
@@ -436,7 +435,6 @@ export default {
   border-top: 1px solid #f0f0f0;
   background: #fafafa;
   height: 40px;
-  
 }
 .right {
   background: #fff;

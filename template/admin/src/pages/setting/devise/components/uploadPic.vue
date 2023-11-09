@@ -238,12 +238,12 @@ export default {
           .input-box {
             flex: 1;
 
-            /deep/input {
+            ::v-deepinput {
               cursor: pointer;
             }
           }
 
-          /deep/ .ivu-input {
+          ::v-deep .ivu-input {
             font-size: 13px !important;
           }
         }

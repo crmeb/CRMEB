@@ -60,22 +60,28 @@
             <div class="section">
               <div class="title">收货信息</div>
               <ul class="list">
-                <li class="item">
+                <!-- <li class="item">
                   <div>收货信息：</div>
                   <div class="value">{{ orderDatalist.orderInfo.user_address || '' }}</div>
+                </li> -->
+                <li class="item">
+                  <div>收货人：</div>
+                  <div class="value">
+                    {{ orderDatalist.orderInfo.real_name ? orderDatalist.orderInfo.real_name : '-' }}
+                  </div>
                 </li>
-                <!--                <li class="item">-->
-                <!--                  <div>收货人：</div>-->
-                <!--                  <div class="value">{{ orderDetailList.real_name ? orderDetailList.real_name : '-' }}</div>-->
-                <!--                </li>-->
-                <!--                <li class="item">-->
-                <!--                  <div>收货电话：</div>-->
-                <!--                  <div class="value">{{ orderDetailList.user_phone ? orderDetailList.user_phone : '-' }}</div>-->
-                <!--                </li>-->
-                <!--                <li class="item">-->
-                <!--                  <div>收货地址：</div>-->
-                <!--                  <div class="value">{{ orderDetailList.user_address ? orderDetailList.user_address : '-' }}</div>-->
-                <!--                </li>-->
+                <li class="item">
+                  <div>收货电话：</div>
+                  <div class="value">
+                    {{ orderDatalist.orderInfo.user_phone ? orderDatalist.orderInfo.user_phone : '-' }}
+                  </div>
+                </li>
+                <li class="item">
+                  <div>收货地址：</div>
+                  <div class="value">
+                    {{ orderDatalist.orderInfo.user_address ? orderDatalist.orderInfo.user_address : '-' }}
+                  </div>
+                </li>
               </ul>
             </div>
             <div class="section">
@@ -212,6 +218,28 @@
                 </li>
               </ul>
             </div>
+            <div class="section" v-if="orderDatalist.orderInfo.custom_form.length">
+              <div class="title">表单信息</div>
+              <ul class="list">
+                <li
+                  class="item"
+                  :class="{ pic: item.label == 'img' }"
+                  :span="item.label !== 'text' ? 12 : 24"
+                  v-for="(item, index) in orderDatalist.orderInfo.custom_form"
+                  :key="index"
+                >
+                  <template v-if="item.label !== 'img'">
+                    <div>{{ item.title }}：{{ item.value }}</div>
+                  </template>
+                  <template v-else>
+                    <div>{{ item.title }}：</div>
+                    <div v-for="(img, i) in item.value" :key="i" class="img">
+                      <img v-viewer :src="img" alt="" />
+                    </div>
+                  </template>
+                </li>
+              </ul>
+            </div>
             <div class="section">
               <div class="title">订单备注</div>
               <ul class="list">
@@ -245,7 +273,7 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="售价" min-width="90">
+              <el-table-column label="支付价格" min-width="90">
                 <template slot-scope="scope">
                   <div class="tab">
                     <div class="line1">
@@ -263,7 +291,7 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="库存" min-width="70">
+              <!-- <el-table-column label="库存" min-width="70">
                 <template slot-scope="scope">
                   <div class="tab">
                     <div class="line1">
@@ -271,7 +299,7 @@
                     </div>
                   </div>
                 </template>
-              </el-table-column>
+              </el-table-column> -->
             </el-table>
           </el-tab-pane>
           <el-tab-pane label="订单记录" name="orderList">
@@ -420,11 +448,11 @@ export default {
   },
 };
 </script>
-<style lang="less" scoped>
-/deep/ .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+<style lang="scss" scoped>
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   border-bottom: none;
 }
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 40px !important;
   line-height: 40px !important;
 }
@@ -549,6 +577,13 @@ export default {
       vertical-align: middle;
     }
   }
+  .item.pic {
+    display: flex;
+    img {
+      width: 80px;
+      height: 80px;
+    }
+  }
 }
 .tab {
   display: flex;
@@ -559,25 +594,25 @@ export default {
     margin-right: 10px;
   }
 }
-/deep/.el-drawer__body {
+::v-deep.el-drawer__body {
   // padding: 0;
   overflow: auto;
 }
 .gary {
   color: #aaa;
 }
-/deep/.el-drawer__body {
+::v-deep.el-drawer__body {
   padding: 20px 0;
 }
-/deep/.el-tabs--border-card > .el-tabs__content {
+::v-deep.el-tabs--border-card > .el-tabs__content {
   padding: 0 35px;
 }
-/deep/.el-tabs--border-card > .el-tabs__header,
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
+::v-deep.el-tabs--border-card > .el-tabs__header,
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
   border: none;
   height: 40px;
 }
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   border: none;
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
@@ -585,10 +620,10 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
   border: none;
 }
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
   margin-top: 0;
   transition: none;
   height: 40px !important;
@@ -599,7 +634,7 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-/deep/.el-tabs--border-card {
+::v-deep.el-tabs--border-card {
   border: none;
   box-shadow: none;
 }

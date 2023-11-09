@@ -472,7 +472,7 @@ export default {
 }
 
 .search {
-  >>> .ivu-form-item-content {
+  ::v-deep .ivu-form-item-content {
     margin-left: 0 !important;
   }
 }
@@ -486,7 +486,7 @@ export default {
   color: rgba(0, 0, 0, 0.65);
 }
 
-.ivu-mt >>> .ivu-table-cell {
+.ivu-mt ::v-deep .ivu-table-cell {
   padding: 10px 0 !important;
 }
 

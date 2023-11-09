@@ -272,13 +272,13 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .echarts {
   width: 100%;
 }
 .tables {
   width: 100%;
-  /deep/.ivu-table-overflowY {
+  ::v-deep.ivu-table-overflowY {
     &::-webkit-scrollbar {
       width: 0;
     }

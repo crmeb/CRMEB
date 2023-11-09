@@ -43,6 +43,7 @@ class StoreCouponIssue extends AuthController
             ['coupon_title', ''],
             ['receive_type', ''],
             ['type', ''],
+            ['coupon_type', ''],
         ]);
         $list = $this->services->getCouponIssueList($where);
         return app('json')->success($list);
@@ -55,6 +56,7 @@ class StoreCouponIssue extends AuthController
     public function saveCoupon()
     {
         $data = $this->request->postMore([
+            ['id', 0],
             ['coupon_title', ''],
             ['coupon_price', 0.00],
             ['use_min_price', 0.00],

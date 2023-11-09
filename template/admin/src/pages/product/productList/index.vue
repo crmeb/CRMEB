@@ -218,11 +218,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="24" v-if="batchType == 2">
-            <!--            <el-divider content-position="left">物流设置</el-divider>-->
             <el-form-item label="物流方式：" prop="logistics">
               <el-checkbox-group v-model="batchFormData.logistics" @change="logisticsBtn">
                 <el-checkbox label="1">快递</el-checkbox>
-
                 <el-checkbox label="2">到店核销</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -434,6 +432,9 @@ export default {
         activeIds.push(item.id);
       });
       data.label_id = activeIds;
+      if (this.batchType == 2 && !this.batchFormData.logistics.length) {
+        return this.$message.warning('请选择物流方式');
+      }
       batchSetting(data)
         .then((res) => {
           this.$message.success(res.msg);
@@ -461,6 +462,7 @@ export default {
         this.dataLabel = [];
       }
       this.batchModal = false;
+      this.$refs.table.clearSelection();
     },
     // 批量设置商品
     batchSelect(type) {
@@ -641,6 +643,7 @@ export default {
     onClickTab() {
       this.artFrom.page = 1;
       this.multipleSelection = [];
+      this.$refs.table.clearSelection();
       this.getDataList();
     },
     // 下拉树
@@ -774,6 +777,7 @@ export default {
           this.$message.success(res.msg);
           this.tableList.splice(num, 1);
           this.goodHeade();
+          this.getDataList();
         })
         .catch((res) => {
           this.$message.error(res.msg);
@@ -783,27 +787,27 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-/deep/.ivu-modal-mask {
+::v-deep.ivu-modal-mask {
   z-index: 999 !important;
 }
 
-/deep/.ivu-modal-wrap {
+::v-deep.ivu-modal-wrap {
   z-index: 999 !important;
 }
 
 .Box {
-  >>> .ivu-modal-body {
+  ::v-deep .ivu-modal-body {
     height: 700px;
     overflow: auto;
   }
 }
 
 .batch-box {
-  >>> .ivu-modal-body {
+  ::v-deep .ivu-modal-body {
     overflow: auto;
     min-height: 350px;
   }
@@ -831,7 +835,7 @@ export default {
   z-index: 11;
 }
 
-/deep/.happy-scroll-content {
+::v-deep.happy-scroll-content {
   width: 100%;
 
   .demo-spin-icon-load {

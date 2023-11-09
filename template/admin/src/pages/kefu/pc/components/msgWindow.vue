@@ -628,7 +628,7 @@ export default {
         .input-box {
           border-bottom: 1px solid #EEEEEE;
 
-          >>> .ivu-input {
+          ::v-deep .ivu-input {
             background: transparent;
             border: 0;
             border-radius: 0;
@@ -690,7 +690,7 @@ export default {
 }
 
 .right-scroll {
-  >>> .ivu-scroll-container .ivu-scroll-loader:nth-child(1) {
+  ::v-deep .ivu-scroll-container .ivu-scroll-loader:nth-child(1) {
     display: none;
   }
 }

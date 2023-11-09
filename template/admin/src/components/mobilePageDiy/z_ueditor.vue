@@ -118,7 +118,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.mobile-page /deep/video{
+.mobile-page ::v-deepvideo{
     width 100%!important
 }
 .box

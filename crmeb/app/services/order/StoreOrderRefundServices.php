@@ -602,6 +602,7 @@ class StoreOrderRefundServices extends BaseServices
         $order['nickname'] = $userInfo['nickname'];
         $order['phone'] = $userInfo['phone'];
         if (in_array($order['pay_type'], ['weixin', 'alipay', 'allinpay', 'offline'])) {
+            $order['refund_price'] = $refund_price;
             $capitalFlowServices->setFlow($order, 'refund');
         }
 

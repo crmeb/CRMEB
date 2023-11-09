@@ -128,8 +128,8 @@ export default {
       if (!value) {
         this.formData.nickname = '';
         this.formData.comment = '';
-        this.product_score = 0;
-        this.service_score = 0;
+        this.product_score = 5;
+        this.service_score = 5;
         this.add_time = '';
       }
     },

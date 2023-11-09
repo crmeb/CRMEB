@@ -151,7 +151,6 @@ import { crudList, crudDet, crudDownload, crudSaveFile } from '@/api/systemCodeG
 import * as monaco from 'monaco-editor';
 import { getCookies, removeCookies } from '@/libs/util';
 import Setting from '@/setting';
-// import { el-input } from 'view-design';
 export default {
   data() {
     return {
@@ -511,7 +510,7 @@ export default {
 
 <style lang="scss" scoped>
 // 自定义方法缩小
->>> .diy-fullscreen {
+::v-deep .diy-fullscreen {
   overflow: hidden;
 
   .ivu-modal {
@@ -562,7 +561,7 @@ export default {
     opacity: 0.8;
   }
 }
->>> .ivu-modal {
+::v-deep .ivu-modal {
   top: 70px;
 }
 
@@ -591,17 +590,17 @@ export default {
   color: #f00;
 }
 
->>> body .ivu-select-dropdown .ivu-dropdown-transfer {
+::v-deep body .ivu-select-dropdown .ivu-dropdown-transfer {
   background: red !important;
 }
 
 // 导航栏右键样式 无效
-.file-left /deep/ .ivu-select-dropdown.ivu-dropdown-transfer .ivu-dropdown-menu .ivu-dropdown-item:hover {
+.file-left ::v-deep .ivu-select-dropdown.ivu-dropdown-transfer .ivu-dropdown-menu .ivu-dropdown-item:hover {
   background-color: #e5e5e5 !important;
 }
 
 // 选项卡头部
->>> .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container {
+::v-deep .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container {
   background-color: #fff;
 }
 .demo-drawer-footer {

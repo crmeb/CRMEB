@@ -38,7 +38,11 @@
                 v-model.trim="item.detail.attrsVal"
                 @keyup.enter.native="createAttr(item.detail.attrsVal, index)"
                 class="mb10 form_content_width"
-              />
+              >
+                <template slot="append">
+                  <el-button type="primary" @click="createAttr(item.detail.attrsVal, index)">确定</el-button>
+                </template>
+              </el-input>
             </div>
           </el-form-item>
         </el-col>
@@ -53,10 +57,10 @@
               <el-input v-model="attrsVal" placeholder="请输入规格值" />
             </el-form-item>
           </el-col>
-          <el-col span="2">
+          <el-col :span="2">
             <el-button type="primary" @click="createAttrName">确定</el-button>
           </el-col>
-          <el-col span="2">
+          <el-col :span="2">
             <el-button @click="offAttrName">取消</el-button>
           </el-col>
         </el-col>
@@ -65,7 +69,7 @@
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="onClose">取消</el-button>
-      <el-button type="primary" @click="handleSubmit('formDynamic')">确定</el-button>
+      <el-button type="primary" :loading="modal_loading" @click="handleSubmit('formDynamic')">确定</el-button>
     </span>
   </el-dialog>
 </template>
@@ -232,7 +236,7 @@ export default {
 }
 
 .attrFrom {
-  >>> .ivu-form-item {
+  ::v-deep .ivu-form-item {
     margin-bottom: 0px !important;
   }
 }

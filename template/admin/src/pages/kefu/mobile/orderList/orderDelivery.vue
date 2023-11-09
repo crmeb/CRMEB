@@ -392,7 +392,7 @@ export default {
   },
 };
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 .textarea {
   display: block;
   min-height: 1.92rem;

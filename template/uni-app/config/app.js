@@ -13,7 +13,7 @@ module.exports = {
 
 
 	// 后台版本号
-	SYSTEM_VERSION: 520,
+	SYSTEM_VERSION: 521,
 	
 	// 以下配置在不做二开的前提下,不需要做任何的修改
 	HEADER: {
@@ -35,4 +35,3 @@ module.exports = {
 	//分页最多显示条数
 	LIMIT: 10
 }
- 

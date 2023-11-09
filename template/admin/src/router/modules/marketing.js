@@ -81,7 +81,7 @@ export default {
       component: () => import('@/pages/marketing/storeCouponIssue/index'),
     },
     {
-      path: 'store_coupon_issue/create/:id?',
+      path: 'store_coupon_issue/create/:id?/:edit?',
       name: `${pre}storeCouponCreate`,
       meta: {
         auth: ['marketing-store_coupon_issue-create'],

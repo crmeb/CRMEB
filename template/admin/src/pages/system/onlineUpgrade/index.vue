@@ -727,7 +727,7 @@ export default {
   color: var(--prev-color-primary);
   font-size: 18px;
 }
-/deep/ .ivu-collapse > .ivu-collapse-item > .ivu-collapse-header{
+::v-deep .ivu-collapse > .ivu-collapse-item > .ivu-collapse-header{
   line-height: 20px;
 
 }
@@ -827,11 +827,11 @@ export default {
     top: 0;
   }
 }
-/deep/ .vertical-center-modal .ivu-modal-header{
+::v-deep .vertical-center-modal .ivu-modal-header{
   padding: 0 !important;
   border: none;
 }
-/deep/ .ivu-modal-content{
+::v-deep .ivu-modal-content{
   border-radius: 14px 14px 0 0;
   overflow: hidden;
 }

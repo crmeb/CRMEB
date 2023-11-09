@@ -871,7 +871,7 @@ class StoreBargainServices extends BaseServices
         }
         /** @var StoreBargainUserServices $services */
         $services = app()->make(StoreBargainUserServices::class);
-        $bargainUser = $services->get(['bargain_id' => $bargainId, 'uid' => $user['uid']], ['price', 'bargain_price_min']);
+        $bargainUser = $services->get(['bargain_id' => $bargainId, 'uid' => $user['uid'], 'status' => 1], ['price', 'bargain_price_min']);
         if (!$bargainUser) {
             throw new ApiException(410304);
         }
@@ -1029,7 +1029,7 @@ class StoreBargainServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0];
         $list = $orderServices->bargainStatisticsOrder($id, $where, $page, $limit);
-        $count = $orderServices->bargainStatisticsOrderCount($where);
+        $count = $orderServices->bargainStatisticsOrderCount($id, $where);
         foreach ($list as &$item) {
             if ($item['status'] == 0) {
                 if ($item['paid'] == 0) {

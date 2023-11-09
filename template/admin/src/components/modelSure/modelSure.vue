@@ -58,7 +58,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.acea-row >>> .ivu-btn-primary
+.acea-row ::v-deep .ivu-btn-primary
     background-color: rgb(170, 170, 170);
     border-color: rgb(170, 170, 170);
 </style>

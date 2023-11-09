@@ -124,6 +124,9 @@ class SystemAttachmentServices extends BaseServices
         }
         try {
             $path = make_path('attach', 2, true);
+            if ($path === '') {
+                throw new AdminException(400555);
+            }
             $upload = UploadService::init($upload_type);
             $res = $upload->to($path)->validate()->move($file, $realName);
             if ($res === false) {

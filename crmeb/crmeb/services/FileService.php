@@ -989,7 +989,7 @@ class FileService
                     $t3 = $this->objToStr($sheet->getCellByColumnAndRow(3, $i)->getValue());
                     $t4 = $this->objToStr($sheet->getCellByColumnAndRow(4, $i)->getValue());
                     $t5 = $this->objToStr($sheet->getCellByColumnAndRow(5, $i)->getValue());
-                    if ($t3 && $t4 && $t5) {
+                    if ($t3 && $t5) {
                         $data[] = [
                             'id' => $t1,
                             'delivery_name' => $t3,

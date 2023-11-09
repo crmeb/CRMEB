@@ -110,7 +110,7 @@ export default {
 
 <style scoped lang="stylus">
 
-.card_box_cir1 >>> .iconfont
+.card_box_cir1 ::v-deep .iconfont
    font-size: 26px
    color: #fff
  .one

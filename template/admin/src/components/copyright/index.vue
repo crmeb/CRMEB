@@ -50,7 +50,7 @@ export default {
   },
 };
 </script>
-<style lang="less">
+<style lang="scss">
 .ivu-global-footer {
   /* margin: 48px 0 24px 0; */
   /* padding: 0 16px; */

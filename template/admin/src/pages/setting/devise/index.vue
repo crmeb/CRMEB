@@ -1276,11 +1276,11 @@ export default {
   }
 }
 
-/deep/ .ivu-scroll-loader {
+::v-deep .ivu-scroll-loader {
   display: none;
 }
 
-/deep/ .ivu-card-body {
+::v-deep .ivu-card-body {
   width: 100%;
 }
 </style>

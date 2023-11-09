@@ -655,7 +655,7 @@ export default {
     }
   }
 }
-/deep/ .el-input-group__prepend .el-select {
+::v-deep .el-input-group__prepend .el-select {
   width: 85px;
 }
 .drag {
@@ -667,16 +667,16 @@ export default {
     height: 15px;
   }
 }
-.code-table-sel /deep/ .el-input__inner {
+.code-table-sel ::v-deep .el-input__inner {
   border: none;
   border-color: transparent;
   background-color: transparent;
 }
-/deep/ .el-input-group__prepend div.el-select .el-input__inner {
+::v-deep .el-input-group__prepend div.el-select .el-input__inner {
   height: 28px !important;
   line-height: 28px !important;
 }
-/deep/.el-input-group__prepend div.el-select .el-input--small .el-input__icon {
+::v-deep.el-input-group__prepend div.el-select .el-input--small .el-input__icon {
   line-height: 28px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="goodClass">
-    <el-card :bordered="false" shadow="never">
+    <el-card class="h100" :bordered="false" shadow="never">
       <!-- <div class="title">页面设置</div> -->
       <div class="list acea-row row-top">
         <div
@@ -82,7 +82,7 @@ export default {
     .list{
         .item{
             width 264px;
-            margin 20px 30px 0 0;
+            margin 0px 30px 0 0;
             cursor pointer;
             .pictrue{
                 width 100%;
@@ -98,7 +98,7 @@ export default {
             .name{
                 font-size: 13px;
                 color: rgba(0, 0, 0, 0.85);
-                margin-top 26px;
+                margin-top 16px;
                 text-align center;
             }
             &.on{

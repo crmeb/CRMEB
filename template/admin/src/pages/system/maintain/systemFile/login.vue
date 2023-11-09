@@ -140,7 +140,7 @@ export default {
 }
 
 
->>> .btn{
+::v-deep .btn{
   font-size: 15px !important;
 }
 </style>

@@ -625,15 +625,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/ .ivu-menu-vertical .ivu-menu-item-group-title {
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
 
-/deep/ .ivu-menu-vertical.ivu-menu-light:after {
+::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
 
-/deep/.ivu-form-item-content {
+::v-deep.ivu-form-item-content {
   margin-left: 0px !important;
 }
 
@@ -1372,20 +1372,20 @@ export default {
   // width 80px!important
 }
 
-/deep/.i-layout-page-header {
+::v-deep.i-layout-page-header {
   height: 66px;
   background-color: #fff;
   border-bottom: 1px solid #e8eaec;
 }
 
-/deep/.ivu-page-header {
+::v-deep.ivu-page-header {
   border-bottom: unset;
   position: fixed;
   z-index: 9;
   width: 100%;
 }
 
-/deep/.i-layout-page-header {
+::v-deep.i-layout-page-header {
   height: 66px;
   background-color: #fff;
   border-bottom: 1px solid #e8eaec;

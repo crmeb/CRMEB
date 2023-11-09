@@ -551,7 +551,7 @@ export default {
         width 100%
         height 100%
 .modelBox
-    >>>
+    ::v-deep
     .ivu-table-header
         width 100% !important
 .trees-coadd
@@ -566,10 +566,10 @@ export default {
 .scollhide::-webkit-scrollbar {
     display: none;
 }
-/deep/ .ivu-menu-vertical .ivu-menu-item-group-title{
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title{
     display: none;
 }
-/deep/ .ivu-menu-vertical.ivu-menu-light:after{
+::v-deep .ivu-menu-vertical.ivu-menu-light:after{
     display none
 }
 

@@ -261,7 +261,7 @@ img {
         letter-spacing: 1px;
         padding: 5px 0;
         box-sizing: border-box;
-.orderData >>>.ivu-table-cell{padding-left: 0 !important;}
+.orderData ::v-deep.ivu-table-cell{padding-left: 0 !important;}
 .vertical-center-modal{
     display: flex;
     align-items: center;
@@ -273,7 +273,7 @@ img {
    color #515a6e
 .ivu-mt a:hover
     color: #2D8cF0;
-.ivu-mt /deep/ .ivu-form-item{
+.ivu-mt ::v-deep .ivu-form-item{
   padding 7px 0;
   margin-bottom 0
 }

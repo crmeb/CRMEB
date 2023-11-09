@@ -299,10 +299,10 @@ export default {
     cursor pointer
 .ivu-form-item
     margin-bottom 10px
-.status >>> .item~.item
+.status ::v-deep .item~.item
     margin-left 6px
-.status >>> .statusVal
+.status ::v-deep .statusVal
     margin-bottom 7px
-/*.ivu-mt >>> .ivu-table-header*/
+/*.ivu-mt ::v-deep .ivu-table-header*/
 /*    border-top:1px dashed #ddd!important*/
 </style>

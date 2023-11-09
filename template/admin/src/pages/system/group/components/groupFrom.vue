@@ -235,6 +235,6 @@ export default {
 <style scoped lang="stylus">
 .cur
    cursor pointer
-.goupBox >>> .ivu-form-item-content
+.goupBox ::v-deep .ivu-form-item-content
    margin-left: 43px!important;
 </style>

@@ -195,7 +195,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.ivu-form-label-left >>> .ivu-form-item-label {
+.ivu-form-label-left ::v-deep .ivu-form-item-label {
   text-align: right;
 }
 
@@ -211,7 +211,7 @@ export default {
   color: #009688;
 }
 
-.ivu-mt /deep/ .ivu-select-placeholder {
+.ivu-mt ::v-deep .ivu-select-placeholder {
   height: 32px;
 }
 </style>

@@ -67,7 +67,7 @@ export default {
       path: 'system_config/:type?/:tab_id?',
       name: `${pre}setApp`,
       meta: {
-        title: '应用设置',
+        title: '系统设置',
       },
       component: () => import('@/pages/setting/setSystem/index'),
     },
@@ -387,11 +387,29 @@ export default {
       },
     },
     {
-      path: 'pages/devise',
+      path: 'pages/devise/:type',
       name: `${pre}devise`,
       meta: {
         auth: ['admin-setting-pages-devise'],
         title: '店铺装修',
+      },
+      component: () => import('@/pages/setting/devise/list'),
+    },
+    {
+      path: 'pages/user_page/:type',
+      name: `${pre}user`,
+      meta: {
+        auth: ['admin-setting-pages-user'],
+        title: '个人中心',
+      },
+      component: () => import('@/pages/setting/devise/list'),
+    },
+    {
+      path: 'pages/cate_page/:type',
+      name: `${pre}cate`,
+      meta: {
+        auth: ['admin-setting-pages-cate'],
+        title: '商品分类',
       },
       component: () => import('@/pages/setting/devise/list'),
     },

@@ -8,34 +8,28 @@
         </div>
       </div>
     </div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :style="'min-height:' + clientHeight + 'px'">
-      <el-form :label-width="labelWidth">
-        <el-form-item label="选择配色方案：">
-          <div class="acea-row">
-            <div
-              class="tab_color"
-              v-for="(item, index) in tabList"
-              :key="index"
-              :class="current === index + 1 ? 'active' : ''"
-              @click="selected(index)"
-            >
-              <div class="color_cont flex align-center">
-                <div class="main_c mr-2" :class="item.class">
-                  <span class="iconfont iconxuanzhong6" v-show="current == index + 1"></span>
-                </div>
-                <div style="line-height: 24px">{{ item.tit }}</div>
-              </div>
+    <el-card :bordered="false" shadow="never" class="ivu-mt p20 h100">
+      <div class="acea-row">
+        <div
+          class="tab_color"
+          v-for="(item, index) in tabList"
+          :key="index"
+          :class="current === index + 1 ? 'active' : ''"
+          @click="selected(index)"
+        >
+          <div class="color_cont flex align-center">
+            <div class="main_c mr-2" :class="item.class">
+              <span class="iconfont iconxuanzhong6" v-show="current == index + 1"></span>
             </div>
+            <div style="line-height: 24px">{{ item.tit }}</div>
           </div>
-        </el-form-item>
-        <el-form-item label="当前风格示例：">
-          <div class="acea-row row-top">
-            <div class="pictrue" v-for="(item, index) in picList" :key="index">
-              <img :src="item.image" />
-            </div>
-          </div>
-        </el-form-item>
-      </el-form>
+        </div>
+      </div>
+      <div class="acea-row row-top">
+        <div class="pictrue" v-for="(item, index) in picList" :key="index">
+          <img :src="item.image" />
+        </div>
+      </div>
     </el-card>
     <!--<div class="footer acea-row row-center-wrapper">-->
     <!--<el-button type="primary" @click="submit">保存</el-button>-->
@@ -201,6 +195,7 @@ export default {
   width: 114px;
   height: 45px;
   border: 1px solid #e5e5e5;
+  margin-bottom: 10px;
   margin-right: 20px;
   border-radius: 5px;
   display: flex;
@@ -244,7 +239,7 @@ export default {
   border: 1px solid var(--prev-color-primary);
 }
 
-/deep/.ivu-radio-border {
+::v-deep.ivu-radio-border {
   position: relative;
 }
 
@@ -253,12 +248,12 @@ export default {
   color: #fff;
 }
 
-/deep/.ivu-radio-inner:after {
+::v-deep.ivu-radio-inner:after {
   background-color: unset;
   transform: unset;
 }
 
-/deep/.i-layout-page-header {
+::v-deep.i-layout-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;

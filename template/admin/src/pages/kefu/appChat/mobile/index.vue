@@ -709,10 +709,10 @@ export default {
                 border transparent !important
 
             }
-            >>> .ivu-input{
+            ::v-deep .ivu-input{
                 font-size .28rem !important
             }
-            >>> .ivu-input, .ivu-input:hover, .ivu-input:focus {
+            ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
                 border transparent
                 box-shadow: none;
             }
@@ -827,10 +827,10 @@ export default {
                 border-radius: .32rem;
                 overflow hidden
 
-                >>> .ivu-input{
+                ::v-deep .ivu-input{
                     background #F5F6F9
                 }
-                >>> .ivu-input, .ivu-input:hover, .ivu-input:focus {
+                ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
                     border transparent
                     box-shadow: none;
                 }

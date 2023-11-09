@@ -157,7 +157,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

@@ -404,16 +404,16 @@ export default {
   margin-left: 10px;
   margin-right: 10px;
 }
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-/deep/.ivu-form-item-label {
+::v-deep.ivu-form-item-label {
   text-align: left;
   width: 83px !important;
 }
 
-/deep/.ivu-form-item-content {
+::v-deep.ivu-form-item-content {
   margin-left: 83px !important;
 }
 
@@ -430,15 +430,15 @@ export default {
   color: #515A6E;
 }
 
-.tab_data >>> .ivu-form-item-content {
+.tab_data ::v-deep .ivu-form-item-content {
   margin-left: 0 !important;
 }
 
-.table_box >>> .ivu-divider-horizontal {
+.table_box ::v-deep .ivu-divider-horizontal {
   margin-top: 0px !important;
 }
 
-.table_box >>> .ivu-form-item {
+.table_box ::v-deep .ivu-form-item {
   margin-bottom: 15px !important;
 }
 

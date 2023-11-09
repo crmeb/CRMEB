@@ -1,16 +1,16 @@
 <template>
   <div>
-    <productlist-details v-if="currentTab === 'article' || 'project' || 'app'" ref="productlist"></productlist-details>
+    <product-list-details v-if="currentTab === 'article' || 'project' || 'app'" ref="productlist"></product-list-details>
   </div>
 </template>
 
 <script>
-import productlistDetails from './orderlistDetails';
+import productListDetails from './orderListDetails';
 import { mapMutations } from 'vuex';
 export default {
   name: 'list',
   components: {
-    productlistDetails,
+    productListDetails,
   },
   data() {
     return {
@@ -92,19 +92,19 @@ export default {
 };
 </script>
 <style scoped lang="stylus">
-.product_tabs >>> .ivu-tabs-bar {
+.product_tabs ::v-deep .ivu-tabs-bar {
   margin-bottom: 0px !important;
 }
 
-.product_tabs >>> .ivu-page-header-content {
+.product_tabs ::v-deep .ivu-page-header-content {
   margin-bottom: 0px !important;
 }
 
-.product_tabs >>> .ivu-page-header-breadcrumb {
+.product_tabs ::v-deep .ivu-page-header-breadcrumb {
   margin-bottom: 0px !important;
 }
 
-/deep/ .el-badge__content.is-fixed {
+::v-deep .el-badge__content.is-fixed {
   top: 7px;
 }
 </style>

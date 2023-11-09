@@ -353,7 +353,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .el-input-number--small {
   width: 100%;
 }

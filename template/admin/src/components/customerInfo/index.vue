@@ -222,7 +222,7 @@ export default {
         width 100%
         height 100%
 .modelBox
-    >>>
+    ::v-deep
     .ivu-table-header
         width 100% !important
 .trees-coadd
@@ -240,7 +240,7 @@ export default {
     margin: 15px 0;
     padding-right: 20px;
 }
-/deep/ .el-form--inline .el-form-item{
+::v-deep .el-form--inline .el-form-item{
   margin-bottom 0
 }
 </style>

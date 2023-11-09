@@ -237,7 +237,8 @@
 		<couponListWindow :coupon='coupon' @ChangCouponsClone="ChangCouponsClone" :openType='openType' :cartId='cartId'
 			@ChangCoupons="ChangCoupons"></couponListWindow>
 		<addressWindow ref="addressWindow" @changeTextareaStatus="changeTextareaStatus" :news='news' :address='address'
-			:pagesUrl="pagesUrl" @OnChangeAddress="OnChangeAddress" @changeClose="changeClose"></addressWindow>
+			:pagesUrl="pagesUrl" @OnChangeAddress="OnChangeAddress" @changeClose="changeClose"
+			@onHaveAddressList="onHaveAddressList"></addressWindow>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
@@ -922,21 +923,18 @@
 			 */
 			getaddressInfo: function() {
 				let that = this;
-				if (that.addressId) {
-					getAddressDetail(that.addressId).then(res => {
+				let fnc = that.addressId ? getAddressDetail : getAddressDefault
+				fnc(that.addressId).then(res => {
+					if (!Array.isArray(res.data)) {
 						res.data.is_default = parseInt(res.data.is_default);
 						that.addressInfo = res.data || {};
 						that.addressId = res.data.id || 0;
 						that.address.addressId = res.data.id || 0;
-					})
-				} else {
-					getAddressDefault().then(res => {
-						res.data.is_default = parseInt(res.data.is_default);
-						that.addressInfo = res.data || {};
-						that.addressId = res.data.id || 0;
-						that.address.addressId = res.data.id || 0;
-					})
-				}
+					}
+				})
+			},
+			onHaveAddressList() {
+				this.haveAddressList = true
 			},
 			payItem: function(e) {
 				let that = this;
@@ -966,7 +964,7 @@
 			},
 			onAddress: function() {
 				let that = this;
-				if (this.addressInfo.real_name) {
+				if (this.addressInfo.real_name || this.haveAddressList) {
 					this.$refs.addressWindow.getAddressList();
 					that.textareaStatus = false;
 					that.address.address = true;

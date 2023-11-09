@@ -39,7 +39,7 @@ import 'xe-utils';
 import 'vxe-table/lib/style.css';
 
 import 'v-org-tree/dist/v-org-tree.css';
-import './styles/index.less';
+import './styles/index.scss';
 import 'swiper/css/swiper.css';
 import 'viewerjs/dist/viewer.css';
 import 'codemirror/lib/codemirror.css';
@@ -109,7 +109,6 @@ const messages = ['success', 'warning', 'info', 'error'];
 
 messages.forEach((type) => {
   Element.Message[type] = (options) => {
-    console.log(options, 'optionss');
     if (typeof options === 'string') {
       options = {
         message: options,

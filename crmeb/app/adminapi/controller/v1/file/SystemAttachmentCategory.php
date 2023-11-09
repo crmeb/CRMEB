@@ -75,6 +75,7 @@ class SystemAttachmentCategory extends AuthController
             ['pid', 0],
             ['name', '']
         ]);
+        if (is_array($data['pid'])) $data['pid'] = end($data['pid']);
         if (!$data['name']) {
             return app('json')->fail(400100);
         }
@@ -107,6 +108,9 @@ class SystemAttachmentCategory extends AuthController
         if (is_array($data['pid'])) $data['pid'] = end($data['pid']);
         if (!$data['name']) {
             return app('json')->fail(400100);
+        }
+        if ($data['pid'] == $id) {
+            return app('json')->fail('上级分类不能是自己');
         }
         $info = $this->service->get($id);
         $count = $this->service->count(['pid' => $id]);

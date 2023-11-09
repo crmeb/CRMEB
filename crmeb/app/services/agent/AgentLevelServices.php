@@ -210,46 +210,41 @@ class AgentLevelServices extends BaseServices
 
     /**
      * 分销等级上浮
-     * @param int $uid
-     * @param array $userInfo
+     * @param $storeBrokerageRatio
+     * @param $storeBrokerageTwo
+     * @param $spread_one_uid
+     * @param $spread_two_uid
      * @return array|int[]
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getAgentLevelBrokerage(int $uid, $userInfo = [])
+    public function getAgentLevelBrokerage($storeBrokerageRatio, $storeBrokerageTwo, $spread_one_uid, $spread_two_uid)
     {
-        $one_brokerage_up = $two_brokerage_up = $spread_one_uid = $spread_two_uid = 0;
-        if (!$uid) {
-            return [$one_brokerage_up, $two_brokerage_up, $spread_one_uid, $spread_two_uid];
-        }
-        //商城分销是否开启
-        if (!sys_config('brokerage_func_status')) {
-            return [$one_brokerage_up, $two_brokerage_up, $spread_one_uid, $spread_two_uid];
-        }
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        if (!$userInfo) {
-            $userInfo = $userServices->getUserInfo($uid);
-        }
-        if (!$userInfo) {
-            return [$one_brokerage_up, $two_brokerage_up, $spread_one_uid, $spread_two_uid];
-        }
-        //获取上级uid ｜｜ 开启自购返回自己uid
-        $spread_one_uid = $userServices->getSpreadUid($uid, $userInfo);
-        $one_agent_level = 0;
-        $two_agent_level = 0;
-        $spread_two_uid = 0;
-        if ($spread_one_uid > 0 && $one_user_info = $userServices->getUserInfo($spread_one_uid)) {
-            $one_agent_level = $one_user_info['agent_level'] ?? 0;
-            $spread_two_uid = $userServices->getSpreadUid($spread_one_uid, $one_user_info, false);
-            if ($spread_two_uid > 0 && $two_user_info = $userServices->getUserInfo($spread_two_uid)) {
-                $two_agent_level = $two_user_info['agent_level'] ?? 0;
+        $one_agent_level = $userServices->value(['uid' => $spread_one_uid], 'agent_level') ?? 0;
+        $two_agent_level = $userServices->value(['uid' => $spread_two_uid], 'agent_level') ?? 0;
+
+        if ($one_agent_level) {
+            $oneLevelInfo = $this->getLevelInfo($one_agent_level);
+            if ($oneLevelInfo['one_brokerage_percent'] == '0.00') {
+                $storeBrokerageRatio = $storeBrokerageRatio + (($storeBrokerageRatio * $oneLevelInfo['one_brokerage'] ?? 0) / 100);
+            } else {
+                $storeBrokerageRatio = $oneLevelInfo['one_brokerage_percent'];
             }
         }
-        $one_brokerage_up = $one_agent_level ? ($this->getLevelInfo($one_agent_level)['one_brokerage'] ?? 0) : 0;
-        $two_brokerage_up = $two_agent_level ? ($this->getLevelInfo($two_agent_level)['two_brokerage'] ?? 0) : 0;
-        return [$one_brokerage_up, $two_brokerage_up, $spread_one_uid, $spread_two_uid];
+
+        if ($two_agent_level) {
+            $twoLevelInfo = $this->getLevelInfo($two_agent_level);
+            if ($twoLevelInfo['two_brokerage_percent'] == '0.00') {
+                $storeBrokerageTwo = $storeBrokerageTwo + (($storeBrokerageTwo * $twoLevelInfo['two_brokerage'] ?? 0) / 100);
+            } else {
+                $storeBrokerageTwo = $twoLevelInfo['two_brokerage_percent'];
+            }
+        }
+
+        return [$storeBrokerageRatio, $storeBrokerageTwo];
     }
 
     /**
@@ -263,16 +258,16 @@ class AgentLevelServices extends BaseServices
         $field[] = Form::input('name', '等级名称')->maxlength(8)->col(24);
         $field[] = Form::number('grade', '等级', 0)->min(0)->precision(0);
         $field[] = Form::frameImage('image', '背景图', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image')))->icon('el-icon-picture-outline')->width('950px')->height('560px')->props(['footer' => false]);
-        $field[] = Form::number('one_brokerage', '一级上浮', 0)->appendRule('suffix', [
+        $field[] = Form::number('one_brokerage_percent', '一级佣金比例', 0)->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',
-            'domProps' => ['innerHTML' => '在分销一级佣金基础上浮（0-1000之间整数）百分比，目前一级返佣比率：10%，上浮5%，则返佣比率：一级返佣比率 * (1 + 一级上浮比率) = 10.50%']
-        ])->max(1000)->precision(0);
-        $field[] = Form::number('two_brokerage', '二级上浮', 0)->appendRule('suffix', [
+            'domProps' => ['innerHTML' => '到达该等级之后，一级分佣按照此比例计算佣金']
+        ])->max(100)->precision(2);
+        $field[] = Form::number('two_brokerage_percent', '二级佣金比例', 0)->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',
-            'domProps' => ['innerHTML' => '在分销二级佣金基础上浮（0-1000之间整数）百分比，目前二级返佣比率：10%，上浮2%，则返佣比率：二级返佣比率 * (1 + 二级上浮比率) = 5.10%']
-        ])->min(0)->max(1000)->precision(0);
+            'domProps' => ['innerHTML' => '到达该等级之后，二级分佣按照此比例计算佣金']
+        ])->min(0)->max(100)->precision(2);
         $field[] = Form::radio('status', '是否显示', 1)->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
         return create_form('添加分销员等级', $field, Url::buildUrl('/agent/level'), 'POST');
     }
@@ -293,16 +288,16 @@ class AgentLevelServices extends BaseServices
         $field[] = Form::input('name', '等级名称', $levelInfo['name'])->maxlength(8)->col(24);
         $field[] = Form::number('grade', '等级', $levelInfo['grade'])->min(0)->precision(0);
         $field[] = Form::frameImage('image', '背景图', Url::buildUrl(config('app.admin_prefix', 'admin') . '/widget.images/index', array('fodder' => 'image')), $levelInfo['image'])->icon('el-icon-picture-outline')->width('950px')->height('560px')->props(['footer' => false]);
-        $field[] = Form::number('one_brokerage', '一级上浮', $levelInfo['one_brokerage'])->appendRule('suffix', [
+        $field[] = Form::number('one_brokerage_percent', '一级佣金比例', $levelInfo['one_brokerage_percent'])->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',
-            'domProps' => ['innerHTML' => '在分销一级佣金基础上浮（0-1000之间整数）百分比，目前一级返佣比率：10%，上浮5%，则返佣比率：一级返佣比率 * (1 + 一级上浮比率) = 10.50%']
-        ])->min(0)->max(1000)->precision(0);
-        $field[] = Form::number('two_brokerage', '二级上浮', $levelInfo['two_brokerage'])->appendRule('suffix', [
+            'domProps' => ['innerHTML' => '到达该等级之后，一级分佣按照此比例计算佣金']
+        ])->max(100)->precision(2);
+        $field[] = Form::number('two_brokerage_percent', '二级佣金比例', $levelInfo['two_brokerage_percent'])->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',
-            'domProps' => ['innerHTML' => '在分销二级佣金基础上浮（0-1000之间整数）百分比，目前二级返佣比率：10%，上浮2%，则返佣比率：二级返佣比率 * (1 + 二级上浮比率) = 5.10%']
-        ])->min(0)->max(1000)->precision(0);
+            'domProps' => ['innerHTML' => '到达该等级之后，二级分佣按照此比例计算佣金']
+        ])->min(0)->max(100)->precision(2);
         $field[] = Form::radio('status', '是否显示', $levelInfo['status'])->options([['value' => 1, 'label' => '显示'], ['value' => 0, 'label' => '隐藏']]);
 
         return create_form('编辑分销员等级', $field, Url::buildUrl('/agent/level/' . $id), 'PUT');

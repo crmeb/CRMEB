@@ -1175,7 +1175,7 @@ export default {
 .card-tree::-webkit-scrollbar {
     display: none; /* Chrome Safari */
 }
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
@@ -1203,7 +1203,7 @@ export default {
     height: calc(100vh - 115px);
     overflow-y: scroll;
   }
-  >>> .tree {
+  ::v-deep .tree {
     .tree-list{
       margin-left:10px;
       padding: 0 15px;
@@ -1241,12 +1241,12 @@ export default {
     }
   }
 
-  >>> .vtl-node-main .vtl-operation {
+  ::v-deep .vtl-node-main .vtl-operation {
     position: absolute;
     right: 20px;
   }
 
-  >>> .vtl-node-content {
+  ::v-deep .vtl-node-content {
     width: 100%;
   }
 
@@ -1255,12 +1255,12 @@ export default {
     justify-content: space-between;
   }
 
-  >>> .vtl-node-content .add {
+  ::v-deep .vtl-node-content .add {
     display: none;
     margin-right: 10px;
   }
 
-  >>> .vtl-node-content:hover .add {
+  ::v-deep .vtl-node-content:hover .add {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1269,24 +1269,24 @@ export default {
     height: 18px;
   }
 
-  >>> .vtl-node-content:hover .add:hover {
+  ::v-deep .vtl-node-content:hover .add:hover {
     background-color: #fff;
 
     .pop-menu {
       font-size: 16px;
     }
   }
-  >>> .vtl-node-main{
+  ::v-deep .vtl-node-main{
     padding:0;
   }
-  >>> .line1 {
+  ::v-deep .line1 {
     display: table-caption;
     white-space: nowrap;
     width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  >>> .ivu-form-item{
+  ::v-deep .ivu-form-item{
     margin-bottom: 10px;
   }
   .right-card {
@@ -1331,19 +1331,19 @@ export default {
     }
   }
 
-  >>> .ivu-tree-title {
+  ::v-deep .ivu-tree-title {
     width: 100% !important;
   }
-  >>> .vtl-tree-margin{
+  ::v-deep .vtl-tree-margin{
     margin-left: 15px;
   }
-  >>> .ivu-btn-icon-only.ivu-btn-small {
+  ::v-deep .ivu-btn-icon-only.ivu-btn-small {
     width: 28px;
   }
-  >>> .tree-node > span{
+  ::v-deep .tree-node > span{
     font-size: 14px
   }
-  >>> .tree-node.node > span{
+  ::v-deep .tree-node.node > span{
     font-size: 13px
   }
   .nothing {

@@ -1995,7 +1995,7 @@ class UserServices extends BaseServices
             $this->dao->update(['uid' => $uid], ['is_money_level' => 0/*, 'overdue_time' => 0*/]);
             return false;
         }
-        return true;
+        return $userInfo;
     }
 
     /**

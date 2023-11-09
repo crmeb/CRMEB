@@ -623,7 +623,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-/deep/.ivu-select .ivu-select-dropdown, /deep/.ivu-date-picker .ivu-select-dropdown {
+::v-deep.ivu-select .ivu-select-dropdown, ::v-deep.ivu-date-picker .ivu-select-dropdown {
   top: unset !important;
 }
 .right-scroll{
@@ -780,7 +780,7 @@ color #6440C2, &.routine {
     padding: 0 8px;
     margin-top: 12px;
 
-    /deep/ .ivu-input {
+    ::v-deep .ivu-input {
       border-radius: 17px;
     }
   }
@@ -932,7 +932,7 @@ color #6440C2, &.routine {
     margin-top: 10px;
     padding: 0 8px;
 
-    /deep/ .ivu-input {
+    ::v-deep .ivu-input {
       border-radius: 17px;
     }
   }
@@ -989,7 +989,7 @@ color #6440C2, &.routine {
 }
 
 .label-box {
-  >>> .ivu-modal-header {
+  ::v-deep .ivu-modal-header {
     padding: 0;
     border: 0;
     background: #fff;

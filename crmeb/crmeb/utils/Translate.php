@@ -75,6 +75,11 @@ class Translate extends V4Curl
         if ($resp->getStatusCode() != 200) {
             throw new ApiException("failed to translate: status_code=%d, resp=%s", $resp->getStatusCode(), $resp->getBody());
         }
-        return json_decode($resp->getBody()->getContents(), true)["TranslationList"];
+        $result = json_decode($resp->getBody()->getContents(), true);
+        if (isset($result["TranslationList"])) {
+            return $result["TranslationList"];
+        } else {
+            throw new ApiException("failed to translate: " . $result["ResponseMetadata"]['Error']['Message']);
+        }
     }
 }

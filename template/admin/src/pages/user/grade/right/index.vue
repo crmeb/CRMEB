@@ -1,8 +1,8 @@
 <template>
   <div>
-<!--    <div class="i-layout-page-header header-title">-->
-<!--      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>-->
-<!--    </div>-->
+    <!--    <div class="i-layout-page-header header-title">-->
+    <!--      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>-->
+    <!--    </div>-->
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-table
         :data="tbody"
@@ -72,7 +72,7 @@
         <el-form-item label="权益图标：" prop="image">
           <div class="image-group" @click="callImage">
             <img v-if="form.image" v-lazy="form.image" />
-            <i v-else class="el-icon-picture-outline" style="font-size: 24px;"></i>
+            <i v-else class="el-icon-picture-outline" style="font-size: 24px"></i>
           </div>
           <el-input v-model="form.image" style="display: none"></el-input>
         </el-form-item>
@@ -239,7 +239,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .image-wrap {
   width: 36px;
   height: 36px;
@@ -269,7 +269,7 @@ export default {
     height: 100%;
   }
 }
-.w414{
-  width:414px;
+.w414 {
+  width: 414px;
 }
 </style>

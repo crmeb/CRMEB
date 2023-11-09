@@ -74,7 +74,7 @@ class ExportServices extends BaseServices
      */
     public function exportOrderList($where)
     {
-        $header = ['订单号', '收货人姓名', '收货人电话', '收货地址', '商品信息', '总价格', '实际支付', '支付状态', '支付时间', '订单状态', '下单时间', '用户备注', '商家备注', '表单信息'];
+        $header = ['订单号', '收货人姓名', '收货人电话', '收货地址', '商品名称', '规格', '数量', '价格', '总价格', '实际支付', '支付状态', '支付时间', '订单状态', '下单时间', '用户备注', '商家备注', '表单信息'];
         $filename = '订单列表_' . date('YmdHis', time());
         $export = $fileKey = [];
         /** @var StoreOrderServices $orderServices */
@@ -136,38 +136,63 @@ class ExportServices extends BaseServices
                     }
                 }
 
-                $goodsName = [];
+//                $goodsName = [];
+//                foreach ($item['_info'] as $value) {
+//                    $_info = $value['cart_info'];
+//                    $sku = '';
+//                    if (isset($_info['productInfo']['attrInfo'])) {
+//                        if (isset($_info['productInfo']['attrInfo']['suk'])) {
+//                            $sku = '(' . $_info['productInfo']['attrInfo']['suk'] . ')';
+//                        }
+//                    }
+//                    if (isset($_info['productInfo']['store_name'])) {
+//                        $goodsName[] = implode(' ',
+//                            [$_info['productInfo']['store_name'],
+//                                $sku,
+//                                "[{$_info['cart_num']} * {$_info['truePrice']}]"
+//                            ]);
+//                    }
+//                }
+//                $one_data = [
+//                    'order_id' => $item['order_id'],
+//                    'real_name' => $item['real_name'],
+//                    'user_phone' => $item['user_phone'],
+//                    'user_address' => $item['user_address'],
+//                    'goods_name' => $goodsName ? implode("\n", $goodsName) : '',
+//                    'total_price' => $item['total_price'],
+//                    'pay_price' => $item['pay_price'],
+//                    'pay_type_name' => $item['pay_type_name'],
+//                    'pay_time' => $item['pay_time'] > 0 ? date('Y-m-d H:i', (int)$item['pay_time']) : '暂无',
+//                    'status_name' => $item['status_name'] ?? '未知状态',
+//                    'add_time' => $item['add_time'],
+//                    'mark' => $item['mark'],
+//                    'remark' => $item['remark'],
+//                    'custom_form' => $custom_form,
+//                ];
+                $goodsInfo = [];
                 foreach ($item['_info'] as $value) {
-                    $_info = $value['cart_info'];
-                    $sku = '';
-                    if (isset($_info['productInfo']['attrInfo'])) {
-                        if (isset($_info['productInfo']['attrInfo']['suk'])) {
-                            $sku = '(' . $_info['productInfo']['attrInfo']['suk'] . ')';
-                        }
-                    }
-                    if (isset($_info['productInfo']['store_name'])) {
-                        $goodsName[] = implode(' ',
-                            [$_info['productInfo']['store_name'],
-                                $sku,
-                                "[{$_info['cart_num']} * {$_info['truePrice']}]"
-                            ]);
-                    }
+                    $goodsInfo[] = [
+                        $value['cart_info']['productInfo']['store_name'],
+                        $value['cart_info']['productInfo']['attrInfo']['suk'],
+                        $value['cart_info']['cart_num'],
+                        $value['cart_info']['truePrice'],
+                    ];
                 }
                 $one_data = [
-                    'order_id' => $item['order_id'],
-                    'real_name' => $item['real_name'],
-                    'user_phone' => $item['user_phone'],
-                    'user_address' => $item['user_address'],
-                    'goods_name' => $goodsName ? implode("\n", $goodsName) : '',
-                    'total_price' => $item['total_price'],
-                    'pay_price' => $item['pay_price'],
-                    'pay_type_name' => $item['pay_type_name'],
-                    'pay_time' => $item['pay_time'] > 0 ? date('Y-m-d H:i', (int)$item['pay_time']) : '暂无',
-                    'status_name' => $item['status_name'] ?? '未知状态',
-                    'add_time' => $item['add_time'],
-                    'mark' => $item['mark'],
-                    'remark' => $item['remark'],
-                    'custom_form' => $custom_form,
+                    $item['order_id'],
+                    $item['real_name'],
+                    $item['user_phone'],
+                    $item['user_address'],
+                    $goodsInfo,
+                    $item['total_price'],
+                    $item['pay_price'],
+                    $item['pay_type_name'],
+                    $item['pay_time'] > 0 ? date('Y-m-d H:i', (int)$item['pay_time']) : '暂无',
+                    $item['status_name'] ?? '未知状态',
+                    $item['add_time'],
+                    $item['mark'],
+                    $item['remark'],
+                    $custom_form,
                 ];
                 $export[] = $one_data;
                 if ($i == 0) {
@@ -594,8 +619,8 @@ class ExportServices extends BaseServices
                     $item['nickname'],
                     $item['phone'],
                     $item['spread_count'],
-                    $item['order_count'],
-                    $item['order_price'],
+                    $item['spread_order']['order_count'],
+                    $item['spread_order']['order_price'],
                     $item['brokerage_money'],
                     $item['extract_count_price'],
                     $item['extract_count_num'],
@@ -604,7 +629,7 @@ class ExportServices extends BaseServices
                 ];
             }
         }
-        $header = ['用户编号', '昵称', '电话号码', '推广用户数量', '订单数量', '推广订单金额', '佣金金额', '已提现金额', '提现次数', '未提现金额', '上级推广人'];
+        $header = ['用户编号', '昵称', '电话号码', '推广用户数量', '推广订单数量', '推广订单金额', '佣金金额', '已提现金额', '提现次数', '未提现金额', '上级推广人'];
         $title = ['推广用户', '推广用户导出' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time())];
         $filename = '推广用户_' . date('YmdHis', time());
         $suffix = 'xlsx';

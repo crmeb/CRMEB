@@ -3,7 +3,7 @@
 docker 官网下载
 https://www.docker.com/products/docker-desktop
 
-或命令安装  
+或命令安装 
 ```
 curl -sSL https://get.daocloud.io/docker | sh
 ```
@@ -31,7 +31,7 @@ http://localhost:8011/
 ## 6、安装CRMEB
 ### Mysql数据库信息：
 ```
-Host:192.168.10.1 
+Host:192.168.10.11
 Post:3306 
 user:root 
 pwd:123456 
@@ -44,8 +44,13 @@ db:0
 pwd:123456
 ```
 ## 7、常见问题
-1、端口被占用进入docker-compose.yml 里面修改端口
+1. 端口被占用进入docker-compose.yml 里面修改端口
 
-2、如果运行docker-compose up -d 启动失败，请查看docker-compose.yml 修改里面镜像地址或其它配置
+2. 如果运行docker-compose up -d 启动失败，请查看docker-compose.yml 修改里面镜像地址或其它配置
 
+3. Error response from daemon: Address already in use 报错
+  一般情况下是设置的ip被占用，修改下某个容器下的ipv4_address地址
 
+4. MYSQL容器无法启动，没有任何日志
+  注意m1芯片下需要使用mysql镜像daocloud.io/library/mysql:5.7.5-m15；其他任何情况下都
+   使用mysql:5.7的镜像

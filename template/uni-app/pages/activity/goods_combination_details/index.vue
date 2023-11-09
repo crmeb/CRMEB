@@ -57,7 +57,7 @@
 							<view class='stock'>{{$t(`类型`)}}：{{storeInfo.people || 0}}{{$t(`人团`)}}</view>
 							<view>{{$t(`累计销量`)}}：{{storeInfo.total?storeInfo.total:0}} {{$t(storeInfo.unit_name) || ''}}
 							</view>
-							<view>{{$t(`限购`)}}: {{ storeInfo.quota ? storeInfo.quota : 0 }}
+							<view>{{$t(`限量剩余`)}}: {{ storeInfo.quota ? storeInfo.quota : 0 }}
 								{{$t(storeInfo.unit_name) || ''}}
 							</view>
 						</view>
@@ -258,7 +258,7 @@
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
 		<!-- #endif -->
-		<product-window :attr='attribute' :limitNum='attribute.productSelect.quota' @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+		<product-window :attr='attribute' :limitNum='1' :type="'combination'" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
 			@ChangeCartNum="ChangeCartNum" @iptCartNum="iptCartNum" @attrVal="attrVal" @getImg="showImg">
 		</product-window>
 		<swiperPrevie ref="cusSwiperImg" :list="storeInfo.images"></swiperPrevie>

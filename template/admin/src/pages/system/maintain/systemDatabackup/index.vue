@@ -441,11 +441,11 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-.tableBox >>> .ivu-table-header table
+.tableBox ::v-deep .ivu-table-header table
    border none !important
 
 .table-mark{
@@ -455,11 +455,11 @@ export default {
   border:1px solid #c2c2c2;
   padding: 3px 5px
 }
-.mark /deep/ .ivu-input{
+.mark ::v-deep .ivu-input{
     background: #fff;
     border-radius: .39rem;
 }
-.mark /deep/ .ivu-input, .ivu-input:hover, .ivu-input:focus {
+.mark ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
     border: transparent;
     box-shadow: none;
 }

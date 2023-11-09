@@ -523,7 +523,7 @@ export function roleSetStatusApi(data) {
  * @description 设置 身份管理 ==新增 编辑
  * @param {Object} param data {Object} 传值参数
  */
-export function roleCreatApi(data) {
+export function roleCreateApi(data) {
   return request({
     url: `setting/role/${data.id}`,
     method: 'post',

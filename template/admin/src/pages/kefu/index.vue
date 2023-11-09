@@ -15,14 +15,14 @@
               <div class="page-account-top-logo">客服登录</div>
             </div>
             <el-form ref="formInline" :model="formInline" :rules="ruleInline" @keyup.enter="handleSubmit('formInline')">
-              <el-form-item prop="username">
+              <el-form-item class="mb10" prop="username">
                 <el-input type="text" v-model="formInline.username" placeholder="请输入用户名" size="large" />
               </el-form-item>
-              <el-form-item prop="password">
+              <el-form-item class="mb10" prop="password">
                 <el-input type="password" v-model="formInline.password" placeholder="请输入密码" size="large" />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" long size="large" @click="handleSubmit('formInline')" class="btn">登录 </el-button>
+                <el-button type="primary" size="large" @click="handleSubmit('formInline')" class="btn">登录 </el-button>
               </el-form-item>
             </el-form>
             <div class="qh_box" v-if="!isMobile" @click="bindScan"><span class="iconfont iconerweima2"></span></div>
@@ -488,6 +488,7 @@ export default {
 }
 
 .btn {
+  width: 100%;
   background: #265BED;
 }
 
@@ -519,7 +520,7 @@ a:link, a:visited, a:hover, a:active {
   color: #0366D6;
 }
 
-.index_from >>> .ivu-input-large {
+.index_from ::v-deep .ivu-input-large {
   font-size: 14px !important;
 }
 </style>

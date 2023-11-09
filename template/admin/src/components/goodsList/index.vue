@@ -403,7 +403,7 @@ export default {
 }
 
 .tabform {
-  >>> .ivu-form-item {
+  ::v-deep .ivu-form-item {
     margin-bottom: 16px !important;
   }
 }
@@ -414,7 +414,7 @@ export default {
 }
 
 .goodList {
-  >>> table {
+  ::v-deep table {
     width: 100% !important;
   }
 }

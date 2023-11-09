@@ -45,8 +45,9 @@
         </div>
         <el-button type="primary" @click="saveCopyRight">保存</el-button>
       </div>
-      <div class="authorized">
-        <div>
+      <div class="authorized auth">
+        <div class="acea-row row-middle">
+          <div class="box"></div>
           <span class="update">上传授权图片:</span>
         </div>
         <div class="uploadPictrue" v-if="authorizedPicture" @click="modalPicTap('单选')">
@@ -265,6 +266,9 @@ export default {
 <style scoped lang="scss">
 .auth {
   padding: 9px 16px 9px 10px;
+  .box{
+    width: 50px;
+  }
 }
 
 .auth .iconIos {
@@ -303,8 +307,6 @@ export default {
 
 .authorized {
   display: flex;
-  margin-left: 18px;
-  margin-bottom: 14px;
 
   .upload {
     width: 60px;
@@ -351,7 +353,7 @@ export default {
 }
 
 .prompt {
-  margin-left: 114px;
+  margin-left: 150px;
   font-size: 12px;
   font-weight: 400;
   color: #999999;

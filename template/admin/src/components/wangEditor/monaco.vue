@@ -63,10 +63,10 @@ export default {
   width: 100%;
   margin: 0 auto;
 }
-.text /deep/ .ivu-input-wrapper {
+.text ::v-deep .ivu-input-wrapper {
   min-height: 600px;
 }
-.text /deep/ textarea.ivu-input {
+.text ::v-deep textarea.ivu-input {
   min-height: 600px;
 }
 .text {

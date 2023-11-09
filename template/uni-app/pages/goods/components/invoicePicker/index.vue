@@ -18,22 +18,26 @@
 										</view>
 									</view>
 									<view class="type" :class="{special: item.type === 2}">
-										{{item.header_type === 1 ? $t(`个人`) : $t(`企业`)}} {{item.type === 1 ? $t(`普通`) : $t(`专用`)}}
+										{{item.header_type === 1 ? $t(`个人`) : $t(`企业`)}}
+										{{item.type === 1 ? $t(`普通`) : $t(`专用`)}}
 									</view>
 								</view>
 								<view class="acea-row row-bottom">
 									<view class="info-wrap">
 										<view class="email">{{$t(`联系邮箱`)}} {{item.email}}</view>
-										<view v-if="item.header_type === 1" class="tel">{{$t(`联系电话`)}} {{item.drawer_phone}}
+										<view v-if="item.header_type === 1" class="tel">{{$t(`联系电话`)}}
+											{{item.drawer_phone}}
 										</view>
 										<view v-else class="number">{{$t(`企业税号`)}}{{item.duty_number}}</view>
 									</view>
 									<navigator v-if="!isOrder" class="navigator"
 										:url="`/pages/users/user_invoice_form/index?from=order_confirm&id=${item.id}&${urlQuery}`"
-										hover-class="none"><text class="iconfont icon-bianji"></text>{{$t(`编辑`)}}</navigator>
+										hover-class="none"><text class="iconfont icon-bianji"></text>{{$t(`编辑`)}}
+									</navigator>
 									<navigator v-else class="navigator"
 										:url="`/pages/users/user_invoice_form/index?from=order_details&id=${item.id}&order_id=${orderId}`"
-										hover-class="none"><text class="iconfont icon-bianji"></text>{{$t(`编辑`)}}</navigator>
+										hover-class="none"><text class="iconfont icon-bianji"></text>{{$t(`编辑`)}}
+									</navigator>
 								</view>
 							</view>
 						</label>
@@ -47,24 +51,29 @@
 			<view class="popup-ft">
 				<navigator v-if="!isOrder" class="navigator"
 					:url="`/pages/users/user_invoice_form/index?from=order_confirm&${urlQuery}`" hover-class="none">
-					<text class="iconfont icon-fapiao"></text>{{$t(`添加新的抬头`)}}</navigator>		
+					<text class="iconfont icon-fapiao"></text>{{$t(`添加新的抬头`)}}
+				</navigator>
 				<navigator v-else class="navigator"
-					:url="`/pages/users/user_invoice_form/index?order_id=${orderId}&from=order_details&${urlQuery}`" hover-class="none">
-					<text class="iconfont icon-fapiao"></text>{{$t(`添加新的抬头`)}}</navigator>
+					:url="`/pages/users/user_invoice_form/index?order_id=${orderId}&from=order_details&${urlQuery}`"
+					hover-class="none">
+					<text class="iconfont icon-fapiao"></text>{{$t(`添加新的抬头`)}}
+				</navigator>
 				<button class="button" plain @click="invCancel">{{$t(`不开发票`)}}</button>
-				<button v-if="isOrder" class="button" plain @click="invSub">{{$t(`确认提交`)}}</button>
+				<button class="button" plain @click="invSub">{{$t(`确认提交`)}}</button>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import {HTTP_REQUEST_URL} from '@/config/app';
+	import {
+		HTTP_REQUEST_URL
+	} from '@/config/app';
 	export default {
-		data(){
-			return{
-				imgHost:HTTP_REQUEST_URL,
-				invId:0
+		data() {
+			return {
+				imgHost: HTTP_REQUEST_URL,
+				invId: 0
 			}
 		},
 		props: {
@@ -94,9 +103,9 @@
 				type: Number,
 				default: 0
 			},
-			orderId:{
-				type:String,
-				default:''
+			orderId: {
+				type: String,
+				default: ''
 			}
 		},
 		methods: {
@@ -110,7 +119,7 @@
 					this.$emit('inv-change', e.detail.value);
 				}
 			},
-			invSub(){
+			invSub() {
 				this.$emit('inv-change', this.invId || this.invChecked);
 			},
 			invCancel() {

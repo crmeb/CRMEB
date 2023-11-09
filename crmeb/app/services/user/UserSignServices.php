@@ -158,6 +158,8 @@ class UserSignServices extends BaseServices
             throw new ApiException(410032);
         }
 
+        $userServices->offMemberLevel($uid);
+
         //检测今天是否已经签到
         if ($this->getIsSign($uid, 'today')) {
             throw new ApiException(410293);
@@ -257,7 +259,7 @@ class UserSignServices extends BaseServices
             /** @var UserBillServices $userBill */
             $userBill = app()->make(UserBillServices::class);
             $user['sum_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,lottery_add,product_gain,pay_product_integral_back'));
-            $user['deduction_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'deduction,lottery_use,order_deduction', '', true) ?? 0);
+            $user['deduction_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'deduction,lottery_use,order_deduction,storeIntegral_use', '', true) ?? 0);
             $user['today_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,product_gain,lottery_add,pay_product_integral_back', 'today'));
             /** @var UserBillServices $userBillServices */
             $userBillServices = app()->make(UserBillServices::class);
@@ -338,14 +340,14 @@ class UserSignServices extends BaseServices
         $nextContinuousDays = 0;
         foreach ($nextContinuousSignRewardList as $continuousNext) {
             if ($continuousSignDays < $continuousNext['days']) {
-                $nextContinuousDays = $continuousNext['days'] - $continuousSignDays > 0 ?: 1;
+                $nextContinuousDays = $continuousNext['days'] - $continuousSignDays > 0 ? $continuousNext['days'] - $continuousSignDays : 1;
                 break;
             }
         }
         $nextCumulativeDays = 0;
         foreach ($nextCumulativeSignRewardList as $cumulativeNext) {
             if ($cumulativeSignDays < $cumulativeNext['days']) {
-                $nextCumulativeDays = $cumulativeNext['days'] - $cumulativeSignDays > 0 ?: 1;
+                $nextCumulativeDays = $cumulativeNext['days'] - $cumulativeSignDays > 0 ? $cumulativeNext['days'] - $cumulativeSignDays : 1;
                 break;
             }
         }

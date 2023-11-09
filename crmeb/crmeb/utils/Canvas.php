@@ -261,7 +261,10 @@ class Canvas
             if ($strlen !== false) {
                 $path = substr($this->path, 8);
             }
-            make_path($path, 4, true);
+
+            if (make_path($path, 4, true) === '') {
+                throw new \RuntimeException(400555);
+            }
 
             $save_file = $this->path . $this->fileName . '.' . $this->imageType;
             switch ($this->imageType) {

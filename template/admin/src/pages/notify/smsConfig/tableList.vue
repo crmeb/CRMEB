@@ -267,7 +267,13 @@
         </div>
       </div>
     </el-card>
-    <el-dialog :visible.sync="modals" title="短信账户签名修改" width="540px" class="order_box" @closed="cancel('formInline')">
+    <el-dialog
+      :visible.sync="modals"
+      title="短信账户签名修改"
+      width="540px"
+      class="order_box"
+      @closed="cancel('formInline')"
+    >
       <el-form ref="formInline" :model="formInline" :rules="ruleInline" label-width="100px" @submit.native.prevent>
         <el-form-item>
           <el-input
@@ -774,9 +780,8 @@ export default {
   },
 };
 </script>
-<style lang="less" scoped>
-@aaa: ~'>>>';
-.order_box /deep/.ivu-form-item-content {
+<style lang="scss" scoped>
+.order_box ::v-deep.ivu-form-item-content {
   margin-left: 50px !important;
 }
 .maxInpt {
@@ -851,7 +856,7 @@ export default {
   }
 }
 .tempId {
-  @aaa .ivu-form-item-content {
+  ::v-deep .ivu-form-item-content {
     text-align: left !important;
   }
   cursor: pointer;
@@ -913,7 +918,7 @@ export default {
   }
 }
 .tempId {
-  @aaa .ivu-form-item-content {
+  ::v-deep .ivu-form-item-content {
     text-align: left !important;
   }
 
@@ -976,7 +981,7 @@ export default {
   }
 }
 .tempId {
-  @aaa .ivu-form-item-content {
+  ::v-deep .ivu-form-item-content {
     text-align: left !important;
   }
 }

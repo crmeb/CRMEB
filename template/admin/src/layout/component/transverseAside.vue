@@ -219,7 +219,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/ .el-scrollbar__bar.is-horizontal {
+::v-deep .el-scrollbar__bar.is-horizontal {
   height: 0;
 }
 .el-menu-horizontal-warp {
@@ -321,13 +321,13 @@ export default {
     }
   }
 }
-/deep/ .el-scrollbar {
+::v-deep .el-scrollbar {
   height: 50px;
 }
-/deep/ .el-scrollbar__bar.is-horizontal {
+::v-deep .el-scrollbar__bar.is-horizontal {
   display: none;
 }
-/deep/ .el-scrollbar__thumb {
+::v-deep .el-scrollbar__thumb {
   display: none;
 }
 </style>

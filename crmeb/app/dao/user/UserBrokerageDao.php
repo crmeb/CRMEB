@@ -73,6 +73,7 @@ class UserBrokerageDao extends BaseDao
     public function brokerageRankList(array $where, int $page = 0, int $limit = 0)
     {
         //SUM(IF(pm=1,`number`,-`number`))
+        if ($where['pm'] == 1) $where['not_type'] = ['extract_fail'];
         return $this->search($where)->field('uid,SUM(number) as brokerage_price')->with(['user' => function ($query) {
             $query->field('uid,avatar,nickname');
         }])->order('brokerage_price desc')->group('uid')->when($page && $limit, function ($query) use ($page, $limit) {
@@ -88,6 +89,7 @@ class UserBrokerageDao extends BaseDao
      */
     public function getBrokerageSumColumn(array $where)
     {
+        if ($where['pm'] == 1) $where['not_type'] = ['extract_fail'];
         if (isset($where['uid']) && is_array($where['uid'])) {
             return $this->search($where)->group('uid')->column('sum(number) as num', 'uid');
         } else

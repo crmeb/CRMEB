@@ -370,7 +370,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/ .el-scrollbar__bar.is-horizontal {
+::v-deep .el-scrollbar__bar.is-horizontal {
   height: 0;
 }
 .el-dropdown-menu {

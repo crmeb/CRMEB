@@ -95,7 +95,7 @@ class MiniProgramService
      */
     public static function options()
     {
-        $wechat = SystemConfigService::more(['wechat_app_appsecret', 'wechat_app_appid', 'site_url', 'routine_appId', 'routine_appsecret', 'wechat_token', 'wechat_encodingaeskey']);
+        $wechat = SystemConfigService::more(['wechat_app_appsecret', 'wechat_app_appid', 'site_url', 'routine_appId', 'routine_appsecret', 'routine_token', 'routine_encodingaeskey']);
         $payment = SystemConfigService::more(['pay_weixin_mchid', 'pay_weixin_key', 'pay_weixin_client_cert', 'pay_weixin_client_key', 'pay_weixin_open', 'pay_new_weixin_open', 'pay_new_weixin_mchid']);
         $config = [];
         if (request()->isApp()) {
@@ -106,14 +106,14 @@ class MiniProgramService
             $appsecret = isset($wechat['routine_appsecret']) ? trim($wechat['routine_appsecret']) : '';
         }
         $config = [
-            'token' => isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) : '',
-            'aes_key' => isset($wechat['wechat_encodingaeskey']) ? trim($wechat['wechat_encodingaeskey']) : '',
+            'token' => isset($wechat['routine_token']) ? trim($wechat['routine_token']) : '',
+            'aes_key' => isset($wechat['routine_encodingaeskey']) ? trim($wechat['routine_encodingaeskey']) : '',
         ];
         $config['mini_program'] = [
             'app_id' => $appId,
             'secret' => $appsecret,
-            'token' => isset($wechat['wechat_token']) ? trim($wechat['wechat_token']) : '',
-            'aes_key' => isset($wechat['wechat_encodingaeskey']) ? trim($wechat['wechat_encodingaeskey']) : ''
+            'token' => isset($wechat['routine_token']) ? trim($wechat['routine_token']) : '',
+            'aes_key' => isset($wechat['routine_encodingaeskey']) ? trim($wechat['routine_encodingaeskey']) : ''
         ];
         $config['payment'] = [
             'app_id' => $appId,

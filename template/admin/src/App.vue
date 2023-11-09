@@ -90,20 +90,18 @@ export default {
 };
 </script>
 
-<style lang="less">
-.size {
-  width: 100%;
-  height: 100%;
-}
+<style lang="scss">
 html,
 body {
-  .size;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   margin: 0;
   padding: 0;
 }
 #app {
-  .size;
+  width: 100%;
+  height: 100%;
   font-family: PingFang SC, Arial, Microsoft YaHei, sans-serif;
 }
 // .dialog-fade-enter-active {
@@ -132,7 +130,7 @@ body {
 //     opacity: 0;
 //   }
 // }
-.ivu-modal-wrap /deep/ .connect_customerServer_img {
+.ivu-modal-wrap ::v-deep .connect_customerServer_img {
   display: none;
 }
 .right-box .ivu-color-picker .ivu-select-dropdown {

@@ -54,28 +54,28 @@ class UpgradeServices extends BaseServices
      */
     public function __construct(UpgradeLogDao $dao)
     {
-        $versionData = $this->getVersion();
-        if ($versionData['version_code'] < 450) return true;
-        if (empty($versionData)) {
-            throw new AdminException('授权信息丢失');
-        }
-
-        $this->timeStamp = time();
-        $recVersion = $this->recombinationVersion($versionData['version'] ?? '');
-        $this->dao = $dao;
-
-        $this->requestData = [
-            'nonce' => mt_rand(111, 999),
-            'host' => app()->request->host(),
-            'timestamp' => $this->timeStamp,
-            'app_id' => trim($versionData['app_id'] ?? ''),
-            'app_key' => trim($versionData['app_key'] ?? ''),
-            'version' => implode('.', $recVersion)
-        ];
-
-        if (!CacheService::get('upgrade_auth_token')) {
-            $this->getAuth();
-        }
+//        $versionData = $this->getVersion();
+//        if ($versionData['version_code'] < 450) return true;
+//        if (empty($versionData)) {
+//            throw new AdminException('授权信息丢失');
+//        }
+//
+//        $this->timeStamp = time();
+//        $recVersion = $this->recombinationVersion($versionData['version'] ?? '');
+//        $this->dao = $dao;
+//
+//        $this->requestData = [
+//            'nonce' => mt_rand(111, 999),
+//            'host' => app()->request->host(),
+//            'timestamp' => $this->timeStamp,
+//            'app_id' => trim($versionData['app_id'] ?? ''),
+//            'app_key' => trim($versionData['app_key'] ?? ''),
+//            'version' => implode('.', $recVersion)
+//        ];
+//
+//        if (!CacheService::get('upgrade_auth_token')) {
+//            $this->getAuth();
+//        }
     }
 
     /**

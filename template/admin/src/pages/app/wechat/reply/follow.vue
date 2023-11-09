@@ -575,7 +575,7 @@ export default {
     height: 100%;
 }
 .modelBox
-   >>> .ivu-modal-body
+   ::v-deep .ivu-modal-body
      padding 0 16px 16px 16px !important
 .news_pic
     width: 100%

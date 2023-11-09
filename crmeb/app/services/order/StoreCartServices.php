@@ -726,4 +726,20 @@ class StoreCartServices extends BaseServices
         }
         return true;
     }
+
+    /**
+     * 判断是否非付费会员购买会员专属商品
+     * @param $user
+     * @param $pid
+     * @return bool
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/10/30
+     */
+    public function checkVipGoodsBuy($user, $pid)
+    {
+        $is_vip_product = app()->make(StoreProductServices::class)->value(['id' => $pid], 'vip_product');
+        if ($is_vip_product == 1 && $user['is_money_level'] == 0) throw new ApiException('此商品为付费会员专属，您无权购买');
+        return true;
+    }
 }

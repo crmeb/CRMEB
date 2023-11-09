@@ -296,7 +296,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.treeSel >>>.ivu-select-dropdown-list {
+.treeSel ::v-deep.ivu-select-dropdown-list {
   padding: 0 10px !important;
   box-sizing: border-box;
 }

@@ -97,7 +97,7 @@ export default {
   },
 };
 </script>
-<style lang="less">
+<style lang="scss">
 .el-tag {
   color: var(--prev-color-primary) !important;
   background-color: #fff !important;

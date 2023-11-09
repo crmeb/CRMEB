@@ -95,7 +95,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/.ivu-radio-group-button.ivu-radio-group-large .ivu-radio-wrapper{
+::v-deep.ivu-radio-group-button.ivu-radio-group-large .ivu-radio-wrapper{
     width 52px!important
     margin-bottom 10px
     margin-right 9px!important

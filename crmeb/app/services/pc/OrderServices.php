@@ -47,7 +47,7 @@ class OrderServices extends BaseServices
         /** @var StoreOrderServices $order */
         $order = app()->make(StoreOrderServices::class);
         $data['list'] = $order->getOrderApiList($where, $field, $with);
-        $data['count'] = $order->count($where);
+        $data['count'] = $order->dao->count($where, false);
         return $data;
     }
 }

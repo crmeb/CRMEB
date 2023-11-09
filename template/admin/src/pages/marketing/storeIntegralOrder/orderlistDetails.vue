@@ -103,7 +103,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.card_cent >>> .ivu-card-body {
+.card_cent ::v-deep .ivu-card-body {
   width: 100%;
   height: 100%;
 }

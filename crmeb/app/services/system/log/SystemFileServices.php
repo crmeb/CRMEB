@@ -310,6 +310,13 @@ class SystemFileServices extends BaseServices
     //读取文件
     public function openfile($filepath)
     {
+        //根目录
+        $rootDir = $this->formatPath(app()->getRootPath());
+        //防止查看站点以外的文件
+        if (strpos($filepath, $rootDir) === false || $filepath == '') {
+            throw new AdminException('无法打开站点以外的文件');
+        }
+
         $filepath = $this->formatPath($filepath);
         $content = FileClass::readFile($filepath);//防止页面内嵌textarea标签
         $ext = FileClass::getExt($filepath);

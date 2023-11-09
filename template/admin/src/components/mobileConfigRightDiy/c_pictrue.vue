@@ -169,7 +169,7 @@ export default {
 };
 </script>
 <style scoped lang="stylus">
-/deep/ .ivu-divider-horizontal {
+::v-deep .ivu-divider-horizontal {
     margin 12px 0
 }
 .empty-box {

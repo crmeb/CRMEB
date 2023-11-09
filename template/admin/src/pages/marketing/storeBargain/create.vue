@@ -239,6 +239,23 @@
                 </el-form-item>
               </el-col>
               <el-col :span="24">
+                <el-form-item label="砍价是否参与分销：" props="is_commission" label-for="is_commission">
+                  <div>
+                    <el-switch
+                      class="defineSwitch"
+                      :active-value="1"
+                      :inactive-value="0"
+                      v-model="formValidate.is_commission"
+                      size="large"
+                      active-text="开启"
+                      inactive-text="关闭"
+                    >
+                    </el-switch>
+                    <div class="grey">商品是否参与商城分销返佣</div>
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
                 <el-form-item label="活动状态：" props="status" label-for="status">
                   <el-switch
                     class="defineSwitch"
@@ -482,6 +499,7 @@ export default {
         logistics: [], //选择物流方式
         freight: 2, //运费设置
         postage: 1, //设置运费金额
+        is_commission: 0
       },
       description: '',
       rule: '',
@@ -686,6 +704,7 @@ export default {
           postage: row.postage, //设置运费金额
           custom_form: row.custom_form, //自定义表单数据
           virtual_type: row.virtual_type, //虚拟商品类型
+          is_commission: row.is_commission
         };
         this.productAttrs(row);
       }, 500);
@@ -920,7 +939,7 @@ export default {
   font-size 12px
 }
 
-.maxW /deep/.ivu-select-dropdown {
+.maxW ::v-deep.ivu-select-dropdown {
   max-width: 600px;
 }
 
@@ -990,7 +1009,7 @@ export default {
 }
 
 .addfont {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--prev-color-primary);
   margin-left: 14px;
   cursor: pointer;

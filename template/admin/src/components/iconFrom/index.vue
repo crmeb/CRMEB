@@ -69,7 +69,7 @@ export default {
     position: relative;
     padding-top: 10px;
 
-    >>> .ivu-icon
+    ::v-deep .ivu-icon
         font-size: 32px !important;
 
 .trees-coadd

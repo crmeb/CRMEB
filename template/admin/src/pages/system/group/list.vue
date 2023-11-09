@@ -332,10 +332,10 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/ .ivu-menu-vertical .ivu-menu-item-group-title{
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title{
     display: none;
 }
-/deep/ .ivu-menu-vertical.ivu-menu-light:after{
+::v-deep .ivu-menu-vertical.ivu-menu-light:after{
     display none
 }
 .left-wrapper

@@ -235,10 +235,6 @@ export default {
     addLabel() {
       this.$modalForm(userLabelAddApi(0)).then(() => {});
     },
-    closeLabel(label) {
-      let index = this.dataLabel.indexOf(this.dataLabel.filter((d) => d.id == label.id)[0]);
-      this.dataLabel.splice(index, 1);
-    },
     changeModal(status) {
       if (!status) {
         this.cancel();
@@ -314,7 +310,7 @@ export default {
 
 .addfont {
   display: inline-block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--prev-color-primary);
   margin-left: 14px;

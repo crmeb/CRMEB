@@ -261,7 +261,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/.ivu-tag-cyan .ivu-tag-text{
+::v-deep.ivu-tag-cyan .ivu-tag-text{
     color #19be6b!important
 }
 .ivu-tag-cyan{

@@ -4,7 +4,6 @@
 			<view class="product-box">
 				<view class="product-list" v-for="(item, i1) in tmp_data" :key="i1" @click="goGoodsDetail(item)">
 					<view class="product-item">
-						<!-- <image :src="item.image" mode="scaleToFill" fade-show style="width: 100%;"></image> -->
 						<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 						<view class="info">
 							<view class="title line2">

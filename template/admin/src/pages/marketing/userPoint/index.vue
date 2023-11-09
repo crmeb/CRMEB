@@ -216,7 +216,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.tab_data >>> .ivu-form-item-content
+.tab_data ::v-deep .ivu-form-item-content
     display flex!important
 .z-price {
     color: red;

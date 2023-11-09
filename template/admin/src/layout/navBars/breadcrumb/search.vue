@@ -99,10 +99,10 @@ export default {
     transform: translateX(-50%);
   }
 }
-/deep/ .el-dialog__header {
+::v-deep .el-dialog__header {
   border: none !important;
 }
-/deep/ .el-input--small .el-input__inner {
+::v-deep .el-input--small .el-input__inner {
   height: 36px;
   line-height: 36px;
 }

@@ -73,7 +73,7 @@ export default {
 .c_row-item
     margin-top 10px
     margin-bottom 10px
-    >>> .ivu-select-dropdown
+    ::v-deep .ivu-select-dropdown
         left -27px !important
 .color-box
     display flex

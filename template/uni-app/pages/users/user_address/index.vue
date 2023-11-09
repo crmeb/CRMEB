@@ -329,7 +329,7 @@
 										}
 									}, 1000);
 									return that.$util.Tips({
-										title: this.$t(`添加成功`),
+										title: that.$t(`添加成功`),
 										icon: 'success'
 									});
 								}).catch(err => {
@@ -341,15 +341,15 @@
 							fail: function(res) {
 								if (res.errMsg == 'chooseAddress:cancel') return that.$util
 									.Tips({
-										title: this.$t(`取消选择`)
+										title: that.$t(`取消选择`)
 									});
 							},
 						})
 					},
 					fail: function(res) {
 						uni.showModal({
-							title: this.$t(`您已拒绝导入微信地址权限`),
-							content: this.$t(`是否进入权限管理，调整授权？`),
+							title: that.$t(`您已拒绝导入微信地址权限`),
+							content: that.$t(`是否进入权限管理，调整授权？`),
 							success(res) {
 								if (res.confirm) {
 									uni.openSetting({

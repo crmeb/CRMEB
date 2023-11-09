@@ -3,6 +3,7 @@
     <el-dialog
       title="上传图片"
       :visible.sync="uploadModal"
+      :append-to-body="true"
       :width="isIframe ? '100%' : '1024px'"
       :fullscreen="isIframe"
       @close="closed"
@@ -408,12 +409,12 @@ export default {
   },
 };
 </script>
-<style lang="stylus" scoped>
-/deep/ .el-dialog__title{
+<style lang="scss" scoped>
+::v-deep .el-dialog__title {
   font-size: 16px;
 }
-.main{
-    min-height: 410px
+.main {
+  min-height: 410px;
 }
 .pictrue {
   width: 60px !important;
@@ -434,90 +435,91 @@ export default {
   font-size: 18px;
   right: -5px;
   top: -5px;
-  color #999
+  color: #999;
 }
-.form-width{
-    width 280px
+.form-width {
+  width: 280px;
 }
-.tq-text{
-    margin-left 14px
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--prev-color-primary);
-    cursor pointer
+.tq-text {
+  margin-left: 14px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--prev-color-primary);
+  cursor: pointer;
 }
-.uploadCont /deep/ .el-upload--picture-card, /deep/ .el-upload-list--picture-card .el-upload-list__item{
-    width 64px
-    height 64px
-    line-height: 72px;
-    overflow inherit
+.uploadCont ::v-deep .el-upload--picture-card,
+::v-deep .el-upload-list--picture-card .el-upload-list__item {
+  width: 64px;
+  height: 64px;
+  line-height: 72px;
+  overflow: inherit;
 }
-.uploadCont /deep/ .el-upload--picture-card, /deep/ .el-upload-list--picture-card .el-upload-list__item img{
-    width 64px !important
-    height 64px !important
-    border-radius: 6px;
-    object-fit: cover;
+.uploadCont ::v-deep .el-upload--picture-card,
+::v-deep .el-upload-list--picture-card .el-upload-list__item img {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 6px;
+  object-fit: cover;
 }
-.pl100{
-    padding-left 100px
+.pl100 {
+  padding-left: 100px;
 }
-.img-box{
-    display flex
-    flex-wrap: wrap
+.img-box {
+  display: flex;
+  flex-wrap: wrap;
 }
-.tips{
-    font-size: 12px;
-    color #BBBBBB
+.tips {
+  font-size: 12px;
+  color: #bbbbbb;
 }
-.code-image{
-    display flex
-    margin-top 12px
-    .left{
-        display flex
-        flex-direction: column
-            margin-right 20px
-        align-items center
-        .code{
-            border: 1px solid #DDDDDD;
-            display flex
-            align-items center
-            justify-content center
-            width 200px
-            height 200px
-            border-radius: 4px
-            .code-img{
-                width 160px
-                height 160px
-            }
-        }
-        .form-width{
-            width 200px
-        }
-        .code{
-            margin-bottom 14px
-        }
-         .trip{
-          color #333333
-          text-align: center
-          line-height: 18px;
-        }
-        .trip-small{
-            font-size: 12px;
-            font-weight: 400;
-            color: #BBBBBB;
-            text-align: center
-            line-height: 16px;
-        }
+.code-image {
+  display: flex;
+  margin-top: 12px;
+  .left {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+    align-items: center;
+    .code {
+      border: 1px solid #dddddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 200px;
+      height: 200px;
+      border-radius: 4px;
+      .code-img {
+        width: 160px;
+        height: 160px;
+      }
     }
-    .right{
-      margin-top: 62px;
-        .tip{
-            font-size: 12px;
-            font-weight: 400;
-            color: #BBBBBB;
-            margin 10px 0
-        }
-
+    .form-width {
+      width: 200px;
     }
+    .code {
+      margin-bottom: 14px;
+    }
+    .trip {
+      color: #333333;
+      text-align: center;
+      line-height: 18px;
+    }
+    .trip-small {
+      font-size: 12px;
+      font-weight: 400;
+      color: #bbbbbb;
+      text-align: center;
+      line-height: 16px;
+    }
+  }
+  .right {
+    margin-top: 62px;
+    .tip {
+      font-size: 12px;
+      font-weight: 400;
+      color: #bbbbbb;
+      margin: 10px 0;
+    }
+  }
 }
 </style>

@@ -32,18 +32,6 @@
               </div>
             </el-form-item>
             <el-col v-show="current === 1">
-              <!-- <el-col :span="24">
-                <el-form-item label="商品主图：" prop="image">
-                  <div class="picBox" @click="modalPicTap('dan', 'danFrom')">
-                    <div class="pictrue" v-if="formValidate.image">
-                      <img v-lazy="formValidate.image" />
-                    </div>
-                    <div class="upLoad acea-row row-center-wrapper" v-else>
-                      <i class="el-icon-picture-outline" style="font-size:24px;"></i>
-                    </div>
-                  </div>
-                </el-form-item>
-              </el-col> -->
               <el-col :span="24">
                 <el-form-item label="商品轮播图：" prop="images">
                   <div class="acea-row">
@@ -246,6 +234,23 @@
                     v-model="formValidate.sort"
                     class="content_width"
                   />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="秒杀是否参与分销：" props="is_commission" label-for="is_commission">
+                  <div>
+                    <el-switch
+                      class="defineSwitch"
+                      :active-value="1"
+                      :inactive-value="0"
+                      v-model="formValidate.is_commission"
+                      size="large"
+                      active-text="开启"
+                      inactive-text="关闭"
+                    >
+                    </el-switch>
+                    <div class="grey">商品是否参与商城分销返佣</div>
+                  </div>
                 </el-form-item>
               </el-col>
               <el-col :span="24">
@@ -469,6 +474,7 @@ export default {
         time_id: '',
         attrs: [],
         items: [],
+        is_commission: 0
       },
       description: '',
       templateList: [],
@@ -682,6 +688,7 @@ export default {
           postage: row.postage, //设置运费金额
           custom_form: row.custom_form, //自定义表单数据
           virtual_type: row.virtual_type, //虚拟商品类型
+          is_commission: row.is_commission
         };
         this.productAttrs(row);
         this.$refs.goodslist.productRow = null;
@@ -875,7 +882,7 @@ export default {
 .content_width{
   width: 460px;
 }
-.maxW /deep/.ivu-select-dropdown {
+.maxW ::v-deep.ivu-select-dropdown {
   max-width: 600px;
 }
 .grey{
@@ -944,7 +951,7 @@ export default {
 }
 
 .addfont {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--prev-color-primary);
   margin-left: 14px;
   cursor: pointer;

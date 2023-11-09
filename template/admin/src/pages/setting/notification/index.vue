@@ -21,10 +21,16 @@
           >
         </el-col>
       </el-row>
-      <el-alert v-if="currentTab == 1" closable>
+      <el-alert v-if="currentTab == 1" type="warning" :closable="false">
         <template slot="title">
-          公众号：登录微信公众号后台，基本设置，服务类目增加《生活服务> 百货/超市/便利店》<br />
-          小程序：登录微信小程序后台，基本设置，服务类目增加《生活服务> 百货/超市/便利店》
+          <p class="alert_title">小程序订阅消息</p>
+          登录微信小程序后台，基本设置，服务类目增加《生活服务 > 百货/超市/便利店》 (否则同步小程序订阅消息会报错)<br />
+          同步小程序订阅消息，是在小程序后台未添加订阅消息模板的前提下使用的，会新增一个模板消息并把信息同步过来，并新本项目数据库。<br />
+          <br />
+          <p class="alert_title">微信模板消息</p>
+          登录微信公众号后台，选择模板消息，在账号详情下的服务类目中手动设置服务类目，《生活服务 >
+          百货/超市/便利店》(否则同步模板消息不成功)<br />
+          同步公众号模板消息，同步公众号模板会删除公众号后台现有的模板，并重新添加新的模板，然后同步信息到数据库，如果多个项目使用同一个公众号的模板，请谨慎操作。
         </template>
       </el-alert>
       <el-table
@@ -223,14 +229,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-.message /deep/ .ivu-table-header thead tr th {
+.message ::v-deep .ivu-table-header thead tr th {
   padding: 8px 16px;
 }
-.message /deep/ .ivu-tabs-tab {
+.message ::v-deep .ivu-tabs-tab {
   border-radius: 0 !important;
 }
 .table-box {
@@ -259,5 +265,9 @@ export default {
 }
 .table {
   padding: 0 18px;
+}
+.alert_title {
+  margin-bottom: 5px;
+  font-weight: 700;
 }
 </style>

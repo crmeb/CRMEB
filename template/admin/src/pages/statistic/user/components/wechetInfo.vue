@@ -240,7 +240,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .one {
   background: var(--prev-color-primary);
 }

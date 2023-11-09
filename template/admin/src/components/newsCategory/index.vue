@@ -293,17 +293,17 @@ export default {
   }
 }
 
-.contentBox >>> .vue-waterfall-easy {
+.contentBox ::v-deep .vue-waterfall-easy {
   width: 100% !important;
   left: 0 !important;
   margin-left: 0 !important;
 }
 
-.contentBox >>> .vue-waterfall-easy-scroll::-webkit-scrollbar {
+.contentBox ::v-deep .vue-waterfall-easy-scroll::-webkit-scrollbar {
   display: none;
 }
 
-.contentBox >>> .vue-waterfall-easy-scroll {
+.contentBox ::v-deep .vue-waterfall-easy-scroll {
   scrollbar-width: none; /* firefox */
   -ms-overflow-style: none; /* IE 10+ */
   overflow-x: hidden;
@@ -382,7 +382,7 @@ export default {
   }
 }
 
-.news_pic >>> .ivu-btn-error {
+.news_pic ::v-deep .ivu-btn-error {
   width: 24px !important;
   height: 24px !important;
   background: #FF5D5F !important;
@@ -390,13 +390,13 @@ export default {
   border: 1px solid #eee !important;
 }
 
-.news_pic >>>.ivu-btn-error:hover {
+.news_pic ::v-deep.ivu-btn-error:hover {
   background: #FF5D5F !important;
   border: 1px solid #fff !important;
   color: #fff !important;
 }
 
-.news_pic >>> .ivu-btn-success {
+.news_pic ::v-deep .ivu-btn-success {
   width: 24px !important;
   height: 24px !important;
   border: 1px solid #eee !important;

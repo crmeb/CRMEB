@@ -186,7 +186,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/.ivu-input{
+::v-deep.ivu-input{
     font-size 13px!important;
 }
 .hot_imgs

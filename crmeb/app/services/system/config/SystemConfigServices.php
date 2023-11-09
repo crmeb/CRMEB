@@ -405,7 +405,7 @@ class SystemConfigServices extends BaseServices
                 break;
             default:
                 $data['value'] = isset($data['value']) ? json_decode($data['value'], true) : '';
-                if ($data['menu_name'] == 'api') {
+                if ($data['menu_name'] == 'api' || $data['menu_name'] == 'routine_api') {
                     $formbuider[] = $this->builder->input($data['menu_name'], $data['info'], strpos($data['value'], 'http') === false ? sys_config('site_url') . $data['value'] : $data['value'])->appendRule('suffix', [
                         'type' => 'div',
                         'class' => 'tips-info',

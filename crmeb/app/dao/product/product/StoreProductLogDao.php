@@ -38,7 +38,7 @@ class StoreProductLogDao extends BaseDao
                 'SUM(pay_num) as pay',
                 'SUM(pay_price * pay_num) as price',
                 'SUM(cost_price) as cost',
-                'ROUND((SUM(pay_price)-SUM(cost_price))/SUM(cost_price),2) as profit',
+                'ROUND((SUM(pay_price)-SUM(cost_price))/SUM(pay_price),2) as profit',
                 'SUM(collect_num) as collect',
                 'ROUND((COUNT(distinct(pay_uid))-1)/COUNT(distinct(uid)),2) as changes',
                 'COUNT(distinct(pay_uid))-1 as repeats'

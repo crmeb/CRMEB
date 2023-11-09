@@ -40,10 +40,6 @@ class SystemConfigService
 
         try {
             return $callable();
-//            if ($isCaChe) {
-//                return $callable();
-//            }
-//            return CacheService::remember($key, $callable);
         } catch (\Throwable $e) {
             return $default;
         }
@@ -64,10 +60,7 @@ class SystemConfigService
             return Arr::getDefaultValue($keys, $service->getConfigAll($keys));
         };
         try {
-            if ($isCaChe)
-                return $callable();
-
-            return CacheService::remember(md5(implode(',', $keys)), $callable);
+            return $callable();
         } catch (\Throwable $e) {
             return Arr::getDefaultValue($keys);
         }

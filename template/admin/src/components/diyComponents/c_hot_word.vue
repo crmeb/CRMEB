@@ -119,7 +119,7 @@ export default {
         color: #D8D8D8;
       }
 
-      /deep/.ivu-input {
+      ::v-deep.ivu-input {
         flex: 1;
         height: 36px;
       }

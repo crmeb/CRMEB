@@ -199,6 +199,6 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.btn_box >>> .ivu-form-item-content
+.btn_box ::v-deep .ivu-form-item-content
     margin-left 0 !important
 </style>

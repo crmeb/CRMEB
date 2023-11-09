@@ -340,7 +340,7 @@ class SystemConfig extends AuthController
             if (!is_int($post['sign_give_point']) || $post['sign_give_point'] < 0) return app('json')->fail('签到赠送积分请填写大于等于0的整数');
         }
         if (isset($post['sign_give_exp'])) {
-            if (!is_int($post['sign_give_exp']) || $post['sign_give_exp'] < 0) return app('json')->fail('签到赠送经验请填写大于等于0的整数');
+            if ((int)$post['sign_give_exp'] < 0) return app('json')->fail('签到赠送经验请填写大于等于0的整数');
         }
         if (isset($post['integral_frozen'])) {
             if (!ctype_digit($post['integral_frozen']) || $post['integral_frozen'] < 0) return app('json')->fail('积分冻结天数请填写大于等于0的整数');
@@ -357,6 +357,9 @@ class SystemConfig extends AuthController
         }
         if (isset($post['customer_phone'])) {
             if (!ctype_digit($post['customer_phone']) || strlen($post['customer_phone']) > 11) return app('json')->fail('客服手机号为11位数字');
+        }
+        if (isset($post['refund_time_available'])) {
+            if (!ctype_digit($post['refund_time_available'])) return app('json')->fail('售后期限必须为大于0的整数');
         }
 
         foreach ($post as $k => $v) {

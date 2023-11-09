@@ -45,10 +45,12 @@
                           </div>
                           <div class="attr">
                             <span>库存：{{ item.productInfo.stock }}</span>
-                            <span>销量：{{
+                            <span
+                              >销量：{{
                                 parseInt(item.productInfo.sales) +
                                 parseInt(item.productInfo.ficti ? item.productInfo.ficti : 0)
-                              }}</span>
+                              }}</span
+                            >
                           </div>
                           <div class="group">
                             <div class="money">￥{{ item.productInfo.price }}</div>
@@ -572,7 +574,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 @import '../../../styles/emoji-awesome/css/google.min.css';
 li {
   list-style-type: none;
@@ -964,11 +966,11 @@ li {
             display: none;
           }
 
-          /deep/ img {
+          ::v-deep img {
             width: 100%;
           }
 
-          /deep/ video {
+          ::v-deep video {
             width: 100%;
           }
         }

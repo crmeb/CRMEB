@@ -450,9 +450,15 @@ class StoreOrderCreateServices extends BaseServices
             $isCommission = 0;
             if ($order['combination_id']) {
                 //检测拼团是否参与返佣
-                /** @var StoreCombinationServices $combinationServices */
-                $combinationServices = app()->make(StoreCombinationServices::class);
-                $isCommission = $combinationServices->value(['id' => $order['combination_id']], 'is_commission');
+                $isCommission = app()->make(StoreCombinationServices::class)->value(['id' => $order['combination_id']], 'is_commission');
+            }
+            if ($order['seckill_id']) {
+                //检测秒杀是否参与返佣
+                $isCommission = app()->make(StoreSeckillServices::class)->value(['id' => $order['seckill_id']], 'is_commission');
+            }
+            if ($order['bargain_id']) {
+                //检测砍价是否参与返佣
+                $isCommission = app()->make(StoreBargainServices::class)->value(['id' => $order['bargain_id']], 'is_commission');
             }
             if ($cartInfo && (!$activity || $isCommission)) {
                 /** @var StoreOrderComputedServices $orderComputed */
@@ -510,7 +516,7 @@ class StoreOrderCreateServices extends BaseServices
             }
         }
         try {
-            [$cartInfo, $spread_ids] = $this->computeOrderProductBrokerage($uid, $cartInfo, $orderInfo);
+            [$cartInfo, $spread_ids] = $this->computeOrderProductBrokerage($uid, $cartInfo);
         } catch (\Throwable $e) {
             Log::error('订单商品结算失败,File：' . $e->getFile() . ',Line：' . $e->getLine() . ',Message：' . $e->getMessage());
             throw new ApiException(410248);
@@ -767,19 +773,10 @@ class StoreOrderCreateServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function computeOrderProductBrokerage(int $uid, array $cartInfo, $orderInfo)
+    public function computeOrderProductBrokerage(int $uid, array $cartInfo)
     {
-        /** @var AgentLevelServices $agentLevelServices */
-        $agentLevelServices = app()->make(AgentLevelServices::class);
-        [$one_brokerage_up, $two_brokerage_up, $spread_one_uid, $spread_two_uid] = $agentLevelServices->getAgentLevelBrokerage($uid);
 
-        $BrokerageOne = sys_config('store_brokerage_ratio') != '' ? sys_config('store_brokerage_ratio') : 0;
-        $BrokerageTwo = sys_config('store_brokerage_two') != '' ? sys_config('store_brokerage_two') : 0;
-        $storeBrokerageRatio = $BrokerageOne + (($BrokerageOne * $one_brokerage_up) / 100);
-        $storeBrokerageTwo = $BrokerageTwo + (($BrokerageTwo * $two_brokerage_up) / 100);
-        if (sys_config('brokerage_level') == 1) {
-            $storeBrokerageTwo = $spread_two_uid = 0;
-        }
+        [$storeBrokerageRatio, $storeBrokerageTwo, $spread_one_uid, $spread_two_uid] = $this->getSpreadDate($uid);
 
         /** @var DivisionServices $divisionService */
         $divisionService = app()->make(DivisionServices::class);
@@ -843,5 +840,53 @@ class StoreOrderCreateServices extends BaseServices
         }
 
         return [$cartInfo, [$spread_one_uid, $spread_two_uid]];
+    }
+
+
+    /**
+     * 获取计算好的佣金比例以及返佣人员uid
+     * @param int $uid
+     * @return array|int[]
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/10/8
+     */
+    public function getSpreadDate(int $uid)
+    {
+        //商城分销是否开启，用户uid是否存在，全部返回0
+        if (!sys_config('brokerage_func_status') || !$uid) {
+            return [0, 0, 0, 0];
+        }
+
+        //获取用户信息，获取不到全部返回0
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
+        $userInfo = $userServices->getUserInfo($uid);
+        if (!$userInfo) {
+            return [0, 0, 0, 0];
+        }
+
+        //获取系统一二级分佣比例
+        $storeBrokerageRatio = sys_config('store_brokerage_ratio') != '' ? sys_config('store_brokerage_ratio') : 0;
+        $storeBrokerageTwo = sys_config('store_brokerage_two') != '' ? sys_config('store_brokerage_two') : 0;
+
+        //获取上级和上上级的uid，开启自购获取自己和上级的uid
+        $spread_one_uid = $userServices->getSpreadUid($uid, $userInfo);
+        $spread_two_uid = 0;
+        if ($spread_one_uid > 0 && $one_user_info = $userServices->getUserInfo($spread_one_uid)) {
+            $spread_two_uid = $userServices->getSpreadUid($spread_one_uid, $one_user_info, false);
+        }
+
+        //计算分销等级之后的佣金比例
+        [$storeBrokerageRatio, $storeBrokerageTwo] = app()->make(AgentLevelServices::class)->getAgentLevelBrokerage($storeBrokerageRatio, $storeBrokerageTwo, $spread_one_uid, $spread_two_uid);
+
+        //判断返佣层级为一级时，将二级用户uid和二级分佣比例改为0
+        if (sys_config('brokerage_level') == 1) {
+            $storeBrokerageTwo = $spread_two_uid = 0;
+        }
+        return [$storeBrokerageRatio, $storeBrokerageTwo, $spread_one_uid, $spread_two_uid];
     }
 }

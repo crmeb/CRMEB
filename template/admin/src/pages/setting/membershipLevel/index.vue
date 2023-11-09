@@ -65,7 +65,17 @@
             <span>{{ scope.row.grade }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="一级上浮比例" min-width="130">
+        <el-table-column label="一级分佣比例" min-width="150">
+          <template slot-scope="scope">
+            <span>{{ scope.row.one_brokerage_percent == '0.00' ? scope.row.one_brokerage_ratio : scope.row.one_brokerage_percent }}%</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="二级分佣比例" min-width="150">
+          <template slot-scope="scope">
+            <span>{{ scope.row.two_brokerage_percent == '0.00' ? scope.row.two_brokerage_ratio : scope.row.two_brokerage_percent }}%</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="一级上浮比例" min-width="130">
           <template slot-scope="scope">
             <span>{{ scope.row.one_brokerage }}%</span>
           </template>
@@ -84,7 +94,7 @@
           <template slot-scope="scope">
             <span>{{ scope.row.two_brokerage_ratio }}%</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="是否显示" min-width="130">
           <template slot-scope="scope">
             <el-switch
@@ -511,11 +521,11 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/ .ivu-menu-vertical .ivu-menu-item-group-title {
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
 
-/deep/ .ivu-menu-vertical.ivu-menu-light:after {
+::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
 
@@ -587,7 +597,7 @@ export default {
   }
 }
 
-.search /deep/ .ivu-select-selection {
+.search ::v-deep .ivu-select-selection {
   border: 1px solid #dcdee2 !important;
 }
 
@@ -596,11 +606,11 @@ export default {
   margin-bottom: 20px;
 }
 
-/deep/ .ivu-modal-mask {
+::v-deep .ivu-modal-mask {
   z-index: 100 !important;
 }
 
-/deep/ .ivu-modal-wrap {
+::v-deep .ivu-modal-wrap {
   z-index: 100 !important;
 }
 

@@ -220,7 +220,8 @@ if (!function_exists('make_path')) {
         } catch (\Exception $e) {
             if ($force)
                 throw new \Exception($e->getMessage());
-            return '无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS;
+//            return '无法创建文件夹，请检查您的上传目录权限：' . app()->getRootPath() . 'public' . DS . 'uploads' . DS . 'attach' . DS;
+            return '';
         }
 
     }
@@ -1108,5 +1109,19 @@ if (!function_exists('dump_sql')) {
         Db::listen(function ($sql) {
             var_dump($sql);
         });
+    }
+}
+
+if (!function_exists('stringToIntArray')) {
+
+    /**
+     * 处理ids等并过滤参数
+     * @param string $string
+     * @param string $separator
+     * @return array
+     */
+    function stringToIntArray(string $string, string $separator = ',')
+    {
+        return !empty($string) ? array_unique(array_diff(array_map('intval', explode($separator, $string)), [0])) : [];
     }
 }

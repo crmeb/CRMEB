@@ -411,7 +411,7 @@ export default {
   max-width: 1100px;
 }
 
-.ivu-form >>> .ivu-form-item-label {
+.ivu-form ::v-deep .ivu-form-item-label {
   font-weight: 700;
   font-size: 14px !important;
 }
@@ -425,7 +425,7 @@ export default {
   font-size: 14px !important;
 }
 
-.ivu-radio-wrapper >>> .ivu-radio {
+.ivu-radio-wrapper ::v-deep .ivu-radio {
   margin-right: 10px;
 }
 
@@ -473,7 +473,7 @@ export default {
   transform: translate(50%, -50%);
 }
 
-.modelBox /deep/ .ivu-modal-body {
+.modelBox ::v-deep .ivu-modal-body {
   padding: 0 16px 16px 16px !important;
 }
 
@@ -530,7 +530,7 @@ textarea {
 
 .addfont {
   display: inline-block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--prev-color-primary);
   margin-left: 14px;

@@ -20,12 +20,15 @@ use app\services\system\log\SystemFileServices;
 use app\services\system\SystemCrudDataService;
 use app\services\system\SystemCrudServices;
 use app\services\system\SystemMenusServices;
+use app\services\system\SystemRouteServices;
 use crmeb\services\CacheService;
 use crmeb\services\crud\enum\FormTypeEnum;
 use crmeb\services\crud\Make;
 use crmeb\services\crud\Service;
 use crmeb\services\FileService;
 use think\facade\App;
+use think\facade\Db;
+use think\facade\Env;
 use think\helper\Str;
 use think\Response;
 
@@ -548,13 +551,20 @@ class SystemCrud extends AuthController
             return app('json')->fail(100026);
         }
 
-        $services->transaction(function () use ($services, $info) {
-            if ($info->menu_ids) {
-                $services->deleteMenus($info->menu_ids);
-            }
+        $menusServices = app()->make(SystemMenusServices::class);
+        if ($info->menu_ids) {
+            $menusServices->deleteMenus($info->menu_ids);
+        }
+        if ($info->menu_id) {
+            $menusServices->deleteMenus([$info->menu_id]);
+        }
 
-            $info->delete();
-        });
+        $routeServices = app()->make(SystemRouteServices::class);
+        if ($info->route_ids) {
+            $routeServices->deleteRoutes($info->route_ids);
+        }
+
+        Db::query("DROP TABLE `" . Env::get('database.prefix', 'eb_') . $info->table_name . "`");
 
         if ($info->make_path) {
             $errorFile = [];
@@ -576,6 +586,8 @@ class SystemCrud extends AuthController
                 ]);
             }
         }
+
+        $info->delete();
 
 
         return app('json')->success(100002);

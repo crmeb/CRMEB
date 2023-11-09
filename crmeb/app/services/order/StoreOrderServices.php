@@ -17,6 +17,7 @@ use app\services\activity\combination\StorePinkServices;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\BaseServices;
 use app\services\other\PosterServices;
+use app\services\other\UploadService;
 use app\services\pay\OrderPayServices;
 use app\services\pay\PayServices;
 use app\services\product\product\StoreProductLogServices;
@@ -34,13 +35,14 @@ use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 use crmeb\exceptions\PayException;
+use crmeb\services\app\MiniProgramService;
 use crmeb\services\CacheService;
 use crmeb\services\easywechat\orderShipping\MiniOrderService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\printer\Printer;
 use crmeb\services\SystemConfigService;
 use crmeb\utils\Arr;
-use think\exception\ValidateException;
+use Guzzle\Http\EntityBody;
 use think\facade\Log;
 
 /**
@@ -1648,7 +1650,7 @@ HTML;
         }
         /** @var StoreOrderComputedServices $computedServices */
         $computedServices = app()->make(StoreOrderComputedServices::class);
-        $priceGroup = $computedServices->getOrderPriceGroup($storeFreePostage, $validCartInfo, $addr, $user);
+        $priceGroup = $computedServices->getOrderPriceGroup($storeFreePostage, $validCartInfo, $addr, $user, $shipping_type);
         $validCartInfo = $priceGroup['cartInfo'] ?? $validCartInfo;
         $other = [
             'offlinePostage' => sys_config('offline_postage'),
@@ -2438,22 +2440,61 @@ HTML;
             $storeServices = app()->make(SystemStoreServices::class);
             $order['system_store'] = $storeServices->getStoreDispose($order['store_id']);
         }
+        $order['code'] = '';
         if (($order['shipping_type'] === 2 || $order['delivery_uid'] != 0) && $order['verify_code']) {
-            $name = $order['verify_code'] . '.jpg';
-            /** @var SystemAttachmentServices $attachmentServices */
-            $attachmentServices = app()->make(SystemAttachmentServices::class);
-            $imageInfo = $attachmentServices->getInfo(['name' => $name]);
-            $siteUrl = sys_config('site_url');
-            if (!$imageInfo) {
-                $imageInfo = PosterServices::getQRCodePath($order['verify_code'], $name);
-                if (is_array($imageInfo)) {
-                    $attachmentServices->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+//            $name = $order['verify_code'] . '.jpg';
+//            /** @var SystemAttachmentServices $attachmentServices */
+//            $attachmentServices = app()->make(SystemAttachmentServices::class);
+//            $imageInfo = $attachmentServices->getInfo(['name' => $name]);
+//            $siteUrl = sys_config('site_url');
+//            if (!$imageInfo) {
+//                $imageInfo = PosterServices::getQRCodePath($order['verify_code'], $name);
+//                if (is_array($imageInfo)) {
+//                    $attachmentServices->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+//                    $url = $imageInfo['dir'];
+//                } else
+//                    $url = '';
+//            } else $url = $imageInfo['att_dir'];
+//            if (isset($imageInfo['image_type']) && $imageInfo['image_type'] == 1) $url = $siteUrl . $url;
+//            $order['code'] = $url;
+            try {
+                $verifyName = 'verify_code_' . $order['verify_code'] . '.jpg';
+                $data = 'verify_code=' . $order['verify_code'];
+                /** @var SystemAttachmentServices $systemAttachmentService */
+                $systemAttachmentService = app()->make(SystemAttachmentServices::class);
+                $imageInfo = $systemAttachmentService->getOne(['name' => $verifyName]);
+                $siteUrl = sys_config('site_url');
+                if (!$imageInfo) {
+                    $res = MiniProgramService::appCodeUnlimitService($data, 'pages/admin/order_cancellation/index', 280);
+                    if (!$res) throw new ApiException('小程序核销码生成失败');
+                    $uploadType = (int)sys_config('upload_type', 1);
+                    $upload = UploadService::init();
+                    $res = (string)EntityBody::factory($res);
+                    $res = $upload->to('routine/product')->validate()->setAuthThumb(false)->stream($res, $verifyName);
+                    if ($res === false) throw new ApiException('小程序核销码生成失败');
+                    $imageInfo = $upload->getUploadInfo();
+                    $imageInfo['image_type'] = $uploadType;
+                    if ($imageInfo['image_type'] == 1) $remoteImage = PosterServices::remoteImage($siteUrl . $imageInfo['dir']);
+                    else $remoteImage = PosterServices::remoteImage($imageInfo['dir']);
+                    if (!$remoteImage['status']) throw new ApiException('小程序核销码生成失败');
+                    $systemAttachmentService->save([
+                        'name' => $imageInfo['name'],
+                        'att_dir' => $imageInfo['dir'],
+                        'satt_dir' => $imageInfo['thumb_path'],
+                        'att_size' => $imageInfo['size'],
+                        'att_type' => $imageInfo['type'],
+                        'image_type' => $imageInfo['image_type'],
+                        'module_type' => 2,
+                        'time' => time(),
+                        'pid' => 1,
+                        'type' => 2
+                    ]);
                     $url = $imageInfo['dir'];
-                } else
-                    $url = '';
-            } else $url = $imageInfo['att_dir'];
-            if (isset($imageInfo['image_type']) && $imageInfo['image_type'] == 1) $url = $siteUrl . $url;
-            $order['code'] = $url;
+                } else $url = $imageInfo['att_dir'];
+                if ($imageInfo['image_type'] == 1) $url = $siteUrl . $url;
+                $order['code'] = $url;
+            } catch (\Exception $e) {
+            }
         }
         $order['mapKey'] = sys_config('tengxun_map_key');
         $order['yue_pay_status'] = (int)sys_config('balance_func_status') && (int)sys_config('yue_pay_status') == 1 ? (int)1 : (int)2;//余额支付 1 开启 2 关闭
@@ -2523,7 +2564,29 @@ HTML;
             }
 
         }
+        $orderData['is_refund_available'] = $this->isRefundAvailable((int)$order['id']);
         return $orderData;
+    }
+
+    /**
+     * 检测订单是否能退款
+     * @param $oid
+     * @return bool
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/10/11
+     */
+    public function isRefundAvailable($oid)
+    {
+        $refundTimeAvailable = (int)sys_config('refund_time_available');
+        if ($refundTimeAvailable == 0) return true;
+        $statusInfo = app()->make(StoreOrderStatusServices::class)->get(['oid' => $oid, 'change_type' => 'take_delivery']);
+        if (!$statusInfo) return true;
+        $changeTime = preg_match('/^\d+$/', $statusInfo['change_time']) ? intval($statusInfo['change_time']) : strtotime($statusInfo['change_time']);
+        if (($changeTime + ($refundTimeAvailable * 86400)) < time()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -2690,13 +2753,13 @@ HTML;
     {
         $orderInfo = $this->dao->get($id);
         if (!$orderInfo) {
-            throw new ValidateException('取消的订单不存在');
+            throw new AdminException('取消的订单不存在');
         }
         if (!$orderInfo->kuaidi_task_id || !$orderInfo->kuaidi_order_id) {
-            throw new ValidateException('商家寄件订单信息不存在，无法取消');
+            throw new AdminException('商家寄件订单信息不存在，无法取消');
         }
         if ($orderInfo->is_stock_up != 1) {
-            throw new ValidateException('订单状态不正确，无法取消寄件');
+            throw new AdminException('订单状态不正确，无法取消寄件');
         }
 
         //发起取消商家寄件
@@ -2767,5 +2830,49 @@ HTML;
         } else {
             return true;
         }
+    }
+
+    /**
+     * 配货单数据
+     * @param $oid
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/10/11
+     */
+    public function printShippingData($order_id)
+    {
+        $orderInfo = $this->dao->get(['order_id' => $order_id]);
+        if (!$orderInfo) {
+            throw new AdminException('订单不存在');
+        }
+        $orderInfo = $this->tidyOrder($orderInfo->toArray(), true);
+        $data['user_name'] = $orderInfo['real_name'];
+        $data['user_phone'] = $orderInfo['user_phone'];
+        $data['user_address'] = $orderInfo['user_address'];
+        $data['order_id'] = $orderInfo['order_id'];
+        $data['pay_time'] = $orderInfo['_pay_time'];
+        $data['pay_type'] = $orderInfo['_status']['_payType'];
+        $data['pay_price'] = $orderInfo['pay_price'];
+        $data['pay_postage'] = $orderInfo['pay_postage'];
+        $data['deduction_price'] = $orderInfo['deduction_price'];
+        $data['coupon_price'] = $orderInfo['coupon_price'];
+        $data['mark'] = $orderInfo['mark'];
+        $data['product_info'] = [];
+        $data['vip_price'] = 0;
+        foreach ($orderInfo['cartInfo'] as $item) {
+            $data['product_info'][] = [
+                'name' => $item['productInfo']['store_name'],
+                'sku' => $item['attrInfo']['suk'],
+                'price' => $item['sum_price'],
+                'num' => $item['cart_num'],
+                'sum_price' => bcmul((string)$item['sum_price'], (string)$item['cart_num'], 2)
+            ];
+            $data['vip_price'] = bcadd((string)$data['vip_price'], $item['vip_sum_truePrice'], 2);
+        }
+        return $data;
     }
 }

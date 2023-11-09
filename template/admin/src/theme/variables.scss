@@ -116,6 +116,7 @@
   .el-radio,
   .el-checkbox {
     color: var(--prev-color-text-primary);
+    font-weight: 400;
   }
   .el-radio-button .el-radio__input.is-checked + .el-radio__label,
   .el-radio-button .el-radio-button__inner:hover {
@@ -1039,11 +1040,11 @@
 
 /* Alert 警告
 ------------------------------- */
-.el-alert--info.is-light {
-  color: #f7ba1e !important;
-  background-color: #fef8e8 !important;
-  // border: 1px solid rgba(144, 147, 153, 0.3) !important;
-}
+// .el-alert--info.is-light {
+//   color: #f7ba1e !important;
+//   background-color: #fef8e8 !important;
+//   // border: 1px solid rgba(144, 147, 153, 0.3) !important;
+// }
 .el-alert--info .el-alert__description,
 .el-alert.is-light .el-alert__closebtn {
   color: #f7ba1e !important;

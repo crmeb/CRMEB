@@ -165,9 +165,6 @@ export default {
       infoApi(data)
         .then(async (res) => {
           if (res.status === 200) {
-            let data = res.data;
-            this.userLists = data.list;
-            this.total = data.count;
             switch (this.userFrom.type) {
               case 'order':
                 this.columns = [
@@ -328,6 +325,11 @@ export default {
                   },
                 ];
             }
+            this.$nextTick((e) => {
+              let data = res.data;
+              this.userLists = data.list;
+              this.total = data.count;
+            });
             this.loading = false;
           } else {
             this.loading = false;
@@ -343,7 +345,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .avatar {
   width: 60px;
   height: 60px;
@@ -354,18 +356,18 @@ export default {
     height: 100%;
   }
 }
-/deep/.el-drawer__body {
+::v-deep.el-drawer__body {
   padding: 20px 0;
 }
-/deep/.el-tabs--border-card > .el-tabs__content {
+::v-deep.el-tabs--border-card > .el-tabs__content {
   padding: 0 35px;
 }
-/deep/.el-tabs--border-card > .el-tabs__header,
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
+::v-deep.el-tabs--border-card > .el-tabs__header,
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
   border: none;
   height: 40px;
 }
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   border: none;
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
@@ -373,10 +375,10 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
   border: none;
 }
-/deep/.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
   margin-top: 0;
   transition: none;
   height: 40px !important;
@@ -387,7 +389,7 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-/deep/.el-tabs--border-card {
+::v-deep.el-tabs--border-card {
   border: none;
   box-shadow: none;
 }
@@ -458,7 +460,7 @@ export default {
 }
 </style>
 <style scoped lang="stylus">
-.user_menu >>> .ivu-menu {
+.user_menu ::v-deep .ivu-menu {
   width: 100% !important;
 }
 </style>

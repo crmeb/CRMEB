@@ -1,9 +1,5 @@
 <template>
   <div>
-    <!-- <cards-data
-      :cardLists="cardLists"
-      v-if="cardLists.length >= 0"
-    ></cards-data> -->
     <el-card :bordered="false" shadow="never" :body-style="{padding:0}">
       <table-form @getList="getData" />
     </el-card>
@@ -18,7 +14,7 @@ import cardsData from '../../../components/cards/cards';
 import tableForm from './components/tableFrom';
 import tableList from './components/tableList';
 export default {
-  name: 'orderlistDetails',
+  name: 'orderListDetails',
   components: {
     tableForm,
     tableList,
@@ -51,7 +47,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.card_cent >>> .ivu-card-body {
+.card_cent ::v-deep .ivu-card-body {
   width: 100%;
   height: 100%;
 }

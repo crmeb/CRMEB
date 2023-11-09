@@ -14,6 +14,7 @@ use app\adminapi\controller\AuthController;
 use app\adminapi\validate\order\StoreOrderValidate;
 use app\jobs\OrderExpressJob;
 use app\services\serve\ServeServices;
+use app\services\wechat\WechatUserServices;
 use crmeb\services\FileService;
 use app\services\order\{StoreOrderCartInfoServices,
     StoreOrderDeliveryServices,
@@ -452,7 +453,7 @@ class StoreOrder extends AuthController
         if (!$id) {
             return app('json')->fail(100100);
         }
-        return app('json')->success($services->refundOrderForm((int)$id));
+        return app('json')->success($services->refundOrderForm((int)$id, 'order'));
     }
 
     /**
@@ -467,7 +468,6 @@ class StoreOrder extends AuthController
     {
         $data = $this->request->postMore([
             ['refund_price', 0],
-            ['type', 1]
         ]);
         if (!$id) {
             return app('json')->fail(100100);
@@ -476,44 +476,63 @@ class StoreOrder extends AuthController
         if (!$order) {
             return app('json')->fail(400118);
         }
+
+        $refundData = [
+            'refund_reason' => '后台主动退款',
+            'refund_explain' => '后台主动退款',
+            'refund_img' => json_encode([]),
+        ];
+
+        $res = $services->applyRefund((int)$id, $order['uid'], $order, [], 1, (float)$data['refund_price'], $refundData);
+
+        if (!$res) {
+            return app('json')->fail('退款单生成失败');
+        }
+
+        $orderRefund = $services->get(['store_order_id' => $id]);
+
+
+        $data['refund_status'] = 2;
+        $data['refund_type'] = 6;
+        $data['refunded_time'] = time();
+
         //0元退款
-        if ($order['pay_price'] == 0 && in_array($order['refund_status'], [0, 1])) {
+        if ($orderRefund['refund_price'] == 0 && in_array($orderRefund['refund_type'], [1, 5])) {
             $refund_price = 0;
         } else {
-            if ($order['pay_price'] == $order['refund_price']) {
-                return app('json')->fail(400147);
-            }
             if (!$data['refund_price']) {
                 return app('json')->fail(400146);
             }
-            $refund_price = $data['refund_price'];
-            $data['refund_price'] = bcadd($data['refund_price'], $order['refund_price'], 2);
-            $bj = bccomp((string)$order['pay_price'], (string)$data['refund_price'], 2);
-            if ($bj < 0) {
-                return app('json')->fail(400148);
+            if ($orderRefund['refund_price'] == $orderRefund['refunded_price']) {
+                return app('json')->fail(400147);
             }
+            $refund_price = $data['refund_price'];
         }
-        if ($data['type'] == 1) {
-            $data['refund_status'] = 2;
-        } else if ($data['type'] == 2) {
-            $data['refund_status'] = 0;
+
+        $data['refunded_price'] = bcadd($data['refund_price'], $orderRefund['refunded_price'], 2);
+        $bj = bccomp((string)$orderRefund['refund_price'], (string)$data['refunded_price'], 2);
+        if ($bj < 0) {
+            return app('json')->fail(400148);
         }
-        $data['refund_type'] = 6;
-        $type = $data['type'];
-        unset($data['type']);
+
         $refund_data['pay_price'] = $order['pay_price'];
         $refund_data['refund_price'] = $refund_price;
         if ($order['refund_price'] > 0) {
+            mt_srand();
             $refund_data['refund_id'] = $order['order_id'] . rand(100, 999);
         }
-        //退款处理
-        $services->payOrderRefund($type, $order, $refund_data);
+        ($order['pid'] > 0) ? $refund_data['order_id'] = $this->services->value(['id' => (int)$order['pid']], 'order_id') : $refund_data['order_id'] = $order['order_id'];
+        /** @var WechatUserServices $wechatUserServices */
+        $wechatUserServices = app()->make(WechatUserServices::class);
+        $refund_data['open_id'] = $wechatUserServices->uidToOpenid((int)$order['uid'], 'routine') ?? '';
+        $refund_data['refund_no'] = $orderRefund['order_id'];
         //修改订单退款状态
-        if ($this->services->update($id, $data)) {
-            $services->storeProductOrderRefundY($data, $order, $refund_price);
+        unset($data['refund_price']);
+        if ($services->agreeRefund($orderRefund['id'], $refund_data)) {
+            $services->update($orderRefund['id'], $data);
             return app('json')->success(400149);
         } else {
-            $services->storeProductOrderRefundYFasle((int)$id, $refund_price);
+            $services->storeProductOrderRefundYFasle((int)$orderRefund['id'], $refund_price);
             return app('json')->fail(400150);
         }
     }
@@ -882,5 +901,25 @@ class StoreOrder extends AuthController
             OrderExpressJob::dispatch([$item]);
         }
         return app('json')->success('批量发货成功');
+    }
+
+    /**
+     * 配货单
+     * @param $order_id
+     * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author: 吴汐
+     * @email: 442384644@qq.com
+     * @date: 2023/10/11
+     */
+    public function printShipping($order_id)
+    {
+        if (!$order_id) {
+            return app('json')->fail('参数错误');
+        }
+        $data = $this->services->printShippingData($order_id);
+        return app('json')->success($data);
     }
 }

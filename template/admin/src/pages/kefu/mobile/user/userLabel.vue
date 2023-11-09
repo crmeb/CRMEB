@@ -128,7 +128,7 @@ export default {
     font-size 0.32rem
     color #282828
 </style>
-<style scoped lang="less">
+<style scoped lang="scss">
 .label {
   &-title {
     margin-bottom: 0.25rem;
@@ -152,10 +152,10 @@ export default {
   }
 }
 .labelCheck {
-  /deep/.ivu-checkbox {
+  ::v-deep.ivu-checkbox {
     display: none !important;
   }
-  /deep/.ivu-checkbox-wrapper-checked.ivu-checkbox-border {
+  ::v-deep.ivu-checkbox-wrapper-checked.ivu-checkbox-border {
     background: #3875ea;
     color: #fff;
   }

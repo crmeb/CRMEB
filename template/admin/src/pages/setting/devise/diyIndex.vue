@@ -839,6 +839,7 @@ export default {
         this.footActive = true;
       }
       this.$nextTick(() => {
+        this.nameModal = false;
         this.diySaveDate(val, init, name);
       });
     },
@@ -972,10 +973,10 @@ export default {
 }
 </style>
 <style scoped lang="scss">
-/deep/ .el-card__body {
+::v-deep .el-card__body {
   padding: 0;
 }
-/deep/ .el-button--small {
+::v-deep .el-button--small {
   // border-radius: 0;
   border-radius: 4px;
 }
@@ -1449,7 +1450,7 @@ export default {
     overflow: scroll;
     -webkit-overflow-scrolling: touch;
 
-    /deep/ .ivu-tabs-bar {
+    ::v-deep .ivu-tabs-bar {
       margin-bottom: 16px;
     }
 
@@ -1499,11 +1500,11 @@ export default {
   }
 }
 
-/deep/ .ivu-scroll-loader {
+::v-deep .ivu-scroll-loader {
   display: none;
 }
 
-/deep/ .ivu-card-body {
+::v-deep .ivu-card-body {
   width: 100%;
   padding: 0;
   height: calc(100vh - 73px);

@@ -349,6 +349,8 @@ class UserBrokerageServices extends BaseServices
         $data['uid'] = $uid;
         $data['pm'] = 1;
         $data['commissionSum'] = $this->getUsersBokerageSum($data);
+        $extract_fail = $this->dao->sum(['uid' => $uid, 'pm' => 1, 'type' => 'extract_fail'], 'number');
+        $data['commissionSum'] = bcadd($data['commissionSum'], $extract_fail, 2);
         $data['pm'] = 0;
         $data['commissionRefund'] = $this->getUsersBokerageSum($data);
         $data['commissionCount'] = $data['commissionSum'] > $data['commissionRefund'] ? bcsub((string)$data['commissionSum'], (string)$data['commissionRefund'], 2) : 0.00;

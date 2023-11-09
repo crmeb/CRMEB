@@ -279,7 +279,7 @@ export default {
 .form-card {
   margin-bottom: 74px;
 
-  >>> .ivu-card-body {
+  ::v-deep .ivu-card-body {
     padding: 30px 0;
   }
 }
@@ -305,7 +305,7 @@ export default {
     padding-right: 35px;
   }
 
-  >>> .ivu-input-number-handler-wrap {
+  ::v-deep .ivu-input-number-handler-wrap {
     right: 35px;
   }
 
@@ -327,7 +327,7 @@ export default {
   padding-left: 15px;
   color: #aaa;
 }
-/deep/ .el-input-number__increase,/deep/ .el-input-number__decrease{
+::v-deep .el-input-number__increase,::v-deep .el-input-number__decrease{
   display none
 }
   .ml30{

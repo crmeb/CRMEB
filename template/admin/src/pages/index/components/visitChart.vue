@@ -124,7 +124,7 @@ export default {
   },
 };
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .dashboard-console-visit {
   ul {
     li {
@@ -140,7 +140,7 @@ export default {
   padding-left: 8px !important;
 }
 .card-title {
-    display: flex;
+  display: flex;
   align-items: center;
 }
 </style>

@@ -134,7 +134,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .width-add {
   width: 40px;
 }
@@ -162,7 +162,7 @@ export default {
     }
 
     .item {
-      flex: 0 0 calc(~'(100% - 60px) / 3');
+      flex: 0 0 calc((100% - 60px) / 3);
       display: flex;
       margin: 16px 30px 0 0;
       font-size: 13px;

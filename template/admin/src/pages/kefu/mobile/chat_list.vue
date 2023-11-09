@@ -453,7 +453,7 @@ body {
             border-bottom: 1px solid #ECEFF8;
 
 
-            >>> .ivu-input {
+            ::v-deep .ivu-input {
                 display: block;
                 width: 100%;
                 height: .68rem;
@@ -464,7 +464,7 @@ body {
                 border-radius: .39rem;
                 text-align center
             }
-            >>> .ivu-input, .ivu-input:hover, .ivu-input:focus {
+            ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
                 border transparent
                 box-shadow: none;
             }

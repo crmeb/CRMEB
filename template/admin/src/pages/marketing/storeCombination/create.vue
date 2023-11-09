@@ -970,7 +970,7 @@ export default {
   color: #999;
 }
 
-.maxW /deep/.ivu-select-dropdown {
+.maxW ::v-deep.ivu-select-dropdown {
   max-width: 600px;
 }
 
@@ -1040,7 +1040,7 @@ export default {
 }
 
 .addfont {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--prev-color-primary);
   margin-left: 14px;
   cursor: pointer;

@@ -68,7 +68,7 @@
           <template v-slot="{ row }">
             <a @click="edit(row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(row, '删除文章分类',scope.$index)">删除</a>
+            <a @click="del(row, '删除文章分类', index)">删除</a>
             <el-divider direction="vertical"></el-divider>
             <a @click="lookUp(row)">查看文章</a>
           </template>

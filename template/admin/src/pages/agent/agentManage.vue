@@ -73,24 +73,24 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="推广用户数量" min-width="120">
-          <template slot-scope="scope">
-            <span>{{ scope.row.spread_count }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="分销等级" min-width="120">
           <template slot-scope="scope">
             <div>{{ scope.row.agentLevel ? scope.row.agentLevel.name : '--' }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="订单数量" min-width="120">
+        <el-table-column label="推广用户数量" min-width="120">
           <template slot-scope="scope">
-            <div>{{ scope.row.order_count }}</div>
+            <span>{{ scope.row.spread_count }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="订单金额" min-width="120">
+        <el-table-column label="推广订单数量" min-width="120">
           <template slot-scope="scope">
-            <div>{{ scope.row.order_price }}</div>
+            <div>{{ scope.row.spread_order.order_count }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="推广订单金额" min-width="120">
+          <template slot-scope="scope">
+            <div>{{ scope.row.spread_order.order_price || '0.00' }}</div>
           </template>
         </el-table-column>
         <el-table-column label="佣金总金额" min-width="120">
@@ -569,6 +569,6 @@ img {
   margin-bottom: 10px;
 }
 
-/* .ivu-mt >>> .ivu-table-header */
+/* .ivu-mt ::v-deep .ivu-table-header */
 /* border-top:1px dashed #ddd!important */
 </style>

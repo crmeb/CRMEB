@@ -22,10 +22,11 @@
             :max="9999999999"
             v-model="formData.coupon_price"
             class="content_width"
+            :disabled="isEdit"
           ></el-input-number>
         </el-form-item>
         <el-form-item label="发送方式：">
-          <el-radio-group v-model="formData.receive_type">
+          <el-radio-group v-model="formData.receive_type" :disabled="isEdit">
             <el-radio :label="1">用户领取</el-radio>
             <el-radio :label="2">新用户自动发放</el-radio>
             <el-radio :label="3">系统赠送</el-radio>
@@ -39,7 +40,7 @@
           </div>
         </el-form-item>
         <el-form-item label="优惠劵类型：">
-          <el-radio-group v-model="formData.type">
+          <el-radio-group v-model="formData.type" :disabled="isEdit">
             <el-radio :label="0">通用券</el-radio>
             <el-radio :label="1">品类券</el-radio>
             <el-radio :label="2">商品券</el-radio>
@@ -67,11 +68,12 @@
             :props="{ multiple: true, emitPath: false, checkStrictly: true }"
             clearable
             style="width: 320px"
+            :disabled="isEdit"
           ></el-cascader>
           <div class="info">选择商品的品类</div>
         </el-form-item>
         <el-form-item label="使用门槛：">
-          <el-radio-group v-model="isMinPrice">
+          <el-radio-group v-model="isMinPrice" :disabled="isEdit">
             <el-radio :label="0">无门槛</el-radio>
             <el-radio :label="1">有门槛</el-radio>
           </el-radio-group>
@@ -79,15 +81,16 @@
         <el-form-item v-if="isMinPrice">
           <el-input-number
             :controls="false"
-            :min="1"
+            :min="0"
             :max="9999999999"
             v-model="formData.use_min_price"
             class="content_width"
+            :disabled="isEdit"
           ></el-input-number>
           <div class="info">填写优惠券的最低消费金额</div>
         </el-form-item>
         <el-form-item label="使用时间：">
-          <el-radio-group v-model="isCouponTime">
+          <el-radio-group v-model="isCouponTime" :disabled="isEdit">
             <el-radio :label="1">天数</el-radio>
             <el-radio :label="0">时间段</el-radio>
           </el-radio-group>
@@ -95,20 +98,22 @@
         <el-form-item v-show="isCouponTime" label="">
           <el-input-number
             :controls="false"
-            :min="1"
+            :min="0"
             v-model="formData.coupon_time"
             :precision="0"
             class="content_width"
+            :disabled="isEdit"
           ></el-input-number>
           <div class="info">领取后多少天内有效</div>
         </el-form-item>
         <el-form-item v-show="!isCouponTime" label="">
           <el-date-picker
             v-model="datetime1"
+            :disabled="isEdit"
             clearable
             :editable="false"
             type="datetimerange"
-            value-format="yyyy/MM/dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
             style="width: 380px"
             range-separator="-"
             start-placeholder="开始日期"
@@ -116,8 +121,9 @@
             @change="dateChange"
           ></el-date-picker>
         </el-form-item>
+
         <el-form-item label="领取时间：" v-if="formData.receive_type != 2 && formData.receive_type != 3">
-          <el-radio-group v-model="isReceiveTime">
+          <el-radio-group v-model="isReceiveTime" :disabled="isEdit">
             <el-radio :label="1">限时</el-radio>
             <el-radio :label="0">不限时</el-radio>
           </el-radio-group>
@@ -133,10 +139,11 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             @change="timeChange"
+            :disabled="isEdit"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="优惠券发布数量：" v-if="formData.receive_type != 2 && formData.receive_type != 3">
-          <el-radio-group v-model="formData.is_permanent">
+          <el-radio-group v-model="formData.is_permanent" :disabled="isEdit">
             <el-radio :label="0">限量</el-radio>
             <el-radio :label="1">不限量</el-radio>
           </el-radio-group>
@@ -148,7 +155,7 @@
         >
           <el-input-number
             :controls="false"
-            :min="1"
+            :min="isEdit ? formData.total_count : 1"
             :max="9999999999"
             v-model="formData.total_count"
             :precision="0"
@@ -159,7 +166,7 @@
         <el-form-item label="用户领取数量：" v-if="formData.receive_type != 2 && formData.receive_type != 3">
           <el-input-number
             :controls="false"
-            :min="1"
+            :min="isEdit ? formData.receive_limit : 1"
             :max="9999999999"
             v-model="formData.receive_limit"
             :precision="0"
@@ -174,7 +181,9 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="save" :disabled="disabled">立即创建</el-button>
+          <el-button type="primary" @click="save" :disabled="disabled">{{
+            isEdit ? '立即保存' : '立即创建'
+          }}</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -187,7 +196,7 @@
 <script>
 import { mapState } from 'vuex';
 import goodsList from '@/components/goodsList/index';
-import {  couponSaveApi, couponDetailApi } from '@/api/marketing';
+import { couponSaveApi, couponDetailApi } from '@/api/marketing';
 import { cascaderListApi } from '@/api/product';
 export default {
   name: 'storeCouponCreate',
@@ -202,7 +211,7 @@ export default {
         coupon_price: 0,
         type: 0,
         use_min_price: 0,
-        coupon_time: 1,
+        coupon_time: 0,
         start_use_time: 0,
         end_use_time: 0,
         start_time: 0,
@@ -222,16 +231,20 @@ export default {
       isCouponTime: 1,
       isReceiveTime: 0,
       modals: false,
-      datetime1: [],
+      datetime1: ['2023-10-18 00:00:00', '2023-11-22 00:00:00'],
       datetime2: [],
     };
   },
   computed: {
     ...mapState('media', ['isMobile']),
+    isEdit() {
+      return !!this.$route.params.edit;
+    },
   },
   created() {
     this.getCategoryList();
     if (this.$route.params.id) {
+      this.formData.id = (this.isEdit && Number(this.$route.params.id)) || 0;
       this.getCouponDetail();
     }
   },
@@ -270,10 +283,11 @@ export default {
           }
           if (!data.coupon_time) {
             this.isCouponTime = 0;
-            this.datetime1 = [data.start_use_time * 1000, data.end_use_time * 1000];
+            this.datetime1 = [this.makeDate(data.start_use_time * 1000), this.makeDate(data.end_use_time * 1000)];
             this.formData.start_use_time = this.makeDate(data.start_use_time * 1000);
             this.formData.end_use_time = this.makeDate(data.end_use_time * 1000);
           }
+          console.log(this.datetime1);
           if (data.start_time) {
             this.isReceiveTime = 1;
             this.datetime2 = [data.start_time * 1000, data.end_time * 1000];
@@ -431,7 +445,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang="scss">
 .content_width {
   width: 414px;
 }

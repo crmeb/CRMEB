@@ -33,12 +33,6 @@
 					<button class="bg-theme btn1" v-else-if="!bindPhone" @click="getAuthLogin">
 						{{$t(`授权登录`)}}
 					</button>
-					<button hover-class="none" v-else-if="mp_is_new" @tap="userLogin"
-						class="bg-theme btn1">{{$t(`授权登录`)}}</button>
-					<button v-else-if="canUseGetUserProfile && code" hover-class="none" @tap="getUserProfile"
-						class="bg-theme btn1">{{$t(`授权登录`)}}</button>
-					<button v-else hover-class="none" open-type="getUserInfo" @getuserinfo="setUserInfo"
-						class="bg-theme btn1">{{$t(`授权登录`)}}</button>
 				</template>
 				<button v-if="configData.phone_auth_switch" hover-class="none" @click="phoneLogin"
 					class="btn2">{{$t(`手机号登录`)}}</button>
@@ -154,11 +148,7 @@
 			// #endif
 			let that = this;
 			// #ifdef MP
-			Routine.getCode()
-				.then(code => {
-					this.code = code
-					this.userLogin()
-				})
+			this.userLogin()
 			// #endif
 			// #ifdef H5
 			const {
@@ -255,6 +245,7 @@
 					});
 			},
 			getAuthLogin() {
+				if (!this.authKey) return
 				if (!this.protocol) {
 					uni.showToast({
 						title: this.$t('请先阅读并同意协议'),
@@ -292,16 +283,6 @@
 				this.isShow = false
 			},
 			phoneLogin() {
-				// this.canClose = true
-				// this.isUp = true;
-				// if (!this.protocol) {
-				// 	uni.showToast({
-				// 		title: this.$t('请先阅读并同意协议'),
-				// 		icon: 'none',
-				// 		duration: 2000
-				// 	});
-				// 	return
-				// }
 				uni.navigateTo({
 					url: `/pages/users/binding_phone/index?authKey=${this.authKey}&pageType=0`
 				})
@@ -421,103 +402,6 @@
 						uni.hideLoading();
 					});
 			},
-
-			setUserInfo(e) {
-				uni.showLoading({
-					title: this.$t(`正在登录中`)
-				});
-				Routine.getCode()
-					.then(code => {
-						this.getWxUser(code);
-					})
-					.catch(res => {
-						uni.hideLoading();
-					});
-			},
-			//小程序授权api替换 getUserInfo
-			getUserProfile() {
-				uni.showLoading({
-					title: this.$t(`正在登录中`)
-				});
-				let self = this;
-				Routine.getUserProfile()
-					.then(res => {
-						let userInfo = res.userInfo;
-						userInfo.code = this.code;
-						userInfo.spread_spid = app.globalData.spid || this.$Cache.get('spread'); //获取推广人ID
-						userInfo.spread_code = app.globalData.code; //获取推广人分享二维码ID
-						Routine.authUserInfo(userInfo)
-							.then(res => {
-								if (res.data.key !== undefined && res.data.key) {
-									uni.hideLoading();
-									self.authKey = res.data.key;
-									self.isPhoneBox = true;
-								} else {
-									uni.hideLoading();
-									let time = res.data.expires_time - self.$Cache.time();
-									self.$store.commit('LOGIN', {
-										token: res.data.token,
-										time: time
-									});
-									this.getUserInfo()
-								}
-							})
-							.catch(err => {
-								uni.hideLoading();
-								uni.showToast({
-									title: err,
-									icon: 'none',
-									duration: 2000
-								});
-							});
-					})
-					.catch(res => {
-						uni.hideLoading();
-					});
-			},
-			getWxUser(code) {
-				let self = this;
-				Routine.getUserInfo()
-					.then(res => {
-						let userInfo = res.userInfo;
-						userInfo.code = code;
-						userInfo.spread_spid = app.globalData.spid; //获取推广人ID
-						userInfo.spread_code = app.globalData.code; //获取推广人分享二维码ID
-						Routine.authUserInfo(userInfo)
-							.then(res => {
-								if (res.data.key !== undefined && res.data.key) {
-									uni.hideLoading();
-									self.authKey = res.data.key;
-									self.isPhoneBox = true;
-								} else {
-									uni.hideLoading();
-									let time = res.data.expires_time - self.$Cache.time();
-									self.$store.commit('LOGIN', {
-										token: res.data.token,
-										time: time
-									});
-									self.$util.Tips({
-										title: res.msg,
-										icon: 'success'
-									}, {
-										tab: 3
-									});
-								}
-							})
-							.catch(err => {
-								uni.hideLoading();
-								uni.showToast({
-									title: err,
-									icon: 'none',
-									duration: 2000
-								});
-							});
-					})
-					.catch(res => {
-						uni.hideLoading();
-					});
-			},
-
 			// #endif
 			/**
 			 * 获取个人用户信息

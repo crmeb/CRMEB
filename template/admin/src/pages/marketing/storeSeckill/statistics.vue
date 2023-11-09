@@ -248,7 +248,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .cl {
   margin-right: 20px;
 }
@@ -263,7 +263,7 @@ export default {
 .ech-box {
   margin-top: 10px;
 }
-/deep/ .ivu-tabs-nav-scroll {
+::v-deep .ivu-tabs-nav-scroll {
   background-color: #fff;
   padding-top: 5px;
 }

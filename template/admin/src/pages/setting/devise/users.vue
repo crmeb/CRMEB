@@ -1,6 +1,6 @@
 <template>
   <div class="users">
-    <el-card :bordered="false" shadow="never">
+    <el-card :bordered="false" shadow="never" class="h100">
       <div class="acea-row row-top">
         <div class="left" :style="colorStyle">
           <div class="header" :class="userData.status == 3 ? 'bgColor' : ''">
@@ -162,7 +162,12 @@
           <div class="c_row-item acea-row row-top" v-if="current == 5">
             <el-col class="label" :span="4"> 广告位： </el-col>
             <el-col :span="20" class="slider-box">
-              <el-switch :active-value="1"  :inactive-value="0" v-model="userData.my_banner_status" style="margin-bottom: 12px" />
+              <el-switch
+                :active-value="1"
+                :inactive-value="0"
+                v-model="userData.my_banner_status"
+                style="margin-bottom: 12px"
+              />
               <div class="info">建议尺寸：690 * 240px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
               <uploadPic :listData="userData.routine_my_banner" :type="5"></uploadPic>
             </el-col>
@@ -382,7 +387,7 @@ export default {
 <style scoped lang="stylus">
 /* 定义滑块 内阴影+圆角 */
 ::-webkit-scrollbar-thumb {
-  -webkit-box-shadow: inset 0 0 6px #ddd;
+  -webkit-box-shadow: inset 0 0 0px #ddd;
 }
 
 ::-webkit-scrollbar {
@@ -492,7 +497,7 @@ export default {
   background-image: url('../../../assets/images/user_vip.png');
   background-repeat: no-repeat;
   background-size: 100%;
-  width: 270px;
+  width: 334px;
   height: 48px;
   margin: -42px auto 0 auto;
   position: relative;
@@ -541,27 +546,25 @@ export default {
   bottom: 2px;
 }
 
-/deep/.swiper-pagination-bullet {
+::v-deep.swiper-pagination-bullet {
   width: 4px;
   height: 4px;
 }
 
-/deep/.swiper-pagination-bullet-active {
+::v-deep.swiper-pagination-bullet-active {
   background: #fff;
 }
 
 .users {
   .left {
     background: #F7F7F7;
-    width: 310px;
+    width: 375px;
     height: 690px;
-    overflow-x: hidden;
-    overflow-y: auto;
     padding-bottom: 1px;
     border-radius: 10px;
     margin-right: 30px;
     border: 1px solid #eee;
-
+    overflow:hidden;
     .header {
       background-color: var(--view-theme);
       background-image: url('../../../assets/images/user01.png');
@@ -777,7 +780,7 @@ export default {
   .right {
     width: 540px;
 
-    /deep/.ivu-radio-wrapper {
+    ::v-deep.ivu-radio-wrapper {
       font-size: 13px;
       margin-right: 20px;
     }

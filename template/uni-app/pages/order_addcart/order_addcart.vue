@@ -799,6 +799,7 @@
 					}
 					for (let i = 0; i < Math.ceil(c.data.ids.length / that.limit); i++) {
 						let cartList = await this.getCartData(data)
+						data.page = data.page + 1;
 						let valid = cartList.valid
 						let validList = that.$util.SplitArray(valid, that.cartList.valid);
 
@@ -840,7 +841,7 @@
 							}
 						}
 						that.$set(that.cartList, 'valid', validList);
-						data.page = that.page + 1;
+
 						// that.goodsHidden = cartList.valid.length <= 0 ? false : true;
 						that.selectValue = selectValue;
 						let newArr = validList.filter(item => item.attrStatus);

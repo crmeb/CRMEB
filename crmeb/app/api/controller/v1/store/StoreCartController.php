@@ -87,6 +87,7 @@ class StoreCartController
         } elseif ($where['advanceId']) {
             $type = 6;
         }
+        if ($type == 0) $cartService->checkVipGoodsBuy($request->user(), $where['productId']);
         $res = $cartService->setCart($request->uid(), $where['productId'], $where['cartNum'], $where['uniqueId'], $type, $new, $where['combinationId'], $where['secKillId'], $where['bargainId'], $where['advanceId']);
         if (!$res) return app('json')->fail(100022);
         else  return app('json')->success(['cartId' => $res]);

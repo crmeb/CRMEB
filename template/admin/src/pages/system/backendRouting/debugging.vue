@@ -201,40 +201,6 @@
           </vxe-column>
         </vxe-table>
         <el-button class="mt10" type="primary" @click="insertEvent('zTable')">添加参数</el-button>
-        <!-- <h4 class="mt10 title">全局Header参数</h4>
-        <vxe-table
-          class="mt10"
-          resizable
-          show-overflow
-          keep-source
-          ref="zaTable"
-          row-id="id"
-          :print-config="{}"
-          :export-config="{}"
-          :tree-config="{ transform: true, rowField: 'id', parentField: 'parentId' }"
-          :data="interfaceData.allHeaderData"
-        >
-          <vxe-column field="attribute" width="300" title="属性" tree-node :edit-render="{}">
-            <template #default="{ row }">
-              <span>{{ row.attribute || '' }}</span>
-            </template>
-          </vxe-column>
-          <vxe-column field="value" title="参数值" :edit-render="{}">
-            <template #default="{ row }">
-              <span>{{ row.value || '' }}</span>
-            </template>
-          </vxe-column>
-          <vxe-column field="type" title="类型" width="200" :edit-render="{}">
-            <template #default="{ row }">
-              <span>{{ row.type || '' }}</span>
-            </template>
-          </vxe-column>
-          <vxe-column field="trip" title="说明" :edit-render="{}">
-            <template #default="{ row }">
-              <span>{{ row.trip || '' }}</span>
-            </template>
-          </vxe-column>
-        </vxe-table> -->
       </div>
     </div>
     <div class="res mt10 mb10" v-if="codes">
@@ -540,7 +506,7 @@ export default {
   display: flex;
   justify-content: right;
 }
-/deep/ .monaco-editor {
+::v-deep .monaco-editor {
   min-height: 700px;
 }
 </style>

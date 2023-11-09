@@ -52,7 +52,7 @@ export default {
             this.authCode = data.auth_code;
             this.auth = true;
           }
-          this.openImage = true
+          this.openImage = true;
         })
         .catch((res) => {});
     },
@@ -63,7 +63,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="scss">
 .dashboard-console-visit {
   .ivu-radio-group-button .ivu-radio-wrapper {
     border: none !important;

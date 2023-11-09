@@ -512,7 +512,7 @@ export default {
         width 100%
         height 100%
 .modelBox
-    >>>
+    ::v-deep
     .ivu-table-header
         width 100% !important
 .trees-coadd

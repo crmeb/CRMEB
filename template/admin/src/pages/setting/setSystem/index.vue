@@ -242,20 +242,20 @@ export default {
 </script>
 
 <style scoped lang="scss">
-/deep/ .el-tabs__header {
+::v-deep .el-tabs__header {
   margin: unset;
 }
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-/deep/ .el-input-number {
+::v-deep .el-input-number {
   width: 414px;
 }
-/deep/ .el-input {
+::v-deep .el-input {
   width: 414px;
 }
-/deep/ .el-input-number .el-input__inner {
+::v-deep .el-input-number .el-input__inner {
   text-align: unset;
 }
 .ivu-tabs {
@@ -267,16 +267,16 @@ export default {
   margin-top: 0px !important;
 }
 
-.article-manager /deep/ .ivu-form-item {
+.article-manager ::v-deep .ivu-form-item {
   margin-bottom: 20px !important;
 }
-// /deep/ .form-create .el-button{
+// ::v-deep .form-create .el-button{
 //   float: right;
 // }
-body /deep/ .el-dialog .el-dialog__header {
+body ::v-deep .el-dialog .el-dialog__header {
   border: none !important;
 }
-/deep/.el-form-item--small .el-form-item__label {
+::v-deep.el-form-item--small .el-form-item__label {
   line-height: 14px;
   margin-top: 10px;
 }

@@ -335,7 +335,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .goodList .ivu-input-group {
+::v-deep .goodList .ivu-input-group {
   width: 200% !important;
 }
 </style>

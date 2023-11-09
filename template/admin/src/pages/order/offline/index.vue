@@ -1,46 +1,36 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="pagination"
-            :model="pagination"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="pagination"
+          :model="pagination"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="创建时间：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="订单号：" label-for="title">
-            <el-input
-                clearable
-                v-model="pagination.order_id"
-                placeholder="请输入订单号"
-                class="form_content_width"
-            />
+            <el-input clearable v-model="pagination.order_id" placeholder="请输入订单号" class="form_content_width" />
           </el-form-item>
           <el-form-item label="用户名：" label-for="title">
-            <el-input
-                clearable
-                v-model="pagination.name"
-                placeholder="请输入用户名"
-                class="form_content_width"
-            />
+            <el-input clearable v-model="pagination.name" placeholder="请输入用户名" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="orderSearch">查询</el-button>
@@ -206,7 +196,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .code {
   position: relative;
 }

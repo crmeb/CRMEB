@@ -30,7 +30,7 @@
         :class="!isScreenfull ? 'el-icon-full-screen' : 'el-icon-crop'"
       ></i>
     </div>
-    <el-dropdown :show-timeout="70" :hide-timeout="50" @command="onDropdownCommand">
+    <el-dropdown :show-timeout="70" @command="onDropdownCommand">
       <span class="layout-navbars-breadcrumb-user-link">
         <img :src="getUserInfos.head_pic" class="layout-navbars-breadcrumb-user-link-photo mr5" />
         {{ getUserInfos.account === '' ? 'test' : getUserInfos.account }}

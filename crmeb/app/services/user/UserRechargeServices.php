@@ -233,19 +233,8 @@ class UserRechargeServices extends BaseServices
 
         try {
             $recharge_type = $UserRecharge['recharge_type'];
-
-            if (sys_config('pay_wechat_type')) {
-                $drivers = 'v3_wechat_pay';
-                $trade_no = $UserRecharge['trade_no'];
-            } else {
-                $drivers = 'wechat_pay';
-                $trade_no = $UserRecharge['order_id'];
-            }
-            /** @var Pay $pay */
-            $pay = app()->make(Pay::class, [$drivers]);
             if ($recharge_type == 'weixin') {
                 $refund_data['wechat'] = true;
-                $pay->refund($trade_no, $refund_data);
             } else {
                 $refund_data['trade_no'] = $UserRecharge['trade_no'];
                 $refund_data['order_id'] = $UserRecharge['order_id'];
@@ -256,8 +245,20 @@ class UserRechargeServices extends BaseServices
                 /** @var StoreOrderCreateServices $storeOrderCreateServices */
                 $storeOrderCreateServices = app()->make(StoreOrderCreateServices::class);
                 $refund_data['refund_no'] = $storeOrderCreateServices->getNewOrderId('tk');
-                $pay->refund($UserRecharge['order_id'], $refund_data);
             }
+            if ($recharge_type == 'allinpay') {
+                $drivers = 'allin_pay';
+                $trade_no = $UserRecharge['trade_no'];
+            } elseif (sys_config('pay_wechat_type')) {
+                $drivers = 'v3_wechat_pay';
+                $trade_no = $UserRecharge['trade_no'];
+            } else {
+                $drivers = 'wechat_pay';
+                $trade_no = $UserRecharge['order_id'];
+            }
+            /** @var Pay $pay */
+            $pay = app()->make(Pay::class, [$drivers]);
+            $pay->refund($trade_no, $refund_data);
         } catch (\Exception $e) {
             throw new AdminException($e->getMessage());
         }

@@ -132,7 +132,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-/deep/ .el-tabs__item {
+::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
@@ -168,7 +168,7 @@ export default {
 }
 
 .new_tab {
-  >>>.ivu-tabs-nav .ivu-tabs-tab {
+  ::v-deep.ivu-tabs-nav .ivu-tabs-tab {
     padding: 4px 16px 20px !important;
     font-weight: 500;
   }
@@ -182,7 +182,7 @@ export default {
 //   z-index: 8;
 //   // box-shadow: 0 -1px 2px rgb(240, 240, 240);
 //   border:none;
-//   /deep/ .ivu-card-body {
+//   ::v-deep .ivu-card-body {
 //     padding: 15px 16px 14px;
 //   }
 
@@ -190,7 +190,7 @@ export default {
 //     margin-bottom: 0;
 //   }
 
-//   /deep/ .ivu-form-item-content {
+//   ::v-deep .ivu-form-item-content {
 //     margin-right: 124px;
 //     text-align: center;
 //   }

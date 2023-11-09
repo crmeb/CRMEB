@@ -134,4 +134,14 @@ class StoreCouponIssue extends BaseModel
     {
         if ($value) $query->whereLike('coupon_title', '%' . $value . '%');
     }
+
+    /**
+     * 优惠券类型
+     * @param Model $query
+     * @param $value
+     */
+    public function searchCouponTypeAttr($query, $value)
+    {
+        if ($value != '') $query->where('type', $value);
+    }
 }

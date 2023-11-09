@@ -47,6 +47,8 @@ class AgentManageServices extends BaseServices
         $data = $userServices->getAgentUserList($where, '*', $is_page);
         /** @var UserBrokerageServices $frozenPrices */
         $frozenPrices = app()->make(UserBrokerageServices::class);
+        /** @var StoreOrderServices $orderServices */
+        $orderServices = app()->make(StoreOrderServices::class);
         foreach ($data['list'] as &$item) {
             $item['headimgurl'] = $item['avatar'];
             $item['extract_count_price'] = $item['extract'][0]['extract_count_price'] ?? 0;
@@ -71,6 +73,7 @@ class AgentManageServices extends BaseServices
             if (strpos($item['headimgurl'], '/statics/system_images/') !== false) {
                 $item['headimgurl'] = set_file_url($item['headimgurl']);
             }
+            $item['spread_order'] = $orderServices->get(['spread_uid' => $item['uid'], 'paid' => 1, 'refund_status' => 0, 'pid' => 0], ['sum(pay_price) as order_price','count(id) as order_count']);
         }
         return $data;
     }

@@ -105,10 +105,10 @@ export default {
     transform: translateX(100%);
   }
 }
-.setUp /deep/.ivu-tabs-nav-scroll {
+.setUp ::v-deep.ivu-tabs-nav-scroll {
   padding: 0 30px;
 }
-.setUp /deep/.ivu-tabs-nav .ivu-tabs-tab {
+.setUp ::v-deep.ivu-tabs-nav .ivu-tabs-tab {
   padding: 8px 45px;
 }
 </style>

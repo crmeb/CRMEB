@@ -81,7 +81,7 @@
           </div>
           <div class="chat-textarea">
             <div class="chat-btn-wrapper">
-              <div class="left-wrapper">
+              <div class="left-wrappers">
                 <div class="icon-item" @click.stop="isEmoji = !isEmoji">
                   <span class="iconfont iconbiaoqing1"></span>
                 </div>
@@ -622,7 +622,7 @@ export default {
 <style lang="stylus" scoped>
 @import '../../../styles/emoji-awesome/css/google.min.css';
 
-/deep/ textarea.ivu-input {
+::v-deep textarea.ivu-input {
   border: none;
   resize: none;
 
@@ -786,7 +786,7 @@ export default {
           justify-content: space-between;
           padding: 15px 0;
 
-          .left-wrapper {
+          .left-wrappers {
             display: flex;
             align-items: center;
 
@@ -902,7 +902,7 @@ export default {
   background: rgba(0, 0, 0, 0.5);
 }
 
-/deep/.happy-scroll-content {
+::v-deep.happy-scroll-content {
   width: 100%;
 
   .demo-spin-icon-load {
@@ -931,17 +931,17 @@ export default {
 }
 
 .isMsgbox {
-  >>> .ivu-modal-body {
+  ::v-deep .ivu-modal-body {
     padding: 0;
   }
 }
 .emoji-box::-webkit-scrollbar {
   width: 0;
 }
-.textarea-box /deep/ .ivu-input:focus{
+.textarea-box ::v-deep .ivu-input:focus{
   box-shadow: none;
 }
-.textarea-box /deep/ .el-textarea__inner{
+.textarea-box ::v-deep .el-textarea__inner{
   border:none;
   resize: none;
 }

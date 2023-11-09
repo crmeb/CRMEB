@@ -322,16 +322,16 @@ export default {
 .tab-1 {
   padding-bottom: 100px;
 }
-/deep/ .el-input__inner {
+::v-deep .el-input__inner {
   padding-left: 7px;
 }
-/deep/ .ivu-form-item {
+::v-deep .ivu-form-item {
   margin-bottom: 17px;
 }
-/deep/ .ivu-form-item-error-tip {
+::v-deep .ivu-form-item-error-tip {
   padding-top: 2px;
 }
-/deep/ .tip {
+::v-deep .tip {
   color: #bbb;
   line-height: 16px;
   padding-top: 5px;

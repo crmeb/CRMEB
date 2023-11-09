@@ -158,13 +158,13 @@ export default {
         height 100%
 
 .tabform
-    >>> .ivu-form-item
+    ::v-deep .ivu-form-item
         margin-bottom 16px !important
 
 .btn
     margin-top 20px
     float right
 .goodList
-    >>> table
+    ::v-deep table
         width 100% !important
 </style>

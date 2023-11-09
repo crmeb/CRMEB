@@ -149,7 +149,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-/deep/.ivu-input
+::v-deep.ivu-input
     font-size 13px!important
 .c_product
     border-bottom 1px solid rgba(0,0,0,0.05);

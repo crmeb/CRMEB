@@ -243,7 +243,7 @@ class SystemMenusServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getMenus($roles): array
+    public function getMenus($roles, $check = []): array
     {
         $field = ['menu_name', 'pid', 'id'];
         $where = ['is_del' => 0, 'is_show_path' => 1];
@@ -255,6 +255,9 @@ class SystemMenusServices extends BaseServices
             $roles = is_string($roles) ? explode(',', $roles) : $roles;
             $ids = $service->getRoleIds($roles);
             $menus = $this->dao->getMenusRoule(['rule' => $ids] + $where, $field);
+        }
+        foreach ($menus as &$item) {
+            $item['checked'] = in_array($item['id'], $check);
         }
         return $this->tidyMenuTier(false, $menus);
     }
