@@ -812,7 +812,7 @@ export default {
 			var that = this,
 				scrollY = e.detail.scrollTop;
 			var opacity = scrollY / 200;
-			this.scrollTop = e.detail.scrollTop
+			// this.scrollTop = e.detail.scrollTop
 			opacity = opacity > 1 ? 1 : opacity;
 			that.$set(that, 'opacity', opacity);
 			that.$set(that, 'scrollY', scrollY);
