@@ -24,6 +24,7 @@
         :isdiy="true"
         @getProductId="getProductId"
         v-if="modals"
+        :selectIds="selectIds"
       ></goods-list>
     </el-dialog>
   </div>
@@ -47,6 +48,11 @@ export default {
     configObj: {
       handler(nVal, oVal) {
         this.defaults = nVal;
+        let ids =[]
+        this.defaults.goodsList.list.map((i) => {
+          ids.push(i.id);
+        });
+        this.selectIds = ids;
       },
       immediate: true,
       deep: true,
@@ -58,6 +64,7 @@ export default {
       goodsList: [],
       tempGoods: {},
       defaults: {},
+      selectIds: [],
     };
   },
   created() {

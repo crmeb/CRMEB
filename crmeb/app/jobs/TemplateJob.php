@@ -37,7 +37,7 @@ class TemplateJob extends BaseJobs
      * @param $color
      * @return bool|mixed
      */
-    public function doJob($type, $openid, $tempId, $data, $link, $color)
+    public function doJob($type, $openid, $tempId, $data, $link, $color, $wechatToRoutine = 0)
     {
         try {
             if (!$openid) return true;
@@ -56,7 +56,11 @@ class TemplateJob extends BaseJobs
                 }
                 $template->url($link);
             }
-            return $template->send($tempId, $data);
+            if ($type == 'wechat') {
+                return $template->send($tempId, $data, $wechatToRoutine);
+            } else {
+                return $template->send($tempId, $data);
+            }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return true;

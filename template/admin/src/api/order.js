@@ -150,6 +150,17 @@ export function getRefundFrom(id) {
     method: 'get',
   });
 }
+/**
+ * @description 退款
+ * @param {Number} param id {Number} 订单id
+ */
+export function refundPrice(id, data) {
+  return request({
+    url: `/order/refund/${id}`,
+    method: 'put',
+    data,
+  });
+}
 
 /**
  * @description 新版-获取退款表单数据

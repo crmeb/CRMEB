@@ -59,6 +59,7 @@ export default {
           data: {
             sms_account: data.data.accessKey,
             sms_token: data.data.secretKey,
+            sms_save_type: 'yihaotong'
           },
         }).then((res) => {});
       }

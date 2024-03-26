@@ -26,8 +26,13 @@ class PublicController
      * @param string $key
      * @return Response|\think\response\File
      */
-    public function download(string $key = '')
+    public function download(Request $request, string $key = '')
     {
+        if ($key == '') {
+            $key = $request->getMore([
+                ['key', ''],
+            ], true);
+        }
         if (!$key) {
             return Response::create()->code(500);
         }

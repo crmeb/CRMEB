@@ -152,10 +152,10 @@ export default {
   }
 }
 .labelCheck {
-  ::v-deep.ivu-checkbox {
+  ::v-deep .ivu-checkbox {
     display: none !important;
   }
-  ::v-deep.ivu-checkbox-wrapper-checked.ivu-checkbox-border {
+  ::v-deep .ivu-checkbox-wrapper-checked.ivu-checkbox-border {
     background: #3875ea;
     color: #fff;
   }

@@ -179,6 +179,12 @@ class SystemConfigServices extends BaseServices
         ],
         'customer_type' => [
             'son_type' => [
+                'service_feedback' => '',
+            ],
+            'show_value' => 0
+        ],
+        'customer_type#' => [
+            'son_type' => [
                 'customer_phone' => '',
             ],
             'show_value' => 1
@@ -198,10 +204,17 @@ class SystemConfigServices extends BaseServices
         ],
         'mer_type' => [
             'son_type' => [
-                'pay_sub_merchant_id' => ''
+                'pay_sub_merchant_id' => '',
+                'sp_appid' => ''
             ],
             'show_value' => 1
-        ]
+        ],
+        'member_card_status' => [
+            'son_type' => [
+                'member_price_status' => '',
+            ],
+            'show_value' => 1
+        ],
     ];
 
     /**
@@ -279,7 +292,7 @@ class SystemConfigServices extends BaseServices
         $count = $this->dao->count($where);
         $tidy_srr = [];
         foreach ($list as &$item) {
-            $item['value'] = $item['value'] ? json_decode($item['value'], true) ?: '' : '';
+            $item['value'] = $item['value'] ? (json_decode($item['value'], true) ?: '') : '';
             if ($item['type'] == 'radio' || $item['type'] == 'checkbox') {
                 $item['value'] = $this->getRadioOrCheckboxValueInfo($item['menu_name'], $item['value']);
             }
@@ -446,7 +459,7 @@ class SystemConfigServices extends BaseServices
      * @param array $control_two
      * @return array
      */
-    public function createRadioForm(array $data, $control = [], $control_two = [])
+    public function createRadioForm(array $data, $control = [], $control_two = [], $control_three = [])
     {
         $formbuider = [];
         $data['value'] = json_decode($data['value'], true) ?: '0';
@@ -471,6 +484,9 @@ class SystemConfigServices extends BaseServices
             }
             if ($control_two && isset($data['show_value2'])) {
                 $radio->appendControl($data['show_value2'] ?? 2, is_array($control_two) ? $control_two : [$control_two]);
+            }
+            if ($control_three && isset($data['show_value3'])) {
+                $radio->appendControl($data['show_value3'] ?? 3, is_array($control_three) ? $control_three : [$control_three]);
             }
             return $formbuider;
         }
@@ -647,14 +663,14 @@ class SystemConfigServices extends BaseServices
      * @return array
      * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function formTypeShine($data, $control = false, $controle_two = [])
+    public function formTypeShine($data, $control = false, $controle_two = [], $controle_three = [])
     {
 
         switch ($data['type']) {
             case 'text'://文本框
                 return $this->createTextForm($data['input_type'], $data);
             case 'radio'://单选框
-                return $this->createRadioForm($data, $control, $controle_two);
+                return $this->createRadioForm($data, $control, $controle_two, $controle_three);
             case 'textarea'://多行文本框
                 return $this->createTextareaForm($data);
             case 'upload'://文件上传
@@ -743,7 +759,19 @@ class SystemConfigServices extends BaseServices
                                         }
                                     }
                                 }
-                                $builder[] = $this->formTypeShine($son_data, $son_build, $son_build_two)[0];
+                                $son_build_three = [];
+                                if (isset($role['son_type'][$sk . '#'])) {
+                                    $son_type_three = $role['son_type'][$sk . '#'];
+                                    $son_data['show_value3'] = $son_type_three['show_value'];
+                                    if (isset($son_type_three['son_type'])) {
+                                        foreach ($son_type_three['son_type'] as $ssk => $ssv) {
+                                            if (isset($list[$ssk]['menu_name']) && $list[$ssk]['menu_name'] == 'watermark_text_color') $list[$ssk]['type'] = 'color';
+                                            $son_build_three[] = $this->formTypeShine($list[$ssk])[0];
+                                            unset($list[$ssk]);
+                                        }
+                                    }
+                                }
+                                $builder[] = $this->formTypeShine($son_data, $son_build, $son_build_two, $son_build_three)[0];
                                 unset($list[$sk]);
                             }
                         }
@@ -759,7 +787,17 @@ class SystemConfigServices extends BaseServices
                             $builder_two[] = $this->formTypeShine($son_data)[0];
                         }
                     }
-                    $formbuider = array_merge($formbuider, $this->createRadioForm($data, $builder, $builder_two));
+                    $builder_three = [];
+                    if (isset($relateRule[$key . '#'])) {
+                        $role = $relateRule[$key . '#'];
+                        $data['show_value3'] = $role['show_value'];
+                        foreach ($role['son_type'] as $sk => $sv) {
+                            $son_data = $list[$sk];
+                            $son_data['show_value'] = $role['show_value'];
+                            $builder_three[] = $this->formTypeShine($son_data)[0];
+                        }
+                    }
+                    $formbuider = array_merge($formbuider, $this->createRadioForm($data, $builder, $builder_two, $builder_three));
                     break;
                 case 'textarea'://多行文本框
                     $formbuider = array_merge($formbuider, $this->createTextareaForm($data));
@@ -961,7 +999,7 @@ class SystemConfigServices extends BaseServices
         $formbuider[] = $this->builder->input('menu_name', '字段变量', $menu['menu_name'])->disabled(1);
         $formbuider[] = $this->builder->hidden('type', $menu['type']);
         [$configTabList, $data] = $service->getConfigTabListForm((int)($menu['config_tab_id'] ?? 0));
-        $formbuider[] = $this->builder->cascader('config_tab_id', '分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width'=>'100%']);
+        $formbuider[] = $this->builder->cascader('config_tab_id', '分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width' => '100%']);
         $formbuider[] = $this->builder->input('info', '配置名称', $menu['info'])->autofocus(1);
         $formbuider[] = $this->builder->input('desc', '配置简介', $menu['desc']);
         switch ($menu['type']) {
@@ -1118,7 +1156,7 @@ class SystemConfigServices extends BaseServices
         if ($form_type) {
             $formbuider[] = $this->builder->hidden('type', $form_type);
             [$configTabList, $data] = $service->getConfigTabListForm((int)($tab_id ?? 0));
-            $formbuider[] = $this->builder->cascader('config_tab_id', '分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width'=>'100%']);
+            $formbuider[] = $this->builder->cascader('config_tab_id', '分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width' => '100%']);
             if ($info_type) {
                 $formbuider[] = $info_type;
             }

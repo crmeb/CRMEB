@@ -228,7 +228,7 @@ export default {
   height: 54px !important;
   line-height: 54px !important;
 }
-::v-deep.ivu-card-body {
+::v-deep .ivu-card-body {
   padding: 0;
 }
 

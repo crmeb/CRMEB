@@ -1,9 +1,12 @@
 <template>
+  <!-- 根据头部菜单是否显示来判断显示哪个组件 -->
   <Mains v-if="headMenuNoShow" />
+  <!-- 根据主题配置中的布局类型来判断显示哪个组件 -->
   <Defaults v-else-if="getThemeConfig.layout === 'defaults'" />
   <Classic v-else-if="getThemeConfig.layout === 'classic'" />
   <Transverse v-else-if="getThemeConfig.layout === 'transverse'" />
   <Columns v-else-if="getThemeConfig.layout === 'columns'" />
+
 </template>
 
 <script>

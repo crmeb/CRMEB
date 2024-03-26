@@ -488,7 +488,7 @@
 				{
 					"path": "user_info/index",
 					"style": {
-						"navigationBarTitleText": "个人资料",
+						"navigationBarTitleText": "设置",
 						"app-plus": {
 							// #ifdef APP-PLUS
 							"titleNView": {

@@ -74,6 +74,7 @@ class SystemConfigTab extends AuthController
             ['type', 0],
             ['sort', 0],
             ['pid', 0],
+            ['menus_id', 0],
         ]);
         if (is_array($data['pid'])) $data['pid'] = end($data['pid']);
         if (!$data['title']) return app('json')->fail(400291);
@@ -119,6 +120,7 @@ class SystemConfigTab extends AuthController
             ['type', 0],
             ['sort', 0],
             ['pid', 0],
+            ['menus_id', 0],
         ]);
         if (is_array($data['pid'])) $data['pid'] = end($data['pid']);
         if (!$data['title']) return app('json')->fail(400291);

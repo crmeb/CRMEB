@@ -1,0 +1,18 @@
+version: '5'  
+services:  
+  node-web:  
+    container_name: CRMEBv5
+    image: crmeb
+    build:  
+      context: .  
+      dockerfile: Dockerfile  
+    ports:  
+      - "1617:1617"  
+    volumes:  
+      - .:/app  
+      - /app/node_modules
+    working_dir: /app  
+    # 开发调试
+    command: ["npm","run","dev"]  
+    # 正式版打包
+    # command: ["npm","run","build"]  

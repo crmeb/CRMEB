@@ -256,6 +256,7 @@ class SystemAttachmentServices extends BaseServices
         if (isset($pathinfo['extension']) && !in_array($pathinfo['extension'], ['avi', 'mp4', 'wmv', 'rm', 'mpg', 'mpeg', 'mov', 'flv', 'swf'])) {
             throw new AdminException(400558);
         }
+        $data['chunkNumber'] = (int)$data['chunkNumber'];
         $public_dir = app()->getRootPath() . 'public';
         $dir = '/uploads/attach/' . date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d');
         $all_dir = $public_dir . $dir;

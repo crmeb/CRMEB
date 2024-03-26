@@ -32,6 +32,7 @@ use app\services\system\store\SystemStoreStaffServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserInvoiceServices;
 use app\services\user\UserServices;
+use app\services\wechat\RoutineSchemeServices;
 use app\services\wechat\WechatUserServices;
 use app\Request;
 use crmeb\services\CacheService;
@@ -100,7 +101,7 @@ class PublicController
     public function share()
     {
         $data['img'] = sys_config('wechat_share_img');
-        if (strstr($data['img'], 'http') === false) {
+        if (strstr($data['img'], 'http') === false && $data['img'] != '') {
             $data['img'] = sys_config('site_url') . $data['img'];
         }
         $data['img'] = str_replace('\\', '/', $data['img']);
@@ -695,6 +696,24 @@ class PublicController
         $data['wechat_auth_switch'] = (int)in_array(1, sys_config('routine_auth_type'));//微信登录开关
         $data['phone_auth_switch'] = (int)in_array(2, sys_config('routine_auth_type'));//手机号登录开关
         $data['wechat_status'] = sys_config('wechat_appid') != '' && sys_config('wechat_appsecret') != '';//公众号是否配置
+        $data['site_func'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         return app('json')->success($data);
+    }
+
+    /**
+     * 小程序跳转链接接口
+     * @param $id
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/2/26
+     */
+    public function getSchemeUrl($id)
+    {
+        $url = app()->make(RoutineSchemeServices::class)->value($id, 'url');
+        if ($url) {
+            echo '<script>window.location.href="' . $url . '";</script>';
+        } else {
+            echo '<h1>未找到跳转路径</h1>';
+        }
     }
 }

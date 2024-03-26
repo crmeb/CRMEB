@@ -14,17 +14,16 @@
 					</component>
 				</view>
 				<!-- #endif -->
-				
 				<!-- #ifdef MP || APP-PLUS -->
 				<block v-for="(item, index) in styleConfig" :key="index">
 					<activeParty v-if="item.name == 'activeParty'" :dataConfig="item" :isSortType="isSortType">
 					</activeParty>
 					<articleList v-if="item.name == 'articleList'" :dataConfig="item" :isSortType="isSortType">
 					</articleList>
-					<bargain v-if="item.name == 'bargain'" :dataConfig="item" @changeBarg="changeBarg"
+					<bargain v-if="item.name == 'bargain' && $permission('bargain')" :dataConfig="item" @changeBarg="changeBarg"
 						:isSortType="isSortType"></bargain>
 					<blankPage v-if="item.name == 'blankPage'" :dataConfig="item" :isSortType="isSortType"></blankPage>
-					<combination v-if="item.name == 'combination'" :dataConfig="item" :isSortType="isSortType">
+					<combination v-if="item.name == 'combination' && $permission('combination')" :dataConfig="item" :isSortType="isSortType">
 					</combination>
 					<coupon v-if="item.name == 'coupon'" :dataConfig="item" :isSortType="isSortType"></coupon>
 					<customerService v-if="item.name == 'customerService'" :dataConfig="item" :isSortType="isSortType">
@@ -43,7 +42,7 @@
 						:tempArr="tempArr" :iSshowH="iSshowH" @detail="goDetail" :isSortType="isSortType">
 					</promotionList>
 					<richText v-if="item.name == 'richText'" :dataConfig="item" :isSortType="isSortType"></richText>
-					<seckill v-if="item.name == 'seckill'" :dataConfig="item" :isSortType="isSortType"></seckill>
+					<seckill v-if="item.name == 'seckill' && $permission('seckill')" :dataConfig="item" :isSortType="isSortType"></seckill>
 					<swiperBg v-if="item.name == 'swiperBg'" :dataConfig="item" :isSortType="isSortType"></swiperBg>
 					<swipers v-if="item.name == 'swipers'" :dataConfig="item" :isSortType="isSortType"></swipers>
 					<tabNav v-if="item.name == 'tabNav'" :dataConfig="item" @bindHeight="bindHeighta"
@@ -68,11 +67,11 @@
 						<view class="product-item" v-for="(item, index) in goodList" @click="goGoodsDetail(item)">
 							<image :src="item.image"></image>
 							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+								v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+								v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+								v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 							<view class="info">
 								<view class="title line1">{{ item.store_name }}</view>
 								<view class="price-box">
@@ -108,11 +107,11 @@
 						<view class="product-item" v-for="(item, index) in goodList" @click="goGoodsDetail(item)">
 							<image :src="item.image"></image>
 							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+								v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+								v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+								v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 							<span class="pictrue_log_big pictrue_log_class" v-if="item.checkCoupon">{{$t(`券`)}}</span>
 							<view class="info">
 								<view class="title line2">{{ item.store_name }}</view>

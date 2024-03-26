@@ -54,7 +54,7 @@ class StoreOrderRefundDao extends BaseDao
                             $q->name('store_product')->whereLike('store_name|keyword', '%' . $where['real_name'] . '%')->field(['id'])->select();
                         })->field(['oid'])->select();
                     })->whereOr('store_order_id', 'in', function ($orderModel) use ($where) {
-                        $orderModel->name('store_order')->field('id')->whereLike('order_id', '%' . $where['real_name'] . '%');
+                        $orderModel->name('store_order')->field('id')->whereLike('order_id|user_phone', '%' . $where['real_name'] . '%');
                     });
                 });
             });

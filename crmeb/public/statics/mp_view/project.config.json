@@ -18,9 +18,9 @@
     }
   },
   "compileType": "miniprogram",
-  "libVersion": "3.1.5",
+  "libVersion": "3.3.5",
   "appid": "wx3b82801238ca1b57",
-  "projectname": "CRMEB标准版-v5.2.1",
+  "projectname": "CRMEB标准版",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",

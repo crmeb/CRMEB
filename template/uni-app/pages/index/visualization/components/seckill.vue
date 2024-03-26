@@ -3,7 +3,7 @@
 		<view class="default" v-if="isIframe && !spikeList.length">
 			<text>{{$t(`秒杀模块，暂无数据`)}}</text>
 		</view>
-		<view class="seckill" v-if="spikeList.length && isShow && !isIframe">
+		<view class="seckill" v-if="spikeList.length && isShow && !isIframe && $permission('seckill')">
 			<view class="title acea-row row-between-wrapper">
 				<view class="acea-row row-middle">
 					<view class="name">{{$t(`限时秒杀`)}}</view>

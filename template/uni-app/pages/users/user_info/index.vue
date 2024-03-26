@@ -122,6 +122,18 @@
 							{{$t(`注销后无法恢复`)}}<text class="iconfont icon-xiangyou"></text>
 						</navigator>
 					</view>
+					<view class="item acea-row row-between-wrapper">
+						<view>{{$t(`用户协议`)}}</view>
+						<navigator url="/pages/users/privacy/index?type=4" hover-class="none" class="input">
+							{{$t(`点击查看`)}}<text class="iconfont icon-xiangyou"></text>
+						</navigator>
+					</view>
+					<view class="item acea-row row-between-wrapper">
+						<view>{{$t(`隐私协议`)}}</view>
+						<navigator url="/pages/users/privacy/index?type=3" hover-class="none" class="input">
+							{{$t(`点击查看`)}}<text class="iconfont icon-xiangyou"></text>
+						</navigator>
+					</view>
 
 				</view>
 

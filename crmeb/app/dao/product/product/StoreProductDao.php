@@ -41,12 +41,12 @@ class StoreProductDao extends BaseDao
     {
         return $this->search($where, false)->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
             $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->where('cate_id', $where['sid'])->field('product_id')->select();
+                $query->name('store_product_cate')->where('cate_id', is_array($where['sid']) ? 'in' : '=', $where['sid'])->field('product_id')->select();
             });
         })->when(isset($where['cid']) && $where['cid'], function ($query) use ($where) {
             $query->whereIn('id', function ($query) use ($where) {
                 $query->name('store_product_cate')->whereIn('cate_id', function ($query) use ($where) {
-                    $query->name('store_category')->where('pid', $where['cid'])->field('id')->select();
+                    $query->name('store_category')->where('pid', is_array($where['cid']) ? 'in' : '=', $where['cid'])->field('id')->select();
                 })->field('product_id')->select();
             });
         })->when(isset($where['ids']), function ($query) use ($where) {
@@ -117,15 +117,17 @@ class StoreProductDao extends BaseDao
             $query->page($page, $limit);
         })->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
             $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->where('cate_id', $where['sid'])->field('product_id')->select();
+                $query->name('store_product_cate')->where('cate_id', is_array($where['sid']) ? 'in' : '=', $where['sid'])->field('product_id')->select();
             });
         })->when(isset($where['cid']) && $where['cid'], function ($query) use ($where) {
             $query->whereIn('id', function ($query) use ($where) {
                 $query->name('store_product_cate')->whereIn('cate_id', function ($query) use ($where) {
-                    $query->name('store_category')->where('pid', $where['cid'])->whereOr('id', $where['cid'])->field('id')->select();
+                    $query->name('store_category')->where('pid', is_array($where['cid']) ? 'in' : '=', $where['cid'])
+                        ->whereOr('id', is_array($where['cid']) ? 'in' : '=', $where['cid'])->field('id')->select();
                 })->field('product_id')->select();
             });
         })->when(isset($where['coupon_category_id']) && $where['coupon_category_id'] != '', function ($query) use ($where) {
+            $where['coupon_category_id'] = stringToIntArray($where['coupon_category_id']);
             $query->whereIn('id', function ($query) use ($where) {
                 $query->name('store_product_cate')->whereIn('cate_id', function ($query) use ($where) {
                     $query->name('store_category')->whereIn('pid', $where['coupon_category_id'])->field('id')->select();

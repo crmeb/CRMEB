@@ -1256,7 +1256,7 @@ class UserServices extends BaseServices
         }
         $userInfo['vip_name'] = app()->make(SystemUserLevelServices::class)->value(['grade' => $userInfo['level']], 'name');
         $userInfo['group_name'] = app()->make(UserGroupServices::class)->value(['id' => $userInfo['group_id']], 'group_name');
-        $userInfo['spread_uid_nickname'] = $this->dao->value(['uid' => $userInfo['spread_uid']], 'nickname') . '（' . $userInfo['spread_uid'] . '）';
+        $userInfo['spread_uid_nickname'] = $this->dao->value(['uid' => $userInfo['spread_uid']], 'nickname') . '/' . $userInfo['spread_uid'];
         $userInfo['label_list'] = implode(',', array_column(app()->make(UserLabelRelationServices::class)->getUserLabelList([$uid]), 'label_name'));
         return [
             'uid' => $uid,
@@ -2183,6 +2183,8 @@ class UserServices extends BaseServices
             $label_ids = $userLabelRelationServices->getUserLabels($uid);
             $userInfo['label_id'] = !empty($label_ids) ? $userLabelServices->getLabelList(['ids' => $label_ids], ['id', 'label_name']) : [];
             $userInfo['birthday'] = date('Y-m-d', (int)$userInfo['birthday']);
+            $userInfo['level'] = $userInfo['level'] != 0 ? $userInfo['level'] : '';
+            $userInfo['group_id'] = $userInfo['group_id'] != 0 ? $userInfo['group_id'] : '';
         }
         $levelInfo = $systemUserLevelServices->getWhereLevelList([], 'id,name');
         $groupInfo = $userGroupServices->getGroupList();

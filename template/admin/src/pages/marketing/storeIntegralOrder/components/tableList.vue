@@ -478,7 +478,7 @@ img {
   }
 }
 
-.orderData ::v-deep.ivu-table-cell {
+.orderData ::v-deep .ivu-table-cell {
   padding-left: 0 !important;
 }
 
@@ -500,23 +500,23 @@ img {
   overflow: visible !important;
 }
 
-::v-deep.ivu-table-header {
+::v-deep .ivu-table-header {
   // overflow: visible;
 }
 
-::v-deep.ivu-table th {
+::v-deep .ivu-table th {
   overflow: visible;
 }
 
-::v-deep.select-item:hover {
+::v-deep .select-item:hover {
   background-color: #f3f3f3;
 }
 
-::v-deep.select-on {
+::v-deep .select-on {
   display: block;
 }
 
-::v-deep.select-item.on {
+::v-deep .select-item.on {
   background: #f3f3f3;
 }
 </style>

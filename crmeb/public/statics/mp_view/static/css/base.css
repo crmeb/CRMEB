@@ -251,9 +251,7 @@ page {
 }
 
 body,
-html {
-	height: unset;
-}
+html {}
 
 button {
 	padding: 0;
@@ -446,6 +444,6 @@ checkbox .uni-checkbox-input.uni-checkbox-input-checked::before {
 	height: calc(100rpx + env(safe-area-inset-bottom));
 }
 
-.pd10{
+.pd10 {
 	padding: 10rpx;
 }

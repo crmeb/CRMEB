@@ -94,7 +94,7 @@
 							{{$t(`确认付款`)}}
 						</view>
 						<navigator class="bnt"
-							v-if="where.status == 1 && item.shipping_type === 1 && (item.pinkStatus === null || item.pinkStatus === 2)"
+							v-if="where.status == 1 && item.shipping_type === 1 && (item.pinkStatus === null || item.pinkStatus === 2) && !item.refund.length"
 							:url="'/pages/admin/delivery/index?id='+item.order_id+'&listId='+item.id+'&totalNum='+item.total_num+'&orderStatus='+item._status+'&comeType=1'+'&virtualType='+item.virtual_type">
 							{{$t(`去发货`)}}
 						</navigator>

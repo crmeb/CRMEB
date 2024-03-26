@@ -34,7 +34,7 @@
           <div class="img-box">
             <img v-if="item.image" :src="item.image" alt="" />
             <div v-else class="empty-box"><span class="iconfont-diy icontupian"></span></div>
-            <div class="label" :style="{ background: labelColor }" v-if="item.activity && item.activity.type === '1'">
+            <div v-permission="'seckill'" class="label" :style="{ background: labelColor }" v-if="item.activity && item.activity.type === '1'">
               秒杀
             </div>
             <div class="label" :style="{ background: labelColor }" v-if="item.activity && item.activity.type === '2'">

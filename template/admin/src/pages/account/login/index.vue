@@ -63,7 +63,7 @@
     <div class="footer">
       <div class="pull-right" v-if="copyright">{{ copyright }}</div>
       <div class="pull-right" v-else>
-        Copyright © 2014-2023 <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
+        Copyright © 2014-2024 <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
       </div>
     </div>
   </div>
@@ -76,6 +76,7 @@ import '@/assets/js/canvas-nest.min';
 import Verify from '@/components/verifition/Verify';
 import { PrevLoading } from '@/utils/loading.js';
 import { formatFlatteningRoutes, findFirstNonNullChildren } from '@/libs/system';
+import { Local } from '@/utils/storage.js';
 
 export default {
   components: {
@@ -203,7 +204,7 @@ export default {
           setCookies('uuid', data.user_info.id, expires);
           setCookies('token', data.token, expires);
           setCookies('expires_time', data.expires_time, expires);
-
+          Local.set('PERMISSIONS', data.site_func);
           this.$store.commit('userInfo/uniqueAuth', data.unique_auth);
           this.$store.commit('userInfo/userInfo', data.user_info);
           // 保存菜单信息
@@ -414,7 +415,7 @@ export default {
 }
 
 .page-account-top {
-  padding: 20px 0 24px 0!important;
+  padding: 20px 0 24px 0 !important;
   box-sizing: border-box !important;
   display: flex;
   justify-content: center;
@@ -464,36 +465,41 @@ a:link, a:visited, a:hover, a:active {
 .from-wh {
   width: 400px;
 }
+
 .pull-right {
-    float: right!important;
+  float: right !important;
 }
-::v-deep .el-button--primary{
-  border:none;
+
+::v-deep .el-button--primary {
+  border: none;
 }
-::v-deep .el-button{
+
+::v-deep .el-button {
   padding: 13px 20px !important;
 }
+
 .pull-right {
-    float: right!important;
-    color: #666;
+  float: right !important;
+  color: #666;
 }
+
 .pull-right a {
-    margin-left: 0;
-    color: #666;
+  margin-left: 0;
+  color: #666;
 }
-.footer{
+
+.footer {
   position: fixed;
   bottom: 0;
   width: 100%;
   left: 0;
   margin: 0;
-  background: rgba(255,255,255,.8);
+  background: rgba(255, 255, 255, 0.8);
   border-top: 1px solid #e7eaec;
   overflow: hidden;
   padding: 10px 20px;
   height: 36px;
   line-height: 18px;
   z-index: 999;
-
 }
 </style>

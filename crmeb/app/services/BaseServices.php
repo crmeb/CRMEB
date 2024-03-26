@@ -97,6 +97,10 @@ abstract class BaseServices
         if ($type == 'api' && !app()->make(UserServices::class)->value(['uid' => $id], 'status')) {
             throw new ApiException(410027);
         }
+        if ($type == 'api') {
+            //自定义消息-用户登录成功
+            event('CustomNoticeListener', [$id, app()->make(UserServices::class)->get($id), 'login_success']);
+        }
         return $jwtAuth->createToken($id, $type, ['pwd' => md5($pwd)]);
     }
 

@@ -43,11 +43,11 @@
 						<view class="title acea-row row-between-wrapper">
 							<view class="acea-row row-middle">
 								<text class="sign cart-color acea-row row-center-wrapper"
-									v-if="item.type == 2">{{$t(`砍价`)}}</text>
+									v-if="item.type == 2 && $permission('bargain')">{{$t(`砍价`)}}</text>
 								<text class="sign cart-color acea-row row-center-wrapper"
-									v-else-if="item.type == 3">{{$t(`拼团`)}}</text>
+									v-else-if="item.type == 3 && $permission('combination')">{{$t(`拼团`)}}</text>
 								<text class="sign cart-color acea-row row-center-wrapper"
-									v-else-if="item.type == 1">{{$t(`秒杀`)}}</text>
+									v-else-if="item.type == 1 && $permission('seckill')">{{$t(`秒杀`)}}</text>
 								<text class="sign cart-color acea-row row-center-wrapper"
 									v-else-if="item.type == 4">{{$t(`预售`)}}</text>
 								<view>{{ item._add_time }}</view>

@@ -280,6 +280,11 @@ class StoreOrderRefundServices extends BaseServices
         //订单退款记录
         ProductLogJob::dispatch(['refund', ['uid' => $order['uid'], 'order_id' => $order['id']]]);
         event('NoticeListener', [['data' => $refundData, 'order' => $order], 'order_refund']);
+
+        //自定义消息-退款成功
+        $order['phone'] = $order['user_phone'];
+        event('CustomNoticeListener', [$order['uid'], $order, 'order_refund_success']);
+
         return true;
     }
 
@@ -504,9 +509,15 @@ class StoreOrderRefundServices extends BaseServices
             //判断订单是否已经回退积分
             $count = $userBillServices->count(['category' => 'integral', 'type' => 'integral_refund', 'link_id' => $order['id']]);
             if (!$count) {
-                $res1 = $userServices->bcDec($order['uid'], 'integral', $give_integral);
-                //记录赠送积分收回
-                $integral = $integral - $give_integral;
+                if ($integral > $give_integral) {
+                    $res1 = $userServices->bcDec($order['uid'], 'integral', $give_integral);
+                    //记录赠送积分收回
+                    $integral = $integral - $give_integral;
+                } else {
+                    $res1 = $userServices->update($order['uid'], ['integral' => 0]);
+                    //记录赠送积分收回
+                    $integral = 0;
+                }
                 $res2 = $userBillServices->income('integral_refund', $order['uid'], $give_integral, $integral, $order['id']);
                 //清除积分冻结
                 $userBillServices->update(['link_id' => $order['id']], ['frozen_time' => 0]);
@@ -689,19 +700,23 @@ class StoreOrderRefundServices extends BaseServices
 
             $storeOrderServices->update($oid, ['refund_status' => 0, 'refund_type' => 3]);
             //处理订单商品cart_info
-            $this->cancelOrderRefundCartInfo($id, $oid, $orderRefundInfo, '不退款原因:' . ($data['refund_reason'] ?? ''));
+            $this->cancelOrderRefundCartInfo($id, $oid, $orderRefundInfo, '不退款原因:' . ($data['refuse_reason'] ?? ''));
             //记录
             /** @var StoreOrderStatusServices $statusService */
             $statusService = app()->make(StoreOrderStatusServices::class);
             $statusService->save([
                 'oid' => $id,
                 'change_type' => 'refund_n',
-                'change_message' => '不退款原因:' . ($data['refund_reason'] ?? ''),
+                'change_message' => '不退款原因:' . ($data['refuse_reason'] ?? ''),
                 'change_time' => time()
             ]);
         });
         $orderRefundInfo['refuse_reason'] = $data['refuse_reason'];
         event('NoticeListener', [['orderInfo' => $orderRefundInfo], 'send_order_refund_no_status']);
+
+        //自定义消息-退款失败
+        event('CustomNoticeListener', [$orderRefundInfo['uid'], $orderRefundInfo->toArray(), 'order_refund_fail']);
+
         return true;
     }
 
@@ -1025,6 +1040,10 @@ class StoreOrderRefundServices extends BaseServices
         event('NoticeListener', [['order' => $order], 'send_order_apply_refund']);
         //推送订单
         event('OutPushListener', ['refund_create_push', ['order_id' => (int)$order['id']]]);
+
+        //自定义消息-订单发起退款
+//        event('CustomNoticeListener', [$order['uid'], $order->toArray(), 'order_initiated_refund']);
+
         try {
             ChannelService::instance()->send('NEW_REFUND_ORDER', ['order_id' => $order['order_id']]);
         } catch (\Exception $e) {
@@ -1104,8 +1123,8 @@ class StoreOrderRefundServices extends BaseServices
                     '_type' => $_type,
                     '_title' => $_title,
                 ];
-                $item['store_order_order_id'] = $orderInfoList[$item['store_order_id']]['order_id'];
-                $item['store_order_status'] = $store_order_status[$orderInfoList[$item['store_order_id']]['status']];
+                $item['store_order_order_id'] = $orderInfoList[$item['store_order_id']]['order_id'] ?? '';
+                $item['store_order_status'] = $store_order_status[$orderInfoList[$item['store_order_id']]['status'] ?? -3] ?? '';
             }
         }
         $data['list'] = $list;
@@ -1191,6 +1210,7 @@ class StoreOrderRefundServices extends BaseServices
         $orderData['routine_contact_type'] = sys_config('routine_contact_type', 0);
         $orderData['levelPrice'] = $this->getOrderSumPrice($orderData['cart_info'], 'level');//获取会员等级优惠
         $orderData['memberPrice'] = $this->getOrderSumPrice($orderData['cart_info'], 'member');//获取付费会员优惠
+        $orderData['pay_type'] = $orderInfo['pay_type'];
 
         switch ($orderInfo['pay_type']) {
             case PayServices::WEIXIN_PAY:

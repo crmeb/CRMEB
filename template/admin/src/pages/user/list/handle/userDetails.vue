@@ -266,7 +266,7 @@ export default {
                     minWidth: 120,
                   },
                   {
-                    title: '兑换时间',
+                    title: '领取时间',
                     key: '_add_time',
                     minWidth: 120,
                   },
@@ -356,18 +356,18 @@ export default {
     height: 100%;
   }
 }
-::v-deep.el-drawer__body {
-  padding: 20px 0;
+::v-deep .el-drawer__body {
+  padding: 20px 0 !important;
 }
-::v-deep.el-tabs--border-card > .el-tabs__content {
+::v-deep .el-tabs--border-card > .el-tabs__content {
   padding: 0 35px;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header,
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
+::v-deep .el-tabs--border-card > .el-tabs__header,
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
   border: none;
   height: 40px;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   border: none;
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
@@ -375,10 +375,10 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item {
   border: none;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item {
   margin-top: 0;
   transition: none;
   height: 40px !important;
@@ -389,13 +389,13 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-::v-deep.el-tabs--border-card {
+::v-deep .el-tabs--border-card {
   border: none;
   box-shadow: none;
 }
 .head {
   position: relative;
-  padding: 0 35px;
+  padding: 0 15px;
   .edit-btn {
     position: absolute;
     right: 10px;

@@ -14,7 +14,6 @@ function LotteryDraw(obj, callback) {
 LotteryDraw.prototype = {
 	rollFn: function() {
 		var that = this;
-		// console.log(`获奖位置：${this.winingIndex}`)
 		// 活动index值增加，即移动到下一个格子
 		this.startIndex++;
 		

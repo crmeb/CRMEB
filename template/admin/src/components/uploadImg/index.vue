@@ -42,7 +42,6 @@
                   :auto-upload="false"
                   :data="uploadData"
                   :headers="header"
-                  :before-upload="beforeUpload"
                   :multiple="true"
                   :limit="limit"
                 >
@@ -136,7 +135,7 @@ import { getCookies } from '@/libs/util';
 import { fileUpload, scanUploadQrcode, scanUploadGet } from '@/api/setting';
 import QRCode from 'qrcodejs2';
 import compressImg from '@/utils/compressImg.js';
-
+import { isPicUpload } from '@/utils/index';
 export default {
   name: '',
   props: {
@@ -224,6 +223,10 @@ export default {
         this.$message.error('请先输入图片地址');
         return;
       }
+      if (this.webImgUrl.indexOf('.php') != -1) {
+        this.$message.error('请先输入其他图片地址');
+        return;
+      }
       this.ruleForm.imgList.push({
         url: this.webImgUrl,
       });
@@ -306,7 +309,9 @@ export default {
           });
       });
     },
-    beforeUpload(file) {},
+    beforeUpload(file) {
+      console.log(file);
+    },
     creatQrCode(url) {
       this.$refs.qrCodeUrl.innerHTML = '';
       var qrcode = new QRCode(this.$refs.qrCodeUrl, {
@@ -335,17 +340,22 @@ export default {
       console.log(file);
     },
     async fileChange(file, fileList) {
-      if (file.size >= 2097152) {
-        await this.comImg(file.raw).then((res) => {
-          fileList.map((e) => {
-            if (e.uid === file.uid) {
-              e.raw = res;
-            }
+      if (isPicUpload(file)) {
+        if (file.size >= 2097152) {
+          await this.comImg(file.raw).then((res) => {
+            fileList.map((e) => {
+              if (e.uid === file.uid) {
+                e.raw = res;
+              }
+            });
+            this.ruleForm.imgList = fileList;
           });
+        } else {
           this.ruleForm.imgList = fileList;
-        });
+        }
       } else {
-        this.ruleForm.imgList = fileList;
+        // 从ruleForm对象的imgList数组中删除最后一个元素
+        this.ruleForm.imgList.splice(this.ruleForm.imgList.length, 1);
       }
     },
     comImg(file) {

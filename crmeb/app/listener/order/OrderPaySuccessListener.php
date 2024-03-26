@@ -58,7 +58,7 @@ class OrderPaySuccessListener implements ListenerInterface
         $orderInvoiceServices->update(['order_id' => $orderInfo['id']], ['is_pay' => 1]);
 
         //虚拟商品自动发货
-        if ($orderInfo['virtual_type'] > 0) {
+        if ($orderInfo['virtual_type'] > 0 && $orderInfo['combination_id'] == 0) {
             /** @var StoreOrderDeliveryServices $orderDeliveryServices */
             $orderDeliveryServices = app()->make(StoreOrderDeliveryServices::class);
             $orderDeliveryServices->virtualSend($orderInfo);

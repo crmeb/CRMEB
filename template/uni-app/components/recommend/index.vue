@@ -11,11 +11,11 @@
 				<view class='pictrue'>
 					<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 					<span class="pictrue_log_big pictrue_log_class"
-						v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+						v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 					<span class="pictrue_log_big pictrue_log_class"
-						v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+						v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 					<span class="pictrue_log_big pictrue_log_class"
-						v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+						v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 				</view>
 				<view class='name line2'>{{item.store_name}}</view>
 				<view class='money font-color'>{{$t(`￥`)}}<text class='num'>{{item.price}}</text></view>

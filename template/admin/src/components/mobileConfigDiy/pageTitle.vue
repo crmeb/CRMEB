@@ -157,7 +157,7 @@ export default {
   background: #ccc;
 }
 
-::v-deep.ivu-input {
+::v-deep .ivu-input {
   font-size: 13px !important;
 }
 

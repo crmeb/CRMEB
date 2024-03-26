@@ -112,6 +112,7 @@ class SystemRoute extends AuthController
             ['request_example', []],
             ['response_example', []],
             ['describe', ''],
+            ['error_code', []],
         ]);
 
 //        if (!$data['name']) {

@@ -23,6 +23,7 @@ use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\ApiException;
 use crmeb\services\app\WechatService;
+use crmeb\services\pay\Pay;
 use think\facade\Log;
 
 /**
@@ -55,12 +56,7 @@ class LuckLotteryRecordServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         /** @var LuckLotteryServices $luckServices */
         $luckServices = app()->make(LuckLotteryServices::class);
-        $where['lottery_id'] = $luckServices->value(['factor' => $where['factor']], 'id');
-        if (!$where['lottery_id']) {
-            $list = [];
-            $count = 0;
-            return compact('list', 'count');
-        }
+        $where['lottery_id'] = $where['factor'] == '' ? '' : $luckServices->value(['factor' => $where['factor']], 'id');
         unset($where['factor']);
         $list = $this->dao->getList($where, '*', ['lottery', 'prize', 'user'], $page, $limit);
         foreach ($list as &$item) {
@@ -190,7 +186,16 @@ class LuckLotteryRecordServices extends BaseServices
                 case 4:
                     /** @var WechatUserServices $wechatServices */
                     $wechatServices = app()->make(WechatUserServices::class);
-                    $openid = $wechatServices->getWechatOpenid($uid, 'wechat');
+                    $openid = $wechatServices->uidToOpenid((int)$uid, 'wechat');
+                    $type = 'JSAPI';
+                    if (!$openid) {
+                        $openid = $wechatServices->uidToOpenid((int)$uid, 'routine');
+                        $type = 'mini';
+                    }
+                    if (!$openid) {
+                        $openid = $wechatServices->uidToOpenid((int)$uid, 'app');
+                        $type = 'APP';
+                    }
                     if ($openid) {
                         /** @var StoreOrderCreateServices $services */
                         $services = app()->make(StoreOrderCreateServices::class);
@@ -205,7 +210,17 @@ class LuckLotteryRecordServices extends BaseServices
                             'nickname' => $userInfo['nickname'],
                             'phone' => $userInfo['phone']
                         ], 'luck');
-                        WechatService::merchantPay($openid, $wechat_order_id, $prize['num'], '抽奖中奖红包');
+
+                        if (sys_config('pay_wechat_type')) {
+                            $pay = new Pay('v3_wechat_pay');
+                            $pay->merchantPay($openid, $wechat_order_id, $prize['num'], [
+                                'type' => $type,
+                                'batch_name' => '抽奖中奖红包',
+                                'batch_remark' => '您于' . date('Y-m-d H:i:s') . '中奖.' . $prize['num'] . '元'
+                            ]);
+                        } else {
+                            WechatService::merchantPay($openid, $wechat_order_id, $prize['num'], '抽奖中奖红包');
+                        }
                     }
                     break;
                 case 5:
@@ -249,7 +264,7 @@ class LuckLotteryRecordServices extends BaseServices
         $deliver_info = $lotteryRecord['deliver_info'];
         $edit = [];
         //备注
-        if($data['deliver_name'] && $data['deliver_number']) {
+        if ($data['deliver_name'] && $data['deliver_number']) {
             if ($lotteryRecord['type'] != 6 && ($data['deliver_name'] || $data['deliver_number'])) {
                 throw new ApiException(410055);
             }

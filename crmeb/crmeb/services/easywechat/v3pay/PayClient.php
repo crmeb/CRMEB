@@ -174,11 +174,12 @@ class PayClient extends BaseClient
             $mchid = $data['mchid'];
             $appid = $data['appid'];
             unset($data['mchid'], $data['appid'], $data['payer']);
-            $data['sp_appid'] = $appid;
+            $data['sp_appid'] = $this->app['config']['v3_payment']['sp_appid'];
             $data['sp_mchid'] = $mchid;
             $data['sub_mchid'] = $this->app['config']['v3_payment']['sub_mch_id'];
             if (!empty($payer['openid'])) {
-                $data['payer']['sp_openid'] = $payer['openid'];
+                $data['payer']['sub_openid'] = $payer['openid'];
+                $data['sub_appid'] = $appid;
             }
 
             $url = '';

@@ -124,8 +124,7 @@ export default {
 		scanCode() {
 			var self = this;
 			// #ifdef MP || APP-PLUS
-			wx.scanCode({
-				scanType: ['qrCode', 'barCode'],
+			uni.scanCode({
 				success(res) {
 					if (res.scanType == 'WX_CODE') {
 						self.verify_code = res.path.split('%3D')[1];

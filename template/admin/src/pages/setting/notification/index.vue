@@ -21,6 +21,11 @@
           >
         </el-col>
       </el-row>
+      <el-row class="mb14" v-if="currentTab == 3">
+        <el-col>
+          <el-button type="primary" @click="notificationForm(0)">添加通知</el-button>
+        </el-col>
+      </el-row>
       <el-alert v-if="currentTab == 1" type="warning" :closable="false">
         <template slot="title">
           <p class="alert_title">小程序订阅消息</p>
@@ -136,9 +141,15 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="70">
+        <el-table-column label="操作" fixed="right" :width="currentTab == 3 ? 130 :70">
           <template slot-scope="scope">
             <a class="setting btn" @click="setting(item, scope.row)">设置</a>
+            <template v-if="currentTab == 3">
+              <el-divider direction="vertical"></el-divider>
+              <a class="setting btn" @click="notificationForm(scope.row.id)">编辑</a>
+              <el-divider direction="vertical"></el-divider>
+              <a class="setting btn" @click="del(scope.row, '删除', scope.$index)">删除</a>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -147,7 +158,7 @@
 </template>
 
 <script>
-import { getNotificationList, getNotificationInfo, noticeStatus } from '@/api/notification.js';
+import { getNotificationList, getNotificationInfo, noticeStatus, notificationForm } from '@/api/notification.js';
 import { routineSyncTemplate, wechatSyncTemplate } from '@/api/app';
 export default {
   data() {
@@ -155,8 +166,9 @@ export default {
       modalTitle: '',
       notificationModal: false,
       headerList: [
-        { label: '通知会员', value: '1' },
-        { label: '通知平台', value: '2' },
+        { label: '会员通知', value: '1' },
+        { label: '平台通知', value: '2' },
+        { label: '自定义通知', value: '3' },
       ],
       levelLists: [],
       currentTab: '1',
@@ -176,6 +188,9 @@ export default {
         .catch((err) => {
           this.$message.error(err.msg);
         });
+    },
+    notificationForm(id) {
+      this.$modalForm(notificationForm(id)).then(() => this.changeTab());
     },
     changeTab() {
       getNotificationList(this.currentTab).then((res) => {
@@ -223,6 +238,24 @@ export default {
         this.formData.type = item;
         this.notificationModal = true;
       });
+    },
+    // 删除
+    del(row, tit, num) {
+      let delfromData = {
+        title: tit,
+        num: num,
+        url: `setting/notification/del_not/${row.id}`,
+        method: 'DELETE',
+        ids: '',
+      };
+      this.$modalSure(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.levelLists.splice(num, 1);
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
     },
   },
 };

@@ -189,6 +189,7 @@ class RefundOrder extends AuthController
             $wechatUserServices = app()->make(WechatUserServices::class);
             $refund_data['open_id'] = $wechatUserServices->uidToOpenid((int)$order['uid'], 'routine') ?? '';
             $refund_data['refund_no'] = $orderRefund['order_id'];
+            $refund_data['order_id'] = $orderRefund['order_id'];
             //修改订单退款状态
 //            $data['refund_price'] = $data['refunded_price'];
             unset($data['refund_price']);

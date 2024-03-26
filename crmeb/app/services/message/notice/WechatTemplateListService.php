@@ -215,15 +215,11 @@ class WechatTemplateListService extends NoticeService
         $StoreServiceServices = app()->make(StoreServiceServices::class);
         $adminList = $StoreServiceServices->getStoreServiceOrderNotice();
         foreach ($adminList as $item) {
-            $this->sendTemplate((int)$item['uid'],
-                [
-                    'first' => $title,
-                    'keyword1' => $orderId,
-                    'keyword2' => $storeName,
-                    'keyword3' => $status,
-                    'keyword4' => date('Y-m-d H:i:s', time()),
-                    'remark' => '点击查看订单详情'
-                ], $link);
+            $this->sendTemplate((int)$item['uid'], [
+                'short_thing6' => $status,
+                'character_string1' => $orderId,
+                'time2' => date('Y-m-d H:i:s', time()),
+            ], $link);
         }
         return true;
     }

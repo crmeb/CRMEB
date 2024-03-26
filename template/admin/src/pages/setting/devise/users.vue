@@ -463,7 +463,7 @@ export default {
 }
 
 .bottomB {
-  width: 270px;
+  width: 337px;
   height: 62px;
   background: #343A48;
   border-radius: 8px 8px 0px 0px;
@@ -546,12 +546,12 @@ export default {
   bottom: 2px;
 }
 
-::v-deep.swiper-pagination-bullet {
+::v-deep .swiper-pagination-bullet {
   width: 4px;
   height: 4px;
 }
 
-::v-deep.swiper-pagination-bullet-active {
+::v-deep .swiper-pagination-bullet-active {
   background: #fff;
 }
 
@@ -687,7 +687,7 @@ export default {
 
       .bottom {
         background-image: url('../../../assets/images/member.png');
-        width: 287px;
+        width: 355px;
         height: 34px;
         background-size: 100%;
         background-repeat: no-repeat;
@@ -780,7 +780,7 @@ export default {
   .right {
     width: 540px;
 
-    ::v-deep.ivu-radio-wrapper {
+    ::v-deep .ivu-radio-wrapper {
       font-size: 13px;
       margin-right: 20px;
     }

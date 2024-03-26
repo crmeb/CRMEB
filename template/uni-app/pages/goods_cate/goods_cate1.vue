@@ -88,12 +88,6 @@
 			pageFooter,
 			tabBar
 		},
-		props: {
-			isNew: {
-				type: Boolean,
-				default: false
-			}
-		},
 		data() {
 			return {
 				defimg: require('@/static/images/all_cat.png'),
@@ -135,12 +129,10 @@
 			let routes = getCurrentPages();
 			let curRoute = routes[routes.length - 1].route
 			this.activeRouter = '/' + curRoute
-			this.getAllCategory(1);
-		},
-		watch: {
-			isNew(newVal) {
+			!that.productList.length && this.getAllCategory(1);
+			uni.$on('uploadCatData', () => {
 				this.getAllCategory(1);
-			}
+			})
 		},
 		methods: {
 			getNav() {
@@ -243,11 +235,6 @@
 		}
 	}
 </script>
-<style>
-	page {
-		height: 100%;
-	}
-</style>
 <style scoped lang="scss">
 	/deep/uni-scroll-view {
 		padding-bottom: 0 !important;

@@ -42,6 +42,8 @@ Route::group(function () {
     Route::get('copyright', 'Common/copyright')->option(['real_name' => '申请版权']);
     //保存版权
     Route::post('copyright', 'Common/saveCopyright')->option(['real_name' => '保存版权']);
+    //后台菜单搜索
+    Route::post('menusSearch', 'Common/menusSearch')->option(['real_name' => '后台菜单搜索']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

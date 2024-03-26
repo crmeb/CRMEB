@@ -13,7 +13,7 @@ module.exports = {
 
 
 	// 后台版本号
-	SYSTEM_VERSION: 521,
+	SYSTEM_VERSION: 530,
 	
 	// 以下配置在不做二开的前提下,不需要做任何的修改
 	HEADER: {

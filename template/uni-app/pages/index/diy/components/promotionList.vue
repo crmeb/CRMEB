@@ -17,11 +17,11 @@
 			<view class="item" v-for="(item,index) in tempArr" :key="index" @click="goDetail(item)">
 				<view class="pictrue">
 					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-						v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+						v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-						v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+						v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 					<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-						v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+						v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 					<!-- <image :src="item.image" mode="aspectFit"></image> -->
 					<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 				</view>

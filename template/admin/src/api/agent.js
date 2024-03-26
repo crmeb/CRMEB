@@ -184,3 +184,14 @@ export function isShowApi(data) {
     method: 'put',
   });
 }
+
+/**
+ * @description 员工添加--表单
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function staffAddFrom(uid) {
+  return request({
+    url: `agent/division/staff/create/${uid}`,
+    method: 'get',
+  });
+}

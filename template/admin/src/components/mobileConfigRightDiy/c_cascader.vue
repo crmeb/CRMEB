@@ -11,7 +11,7 @@
           v-model="configData.activeValue"
           filterable
           @change="sliderChange"
-          :props="{ multiple: true, checkStrictly: true, emitPath: false }"
+          :props="{ multiple: false, checkStrictly: true, emitPath: false }"
           clearable
         ></el-cascader>
       </el-col>

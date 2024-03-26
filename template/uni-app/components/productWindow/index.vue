@@ -1,7 +1,7 @@
 <template>
 	<view :style="colorStyle">
 		<view class="product-window"
-			:class="(attr.cartAttr === true ? 'on' : '') + ' ' + (iSbnt?'join':'') + ' ' + (iScart?'joinCart':'')">
+			:class="(attr.cartAttr === true ? 'on' : '') + ' ' + (iSbnt?'join':'') + ' ' + (iScart?'joinCart':'')" :style="{ bottom: bottomVal }">
 			<view class="textpic acea-row row-between-wrapper"  @touchmove.stop.prevent="moveHandle">
 				<view class="pictrue" @click="showImg()">
 					<image :src="attr.productSelect.image"></image>
@@ -59,7 +59,10 @@
 						<view class='item num acea-row row-middle'>
 							<input type="number" v-model="attr.productSelect.cart_num"
 								data-name="productSelect.cart_num"
-								@input="bindCode(attr.productSelect.cart_num)"></input>
+								@input="bindCode(attr.productSelect.cart_num)" 
+								@focus="inputBindFocus"     
+								@blur="inputBindBlur"
+							></input>
 						</view>
 						<view v-if="iSplus" class="item plus acea-row row-center-wrapper" :class="
 				      attr.productSelect.cart_num >= attr.productSelect.stock || (limitNum && attr.productSelect.cart_num >= limitNum)
@@ -141,12 +144,20 @@
 			},
 		},
 		data() {
-			return {};
+			return {
+				bottomVal: ''
+			};
 		},
 		mounted() {
 
 		},
 		methods: {
+			inputBindFocus(e) {
+			  this.bottomVal = 40 +  'rpx'
+			},
+			inputBindBlur(){
+				this.bottomVal = '0px'
+			}, 
 			moveHandle() {},
 			getpreviewImage: function() {
 				uni.previewImage({

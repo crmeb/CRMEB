@@ -67,6 +67,9 @@ Route::group('diy', function () {
     //开屏广告
     Route::get('open_adv/info', 'v1.diy.Diy/getOpenAdv')->option(['real_name' => '获取开屏广告']);
     Route::post('open_adv/add', 'v1.diy.Diy/openAdvAdd')->option(['real_name' => '保存开屏广告']);
+    //推荐商品
+    Route::get('groom_list/:type', 'v1.diy.Diy/getGroomList')->option(['real_name' => '推荐商品']);
+
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

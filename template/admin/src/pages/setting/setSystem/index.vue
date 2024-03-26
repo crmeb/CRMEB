@@ -115,7 +115,10 @@ export default {
     getHeader(index) {
       this.spinShow = true;
       return new Promise((resolve, reject) => {
-        let tab_id = this.$route.params.tab_id;
+        if (this.$route.query.tab_id) {
+          this.currentTab = this.$route.query.tab_id;
+        }
+        let tab_id = this.$route.params.tab_id ? this.$route.params.tab_id : this.$route.query.tab_id;
         let data = {
           type: this.$route.params.type ? this.$route.params.type : 0,
           pid: tab_id ? tab_id : 0,
@@ -124,7 +127,13 @@ export default {
           .then(async (res) => {
             let config = res.data.config_tab;
             this.headerList = config;
-            this.currentTab = config[index ? index : 0].value.toString();
+            if (!this.currentTab) {
+            }
+            if (this.$route.query.tab_id) {
+              this.currentTab = this.$route.query.tab_id;
+            } else {
+              this.currentTab = config[index ? index : 0].value.toString();
+            }
             this.childrenList(index ? 1 : 0);
             resolve(this.currentTab);
             this.spinShow = false;
@@ -276,7 +285,7 @@ export default {
 body ::v-deep .el-dialog .el-dialog__header {
   border: none !important;
 }
-::v-deep.el-form-item--small .el-form-item__label {
+::v-deep .el-form-item--small .el-form-item__label {
   line-height: 14px;
   margin-top: 10px;
 }

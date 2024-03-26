@@ -13,9 +13,9 @@ return [
     //默认扩展
     'default' => 'yihaotong',
     //单个手机每日发送上限
-    'maxPhoneCount' => 10,
+    'maxPhoneCount' => 20,
     //验证码每分钟发送上线
-    'maxMinuteCount' => 20,
+    'maxMinuteCount' => 5,
     //单个IP每日发送上限
     'maxIpCount' => 50,
     //驱动模式

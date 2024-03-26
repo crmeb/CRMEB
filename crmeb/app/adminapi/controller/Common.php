@@ -11,6 +11,7 @@
 namespace app\adminapi\controller;
 
 use app\services\system\config\SystemConfigServices;
+use app\services\system\config\SystemConfigTabServices;
 use app\services\system\SystemAuthServices;
 use app\services\order\StoreOrderServices;
 use app\services\product\product\StoreProductServices;
@@ -22,6 +23,7 @@ use app\services\system\SystemMenusServices;
 use app\services\user\UserServices;
 use crmeb\services\CacheService;
 use crmeb\services\HttpService;
+use think\facade\Config;
 
 /**
  * 公共接口基类 主要存放公共接口
@@ -236,28 +238,28 @@ class Common extends AuthController
             $value[] = [
                 'title' => "您有$data[ordernum]个待发货的订单",
                 'type' => 1,
-                'url' => '/admin/order/list?status=1'
+                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/order/list?status=1'
             ];
         }
         if ($data['inventory'] != 0) {
             $value[] = [
                 'title' => "您有$data[inventory]个商品库存预警",
                 'type' => 2,
-                'url' => '/admin/product/product_list?type=5',
+                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/product/product_list?type=5',
             ];
         }
         if ($data['commentnum'] != 0) {
             $value[] = [
                 'title' => "您有$data[commentnum]条评论待回复",
                 'type' => 3,
-                'url' => '/admin/product/product_reply?is_reply=0'
+                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/product/product_reply?is_reply=0'
             ];
         }
         if ($data['reflectnum'] != 0) {
             $value[] = [
                 'title' => "您有$data[reflectnum]个提现申请待审核",
                 'type' => 4,
-                'url' => '/admin/finance/user_extract/index?status=0',
+                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/finance/user_extract/index?status=0',
             ];
         }
         return app('json')->success($this->noticeData($value));
@@ -406,5 +408,56 @@ class Common extends AuthController
         return app('json')->success(100000);
     }
 
-
+    /**
+     * 系统搜索菜单
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2024/2/1
+     */
+    public function menusSearch()
+    {
+        // 从请求中获取关键字
+        [$keyword] = $this->request->postMore([
+            ['keyword', ''],
+        ], true);
+        // 获取系统菜单服务实例
+        $menusServices = app()->make(SystemMenusServices::class);
+        // 查询菜单列表
+        $menusList = $menusServices->selectList([['menu_name', 'like', '%' . $keyword . '%'], ['auth_type', '=', 1]], 'menu_name as title,menu_path as path,id')->toArray();
+        // 获取系统配置服务实例
+        $configServices = app()->make(SystemConfigServices::class);
+        // 获取系统配置标签服务实例
+        $configTabServices = app()->make(SystemConfigTabServices::class);
+        // 查询配置项列表
+        $configList = $configServices->selectList([['info', 'like', '%' . $keyword . '%']], 'info as title,config_tab_id')->toArray();
+        $configTabList = $configTabServices->selectList([['title', 'like', '%' . $keyword . '%']], 'title,id as config_tab_id')->toArray();
+        $configAllList = array_merge($configList, $configTabList);
+        // 获取配置项对应的标签ID
+        $tabIds = array_unique(array_column($configAllList, 'config_tab_id'));
+        // 查询配置项标签列表
+        $tabList = $configTabServices->getColumn([['id', 'in', $tabIds]], 'menus_id', 'id');
+        // 将配置项标签列表中的菜单ID与配置项列表中的菜单ID对应起来
+        foreach ($configAllList as &$item1) {
+            $item1['menus_id'] = $tabList[$item1['config_tab_id']] ?? 0;
+        }
+        // 获取配置项标签对应的菜单ID
+        $configTabIds = array_values($tabList);
+        // 查询配置项标签对应的菜单列表
+        $configMenusList = $menusServices->getColumn([['id', 'in', $configTabIds]], 'menu_name as title,menu_path as path,id', 'id');
+        // 将配置项列表中的菜单ID与配置项标签对应的菜单ID对应起来
+        foreach ($configAllList as $item2) {
+            $menusList[] = [
+                'title' => $configMenusList[$item2['menus_id']]['title'] . '-' . $item2['title'],
+                'path' => $configMenusList[$item2['menus_id']]['path'] . '?tab_id=' . $item2['config_tab_id'],
+                'id' => $configMenusList[$item2['menus_id']]['id']
+            ];
+        }
+        // 将菜单列表中的路径前缀添加到每个菜单项的 path 属性上
+        foreach ($menusList as &$item) {
+            $item['path'] = '/' . Config::get('app.admin_prefix', 'admin') . $item['path'];
+        }
+        // 返回 JSON 格式的菜单列表
+        return app('json')->success($menusList);
+    }
 }

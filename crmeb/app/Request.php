@@ -34,7 +34,7 @@ class Request extends \think\Request
      * @var array
      */
     protected $except = ['menu_path', 'api_url', 'unique_auth',
-        'description', 'custom_form', 'content', 'tableField'];
+        'description', 'custom_form', 'content', 'tableField', 'url'];
 
     /**
      * 获取请求的数据
@@ -118,6 +118,7 @@ class Request extends \think\Request
     {
         if (filter_var($str, FILTER_VALIDATE_URL)) {
             $url = parse_url($str);
+            if (!isset($url['scheme'])) return $str;
             $host = $url['scheme'] . '://' . $url['host'];
             $str = $host . preg_replace($farr, '', str_replace($host, '', $str));
         } else {

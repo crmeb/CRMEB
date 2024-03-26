@@ -57,6 +57,13 @@ Route::group('app', function () {
         Route::get('routine/info', 'v1.application.routine.RoutineTemplate/getDownloadInfo')->option(['real_name' => '下载小程序页面数据']);
         //下载小程序模版
         Route::post('routine/download', 'v1.application.routine.RoutineTemplate/downloadTemp')->option(['real_name' => '下载小程序模版']);
+
+        Route::get('routine/scheme_list', 'v1.application.routine.RoutineScheme/schemeList')->name('schemeList')->option(['real_name' => '小程序外链列表']);
+        Route::get('routine/scheme_form/:id', 'v1.application.routine.RoutineScheme/schemeForm')->name('schemeForm')->option(['real_name' => '小程序外链添加修改表单']);
+        Route::post('routine/scheme_save/:id', 'v1.application.routine.RoutineScheme/schemeSave')->name('schemeSave')->option(['real_name' => '小程序外链添加修改保存']);
+        Route::delete('routine/scheme_del/:id', 'v1.application.routine.RoutineScheme/schemeDel')->name('schemeDel')->option(['real_name' => '小程序外链删除']);
+
+
     })->option(['parent' => 'app', 'cate_name' => '小程序']);
 
     /** 公众号渠道码 */

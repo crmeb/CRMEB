@@ -243,6 +243,7 @@ import { mapState } from 'vuex';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcodejs2';
 import { writeUpdate } from '@api/order';
+import checkArray from '@/libs/permission';
 
 let idGlobal = 0;
 export default {
@@ -384,8 +385,10 @@ export default {
     },
     preview(row) {
       this.modal = true;
-      this.creatQrCode(row.id);
-      this.routineCode(this.$route.query.id);
+      this.$nextTick((e) => {
+        this.creatQrCode(row.id);
+        this.routineCode(this.$route.query.id);
+      });
     },
     //生成二维码
     creatQrCode(id) {
@@ -780,7 +783,15 @@ export default {
           basis.list.push(el);
         }
         if (el.type == 1) {
-          marketing.list.push(el);
+          if (el.name == 'home_seckill' && checkArray('seckill')) {
+            marketing.list.push(el);
+          } else if (el.name == 'home_bargain' && checkArray('bargain')) {
+            marketing.list.push(el);
+          } else if (el.name == 'home_pink' && checkArray('combination')) {
+            marketing.list.push(el);
+          } else if (el.name != 'home_seckill' && el.name != 'home_bargain' && el.name != 'home_pink') {
+            marketing.list.push(el);
+          }
         }
         if (el.type == 2) {
           tool.list.push(el);

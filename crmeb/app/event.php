@@ -43,6 +43,7 @@ return [
         'UserLevelListener' => [\app\listener\user\UserLevelListener::class], //用户升级事件
         'UserVisitListener' => [\app\listener\user\UserVisitListener::class], //用户访问事件
         'NoticeListener' => [\app\listener\notice\NoticeListener::class], //通知->消息事件
+        'CustomNoticeListener' => [\app\listener\notice\CustomNoticeListener::class], //通知->自定义消息发送事件
         'NotifyListener' => [\app\listener\pay\NotifyListener::class],//支付异步回调
         'CrontabListener' => [\app\listener\crontab\SystemCrontabListener::class],//定时任务事件
         'OrderShipping' => [\app\listener\order\OrderShippingListener::class],//定时任务事件

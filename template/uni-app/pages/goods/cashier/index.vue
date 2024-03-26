@@ -107,7 +107,8 @@
 					orderId: '',
 					msg: ''
 				},
-				formContent: ''
+				formContent: '',
+				oid: 0
 			}
 		},
 		watch: {
@@ -213,6 +214,7 @@
 					this.invalidTime = res.data.invalid_time
 					this.cartArr[2].number = res.data.now_money;
 					this.number = Number(res.data.now_money) || 0;
+					this.oid = res.data.oid
 					uni.hideLoading();
 				}).catch(err => {
 					uni.hideLoading();
@@ -271,7 +273,7 @@
 				if (paytype == 'friend' && that.orderId) {
 					uni.hideLoading();
 					return uni.navigateTo({
-						url: '/pages/users/payment_on_behalf/index?order_id=' + that.orderId + '&spread=' +
+						url: '/pages/users/payment_on_behalf/index?oid=' + that.oid + '&spread=' +
 							this.$store.state.app.uid,
 						success: res => {},
 						fail: () => {},

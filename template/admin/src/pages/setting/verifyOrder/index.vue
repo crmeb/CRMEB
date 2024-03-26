@@ -261,7 +261,7 @@ img {
         letter-spacing: 1px;
         padding: 5px 0;
         box-sizing: border-box;
-.orderData ::v-deep.ivu-table-cell{padding-left: 0 !important;}
+.orderData ::v-deep .ivu-table-cell{padding-left: 0 !important;}
 .vertical-center-modal{
     display: flex;
     align-items: center;

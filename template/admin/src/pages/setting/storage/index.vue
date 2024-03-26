@@ -174,7 +174,7 @@
                 </div>
               </div>
             </div>
-            <divider />
+            <el-divider />
             <div class="content mt20">
               <el-form-item label="是否开启水印：" label-width="120px">
                 <el-switch
@@ -344,7 +344,7 @@
       </el-card>
     </div>
     <!-- 缩略图配置 -->
-    <div class="pt10" v-else-if="currentTab == 10">我去恶趣味我去</div>
+    <div class="pt10" v-else-if="currentTab == 10"></div>
     <div class="pt10" v-else>
       <el-card :bordered="false" shadow="never" class="ivu-mt">
         <el-row class="mb20">
@@ -422,7 +422,7 @@
             :total="total"
             :page.sync="list.page"
             :limit.sync="list.limit"
-            @pagination="getList"
+            @pagination="getlist"
           />
         </div>
       </el-card>
@@ -496,7 +496,7 @@ export default {
         thumb_mid_height: '',
         thumb_small_height: '',
         thumb_small_width: '',
-        image_watermark_status: false,
+        image_watermark_status: 0,
         watermark_type: 1,
         watermark_opacity: '',
         watermark_rotate: '',
@@ -584,11 +584,6 @@ export default {
       this.formValidate.watermark_position = item.id;
     },
     handleSubmit(name) {
-      if (this.formValidate.image_watermark_status) {
-        this.formValidate.image_watermark_status = 1;
-      } else {
-        this.formValidate.image_watermark_status = 0;
-      }
       if (this.formValidate.image_watermark_status) {
         this.$refs[name].validate((valid) => {
           if (valid) {
@@ -698,11 +693,6 @@ export default {
       let that = this;
       positionInfoApi().then((res) => {
         this.formValidate = res.data;
-        if (res.data.image_watermark_status == 1) {
-          that.formValidate.image_watermark_status = true;
-        } else {
-          that.formValidate.image_watermark_status = false;
-        }
         this.positionId = res.data.watermark_position;
         for (var i = 0; i < this.boxs.length; i++) {
           if (this.boxs[i].id == res.data.watermark_position) {
@@ -751,14 +741,14 @@ export default {
   line-height: 54px !important;
 }
 .ivu-input-group > .ivu-input:last-child,
-::v-deep.ivu-input-group-append {
+::v-deep .ivu-input-group-append {
   background: none;
   color: #999999;
 }
-::v-deep.ivu-input-group .ivu-input {
+::v-deep .ivu-input-group .ivu-input {
   border-right: 0px !important;
 }
-.content ::v-deep.ivu-form .ivu-form-item-label {
+.content ::v-deep .ivu-form .ivu-form-item-label {
   width: 133px;
 }
 .topIput {
@@ -802,7 +792,7 @@ export default {
     }
   }
   .content {
-    ::v-deep.ivu-form-item-label {
+    ::v-deep .ivu-form-item-label {
       width: 120px;
     }
     .flex {

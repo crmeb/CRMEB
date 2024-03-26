@@ -285,11 +285,11 @@
 					]
 					let list = [];
 					that.userInfo = res.data;
-					for (var i = 0; i < that.userInfo.extract_type.length; i++) {
-						if (this.navList[that.userInfo.extract_type[i]].id == that.userInfo.extract_type[i]) {
-							list.push(this.navList[that.userInfo.extract_type[i]])
-						}
-					}
+					that.navList.forEach((item,index)=>{
+							if(that.userInfo.extract_type.includes(item.id.toString())){
+								list.push(item)
+							}
+					})
 					this.navList = list
 					this.swichNav(this.navList[0].id)
 				});

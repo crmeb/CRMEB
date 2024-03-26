@@ -216,7 +216,7 @@ export default {
       // }
       let activeValue = this.configObj.selectConfig.activeValue;
       getProduct({
-        id: activeValue[activeValue.length - 1],
+        id: activeValue,
         page: 1,
         limit: this.configObj.numConfig.val,
         priceOrder: this.configObj.goodsSort.type == 2 ? 'desc' : '',

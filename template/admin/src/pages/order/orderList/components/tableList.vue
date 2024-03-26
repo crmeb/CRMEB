@@ -1,12 +1,15 @@
 <template>
   <div>
     <el-tabs v-model="currentTab" @tab-click="onClickTab" v-if="tablists">
-      <el-tab-pane :label="'全部订单（' + (tablists.all || 0) + '）'" name="" />
-      <el-tab-pane :label="'普通订单（' + (tablists.general || 0) + '）'" name="1" />
-      <el-tab-pane :label="'拼团订单（' + (tablists.pink || 0) + '）'" name="2" />
-      <el-tab-pane :label="'秒杀订单（' + (tablists.seckill || 0) + '）'" name="3" />
-      <el-tab-pane :label="'砍价订单（' + (tablists.bargain || 0) + '）'" name="4" />
-      <el-tab-pane :label="'预售订单（' + (tablists.advance || 0) + '）'" name="5" />
+      <el-tab-pane name="null" label="全部"></el-tab-pane>
+      <el-tab-pane name="0" :label="`待支付(${orderChartType.un_paid})`"></el-tab-pane>
+      <el-tab-pane name="1" :label="`待发货(${orderChartType.un_send})`"></el-tab-pane>
+      <el-tab-pane name="5" label="待核销"></el-tab-pane>
+      <el-tab-pane name="2" label="待收货"></el-tab-pane>
+      <el-tab-pane name="3" label="待评价"></el-tab-pane>
+      <el-tab-pane name="4" label="已完成"></el-tab-pane>
+      <el-tab-pane name="-2" label="已退款"></el-tab-pane>
+      <el-tab-pane name="-4" label="已删除"></el-tab-pane>
     </el-tabs>
     <div class="acea-row">
       <el-button v-auth="['order-write']" type="primary" @click="writeOff">订单核销</el-button>
@@ -36,7 +39,7 @@
       <el-table-column label="订单号 | 类型" width="200">
         <template slot-scope="scope">
           <div>{{ scope.row.order_id }}</div>
-          <div class="pink_name">{{ scope.row.pink_name }}</div>
+          <div class="pink_name" :style="{ color: scope.row.color }">{{ scope.row.pink_name }}</div>
           <span v-show="scope.row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
         </template>
       </el-table-column>
@@ -129,7 +132,8 @@
               (scope.row.status === 4 || scope.row._status === 2 || scope.row._status === 8) &&
               scope.row.shipping_type === 1 &&
               (scope.row.pinkStatus === null || scope.row.pinkStatus === 2) &&
-              scope.row.is_del !== 1
+              scope.row.is_del !== 1 && 
+              !scope.row.refund.length
             "
             >发送货</a
           >
@@ -148,7 +152,7 @@
             direction="vertical"
             v-if="
               (scope.row._status === 2 && scope.row.shipping_type === 1 && scope.row.pinkStatus === 2) ||
-              (scope.row.split.length && scope.row.is_del !== 1)
+              (scope.row.split.length && scope.row.is_del !== 1 && !scope.row.refund.length)
             "
           />
           <el-divider
@@ -164,7 +168,7 @@
                   scope.row.status == 0 &&
                   scope.row.paid == 1 &&
                   scope.row.refund_status === 0)) &&
-              scope.row.is_del !== 1
+              scope.row.is_del !== 1 && !scope.row.refund.length
             "
           />
           <template>
@@ -196,7 +200,7 @@
                   "
                   >订单备注</el-dropdown-item
                 >
-                <!-- <el-dropdown-item command="5" v-show="!scope.row.refund.length">立即退款</el-dropdown-item> -->
+                <el-dropdown-item command="5" v-show="scope.row.paid == 1 && scope.row.refund_status == 0">立即退款</el-dropdown-item>
                 <!--                            <el-dropdown-item command="6"  v-show='scope.row._status !==1 && (scope.row.use_integral > 0 && scope.row.use_integral >= scope.row.back_integral) '>退积分</el-dropdown-item>-->
                 <!--                            <el-dropdown-item command="7"  v-show='scope.row._status === 3'>不退款</el-dropdown-item>-->
                 <el-dropdown-item command="8" v-show="scope.row._status === 4">已收货</el-dropdown-item>
@@ -235,6 +239,20 @@
         }
       "
     ></order-send>
+    <order-refund
+      ref="refund"
+      :orderId="orderId"
+      :status="status"
+      :pay_type="pay_type"
+      :virtual_type="virtual_type"
+      @submitFail="submitFail"
+      @clearId="
+        () => {
+          orderId = 0;
+          virtual_type = null;
+        }
+      "
+    ></order-refund>
     <!--    -->
     <el-dialog
       :visible.sync="modals2"
@@ -287,7 +305,15 @@
         <el-button @click="exportDeliveryList">导出发货单</el-button>
         <div class="pl20 tips"></div>
       </div>
-      <el-upload class="upload-demo" drag :action="expressUrl" :headers="header" :on-success="upExpress">
+      <el-upload
+        class="upload-demo"
+        accept=".doc,.docx,.xls,.xlsx"
+        drag
+        :action="expressUrl"
+        :headers="header"
+        :on-success="upExpress"
+        :before-upload="beforeUpload"
+      >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">批量发货单,拖入上传或<em>点击上传</em></div>
       </el-upload>
@@ -316,12 +342,14 @@ import editFrom from '../../../../components/from/from';
 import detailsFrom from '../handle/orderDetails';
 import orderRemark from '../handle/orderRemark';
 import orderSend from '../handle/orderSend';
+import orderRefund from '../handle/orderRefund';
 import orderShipment from '../handle/orderShipment';
 import { exportOrderList, exportOrderDeliveryList } from '@api/export';
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import { serveOpnOtherApi } from '@api/setting';
 import createWorkBook from '@/vendor/newToExcel.js';
+import { isFileUpload } from '@/utils';
 
 export default {
   name: 'table_list',
@@ -332,6 +360,7 @@ export default {
     orderRemark,
     orderSend,
     orderShipment,
+    orderRefund,
   },
   data() {
     const codeNum = (rule, value, callback) => {
@@ -375,7 +404,7 @@ export default {
       orderDatalist: null,
       // modalTitleSs: '',
       selectedIds: [], //选中合并项的id
-      currentTab: '',
+      currentTab: 'null',
       spinShow: false,
       tablists: {
         all: '0',
@@ -405,6 +434,7 @@ export default {
       'orderType',
       'delIdList',
       'isDels',
+      'orderChartType'
     ]),
   },
   mounted() {},
@@ -421,8 +451,11 @@ export default {
     },
   },
   methods: {
-    ...mapMutations('order', ['onChangeTabs', 'getIsDel', 'getisDelIdListl']),
+    ...mapMutations('order', ['getOrderStatus', 'onChangeTabs', 'getIsDel', 'getisDelIdListl']),
     batchShipment() {},
+    beforeUpload(file) {
+      return isPicUpload(file);
+    },
     // 操作
     changeMenu(row, name) {
       this.orderId = row.id;
@@ -453,7 +486,15 @@ export default {
           this.$refs.remarks.formValidate.remark = row.remark;
           break;
         case '5':
-          this.getRefundData(row.id);
+          // this.getRefundData(row.id);
+          this.$refs.refund.total_num = row.total_num;
+          this.$refs.refund.order_id = row.order_id;
+          this.$refs.refund.formItem.refund_price = row.pay_price;
+          this.virtual_type = row.virtual_type;
+          this.$refs.refund.modals = true;
+          this.orderId = row.id;
+          this.status = row._status;
+          this.pay_type = row.pay_type;
           break;
         // case '6':
         //   this.getRefundIntegral(row.id);
@@ -518,7 +559,7 @@ export default {
           break;
         case '13':
           let pathInfo = this.$router.resolve({
-            path: '/admin/order/print',
+            path: Setting.routePre + '/order/print',
             query: {
               id: row.order_id,
             },
@@ -770,8 +811,8 @@ export default {
         });
     },
     onClickTab() {
-      this.onChangeTabs(Number(this.currentTab));
-      this.$store.dispatch('order/getOrderTabs', { type: this.currentTab });
+      this.getOrderStatus(this.currentTab == 'null' ? '' : this.currentTab);
+      this.getList();
     },
     // 批量删除
     delAll() {
@@ -791,7 +832,7 @@ export default {
           this.$modalSure(delfromData)
             .then((res) => {
               this.$message.success(res.msg);
-              this.$emit('getList');
+              this.getList();
             })
             .catch((res) => {
               this.$message.error(res.msg);
@@ -889,7 +930,7 @@ export default {
               this.$message.success(res.msg);
               this.modals2 = false;
               this.$refs[name].resetFields();
-              this.$emit('getList', 1);
+              this.getList();
             } else {
               this.$message.error(res.msg);
             }
@@ -912,9 +953,10 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-::v-deep .el-upload ,::v-deep .el-upload-dragger{
+::v-deep .el-upload, ::v-deep .el-upload-dragger {
   width: 100%;
 }
+
 ::v-deep .el-upload-list {
   display: none;
 }
@@ -956,7 +998,7 @@ img {
   }
 }
 
-.orderData ::v-deep.ivu-table-cell {
+.orderData ::v-deep .ivu-table-cell {
   padding-left: 0 !important;
 }
 
@@ -995,8 +1037,9 @@ img {
 .w-120 {
   width: 120px;
 }
-.tips{
-    color: #c0c4cc;
+
+.tips {
+  color: #c0c4cc;
   font-size: 12px;
 }
 </style>

@@ -26,11 +26,11 @@
 						<view class='text'>
 							<view class='name line2'>{{item.store_name}}</view>
 							<view class="type">
-								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1' && $permission('seckill')">{{$t(`秒杀`)}}
 								</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2' && $permission('bargain')">{{$t(`砍价`)}}
 								</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3' && $permission('combination')">{{$t(`砍价`)}}
 								</view>
 							</view>
 							<view class='vip acea-row'>
@@ -76,11 +76,11 @@
 						<view class='text'>
 							<view class='name line2'>{{item.store_name}}</view>
 							<view class="type">
-								<view class="type-sty" v-if="item.activity && item.activity.type == '1'">{{$t(`秒杀`)}}
+								<view class="type-sty" v-if="item.activity && item.activity.type == '1' && $permission('seckill')">{{$t(`秒杀`)}}
 								</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '2'">{{$t(`砍价`)}}
+								<view class="type-sty" v-if="item.activity && item.activity.type == '2' && $permission('bargain')">{{$t(`砍价`)}}
 								</view>
-								<view class="type-sty" v-if="item.activity && item.activity.type == '3'">{{$t(`砍价`)}}
+								<view class="type-sty" v-if="item.activity && item.activity.type == '3' && $permission('combination')">{{$t(`拼团`)}}
 								</view>
 								<view class="type-sty" v-if="item.checkCoupon">{{$t(`ticket`)}}</view>
 							</view>

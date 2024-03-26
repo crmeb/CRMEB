@@ -278,6 +278,12 @@ Route::group('setting', function () {
     Route::group(function () {
         //系统通知列表
         Route::get('notification/index', 'v1.setting.SystemNotification/index')->option(['real_name' => '系统通知列表']);
+        //自定义消息添加修改表单
+        Route::get('notification/not_form/:id', 'v1.setting.SystemNotification/notForm')->option(['real_name' => '自定义消息添加修改表单']);
+        //删除自定义消息
+        Route::delete('notification/del_not/:id', 'v1.setting.SystemNotification/delNot')->option(['real_name' => '删除自定义消息']);
+        //自定义消息保存
+        Route::post('notification/not_form_save/:id', 'v1.setting.SystemNotification/notFormSave')->option(['real_name' => '自定义消息保存']);
         //获取单条数据
         Route::get('notification/info', 'v1.setting.SystemNotification/info')->option(['real_name' => '获取单条通知数据']);
         //保存通知设置

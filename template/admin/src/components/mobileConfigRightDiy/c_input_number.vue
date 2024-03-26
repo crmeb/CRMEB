@@ -64,7 +64,7 @@ export default {
 <style scoped lang="stylus">
 .ivu-input-number
     width 100%
-::v-deep.ivu-input
+::v-deep .ivu-input
     font-size 13px!important
 .numbox
     display flex

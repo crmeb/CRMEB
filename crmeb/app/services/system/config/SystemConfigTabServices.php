@@ -14,6 +14,7 @@ namespace app\services\system\config;
 
 use app\dao\system\config\SystemConfigTabDao;
 use app\services\BaseServices;
+use app\services\system\SystemMenusServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\FormBuilder as Form;
 
@@ -124,8 +125,8 @@ class SystemConfigTabServices extends BaseServices
      */
     public function createConfigTabForm(array $formData = [])
     {
-        [$configTabList, $data] = $this->getConfigTabListForm((int)($formData['pid'] ?? 0), 3);
-        $form[] = Form::cascader('pid', '父级分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width'=>'100%']);
+        [$configTabList, $data1] = $this->getConfigTabListForm((int)($formData['pid'] ?? 0), 3);
+        $form[] = Form::cascader('pid', '父级分类', $data1)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width'=>'100%']);
         $form[] = Form::input('title', '分类名称', $formData['title'] ?? '');
         $form[] = Form::input('eng_title', '分类字段英文', $formData['eng_title'] ?? '');
         $form[] = Form::frameInput('icon', '图标', $this->url(config('app.admin_prefix', 'admin') . '/widget.widgets/icon', ['fodder' => 'icon'], true), $formData['icon'] ?? '')->icon('el-icon-picture-outline')->height('560px')->props(['footer' => false]);
@@ -133,6 +134,8 @@ class SystemConfigTabServices extends BaseServices
             ['value' => 0, 'label' => '系统'],
             ['value' => 3, 'label' => '其它']
         ]);
+        [$menusList, $data2] = app()->make(SystemMenusServices::class)->getFormCascaderMenus((int)($formData['menus_id'] ?? 0));
+        $form[] = Form::cascader('menus_id', '关联菜单', $data2)->options($menusList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width'=>'100%']);
         $form[] = Form::radio('status', '状态', $formData['status'] ?? 1)->options([['value' => 1, 'label' => '显示'], ['value' => 2, 'label' => '隐藏']]);
         $form[] = Form::number('sort', '排序', (int)($formData['sort'] ?? 0))->precision(0)->controls(false);
         return $form;

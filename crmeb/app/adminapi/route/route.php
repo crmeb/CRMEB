@@ -25,7 +25,7 @@ Route::group(function () {
     //后台登录页面数据
     Route::get('login/info', 'Login/info')->option(['real_name' => '登录信息']);
     //下载文件
-    Route::get('download/:key', 'PublicController/download')->option(['real_name' => '下载文件']);
+    Route::get('download/[:key]', 'PublicController/download')->option(['real_name' => '下载文件']);
     //验证码
     Route::get('captcha_pro', 'Login/captcha')->name('')->option(['real_name' => '获取验证码']);
     //获取验证码

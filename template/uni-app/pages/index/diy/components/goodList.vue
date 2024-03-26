@@ -9,11 +9,11 @@
 						:key="index" @click="goDetail(item)">
 						<view class="pictrue">
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+								v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+								v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+								v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 							<image :src="item.image" mode=""></image>
 						</view>
 						<view class="text-info"
@@ -43,11 +43,11 @@
 						:key="index" @click="goDetail(item)">
 						<view class="pictrue">
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+								v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+								v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+								v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 							<image :src="item.image" mode="aspectFit">
 						</view>
 						<view class="text-info">
@@ -74,11 +74,11 @@
 						:key="index" @click="goDetail(item)">
 						<view class="pictrue">
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+								v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+								v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 							<span class="pictrue_log pictrue_log_class" :style="'background-color:'+labelColor"
-								v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+								v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 							<image :src="item.image" mode="aspectFit"></image>
 						</view>
 						<view class="text-info"
@@ -109,11 +109,11 @@
 					@click="goDetail(item)">
 					<view class="img-box">
 						<span class="pictrue_log_big pictrue_log_class" :style="'background-color:'+labelColor"
-							v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+							v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 						<span class="pictrue_log_big pictrue_log_class" :style="'background-color:'+labelColor"
-							v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+							v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 						<span class="pictrue_log_big pictrue_log_class" :style="'background-color:'+labelColor"
-							v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+							v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 						<image :src="item.recommend_image" mode="" v-if="item.recommend_image"></image>
 						<image :src="item.image" mode="" v-else></image>
 					</view>
@@ -184,7 +184,7 @@
 					data = {
 						priceOrder: this.sortType == 2 ? 'desc' : '',
 						salesOrder: this.sortType == 1 ? 'desc' : '',
-						selectId: this.selectId[this.selectId.length - 1] || 0,
+						selectId: this.selectId || 0,
 						limit: this.numConfig
 					};
 				}

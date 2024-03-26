@@ -1,7 +1,7 @@
 {
   "name": "from-crmeb-admin",
-  "version": "5.2.1",
-  "author": "Lison<lison16new@163.com>",
+  "version": "5.2.2",
+  "author": "sugar1569<763569752@qq.com>",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve --open --mode=dev",

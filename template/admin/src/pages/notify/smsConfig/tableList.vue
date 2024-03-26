@@ -781,7 +781,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.order_box ::v-deep.ivu-form-item-content {
+.order_box ::v-deep .ivu-form-item-content {
   margin-left: 50px !important;
 }
 .maxInpt {

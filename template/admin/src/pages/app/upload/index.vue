@@ -51,6 +51,8 @@
 import Setting from '@/setting';
 import { scanUpload } from '@/api/setting';
 import compressImg from '@/utils/compressImg.js';
+import { isPicUpload } from '@/utils';
+
 export default {
   name: 'app_upload_file',
   data() {
@@ -62,7 +64,7 @@ export default {
       uploading: true,
       limit: 20,
       loading: false,
-      pid: 0
+      pid: 0,
     };
   },
   created() {
@@ -143,7 +145,7 @@ export default {
       console.log(err, file, fileList);
     },
     beforeUpload(file) {
-      console.log(file);
+      return isPicUpload(file);
     },
     async fileChange(file, fileList) {
       if (file.size >= 2097152) {

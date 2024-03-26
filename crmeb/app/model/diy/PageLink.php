@@ -57,4 +57,21 @@ class PageLink extends BaseModel
     {
         if ($value != '') $query->where('status', $value);
     }
+
+
+    /**
+     * 模块检测
+     * @param Model $query
+     * @param $value
+     */
+    public function searchNoModelAttr($query, $value)
+    {
+        $query->when(!in_array('seckill', $value), function ($q1) {
+            $q1->whereNotLike('name', '%秒杀%');
+        })->when(!in_array('bargain', $value), function ($q2) {
+            $q2->whereNotLike('name', '%砍价%');
+        })->when(!in_array('combination', $value), function ($q3) {
+            $q3->whereNotLike('name', '%拼团%');
+        });
+    }
 }

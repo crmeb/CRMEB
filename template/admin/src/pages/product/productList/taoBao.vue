@@ -170,7 +170,7 @@
                           <template v-else-if="item.slot === 'pic'">
                             <div
                               class="acea-row row-middle row-center-wrapper"
-                              @click="modalPicTap('dan', 'duopi', index)"
+                              @click="modalPicTap('dan', 'duopi', scope.$index)"
                             >
                               <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
                                 <img v-lazy="oneFormBatch[0].pic" />
@@ -821,7 +821,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-::v-deep.ivu-form-item-content {
+::v-deep .ivu-form-item-content {
   line-height: unset !important;
 }
 

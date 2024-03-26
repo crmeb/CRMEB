@@ -28,8 +28,7 @@
 								<!-- #endif -->
 								<!-- #ifndef APP-PLUS -->
 								<view class="avatar-box" :class="{on:userInfo.is_money_level}">
-									<image class="avatar" :src='userInfo.avatar' v-if="userInfo.avatar"
-										@click="goEdit()">
+									<image class="avatar" :src='userInfo.avatar' v-if="userInfo.avatar" @click="goEdit()">
 									</image>
 									<image v-else class="avatar" src="/static/images/f.png" mode="" @click="goEdit()">
 									</image>
@@ -40,8 +39,7 @@
 								<!-- #endif -->
 								<!-- #ifdef APP-PLUS -->
 								<view class="avatar-box" :class="{on:userInfo.is_money_level}">
-									<image class="avatar" :src='userInfo.avatar' v-if="userInfo.avatar"
-										@click="goEdit()">
+									<image class="avatar" :src='userInfo.avatar' v-if="userInfo.avatar" @click="goEdit()">
 									</image>
 									<image v-else class="avatar" src="/static/images/f.png" mode="" @click="goEdit()">
 									</image>
@@ -100,7 +98,6 @@
 							<!-- #ifdef MP -->
 							<!-- <view class="setting" @click="Setting"><text class="iconfont icon-shezhi"></text></view> -->
 							<!-- #endif -->
-
 						</view>
 						<view class="num-wrapper">
 							<view class="num-item" v-if="userInfo.balance_func_status"
@@ -108,8 +105,7 @@
 								<text class="num">{{userInfo.now_money || 0}}</text>
 								<view class="txt">{{$t('余额')}}</view>
 							</view>
-							<view class="num-item" v-else
-								@click="goMenuPage('/pages/users/user_goods_collection/index')">
+							<view class="num-item" v-else @click="goMenuPage('/pages/users/user_goods_collection/index')">
 								<text class="num">{{userInfo.collectCount || 0}}</text>
 								<view class="txt">{{$t('收藏')}}</view>
 							</view>
@@ -123,8 +119,7 @@
 							</view>
 						</view>
 						<!-- <view class="sign" @click="goSignIn">签到</view> -->
-						<view class="cardVipA acea-row row-between-wrapper"
-							v-if="userInfo.svip_open && member_style==1">
+						<view class="cardVipA acea-row row-between-wrapper" v-if="userInfo.svip_open && member_style==1">
 							<view class="left-box">
 								<view v-if="userInfo.vip_status == 1" class="small">{{$t('永久')}}</view>
 								<view v-else-if="userInfo.vip_status == 3" class="small">{{$t('会员到期')}}
@@ -135,8 +130,8 @@
 								</view>
 							</view>
 							<view class="acea-row row-middle">
-								<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index"
-									hover-class="none" class="btn">{{$t('查看会员权益')}}</navigator>
+								<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index" hover-class="none"
+									class="btn">{{$t('查看会员权益')}}</navigator>
 								<navigator v-else url="/pages/annex/vip_paid/index" hover-class="none" class="btn">
 									{{ userInfo.overdue_time ? $t('立即续费') : $t('立即激活') }}
 								</navigator>
@@ -157,8 +152,8 @@
 								</view>
 							</view>
 							<view class="acea-row">
-								<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index"
-									hover-class="none" class="btn">{{$t('会员可享多项权益')}}</navigator>
+								<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index" hover-class="none"
+									class="btn">{{$t('会员可享多项权益')}}</navigator>
 								<navigator v-else url="/pages/annex/vip_paid/index" hover-class="none" class="btn">
 									{{ userInfo.overdue_time ? $t('立即续费') : $t('立即激活') }}
 								</navigator>
@@ -177,8 +172,8 @@
 							<view v-else-if="userInfo.vip_status == 2" class="small">{{$t('未开通会员')}}
 							</view>
 						</view>
-						<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index" hover-class="none"
-							class="btn">{{$t('查看会员权益')}}</navigator>
+						<navigator v-if="userInfo.vip_status == 1" url="/pages/annex/vip_paid/index" hover-class="none" class="btn">
+							{{$t('查看会员权益')}}</navigator>
 						<navigator v-else url="/pages/annex/vip_paid/index" hover-class="none" class="btn">
 							{{ userInfo.overdue_time ? $t('立即续费') : $t('立即激活') }}
 						</navigator>
@@ -186,8 +181,7 @@
 					<view class="order-wrapper" :class="userInfo.svip_open?'':'height'">
 						<view class="order-hd flex">
 							<view class="left">{{$t('订单中心')}}</view>
-							<navigator class="right flex" hover-class="none" url="/pages/goods/order_list/index"
-								open-type="navigate">
+							<navigator class="right flex" hover-class="none" url="/pages/goods/order_list/index" open-type="navigate">
 								{{$t('查看全部')}}
 								<text class="iconfont icon-xiangyou"></text>
 							</navigator>
@@ -212,7 +206,7 @@
 						:duration="duration" indicator-color="rgba(255,255,255,0.6)" indicator-active-color="#fff">
 						<block v-for="(item,index) in imgUrls" :key="index">
 							<swiper-item>
-								<view @click="goMenuPage(item.url)" class='slide-navigator acea-row row-between-wrapper'
+								<view @click="goPages(item.url)" class='slide-navigator acea-row row-between-wrapper'
 									hover-class='none'>
 									<image :src="item.pic" class="slide-image"></image>
 								</view>
@@ -263,8 +257,7 @@
 					<view class="list-box">
 						<block v-for="(item,index) in storeMenu" :key="index">
 							<view class="item" :url="item.url" hover-class="none"
-								v-if="item.url!='#' && item.url!='/pages/service/index'"
-								@click="goMenuPage(item.url, item.name)">
+								v-if="item.url!='#' && item.url!='/pages/service/index'" @click="goMenuPage(item.url, item.name)">
 								<image :src="item.pic"></image>
 								<text>{{$t(item.name)}}</text>
 							</view>
@@ -697,6 +690,11 @@
 					url: '/pages/users/user_sgin/index'
 				})
 			},
+
+			goPages(url) {
+				this.$util.JumpPath(url);
+			},
+
 			// goMenuPage
 			goMenuPage(url, name) {
 				if (this.isLogin) {

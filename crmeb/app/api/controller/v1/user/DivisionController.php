@@ -6,6 +6,7 @@ namespace app\api\controller\v1\user;
 
 use app\Request;
 use app\services\agent\DivisionAgentApplyServices;
+use app\services\agent\DivisionServices;
 use app\services\other\AgreementServices;
 use app\services\user\UserServices;
 use crmeb\services\CacheService;
@@ -94,7 +95,7 @@ class DivisionController
             ['sort', ''],
         ]);
         $where['agent_id'] = $request->uid();
-        return app('json')->success($this->services->getStaffList($request->user(), $where));
+        return app('json')->success($this->services->getStaffList($request->isRoutine(), $where));
     }
 
     /**
@@ -132,5 +133,23 @@ class DivisionController
         $userService = app()->make(UserServices::class);
         $userService->update(['uid' => $uid, 'agent_id' => $agentId], ['division_percent' => 0, 'agent_id' => 0, 'division_id' => 0, 'staff_id' => 0, 'division_type' => 0, 'is_staff' => 0]);
         return app('json')->success(100002);
+    }
+
+    /**
+     * 绑定员工方法
+     * @param Request $request
+     * @return \think\Response
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2024/2/2
+     */
+    public function agentSpread(Request $request)
+    {
+        [$agentId, $agentCode] = $request->postMore([
+            ['agent_id', 0],
+            ['agent_code', 0],
+        ], true);
+        $res = app()->make(DivisionServices::class)->agentSpreadStaff($request->uid(), (int)$agentId, (int)$agentCode);
+        return app('json')->success($res);
     }
 }

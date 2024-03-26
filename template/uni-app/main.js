@@ -28,6 +28,8 @@ import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
 Vue.component('skeleton', skeleton)
 Vue.component('pageLoading', pageLoading)
 Vue.component('easyLoadimage', easyLoadimage)
+import ActivePermission from './libs/permission.js';
+Vue.prototype.$permission = ActivePermission;
 // #ifdef H5
 import {
 	parseQuery

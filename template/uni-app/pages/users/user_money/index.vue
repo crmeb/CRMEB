@@ -81,7 +81,7 @@
 					</navigator>
 				</view>
 				<view class='list'>
-					<view class='item acea-row row-between-wrapper'>
+					<view class='item acea-row row-between-wrapper' v-if="$permission('combination')">
 						<view class='picTxt acea-row row-between-wrapper'>
 							<view class='iconfont icon-hebingxingzhuang'></view>
 							<view class='text'>
@@ -93,7 +93,7 @@
 							v-if="activity.is_pink">{{$t(`立即参与`)}}</navigator>
 						<view class='bnt end' v-else>{{$t(`已结束`)}}</view>
 					</view>
-					<view class='item acea-row row-between-wrapper'>
+					<view class='item acea-row row-between-wrapper' v-if="$permission('seckill')">
 						<view class='picTxt acea-row row-between-wrapper'>
 							<view class='iconfont icon-miaosha yellow'></view>
 							<view class='text'>
@@ -105,7 +105,7 @@
 							v-if="activity.is_seckill">{{$t(`立即参与`)}}</navigator>
 						<view class='bnt end' v-else>{{$t(`已结束`)}}</view>
 					</view>
-					<view class='item acea-row row-between-wrapper'>
+					<view class='item acea-row row-between-wrapper' v-if="$permission('bargain')">
 						<view class='picTxt acea-row row-between-wrapper'>
 							<view class='iconfont icon-kanjia1 green'></view>
 							<view class='text'>

@@ -62,7 +62,7 @@ class RechargeServices
             throw new ApiException(410278);
         }
 
-        if ($recharge['recharge_type'] == PayServices::WEIXIN_PAY && !request()->isH5()) {
+        if ($recharge['recharge_type'] == PayServices::WEIXIN_PAY && !request()->isH5() && !request()->isApp()) {
 
             /** @var WechatUserServices $wechatUser */
             $wechatUser = app()->make(WechatUserServices::class);

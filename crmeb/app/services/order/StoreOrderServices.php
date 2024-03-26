@@ -110,6 +110,7 @@ class StoreOrderServices extends BaseServices
             }
             $item['total_price'] = bcadd($item['total_price'], $vipTruePrice, 2);
             $item['is_all_refund'] = $refund_num == $cart_num;
+            $item['pay_price'] = (float)$item['pay_price'];
         }
         return compact('data', 'count');
     }
@@ -476,25 +477,25 @@ class StoreOrderServices extends BaseServices
                         break;
                     default:
                         $item['pink_name'] = '[拼团订单]历史订单';
-                        $item['color'] = '#457856';
+                        $item['color'] = '#FF7D00';
                         break;
                 }
             } elseif ($item['combination_id']) {
                 $item['pink_name'] = '[拼团订单]';
-                $item['color'] = '#32c5e9';
+                $item['color'] = '#FF7D00';
             } elseif ($item['seckill_id']) {
                 $item['pink_name'] = '[秒杀订单]';
-                $item['color'] = '#32c5e9';
+                $item['color'] = '#3491FA';
             } elseif ($item['bargain_id']) {
                 $item['pink_name'] = '[砍价订单]';
-                $item['color'] = '#12c5e9';
+                $item['color'] = '#F7BA1E';
             } elseif ($item['advance_id']) {
                 $item['pink_name'] = '[预售订单]';
-                $item['color'] = '#12c5e9';
+                $item['color'] = '#B27FEB';
             } else {
                 if ($item['shipping_type'] == 1) {
                     $item['pink_name'] = '[普通订单]';
-                    $item['color'] = '#895612';
+                    $item['color'] = '#333';
                 } else if ($item['shipping_type'] == 2) {
                     $item['pink_name'] = '[核销订单]';
                     $item['color'] = '#8956E8';
@@ -733,15 +734,20 @@ HTML;
      * @param array $where
      * @return mixed
      */
+    /**
+     * @param array $where
+     * @return array
+     * @throws \ReflectionException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/3/14
+     */
     public function orderCount(array $where)
     {
-        $where_one = ['time' => $where['time'], 'is_system_del' => 0, 'pid' => 0, 'status' => 1, 'shipping_type' => 1];
-        $data['all'] = (string)$this->dao->count($where_one);
-        $data['general'] = (string)$this->dao->count($where_one + ['type' => 1]);
-        $data['pink'] = (string)$this->dao->count($where_one + ['type' => 2]);
-        $data['seckill'] = (string)$this->dao->count($where_one + ['type' => 3]);
-        $data['bargain'] = (string)$this->dao->count($where_one + ['type' => 4]);
-        $data['advance'] = (string)$this->dao->count($where_one + ['type' => 5]);
+        $where['is_system_del'] = 0;
+        $where['pid'] = 0;
+        $data['un_paid'] = $this->dao->count($where + ['status' => 0], false);
+        $data['un_send'] = $this->dao->count($where + ['status' => 1], false);
         return $data;
     }
 
@@ -759,8 +765,8 @@ HTML;
         }
         $f = [];
         $f[] = Form::input('order_id', '订单编号', $product->getData('order_id'))->disabled(true);
-        $f[] = Form::number('total_price', '商品总价', (float)$product->getData('total_price'))->min(0)->disabled(true);
-        $f[] = Form::number('pay_postage', '支付邮费', (float)$product->getData('pay_postage') ?: 0)->disabled(true);
+        $f[] = Form::hidden('total_price', (float)$product->getData('total_price'));
+        $f[] = Form::hidden('pay_postage', (float)$product->getData('pay_postage') ?: 0);
         $f[] = Form::number('pay_price', '实际支付金额', (float)$product->getData('pay_price'))->min(0);
         $f[] = Form::number('gain_integral', '赠送积分', (float)$product->getData('gain_integral') ?: 0)->min(0);
         return create_form('修改订单', $f, $this->url('/order/update/' . $id), 'PUT');
@@ -813,6 +819,9 @@ HTML;
                 $order = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
                 //改价短信提醒
                 event('NoticeListener', [['order' => $order, 'pay_price' => $data['pay_price']], 'price_revision']);
+                //自定义消息-订单改价
+                $order['change_price'] = $data['pay_price'];
+                event('NoticeListener', [$order['uid'], $order, 'price_change_price']);
                 return $data['order_id'];
             } else {
                 throw new AdminException(100007);
@@ -1635,19 +1644,6 @@ HTML;
         $data = [];
         $data['storeFreePostage'] = $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮金额
         $validCartInfo = $cartGroup['valid'];
-        if (count($validCartInfo)) {
-            if (isset($validCartInfo[0]['productInfo']['is_virtual']) && $validCartInfo[0]['productInfo']['is_virtual']) {
-                $data['virtual_type'] = 1;
-                $data['deduction'] = true;
-            } else {
-                if ($validCartInfo[0]['productInfo']['virtual_type'] == 3) {
-                    $data['virtual_type'] = 1;
-                    $data['deduction'] = true;
-                } else {
-                    $data['virtual_type'] = 0;
-                }
-            }
-        }
         /** @var StoreOrderComputedServices $computedServices */
         $computedServices = app()->make(StoreOrderComputedServices::class);
         $priceGroup = $computedServices->getOrderPriceGroup($storeFreePostage, $validCartInfo, $addr, $user, $shipping_type);
@@ -1668,6 +1664,7 @@ HTML;
             $advance_id = $cartGroup['deduction']['advance_id'] ?? 0;
         }
         $data['valid_count'] = count($validCartInfo);
+        $data['virtual_type'] = $data['valid_count'] ? (int)$validCartInfo[0]['productInfo']['virtual_type'] > 0 : 0;
         $data['deduction'] = $seckill_id || $combination_id || $bargain_id || $advance_id;
         $data['addressInfo'] = $addr;
         $data['seckill_id'] = $seckill_id;
@@ -2003,8 +2000,14 @@ HTML;
                 case 2:
                     $where_data['spread_two_uid'] = $uid;
                     break;
+                case 3:
+                    $where_data['division_id'] = $uid;
+                    break;
+                case 4:
+                    $where_data['agent_id'] = $uid;
+                    break;
                 default:
-                    $where_data['spread_or_uid'] = $uid;
+                    $where_data['all_spread'] = $uid;
                     break;
             }
         }
@@ -2273,7 +2276,7 @@ HTML;
      */
     public function getFriendDetail($orderId, $uid)
     {
-        $orderInfo = $this->dao->getOne(['order_id' => $orderId, 'is_del' => 0]);
+        $orderInfo = $this->dao->getOne(['id' => $orderId, 'is_del' => 0]);
         if ($orderInfo) {
             $orderInfo = $orderInfo->toArray();
         } else {
@@ -2553,7 +2556,7 @@ HTML;
         }
         // 判断是否开启小程序订单管理
         $orderData['order_shipping_open'] = false;
-        if (sys_config('order_shipping_open', 0) && MiniOrderService::isManaged() && $order['is_channel'] == 1 && $order['pay_type'] == 'weixin') {
+        if (sys_config('order_shipping_open', 0) && $order['is_channel'] == 1 && $order['pay_type'] == 'weixin' && MiniOrderService::isManaged()) {
             // 判断是否存在子未收货子订单
             if ($order['pid'] > 0) {
                 if ($this->checkSubOrderNotTake((int)$order['pid'], (int)$order['id'])) {
@@ -2688,7 +2691,7 @@ HTML;
 
         switch ($type) {
             case 'order':
-                $info = $this->dao->get(['order_id' => $orderId], ['pay_price', 'add_time', 'combination_id', 'seckill_id', 'bargain_id', 'pay_postage']);
+                $info = $this->dao->get(['order_id' => $orderId], ['id', 'pay_price', 'add_time', 'combination_id', 'seckill_id', 'bargain_id', 'pay_postage']);
                 if (!$info) {
                     throw new PayException('您支付的订单不存在');
                 }
@@ -2712,10 +2715,11 @@ HTML;
                 $data['pay_postage'] = $info['pay_postage'];
                 $data['offline_postage'] = (int)sys_config('offline_postage', 0);
                 $data['invalid_time'] = $time;
+                $data['oid'] = $info['id'];
 
                 break;
             case 'svip':
-                $info = app()->make(OtherOrderServices::class)->get(['order_id' => $orderId], ['pay_price', 'add_time']);
+                $info = app()->make(OtherOrderServices::class)->get(['order_id' => $orderId], ['id', 'pay_price', 'add_time']);
                 if (!$info) {
                     throw new PayException('您支付的订单不存在');
                 }
@@ -2723,7 +2727,7 @@ HTML;
                 $data['invalid_time'] = $info->add_time + 86400;
                 break;
             case 'recharge':
-                $info = app()->make(UserRechargeServices::class)->get(['order_id' => $orderId], ['price', 'add_time']);
+                $info = app()->make(UserRechargeServices::class)->get(['order_id' => $orderId], ['id', 'price', 'add_time']);
                 if (!$info) {
                     throw new PayException('您支付的订单不存在');
                 }

@@ -99,7 +99,13 @@
         <el-form-item label="寄件人姓名：" prop="sendName" class="form-item" label-position="right" label-width="100px">
           <el-input v-model="formValidate.sendName" placeholder="请输入寄件人姓名" style="width: 100%"></el-input>
         </el-form-item>
-        <el-form-item label="寄件人电话：" prop="sendPhone" class="form-item" label-position="right" label-width="100px">
+        <el-form-item
+          label="寄件人电话："
+          prop="sendPhone"
+          class="form-item"
+          label-position="right"
+          label-width="100px"
+        >
           <el-input v-model="formValidate.sendPhone" placeholder="请输入寄件人电话" style="width: 100%"></el-input>
         </el-form-item>
         <el-form-item
@@ -331,7 +337,10 @@ export default {
     },
     // 物流选中
     bindChange(val) {
-      this.formValidate.logisticsName = val.label;
+      let deliveryItem = this.logisticsList.find((item) => {
+        return item.code == val;
+      });
+      this.formValidate.logisticsName = deliveryItem.value;
       if (this.formValidate.shipStatus == 2) {
         orderTemp({
           com: val.value,
@@ -356,6 +365,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.form-item
-    width 100%
+.form-item {
+  width: 100%;
+}
 </style>

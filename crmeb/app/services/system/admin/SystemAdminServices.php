@@ -147,6 +147,7 @@ class SystemAdminServices extends BaseServices
             'queue' => $queue ?? true,
             'timer' => $timer ?? true,
             'site_name' => sys_config('site_name'),
+            'site_func' => sys_config('model_checkbox', ['seckill', 'bargain', 'combination']),
         ];
     }
 
@@ -217,8 +218,13 @@ class SystemAdminServices extends BaseServices
     public function createAdminForm(int $level, array $formData = [])
     {
         $f[] = $this->builder->input('account', '管理员账号', $formData['account'] ?? '')->required('请填写管理员账号');
-        $f[] = $this->builder->input('pwd', '管理员密码')->type('password')->required('请填写管理员密码');
-        $f[] = $this->builder->input('conf_pwd', '确认密码')->type('password')->required('请输入确认密码');
+        if (empty($formData)) {
+            $f[] = $this->builder->input('pwd', '管理员密码')->type('password')->required('请填写管理员密码');
+            $f[] = $this->builder->input('conf_pwd', '确认密码')->type('password')->required('请输入确认密码');
+        } else {
+            $f[] = $this->builder->input('pwd', '管理员密码')->type('password');
+            $f[] = $this->builder->input('conf_pwd', '确认密码')->type('password');
+        }
         $f[] = $this->builder->input('real_name', '管理员姓名', $formData['real_name'] ?? '')->required('请输入管理员姓名');
 
         /** @var SystemRoleServices $service */
@@ -272,7 +278,6 @@ class SystemAdminServices extends BaseServices
 
         return $this->transaction(function () use ($data) {
             if ($this->dao->save($data)) {
-                CacheService::clear();
                 return true;
             } else {
                 throw new AdminException(100022);
@@ -341,7 +346,6 @@ class SystemAdminServices extends BaseServices
         $adminInfo->account = $data['account'] ?? $adminInfo->account;
         $adminInfo->status = $data['status'];
         if ($adminInfo->save()) {
-            CacheService::clear();
             return true;
         } else {
             return false;

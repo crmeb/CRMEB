@@ -39,18 +39,16 @@
       <el-col :span="20" ref="rightBox">
         <el-card :bordered="false" shadow="never">
           <el-row class="mb14">
-            <el-col :span="20">
+            <el-col :span="18">
               <el-button v-auth="['marketing-channel_code-create']" type="primary" @click="add">新建二维码</el-button>
               <!-- <el-button v-auth="['marketing-channel_code-create']" type="success" @click="addSort">添加分组</el-button> -->
             </el-col>
-            <el-col :span="4">
-              <el-input
-                v-model="tableFrom.name"
-                search
-                @on-search="userSearchs"
-                enter-button="搜索"
-                placeholder="请输入二维码名称"
-              />
+            <el-col :span="6">
+              <div class="flex">
+
+              <el-input class="mr10" v-model="tableFrom.name" search placeholder="请输入二维码名称"> </el-input>
+              <el-button type="primary" @click="userSearchs">搜索</el-button>
+              </div>
             </el-col>
           </el-row>
           <el-table
@@ -84,7 +82,9 @@
             </el-table-column>
             <el-table-column label="用户标签" min-width="80">
               <template slot-scope="scope">
-                <el-tag class="label-name" v-for="(item, index) in scope.row.label_name" :key="index">{{ item }}</el-tag>
+                <el-tag class="label-name" v-for="(item, index) in scope.row.label_name" :key="index">{{
+                  item
+                }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="时间" min-width="80">
@@ -535,9 +535,11 @@ export default {
     width: 100% !important;
   }
 }
-.label-name{
+
+.label-name {
   margin: 2px 2px;
 }
+
 .trees-coadd {
   width: 100%;
   height: 385px;

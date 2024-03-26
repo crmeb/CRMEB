@@ -4,7 +4,7 @@
     <div class="putSupplier perpage" v-for="(item, index) in newArrayData" :key="index">
       <div class="header acea-row row-between-wrapper">
         <div class="left acea-row row-middle">
-          <div class="picture" :id="'qrCodeUrl' + index"></div>
+          <!-- <div class="picture" :id="'qrCodeUrl' + index"></div> -->
           <div class="info">
             <div><span class="name">收货人：</span>{{ orderData.user_name }}</div>
             <div><span class="name">收货地址：</span>{{ orderData.user_address }}</div>
@@ -193,39 +193,39 @@ export default {
   height: max-content;
   min-height: 100vh;
 }
-::v-deep.el-table th {
+::v-deep .el-table th {
   background-color: #fff !important;
 }
-::v-deep.el-table-header thead tr th:nth-of-type(1) {
+::v-deep .el-table-header thead tr th:nth-of-type(1) {
   padding-left: 0 !important;
 }
-::v-deep.el-table-header thead tr th {
+::v-deep .el-table-header thead tr th {
   border-top: 1px solid #333;
 }
-::v-deep.el-table td:nth-of-type(1) {
+::v-deep .el-table td:nth-of-type(1) {
   padding-left: 0 !important;
 }
-::v-deep.el-table-header table {
+::v-deep .el-table-header table {
   //border-top:0!important;
 }
-::v-deep.el-table-border th,
-::v-deep.el-table-border td {
+::v-deep .el-table-border th,
+::v-deep .el-table-border td {
   border-right: 1px solid #333 !important;
 }
-::v-deep.el-table-border th:nth-of-type(1),
-::v-deep.el-table-border td:nth-of-type(1) {
+::v-deep .el-table-border th:nth-of-type(1),
+::v-deep .el-table-border td:nth-of-type(1) {
   border-left: 1px solid #333 !important;
 }
-::v-deep.el-table th,
-::v-deep.el-table td {
+::v-deep .el-table th,
+::v-deep .el-table td {
   border-bottom: 1px solid #333 !important;
   border-right: 1px solid #333 !important;
 }
-::v-deep.el-table-wrapper-with-border {
+::v-deep .el-table-wrapper-with-border {
   border-color: #333 !important;
   border: unset;
 }
-::v-deep.el-table-border:after {
+::v-deep .el-table-border:after {
   background-color: #333;
   width: 0 !important;
   height: 0 !important;
@@ -234,19 +234,19 @@ export default {
   border: 1px solid #333 !important;
   border-bottom: 0px !important;
 }
-::v-deep.el-table:before {
+::v-deep .el-table:before {
   background-color: #333;
   width: 0 !important;
   height: 0 !important;
 }
-::v-deep.el-table .cell,
-::v-deep.el-table th.el-table__cell > .cell {
+::v-deep .el-table .cell,
+::v-deep .el-table th.el-table__cell > .cell {
   height: 47px !important;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-::v-deep.el-table {
+::v-deep .el-table {
   color: #000;
 }
 .pricePay {

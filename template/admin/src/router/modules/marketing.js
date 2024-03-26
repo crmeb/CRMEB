@@ -194,6 +194,15 @@ export default {
       component: () => import('@/pages/setting/setSystem/index'),
     },
     {
+      path: `model/system_config/:type?/:tab_id?`,
+      name: `${pre}model`,
+      meta: {
+        auth: ['system-model-system_config'],
+        title: '模块配置',
+      },
+      component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
       path: 'store_integral/index',
       name: `${pre}storeIntegral`,
       meta: {

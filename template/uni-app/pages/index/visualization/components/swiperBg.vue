@@ -122,7 +122,8 @@
 		methods: {
 			goDetail(url) {
 				goPage().then(res => {
-					this.$util.JumpPath(url);
+					let urls = url.info[1].value
+					this.$util.JumpPath(urls);
 				})
 			},
 			//替换安全域名

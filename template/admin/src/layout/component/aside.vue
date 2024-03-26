@@ -57,9 +57,9 @@ export default {
       } else {
         // 其它布局给 64px
         if (isCollapse) {
-          return ['layout-aside-width64', asideBrColor];
+          return ['layout-aside-width1', asideBrColor];
         } else {
-          return ['layout-aside-width-default', asideBrColor];
+          return ['layout-aside-width-default', asideBrColor, layout === 'classic' ? 'pt8' : ''];
         }
       }
     },

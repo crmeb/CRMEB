@@ -158,9 +158,13 @@ class OrderStatisticServices extends BaseServices
         $orderService = app()->make(StoreOrderServices::class);
 
         $bing_xdata = ['普通订单', '秒杀订单', '砍价订单', '拼团订单', '预售订单'];
+        $model_checkbox = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         $color = ['#64a1f4', '#3edeb5', '#70869f', '#ffc653', '#fc7d6a'];
         $bing_data = [];
         foreach ($bing_xdata as $key => $item) {
+            if (!in_array('seckill', $model_checkbox) && $key == 1) continue;
+            if (!in_array('bargain', $model_checkbox) && $key == 2) continue;
+            if (!in_array('combination', $model_checkbox) && $key == 3) continue;
             $bing_data[] = [
                 'name' => $item,
                 'value' => $orderService->together(['paid' => 1, 'pid' => 0, 'activity_type' => $key, 'time' => $where['time']], 'pay_price', 'sum'),

@@ -176,7 +176,7 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
-                            @click="modalPicTap('dan', 'danTable', index)"
+                            @click="modalPicTap('dan', 'danTable', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="scope.row.pic">
                               <img v-lazy="scope.row.pic" />
@@ -693,7 +693,7 @@ export default {
   color: #999;
 }
 
-.maxW ::v-deep.ivu-select-dropdown {
+.maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
 

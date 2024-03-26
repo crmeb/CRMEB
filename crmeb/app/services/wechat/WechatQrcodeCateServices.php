@@ -39,7 +39,7 @@ class WechatQrcodeCateServices extends BaseServices
     {
         $info = $this->dao->get($id);
         $f[] = Form::hidden('id', $id);
-        $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(30)->required();
+        $f[] = Form::input('cate_name', '分类名称', $info['cate_name'] ?? '')->maxlength(10)->required();
         return create_form('添加分类', $f, Url::buildUrl('/app/wechat_qrcode/cate/save'), 'POST');
     }
 

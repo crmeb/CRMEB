@@ -468,7 +468,7 @@ class NoticeListener implements ListenerInterface
     {
         $list = $data['list'];
         $title = $data['title'];
-        $url = '/pages/users/order_details/index?order_id=' . $list['order_id'];
+        $url = '/pages/goods/order_details/index?order_id=' . $list['order_id'];
         $title = Str::substrUTf8($title, 20, 'UTF-8', '');
 
         //站内信

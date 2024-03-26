@@ -220,6 +220,7 @@ class OutStoreOrderRefundServices extends BaseServices
             mt_srand();
             $refundData['refund_id'] = $order['order_id'] . rand(100, 999);
         }
+        $refundData['order_id'] = $orderId;
         //修改订单退款状态
         if ($refundServices->agreeRefund((int)$orderRefund['id'], $refundData)) {
             $refundServices->update((int)$orderRefund['id'], $data);

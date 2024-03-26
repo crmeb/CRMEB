@@ -469,7 +469,7 @@ class StoreSeckillServices extends BaseServices
         /** @var StoreProductServices $storeProductService */
         $storeProductService = app()->make(StoreProductServices::class);
         $productInfo = $storeProductService->get($storeInfo['product_id']);
-        $storeInfo['total'] = $productInfo['sales'] + $productInfo['ficti'] + $storeInfo['sales'];
+        $storeInfo['total'] = $storeInfo['sales'];
 
         if (sys_config('share_qrcode', 0) && request()->isWechat()) {
             /** @var QrcodeServices $qrcodeService */

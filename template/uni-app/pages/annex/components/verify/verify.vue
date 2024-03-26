@@ -172,7 +172,6 @@ export default {
 	},
 	methods: {
 		success(e) {
-			console.log('111')
 			this.$emit('success', e);
 		},
 		// 生成 uuid

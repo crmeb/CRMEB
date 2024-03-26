@@ -51,21 +51,31 @@
 					</view>
 					<view class="mask" @click="closeTap"></view>
 				</view>
-				<goodClass
-					ref="goodClass"
-					:tempArr="tempArr"
-					:isLogin="isLogin"
-					@gocartduo="goCartDuo"
-					@gocartdan="goCartDan"
-					@ChangeCartNumDan="ChangeCartNumDan"
-					@detail="goDetail"
-					:endLocation="endLocation"
-					@addCart="addCart"
-				></goodClass>
-				<view class="loadingicon acea-row row-center-wrapper">
-					<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
-					{{ loadTitle }}
-				</view>
+				<scroll-view
+					scroll-y="true"
+					scroll-with-animation="true"
+					:scroll-top="0"
+					@scroll="scroll"
+					:style="{ height: scrollHeight * 2 + 'rpx' }"
+					:lower-threshold="50"
+					@scrolltolower="productslist"
+				>
+					<goodClass
+						ref="goodClass"
+						:tempArr="tempArr"
+						:isLogin="isLogin"
+						@gocartduo="goCartDuo"
+						@gocartdan="goCartDan"
+						@ChangeCartNumDan="ChangeCartNumDan"
+						@detail="goDetail"
+						:endLocation="endLocation"
+						@addCart="addCart"
+					></goodClass>
+					<view class="loadingicon acea-row row-center-wrapper">
+						<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
+						{{ loadTitle }}
+					</view>
+				</scroll-view>
 			</view>
 		</view>
 		<view class="footer acea-row row-between-wrapper" id="cart">
@@ -114,6 +124,8 @@ import cartList from '@/components/cartList';
 import { mapGetters } from 'vuex';
 import { goShopDetail } from '@/libs/order.js';
 import { toLogin } from '@/libs/login.js';
+let windowHeight = uni.getSystemInfoSync().windowHeight;
+let sysHeight = uni.getSystemInfoSync().statusBarHeight;
 export default {
 	computed: mapGetters(['isLogin', 'uid']),
 	components: {
@@ -135,11 +147,18 @@ export default {
 	},
 	data() {
 		return {
+			windowHeight: windowHeight,
+			showCateDrawer: false,
+			sysHeight: sysHeight,
 			categoryList: [],
 			navActive: 0,
 			categoryTitle: '',
 			categoryErList: [],
 			tabLeft: 0,
+			scrollTop: 0,
+			old: {
+				scrollTop: 0
+			},
 			isWidth: 0, //每个导航栏占位
 			tabClick: 0, //导航栏被点击
 			iSlong: true,
@@ -172,7 +191,8 @@ export default {
 			is_vip: 0, //是否是会员
 			cart_num: 0,
 			storeInfo: {},
-			endLocation: {}
+			endLocation: {},
+			scrollHeight: 0
 		};
 	},
 	onShow() {
@@ -210,7 +230,13 @@ export default {
 				that.isWidth = e.windowWidth / 5;
 			}
 		});
-		this.getAllCategory(1);
+		!that.categoryList.length && this.getAllCategory(1);
+		uni.$on('uploadCatData', () => {
+			this.getAllCategory(1);
+		});
+		setTimeout(() => {
+			this.scrollHeight = windowHeight - 80 - sysHeight;
+		}, 1000);
 	},
 	methods: {
 		jumpIndex() {
@@ -448,6 +474,7 @@ export default {
 					that.loading = false;
 					that.loadend = loadend;
 					that.loadTitle = loadend ? that.$t(`没有更多内容啦~`) : that.$t(`加载更多`);
+					that.page == 1 && this.goTop();
 					that.page = that.page + 1;
 				})
 				.catch((err) => {
@@ -459,7 +486,6 @@ export default {
 		ChangeCartNumDan(changeValue, index, item) {
 			let num = this.tempArr[index];
 			let stock = this.tempArr[index].stock;
-			console.log(item, changeValue, 'changeValue');
 			this.ChangeCartNum(changeValue, num, stock, 0, item.id);
 		},
 		// 改变多属性购物车
@@ -479,7 +505,6 @@ export default {
 			let list = this.cartData.cartList;
 			let num = list[index];
 			let stock = list[index].trueStock;
-			console.log(num.cart_num, list[index].productInfo.min_qty, 'changeValue, index');
 			if (!changeValue && num.cart_num <= list[index].productInfo.min_qty) {
 				return this.$util.Tips({
 					title: this.$t(`该商品${list[index].productInfo.min_qty}件起购`)
@@ -680,15 +705,11 @@ export default {
 		},
 		// 去详情页
 		goDetail(item) {
-			if (!this.isLogin) {
-				toLogin();
-			} else {
-				goShopDetail(item, this.uid).then((res) => {
-					uni.navigateTo({
-						url: `/pages/goods_details/index?id=${item.id}`
-					});
+			goShopDetail(item, this.uid).then((res) => {
+				uni.navigateTo({
+					url: `/pages/goods_details/index?id=${item.id}`
 				});
-			}
+			});
 		},
 
 		openTap() {
@@ -697,7 +718,7 @@ export default {
 		closeTap() {
 			this.iSlong = true;
 		},
-		getAllCategory: function (type) {
+		getAllCategory(type) {
 			let that = this;
 			if (type || !uni.getStorageSync('CAT3_DATA')) {
 				getCategoryList().then((res) => {
@@ -715,10 +736,10 @@ export default {
 					that.navActive = 0;
 					that.tabClick = 0;
 					that.categoryList = data;
-					that.categoryErList = res.data[0].children ? res.data[0].children : [];
 					that.page = 1;
 					that.loadend = false;
 					that.tempArr = [];
+					that.categoryErList = res.data[0].children ? res.data[0].children : [];
 					that.productslist();
 				});
 			} else {
@@ -729,18 +750,28 @@ export default {
 						cate_name: that.$t(`全部`)
 					});
 				});
-				that.categoryTitle = data[0].cate_name;
-				that.cid = data[0].id;
-				that.sid = 0;
-				that.navActive = 0;
-				that.tabClick = 0;
-				that.categoryList = data;
-				that.categoryErList = data[0].children ? data[0].children : [];
-				that.page = 1;
-				that.loadend = false;
-				that.tempArr = [];
-				that.productslist();
+				if (!that.cid) {
+					that.categoryTitle = data[0].cate_name;
+					that.cid = data[0].id;
+					that.sid = 0;
+					that.navActive = 0;
+					that.tabClick = 0;
+					that.categoryList = data;
+					that.page = 1;
+					that.loadend = false;
+					that.productslist();
+				}
 			}
+		},
+		scroll(e) {
+			this.old.scrollTop = e.detail.scrollTop;
+		},
+		goTop(e) {
+			// 解决view层不同步的问题
+			this.scrollTop = this.old.scrollTop;
+			this.$nextTick(() => {
+				this.scrollTop = 0;
+			});
 		},
 		tapNav(index, item) {
 			let list = this.categoryList[index];
@@ -754,6 +785,7 @@ export default {
 			this.page = 1;
 			this.loadend = false;
 			this.tempArr = [];
+
 			this.productslist();
 		},
 		// 导航栏点击
@@ -769,9 +801,6 @@ export default {
 			this.tempArr = [];
 			this.productslist();
 		}
-	},
-	onReachBottom: function () {
-		this.productslist();
 	}
 };
 </script>
@@ -858,9 +887,9 @@ page {
 
 	.conter {
 		margin-top: 128rpx;
-		height: 100vh;
+		// height: 100vh;
 		background-color: #fff;
-
+		position: relative;
 		.aside {
 			position: fixed;
 			width: 23%;
@@ -902,12 +931,13 @@ page {
 		}
 
 		.wrapper {
-			margin-top: 104rpx;
+			position: fixed;
+			top: 232rpx;
+			right: 0;
 			width: 77%;
 			float: right;
 			background-color: #ffffff;
-			padding-bottom: 130rpx;
-
+			overflow: hidden;
 			.bgcolor {
 				width: 100%;
 				background-color: #ffffff;
@@ -924,8 +954,7 @@ page {
 			.longTab {
 				width: 65%;
 				position: fixed;
-				top: 0;
-				margin-top: 128rpx;
+				top: 128rpx;
 				height: 100rpx;
 				z-index: 99;
 				background-color: #ffffff;
@@ -1089,7 +1118,8 @@ page {
 		padding-left: 30rpx;
 		box-sizing: border-box;
 		height: 100rpx;
-
+		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		.cartIcon {
 			width: 124rpx;
 			height: 106rpx;

@@ -45,6 +45,7 @@ class PageLinkDao extends BaseDao
      */
     public function getList(array $where, string $field = '*', int $page = 0, int $limit = 0)
     {
+        $where['no_model'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         return $this->search($where)->field($field)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page();
         })->order('sort desc,id asc')->select()->toArray();

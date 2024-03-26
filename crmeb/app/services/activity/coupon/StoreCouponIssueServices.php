@@ -102,18 +102,8 @@ class StoreCouponIssueServices extends BaseServices
             return (int)$data['id'];
         }
 
-        if ($data['start_time'] && $data['start_use_time']) {
-
-            if ($data['start_time'] < date('Y-m-d 00:00:00')) {
-                throw new AdminException('开始领取时间不能小于当前时间');
-            }
-            if ($data['start_use_time'] < date('Y-m-d 00:00:00')) {
-                throw new AdminException('开始使用时间不能小于当前时间');
-            }
-
-            if ($data['start_use_time'] < $data['start_time']) {
-                throw new AdminException(400513);
-            }
+        if (empty($data['coupon_title'])) {
+            throw new AdminException(400759);
         }
 
         if (!in_array((int)$data['receive_type'], [1, 2, 3, 4])) {
@@ -124,20 +114,30 @@ class StoreCouponIssueServices extends BaseServices
             throw new AdminException(400758);
         }
 
-        if (empty($data['coupon_title'])) {
-            throw new AdminException(400759);
-        }
-
-        if ($data['end_time'] && $data['end_use_time']) {
-            if ($data['end_use_time'] < $data['end_time']) {
-                throw new AdminException('用户领取数量不能大于优惠券发布数量');
-            }
-        }
-
         $data['start_use_time'] = strtotime((string)$data['start_use_time']);
         $data['end_use_time'] = strtotime((string)$data['end_use_time']);
         $data['start_time'] = strtotime((string)$data['start_time']);
         $data['end_time'] = strtotime((string)$data['end_time']);
+
+        if ($data['start_time'] && $data['start_use_time']) {
+
+            if ($data['start_time'] < date('Y-m-d 00:00:00')) {
+                throw new AdminException('开始领取时间不能小于当前时间');
+            }
+            if ($data['start_use_time'] < date('Y-m-d 00:00:00')) {
+                throw new AdminException('开始使用时间不能小于当前时间');
+            }
+            if ($data['start_use_time'] < $data['start_time']) {
+                throw new AdminException(400513);
+            }
+        }
+
+        if ($data['end_time'] && $data['end_use_time']) {
+            if ($data['end_use_time'] < $data['end_time']) {
+                throw new AdminException('最后使用时间不能小于最后领取时间');
+            }
+        }
+
         $data['title'] = $data['coupon_title'];
         $data['remain_count'] = $data['total_count'];
         $data['category_id'] = implode(',', $data['category_id']);
@@ -149,7 +149,6 @@ class StoreCouponIssueServices extends BaseServices
         if ($data['is_permanent'] != 1 && $data['receive_limit'] > $data['total_count']) {
             throw new AdminException(500031);
         }
-
 
         $data['add_time'] = time();
         $res = $this->dao->save($data);
@@ -280,11 +279,12 @@ class StoreCouponIssueServices extends BaseServices
                 $data['coupon_title'] = $item['title'];
                 $data['coupon_price'] = $item['coupon_price'];
                 $data['use_min_price'] = $item['use_min_price'];
+                $data['add_time'] = $time;
                 if ($item['coupon_time']) {
-                    $data['add_time'] = $time;
+                    $data['start_time'] = $time;
                     $data['end_time'] = $data['add_time'] + $item['coupon_time'] * 86400;
                 } else {
-                    $data['add_time'] = $item['start_use_time'];
+                    $data['start_time'] = $item['start_use_time'];
                     $data['end_time'] = $item['end_use_time'];
                 }
                 $data['type'] = 'send';

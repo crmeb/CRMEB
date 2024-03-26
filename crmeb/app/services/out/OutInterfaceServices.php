@@ -5,6 +5,8 @@ namespace app\services\out;
 use app\dao\out\OutInterfaceDao;
 use app\Request;
 use app\services\BaseServices;
+use app\services\system\SystemRouteCateServices;
+use app\services\system\SystemRouteServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\AuthException;
 
@@ -24,14 +26,17 @@ class OutInterfaceServices extends BaseServices
     {
         $rule = trim(strtolower($request->rule()->getRule()));
         $method = trim(strtolower($request->method()));
-        $authList = $this->dao->getColumn([['id', 'in', $request->outInfo()['rules']], ['type', '=', 1]], 'method,url');
+        $authList = app()->make(SystemRouteServices::class)->getColumn([['id', 'in', $request->outInfo()['rules']], ['app_name', '=', 'outapi']], 'method,path');
         $rolesAuth = [];
         foreach ($authList as $item) {
-            $rolesAuth[trim(strtolower($item['method']))][] = trim(strtolower(str_replace(' ', '', $item['url'])));
+            $rolesAuth[trim(strtolower($item['method']))][] = trim(strtolower(str_replace(' ', '', $item['path'])));
+        }
+        if (in_array($rule, $rolesAuth[$method])) {
+            return true;
         }
         $rule = str_replace('<', '{', $rule);
         $rule = str_replace('>', '}', $rule);
-        if (in_array('/' . $rule, $rolesAuth[$method])) {
+        if (in_array($rule, $rolesAuth[$method])) {
             return true;
         } else {
             throw new AuthException(110000);
@@ -47,23 +52,22 @@ class OutInterfaceServices extends BaseServices
      */
     public function outInterfaceList(): array
     {
-        $list = $this->dao->selectList(['is_del' => 0], 'id,pid,method,type,name,name as title')->toArray();
-        $data = [];
-        foreach ($list as $key => $item) {
-            if ($item['pid'] == 0) {
-                $data[] = $item;
-                unset($list[$key]);
-            }
-        }
-        foreach ($data as &$item_p) {
-            foreach ($list as $item_c) {
-                if ($item_p['id'] == $item_c['pid']) {
-                    $item_p['children'][] = $item_c;
+        // 获取系统路由分类列表
+        $list = app()->make(SystemRouteCateServices::class)->selectList(['app_name' => 'outapi'], 'id,pid,name,name as title')->toArray();
+        // 获取系统路由列表
+        $data = app()->make(SystemRouteServices::class)->selectList(['app_name' => 'outapi'], 'id,cate_id as pid,name,name as title')->toArray();
+        // 遍历分类列表，将分类下的路由添加到对应的子节点中
+        foreach ($list as &$item) {
+            foreach ($data as $k => $v) {
+                if ($item['id'] == $v['pid']) {
+                    $item['children'][] = $v;
                 }
             }
         }
-        return $data;
+        // 返回完整的外部接口列表
+        return $list;
     }
+
 
     /**
      * 新增对外接口文档

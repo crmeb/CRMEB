@@ -110,7 +110,7 @@
             <el-tag size="medium" type="info" v-show="scope.row.start_name === '已结束'">已结束</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" min-width="120">
+        <el-table-column label="结束时间" min-width="140">
           <template slot-scope="scope">
             <span> {{ scope.row.stop_time | formatDate }}</span>
           </template>
@@ -165,7 +165,7 @@ export default {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, 'yyyy-MM-dd hh:mm');
+        return formatDate(date, 'yyyy-MM-dd hh:mm:ss');
       }
     },
   },

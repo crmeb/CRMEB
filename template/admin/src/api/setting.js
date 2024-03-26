@@ -1168,3 +1168,13 @@ export function scanUpload(data) {
     data,
   });
 }
+/**
+ * 菜单搜索
+ */
+export function menusSearch(data) {
+  return request({
+    url: `menusSearch`,
+    method: 'post',
+    data,
+  });
+}

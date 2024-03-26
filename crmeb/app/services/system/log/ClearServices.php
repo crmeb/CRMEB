@@ -78,6 +78,6 @@ class ClearServices extends BaseServices
                 }
             }
         }
-        CacheService::clear();
+        CacheService::clearAll();
     }
 }

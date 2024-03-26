@@ -24,7 +24,7 @@
 								<view class='img-box'>
 									<easy-loadimage mode="widthFix" :image-src="item.image"></easy-loadimage>
 									<text class="pictrue_log_medium pictrue_log_class"
-										v-if="item.activity && item.activity.type ==='1'">
+										v-if="item.activity && item.activity.type ==='1' && $permission('seckill')">
 										{{$t(`秒杀`)}}
 									</text>
 									<text class="pictrue_log_medium pictrue_log_class"
@@ -64,7 +64,7 @@
 								<view class='img-box'>
 									<image :src='item.image'></image>
 									<text class="pictrue_log_medium pictrue_log_class"
-										v-if="item.activity && item.activity.type ==='1'">
+										v-if="item.activity && item.activity.type ==='1' && $permission('seckill')">
 										{{$t(`秒杀`)}}
 									</text>
 									<text class="pictrue_log_medium pictrue_log_class"

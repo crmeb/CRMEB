@@ -73,7 +73,7 @@ class AgentManageServices extends BaseServices
             if (strpos($item['headimgurl'], '/statics/system_images/') !== false) {
                 $item['headimgurl'] = set_file_url($item['headimgurl']);
             }
-            $item['spread_order'] = $orderServices->get(['spread_uid' => $item['uid'], 'paid' => 1, 'refund_status' => 0, 'pid' => 0], ['sum(pay_price) as order_price','count(id) as order_count']);
+            $item['spread_order'] = $orderServices->get(['spread_uid' => $item['uid'], 'paid' => 1, 'refund_status' => 0, 'pid' => 0], ['sum(pay_price) as order_price', 'count(id) as order_count']);
         }
         return $data;
     }

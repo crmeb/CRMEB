@@ -1,5 +1,5 @@
 <template>
-	<view v-show="!isSortType" :style="{padding:'0 '+prConfig*2+'rpx'}">
+	<view v-show="!isSortType && $permission('bargain')" :style="{padding:'0 '+prConfig*2+'rpx'}">
 		<view class="barg" :class="bgStyle===0?'':'borderRadius15'" :style="'background: linear-gradient(180deg, '+ bgColor[0].item +' 0%, '+ bgColor[1].item +' 100%);margin-top:' + mbCongfig*2 +'rpx;'" v-if="bargList.length>0">
 				<view class="title" :style="'color:'+titleColor+';'">
 					{{$t(`砍价专区·BARGAINING`)}}

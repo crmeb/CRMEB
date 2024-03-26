@@ -53,3 +53,14 @@ export function noticeStatus(type, status, id) {
     method: 'put',
   });
 }
+
+/**
+ * @description 添加修改消息表单
+ * @param {Number} param id {Number} 传值参数
+ */
+ export function notificationForm(id) {
+  return request({
+    url: `setting/notification/not_form/${id}`,
+    method: 'get',
+  });
+}

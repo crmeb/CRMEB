@@ -1,27 +1,34 @@
 @charset "UTF-8";
+
 .vxe-tree-cell,
 .vxe-cell {
   font-size: 12px;
 }
+
 .plusColor {
   color: #e83323;
 }
+
 .reduceColor {
   color: #16ac57;
 }
+
 .c_label {
   font-size: 14px;
   color: #999999;
 }
+
 .c_label span {
   margin-left: 10px;
   color: #333;
 }
+
 .c_row-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .acea-row {
   display: -webkit-box;
   display: -moz-box;
@@ -209,9 +216,11 @@ body {
   font-size: 13px;
   padding: 10px 5px !important;
 }
+
 .ivu-form .ivu-form-item-label {
   font-size: 12px !important;
 }
+
 .ivu-radio-group-button .ivu-radio-wrapper,
 .ivu-table {
   font-size: 13px !important;
@@ -224,6 +233,7 @@ body {
 .ivu-table th {
   background: rgba(33, 100, 250, 0.05) !important;
 }
+
 .form_content_width {
   width: 250px;
 }
@@ -247,9 +257,11 @@ body {
 .product_tabs .ivu-page-header-content {
   margin-bottom: 0 !important;
 }
+
 .ivu-radio {
   padding: 8px 0;
 }
+
 .ivu-radio-wrapper {
   font-size: 12px !important;
 }
@@ -257,13 +269,16 @@ body {
 .ivu-input {
   font-size: 12px !important;
 }
+
 .ivu-notice-desc {
   word-break: normal;
   text-align: left !important;
 }
+
 .el-input-number .el-input__inner {
   text-align: unset;
 }
+
 .modal-form {
   width: 540px;
   position: absolute;
@@ -274,34 +289,43 @@ body {
   border-radius: 6px;
   padding-bottom: 20px;
 }
+
 .modal-form .el-message-box__header {
   padding: 15px;
   border-bottom: 1px solid #eee;
 }
+
 .modal-form .el-message-box__title {
   font-size: 14px;
   font-weight: 500;
   color: #333333;
 }
+
 .modal-form .el-message-box__content {
   padding: 30px 15px 10px;
 }
+
 .modal-form .el-message-box__headerbtn {
   // top: 10px;
   color: #c0c4cc;
 }
+
 .common-form-create .el-input-number .el-input__inner {
   text-align: unset;
 }
+
 .form-create .el-select {
   width: 100%;
 }
+
 .form-create .el-input-number {
   width: 100%;
 }
+
 .el-dialog ::v-deep .form-create .el-button {
   float: right;
 }
+
 .modalBody .ivu-modal-body {
   padding: 27px !important;
 }
@@ -322,6 +346,10 @@ body {
 
 .Modals .ivu-table table {
   width: 100% !important;
+}
+
+.h-33 {
+  height: 33px;
 }
 
 /*距离样式*/
@@ -348,6 +376,7 @@ body {
 .ml40 {
   margin-left: 40px !important;
 }
+
 .ml95 {
   margin-left: 95px !important;
 }
@@ -368,6 +397,7 @@ body {
 .mr15 {
   margin-right: 15px !important;
 }
+
 .mr5 {
   margin-right: 5px !important;
 }
@@ -375,12 +405,15 @@ body {
 .mb20 {
   margin-bottom: 20px !important;
 }
+
 .mb5 {
   margin-bottom: 5px !important;
 }
+
 .mb14 {
   margin-bottom: 14px !important;
 }
+
 .mb15 {
   margin-bottom: 15px !important;
 }
@@ -412,9 +445,11 @@ body {
 .mt20 {
   margin-top: 20px;
 }
+
 .mt14 {
   margin-top: 14px;
 }
+
 .mt50 {
   margin-top: 50px;
 }
@@ -422,33 +457,41 @@ body {
 .mt10 {
   margin-top: 10px;
 }
+
 .mb10 {
   margin-bottom: 10px !important;
 }
+
 .spBlock {
   display: block;
 }
+
 .mb5 {
   margin-bottom: 5px !important;
 }
+
 .pl25 {
   padding-left: 25px;
   box-sizing: border-box;
 }
+
 .padding-add {
   padding: 20px 20px 0;
 }
+
 .index_bg {
   width: 100%;
   /*height: 100vh;*/
   background: rgba(0, 0, 0, 0.6) !important;
   z-index: 0 !important;
 }
+
 .fl_header {
   display: flex;
   align-items: center;
   padding-left: 0px !important;
 }
+
 .header_top {
   padding-bottom: 16px !important;
   padding-left: 10px !important;
@@ -463,9 +506,11 @@ body {
 .i-layout-menu-side-title-icon-single .ivu-icon {
   font-size: 20px;
 }
+
 .ivu-layout-content {
   position: relative;
 }
+
 .ivu-form-item-content {
   font-size: 12px !important;
 }
@@ -481,6 +526,7 @@ body {
   line-height: 28px !important;
   padding: 0 10px !important;
 }
+
 #shopp-manager .ivu-tag .ivu-icon-ios-close {
   top: 0;
 }
@@ -490,6 +536,7 @@ body {
   color: #2d8cf0;
   cursor: pointer;
 }
+
 /*tab标签栏*/
 .i-layout-tabs-fix {
   z-index: 5 !important;
@@ -498,28 +545,35 @@ body {
 .vxe-header--row th:nth-of-type(1) {
   padding-left: 10px !important;
 }
+
 .vxe-table--body td:nth-of-type(1) {
   padding-left: 10px !important;
 }
+
 .ivu-modal-header {
   background: #fafafa;
 }
+
 .ivu-mb,
 .ivu-mb-16 {
   margin-bottom: 16px !important;
 }
+
 .ivu-mt-16 {
   margin-top: 16px !important;
 }
+
 .ivu-table-wrapper {
   border: 0;
 }
+
 .i-layout-page-header {
   margin: 0;
   /* display: none; */
   background-color: #fff;
   padding: 7px 32px 0 32px;
 }
+
 .header-title {
   padding: 10px 20px;
   // border-bottom: 1px solid #f2f2f2;
@@ -537,6 +591,7 @@ body {
   font-size: 14px;
   color: #303133;
 }
+
 .statics-header-title {
   font-size: 16px;
   color: #303133;
@@ -550,6 +605,7 @@ body {
   -ms-flex-pack: justify;
   justify-content: space-between;
 }
+
 .ivu-page-header-title {
   display: inline-block;
   color: #17233d;
@@ -557,74 +613,94 @@ body {
   font-size: 20px;
   line-height: 32px;
 }
+
 .main .content-wrapper {
   padding: 16px;
   height: calc(100% - 80px);
   overflow: auto;
   background-color: #f5f7f9;
 }
+
 .left-wrapper {
   height: calc(100vh - 120px);
   background: #fff;
   border-right: 1px solid #f2f2f2;
 }
+
 .ivu-tabs-bar {
   margin-bottom: 0;
 }
+
 .perW100 {
   width: 100%;
 }
+
 .perW90 {
   width: 90%;
 }
+
 .perW50 {
   width: 50%;
 }
+
 .perW20 {
   width: 20%;
 }
+
 .perW35 {
   width: 35%;
 }
+
 .perW30 {
   width: 30%;
 }
+
 .font12 {
   font-size: 12px !important;
 }
+
 .font14 {
   font-size: 14px !important;
 }
+
 .ivu-table:after {
   width: 0;
 }
+
 /*复制pro*/
 .ivu-text-left {
   text-align: left;
 }
+
 .ivu-text-right {
   text-align: right;
 }
+
 .ivu-block {
   display: block;
 }
+
 .ivu-pl-8 {
   padding-left: 8px !important;
 }
+
 .tabBox_img {
   width: 36px;
   height: 36px;
   border-radius: 4px;
   cursor: pointer;
 }
+
 .tabBox_img img {
   width: 100%;
   height: 100%;
 }
+
 .content img {
   display: block;
   max-width: 100%;
 }
+
 /*客服*/
 .mask-footer {
   display: flex;
@@ -632,30 +708,37 @@ body {
   padding-top: 20px;
   border-top: 1px solid #e8eaec;
 }
+
 .mask-footer button {
   margin-left: 10px;
 }
+
 .goods-mask .ivu-modal-body {
   padding: 0;
 }
+
 .content img {
   display: block;
   max-width: 100%;
   object-fit: contain;
 }
+
 .none-radius .ivu-modal-content {
   border-radius: 0;
 }
+
 .transfer-mask .ivu-modal-wrap {
   width: 1200px;
   margin: 0 auto;
 }
+
 .transfer-mask .ivu-modal {
   position: absolute;
   right: 279px;
   top: auto;
   bottom: 271px;
 }
+
 .maskModel {
   position: fixed;
   top: 0;
@@ -665,6 +748,7 @@ body {
   z-index: 55;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
 .input-input {
   display: block;
   height: 100%;
@@ -681,20 +765,24 @@ body {
   text-shadow: inherit;
   border: none;
 }
+
 .kf_mobile .textarea-box textarea {
   resize: none !important;
   height: 148px;
   border-color: transparent;
   font-size: 14px !important;
 }
+
 .kf_mobile .textarea-box textarea:focus {
   box-shadow: none;
 }
+
 .line1 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .line2 {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -702,14 +790,17 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+
 .df-n-warp {
   display: flex;
   flex-wrap: nowrap;
 }
+
 .none-radius .ivu-modal-mask,
 .label-box .ivu-modal-mask {
   background-color: transparent;
 }
+
 .empty-box {
   width: 100%;
   height: 100%;
@@ -719,13 +810,16 @@ body {
   background: #f3f5f7;
   border-radius: 6px;
 }
+
 .empty-box.on {
   border-radius: 0px;
 }
+
 .empty-box .iconfont-diy {
   color: #bbbfc8;
   font-size: 30px;
 }
+
 .paddingBox {
   padding: 0 10px 10px;
 }
@@ -737,13 +831,16 @@ body {
   color: #c0c4cc;
   font-size: 12px;
 }
+
 .pt10 {
   padding-top: 10px;
 }
+
 .common-form-create-footer {
   display: flex;
   justify-content: right;
 }
+
 .common-form-button {
   margin-right: 10px;
 }
@@ -751,40 +848,51 @@ body {
 .pl10 {
   padding-left: 10px;
 }
+
 .el-switch__label * {
   font-size: 12px;
   line-height: 20px !important;
   font-weight: 400;
 }
+
 .defineSwitch .el-switch__label {
   position: absolute;
   display: none;
   color: #fff !important;
 }
+
 /*打开时文字位置设置*/
 .defineSwitch .el-switch__label--right {
   z-index: 1;
-  right: -8px; /*不同场景下可能不同，自行调整*/
+  right: -8px;
+  /*不同场景下可能不同，自行调整*/
 }
+
 /*关闭时文字位置设置*/
 .defineSwitch .el-switch__label--left {
   z-index: 1;
-  left: 22px; /*不同场景下可能不同，自行调整*/
+  left: 22px;
+  /*不同场景下可能不同，自行调整*/
 }
+
 /*显示文字*/
 .defineSwitch .el-switch__label.is-active {
   display: block;
 }
+
 .defineSwitch.el-switch .el-switch__core,
 .defineSwitch.el-switch .el-switch__label {
-  width: 55px !important; /*开关按钮的宽度大小*/
+  width: 55px !important;
+  /*开关按钮的宽度大小*/
 }
+
 .df-jcsb {
   display: flex;
   justify-content: space-between;
 }
 
 .el-table {
+
   .el-table__header-wrapper,
   .el-table__fixed-header-wrapper {
     th {
@@ -803,6 +911,7 @@ a {
   cursor: pointer;
   text-decoration: none;
 }
+
 .label_text {
   color: #606266;
   font-size: 12px;
@@ -811,9 +920,11 @@ a {
   text-align: right;
   padding-right: 12px;
 }
+
 .el-table-column--selection .cell {
   padding-left: 10px;
 }
+
 .tree_tit {
   font-size: 15px;
   color: #606266;
@@ -822,38 +933,47 @@ a {
   display: flex;
   align-items: center;
   cursor: pointer;
+
   .el-icon-circle-plus {
     color: #c0c4cc;
     font-size: 20px;
     margin-right: 6px;
   }
 }
+
 .tree {
   min-height: 374px;
+
   .is-current .file-name {
     color: var(--prev-color-primary);
   }
+
   .file-name {
     display: flex;
     align-items: center;
     color: #303133;
     font-size: 14px;
+
     .icon {
       width: 15px;
       height: 13px;
       margin-right: 6px;
     }
   }
+
   .el-tree-node {
     // margin-right: 16px;
   }
+
   .el-tree-node__children .el-tree-node {
     margin-right: 0;
   }
+
   .el-tree-node__content {
     width: 100%;
     height: 48px;
   }
+
   .custom-tree-node {
     flex: 1;
     display: flex;
@@ -865,18 +985,22 @@ a {
     color: rgba(0, 0, 0, 0.6);
     line-height: 13px;
   }
+
   .is-current {
     background: #f1f9ff !important;
     color: var(--prev-color-primary) !important;
   }
+
   .is-current .custom-tree-node {
     color: var(--prev-color-primary) !important;
   }
-  .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+
+  .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
     background-color: var(--prev-color-primary-light-9) !important;
     border-right: 2px solid var(--prev-color-primary);
   }
 }
+
 .upload-box {
   font-size: 24px;
   font-weight: 500;
@@ -888,6 +1012,7 @@ a {
   font-size: 24px;
   font-weight: 500;
 }
+
 .fixed-card {
   position: fixed;
   right: 16px;
@@ -901,6 +1026,7 @@ a {
   align-items: center;
   background-color: rgba(255, 255, 255, 0.6) !important;
   backdrop-filter: blur(4px);
+
   ::v-deep .ivu-card-body {
     padding: 15px 16px 14px;
   }
@@ -914,13 +1040,14 @@ a {
     text-align: center;
   }
 }
+
 .drag {
   display: flex;
   align-items: center;
   justify-content: center;
+
   .handle {
     width: 9px;
     height: 15px;
   }
 }
-

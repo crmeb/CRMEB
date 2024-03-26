@@ -12,8 +12,8 @@
           :title="$t(v.title)"
         >
           <div :class="setColumnsAsidelayout" v-if="!v.isLink || (v.isLink && v.isIframe)">
-            <i :class="'el-icon-' + v.icon"></i>
-            <div class="font12">
+            <!-- <i :class="'el-icon-' + v.icon"></i> -->
+            <div class="font14">
               {{
                 $t(v.title) && $t(v.title).length >= 4
                   ? $t(v.title).substr(0, setColumnsAsidelayout === 'columns-vertical' ? 4 : 3)
@@ -23,8 +23,8 @@
           </div>
           <div :class="setColumnsAsidelayout" v-else>
             <a :href="v.isLink" target="_blank">
-              <i :class="'el-icon-' + v.icon"></i>
-              <div class="font12">
+              <!-- <i :class="'el-icon-' + v.icon"></i> -->
+              <div class="font14">
                 {{
                   $t(v.title) && $t(v.title).length >= 4
                     ? $t(v.title).substr(0, setColumnsAsidelayout === 'columns-vertical' ? 4 : 3)
@@ -230,7 +230,7 @@ export default {
     overflow-y: hidden !important;
     overflow-x: scroll !important;
   }
-  ::v-deep a {
+  ::v-deepa {
     width: 100%;
   }
   .el-menu.el-menu--horizontal {
@@ -253,7 +253,7 @@ export default {
     li {
       color: var(--prev-bg-columnsMenuBarColor);
       width: 80px;
-      height: 50px;
+      height: 66px;
       text-align: center;
       display: flex;
       cursor: pointer;
@@ -303,26 +303,25 @@ export default {
       background: var(--prev-color-primary);
       position: absolute;
       left: 0;
-      height: 40px;
+      height: 4px;
       width: 80px;
-      margin-top: 5px;
+      margin-top: 59px;
       transform: translatey(0%);
       z-index: 0;
       transition: 0.2s ease-in-out;
-      border-radius: 3px;
     }
     .columns-card {
       @extend .columns-round;
       top: 0;
-      height: 50px;
+      height: 4px;
       width: 80px;
       border-radius: 0;
-      margin-top: 0px;
+      margin-top: 59px;
     }
   }
 }
 ::v-deep .el-scrollbar {
-  height: 50px;
+  height: 66px;
 }
 ::v-deep .el-scrollbar__bar.is-horizontal {
   display: none;

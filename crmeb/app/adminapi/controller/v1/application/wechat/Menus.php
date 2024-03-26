@@ -50,6 +50,7 @@ class Menus extends AuthController
     public function save()
     {
         $buttons = request()->post('button/a', []);
+        if(strlen($buttons[0]['name']) > 15) return app('json')->fail('菜单名称不能大于5个字');
         if (!count($buttons)) return app('json')->fail(400238);
         $this->services->saveMenu($buttons);
         return app('json')->success(100001);

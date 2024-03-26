@@ -235,7 +235,7 @@ class Qiniu extends BaseUpload
             if (strpos($filePath, '?') === false) {
                 $filePath .= '?watermark';
             } else {
-                $filePath .= '&watermark';
+                $filePath .= '|watermark';
             }
             switch ($waterConfig['watermark_type']) {
                 case 1://图片

@@ -1677,7 +1677,7 @@ class StoreProductServices extends BaseServices
         /** @var  StoreProductAttrValueServices $StoreProductAttrValue */
         $StoreProductAttrValue = app()->make(StoreProductAttrValueServices::class);
         return $uniqueId == '' ?
-            $this->dao->value(['id' => $productId], 'stock') ?: 0
+            ($this->dao->value(['id' => $productId], 'stock') ?: 0)
             : $StoreProductAttrValue->uniqueByStock($uniqueId);
     }
 

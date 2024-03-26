@@ -3,6 +3,7 @@
 namespace app\services\system\lang;
 
 use app\dao\system\lang\LangCodeDao;
+use app\jobs\TranslateJob;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
@@ -185,5 +186,18 @@ class LangCodeServices extends BaseServices
                 'version' => uniqid()
             ];
         });
+    }
+
+
+    public function BatchTranslation($typeId, $langType)
+    {
+        $list = $this->dao->selectList(['type_id' => $typeId], 'id,remarks')->toArray();
+        $list = array_chunk($list, 100);
+        $time = 1;
+        foreach ($list as $item) {
+            TranslateJob::dispatchSecs($time, 'doJob', [$item, $langType]);
+            $time++;
+        }
+        return true;
     }
 }

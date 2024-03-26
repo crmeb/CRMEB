@@ -405,3 +405,37 @@ export function cityList() {
     method: 'get',
   });
 }
+
+/**
+ * @description 小程序链接 -- 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+ export function routineSchemeList(data) {
+  return request({
+    url: 'app/routine/scheme_list',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 小程序链接 -- 创建修改表单
+ * @param {Number} param id {Number} 标签id
+ */
+ export function routineSchemeForm(id) {
+  return request({
+    url: `app/routine/scheme_form/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 小程序链接 -- 删除
+ * @param {Number} param id {Number} 标签id
+ */
+ export function routineSchemeDel(id) {
+  return request({
+    url: `app/routine/scheme_del/${id}`,
+    method: 'delete',
+  });
+}

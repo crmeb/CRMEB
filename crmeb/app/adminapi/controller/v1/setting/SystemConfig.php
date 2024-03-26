@@ -335,7 +335,7 @@ class SystemConfig extends AuthController
             if ($post['reward_money'] < 0) return app('json')->fail('赠送余额不能小于0元');
             if ($post['reward_integral'] < 0) return app('json')->fail('赠送积分不能小于0');
         }
-        
+
         if (isset($post['sign_give_point'])) {
             if (!is_int($post['sign_give_point']) || $post['sign_give_point'] < 0) return app('json')->fail('签到赠送积分请填写大于等于0的整数');
         }
@@ -361,7 +361,7 @@ class SystemConfig extends AuthController
         if (isset($post['refund_time_available'])) {
             if (!ctype_digit($post['refund_time_available'])) return app('json')->fail('售后期限必须为大于0的整数');
         }
-
+        if (isset($post['sms_save_type']) && sys_config('sms_account', '') != '') return app('json')->success(100001);
         foreach ($post as $k => $v) {
             $config_one = $this->services->getOne(['menu_name' => $k]);
             if ($config_one) {
@@ -372,7 +372,6 @@ class SystemConfig extends AuthController
         }
         CacheService::clear();
         return app('json')->success(100001);
-
     }
 
     /**

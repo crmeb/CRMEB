@@ -19,7 +19,9 @@
 </template>
 
 <script>
+import { menusSearch } from '@/api/setting';
 import { getAllSiderMenu } from '@/libs/system';
+
 export default {
   name: 'layoutBreadcrumbSearch',
   data() {
@@ -47,8 +49,17 @@ export default {
     },
     // 菜单搜索数据过滤
     menuSearch(queryString, cb) {
-      let results = queryString ? this.tagsViewList.filter(this.createFilter(queryString)) : this.tagsViewList;
-      cb(results);
+      if (!queryString) {
+        let results = queryString ? this.tagsViewList.filter(this.createFilter(queryString)) : this.tagsViewList;
+        cb(results);
+      } else {
+        let queryData = {
+          keyword: queryString,
+        };
+        menusSearch(queryData).then((res) => {
+          cb(res.data);
+        });
+      }
     },
     // 菜单搜索过滤
     createFilter(queryString) {

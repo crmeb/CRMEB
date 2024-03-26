@@ -182,7 +182,7 @@ export default {
         },
         {
           title: '帮砍人数',
-          slot: 'num',
+          key: 'num',
         },
         {
           title: '结束时间',

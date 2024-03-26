@@ -120,7 +120,7 @@ class SystemMenusServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    protected function getFormCascaderMenus(int $value = 0, $auth_type = 0)
+    public function getFormCascaderMenus(int $value = 0, $auth_type = 0)
     {
         $where = ['is_del' => 0];
         $menuList = $this->dao->getMenusRoule($where, ['id as value', 'pid', 'menu_name as label']);

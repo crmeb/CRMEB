@@ -81,6 +81,8 @@ class LangTypeServices extends BaseServices
                     $list[$key]['type_id'] = $res->id;
                 }
                 $codeServices->saveAll($list);
+                $codeServices->BatchTranslation($res->id, $data['file_name']);
+                app()->make(LangCountryServices::class)->update(['code' => $data['file_name']], ['type_id' => $res->id]);
             } else {
                 throw new AdminException(100006);
             }
@@ -100,8 +102,8 @@ class LangTypeServices extends BaseServices
     public function setDefaultLangName()
     {
         $fileName = $this->dao->value(['is_default' => 1], 'file_name');
-        CacheService::set('range_name', $fileName);
         CacheService::clear();
+        CacheService::set('range_name', $fileName);
     }
 
     /**

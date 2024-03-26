@@ -305,7 +305,7 @@ export default {
 .content_width {
   width: 414px;
 }
-::v-deep.ivu-form-item-content {
+::v-deep .ivu-form-item-content {
   line-height: unset !important;
 }
 .picBox {

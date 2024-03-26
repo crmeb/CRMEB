@@ -28,6 +28,35 @@ export default {
       isVersion: false,
     };
   },
+  watch: {
+    // 监听路由 控制侧边栏显示 标记当前顶栏菜单（如需要）
+    $route(to, from) {
+      const onRoutes = to.meta.activeMenu ? to.meta.activeMenu : to.meta.path;
+      this.$store.commit('menu/setActivePath', onRoutes);
+      if (to.name == 'crud_crud') {
+        this.$store.state.menus.oneLvRoutes.map((e) => {
+          if (e.path === to.path) {
+            to.meta.title = e.title;
+          }
+        });
+      }
+      if (
+        [
+          'product_productAdd',
+          'marketing_bargainCreate',
+          'marketing_storeSeckillCreate',
+          'marketing_storeIntegralCreate',
+        ].includes(to.name)
+      ) {
+        let route = to.matched[1].path.split(':')[0];
+        this.$store.state.menus.oneLvRoutes.map((e) => {
+          if (route.indexOf(e.path) != -1) {
+            to.meta.title = `${e.title} ${to.params.id ? 'ID:' + to.params.id : ''}`;
+          }
+        });
+      }
+    },
+  },
   methods: {
     ...mapMutations('media', ['setDevice']),
     handleWindowResize() {

@@ -70,7 +70,7 @@ class SystemRouteServices extends BaseServices
         }
 
         $routeInfo = $routeInfo->toArray();
-        $routeInfo['cate_tree'] = app()->make(SystemRouteCateServices::class)->getAllList($routeInfo['app_name'], '*', 'id asc,sort desc');
+        $routeInfo['cate_tree'] = app()->make(SystemRouteCateServices::class)->getAllList($routeInfo['app_name'], 'id,name,pid', 'id asc,sort desc');
         return $routeInfo;
     }
 

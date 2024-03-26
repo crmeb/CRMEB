@@ -390,7 +390,7 @@ export default {
   border: 1px solid #eee !important;
 }
 
-.news_pic ::v-deep.ivu-btn-error:hover {
+.news_pic ::v-deep .ivu-btn-error:hover {
   background: #FF5D5F !important;
   border: 1px solid #fff !important;
   color: #fff !important;

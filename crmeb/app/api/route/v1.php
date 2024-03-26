@@ -50,9 +50,10 @@ Route::group(function () {
 //    Route::get('ali_pay', 'v1.order.StoreOrderController/aliPay')->name('aliPay');
     //查询版权
     Route::get('copyright', 'v1.PublicController/copyright')->option(['real_name' => '申请版权'])->option(['real_name' => '查询版权']);
-
     //商城基础配置汇总接口
     Route::get('basic_config', 'v1.PublicController/getMallBasicConfig')->option(['real_name' => '商城基础配置汇总接口']);
+    //小程序跳转url接口
+    Route::get('get_scheme_url/:id', 'v1.PublicController/getSchemeUrl')->option(['real_name' => '小程序跳转url接口']);
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)
     ->middleware(\app\api\middleware\StationOpenMiddleware::class)
@@ -323,6 +324,7 @@ Route::group(function () {
         Route::get('agent/get_staff_list', 'v1.user.DivisionController/getStaffList')->name('getStaffList')->option(['real_name' => '员工列表']);//员工列表
         Route::post('agent/set_staff_percent', 'v1.user.DivisionController/setStaffPercent')->name('setStaffPercent')->option(['real_name' => '设置员工分佣比例']);//设置员工分佣比例
         Route::get('agent/del_staff/:uid', 'v1.user.DivisionController/delStaff')->name('delStaff')->option(['real_name' => '删除员工']);//删除员工
+        Route::post('agent/spread', 'v1.user.DivisionController/agentSpread')->name('agentSpread')->option(['real_name' => '代理商绑定员工']);//代理商绑定员工
     })->option(['mark' => 'agent', 'mark_name' => '代理商']);
 
     Route::group(function () {

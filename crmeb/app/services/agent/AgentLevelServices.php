@@ -228,19 +228,23 @@ class AgentLevelServices extends BaseServices
 
         if ($one_agent_level) {
             $oneLevelInfo = $this->getLevelInfo($one_agent_level);
-            if ($oneLevelInfo['one_brokerage_percent'] == '0.00') {
-                $storeBrokerageRatio = $storeBrokerageRatio + (($storeBrokerageRatio * $oneLevelInfo['one_brokerage'] ?? 0) / 100);
-            } else {
-                $storeBrokerageRatio = $oneLevelInfo['one_brokerage_percent'];
+            if ($oneLevelInfo) {
+                if ($oneLevelInfo['one_brokerage_percent'] == '0.00') {
+                    $storeBrokerageRatio = $storeBrokerageRatio + (($storeBrokerageRatio * $oneLevelInfo['one_brokerage'] ?? 0) / 100);
+                } else {
+                    $storeBrokerageRatio = $oneLevelInfo['one_brokerage_percent'];
+                }
             }
         }
 
         if ($two_agent_level) {
             $twoLevelInfo = $this->getLevelInfo($two_agent_level);
-            if ($twoLevelInfo['two_brokerage_percent'] == '0.00') {
-                $storeBrokerageTwo = $storeBrokerageTwo + (($storeBrokerageTwo * $twoLevelInfo['two_brokerage'] ?? 0) / 100);
-            } else {
-                $storeBrokerageTwo = $twoLevelInfo['two_brokerage_percent'];
+            if ($twoLevelInfo) {
+                if ($twoLevelInfo['two_brokerage_percent'] == '0.00') {
+                    $storeBrokerageTwo = $storeBrokerageTwo + (($storeBrokerageTwo * $twoLevelInfo['two_brokerage'] ?? 0) / 100);
+                } else {
+                    $storeBrokerageTwo = $twoLevelInfo['two_brokerage_percent'];
+                }
             }
         }
 

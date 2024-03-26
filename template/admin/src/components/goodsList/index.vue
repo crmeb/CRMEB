@@ -1,19 +1,14 @@
 <template>
   <div class="goodList">
-    <el-form ref="formValidate"
-             :model="formValidate"
-             label-width="80px"
-             label-position="right"
-             inline
-             class="tabform">
+    <el-form ref="formValidate" :model="formValidate" label-width="80px" label-position="right" inline class="tabform">
       <el-form-item label="商品分类：" v-if="!liveStatus">
         <el-cascader
-            v-model="formValidate.cate_id"
-            size="small"
-            :options="treeSelect"
-            :props="{ checkStrictly: true, emitPath: false }"
-            clearable
-            class="form_content_width"
+          v-model="formValidate.cate_id"
+          size="small"
+          :options="treeSelect"
+          :props="{ checkStrictly: true, emitPath: false }"
+          clearable
+          class="form_content_width"
         ></el-cascader>
       </el-form-item>
       <el-form-item label="商品类型：" v-if="!type && diy">
@@ -24,10 +19,10 @@
       </el-form-item>
       <el-form-item label="商品搜索：">
         <el-input
-            clearable
-            placeholder="请输入商品名称/关键字/编号"
-            v-model="formValidate.store_name"
-            class="form_content_width"
+          clearable
+          placeholder="请输入商品名称/关键字/编号"
+          v-model="formValidate.store_name"
+          class="form_content_width"
         />
         <el-button type="primary" @click="userSearchs" class="ml15">查询</el-button>
       </el-form-item>
@@ -189,15 +184,15 @@ export default {
     };
   },
   computed: {},
-  watch:{
-    ischeckbox:{
-      handler(newVal,oldVal) {
-        if(newVal){
+  watch: {
+    ischeckbox: {
+      handler(newVal, oldVal) {
+        if (newVal) {
           this.many = 'many';
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   created() {
     let many = '';
@@ -262,9 +257,10 @@ export default {
         };
         images.push(imageObject);
       });
+
       this.images = images;
       this.diyVal = selection;
-      // this.$emit('getProductId', selection);
+      this.$emit('getProductDiy', selection);
     },
     // 商品分类；
     goodsCategory() {
@@ -293,21 +289,26 @@ export default {
         changeListApi(this.formValidate)
           .then(async (res) => {
             let data = res.data;
-            if (this.selectIds.length) {
-              let arr = [];
-              this.selectIds.map((item) => {
-                data.list.map((i) => {
-                  if (i.id == item) {
-                    i._checked = true;
-                    arr.push(i);
-                  }
-                });
-              });
-              this.changeCheckbox(arr);
-            }
+            console.log(this.selectIds);
             this.tableList = data.list;
             this.total = res.data.count;
             this.loading = false;
+            this.$nextTick(() => {
+              if (this.selectIds.length) {
+                let arr = [];
+                this.selectIds.map((item) => {
+                  data.list.map((i) => {
+                    if (i.id == item) {
+                      console.log(i);
+                      this.$refs.table.toggleRowSelection(i, true);
+
+                      arr.push(i);
+                    }
+                  });
+                });
+                this.changeCheckbox(arr);
+              }
+            });
           })
           .catch((res) => {
             this.loading = false;
@@ -331,7 +332,8 @@ export default {
               this.selectIds.map((item) => {
                 data.list.map((i) => {
                   if (i.id == item) {
-                    i._checked = true;
+                    console.log(i);
+                    this.$refs.table.toggleRowSelection(i);
                   }
                 });
               });
@@ -355,7 +357,7 @@ export default {
           form_create_helper.set('image', imageValue.concat(this.images));
           form_create_helper.close('image');
         } else {
-          this.$refs.table.clearSelection()
+          this.$refs.table.clearSelection();
           if (this.isdiy) {
             this.$emit('getProductId', this.diyVal);
           } else {
@@ -414,7 +416,7 @@ export default {
 }
 
 .goodList {
-  ::v-deep table {
+  ::v-deeptable {
     width: 100% !important;
   }
 }

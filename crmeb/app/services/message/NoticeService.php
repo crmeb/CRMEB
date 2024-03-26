@@ -34,14 +34,10 @@ class NoticeService extends BaseServices
     public function setEvent(string $event)
     {
         if ($this->event != $event) {
-            $this->noticeInfo = CacheService::get('NOTICE_' . $event);
-            if (!$this->noticeInfo) {
-                /** @var SystemNotificationServices $services */
-                $services = app()->make(SystemNotificationServices::class);
-                $noticeInfo = $services->getOneNotce(['mark' => $event]);
-                $this->noticeInfo = $noticeInfo ? $noticeInfo->toArray() : [];
-                CacheService::set('NOTICE_' . $event, $this->noticeInfo);
-            }
+            /** @var SystemNotificationServices $services */
+            $services = app()->make(SystemNotificationServices::class);
+            $noticeInfo = $services->getOneNotce(['mark' => $event]);
+            $this->noticeInfo = $noticeInfo ? $noticeInfo->toArray() : [];
             $this->event = $event;
         }
         return $this;

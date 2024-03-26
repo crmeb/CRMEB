@@ -97,7 +97,7 @@
                     :show-file-list="false"
                     :action="uploadAction"
                     :before-upload="beforeUpload"
-                    :format="['jpg', 'jpeg', 'png', 'gif']"
+                    accept="image/*"
                     :on-format-error="handleFormatError"
                     :data="uploadData"
                     :on-success="uploadSuccess"
@@ -152,6 +152,8 @@ import Setting from '@/setting';
 import Cookies from 'js-cookie';
 import { chatListApi, serviceListApi, getAdvApi, serviceList, getOrderApi, productApi } from '@/api/kefu';
 import feedBack from './feedback';
+import { isPicUpload } from '@/utils';
+
 const chunk = function (arr, num) {
   num = num * 1 || 1;
   var ret = [];
@@ -550,16 +552,18 @@ export default {
       });
     },
     beforeUpload(file) {
-      this.uploadData = {
-        filename: file,
-        token: this.kufuToken,
-      };
-      let promise = new Promise((resolve) => {
-        this.$nextTick(function () {
-          resolve(true);
+      if (isPicUpload(file)) {
+        this.uploadData = {
+          filename: file,
+          token: this.kufuToken,
+        };
+        let promise = new Promise((resolve) => {
+          this.$nextTick(function () {
+            resolve(true);
+          });
         });
-      });
-      return promise;
+        return promise;
+      }
     },
     handleFormatError(file) {
       this.$message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
@@ -966,11 +970,11 @@ li {
             display: none;
           }
 
-          ::v-deep img {
+          ::v-deepimg {
             width: 100%;
           }
 
-          ::v-deep video {
+          ::v-deepvideo {
             width: 100%;
           }
         }

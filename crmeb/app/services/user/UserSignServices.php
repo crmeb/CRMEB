@@ -215,7 +215,7 @@ class UserSignServices extends BaseServices
         $this->transaction(function () use ($uid, $title, $sign_point, $user, $sign_exp) {
             $this->setSignData($uid, $title, $sign_point, $user['integral'], (int)$user['exp'], $sign_exp);
             $user->integral = (int)$user->integral + (int)$sign_point;
-            if ($sign_exp) $user->exp = (int)$user->exp + (int)$sign_exp;
+            if ($sign_exp) $user->exp = bcadd((string)$user->exp, (string)$sign_exp, 2);
             if (!$user->save()) {
                 throw new ApiException(410287);
             }

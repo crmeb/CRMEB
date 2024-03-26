@@ -239,7 +239,7 @@ export default {
   border: 1px solid var(--prev-color-primary);
 }
 
-::v-deep.ivu-radio-border {
+::v-deep .ivu-radio-border {
   position: relative;
 }
 
@@ -248,12 +248,12 @@ export default {
   color: #fff;
 }
 
-::v-deep.ivu-radio-inner:after {
+::v-deep .ivu-radio-inner:after {
   background-color: unset;
   transform: unset;
 }
 
-::v-deep.i-layout-page-header {
+::v-deep .i-layout-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;

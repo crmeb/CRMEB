@@ -1,6 +1,6 @@
 <template>
 	<view class="wrapper" :style="colorStyle">
-		<scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-Y" @scroll="scroll">
+		<scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-Y" @scroll="scroll" @scrolltolower="scrollLower">
 			<view class='searchGood'>
 				<view class='search acea-row row-between-wrapper'>
 					<view class='input acea-row row-between-wrapper'>
@@ -104,19 +104,19 @@
 				this.hotSearchList = uni.getStorageSync('hotList');
 			} catch (err) {}
 		},
-		onReachBottom: function() {
-			if (this.bastList.length > 0) {
-				this.getProductList();
-			} else {
-				this.getHostProduct();
-			}
-		},
 		// 滚动监听
 		onPageScroll(e) {
 			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
 			uni.$emit('scroll');
 		},
 		methods: {
+			scrollLower(){
+				if (this.bastList.length > 0) {
+					this.getProductList();
+				} else {
+					this.getHostProduct();
+				}
+			},
 			scroll(e) {
 				this.scrollTopShow = e.detail.scrollTop > 150
 				this.old.scrollTop = e.detail.scrollTop

@@ -47,7 +47,7 @@ class WechatQrcodeServices extends BaseServices
         $list = $this->dao->getList($where, $page, $limit);
         foreach ($list as &$item) {
             $item['y_follow'] = $item['y_follow'] ?? 0;
-            $item['stop'] = $item['end_time'] ? $item['end_time'] > time() ? 1 : -1 : 0;
+            $item['stop'] = $item['end_time'] ? ($item['end_time'] > time() ? 1 : -1) : 0;
             $item['label_name'] = $userLabel->getColumn([['id', 'in', $item['label_id']]], 'label_name');
             $item['end_time'] = date('Y-m-d H:i:s', $item['end_time']);
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);

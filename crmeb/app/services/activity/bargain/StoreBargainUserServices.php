@@ -51,7 +51,7 @@ class StoreBargainUserServices extends BaseServices
         $ids = $this->dao->getColumn(['bargain_id' => $bargainId], 'id');
         /** @var StoreBargainUserHelpServices $bargainHelp */
         $bargainHelp = app()->make(StoreBargainUserHelpServices::class);
-        return $bargainHelp->getCount([['bargain_user_id', 'in', $ids], ['bargain_id', '=', $bargainId], ['type', '=', 1]]);
+        return $bargainHelp->getCount([['bargain_user_id', 'in', $ids], ['bargain_id', '=', $bargainId]]);
     }
 
     /**
@@ -247,7 +247,7 @@ class StoreBargainUserServices extends BaseServices
         $bargainUserHelpService = app()->make(StoreBargainUserHelpServices::class);
         $nums = $bargainUserHelpService->getNums();
         foreach ($list as &$item) {
-            $item['num'] = $item['people_num'] - ($nums[$item['id']] ?? 0);
+            $item['num'] = ($nums[$item['id']] ?? 1) - 1;
             $item['already_num'] = $nums[$item['id']] ?? 0;
             $item['now_price'] = bcsub((string)$item['bargain_price'], (string)$item['price'], 2);
             $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i:s', (int)$item['add_time']) : '';

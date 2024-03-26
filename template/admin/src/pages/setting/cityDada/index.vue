@@ -174,17 +174,17 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-::v-deep.ivu-table-cell-tree {
+::v-deep .ivu-table-cell-tree {
   border: 0;
   font-size: 15px;
   background-color: unset;
 }
 
-::v-deep.ivu-table-cell-tree .ivu-icon-ios-add:before {
+::v-deep .ivu-table-cell-tree .ivu-icon-ios-add:before {
   content: '\F11F';
 }
 
-::v-deep.ivu-table-cell-tree .ivu-icon-ios-remove:before {
+::v-deep .ivu-table-cell-tree .ivu-icon-ios-remove:before {
   content: '\F116';
 }
 

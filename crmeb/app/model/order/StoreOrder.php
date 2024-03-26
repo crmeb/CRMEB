@@ -315,6 +315,16 @@ class StoreOrder extends BaseModel
     }
 
     /**
+     * 不包含用户ID搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchNotUidAttr($query, $value)
+    {
+        $query->where('uid', '<>', $value);
+    }
+
+    /**
      * 支付状态搜索器
      * @param Model $query
      * @param $value
@@ -509,6 +519,11 @@ class StoreOrder extends BaseModel
         if ($value) $query->where('spread_uid|spread_two_uid', $value);
     }
 
+    public function searchAllSpreadAttr($query, $value)
+    {
+        if ($value) $query->where('spread_uid|spread_two_uid|division_id|agent_id|staff_id', $value);
+    }
+
     /**
      * 上级推广人
      * @param $query
@@ -591,6 +606,16 @@ class StoreOrder extends BaseModel
     }
 
     /**
+     * 代理商推广订单
+     * @param $query
+     * @param $value
+     */
+    public function searchStaffIdAttr($query, $value)
+    {
+        if ($value !== '') $query->where('staff_id', $value);
+    }
+
+    /**
      * @param $query
      * @param $value
      */
@@ -598,5 +623,15 @@ class StoreOrder extends BaseModel
     {
         if (is_string($value)) $value = explode(',', $value);
         if (count($value)) $query->whereIn('id', $value);
+    }
+
+    public function searchDivisionBrokerageGreaterAttr($query, $value)
+    {
+        $query->where('division_brokerage', '>', $value);
+    }
+
+    public function searchAgentBrokerageGreaterAttr($query, $value)
+    {
+        $query->where('agent_brokerage', '>', $value);
     }
 }

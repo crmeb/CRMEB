@@ -791,11 +791,11 @@ export default {
   height: 54px !important;
   line-height: 54px !important;
 }
-::v-deep.ivu-modal-mask {
+::v-deep .ivu-modal-mask {
   z-index: 999 !important;
 }
 
-::v-deep.ivu-modal-wrap {
+::v-deep .ivu-modal-wrap {
   z-index: 999 !important;
 }
 
@@ -835,7 +835,7 @@ export default {
   z-index: 11;
 }
 
-::v-deep.happy-scroll-content {
+::v-deep .happy-scroll-content {
   width: 100%;
 
   .demo-spin-icon-load {

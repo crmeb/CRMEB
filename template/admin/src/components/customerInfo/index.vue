@@ -1,24 +1,10 @@
 <template>
   <div class="customer">
     <el-form ref="formValidate" :model="formValidate" label-width="80px" inline @submit.native.prevent>
-      <el-form-item label="搜索日期：">
-        <el-date-picker
-          :editable="false"
-          @change="onchangeTime"
-          v-model="timeVal"
-          value-format="yyyy/MM/dd"
-          type="daterange"
-          placement="bottom-end"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          style="width: 250px"
-        ></el-date-picker>
-      </el-form-item>
-      <el-form-item label="用户名称：">
+      <el-form-item label="搜索用户：">
         <el-input
           clearable
-          placeholder="请输入用户名称"
+          placeholder="请输入用户UID、昵称或手机号"
           v-model="formValidate.nickname"
           class="form_content_width"
         ></el-input>
@@ -48,53 +34,37 @@
           >
         </template>
       </el-table-column>
-      <el-table-column label="ID" width="80">
+      <el-table-column label="UID" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.uid }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="微信用户名称" min-width="180">
-        <template slot-scope="scope">
-          <div>{{ scope.row.nickname }}</div>
-          <div style="color: red">{{ scope.row.is_del ? '用户已注销' : '' }}</div>
-        </template>
-      </el-table-column>
-      <el-table-column label="客服头像" min-width="90">
+      <el-table-column label="用户头像" min-width="90">
         <template slot-scope="scope">
           <div class="tabBox_img" v-viewer>
             <img v-lazy="scope.row.headimgurl" />
           </div>
         </template>
       </el-table-column>
-
-      <el-table-column label="用户类型" min-width="130">
+      <el-table-column label="用户昵称" min-width="180">
         <template slot-scope="scope">
-          <span v-if="scope.row.user_type === 'wechat'">公众号</span>
-          <span v-else-if="scope.row.user_type === 'routine'">小程序</span>
-          <span v-else-if="scope.row.user_type === 'h5'">H5</span>
-          <span v-else-if="scope.row.user_type === 'pc'">PC</span>
-          <span v-else>--</span>
+          <div>{{ scope.row.nickname }}</div>
+          <div style="color: red">{{ scope.row.is_del ? '用户已注销' : '' }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="性别" min-width="130">
+      <el-table-column label="手机号" min-width="180">
         <template slot-scope="scope">
-          <span v-show="scope.row.sex === 1">男</span>
-          <span v-show="scope.row.sex === 2">女</span>
-          <span v-show="scope.row.sex === 0">保密</span>
-          <span v-show="scope.row.sex === null">--</span>
+          <div>{{ scope.row.phone }}</div>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="地区" min-width="130">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <span v-if="scope.row.country || scope.row.province || scope.row.city">{{-->
-      <!--            scope.row.country + scope.row.province + scope.row.city-->
-      <!--          }}</span>-->
-      <!--          <span v-else>&#45;&#45;</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
       <el-table-column label="是否关注公众号" min-width="130">
         <template slot-scope="scope">
           <span v-text="scope.row.subscribe === 1 ? '关注' : '未关注'"></span>
+        </template>
+      </el-table-column>
+      <el-table-column label="注册时间" min-width="180">
+        <template slot-scope="scope">
+          <div>{{ scope.row.add_time }}</div>
         </template>
       </el-table-column>
     </el-table>
@@ -222,7 +192,7 @@ export default {
         width 100%
         height 100%
 .modelBox
-    ::v-deep
+    ::v-deep 
     .ivu-table-header
         width 100% !important
 .trees-coadd

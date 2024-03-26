@@ -21,6 +21,7 @@
         :headers="header"
         :multiple="true"
         style="display: inline-block"
+        accept=".mp4"
       >
         <el-button type="primary" icon="ios-cloud-upload-outline">上传视频</el-button>
       </el-upload>
@@ -48,6 +49,7 @@ import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
 import { productGetTempKeysApi, uploadType } from '@/api/product';
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
+import { isVideoUpload } from '@/utils';
 // import "../../../public/UEditor/dialogs/internal";
 export default {
   name: 'vide11o',
@@ -73,22 +75,23 @@ export default {
   },
   methods: {
     videoSaveToUrl(file) {
-      uploadByPieces({
-        file: file, // 视频实体
-        pieceSize: 3, // 分片大小
-        success: (data) => {
-          this.formValidate.video_link = data.file_path;
-          this.progress = 100;
-        },
-        error: (e) => {
-          this.$message.error(e.msg);
-        },
-        uploading: (chunk, allChunk) => {
-          this.videoIng = true;
-          let st = Math.floor((chunk / allChunk) * 100);
-          this.progress = st;
-        },
-      });
+      if (isVideoUpload(file))
+        uploadByPieces({
+          file: file, // 视频实体
+          pieceSize: 3, // 分片大小
+          success: (data) => {
+            this.formValidate.video_link = data.file_path;
+            this.progress = 100;
+          },
+          error: (e) => {
+            this.$message.error(e.msg);
+          },
+          uploading: (chunk, allChunk) => {
+            this.videoIng = true;
+            let st = Math.floor((chunk / allChunk) * 100);
+            this.progress = st;
+          },
+        });
       return false;
     },
     // 删除视频；

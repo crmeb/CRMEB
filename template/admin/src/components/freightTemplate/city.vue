@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog :visible.sync="addressModal" title="选择可配送区域" width="50%" class="modal">
-      <el-row :gutter="24" >
+      <el-row :gutter="24">
         <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24" class="item">
           <div class="acea-row row-right row-middle">
             <el-checkbox v-model="iSselect" @change="allCheckbox">全选</el-checkbox>
@@ -9,7 +9,7 @@
           </div>
         </el-col>
       </el-row>
-      <el-row :gutter="24"  v-loading="loading">
+      <el-row :gutter="24" v-loading="loading">
         <el-col
           :xl="6"
           :lg="6"
@@ -21,33 +21,29 @@
           :key="index"
           v-if="item.isShow"
         >
-          <el-popover
-              placement="top-start"
-              width="600"
-              trigger="hover"
-              :open-delay="600">
+          <el-popover placement="top-start" width="600" trigger="hover" :open-delay="600">
             <div>
               <div class="city">
                 <div class="checkBox">
                   <div class="arrow"></div>
                   <div>
                     <el-checkbox
-                        v-model="city.checked"
-                        :label="city.name"
-                        @change="primary(index, indexn)"
-                        class="itemn"
-                        v-for="(city, indexn) in item.children"
-                        :key="indexn"
-                        v-show="city.isShow"
-                    >{{ city.name }}</el-checkbox
+                      v-model="city.checked"
+                      :label="city.name"
+                      @change="primary(index, indexn)"
+                      class="itemn"
+                      v-for="(city, indexn) in item.children"
+                      :key="indexn"
+                      v-show="city.isShow"
+                      >{{ city.name }}</el-checkbox
                     >
                   </div>
                 </div>
               </div>
             </div>
             <el-checkbox slot="reference" v-model="item.checked" :label="item.name" @change="checkedClick(index)">{{
-                item.name
-              }}</el-checkbox
+              item.name
+            }}</el-checkbox
             ><span class="red">({{ (item.count || 0) + '/' + item.childNum }})</span>
           </el-popover>
         </el-col>
@@ -128,6 +124,7 @@ export default {
           el.childNum = oldNum;
         });
         this.cityList = res.data;
+        this.iSselect = false;
       });
     },
     /**
@@ -245,6 +242,7 @@ export default {
   mounted() {
     // this.getCityList();
   },
+  beforeDestroy() {},
 };
 </script>
 

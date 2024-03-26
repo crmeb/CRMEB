@@ -126,19 +126,19 @@
               </ul>
             </div>
             <div class="section" v-if="orderDatalist.orderInfo.delivery_name">
-              <div class="title">物流信息</div>
+              <div class="title">{{orderDatalist.orderInfo.delivery_type == 'express' ? '物流信息' : '送货人信息'}}</div>
               <ul class="list">
                 <li class="item">
-                  <div>物流公司：</div>
+                  <div>{{orderDatalist.orderInfo.delivery_type == 'express' ? '物流公司：' : '送货人姓名：'}}</div>
                   <div class="value">
                     {{ orderDatalist.orderInfo.delivery_name ? orderDatalist.orderInfo.delivery_name : '-' }}
                   </div>
                 </li>
                 <li class="item">
-                  <div>物流单号：</div>
+                  <div>{{orderDatalist.orderInfo.delivery_type == 'express' ? '物流单号：' : '送货人电话：'}}</div>
                   <div class="value">
                     {{ orderDatalist.orderInfo.delivery_id }}
-                    <a @click="openLogistics">物流查询</a>
+                    <a v-if="orderDatalist.orderInfo.delivery_type == 'express'" @click="openLogistics">物流查询</a>
                   </div>
                 </li>
               </ul>
@@ -594,25 +594,25 @@ export default {
     margin-right: 10px;
   }
 }
-::v-deep.el-drawer__body {
+::v-deep .el-drawer__body {
   // padding: 0;
   overflow: auto;
 }
 .gary {
   color: #aaa;
 }
-::v-deep.el-drawer__body {
+::v-deep .el-drawer__body {
   padding: 20px 0;
 }
-::v-deep.el-tabs--border-card > .el-tabs__content {
+::v-deep .el-tabs--border-card > .el-tabs__content {
   padding: 0 35px;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header,
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
+::v-deep .el-tabs--border-card > .el-tabs__header,
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item:active {
   border: none;
   height: 40px;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
   border: none;
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
@@ -620,10 +620,10 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item {
   border: none;
 }
-::v-deep.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item {
   margin-top: 0;
   transition: none;
   height: 40px !important;
@@ -634,7 +634,7 @@ export default {
   color: #303133;
   line-height: 16px;
 }
-::v-deep.el-tabs--border-card {
+::v-deep .el-tabs--border-card {
   border: none;
   box-shadow: none;
 }

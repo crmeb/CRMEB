@@ -169,7 +169,7 @@ export default {
 </script>
 
 <style scoped lang="stylus">
- ::v-deep.ivu-input{
+ ::v-deep .ivu-input{
      font-size 13px!important;
   }
 .tips

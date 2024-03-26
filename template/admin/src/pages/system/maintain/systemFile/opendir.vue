@@ -63,6 +63,7 @@
       :custom-class="className"
       :close-on-click-modal="false"
       width="80%"
+      top="5vh"
       @close="editModalChange"
       append-to-body
       :title="editorIndex[indexEditor].title"
@@ -77,9 +78,10 @@
         />
       </p>
       <div style="height: 100%">
-        <el-button type="primary" id="savefile" class="diy-button" @click="savefile(indexEditor)">保存</el-button>
-        <el-button id="refresh" class="diy-button" @click="refreshfile">刷新</el-button>
-
+        <div class="top-button">
+          <el-button type="primary" id="savefile" class="diy-button" @click="savefile(indexEditor)">保存</el-button>
+          <el-button id="refresh" class="diy-button" @click="refreshfile">刷新</el-button>
+        </div>
         <div class="file-box">
           <div class="show-info">
             <div class="show-text" :title="navItem.pathname">目录: {{ navItem.pathname }}</div>
@@ -130,7 +132,7 @@
                 :icon="value.icon"
                 v-if="value.tab"
               >
-                <div ref="container" :id="'container_' + value.index" style="height: 100%; min-height: 580px"></div>
+                <div ref="container" :id="'container_' + value.index" style="height: 100%; min-height: calc(80vh - 100px);"></div>
               </el-tab-pane>
             </el-tabs>
           </div>
@@ -900,22 +902,22 @@ export default {
 .file-left {
   padding-left: 10px;
 
-  ::v-deep.ivu-icon-ios-arrow-forward {
+  ::v-deep .ivu-icon-ios-arrow-forward {
     font-size: 18px !important;
   }
 
   color: #cccccc;
 
-  ::v-deep.ivu-icon-ios-folder-outline {
+  ::v-deep .ivu-icon-ios-folder-outline {
     font-size: 14px !important;
   }
 
-  ::v-deep.ivu-icon-ios-document-outline {
+  ::v-deep .ivu-icon-ios-document-outline {
     font-size: 18px !important;
   }
 }
 
-::v-deep.ivu-icon-md-folder {
+::v-deep .ivu-icon-md-folder {
   font-size: 18px !important;
   color: #d6ab34 !important;
 }
@@ -996,7 +998,7 @@ export default {
 
 }
 
-::v-deep.CodeMirror {
+::v-deep .CodeMirror {
   height: 70vh !important;
 }
 
@@ -1005,8 +1007,7 @@ export default {
   align-items: flex-start;
   justify-content: space-between;
   position: relative;
-  height: 95%;
-  min-height: 600px;
+  min-height: calc(100% - 35px);
   overflow: hidden;
 }
 
@@ -1015,9 +1016,10 @@ export default {
     position: absolute;
     top: 58px;
     left: 0;
-    height: 90%;
+    height: calc(100% - 58px);
+    
     // height: 100%;
-    // min-height: 600px;
+    // min-height: calc(100% - 35px);
     width: 25%;
     max-width: 250px;
     overflow: auto;
@@ -1027,11 +1029,10 @@ export default {
   .file-fix {
     flex: 1;
     max-width: 250px;
-    height: 76vh;
-    min-height: 600px;
+    min-height: calc(100% - 35px);
     // bottom: 0px;
     // overflow: auto;
-    min-height: 600px;
+    min-height: calc(100% - 35px);
     background-color: #292929;
   }
 }
@@ -1043,17 +1044,15 @@ export default {
     // left: 25%;
     flex: 3;
     overflow: hidden;
-    min-height: 600px;
+    min-height: calc(100% - 35px);
     height: 100%;
   }
 }
 
-::v-deep.el-dialog__body {
+::v-deep .el-dialog__body {
   padding: 0 !important;
-}
-
-::v-deep.el-dialog__body {
-  background-color: #292929;
+  height: 80vh;
+  max-height: 80vh;
 }
 
 .diy-button {
@@ -1133,9 +1132,11 @@ export default {
   text-align: center;
   background-color: #2f2f2f;
 }
-
+  .top-button{
+    background-color: #292929;
+  }
 .show-info {
-  background-color: #383838;
+  background-color: #292929;
   color: #FFF;
   width: 25%;
   max-width: 250px;
@@ -1165,7 +1166,7 @@ export default {
   }
 }
 
-body ::v-deep.ivu-select-dropdown {
+body ::v-deep .ivu-select-dropdown {
   background: #fff;
 }
 
@@ -1174,7 +1175,7 @@ body ::v-deep.ivu-select-dropdown {
     overflow: hidden;
   }
 
-  ::v-deep.ivu-tree-title {
+  ::v-deep .ivu-tree-title {
     width: 90%;
     max-width: 250px;
     padding: 0;
@@ -1182,15 +1183,15 @@ body ::v-deep.ivu-select-dropdown {
   }
 }
 
-::v-deep.ivu-tree-children {
+::v-deep .ivu-tree-children {
   .ivu-tree-title:hover {
     background-color: #2f2f2f !important;
   }
 }
-::v-deep.el-tabs__item{
+::v-deep .el-tabs__item{
   background-color: #fff;
 }
-::v-deep.el-tree{
+::v-deep .el-tree{
   background-color: #292929 !important;
 }
 .file-box {
@@ -1231,7 +1232,7 @@ body ::v-deep.ivu-select-dropdown {
 }
 
 // 自定义方法缩小
-::v-deep.diy-fullscreen {
+::v-deep .diy-fullscreen {
   overflow: hidden;
 
   .ivu-modal {
@@ -1269,7 +1270,7 @@ body ::v-deep.ivu-select-dropdown {
   }
 }
 
-::v-deep.ivu-modal {
+::v-deep .ivu-modal {
   top: 70px;
 }
 
@@ -1309,7 +1310,7 @@ body ::v-deep.ivu-select-dropdown {
 }
 
 // 选项卡头部
-::v-deep.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container {
+::v-deep .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container {
   background-color: #333;
 }
 </style>

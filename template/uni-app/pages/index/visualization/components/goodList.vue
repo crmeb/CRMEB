@@ -6,7 +6,7 @@
 					<view class='pictrue'>
 						<image :src='item.image'></image>
 						<span class="pictrue_log pictrue_log_class"
-							v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+							v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 						<span class="pictrue_log pictrue_log_class"
 							v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
 						<span class="pictrue_log pictrue_log_class"
@@ -41,11 +41,11 @@
 					<view class='pictrue'>
 						<image :src='item.image'></image>
 						<span class="pictrue_log pictrue_log_class"
-							v-if="item.activity && item.activity.type === '1'">{{$t(`秒杀`)}}</span>
+							v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
 						<span class="pictrue_log pictrue_log_class"
-							v-if="item.activity && item.activity.type === '2'">{{$t(`砍价`)}}</span>
+							v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
 						<span class="pictrue_log pictrue_log_class"
-							v-if="item.activity && item.activity.type === '3'">{{$t(`拼团`)}}</span>
+							v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
 					</view>
 					<view class='underline'>
 						<view class='text'>

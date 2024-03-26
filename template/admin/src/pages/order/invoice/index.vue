@@ -408,12 +408,12 @@ export default {
   height: 54px !important;
   line-height: 54px !important;
 }
-::v-deep.ivu-form-item-label {
+::v-deep .ivu-form-item-label {
   text-align: left;
   width: 83px !important;
 }
 
-::v-deep.ivu-form-item-content {
+::v-deep .ivu-form-item-content {
   margin-left: 83px !important;
 }
 

@@ -57,7 +57,10 @@ class StoreOrder extends AuthController
     {
         $where = $this->request->getMore([
             ['data', '', '', 'time'],
-            [['type', 'd'], 0],
+            ['type', ''],
+            ['pay_type', ''],
+            ['field_key', 'all'],
+            ['real_name', ''],
         ]);
         $data = $this->services->orderCount($where);
         return app('json')->success($data);
@@ -188,6 +191,7 @@ class StoreOrder extends AuthController
             ['status', ''],
         ], true);
         if ($status != '') $data['status'] = $status;
+        if ($status == 'undefined') $data['status'] = 1;
         $data['is_show'] = 1;
         return app('json')->success($services->express($data));
     }
@@ -468,6 +472,7 @@ class StoreOrder extends AuthController
     {
         $data = $this->request->postMore([
             ['refund_price', 0],
+            ['cart_ids', []]
         ]);
         if (!$id) {
             return app('json')->fail(100100);
@@ -483,7 +488,7 @@ class StoreOrder extends AuthController
             'refund_img' => json_encode([]),
         ];
 
-        $res = $services->applyRefund((int)$id, $order['uid'], $order, [], 1, (float)$data['refund_price'], $refundData);
+        $res = $services->applyRefund((int)$id, $order['uid'], $order, $data['cart_ids'], 1, (float)$data['refund_price'], $refundData);
 
         if (!$res) {
             return app('json')->fail('退款单生成失败');
@@ -526,6 +531,7 @@ class StoreOrder extends AuthController
         $wechatUserServices = app()->make(WechatUserServices::class);
         $refund_data['open_id'] = $wechatUserServices->uidToOpenid((int)$order['uid'], 'routine') ?? '';
         $refund_data['refund_no'] = $orderRefund['order_id'];
+        $refund_data['order_id'] = $orderRefund['order_id'];
         //修改订单退款状态
         unset($data['refund_price']);
         if ($services->agreeRefund($orderRefund['id'], $refund_data)) {
@@ -687,6 +693,12 @@ class StoreOrder extends AuthController
         $services->storeProductOrderRefundNo((int)$id, $refund_reason);
         //提醒推送
         event('NoticeListener', [['orderInfo' => $orderInfo], 'send_order_refund_no_status']);
+
+        //自定义消息-订单拒绝退款
+        $orderInfo['time'] = date('Y-m-d H:i:s');
+        $orderInfo['phone'] = $orderInfo['user_phone'];
+        event('CustomNoticeListener', [$orderInfo['uid'], $orderInfo, 'order_refund_fail']);
+
         return app('json')->success(100010);
     }
 

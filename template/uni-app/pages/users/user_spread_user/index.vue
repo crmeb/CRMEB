@@ -67,7 +67,7 @@
 				<navigator v-if="userInfo.division_open && (userInfo.is_agent || userInfo.is_division)" url='/pages/users/promoter-order/index?type=1' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>
 					<text class='iconfont icon-dingdan'></text>
-					<view>{{userInfo.is_division?$t(`事业部`):$t(`agent`)}}{{$t(`推广订单`)}}</view>
+					<view>{{userInfo.is_division?$t(`事业部`):$t(`代理商`)}}{{$t(`推广订单`)}}</view>
 				</navigator>
 				<navigator url='/pages/users/promoter_rank/index' hover-class="none"
 					class='item acea-row row-center-wrapper row-column'>

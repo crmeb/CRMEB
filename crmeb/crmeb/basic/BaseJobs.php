@@ -13,6 +13,7 @@ namespace crmeb\basic;
 
 
 use crmeb\interfaces\JobInterface;
+use think\facade\Log;
 use think\queue\Job;
 
 /**
@@ -40,11 +41,12 @@ abstract class BaseJobs implements JobInterface
     public function fire(Job $job, $data): void
     {
         try {
-            $action     = $data['do'] ?? 'doJob';//任务名
-            $infoData   = $data['data'] ?? [];//执行数据
+            $action = $data['do'] ?? 'doJob';//任务名
+            $infoData = $data['data'] ?? [];//执行数据
             $errorCount = $data['errorCount'] ?? 0;//最大错误次数
             $this->runJob($action, $job, $infoData, $errorCount);
         } catch (\Throwable $e) {
+            Log::error('队列错误：' . $e->getMessage());
             $job->delete();
         }
     }

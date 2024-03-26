@@ -682,6 +682,9 @@ export default {
                     flex 1
                     margin-left 5px
                     padding: 5px 10px;
+                    .title
+                      height 37px;
+
         &.itemB
             justify-content inherit
             .item

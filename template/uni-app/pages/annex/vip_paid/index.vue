@@ -675,17 +675,10 @@
 					case 'ALIPAY_PAY':
 						uni.hideLoading();
 						//#ifdef H5
-						if (this.$wechat.isWeixin()) {
-							uni.navigateTo({
-								url: `/pages/users/alipay_invoke/index?id=${data.data.result.order_id}&pay_key=${data.data.result.pay_key}&from=member`
-							});
-						} else {
-							uni.hideLoading();
-							this.formContent = jsConfig;
-							this.$nextTick(() => {
-								document.getElementById('alipaysubmit').submit();
-							});
-						}
+						this.formContent = jsConfig;
+						this.$nextTick(() => {
+							document.getElementById('alipaysubmit').submit();
+						});
 						//#endif
 						// #ifdef MP
 						uni.navigateTo({

@@ -834,11 +834,11 @@ export default {
   margin-bottom: 10px;
 }
 
-::v-deep.ivu-form-item-content {
+::v-deep .ivu-form-item-content {
   margin-left: 0px !important;
 }
 
-::v-deep.i-layout-page-header {
+::v-deep .i-layout-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;

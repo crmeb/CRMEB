@@ -773,7 +773,7 @@ class UserBillServices extends BaseServices
         }
         /** @var UserUserBrokerageServices $userUserBrokerage */
         $userUserBrokerage = app()->make(UserUserBrokerageServices::class);
-        [$count, $list] = $userUserBrokerage->getBrokerageList($where_data, 'b.type,b.pm,sum(IF(b.pm = 1 AND b.type <> \'extract_fail\', b.number, 0)) as income,sum(IF(b.pm = 0, b.number, 0)) as pay,u.nickname,u.phone,u.uid,u.now_money,u.brokerage_price,b.add_time as time', $order_string, $limit);
+        [$count, $list] = $userUserBrokerage->getBrokerageList($where_data, 'b.type,b.pm,sum(IF(b.pm = 1 AND b.type <> \'extract_fail\', b.number, 0)) - sum(IF(b.pm = 0, b.number, 0)) as income,sum(IF(b.pm = 0, b.number, 0)) as pay,u.nickname,u.phone,u.uid,u.now_money,u.brokerage_price,b.add_time as time', $order_string, $limit);
         $uids = array_unique(array_column($list, 'uid'));
         /** @var UserExtractServices $userExtract */
         $userExtract = app()->make(UserExtractServices::class);
@@ -1263,9 +1263,9 @@ class UserBillServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $where = ['paid' => 1, 'type' => 1, 'pid' => 0];
         if ($division_type == 1) {
-            $where = $where + ['division_id' => $uid];
+            $where = $where + ['division_id' => $uid, 'division_brokerage_greater' => 0];
         } elseif ($division_type == 2) {
-            $where = $where + ['agent_id' => $uid];
+            $where = $where + ['agent_id' => $uid, 'agent_brokerage_greater' => 0];
         }
 
         $list = $storeOrderServices->getlist($where, ['id,order_id,uid,add_time,spread_uid,division_id,agent_id,status,spread_two_uid,one_brokerage,two_brokerage,agent_brokerage,division_brokerage,pay_price,pid'], $page, $limit, ['split']);

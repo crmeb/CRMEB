@@ -73,11 +73,6 @@
                 <span>{{ scope.row.agent_count }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="订单数量" min-width="130">
-              <template slot-scope="scope">
-                <span>{{ scope.row.order_count }}</span>
-              </template>
-            </el-table-column>
             <el-table-column label="截止时间" min-width="130">
               <template slot-scope="scope">
                 <span>{{ scope.row.division_end_time }}</span>
@@ -222,7 +217,7 @@ export default {
     formatDate(time) {
       if (time !== 0) {
         let date = new Date(time * 1000);
-        return formatDate(date, 'yyyy-MM-dd hh:mm');
+        return formatDate(date, 'yyyy-MM-dd');
       }
     },
   },

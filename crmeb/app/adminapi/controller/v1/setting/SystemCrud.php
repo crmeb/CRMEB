@@ -65,6 +65,28 @@ class SystemCrud extends AuthController
     }
 
     /**
+     * 验证路径
+     * @param $data
+     * @return bool
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/2/19
+     */
+    public function crudVerifyPath($data)
+    {
+        if (strpos($data['controller'], 'app/adminapi/controller/crud/') !== 0) return false;
+        if (strpos($data['validate'], 'app/adminapi/validate/crud/') !== 0) return false;
+        if (strpos($data['service'], 'app/services/crud/') !== 0) return false;
+        if (strpos($data['dao'], 'app/dao/crud/') !== 0) return false;
+        if (strpos($data['model'], 'app/model/crud/') !== 0) return false;
+        if (strpos($data['route'], 'app/adminapi/route/crud/') !== 0) return false;
+        if (strpos($data['router'], 'router/modules/crud/') !== 0) return false;
+        if (strpos($data['api'], 'api/crud/') !== 0) return false;
+        if (strpos($data['pages'], 'pages/crud/') !== 0) return false;
+        return true;
+    }
+
+    /**
      * @return Response
      * @author 等风来
      * @email 136327134@qq.com
@@ -84,6 +106,12 @@ class SystemCrud extends AuthController
             ['isTable', 0],//是否生成表
             ['deleteField', []],//删除的表字段
         ]);
+
+        if (!preg_match('/^[\x{4e00}-\x{9fa5}a-zA-Z]+$/u', $data['menuName'])) return app('json')->fail('菜单名称只能是中文或者英文');
+        if (!preg_match('/^[\x{4e00}-\x{9fa5}a-zA-Z]+$/u', $data['modelName'])) return app('json')->fail('模块名称只能是中文或者英文');
+        if (!preg_match('/^[a-zA-Z_]+$/u', $data['tableName'])) return app('json')->fail('表名称只能是英文和下划线组成');
+        if (!$this->crudVerifyPath($data['filePath'])) return app('json')->fail('生成的文件位置有误，请检查后重新生成');
+
 
         $fromField = $searchField = $hasOneField = $columnField = $tableIndex = [];
 
@@ -897,6 +925,5 @@ class SystemCrud extends AuthController
         } else {
             return app('json')->fail('删除失败');
         }
-
     }
 }

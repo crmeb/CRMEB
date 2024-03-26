@@ -1,7 +1,5 @@
 const path = require('path');
 const Setting = require('./src/setting.env');
-// 引入打包分析文件
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 // 引入js打包工具
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
@@ -20,6 +18,7 @@ const resolve = (dir) => {
 // iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
 const BASE_URL = process.env.NODE_ENV === 'production' ? '/' : '/';
 const env = process.env.NODE_ENV;
+
 module.exports = {
   // Project deployment base
   // By default we assume your app will be deployed at the root of a domain,
@@ -81,6 +80,7 @@ module.exports = {
     }
   },
   chainWebpack: (config) => {
+    config.plugins.delete('prefetch');
     config.resolve.alias
       .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
       .set('_c', resolve('src/components'));

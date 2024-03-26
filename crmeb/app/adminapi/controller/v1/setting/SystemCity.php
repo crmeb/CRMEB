@@ -133,13 +133,9 @@ class SystemCity extends AuthController
      */
     public function clean_cache()
     {
-        $res1 = CacheService::delete('CITY_LIST');
-        $res2 = CacheService::delete('CITY_FULL_LIST');
-        if ($res1 && $res2) {
-            return app('json')->success(400185);
-        } else {
-            return app('json')->fail(400186);
-        }
+        CacheService::delete('CITY_LIST');
+        CacheService::delete('CITY_FULL_LIST');
+        return app('json')->success(400185);
     }
 
     /**

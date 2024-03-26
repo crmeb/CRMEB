@@ -222,7 +222,7 @@ export default {
     height 100%
     background rgba(0,0,0,0.5)
     z-index: 11;
-::v-deep.happy-scroll-content
+::v-deep .happy-scroll-content
     width 100%
     .demo-spin-icon-load{
         animation: ani-demo-spin 1s linear infinite;

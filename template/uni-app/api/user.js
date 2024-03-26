@@ -719,3 +719,12 @@ export function changeRemindStatus(status) {
 		noAuth: true
 	})
 }
+
+
+/**
+ * 绑定员工
+ * 
+ */
+export function spreadAgent(data) {
+	return request.post(`agent/spread`, data);
+}

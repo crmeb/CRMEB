@@ -13,6 +13,7 @@ namespace crmeb\services\easywechat;
 
 
 use crmeb\services\easywechat\miniPayment\ServiceProvider;
+use crmeb\services\easywechat\miniScheme\ProgramProvider as ProgramScheme;
 use crmeb\services\easywechat\oauth2\wechat\WechatOauth2Provider;
 use crmeb\services\easywechat\orderShipping\OrderClient;
 use crmeb\services\easywechat\subscribe\ProgramProvider;
@@ -45,7 +46,8 @@ class Application extends \EasyWeChat\Foundation\Application
         V3PayServiceProvider::class,
         \crmeb\services\easywechat\Open3rd\ProgramProvider::class,
         OrderServiceProvider::class,
-        TemplateProvider::class
+        TemplateProvider::class,
+        ProgramScheme::class
     ];
 
     /**

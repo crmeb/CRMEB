@@ -455,10 +455,26 @@ class StoreOrderDeliveryServices extends BaseServices
             case 1://快递发货
                 $res = $this->orderDeliverGoods($id, $data, $orderInfo, $storeName);
                 event('NoticeListener', [['orderInfo' => $orderInfo, 'storeName' => $storeName, 'data' => $data], 'order_postage_success']);
+
+                //自定义消息-快递发货
+                $orderInfo['storeName'] = $storeName;
+                $orderInfo['delivery_name'] = $data['delivery_name'];
+                $orderInfo['delivery_id'] = $data['delivery_id'];
+                $orderInfo['time'] = date('Y-m-d H:i:s');
+                $orderInfo['phone'] = $orderInfo['user_phone'];
+                event('CustomNoticeListener', [$orderInfo['uid'], $orderInfo, 'order_express_success']);
                 break;
             case 2://配送
                 $this->orderDelivery($id, $data, $orderInfo, $storeName);
                 event('NoticeListener', [['orderInfo' => $orderInfo, 'storeName' => $storeName, 'data' => $data], 'order_deliver_success']);
+
+                //自定义消息-配送员配送
+                $orderInfo['storeName'] = $storeName;
+                $orderInfo['delivery_name'] = $data['delivery_name'];
+                $orderInfo['delivery_id'] = $data['delivery_id'];
+                $orderInfo['time'] = date('Y-m-d H:i:s');
+                $orderInfo['phone'] = $orderInfo['user_phone'];
+                event('CustomNoticeListener', [$orderInfo['uid'], $orderInfo, 'order_send_success']);
                 break;
             case 3://虚拟发货
                 $this->orderVirtualDelivery($id, $data, $orderInfo, $storeName);

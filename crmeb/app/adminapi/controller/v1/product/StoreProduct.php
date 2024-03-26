@@ -303,6 +303,7 @@ class StoreProduct extends AuthController
         ]);
         $where['is_show'] = 1;
         $where['is_del'] = 0;
+        $where['cate_id'] = stringToIntArray($where['cate_id']);
         /** @var StoreCategoryServices $storeCategoryServices */
         $storeCategoryServices = app()->make(StoreCategoryServices::class);
         if ($where['cate_id'] !== '') {

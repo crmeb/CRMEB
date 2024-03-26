@@ -106,10 +106,10 @@
               </el-switch>
             </el-form-item>
           </el-col>
-          <el-col :span="24" v-if="formValidate.video_open">
+          <el-col :span="24" v-if="formValidate.video_open && !formValidate.video_link">
             <el-form-item label="视频类型：">
               <el-radio-group v-model="seletVideo" @input="changeVideo">
-                <el-radio :label="0" class="radio">本地视频</el-radio>
+                <el-radio :label="0" class="radio">上传视频</el-radio>
                 <el-radio :label="1">视频链接</el-radio>
               </el-radio-group>
             </el-form-item>
@@ -138,7 +138,7 @@
                 >确认添加</el-button
               >
               <el-upload
-                v-if="upload_type === '1' && !videoLink"
+                v-if="upload_type === '1' && !videoLink && !formValidate.video_link"
                 :show-file-list="false"
                 :action="fileUrl2"
                 :before-upload="videoSaveToUrl"
@@ -146,12 +146,13 @@
                 :headers="header"
                 :multiple="false"
                 style="display: inline-block"
+                accept=".mp4"
               >
                 <div v-if="seletVideo === 0 && !formValidate.video_link" class="videbox">+</div>
               </el-upload>
               <div class="box-video-style" v-if="formValidate.video_link">
                 <video
-                  style="width: 100%; height: 100% !important; border-radius: 10px"
+                  style="width: 100%; height: 100%;"
                   :src="formValidate.video_link"
                   controls="controls"
                 >
@@ -368,7 +369,7 @@
                           >
                           <span
                             class="see"
-                            v-else-if=" formValidate.virtual_type == 2 && scope.row.coupon_id "
+                            v-else-if="formValidate.virtual_type == 2 && scope.row.coupon_id"
                             @click="see(scope.row, 'manyFormValidate', scope.$index)"
                             >{{ scope.row.coupon_name }}</span
                           >
@@ -524,7 +525,9 @@
                           >
                           <span
                             class="see"
-                            v-else-if="(scope.row.virtual_list.length || scope.row.stock) && formValidate.virtual_type == 1"
+                            v-else-if="
+                              (scope.row.virtual_list.length || scope.row.stock) && formValidate.virtual_type == 1
+                            "
                             @click="see(scope.row, 'manyFormValidate', scope.$index)"
                             >已设置</span
                           >
@@ -936,7 +939,6 @@
                   class="columnsBox content_width"
                   v-model="manyBrokerage"
                 >
-                  <template slot="append">%</template>
                 </el-input>
                 <span class="brokerage">二级返佣：</span
                 ><el-input
@@ -945,7 +947,7 @@
                   placeholder="请输入二级返佣"
                   class="columnsBox content_width"
                   v-model="manyBrokerageTwo"
-                  ><template slot="append">%</template></el-input
+                  ></el-input
                 >
               </span>
               <span v-if="formValidate.is_sub.indexOf(0) > -1">
@@ -1145,6 +1147,7 @@
               <div class="acea-row row-middle">
                 <span class="mr10">预售活动结束后</span>
                 <el-input-number
+                  class="w-80"
                   :controls="false"
                   placeholder="请输入发货时间"
                   :precision="0"
@@ -1152,7 +1155,6 @@
                   v-model="formValidate.presale_day"
                 />
                 <span class="ml10"> 天之内 </span>
-                <div class="ml10 grey"></div>
               </div>
             </el-form-item>
           </el-col>
@@ -1377,8 +1379,9 @@
                 </div>
               </div>
               <div class="add-more" v-if="disk_type == 2">
-                <el-button type="primary" @click="handleAdd">新增</el-button>
-                <el-upload class="ml10" :action="cardUrl" :data="uploadData" :headers="header" :on-success="upFile">
+                <el-button class="h-33" type="primary" @click="handleAdd">新增</el-button>
+                <el-upload class="ml10" :action="cardUrl" :data="uploadData" :headers="header" :on-success="upFile" :before-upload="beforeUpload"
+ >
                   <el-button>导入卡密</el-button>
                 </el-upload>
               </div>
@@ -1458,6 +1461,8 @@ import {
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
+import { isFileUpload, isVideoUpload } from '@/utils';
+import checkArray from '@/libs/permission';
 
 export default {
   name: 'product_productAdd',
@@ -1913,7 +1918,7 @@ export default {
         },
       ],
       columnsInstalM: [],
-      moveIndex: '',
+      moveIndex: ''
     };
   },
   computed: {
@@ -2003,6 +2008,7 @@ export default {
                 },
               ];
             }
+            this.watchActivity()
             this.spinShow = false;
           }
         })
@@ -2021,26 +2027,32 @@ export default {
     this.productGetTemplate();
     // this.userLabel();
     this.uploadType();
+    this.watchActivity()
   },
   methods: {
+    beforeUpload(file) {
+      return isFileUpload(file)
+    },
     // 分片上传
     videoSaveToUrl(file) {
-      uploadByPieces({
-        file: file, // 视频实体
-        pieceSize: 3, // 分片大小
-        success: (data) => {
-          this.formValidate.video_link = data.file_path;
-          this.progress = 100;
-        },
-        error: (e) => {
-          this.$message.error(e.msg);
-        },
-        uploading: (chunk, allChunk) => {
-          this.videoIng = true;
-          let st = Math.floor((chunk / allChunk) * 100);
-          this.progress = st;
-        },
-      });
+      if(isVideoUpload(file)){
+        uploadByPieces({
+          file: file, // 视频实体
+          pieceSize: 3, // 分片大小
+          success: (data) => {
+            this.formValidate.video_link = data.file_path;
+            this.progress = 100;
+          },
+          error: (e) => {
+            this.$message.error(e.msg);
+          },
+          uploading: (chunk, allChunk) => {
+            this.videoIng = true;
+            let st = Math.floor((chunk / allChunk) * 100);
+            this.progress = st;
+          },
+        });
+      }
       return false;
     },
     // 类型选择/填入内容判断
@@ -2230,6 +2242,7 @@ export default {
           },
         ];
       }
+      this.watchActivity()
     },
     //关闭淘宝弹窗并生成数据；
     onClose(data) {
@@ -2934,7 +2947,7 @@ export default {
         return match;
       });
       newContent = newContent.replace(/style="[^"]+"/gi, function (match, capture) {
-        match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/width:[^;]+;/gi, 'max-width:100%;');
+        match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/max-max-width:[^;]+;/gi, 'max-width:100%;')
         return match;
       });
       newContent = newContent.replace(/<br[^>]*\/>/gi, '');
@@ -2978,7 +2991,6 @@ export default {
     openLabel(row) {
       this.labelShow = true;
       this.$nextTick((e) => {
-        console.log(this.$refs.userLabel);
         // this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.dataLabel)));
       });
     },
@@ -2995,6 +3007,24 @@ export default {
     },
     handleRemoveRecommend(i) {
       this.formValidate.recommend_list.splice(i, 1);
+    },
+    watchActivity() {
+      let marketing = []
+       this.formValidate.activity.map((el) => {
+        if (el == '默认') {
+          marketing.push(el);
+        }
+        if (el == '秒杀' && checkArray('seckill')) {
+          marketing.push(el);
+        } 
+         if (el == '砍价' && checkArray('bargain')) {
+          marketing.push(el);
+        } 
+         if (el == '拼团' && checkArray('combination')) {
+          marketing.push(el);
+        } 
+      });
+      this.formValidate.activity = marketing
     },
   },
 };
@@ -3035,7 +3065,7 @@ export default {
   color: #d8d8d8;
 }
 
-.maxW ::v-deep.ivu-select-dropdown {
+.maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
 
@@ -3063,8 +3093,8 @@ export default {
 }
 
 .box-video-style {
-  width: 40%;
-  height: 180px;
+  width: 375px; 
+  height: 211px;
   border-radius: 10px;
   background-color: #707070;
   margin-top: 10px;
@@ -3083,6 +3113,7 @@ export default {
   top: -74px;
   left: 50%;
   margin-left: -25px;
+  cursor: pointer;
 }
 
 .box-video-style .mark {
@@ -3144,6 +3175,7 @@ export default {
   align-items: center;
   .item{
     display:flex;
+    flex-wrap: wrap;
   }
 }
 
@@ -3307,7 +3339,7 @@ export default {
 }
 </style>
 <style scoped lang="stylus">
-::v-deep.ivu-date-picker {
+::v-deep .ivu-date-picker {
   width: 300px;
 }
 
@@ -3453,11 +3485,11 @@ export default {
   }
 }
 
-#shopp-manager ::v-deep.ivu-form-item-content {
+#shopp-manager ::v-deep .ivu-form-item-content {
   line-height: 33px !important;
 }
 
-#selectvideo ::v-deep.ivu-form-item-content {
+#selectvideo ::v-deep .ivu-form-item-content {
   line-height: 0px !important;
 }
 
@@ -3473,7 +3505,7 @@ export default {
 .labelInput ::v-deep .el-tag .el-tag__close{
   color: #909399;
 }
-.labelInput ::v-deep.el-tag .el-tag__close:hover{
+.labelInput ::v-deep .el-tag .el-tag__close:hover{
   color: #fff;
   background-color: #909399;
 }

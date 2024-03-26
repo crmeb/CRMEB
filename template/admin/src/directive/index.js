@@ -21,8 +21,10 @@ const importDirective = (Vue) => {
   Vue.directive('clipboard', directive.clipboard);
   /**
    * v-auth="['string-string']"
-  * */
+   * */
   Vue.directive('auth', directive.auth);
+
+  Vue.directive('permission', directive.permission);
 };
 
 export default importDirective;

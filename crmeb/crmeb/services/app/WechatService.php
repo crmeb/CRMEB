@@ -296,13 +296,15 @@ class WechatService
      * @email: 442384644@qq.com
      * @date: 2023/8/17
      */
-    public static function sendTemplate($openid, $templateId, array $data, $url = null, $defaultColor = null)
+    public static function sendTemplate($openid, $templateId, array $data, $url = null, $defaultColor = null, int $wechatToRoutine = 0)
     {
         $notice = self::application()->new_notice->to($openid)->template($templateId)->andData($data);
-        if (sys_config('wechat_template_to_miniprogram') == 1) $notice->setMiniprogram([
-            'appid' => sys_config('routine_appId'),
-            'pagepath' => str_replace(sys_config('site_url'), '', $url)
-        ]);
+        if ($wechatToRoutine && sys_config('routine_appId')) {
+            $notice->setMiniprogram([
+                'appid' => sys_config('routine_appId'),
+                'pagepath' => str_replace(sys_config('site_url'), '', $url)
+            ]);
+        }
         if ($url !== null) $notice->url($url);
         if ($defaultColor !== null) $notice->defaultColor($defaultColor);
         return $notice->send();

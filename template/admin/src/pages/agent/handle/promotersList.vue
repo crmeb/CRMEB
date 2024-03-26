@@ -128,6 +128,16 @@
               <span>{{ scope.row.brokerage_price || 0 }}</span>
             </template>
           </el-table-column>
+          <el-table-column label="事业部返佣金额" min-width="130" v-if="rowsList.division_type == 1">
+            <template slot-scope="scope">
+              <span>{{ scope.row.division_brokerage || 0 }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="代理商返佣金额" min-width="130" v-if="rowsList.division_type == 2">
+            <template slot-scope="scope">
+              <span>{{ scope.row.agent_brokerage || 0 }}</span>
+            </template>
+          </el-table-column>
         </template>
       </el-table>
       <div class="acea-row row-right page">
@@ -187,6 +197,8 @@ export default {
           { text: '全部', val: '' },
           { text: '一级推广人订单', val: 1 },
           { text: '二级推广人订单', val: 2 },
+          { text: '事业部推广订单', val: 3 },
+          { text: '代理商推广订单', val: 4 },
         ],
       },
       formValidate: {

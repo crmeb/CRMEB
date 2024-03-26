@@ -10,7 +10,7 @@
             @submit.native.prevent
             inline
         >
-          <el-form-item label="订单状态：">
+          <el-form-item label="退款状态：">
             <el-select
                 v-model="pagination.refund_type"
                 clearable

@@ -15,6 +15,7 @@ namespace app\services\activity\combination;
 use app\dao\activity\combination\StorePinkDao;
 use app\jobs\PinkJob;
 use app\services\BaseServices;
+use app\services\order\StoreOrderDeliveryServices;
 use app\services\order\StoreOrderRefundServices;
 use app\services\order\StoreOrderServices;
 use app\services\other\PosterServices;
@@ -408,6 +409,18 @@ class StorePinkServices extends BaseServices
                 ], 'order_user_groups_success']);
         }
         $this->dao->update([['uid', 'in', $uidAll], ['id|k_id', '=', $pid]], ['is_tpl' => 1]);
+
+        //拼团卡密和优惠券商品，成团后发放
+        $orderInfos = $orderService->getColumn([['order_id', 'in', $order_ids]], '*', 'order_id');
+        foreach ($orderInfos as $orderInfo) {
+            if ($orderInfo['virtual_type'] > 0) {
+                $orderInfo['cart_id'] = json_decode($orderInfo['cart_id'], true);
+                /** @var StoreOrderDeliveryServices $orderDeliveryServices */
+                $orderDeliveryServices = app()->make(StoreOrderDeliveryServices::class);
+                $orderDeliveryServices->virtualSend($orderInfo);
+            }
+        }
+        return true;
     }
 
     /**

@@ -259,7 +259,6 @@ export default {
     saveTimer(data) {
       saveTimer(data)
         .then((res) => {
-          console.log(res);
           this.$message.success({
             message: res.msg,
             onClose: () => {

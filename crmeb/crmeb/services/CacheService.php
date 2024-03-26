@@ -99,6 +99,18 @@ class CacheService
     }
 
     /**
+     * 清空全部缓存
+     * @return bool
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/12/19
+     */
+    public static function clearAll()
+    {
+        return Cache::clear();
+    }
+
+    /**
      * 检查缓存是否存在
      * @param string $key
      * @return bool

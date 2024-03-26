@@ -427,7 +427,7 @@ export default {
   display: none;
 }
 
-::v-deep.ivu-form-item-content {
+::v-deep .ivu-form-item-content {
   margin-left: 0px !important;
 }
 
@@ -1167,7 +1167,7 @@ export default {
   // width 80px!important
 }
 
-::v-deep.ivu-page-header {
+::v-deep .ivu-page-header {
   border-bottom: unset;
   position: fixed;
   z-index: 9;

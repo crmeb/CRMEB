@@ -45,7 +45,7 @@
         <template slot-scope="scope">
           <a @click="edit(scope.row.id)">编辑</a>
           <el-divider direction="vertical"></el-divider>
-          <a @click="handleDelete(scope.row, '删除秒杀商品', scope.$index)">删除</a>
+          <a v-permission="'seckill'" @click="handleDelete(scope.row, '删除秒杀商品', scope.$index)">删除</a>
         </template>
       </el-table-column>
     </el-table>

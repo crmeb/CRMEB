@@ -55,7 +55,6 @@
           <div v-show="isReceiveTime">
             <el-input-number
               :controls="false"
-              :min="1"
               :max="10000"
               :precision="0"
               v-model="formData.time"
@@ -115,6 +114,8 @@
               :on-exceeded-size="handleMaxSize"
               class="mr20"
               style="margin-top: 1px"
+              accept="image/*"
+              :before-upload="beforeUpload"
             >
               <el-button type="primary">上传</el-button>
             </el-upload>
@@ -127,7 +128,7 @@
         >立即提交</el-button
       >
     </el-card>
-    <el-dialog :visible.sync="customerShow" title="请选择商城用户" :show-close="true" width="720px">
+    <el-dialog :visible.sync="customerShow" title="请选择商城用户" :show-close="true" width="1000px">
       <customerInfo v-if="customerShow" @imageObject="imageObject"></customerInfo>
     </el-dialog>
     <!--图文消息 -->
@@ -167,6 +168,7 @@ import { wechatQrcodeSaveApi, wechatQrcodeTree, wechatQrcodeDetail } from '@/api
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import customerInfo from '@/components/customerInfo';
+import { isPicUpload } from '@/utils';
 
 export default {
   name: 'storeCouponCreate',
@@ -195,7 +197,7 @@ export default {
       formData: {
         name: '',
         type: 'text',
-        time: 0,
+        time: undefined,
         label_id: [],
         image: '',
         cate_id: '',
@@ -242,6 +244,9 @@ export default {
     }
   },
   methods: {
+    beforeUpload(file) {
+      return isPicUpload(file);
+    },
     activeData(dataLabel) {
       this.labelShow = false;
       this.dataLabel = dataLabel;
@@ -394,9 +399,10 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.content_width{
-  width:460px;
+.content_width {
+  width: 460px;
 }
+
 .info {
   color: #888;
   font-size: 12px;
@@ -460,6 +466,10 @@ export default {
   vertical-align: middle;
 }
 
+::v-deep .el-tag {
+  margin-right: 5px;
+}
+
 .upload-list img {
   display: block;
   width: 100%;
@@ -483,6 +493,7 @@ export default {
 }
 
 .trip {
+  font-size: 12px;
   color: #ccc;
 }
 
@@ -552,17 +563,18 @@ textarea {
   padding: 10px;
   border-radius: 10px;
   margin-top: 20px;
-  position relative
+  position: relative;
 
   .news_pic {
     width: 100%;
     height: 150px;
   }
-  .del_icon{
-    position absolute
-    right -8px
-    top -8px
-    cursor pointer
+
+  .del_icon {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    cursor: pointer;
   }
 }
 
@@ -575,6 +587,7 @@ textarea {
   cursor: pointer;
 
   .span {
+    font-size: 12px;
     color: #c5c8ce;
   }
 

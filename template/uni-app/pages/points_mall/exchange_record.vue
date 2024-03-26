@@ -1,14 +1,12 @@
 <template>
 	<view :style="colorStyle">
-		<block v-if="bargain.length>0" >
+		<block v-if="bargain.length > 0">
 			<view class="bargain-record" ref="container">
 				<view class="item" v-for="(item, index) in bargain" :key="index">
 					<view class="exchange_record-time">
-						<view class="">
-							{{$t(`兑换时间`)}}：{{item.add_time}}
-						</view>
+						<view class="">{{ $t(`兑换时间`) }}：{{ item.add_time }}</view>
 						<view class="status">
-							{{$t(item.status_name)}}
+							{{ $t(item.status_name) }}
 						</view>
 					</view>
 					<view class="picTxt acea-row row-between-wrapper">
@@ -16,9 +14,9 @@
 							<image :src="item.image" />
 						</view>
 						<view class="text acea-row row-column-around">
-							<view class="line1" style="width: 100%;">{{ item.store_name }}</view>
-							<view class="line1 gray-sty">{{item.suk}}</view>
-							<view class="line1 gray-sty">{{$t(`积分`)}}:{{item.total_price}}</view>
+							<view class="line1" style="width: 100%">{{ item.store_name }}</view>
+							<view class="line1 gray-sty">{{ item.suk }}</view>
+							<view class="line1 gray-sty">{{ $t(`积分`) }}:{{ item.total_price }}</view>
 						</view>
 					</view>
 					<view class="bottom acea-row row-between-wrapper">
@@ -26,10 +24,10 @@
 						<view class="acea-row row-middle row-right">
 							<view class="bnt cancel" v-if="item.status === 2 && item.delivery_type === 'express'"
 								@click="getLogistics(item.order_id)">
-								{{$t(`查看物流`)}}
+								{{ $t(`查看物流`) }}
 							</view>
 							<view class="bnt bg-color-red" @click="goDetail(item.order_id)">
-								{{$t(`查看详情`)}}
+								{{ $t(`查看详情`) }}
 							</view>
 							<!-- <view class="bnt bg-color-red" v-else @click="goList">重开一个</view> -->
 						</view>
@@ -47,16 +45,16 @@
 	</view>
 </template>
 <script>
-	import CountDown from "@/components/countDown";
-	import emptyPage from '@/components/emptyPage.vue'
+	import CountDown from '@/components/countDown';
+	import emptyPage from '@/components/emptyPage.vue';
 	import {
 		getIntegralOrderList
-	} from "@/api/activity";
-	import Loading from "@/components/Loading";
+	} from '@/api/activity';
+	import Loading from '@/components/Loading';
 	import home from '@/components/home';
 	import colors from '@/mixins/color.js';
 	export default {
-		name: "BargainRecord",
+		name: 'BargainRecord',
 		components: {
 			CountDown,
 			Loading,
@@ -64,8 +62,8 @@
 			home
 		},
 		props: {},
-		mixins:[colors],
-		data: function() {
+		mixins: [colors],
+		data() {
 			return {
 				bargain: [],
 				status: false, //砍价列表是否获取完成 false 未完成 true 完成
@@ -75,43 +73,48 @@
 				userInfo: {}
 			};
 		},
-		onLoad: function() {
+		onShow() {
+			this.bargain = [];
+			this.page = 1;
+			this.status = false
 			this.getIntegralOrderList();
 		},
 		methods: {
 			goDetail: function(id) {
 				uni.navigateTo({
 					url: `/pages/points_mall/integral_order_details?order_id=${id}`
-				})
+				});
 			},
 			getIntegralOrderList: function() {
 				var that = this;
 				if (that.loadingList) return;
 				if (that.status) return;
+				that.loadingList = true
 				getIntegralOrderList({
 						page: that.page,
 						limit: that.limit
 					})
-					.then(res => {
+					.then((res) => {
 						that.status = res.data.length < that.limit;
 						that.bargain.push.apply(that.bargain, res.data);
 						that.page++;
 						that.loadingList = false;
 					})
-					.catch(res => {
+					.catch((res) => {
 						that.$util.Tips({
 							title: res
-						})
+						});
 					});
 			},
 			getLogistics(order_id) {
 				uni.navigateTo({
 					url: `/pages/points_mall/logistics_details?order_id=${order_id}`
-				})
-			},
+				});
+			}
 		},
 		onReachBottom() {
-			this.getIntegralOrderList();
+			if (!this.loadingList)
+				this.getIntegralOrderList();
 		}
 	};
 </script>
@@ -135,7 +138,7 @@
 
 		.exchange_record-time {
 			color: #333333;
-			border-bottom: 1px solid #EEEEEE;
+			border-bottom: 1px solid #eeeeee;
 			padding: 22rpx 30rpx;
 			display: flex;
 			justify-content: space-between;

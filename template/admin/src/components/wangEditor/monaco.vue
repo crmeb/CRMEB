@@ -52,8 +52,10 @@ export default {
     },
   },
   beforeDestroy() {
-    this.monacoInstance.dispose();
-    this.monacoInstance = null;
+    if (this.monacoInstance) {
+      this.monacoInstance.dispose();
+      this.monacoInstance = null;
+    }
   },
 };
 </script>
@@ -66,7 +68,7 @@ export default {
 .text ::v-deep .ivu-input-wrapper {
   min-height: 600px;
 }
-.text ::v-deep textarea.ivu-input {
+.text ::v-deeptextarea.ivu-input {
   min-height: 600px;
 }
 .text {

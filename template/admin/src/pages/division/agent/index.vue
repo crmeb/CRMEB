@@ -67,14 +67,9 @@
                 <span> {{ scope.row.division_percent }}%</span>
               </template>
             </el-table-column>
-            <el-table-column label="代理商数量" min-width="130">
+            <el-table-column label="员工数量" min-width="130">
               <template slot-scope="scope">
                 <span>{{ scope.row.agent_count }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="订单数量" min-width="130">
-              <template slot-scope="scope">
-                <span>{{ scope.row.order_count }}</span>
               </template>
             </el-table-column>
             <el-table-column label="截止时间" min-width="130">
@@ -95,8 +90,10 @@
                 </el-switch>
               </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="170">
+            <el-table-column label="操作" fixed="right" width="220">
               <template slot-scope="scope">
+                <a @click="staffAdd(scope.row.uid)">添加员工</a>
+                <el-divider direction="vertical"></el-divider>
                 <a @click="jump(scope.row.uid)">查看员工</a>
                 <el-divider direction="vertical"></el-divider>
                 <a @click="groupAdd(scope.row.uid)">编辑</a>
@@ -142,9 +139,9 @@
         <el-table-column label="姓名" min-width="130">
           <template slot-scope="scope">
             <div class="acea-row">
-              <i class="el-icon-male" v-show="scope.row.sex === '男'" style="color:#2db7f5;font-size: 15px;"></i>
-              <i class="el-icon-female" v-show="scope.row.sex === '女'" style="color:#ed4014;font-size: 15px;"></i>
-              <div v-text="scope.row.nickname" class="ml10"></div>
+              <i class="el-icon-male mr10" v-show="scope.row.sex === '男'" style="color:#2db7f5;font-size: 15px;"></i>
+              <i class="el-icon-female mr10" v-show="scope.row.sex === '女'" style="color:#ed4014;font-size: 15px;"></i>
+              <div v-text="scope.row.nickname" class=""></div>
             </div>
           </template>
         </el-table-column>
@@ -169,7 +166,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { regionList, agentFrom, isShowApi, clerkList } from '@/api/agent';
+import { regionList, agentFrom, isShowApi, clerkList, staffAddFrom } from '@/api/agent';
 import { formatDate } from '@/utils/validate';
 export default {
   name: 'agent_extra',
@@ -263,6 +260,14 @@ export default {
     // 添加表单
     groupAdd(id) {
       this.$modalForm(agentFrom(id))
+        .then((res) => {
+          this.getList();
+        })
+        .catch((err) => {});
+    },
+    //添加员工表单
+    staffAdd(id) {
+      this.$modalForm(staffAddFrom(id))
         .then((res) => {
           this.getList();
         })

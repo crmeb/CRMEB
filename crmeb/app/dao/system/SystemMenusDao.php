@@ -57,6 +57,7 @@ class SystemMenusDao extends BaseDao
         if (!$field) {
             $field = ['id', 'menu_name', 'icon', 'pid', 'sort', 'menu_path', 'is_show', 'header', 'is_header', 'is_show_path', 'is_show'];
         }
+        $where['no_model'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         return $this->search($where)->field($field)->order('sort DESC,id DESC')->failException(false)->select();
     }
 
@@ -67,6 +68,7 @@ class SystemMenusDao extends BaseDao
      */
     public function getMenusUnique(array $where)
     {
+        $where['no_model'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         return $this->search($where)->where('unique_auth', '<>', '')->column('unique_auth', '');
     }
 
@@ -91,6 +93,7 @@ class SystemMenusDao extends BaseDao
     public function getMenusList(array $where, array $field = ['*'])
     {
         $where = array_merge($where, ['is_del' => 0]);
+        $where['no_model'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         return $this->search($where)->field($field)->order('sort DESC,id ASC')->select();
     }
 
@@ -114,6 +117,7 @@ class SystemMenusDao extends BaseDao
      */
     public function column(array $where, string $field, string $key = '')
     {
+        $where['no_model'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         return $this->search($where)->column($field, $key);
     }
 
@@ -127,6 +131,7 @@ class SystemMenusDao extends BaseDao
      */
     public function menusSelect(array $where, $type = 1)
     {
+        $where['no_model'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         if ($type == 1) {
             return $this->search($where)->field('id,pid,menu_name,menu_path,unique_auth,sort')->order('sort DESC,id DESC')->select();
         } else {
@@ -142,6 +147,7 @@ class SystemMenusDao extends BaseDao
      */
     public function getSearchList()
     {
+        $where['no_model'] = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
         return $this->search(['is_show' => 1, 'auth_type' => 1, 'is_del' => 0, 'is_show_path' => 0])
             ->field('id,pid,menu_name,menu_path,unique_auth,sort')->order('sort DESC,id DESC')->select();
     }

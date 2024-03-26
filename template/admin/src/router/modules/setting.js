@@ -498,7 +498,7 @@ export default {
     },
     {
       path: 'pc_group_data',
-      name: `${pre}systemGroupData`,
+      name: `${pre}systemPcGroupData`,
       meta: {
         auth: ['setting-system-pc_data'],
         title: 'PC商城',

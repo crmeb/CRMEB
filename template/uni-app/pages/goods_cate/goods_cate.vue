@@ -43,10 +43,8 @@ export default {
 			uni.$emit('uploadFooter');
 			getCategoryVersion().then((res) => {
 				if (!uni.getStorageSync('CAT_VERSION') || res.data.version != uni.getStorageSync('CAT_VERSION')) {
-					this.isNew = !this.isNew;
 					uni.setStorageSync('CAT_VERSION', res.data.version);
-				} else {
-					// this.isNew = false
+					uni.$emit('uploadCatData');
 				}
 				this.classStyle();
 			});
@@ -61,40 +59,16 @@ export default {
 				let status = res.data.status;
 				this.category = status;
 				uni.setStorageSync('is_diy', res.data.is_diy);
-				this.status = res.data.status;
 				this.$nextTick((e) => {
-					if (this.status == 2 || this.status == 3) {
-						uni.hideTabBar();
-					} else if (this.status == 1) {
-						this.$refs.classOne.is_diy = res.data.is_diy;
-						this.$refs.classOne.getNav();
-					}
-					if (status == 2) {
-						if (this.isLogin) {
-							this.$refs.classTwo.getCartNum();
-							this.$refs.classTwo.getCartList(1);
-						}
-						// this.$refs.classTwo.getAllCategory()
-					}
-					if (status == 3) {
-						if (this.isLogin) {
-							this.$refs.classThree.getCartNum();
-							this.$refs.classThree.getCartList(1);
-							this.$refs.classThree.tempArr = [];
-							this.$refs.classThree.loadend = false;
-							this.$refs.classThree.page = 1;
-							this.$refs.classThree.productslist();
-						}
-						// this.$refs.classThree.getAllCategory()
-					}
 					if (status == 2 || status == 3) {
 						uni.hideTabBar();
 					} else {
+						this.$refs.classOne.is_diy = res.data.is_diy;
 						if (!this.is_diy) {
 							uni.hideTabBar();
 						} else {
+							this.$refs.classOne.getNav();
 						}
-						this.$refs.classOne.getNav();
 					}
 				});
 			});
@@ -113,5 +87,11 @@ export default {
 <style scoped lang="scss">
 /deep/.mask {
 	z-index: 99;
+}
+::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	color: transparent;
+	display: none;
 }
 </style>

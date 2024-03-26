@@ -15,10 +15,10 @@
               <div class="page-account-top-logo">客服登录</div>
             </div>
             <el-form ref="formInline" :model="formInline" :rules="ruleInline" @keyup.enter="handleSubmit('formInline')">
-              <el-form-item class="mb10" prop="username">
+              <el-form-item class="mb20" prop="username">
                 <el-input type="text" v-model="formInline.username" placeholder="请输入用户名" size="large" />
               </el-form-item>
-              <el-form-item class="mb10" prop="password">
+              <el-form-item class="mb20" prop="password">
                 <el-input type="password" v-model="formInline.password" placeholder="请输入密码" size="large" />
               </el-form-item>
               <el-form-item>
@@ -45,7 +45,7 @@
     </div>
     <div class="foot-box" v-if="copyright">{{ copyright }}</div>
     <div class="foot-box" v-else>
-      Copyright © 2014-2023 <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
+      Copyright © 2014-2024 <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
     </div>
   </div>
 </template>

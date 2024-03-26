@@ -207,6 +207,6 @@ class OrderPayServices
                 }
         }
 
-        return ['jsConfig' => $jsConfig, 'order_id' => $order['order_id'], 'pay_key' => $payKey, 'pay_url' => $payUrl ?? ''];
+        return ['jsConfig' => $jsConfig, 'oid' => $order['id'], 'order_id' => $order['order_id'], 'pay_key' => $payKey, 'pay_url' => $payUrl ?? ''];
     }
 }

@@ -14,7 +14,6 @@ export const uploadByPieces = ({ file, pieceSize = 2, success, error, uploading 
     fileRederInstance.addEventListener('load', (e) => {
       let fileBolb = e.target.result;
       fileMD5 = md5(fileBolb);
-      console.log('文件未被上传，将分片上传');
       readChunkMD5();
     });
   };
@@ -29,8 +28,6 @@ export const uploadByPieces = ({ file, pieceSize = 2, success, error, uploading 
     // 针对单个文件进行chunk上传
     for (var i = 0; i < chunkCount; i++) {
       const { chunk } = getChunkInfo(file, i, chunkSize);
-      console.log('总片数' + chunkCount);
-      console.log('分片后的数据---测试：' + i);
       await uploadChunk({ chunk, currentChunk: i, chunkCount });
     }
   };
@@ -53,7 +50,6 @@ export const uploadByPieces = ({ file, pieceSize = 2, success, error, uploading 
       fetchForm.append('md5', fileMD5);
       upload(fetchForm, config)
         .then((res) => {
-          console.log('分片上传返回信息：', res);
           if (res.data.code == 1) {
             // // 结合不同项目 将成功的信息返回出去
             // 下面如果在项目中没有用到可以不用打开注释
@@ -61,11 +57,9 @@ export const uploadByPieces = ({ file, pieceSize = 2, success, error, uploading 
             resolver(true);
           } else if (res.data.code == 2) {
             if (chunkInfo.currentChunk < chunkInfo.chunkCount - 1) {
-              console.log('分片上传成功');
             } else {
               // 当总数大于等于分片个数的时候
               if (chunkInfo.currentChunk + 1 == chunkInfo.chunkCount) {
-                console.log('文件开始------合并成功');
                 success(res.data);
               }
             }

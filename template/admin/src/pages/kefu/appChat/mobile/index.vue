@@ -98,7 +98,7 @@
           :headers="header"
           :multiple="true"
           :on-success="handleSuccess"
-          :format="['jpg', 'jpeg', 'png', 'gif']"
+          accept="image/*"
           :on-format-error="handleFormatError"
           style="margin-top: 1px; display: inline-block"
         >
@@ -129,6 +129,8 @@ import util from '@/libs/util';
 import emojiList from '@/utils/emoji';
 import { serviceList, serviceListApi, getOrderApi, chatListApi, productApi } from '@/api/kefu';
 import { getCookies, removeCookies, setCookies } from '@/libs/util';
+import { isPicUpload } from '@/utils';
+
 const chunk = function (arr, num) {
   num = num * 1 || 1;
   var ret = [];
@@ -709,10 +711,10 @@ export default {
                 border transparent !important
 
             }
-            ::v-deep .ivu-input{
+            ::v-deep .el-input__inner{
                 font-size .28rem !important
             }
-            ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
+            ::v-deep .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
                 border transparent
                 box-shadow: none;
             }
@@ -827,10 +829,10 @@ export default {
                 border-radius: .32rem;
                 overflow hidden
 
-                ::v-deep .ivu-input{
+                ::v-deep .el-input__inner{
                     background #F5F6F9
                 }
-                ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
+                ::v-deep .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
                     border transparent
                     box-shadow: none;
                 }

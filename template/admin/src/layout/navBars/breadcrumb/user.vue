@@ -89,13 +89,23 @@ export default {
     }
   },
   methods: {
+    /**
+     * 初始化 isDot 属性
+     * @param {boolean} status - 状态值
+     */
     initIsDot(status) {
       this.isDot = status;
     },
+    /**
+     * 打开新弹窗
+     */
     openNews() {
+      // 切换 isShowUserNewsPopover 属性值
       this.isShowUserNewsPopover = !this.isShowUserNewsPopover;
+      // 将 isDot 属性设置为 false
       this.isDot = false;
     },
+
     // 搜索点击
     onSearchClick() {
       this.$refs.searchRef.openSearch();

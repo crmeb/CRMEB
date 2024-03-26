@@ -183,7 +183,7 @@ class StoreOrderController
             ['custom_form', []],
         ], true);
         $payType = strtolower($payType);
-        $order = CacheService::lock('orderCreat' . $key, function () use ($createServices, $userInfo, $key, $addressId, $payType, $useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $advanceId, $customForm, $invoice_id) {
+        $order = CacheService::lock('orderCreate' . $key, function () use ($createServices, $userInfo, $key, $addressId, $payType, $useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $advanceId, $customForm, $invoice_id) {
             return $createServices->createOrder($userInfo['uid'], $key, $userInfo, $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, !!$news, $advanceId, $customForm, $invoice_id);
         });
         $orderId = $order['order_id'];
@@ -241,8 +241,12 @@ class StoreOrderController
             ['quitUrl', ''],
             ['type', 0]
         ], true);
+        $payLock = CacheService::get('PAY_LOCK_' . $uni);
+        if ($payLock) return app('json')->fail('订单支付中，请勿重复支付');
+        CacheService::set('PAY_LOCK_' . $uni, 'PAY_LOCK', 2);
         if (!$uni) return app('json')->fail(100100);
         $orderInfo = $this->services->get(['order_id' => $uni]);
+        if ($orderInfo->is_del == 1 || $orderInfo->is_system_del == 1) return app('json')->fail('订单已经超过系统支付时间，无法支付，请重新下单');
         $uid = $type == 1 ? (int)$request->uid() : $orderInfo->uid;
         $orderInfo->is_channel = $this->getChennel[$request->getFromType()] ?? ($request->isApp() ? 0 : 1);
         $orderInfo->order_id = $uid != $orderInfo->pay_uid ? app()->make(StoreOrderCreateServices::class)->getNewOrderId('cp') : $uni;
@@ -283,7 +287,7 @@ class StoreOrderController
                 }
             case PayServices::OFFLINE_PAY:
                 if ($this->services->setOrderTypePayOffline($order['order_id'])) {
-                    event('NoticeListener', [$order, 'admin_pay_success_code']);
+                    event('NoticeListener', [$order->toArray(), 'admin_pay_success_code']);
                     return app('json')->status('success', 410203);
                 } else {
                     return app('json')->status('success', 410216);
@@ -812,7 +816,7 @@ class StoreOrderController
                     $update['delivery_id'] = $data['kuaidinum'];
                 }
                 if (isset($data['task_id'])) {
-                    $this->services->update(['task_id' => $data['task_id']], $update);
+                    $this->services->update(['kuaidi_task_id' => $data['task_id']], $update);
                 }
                 break;
             case 'order_take'://取件

@@ -84,7 +84,7 @@ export default function modalForm(formRequestPromise, config = {}) {
                     })
                     .catch((err) => {
                       this.$message.error(err.msg || '提交失败');
-                      reject(err);
+                      // reject(err);
                     })
                     .finally(() => {
                       fn();
@@ -100,7 +100,7 @@ export default function modalForm(formRequestPromise, config = {}) {
         });
       })
       .catch((e) => {
-        this.$message.error(e.message || '--');
+        this.$message.error(e.msg || '--');
       });
   });
 }

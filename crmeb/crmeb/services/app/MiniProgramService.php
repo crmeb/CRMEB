@@ -912,9 +912,6 @@ class MiniProgramService
                         case 'trade_manage_remind_shipping':   // 曾经发过货的小程序，订单超过48小时未发货时
                             break;
                         case 'trade_manage_order_settlement':     // 订单完成发货时  订单结算时
-                            if (isset($message['estimated_settlement_time'])) { //订单完成发货时
-                                MiniOrderService::notifyConfirmByTradeNo($message['merchant_trade_no'], time());
-                            }
                             if (isset($message['confirm_receive_method'])) {  // 订单结算时
                                 /** @var StoreOrderTakeServices $StoreOrderTakeServices */
                                 $storeOrderTakeServices = app()->make(StoreOrderTakeServices::class);
@@ -925,5 +922,19 @@ class MiniProgramService
                     break;
             };
         });
+    }
+
+    public static function getUrlScheme($jumpWxa = [], $expireType = -1, $expireNum = 0)
+    {
+        try {
+            $res = self::miniprogram()->mini_scheme->getUrlScheme($jumpWxa, $expireType, $expireNum);
+            if (isset($res['errcode']) && $res['errcode'] == 0) {
+                return $res['openlink'];
+            } else {
+                return '';
+            }
+        } catch (\Throwable $e) {
+            return $e->getMessage();
+        }
     }
 }

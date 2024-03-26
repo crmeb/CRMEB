@@ -53,23 +53,33 @@
 					</view>
 					<view class="mask" @click="closeTap"></view>
 				</view>
-				<goodList
-					ref="d_goodClass"
-					:tempArr="tempArr"
-					:isLogin="isLogin"
-					@gocartduo="goCartDuo"
-					@gocartdan="goCartDan"
-					@ChangeCartNumDan="ChangeCartNumDan"
-					@detail="goDetail"
-				></goodList>
-				<view class="loadingicon acea-row row-center-wrapper">
-					<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
-					{{ loadTitle }}
-				</view>
+				<scroll-view
+					scroll-y="true"
+					scroll-with-animation="true"
+					:scroll-top="scrollTop"
+					@scroll="scroll"
+					style="height: calc(100vh - 324rpx)"
+					:lower-threshold="50"
+					@scrolltolower="productslist"
+				>
+					<goodList
+						ref="d_goodClass"
+						:tempArr="tempArr"
+						:isLogin="isLogin"
+						@gocartduo="goCartDuo"
+						@gocartdan="goCartDan"
+						@ChangeCartNumDan="ChangeCartNumDan"
+						@detail="goDetail"
+					></goodList>
+					<view class="loadingicon acea-row row-center-wrapper">
+						<text class="loading iconfont icon-jiazai" :hidden="loading == false"></text>
+						{{ loadTitle }}
+					</view>
+				</scroll-view>
 			</view>
 		</view>
 		<view class="footer acea-row row-between-wrapper">
-			<view class="cartIcon acea-row row-center-wrapper" @click="getCartList(0)" v-if="cartData.cartList.length">
+			<view class="cartIcon acea-row row-center-wrapper" @click="getCartList(0)" v-if="cartCount">
 				<view class="iconfont icon-gouwuche-yangshi2"></view>
 				<view class="num">{{ cartCount }}</view>
 			</view>
@@ -115,17 +125,6 @@ import { mapGetters } from 'vuex';
 import { goShopDetail } from '@/libs/order.js';
 import { toLogin } from '@/libs/login.js';
 export default {
-	props: {
-		isNew: {
-			type: Boolean,
-			default: false
-		}
-	},
-	watch: {
-		isNew(newVal) {
-			this.getAllCategory(1);
-		}
-	},
 	computed: mapGetters(['isLogin', 'uid']),
 	components: {
 		productWindow,
@@ -139,6 +138,10 @@ export default {
 			categoryTitle: '',
 			categoryErList: [],
 			tabLeft: 0,
+			scrollTop: 0,
+			old: {
+				scrollTop: 0
+			},
 			isWidth: 0, //每个导航栏占位
 			tabClick: 0, //导航栏被点击
 			iSlong: true,
@@ -180,7 +183,15 @@ export default {
 				that.isWidth = e.windowWidth / 5;
 			}
 		});
-		this.getAllCategory(1);
+		if (!that.categoryList.length) {
+			this.getAllCategory(1);
+			this.getCartNum();
+			this.getCartList(1);
+		}
+		uni.$on('uploadCatData', () => {
+			this.getAllCategory(1);
+			this.getCartNum();
+		});
 	},
 	methods: {
 		jumpIndex() {
@@ -269,7 +280,7 @@ export default {
 			this.tempArr = [];
 			this.productslist();
 		},
-		getCartNum: function () {
+		getCartNum() {
 			let that = this;
 			getCartCounts().then((res) => {
 				that.cartCount = res.data.count;
@@ -401,13 +412,23 @@ export default {
 					that.loading = false;
 					that.loadend = loadend;
 					that.loadTitle = loadend ? that.$t(`没有更多内容啦~`) : that.$t(`加载更多`);
+					that.page == 1 && this.goTop();
 					that.page = that.page + 1;
 				})
 				.catch((err) => {
 					(that.loading = false), (that.loadTitle = that.$t(`加载更多`));
 				});
 		},
-
+		scroll(e) {
+			this.old.scrollTop = e.detail.scrollTop;
+		},
+		goTop(e) {
+			// 解决view层不同步的问题
+			this.scrollTop = this.old.scrollTop;
+			this.$nextTick(() => {
+				this.scrollTop = 0;
+			});
+		},
 		// 改变单属性购物车
 		ChangeCartNumDan(changeValue, index, item) {
 			let num = this.tempArr[index];
@@ -575,7 +596,7 @@ export default {
 					});
 					return;
 				}
-				this.tempArr[index].cart_num = this.storeInfo.min_qty;
+				item.cart_num = item.min_qty;
 				this.$set(this, 'tempArr', this.tempArr);
 				this.goCat(0, item.id, 1);
 			}
@@ -618,15 +639,11 @@ export default {
 		},
 		// 去详情页
 		goDetail(item) {
-			if (!this.isLogin) {
-				toLogin();
-			} else {
-				goShopDetail(item, this.uid).then((res) => {
-					uni.navigateTo({
-						url: `/pages/goods_details/index?id=${item.id}`
-					});
+			goShopDetail(item, this.uid).then((res) => {
+				uni.navigateTo({
+					url: `/pages/goods_details/index?id=${item.id}`
 				});
-			}
+			});
 		},
 
 		openTap() {
@@ -653,10 +670,10 @@ export default {
 					that.navActive = 0;
 					that.tabClick = 0;
 					that.categoryList = data;
-					that.categoryErList = res.data[0].children ? res.data[0].children : [];
 					that.page = 1;
 					that.loadend = false;
 					that.tempArr = [];
+					that.categoryErList = res.data[0].children ? res.data[0].children : [];
 					that.productslist();
 				});
 			} else {
@@ -667,16 +684,18 @@ export default {
 						cate_name: that.$t(`全部`)
 					});
 				});
-				that.categoryTitle = data[0].cate_name;
-				that.cid = data[0].id;
-				that.sid = 0;
-				that.navActive = 0;
-				that.tabClick = 0;
-				that.categoryList = data;
-				that.categoryErList = data[0].children ? data[0].children : [];
-				that.page = 1;
-				that.loadend = false;
-				that.tempArr = [];
+				if (!that.cid) {
+					that.categoryTitle = data[0].cate_name;
+					that.cid = data[0].id;
+					that.sid = 0;
+					that.navActive = 0;
+					that.tabClick = 0;
+					that.categoryList = data;
+					that.categoryErList = data[0].children ? data[0].children : [];
+					that.page = 1;
+					that.loadend = false;
+					that.tempArr = [];
+				}
 				that.productslist();
 			}
 		},
@@ -707,6 +726,9 @@ export default {
 			this.tempArr = [];
 			this.productslist();
 		}
+	},
+	onReachBottom() {
+		this.productslist();
 	}
 };
 </script>
@@ -784,7 +806,7 @@ page {
 
 	.conter {
 		margin-top: 128rpx;
-		height: 100vh;
+		// height: 100vh;
 		background-color: #fff;
 
 		.aside {
@@ -831,7 +853,6 @@ page {
 			width: 77%;
 			float: right;
 			background-color: #fff;
-			padding-bottom: 100rpx;
 
 			.bgcolor {
 				width: 100%;

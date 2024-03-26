@@ -82,7 +82,7 @@
 				</div>
 			</div>
 		</div>
-		<product-window :attr="attr" :limitNum="1" :iSbnt="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+		<product-window :attr="attr" :limitNum="storeCombination.once_num" :iSbnt="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
 			@ChangeCartNum="ChangeCartNum" @iptCartNum="iptCartNum" @attrVal="attrVal" @goCat="goPay"></product-window>
 		<!-- 分享按钮 -->
 		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
@@ -275,7 +275,9 @@
 		},
 		//#endif
 		mounted() {
-			this.getCombinationPink();
+			if (this.isLogin) {
+				this.getCombinationPink();
+			}
 		},
 		methods: {
 			// app分享

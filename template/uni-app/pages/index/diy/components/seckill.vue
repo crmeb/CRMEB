@@ -1,5 +1,5 @@
 <template>
-	<view v-show="!isSortType" v-if="spikeList.length>0">
+	<view v-show="!isSortType" v-if="spikeList.length>0  && $permission('seckill')">
 		<view class="spike-box" :class="conStyle?'borderRadius20':''" :style="{background:bgColor,margin:'0 '+prConfig*2+'rpx',marginTop:mbConfig*2+'rpx'}">
 			<view class="hd">
 				<view class="left">

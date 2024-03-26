@@ -7,7 +7,6 @@
         prefix="ios-search"
         placeholder="搜索用户名称"
         @change="bindSearch"
-        @input="inputChange"
       />
       <div class="user_info">
         <img v-lazy="kefuInfo.avatar" alt="" />

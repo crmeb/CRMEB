@@ -57,8 +57,8 @@
             </div>
           </div>
         </div>
-        <div class="right_box" v-if="currenType == 'marketing_link'">
-          <div v-if="coupon.length">
+        <div class="right_box" v-if="currenType == 'marketing_link' && coupon.length">
+          <div>
             <div class="cont">优惠券</div>
             <div class="Box">
               <div
@@ -72,7 +72,8 @@
               </div>
             </div>
           </div>
-          <div v-if="basicsList.length">
+          <div >
+          <div v-permission="'seckill'" v-if="basicsList.length">
             <div class="cont">秒杀</div>
             <div class="Box">
               <div
@@ -86,7 +87,10 @@
               </div>
             </div>
           </div>
-          <div v-if="distributionList.length">
+          </div>
+          <div >
+
+          <div v-permission="'bargain'" v-if="distributionList.length">
             <div class="cont">砍价</div>
             <div class="Box">
               <div
@@ -100,7 +104,10 @@
               </div>
             </div>
           </div>
-          <div v-if="userList.length">
+          </div>
+          <div>
+
+          <div v-permission="'combination'" v-if="userList.length">
             <div class="cont">拼团</div>
             <div class="Box">
               <div
@@ -113,6 +120,7 @@
                 {{ item.name }}
               </div>
             </div>
+          </div>
           </div>
           <div v-if="integral.length">
             <div class="cont">积分</div>
@@ -824,16 +832,16 @@ export default {
 ::v-deep .el-tree-node__content {
   height: 30px;
 }
-::v-deep.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+::v-deep .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
   background-color: var(--prev-bg-menu-hover-ba-color) !important;
   border-right: 2px solid var(--prev-color-primary);
 }
-::v-deep.ivu-tree-title-selected, ::v-deep.ivu-tree-title-selected:hover, ::v-deep.ivu-tree-title:hover {
+::v-deep .ivu-tree-title-selected, ::v-deep .ivu-tree-title-selected:hover, ::v-deep .ivu-tree-title:hover {
   background-color: unset;
   color: var(--prev-color-primary);
 }
 
-::v-deep.ivu-table-cell-tree {
+::v-deep .ivu-table-cell-tree {
   border: 0;
   font-size: 15px;
   background-color: unset;
@@ -842,11 +850,11 @@ export default {
   display: flex;
   align-items: center;
 }
-::v-deep.ivu-table-cell-tree .ivu-icon-ios-add:before {
+::v-deep .ivu-table-cell-tree .ivu-icon-ios-add:before {
   content: '\F11F';
 }
 
-::v-deep.ivu-table-cell-tree .ivu-icon-ios-remove:before {
+::v-deep .ivu-table-cell-tree .ivu-icon-ios-remove:before {
   content: '\F116';
 }
 
@@ -905,7 +913,7 @@ export default {
   }
 }
 .radioGroup {
-  ::v-deep.ivu-radio-wrapper {
+  ::v-deep .ivu-radio-wrapper {
     margin-right: 30px;
   }
 }

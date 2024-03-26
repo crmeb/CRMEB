@@ -292,6 +292,11 @@ class UserRechargeServices extends BaseServices
 
         //提醒推送
         event('NoticeListener', [['user_type' => strtolower($userInfo['user_type']), 'data' => $data, 'UserRecharge' => $UserRecharge, 'now_money' => $refund_price], 'recharge_order_refund_status']);
+
+        //自定义通知-充值退款
+        $UserRecharge['now_money'] = $now_money;
+        $UserRecharge['time'] = date('Y-m-d H:i:s');
+        event('NoticeListener', [$UserRecharge['uid'], $UserRecharge, 'recharge_refund']);
         return true;
     }
 
@@ -501,6 +506,11 @@ class UserRechargeServices extends BaseServices
 
         //提醒推送
         event('NoticeListener', [['order' => $order, 'now_money' => $now_money], 'recharge_success']);
+
+        //自定义消息-订单拒绝退款
+        $order['now_money'] = $now_money;
+        $order['time'] = date('Y-m-d H:i:s');
+        event('CustomNoticeListener', [$order['uid'], $order, 'recharge_success']);
 
         $order['pay_type'] = $other['pay_type'];
         // 小程序订单服务

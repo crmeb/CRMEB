@@ -599,7 +599,6 @@ export default {
         if (expressItem.list.length) {
           this.formItem.express_temp_id = expressItem.list[0].temp_id;
           this.temp = expressItem.list[0];
-          console.log(expressItem.list[0], 'expressItem.list[0]');
         }
       }
     },

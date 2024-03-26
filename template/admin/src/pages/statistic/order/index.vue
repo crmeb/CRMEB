@@ -233,6 +233,8 @@ export default {
       this.name = this.formValidate.time;
       this.getBasic();
       this.getTrend();
+      this.getChannel();
+      this.getType();
     },
     // 统计图
     getTrend() {

@@ -82,7 +82,7 @@ class StoreOrderDao extends BaseDao
                     $query->where('paid', 1)->where('status', 0)->where('refund_status', 0)->where('shipping_type', 2)->where('is_del', 0);
                     break;
                 case 6://已支付 已核销 没有退款
-                    $query->where('paid', 1)->whereIn('status', [2,3])->where('refund_status', 0)->where('shipping_type', 2)->where('is_del', 0);
+                    $query->where('paid', 1)->whereIn('status', [2, 3])->where('refund_status', 0)->where('shipping_type', 2)->where('is_del', 0);
                     break;
                 case -1://退款中
                     $query->where('paid', 1)->whereIn('refund_status', [1, 4])->where('is_del', 0);
@@ -167,8 +167,14 @@ class StoreOrderDao extends BaseDao
                 $query->where(trim($fieldKey), trim($realName));
             } else {
                 $query->where('id', 'in', function ($que) use ($where) {
-                    $que->name('store_order_cart_info')->whereIn('product_id', function ($q) use ($where) {
+                    $que->name('store_order_cart_info')->whereOr('product_id', 'in', function ($q) use ($where) {
                         $q->name('store_product')->whereLike('store_name|keyword', '%' . $where['real_name'] . '%')->field(['id'])->select();
+                    })->whereOr('product_id', 'in', function ($q) use ($where) {
+                        $q->name('store_bargain')->whereLike('title|info', '%' . $where['real_name'] . '%')->field(['id'])->select();
+                    })->whereOr('product_id', 'in', function ($q) use ($where) {
+                        $q->name('store_combination')->whereLike('title|info', '%' . $where['real_name'] . '%')->field(['id'])->select();
+                    })->whereOr('product_id', 'in', function ($q) use ($where) {
+                        $q->name('store_seckill')->whereLike('title|info', '%' . $where['real_name'] . '%')->field(['id'])->select();
                     })->field(['oid'])->select();
                 });
             }
@@ -177,8 +183,14 @@ class StoreOrderDao extends BaseDao
                 $que->whereLike('order_id|real_name|user_phone', '%' . $where['real_name'] . '%')->whereOr('uid', 'in', function ($q) use ($where) {
                     $q->name('user')->whereLike('nickname|uid|phone', '%' . $where['real_name'] . '%')->field(['uid'])->select();
                 })->whereOr('id', 'in', function ($que) use ($where) {
-                    $que->name('store_order_cart_info')->whereIn('product_id', function ($q) use ($where) {
+                    $que->name('store_order_cart_info')->whereOr('product_id', 'in', function ($q) use ($where) {
                         $q->name('store_product')->whereLike('store_name|keyword', '%' . $where['real_name'] . '%')->field(['id'])->select();
+                    })->whereOr('product_id', 'in', function ($q) use ($where) {
+                        $q->name('store_bargain')->whereLike('title|info', '%' . $where['real_name'] . '%')->field(['id'])->select();
+                    })->whereOr('product_id', 'in', function ($q) use ($where) {
+                        $q->name('store_combination')->whereLike('title|info', '%' . $where['real_name'] . '%')->field(['id'])->select();
+                    })->whereOr('product_id', 'in', function ($q) use ($where) {
+                        $q->name('store_seckill')->whereLike('title|info', '%' . $where['real_name'] . '%')->field(['id'])->select();
                     })->field(['oid'])->select();
                 });
             });

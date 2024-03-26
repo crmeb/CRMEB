@@ -3,6 +3,7 @@ body,
 html {
   height: 100%;
 }
+
 //body{
 //    background-color: @background-color-base;
 //    font-size: 14px;
@@ -14,9 +15,11 @@ html {
   &::-webkit-scrollbar {
     width: 0;
   }
+
   &::-webkit-scrollbar-track {
     background-color: transparent;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #e8eaec;
   }
@@ -28,9 +31,11 @@ html {
   &::-webkit-scrollbar {
     width: 6px;
   }
+
   &::-webkit-scrollbar-track {
     background-color: transparent;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #808695;
     border-radius: 4px;
@@ -42,9 +47,11 @@ html {
   &::-webkit-scrollbar {
     width: 0;
   }
+
   &::-webkit-scrollbar-track {
     background-color: transparent;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #e8eaec;
   }
@@ -55,9 +62,11 @@ html {
   &::-webkit-scrollbar {
     width: 6px;
   }
+
   &::-webkit-scrollbar-track {
     background-color: transparent;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #808695;
     border-radius: 4px;
@@ -69,12 +78,22 @@ html {
   .ivu-table th {
     background-color: #fff;
   }
+
   .ivu-table-wrapper,
   .ivu-table tr:last-child td {
     border: none;
   }
+
   .ivu-table:before,
   .ivu-table:after {
     display: none;
   }
+}
+
+.w-80 {
+  width: 80px;
+}
+
+.w-100 {
+  width: 100px;
 }

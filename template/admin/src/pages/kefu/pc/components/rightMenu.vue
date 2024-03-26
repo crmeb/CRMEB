@@ -139,7 +139,10 @@
                 </div>
                 <div class="order-info">
                   <div class="info-item"><span>订单编号：</span>{{ item.order_id }}</div>
-                  <div class="info-item"><span>付款时间：</span>{{ item._pay_time }}</div>
+                  <div class="info-item">
+                    <span>{{ item.refund_status == 1 ? '发起时间' : '付款时间' }}：</span
+                    >{{ item.refund_status == 1 ? item.add_time : item._pay_time }}
+                  </div>
                   <div class="info-item"><span>邮费：</span>¥ {{ item.pay_postage }}</div>
                   <div class="info-item"><span>实收款：</span>¥ {{ item.pay_price }}</div>
                 </div>
@@ -161,7 +164,9 @@
                   <el-button class="btn" ghost @click.stop="orderEdit(item.id)" v-if="item._status._type == 0"
                     >改价</el-button
                   >
-                  <el-button class="btn" ghost @click.stop="bindRemark(item)">备注</el-button>
+                  <el-button v-if="item.refund_status == 0" class="btn" ghost @click.stop="bindRemark(item)"
+                    >备注</el-button
+                  >
                 </div>
               </div>
             </div>
@@ -516,7 +521,12 @@ export default {
     },
     // 订单改价
     orderEdit(id) {
-      this.$modalForm(orderEdit(id)).then(() => this.getOrderList());
+      this.$modalForm(orderEdit(id)).then(() => {
+        this.orderConfig.page = 1;
+        this.isOrderScroll = true;
+        this.orderList = [];
+        this.getOrderList();
+      });
     },
     // 订单退款
     orderRecord(id) {
@@ -623,13 +633,15 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-::v-deep.ivu-select .ivu-select-dropdown, ::v-deep.ivu-date-picker .ivu-select-dropdown {
+::v-deep .ivu-select .ivu-select-dropdown, ::v-deep .ivu-date-picker .ivu-select-dropdown {
   top: unset !important;
 }
-.right-scroll{
+
+.right-scroll {
   max-height: 650px;
   overflow-y: scroll;
 }
+
 .right-wrapper {
   width: 280px;
 
@@ -889,8 +901,8 @@ color #6440C2, &.routine {
 
     .btn {
       width: 59px;
-      // margin-right: 5px;
 
+      // margin-right: 5px;
       &:last-child {
         margin-right: 0;
       }

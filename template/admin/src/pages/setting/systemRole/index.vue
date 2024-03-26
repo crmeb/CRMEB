@@ -374,7 +374,6 @@ export default {
         let parentNode = currentObj.pid ? this.$refs.tree.getNode(currentObj.pid).data : undefined;
         if (parentNode && parentNode.children.length) {
           for (let i = 0; i < parentNode.children.length; i++) {
-            console.log(treeStatus.checkedKeys, parentNode.children[i].id);
             if (treeStatus.checkedKeys.includes(parentNode.children[i].id)) {
               selParent = true;
             }

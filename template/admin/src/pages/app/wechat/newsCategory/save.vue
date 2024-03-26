@@ -345,7 +345,7 @@ export default {
 
 <style scoped lang="stylus">
 .newsBox {
-  ::v-deep.ivu-global-footer {
+  ::v-deep .ivu-global-footer {
     dispaly: none !important;
   }
 }
@@ -408,7 +408,7 @@ export default {
   border: 1px solid #eee !important;
 }
 
-.save_from ::v-deep.ivu-btn-error:hover {
+.save_from ::v-deep .ivu-btn-error:hover {
   background: #FF5D5F !important;
   border: 1px solid #fff !important;
   color: #fff !important;

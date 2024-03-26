@@ -278,7 +278,7 @@ export default {
 }
 .tables {
   width: 100%;
-  ::v-deep.ivu-table-overflowY {
+  ::v-deep .ivu-table-overflowY {
     &::-webkit-scrollbar {
       width: 0;
     }

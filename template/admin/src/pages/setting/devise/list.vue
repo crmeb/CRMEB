@@ -443,7 +443,7 @@ export default {
   background-color: #fff;
   padding-bottom: 50px;
 }
-::v-deep.el-card__body{
+::v-deep .el-card__body{
   padding: 40px;
 }
 .bnt {
@@ -478,17 +478,17 @@ export default {
   background-color: rgba(0, 0, 0, 0);
 }
 
-::v-deep.ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title {
+::v-deep .ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title {
   text-align: center;
 }
 
-::v-deep.i-layout-page-header {
+::v-deep .i-layout-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-::v-deep.ivu-page-header {
+::v-deep .ivu-page-header {
   border-bottom: unset;
   position: fixed;
   z-index: 9;

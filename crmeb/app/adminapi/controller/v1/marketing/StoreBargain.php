@@ -154,7 +154,7 @@ class StoreBargain extends AuthController
         $bargainUserService = app()->make(StoreBargainUserServices::class);
         $bargainUserService->userBargainStatusFail($id, false);
         $this->services->update($id, ['status' => $status]);
-        return app('json')->success($status == 0 ? 100001 : 100007);
+        return app('json')->success(100001);
     }
 
     /**

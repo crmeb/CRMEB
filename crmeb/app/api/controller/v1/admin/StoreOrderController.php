@@ -445,6 +445,7 @@ class StoreOrderController
                 }
                 $refundData['pay_price'] = $orderInfo['pay_price'];
                 $refundData['refund_price'] = $price;
+                $refundData['order_id'] = $orderId;
 
 
                 //修改订单退款状态
@@ -515,7 +516,7 @@ class StoreOrderController
                 }
                 $refundOrderData['cart_info'] = json_encode(array_column($cartInfos, 'cart_info'));
                 $res = $services->save($refundOrderData);
-
+                $refund_data['order_id'] = $refundOrderData['order_id'];
 
                 //修改订单退款状态
                 if ($services->agreeRefund((int)$res->id, $refund_data)) {
@@ -616,7 +617,7 @@ class StoreOrderController
             ['order_id', ''],
             ['time', ''],
             ['refund_type', 0],
-            ['keywords', ''],
+            ['keywords', '', '', 'real_name'],
         ]);
         $where['is_cancel'] = 0;
         $data = $services->refundList($where)['list'];

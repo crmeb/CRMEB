@@ -119,7 +119,6 @@ export default {
           this.page = 1;
           this.isScroll = true;
           this.userList = [];
-          this.isSearch = true;
           this.getList();
         }
       },

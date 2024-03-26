@@ -134,7 +134,7 @@
                   <div class="acea-row">
                     <el-input-number
                       :controls="false"
-                      :min="0.01"
+                      :min="0"
                       :max="9999999999"
                       v-model="formValidate.postage"
                       placeholder="请输入金额"
@@ -294,7 +294,7 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
-                            @click="modalPicTap('dan', 'danTable', index)"
+                            @click="modalPicTap('dan', 'danTable', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="scope.row.pic">
                               <img v-lazy="scope.row.pic" />
@@ -359,6 +359,7 @@
             </div>
             <el-form-item>
               <el-button
+                v-if="current !== 0"
                 class="submission"
                 @click="step"
                 :disabled="($route.params.id && $route.params.id !== '0' && current === 1) || current === 0"
@@ -939,7 +940,7 @@ export default {
   font-size 12px
 }
 
-.maxW ::v-deep.ivu-select-dropdown {
+.maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
 

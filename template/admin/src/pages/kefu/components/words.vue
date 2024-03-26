@@ -557,10 +557,10 @@ export default {
                 border-radius: .32rem;
                 overflow hidden
 
-                ::v-deep .ivu-input{
+                ::v-deep .el-input__inner{
                     background #F5F6F9
                 }
-                ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
+                ::v-deep .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
                     border transparent
                     box-shadow: none;
                 }

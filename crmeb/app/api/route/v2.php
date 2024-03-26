@@ -79,16 +79,16 @@ Route::group('v2', function () {
         })->option(['mark' => 'invoice', 'mark_name' => '发票']);
 
         //清除搜索记录
-        Route::get('user/clean_search', 'v2.user.UserSearchController/cleanUserSearch')->mame('cleanUserSearch')->option(['real_name' => '清除搜索记录']);
+        Route::get('user/clean_search', 'v2.user.UserSearchController/cleanUserSearch')->name('cleanUserSearch')->option(['real_name' => '清除搜索记录']);
 
         //抽奖活动详情
-        Route::get('lottery/info/:factor', 'v2.activity.LuckLotteryController/lotteryInfo')->mame('lotteryInfo')->option(['real_name' => '抽奖活动详情']);
+        Route::get('lottery/info/:factor', 'v2.activity.LuckLotteryController/lotteryInfo')->name('lotteryInfo')->option(['real_name' => '抽奖活动详情']);
         //参与抽奖
-        Route::post('lottery', 'v2.activity.LuckLotteryController/luckLottery')->mame('luckLottery')->middleware(BlockerMiddleware::class)->option(['real_name' => '参与抽奖']);
+        Route::post('lottery', 'v2.activity.LuckLotteryController/luckLottery')->name('luckLottery')->middleware(BlockerMiddleware::class)->option(['real_name' => '参与抽奖']);
         //领取奖品
-        Route::post('lottery/receive', 'v2.activity.LuckLotteryController/lotteryReceive')->mame('lotteryReceive')->middleware(BlockerMiddleware::class)->option(['real_name' => '领取奖品']);
+        Route::post('lottery/receive', 'v2.activity.LuckLotteryController/lotteryReceive')->name('lotteryReceive')->middleware(BlockerMiddleware::class)->option(['real_name' => '领取奖品']);
         //抽奖记录
-        Route::get('lottery/record', 'v2.activity.LuckLotteryController/lotteryRecord')->mame('lotteryRecord')->option(['real_name' => '抽奖记录']);
+        Route::get('lottery/record', 'v2.activity.LuckLotteryController/lotteryRecord')->name('lotteryRecord')->option(['real_name' => '抽奖记录']);
 
         //获取分销等级列表
         Route::get('agent/level_list', 'v2.agent.AgentLevel/levelList')->name('agentLevelList')->option(['real_name' => '获取分销等级列表']);
@@ -100,7 +100,7 @@ Route::group('v2', function () {
     //授权不通过,不会抛出异常继续执行
     Route::group(function () {
         //用户搜索记录
-        Route::get('user/search_list', 'v2.user.UserSearchController/getUserSeachList')->mame('userSearchList')->option(['real_name' => '用户搜索记录']);
+        Route::get('user/search_list', 'v2.user.UserSearchController/getUserSeachList')->name('userSearchList')->option(['real_name' => '用户搜索记录']);
         Route::get('get_today_coupon', 'v2.store.StoreCouponsController/getTodayCoupon')->option(['real_name' => '新优惠券弹窗接口']);//新优惠券弹窗接口
         Route::get('subscribe', 'v2.PublicController/subscribe')->name('WechatSubscribe')->option(['real_name' => '微信公众号用户是否关注']);// 微信公众号用户是否关注
         //公共类

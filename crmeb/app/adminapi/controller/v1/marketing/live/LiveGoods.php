@@ -72,9 +72,14 @@ class LiveGoods extends AuthController
         [$goods_info] = $this->request->postMore([
             ['goods_info', []]
         ], true);
+        $error = false;
         foreach ($goods_info as $goods) {
             $this->validate($goods, \app\adminapi\validate\marketing\LiveGoodsValidate::class, 'save');
+            if (!preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $goods['image']) && strpos(strtolower($goods['image']), "phar://") !== false) {
+                $error = true;
+            }
         }
+        if ($error) return app('json')->fail(40137);
         $this->services->add($goods_info);
         return app('json')->success(100000);
     }

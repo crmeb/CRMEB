@@ -60,7 +60,7 @@ export default {
       name: `${pre}backend_routing`,
       meta: {
         auth: ['system-config-backend-routing'],
-        title: '路由权限',
+        title: '接口管理',
       },
       component: () => import('@/pages/system/backendRouting/index'),
     },

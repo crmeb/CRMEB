@@ -118,7 +118,7 @@ export default {
                 justify-content center
                 width 36px
                 cursor move
-            ::v-deep.ivu-input
+            ::v-deep .ivu-input
                 flex 1
                 height 36px
                 font-size 13px!important

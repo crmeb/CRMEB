@@ -135,15 +135,6 @@
 				uni.showLoading({
 					title: that.$t(`支付中`)
 				});
-				if (paytype == 'friend' && that.order_id) {
-					return uni.navigateTo({
-						url: '/pages/users/payment_on_behalf/index?order_id=' + that.order_id + '&spread=' +
-							this.$store.state.app.uid,
-						success: res => {},
-						fail: () => {},
-						complete: () => {}
-					});
-				}
 				orderPay({
 					uni: that.order_id,
 					paytype: paytype,

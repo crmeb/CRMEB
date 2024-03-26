@@ -96,6 +96,16 @@ class SystemRoute extends BaseModel
         return json_decode($value, true);
     }
 
+    public function setErrorCodeAttr($value)
+    {
+        return json_encode($value);
+    }
+
+    public function getErrorCodeAttr($value)
+    {
+        return json_decode($value, true);
+    }
+
 
     public function setResponseExampleAttr($value)
     {

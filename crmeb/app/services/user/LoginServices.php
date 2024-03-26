@@ -100,11 +100,13 @@ class LoginServices extends BaseServices
             $data['staff_id'] = $userInfo['uid'];
             $data['is_staff'] = $user['is_staff'] ?? 0;
             $data['division_type'] = 3;
+            $data['division_status'] = 1;
             $data['division_change_time'] = time();
             $data['division_end_time'] = $spreadInfo->division_end_time;
             //如果店员切换代理商，则店员在之前代理商下推广的用户，他们的直接上级从当前店员变为之前代理商
             if ($userInfo->agent_id != 0 && $userInfo->agent_id != $spreadInfo->agent_id) {
-                $this->dao->update($userInfo['uid'], ['spread_uid' => $userInfo->agent_id], 'spread_uid');
+                $this->dao->update(['staff_id' => $userInfo['uid'], 'spread_uid' => $userInfo['uid']], ['spread_uid' => $spreadInfo['agent_id'], 'staff_id' => 0]);
+                $this->dao->update(['staff_id' => $userInfo['uid'], 'not_spread_uid' => $userInfo['uid']], ['staff_id' => 0]);
             }
         }
         if ($is_new) {
@@ -155,23 +157,10 @@ class LoginServices extends BaseServices
         return true;
     }
 
-    public function verify(SmsService $services, $phone, $type, $time, $ip)
+    public function verify(SmsService $services, $phone, $type, $time)
     {
         if ($this->dao->getOne(['account' => $phone, 'is_del' => 0]) && $type == 'register') {
             throw new ApiException(410028);
-        }
-        $default = Config::get('sms.default', 'yihaotong');
-        $defaultMaxPhoneCount = Config::get('sms.maxPhoneCount', 10);
-        $defaultMaxIpCount = Config::get('sms.maxIpCount', 50);
-        $maxPhoneCount = Config::get('sms.stores.' . $default . '.maxPhoneCount', $defaultMaxPhoneCount);
-        $maxIpCount = Config::get('sms.stores.' . $default . '.maxIpCount', $defaultMaxIpCount);
-        /** @var SmsRecordServices $smsRecord */
-        $smsRecord = app()->make(SmsRecordServices::class);
-        if ($smsRecord->count(['phone' => $phone, 'add_ip' => $ip, 'time' => 'today']) >= $maxPhoneCount) {
-            throw new ApiException(410029);
-        }
-        if ($smsRecord->count(['add_ip' => $ip, 'time' => 'today']) >= $maxIpCount) {
-            throw new ApiException(410030);
         }
         $code = rand(100000, 999999);
         $data['code'] = $code;

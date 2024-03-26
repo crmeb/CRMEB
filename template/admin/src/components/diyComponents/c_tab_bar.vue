@@ -46,7 +46,7 @@
     </div>
     <div>
       <el-dialog
-        v-model="modalPic"
+        :visible.sync="modalPic"
         width="950px"
         scrollable
         footer-hide

@@ -144,6 +144,11 @@ class StoreOrderTakeServices extends BaseServices
                 event('NoticeListener', [['order' => $order, 'storeTitle' => $storeTitle], 'order_take']);
                 //收货给客服发送消息
                 event('NoticeListener', [['order' => $order, 'storeTitle' => $storeTitle], 'send_admin_confirm_take_over']);
+                //自定义消息-订单收货
+                $order['storeTitle'] = $storeTitle;
+                $order['time'] = date('Y-m-d H:i:s');
+                $order['phone'] = $order['user_phone'];
+                event('CustomNoticeListener', [$order['uid'], $order, 'order_take']);
             } catch (\Throwable $exception) {
 
             }
@@ -216,6 +221,17 @@ class StoreOrderTakeServices extends BaseServices
             $orderServices = app()->make(StoreOrderServices::class);
             $orderServices->update($order['id'], ['gain_integral' => $give_integral], 'id');
             event('NoticeListener', [['order' => $order, 'storeTitle' => $storeTitle, 'give_integral' => $give_integral, 'integral' => $integral], 'integral_accout']);
+
+            //自定义消息-积分到账
+            event('CustomNoticeListener', [$order['uid'], [
+                'uid' => $order['uid'],
+                'phone' => app()->make(UserServices::class)->value($order['uid'], 'phone'),
+                'storeTitle' => $storeTitle,
+                'give_integral' => $give_integral,
+                'integral' => $integral,
+                'time' => date('Y-m-d H:i:s'),
+            ], 'point_received']);
+
             return true;
         }
         return true;
@@ -392,8 +408,7 @@ class StoreOrderTakeServices extends BaseServices
         $res1 = $userServices->bcInc($one_spread_uid, 'brokerage_price', $brokeragePrice, 'uid');
         if ($res1) {
             //冻结时间
-            $broken_time = intval(sys_config('extract_time'));
-            $frozen_time = time() + $broken_time * 86400;
+            $frozen_time = time() + intval(sys_config('extract_time')) * 86400;
             // 添加佣金记录
             /** @var UserBrokerageServices $userBrokerageServices */
             $userBrokerageServices = app()->make(UserBrokerageServices::class);
@@ -463,6 +478,8 @@ class StoreOrderTakeServices extends BaseServices
         // 添加佣金记录
         /** @var UserBrokerageServices $userBrokerageServices */
         $userBrokerageServices = app()->make(UserBrokerageServices::class);
+        //冻结时间
+        $frozenTime = time() + intval(sys_config('extract_time')) * 86400;
         $res1 = $userBrokerageServices->income('get_two_brokerage', $spread_two_uid, [
             'nickname' => $userInfo['nickname'],
             'pay_price' => floatval($orderInfo['pay_price']),
@@ -509,6 +526,17 @@ class StoreOrderTakeServices extends BaseServices
         }
         //提醒推送
         event('NoticeListener', [['spread_uid' => $spread_uid, 'userType' => $userType, 'brokeragePrice' => $brokeragePrice, 'goodsName' => $goodsName, 'goodsPrice' => $goodsPrice, 'add_time' => $orderInfo['add_time'] ?? time()], 'order_brokerage']);
+
+        //自定义消息-佣金到账
+        event('CustomNoticeListener', [$spread_uid, [
+            'uid' => $spread_uid,
+            'phone' => app()->make(UserServices::class)->value($spread_uid, 'phone'),
+            'brokeragePrice' => $brokeragePrice,
+            'goodsName' => $goodsName,
+            'goodsPrice' => $goodsPrice,
+            'time' => date('Y-m-d H:i:s')
+        ], 'brokerage_received']);
+
     }
 
 
@@ -599,7 +627,7 @@ class StoreOrderTakeServices extends BaseServices
                     }
                 });
             } catch (\Throwable $e) {
-                Log::error('自动收货失败,失败原因：' . $e->getMessage());
+                Log::error('自动收货失败,失败原因：' . $e->getMessage() . '|' . $e->getFile() . '|' . $e->getLine());
             }
 
         }

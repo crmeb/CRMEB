@@ -342,8 +342,8 @@ class OtherOrderServices extends BaseServices
             $spread_two = sys_config('brokerage_level', 2) == 2 ? $userServices->getSpreadUid($spread_one) : 0;
             $spread_one_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_ratio', 0), '100', 4), 2);
             $spread_two_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_two', 0), '100', 4), 2);
-            if ($spread_one && $spread_one_price > 0) $this->memberBrokerage($spread_one, $spread_one_price, sys_config('is_self_brokerage') ? 'get_self_member_brokerage' : 'get_member_brokerage', $orderInfo);
-            if ($spread_two && $spread_two_price > 0) $this->memberBrokerage($spread_two, $spread_two_price, 'get_two_member_brokerage', $orderInfo);
+            if ($spread_one && $spread_one_price > 0 && $userServices->checkUserPromoter($spread_one)) $this->memberBrokerage($spread_one, $spread_one_price, sys_config('is_self_brokerage') ? 'get_self_member_brokerage' : 'get_member_brokerage', $orderInfo);
+            if ($spread_two && $spread_two_price > 0 && $userServices->checkUserPromoter($spread_two)) $this->memberBrokerage($spread_two, $spread_two_price, 'get_two_member_brokerage', $orderInfo);
         }
 
         $orderInfo['pay_type'] = $paytype;

@@ -143,6 +143,15 @@ class UserExtractServices extends BaseServices
         });
 
         event('NoticeListener', [['uid' => $uid, 'userType' => strtolower($user['user_type']), 'extract_number' => $extract_number, 'nickname' => $user['nickname'], 'message' => $message], 'user_balance_change']);
+
+        //自定义通知-用户提现失败
+        $userExtract['nickname'] = $user['nickname'];
+        $userExtract['message'] = $message;
+        $userExtract['time'] = date('Y-m-d H:i:s');
+        $userExtract['price'] = $extract_number;
+        $userExtract['phone'] = app()->make(UserServices::class)->value($userExtract['uid'], 'phone');
+        event('CustomNoticeListener', [$userExtract['uid'], $userExtract, 'extract_fail']);
+
         return true;
     }
 
@@ -249,6 +258,13 @@ class UserExtractServices extends BaseServices
         }
         event('NoticeListener', [['uid' => $userExtract['uid'], 'userType' => strtolower($userType), 'extractNumber' => $extractNumber, 'nickname' => $nickname], 'user_extract']);
 
+        //自定义通知-用户提现成功
+        $userExtract['nickname'] = $nickname;
+        $userExtract['phone'] = $phone;
+        $userExtract['time'] = date('Y-m-d H:i:s');
+        $userExtract['price'] = $extractNumber;
+        event('CustomNoticeListener', [$userExtract['uid'], $userExtract, 'extract_success']);
+
         return true;
     }
 
@@ -275,9 +291,10 @@ class UserExtractServices extends BaseServices
         $userBrokerageServices = app()->make(UserBrokerageServices::class);
         $where['pm'] = 1;
         $brokerage_count = $userBrokerageServices->getUsersBokerageSum($where);
-        $extract_statistics['brokerage_count'] = bcadd((string)$brokerage_count, (string)$extract_statistics['price'], 2);
+        $refund_brokerage = $userBrokerageServices->sum(['type' => 'refund'], 'number');
+        $extract_statistics['brokerage_count'] = bcsub((string)$brokerage_count, (string)$refund_brokerage, 2);
         //未提现金额
-        $extract_statistics['brokerage_not'] = $extract_statistics['brokerage_count'] > $extract_statistics['priced'] ? bcsub((string)$brokerage_count, (string)$extract_statistics['priced'], 2) : 0.00;
+        $extract_statistics['brokerage_not'] = $extract_statistics['brokerage_count'] > $extract_statistics['priced'] ? bcsub((string)$extract_statistics['brokerage_count'], (string)$extract_statistics['priced'], 2) : 0.00;
         return compact('extract_statistics', 'list');
     }
 

@@ -101,6 +101,11 @@ class StoreOrderSuccessServices extends BaseServices
         // 推送订单
         event('OutPushListener', ['order_pay_push', ['order_id' => (int)$orderInfo['id']]]);
 
+        //自定义消息-订单支付成功
+        $orderInfo['time'] = date('Y-m-d H:i:s');
+        $orderInfo['phone'] = $orderInfo['user_phone'];
+        event('CustomNoticeListener', [$orderInfo['uid'], $orderInfo, 'order_pay_success']);
+
         // 小程序订单管理 (自提商品)
         if ($orderInfo['shipping_type'] == 2) {
             event('OrderShipping', ['product', $orderInfo, 4, '', '']);

@@ -102,8 +102,8 @@ export default {
       tabList: [],
       formValidate: {
         nickname: '',
-        price_max: '',
-        price_min: '',
+        price_max: undefined,
+        price_min: undefined,
         excel: 0,
         page: 1, // 当前页
         limit: 20, // 每页显示条数

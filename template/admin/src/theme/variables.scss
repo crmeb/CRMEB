@@ -277,10 +277,7 @@
   .el-range-editor.is-active:hover {
     border: none;
   }
-  .el-select .el-input.is-focus .el-input__inner,
-  .el-select .el-input__inner:focus {
-    border: 1px solid var(--prev-border-color-base);
-  }
+  
   .el-input-group__prepend .el-select .el-input--suffix .el-input__inner::placeholder,
   .el-cascader .el-input .el-icon-arrow-down,
   .el-select .el-input .el-select__caret {

@@ -100,7 +100,10 @@
           </div>
         </div>
 
-        <div class="layout-breadcrumb-seting-bar-flex" v-if="getThemeConfig.layout === 'columns' || getThemeConfig.layout === 'defaults'">
+        <div
+          class="layout-breadcrumb-seting-bar-flex"
+          v-if="getThemeConfig.layout === 'columns' || getThemeConfig.layout === 'defaults'"
+        >
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.threeIsCollapse') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
             <el-switch v-model="getThemeConfig.isCollapse" :width="35" @change="setLocalThemeConfig"> </el-switch>
@@ -287,16 +290,50 @@ export default {
     },
     setLocalTheme(val) {
       let themeSelect = themeList[val];
-
       themeSelect['--prev-border-color-lighter'] = '#ebeef5';
-      console.log(this.getThemeConfig.layout);
-      if (['classic', 'transverse'].includes(this.getThemeConfig.layout)) { //第三和第四种布局
+      /**
+       * 根据主题配置设置样式
+       * @param {string} val - 主题值
+       */
+      if (['classic'].includes(this.getThemeConfig.layout)) {
+        // 第三种布局
+        themeSelect['--prev-bg-topBar'] = '#282c34';
+        themeSelect['--prev-bg-topBarColor'] = '#fff';
+        // themeSelect['--prev-MenuActiveColor'] = '#fff';
+        themeSelect['--prev-bg-menuBarColor'] = '#515a6e';
+        themeSelect['--prev-bg-menu-hover-ba-color'] = '#e5eeff';
+        // themeSelect['--prev-MenuActiveColor'] = '#6954f0';
+        if (val == 'theme-1') {
+          themeSelect['--prev-bg-menuBar'] = '#fff';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else if (val == 'theme-3') {
+          // themeSelect['--prev-bg-menu-hover-ba-color'] = '#41b584';
+          themeSelect['--prev-bg-menuBar'] = '#fff';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else if (val == 'theme-5') {
+          // themeSelect['--prev-bg-menu-hover-ba-color'] = '#6954f0';
+          themeSelect['--prev-bg-menuBar'] = '#fff';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else if (val == 'theme-7') {
+          // themeSelect['--prev-bg-menu-hover-ba-color'] = '#f34d37';
+          themeSelect['--prev-bg-menuBar'] = '#fff';
+          themeSelect['--prev-border-color-lighter'] = '#282c34';
+        } else {
+          themeSelect['--prev-border-color-lighter'] = '#ebeef5';
+          themeSelect['--prev-bg-topBar'] = '#fff';
+          themeSelect['--prev-bg-topBarColor'] = '#515a6e';
+          themeSelect['--prev-bg-columnsMenuActiveColor'] = '#515a6e';
+
+          // themeSelect['--prev-bg-menuBarColor'] = '#515a6e';
+        }
+      } else if (['transverse'].includes(this.getThemeConfig.layout)) {
+        // 第四种布局
         themeSelect['--prev-bg-topBar'] = '#282c34';
         themeSelect['--prev-bg-topBarColor'] = '#fff';
         themeSelect['--prev-bg-menuBarColor'] = '#fff';
         themeSelect['--prev-MenuActiveColor'] = '#fff';
         if (val == 'theme-1') {
-          themeSelect['--prev-bg-menu-hover-ba-color'] = '#e8f4ff';
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#0256FF';
           themeSelect['--prev-bg-menuBar'] = '#282c34';
           themeSelect['--prev-border-color-lighter'] = '#282c34';
         } else if (val == 'theme-3') {
@@ -319,14 +356,15 @@ export default {
           themeSelect['--prev-bg-menuBarColor'] = '#515a6e';
           themeSelect['--prev-MenuActiveColor'] = '#515a6e';
         }
-      } else if (this.getThemeConfig.layout === 'columns') { //第二种布局
+      } else if (this.getThemeConfig.layout === 'columns') {
+        //第二种布局
         themeSelect['--prev-bg-topBar'] = '#fff';
         themeSelect['--prev-bg-topBarColor'] = '#515a6e';
         themeSelect['--prev-bg-menuBar'] = '#fff';
         themeSelect['--prev-bg-menuBarColor'] = '#303133';
         themeSelect['--prev-border-color-lighter'] = '#ebeef5';
         if (val == 'theme-1') {
-          themeSelect['--prev-bg-menu-hover-ba-color'] = '#e8f4ff';
+          themeSelect['--prev-bg-menu-hover-ba-color'] = '#e5eeff';
           themeSelect['--prev-color-primary'] = '#0256FF';
           themeSelect['--prev-MenuActiveColor'] = '#0256FF';
         } else if (val == 'theme-3') {
@@ -342,7 +380,8 @@ export default {
           themeSelect['--prev-color-primary'] = '#f34d37';
           themeSelect['--prev-MenuActiveColor'] = '#f34d37';
         }
-      } else { //默认布局
+      } else {
+        //默认布局
         if (val == 'theme-1') {
           themeSelect['--prev-bg-menuBar'] = '#282c34';
           themeSelect['--prev-color-primary'] = '#0256FF';
@@ -377,6 +416,7 @@ export default {
           themeSelect['--prev-bg-menu-hover-ba-color'] = '#f34d37';
         }
       }
+
       if (['theme-1', 'theme-2'].includes(val)) {
         this.$store.state.themeConfig.themeConfig.primary = '#0256FF'; //蓝黑蓝白
       } else if (['theme-3', 'theme-4'].includes(val)) {
@@ -388,10 +428,16 @@ export default {
       } else {
         this.$store.state.themeConfig.themeConfig.primary = '#0256FF'; //默认蓝
       }
+      /**
+       * 遍历主题选择对象，将其属性值设置为文档根元素的样式属性
+       */
       for (let key in themeSelect) {
+        // 将主题选择对象的属性作为样式属性名，属性值作为样式属性值，设置到文档根元素上
         document.documentElement.style.setProperty(key, themeSelect[key]);
       }
+      // 在下一次 DOM 更新循环结束后执行回调函数
       this.$nextTick((e) => {
+        // 调用 onColorPickerChange 方法
         this.onColorPickerChange();
       });
     },

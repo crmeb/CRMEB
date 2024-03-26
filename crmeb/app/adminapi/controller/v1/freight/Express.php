@@ -103,12 +103,6 @@ class Express extends AuthController
             ['sort', 0],
             ['is_show', 0]]);
         if (!$expressInfo = $this->services->get($id)) return app('json')->fail(100026);
-        if ($expressInfo['partner_id'] == 1 && !$data['account']) {
-            return app('json')->fail(400402);
-        }
-        if ($expressInfo['partner_key'] == 1 && !$data['key']) {
-            return app('json')->fail(400403);
-        }
         if ($expressInfo['net'] == 1 && !$data['net_name']) {
             return app('json')->fail(400404);
         }

@@ -93,7 +93,7 @@ class StoreProductAttrServices extends BaseServices
                             $productVirtual->save($data);
                         }
                     }
-                    $allStock = $productVirtual->count(['product_id' => $id, 'attr_unique' => $item['unique']]);
+                    $allStock = $productVirtual->count(['product_id' => $id, 'attr_unique' => $res->unique]);
                     $storeProductAttrValueServices->update(['id' => $res['id']], ['stock' => $allStock - $sales, 'sales' => $sales]);
                     $cardStock = $cardStock + ($allStock - $sales);
                 }

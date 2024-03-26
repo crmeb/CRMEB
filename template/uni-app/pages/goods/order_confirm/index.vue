@@ -822,7 +822,7 @@
 					that.$set(that, 'integral', res.data.usable_integral);
 					that.$set(that, 'usable_integral', res.data.usable_integral);
 					that.$set(that, 'contacts', res.data.userInfo.real_name);
-					that.$set(that, 'contactsTel', res.data.userInfo.record_phone === '0' ? '' : res.data
+					that.$set(that, 'contactsTel', res.data.userInfo.record_phone === '0' ? res.data.userInfo.phone : res.data
 						.userInfo.record_phone);
 					that.$set(that, 'cartInfo', res.data.cartInfo);
 					that.$set(that, 'integralRatio', res.data.integralRatio);

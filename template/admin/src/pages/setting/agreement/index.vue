@@ -168,7 +168,7 @@ export default {
 }
 
 .new_tab {
-  ::v-deep.ivu-tabs-nav .ivu-tabs-tab {
+  ::v-deep .ivu-tabs-nav .ivu-tabs-tab {
     padding: 4px 16px 20px !important;
     font-weight: 500;
   }

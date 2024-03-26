@@ -1,7 +1,9 @@
 {
   "navigationBarTitleText": "专题页",
   "usingComponents": {
-    "page-footer": "/components/pageFooter/index",
+    "recommend": "/components/recommend/index",
+    "loading": "/components/Loading/index",
+    "page-foot": "/components/pageFooter/index",
     "coupon-window": "/components/couponWindow/index",
     "authorize": "/components/Authorize",
     "active-party": "/pages/index/diy/components/activeParty",
@@ -17,6 +19,7 @@
     "guide": "/pages/index/diy/components/guide",
     "live-broadcast": "/pages/index/diy/components/liveBroadcast",
     "menus": "/pages/index/diy/components/menus",
+    "picture-cube": "/pages/index/diy/components/pictureCube",
     "news": "/pages/index/diy/components/news",
     "promotion-list": "/pages/index/diy/components/promotionList",
     "rich-text": "/pages/index/diy/components/richText",
@@ -24,6 +27,6 @@
     "swiper-bg": "/pages/index/diy/components/swiperBg",
     "tab-nav": "/pages/index/diy/components/tabNav",
     "titles": "/pages/index/diy/components/titles",
-    "picture-cube": "/pages/index/diy/components/pictureCube"
+    "app-update": "/components/update/app-update"
   }
 }

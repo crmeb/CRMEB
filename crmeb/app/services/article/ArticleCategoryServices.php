@@ -48,8 +48,7 @@ class ArticleCategoryServices extends BaseServices
     {
         $list = $this->dao->getList($where);
         $list = get_tree_children($list);
-        $count = $this->dao->count($where);
-        return compact('list', 'count');
+        return compact('list');
     }
 
     /**

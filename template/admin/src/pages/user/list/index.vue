@@ -16,9 +16,14 @@
                 <div class="labelInput acea-row row-between-wrapper" @click="openSelectLabel">
                   <div style="width: 222px">
                     <div v-if="selectDataLabel.length">
-                      <el-tag :closable="false" v-for="(item, index) in selectDataLabel" :key="index" class="mr10">{{
-                        item.label_name
-                      }}</el-tag>
+                      <el-tag
+                        v-for="(item, index) in selectDataLabel"
+                        :key="index"
+                        closable
+                        class="mr10"
+                        @close="handleClose(item)"
+                        >{{ item.label_name }}</el-tag
+                      >
                     </div>
                     <span class="span" v-else>选择用户关联标签</span>
                   </div>
@@ -690,7 +695,11 @@ export default {
         this.$message.warning('请选择要设置分组的用户');
       } else {
         let uids = { uids: this.ids };
-        this.$modalForm(userSetGroup(uids)).then(() => this.getList());
+        this.$modalForm(userSetGroup(uids)).then(() => {
+          this.ids = [];
+          this.selectedIds = [];
+          this.getList();
+        });
       }
     },
     // 批量设置标签；
@@ -707,13 +716,35 @@ export default {
       }
     },
     activeSelectData(data) {
-      // let labels = [];
-      // if (!data.length) return;
-      // data.map((i) => {
-      //   labels.push(i.id);
-      // });
       this.selectLabelShow = false;
       this.selectDataLabel = data || [];
+      if (this.selectDataLabel.length) {
+        let activeIds = [];
+        this.selectDataLabel.map((item) => {
+          activeIds.push(item.id);
+        });
+        this.userFrom.label_id = activeIds.join(',');
+      } else {
+        this.userFrom.label_id = '';
+      }
+    },
+    handleClose(tag) {
+      let i = this.selectDataLabel.findIndex((item) => item.id === tag.id);
+      if (i !== -1) {
+        this.selectDataLabel.splice(i, 1);
+      }
+      this.$nextTick(() => {
+        if (this.selectDataLabel.length) {
+          let activeIds = [];
+          this.selectDataLabel.map((item) => {
+            activeIds.push(item.id);
+          });
+          this.userFrom.label_id = activeIds.join(',');
+        } else {
+          this.userFrom.label_id = '';
+        }
+      });
+      // this.userSearchs();
     },
     // 批量设置标签
     activeData(data) {
@@ -821,6 +852,11 @@ export default {
     cancel(name) {
       this.promoterShow = false;
       this.$refs[name].resetFields();
+      this.formInline = {
+        uid: 0,
+        spread_uid: 0,
+        image: '',
+      };
     },
     // 赠送会员等级
     giveLevel(id) {
@@ -880,13 +916,13 @@ export default {
     },
     // 会员列表
     getList() {
-      if (this.selectDataLabel.length) {
-        let activeIds = [];
-        this.selectDataLabel.forEach((item) => {
-          activeIds.push(item.id);
-        });
-        this.userFrom.label_id = activeIds.join(',');
-      }
+      // if (this.selectDataLabel.length) {
+      //   let activeIds = [];
+      //   this.selectDataLabel.forEach((item) => {
+      //     activeIds.push(item.id);
+      //   });
+      //   this.userFrom.label_id = activeIds.join(',');
+      // }
       this.userFrom.user_type = this.userFrom.user_type || '';
       this.userFrom.status = this.userFrom.status || '';
       this.userFrom.sex = this.userFrom.sex || '';
@@ -916,13 +952,6 @@ export default {
     },
     // 用户导出
     async exportList() {
-      if (this.selectDataLabel.length) {
-        let activeIds = [];
-        this.selectDataLabel.forEach((item) => {
-          activeIds.push(item.id);
-        });
-        this.userFrom.label_id = activeIds.join(',');
-      }
       if (this.ids.length) {
         this.userFrom.ids = this.ids;
       }
@@ -967,6 +996,7 @@ export default {
       this.selectionList = [];
       this.getList();
     },
+
     // 搜索
     userSearchs() {
       this.userFrom.page = 1;
@@ -1221,7 +1251,7 @@ img {
 .search-form {
   display: flex;
   justify-content: space-between;
-  .search-form-box{
+  .search-form-box {
     display: flex;
     flex-wrap: wrap;
     flex: 1;

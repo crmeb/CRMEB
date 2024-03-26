@@ -140,17 +140,37 @@ class LoginController
         ], true);
 
         $keyName = 'sms.key.' . $key;
-        $nowKey = 'sms.' . date('YmdHi');
+        if (!CacheService::has($keyName)) return app('json')->fail(410003);
 
-        if (!CacheService::has($keyName)) {
-            return app('json')->fail(410003);
+        // 验证限制
+        // 验证码每分钟发送上限
+        $maxMinuteCountKey = 'sms.minute.' . $phone . date('YmdHi');
+        $minuteCount = 0;
+        if (CacheService::has($maxMinuteCountKey)) {
+            $minuteCount = CacheService::get($maxMinuteCountKey);
+            $maxMinuteCount = Config::get('sms.maxMinuteCount', 5);
+            if ($minuteCount > $maxMinuteCount) return app('json')->fail('同一手机号每分钟最多发送' . $maxMinuteCount . '条');
+
         }
 
-        $total = 1;
-        if (CacheService::has($nowKey)) {
-            $total = CacheService::get($nowKey);
-            if ($total > Config::get('sms.maxMinuteCount', 20))
-                return app('json')->success(410006);
+        // 验证码单个手机每日发送上限
+        $maxPhoneCountKey = 'sms.phone.' . $phone . '.' . date('Ymd');
+        $phoneCount = 0;
+        if (CacheService::has($maxPhoneCountKey)) {
+            $phoneCount = CacheService::get($maxPhoneCountKey);
+            $maxPhoneCount = Config::get('sms.maxPhoneCount', 20);
+            if ($phoneCount > $maxPhoneCount) return app('json')->fail('同一手机号每天最多发送' . $maxPhoneCount . '条');
+
+        }
+
+        // 验证码单个手机每日发送上限
+        $maxIpCountKey = 'sms.ip.' . app()->request->ip() . '.' . date('Ymd');
+        $ipCount = 0;
+        if (CacheService::has($maxIpCountKey)) {
+            $ipCount = CacheService::get($maxPhoneCountKey);
+            $maxIpCount = Config::get('sms.maxIpCount', 50);
+            if ($ipCount > $maxIpCount) return app('json')->fail('同一IP每天最多发送' . $maxIpCount . '条');
+
         }
 
         //二次验证
@@ -166,10 +186,12 @@ class LoginController
             return app('json')->fail($e->getError());
         }
         $time = sys_config('verify_expire_time', 1);
-        $smsCode = $this->services->verify($services, $phone, $type, $time, app()->request->ip());
+        $smsCode = $this->services->verify($services, $phone, $type, $time);
         if ($smsCode) {
             CacheService::set('code_' . $phone, $smsCode, $time * 60);
-            CacheService::set($nowKey, $total, 61);
+            CacheService::set($maxMinuteCountKey, $minuteCount + 1, 61);
+            CacheService::set($maxPhoneCountKey, $phoneCount + 1, 86401);
+            CacheService::set($maxIpCountKey, $ipCount + 1, 86401);
             return app('json')->success(410007);
         } else {
             return app('json')->fail(410008);

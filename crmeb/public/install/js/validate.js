@@ -78,7 +78,7 @@ $.extend($.fn, {
 					return handle();
 				}
 
-				if ( validator.form() ) {//console.log(validator.pendingRequest);
+				if ( validator.form() ) {
 					if ( validator.pendingRequest ) {
 						validator.formSubmitted = true;
 						return false;

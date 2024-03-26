@@ -944,7 +944,6 @@ export default {
 					that.getOrderStatus();
 				})
 				.catch((err) => {
-					console.log(err, 'err');
 					uni.hideLoading();
 					that.$util.Tips(
 						{
@@ -1068,9 +1067,7 @@ export default {
 		},
 		// #ifdef H5
 		copyAddress() {
-			// console.log('1111111111111')
 			// let msg =
-			// console.log(msg)
 			// return msg
 		},
 		// #endif
@@ -1174,7 +1171,6 @@ export default {
 				content: that.$t(`为保障权益，请收到货确认无误后，再确认收货`),
 				success: (res) => {
 					if (res.confirm) {
-						console.log('1');
 						orderTake(orderId ? orderId : that.order_id)
 							.then((res) => {
 								return that.$util.Tips(

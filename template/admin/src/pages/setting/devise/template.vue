@@ -26,6 +26,7 @@ import { diyGetInfo, diySave } from '@/api/diy';
 import { mapMutations } from 'vuex';
 import rightConfig from '@/components/rightConfig/index';
 import links from './links';
+import Setting from '@/setting';
 export default {
   name: 'index',
   components: {
@@ -44,8 +45,8 @@ export default {
   created() {
     let pageId = this.$route.query.id;
     let names = this.$route.query.name;
-    this.setConfig = 'admin/' + names + '/setConfig';
-    this.updataConfig = 'admin/' + names + '/updataConfig';
+    this.setConfig = Setting.routePre + '/' + names + '/setConfig';
+    this.updataConfig = Setting.routePre + '/' + names + '/updataConfig';
     this.pageId = parseInt(pageId);
     this.iframeUrl = `${location.origin}/pages/index/index?mdType=iframeWindow`;
     diyGetInfo(parseInt(pageId)).then((datas) => {

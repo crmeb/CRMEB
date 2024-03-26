@@ -318,7 +318,6 @@ export default {
     // 搜索
     upIcon(n) {
       this.searchData = this.list.filter((item) => item.indexOf(this.iconVal) > -1);
-      console.log(this.searchData);
     },
     // 搜索规则
     searchRules() {

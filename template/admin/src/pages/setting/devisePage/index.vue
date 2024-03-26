@@ -1,6 +1,6 @@
 <template>
   <div>
-    <pages-header ref="pageHeader" title="页面设计" :backUrl="$routeProStr + '/setting/pages/devise'"></pages-header>
+    <pages-header ref="pageHeader" title="页面设计" :backUrl="$routeProStr + '/setting/pages/devise/0'"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt15">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->

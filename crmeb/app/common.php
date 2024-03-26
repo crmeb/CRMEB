@@ -791,7 +791,7 @@ if (!function_exists('get_tree_children')) {
         foreach ($data as $value) {
             $list[$value[$keyName]] = $value;
         }
-        static $tree = array(); //格式化好的树
+        $tree = array(); //格式化好的树
         foreach ($list as $item) {
             if (isset($list[$item[$pidName]])) {
                 $list[$item[$pidName]][$childrenname][] = &$list[$item[$keyName]];
@@ -832,18 +832,29 @@ if (!function_exists('get_tree_value')) {
      */
     function get_tree_value(array $data, $value)
     {
-        static $childrenValue = [];
-        foreach ($data as &$item) {
-            if ($item['value'] == $value) {
-                $childrenValue[] = $item['value'];
-                if ($item['pid']) {
-                    $value = $item['pid'];
-                    unset($item);
-                    return get_tree_value($data, $value);
+//        static $childrenValue = [];
+//        foreach ($data as &$item) {
+//            if ($item['value'] == $value) {
+//                $childrenValue[] = $item['value'];
+//                if ($item['pid']) {
+//                    $value = $item['pid'];
+//                    unset($item);
+//                    return get_tree_value($data, $value);
+//                }
+//            }
+//        }
+//        return $childrenValue;
+        $childrenValue = []; // 用于存储找到的子值的数组
+        foreach ($data as $item) {
+            if ($item['value'] == $value) { // 如果当前项的'value'键与给定值匹配
+                $childrenValue[] = $item['value']; // 将当前值添加到子值数组中
+                if ($item['pid']) { // 如果当前项有'pid'值，表示有父项
+                    // 递归调用get_tree_value函数，并将父项的'pid'值作为新的$value参数
+                    $childrenValue = array_merge($childrenValue, get_tree_value($data, $item['pid']));
                 }
             }
         }
-        return $childrenValue;
+        return $childrenValue; // 返回包含所有子值的数组
     }
 }
 
@@ -865,7 +876,6 @@ if (!function_exists('get_image_thumb')) {
             $image = $type == 'all' ? $data : $data[$type] ?? $filePath;
         } catch (\Throwable $e) {
             $image = $filePath;
-            \think\facade\Log::error('获取缩略图失败，原因：' . $e->getMessage() . '----' . $e->getFile() . '----' . $e->getLine() . '----' . $filePath);
         }
         $data = parse_url($image);
         if (!isset($data['host']) && (substr($image, 0, 2) == './' || substr($image, 0, 1) == '/')) {//不是完整地址

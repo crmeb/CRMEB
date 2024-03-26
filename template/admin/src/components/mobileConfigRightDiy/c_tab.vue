@@ -72,7 +72,7 @@ export default {
     border-left 1px solid #dcdee2
 }
 // .radio-box
-//     ::v-deep.ivu-radio-group-button
+//     ::v-deep .ivu-radio-group-button
 //         display flex
 //         width 100%
 //         flex-wrap: wrap
@@ -82,7 +82,7 @@ export default {
 //             align-items center
 //             justify-content center
 //     &.on
-//         ::v-deep.ivu-radio-group-button
+//         ::v-deep .ivu-radio-group-button
 //             .ivu-radio-wrapper
 //                 flex unset
 //                 width 67px

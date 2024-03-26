@@ -89,7 +89,7 @@ export default {
   margin-right: 0 !important;
   margin-left: 5px;
 }
-// ::v-deep.el-submenu__title {
+// ::v-deep .el-submenu__title {
 //   display: flex;
 //   justify-content: center;
 //   align-items: center;

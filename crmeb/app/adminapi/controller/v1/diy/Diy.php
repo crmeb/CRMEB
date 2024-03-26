@@ -348,6 +348,27 @@ class Diy extends AuthController
     }
 
     /**
+     * 推荐商品展示
+     * @param $type
+     * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/3/11
+     */
+    public function getGroomList($type)
+    {
+        [$page, $limit] = $this->request->getMore([
+            ['page', 1],
+            ['limit', 6],
+        ], true);
+        $list = $this->get_groom_list($type, $limit);
+        return app('json')->success($list);
+    }
+
+    /**
      * 获取uni-app路径
      * @return mixed
      */
@@ -355,9 +376,13 @@ class Diy extends AuthController
     {
         $url = sys_data('uni_app_link');
         if ($url) {
-            foreach ($url as &$link) {
+            $model_checkbox = sys_config('model_checkbox', ['seckill', 'bargain', 'combination']);
+            foreach ($url as $key => &$link) {
                 $link['url'] = $link['link'];
                 $link['parameter'] = trim($link['param']);
+                if (!in_array('seckill', $model_checkbox) && strpos($link['name'], '秒杀') !== false) unset($url[$key]);
+                if (!in_array('bargain', $model_checkbox) && strpos($link['name'], '砍价') !== false) unset($url[$key]);
+                if (!in_array('combination', $model_checkbox) && strpos($link['name'], '拼团') !== false) unset($url[$key]);
             }
         } else {
             /** @var CacheServices $cache */

@@ -85,7 +85,11 @@ export default {
   methods: {
     // 添加
     add() {
-      this.$modalForm(groupAddApi(0)).then(() => this.getList());
+      this.$modalForm(groupAddApi(0))
+        .then(() => this.getList())
+        .catch(() => {
+          console.log('error');
+        });
     },
     // 分组列表
     getList() {

@@ -1,9 +1,10 @@
 <template>
   <div>
     <pages-header
-        ref="pageHeader"
-        :title="$route.meta.title"
-        :backUrl="$routeProStr + '/app/wechat/reply/keyword'"></pages-header>
+      ref="pageHeader"
+      :title="$route.meta.title"
+      :backUrl="$routeProStr + '/app/wechat/reply/keyword'"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt-16">
       <!-- 公众号设置 -->
       <el-row :gutter="24">
@@ -121,11 +122,12 @@
                           :show-file-list="false"
                           :action="fileUrl"
                           :on-success="handleSuccess"
-                          :format="formValidate.type === 'image' ? formatImg : formatVoice"
+                          :accept="formValidate.type === 'image' ? formatImg : formatVoice"
                           :max-size="2048"
                           :headers="header"
                           :on-format-error="handleFormatError"
                           :on-exceeded-size="handleMaxSize"
+                          :before-upload="beforeUpload"
                           class="mr20"
                           style="margin-top: 1px"
                         >
@@ -169,6 +171,8 @@ import { replyApi, keywordsinfoApi } from '@/api/app';
 // import { mapActions } from 'vuex'
 import newsCategory from '@/components/newsCategory/index';
 import { getCookies } from '@/libs/util';
+import { isPicUpload } from '@/utils';
+
 export default {
   name: 'follow',
   components: { newsCategory },
@@ -254,6 +258,7 @@ export default {
     }
   },
   methods: {
+    beforeUpload(file) {},
     getCentList(val) {
       this.formValidate.data.list = val.new;
       this.modals = false;
@@ -391,23 +396,25 @@ export default {
       if (this.$route.params.id && this.$route.params.id === '0') {
         this.$msgbox({
           title: '提示',
-          message:'是否继续添加',
+          message: '是否继续添加',
           showCancelButton: true,
           cancelButtonText: '否',
           confirmButtonText: '是',
           iconClass: 'el-icon-warning',
-          confirmButtonClass: 'btn-custom-cancel'
-        }).then(() => {
-          setTimeout(() => {
-            this.labelarr = [];
-            this.val = '';
-            this.$refs['formValidate'].resetFields();
-          }, 1000);
-        }).catch(() => {
-          setTimeout(() => {
-            this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword' });
-          }, 500);
+          confirmButtonClass: 'btn-custom-cancel',
         })
+          .then(() => {
+            setTimeout(() => {
+              this.labelarr = [];
+              this.val = '';
+              this.$refs['formValidate'].resetFields();
+            }, 1000);
+          })
+          .catch(() => {
+            setTimeout(() => {
+              this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword' });
+            }, 500);
+          });
       } else if (this.$route.params.id && this.$route.params.id !== '0') {
         this.$router.push({ path: this.$routeProStr + '/app/wechat/reply/keyword' });
       }
@@ -418,207 +425,223 @@ export default {
 
 <style scoped lang="stylus">
 * {
-    -moz-user-select: none; /*火狐*/
-    -webkit-user-select: none; /*webkit浏览器*/
-    -ms-user-select: none; /*IE10*/
-    -khtml-user-select: none; /*早期浏览器*/
-    user-select: none;
+  -moz-user-select: none; /* 火狐 */
+  -webkit-user-select: none; /* webkit浏览器 */
+  -ms-user-select: none; /* IE10 */
+  -khtml-user-select: none; /* 早期浏览器 */
+  user-select: none;
 }
 
 .arrbox {
-    background-color: white;
-    font-size: 12px;
-    border: 1px solid #dcdee2;
-    border-radius: 6px;
-    margin-bottom: 0px;
-    padding:0 5px;
-    text-align: left;
-    box-sizing border-box;
-    width: 90%;
-    .el-tag{
-      margin-right: 3px;
-    }
+  background-color: white;
+  font-size: 12px;
+  border: 1px solid #dcdee2;
+  border-radius: 6px;
+  margin-bottom: 0px;
+  padding: 0 5px;
+  text-align: left;
+  box-sizing: border-box;
+  width: 90%;
+
+  .el-tag {
+    margin-right: 3px;
+  }
 }
 
 .arrbox_ip {
-    font-size: 12px;
-    border: none;
-    box-shadow: none;
-    outline: none;
-    background-color: transparent;
-    padding: 0;
-    margin: 0;
-    width: auto !important;
-    max-width: inherit;
-    min-width: 80px;
-    vertical-align: top;
-    height: 30px;
-    color: #34495e;
-    margin: 2px;
-    line-height: 30px;
+  font-size: 12px;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  width: auto !important;
+  max-width: inherit;
+  min-width: 80px;
+  vertical-align: top;
+  height: 30px;
+  color: #34495e;
+  margin: 2px;
+  line-height: 30px;
 }
 
 .left {
-    min-width: 390px;
-    min-height: 550px;
-    position: relative;
-    padding-left: 40px;
+  min-width: 390px;
+  min-height: 550px;
+  position: relative;
+  padding-left: 40px;
 }
 
 .top {
-    position: absolute;
-    top: 0px;
+  position: absolute;
+  top: 0px;
 }
 
 .bottom {
-    position: absolute;
-    bottom: 0px;
+  position: absolute;
+  bottom: 0px;
 }
 
 .centent {
-    background: #f4f5f9;
-    min-height: 438px;
-    position: absolute;
-    top: 63px;
-    width: 320px;
-    height: 60%;
-    overflow-y: auto;
-    padding: 15px;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
+  background: #f4f5f9;
+  min-height: 438px;
+  position: absolute;
+  top: 63px;
+  width: 320px;
+  height: 60%;
+  overflow-y: auto;
+  padding: 15px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .right {
-    background: #fff;
-    min-height: 300px;
+  background: #fff;
+  min-height: 300px;
 }
 
 .box-content {
-    position: relative;
-    max-width: 60%;
-    min-height: 40px;
-    margin-left: 15px;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    word-break: break-all;
-    word-wrap: break-word;
-    line-height: 1.5;
-    border-radius: 5px;
+  position: relative;
+  max-width: 60%;
+  min-height: 40px;
+  margin-left: 15px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  word-break: break-all;
+  word-wrap: break-word;
+  line-height: 1.5;
+  border-radius: 5px;
 }
 
 .box-content_pic {
-    width: 100%;
+  width: 100%;
 }
 
 .box-content_pic img {
-    width: 100%;
-    height: auto;
+  width: 100%;
+  height: auto;
 }
 
 .box-content:before {
-    content: '';
-    position: absolute;
-    left: -13px;
-    top: 11px;
-    display: block;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 10px solid #ccc;
-    -webkit-transform: rotate(90deg);
-    transform: rotate(90deg);
+  content: '';
+  position: absolute;
+  left: -13px;
+  top: 11px;
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid #ccc;
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 .box-content:after {
-    content: '';
-    content: '';
-    position: absolute;
-    left: -12px;
-    top: 11px;
-    display: block;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 10px solid #f5f5f5;
-    -webkit-transform: rotate(90deg);
-    transform: rotate(90deg);
+  content: '';
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 11px;
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid #f5f5f5;
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 .time-wrapper {
-    margin-bottom: 10px;
-    text-align: center;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .time {
-    display: inline-block;
-    color: #f5f5f5;
-    background: rgba(0, 0, 0, .3);
-    padding: 3px 8px;
-    border-radius: 3px;
-    font-size: 12px;
+  display: inline-block;
+  color: #f5f5f5;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 12px;
 }
 
 .text-box {
-    display: flex;
+  display: flex;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
+  width: 40px;
+  height: 40px;
 }
 
 .avatar img {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
-.modelBox
-   ::v-deep .ivu-modal-body
-     padding 0 16px 16px 16px !important
-.news_pic
-    width: 100%
-    height: 150px
-    overflow: hidden
-    position: relative
-    background-size: 100%
-    background-position: center center
-    border-radius: 5px 5px 0 0
-    padding 10px
-    box-sizing border-box
-    display flex
-    flex-direction column
-    align-items: flex-end
-.news_sp
-    font-size 12px
-    color #000000
-    background #fff
-    width 100%
-    height 38px
-    line-height 38px
-    padding 0 12px
-    box-sizing border-box
-    display: block;
-.news_cent
-    width 100%
-    height auto
-    background #fff
-    border-top: 1px dashed #eee;
-    display flex
-    padding 10px
-    box-sizing border-box
-    justify-content: space-between
-    .news_sp1
-        font-size 12px
-        color #000000
-        width: 71%;
-    .news_cent_img
-        width 81px
-        height 46px
-        border-radius 6px
-        overflow hidden
-        img
-            width 100%
-            height 100%
+
+.modelBox {
+  ::v-deep .ivu-modal-body {
+    padding: 0 16px 16px 16px !important;
+  }
+}
+
+.news_pic {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  position: relative;
+  background-size: 100%;
+  background-position: center center;
+  border-radius: 5px 5px 0 0;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.news_sp {
+  font-size: 12px;
+  color: #000000;
+  background: #fff;
+  width: 100%;
+  height: 38px;
+  line-height: 38px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  display: block;
+}
+
+.news_cent {
+  width: 100%;
+  height: auto;
+  background: #fff;
+  border-top: 1px dashed #eee;
+  display: flex;
+  padding: 10px;
+  box-sizing: border-box;
+  justify-content: space-between;
+
+  .news_sp1 {
+    font-size: 12px;
+    color: #000000;
+    width: 71%;
+  }
+
+  .news_cent_img {
+    width: 81px;
+    height: 46px;
+    border-radius: 6px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
 </style>

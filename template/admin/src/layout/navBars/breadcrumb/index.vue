@@ -78,7 +78,7 @@ export default {
 
 <style scoped lang="scss">
 .layout-navbars-breadcrumb-index {
-  height: 50px;
+  height: 64px;
   display: flex;
   align-items: center;
   // padding-right: 15px;

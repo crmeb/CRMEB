@@ -48,6 +48,54 @@ class SystemNotification extends AuthController
     }
 
     /**
+     * 添加消息
+     * @return \think\Response
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/2/19
+     */
+    public function notForm($id)
+    {
+        return app('json')->success($this->services->getNotForm($id));
+    }
+
+    /**
+     * 保存自定义消息
+     * @param $id
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/2/20
+     */
+    public function notFormSave($id)
+    {
+        $data = $this->request->postMore([
+            ['custom_trigger', ''],
+            ['name', ''],
+            ['mark', ''],
+        ]);
+        $this->services->notFormSave($id, $data);
+        return app('json')->success(100000);
+    }
+
+    /**
+     * 删除消息
+     * @param $id
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/2/20
+     */
+    public function delNot($id)
+    {
+        if (!$id) return app('json')->fail(100100);
+        $this->services->delete($id);
+        return app('json')->success(100002);
+    }
+
+
+    /**
      * 显示编辑
      * @return \think\Response
      * @throws \think\db\exception\DataNotFoundException
@@ -85,12 +133,19 @@ class SystemNotification extends AuthController
             ['system_title', ''],
             ['system_text', ''],
             ['tempid', ''],
+            ['tempkey', ''],
+            ['content', ''],
             ['ent_wechat_text', ''],
             ['url', ''],
             ['wechat_id', ''],
             ['routine_id', ''],
             ['mark', ''],
             ['sms_id', ''],
+            ['key_list', ''],
+            ['sms_text', ''],
+            ['wechat_link', ''],
+            ['routine_link', ''],
+            ['wechat_to_routine', ''],
         ]);
         if ($data['mark'] == 'verify_code') $data['type'] = 'is_sms';
         if (!$data['id']) return app('json')->fail(100100);

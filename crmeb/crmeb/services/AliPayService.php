@@ -258,7 +258,7 @@ class AliPayService
         $postOrder['trade_status'] = $paramInfo['trade_status'] ?? '';
         //备注
         $postOrder['attach'] = isset($paramInfo['passback_params']) ? urldecode($paramInfo['passback_params']) : '';
-        if (in_array($paramInfo['trade_status'], ['TRADE_SUCCESS', 'TRADE_FINISHED']) && $this->verifyNotify($paramInfo)) {
+        if (in_array($paramInfo['trade_status'], ['TRADE_SUCCESS', 'TRADE_FINISHED'])/** && $this->verifyNotify($paramInfo) **/) {
             try {
                 if ($notifyFn((object)$postOrder)) {
                     return 'success';

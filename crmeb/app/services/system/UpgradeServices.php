@@ -46,7 +46,7 @@ class UpgradeServices extends BaseServices
     /**
      * @var int $timeStamp
      */
-    private $timeStamp;
+    private $timeStamp = 0;
 
     /**
      * UpgradeServices constructor.

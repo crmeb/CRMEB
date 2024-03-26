@@ -156,7 +156,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
-          <template slot-scope="scope">
+          <template slot-scope="scope" v-if="scope.row.status == 0">
             <a href="javascript:void(0);" @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a class="item" @click="adopt(scope.row, '审核通过', index)">通过</a>

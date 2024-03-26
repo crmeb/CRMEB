@@ -60,7 +60,7 @@
       <span class="prompt">建议尺寸：宽290px*高100px</span>
     </el-card>
 
-    <el-dialog :visible.sync="isTemplate" title="商业授权" width="480px" @closed="cancel">
+    <el-dialog :visible.sync="isTemplate" title="商业授权" width="550px" @closed="cancel">
       <iframe width="100%" height="780" :src="iframeUrl" frameborder="0"></iframe>
     </el-dialog>
     <el-dialog :visible.sync="modalPic" width="1024px" title="上传授权图片" :close-on-click-modal="false">
@@ -432,7 +432,7 @@ export default {
   font-weight: 600;
 }
 iframe {
-  height: 370px;
+  height: 550px;
   overflow: hidden;
 }
 </style>

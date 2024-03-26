@@ -14,19 +14,17 @@
 				</view>
 				<view class='tip picList' v-if='!active'>
 					<view class="pic-box pic-box-color acea-row row-center-wrapper row-column"
-						:class="activePic == index ? 'pic-box-color-active' : ''" v-for="(item, index) in picList"
-						:key="index" @click="picCharge(index, item)" v-if="item.price">
+						:class="activePic == index ? 'pic-box-color-active' : ''" v-for="(item, index) in picList" :key="index"
+						@click="picCharge(index, item)" v-if="item.price">
 						<view class="pic-number-pic">
 							{{ item.price }}<span class="pic-number"> {{$t(`元`)}}</span>
 						</view>
 						<view class="pic-number">{{$t(`赠送`)}}: {{ item.give_money }} {{$t(`元`)}} </view>
 					</view>
 					<view class="pic-box pic-box-color acea-row row-center-wrapper"
-						:class="activePic == picList.length ? 'pic-box-color-active' : ''"
-						@click="picCharge(picList.length)">
+						:class="activePic == picList.length ? 'pic-box-color-active' : ''" @click="picCharge(picList.length)">
 						<input type="digit" @input="replaceInput" :placeholder="$t(`其他`)" v-model="money"
-							class="pic-box-money pic-number-pic"
-							:placeholder-class="activePic == picList.length ? 'active' :''"
+							class="pic-box-money pic-number-pic" :placeholder-class="activePic == picList.length ? 'active' :''"
 							:class="activePic == picList.length ? 'pic-box-color-active' : ''" />
 					</view>
 					<view class="tips-box">
@@ -164,10 +162,10 @@
 		},
 		methods: {
 			replaceInput(event) {
-			    // 必须在nextTick中
-			    this.$nextTick(() => {
-			        this.money = event.target.value.match(/^\d*(\.?\d{0,2})/g)[0]
-			    })
+				// 必须在nextTick中
+				this.$nextTick(() => {
+					this.money = event.target.value.match(/^\d*(\.?\d{0,2})/g)[0]
+				})
 			},
 			getBasicConfig() {
 				basicConfig().then(res => {
@@ -244,6 +242,9 @@
 				let that = this;
 				getUserInfo().then(res => {
 					that.$set(that, 'userinfo', res.data);
+					if (!res.data.extract_type.includes('3')) {
+						this.$set(this, 'navRecharge', [this.$t(`账户充值`)])
+					}
 				})
 			},
 			onChangeFun: function(e) {

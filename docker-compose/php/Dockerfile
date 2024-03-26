@@ -11,5 +11,6 @@ RUN apt-get update; \
 RUN apt-get clean 
 RUN apt-get autoremove   
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+RUN echo "open_basedir = /tmp:/var" > /etc/php/7.4/fpm/conf.d/open_basedir.ini
 
 # 

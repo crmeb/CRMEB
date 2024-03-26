@@ -44,7 +44,7 @@ class Wechat extends BaseMessage
      * @param array $data
      * @return bool|mixed
      */
-    public function send(string $tempid, array $data = [])
+    public function send(string $tempid, array $data = [], $wechatToRoutine = 0)
     {
         if (!$tempid) {
             return $this->setError('Template ID does not exist');
@@ -53,7 +53,7 @@ class Wechat extends BaseMessage
             return $this->setError('Openid does not exist');
         }
         try {
-            $res = WechatService::sendTemplate($this->openId, $tempid, $data, $this->toUrl, $this->color);
+            $res = WechatService::sendTemplate($this->openId, $tempid, $data, $this->toUrl, $this->color, $wechatToRoutine);
             $this->clear();
             return $res;
         } catch (\Exception $e) {

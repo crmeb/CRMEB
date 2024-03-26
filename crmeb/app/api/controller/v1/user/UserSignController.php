@@ -74,10 +74,8 @@ class UserSignController
     public function sign_integral(Request $request)
     {
         $uid = (int)$request->uid();
-        if ($integral = $this->services->sign($uid)) {
-            return app('json')->success(410127, ['integral' => $integral], ['integral' => $integral]);
-        }
-        return app('json')->fail(410128);
+        $integral = $this->services->sign($uid);
+        return app('json')->success(410127, ['integral' => $integral], ['integral' => $integral]);
     }
 
     /**

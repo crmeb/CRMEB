@@ -151,7 +151,7 @@ class LuckLotteryRecord extends BaseModel
      */
     public function searchLotteryIdAttr($query, $value)
     {
-        if ($value) $query->where('lottery_id', $value);
+        if ($value !== '') $query->where('lottery_id', $value);
     }
 
     /**

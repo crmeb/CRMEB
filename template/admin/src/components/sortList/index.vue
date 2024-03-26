@@ -165,6 +165,6 @@ export default {
     margin-top 20px
     float right
 .goodList
-    ::v-deep table
+    ::v-deeptable
         width 100% !important
 </style>

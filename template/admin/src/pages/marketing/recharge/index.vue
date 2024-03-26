@@ -95,7 +95,6 @@
         </div>
       </div>
     </div>
-    <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
   </div>
 </template>
 
@@ -119,15 +118,13 @@ import {
 } from '@/api/system';
 import draggable from 'vuedraggable';
 import uploadPictures from '@/components/uploadPictures';
-import linkaddress from '@/components/linkaddress';
 import { getCookies } from '@/libs/util';
 
 export default {
   name: 'list',
   components: {
     draggable,
-    uploadPictures,
-    linkaddress,
+    uploadPictures
   },
   computed: {
     bgcolors() {
@@ -336,9 +333,6 @@ export default {
       });
       return promise;
     },
-    linkUrl(e) {
-      this.tabList.list[this.activeIndexs].link = e;
-    },
     color() {
       getColorChange('color_change').then((res) => {
         switch (res.data.status) {
@@ -517,10 +511,6 @@ export default {
           });
       }
     },
-    link(index) {
-      this.activeIndexs = index;
-      this.$refs.linkaddres.modals = true;
-    },
     getListHeader() {
       this.loading = true;
       groupDataHeaderApi({ config_name: this.name }, 'setting/sign_data/header')
@@ -633,7 +623,7 @@ export default {
   display: none;
 }
 
-::v-deep.ivu-form-item-content {
+::v-deep .ivu-form-item-content {
   margin-left: 0px !important;
 }
 
@@ -1372,20 +1362,20 @@ export default {
   // width 80px!important
 }
 
-::v-deep.i-layout-page-header {
+::v-deep .i-layout-page-header {
   height: 66px;
   background-color: #fff;
   border-bottom: 1px solid #e8eaec;
 }
 
-::v-deep.ivu-page-header {
+::v-deep .ivu-page-header {
   border-bottom: unset;
   position: fixed;
   z-index: 9;
   width: 100%;
 }
 
-::v-deep.i-layout-page-header {
+::v-deep .i-layout-page-header {
   height: 66px;
   background-color: #fff;
   border-bottom: 1px solid #e8eaec;

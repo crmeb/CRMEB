@@ -46,7 +46,13 @@ class RegisterListener implements ListenerInterface
             //记录推广绑定关系
             /** @var UserSpreadServices $userSpreadServices */
             $userSpreadServices = app()->make(UserSpreadServices::class);
-            $userSpreadServices->setSpread($uid, $spreadUid);
+            $res = $userSpreadServices->setSpread($uid, $spreadUid);
+
+            //自定义消息-下级用户绑定成功
+            if ($res) {
+                $phone = app()->make(UserServices::class)->value($uid, 'phone');
+                event('CustomNoticeListener', [$uid, ['nickname' => $name, 'time' => date('Y-m-d H:i:s'), 'phone' => $phone], 'spread_success']);
+            }
         }
 
         if ($isNew) {

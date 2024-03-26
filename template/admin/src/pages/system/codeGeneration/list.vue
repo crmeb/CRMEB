@@ -590,7 +590,7 @@ export default {
   color: #f00;
 }
 
-::v-deep body .ivu-select-dropdown .ivu-dropdown-transfer {
+::v-deepbody .ivu-select-dropdown .ivu-dropdown-transfer {
   background: red !important;
 }
 

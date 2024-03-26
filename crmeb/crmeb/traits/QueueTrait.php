@@ -13,6 +13,7 @@ namespace crmeb\traits;
 
 
 use crmeb\utils\Queue;
+use think\facade\Env;
 
 /**
  * 快捷加入消息队列
@@ -39,7 +40,7 @@ trait QueueTrait
      */
     public static function dispatch($action, array $data = [], string $queueName = null)
     {
-        if (sys_config('queue_open', 0) == 1) {
+        if (sys_config('queue_open', 0) == 1 && Env::get('cache.driver', 'file') == 'redis') {
             $queue = Queue::instance()->job(__CLASS__);
             if (is_array($action)) {
                 $queue->data(...$action);
@@ -73,7 +74,7 @@ trait QueueTrait
      */
     public static function dispatchSecs(int $secs, $action, array $data = [], string $queueName = null)
     {
-        if (sys_config('queue_open', 0) == 1) {
+        if (sys_config('queue_open', 0) == 1 && Env::get('cache.driver', 'file') == 'redis') {
             $queue = Queue::instance()->job(__CLASS__)->secs($secs);
             if (is_array($action)) {
                 $queue->data(...$action);

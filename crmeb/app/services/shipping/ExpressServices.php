@@ -86,8 +86,8 @@ class ExpressServices extends BaseServices
      */
     public function createExpressForm(array $formData = [])
     {
-        if (isset($formData['partner_id']) && $formData['partner_id'] == 1) $field[] = Form::input('account', '月结账号', $formData['account'] ?? '')->required();
-        if (isset($formData['partner_key']) && $formData['partner_key'] == 1) $field[] = Form::input('key', '月结密码', $formData['key'] ?? '')->required();
+        if (isset($formData['partner_id']) && $formData['partner_id'] == 1) $field[] = Form::input('account', '月结账号', $formData['account'] ?? '');
+        if (isset($formData['partner_key']) && $formData['partner_key'] == 1) $field[] = Form::input('key', '月结密码', $formData['key'] ?? '');
         if (isset($formData['net']) && $formData['net'] == 1) $field[] = Form::input('net_name', '取件网点', $formData['net_name'] ?? '')->required();
         if (isset($formData['check_man']) && $formData['check_man'] == 1) $field[] = Form::input('courier_name', '承载快递员名', $formData['courier_name'] ?? '')->required();
         if (isset($formData['partner_name']) && $formData['partner_name'] == 1) $field[] = Form::input('customer_name', '客户账户名称', $formData['customer_name'] ?? '')->required();

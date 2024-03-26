@@ -49,9 +49,9 @@
             <el-radio-group v-model="currentTab" type="button" @input="onClickTab(currentTab)">
               <el-radio-button label="">全部</el-radio-button>
               <el-radio-button label="1">普通</el-radio-button>
-              <el-radio-button label="2">拼团</el-radio-button>
-              <el-radio-button label="3">砍价</el-radio-button>
-              <el-radio-button label="4">秒杀</el-radio-button>
+              <el-radio-button v-permission="'combination'" label="2">拼团</el-radio-button>
+              <el-radio-button v-permission="'bargain'" label="3">砍价</el-radio-button>
+              <el-radio-button v-permission="'seckill'" label="4">秒杀</el-radio-button>
             </el-radio-group>
           </el-form-item>
         </el-col>

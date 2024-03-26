@@ -5,6 +5,7 @@
       :title="formItem.id ? '编辑提货点' : '添加提货点'"
       width="720px"
       @closed="cancel"
+      append-to-body
     >
       <div class="article-manager" v-loading="spinShow">
         <el-form
@@ -32,8 +33,8 @@
             </el-col>
             <el-col :span="24">
               <el-col v-bind="grid">
-                <el-form-item label="提货点手机号：" label-for="phone" prop="phone">
-                  <el-input v-model="formItem.phone" placeholder="请输入提货点手机号" />
+                <el-form-item label="提货点电话：" label-for="phone" prop="phone">
+                  <el-input v-model="formItem.phone" placeholder="请输入提货点电话：" />
                 </el-form-item>
               </el-col>
             </el-col>
@@ -42,7 +43,6 @@
                 <el-form-item label="提货点地址：" label-for="address" prop="address">
                   <el-cascader
                     :options="addresData"
-                    :value="formItem.address"
                     v-model="formItem.address"
                     @change="handleChange"
                     style="width: 100%"
@@ -137,7 +137,7 @@
           width="1024px"
           :title="modalTitle"
           :close-on-click-modal="false"
-          :z-index="888"
+          append-to-body
         >
           <uploadPictures
             :isChoice="isChoice"
@@ -147,21 +147,13 @@
             v-if="modalPic"
           ></uploadPictures>
         </el-dialog>
-
-        <el-dialog
-          :visible.sync="modalMap"
-          title="请选择地址"
-          :close-on-click-modal="false"
-          :z-index="1"
-          width="720px"
-          class="mapBox"
-        >
-          <iframe id="mapPage" width="100%" height="600px" frameborder="0" v-bind:src="keyUrl"></iframe>
-        </el-dialog>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" long @click="handleSubmit('formItem')">{{ formItem.id ? '修改' : '提交' }}</el-button>
       </span>
+    </el-dialog>
+    <el-dialog :visible.sync="modalMap" title="请选择地址" append-to-body :close-on-click-modal="false" width="720px" class="mapBox">
+      <iframe id="mapPage" width="100%" height="600px" frameborder="0" v-bind:src="keyUrl"></iframe>
     </el-dialog>
   </div>
 </template>
@@ -178,9 +170,7 @@ export default {
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('请填写手机号'));
-      } else if (!/^1[3456789]\d{9}$/.test(value)) {
-        callback(new Error('手机号格式不正确!'));
+        return callback(new Error('请填写电话号码'));
       } else {
         callback();
       }

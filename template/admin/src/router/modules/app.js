@@ -127,6 +127,15 @@ export default {
       component: () => import('@/pages/app/routine/download/index'),
     },
     {
+      path: 'routine/link',
+      name: `${pre}routineLink`,
+      meta: {
+        auth: ['routine-link'],
+        title: '小程序链接',
+      },
+      component: () => import('@/pages/app/routine/link/index'),
+    },
+    {
       path: 'app/version',
       name: `${pre}version`,
       meta: {

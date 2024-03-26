@@ -69,7 +69,7 @@
           :headers="header"
           :multiple="true"
           :on-success="handleSuccess"
-          :format="['jpg', 'jpeg', 'png', 'gif']"
+          accept="image/*"
           :on-format-error="handleFormatError"
           style="margin-top: 1px; display: inline-block"
         >
@@ -130,6 +130,8 @@ import util from '@/libs/util';
 import emojiList from '@/utils/emoji';
 import { serviceList, speeChcraft, transferList, serviceCate, serviceTransfer } from '@/api/kefu';
 import { getCookies, removeCookies, setCookies } from '@/libs/util';
+import { isPicUpload } from '@/utils';
+
 const chunk = function (arr, num) {
   num = num * 1 || 1;
   var ret = [];
@@ -310,7 +312,9 @@ export default {
       }
     },
     // 上传之前
-    beforeUpload() {},
+    beforeUpload(file) {
+      return isPicUpload(file)
+    },
     // 上传成功
     handleSuccess(res, file, fileList) {
       if (res.status === 200) {
@@ -660,7 +664,7 @@ body {
 
             }
 
-            ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
+            ::v-deep .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
                 border transparent
                 box-shadow: none;
             }
@@ -775,10 +779,10 @@ body {
                 border-radius: .32rem;
                 overflow hidden
 
-                ::v-deep .ivu-input{
+                ::v-deep .el-input__inner{
                     background #F5F6F9
                 }
-                ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
+                ::v-deep .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
                     border transparent
                     box-shadow: none;
                 }

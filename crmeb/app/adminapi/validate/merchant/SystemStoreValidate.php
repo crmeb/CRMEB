@@ -23,7 +23,7 @@ class SystemStoreValidate extends Validate
     protected $rule = [
         'name' => 'require',
         'introduction' => 'require',
-        'phone' => ['require', 'mobile'],
+        'phone' => 'require',
         'address' => 'require',
         'image' => 'require',
         'oblong_image' => 'require',
@@ -43,7 +43,6 @@ class SystemStoreValidate extends Validate
         'phone.require' => '400380',
         'image.require' => '400381',
         'oblong_image.require' => '400382',
-        'phone.mobile' => '400252',
         'address.require' => '400383',
         'detailed_address.require' => '400384',
         'latlng.require' => '400385',

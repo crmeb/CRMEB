@@ -64,7 +64,7 @@ export default {
 
 <style scoped lang="stylus">
 .radio-box
-    ::v-deep.ivu-radio-group-button
+    ::v-deep .ivu-radio-group-button
         display flex
         width 100%
         .ivu-radio-wrapper
@@ -73,7 +73,7 @@ export default {
             align-items center
             justify-content center
     &.on
-        ::v-deep.ivu-radio-group-button
+        ::v-deep .ivu-radio-group-button
             .ivu-radio-wrapper
                 flex 1
 .title-tips
