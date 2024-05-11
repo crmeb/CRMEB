@@ -10,7 +10,7 @@ CRMEB开源商城系统PHP版
 
 <div align="center" >
     <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Licence-GPL3.0-green.svg?style=flat" />
+        <img src="https://img.shields.io/badge/Licence-apache2.0-green.svg?style=flat" />
     </a>
     <a href="http://www.crmeb.com">
         <img src="https://img.shields.io/badge/Edition-5.2-blue.svg" />
@@ -29,7 +29,8 @@ CRMEB开源商城系统PHP版
 
 [官网](https://www.crmeb.com/) |
 [在线体验](http://v4.crmeb.net/admin/) |
-[帮助文档](https://doc.crmeb.com/single/crmeb_v4) |
+[帮助文档](https://doc.crmeb.com/single/v53/) |
+[应用市场](https://www.crmeb.com/market/)
 [技术社区](https://www.crmeb.com/ask/)
 
 [comment]: <> ([宽屏预览]&#40;https://gitee.com/ZhongBangKeJi/CRMEB/blob/master/README.md&#41;)
@@ -62,7 +63,7 @@ CRMEB开源商城Java版：https://gitee.com/ZhongBangKeJi/crmeb_java
 
 ### 🫧 系统亮点
 ~~~
-1.前后端分离：后端TP6，管理端iView UI，移动端Uni-app；
+1.前后端分离：后端TP6，管理端Element UI，移动端Uni-app；
 2.代码规范：遵循PSR-2命名规范、Restful标准接口、代码严格分层、注释齐全、统一错误码；
 3.权限管理：内置强大灵活的权限管理，可以控制到每一个菜单；
 4.开发配置：低代码增加配置、系统组合数据模块；
@@ -174,20 +175,28 @@ UI：xy-yyds、LXT
 
 
 ---
-###  📺 使用须知
-1、允许用于个人学习、毕业设计、教学案例、公益事业、商业使用；
+###  📺 版权须知
 
-2、如果商用必须保留版权信息，请自觉遵守；
+Apache License 2.0 许可的主要内容包括：
 
-3、禁止将本项目的代码和资源进行任何形式的出售，产生的一切任何后果责任由侵权者自负。
+1. 授权：允许任何人以任何目的使用、复制、修改和分发该软件。
 
+2. 版权声明：要求在软件和相关文档中包含原始版权声明和许可证声明。
+
+3. 保证免责：表明该软件是按现状提供的，没有任何明示或暗示的担保或保证。作者不承担任何赔偿责任。
+
+4. 贡献者授权：要求所有贡献者授予 Apache 软件基金会永久性的、免费的、不可撤销的许可，以使用、复制、修改和分发其贡献。
+
+5. 专利许可：为了保护使用该软件的用户，该许可要求贡献者授权任何必要的专利许可，以便将其用于 Apache 软件基金会的项目。
+
+Apache License 2.0 是一种宽松的开源许可，允许人们自由使用、修改和分发软件。
 
 ---
 ###  💾 版权信息
 
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2017-2023 by CRMEB (https://www.crmeb.com)
+版权所有Copyright © 2017-2024 by CRMEB (https://www.crmeb.com)
 
 All rights reserved。
 

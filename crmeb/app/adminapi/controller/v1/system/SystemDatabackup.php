@@ -50,7 +50,9 @@ class SystemDatabackup extends AuthController
      */
     public function read()
     {
-        $tablename = request()->param('tablename', '', 'htmlspecialchars');
+        [$tablename] = $this->request->getMore([
+            ['tablename', ''],
+        ], true);
         return app('json')->success($this->services->getRead($tablename));
     }
 
