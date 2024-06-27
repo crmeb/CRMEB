@@ -37,7 +37,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="searchList">查询</el-button>
+          <el-button type="primary" v-db-click @click="searchList">查询</el-button>
         </el-form-item>
       </el-form>
       <el-tabs v-model="type" @tab-click="onClickTab">
@@ -77,7 +77,7 @@
               <el-tag v-show="scope.row.status === 2">已成功</el-tag>
             </template>
             <template v-else-if="item.slot === 'action'">
-              <a @click="Info(scope.row)">查看详情</a>
+              <a v-db-click @click="Info(scope.row)">查看详情</a>
             </template>
           </template>
         </el-table-column>

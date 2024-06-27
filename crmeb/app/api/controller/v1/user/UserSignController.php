@@ -73,6 +73,9 @@ class UserSignController
      */
     public function sign_integral(Request $request)
     {
+        if (sys_config('sign_status') == 0) {
+            return app('json')->fail('签到功能未开启');
+        }
         $uid = (int)$request->uid();
         $integral = $this->services->sign($uid);
         return app('json')->success(410127, ['integral' => $integral], ['integral' => $integral]);

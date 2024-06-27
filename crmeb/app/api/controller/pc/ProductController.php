@@ -43,7 +43,7 @@ class ProductController
             [['news', 'd'], 0, '', 'timeOrder'],
             [['type', 0], 0],
             ['ids', ''],
-            ['selectId', '']
+            [['selectId', 'd'], 0]
         ]);
         if ($where['selectId'] && (!$where['sid'] || !$where['cid'])) {
             if ($services->value(['id' => $where['selectId']], 'pid')) {

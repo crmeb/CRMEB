@@ -3,7 +3,7 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row>
         <el-col v-bind="grid">
-          <el-button v-auth="['admin-template']" type="primary" @click="add">添加模板</el-button>
+          <el-button v-auth="['admin-template']" type="primary" v-db-click @click="add">添加模板</el-button>
         </el-col>
       </el-row>
       <el-table
@@ -43,11 +43,11 @@
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
             <div style="display: inline-block" v-if="scope.row.status != 1">
-              <a @click="setStatus(scope.row, index)">设为首页</a>
+              <a v-db-click @click="setStatus(scope.row, index)">设为首页</a>
             </div>
             <el-divider direction="vertical" v-if="scope.row.status != 1" />
             <div style="display: inline-block" v-if="scope.row.status || scope.row.type">
-              <a @click="edit(scope.row)">编辑</a>
+              <a v-db-click @click="edit(scope.row)">编辑</a>
             </div>
             <el-divider direction="vertical" v-if="scope.row.status || scope.row.type" />
             <template>
@@ -94,8 +94,8 @@
         </el-card>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取消</el-button>
-        <el-button type="primary" @click="handleSubmit('formItem')">提交</el-button>
+        <el-button v-db-click @click="cancel">取消</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formItem')">提交</el-button>
       </span>
     </el-dialog>
   </div>

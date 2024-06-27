@@ -279,6 +279,15 @@ class StoreCartServices extends BaseServices
         } else {//加入购物车记录
             ProductLogJob::dispatch(['cart', ['uid' => $uid, 'product_id' => $product_id, 'cart_num' => $cart_num]]);
             $cart = $this->dao->getOne(['type' => $type, 'uid' => $uid, 'product_id' => $product_id, 'product_attr_unique' => $product_attr_unique, 'is_del' => 0, 'is_new' => 0, 'is_pay' => 0, 'status' => 1]);
+
+            //自定义事件-加入购物车
+            event('CustomEventListener', ['user_add_cart', [
+                'product_id' => $product_id,
+                'uid' => $uid,
+                'cart_num' => $cart_num,
+                'add_time' => date('Y-m-d H:i:s'),
+            ]]);
+
             if ($cart) {
                 $cart->cart_num = $cart_num + $cart->cart_num;
                 $cart->add_time = time();
@@ -288,7 +297,6 @@ class StoreCartServices extends BaseServices
                 $add_time = time();
                 return $this->dao->save(compact('uid', 'product_id', 'cart_num', 'product_attr_unique', 'type', 'add_time'))->id;
             }
-
         }
     }
 
@@ -326,7 +334,8 @@ class StoreCartServices extends BaseServices
             throw new ApiException('不能小于起购数量');
         }
         if ($limitInfo['is_limit']) {
-            if ($limitInfo['limit_type'] == 1 && $number > $limitInfo['limit_num']) {
+            $num = $this->dao->sum([['uid', '=', $uid], ['product_id', '=', $carInfo->product_id], ['id', '<>', $id]], 'cart_num') + $number;
+            if ($limitInfo['limit_type'] == 1 && $num > $limitInfo['limit_num']) {
                 throw new ApiException(410239, ['limit' => $limitInfo['limit_num']]);
             } else if ($limitInfo['limit_type'] == 2) {
                 /** @var StoreOrderCartInfoServices $orderCartServices */
@@ -334,7 +343,7 @@ class StoreCartServices extends BaseServices
                 $orderPayNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $carInfo->product_id], 'cart_num');
                 $orderRefundNum = $orderCartServices->sum(['uid' => $uid, 'product_id' => $carInfo->product_id], 'refund_num');
                 $orderNum = $orderPayNum - $orderRefundNum;
-                if (($number + $orderNum) > $limitInfo['limit_num']) {
+                if (($num + $orderNum) > $limitInfo['limit_num']) {
                     throw new ApiException(410240, ['limit' => $limitInfo['limit_num'], 'pay_num' => $orderNum]);
                 }
             }
@@ -463,13 +472,14 @@ class StoreCartServices extends BaseServices
         }
 
         $cart = $this->dao->getOne(['uid' => $uid, 'product_id' => $productId, 'product_attr_unique' => $unique]);
+        $min_qty = $productServices->value(['id' => $productId], 'min_qty');
         if ($cart) {
             if ($type == -1) {
                 $cart->cart_num = $num;
             } elseif ($type == 0) {
                 $cart->cart_num = $cart->cart_num - $num;
-                if ($cart->cart_num < $productServices->value(['id' => $productId], 'min_qty')) {
-                    throw new ApiException('不能小于起购数量');
+                if ($cart->cart_num < $min_qty) {
+                    return $this->dao->delete($cart->id);
                 }
             } elseif ($type == 1) {
                 $cart->cart_num = $cart->cart_num + $num;
@@ -482,10 +492,11 @@ class StoreCartServices extends BaseServices
                 return $cart->id;
             }
         } else {
+
             $data = [
                 'uid' => $uid,
                 'product_id' => $productId,
-                'cart_num' => $num,
+                'cart_num' => $num > $min_qty ? $num : $min_qty,
                 'product_attr_unique' => $unique,
                 'type' => 0,
                 'add_time' => time()
@@ -605,6 +616,7 @@ class StoreCartServices extends BaseServices
         $productServices = app()->make(StoreProductServices::class);
         $valid = $invalid = [];
         foreach ($cartList as &$item) {
+            if ($item['type'] == 0) $item['min_qty'] = $item['productInfo']['min_qty'];
             $item['productInfo']['express_delivery'] = false;
             $item['productInfo']['store_mention'] = false;
             if (isset($item['productInfo']['logistics'])) {

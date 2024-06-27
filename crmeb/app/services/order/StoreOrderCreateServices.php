@@ -312,6 +312,24 @@ class StoreOrderCreateServices extends BaseServices
         event('OrderCreateAfterListener', [$order, compact('cartInfo', 'priceData', 'addressId', 'cartIds', 'news'), $uid, $key, $combinationId, $seckillId, $bargainId]);
         // 推送订单
         event('OutPushListener', ['order_create_push', ['order_id' => (int)$order['id']]]);
+
+        //自定义事件-订单创建事件
+        event('CustomEventListener', ['order_create', [
+            'uid' => $uid,
+            'id' => (int)$order['id'],
+            'order_id' => $order['order_id'],
+            'real_name' => $order['real_name'],
+            'user_phone' => $order['user_phone'],
+            'user_address' => $order['user_address'],
+            'total_num' => $order['total_num'],
+            'pay_price' => $order['pay_price'],
+            'pay_postage' => $order['pay_postage'],
+            'deduction_price' => $order['deduction_price'],
+            'coupon_price' => $order['coupon_price'],
+            'store_name' => app()->make(StoreOrderCartInfoServices::class)->getCarIdByProductTitle((int)$order['id']),
+            'add_time' => date('Y-m-d H:i:s', $order['add_time']),
+        ]]);
+
         return $order;
     }
 

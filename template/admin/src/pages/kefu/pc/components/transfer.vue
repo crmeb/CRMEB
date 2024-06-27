@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="list-wrapper">
-      <div class="user-item" v-for="(item, index) in labelLists" :key="index" @click="bindActive(item)">
+      <div class="user-item" v-for="(item, index) in labelLists" :key="index" v-db-click @click="bindActive(item)">
         <img v-lazy="item.avatar" alt="" />
         <p class="line1">{{ item.wx_name }}</p>
       </div>

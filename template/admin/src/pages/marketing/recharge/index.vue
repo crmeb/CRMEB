@@ -44,7 +44,7 @@
               <el-button
                 type="primary"
                 icon="md-add"
-                @click="groupAdd('添加数据')"
+                v-db-click @click="groupAdd('添加数据')"
                 style="margin-left: 14px; margin-top: 14px"
                 >添加数据</el-button
               >
@@ -84,9 +84,9 @@
                     </el-switch>
                   </template>
                   <template v-else-if="item.slot === 'action'">
-                    <a @click="edit(scope.row, '编辑')">编辑</a>
+                    <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
                     <el-divider direction="vertical"></el-divider>
-                    <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+                    <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
                   </template>
                 </template>
               </el-table-column>

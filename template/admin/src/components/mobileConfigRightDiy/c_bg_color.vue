@@ -5,7 +5,7 @@
       <el-col :span="14" class="color-box">
         <div class="color-item acea-row row-middle" v-for="(color, key) in configData.color" :key="key">
           <el-color-picker v-model="color.item" @change="changeColor($event, color)" show-alpha></el-color-picker
-          ><span @click="resetBgA(color, index, key)">重置</span>
+          ><span v-db-click @click="resetBgA(color, index, key)">重置</span>
         </div>
       </el-col>
     </div>

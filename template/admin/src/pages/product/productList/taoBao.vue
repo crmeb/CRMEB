@@ -5,7 +5,7 @@
         生成的商品默认是没有上架的，请手动上架商品！
         <a href="https://doc.crmeb.com/single/v5/7785" v-if="copyConfig.copy_type == 2" target="_blank">如何配置密钥</a>
         <span v-else
-          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a class="add" @click="mealPay('copy')">增加采集次数</a></span
+          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a class="add" v-db-click @click="mealPay('copy')">增加采集次数</a></span
         >
       </div>
       <div>商品采集设置：设置 > 系统设置 > 第三方接口设置 > 采集商品配置</div>
@@ -143,8 +143,8 @@
                   >
                     <div class="pictrue"><img v-lazy="item" /></div>
                     <ButtonGroup size="small">
-                      <el-button @click.native="checked(item, index)">主图</el-button>
-                      <el-button @click.native="handleRemove(index)">移除</el-button>
+                      <el-button v-db-click @click.native="checked(item, index)">主图</el-button>
+                      <el-button v-db-click @click.native="handleRemove(index)">移除</el-button>
                     </ButtonGroup>
                   </div>
                 </div>
@@ -170,7 +170,7 @@
                           <template v-else-if="item.slot === 'pic'">
                             <div
                               class="acea-row row-middle row-center-wrapper"
-                              @click="modalPicTap('dan', 'duopi', scope.$index)"
+                              v-db-click @click="modalPicTap('dan', 'duopi', scope.$index)"
                             >
                               <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
                                 <img v-lazy="oneFormBatch[0].pic" />
@@ -232,9 +232,9 @@
                       </el-table-column>
                       <el-table-column label="操作" fixed="right" width="170">
                         <template slot-scope="">
-                          <a @click="batchAdd">添加</a>
+                          <a v-db-click @click="batchAdd">添加</a>
                           <el-divider direction="vertical"></el-divider>
-                          <a @click="batchDel">清空</a>
+                          <a v-db-click @click="batchDel">清空</a>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -263,7 +263,7 @@
                           <template v-else-if="item.slot === 'pic'">
                             <div
                               class="acea-row row-middle row-center-wrapper"
-                              @click="modalPicTap('dan', scope.$index)"
+                              v-db-click @click="modalPicTap('dan', scope.$index)"
                             >
                               <div class="pictrue pictrueTab" v-if="formValidate.attrs[scope.$index].pic">
                                 <img v-lazy="formValidate.attrs[scope.$index].pic" />
@@ -324,7 +324,7 @@
                       </el-table-column>
                       <el-table-column label="操作" fixed="right" width="170">
                         <template slot-scope="scope">
-                          <a @click="delAttrTable(scope.$index)">删除</a>
+                          <a v-db-click @click="delAttrTable(scope.$index)">删除</a>
                         </template>
                       </el-table-column>
                     </el-table>
@@ -347,7 +347,7 @@
                   type="primary"
                   :loading="modal_loading"
                   class="submission"
-                  @click="handleSubmit('formValidate')"
+                  v-db-click @click="handleSubmit('formValidate')"
                   >提交</el-button
                 >
               </el-form-item>

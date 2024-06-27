@@ -2,8 +2,8 @@
   <div>
     <el-tabs v-model="currentTab" @tab-click="onClickTab" v-if="tablists">
       <el-tab-pane name="null" label="全部"></el-tab-pane>
-      <el-tab-pane name="0" :label="`待支付(${orderChartType.un_paid})`"></el-tab-pane>
-      <el-tab-pane name="1" :label="`待发货(${orderChartType.un_send})`"></el-tab-pane>
+      <el-tab-pane name="0" :label="orderChartType.un_paid > 0 ? `待支付(${orderChartType.un_paid})` : `待支付`"></el-tab-pane>
+      <el-tab-pane name="1" :label="orderChartType.un_send > 0 ? `待发货(${orderChartType.un_send})` : `待发货`"></el-tab-pane>
       <el-tab-pane name="5" label="待核销"></el-tab-pane>
       <el-tab-pane name="2" label="待收货"></el-tab-pane>
       <el-tab-pane name="3" label="待评价"></el-tab-pane>
@@ -12,14 +12,14 @@
       <el-tab-pane name="-4" label="已删除"></el-tab-pane>
     </el-tabs>
     <div class="acea-row">
-      <el-button v-auth="['order-write']" type="primary" @click="writeOff">订单核销</el-button>
-      <el-button type="primary" @click="batchShipmentModal = true">批量发货</el-button>
+      <el-button v-auth="['order-write']" type="primary" v-db-click @click="writeOff">订单核销</el-button>
+      <el-button type="primary" v-db-click @click="batchShipmentModal = true">批量发货</el-button>
       <!-- <el-upload class="mr14" :action="expressUrl" :headers="header" :on-success="upExpress">
         <el-button class="export" type="primary">批量发货</el-button>
       </el-upload> -->
-      <el-button v-auth="['order-dels']" @click="delAll">批量删除</el-button>
-      <el-button v-auth="['export-storeOrder']" class="export" @click="exportList">订单导出</el-button>
-      <!-- <el-button class="export" @click="exportDeliveryList">发货单导出</el-button> -->
+      <el-button v-auth="['order-dels']" v-db-click @click="delAll">批量删除</el-button>
+      <el-button v-auth="['export-storeOrder']" class="export" v-db-click @click="exportList">订单导出</el-button>
+      <!-- <el-button class="export" v-db-click @click="exportDeliveryList">发货单导出</el-button> -->
     </div>
     <el-table
       :data="orderList"
@@ -41,6 +41,7 @@
           <div>{{ scope.row.order_id }}</div>
           <div class="pink_name" :style="{ color: scope.row.color }">{{ scope.row.pink_name }}</div>
           <span v-show="scope.row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
+          <span v-show="scope.row.refund_type === 6" style="color: #ed4014; display: block">订单已退款</span>
         </template>
       </el-table-column>
       <el-table-column label="商品信息" min-width="250">
@@ -125,9 +126,9 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="130">
         <template slot-scope="scope">
-          <a @click="edit(scope.row)" v-if="scope.row._status === 1 && scope.row.is_del !== 1">编辑</a>
+          <a v-db-click @click="edit(scope.row)" v-if="scope.row._status === 1 && scope.row.is_del !== 1">编辑</a>
           <a
-            @click="sendOrder(scope.row)"
+            v-db-click @click="sendOrder(scope.row)"
             v-if="
               (scope.row.status === 4 || scope.row._status === 2 || scope.row._status === 8) &&
               scope.row.shipping_type === 1 &&
@@ -137,9 +138,9 @@
             "
             >发送货</a
           >
-          <a @click="delivery(scope.row)" v-if="scope.row._status === 4 && !scope.row.split.length">配送信息</a>
+          <a v-db-click @click="delivery(scope.row)" v-if="scope.row._status === 4 && !scope.row.split.length">配送信息</a>
           <a
-            @click="bindWrite(scope.row)"
+            v-db-click @click="bindWrite(scope.row)"
             v-if="
               scope.row.shipping_type == 2 &&
               scope.row.status == 0 &&
@@ -200,7 +201,7 @@
                   "
                   >订单备注</el-dropdown-item
                 >
-                <el-dropdown-item command="5" v-show="scope.row.paid == 1 && scope.row.refund_status == 0">立即退款</el-dropdown-item>
+                <el-dropdown-item command="5" v-show="scope.row.paid == 1 && scope.row.refund_status == 0 && !scope.row.refund.length">立即退款</el-dropdown-item>
                 <!--                            <el-dropdown-item command="6"  v-show='scope.row._status !==1 && (scope.row.use_integral > 0 && scope.row.use_integral >= scope.row.back_integral) '>退积分</el-dropdown-item>-->
                 <!--                            <el-dropdown-item command="7"  v-show='scope.row._status === 3'>不退款</el-dropdown-item>-->
                 <el-dropdown-item command="8" v-show="scope.row._status === 4">已收货</el-dropdown-item>
@@ -281,8 +282,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button type="primary" @click="ok('writeOffFrom')">立即核销</el-button>
-        <el-button @click="del('writeOffFrom')">取消</el-button>
+        <el-button type="primary" v-db-click @click="ok('writeOffFrom')">立即核销</el-button>
+        <el-button v-db-click @click="del('writeOffFrom')">取消</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -302,7 +303,7 @@
         <p>步骤三 将发货单上传</p>
       </el-alert>
       <div class="acea-row row-middle mb10 mt10">
-        <el-button @click="exportDeliveryList">导出发货单</el-button>
+        <el-button v-db-click @click="exportDeliveryList">导出发货单</el-button>
         <div class="pl20 tips"></div>
       </div>
       <el-upload
@@ -454,7 +455,7 @@ export default {
     ...mapMutations('order', ['getOrderStatus', 'onChangeTabs', 'getIsDel', 'getisDelIdListl']),
     batchShipment() {},
     beforeUpload(file) {
-      return isPicUpload(file);
+      return isFileUpload(file);
     },
     // 操作
     changeMenu(row, name) {
@@ -522,7 +523,6 @@ export default {
         case '10':
           this.delfromData = {
             title: '立即打印订单',
-            info: '您确认打印此订单吗?',
             url: `/order/print/${row.id}`,
             method: 'get',
             ids: '',

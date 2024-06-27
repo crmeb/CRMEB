@@ -77,9 +77,9 @@
           </el-table-column>
           <el-table-column label="操作" fixed="right" width="170">
             <template slot-scope="scope">
-              <a @click="Info(scope.row)">账单详情</a>
+              <a v-db-click @click="Info(scope.row)">账单详情</a>
               <el-divider direction="vertical"></el-divider>
-              <a @click="download(scope.row)">下载</a>
+              <a v-db-click @click="download(scope.row)">下载</a>
             </template>
           </el-table-column>
         </el-table>

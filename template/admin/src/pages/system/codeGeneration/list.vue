@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt" v-loading="spinShow">
-      <el-button type="primary" @click="groupAdd()" class="mr20">添加功能</el-button>
-      <!-- <el-button type="success" @click="buildCode()" class="mr20">重新发布</el-button> -->
+      <el-button type="primary" v-db-click @click="groupAdd()" class="mr20">添加功能</el-button>
+      <!-- <el-button type="success" v-db-click @click="buildCode()" class="mr20">重新发布</el-button> -->
       <el-table
         :data="tabList"
         ref="table"
@@ -39,13 +39,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template slot-scope="scope">
-            <a @click="edit(scope.row, '编辑')">查看代码</a>
+            <a v-db-click @click="edit(scope.row, '编辑')">查看代码</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="editItem(scope.row)">编辑</a>
+            <a v-db-click @click="editItem(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="downLoad(scope.row)">下载</a>
+            <a v-db-click @click="downLoad(scope.row)">下载</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -72,7 +72,7 @@
         <span>{{ title }}</span>
       </p>
       <div class="file" style="height: 100%">
-        <el-button class="save" type="primary" @click="pwdModal = true">保存</el-button>
+        <el-button class="save" type="primary" v-db-click @click="pwdModal = true">保存</el-button>
 
         <div class="file-box">
           <div class="file-fix"></div>
@@ -138,8 +138,8 @@
     <el-dialog :visible.sync="pwdModal" width="470px" title="文件管理密码" :show-close="true" :close-on-click-modal="false">
       <el-input v-model="pwd" type="password" placeholder="请输入文件管理密码"></el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="pwdModal = false">取 消</el-button>
-        <el-button type="primary" @click="crudSaveFile">确 定</el-button>
+        <el-button v-db-click @click="pwdModal = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="crudSaveFile">确 定</el-button>
       </span>
     </el-dialog>
   </div>

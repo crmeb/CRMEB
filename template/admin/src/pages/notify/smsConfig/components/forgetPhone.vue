@@ -44,7 +44,7 @@
                   placeholder="请输入验证码"
                   size="large"
                 />
-                <el-button :disabled="!this.canClick" @click="cutDown" size="large">{{ cutNUm }}</el-button>
+                <el-button :disabled="!this.canClick" v-db-click @click="cutDown" size="large">{{ cutNUm }}</el-button>
               </div>
             </el-form-item>
           </template>
@@ -72,7 +72,7 @@
               type="primary"
               long
               size="large"
-              @click="handleSubmit1('formInline', current)"
+              v-db-click @click="handleSubmit1('formInline', current)"
               class="mb20"
               >下一步</el-button
             >
@@ -81,7 +81,7 @@
               type="primary"
               long
               size="large"
-              @click="handleSubmit2('formInline', current)"
+              v-db-click @click="handleSubmit2('formInline', current)"
               class="mb20"
               >提交</el-button
             >
@@ -90,11 +90,11 @@
               type="primary"
               long
               size="large"
-              @click="handleSubmit('formInline', current)"
+              v-db-click @click="handleSubmit('formInline', current)"
               class="mb20"
               >登录</el-button
             >
-            <el-button long size="large" @click="returns('formInline')" class="btn">返回 </el-button>
+            <el-button long size="large" v-db-click @click="returns('formInline')" class="btn">返回 </el-button>
           </el-form-item>
         </el-form>
       </div>

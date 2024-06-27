@@ -2,7 +2,7 @@
   <div>
     <el-row class="ivu-mt box-wrapper">
       <el-col v-bind="grid1" class="left-wrapper">
-        <div class="tree_tit" @click="addSort">
+        <div class="tree_tit" v-db-click @click="addSort">
           <i class="el-icon-circle-plus"></i>
           添加分类
         </div>
@@ -40,8 +40,8 @@
         <el-card :bordered="false" shadow="never">
           <el-row>
             <el-col>
-              <el-button v-auth="['admin-user-label_add']" type="primary" @click="add">添加标签</el-button>
-              <!-- <el-button v-auth="['admin-user-label_add']" type="success" @click="addSort">添加分类</el-button> -->
+              <el-button v-auth="['admin-user-label_add']" type="primary" v-db-click @click="add">添加标签</el-button>
+              <!-- <el-button v-auth="['admin-user-label_add']" type="success" v-db-click @click="addSort">添加分类</el-button> -->
             </el-col>
           </el-row>
           <el-table
@@ -70,9 +70,9 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
               <template slot-scope="scope">
-                <a @click="edit(scope.row.id)">修改</a>
+                <a v-db-click @click="edit(scope.row.id)">修改</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="del(scope.row, '删除分类', scope.$index)">删除</a>
+                <a v-db-click @click="del(scope.row, '删除分类', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>

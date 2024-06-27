@@ -3,15 +3,15 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt" v-loading="spinShow">
       <div v-if="isShowList" class="backs-box">
         <div class="backs">
-          <span class="back" @click="goBack(false)">
+          <span class="back" v-db-click @click="goBack(false)">
             <i class="el-icon-back icon" />
           </span>
-          <span class="item" v-for="(item, index) in routeList" :key="index" @click="jumpRoute(item)">
+          <span class="item" v-for="(item, index) in routeList" :key="index" v-db-click @click="jumpRoute(item)">
             <span class="key">{{ item.key }}</span>
             <i class="forward el-icon-arrow-right" v-if="index < routeList.length - 1" />
           </span>
         </div>
-        <span class="refresh" @click="refreshRoute">
+        <span class="refresh" v-db-click @click="refreshRoute">
           <i class="el-icon-refresh-right icon" />
         </span>
       </div>
@@ -25,7 +25,7 @@
       >
         <el-table-column label="文件/文件夹名" min-width="150">
           <template slot-scope="scope">
-            <div class="file-name" @click="currentChange(scope.row)">
+            <div class="file-name" v-db-click @click="currentChange(scope.row)">
               <i v-if="scope.row.isDir" class="el-icon-folder mr5" />
               <i v-else class="el-icon-document mr5" />
               <span>{{ scope.row.filename }}</span>
@@ -45,15 +45,15 @@
         <el-table-column label="备注" min-width="120">
           <template slot-scope="scope">
             <div class="mark">
-              <div v-if="scope.row.is_edit" class="table-mark" @click="isEditMark(scope.row)">{{ scope.row.mark }}</div>
+              <div v-if="scope.row.is_edit" class="table-mark" v-db-click @click="isEditMark(scope.row)">{{ scope.row.mark }}</div>
               <el-input ref="mark" v-else v-model="scope.row.mark" @blur="isEditBlur(scope.row)"></el-input>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="60">
           <template slot-scope="scope">
-            <el-button type="text" @click="open(scope.row)" v-if="scope.row.isDir">打开</el-button>
-            <el-button type="text" @click="edit(scope.row)" v-else>编辑</el-button>
+            <el-button type="text" v-db-click @click="open(scope.row)" v-if="scope.row.isDir">打开</el-button>
+            <el-button type="text" v-db-click @click="edit(scope.row)" v-else>编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,7 +71,7 @@
       <p slot="header" class="diy-header" ref="diyHeader">
         <span>{{ title }}</span>
         <i
-          @click="winChanges"
+          v-db-click @click="winChanges"
           class="diy-header-icon"
           :class="className ? 'el-icon-cpu' : 'el-icon-full-screen'"
           style="font-size: 20px"
@@ -79,15 +79,15 @@
       </p>
       <div style="height: 100%">
         <div class="top-button">
-          <el-button type="primary" id="savefile" class="diy-button" @click="savefile(indexEditor)">保存</el-button>
-          <el-button id="refresh" class="diy-button" @click="refreshfile">刷新</el-button>
+          <el-button type="primary" id="savefile" class="diy-button" v-db-click @click="savefile(indexEditor)">保存</el-button>
+          <el-button id="refresh" class="diy-button" v-db-click @click="refreshfile">刷新</el-button>
         </div>
         <div class="file-box">
           <div class="show-info">
             <div class="show-text" :title="navItem.pathname">目录: {{ navItem.pathname }}</div>
             <div class="diy-button-list">
-              <el-button class="diy-button" @click="goBack(true)">返回上一级</el-button>
-              <el-button class="diy-button" @click="getList(true, true)">刷新</el-button>
+              <el-button class="diy-button" v-db-click @click="goBack(true)">返回上一级</el-button>
+              <el-button class="diy-button" v-db-click @click="getList(true, true)">刷新</el-button>
             </div>
           </div>
           <div class="file-left">
@@ -102,14 +102,14 @@
               :props="props"
             >
               <!-- <template transfer slot="contextMenu">
-                <DropdownItem v-if="contextData && contextData.isDir" @click.native="handleContextCreateFolder()"
+                <DropdownItem v-if="contextData && contextData.isDir" v-db-click @click.native="handleContextCreateFolder()"
                   >新建文件夹</DropdownItem
                 >
-                <DropdownItem v-if="contextData && contextData.isDir" @click.native="handleContextCreateFile()"
+                <DropdownItem v-if="contextData && contextData.isDir" v-db-click @click.native="handleContextCreateFile()"
                   >新建文件</DropdownItem
                 >
-                <DropdownItem @click.native="handleContextRename()">重命名</DropdownItem>
-                <DropdownItem @click.native="handleContextDelFolder()" style="color: #ed4014">删除</DropdownItem>
+                <DropdownItem v-db-click @click.native="handleContextRename()">重命名</DropdownItem>
+                <DropdownItem v-db-click @click.native="handleContextDelFolder()" style="color: #ed4014">删除</DropdownItem>
               </template> -->
             </el-tree>
           </div>
@@ -152,10 +152,10 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button class="diy-button" @click="handleSubmit('formInline')">确定</el-button>
+          <el-button class="diy-button" v-db-click @click="handleSubmit('formInline')">确定</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button class="diy-button" @click="formExit()">取消</el-button>
+          <el-button class="diy-button" v-db-click @click="formExit()">取消</el-button>
         </el-form-item>
         <div class="form-mask" v-show="formShow"></div>
       </el-form>

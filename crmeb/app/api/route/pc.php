@@ -37,6 +37,9 @@ Route::group('pc', function () {
         Route::get('get_recommend/:type', 'pc.ProductController/getRecommendList')->name('getRecommendList')->option(['real_name' => '获取推荐商品']);//获取推荐商品
         Route::get('get_wechat_qrcode', 'pc.PublicController/getWechatQrcode')->name('getWechatQrcode')->option(['real_name' => '获取关注二维码']);//获取关注二维码
         Route::get('get_good_product', 'pc.ProductController/getGoodProduct')->name('getGoodProduct')->option(['real_name' => '获取优品推荐']);//获取优品推荐
+        Route::get('get_news_category', 'pc.PublicController/getNewsCategory')->name('getNewsCategory')->option(['real_name' => '获取文章分类']);//获取文章分类
+        Route::get('get_news_list', 'pc.PublicController/getNewsList')->name('getNewsList')->option(['real_name' => '获取文章列表']);//获取文章列表
+        Route::get('get_news_detail/:id', 'pc.PublicController/getNewsDetail')->name('getNewsDetail')->option(['real_name' => '获取文章详情']);//获取文章详情
     })->middleware(\app\http\middleware\AllowOriginMiddleware::class)
         ->middleware(\app\api\middleware\StationOpenMiddleware::class)
         ->middleware(\app\api\middleware\AuthTokenMiddleware::class, false)

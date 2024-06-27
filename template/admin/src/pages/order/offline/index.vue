@@ -33,13 +33,13 @@
             <el-input clearable v-model="pagination.name" placeholder="请输入用户名" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="orderSearch">查询</el-button>
+            <el-button type="primary" v-db-click @click="orderSearch">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button type="primary" @click="qrcodeShow">查看收款二维码</el-button>
+      <el-button type="primary" v-db-click @click="qrcodeShow">查看收款二维码</el-button>
       <el-table
         :data="tbody"
         ref="table"

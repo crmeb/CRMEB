@@ -28,7 +28,7 @@
             @submit.native.prevent
           >
             <el-form-item label="选择商品：" prop="image_input" v-if="current === 0">
-              <div class="picBox" @click="changeGoods">
+              <div class="picBox" v-db-click @click="changeGoods">
                 <div class="pictrue" v-if="formValidate.image">
                   <img v-lazy="formValidate.image" />
                 </div>
@@ -40,7 +40,7 @@
             <el-row v-show="current === 1">
               <el-col :span="24">
                 <el-form-item label="商品主图：" prop="image">
-                  <div class="picBox" @click="modalPicTap('dan', 'danFrom')">
+                  <div class="picBox" v-db-click @click="modalPicTap('dan', 'danFrom')">
                     <div class="pictrue" v-if="formValidate.image">
                       <img v-lazy="formValidate.image" />
                     </div>
@@ -67,14 +67,14 @@
                       <el-button
                         shape="circle"
                         icon="md-close"
-                        @click.native="handleRemove(index)"
+                        v-db-click @click.native="handleRemove(index)"
                         class="btndel"
                       ></el-button>
                     </div>
                     <div
                       v-if="formValidate.images.length < 10"
                       class="upLoad acea-row row-center-wrapper"
-                      @click="modalPicTap('duo')"
+                      v-db-click @click="modalPicTap('duo')"
                     >
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
@@ -148,7 +148,7 @@
                         :label="item.name"
                       ></el-option>
                     </el-select>
-                    <div class="ml10 col" @click="freight">添加运费模板</div>
+                    <div class="ml10 col" v-db-click @click="freight">添加运费模板</div>
                   </div>
                 </el-form-item>
               </el-col>
@@ -250,7 +250,7 @@
             <el-form-item>
               <el-button
                 class="submission"
-                @click="step"
+                v-db-click @click="step"
                 :disabled="($route.params.id && current === 1) || current === 0"
                 >上一步
               </el-button>
@@ -258,7 +258,7 @@
                 type="primary"
                 :disabled="submitOpen && current === 2"
                 class="submission"
-                @click="next('formValidate')"
+                v-db-click @click="next('formValidate')"
                 >{{ current === 2 ? '提交' : '下一步' }}</el-button
               >
             </el-form-item>
@@ -753,9 +753,10 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$refs.goodslist.formValidate.is_virtual = 0;
-      this.$refs.goodslist.getList();
-      this.$refs.goodslist.goodsCategory();
+      this.$nextTick(e => {
+        this.$refs.goodslist.getList();
+        this.$refs.goodslist.goodsCategory();
+      })
     },
     // 移动
     handleDragStart(e, item) {

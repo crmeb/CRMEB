@@ -70,7 +70,7 @@
           </el-col>
         </el-scope.row>
         <el-scope.row class="mb20">
-          <el-button v-auth="['marketing-store_bargain-create']" type="primary" @click="add" class="mr10"
+          <el-button v-auth="['marketing-store_bargain-create']" type="primary" v-db-click @click="add" class="mr10"
             >添加抽奖</el-button
           >
         </el-scope.row>
@@ -147,13 +147,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除抽奖', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除抽奖', scope.$index)">删除</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="copy(scope.row)">复制</a>
+            <a v-db-click @click="copy(scope.row)">复制</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="getRecording(scope.row)">抽奖记录</a>
+            <a v-db-click @click="getRecording(scope.row)">抽奖记录</a>
           </template>
         </el-table-column>
       </el-table>

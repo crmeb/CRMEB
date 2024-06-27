@@ -1,6 +1,6 @@
 <template>
   <div class="chat-room">
-    <div class="room" :class="{ win: !chatOptions.popup }" @click="roomClick">
+    <div class="room" :class="{ win: !chatOptions.popup }" v-db-click @click="roomClick">
       <div v-drag class="head">
         <div class="image">
           <img v-lazy="serviceData && serviceData.avatar" />
@@ -8,9 +8,9 @@
         <div class="name">{{ serviceData && serviceData.nickname }}</div>
         <div
           :class="['iconfont', muted ? 'icon-shengyinjingyinxianxing' : 'icon-shengyinyinliang']"
-          @click.stop="muted = !muted"
+          v-db-click @click.stop="muted = !muted"
         ></div>
-        <div class="iconfont icon-guanbi5" @click.stop="close"></div>
+        <div class="iconfont icon-guanbi5" v-db-click @click.stop="close"></div>
       </div>
       <div class="main">
         <div class="chat">
@@ -54,7 +54,7 @@
                           </div>
                           <div class="group">
                             <div class="money">￥{{ item.productInfo.price }}</div>
-                            <span style="cursor: pointer" @click.stop="onLook(item.productInfo.id)">查看商品 ></span>
+                            <span style="cursor: pointer" v-db-click @click.stop="onLook(item.productInfo.id)">查看商品 ></span>
                           </div>
                         </div>
                       </div>
@@ -89,7 +89,7 @@
           <div class="editor">
             <div class="editor-hd">
               <div>
-                <button class="emoji-btn" title="表情" @click.stop="emojiSwitch">
+                <button class="emoji-btn" title="表情" v-db-click @click.stop="emojiSwitch">
                   <span class="iconfont iconbiaoqing1"></span>
                 </button>
                 <button title="图片" v-if="kufuToken">
@@ -108,7 +108,7 @@
                 </button>
               </div>
               <!--                            <div>-->
-              <!--                                <button class="end" @click="chatEnd">-->
+              <!--                                <button class="end" v-db-click @click="chatEnd">-->
               <!--                                    <i class="iconfont icon-guanji"></i>结束-->
               <!--                                </button>-->
               <!--                            </div>-->
@@ -117,7 +117,7 @@
                 <i
                   class="em"
                   :class="emoji"
-                  @click.stop="selectEmoji(emoji)"
+                  v-db-click @click.stop="selectEmoji(emoji)"
                   v-for="(emoji, index) in emojiList"
                   :key="index"
                 ></i>
@@ -127,7 +127,7 @@
               <textarea v-model="chatCont" placeholder="请输入文字内容" @keydown.enter="ctrlEnter"></textarea>
             </div>
             <div class="editor-ft">
-              <button :disabled="!chatCont" @click.stop="sendMessage">发送</button>
+              <button :disabled="!chatCont" v-db-click @click.stop="sendMessage">发送</button>
             </div>
           </div>
         </div>

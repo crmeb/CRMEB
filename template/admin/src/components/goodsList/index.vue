@@ -24,7 +24,7 @@
           v-model="formValidate.store_name"
           class="form_content_width"
         />
-        <el-button type="primary" @click="userSearchs" class="ml15">查询</el-button>
+        <el-button type="primary" v-db-click @click="userSearchs" class="ml15">查询</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -77,7 +77,7 @@
         :limit.sync="formValidate.limit"
         @pagination="pageChange"
       />
-      <el-button type="primary" @click="ok" v-if="many === 'many' && !diy" class="ml15">提交</el-button>
+      <el-button type="primary" v-db-click @click="ok" v-if="many === 'many' && !diy" class="ml15">提交</el-button>
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="never" class="box-card">
     <div class="acea-row row-middle">
-      <div class="font-sm after-line" @click="goBack">
+      <div class="font-sm after-line" v-db-click @click="goBack">
         <span class="el-icon-arrow-left"></span>
         <span class="pl10">返回</span>
       </div>

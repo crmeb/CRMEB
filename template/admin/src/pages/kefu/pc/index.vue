@@ -50,7 +50,7 @@
                             <div class="sku">库存：{{ item.productInfo.stock }} 销量：{{ item.productInfo.sales }}</div>
                             <div class="price-box">
                               <div class="num">¥ {{ item.productInfo.price }}</div>
-                              <a herf="javascript:;" class="more" @click.stop="lookGoods(item)">查看商品 ></a>
+                              <a herf="javascript:;" class="more" v-db-click @click.stop="lookGoods(item)">查看商品 ></a>
                             </div>
                           </div>
                         </div>
@@ -70,7 +70,7 @@
                             <div class="sku">商品数量：{{ item.orderInfo.total_num }}</div>
                             <div class="price-box">
                               <div class="num">¥ {{ item.orderInfo.pay_price }}</div>
-                              <a href="javascript:;" class="more" @click.stop="lookOrder(item)">查看订单 ></a>
+                              <a href="javascript:;" class="more" v-db-click @click.stop="lookOrder(item)">查看订单 ></a>
                             </div>
                           </div>
                         </div>
@@ -87,7 +87,7 @@
           <div class="chat-textarea">
             <div class="chat-btn-wrapper">
               <div class="left-wrappers">
-                <div class="icon-item" @click.stop="isEmoji = !isEmoji">
+                <div class="icon-item" v-db-click @click.stop="isEmoji = !isEmoji">
                   <span class="iconfont iconbiaoqing1"></span>
                 </div>
                 <div class="icon-item">
@@ -104,24 +104,24 @@
                     <span class="iconfont icontupian1"></span>
                   </el-upload>
                 </div>
-                <div class="icon-item" @click.stop.stop="isMsg = true">
+                <div class="icon-item" v-db-click @click.stop.stop="isMsg = true">
                   <span class="iconfont iconliaotian"></span>
                 </div>
               </div>
               <div class="right-wrapper">
-                <div class="icon-item" @click.stop="isTransfer = !isTransfer">
+                <div class="icon-item" v-db-click @click.stop="isTransfer = !isTransfer">
                   <span class="iconfont iconzhuanjie"></span>
                   <span>转接</span>
                 </div>
                 <div class="transfer-box" v-if="isTransfer">
                   <transfer @close="msgClose" @transferPeople="transferPeople" :userUid="userActive.to_uid"></transfer>
                 </div>
-                <div class="transfer-bg" v-if="isTransfer" @click.stop="isTransfer = false"></div>
+                <div class="transfer-bg" v-if="isTransfer" v-db-click @click.stop="isTransfer = false"></div>
               </div>
               <!-- 表情 -->
               <div class="emoji-box" v-show="isEmoji">
                 <div class="emoji-item" v-for="(emoji, index) in emojiList" :key="index">
-                  <i class="em" :class="emoji" @click.stop="select(emoji)"></i>
+                  <i class="em" :class="emoji" v-db-click @click.stop="select(emoji)"></i>
                 </div>
               </div>
             </div>
@@ -137,7 +137,7 @@
                 style="font-size: 14px; height: 150px"
               />
               <div class="send-btn">
-                <el-button class="btns" type="primary" :disabled="disabled" @click.stop="sendText">发送</el-button>
+                <el-button class="btns" type="primary" :disabled="disabled" v-db-click @click.stop="sendText">发送</el-button>
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@
       </el-dialog>
       <!-- 商品弹窗 -->
       <div v-if="isProductBox">
-        <div class="bg" @click.stop="isProductBox = false"></div>
+        <div class="bg" v-db-click @click.stop="isProductBox = false"></div>
         <goodsDetail :goodsId="goodsId"></goodsDetail>
       </div>
       <!-- 订单详情 -->

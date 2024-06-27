@@ -4,11 +4,11 @@
       <div class="pictrue"><img :src="orderInfo.cartInfo[0].productInfo.image" /></div>
       <div class="num acea-row row-center-wrapper">
         {{ orderInfo.order_id }}
-        <div class="views" @click="toDetail(orderInfo)">查看<span class="iconfont icon-jiantou views-jian"></span></div>
+        <div class="views" v-db-click @click="toDetail(orderInfo)">查看<span class="iconfont icon-jiantou views-jian"></span></div>
       </div>
       <div class="tip">确定要核销此订单吗？</div>
-      <div class="sure" @click="confirm">确定核销</div>
-      <div class="sure cancel" @click="cancel">取消</div>
+      <div class="sure" v-db-click @click="confirm">确定核销</div>
+      <div class="sure cancel" v-db-click @click="cancel">取消</div>
     </div>
     <div class="maskModel" @touchmove.prevent></div>
   </div>

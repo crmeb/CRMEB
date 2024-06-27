@@ -1,5 +1,5 @@
 <template>
-  <!-- 根据头部菜单是否显示来判断显示哪个组件 -->
+  <!-- 判断显示哪个组件 -->
   <Mains v-if="headMenuNoShow" />
   <!-- 根据主题配置中的布局类型来判断显示哪个组件 -->
   <Defaults v-else-if="getThemeConfig.layout === 'defaults'" />

@@ -216,9 +216,10 @@
 							<!-- #endif -->
 						</view>
 					</view>
+					<view class="uni-p-b-98"></view>
 				</scroll-view>
 			</view>
-			<!-- <view class="uni-p-b-98"></view> -->
+			
 			<view class="footer acea-row row-between-wrapper" :class="{ eject: storeInfo.id }">
 				<!-- <button open-type="contact" hover-class='none' class='item'>
 						<view class='iconfont icon-kefu'></view>
@@ -381,7 +382,7 @@
 			<!-- 海报展示 -->
 			<view class="poster-pop" v-if="posterImageStatus">
 				<image src="../../static/images/poster-close.png" class="close" @click="posterImageClose"></image>
-				<image :src="posterImage"></image>
+				<image class="poster-img" :src="posterImage"></image>
 				<!-- #ifndef H5  -->
 				<view class="save-poster" @click="savePosterPath">{{ $t(`保存到手机`) }}</view>
 				<!-- #endif -->
@@ -550,6 +551,9 @@ export default {
 			heightArr: [],
 			lock: false,
 			scrollTop: 0,
+			old: {
+				scrollTop: 0
+			},
 			tagStyle: {
 				img: 'width:100%;display:block;',
 				table: 'width:100%',
@@ -802,17 +806,20 @@ export default {
 			// if (!this.data.good_list.length && id == "past2") {
 			//   id = "past3"
 			// }
-			console.log(that.topArr, index, this.height);
 			this.$set(this, 'toView', id);
 			this.$set(this, 'navActive', index);
 			this.$set(this, 'lock', true);
-			this.$set(this, 'scrollTop', index > 0 ? that.topArr[index] - app.globalData.navHeight / 2 : that.topArr[index]);
+			// this.$set(this, 'scrollTop', index > 0 ? that.topArr[index] - app.globalData.navHeight / 2 : that.topArr[index]);
+			this.scrollTop = this.old.scrollTop;
+			this.$nextTick(() => {
+				this.scrollTop = index > 0 ? that.topArr[index] - app.globalData.navHeight / 2 : that.topArr[index];
+			});
 		},
 		scroll(e) {
 			var that = this,
 				scrollY = e.detail.scrollTop;
 			var opacity = scrollY / 200;
-			// this.scrollTop = e.detail.scrollTop
+			this.old.scrollTop = e.detail.scrollTop;
 			opacity = opacity > 1 ? 1 : opacity;
 			that.$set(that, 'opacity', opacity);
 			that.$set(that, 'scrollY', scrollY);
@@ -1129,7 +1136,6 @@ export default {
 					that.$set(that, 'heightArr', heightArr);
 				});
 			}
-			console.log(topArr);
 		},
 		/**
 		 * 拨打电话
@@ -1441,31 +1447,13 @@ export default {
 		 */
 		listenerActionSheet() {
 			this.currentPage = false;
-			this.downloadFilePromotionCode();
-			if (this.isLogin === false) {
-				toLogin();
-			} else {
-				if (this.posterImage) {
-					this.posters = true;
-					return;
-				}
-				// #ifdef H5
-				if (this.$wechat.isWeixin()) {
-					// this.ShareInfo()
-					this.weixinStatus = true;
-				}
-				// #endif
-				// #ifdef MP
-				// this.downloadFilePromotionCode();
-				// #endif
-				// #ifdef APP-PLUS
-				if (this.PromotionCode.indexOf('http') == 0) {
-					// this.downloadFilePromotionCode();
-				}
-				// #endif
-
-				this.posters = true;
+			// #ifdef H5
+			if (this.$wechat.isWeixin()) {
+				this.weixinStatus = true;
 			}
+			// #endif
+
+			this.posters = true;
 		},
 		// 分享关闭
 		listenerActionClose: function () {
@@ -2008,6 +1996,9 @@ action-sheet-item {
 	z-index: 399;
 	top: 50%;
 	margin-top: -377rpx;
+	.poster-img{
+		border-radius: 6px;
+	}
 }
 
 .poster-pop image {

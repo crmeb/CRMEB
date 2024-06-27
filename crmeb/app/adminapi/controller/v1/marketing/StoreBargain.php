@@ -65,6 +65,7 @@ class StoreBargain extends AuthController
             ['info', ''],
             ['unit_name', ''],
             ['section_time', []],
+            ['image', ''],
             ['images', []],
             ['bargain_max_price', 0],
             ['bargain_min_price', 0],

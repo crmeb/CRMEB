@@ -57,7 +57,9 @@ class SystemConfig extends BaseModel
      */
     public function searchTabIdAttr($query, $value)
     {
-        $query->where('config_tab_id', $value);
+        if ($value != 0) {
+            $query->where('config_tab_id', $value);
+        }
     }
 
     /**
@@ -78,5 +80,17 @@ class SystemConfig extends BaseModel
     public function searchValueAttr($query, $value)
     {
         $query->where('value', $value);
+    }
+
+    /**
+     * info搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchConfigNameAttr($query, $value)
+    {
+        if ($value !== '') {
+            $query->where('info|menu_name', 'like', "%$value%");
+        }
     }
 }

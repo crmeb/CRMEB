@@ -3,7 +3,7 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div style="float: right">
-        <el-button class="bnt" type="primary" @click="onsubmit('formValidate')">保存</el-button>
+        <el-button class="bnt" type="primary" v-db-click @click="onsubmit('formValidate')">保存</el-button>
       </div>
     </div>
     <div class="box-wrapper">

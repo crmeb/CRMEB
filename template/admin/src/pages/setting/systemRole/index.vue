@@ -31,13 +31,13 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" v-loading="spinShow">
-      <el-button v-auth="['setting-system_role-add']" type="primary" @click="add('添加')">添加身份</el-button>
+      <el-button v-auth="['setting-system_role-add']" type="primary" v-db-click @click="add('添加')">添加身份</el-button>
       <el-table
         :data="tableList"
         ref="table"
@@ -80,9 +80,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
-            <a @click="edit(scope.row, '编辑')">编辑</a>
+            <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -143,8 +143,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="onCancel">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit('formInline')">提 交</el-button>
+        <el-button v-db-click @click="onCancel">取 消</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formInline')">提 交</el-button>
       </span>
     </el-dialog>
   </div>

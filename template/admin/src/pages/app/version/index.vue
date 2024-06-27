@@ -3,7 +3,7 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row class="mb20">
         <el-col :span="24">
-          <el-button type="primary" @click="add" class="mr10">发布版本</el-button>
+          <el-button type="primary" v-db-click @click="add" class="mr10">发布版本</el-button>
         </el-col>
       </el-row>
       <el-table
@@ -53,9 +53,11 @@
             <span>{{ scope.row.url }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="60">
+        <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a v-db-click @click="del(scope.row, '删除版本', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -136,7 +138,7 @@ export default {
       let delfromData = {
         title: tit,
         num: num,
-        url: `app/version/del/${row.id}`,
+        url: `system/version_del/${row.id}`,
         method: 'DELETE',
         ids: '',
       };

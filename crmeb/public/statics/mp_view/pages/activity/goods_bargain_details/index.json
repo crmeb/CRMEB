@@ -4,6 +4,7 @@
     "jyf-parser": "/components/jyf-parser/jyf-parser",
     "count-down": "/components/countDown/index",
     "authorize": "/components/Authorize",
-    "home": "/components/home/index"
+    "home": "/components/home/index",
+    "bargain-poster": "/pages/activity/poster-poster/index"
   }
 }

@@ -38,6 +38,19 @@ class UserCancelServices extends BaseServices
         $userServices->update(['spread_uid' => $uid], ['spread_uid' => 0, 'spread_time' => 0]);
         $wechatUserServices->update(['uid' => $uid], ['is_del' => 1]);
         $ServiceServices->delete(['uid' => $uid]);
+
+        $user = $userServices->getUserInfo($uid);
+
+        //自定义事件-用户注销
+        event('CustomEventListener', ['user_cancel', [
+            'uid' => $uid,
+            'nickname' => $user['nickname'],
+            'phone' => $user['phone'],
+            'add_time' => date('Y-m-d H:i:s', $user['add_time']),
+            'cancel_time' => date('Y-m-d H:i:s'),
+            'user_type' => $user['user_type'],
+        ]]);
+
         return true;
     }
 

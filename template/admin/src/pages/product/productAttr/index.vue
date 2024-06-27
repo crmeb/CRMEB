@@ -20,14 +20,14 @@
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['product-rule-save']" type="primary" @click="addAttr">添加商品规格</el-button>
-      <el-button v-auth="['product-product-rule-delete']" @click="del(null, '批量删除规格')">批量删除</el-button>
+      <el-button v-auth="['product-rule-save']" type="primary" v-db-click @click="addAttr">添加商品规格</el-button>
+      <el-button v-auth="['product-product-rule-delete']" v-db-click @click="del(null, '批量删除规格')">批量删除</el-button>
       <el-table
         ref="table"
         :data="tableList"
@@ -66,9 +66,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除规格', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除规格', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

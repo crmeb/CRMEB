@@ -12,7 +12,7 @@
           <el-input type="password" v-model="formValidate.conf_file_pwd" class="input"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSubmit('formValidate')">提交</el-button>
+          <el-button type="primary" v-db-click @click="handleSubmit('formValidate')">提交</el-button>
         </el-form-item>
       </el-form>
     </el-card>

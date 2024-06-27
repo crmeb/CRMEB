@@ -21,8 +21,8 @@
         handleIcon="false"
       ></form-create>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="modals = false">取 消</el-button>
-        <el-button type="primary" @click="formSubmit">确 定</el-button>
+        <el-button v-db-click @click="modals = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="formSubmit">确 定</el-button>
       </span>
     </el-dialog>
   </div>

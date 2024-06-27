@@ -60,34 +60,6 @@ class Common extends AuthController
             'version' => $version
         ]);
         $res = $res ? json_decode($res, true) : [];
-
-        //兼容test.
-        if (!isset($res['data']['status']) || $res['data']['status'] !== 1) {
-            $host = str_replace('test.', '', $host);
-            $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
-                'domain_name' => $host,
-                'label' => 34,
-                'version' => $version
-            ]);
-            $res = $res ? json_decode($res, true) : [];
-        }
-
-        //如果是主域名兼容www.
-        if (!isset($res['data']['status']) || $res['data']['status'] !== 1) {
-            $host = str_replace('www.', '', $host);
-            $res = HttpService::request('http://authorize.crmeb.net/api/auth_cert_query', 'post', [
-                'domain_name' => $host,
-                'label' => 34,
-                'version' => $version
-            ]);
-            $res = $res ? json_decode($res, true) : [];
-        }
-
-        //升级状态
-//        /** @var UpgradeServices $upgradeServices */
-//        $upgradeServices = app()->make(UpgradeServices::class);
-//        $upgradeStatus = $upgradeServices->getUpgradeStatus();
-
         $status = $res['data']['status'] ?? -9;
         switch ((int)$status) {
             case 1:
@@ -447,6 +419,9 @@ class Common extends AuthController
         $configMenusList = $menusServices->getColumn([['id', 'in', $configTabIds]], 'menu_name as title,menu_path as path,id', 'id');
         // 将配置项列表中的菜单ID与配置项标签对应的菜单ID对应起来
         foreach ($configAllList as $item2) {
+            if ($item2['menus_id'] == 0) {
+                continue;
+            }
             $menusList[] = [
                 'title' => $configMenusList[$item2['menus_id']]['title'] . '-' . $item2['title'],
                 'path' => $configMenusList[$item2['menus_id']]['path'] . '?tab_id=' . $item2['config_tab_id'],

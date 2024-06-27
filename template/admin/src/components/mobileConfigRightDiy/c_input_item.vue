@@ -5,7 +5,7 @@
         {{ configData.title }}
       </el-col>
       <el-col :span="19" class="slider-box">
-        <div @click="getLink(configData.title)">
+        <div v-db-click @click="getLink(configData.title)">
           <el-input
             :suffix-icon="configData.title == '链接' ? 'el-icon-arrow-right' : ''"
             :readonly="configData.title == '链接' ? true : false"

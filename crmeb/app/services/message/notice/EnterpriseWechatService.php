@@ -48,7 +48,7 @@ class EnterpriseWechatService extends NoticeService
      */
     public function weComSend($data)
     {
-        if ($this->isOpen) {
+        if ($this->noticeInfo['is_ent_wechat'] == 1 && $this->noticeInfo['url'] !== '') {
             $url = $this->noticeInfo['url'];
             $ent_wechat_text = $this->noticeInfo['ent_wechat_text'];
             try {

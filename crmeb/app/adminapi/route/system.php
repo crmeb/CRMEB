@@ -94,7 +94,9 @@ Route::group('system', function () {
         //添加版本信息
         Route::get('version_crate/:id', 'v1.system.AppVersion/crate')->option(['real_name' => '添加版本']);
         //添加版本信息
-        Route::post('version_save', 'v1.system.AppVersion/save')->option(['real_name' => '添加版本']);
+        Route::post('version_save', 'v1.system.AppVersion/save')->option(['real_name' => '保存版本']);
+        //删除版本信息
+        Route::delete('version_del/:id', 'v1.system.AppVersion/del')->option(['real_name' => '删除版本']);
     })->option(['parent' => 'system', 'cate_name' => '数据清除']);
 
     /** 在线升级 */
@@ -135,6 +137,22 @@ Route::group('system', function () {
         Route::get('crontab/set_open/:id/:is_open', 'v1.system.SystemCrontab/setTimerStatus')->option(['real_name' => '定时任务是否开启开关']);
     })->option(['parent' => 'system', 'cate_name' => '定时任务']);
 
+    /** 自定事件 */
+    Route::group(function () {
+        //定时任务列表
+        Route::get('event/list', 'v1.system.SystemEvent/getEventList')->option(['real_name' => '自定事件列表']);
+        //定时任务类型
+        Route::get('event/mark', 'v1.system.SystemEvent/getMarkList')->option(['real_name' => '自定事件类型']);
+        //定时任务详情
+        Route::get('event/info/:id', 'v1.system.SystemEvent/getEventInfo')->option(['real_name' => '自定事件详情']);
+        //定时任务添加编辑
+        Route::post('event/save', 'v1.system.SystemEvent/saveEvent')->option(['real_name' => '自定事件添加编辑']);
+        //删除定时任务
+        Route::delete('event/del/:id', 'v1.system.SystemEvent/delEvent')->option(['real_name' => '删除自定事件']);
+        //定时任务是否开启开关
+        Route::get('event/set_open/:id/:is_open', 'v1.system.SystemEvent/setEventStatus')->option(['real_name' => '自定事件是否开启开关']);
+    })->option(['parent' => 'system', 'cate_name' => '自定事件']);
+
     /** 系统路由 */
     Route::group(function () {
         //同步路由接口
@@ -174,6 +192,24 @@ Route::group('system', function () {
         Route::get('crud/menus', 'v1.setting.SystemCrud/getMenus')->option(['real_name' => '获取菜单TREE形数据']);
         //获取CRUD文件存放
         Route::post('crud/file_path', 'v1.setting.SystemCrud/getFilePath')->option(['real_name' => '获取CRUD文件存放']);
+
+        //获取数据字典列表
+        Route::get('crud/data_dictionary_list', 'v1.setting.SystemCrud/dataDictionaryList')->option(['real_name' => '获取数据字典列表']);
+        //获取数据字典添加修改表单
+        Route::get('crud/data_dictionary_list/create/:id', 'v1.setting.SystemCrud/dataDictionaryListCreate')->option(['real_name' => '获取数据字典添加修改表单']);
+        //保存数据字典
+        Route::post('crud/data_dictionary_list/save/:id', 'v1.setting.SystemCrud/dataDictionaryListSave')->option(['real_name' => '保存数据字典']);
+        //删除数据字典
+        Route::delete('crud/data_dictionary_list/del/:id', 'v1.setting.SystemCrud/dataDictionaryListDel')->option(['real_name' => '删除数据字典']);
+        //查看数据字典内容列表
+        Route::get('crud/data_dictionary/info_list/:cid', 'v1.setting.SystemCrud/dataDictionaryInfoList')->option(['real_name' => '查看数据字典内容列表']);
+        //查看数据字典内容添加修改表单
+        Route::get('crud/data_dictionary/info_create/:cid/:id/:pid', 'v1.setting.SystemCrud/dataDictionaryInfoCreate')->option(['real_name' => '查看数据字典内容添加修改表单']);
+        //修改或者保存字典数据内容
+        Route::post('crud/data_dictionary/info_save/:cid/:id', 'v1.setting.SystemCrud/dataDictionaryInfoSave')->option(['real_name' => '修改或者保存字典数据内容']);
+        //删除数据字典内容
+        Route::delete('crud/data_dictionary/info_del/:id', 'v1.setting.SystemCrud/dataDictionaryInfoDel')->option(['real_name' => '删除数据字典内容']);
+
         //获取数据字典列表
         Route::get('crud/data_dictionary', 'v1.setting.SystemCrud/getDataDictionary')->option(['real_name' => '获取数据字典列表']);
         //查看数据字典

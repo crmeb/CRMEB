@@ -43,7 +43,7 @@
             <el-col :span="12">快递公司：{{ orderDatalist.orderInfo.delivery_name }}</el-col>
             <el-col :span="12"
               >快递单号：{{ orderDatalist.orderInfo.delivery_id }}
-              <a size="small" @click="openLogistics">物流查询</a></el-col
+              <a size="small" v-db-click @click="openLogistics">物流查询</a></el-col
             >
           </el-row>
         </div>

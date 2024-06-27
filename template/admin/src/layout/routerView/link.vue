@@ -10,7 +10,7 @@
       <div class="layout-link-warp">
         <i class="layout-link-icon iconfont icon-xingqiu"></i>
         <div class="layout-link-msg">页面 "{{ $t(meta.title) }}" 已在新窗口中打开</div>
-        <el-button class="mt30" round size="small" @click="onGotoFullPage">
+        <el-button class="mt30" round size="small" v-db-click @click="onGotoFullPage">
           <i class="iconfont icon-lianjie"></i>
           <span>立即前往</span>
         </el-button>

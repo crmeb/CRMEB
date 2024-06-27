@@ -47,7 +47,7 @@
             <el-input clearable placeholder="请输入用户信息" v-model="tableFrom.keyword" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -100,10 +100,10 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
-            <a @click="deliver(scope.row, 1)" v-if="scope.row.type == 6 && scope.row.is_deliver === 0">发货</a>
-            <a v-else-if="scope.row.type == 6 && scope.row.is_deliver === 1" @click="isDeliver(scope.row)">配送信息</a>
+            <a v-db-click @click="deliver(scope.row, 1)" v-if="scope.row.type == 6 && scope.row.is_deliver === 0">发货</a>
+            <a v-else-if="scope.row.type == 6 && scope.row.is_deliver === 1" v-db-click @click="isDeliver(scope.row)">配送信息</a>
             <el-divider direction="vertical" v-if="scope.row.type == 6" />
-            <a @click="deliver(scope.row, 2)">备注</a>
+            <a v-db-click @click="deliver(scope.row, 2)">备注</a>
           </template>
         </el-table-column>
       </el-table>
@@ -148,8 +148,8 @@
         </el-form-item>
         <el-form-item>
           <div class="acea-row row-right">
-            <el-button @click="cancel('formValidate')">关闭</el-button>
-            <el-button type="primary" @click="ok(modelType === 1 ? 'shipForm' : 'markForm')">提交</el-button>
+            <el-button v-db-click @click="cancel('formValidate')">关闭</el-button>
+            <el-button type="primary" v-db-click @click="ok(modelType === 1 ? 'shipForm' : 'markForm')">提交</el-button>
           </div>
         </el-form-item>
       </el-form>

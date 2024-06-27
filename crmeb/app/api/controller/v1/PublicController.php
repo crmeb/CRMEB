@@ -15,6 +15,8 @@ use app\services\activity\combination\StorePinkServices;
 use app\services\diy\DiyServices;
 use app\services\kefu\service\StoreServiceServices;
 use app\services\order\DeliveryServiceServices;
+use app\services\order\StoreOrderCartInfoServices;
+use app\services\order\StoreOrderServices;
 use app\services\other\AgreementServices;
 use app\services\other\CacheServices;
 use app\services\product\product\StoreCategoryServices;
@@ -715,5 +717,33 @@ class PublicController
         } else {
             echo '<h1>未找到跳转路径</h1>';
         }
+    }
+
+    /**
+     * 微信服务商支付
+     * @param Request $request
+     * @return \think\Response
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/4/7
+     */
+    public function servicePayResult(Request $request)
+    {
+        [$sub_mch_id, $out_trade_no, $check_code] = $request->getMore([
+            ['sub_mch_id', ''],
+            ['out_trade_no', ''],
+            ['check_code', ''],
+        ], true);
+        $data['site_name'] = sys_config('site_name');//网站名称
+        $data['site_url'] = sys_config('site_url');//网站地址
+        $data['site_logo'] = sys_config('wap_login_logo');//移动端登录logo
+        $order = app()->make(StoreOrderServices::class)->getOne(['order_id' => $out_trade_no]);
+        $data['goods_name'] = app()->make(StoreOrderCartInfoServices::class)->getCarIdByProductTitle((int)$order['id']);
+        $data['pay_price'] = $order['pay_price'];
+        $data['jump_url'] = sys_config('site_url') . '/pages/goods/order_pay_status/index?order_id=' . $out_trade_no . '&msg=支付成功&type=3&totalPrice=' . $data['pay_price'];
+        return app('json')->header(['X-Frame-Options' => 'payapp.weixin.qq.com'])->success($data);
     }
 }

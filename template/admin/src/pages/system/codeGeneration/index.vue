@@ -37,8 +37,8 @@
       </el-card>
     </div>
     <el-card :bordered="false" class="fixed-card" :style="{ left: `${fixBottomWidth}` }" shadow="never">
-      <el-button :disabled="!currentTab" class="mr20" @click="beforeTab">上一步</el-button>
-      <el-button type="primary" @click="nextTab">{{ currentTab == 2 ? '提交' : '下一步' }}</el-button>
+      <el-button :disabled="!currentTab" class="mr20" v-db-click @click="beforeTab">上一步</el-button>
+      <el-button type="primary" v-db-click @click="nextTab">{{ currentTab == 2 ? '提交' : '下一步' }}</el-button>
     </el-card>
   </div>
 </template>

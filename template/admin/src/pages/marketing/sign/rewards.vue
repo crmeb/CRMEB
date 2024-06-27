@@ -4,7 +4,7 @@
       <el-tabs v-model="signFrom.type" @tab-click="onClickTab">
         <el-tab-pane :label="item.name" :name="item.type" v-for="(item, index) in tabList" :key="index" />
       </el-tabs>
-      <el-button @click="add" type="primary">{{
+      <el-button v-db-click @click="add" type="primary">{{
         signFrom.type == 0 ? '添加连续签到奖励' : '添加累积签到奖励'
       }}</el-button>
       <el-table
@@ -40,9 +40,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row)">删除</a>
+            <a v-db-click @click="del(scope.row)">删除</a>
           </template>
         </el-table-column>
       </el-table>

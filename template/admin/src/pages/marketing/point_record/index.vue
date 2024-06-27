@@ -85,7 +85,7 @@
         </el-table-column>
         <el-table-column label="备注" width="100">
           <template slot-scope="scope">
-            <a class="item" @click="setMark(scope.row)">修改备注</a>
+            <a class="item" v-db-click @click="setMark(scope.row)">修改备注</a>
           </template>
         </el-table-column>
       </el-table>
@@ -103,7 +103,7 @@
     <el-dialog :visible.sync="modals" title="备注" :close-on-click-modal="false" width="470px">
       <el-input v-model="mark_msg.mark" type="textarea" :rows="4" placeholder="请输入备注" />
       <div slot="footer">
-        <el-button type="primary" size="small" @click="oks">确定</el-button>
+        <el-button type="primary" size="small" v-db-click @click="oks">确定</el-button>
       </div>
     </el-dialog>
   </div>

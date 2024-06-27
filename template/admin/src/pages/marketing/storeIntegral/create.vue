@@ -22,7 +22,7 @@
             @submit.native.prevent
           >
             <el-form-item label="选择商品：" prop="image_input" v-if="current === 0">
-              <div class="picBox" @click="changeGoods">
+              <div class="picBox" v-db-click @click="changeGoods">
                 <div class="pictrue" v-if="formValidate.image">
                   <img v-lazy="formValidate.image" />
                 </div>
@@ -41,7 +41,7 @@
                     </div>
                     <div>：</div>
                   </div>
-                  <div class="picBox" @click="modalPicTap('dan', 'danFrom')">
+                  <div class="picBox" v-db-click @click="modalPicTap('dan', 'danFrom')">
                     <div class="pictrue" v-if="formValidate.image">
                       <img v-lazy="formValidate.image" />
                     </div>
@@ -72,12 +72,12 @@
                       @dragend="handleDragEnd($event, item)"
                     >
                       <img v-lazy="item" />
-                      <i class="el-icon-circle-close btndel" @click="handleRemove(index)"></i>
+                      <i class="el-icon-circle-close btndel" v-db-click @click="handleRemove(index)"></i>
                     </div>
                     <div
                       v-if="formValidate.images.length < 10"
                       class="upLoad acea-row row-center-wrapper"
-                      @click="modalPicTap('duo')"
+                      v-db-click @click="modalPicTap('duo')"
                     >
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
@@ -176,7 +176,7 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
-                            @click="modalPicTap('dan', 'danTable', scope.$index)"
+                            v-db-click @click="modalPicTap('dan', 'danTable', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="scope.row.pic">
                               <img v-lazy="scope.row.pic" />
@@ -227,7 +227,7 @@
               <el-form-item>
                 <el-button
                   class="submission"
-                  @click="step"
+                  v-db-click @click="step"
                   :disabled="($route.params.id && current === 1) || current === 0"
                   >上一步
                 </el-button>
@@ -235,7 +235,7 @@
                   :disabled="submitOpen && current === 2"
                   type="primary"
                   class="submission"
-                  @click="next('formValidate')"
+                  v-db-click @click="next('formValidate')"
                   >{{ current === 2 ? '提交' : '下一步' }}</el-button
                 >
               </el-form-item>
@@ -650,10 +650,12 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$refs.goodslist.formValidate.is_presale = 0;
-      this.$refs.goodslist.formValidate.is_virtual = 0;
-      this.$refs.goodslist.getList();
-      this.$refs.goodslist.goodsCategory();
+      this.$nextTick(e => {
+        this.$refs.goodslist.formValidate.is_show = -1;
+        this.$refs.goodslist.formValidate.type = 3;
+        this.$refs.goodslist.getList();
+        this.$refs.goodslist.goodsCategory();
+      })
     }, // 移动
     handleDragStart(e, item) {
       this.dragging = item;

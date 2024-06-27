@@ -8,7 +8,7 @@
         type="primary"
         icon="ios-cloud-upload-outline"
         class="ml10"
-        @click="zh_uploadFile"
+        v-db-click @click="zh_uploadFile"
         >{{ videoLink ? '确认添加' : '上传视频' }}</el-button
       >
       <el-upload
@@ -35,11 +35,11 @@
           您的浏览器不支持 video 标签。
         </video>
         <div class="mark"></div>
-        <i class="el-icon-delete iconv" @click="delVideo"></i>
+        <i class="el-icon-delete iconv" v-db-click @click="delVideo"></i>
       </div>
     </div>
     <div class="mt50 ml20">
-      <el-button type="primary" @click="uploads">确认</el-button>
+      <el-button type="primary" v-db-click @click="uploads">确认</el-button>
     </div>
   </div>
 </template>

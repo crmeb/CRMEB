@@ -52,9 +52,9 @@
             <div class="acea-row">
               <div v-for="(item, index) in productList" :key="index" class="pictrue">
                 <img v-lazy="item.image" />
-                <i class="el-icon-error btndel" @click="remove(item.product_id)"></i>
+                <i class="el-icon-error btndel" v-db-click @click="remove(item.product_id)"></i>
               </div>
-              <div class="upLoad acea-row row-center-wrapper" @click="modals = true">
+              <div class="upLoad acea-row row-center-wrapper" v-db-click @click="modals = true">
                 <i class="el-icon-goods" style="font-size: 24px"></i>
               </div>
             </div>
@@ -181,7 +181,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="save" :disabled="disabled">{{
+          <el-button type="primary" v-db-click @click="save" :disabled="disabled">{{
             isEdit ? '立即保存' : '立即创建'
           }}</el-button>
         </el-form-item>

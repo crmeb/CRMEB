@@ -50,7 +50,7 @@
               ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="userSearch" @click="userSearchs">搜索</el-button >
+            <el-button type="primary" class="userSearch" v-db-click @click="userSearchs">搜索</el-button >
           </el-form-item>
         </el-form>
       </div>

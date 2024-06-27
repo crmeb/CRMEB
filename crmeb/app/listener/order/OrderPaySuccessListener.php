@@ -5,6 +5,7 @@ namespace app\listener\order;
 
 
 use app\jobs\AgentJob;
+use app\jobs\OrderInvoiceJob;
 use app\jobs\OrderJob;
 use app\jobs\ProductLogJob;
 use app\services\activity\seckill\StoreSeckillServices;
@@ -55,7 +56,14 @@ class OrderPaySuccessListener implements ListenerInterface
 
         //修改开票数据支付状态
         $orderInvoiceServices = app()->make(StoreOrderInvoiceServices::class);
-        $orderInvoiceServices->update(['order_id' => $orderInfo['id']], ['is_pay' => 1]);
+        $invoiceInfo = $orderInvoiceServices->get(['order_id' => $orderInfo['id']]);
+        if ($invoiceInfo) {
+            $invoiceInfo->is_pay = 1;
+            if ($invoiceInfo->save() && sys_config('elec_invoice', 1) == 1 && sys_config('auto_invoice', 1) == 1) {
+                //自动开票
+                OrderInvoiceJob::dispatchSecs(10, 'autoInvoice', [$invoiceInfo['id']]);
+            }
+        }
 
         //虚拟商品自动发货
         if ($orderInfo['virtual_type'] > 0 && $orderInfo['combination_id'] == 0) {

@@ -221,35 +221,10 @@ class AliPayService
     public function notify(callable $notifyFn)
     {
         app()->request->filter(['trim']);
-        $paramInfo = app()->request->postMore([
-            ['gmt_create', ''],
-            ['charset', ''],
-            ['seller_email', ''],
-            ['subject', ''],
-            ['sign', ''],
-            ['buyer_id', ''],
-            ['invoice_amount', ''],
-            ['notify_id', ''],
-            ['fund_bill_list', ''],
-            ['notify_type', ''],
-            ['trade_status', ''],
-            ['receipt_amount', ''],
-            ['buyer_pay_amount', ''],
-            ['app_id', ''],
-            ['seller_id', ''],
-            ['sign_type', ''],
-            ['gmt_payment', ''],
-            ['notify_time', ''],
-            ['passback_params', ''],
-            ['version', ''],
-            ['out_trade_no', ''],
-            ['total_amount', ''],
-            ['trade_no', ''],
-            ['auth_app_id', ''],
-            ['buyer_logon_id', ''],
-            ['point_amount', ''],
-        ], false, false);
-
+        $paramInfo = app()->request->param();
+        if (isset($paramInfo['type'])) {
+            unset($paramInfo['type']);
+        }
         //商户订单号
         $postOrder['out_trade_no'] = $paramInfo['out_trade_no'] ?? '';
         //支付宝交易号
@@ -258,7 +233,7 @@ class AliPayService
         $postOrder['trade_status'] = $paramInfo['trade_status'] ?? '';
         //备注
         $postOrder['attach'] = isset($paramInfo['passback_params']) ? urldecode($paramInfo['passback_params']) : '';
-        if (in_array($paramInfo['trade_status'], ['TRADE_SUCCESS', 'TRADE_FINISHED'])/** && $this->verifyNotify($paramInfo) **/) {
+        if (in_array($paramInfo['trade_status'], ['TRADE_SUCCESS', 'TRADE_FINISHED']) && $this->verifyNotify($paramInfo)) {
             try {
                 if ($notifyFn((object)$postOrder)) {
                     return 'success';

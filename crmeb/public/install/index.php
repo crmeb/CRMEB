@@ -289,6 +289,15 @@ switch ($step) {
              * 执行SQL语句
              */
             $counts = count($sqlFormat);
+            if (isset($_SERVER['REQUEST_SCHEME'])) {
+                $request_scheme = $_SERVER['REQUEST_SCHEME'];
+            } else {
+                if ($_SERVER['HTTPS'] == 'on') {
+                    $request_scheme = 'https';
+                } else {
+                    $request_scheme = 'http';
+                }
+            }
             for ($i = $n; $i < $counts; $i++) {
                 $sql = trim($sqlFormat[$i]);
                 if (strstr($sql, 'CREATE TABLE')) {
@@ -309,7 +318,8 @@ switch ($step) {
                     if (trim($sql) == '')
                         continue;
                     $sql = str_replace('`eb_', '`' . $dbPrefix, $sql);//替换表前缀
-                    $sql = str_replace('demo.crmeb.com', $_SERVER['SERVER_NAME'], $sql);//替换图片域名
+                    $sql = str_replace('http://demo.crmeb.com', $request_scheme . '://' . $_SERVER['SERVER_NAME'], $sql);//替换图片域名
+                    $sql = str_replace('http:\\\\/\\\\/demo.crmeb.com', $request_scheme . ':\\\\/\\\\/' . $_SERVER['SERVER_NAME'], $sql);//替换图片域名
                     $ret = mysqli_query($conn, $sql);
                     $message = '';
                     $arr = array('n' => $i, 'count' => $counts, 'msg' => $message, 'time' => date('Y-m-d H:i:s'));
@@ -406,15 +416,6 @@ switch ($step) {
             $res = mysqli_query($conn, $addadminsql);
             $res2 = true;
             if (isset($_SERVER['SERVER_NAME'])) {
-                if (isset($_SERVER['REQUEST_SCHEME'])) {
-                    $request_scheme = $_SERVER['REQUEST_SCHEME'];
-                } else {
-                    if ($_SERVER['HTTPS'] == 'on') {
-                        $request_scheme = 'https';
-                    } else {
-                        $request_scheme = 'http';
-                    }
-                }
                 $site_url = '\'"' . $request_scheme . '://' . $_SERVER['SERVER_NAME'] . '"\'';
                 $res2 = mysqli_query($conn, 'UPDATE `' . $dbPrefix . 'system_config` SET `value`=' . $site_url . ' WHERE `menu_name`="site_url"');
             }

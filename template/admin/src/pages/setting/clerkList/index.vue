@@ -24,7 +24,7 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-        <el-button v-auth="['merchant-store_staff-create']" type="primary" @click="add"
+        <el-button v-auth="['merchant-store_staff-create']" type="primary" v-db-click @click="add"
         >添加核销员</el-button>
       <el-table
         :data="storeLists"
@@ -85,9 +85,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row.id)">编辑</a>
+            <a v-db-click @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除核销员', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除核销员', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

@@ -33,13 +33,13 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" @click="add">添加关键字</el-button>
+      <el-button type="primary" v-db-click @click="add">添加关键字</el-button>
       <el-table
         :data="tabList"
         ref="table"
@@ -82,9 +82,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '关键字回复', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '关键字回复', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

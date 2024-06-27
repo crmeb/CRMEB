@@ -21,10 +21,17 @@ use think\Response;
 class Json
 {
     private $code = 200;
+    private $header = [];
 
     public function code(int $code): self
     {
         $this->code = $code;
+        return $this;
+    }
+
+    public function header(array $header): self
+    {
+        $this->header = $header;
         return $this;
     }
 
@@ -41,7 +48,7 @@ class Json
         }
 
 
-        return Response::create($res, 'json', $this->code);
+        return Response::create($res, 'json', $this->code)->header($this->header);
     }
 
     public function success($msg = 'success', ?array $data = null, ?array $replace = []): Response

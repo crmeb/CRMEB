@@ -28,7 +28,7 @@
       <el-card :bordered="false" shadow="never" class="ivu-mt mt10 mr10">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">积分来源分析</h4>
-          <div class="change-style" @click="echartLeft = !echartLeft">切换样式</div>
+          <div class="change-style" v-db-click @click="echartLeft = !echartLeft">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartLeft" ref="visitChart" :infoList="infoList" echartsTitle="circle"></echarts-from>
@@ -68,14 +68,14 @@
       <el-card :bordered="false" shadow="never" class="ivu-mt mt10">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">积分消耗</h4>
-          <div class="change-style" @click="echartRight = !echartRight">切换样式</div>
+          <div class="change-style" v-db-click @click="echartRight = !echartRight">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartRight" ref="visitChart" :infoList="infoList2" echartsTitle="circle"></echarts-from>
           <el-table
             v-show="!echartRight"
             ref="selection"
-            :data="tabList"
+            :data="tabList2"
             v-loading="loading"
             empty-text="暂无数据"
             highlight-current-row

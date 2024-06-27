@@ -37,7 +37,7 @@
         </el-row>
         <el-row>
           <el-col v-bind="grid">
-            <el-button v-auth="['admin-marketing-store_coupon-add']" type="primary" icon="md-add" @click="add"
+            <el-button v-auth="['admin-marketing-store_coupon-add']" type="primary" icon="md-add" v-db-click @click="add"
               >添加优惠券</el-button
             >
           </el-col>
@@ -100,13 +100,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="couponInvalid(scope.row, '修改优惠券', index)" v-if="scope.row.status">立即失效</a>
+            <a v-db-click @click="couponInvalid(scope.row, '修改优惠券', index)" v-if="scope.row.status">立即失效</a>
             <el-divider direction="vertical" v-if="scope.row.status" />
-            <a @click="couponSend(scope.row)" v-if="scope.row.status" v-auth="['admin-marketing-store_coupon-push']"
+            <a v-db-click @click="couponSend(scope.row)" v-if="scope.row.status" v-auth="['admin-marketing-store_coupon-push']"
               >发布</a
             >
             <el-divider direction="vertical" v-if="scope.row.status" />
-            <a @click="couponDel(scope.row, '删除优惠券', scope.$index)">删除</a>
+            <a v-db-click @click="couponDel(scope.row, '删除优惠券', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

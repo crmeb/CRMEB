@@ -31,14 +31,12 @@ use app\services\shipping\ShippingTemplatesServices;
 use app\services\system\SystemUserLevelServices;
 use app\services\user\UserLabelServices;
 use app\services\user\member\MemberCardServices;
-use app\services\user\UserSearchServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use app\jobs\ProductLogJob;
 use app\jobs\ProductCopyJob;
 use crmeb\exceptions\ApiException;
 use crmeb\services\GroupDataService;
-use Lizhichao\Word\VicWord;
 use think\facade\Config;
 
 /**
@@ -168,10 +166,10 @@ class StoreProductServices extends BaseServices
     public function setShow(array $ids, int $is_show)
     {
         if (empty($ids)) throw new AdminException(100100);
-        if ($is_show == 0) {
-            //下架检测是否有参与活动商品
-            $this->checkActivity($ids);
-        }
+//        if ($is_show == 0) {
+//            //下架检测是否有参与活动商品
+//            $this->checkActivity($ids);
+//        }
         /** @var StoreCartServices $cartService */
         $cartService = app()->make(StoreCartServices::class);
         foreach ($ids as $id) {
@@ -254,7 +252,7 @@ class StoreProductServices extends BaseServices
                 }
             }
         }
-        $productInfo['video_open'] = $productInfo['video_link'] != '' ? true : false;
+        $productInfo['video_open'] = $productInfo['video_link'] != '' ? 1 : 0;
         if (!empty($productInfo['video_link']) && (strpos($productInfo['video_link'], 'http') !== false)) {
             $productInfo['seletVideo'] = 1;
         } else {
@@ -1065,44 +1063,6 @@ class StoreProductServices extends BaseServices
         $where['is_show'] = 1;
         $where['is_del'] = 0;
         [$page, $limit] = $this->getPageValue();
-        /** @var UserSearchServices $userSearchServices */
-        $userSearchServices = app()->make(UserSearchServices::class);
-        $keyword = $vicword = $where['store_name'] ?? '';
-        $ifKeyword = isset($where['store_name']) && $where['store_name'];
-        if ($ifKeyword) {
-            //分词
-            try {
-                $scws = new VicWord();
-                $vicWordArr = $scws->getAutoWord($keyword);
-            } catch (\Throwable $e) {
-                $vicWordArr = [];
-            }
-            if ($vicWordArr) $vicword = array_column($vicWordArr, 0);
-            $result = $userSearchServices->getKeywordResult(0, $where['store_name']);
-            $ids = [];
-            if ($result && isset($result['result']) && $result['result']) {//之前查询结果记录
-                $where['ids'] = $ids = $result['result'];
-                unset($where['store_name']);
-            } else {//分词查询
-                $where['store_name'] = $vicword;
-            }
-            //搜索没有记录
-            if (!$ids) {
-                //查出所有结果ids存搜索记录表
-                $idsArr = $this->dao->getSearchList($where, 0, 0, ['id']);
-                if ($idsArr) {
-                    $where['ids'] = $ids = array_column($idsArr, 'id');
-                    unset($where['store_name']);
-                }
-                $vicword = is_string($vicword) ? [$vicword] : $vicword;
-                $userSearchServices->saveUserSearch($uid, $keyword, $vicword, $ids);
-            }
-        }
-        if ($where['productId'] !== '') {
-            $where['ids'] = explode(',', $where['productId']);
-            $where['ids'] = array_unique(array_map('intval', $where['ids']));
-            unset($where['productId']);
-        }
         $where['vip_user'] = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
         $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price,is_virtual,presale,custom_form,virtual_type,min_qty']);
         /** @var MemberCardServices $memberCardService */
@@ -1403,7 +1363,7 @@ class StoreProductServices extends BaseServices
             $data['storeInfo']['vip_price'] = 0;
         }
         $data['priceName'] = 0;
-        if ($uid) {
+        if ($uid && (int)sys_config('brokerage_window_switch', 1)) {
             $user = $request->user();
             if (!$user->is_promoter) {
                 /** @var StoreOrderServices $storeOrderService */
@@ -1447,6 +1407,14 @@ class StoreProductServices extends BaseServices
         $data['routine_contact_type'] = sys_config('routine_contact_type', 0);
         //浏览记录
         ProductLogJob::dispatch(['visit', ['uid' => $uid, 'product_id' => $id]]);
+
+        //自定义事件-用户商品访问
+        event('CustomEventListener', ['user_product_visit', [
+            'product_id' => $id,
+            'uid' => $uid,
+            'visit_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return $data;
     }
 

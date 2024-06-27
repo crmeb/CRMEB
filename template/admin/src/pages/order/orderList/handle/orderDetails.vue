@@ -138,7 +138,7 @@
                   <div>{{orderDatalist.orderInfo.delivery_type == 'express' ? '物流单号：' : '送货人电话：'}}</div>
                   <div class="value">
                     {{ orderDatalist.orderInfo.delivery_id }}
-                    <a v-if="orderDatalist.orderInfo.delivery_type == 'express'" @click="openLogistics">物流查询</a>
+                    <a v-if="orderDatalist.orderInfo.delivery_type == 'express'" v-db-click @click="openLogistics">物流查询</a>
                   </div>
                 </li>
               </ul>

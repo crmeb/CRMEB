@@ -108,6 +108,7 @@ class SystemConfigServices extends BaseServices
                 'brokerage_level' => '',
                 'division_status' => '',
                 'agent_apply_open' => '',
+                'brokerage_window_switch' => '',
             ],
             'show_value' => 1
         ],
@@ -291,6 +292,7 @@ class SystemConfigServices extends BaseServices
         $list = $this->dao->getConfigList($where, $page, $limit);
         $count = $this->dao->count($where);
         $tidy_srr = [];
+        $configTabList = app()->make(SystemConfigTabServices::class)->getColumn([], 'title', 'id');
         foreach ($list as &$item) {
             $item['value'] = $item['value'] ? (json_decode($item['value'], true) ?: '') : '';
             if ($item['type'] == 'radio' || $item['type'] == 'checkbox') {
@@ -308,8 +310,37 @@ class SystemConfigServices extends BaseServices
                 }
                 $item['value'] = $tidy_srr;
             }
+            if ($item['level'] == 1) {
+                $item['link_data'] = $this->getLinkData($item['link_id'], $item['link_value']);
+            }
+            $item['config_tab_name'] = $configTabList[$item['config_tab_id']] ?? '';
         }
         return compact('count', 'list');
+    }
+
+    /**
+     * 获取关联的值
+     * @param $id
+     * @param $value
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/31
+     */
+    public function getLinkData($id, $value)
+    {
+        $info = $this->dao->get($id);
+        if (!$info) return '';
+        $parameter = explode("\n", $info['parameter']);
+        $result = [];
+        foreach ($parameter as $item) {
+            $parts = explode('=>', $item);
+            $result[$parts[0]] = $parts[1];
+        }
+        return $info['info'] . '/' . $result[$value];
     }
 
     /**
@@ -722,6 +753,7 @@ class SystemConfigServices extends BaseServices
         $formbuider = [];
         $relateRule = $this->relatedRule;
         $sonConfig = $this->getSonConfig();
+        $sonConfig = array_merge($sonConfig, $this->dao->getColumn(['level' => 1], 'menu_name'));
         foreach ($list as $key => $data) {
             if (in_array($key, $sonConfig)) {
                 continue;
@@ -732,6 +764,25 @@ class SystemConfigServices extends BaseServices
                     break;
                 case 'radio'://单选框
                     $builder = [];
+                    if (!isset($relateRule[$key])) {
+                        $relateRule = [];
+                        $sonData = $this->dao->getColumn(['level' => 1, 'link_id' => $data['id']], 'menu_name,link_value');
+                        $sonValue = [];
+                        foreach ($sonData as $sv) {
+                            $sonValue[$sv['link_value']][] = $sv['menu_name'];
+                        }
+                        $i = 0;
+                        foreach ($sonValue as $pk => $pv) {
+                            $label = $data['menu_name'];
+                            if ($i == 1) $label = $data['menu_name'] . '@';
+                            if ($i == 2) $label = $data['menu_name'] . '#';
+                            $relateRule[$label]['show_value'] = (int)$pk;
+                            foreach ($pv as $pvv) {
+                                $relateRule[$label]['son_type'][$pvv] = '';
+                            }
+                            $i++;
+                        }
+                    }
                     if (isset($relateRule[$key])) {
                         $role = $relateRule[$key];
                         $data['show_value'] = $role['show_value'];
@@ -996,10 +1047,18 @@ class SystemConfigServices extends BaseServices
         /** @var SystemConfigTabServices $service */
         $service = app()->make(SystemConfigTabServices::class);
         $formbuider = [];
+        $linkData = $this->linkData($menu['config_tab_id']);
+        $formbuider[] = $this->builder->radio('level', '联动显示', $menu['level'])->options([['value' => 0, 'label' => '否'], ['value' => 1, 'label' => '是']])->appendRule('suffix', [
+            'type' => 'div',
+            'class' => 'tips-info',
+            'domProps' => ['innerHTML' => '否：默认正常展示此配置；是：此配置默认隐藏，当选中下方对应配置的值时，此配置才会显示']
+        ])->appendControl(1, [
+            $this->builder->cascader('link_data', '关联配置/值', [$menu['link_id'], $menu['link_value']])->options($linkData)->props(['props' => ['multiple' => false, 'checkStrictly' => false, 'emitPath' => true]])->style(['width' => '100%']),
+        ]);
         $formbuider[] = $this->builder->input('menu_name', '字段变量', $menu['menu_name'])->disabled(1);
         $formbuider[] = $this->builder->hidden('type', $menu['type']);
         [$configTabList, $data] = $service->getConfigTabListForm((int)($menu['config_tab_id'] ?? 0));
-        $formbuider[] = $this->builder->cascader('config_tab_id', '分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width' => '100%']);
+        $formbuider[] = $this->builder->cascader('config_tab_id', '分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => true]])->style(['width' => '100%']);
         $formbuider[] = $this->builder->input('info', '配置名称', $menu['info'])->autofocus(1);
         $formbuider[] = $this->builder->input('desc', '配置简介', $menu['desc']);
         switch ($menu['type']) {
@@ -1156,6 +1215,14 @@ class SystemConfigServices extends BaseServices
         if ($form_type) {
             $formbuider[] = $this->builder->hidden('type', $form_type);
             [$configTabList, $data] = $service->getConfigTabListForm((int)($tab_id ?? 0));
+            $linkData = $this->linkData($tab_id);
+            $formbuider[] = $this->builder->radio('level', '联动显示', 0)->options([['value' => 0, 'label' => '否'], ['value' => 1, 'label' => '是']])->appendRule('suffix', [
+                'type' => 'div',
+                'class' => 'tips-info',
+                'domProps' => ['innerHTML' => '否：默认正常展示此配置；是：此配置默认隐藏，当选中下方对应配置的值时，此配置才会显示']
+            ])->appendControl(1, [
+                $this->builder->cascader('link_data', '关联配置/值')->options($linkData)->props(['props' => ['multiple' => false, 'checkStrictly' => false, 'emitPath' => true]])->style(['width' => '100%']),
+            ]);
             $formbuider[] = $this->builder->cascader('config_tab_id', '分类', $data)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width' => '100%']);
             if ($info_type) {
                 $formbuider[] = $info_type;
@@ -1165,9 +1232,35 @@ class SystemConfigServices extends BaseServices
             $formbuider[] = $this->builder->input('desc', '表单说明');
             $formbuider = array_merge($formbuider, $parameter);
             $formbuider[] = $this->builder->number('sort', '排序', 0);
+
             $formbuider[] = $this->builder->radio('status', '状态', 1)->options($this->formStatus());
         }
         return create_form('添加字段', $formbuider, $this->url('/setting/config'), 'POST');
+    }
+
+    /**
+     * 根据指定的标签ID，链接数据并以特定格式返回。
+     * @param $tab_id
+     * @return array
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/30
+     */
+    public function linkData($tab_id)
+    {
+        $linkData = $this->selectList(['config_tab_id' => $tab_id, 'type' => 'radio', 'level' => 0], 'info as label,id as value,parameter')->toArray();
+        foreach ($linkData as &$item) {
+            $parameter = [];
+            $parameter = explode("\n", $item['parameter']);
+            foreach ($parameter as $pv) {
+                $pvArr = explode('=>', $pv);
+                $item['children'][] = [
+                    'label' => $pvArr[1],
+                    'value' => (int)$pvArr[0]
+                ];
+            }
+        }
+        return $linkData;
     }
 
     /**

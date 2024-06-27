@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     :visible.sync="modals"
-    title="订单发送货"
+    title="订单退款"
     class="order_box"
     :show-close="true"
     width="1000px"
@@ -95,8 +95,8 @@
       </div>
     </el-form>
     <div slot="footer">
-      <el-button @click="cancel">取消</el-button>
-      <el-button type="primary" @click="putSend">提交</el-button>
+      <el-button v-db-click @click="cancel">取消</el-button>
+      <el-button type="primary" v-db-click @click="putSend">提交</el-button>
     </div>
     <!-- <viewer @inited="inited">
             <img :src="temp.pic" style="display:none" />
@@ -161,12 +161,13 @@ export default {
   mounted() {},
   methods: {
     handleChange(e, params, index) {
-      params.num = e || 1;
-      this.manyFormValidate[index] = params;
-
+      // console.log(e, params, index);
+      // params.num = e || 0;
+      // // this.manyFormValidate[index] = params;
+      // this.$set(this.manyFormValidate[index], 'num', e || 1)
       let total = 0;
       this.selectData.forEach((v, i) => {
-        total += this.manyFormValidate[i].num * this.manyFormValidate[i].cart_info.truePrice;
+        total += this.manyFormValidate[i].num || 0 * this.manyFormValidate[i].cart_info.truePrice;
       });
       this.formItem.refund_price = total;
     },
@@ -207,13 +208,20 @@ export default {
     // 提交
     putSend(name) {
       this.formItem.cart_ids = [];
+      let splitNumStatus = true;
       if (this.splitSwitch) {
         this.selectData.forEach((v) => {
+          if (!v.num) {
+            splitNumStatus = false;
+          }
           this.formItem.cart_ids.push({
             cart_id: v.cart_id,
             cart_num: v.num || v.surplus_num,
           });
         });
+      }
+      if (!splitNumStatus) {
+        return this.$message.error('请选择退款数量');
       }
       refundPrice(this.orderId, this.formItem)
         .then((res) => {

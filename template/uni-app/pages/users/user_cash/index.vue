@@ -32,12 +32,12 @@
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>{{$t(`提现`)}}</view>
-							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
-									name="money" type='digit'></input></view>
+							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice'
+									placeholder-class='placeholder' name="money" type='digit'></input></view>
 						</view>
 						<view class='tip'>
-							{{$t(`当前可提现金额`)}}: <text
-								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}}</text>，{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
+							{{$t(`当前可提现金额`)}}: <text class="price">{{$t(`￥`)}}{{userInfo.commissionCount}}</text>，{{$t(`冻结佣金`)}}:
+							{{$t(`￥`)}}{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
 							{{$t(`提现手续费: `)}}<text class="price">{{withdrawal_fee}}%</text>，{{$t(`实际到账: `)}}<text
@@ -58,8 +58,8 @@
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>{{$t(`提现`)}}</view>
-							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
-									name="money" type='digit'></input></view>
+							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice'
+									placeholder-class='placeholder' name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between' v-if="!brokerageType">
 							<view class='name'>{{$t(`收款码`)}}</view>
@@ -75,8 +75,8 @@
 							</view>
 						</view>
 						<view class='tip'>
-							{{$t(`当前可提现金额`)}}: <text
-								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
+							{{$t(`当前可提现金额`)}}: <text class="price">{{$t(`￥`)}}{{userInfo.commissionCount}}</text>，{{$t(`冻结佣金`)}}:
+							{{$t(`￥`)}}{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
 							{{$t(`提现手续费: `)}}<text class="price">{{withdrawal_fee}}%</text>，{{$t(`实际到账: `)}}<text
@@ -97,8 +97,8 @@
 						</view>
 						<view class='item acea-row row-between-wrapper'>
 							<view class='name'>{{$t(`提现`)}}</view>
-							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice' placeholder-class='placeholder'
-									name="money" type='digit'></input></view>
+							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice'
+									placeholder-class='placeholder' name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between'>
 							<view class='name'>{{$t(`收款码`)}}</view>
@@ -114,8 +114,8 @@
 							</view>
 						</view>
 						<view class='tip'>
-							{{$t(`当前可提现金额`)}}: <text
-								class="price">{{$t(`￥`)}}{{userInfo.commissionCount}},</text>{{$t(`冻结佣金`)}}：{{$t(`￥`)}}{{userInfo.broken_commission}}
+							{{$t(`当前可提现金额`)}}: <text class="price">{{$t(`￥`)}}{{userInfo.commissionCount}}</text>，{{$t(`冻结佣金`)}}:
+							{{$t(`￥`)}}{{userInfo.broken_commission}}
 						</view>
 						<view class='tip'>
 							{{$t(`提现手续费: `)}}<text class="price">{{withdrawal_fee}}%</text>，{{$t(`实际到账: `)}}<text
@@ -123,6 +123,20 @@
 						</view>
 						<view class='tip'>
 							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
+						</view>
+						<button formType="submit" class='bnt bg-color'>{{$t(`提现`)}}</button>
+					</form>
+				</view>
+				<view :hidden='currentTab != 3' class='list'>
+					<form @submit="importNowMoney">
+						<view class='item acea-row row-between-wrapper'>
+							<view class='name'>{{$t(`提现`)}}</view>
+							<view class='input'><input @input='inputNum' placeholder='请输入提现金额' placeholder-class='placeholder'
+									name="money" type='digit'></input></view>
+						</view>
+						<view class='tip'>
+							{{$t(`当前可提现金额`)}}: <text class="price">{{$t(`￥`)}}{{userInfo.commissionCount}}</text>，{{$t(`冻结佣金`)}}:
+							{{$t(`￥`)}}{{userInfo.broken_commission}}
 						</view>
 						<button formType="submit" class='bnt bg-color'>{{$t(`提现`)}}</button>
 					</form>
@@ -139,7 +153,8 @@
 	import {
 		extractCash,
 		extractBank,
-		getUserInfo
+		getUserInfo,
+		recharge
 	} from '@/api/user.js';
 	import {
 		toLogin
@@ -281,14 +296,19 @@
 							'name': that.$t(`支付宝`),
 							'icon': 'icon-icon34',
 							'id': 2
+						},
+						{
+							'name': that.$t(`余额`),
+							'icon': 'icon-qiandai',
+							'id': 3
 						}
 					]
 					let list = [];
 					that.userInfo = res.data;
-					that.navList.forEach((item,index)=>{
-							if(that.userInfo.extract_type.includes(item.id.toString())){
-								list.push(item)
-							}
+					that.navList.forEach((item, index) => {
+						if (that.userInfo.extract_type.includes(item.id.toString())) {
+							list.push(item)
+						}
 					})
 					this.navList = list
 					this.swichNav(this.navList[0].id)
@@ -360,6 +380,44 @@
 						title: err
 					});
 				});
+			},
+			importNowMoney(e) {
+				let that = this
+				let value = e.detail.value.money;
+				if (parseFloat(value) < 0 || parseFloat(value) == NaN || value == undefined || value == "") {
+					return that.$util.Tips({
+						title: that.$t(`请输入金额`)
+					});
+				}
+				uni.showModal({
+					title: that.$t(`提现到余额`),
+					content: that.$t(`提现到余额后无法再次转出，确认是否提现到余额`),
+					success(res) {
+						if (res.confirm) {
+							recharge({
+									price: parseFloat(value),
+									type: 1
+								})
+								.then(res => {
+									return that.$util.Tips({
+										title: that.$t(`提现到余额成功`),
+										icon: 'success'
+									}, {
+										tab: 5,
+										url: '/pages/users/user_spread_user/index'
+									});
+								}).catch(err => {
+									return that.$util.Tips({
+										title: err
+									})
+								});
+						} else if (res.cancel) {
+							return that.$util.Tips({
+								title: that.$t(`已取消`)
+							});
+						}
+					},
+				})
 			}
 		}
 	}

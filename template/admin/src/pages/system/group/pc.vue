@@ -4,7 +4,7 @@
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
-          <el-button class="bnt" type="primary" @click="save">保存</el-button>
+          <el-button class="bnt" type="primary" v-db-click @click="save">保存</el-button>
         </div>
       </div>
     </div>
@@ -12,11 +12,19 @@
       <el-row class="box-wrapper">
         <el-col :xs="24" :sm="24" :md="6" :lg="3">
           <div class="left_box">
-            <div class="left_cont" :class="pageId == 1 ? 'on' : ''" @click="menu(1)">网站LOGO</div>
-            <div class="left_cont" :class="pageId == 'pc_home_banner' ? 'on' : ''" @click="menu('pc_home_banner')">
+            <div class="left_cont" :class="pageId == 1 ? 'on' : ''" v-db-click @click="menu(1)">网站LOGO</div>
+            <div
+              class="left_cont"
+              :class="pageId == 'pc_home_banner' ? 'on' : ''"
+              v-db-click
+              @click="menu('pc_home_banner')"
+            >
               首页轮播图
             </div>
-            <div class="left_cont" :class="pageId == 3 ? 'on' : ''" @click="menu(3)">客服页面广告</div>
+            <div class="left_cont" :class="pageId == 3 ? 'on' : ''" v-db-click @click="menu(3)">客服页面广告</div>
+            <div class="left_cont" :class="pageId == 4 ? 'on' : ''" v-db-click @click="menu(4)">顶部菜单配置</div>
+            <div class="left_cont" :class="pageId == 5 ? 'on' : ''" v-db-click @click="menu(5)">友情链接配置</div>
+            <div class="left_cont" :class="pageId == 6 ? 'on' : ''" v-db-click @click="menu(6)">关于我们</div>
           </div>
         </el-col>
         <div style="display: flex; width: 83%">
@@ -60,12 +68,17 @@
                         <div class="move-icon">
                           <span class="iconfont icondrag2"></span>
                         </div>
-                        <div class="img-box imgBoxs" @click="modalPicTap('单选', index)">
+                        <div class="img-box imgBoxs" v-db-click @click="modalPicTap('单选', index)">
                           <img :src="item.image" alt="" v-if="item.image" />
                           <div class="upload-box" v-else>
                             <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                           </div>
-                          <div class="delect-btn" style="line-height: 0px" @click.stop="bindDelete(item, index)">
+                          <div
+                            class="delect-btn"
+                            style="line-height: 0px"
+                            v-db-click
+                            @click.stop="bindDelete(item, index)"
+                          >
                             <i class="el-icon-circle-close" style="font-size: 24px" />
                           </div>
                         </div>
@@ -78,7 +91,7 @@
                           </div>
                           <div class="info-item">
                             <span>链接地址：</span>
-                            <!-- @click="link(index)"-->
+                            <!-- v-db-click @click="link(index)"-->
                             <div class="input-box">
                               <el-input v-model="item.url" placeholder="选择链接" />
                             </div>
@@ -109,6 +122,7 @@
                         type="primary"
                         ghost
                         style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
+                        v-db-click
                         @click="addBox"
                         >添加图片
                       </el-button>
@@ -126,7 +140,7 @@
                   <div class="title-text">建议尺寸：140px * 60px</div>
                   <div class="title-text">除LOGO图标外，页面其他内容仅供参考</div>
                   <div class="list-box">
-                    <div class="img-boxs" @click="modalPicTap('单选', 0)">
+                    <div class="img-boxs" v-db-click @click="modalPicTap('单选', 0)">
                       <img :src="pclogo" alt="" />
                       <div class="img_font"></div>
                       <div class="img_fonts">更换图片</div>
@@ -176,11 +190,137 @@
               </div>
             </div>
           </el-col>
+          <el-col v-if="pageId == 4" :xs="24" :sm="24" :md="12" :lg="14" style="margin-left: 40px">
+            <div class="content">
+              <div class="right-box">
+                <div class="hot_imgs">
+                  <div class="title">顶部菜单设置</div>
+                  <div class="list-box">
+                    <draggable class="dragArea list-group" :list="menuList" group="peoples" handle=".move-icon">
+                      <div class="item" v-for="(item, index) in menuList" :key="index">
+                        <div class="move-icon">
+                          <span class="iconfont icondrag2"></span>
+                        </div>
+                        <div
+                          class="delect-btn"
+                          style="line-height: 0px"
+                          v-db-click
+                          @click.stop="menuDelete(index)"
+                        >
+                          <i class="el-icon-circle-close" style="font-size: 24px" />
+                        </div>
+                        <div class="info">
+                          <div class="info-item">
+                            <span>菜单名称：</span>
+                            <div class="input-box">
+                              <el-input v-model="item.title" placeholder="请填写名称" />
+                            </div>
+                          </div>
+                          <div class="info-item">
+                            <span>链接地址：</span>
+                            <!-- v-db-click @click="link(index)"-->
+                            <div class="input-box">
+                              <el-input v-model="item.url" placeholder="选择链接" />
+                            </div>
+                          </div>
+                          <!-- <div class="info-item">
+                            <span>是否需要登录：</span>
+                            <div class="input-box">
+                              <el-switch v-model="item.auth" active-value="1" inactive-value="0"> </el-switch>
+                            </div>
+                          </div> -->
+                        </div>
+                      </div>
+                    </draggable>
+                  </div>
+                  <template>
+                    <div class="add-btn">
+                      <el-button
+                        type="primary"
+                        ghost
+                        style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
+                        v-db-click
+                        @click="addMenu"
+                        >添加菜单
+                      </el-button>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </el-col>
+          <el-col v-if="pageId == 5" :xs="24" :sm="24" :md="12" :lg="14" style="margin-left: 40px">
+            <div class="content">
+              <div class="right-box">
+                <div class="hot_imgs">
+                  <div class="title">友情链接配置</div>
+                  <div class="list-box">
+                    <draggable class="dragArea list-group" :list="linkList" group="peoples" handle=".move-icon">
+                      <div class="item" v-for="(item, index) in linkList" :key="index">
+                        <div class="move-icon">
+                          <span class="iconfont icondrag2"></span>
+                        </div>
+                        <div
+                          class="delect-btn"
+                          style="line-height: 0px"
+                          v-db-click
+                          @click.stop="linkDelete(item, index)"
+                        >
+                          <i class="el-icon-circle-close" style="font-size: 24px" />
+                        </div>
+                        <div class="info">
+                          <div class="info-item">
+                            <span>链接名称：</span>
+                            <div class="input-box">
+                              <el-input v-model="item.title" placeholder="请填写名称" />
+                            </div>
+                          </div>
+                          <div class="info-item">
+                            <span>链接地址：</span>
+                            <!-- v-db-click @click="link(index)"-->
+                            <div class="input-box">
+                              <el-input v-model="item.url" placeholder="选择链接" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </draggable>
+                  </div>
+                  <template>
+                    <div class="add-btn">
+                      <el-button
+                        type="primary"
+                        ghost
+                        style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
+                        v-db-click
+                        @click="addLink"
+                        >添加链接
+                      </el-button>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </el-col>
+          <el-col v-if="pageId == 6" :xs="24" :sm="24" :md="24" :lg="24" style="margin-left: 40px">
+            <div class="content">
+              <div class="right-box">
+                <div class="hot_imgs">
+                  <div class="title">关于我们-详情</div>
+                  <WangEditor
+                    style="width: 100%"
+                    :content="formValidate.content"
+                    @editorContent="getEditorContent"
+                  ></WangEditor>
+                </div>
+              </div>
+            </div>
+          </el-col>
         </div>
       </el-row>
     </el-card>
     <!-- <div class="save">
-			<el-button type="primary" @click="save" >保存</el-button>
+			<el-button type="primary" v-db-click @click="save" >保存</el-button>
 		</div> -->
     <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
   </div>
@@ -200,9 +340,12 @@ import {
   getKfAdv,
   setKfAdv,
 } from '@/api/system';
+import { pcHomeMenusSave, pcHomeMenus } from '@/api/setting';
 import draggable from 'vuedraggable';
 import uploadPictures from '@/components/uploadPictures';
 import linkaddress from '@/components/linkaddress';
+import { getAgreements, setAgreements } from '@/api/system';
+
 export default {
   name: 'list',
   components: {
@@ -248,6 +391,8 @@ export default {
       },
       pageId: 1,
       tabList: [],
+      menuList: [],
+      linkList: [],
       lastObj: {
         add_time: '',
         config_name: '',
@@ -337,6 +482,24 @@ export default {
           this.$message.error(res.msg);
         });
     },
+    getAboutUs(id) {
+      getAgreements(id).then((res) => {
+        this.formValidate.content = res.data.content;
+      });
+    },
+    setAboutUs(id) {
+      if (this.formValidate.content == '') return this.$message.warning('请输入内容');
+      let data = {
+        id: id,
+        content: this.formValidate.content,
+        type: id,
+        title: '关于我们',
+      };
+
+      setAgreements(data).then((res) => {
+        this.$message.success(res.msg);
+      });
+    },
     // 添加表单
     groupAdd() {
       this.$modalForm(groupDataAddApi({ config_name: this.pageId }, 'setting/group_data/create')).then(() =>
@@ -357,14 +520,18 @@ export default {
           .catch((res) => {
             this.$message.error(res.msg);
           });
-      }
-      if (this.pageId == 1) {
+      } else if (this.pageId == 1) {
         pcLogoApi('pc_logo').then((res) => {
           this.pclogo = res.data.value;
         });
-      }
-      if (this.pageId == 3) {
+      } else if (this.pageId == 3) {
         this.getKfAdv();
+      } else if (this.pageId == 4) {
+        this.getMenuList();
+      } else if (this.pageId == 5) {
+        this.getLinkList();
+      } else if (this.pageId == 6) {
+        this.getAboutUs(7);
       }
     },
     menu(id) {
@@ -386,12 +553,30 @@ export default {
         };
       } else {
         if (this.tabList.list.length == 5) {
-          this.$message.warning('最多添加五张呦');
+          this.$message.warning('最多添加5张');
         } else {
           let obj = JSON.parse(JSON.stringify(this.lastObj));
           this.tabList.list.push(obj);
         }
       }
+    },
+    addMenu() {
+      if (this.menuList.length >= 6) {
+        return this.$message.warning('最多添加6个菜单');
+      }
+      this.menuList.push({
+        title: '',
+        url: '',
+      });
+    },
+    addLink() {
+      if (this.linkList.length >= 20) {
+        return this.$message.warning('最多添加20个链接');
+      }
+      this.linkList.push({
+        title: '',
+        url: '',
+      });
     },
     // 删除
     bindDelete(item, index) {
@@ -399,6 +584,14 @@ export default {
         this.lastObj = this.tabList.list[0];
       }
       this.tabList.list.splice(index, 1);
+    },
+    menuDelete(index) {
+      console.log(index);
+      this.menuList.splice(index, 1);
+    },
+    // 友情链接
+    linkDelete(index) {
+      this.linkList.splice(index, 1);
     },
     // 点击图文封面
     modalPicTap(title, index) {
@@ -425,8 +618,7 @@ export default {
           .catch((err) => {
             this.$message.error(err.msg);
           });
-      }
-      if (this.pageId == 1) {
+      } else if (this.pageId == 1) {
         pcLogoSave({ pc_logo: this.pclogo })
           .then((res) => {
             this.$message.success(res.msg);
@@ -434,10 +626,47 @@ export default {
           .catch((err) => {
             this.$message.error(err.msg);
           });
-      }
-      if (this.pageId == 3) {
+      } else if (this.pageId == 3) {
         this.onsubmit('formValidate');
+      } else if (this.pageId == 4) {
+        this.saveMenu('pc_home_menus');
+      } else if (this.pageId == 5) {
+        this.saveMenu('pc_home_links');
+      } else if (this.pageId == 6) {
+        this.setAboutUs(7);
       }
+    },
+    getMenuList() {
+      pcHomeMenus('pc_home_menus')
+        .then((res) => {
+          this.menuList = res.data.list;
+        })
+        .catch((err) => {
+          this.$message.error(err.msg);
+        });
+    },
+    getLinkList() {
+      pcHomeMenus('pc_home_links')
+        .then((res) => {
+          this.linkList = res.data.list;
+        })
+        .catch((err) => {
+          this.$message.error(err.msg);
+        });
+    },
+    // 菜单保存
+    saveMenu(config_name) {
+      let data = {
+        config_name: config_name,
+        data: this.pageId == 5 ? this.linkList : this.menuList,
+      };
+      pcHomeMenusSave(data)
+        .then((res) => {
+          this.$message.success(res.msg);
+        })
+        .catch((err) => {
+          this.$message.error(err.msg);
+        });
     },
     link(index) {
       this.activeIndexs = index;
@@ -611,6 +840,7 @@ export default {
     margin-bottom: 12px;
     cursor: pointer;
     padding: 14px 24px;
+    white-space: nowrap;
   }
 }
 
@@ -709,7 +939,7 @@ export default {
         align-items: center;
         justify-content: center;
         width: 30px;
-        height: 80px;
+        // height: 80px;
         cursor: move;
         color: #d8d8d8;
       }
@@ -749,11 +979,12 @@ export default {
         position: absolute;
         right: -12px;
         top: -12px;
-        color: #999999;
-
+        color: #f56c6c;
+        background-color: #fff;
+        cursor: pointer;
+        border-radius: 50%;
         .iconfont {
           font-size: 28px;
-          color: #999;
         }
       }
     }
@@ -824,6 +1055,7 @@ export default {
 
 .item {
   border: 1px dashed #ccc;
+  border-radius: 6px;
   padding: 15px 15px 10px 0px;
 }
 

@@ -1,44 +1,39 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="artFrom"
-            :model="artFrom"
-            :label-width="labelWidth"
-            label-position="right"
-            @submit.native.prevent
-            inline
+          ref="artFrom"
+          :model="artFrom"
+          :label-width="labelWidth"
+          label-position="right"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="文章分类：" label-for="pid">
             <el-cascader
-                v-model="artFrom.pid"
-                placeholder="请选择"
-                class="treeSel"
-                @change="handleCheckChange"
-                :options="treeData"
-                :props="props"
-                style="width: 250px"
+              v-model="artFrom.pid"
+              placeholder="请选择"
+              class="treeSel"
+              @change="handleCheckChange"
+              :options="treeData"
+              :props="props"
+              style="width: 250px"
             >
             </el-cascader>
           </el-form-item>
           <el-form-item label="文章搜索：" label-for="title">
-            <el-input
-                clearable
-                placeholder="请输入"
-                v-model="artFrom.title"
-                class="form_content_width"
-            />
+            <el-input clearable placeholder="请输入" v-model="artFrom.title" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <router-link :to="$routeProStr + '/cms/article/add_article'" v-auth="['cms-article-creat']"
-      ><el-button type="primary" class="bnt">添加文章</el-button></router-link
+        ><el-button type="primary" class="bnt">添加文章</el-button></router-link
       >
       <el-table
         :data="cmsList"
@@ -86,15 +81,23 @@
             <span>{{ scope.row.add_time | formatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="170">
+        <el-table-column label="操作" fixed="right" width="210">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="artRelation(scope.row, '取消关联', index)">{{
+            <a v-db-click @click="artRelation(scope.row, '取消关联', index)">{{
               scope.row.product_id === 0 ? '关联' : '取消关联'
             }}</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除文章', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除文章', scope.$index)">删除</a>
+            <el-divider direction="vertical"></el-divider>
+            <el-dropdown size="small" @command="onCopy(scope.row, $event)" :transfer="true">
+              <span class="el-dropdown-link">复制链接<i class="el-icon-arrow-down el-icon--right"></i></span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="1">移动端链接</el-dropdown-item>
+                <el-dropdown-item command="2">PC端链接</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -290,6 +293,16 @@ export default {
     userSearchs() {
       this.artFrom.page = 1;
       this.getList();
+    },
+    onCopy(row, type) {
+      let copy_url = type == 1 ? row.copy_url : row.copy_url_pc;
+      this.$copyText(copy_url)
+        .then((message) => {
+          this.$message.success('复制成功');
+        })
+        .catch((err) => {
+          this.$message.error('复制失败');
+        });
     },
   },
 };

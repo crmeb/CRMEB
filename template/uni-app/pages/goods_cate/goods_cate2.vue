@@ -452,11 +452,6 @@ export default {
 			let list = this.cartData.cartList;
 			let num = list[index];
 			let stock = list[index].trueStock;
-			if (!changeValue && num.cart_num <= num.min_qty) {
-				return this.$util.Tips({
-					title: this.$t(`该商品${num.min_qty}件起购`)
-				});
-			}
 			this.ChangeCartNum(changeValue, num, stock, 0, num.product_id, index, 1);
 			if (!list.length) {
 				this.cartData.iScart = false;
@@ -494,12 +489,11 @@ export default {
 					}
 				}
 			} else {
-				if (num.cart_num <= num.min_qty) {
-					return this.$util.Tips({
-						title: this.$t(`该商品${num.min_qty}件起购`)
-					});
-				}
 				num.cart_num--;
+				if (num.cart_num < num.min_qty) {
+					this.cartData.cartList.splice(index, 1);
+					num.cart_num = 0
+				}
 				if (num.cart_num == 0) {
 					this.cartData.cartList.splice(index, 1);
 				}
@@ -1030,9 +1024,10 @@ page {
 		background-color: #fff;
 		box-shadow: 0px -3rpx 16rpx rgba(36, 12, 12, 0.05);
 		z-index: 101;
-		padding: 0 30rpx;
+		padding: 12rpx 30rpx;
 		box-sizing: border-box;
-		height: 100rpx;
+		padding-bottom: calc(12rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(12rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
 		.cartIcon {
 			width: 96rpx;

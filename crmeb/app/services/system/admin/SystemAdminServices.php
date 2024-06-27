@@ -128,6 +128,17 @@ class SystemAdminServices extends BaseServices
         if ($remind) {
             [$queue, $timer] = Event::until('AdminLoginListener', [$key]);
         }
+
+        //自定义事件-管理员登录
+        event('CustomEventListener', ['admin_login', [
+            'id' => $adminInfo->getData('id'),
+            'account' => $adminInfo->getData('account'),
+            'head_pic' => get_file_link($adminInfo->getData('head_pic')),
+            'level' => $adminInfo->getData('level'),
+            'real_name' => $adminInfo->getData('real_name'),
+            'login_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return [
             'token' => $tokenInfo['token'],
             'expires_time' => $tokenInfo['params']['exp'],

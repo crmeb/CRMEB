@@ -21,8 +21,6 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :picker-options="pickerOptions"
-              style="width: 250px"
-              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="评价状态：">
@@ -37,6 +35,19 @@
               <el-option value="0" label="未回复"></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="审核状态：">
+            <el-select
+              v-model="formValidate.status"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
+              <el-option value="0" label="未审核"></el-option>
+              <el-option value="1" label="已通过"></el-option>
+              <el-option value="2" label="已拒绝"></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="商品信息：" label-for="store_name">
             <el-input
               placeholder="请输入商品ID或者商品信息"
@@ -45,7 +56,7 @@
               class="form_content_width"
             />
           </el-form-item>
-          <el-form-item label="用户名称：" label-for="account">
+          <el-form-item label="用户名称：">
             <el-input
               enter-button
               placeholder="请输入"
@@ -55,7 +66,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">搜索</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -63,7 +74,7 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-row>
         <el-col v-bind="grid">
-          <el-button v-auth="['product-reply-save_fictitious_reply']" type="primary" @click="addRep"
+          <el-button v-auth="['product-reply-save_fictitious_reply']" type="primary" v-db-click @click="addRep"
             >添加自评</el-button
           >
         </el-col>
@@ -117,16 +128,29 @@
             <span>{{ scope.row.merchant_reply_content }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="审核状态" min-width="80">
+          <template slot-scope="scope">
+            <el-tag effect="dark" v-if="scope.row.status == 1"> 通过 </el-tag>
+            <el-tag effect="dark" type="warning" v-if="scope.row.status == 0"> 待审核 </el-tag>
+            <el-tag effect="dark" type="danger" v-if="scope.row.status == 2"> 已拒绝 </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="评价时间" min-width="130">
           <template slot-scope="scope">
             <span>{{ scope.row.add_time }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="120">
+        <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="reply(scope.row)">回复</a>
+            <template v-if="scope.row.status == 0">
+              <a class="item" v-db-click @click="adopt(scope.row, '审核通过', 1)">通过</a>
+              <el-divider direction="vertical"></el-divider>
+              <a class="item" v-db-click @click="adopt(scope.row, '拒绝', 2)">驳回</a>
+              <el-divider direction="vertical"></el-divider>
+            </template>
+            <a v-db-click @click="reply(scope.row)">回复</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除评论', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除评论', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -147,8 +171,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button type="primary" @click="oks">确定</el-button>
-        <el-button @click="cancels">取消</el-button>
+        <el-button type="primary" v-db-click @click="oks">确定</el-button>
+        <el-button v-db-click @click="cancels">取消</el-button>
       </div>
     </el-dialog>
     <addReply
@@ -262,6 +286,7 @@ export default {
         key: '',
         order: '',
         account: '',
+        status: '',
         product_id: this.$route.params.id === undefined ? 0 : this.$route.params.id,
         page: 1,
         limit: 15,
@@ -311,6 +336,24 @@ export default {
     },
   },
   methods: {
+    // 通过
+    adopt(row, tit, num) {
+      let delfromData = {
+        title: tit,
+        num: num,
+        url: `product/reply/set_status/${row.id}/${num}`,
+        method: 'put',
+        ids: '',
+      };
+      this.$modalSure(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.getList();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
     // 添加虚拟评论；
     addRep() {
       // this.$modalForm(fictitiousReply(this.formValidate.product_id)).then(() => this.getList());
@@ -505,7 +548,7 @@ export default {
 }
 
 .ivu-mt .imgPic .info {
-  flex :1;
+  flex: 1;
   margin-left: 10px;
 }
 
@@ -518,6 +561,7 @@ export default {
   height: 100%;
   display: block;
 }
+
 .product-data {
   display: flex;
   align-items: center;

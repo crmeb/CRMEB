@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :visible.sync="modals" title="选择链接" :close-on-click-modal="false" width="1000px">
+    <el-dialog :visible.sync="modals" title="选择链接" :close-on-click-modal="false" append-to-body width="1000px">
       <div class="table_box">
         <div class="left_box">
           <el-tree
@@ -22,7 +22,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in basicsList"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -36,7 +36,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in userList"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -50,7 +50,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in distributionList"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -66,7 +66,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in coupon"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -81,7 +81,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in basicsList"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -98,7 +98,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in distributionList"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -115,7 +115,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in userList"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -130,7 +130,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in integral"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -144,7 +144,7 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in luckDraw"
                 :key="index"
-                @click="getUrl(item)"
+                v-db-click @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -316,7 +316,7 @@
         </div>
         <div class="right_box" v-if="currenType == 'custom'">
           <!--<div v-if="!tableList.length || customNum==2">-->
-          <!--<el-button type="primary" @click="customList" v-if="tableList.length">自定义列表</el-button>-->
+          <!--<el-button type="primary" v-db-click @click="customList" v-if="tableList.length">自定义列表</el-button>-->
           <div style="width: 340px; margin: 150px 100px 0 120px">
             <el-form ref="customdate" :model="customdate" :rules="ruleValidate" :label-width="100">
               <!--<el-form-item label="链接名称：" prop="name">-->
@@ -353,9 +353,9 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit('customdate')" v-if="currenType == 'custom'">确 定</el-button>
-        <el-button type="primary" @click="ok" v-else>确 定</el-button>
+        <el-button v-db-click @click="cancel">取 消</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('customdate')" v-if="currenType == 'custom'">确 定</el-button>
+        <el-button type="primary" v-db-click @click="ok" v-else>确 定</el-button>
       </span>
     </el-dialog>
   </div>

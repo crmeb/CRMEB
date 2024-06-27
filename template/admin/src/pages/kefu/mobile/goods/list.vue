@@ -7,7 +7,7 @@
           :class="{ on: index == tabCur }"
           v-for="(item, index) in tabList"
           :key="index"
-          @click="bindTab(item)"
+          v-db-click @click="bindTab(item)"
         >
           {{ item.title }}
         </div>
@@ -36,7 +36,7 @@
           </div>
           <div class="right">
             <div class="price">￥{{ item.price }}</div>
-            <div class="btn" @click="bingGoods(item)">推送</div>
+            <div class="btn" v-db-click @click="bingGoods(item)">推送</div>
           </div>
         </div>
         <div class="slot-load" slot="load-deactive"></div>

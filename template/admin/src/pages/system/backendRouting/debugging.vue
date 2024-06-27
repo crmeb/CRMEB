@@ -8,8 +8,8 @@
           </el-select>
         </template>
       </el-input>
-      <el-button class="ml20" type="primary" @click="requestData">请求</el-button>
-      <el-button v-if="codes" class="ml10 copy-btn" type="success" @click="insertCopy()">复制结果</el-button>
+      <el-button class="ml20" type="primary" v-db-click @click="requestData">请求</el-button>
+      <el-button v-if="codes" class="ml10 copy-btn" type="success" v-db-click @click="insertCopy()">复制结果</el-button>
     </div>
     <div class="params">
       <el-tabs class="mt10" v-model="paramsType" @tab-click="changeTab">
@@ -76,14 +76,14 @@
                 type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                @click="insertRow(row, 'xTable')"
+                v-db-click @click="insertRow(row, 'xTable')"
                 >插入</vxe-button
               >
-              <vxe-button type="text" status="primary" @click="removeRow(row, 'xTable')">删除</vxe-button>
+              <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'xTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
-        <el-button class="mt10" type="primary" @click="insertEvent('xTable')">添加参数</el-button>
+        <el-button class="mt10" type="primary" v-db-click @click="insertEvent('xTable')">添加参数</el-button>
       </div>
       <div v-show="paramsType === 'Body'">
         <el-radio-group v-model="bodyType" class="mt10">
@@ -149,17 +149,17 @@
                 type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                @click="insertRow(row, 'yTable')"
+                v-db-click @click="insertRow(row, 'yTable')"
                 >插入</vxe-button
               >
-              <vxe-button type="text" status="primary" @click="removeRow(row, 'yTable')">删除</vxe-button>
+              <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'yTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
         <div v-else>
           <el-input v-model="jsonBody" type="textarea" :rows="8" placeholder="请求数据" />
         </div>
-        <el-button v-if="bodyType == 'form-data'" class="mt10" type="primary" @click="insertEvent('yTable')"
+        <el-button v-if="bodyType == 'form-data'" class="mt10" type="primary" v-db-click @click="insertEvent('yTable')"
           >添加参数</el-button
         >
       </div>
@@ -193,14 +193,14 @@
                 type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                @click="insertRow(row, 'zTable')"
+                v-db-click @click="insertRow(row, 'zTable')"
                 >插入</vxe-button
               >
-              <vxe-button type="text" status="primary" @click="removeRow(row, 'zTable')">删除</vxe-button>
+              <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'zTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
-        <el-button class="mt10" type="primary" @click="insertEvent('zTable')">添加参数</el-button>
+        <el-button class="mt10" type="primary" v-db-click @click="insertEvent('zTable')">添加参数</el-button>
       </div>
     </div>
     <div class="res mt10 mb10" v-if="codes">

@@ -19,7 +19,7 @@
           <el-col :span="24">
             <el-alert class="mb10" type="warning" show-icon :closable="false">
               <span slot="title"
-                >必须前往微信小程序官方后台开通直播权限，关注<span style="color: red; cursor: pointer" @click="codeImg"
+                >必须前往微信小程序官方后台开通直播权限，关注<span style="color: red; cursor: pointer" v-db-click @click="codeImg"
                   >【小程序直播】</span
                 >须知直播状态</span
               >
@@ -57,7 +57,7 @@
           <el-col :span="24">
             <div style="display: flex">
               <el-form-item label="背景图：" prop="name">
-                <div @click="modalPicTap(0)" class="box">
+                <div v-db-click @click="modalPicTap(0)" class="box">
                   <img :src="formValidate.cover_img" alt="" v-if="formValidate.cover_img" />
                   <div class="upload-box acea-row row-center-wrapper" v-else>
                     <i class="el-icon-picture-outline" style="font-size: 24px"></i>
@@ -70,7 +70,7 @@
           <el-col :span="24">
             <div style="display: flex">
               <el-form-item label="分享图：" prop="name">
-                <div @click="modalPicTap(1)" class="box">
+                <div v-db-click @click="modalPicTap(1)" class="box">
                   <img :src="formValidate.share_img" alt="" v-if="formValidate.share_img" />
                   <div class="upload-box acea-row row-center-wrapper" v-else>
                     <i class="el-icon-picture-outline" style="font-size: 24px"></i>
@@ -175,12 +175,12 @@
         </el-row>
         <el-row :gutter="24">
           <el-col v-bind="grid" :span="24">
-            <el-button :loading="loading" type="primary" style="margin-left: 99px" @click="handleSubmit('formItem')">
+            <el-button :loading="loading" type="primary" style="margin-left: 99px" v-db-click @click="handleSubmit('formItem')">
               提交
             </el-button>
             <!-- <el-button
               type="primary"
-              @click="handleSubmit('formItem')"
+              v-db-click @click="handleSubmit('formItem')"
               style="width: 19%; margin-left: 99px"
               >提交</el-button
             > -->

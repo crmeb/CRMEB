@@ -37,7 +37,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="searchList">查询</el-button>
+          <el-button type="primary" v-db-click @click="searchList">查询</el-button>
         </el-form-item>
       </el-form>
       <el-tabs v-model="type" @tab-click="onClickTab">
@@ -74,7 +74,7 @@
               <el-tag size="medium" v-show="scope.row.status === 3">已成功</el-tag>
             </template>
             <template v-else-if="item.slot === 'action'">
-              <a @click="Info(scope.row)">查看详情</a>
+              <a v-db-click @click="Info(scope.row)">查看详情</a>
             </template>
           </template>
         </el-table-column>
@@ -158,7 +158,7 @@ export default {
       tabs: [
         {
           type: '0',
-          label: '活动参与人',
+          label: '发起砍价',
         },
         {
           type: '1',
@@ -182,7 +182,7 @@ export default {
         },
         {
           title: '帮砍人数',
-          key: 'num',
+          key: 'already_num',
         },
         {
           title: '结束时间',

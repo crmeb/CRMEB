@@ -41,7 +41,7 @@
           <!--                        </el-form-item>-->
           <!--                    </el-col>-->
           <el-col :span="24">
-            <el-button type="primary" @click="add">申请模板</el-button>
+            <el-button type="primary" v-db-click @click="add">申请模板</el-button>
           </el-col>
         </el-row>
         <el-row :gutter="24" v-else>

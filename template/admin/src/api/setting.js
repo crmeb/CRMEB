@@ -1178,3 +1178,28 @@ export function menusSearch(data) {
     data,
   });
 }
+
+/**
+ * PC端菜单配置
+ * @param {*} data
+ * @returns
+ */
+export function pcHomeMenusSave(data) {
+  return request({
+    url: `setting/group_data/save_all`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 获取PC端菜单配置
+ * @param {*} data
+ * @returns
+ */
+export function pcHomeMenus(name) {
+  return request({
+    url: `setting/group_data?config_name=${name}`,
+    method: 'get'
+  });
+}

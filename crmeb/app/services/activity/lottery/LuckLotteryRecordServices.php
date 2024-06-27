@@ -213,7 +213,7 @@ class LuckLotteryRecordServices extends BaseServices
 
                         if (sys_config('pay_wechat_type')) {
                             $pay = new Pay('v3_wechat_pay');
-                            $pay->merchantPay($openid, $wechat_order_id, $prize['num'], [
+                            $pay->merchantPay($openid, $wechat_order_id, (string)$prize['num'], [
                                 'type' => $type,
                                 'batch_name' => '抽奖中奖红包',
                                 'batch_remark' => '您于' . date('Y-m-d H:i:s') . '中奖.' . $prize['num'] . '元'

@@ -482,6 +482,16 @@ class LuckLotteryServices extends BaseServices
                 $lotteryRecordServices->receivePrize($uid, (int)$record->id);
             }
             $prize['lottery_record_id'] = $record->id;
+
+            //自定义事件-用户抽奖
+            event('CustomEventListener', ['user_lottery', [
+                'uid' => $uid,
+                'lottery_id' => $prize['lottery_id'],
+                'prize_id' => $prize['id'],
+                'record_id' => $record['id'],
+                'lottery_time' => date('Y-m-d H:i:s'),
+            ]]);
+
             return $prize;
         });
     }

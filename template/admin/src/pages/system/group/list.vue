@@ -36,7 +36,7 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt14">
-      <el-button type="primary" @click="groupAdd('添加数据')" class="mr20">添加数据</el-button>
+      <el-button type="primary" v-db-click @click="groupAdd('添加数据')" class="mr20">添加数据</el-button>
       <el-table
         :data="tabList"
         ref="table"
@@ -70,9 +70,9 @@
               </el-switch>
             </template>
             <template v-else-if="item.slot === 'action'">
-              <a @click="edit(scope.row, '编辑')">编辑</a>
+              <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
               <el-divider direction="vertical"></el-divider>
-              <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+              <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
             </template>
           </template>
         </el-table-column>

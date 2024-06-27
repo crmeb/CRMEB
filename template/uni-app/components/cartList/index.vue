@@ -16,7 +16,8 @@
 					</view>
 					<view class="txtPic">
 						<view class="name line2" :class="(item.attrStatus && item.status)?'':'on'">
-							{{item.productInfo.store_name}}</view>
+							{{item.productInfo.store_name}}
+						</view>
 						<view v-if="item.attrStatus && item.status">
 							<view class="info" v-if="item.productInfo.attrInfo">{{item.productInfo.attrInfo.suk}}</view>
 							<view class="bottom acea-row row-between-wrapper">
@@ -80,7 +81,7 @@
 	.cartList {
 		position: fixed;
 		left: 0;
-		bottom: 0;
+		// bottom: 0;
 		width: 100%;
 		background-color: #fff;
 		z-index: 100;
@@ -89,6 +90,9 @@
 		border-radius: 16rpx 16rpx 0 0;
 		transform: translate3d(0, 100%, 0);
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
+		bottom: 0rpx;
+		bottom: calc(0rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		bottom: calc(0rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
 		&.on {
 			transform: translate3d(0, 0, 0);

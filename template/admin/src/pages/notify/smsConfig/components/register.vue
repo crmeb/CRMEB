@@ -40,15 +40,15 @@
                 prefix="ios-keypad-outline"
                 placeholder="请输入验证码"
               />
-              <el-button :disabled="!canClick" @click="cutDown">{{ cutNUm }}</el-button>
+              <el-button :disabled="!canClick" v-db-click @click="cutDown">{{ cutNUm }}</el-button>
             </div>
           </el-form-item>
           <el-form-item class="maxInpt">
-            <el-button type="primary" long size="large" @click="handleSubmit('formInline')" class="btn">注册</el-button>
+            <el-button type="primary" long size="large" v-db-click @click="handleSubmit('formInline')" class="btn">注册</el-button>
           </el-form-item>
         </el-form>
         <div class="page-account-other">
-          <span @click="changelogo">立即登录</span>
+          <span v-db-click @click="changelogo">立即登录</span>
         </div>
       </div>
     </el-col>

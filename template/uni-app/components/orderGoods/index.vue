@@ -21,7 +21,7 @@
 
 		<view class='goodWrapper'>
 			<view class='' :class="{op:!item.is_valid}" v-for="(item,index) in cartInfo" :key="index"
-				@click="jumpCon(item.product_id)">
+				@click="jumpCon(item)">
 				<view class="item acea-row row-between-wrapper">
 					<view class='pictrue' :class="{gray:!item.is_valid}">
 						<image :src='item.productInfo.attrInfo.image' v-if="item.productInfo.attrInfo"></image>
@@ -73,7 +73,9 @@
 </template>
 
 <script>
+	import { mapGetters } from 'vuex'
 	export default {
+		computed: mapGetters(['uid']),
 		props: {
 			// 订单状态
 			statusType: {
@@ -197,10 +199,20 @@
 					url: "/pages/goods/goods_comment_con/index?unique=" + unique + "&uni=" + orderId
 				})
 			},
-			jumpCon(id) {
+			jumpCon(item) {
 				if (this.jump) {
+					let url = '';
+					if (item.type == 0) {
+						url = `/pages/goods_details/index?id=${item.product_id}`
+					} else if (item.type == 1) {
+						url = `/pages/activity/goods_seckill_details/index?id=${item.seckill_id}`
+					} else if (item.type == 2) {
+						url = `/pages/activity/goods_bargain_details/index?id=${item.bargain_id}&bargain=${this.uid}`
+					} else if (item.type == 3) {
+						url = `/pages/activity/goods_combination_details/index?id=${item.combination_id}`
+					}
 					uni.navigateTo({
-						url: `/pages/goods_details/index?id=${id}`
+						url
 					})
 				} else if (this.jumpDetail) {
 					uni.navigateTo({

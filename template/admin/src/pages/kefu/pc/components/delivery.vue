@@ -91,7 +91,7 @@
               :label="item.title"
             ></el-option>
           </el-select>
-          <el-button style="flex: 1; margin-left: 21px" @click="lookImg">预览</el-button>
+          <el-button style="flex: 1; margin-left: 21px" v-db-click @click="lookImg">预览</el-button>
           <viewer :images="orderTempList" class="viewer" ref="viewer" @inited="inited" style="display: none">
             <img v-for="src in orderTempList" :src="src.pic" :key="src.id" class="image" />
           </viewer>
@@ -137,8 +137,8 @@
         </el-form-item>
       </div>
       <div class="mask-footer">
-        <el-button type="primary" @click="handleSubmit('formValidate')">提交</el-button>
-        <el-button @click="close">取消</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formValidate')">提交</el-button>
+        <el-button v-db-click @click="close">取消</el-button>
       </div>
     </el-form>
   </div>

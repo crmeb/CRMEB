@@ -86,6 +86,7 @@ class StoreCombination extends AuthController
             [['title', 's'], ''],
             [['info', 's'], ''],
             [['unit_name', 's'], ''],
+            ['image', ''],
             ['images', []],
             ['section_time', []],
             [['is_host', 'd'], 0],

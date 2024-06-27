@@ -13,14 +13,14 @@
             <el-input clearable v-model="gradeFrom.title" placeholder="请输入批次名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="mt16">
-      <el-button type="primary" @click="addBatch">添加批次</el-button>
-      <el-button @click="getMemberScan">卡密使用页面二维码</el-button>
+      <el-button type="primary" v-db-click @click="addBatch">添加批次</el-button>
+      <el-button v-db-click @click="getMemberScan">卡密使用页面二维码</el-button>
       <el-table
         class="mt14"
         :data="tbody"
@@ -151,8 +151,8 @@
         </template>
       </el-form>
       <div class="acea-row row-right">
-        <el-button @click="modal = false">取消</el-button>
-        <el-button type="primary" @click="onSubmit()">提交</el-button>
+        <el-button v-db-click @click="modal = false">取消</el-button>
+        <el-button type="primary" v-db-click @click="onSubmit()">提交</el-button>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="cardModal" title="卡列表" width="1000px">
@@ -314,7 +314,7 @@ export default {
       if (this.formValidate.id) {
         memberBatchSetValue(this.formValidate.id, {
           field: 'title',
-          value: this.formValidate.id,
+          value: this.formValidate.title,
           remark: this.formValidate.remark,
         })
           .then((res) => {

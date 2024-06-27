@@ -6,6 +6,7 @@ use app\services\activity\combination\StorePinkServices;
 use app\services\activity\live\LiveGoodsServices;
 use app\services\activity\live\LiveRoomServices;
 use app\services\agent\AgentManageServices;
+use app\services\order\StoreOrderInvoiceServices;
 use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderTakeServices;
 use app\services\product\product\StoreProductServices;
@@ -34,6 +35,8 @@ class CrontabRunServices
         'advanceOff' => '预售商品到期自动下架',
         'productReplay' => '订单商品自动好评',
         'clearPoster' => '清除昨日海报',
+        'autoInvoice' => '自动开具发票以及退款自动冲红',
+        'customTimer' => '自定义定时任务',
     ];
 
     /**
@@ -204,6 +207,41 @@ class CrontabRunServices
             $this->crontabLog(' 执行清除昨日海报');
         } catch (\Throwable $e) {
             $this->crontabLog('清除昨日海报失败,失败原因:' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 执行自动开具/冲红电子发票
+     * @author 吴汐
+     * @email 442384644@qq.com
+     * @date 2023/03/01
+     */
+    public function autoInvoice()
+    {
+        try {
+            $invoiceServices = app()->make(StoreOrderInvoiceServices::class);
+            $invoiceServices->autoInvoice();
+            $invoiceServices->autoInvoiceRed();
+            $this->crontabLog(' 执行自动开具/冲红电子发票');
+        } catch (\Throwable $e) {
+            $this->crontabLog('自动开具/冲红电子发票失败,失败原因:' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 自定义定时器
+     * @param string $customCode
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/6/6
+     */
+    public function customTimer($customCode = '')
+    {
+        try {
+            eval($customCode);
+            $this->crontabLog(' 自定义定时器执行成功');
+        } catch (\Throwable $e) {
+            $this->crontabLog('自定义定时器执行失败,失败原因:' . $e->getMessage());
         }
     }
 }

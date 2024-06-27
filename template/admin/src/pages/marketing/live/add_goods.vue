@@ -19,9 +19,9 @@
               <div class="box">
                 <div class="box-item" v-for="(item, index) in goodsList" :key="index">
                   <img :src="item.image" alt="" />
-                  <i class="el-icon-error" @click="bindDelete(index, item)" style="font-size: 16px;"></i>
+                  <i class="el-icon-error" v-db-click @click="bindDelete(index, item)" style="font-size: 16px;"></i>
                 </div>
-                <div class="upload-box acea-row row-center-wrapper" @click="selectGoods">
+                <div class="upload-box acea-row row-center-wrapper" v-db-click @click="selectGoods">
                   <i class="el-icon-goods" style="font-size: 24px"></i>
                 </div>
               </div>
@@ -30,7 +30,7 @@
         </el-row>
       </el-form>
       <div class="active-btn" v-if="goodsList.length > 0">
-        <el-button type="success" @click="liveGoods">生成直播商品</el-button>
+        <el-button type="success" v-db-click @click="liveGoods">生成直播商品</el-button>
       </div>
       <div class="table-box" v-if="isShowBox">
         <el-table
@@ -66,13 +66,13 @@
           </el-table-column>
           <el-table-column label="操作" fixed="right" width="80">
             <template slot-scope="scope">
-              <a @click="del(scope.row, scope.$index)">删除</a>
+              <a v-db-click @click="del(scope.row, scope.$index)">删除</a>
             </template>
           </el-table-column>
         </el-table>
 
         <div class="sub_btn">
-          <el-button type="primary" style="width: 8%" @click="bindSub" :disabled="disabled" :loading="loadings"
+          <el-button type="primary" style="width: 8%" v-db-click @click="bindSub" :disabled="disabled" :loading="loadings"
             >提交</el-button
           >
         </div>

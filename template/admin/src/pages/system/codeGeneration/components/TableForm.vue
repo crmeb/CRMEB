@@ -12,7 +12,7 @@
       </template>
     </el-alert>
     <div class="df mb14">
-      <el-button class="mr20" type="primary" @click="addRow">添加一行</el-button>
+      <el-button class="mr20" type="primary" v-db-click @click="addRow">添加一行</el-button>
       <el-checkbox class="mr10" v-model="isCreate" @change="addCreate">添加与修改时间</el-checkbox>
       <el-checkbox class="mr10" v-model="isDelete" @change="addDelete">伪删除</el-checkbox>
     </div>
@@ -70,7 +70,7 @@
                   :label="item.name"
                 ></el-option>
               </el-select>
-              <i class="el-icon-edit create" @click="eidtOptions(scope.$index)" />
+              <!-- <i class="el-icon-edit create" v-db-click @click="eidtOptions(scope.$index)" /> -->
             </div>
             <div v-else>--</div>
           </template>
@@ -205,7 +205,7 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-            <a v-if="!scope.row.primaryKey && !disabledInput(scope.$index)" @click="del(row, scope.$index)">删除</a>
+            <a v-if="!scope.row.primaryKey && !disabledInput(scope.$index)" v-db-click @click="del(row, scope.$index)">删除</a>
             <span v-else>--</span>
           </template>
         </el-table-column>
@@ -237,16 +237,16 @@
                 v-if="index == optionsList.length - 1"
                 class="el-icon-circle-plus-outline add"
                 title="新增"
-                @click="addOneOptions"
+                v-db-click @click="addOneOptions"
               />
-              <i v-if="index > 0" class="el-icon-remove-outline delete" title="删除" @click="delOneOptions(index)" />
+              <i v-if="index > 0" class="el-icon-remove-outline delete" title="删除" v-db-click @click="delOneOptions(index)" />
             </div>
           </div>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="optionsModal = false">取 消</el-button>
-        <el-button type="primary" @click="addOptions">确 定</el-button>
+        <el-button v-db-click @click="optionsModal = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="addOptions">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -262,6 +262,7 @@ import {
   crudAssociationTableName,
   crudDataDictionaryList,
   saveCrudDataDictionaryList,
+  getDataDictionaryList
 } from '@/api/systemCodeGeneration';
 import Sortable from 'sortablejs';
 export default {
@@ -589,8 +590,8 @@ export default {
       });
     },
     getCrudDataDictionary() {
-      crudDataDictionary().then((res) => {
-        this.dictionaryList = res.data;
+      getDataDictionaryList().then((res) => {
+        this.dictionaryList = res.data.list;
       });
     },
     getCrudAssociationTableName(name) {

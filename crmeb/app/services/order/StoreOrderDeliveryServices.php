@@ -489,9 +489,22 @@ class StoreOrderDeliveryServices extends BaseServices
             $data['delivery_id'] = uniqid();
         }
         // 小程序订单管理
-        event('OrderShipping', ['product', $orderInfo, $type, $data['delivery_id'], $data['delivery_name']]);
+        event('OrderShippingListener', ['product', $orderInfo, $type, $data['delivery_id'], $data['delivery_name']]);
         //到期自动收货
         event('OrderDeliveryListener', [$orderInfo, $storeName, $data, $type]);
+
+        //自定义事件-订单发货
+        event('CustomEventListener', ['admin_order_express', [
+            'uid' => $orderInfo['uid'],
+            'real_name' => $orderInfo['real_name'],
+            'user_phone' => $orderInfo['user_phone'],
+            'user_address' => $orderInfo['user_address'],
+            'order_id' => $orderInfo['order_id'],
+            'delivery_name' => $orderInfo['delivery_name'],
+            'delivery_id' => $orderInfo['delivery_id'],
+            'express_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return $res;
     }
 

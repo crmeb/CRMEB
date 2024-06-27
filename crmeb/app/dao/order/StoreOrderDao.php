@@ -915,7 +915,7 @@ class StoreOrderDao extends BaseDao
      */
     public function seckillPeople($id, $keyword, $page = 0, $limit = 0)
     {
-        return $this->getModel()->where('paid', 1)->whereIn('refund_type', [0, 3])->where('is_del', 0)
+        return $this->getModel()->where('paid', 1)->where('pid', '<>', -1)->whereIn('refund_type', [0, 3])->where('is_del', 0)
             ->when($id != 0, function ($query) use ($id) {
                 $query->where('seckill_id', $id);
             })->when($keyword != '', function ($query) use ($keyword) {
@@ -1014,7 +1014,7 @@ class StoreOrderDao extends BaseDao
      */
     public function combinationStatisticsOrder($id, $where, $page = 0, $limit = 0)
     {
-        return $this->search($where)->where('combination_id', $id)
+        return $this->search($where)->where('combination_id', $id)->where('pid', '<>', -1)
             ->when($page && $limit, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })->field(['uid', 'order_id', 'real_name', 'status', 'pay_price', 'total_num', 'add_time', 'pay_time', 'paid'])->order('add_time desc')->select()->toArray();

@@ -186,7 +186,7 @@ export default {
 			}
 		}
 	},
-	mounted: function () {
+	mounted () {
 		if (this.loadMake) {
 			if (!this._empty(this.val)) {
 				setTimeout(() => {

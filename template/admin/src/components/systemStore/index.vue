@@ -85,7 +85,7 @@
             <el-col :span="24">
               <el-col v-bind="grid">
                 <el-form-item label="提货点logo：" prop="image">
-                  <div class="picBox" @click="modalPicTap('单选', 'logo')">
+                  <div class="picBox" v-db-click @click="modalPicTap('单选', 'logo')">
                     <div class="pictrue" v-if="formItem.image">
                       <img v-lazy="formItem.image" />
                     </div>
@@ -99,7 +99,7 @@
             <el-col :span="24">
               <el-col v-bind="grid">
                 <el-form-item label="提货点大图：" prop="oblong_image">
-                  <div class="picBox" @click="modalPicTap('单选', 'oblong')">
+                  <div class="picBox" v-db-click @click="modalPicTap('单选', 'oblong')">
                     <div class="pictrue" v-if="formItem.oblong_image">
                       <img v-lazy="formItem.oblong_image" />
                     </div>
@@ -115,7 +115,7 @@
                 <el-form-item label="经纬度：" label-for="status2" prop="latlng">
                   <el-tooltip>
                     <el-input v-model="formItem.latlng" style="width: 100%" placeholder="请查找位置">
-                      <el-button type="primary" slot="append" @click="onSearch">查找位置</el-button>
+                      <el-button type="primary" slot="append" v-db-click @click="onSearch">查找位置</el-button>
                     </el-input>
                     <div slot="content">请点击查找位置选择位置</div>
                   </el-tooltip>
@@ -125,7 +125,7 @@
           </el-row>
           <!-- <el-row>
               <div class="btn">
-                <el-button type="primary" long @click="handleSubmit('formItem')">{{
+                <el-button type="primary" long v-db-click @click="handleSubmit('formItem')">{{
                   formItem.id ? '修改' : '提交'
                 }}</el-button>
               </div>
@@ -149,7 +149,7 @@
         </el-dialog>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" long @click="handleSubmit('formItem')">{{ formItem.id ? '修改' : '提交' }}</el-button>
+        <el-button type="primary" long v-db-click @click="handleSubmit('formItem')">{{ formItem.id ? '修改' : '提交' }}</el-button>
       </span>
     </el-dialog>
     <el-dialog :visible.sync="modalMap" title="请选择地址" append-to-body :close-on-click-modal="false" width="720px" class="mapBox">

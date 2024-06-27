@@ -9,9 +9,9 @@
           v-if="defaults.goodsList.list.length"
         >
           <img :src="goods.image" alt="" />
-          <span class="iconfont-diy icondel_1" @click.stop="bindDelete(index)"></span>
+          <span class="iconfont-diy icondel_1" v-db-click @click.stop="bindDelete(index)"></span>
         </div>
-        <div class="add-item item" @click="modals = true">
+        <div class="add-item item" v-db-click @click="modals = true">
           <span class="iconfont-diy iconaddto"></span>
         </div>
       </draggable>

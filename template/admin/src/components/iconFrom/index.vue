@@ -13,7 +13,7 @@
         <div class="trees">
           <ul class="list-inline">
             <li class="icons-item" v-for="(item, i) in iconVal ? searchData : list" :key="i">
-              <i :class="'el-icon-' + item" class="f-s-24" @click="iconChange(item)"></i>
+              <i :class="'el-icon-' + item" class="f-s-24" v-db-click @click="iconChange(item)"></i>
             </li>
           </ul>
         </div>

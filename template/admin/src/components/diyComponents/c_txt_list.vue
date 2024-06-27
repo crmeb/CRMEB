@@ -14,7 +14,7 @@
                   <span>{{ list.title }}</span>
                 </el-col>
                 <el-col class="slider-box">
-                  <div class="input-box" @click="getLink(index, key)">
+                  <div class="input-box" v-db-click @click="getLink(index, key)">
                     <el-input
                       v-model="list.val"
                       :placeholder="list.pla"
@@ -47,14 +47,14 @@
               </el-select>
             </div>
           </div>
-          <div class="delete" @click.stop="bindDelete(index)" v-if="datas[name].max > 1">
+          <div class="delete" v-db-click @click.stop="bindDelete(index)" v-if="datas[name].max > 1">
             <i class="el-icon-circle-close" style="font-size: 24px;"></i>
           </div>
         </div>
       </draggable>
     </div>
     <div v-if="datas[name]">
-      <div class="add-btn" @click="addHotTxt" v-if="datas[name].list.length < datas[name].max">
+      <div class="add-btn" v-db-click @click="addHotTxt" v-if="datas[name].list.length < datas[name].max">
         <el-button type="primary" ghost style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
           >添加模块</el-button
         >

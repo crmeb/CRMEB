@@ -12,22 +12,22 @@
         <img v-lazy="kefuInfo.avatar" alt="" />
         <span>{{ kefuInfo.nickname }}</span>
         <div class="status-box">
-          <div class="status" :class="online ? 'on' : 'off'" @click.stop="setOnline">
+          <div class="status" :class="online ? 'on' : 'off'" v-db-click @click.stop="setOnline">
             <span class="dot"></span>
             {{ online ? '在线' : '下线' }}
           </div>
 
           <div class="online-down" v-show="isOnline">
-            <div class="item" @click.stop="changeOnline(1)">
+            <div class="item" v-db-click @click.stop="changeOnline(1)">
               <span class="iconfont iconduihao" v-if="online"></span><i class="green"></i>在线
             </div>
-            <div class="item" @click.stop="changeOnline(0)">
+            <div class="item" v-db-click @click.stop="changeOnline(0)">
               <span class="iconfont iconduihao" v-if="!online"></span><i></i>下线
             </div>
           </div>
         </div>
       </div>
-      <div class="out-btn" @click.stop="outLogin">退出登录</div>
+      <div class="out-btn" v-db-click @click.stop="outLogin">退出登录</div>
     </div>
     <div class="right-menu">
       <div
@@ -35,7 +35,7 @@
         :class="{ on: index == curIndex }"
         v-for="(item, index) in menuList"
         :key="index"
-        @click.stop="selectTab(item)"
+        v-db-click @click.stop="selectTab(item)"
       >
         {{ item.title }}
       </div>

@@ -10,73 +10,74 @@
 /**
  * diy自定义组件
  * */
+const getDefaultState = () => ({
+  configName: '',
+  pageTitle: '',
+  pageName: '',
+  pageShow: 1,
+  pageColor: 0,
+  pagePic: 0,
+  pageColorPicker: '#f5f5f5',
+  pageTabVal: 0,
+  pagePicUrl: '',
+  // 已知组件列表默认数据 数组
+  defaultArray: {},
+  pageFooter: {
+    name: 'pageFoot',
+    setUp: {
+      tabVal: 0,
+    },
+    status: {
+      title: '是否自定义',
+      name: 'status',
+      status: false,
+    },
+    txtColor: {
+      title: '文字颜色',
+      name: 'txtColor',
+      default: [{ item: '#282828' }],
+      color: [{ item: '#282828' }],
+    },
+    activeTxtColor: {
+      title: '选中文字颜色',
+      name: 'txtColor',
+      default: [{ item: '#F62C2C' }],
+      color: [{ item: '#F62C2C' }],
+    },
+    bgColor: {
+      title: '背景颜色',
+      name: 'bgColor',
+      default: [{ item: '#fff' }],
+      color: [{ item: '#fff' }],
+    },
+
+    menuList: [
+      {
+        imgList: [require('@/assets/images/foot-001.png'), require('@/assets/images/foot-002.png')],
+        name: '首页',
+        link: '/pages/index/index',
+      },
+      {
+        imgList: [require('@/assets/images/foot-003.png'), require('@/assets/images/foot-004.png')],
+        name: '分类',
+        link: '/pages/goods_cate/goods_cate',
+      },
+      {
+        imgList: [require('@/assets/images/foot-005.png'), require('@/assets/images/foot-006.png')],
+        name: '购物车',
+        link: '/pages/order_addcart/order_addcart',
+      },
+      {
+        imgList: [require('@/assets/images/foot-007.png'), require('@/assets/images/foot-008.png')],
+        name: '我的',
+        link: '/pages/user/index',
+      },
+    ],
+  },
+});
 export default {
   namespaced: true,
-  state: {
-    configName: '',
-    pageTitle: '',
-    pageName: '',
-    pageShow: 1,
-    pageColor: 0,
-    pagePic: 0,
-    pageColorPicker: '#f5f5f5',
-    pageTabVal: 0,
-    pagePicUrl: '',
-    // 已知组件列表默认数据 数组
-    defaultArray: {},
-    pageFooter: {
-      name: 'pageFoot',
-      setUp: {
-        tabVal: 0,
-      },
-      status: {
-        title: '是否自定义',
-        name: 'status',
-        status: false,
-      },
-      txtColor: {
-        title: '文字颜色',
-        name: 'txtColor',
-        default: [{ item: '#282828' }],
-        color: [{ item: '#282828' }],
-      },
-      activeTxtColor: {
-        title: '选中文字颜色',
-        name: 'txtColor',
-        default: [{ item: '#F62C2C' }],
-        color: [{ item: '#F62C2C' }],
-      },
-      bgColor: {
-        title: '背景颜色',
-        name: 'bgColor',
-        default: [{ item: '#fff' }],
-        color: [{ item: '#fff' }],
-      },
-
-      menuList: [
-        {
-          imgList: [require('@/assets/images/foot-001.png'), require('@/assets/images/foot-002.png')],
-          name: '首页',
-          link: '/pages/index/index',
-        },
-        {
-          imgList: [require('@/assets/images/foot-003.png'), require('@/assets/images/foot-004.png')],
-          name: '分类',
-          link: '/pages/goods_cate/goods_cate',
-        },
-        {
-          imgList: [require('@/assets/images/foot-005.png'), require('@/assets/images/foot-006.png')],
-          name: '购物车',
-          link: '/pages/order_addcart/order_addcart',
-        },
-        {
-          imgList: [require('@/assets/images/foot-007.png'), require('@/assets/images/foot-008.png')],
-          name: '我的',
-          link: '/pages/user/index',
-        },
-      ],
-    },
-  },
+  state: getDefaultState(),
   mutations: {
     FOOTER(state, data) {
       state.pageFooter.status.title = data.title;
@@ -270,8 +271,15 @@ export default {
     picurlUpdata(state, data) {
       state.pagePicUrl = data;
     },
+
+    RESETSTATE(state, data) {
+      Object.assign(state, getDefaultState());
+    },
   },
   actions: {
     getData({ commit }, data) {},
+    resetState({ commit }) {
+      commit('RESETSTATE');
+    },
   },
 };

@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\dao\product\product;
 
@@ -106,6 +106,7 @@ class StoreProductReplyStoreProductDao extends BaseDao
         if ($where['product_id']) $model = $model->where('r.product_id', $where['product_id']);
         if ($where['store_name']) $model = $model->where('p.store_name|r.product_id', 'Like', '%' . $where['store_name'] . '%');
         if ($where['account']) $model = $model->where('r.nickname', 'LIKE', '%' . $where['account'] . '%');
+        if ($where['status'] !== '') $model = $model->where('status', $where['status']);
         if ($where['key'] != '') {
             $model = $model->order($where['key'], $where['order']);
         } else {

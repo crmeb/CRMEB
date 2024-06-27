@@ -88,7 +88,7 @@
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
             <template v-if="scope.row.is_show_log">
-              <a @click="deliveryLook(scope.row)">查看</a>
+              <a v-db-click @click="deliveryLook(scope.row)">查看</a>
               <el-divider direction="vertical"></el-divider>
             </template>
             <template>

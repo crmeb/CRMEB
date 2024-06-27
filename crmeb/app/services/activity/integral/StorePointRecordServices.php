@@ -190,7 +190,7 @@ class StorePointRecordServices extends BaseServices
             $list[] = [
                 'name' => $item['name'],
                 'value' => $item['value'],
-                'percent' => $count != 0 ? bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 2) : 0,
+                'percent' => $count != 0 ? round(bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 2), 1) : 0,
             ];
         }
         array_multisort(array_column($list, 'value'), SORT_DESC, $list);
@@ -222,7 +222,7 @@ class StorePointRecordServices extends BaseServices
             $list[] = [
                 'name' => $item['name'],
                 'value' => $item['value'],
-                'percent' => $count != 0 ? bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 2) : 0,
+                'percent' => $count != 0 ? round(bcmul((string)bcdiv((string)$item['value'], (string)$count, 4), '100', 2), 1) : 0,
             ];
         }
         array_multisort(array_column($list, 'value'), SORT_DESC, $list);

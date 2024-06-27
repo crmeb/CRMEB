@@ -15,7 +15,7 @@
         class="line1"
         style="text-align: left"
         v-text="orderInfo.remark ? orderInfo.remark : '订单未备注，点击添加备注信息'"
-        @click="modify(1)"
+        v-db-click @click="modify(1)"
       />
     </div>
     <div class="orderingUser acea-row row-middle">
@@ -59,7 +59,7 @@
         <div>订单编号：</div>
         <div class="conter acea-row row-middle row-right">
           {{ orderInfo.order_id }}
-          <span class="copy copy-data" @click="copyText(orderInfo.order_id)">复制</span>
+          <span class="copy copy-data" v-db-click @click="copyText(orderInfo.order_id)">复制</span>
         </div>
       </div>
       <div class="item acea-row row-between">
@@ -115,17 +115,17 @@
         <div v-if="orderInfo.delivery_type === 'express'">快递单号：</div>
         <div v-if="orderInfo.delivery_type === 'send'">送货人电话：</div>
         <div class="conter">
-          {{ orderInfo.delivery_id }}<span class="copy copy-data" @click="copyText(orderInfo.delivery_id)">复制</span>
+          {{ orderInfo.delivery_id }}<span class="copy copy-data" v-db-click @click="copyText(orderInfo.delivery_id)">复制</span>
         </div>
       </div>
     </div>
     <div style="height: 1.2rem"></div>
     <div class="footer acea-row row-right row-middle" v-if="$route.params.goname != 'looks'">
       <div class="more"></div>
-      <div class="bnt cancel" @click="modify(0)" v-if="types === 0">一键改价</div>
-      <div class="bnt cancel" @click="modify(0)" v-if="types === -1">立即退款</div>
-      <div class="bnt cancel" @click="modify(1)">订单备注</div>
-      <div class="bnt cancel" v-if="orderInfo.pay_type === 'offline' && orderInfo.paid === 0" @click="offlinePay">
+      <div class="bnt cancel" v-db-click @click="modify(0)" v-if="types === 0">一键改价</div>
+      <div class="bnt cancel" v-db-click @click="modify(0)" v-if="types === -1">立即退款</div>
+      <div class="bnt cancel" v-db-click @click="modify(1)">订单备注</div>
+      <div class="bnt cancel" v-if="orderInfo.pay_type === 'offline' && orderInfo.paid === 0" v-db-click @click="offlinePay">
         确认付款
       </div>
       <router-link

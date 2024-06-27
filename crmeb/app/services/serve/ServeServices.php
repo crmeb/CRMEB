@@ -16,6 +16,7 @@ use app\services\BaseServices;
 use crmeb\services\copyproduct\CopyProduct;
 use crmeb\services\express\Express;
 use crmeb\services\FormBuilder;
+use crmeb\services\invoice\Invoice;
 use crmeb\services\printer\Printer;
 use crmeb\services\serve\Serve;
 use crmeb\services\sms\Sms;
@@ -130,6 +131,16 @@ class ServeServices extends BaseServices
     public function user(array $config = [])
     {
         return app()->make(Serve::class, [$this->getConfig($config)]);
+    }
+
+    /**
+     * 电子发票
+     * @param array $config
+     * @return Serve
+     */
+    public function invoice(array $config = [])
+    {
+        return app()->make(Invoice::class, [$this->getConfig($config)]);
     }
 
     /**

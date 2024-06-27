@@ -22,7 +22,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -40,7 +40,7 @@
         <router-link v-auth="['product-product-save']" :to="$routeProStr + '/product/add_product'"
           ><el-button type="primary" class="mr14">添加商品</el-button></router-link
         >
-        <el-button v-auth="['product-crawl-save']" type="success" class="mr14" @click="onCopy">商品采集</el-button>
+        <el-button v-auth="['product-crawl-save']" type="success" class="mr14" v-db-click @click="onCopy">商品采集</el-button>
         <el-dropdown class="bnt mr14" @command="batchSelect">
           <el-button>批量修改<i class="el-icon-arrow-down el-icon--right"></i></el-button>
           <el-dropdown-menu slot="dropdown">
@@ -52,13 +52,13 @@
             <el-dropdown-item :command="6">活动推荐</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <el-button v-auth="['product-product-product_show']" @click="onDismount" v-show="artFrom.type === '1'"
+        <el-button v-auth="['product-product-product_show']" v-db-click @click="onDismount" v-show="artFrom.type === '1'"
           >批量下架</el-button
         >
-        <el-button v-auth="['product-product-product_show']" @click="onShelves" v-show="artFrom.type === '2'"
+        <el-button v-auth="['product-product-product_show']" v-db-click @click="onShelves" v-show="artFrom.type === '2'"
           >批量上架</el-button
         >
-        <el-button v-auth="['export-storeProduct']" class="export" @click="exports">导出</el-button>
+        <el-button v-auth="['export-storeProduct']" class="export" v-db-click @click="exports">导出</el-button>
       </div>
       <el-table
         ref="table"
@@ -137,9 +137,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" minWidth="100">
           <template slot-scope="scope">
-            <!-- <a @click="look(scope.row)">查看</a>
+            <!-- <a v-db-click @click="look(scope.row)">查看</a>
             <el-divider direction="vertical"></el-divider> -->
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <el-dropdown size="small">
               <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
@@ -149,10 +149,10 @@
                     ><a>查看评论</a></router-link
                   >
                 </el-dropdown-item>
-                <el-dropdown-item v-if="artFrom.type === '6'" @click.native="del(scope.row, '恢复商品', scope.$index)"
+                <el-dropdown-item v-if="artFrom.type === '6'" v-db-click @click.native="del(scope.row, '恢复商品', scope.$index)"
                   >恢复商品</el-dropdown-item
                 >
-                <el-dropdown-item v-else @click.native="del(scope.row, '移入回收站', scope.$index)"
+                <el-dropdown-item v-else v-db-click @click.native="del(scope.row, '移入回收站', scope.$index)"
                   >移到回收站</el-dropdown-item
                 >
               </el-dropdown-menu>
@@ -273,11 +273,11 @@
                   item.title
                 }}</el-tag>
               </div>
-              <el-button type="primary" @click="addCoupon">添加优惠券</el-button>
+              <el-button type="primary" v-db-click @click="addCoupon">添加优惠券</el-button>
             </el-form-item>
             <el-form-item label="关联标签：" prop="label_id" v-if="batchType == 5">
               <div class="acea-row label_width">
-                <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
+                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
                   <div style="width: 90%">
                     <div v-if="dataLabel.length">
                       <el-tag closable v-for="(item, index) in dataLabel" @close="closeLabel(item)" :key="index">{{
@@ -303,8 +303,8 @@
         </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="clearBatchData">取 消</el-button>
-        <el-button type="primary" @click="batchSub">确 定</el-button>
+        <el-button v-db-click @click="clearBatchData">取 消</el-button>
+        <el-button type="primary" v-db-click @click="batchSub">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 用户标签 -->
@@ -319,7 +319,7 @@
     </el-dialog>
     <!-- 商品弹窗 -->
     <div v-if="isProductBox">
-      <div class="bg" @click="isProductBox = false"></div>
+      <div class="bg" v-db-click @click="isProductBox = false"></div>
       <goodsDetail :goodsId="goodsId"></goodsDetail>
     </div>
     <coupon-list ref="couponTemplates" @nameId="nameId" :couponids="batchFormData.coupon_ids"></coupon-list>

@@ -299,9 +299,9 @@ class StoreProduct extends AuthController
             ['is_live', 0],
             ['is_new', ''],
             ['is_virtual', -1],
-            ['is_presale', -1]
+            ['is_presale', -1],
+            ['is_show', 1],
         ]);
-        $where['is_show'] = 1;
         $where['is_del'] = 0;
         $where['cate_id'] = stringToIntArray($where['cate_id']);
         /** @var StoreCategoryServices $storeCategoryServices */

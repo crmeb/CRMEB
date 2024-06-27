@@ -125,3 +125,44 @@ export function crudSaveFile(id, data) {
     data,
   });
 }
+
+/**
+ * @description 获取数据字典列表
+ */
+export function getDataDictionaryList(data) {
+  return request({
+    url: `/system/crud/data_dictionary_list`,
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * @description 获取数据字典添加修改表单
+ */
+export function getDataDictionaryForm(id) {
+  return request({
+    url: `/system/crud/data_dictionary_list/create/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 查看数据字典内容列表
+ */
+export function getDataDictionaryInfoList(data) {
+  return request({
+    url: `/system/crud/data_dictionary/info_list/${data.id}`,
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 查看数据字典内容
+ */
+export function getDataDictionaryInfo(cid, id, pid) {
+  return request({
+    url: `/system/crud/data_dictionary/info_create/${cid}/${id}/${pid}`,
+    method: 'get',
+  });
+}

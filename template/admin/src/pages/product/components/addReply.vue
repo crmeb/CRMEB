@@ -8,22 +8,22 @@
   >
     <el-form :model="formData" label-width="100px" label-position="right">
       <el-form-item label="商品：">
-        <div class="upload-box" @click="callGoods">
+        <div class="upload-box" v-db-click @click="callGoods">
           <img v-if="goods.id" :src="goods.image" class="image" />
           <i v-else class="el-icon-goods"></i>
         </div>
       </el-form-item>
       <el-form-item v-if="goods.id" label="商品规格：">
-        <div class="upload-box" @click="callAttr">
+        <div class="upload-box" v-db-click @click="callAttr">
           <img v-if="attr.image" :src="attr.image" class="image" />
           <i v-else class="el-icon-plus" />
         </div>
         <div>{{ attr.suk }}</div>
       </el-form-item>
       <el-form-item label="用户头像：">
-        <div class="upload-box" @click="callPicture('单选')">
+        <div class="upload-box" v-db-click @click="callPicture('单选')">
           <img v-if="avatar.att_dir" :src="avatar.att_dir" class="image" />
-          <i v-if="avatar.att_dir" class="el-icon-error btn" @click.stop="removeUser"></i>
+          <i v-if="avatar.att_dir" class="el-icon-error btn" v-db-click @click.stop="removeUser"></i>
           <i v-else class="el-icon-user" />
         </div>
       </el-form-item>
@@ -43,9 +43,9 @@
         <div class="df-aic">
           <div v-for="item in picture" :key="item.att_id" class="upload-box">
             <img :src="item.att_dir" class="image" />
-            <i class="el-icon-error btn" @click.stop="removePicture(item.att_id)"></i>
+            <i class="el-icon-error btn" v-db-click @click.stop="removePicture(item.att_id)"></i>
           </div>
-          <div v-if="picture.length < 8" class="upload-box" @click="callPicture('多选')">
+          <div v-if="picture.length < 8" class="upload-box" v-db-click @click="callPicture('多选')">
             <i class="el-icon-picture-outline"></i>
           </div>
         </div>
@@ -64,8 +64,8 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="onCancel">取 消</el-button>
-      <el-button type="primary" @click="onOk">确 定</el-button>
+      <el-button v-db-click @click="onCancel">取 消</el-button>
+      <el-button type="primary" v-db-click @click="onOk">确 定</el-button>
     </span>
   </el-dialog>
 </template>

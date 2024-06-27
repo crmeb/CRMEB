@@ -54,7 +54,7 @@ class StoreProductReplyDao extends BaseDao
      */
     public function getProductReply(int $productId)
     {
-        return $this->search(['product_id' => $productId, 'is_del' => 0])
+        return $this->search(['product_id' => $productId, 'is_del' => 0, 'status' => 1])
             ->with(['cartInfo', 'userInfo'])
             ->order('add_time DESC,product_score DESC,service_score DESC,add_time DESC')
             ->find();
@@ -68,7 +68,7 @@ class StoreProductReplyDao extends BaseDao
      */
     public function replyWhere(int $id, int $type = 0)
     {
-        return $this->search(['product_id' => $id, 'is_del' => 0])
+        return $this->search(['product_id' => $id, 'is_del' => 0, 'status' => 1])
             ->when($type == 1, function ($query) {
                 $query->where('product_score', 5)->where('service_score', 5);
             })->when($type == 2, function ($query) {

@@ -1,7 +1,7 @@
 <script>
 import { checkLogin } from './libs/login';
 import { HTTP_REQUEST_URL, SYSTEM_VERSION } from './config/app';
-import { getShopConfig, silenceAuth, getSystemVersion, basicConfig } from '@/api/public';
+import { getShopConfig, silenceAuth, getSystemVersion, basicConfig, remoteRegister } from '@/api/public';
 import Auth from '@/libs/wechat.js';
 import Routine from './libs/routine.js';
 import { silenceBindingSpread } from '@/utils';
@@ -11,6 +11,7 @@ import { mapGetters } from 'vuex';
 import colors from '@/mixins/color.js';
 import Cache from '@/utils/cache';
 import themeList from '@/utils/theme';
+import { debug } from 'util';
 
 export default {
 	globalData: {
@@ -69,7 +70,6 @@ export default {
 		// #ifdef MP
 		if (queryData.query.scene) {
 			let param = this.$util.getUrlParams(decodeURIComponent(queryData.query.scene));
-			console.log(param, 'param');
 			if (param.pid) {
 				this.$Cache.set('spread', param.pid);
 				this.globalData.spid = param.pid;
@@ -101,16 +101,19 @@ export default {
 	async onLaunch(option) {
 		uni.hideTabBar();
 		let that = this;
+		basicConfig().then((res) => {
+			uni.setStorageSync('BASIC_CONFIG', res.data);
+		});
 		// #ifdef H5
 		if (option.query.hasOwnProperty('mdType') && option.query.mdType == 'iframeWindow') {
 			this.globalData.isIframe = true;
 		} else {
 			this.globalData.isIframe = false;
 		}
+		if (!this.isLogin && option.query.hasOwnProperty('remote_token')) {
+				this.remoteRegister(option.query.remote_token);
+		}
 		// #endif
-		basicConfig().then((res) => {
-			uni.setStorageSync('BASIC_CONFIG', res.data);
-		});
 		colorChange('color_change').then((res) => {
 			uni.setStorageSync('is_diy', res.data.is_diy);
 			uni.$emit('is_diy', res.data.is_diy);
@@ -256,10 +259,10 @@ export default {
 		});
 		// #ifdef MP
 		getSystemVersion().then((res) => {
-			if (res.data.version_code < SYSTEM_VERSION) {
+			if (res.data.version_code != SYSTEM_VERSION) {
 				uni.showModal({
-					title: '提示',
-					content: '请重新打包并上传小程序',
+					title: '警告',
+					content: '前后端版本不一致！',
 					success: function (res) {
 						if (res.confirm) {
 						}
@@ -275,6 +278,21 @@ export default {
 	},
 	// #endif
 	methods: {
+		remoteRegister(remote_token) {
+			remoteRegister({ remote_token }).then((res) => {
+				let data = res.data;
+				if (data.get_remote_login_url) {
+					location.href = data.get_remote_login_url
+				} else {
+					this.$store.commit('LOGIN', {
+						token: data.token,
+						time: data.expires_time - this.$Cache.time()
+					});
+					this.$store.commit('SETUID', data.userInfo.uid);
+					location.reload();
+				}
+			});
+		}
 		// 小程序静默授权
 		// silenceAuth(code) {
 		// 	let that = this;

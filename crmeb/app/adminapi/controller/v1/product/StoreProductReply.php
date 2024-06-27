@@ -41,7 +41,8 @@ class StoreProductReply extends AuthController
             ['data', ''],
             ['product_id', 0],
             ['key', ''],
-            ['order', '']
+            ['order', ''],
+            ['status', ''],
         ]);
         $list = $this->services->sysPage($where);
         return app('json')->success($list);
@@ -109,5 +110,20 @@ class StoreProductReply extends AuthController
         $this->validate(['product_id' => $data['product_id'], 'nickname' => $data['nickname'], 'avatar' => $data['avatar'], 'comment' => $data['comment'], 'product_score' => $data['product_score'], 'service_score' => $data['service_score']], \app\adminapi\validate\product\StoreProductReplyValidate::class, 'save');
         $this->services->saveReply($data);
         return app('json')->success(100000);
+    }
+
+    /**
+     * 商品评论审核
+     * @param $id
+     * @param $status
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/4/22
+     */
+    public function set_status($id, $status)
+    {
+        $this->services->update($id, ['status' => $status]);
+        return app('json')->success($status == 1 ? '审核通过' : '拒绝成功');
     }
 }

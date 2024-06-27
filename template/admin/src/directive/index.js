@@ -25,6 +25,7 @@ const importDirective = (Vue) => {
   Vue.directive('auth', directive.auth);
 
   Vue.directive('permission', directive.permission);
+  Vue.directive('dbClick', directive.dbClick);
 };
 
 export default importDirective;

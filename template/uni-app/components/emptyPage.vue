@@ -29,7 +29,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		margin-top: 200rpx;
+		padding-top: 200rpx;
 		image{
 			width: 414rpx;
 			height: 240rpx;

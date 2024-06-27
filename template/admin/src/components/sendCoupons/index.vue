@@ -9,7 +9,7 @@
           placeholder="请输入优惠券名称"
           class="form_content_width"
         />
-        <el-button type="primary" @click="userSearchs" class="ml15">查询</el-button>
+        <el-button type="primary" v-db-click @click="userSearchs" class="ml15">查询</el-button>
       </div>
       <el-table
         :data="couponList"
@@ -43,7 +43,7 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="90">
           <template slot-scope="scope">
-            <a @click="sendGrant(scope.row, '发送优惠券', index)">发送</a>
+            <a v-db-click @click="sendGrant(scope.row, '发送优惠券', index)">发送</a>
           </template>
         </el-table-column>
       </el-table>

@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace crmeb\command;
 
+use app\services\system\crontab\SystemCrontabServices;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
@@ -62,7 +63,7 @@ class Timer extends Command
         date_default_timezone_set('PRC');
         $task->count = 1;
         $task->onWorkerStart = function () {
-            event('CrontabListener');
+            app()->make(SystemCrontabServices::class)->crontabCommandRun();
         };
         $task->runAll();
     }

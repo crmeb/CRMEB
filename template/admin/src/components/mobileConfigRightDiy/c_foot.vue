@@ -8,7 +8,7 @@
         </div>
         <div class="right-wrapper">
           <div class="img-wrapper">
-            <div class="img-item" v-for="(img, j) in item.imgList" @click="modalPicTap(index, j)">
+            <div class="img-item" v-for="(img, j) in item.imgList" v-db-click @click="modalPicTap(index, j)">
               <img :src="img" alt="" v-if="img" />
               <p class="txt" v-if="img">{{ j == 0 ? '选中' : '未选中' }}</p>
               <div class="empty-img" v-else>
@@ -26,18 +26,18 @@
           <div class="c_row-item">
             <el-col class="label" :span="4"> 链接 </el-col>
             <el-col :span="19" class="slider-box">
-              <div @click="getLink(index)">
+              <div v-db-click @click="getLink(index)">
                 <el-input suffix-icon="el-icon-arrow-right" v-model="item.link" readonly placeholder="请选择链接" />
               </div>
             </el-col>
           </div>
         </div>
-        <div class="del-box" @click="deleteMenu(index)">
+        <div class="del-box" v-db-click @click="deleteMenu(index)">
           <span class="iconfont iconcha"></span>
         </div>
       </div>
     </draggable>
-    <el-button class="add-btn" ghost @click="addMenu" v-if="footConfig.length < 5">添加图文导航</el-button>
+    <el-button class="add-btn" ghost v-db-click @click="addMenu" v-if="footConfig.length < 5">添加图文导航</el-button>
     <div>
       <el-dialog
         :visible.sync="modalPic"

@@ -48,14 +48,14 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="selChange">查询</el-button>
+            <el-button type="primary" v-db-click @click="selChange">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <el-card :bordered="false" shadow="never">
-      <el-button v-auth="['export-userRecharge']" class="mr" @click="exports">导出</el-button>
+      <el-button v-auth="['export-userRecharge']" class="mr" v-db-click @click="exports">导出</el-button>
       <el-table ref="table" :data="tabList" class="mt14" v-loading="loading" empty-text="暂无数据"
         ><el-table-column label="ID" width="80">
           <template slot-scope="scope">
@@ -104,14 +104,14 @@
             <a
               href="javascript:void(0);"
               v-if="scope.row.refund_price <= 0 && scope.row.paid && scope.row.recharge_type != 'system'"
-              @click="refund(scope.row)"
+              v-db-click @click="refund(scope.row)"
               >退款</a
             >
             <!--                    <el-divider direction="vertical"  v-if="scope.row.paid"/>-->
             <a
               href="javascript:void(0);"
               v-if="scope.row.paid === 0"
-              @click="del(scope.row, '此条充值记录', scope.$index)"
+              v-db-click @click="del(scope.row, '此条充值记录', scope.$index)"
               >删除</a
             >
             <span class="refund" v-if="scope.row.refund_price > 0">已退款</span>

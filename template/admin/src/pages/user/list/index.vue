@@ -13,7 +13,7 @@
           <div class="acea-row search-form" v-if="!collapse">
             <div>
               <el-form-item label="用户标签：" label-for="label_id">
-                <div class="labelInput acea-row row-between-wrapper" @click="openSelectLabel">
+                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
                   <div style="width: 222px">
                     <div v-if="selectDataLabel.length">
                       <el-tag
@@ -53,9 +53,9 @@
               </el-form-item>
             </div>
             <el-form-item class="search-form-sub">
-              <el-button type="primary" @click="userSearchs">搜索</el-button>
-              <el-button class="ResetSearch" @click="reset('userFrom')">重置</el-button>
-              <a class="ivu-ml-8 font12 ml10" @click="collapse = !collapse">
+              <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
+              <el-button class="ResetSearch" v-db-click @click="reset('userFrom')">重置</el-button>
+              <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
                 <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
                 <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
               </a>
@@ -74,7 +74,7 @@
                 </el-input>
               </el-form-item>
               <el-form-item label="用户标签：" label-for="label_id">
-                <div class="labelInput acea-row row-between-wrapper" @click="openSelectLabel">
+                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
                   <div style="width: 222px">
                     <div v-if="selectDataLabel.length">
                       <el-tag :closable="false" v-for="(item, index) in selectDataLabel" :key="index" class="mr10">{{
@@ -181,9 +181,9 @@
             </div>
 
             <el-form-item class="search-form-sub">
-              <el-button type="primary" label="default" @click="userSearchs">搜索</el-button>
-              <el-button class="ResetSearch" @click="reset('userFrom')">重置</el-button>
-              <a class="ivu-ml-8 font12 ml10" @click="collapse = !collapse">
+              <el-button type="primary" label="default" v-db-click @click="userSearchs">搜索</el-button>
+              <el-button class="ResetSearch" v-db-click @click="reset('userFrom')">重置</el-button>
+              <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
                 <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
                 <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
               </a>
@@ -198,21 +198,21 @@
       </el-tabs>
       <el-row :gutter="24" justify="space-between">
         <el-col :span="24">
-          <el-button v-auth="['admin-user-save']" type="primary" @click="edit({ uid: 0 })">添加用户</el-button>
-          <el-button v-auth="['admin-user-coupon']" @click="onSend">发送优惠券</el-button>
+          <el-button v-auth="['admin-user-save']" type="primary" v-db-click @click="edit({ uid: 0 })">添加用户</el-button>
+          <el-button v-auth="['admin-user-coupon']" v-db-click @click="onSend">发送优惠券</el-button>
           <el-button
             v-auth="['admin-wechat-news']"
             class="greens mr10"
-            @click="onSendPic"
+            v-db-click @click="onSendPic"
             v-if="userFrom.user_type === 'wechat'"
           >
             发送图文消息
           </el-button>
-          <el-button v-auth="['admin-user-group_set']" @click="setGroup">批量设置分组</el-button>
-          <el-button v-auth="['admin-user-set_label']" @click="setLabel">批量设置标签</el-button>
-          <el-button class="mr10" @click="exportList">导出</el-button>
+          <el-button v-auth="['admin-user-group_set']" v-db-click @click="setGroup">批量设置分组</el-button>
+          <el-button v-auth="['admin-user-set_label']" v-db-click @click="setLabel">批量设置标签</el-button>
+          <el-button class="mr10" v-db-click @click="exportList">导出</el-button>
 
-          <!-- <el-button v-auth="['admin-user-synchro']" class="mr20" @click="synchro">同步公众号用户</el-button> -->
+          <!-- <el-button v-auth="['admin-user-synchro']" class="mr20" v-db-click @click="synchro">同步公众号用户</el-button> -->
         </el-col>
         <el-col :span="24" class="userAlert" v-if="selectionList.length">
           <el-alert show-icon>
@@ -295,7 +295,7 @@
         <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
             <template v-if="scope.row.is_del != 1">
-              <a @click="userDetail(scope.row)">详情</a>
+              <a v-db-click @click="userDetail(scope.row)">详情</a>
 
               <el-divider direction="vertical"></el-divider>
               <el-dropdown size="small" @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
@@ -313,7 +313,7 @@
               </el-dropdown>
             </template>
             <template v-else>
-              <a @click="userDetail(scope.row)">详情</a>
+              <a v-db-click @click="userDetail(scope.row)">详情</a>
             </template>
           </template>
         </el-table-column>
@@ -351,7 +351,7 @@
     <el-dialog :visible.sync="promoterShow" title="修改推广人" width="540px" :show-close="true">
       <el-form ref="formInline" :model="formInline" label-width="100px" @submit.native.prevent>
         <el-form-item v-if="formInline" label="选择推广人：" prop="image">
-          <div class="picBox" @click="customer">
+          <div class="picBox" v-db-click @click="customer">
             <div class="pictrue" v-if="formInline.image">
               <img v-lazy="formInline.image" />
             </div>
@@ -362,8 +362,8 @@
         </el-form-item>
       </el-form>
       <div class="acea-row row-right mt20">
-        <el-button @click="cancel('formInline')">取消</el-button>
-        <el-button type="primary" @click="putSend('formInline')">提交</el-button>
+        <el-button v-db-click @click="cancel('formInline')">取消</el-button>
+        <el-button type="primary" v-db-click @click="putSend('formInline')">提交</el-button>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="customerShow" title="请选择商城用户" :show-close="true" width="1000px">
@@ -382,8 +382,8 @@
     <el-drawer :visible.sync="modals" :wrapperClosable="false" size="720" title="用户信息填写">
       <userEdit ref="userEdit" v-if="modals" :userData="userData"></userEdit>
       <div class="acea-row row-center">
-        <el-button @click="modals = false">取消</el-button>
-        <el-button type="primary" @click="setUser">提交</el-button>
+        <el-button v-db-click @click="modals = false">取消</el-button>
+        <el-button type="primary" v-db-click @click="setUser">提交</el-button>
       </div>
     </el-drawer>
     <!-- 用户标签 -->

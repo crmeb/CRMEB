@@ -194,7 +194,7 @@ export default {
 		 * 
 		 */
 		ctx.fillStyle = '#fff';
-		ctx.fillRect(0, 0, 750, 1150);
+		ctx.fillRect(0, 0, 750, 1250);
 		uni.getImageInfo({
 			src: arr2[0],
 			success: function(res) {
@@ -335,7 +335,7 @@ export default {
 				ctx.drawImage(arr2[2], wd * codex, hg * codey, wd * codew, wd * codew);
 				ctx.save();
 				//标题
-				const CONTENT_ROW_LENGTH = 30;
+				const CONTENT_ROW_LENGTH = 32;
 				let [contentLeng, contentArray, contentRows] = that.textByteLength(title,
 					CONTENT_ROW_LENGTH);
 				if (contentRows > 2) {

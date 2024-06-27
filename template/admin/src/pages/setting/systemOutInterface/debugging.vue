@@ -8,8 +8,8 @@
           </el-select>
         </template>
       </el-input>
-      <el-button class="ml20" type="primary" @click="requestData">请求</el-button>
-      <el-button class="ml10 copy-btn" type="success" @click="insertCopy()">复制</el-button>
+      <el-button class="ml20" type="primary" v-db-click @click="requestData">请求</el-button>
+      <el-button class="ml10 copy-btn" type="success" v-db-click @click="insertCopy()">复制</el-button>
     </div>
     <div class="params">
       <el-tabs class="mt10" v-model="paramsType" @tab-click="changeTab">
@@ -64,14 +64,14 @@
           </vxe-column>
           <vxe-column title="操作" width="120">
             <template #default="{ row }">
-              <vxe-button type="text" v-if="row.type === 'array'" status="primary" @click="insertRow(row, 'xTable')"
+              <vxe-button type="text" v-if="row.type === 'array'" status="primary" v-db-click @click="insertRow(row, 'xTable')"
                 >插入</vxe-button
               >
-              <vxe-button type="text" status="primary" @click="removeRow(row, 'xTable')">删除</vxe-button>
+              <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'xTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
-        <el-button class="mt10" type="primary" @click="insertEvent('xTable')">添加参数</el-button>
+        <el-button class="mt10" type="primary" v-db-click @click="insertEvent('xTable')">添加参数</el-button>
       </div>
       <div v-show="paramsType === 'Body'">
         <vxe-table
@@ -120,14 +120,14 @@
           </vxe-column>
           <vxe-column title="操作" width="120">
             <template #default="{ row }">
-              <vxe-button type="text" v-if="row.type === 'array'" status="primary" @click="insertRow(row, 'yTable')"
+              <vxe-button type="text" v-if="row.type === 'array'" status="primary" v-db-click @click="insertRow(row, 'yTable')"
                 >插入</vxe-button
               >
-              <vxe-button type="text" status="primary" @click="removeRow(row, 'yTable')">删除</vxe-button>
+              <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'yTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
-        <el-button class="mt10" type="primary" @click="insertEvent('yTable')">添加参数</el-button>
+        <el-button class="mt10" type="primary" v-db-click @click="insertEvent('yTable')">添加参数</el-button>
       </div>
       <div v-show="paramsType === 'Header'">
         <vxe-table
@@ -166,14 +166,14 @@
           </vxe-column>
           <vxe-column title="操作" width="100">
             <template #default="{ row }">
-              <vxe-button type="text" v-if="row.type === 'array'" status="primary" @click="insertRow(row, 'zTable')"
+              <vxe-button type="text" v-if="row.type === 'array'" status="primary" v-db-click @click="insertRow(row, 'zTable')"
                 >插入</vxe-button
               >
-              <vxe-button type="text" status="primary" @click="removeRow(row, 'zTable')">删除</vxe-button>
+              <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'zTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
-        <el-button class="mt10" type="primary" @click="insertEvent('zTable')">添加参数</el-button>
+        <el-button class="mt10" type="primary" v-db-click @click="insertEvent('zTable')">添加参数</el-button>
         <h4 class="mt10 title">全局Header参数</h4>
         <vxe-table
           class="mt10"

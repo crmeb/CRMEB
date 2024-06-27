@@ -9,7 +9,7 @@
         label-position="right"
       >
         <el-form-item label="头像：">
-          <div class="avatar" @click="avatarMoadl = true">
+          <div class="avatar" v-db-click @click="avatarMoadl = true">
             <img v-if="formValidate.head_pic" :src="formValidate.head_pic" alt="" />
             <img v-else src="../../../assets/images/f.png" alt="" />
           </div>
@@ -30,7 +30,7 @@
           <el-input type="password" v-model="formValidate.conf_pwd" class="input"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSubmit('formValidate')">提交</el-button>
+          <el-button type="primary" v-db-click @click="handleSubmit('formValidate')">提交</el-button>
         </el-form-item>
       </el-form>
     </el-card>

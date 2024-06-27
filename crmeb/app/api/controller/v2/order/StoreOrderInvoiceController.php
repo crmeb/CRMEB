@@ -15,6 +15,7 @@ namespace app\api\controller\v2\order;
 use app\services\order\StoreOrderInvoiceServices;
 use app\services\order\StoreOrderServices;
 use app\services\other\PosterServices;
+use app\services\serve\ServeServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\store\SystemStoreServices;
 use think\Request;
@@ -117,5 +118,20 @@ class StoreOrderInvoiceController
         $order['pay_weixin_open'] = (int)sys_config('pay_weixin_open') ?? 0;//微信支付 1 开启 0 关闭
         $order['ali_pay_status'] = (bool)sys_config('ali_pay_status');//支付宝支付 1 开启 0 关闭
         return app('json')->success($services->tidyOrder($order, true, true));
+    }
+
+    /**
+     * 前端下载电子发票
+     * @param $id
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/14
+     */
+    public function downInvoice($id)
+    {
+        $info = $this->services->getOne(['id' => $id]);
+        $invoice = app()->make(ServeServices::class)->invoice();
+        return app('json')->success($invoice->downloadInvoice($info['invoice_num']));
     }
 }

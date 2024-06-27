@@ -38,7 +38,7 @@
             <div class="con">
               <div class="label-item">{{ activeUserInfo.group_name }}</div>
             </div>
-            <div class="right-icon" @click.stop="isUserGroup = true">
+            <div class="right-icon" v-db-click @click.stop="isUserGroup = true">
               <i class="el-icon-arrow-right" style="font-size: 14px"></i>
             </div>
           </div>
@@ -49,7 +49,7 @@
                 {{ item }}
               </div>
             </div>
-            <div class="right-icon" @click.stop="isUserLabel = true">
+            <div class="right-icon" v-db-click @click.stop="isUserLabel = true">
               <i class="el-icon-arrow-right" style="font-size: 14px"></i>
             </div>
           </div>
@@ -88,7 +88,7 @@
             v-for="(item, index) in menuList"
             :key="index"
             :class="{ active: orderConfig.type === item.key }"
-            @click.stop="bindTab(item)"
+            v-db-click @click.stop="bindTab(item)"
           >
             {{ item.title }}
           </div>
@@ -134,7 +134,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="more-box" v-if="item.cartInfo.length > 2" @click.stop="isOrderHidden = !isOrderHidden">
+                <div class="more-box" v-if="item.cartInfo.length > 2" v-db-click @click.stop="isOrderHidden = !isOrderHidden">
                   <span>{{ isOrderHidden ? '展开' : '合上' }}</span>
                 </div>
                 <div class="order-info">
@@ -151,20 +151,20 @@
                     class="btn"
                     type="primary"
                     v-if="item._status._type == 1 && item._status._type != 0 && item.shipping_type != 2"
-                    @click.stop="openDelivery(item)"
+                    v-db-click @click.stop="openDelivery(item)"
                     >发货</el-button
                   >
                   <el-button
                     class="btn"
                     type="primary"
                     v-if="item.refund_status == 1"
-                    @click.stop="orderRecord(item.id)"
+                    v-db-click @click.stop="orderRecord(item.id)"
                     >退款</el-button
                   >
-                  <el-button class="btn" ghost @click.stop="orderEdit(item.id)" v-if="item._status._type == 0"
+                  <el-button class="btn" ghost v-db-click @click.stop="orderEdit(item.id)" v-if="item._status._type == 0"
                     >改价</el-button
                   >
-                  <el-button v-if="item.refund_status == 0" class="btn" ghost @click.stop="bindRemark(item)"
+                  <el-button v-if="item.refund_status == 0" class="btn" ghost v-db-click @click.stop="bindRemark(item)"
                     >备注</el-button
                   >
                 </div>
@@ -186,7 +186,7 @@
             v-for="(item, index) in goodsTab"
             :key="index"
             :class="{ active: goodsConfig.type === item.key }"
-            @click.stop="bindGoodsTab(item)"
+            v-db-click @click.stop="bindGoodsTab(item)"
           >
             {{ item.title }}
           </div>
@@ -214,7 +214,7 @@
                 </div>
                 <div class="price">
                   <span>¥{{ item.price }}</span>
-                  <div class="push" @click.stop="pushGoods(item)">推送</div>
+                  <div class="push" v-db-click @click.stop="pushGoods(item)">推送</div>
                 </div>
               </div>
             </div>

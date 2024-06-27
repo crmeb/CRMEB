@@ -44,6 +44,7 @@ export default {
 		}
 	},
 	onHide() {
+		this.$Cache.clear('agent_id');
 	},
 	methods: {
 		// 绑定员工关系

@@ -7,7 +7,7 @@
           <div class="move-icon">
             <i class="el-icon-s-grid" style="font-size: 22px" />
           </div>
-          <div class="img-box" @click="modalPicTap('单选', index)">
+          <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
             <img :src="item.img" alt="" v-if="item.img" />
             <div class="upload-box" v-else>
               <i class="el-icon-picture-outline" style="font-size: 24px" />
@@ -42,7 +42,7 @@
       </draggable>
     </div>
     <div class="add-btn" v-if="defaults.menu.length < 4">
-      <el-button style="width: 100%; height: 40px" @click="addBox">添加板块</el-button>
+      <el-button style="width: 100%; height: 40px" v-db-click @click="addBox">添加板块</el-button>
     </div>
   </div>
 </template>

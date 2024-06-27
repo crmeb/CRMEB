@@ -1,7 +1,7 @@
 <template>
   <div class="chat-box">
     <div class="head-box">
-      <div class="back" @click="goBack"><span class="iconfont iconfanhui"></span></div>
+      <div class="back" v-db-click @click="goBack"><span class="iconfont iconfanhui"></span></div>
       <div class="title">{{ nickname }} - 对话详情</div>
     </div>
     <div class="chat-scroll-box">
@@ -19,13 +19,13 @@
           <div v-for="(item, index) in records" :key="index" :id="`chat_${item.id}`">
             <div class="day-box" v-if="item.show">{{ item.time }}</div>
             <div class="chat-item" :class="{ 'right-box': item.uid == kefuInfo.uid }">
-              <img class="avatar" v-lazy="item.avatar" mode="" @click="goUserInfo(item, item.uid == kefuInfo.uid)" />
+              <img class="avatar" v-lazy="item.avatar" mode="" v-db-click @click="goUserInfo(item, item.uid == kefuInfo.uid)" />
               <!-- 消息 -->
               <div class="msg-box" v-if="item.msn_type == 1" v-html="item.msn"></div>
               <!-- 图片 -->
               <div class="img-box" v-if="item.msn_type == 3" v-viewer><img v-lazy="item.msn" mode="widthFix" /></div>
               <!-- 商品 -->
-              <div class="product-box" v-if="item.msn_type == 5" @click="goProduct(item)">
+              <div class="product-box" v-if="item.msn_type == 5" v-db-click @click="goProduct(item)">
                 <img v-lazy="item.productInfo.image" mode="widthFix" />
                 <div class="info">
                   <div class="price"><span>￥</span>{{ item.productInfo.price }}</div>
@@ -33,7 +33,7 @@
                 </div>
               </div>
               <!-- 订单 -->
-              <div class="order-box" v-if="item.msn_type == 6" @click="goOrderDetail(item)">
+              <div class="order-box" v-if="item.msn_type == 6" v-db-click @click="goOrderDetail(item)">
                 <div class="title">订单ID: {{ item.orderInfo.order_id }}</div>
                 <div class="info">
                   <img v-lazy="item.orderInfo.cartInfo[0].productInfo.image" />
@@ -49,13 +49,13 @@
       </vue-scroll>
     </div>
     <div class="footer-box">
-      <div class="words" @click="showWords"><span class="iconfont iconhuashu1"></span></div>
+      <div class="words" v-db-click @click="showWords"><span class="iconfont iconhuashu1"></span></div>
       <div class="input-box">
         <el-input v-model="con" placeholder="请输入内容" style="font-size: 0.28rem" />
-        <span class="iconfont iconfasong" @click="sendText" :class="{ isSend: isSend }"></span>
+        <span class="iconfont iconfasong" v-db-click @click="sendText" :class="{ isSend: isSend }"></span>
       </div>
-      <div class="emoji" @click="openBox(1)"><span class="iconfont iconbiaoqing2"></span></div>
-      <div class="more" @click="openBox(2)"><span class="iconfont icongengduozhankai1"></span></div>
+      <div class="emoji" v-db-click @click="openBox(1)"><span class="iconfont iconbiaoqing2"></span></div>
+      <div class="more" v-db-click @click="openBox(2)"><span class="iconfont icongengduozhankai1"></span></div>
     </div>
     <!-- 工具 -->
     <div class="tool-wrapper" v-if="isTool">
@@ -77,15 +77,15 @@
           <div>图片</div>
         </el-upload>
       </div>
-      <div class="tool-item" @click="goTransfer">
+      <div class="tool-item" v-db-click @click="goTransfer">
         <img src="../static/tool-02.png" mode="" />
         <div>转接</div>
       </div>
-      <div class="tool-item" @click="goAdminOrder">
+      <div class="tool-item" v-db-click @click="goAdminOrder">
         <img src="../static/tool-03.png" mode="" />
         <div>交易订单</div>
       </div>
-      <div class="tool-item" @click="goodsInfo">
+      <div class="tool-item" v-db-click @click="goodsInfo">
         <img src="../static/tool-04.png" mode="" />
         <div>商品信息</div>
       </div>
@@ -94,7 +94,7 @@
     <div class="banner slider-banner" v-show="isSwiper">
       <swiper class="swiper-wrapper" ref="mySwiper" :options="swiperOptions">
         <swiper-slide v-for="(emojiList, index) in emojiGroup" :key="index">
-          <i class="em" :class="emoji" v-for="emoji in emojiList" :key="emoji" @click="addEmoji(emoji)"></i>
+          <i class="em" :class="emoji" v-for="emoji in emojiList" :key="emoji" v-db-click @click="addEmoji(emoji)"></i>
         </swiper-slide>
       </swiper>
     </div>
@@ -103,7 +103,7 @@
     <!-- 转接 -->
     <div class="transfer-mask" v-if="isTransfer">
       <div class="content" :class="{ on: isTransfer }">
-        <div class="title">转接客服<span class="iconfont iconcha" @click="closeTransfer"></span></div>
+        <div class="title">转接客服<span class="iconfont iconcha" v-db-click @click="closeTransfer"></span></div>
         <div class="list-wrapper">
           <el-radio-group v-model="activeKF">
             <el-radio class="list-item" v-for="(item, index) in transferList" :label="item.uid" :key="index">
@@ -114,7 +114,7 @@
             </el-radio>
           </el-radio-group>
         </div>
-        <el-button class="btn" @click="confirm">确定</el-button>
+        <el-button class="btn" v-db-click @click="confirm">确定</el-button>
       </div>
     </div>
   </div>

@@ -87,7 +87,7 @@
           <el-col :span="24">
             <el-col v-bind="grid">
               <el-form-item label="门店logo：" prop="image">
-                <div class="picBox" @click="modalPicTap('单选')">
+                <div class="picBox" v-db-click @click="modalPicTap('单选')">
                   <div class="pictrue" v-if="formItem.image"><img v-lazy="formItem.image" /></div>
                   <div class="upLoad acea-row row-center-wrapper" v-else>
                     <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
@@ -101,7 +101,7 @@
               <el-form-item label="经纬度：" label-for="status2" prop="latlng">
                 <el-tooltip>
                   <el-input v-model="formItem.latlng" style="width: 100%" placeholder="请查找位置">
-                    <el-button type="primary" slot="append" @click="onSearch">查找位置</el-button>
+                    <el-button type="primary" slot="append" v-db-click @click="onSearch">查找位置</el-button>
                   </el-input>
                   <div slot="content">请点击查找位置选择位置</div>
                 </el-tooltip>
@@ -111,7 +111,7 @@
         </el-row>
         <el-row>
           <el-col v-bind="grid">
-            <el-button type="primary" class="ml20" @click="handleSubmit('formItem')">提交</el-button>
+            <el-button type="primary" class="ml20" v-db-click @click="handleSubmit('formItem')">提交</el-button>
           </el-col>
         </el-row>
       </el-form>

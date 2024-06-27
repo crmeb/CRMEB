@@ -10,7 +10,7 @@
       >
         <el-row>
           <el-col v-bind="grid">
-            <el-button v-auth="['setting-system_admin-add']" type="primary" @click="add">添加账号</el-button>
+            <el-button v-auth="['setting-system_admin-add']" type="primary" v-db-click @click="add">添加账号</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -70,11 +70,11 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="140">
           <template slot-scope="scope">
-            <a @click="setUp(scope.row)">设置</a>
+            <a v-db-click @click="setUp(scope.row)">设置</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除账号', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除账号', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -110,7 +110,7 @@
         <el-form-item label="密码：" prop="appsecret">
           <div style="display: flex">
             <el-input type="text" v-model="modalsdate.appsecret" class="input"></el-input>
-            <el-button type="primary" @click="reset" class="reset">随机</el-button>
+            <el-button type="primary" v-db-click @click="reset" class="reset">随机</el-button>
           </div>
         </el-form-item>
         <el-form-item label="描述：" prop="title">
@@ -142,8 +142,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="ok('modalsdate')">确 定</el-button>
+        <el-button v-db-click @click="cancel">取 消</el-button>
+        <el-button type="primary" v-db-click @click="ok('modalsdate')">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -181,7 +181,7 @@
           <div class="form-content">
             <div class="input-button">
               <el-input type="text" v-model="settingData.push_token_url" placeholder="请输入获取TOKEN接口"></el-input>
-              <el-button class="ml10" type="primary" @click="textOutUrl(settingData.id)">测试链接</el-button>
+              <el-button class="ml10" type="primary" v-db-click @click="textOutUrl(settingData.id)">测试链接</el-button>
             </div>
             <span class="trip"
               >接受推送方获取token的URL地址，POST方法，传入push_account和push_password，返回token和有效时间time(秒)</span
@@ -236,8 +236,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button type="primary" @click="submit('settingData')">确定</el-button>
-        <el-button @click="settingModals = false">取消</el-button>
+        <el-button type="primary" v-db-click @click="submit('settingData')">确定</el-button>
+        <el-button v-db-click @click="settingModals = false">取消</el-button>
       </div>
     </el-dialog>
   </div>

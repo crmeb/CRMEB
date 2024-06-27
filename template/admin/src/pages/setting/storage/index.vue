@@ -217,7 +217,7 @@
                   </div>
                   <div class="flex">
                     <el-form-item class="contentIput" label="水印图片：" prop="name" label-width="120px">
-                      <div class="picBox" @click="modalPicTap('单选')">
+                      <div class="picBox" v-db-click @click="modalPicTap('单选')">
                         <div class="pictrue" v-if="formValidate.watermark_image">
                           <img :src="formValidate.watermark_image" />
                         </div>
@@ -234,7 +234,7 @@
                             :class="positionId == item.id ? 'on' : ''"
                             v-for="(item, index) in boxs"
                             :key="index"
-                            @click="bindbox(item)"
+                            v-db-click @click="bindbox(item)"
                           ></div>
                         </div>
                         <div class="title">{{ positiontlt }}</div>
@@ -295,7 +295,7 @@
                             :class="positionId == item.id ? 'on' : ''"
                             v-for="(item, index) in boxs"
                             :key="index"
-                            @click="bindbox(item)"
+                            v-db-click @click="bindbox(item)"
                           ></div>
                         </div>
                         <div class="title">{{ positiontlt }}</div>
@@ -323,12 +323,12 @@
                       </el-input>
                     </el-form-item>
                   </div>
-                  <el-form-item class="contentIput" label="水印横坐纵偏移量：" prop="mail" label-width="120px">
+                  <el-form-item class="contentIput" label="水印纵坐标偏移量：" prop="mail" label-width="120px">
                     <el-input
                       class="topIput"
                       type="number"
                       v-model="formValidate.watermark_y"
-                      placeholder="请输入水印横坐纵偏移量"
+                      placeholder="请输入水印纵坐标偏移量"
                     >
                       <span slot="append">px</span>
                     </el-input>
@@ -337,7 +337,7 @@
               </div>
             </div>
             <el-form-item>
-              <el-button type="primary" @click="handleSubmit('formValidate')">保存</el-button>
+              <el-button type="primary" v-db-click @click="handleSubmit('formValidate')">保存</el-button>
             </el-form-item>
           </div>
         </el-form>
@@ -349,9 +349,9 @@
       <el-card :bordered="false" shadow="never" class="ivu-mt">
         <el-row class="mb20">
           <el-col :span="24">
-            <el-button type="primary" @click="addStorageBtn">添加存储空间</el-button>
-            <el-button type="success" @click="synchro" style="margin-left: 20px">同步存储空间</el-button>
-            <el-button @click="addConfigBtn" style="float: right">修改配置信息</el-button>
+            <el-button type="primary" v-db-click @click="addStorageBtn">添加存储空间</el-button>
+            <el-button type="success" v-db-click @click="synchro" style="margin-left: 20px">同步存储空间</el-button>
+            <el-button v-db-click @click="addConfigBtn" style="float: right">修改配置信息</el-button>
           </el-col>
         </el-row>
         <el-table
@@ -407,12 +407,12 @@
           <el-table-column label="操作" fixed="right" width="220">
             <template slot-scope="scope">
               <template v-if="scope.row.domain && scope.row.domain != scope.row.cname">
-                <span class="btn" @click="config(scope.row)">CNAME配置</span>
+                <span class="btn" v-db-click @click="config(scope.row)">CNAME配置</span>
                 <el-divider direction="vertical"></el-divider>
               </template>
-              <span class="btn" @click="edit(scope.row)">修改空间域名</span>
+              <span class="btn" v-db-click @click="edit(scope.row)">修改空间域名</span>
               <el-divider direction="vertical"></el-divider>
-              <span class="btn" @click="del(scope.row, '删除该数据', scope.$index)">删除</span>
+              <span class="btn" v-db-click @click="del(scope.row, '删除该数据', scope.$index)">删除</span>
             </template>
           </el-table-column>
         </el-table>
@@ -427,13 +427,13 @@
         </div>
       </el-card>
     </div>
-    <el-dialog :visible.sync="configuModal" title="CNAME配置" width="470px">
+    <el-dialog :visible.sync="configuModal" title="CNAME配置" width="570px">
       <div>
         <div class="confignv"><span class="configtit">主机记录：</span>{{ configData.domain }}</div>
         <div class="confignv"><span class="configtit">记录类型：</span>CNAME</div>
         <div class="confignv">
           <span class="configtit">记录值：</span>{{ configData.cname }}
-          <span class="copy copy-data" @click="insertCopy(configData.cname)">复制</span>
+          <span class="copy copy-data" v-db-click @click="insertCopy(configData.cname)">复制</span>
         </div>
       </div>
     </el-dialog>
@@ -854,7 +854,7 @@ export default {
 .btn {
   cursor: pointer;
   color: #2d8cf0;
-  font-size: 10px;
+  font-size: 12px;
 }
 .is-switch-close {
   background-color: #504444;
@@ -874,7 +874,7 @@ export default {
 }
 .configtit {
   display: inline-block;
-  width: 60px;
+  width: 90px;
   text-align: right;
 }
 .copy {

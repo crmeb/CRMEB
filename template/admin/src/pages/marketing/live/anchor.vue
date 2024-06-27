@@ -3,7 +3,7 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row>
         <el-col v-bind="grid">
-          <el-button v-auth="['admin-user-label_add']" type="primary" @click="add">添加主播</el-button>
+          <el-button v-auth="['admin-user-label_add']" type="primary" v-db-click @click="add">添加主播</el-button>
         </el-col>
       </el-row>
       <el-table
@@ -37,9 +37,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row.id)">修改</a>
+            <a v-db-click @click="edit(scope.row.id)">修改</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除主播', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除主播', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

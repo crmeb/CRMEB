@@ -23,7 +23,6 @@
                 end-placeholder="结束日期"
                 :picker-options="pickerOptions"
                 style="width: 250px"
-                class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="上架状态：">
@@ -46,7 +45,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -56,7 +55,7 @@
           v-auth="['marketing-store_integral-create']"
           type="primary"
           icon="md-add"
-          @click="add"
+          v-db-click @click="add"
           class="mr10"
       >添加积分商品</el-button>
       <el-table
@@ -129,13 +128,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template slot-scope="scope">
-            <a @click="orderList(scope.row)">兑换记录</a>
+            <a v-db-click @click="orderList(scope.row)">兑换记录</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="copy(scope.row)">复制</a>
+            <a v-db-click @click="copy(scope.row)">复制</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除积分商品', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除积分商品', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

@@ -529,4 +529,25 @@ class LoginController
             return app('json')->fail(400336);
         }
     }
+
+    /**
+     * 远程登录接口
+     * @param Request $request
+     * @return \think\Response
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/21
+     */
+    public function remoteRegister(Request $request)
+    {
+        [$remote_token] = $request->getMore([
+            ['remote_token', ''],
+        ], true);
+        if ($remote_token == '') return app('json')->success('登录失败', ['get_remote_login_url' => sys_config('get_remote_login_url')]);
+        return app('json')->success('登录成功', $this->services->remoteRegister($remote_token));
+    }
 }

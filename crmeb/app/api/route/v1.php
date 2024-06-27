@@ -21,6 +21,7 @@ Route::group(function () {
     Route::any('order_call_back', 'v1.order.StoreOrderController/callBack')->option(['real_name' => '商家寄件回调']);//商家寄件回调
     Route::get('get_script', 'v1.PublicController/getScript')->option(['real_name' => '获取统计代码']);//获取统计代码
     Route::get('version', 'v1.PublicController/getVersion')->option(['real_name' => '获取代码版本号']);
+    Route::get('service_pay_result', 'v1.PublicController/servicePayResult')->option(['real_name' => '服务商支付商家小票接口']);
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->option(['mark' => 'serve', 'mark_name' => '服务接口']);
 
 Route::group(function () {
@@ -54,6 +55,8 @@ Route::group(function () {
     Route::get('basic_config', 'v1.PublicController/getMallBasicConfig')->option(['real_name' => '商城基础配置汇总接口']);
     //小程序跳转url接口
     Route::get('get_scheme_url/:id', 'v1.PublicController/getSchemeUrl')->option(['real_name' => '小程序跳转url接口']);
+    //远程注册用户
+    Route::get('remote_register', 'v1.LoginController/remoteRegister')->option(['real_name' => '远程注册用户']);
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)
     ->middleware(\app\api\middleware\StationOpenMiddleware::class)
@@ -104,9 +107,6 @@ Route::group(function () {
         Route::post('user/binding', 'v1.LoginController/user_binding_phone')->name('userBindingPhone')->option(['real_name' => '用户绑定手机号']);
         Route::get('logout', 'v1.LoginController/logout')->name('logout')->option(['real_name' => '退出登录']);// 退出登录
         Route::post('switch_h5', 'v1.LoginController/switch_h5')->name('switch_h5')->option(['real_name' => '切换账号']);// 切换账号
-        //商品类
-        Route::get('product/code/:id', 'v1.store.StoreProductController/code')->name('productCode')->option(['real_name' => '商品分享二维码']);//商品分享二维码 推广员
-
         //公共类
         Route::post('upload/image', 'v1.PublicController/upload_image')->name('uploadImage')->option(['real_name' => '图片上传']);//图片上传
     })->option(['mark' => 'common', 'mark_name' => '公共接口']);
@@ -366,6 +366,7 @@ Route::group(function () {
         Route::get('reply/list/:id', 'v1.store.StoreProductController/reply_list')->name('replyList')->option(['real_name' => '商品评价列表']);//商品评价列表
         Route::get('reply/config/:id', 'v1.store.StoreProductController/reply_config')->name('replyConfig')->option(['real_name' => '商品评价数量和好评度']);//商品评价数量和好评度
         Route::get('advance/list', 'v1.store.StoreProductController/advanceList')->name('advanceList')->option(['real_name' => '预售商品列表']);//预售商品列表
+        Route::get('product/code/:id', 'v1.store.StoreProductController/code')->name('productCode')->option(['real_name' => '商品分享二维码']);//商品分享二维码 推广员
     })->option(['mark' => 'product', 'mark_name' => '商品']);
 
     Route::group(function () {

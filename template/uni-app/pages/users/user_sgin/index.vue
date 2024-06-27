@@ -1,22 +1,21 @@
 <template>
 	<view :style="colorStyle">
-		<view class='sign' :style="colorStyle">
-			<view class='header bgcolor' :style="'background-image: url('+sginBg+');'">
-				<view class='headerCon acea-row row-between-wrapper'>
-					<view class='left acea-row row-between-wrapper'>
-						<img :src="sginTip" alt="" srcset="">
+		<view class="sign" :style="colorStyle">
+			<view class="header bgcolor" :style="'background-image: url(' + sginBg + ');'">
+				<view class="headerCon acea-row row-between-wrapper">
+					<view class="left acea-row row-between-wrapper">
+						<img :src="sginTip" alt="" srcset="" />
 					</view>
-					<navigator class='right acea-row row-middle' hover-class='none'
-						url='/pages/users/user_sgin_list/index'>
-						<view>{{$t(`明细`)}}</view>
+					<navigator class="right acea-row row-middle" hover-class="none" url="/pages/users/user_sgin_list/index">
+						<view>{{ $t(`明细`) }}</view>
 					</navigator>
 				</view>
 			</view>
-			<view class='wrapper'>
+			<view class="wrapper">
 				<view class="sgin-num">
 					<view class="text">
 						<text>已连续签到</text>
-						<text class="num">{{continuousSignDays}}</text>
+						<text class="num">{{ continuousSignDays }}</text>
 						<text>天</text>
 					</view>
 					<view class="tip" v-if="signRemindSwitch == 1">
@@ -24,84 +23,84 @@
 						<switch :checked="remindStatus" color="#FFCC33" @change="changeRemind" />
 					</view>
 				</view>
-				<view class='list acea-row row-between-wrapper'>
+				<view class="list acea-row row-between-wrapper">
 					<template v-if="signMode == 0 || signMode == -1">
-						<view class='mot-item' v-for="(item,index) in signSystemList" :key="index">
-							<view class="row" :class="{'sgin-day':e.sign_day,'last-day':e.is_sign}"
-								v-for="(e,i) in item" :key="i">
+						<view class="mot-item" v-for="(item, index) in signSystemList" :key="index">
+							<view class="row" :class="{ 'sgin-day': e.sign_day, 'last-day': e.is_sign }" v-for="(e, i) in item"
+								:key="i">
 								<view class="type-img">
-									<img v-if="!e.is_sign" :src="getTypeImg(e.type,e.is_sign)" alt="" srcset="">
+									<img v-if="!e.is_sign" :src="getTypeImg(e.type, e.is_sign)" alt="" srcset="" />
 									<text v-else class="iconfont icon-xuanzhong1"></text>
 								</view>
-								<view class='venus'>{{e.day}}</view>
+								<view class="venus">{{ e.day }}</view>
 							</view>
 						</view>
 					</template>
 					<template v-else>
-						<view class='mot-item' v-for="(item,index) in signSystemList" :key="index">
-							<view class="mot-item-box" :class="{'sgin-day':e.sign_day,'last-day':e.is_sign}"
-								v-for="(e,i) in item" :key="i">
+						<view class="mot-item" v-for="(item, index) in signSystemList" :key="index">
+							<view class="mot-item-box" :class="{ 'sgin-day': e.sign_day, 'last-day': e.is_sign }"
+								v-for="(e, i) in item" :key="i">
 								<view class="row">
-									<view class='num'>+{{e.point}}</view>
+									<view class="num">+{{ e.point }}</view>
 									<view class="type-img">
-										<img v-if="!e.is_sign" :src="getTypeImg(e.type,e.is_sign)" alt="" srcset="">
+										<img v-if="!e.is_sign" :src="getTypeImg(e.type, e.is_sign)" alt="" srcset="" />
 										<text v-else class="iconfont icon-xuanzhong1"></text>
 									</view>
 								</view>
-								<view class="text">
-									第{{i+1}}天
-								</view>
+								<view class="text">{{weekArr[i]}}</view>
 							</view>
 						</view>
 					</template>
 				</view>
-				<button class='but bg-color on' v-if="checkSign">{{$t(`今日已签到，明日再来吧`)}}</button>
+				<button class="but bg-color on" v-if="checkSign">{{ $t(`今日已签到，明日再来吧`) }}</button>
 				<form @submit="goSign" v-else>
-					<button class='but bg-color' formType="submit">{{$t(`立即签到`)}}</button>
+					<button class="but bg-color" formType="submit">{{ $t(`立即签到`) }}</button>
 				</form>
-				<view class="tip" v-if="nextContinuousDays>0">
-					<img :src="`${imgHost}/statics/images/sgin_icon_4.png`" alt="">
-					再连续签到{{nextContinuousDays}}天，可额外获得惊喜礼包
+				<view class="tip" v-if="nextContinuousDays > 0">
+					<img :src="`${imgHost}/statics/images/sgin_icon_4.png`" alt="" />
+					再连续签到{{ nextContinuousDays }}天，可额外获得惊喜礼包
 				</view>
 				<view class="lock"></view>
 			</view>
-			<view class='wrapper wrapper2'>
-				<view class='tip'>{{$t(`已累计签到`)}}</view>
-				<view class='list2 acea-row row-center row-bottom'>
-					<view class='item'>{{signCount[0] || 0}}</view>
-					<view class='item'>{{signCount[1] || 0}}</view>
-					<view class='item'>{{signCount[2] || 0}}</view>
-					<view class='item'>{{signCount[3] || 0}}</view>
-					<view class='data'>{{$t(`天`)}}</view>
+			<view class="wrapper wrapper2">
+				<view class="tip">{{ $t(`已累计签到`) }}</view>
+				<view class="list2 acea-row row-center row-bottom">
+					<view class="item">{{ signCount[0] || 0 }}</view>
+					<view class="item">{{ signCount[1] || 0 }}</view>
+					<view class="item">{{ signCount[2] || 0 }}</view>
+					<view class="item">{{ signCount[3] || 0 }}</view>
+					<view class="data">{{ $t(`天`) }}</view>
 				</view>
-				<view class='tip2' v-if="nextCumulativeDays>0">
-					<img :src="`${imgHost}/statics/images/sgin_icon_4.png`" alt="">
-					{{$t(`再累计签到`)}}{{nextCumulativeDays}}{{$t(`天，可额外获得惊喜礼包`)}}
+				<view class="tip2" v-if="nextCumulativeDays > 0">
+					<img :src="`${imgHost}/statics/images/sgin_icon_4.png`" alt="" />
+					{{ $t(`再累计签到`) }}{{ nextCumulativeDays }}{{ $t(`天，可额外获得惊喜礼包`) }}
 				</view>
-				<view class='list3' v-if="signList.length">
-					<view class='item acea-row' v-for="(item,index) in signList" :key="index">
+				<view class="list3" v-if="signList.length">
+					<view class="item acea-row" v-for="(item, index) in signList" :key="index">
 						<view>
-							<view class='name line1'>{{$t(item.title)}}</view>
-							<view class='data'>{{item.add_time}}</view>
+							<view class="name line1">{{ $t(item.title) }}</view>
+							<view class="data">{{ item.add_time }}</view>
 						</view>
-						<view class='num'>+{{item.number}}</view>
+						<view class="num">+{{ item.number }}</view>
 					</view>
-					<view class='loading' @click='goSignList' v-if="signList.length >= 8">{{$t(`点击加载更多`)}}<text
-							class='iconfont icon-xiangyou'></text></view>
+					<view class="loading" @click="goSignList" v-if="signList.length >= 8">
+						{{ $t(`点击加载更多`) }}
+						<text class="iconfont icon-xiangyou"></text>
+					</view>
 				</view>
 			</view>
-			<view class='signTip acea-row row-center-wrapper' :class='active==true?"on":""'>
-				<view class='signTipLight loadingpic'></view>
-				<view class='signTipCon'>
+			<view class="signTip acea-row row-center-wrapper" :class="active == true ? 'on' : ''">
+				<view class="signTipLight loadingpic"></view>
+				<view class="signTipCon">
 					<view class="signHeight">
 						<image src="../static/signH.png"></image>
 					</view>
-					<view class='state'>{{$t(`签到成功`)}}</view>
-					<view class='integral'>{{$t(`获得`)}}{{integral}}{{$t(`积分`)}}</view>
-					<view class='signTipBnt' @click='close'>{{$t(`好的`)}}</view>
+					<view class="state">{{ $t(`签到成功`) }}</view>
+					<view class="integral">{{ $t(`获得`) }}{{ integral }}{{ $t(`积分`) }}</view>
+					<view class="signTipBnt" @click="close">{{ $t(`好的`) }}</view>
 				</view>
 			</view>
-			<view class='mask' @touchmove.stop.prevent="false" :hidden='active==false'></view>
+			<view class="mask" @touchmove.stop.prevent="false" :hidden="active == false"></view>
 		</view>
 		<!-- #ifdef MP -->
 		<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse"></authorize> -->
@@ -115,7 +114,7 @@
 	} from '@/libs/login.js';
 	import {
 		mapGetters
-	} from "vuex";
+	} from 'vuex';
 	import {
 		postSignUser,
 		getSignConfig,
@@ -163,6 +162,7 @@
 				signRemindSwitch: 0,
 				checkSign: 0,
 				remindStatus: false,
+				weekArr: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -180,7 +180,7 @@
 		},
 		onLoad() {
 			if (this.isLogin) {
-				this.getColor()
+				this.getColor();
 				this.getUserInfo();
 				this.getSignSysteam();
 				this.getSignList();
@@ -199,25 +199,32 @@
 			},
 			// 授权关闭
 			authColse: function(e) {
-				this.isShowAuth = e
+				this.isShowAuth = e;
 			},
 			getColor() {
-				colorChange('color_change').then(res => {
-					this.sginBg = `${this.imgHost}/statics/images/sgin_bg_${res.data.status}.png`
-					this.sginTip = `${this.imgHost}/statics/images/sgin_tip_${res.data.status}.png`
-					let theme = ['#1db0fc', '#42CA4D', '#e93323', '#ff448f', '#FE5C2D']
+				colorChange('color_change').then((res) => {
+					this.sginBg = `${this.imgHost}/statics/images/sgin_bg_${res.data.status}.png`;
+					this.sginTip = `${this.imgHost}/statics/images/sgin_tip_${res.data.status}.png`;
+					let theme = ['#1db0fc', '#42CA4D', '#e93323', '#ff448f', '#FE5C2D'];
 					uni.setNavigationBarColor({
 						frontColor: '#ffffff', // 必写项
-						backgroundColor: theme[res.data.status - 1], // 必写项
-					})
-				})
+						backgroundColor: theme[res.data.status - 1] // 必写项
+					});
+				});
 			},
 			/**
 			 * 获取签到配置
 			 */
 			getSignSysteam: function() {
 				let that = this;
-				getSignConfig().then(res => {
+				getSignConfig().then((res) => {
+					if (!res.data.signStatus) {
+						return that.$util.Tips({
+							title: that.$t(`签到功能已关闭`)
+						}, {
+							tab: 3
+						});
+					}
 					that.$set(that, 'signSystemList', res.data.signList);
 					that.signMode = res.data.signMode;
 					that.nextContinuousDays = res.data.nextContinuousDays;
@@ -227,48 +234,39 @@
 					that.checkSign = res.data.checkSign;
 					that.remindStatus = !!res.data.signRemindStatus;
 					that.signCount = that.PrefixInteger(res.data.cumulativeSignDays, 4);
-					if (!res.data.signStatus) {
-						that.$util.Tips({
-							title: that.$t(`签到功能已关闭`)
-						})
-						setTimeout(function() {
-							uni.navigateBack();
-						}, 2000)
-
-					}
-				})
+				});
 			},
 			changeRemind(e) {
-				let status = e.detail.value ? 1 : 0
-				changeRemindStatus(status).then(res => {
-					console.log(res)
-				})
+				let status = e.detail.value ? 1 : 0;
+				changeRemindStatus(status).then((res) => {
+					console.log(res);
+				});
 			},
 			getTypeImg(type, isSgin) {
-				let src
+				let src;
 				if (isSgin) {
-					src = `${this.imgHost}/statics/images/sgin_suc_1.png`
-					return src
+					src = `${this.imgHost}/statics/images/sgin_suc_1.png`;
+					return src;
 				}
 				switch (type) {
 					case 1:
-						src = `${this.imgHost}/statics/images/sgin_icon_1.png`
+						src = `${this.imgHost}/statics/images/sgin_icon_1.png`;
 						break;
 					case 2:
-						src = `${this.imgHost}/statics/images/sgin_icon_2.png`
+						src = `${this.imgHost}/statics/images/sgin_icon_2.png`;
 						break;
 					case 3:
-						src = `${this.imgHost}/statics/images/sgin_icon_3.png`
+						src = `${this.imgHost}/statics/images/sgin_icon_3.png`;
 						break;
 					case 4:
-						src = `${this.imgHost}/statics/images/sgin_icon_3.png`
+						src = `${this.imgHost}/statics/images/sgin_icon_3.png`;
 						break;
 				}
-				return src
+				return src;
 			},
 			/**
 			 * 去签到记录页面
-			 * 
+			 *
 			 */
 			goSignList: function() {
 				return this.$util.Tips('/pages/users/user_sgin_list/index');
@@ -280,7 +278,7 @@
 				let that = this;
 				postSignUser({
 					sign: 1
-				}).then(res => {
+				}).then((res) => {
 					// res.data.integral = parseInt(res.data.integral);
 					// let sum_sgin_day = res.data.sum_sgin_day;
 					// that.$set(that, 'userInfo', res.data);
@@ -291,20 +289,20 @@
 
 			/**
 			 * 获取签到列表
-			 * 
+			 *
 			 */
 			getSignList: function() {
 				let that = this;
 				getSignList({
 					page: 1,
 					limit: 8
-				}).then(res => {
+				}).then((res) => {
 					that.$set(that, 'signList', res.data);
-				})
+				});
 			},
 			/**
 			 * 数字转中文
-			 * 
+			 *
 			 */
 			Rp: function(n) {
 				let cnum = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -330,25 +328,28 @@
 			goSign: function(e) {
 				let that = this,
 					sum_sgin_day = that.userInfo.sum_sgin_day;
-				if (that.userInfo.is_day_sgin) return this.$util.Tips({
-					title: that.$t(`您今日已签到!`)
-				});
-				setSignIntegral().then(res => {
-					that.active = true;
-					that.integral = res.data.integral;
-					// that.sign_index = (that.sign_index + 1) > that.signSystemList.length ? 1 : that
-					// 	.sign_index + 1;
-					// that.signCount = that.PrefixInteger(sum_sgin_day + 1, 4);
-					// that.$set(that.userInfo, 'is_day_sgin', true);
-					// that.$set(that.userInfo, 'integral', that.$util.$h.Add(that.userInfo.integral, res.data
-					// 	.integral));
-					that.getSignSysteam();
-					that.getSignList();
-				}).catch(err => {
+				if (that.userInfo.is_day_sgin)
 					return this.$util.Tips({
-						title: err
+						title: that.$t(`您今日已签到!`)
+					});
+				setSignIntegral()
+					.then((res) => {
+						that.active = true;
+						that.integral = res.data.integral;
+						// that.sign_index = (that.sign_index + 1) > that.signSystemList.length ? 1 : that
+						// 	.sign_index + 1;
+						// that.signCount = that.PrefixInteger(sum_sgin_day + 1, 4);
+						// that.$set(that.userInfo, 'is_day_sgin', true);
+						// that.$set(that.userInfo, 'integral', that.$util.$h.Add(that.userInfo.integral, res.data
+						// 	.integral));
+						that.getSignSysteam();
+						that.getSignList();
 					})
-				});
+					.catch((err) => {
+						return this.$util.Tips({
+							title: err
+						});
+					});
 			},
 			/**
 			 * 关闭签到提示
@@ -357,7 +358,7 @@
 				this.active = false;
 			}
 		}
-	}
+	};
 </script>
 
 <style scoped lang="scss">
@@ -475,7 +476,7 @@
 				font-size: 40rpx;
 				font-family: D-DIN-PRO-SemiBold, D-DIN-PRO;
 				font-weight: 600;
-				color: #FE5C2D;
+				color: #fe5c2d;
 				line-height: 40rpx;
 				margin: 0 4rpx;
 			}
@@ -500,19 +501,19 @@
 			height: 32rpx;
 			background-color: #fff;
 			margin: 4rpx 0 4rpx 4rpx;
-			box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 		}
 
 		/deep/uni-switch .uni-switch-input:before {
 			width: 72rpx;
 			height: 40rpx;
-			background-color: #EEEEEE;
+			background-color: #eeeeee;
 		}
 
 		/deep/ uni-switch .uni-switch-input {
 			width: 76rpx;
 			height: 44rpx;
-			background-color: #EEEEEE;
+			background-color: #eeeeee;
 		}
 
 		/deep/ uni-switch .uni-switch-input.uni-switch-input-checked:after {
@@ -527,14 +528,14 @@
 		/deep/ .wx-switch-input {
 			width: 80rpx !important;
 			height: 44rpx !important;
-			background-color: #EEEEEE;
+			background-color: #eeeeee;
 		}
 
 		/*白色样式（false的样式）*/
 		/deep/ .wx-switch-input::before {
 			width: 76rpx !important;
 			height: 40rpx !important;
-			background-color: #EEEEEE;
+			background-color: #eeeeee;
 		}
 
 		/*绿色样式（true的样式）*/
@@ -584,7 +585,6 @@
 			.row:last-child {
 				margin-right: 0;
 			}
-
 		}
 
 		.mot-item-box.sgin-day .num {
@@ -605,8 +605,6 @@
 				padding-right: 14rpx;
 				margin-top: 8rpx;
 			}
-
-
 
 			.num {
 				font-size: 26rpx;
@@ -634,11 +632,10 @@
 			align-items: center;
 			justify-content: center;
 			height: 110rpx;
-			background: #F5F5F5;
+			background: #f5f5f5;
 			border-radius: 16rpx;
 			width: 80rpx;
 			margin-right: 14rpx;
-
 
 			.type-img {
 				display: flex;
@@ -665,9 +662,7 @@
 				line-height: 34rpx;
 				margin-top: 14rpx;
 			}
-
 		}
-
 	}
 
 	.sign .wrapper .list .item {
@@ -707,7 +702,6 @@
 	.sign .wrapper .list .item .venus.venusSelect {}
 
 	.sign .wrapper .list .item .venus.reward {
-
 		width: 75rpx;
 		height: 56rpx;
 	}
@@ -724,17 +718,15 @@
 	}
 
 	.sign .wrapper .but.bg-color {
-
 		background-color: var(--view-theme);
 	}
 
 	.sign .wrapper .but.on {
-
 		background-color: var(--view-minorColor) !important;
 	}
 
 	.sign .wrapper .lock {
-		background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAi4AAABECAYAAACmur7KAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQyIDc5LjE2MDkyNCwgMjAxNy8wNy8xMy0wMTowNjozOSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYWFmYjU3Mi03MGJhLTRiNDctOTI2Yi0zOThlZDkzZDkxMDkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkY0OEQxQjdEMDFDMTFFODgwMTlGMzZDRjQ3RTkwMTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkY0OEQxQjZEMDFDMTFFODgwMTlGMzZDRjQ3RTkwMTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTggKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6ZmRjNTM0MmUtNmFkOC1iMDRhLThjZTEtMjk2YWYzM2FkMmUxIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjBhYWZiNTcyLTcwYmEtNGI0Ny05MjZiLTM5OGVkOTNkOTEwOSIv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");
+		background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAi4AAABECAYAAACmur7KAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQyIDc5LjE2MDkyNCwgMjAxNy8wNy8xMy0wMTowNjozOSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowYWFmYjU3Mi03MGJhLTRiNDctOTI2Yi0zOThlZDkzZDkxMDkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkY0OEQxQjdEMDFDMTFFODgwMTlGMzZDRjQ3RTkwMTgiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkY0OEQxQjZEMDFDMTFFODgwMTlGMzZDRjQ3RTkwMTgiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTggKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6ZmRjNTM0MmUtNmFkOC1iMDRhLThjZTEtMjk2YWYzM2FkMmUxIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjBhYWZiNTcyLTcwYmEtNGI0Ny05MjZiLTM5OGVkOTNkOTEwOSIv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');
 		background-repeat: no-repeat;
 		background-size: 100% 100%;
 		width: 558rpx;
@@ -802,7 +794,7 @@
 
 	.sign .list3 {
 		margin: 0rpx 37rpx 0 37rpx;
-		border-top: 1px dashed #D8D8D8;
+		border-top: 1px dashed #d8d8d8;
 	}
 
 	.sign .list3 .item {

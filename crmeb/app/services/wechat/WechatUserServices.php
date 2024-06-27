@@ -358,7 +358,6 @@ class WechatUserServices extends BaseServices
             //user表没有用户,wechat_user表没有用户创建新用户
             //不存在则创建用户
             $userInfo = $this->transaction(function () use ($userServices, $wechatInfo, $spreadId, $userType) {
-                Log::error($wechatInfo);
                 $userInfo = $userServices->setUserInfo($wechatInfo, (int)$spreadId, $userType);
                 if (!$userInfo) {
                     throw new AuthException(410083);

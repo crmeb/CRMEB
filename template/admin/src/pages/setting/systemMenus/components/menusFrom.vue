@@ -28,7 +28,7 @@
           <el-col v-bind="grid" v-if="authType">
             <el-form-item label="图标：">
               <el-input v-model="formValidate.icon" placeholder="请选择图标，点击右面图标" icon="ios-appstore">
-                <el-button slot="append" icon="el-icon-picture-outline" @click="iconClick"></el-button>
+                <el-button slot="append" icon="el-icon-picture-outline" v-db-click @click="iconClick"></el-button>
               </el-input>
             </el-form-item>
           </el-col>
@@ -49,8 +49,8 @@
         </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="handleReset">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit('formValidate')" :disabled="valids">提 交</el-button>
+        <el-button v-db-click @click="handleReset">取 消</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formValidate')" :disabled="valids">提 交</el-button>
       </span>
     </el-dialog>
     <el-dialog :visible.sync="modal12" width="720px" title="图标选择">
@@ -67,7 +67,7 @@
           <div class="iconlist">
             <ul class="list-inline">
               <li class="icons-item" v-for="(item, i) in iconVal ? searchData : list" :key="i" :title="item">
-                <i :class="'el-icon-' + item" class="f-s-24" @click="iconChange(item)"></i>
+                <i :class="'el-icon-' + item" class="f-s-24" v-db-click @click="iconChange(item)"></i>
               </li>
             </ul>
           </div>
@@ -84,8 +84,8 @@
           style="width: 300px"
           ref="search"
         />
-        <el-button class="mr10" type="primary" @click="searchRules">搜索</el-button>
-        <el-button @click="init">重置</el-button>
+        <el-button class="mr10" type="primary" v-db-click @click="searchRules">搜索</el-button>
+        <el-button v-db-click @click="init">重置</el-button>
       </div>
       <div class="rule">
         <div
@@ -94,7 +94,7 @@
           :class="{ 'select-rule': arrs.includes(index) }"
           v-for="(item, index) in ruleList"
           :key="index"
-          @click="selectRule(item)"
+          v-db-click @click="selectRule(item)"
         >
           <div>接口名称：{{ item.real_name }}</div>
           <div>请求方式：{{ item.method }}</div>

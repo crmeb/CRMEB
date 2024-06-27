@@ -18,6 +18,7 @@ use app\adminapi\controller\AuthController;
 use app\Request;
 use app\services\system\log\SystemFileServices;
 use app\services\system\SystemCrudDataService;
+use app\services\system\SystemCrudListServices;
 use app\services\system\SystemCrudServices;
 use app\services\system\SystemMenusServices;
 use app\services\system\SystemRouteServices;
@@ -116,14 +117,19 @@ class SystemCrud extends AuthController
         $fromField = $searchField = $hasOneField = $columnField = $tableIndex = [];
 
         $dictionaryids = array_column($data['tableField'], 'dictionary_id');
-        if ($dictionaryids) {
-            $dictionaryList = $service->getColumn([['id', 'in', $dictionaryids]], 'value', 'id');
-            foreach ($dictionaryList as &$value) {
-                $value = is_string($value) ? json_decode($value, true) : $value;
-            }
-        } else {
-            $dictionaryList = [];
+        $dictionaryList = [];
+        foreach ($dictionaryids as $dictionaryid) {
+            $dictionaryList[$dictionaryid] = $service->selectList(['cid' => $dictionaryid], 'name as label,value')->toArray();
         }
+
+//        if ($dictionaryids) {
+//            $dictionaryList = $service->getColumn([['id', 'in', $dictionaryids]], 'value', 'id');
+//            foreach ($dictionaryList as &$value) {
+//                $value = is_string($value) ? json_decode($value, true) : $value;
+//            }
+//        } else {
+//            $dictionaryList = [];
+//        }
 
         foreach ($data['tableField'] as $item) {
             //判断字段长度
@@ -925,5 +931,161 @@ class SystemCrud extends AuthController
         } else {
             return app('json')->fail('删除失败');
         }
+    }
+
+
+
+
+    /** 数据字典新 */
+
+    /**
+     * 获取数据字典列表
+     * @param SystemCrudListServices $service
+     * @return Response
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryList(SystemCrudListServices $service)
+    {
+        $where = $this->request->getMore([
+            ['status', ''],
+        ]);
+        return app('json')->success($service->dataDictionaryList($where));
+    }
+
+    /**
+     * 获取数据字典添加修改表单
+     * @param SystemCrudListServices $service
+     * @param $id
+     * @return Response
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryListCreate(SystemCrudListServices $service, $id)
+    {
+        return app('json')->success($service->dataDictionaryListCreate($id));
+    }
+
+    /**
+     * 保存数据字典
+     * @param SystemCrudListServices $service
+     * @param $id
+     * @return Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryListSave(SystemCrudListServices $service, $id)
+    {
+        $data = $this->request->getMore([
+            ['name', ''],
+            ['mark', ''],
+            ['level', ''],
+            ['status', ''],
+        ]);
+        $service->dataDictionaryListSave($id, $data);
+        return app('json')->success('保存成功');
+    }
+
+    /**
+     * 删除数据字典
+     * @param SystemCrudListServices $service
+     * @param $id
+     * @return Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryListDel(SystemCrudListServices $service, $id)
+    {
+        $service->dataDictionaryListDel($id);
+        return app('json')->success('删除成功');
+    }
+
+    /**
+     * 数据字典内容列表
+     * @param SystemCrudDataService $service
+     * @param $cid
+     * @return Response
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryInfoList(SystemCrudDataService $service, $cid)
+    {
+        return app('json')->success($service->dataDictionaryInfoList($cid));
+    }
+
+    /**
+     * 数据字典内容添加修改表单
+     * @param SystemCrudDataService $service
+     * @param $cid
+     * @param $id
+     * @param $pid
+     * @return Response
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryInfoCreate(SystemCrudDataService $service, $cid, $id, $pid)
+    {
+        return app('json')->success($service->dataDictionaryInfoCreate($cid, (int)$id, (int)$pid));
+    }
+
+    /**
+     * 保存数据字典内容
+     * @param SystemCrudDataService $service
+     * @param $cid
+     * @param $id
+     * @return Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryInfoSave(SystemCrudDataService $service, $cid, $id)
+    {
+        $data = $this->request->getMore([
+            ['name', ''],
+            ['pid', 0],
+            ['value', ''],
+            ['sort', 0],
+        ]);
+        $service->dataDictionaryInfoSave($cid, $id, $data);
+        return app('json')->success('保存成功');
+    }
+
+    /**
+     * 删除数据字典内容
+     * @param SystemCrudDataService $service
+     * @param $id
+     * @return Response
+     * @throws \ReflectionException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function dataDictionaryInfoDel(SystemCrudDataService $service, $id)
+    {
+        $service->dataDictionaryInfoDel($id);
+        return app('json')->success('删除成功');
     }
 }

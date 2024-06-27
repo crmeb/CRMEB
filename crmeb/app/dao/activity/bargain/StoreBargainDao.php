@@ -119,7 +119,7 @@ class StoreBargainDao extends BaseDao
             ->where('start_time', '<=', time())
             ->where('stop_time', '>=', time())
             ->where('product_id', 'IN', function ($query) {
-                $query->name('store_product')->where('is_show', 1)->where('is_del', 0)->field('id');
+                $query->name('store_product')->where('is_del', 0)->field('id');
             })->with('product')->field($field)->page($page, $limit)->order('sort DESC,id DESC')->select()->toArray();
     }
 

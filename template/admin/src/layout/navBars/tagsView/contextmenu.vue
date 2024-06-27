@@ -12,7 +12,7 @@
           class="el-dropdown-menu__item"
           v-for="(v, k) in dropdownList"
           :key="k"
-          @click="onCurrentContextmenuClick(v.id)"
+          v-db-click @click="onCurrentContextmenuClick(v.id)"
         >
           <template v-if="!v.affix">
             <i :class="v.icon"></i>

@@ -130,9 +130,8 @@ class StoreOrderWriteOffServices extends BaseServices
             if (!$re) {
                 throw new ApiException(410272);
             }
-            // 小程序订单管理
             if ($orderInfo['shipping_type'] == 2) {
-                event('OrderShipping', ['product', $orderInfo, 1, '123456', '中通快递']);
+                event('OrderShippingListener', ['product', $orderInfo, 4, '', '']);
             }
             return $orderInfo->toArray();
         } else {

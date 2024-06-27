@@ -9,19 +9,19 @@
           <div class="move-icon">
             <span class="iconfont-diy icondrag"></span>
           </div>
-          <div class="img-box" @click="modalPicTap('单选', index)">
+          <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
             <img :src="item.img" alt="" v-if="item.img" />
             <div class="upload-box" v-else>
               <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
             </div>
-            <div class="delect-btn" @click.stop="bindDelete(item, index)" v-if="!configData.isCube">
+            <div class="delect-btn" v-db-click @click.stop="bindDelete(item, index)" v-if="!configData.isCube">
               <span class="iconfont-diy icondel_1"></span>
             </div>
           </div>
           <div class="info">
             <div class="info-item" v-for="(infos, key) in item.info" :key="key">
               <span>{{ infos.title }}</span>
-              <div class="input-box" @click="getLink(index, key, item.info)">
+              <div class="input-box" v-db-click @click="getLink(index, key, item.info)">
                 <el-input
                   :suffix-icon="key == item.info.length - 1 ? 'el-icon-arrow-right' : ''"
                   v-model="infos.value"
@@ -67,7 +67,7 @@
           type="primary"
           ghost
           style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-          @click="addBox"
+          v-db-click @click="addBox"
           >添加板块</el-button
         >
       </div>

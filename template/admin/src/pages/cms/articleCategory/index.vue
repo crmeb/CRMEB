@@ -21,13 +21,13 @@
             <el-input clearable placeholder="请输入分类昵称" v-model="formValidate.title" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never">
-      <el-button v-auth="['cms-category-create']" type="primary" @click="add">添加文章分类</el-button>
+      <el-button v-auth="['cms-category-create']" type="primary" v-db-click @click="add">添加文章分类</el-button>
       <vxe-table
         class="vxeTable mt14"
         highlight-hover-row
@@ -60,11 +60,11 @@
         </vxe-table-column>
         <vxe-table-column field="date" title="操作" width="160" fixed="right">
           <template v-slot="{ row }">
-            <a @click="edit(row)">编辑</a>
+            <a v-db-click @click="edit(row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(row, '删除文章分类')">删除</a>
+            <a v-db-click @click="del(row, '删除文章分类')">删除</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="lookUp(row)">查看文章</a>
+            <a v-db-click @click="lookUp(row)">查看文章</a>
           </template>
         </vxe-table-column>
       </vxe-table>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <div class="open-image" @click="clear" v-if="openImage">
+    <!-- <div class="open-image" v-db-click @click="clear" v-if="openImage">
       <img src="@/assets/images/wechat_demo.png" alt="" />
     </div> -->
     <!--头部-->

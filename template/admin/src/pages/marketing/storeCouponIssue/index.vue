@@ -54,13 +54,13 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['admin-marketing-store_coupon-add']" type="primary" icon="md-add" @click="add"
+      <el-button v-auth="['admin-marketing-store_coupon-add']" type="primary" icon="md-add" v-db-click @click="add"
         >添加优惠券</el-button
       >
       <el-table
@@ -145,13 +145,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template slot-scope="scope">
-            <a @click="receive(scope.row)">领取记录</a>
+            <a v-db-click @click="receive(scope.row)">领取记录</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="copy(scope.row)">复制</a>
+            <a v-db-click @click="copy(scope.row)">复制</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="couponDel(scope.row, '删除发布的优惠券', scope.$index)">删除</a>
+            <a v-db-click @click="couponDel(scope.row, '删除发布的优惠券', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

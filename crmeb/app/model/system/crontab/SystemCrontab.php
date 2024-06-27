@@ -20,4 +20,24 @@ class SystemCrontab extends BaseModel
      * @var string
      */
     protected $name = 'system_timer';
+
+    /**
+     * 是否自定义定时任务搜索器
+     * @param $query
+     * @param $value
+     * @param $data
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/6/6
+     */
+    public function searchCustomAttr($query, $value, $data)
+    {
+        if ($value !== '') {
+            if ($value == 0) {
+                $query->where('mark', '<>', 'customTimer');
+            } else {
+                $query->where('mark', 'customTimer');
+            }
+        }
+    }
 }

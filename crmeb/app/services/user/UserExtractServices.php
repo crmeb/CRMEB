@@ -152,6 +152,16 @@ class UserExtractServices extends BaseServices
         $userExtract['phone'] = app()->make(UserServices::class)->value($userExtract['uid'], 'phone');
         event('CustomNoticeListener', [$userExtract['uid'], $userExtract, 'extract_fail']);
 
+        //自定义事件-用户提现失败
+        event('CustomEventListener', ['admin_extract_fail', [
+            'uid' => $userExtract['uid'],
+            'price' => $userExtract['price'],
+            'pay_type' => $userExtract['extract_type'],
+            'nickname' => $userExtract['price'],
+            'phone' => $userExtract['phone'],
+            'fail_time' => date('Y-m-d H:i:s')
+        ]]);
+
         return true;
     }
 
@@ -264,6 +274,16 @@ class UserExtractServices extends BaseServices
         $userExtract['time'] = date('Y-m-d H:i:s');
         $userExtract['price'] = $extractNumber;
         event('CustomNoticeListener', [$userExtract['uid'], $userExtract, 'extract_success']);
+
+        //自定义事件-用户提现成功
+        event('CustomEventListener', ['admin_extract_success', [
+            'uid' => $userExtract['uid'],
+            'price' => $extractNumber,
+            'pay_type' => $userExtract['extract_type'],
+            'nickname' => $insertData['nickname'],
+            'phone' => $phone,
+            'success_time' => date('Y-m-d H:i:s')
+        ]]);
 
         return true;
     }
@@ -540,6 +560,16 @@ class UserExtractServices extends BaseServices
         $systemAdmin->adminNewPush();
         //消息
         event('NoticeListener', [['nickname' => $user['nickname'], 'money' => $data['extract_price']], 'kefu_send_extract_application']);
+
+        //自定义事件-用户提现
+        event('CustomEventListener', ['user_extract', [
+            'uid' => $insertData['uid'],
+            'phone' => $user['phone'],
+            'extract_type' => $insertData['extract_type'],
+            'extract_price' => $insertData['extract_price'],
+            'extract_fee' => $insertData['extract_fee'],
+            'extract_time' => date('Y-m-d H:i:s'),
+        ]]);
 
         return true;
     }

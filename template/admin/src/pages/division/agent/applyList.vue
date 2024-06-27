@@ -36,7 +36,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -98,11 +98,11 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="170">
               <template slot-scope="scope">
-                <a v-if="scope.row.status == 0" @click="groupAdd(scope.row.id, 1)">同意</a>
+                <a v-if="scope.row.status == 0" v-db-click @click="groupAdd(scope.row.id, 1)">同意</a>
                 <el-divider v-if="scope.row.status == 0" direction="vertical" />
-                <a v-if="scope.row.status == 0" @click="groupAdd(scope.row.id, 0)">拒绝</a>
+                <a v-if="scope.row.status == 0" v-db-click @click="groupAdd(scope.row.id, 0)">拒绝</a>
                 <el-divider direction="vertical" v-if="scope.row.status == 0" />
-                <a @click="del(scope.row, '删除申请', scope.$index)">删除</a>
+                <a v-db-click @click="del(scope.row, '删除申请', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>

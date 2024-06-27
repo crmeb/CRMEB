@@ -16,7 +16,7 @@
           <span class="label" v-for="(item, index) in activeUserInfo.labelNames" :key="index">{{ item }}</span>
         </div>
         <span v-else class="labelBox">无</span>
-        <span class="iconfontYI icon-up" @click="onShowLabel"></span>
+        <span class="iconfontYI icon-up" v-db-click @click="onShowLabel"></span>
       </div>
       <div class="acea-row item bgt">
         <span class="sp1">手机号</span>
@@ -28,9 +28,9 @@
           class="checkName"
           v-if="activeUserInfo.group_name"
           v-text="activeUserInfo.group_name"
-          @click="showName"
+          v-db-click @click="showName"
         ></span>
-        <span v-else @click="showName">无</span>
+        <span v-else v-db-click @click="showName">无</span>
         <vue-pickers
           :data="groupList"
           v-if="groupList.length"

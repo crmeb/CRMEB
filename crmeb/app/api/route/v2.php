@@ -76,6 +76,8 @@ Route::group('v2', function () {
             Route::get('order/invoice_list', 'v2.order.StoreOrderInvoiceController/list')->name('orderInvoiceList')->option(['real_name' => '订单申请开票记录']);
             //订单开票详情
             Route::get('order/invoice_detail/:uni', 'v2.order.StoreOrderInvoiceController/detail')->name('orderInvoiceList')->option(['real_name' => '订单开票详情']);
+            //下载电子发票
+            Route::get('order/down_invoice/:id', 'v2.order.StoreOrderInvoiceController/downInvoice')->name('downInvoice')->option(['real_name' => '下载电子发票']);
         })->option(['mark' => 'invoice', 'mark_name' => '发票']);
 
         //清除搜索记录

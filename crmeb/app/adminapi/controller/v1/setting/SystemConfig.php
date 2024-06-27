@@ -48,9 +48,10 @@ class SystemConfig extends AuthController
     {
         $where = $this->request->getMore([
             ['tab_id', 0],
+            ['config_name', ''],
             ['status', -1]
         ]);
-        if (!$where['tab_id']) {
+        if (!$where['tab_id'] && $where['config_name'] == '') {
             return app('json')->fail(100100);
         }
         if ($where['status'] == -1) {
@@ -96,6 +97,8 @@ class SystemConfig extends AuthController
             ['info', ''],
             ['desc', ''],
             ['sort', 0],
+            ['level', 0],
+            ['link_data', []],
             ['status', 0]
         ]);
         if (is_array($data['config_tab_id'])) $data['config_tab_id'] = end($data['config_tab_id']);
@@ -118,6 +121,11 @@ class SystemConfig extends AuthController
         if ($data['type'] == 'radio' || $data['type'] == 'checkbox') {
             if (!$data['parameter']) return app('json')->fail(400283);
             $this->services->valiDateRadioAndCheckbox($data);
+        }
+        if ($data['level'] == 1) {
+            if (!$data['link_data']) return app('json')->fail('请选择关联顶级选项');
+            $data['link_id'] = $data['link_data'][0];
+            $data['link_value'] = $data['link_data'][1];
         }
         $data['value'] = json_encode($data['value']);
         $config = $this->services->getOne(['menu_name' => $data['menu_name']]);
@@ -185,11 +193,18 @@ class SystemConfig extends AuthController
             ['info', ''],
             ['desc', ''],
             ['sort', 0],
+            ['level', 0],
+            ['link_data', []],
             ['status', 0]
         ]);
         if (is_array($data['config_tab_id'])) $data['config_tab_id'] = end($data['config_tab_id']);
         if (!$this->services->get($id)) {
             return app('json')->fail(100026);
+        }
+        if ($data['level'] == 1) {
+            if (!$data['link_data']) return app('json')->fail('请选择关联顶级选项');
+            $data['link_id'] = $data['link_data'][0];
+            $data['link_value'] = $data['link_data'][1];
         }
         $data['value'] = json_encode($data['value']);
         $this->services->update($id, $data);

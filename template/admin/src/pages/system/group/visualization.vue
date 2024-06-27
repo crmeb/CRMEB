@@ -4,7 +4,7 @@
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
-          <el-button class="bnt" type="primary" @click="save">保存</el-button>
+          <el-button class="bnt" type="primary" v-db-click @click="save">保存</el-button>
         </div>
       </div>
     </div>
@@ -16,11 +16,11 @@
             :class="{ active: item.id == pageId }"
             v-for="(item, index) in groupAll"
             :key="index"
-            @click="edits(item)"
+            v-db-click @click="edits(item)"
           >
             {{ item.name }}
           </div>
-          <div class="tab-item" :class="{ active: pageId == 1617 }" @click="edits(2)">开屏广告</div>
+          <div class="tab-item" :class="{ active: pageId == 1617 }" v-db-click @click="edits(2)">开屏广告</div>
         </div>
       </div>
       <div v-if="name == 'user_recharge_quota'" class="iframe">
@@ -191,7 +191,7 @@
           <div>
             <div v-bind="grid">
               <div class="title">签到天数设置</div>
-              <el-button type="primary" @click="groupAdd('添加数据')" style="margin-left: 14px; margin-top: 30px"
+              <el-button type="primary" v-db-click @click="groupAdd('添加数据')" style="margin-left: 14px; margin-top: 30px"
                 >添加数据</el-button
               >
             </div>
@@ -242,9 +242,9 @@
               </el-table-column>
               <el-table-column label="操作" fixed="right" width="150">
                 <template slot-scope="scope">
-                  <a @click="edit(scope.row, '编辑')">编辑</a>
+                  <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
                   <el-divider direction="vertical"></el-divider>
-                  <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+                  <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
                 </template>
               </el-table-column>
             </el-table>
@@ -256,7 +256,7 @@
           <div>
             <div v-bind="grid">
               <div class="title">充值金额设置</div>
-              <el-button type="primary" @click="groupAdd('添加数据')" style="margin-left: 14px; margin-top: 30px"
+              <el-button type="primary" v-db-click @click="groupAdd('添加数据')" style="margin-left: 14px; margin-top: 30px"
                 >添加数据</el-button
               >
             </div>
@@ -295,9 +295,9 @@
                     </el-switch>
                   </template>
                   <template v-else-if="item.slot === 'action'">
-                    <a @click="edit(scope.row, '编辑')">编辑</a>
+                    <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
                     <el-divider direction="vertical"></el-divider>
-                    <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+                    <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
                   </template>
                 </template>
               </el-table-column>
@@ -327,12 +327,12 @@
                     <div class="move-icon">
                       <span class="iconfont icondrag2"></span>
                     </div>
-                    <div class="img-box" @click="modalPicTap('单选', index)">
+                    <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
                       <img :src="item.slide" alt="" v-if="item.slide" />
                       <div class="upload-box" v-else>
                         <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                       </div>
-                      <div class="delect-btn" @click.stop="bindDelete(item, index)">
+                      <div class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
                         <i class="el-icon-circle-close" style="font-size: 24px" />
                       </div>
                     </div>
@@ -344,12 +344,12 @@
                     <div class="move-icon">
                       <span class="iconfont icondrag2"></span>
                     </div>
-                    <div class="img-box" @click="modalPicTap('单选', index)">
+                    <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
                       <img :src="item.img" alt="" v-if="item.img" />
                       <div class="upload-box" v-else>
                         <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                       </div>
-                      <div class="delect-btn" @click.stop="bindDelete(item, index)">
+                      <div class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
                         <i class="el-icon-circle-close" style="font-size: 24px" />
                       </div>
                     </div>
@@ -362,7 +362,7 @@
                       </div>
                       <div class="info-item">
                         <span>链接地址：</span>
-                        <div class="input-box" @click="link(index)">
+                        <div class="input-box" v-db-click @click="link(index)">
                           <el-input v-model="item.link" readonly placeholder="选择链接" suffix-icon="el-icon-arrow-right" />
                         </div>
                       </div>
@@ -393,7 +393,7 @@
                     type="primary"
                     ghost
                     style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
-                    @click="addBox"
+                    v-db-click @click="addBox"
                     >添加图片
                   </el-button>
                 </div>
@@ -429,12 +429,12 @@
                   <div class="move-icon">
                     <span class="iconfont icondrag2"></span>
                   </div>
-                  <div class="img-box" @click="modalPicTap('单选', index)">
+                  <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
                     <img :src="item.img" alt="" v-if="item.img" />
                     <div class="upload-box" v-else>
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
-                    <div class="delect-btn" @click.stop="bindDelete(item, index)">
+                    <div class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
                       <i class="el-icon-circle-close" style="font-size: 24px" />
                     </div>
                   </div>
@@ -447,7 +447,7 @@
                     </div>
                     <div class="info-item">
                       <span>链接地址：</span>
-                      <div class="input-box" @click="link(index)">
+                      <div class="input-box" v-db-click @click="link(index)">
                         <el-input v-model="item.link" readonly placeholder="选择链接" />
                       </div>
                     </div>
@@ -472,7 +472,7 @@
                   type="primary"
                   ghost
                   style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
-                  @click="addBox"
+                  v-db-click @click="addBox"
                   >添加图片
                 </el-button>
               </div>

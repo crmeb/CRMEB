@@ -21,7 +21,7 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="selChange">搜索</el-button >
+          <el-button type="primary" v-db-click @click="selChange">搜索</el-button >
         </el-form-item>
       </el-form>
       </div>
@@ -29,7 +29,7 @@
     <el-card :bordered="false" shadow="never">
       <el-row>
         <el-col v-bind="grid">
-          <el-button type="primary" @click="add">添加语言地区</el-button>
+          <el-button type="primary" v-db-click @click="add">添加语言地区</el-button>
         </el-col>
       </el-row>
       <el-table
@@ -61,9 +61,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除地区语言', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除地区语言', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

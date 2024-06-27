@@ -35,7 +35,7 @@
         </div>
         <div v-if="bgPic">
           <div class="title">建议尺寸：690 * 240px</div>
-          <div class="boxs" @click="modalPicTap('单选')">
+          <div class="boxs" v-db-click @click="modalPicTap('单选')">
             <img :src="bgPicUrl" alt="" v-if="bgPicUrl" />
             <div class="upload-box" v-else>
               <i class="el-icon-picture-outline" style="font-size: 24px"></i>

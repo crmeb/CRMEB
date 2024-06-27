@@ -27,6 +27,7 @@
                 :class="formValidate.virtual_type == item.id ? 'virtual_boder' : 'virtual_boder2'"
                 v-for="(item, index) in virtual"
                 :key="index"
+                v-db-click
                 @click="virtualbtn(item.id, 2)"
               >
                 <div class="virtual_top">{{ item.tit }}</div>
@@ -53,7 +54,7 @@
                 :props="{ multiple: true, checkStrictly: true, emitPath: false }"
                 clearable
               ></el-cascader>
-              <span class="addfont" @click="addCate">新增分类</span>
+              <span class="addfont" v-db-click @click="addCate">新增分类</span>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -81,11 +82,12 @@
                   @dragend="handleDragEnd($event, item)"
                 >
                   <img v-lazy="item" />
-                  <i class="el-icon-error btndel" @click="handleRemove(index)"></i>
+                  <i class="el-icon-error btndel" v-db-click @click="handleRemove(index)"></i>
                 </div>
                 <div
                   v-if="formValidate.slider_image.length < 10"
                   class="upLoad acea-row row-center-wrapper"
+                  v-db-click
                   @click="modalPicTap('duo')"
                 >
                   <i class="el-icon-picture-outline" style="font-size: 24px"></i>
@@ -126,6 +128,7 @@
               <div
                 v-if="seletVideo == 0 && (upload_type !== '1' || videoLink) && !formValidate.video_link"
                 class="ml10 videbox"
+                v-db-click
                 @click="zh_uploadFile"
               >
                 +
@@ -134,6 +137,7 @@
                 v-if="seletVideo == 1 && (upload_type !== '1' || videoLink) && !formValidate.video_link"
                 type="primary"
                 class="ml10"
+                v-db-click
                 @click="zh_uploadFile"
                 >确认添加</el-button
               >
@@ -151,15 +155,11 @@
                 <div v-if="seletVideo === 0 && !formValidate.video_link" class="videbox">+</div>
               </el-upload>
               <div class="box-video-style" v-if="formValidate.video_link">
-                <video
-                  style="width: 100%; height: 100%;"
-                  :src="formValidate.video_link"
-                  controls="controls"
-                >
+                <video style="width: 100%; height: 100%" :src="formValidate.video_link" controls="controls">
                   您的浏览器不支持 video 标签。
                 </video>
                 <div class="mark"></div>
-                <i class="el-icon-delete iconv" @click="delVideo"></i>
+                <i class="el-icon-delete iconv" v-db-click @click="delVideo"></i>
               </div>
               <Progress class="progress" :percent="progress" :stroke-width="5" v-if="upload.videoIng || videoIng" />
               <div class="titTip">建议时长：9～30秒，视频宽高比16:9</div>
@@ -204,8 +204,8 @@
                     :label="item.rule_name"
                   ></el-option>
                 </el-select>
-                <el-button type="primary" @click="confirm">确认</el-button>
-                <el-button @click="addRule">添加规格模板</el-button>
+                <el-button type="primary" v-db-click @click="confirm">确认</el-button>
+                <el-button v-db-click @click="addRule">添加规格模板</el-button>
               </div>
             </el-form-item>
 
@@ -225,7 +225,7 @@
                   <div style="width: 90%" :class="moveIndex === index ? 'borderStyle' : ''">
                     <div class="acea-row row-middle">
                       <span class="mr5">{{ item.value }}</span>
-                      <i size="14" class="curs el-icon-error" @click="handleRemoveRole(index)" />
+                      <i size="14" class="curs el-icon-error" v-db-click @click="handleRemoveRole(index)" />
                     </div>
                     <div class="rulesBox">
                       <draggable class="item" :list="item.detail" handle=".drag">
@@ -246,7 +246,7 @@
                         style="width: 190px"
                       >
                         <template slot="append"
-                          ><el-button type="primary" @click="createAttr(item.detail.attrsVal, index)"
+                          ><el-button type="primary" v-db-click @click="createAttr(item.detail.attrsVal, index)"
                             >添加</el-button
                           ></template
                         >
@@ -256,7 +256,7 @@
                 </div>
               </draggable>
               <!-- <div  v-for="(item, index) in attrs" :key="index">
-                                    <div class="acea-row row-middle"><span class="mr5">{{item.value}}</span><Icon type="ios-close-circle" size="14" class="curs" @click="handleRemoveRole(index)"/></div>
+                                    <div class="acea-row row-middle"><span class="mr5">{{item.value}}</span><Icon type="ios-close-circle" size="14" class="curs" v-db-click @click="handleRemoveRole(index)"/></div>
                                     <div class="rulesBox">
                                         <el-tag type="dot" closable color="primary" v-for="(j, indexn) in item.detail" :key="indexn" :name="j" class="mr20" @on-close="handleRemove2(item.detail,indexn)">{{j}}</el-tag>
                                         <el-input search enter-button="添加" placeholder="请输入属性名称" v-model="item.detail.attrsVal" @on-search="createAttr(item.detail.attrsVal,index)" style="width: 150px"/>
@@ -265,8 +265,8 @@
             </el-form-item>
             <!-- <el-col :span="24" v-if="createBnt"> -->
             <el-form-item v-if="createBnt">
-              <el-button type="primary" @click="addBtn">添加新规格</el-button>
-              <el-button type="success" @click="generate(1)">立即生成</el-button>
+              <el-button type="primary" v-db-click @click="addBtn">添加新规格</el-button>
+              <el-button type="success" v-db-click @click="generate(1)">立即生成</el-button>
             </el-form-item>
             <!-- </el-col> -->
             <el-col :span="24" v-if="showIput">
@@ -282,8 +282,8 @@
               </el-col>
               <el-col :xl="6" :lg="5" :md="10" :sm="24" :xs="24">
                 <div class="df-n-warp">
-                  <el-button type="primary" @click="createAttrName">确定</el-button>
-                  <el-button @click="offAttrName">取消</el-button>
+                  <el-button type="primary" v-db-click @click="createAttrName">确定</el-button>
+                  <el-button v-db-click @click="offAttrName">取消</el-button>
                 </div>
               </el-col>
             </el-col>
@@ -315,6 +315,7 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
+                            v-db-click
                             @click="modalPicTap('dan', 'duopi', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
@@ -364,23 +365,27 @@
                         <template v-else-if="item.slot === 'fictitious'">
                           <el-button
                             v-if="!scope.row.coupon_id && formValidate.virtual_type == 2"
+                            v-db-click
                             @click="addGoodsCoupon(scope.$index, 'oneFormBatch')"
                             >添加优惠券</el-button
                           >
                           <span
                             class="see"
                             v-else-if="formValidate.virtual_type == 2 && scope.row.coupon_id"
+                            v-db-click
                             @click="see(scope.row, 'manyFormValidate', scope.$index)"
                             >{{ scope.row.coupon_name }}</span
                           >
                           <el-button
                             v-else-if="!scope.row.virtual_list.length && formValidate.virtual_type == 1"
+                            v-db-click
                             @click="addVirtual(scope.$index, 'oneFormBatch')"
                             >添加卡密</el-button
                           >
                           <span
                             class="see"
                             v-else-if="scope.row.virtual_list.length && formValidate.virtual_type == 1"
+                            v-db-click
                             @click="see(scope.row, 'oneFormBatch', scope.$index)"
                             >已设置</span
                           >
@@ -409,9 +414,9 @@
                           ></el-input-number>
                         </template>
                         <template v-else-if="item.slot === 'action'">
-                          <a @click="batchAdd">批量添加</a>
+                          <a v-db-click @click="batchAdd">批量添加</a>
                           <el-divider direction="vertical"></el-divider>
-                          <a @click="batchDel">清空</a>
+                          <a v-db-click @click="batchDel">清空</a>
                         </template>
                       </template>
                     </el-table-column>
@@ -437,6 +442,7 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
+                            v-db-click
                             @click="modalPicTap('dan', 'duoTable', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="manyFormValidate[scope.$index].pic">
@@ -509,17 +515,20 @@
                         <template v-else-if="item.slot === 'fictitious'">
                           <el-button
                             v-if="!scope.row.coupon_id && formValidate.virtual_type == 2"
+                            v-db-click
                             @click="addGoodsCoupon(scope.$index, 'manyFormValidate')"
                             >添加优惠券</el-button
                           >
                           <span
                             class="see"
                             v-else-if="scope.row.coupon_id && formValidate.virtual_type == 2"
+                            v-db-click
                             @click="see(scope.row, 'manyFormValidate', scope.$index)"
                             >{{ scope.row.coupon_name }}</span
                           >
                           <el-button
                             v-else-if="!scope.row.virtual_list && !scope.row.stock && formValidate.virtual_type == 1"
+                            v-db-click
                             @click="addVirtual(scope.$index, 'manyFormValidate')"
                             >添加卡密</el-button
                           >
@@ -528,12 +537,13 @@
                             v-else-if="
                               (scope.row.virtual_list.length || scope.row.stock) && formValidate.virtual_type == 1
                             "
+                            v-db-click
                             @click="see(scope.row, 'manyFormValidate', scope.$index)"
                             >已设置</span
                           >
                         </template>
                         <template v-else-if="item.slot === 'action'">
-                          <a @click="delAttrTable(scope.$index)">删除</a>
+                          <a v-db-click @click="delAttrTable(scope.$index)">删除</a>
                         </template>
                       </template>
                     </el-table-column>
@@ -546,7 +556,7 @@
           <div v-if="formValidate.spec_type === 0">
             <el-col :span="24">
               <el-form-item label="图片：">
-                <div class="pictrueBox" @click="modalPicTap('dan', 'danTable', 0)">
+                <div class="pictrueBox" v-db-click @click="modalPicTap('dan', 'danTable', 0)">
                   <div class="pictrue" v-if="oneFormValidate[0].pic">
                     <img v-lazy="oneFormValidate[0].pic" />
                     <el-input v-model="oneFormValidate[0].pic" style="display: none"></el-input>
@@ -642,12 +652,14 @@
               <el-form-item label="虚拟商品：" v-if="formValidate.virtual_type == 1 || formValidate.virtual_type == 2">
                 <el-button
                   v-if="!oneFormValidate[0].coupon_id && formValidate.virtual_type == 2"
+                  v-db-click
                   @click="addGoodsCoupon(0, 'oneFormValidate')"
                   >添加优惠券</el-button
                 >
                 <span
                   class="see"
                   v-else-if="oneFormValidate[0].coupon_id && formValidate.virtual_type == 2"
+                  v-db-click
                   @click="see(oneFormValidate[0], 'oneFormValidate', 0)"
                   >{{ oneFormValidate[0].coupon_name }}</span
                 >
@@ -657,6 +669,7 @@
                     !oneFormValidate[0].stock &&
                     formValidate.virtual_type == 1
                   "
+                  v-db-click
                   @click="addVirtual(0, 'oneFormValidate')"
                   >添加卡密</el-button
                 >
@@ -666,6 +679,7 @@
                     (oneFormValidate[0].virtual_list.length || oneFormValidate[0].stock > 0) &&
                     formValidate.virtual_type == 1
                   "
+                  v-db-click
                   @click="see(oneFormValidate[0], 'oneFormValidate', 0)"
                   >已设置</span
                 >
@@ -735,7 +749,7 @@
                     :label="item.name"
                   ></el-option>
                 </el-select>
-                <span class="addfont" @click="addTemp">新增运费模板</span>
+                <span class="addfont" v-db-click @click="addTemp">新增运费模板</span>
               </div>
             </el-form-item>
           </el-col>
@@ -789,13 +803,13 @@
                   item.title
                 }}</el-tag>
               </div>
-              <el-button type="primary" @click="addCoupon">添加优惠券</el-button>
+              <el-button type="primary" v-db-click @click="addCoupon">添加优惠券</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="关联用户标签：" prop="label_id">
               <div style="display: flex">
-                <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
+                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
                   <div style="width: 90%">
                     <div v-if="dataLabel.length">
                       <el-tag closable v-for="(item, index) in dataLabel" @close="closeLabel(item)" :key="index">{{
@@ -806,7 +820,7 @@
                   </div>
                   <div class="iconfont iconxiayi"></div>
                 </div>
-                <span class="addfont" @click="addLabel">新增标签</span>
+                <span class="addfont" v-db-click @click="addLabel">新增标签</span>
               </div>
             </el-form-item>
           </el-col>
@@ -876,23 +890,27 @@
                     <template v-else-if="item.slot === 'fictitious'">
                       <el-button
                         v-if="!row.coupon_id && formValidate.virtual_type == 2"
+                        v-db-click
                         @click="addGoodsCoupon(scope.$index, 'oneFormValidate')"
                         >添加优惠券</el-button
                       >
                       <span
                         class="see"
                         v-else-if="row.coupon_id && formValidate.virtual_type == 2"
+                        v-db-click
                         @click="see(row, 'manyFormValidate', scope.$index)"
                         >{{ row.coupon_name }}</span
                       >
                       <el-button
                         v-else-if="!row.virtual_list.length && !row.stock && formValidate.virtual_type == 1"
+                        v-db-click
                         @click="addVirtual(scope.$index, 'oneFormValidate')"
                         >添加卡密</el-button
                       >
                       <span
                         class="see"
                         v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
+                        v-db-click
                         @click="see(row, 'oneFormValidate', scope.$index)"
                         >已设置</span
                       >
@@ -947,8 +965,7 @@
                   placeholder="请输入二级返佣"
                   class="columnsBox content_width"
                   v-model="manyBrokerageTwo"
-                  ></el-input
-                >
+                ></el-input>
               </span>
               <span v-if="formValidate.is_sub.indexOf(0) > -1">
                 会员价：<el-input-number
@@ -960,15 +977,15 @@
                   v-model="manyVipPrice"
                 ></el-input-number>
               </span>
-              <el-button type="primary" @click="brokerageSetUp">批量设置</el-button>
+              <el-button type="primary" v-db-click @click="brokerageSetUp">批量设置</el-button>
               <!-- <template v-if="formValidate.is_sub">
                                 <el-input-number controls-position="right" v-width="'20%'" placeholder="请输入一级返佣" :min="0" class="columnsBox" v-model="manyBrokerage"></el-input-number>
                                 <el-input-number controls-position="right" v-width="'20%'" placeholder="请输入二级返佣" :min="0" class="columnsBox" v-model="manyBrokerageTwo"></el-input-number>
-                                <el-button type="primary" @click="brokerageSetUp">批量设置</el-button>
+                                <el-button type="primary" v-db-click @click="brokerageSetUp">批量设置</el-button>
                             </template>
                             <template v-else>
                                 <el-input-number controls-position="right" v-width="'20%'" placeholder="请输入会员价" :min="0" class="columnsBox" v-model="manyVipPrice"></el-input-number>
-                                <el-button type="primary" @click="vipPriceSetUp">批量设置</el-button>
+                                <el-button type="primary" v-db-click @click="vipPriceSetUp">批量设置</el-button>
                             </template> -->
             </el-form-item>
             <el-form-item label="商品属性：" v-if="formValidate.spec_type === 1 && manyFormValidate.length">
@@ -1011,23 +1028,27 @@
                     <template v-else-if="item.slot === 'fictitious'">
                       <el-button
                         v-if="!row.coupon_id && formValidate.virtual_type == 2"
+                        v-db-click
                         @click="addGoodsCoupon(scope.$index, 'manyFormValidate')"
                         >添加优惠券</el-button
                       >
                       <span
                         class="see"
                         v-else-if="row.coupon_id && formValidate.virtual_type == 2"
+                        v-db-click
                         @click="see(row, 'manyFormValidate', scope.$index)"
                         >{{ row.coupon_name }}</span
                       >
                       <el-button
                         v-else-if="!row.virtual_list.length && !row.stock && formValidate.virtual_type == 1"
+                        v-db-click
                         @click="addVirtual(scope.$index, 'manyFormValidate')"
                         >添加卡密</el-button
                       >
                       <span
                         class="see"
                         v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
+                        v-db-click
                         @click="see(row, 'manyFormValidate', scope.$index)"
                         >已设置</span
                       >
@@ -1195,9 +1216,9 @@
               <div class="picBox">
                 <div class="pictrue" v-for="(item, index) in formValidate.recommend_list" :key="index">
                   <img v-lazy="item.image" />
-                  <i class="el-icon-error btndel" @click="handleRemoveRecommend(index)"></i>
+                  <i class="el-icon-error btndel" v-db-click @click="handleRemoveRecommend(index)"></i>
                 </div>
-                <div class="upLoad acea-row row-center-wrapper" @click="changeGoods">
+                <div class="upLoad acea-row row-center-wrapper" v-db-click @click="changeGoods">
                   <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                 </div>
               </div>
@@ -1239,7 +1260,7 @@
 
           <el-col :span="24">
             <el-form-item label="商品推荐图：">
-              <div class="pictrueBox" @click="modalPicTap('dan', 'recommend_image')">
+              <div class="pictrueBox" v-db-click @click="modalPicTap('dan', 'recommend_image')">
                 <div class="pictrue" v-if="formValidate.recommend_image">
                   <img v-lazy="formValidate.recommend_image" />
                   <el-input v-model.trim="formValidate.recommend_image" style="display: none"></el-input>
@@ -1275,22 +1296,23 @@
                     ></el-option>
                   </el-select>
                   <el-checkbox v-model="item.status">必填</el-checkbox>
-                  <div class="addfont" @click="delcustom()">删除</div>
+                  <div class="addfont" v-db-click @click="delcustom()">删除</div>
                 </div>
               </div>
               <div class="addCustomBox" v-show="customBtn">
-                <div class="btn" @click="addcustom">+ 添加表单</div>
+                <div class="btn" v-db-click @click="addcustom">+ 添加表单</div>
                 <div class="titTip">用户下单时需填写的信息，最多可设置10条，设置了自定义表单的商品不能加入购物车</div>
               </div>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item>
-          <el-button v-if="currentTab !== '1'" @click="upTab">上一步</el-button>
+          <el-button v-if="currentTab !== '1'" v-db-click @click="upTab">上一步</el-button>
           <el-button
             type="primary"
             class="submission"
             v-if="currentTab !== '6' && formValidate.virtual_type == 0"
+            v-db-click
             @click="downTab"
             >下一步</el-button
           >
@@ -1298,21 +1320,22 @@
             type="primary"
             class="submission"
             v-if="currentTab !== '5' && formValidate.virtual_type != 0"
+            v-db-click
             @click="downTab"
             >下一步</el-button
           >
           <el-button
             type="primary"
-            :disabled="openSubimit"
             class="submission"
+            v-db-click
             @click="handleSubmit('formValidate')"
             v-if="($route.params.id || currentTab === '6') && formValidate.virtual_type == 0"
             >保存</el-button
           >
           <el-button
             type="primary"
-            :disabled="openSubimit"
             class="submission"
+            v-db-click
             @click="handleSubmit('formValidate')"
             v-if="($route.params.id || currentTab === '5') && formValidate.virtual_type != 0"
             >保存</el-button
@@ -1375,13 +1398,19 @@
                     style="width: 150px"
                     placeholder="请输入卡密"
                   ></el-input>
-                  <span class="deteal-btn" @click="removeVirtual(index)">删除</span>
+                  <span class="deteal-btn" v-db-click @click="removeVirtual(index)">删除</span>
                 </div>
               </div>
               <div class="add-more" v-if="disk_type == 2">
-                <el-button class="h-33" type="primary" @click="handleAdd">新增</el-button>
-                <el-upload class="ml10" :action="cardUrl" :data="uploadData" :headers="header" :on-success="upFile" :before-upload="beforeUpload"
- >
+                <el-button class="h-33" type="primary" v-db-click @click="handleAdd">新增</el-button>
+                <el-upload
+                  class="ml10"
+                  :action="cardUrl"
+                  :data="uploadData"
+                  :headers="header"
+                  :on-success="upFile"
+                  :before-upload="beforeUpload"
+                >
                   <el-button>导入卡密</el-button>
                 </el-upload>
               </div>
@@ -1389,8 +1418,8 @@
           </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="closeVirtual">取 消</el-button>
-          <el-button type="primary" @click="upVirtual">确 定</el-button>
+          <el-button v-db-click @click="closeVirtual">取 消</el-button>
+          <el-button type="primary" v-db-click @click="upVirtual">确 定</el-button>
         </span>
       </el-dialog>
     </el-card>
@@ -1497,7 +1526,7 @@ export default {
         { tit: '虚拟商品', id: 3, tit2: '虚拟发货' },
       ],
       seletVideo: 0, //选择视频类型
-      customBtn: false, //自定义留言开关
+      customBtn: 0, //自定义留言开关
       content: '',
       contents: '',
       fileUrl: Setting.apiBaseURL + '/file/upload',
@@ -1918,7 +1947,7 @@ export default {
         },
       ],
       columnsInstalM: [],
-      moveIndex: ''
+      moveIndex: '',
     };
   },
   computed: {
@@ -1983,7 +2012,7 @@ export default {
             this.formValidate.is_virtual = data.is_virtual;
             this.formValidate.custom_form = data.custom_form || [];
             if (this.formValidate.custom_form.length != 0) {
-              this.customBtn = true;
+              this.customBtn = 1;
             }
             this.virtualbtn(data.virtual_type, 1);
             if (data.spec_type === 0) {
@@ -2008,7 +2037,7 @@ export default {
                 },
               ];
             }
-            this.watchActivity()
+            this.watchActivity();
             this.spinShow = false;
           }
         })
@@ -2027,15 +2056,15 @@ export default {
     this.productGetTemplate();
     // this.userLabel();
     this.uploadType();
-    this.watchActivity()
+    this.watchActivity();
   },
   methods: {
     beforeUpload(file) {
-      return isFileUpload(file)
+      return isFileUpload(file);
     },
     // 分片上传
     videoSaveToUrl(file) {
-      if(isVideoUpload(file)){
+      if (isVideoUpload(file)) {
         uploadByPieces({
           file: file, // 视频实体
           pieceSize: 3, // 分片大小
@@ -2208,7 +2237,7 @@ export default {
       this.formValidate.logistics = data.logistics || ['1'];
       this.formValidate.custom_form = data.custom_form || [];
       if (this.formValidate.custom_form.length != 0) {
-        this.customBtn = true;
+        this.customBtn = 1;
       }
       this.formValidate.cate_id = cate_id;
       if (data.attr) {
@@ -2242,7 +2271,7 @@ export default {
           },
         ];
       }
-      this.watchActivity()
+      this.watchActivity();
     },
     //关闭淘宝弹窗并生成数据；
     onClose(data) {
@@ -2947,7 +2976,7 @@ export default {
         return match;
       });
       newContent = newContent.replace(/style="[^"]+"/gi, function (match, capture) {
-        match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/max-max-width:[^;]+;/gi, 'max-width:100%;')
+        match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/max-max-width:[^;]+;/gi, 'max-width:100%;');
         return match;
       });
       newContent = newContent.replace(/<br[^>]*\/>/gi, '');
@@ -3009,22 +3038,22 @@ export default {
       this.formValidate.recommend_list.splice(i, 1);
     },
     watchActivity() {
-      let marketing = []
-       this.formValidate.activity.map((el) => {
+      let marketing = [];
+      this.formValidate.activity.map((el) => {
         if (el == '默认') {
           marketing.push(el);
         }
         if (el == '秒杀' && checkArray('seckill')) {
           marketing.push(el);
-        } 
-         if (el == '砍价' && checkArray('bargain')) {
+        }
+        if (el == '砍价' && checkArray('bargain')) {
           marketing.push(el);
-        } 
-         if (el == '拼团' && checkArray('combination')) {
+        }
+        if (el == '拼团' && checkArray('combination')) {
           marketing.push(el);
-        } 
+        }
       });
-      this.formValidate.activity = marketing
+      this.formValidate.activity = marketing;
     },
   },
 };
@@ -3051,7 +3080,7 @@ export default {
 
 .drag {
   cursor: move;
-  margin: 3px 0
+  margin: 3px 0;
 }
 
 .move-icon {
@@ -3093,7 +3122,7 @@ export default {
 }
 
 .box-video-style {
-  width: 375px; 
+  width: 375px;
   height: 211px;
   border-radius: 10px;
   background-color: #707070;
@@ -3141,7 +3170,6 @@ export default {
   color: #fff;
   margin-right: 10px;
   font-size: 12px;
-
 }
 
 .color-list .color-item.blue {
@@ -3173,8 +3201,9 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  .item{
-    display:flex;
+
+  .item {
+    display: flex;
     flex-wrap: wrap;
   }
 }
@@ -3256,7 +3285,6 @@ export default {
   margin-bottom: 10px;
   font-size: 12px;
 }
-
 
 .virtual-data {
   display: flex;
@@ -3496,20 +3524,24 @@ export default {
 .progress {
   margin-top: 10px;
 }
-.labelInput ::v-deep .el-tag{
+
+.labelInput ::v-deep .el-tag {
   color: #606266;
   background-color: #F0F2F5;
   border-color: #F0F2F5;
   margin-right: 6px;
 }
-.labelInput ::v-deep .el-tag .el-tag__close{
+
+.labelInput ::v-deep .el-tag .el-tag__close {
   color: #909399;
 }
-.labelInput ::v-deep .el-tag .el-tag__close:hover{
+
+.labelInput ::v-deep .el-tag .el-tag__close:hover {
   color: #fff;
   background-color: #909399;
 }
-.brokerage{
+
+.brokerage {
   font-size: 12px;
 }
 </style>

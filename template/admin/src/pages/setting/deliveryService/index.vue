@@ -3,7 +3,7 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row class="mb20">
         <el-col :span="24">
-          <el-button v-auth="['setting-delivery_service-add']" type="primary" @click="add" class="mr10"
+          <el-button v-auth="['setting-delivery_service-add']" type="primary" v-db-click @click="add" class="mr10"
             >添加配送员</el-button
           >
         </el-col>
@@ -60,9 +60,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除配送员', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除配送员', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

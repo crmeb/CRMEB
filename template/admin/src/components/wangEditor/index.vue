@@ -4,7 +4,7 @@
       <div ref="wang-editor" class="wang-editor" />
     </div>
     <div v-if="monacoBox">
-      <el-button type="primary" class="bottom" @click="getHtmlint">可视化界面</el-button>
+      <el-button type="primary" class="bottom" v-db-click @click="getHtmlint">可视化界面</el-button>
       <monaco class="monaco-box" @change="changeValue" :value="newHtml" />
     </div>
 

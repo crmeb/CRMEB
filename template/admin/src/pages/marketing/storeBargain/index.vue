@@ -25,7 +25,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -34,10 +34,10 @@
       <el-button
           v-auth="['marketing-store_bargain-create']"
           type="primary"
-          @click="add"
+          v-db-click @click="add"
       >添加砍价商品</el-button
       >
-      <el-button v-auth="['export-storeBargain']" class="export" icon="ios-share-outline" @click="exportList"
+      <el-button v-auth="['export-storeBargain']" class="export" icon="ios-share-outline" v-db-click @click="exportList"
       >导出</el-button
       >
       <el-table
@@ -131,13 +131,13 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a v-if="scope.row.stop_status === 0" @click="edit(scope.row, 0)">编辑</a>
+            <a v-if="scope.row.stop_status === 0" v-db-click @click="edit(scope.row, 0)">编辑</a>
             <el-divider v-if="scope.row.stop_status === 0" direction="vertical" />
-            <a @click="edit(scope.row, 1)">复制</a>
+            <a v-db-click @click="edit(scope.row, 1)">复制</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除砍价商品', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除砍价商品', scope.$index)">删除</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="viewInfo(scope.row)">统计</a>
+            <a v-db-click @click="viewInfo(scope.row)">统计</a>
           </template>
         </el-table-column>
       </el-table>

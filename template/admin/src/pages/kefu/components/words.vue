@@ -9,13 +9,13 @@
               class="tan-item"
               :class="{ on: item.key == wordsTabCur }"
               v-for="(item, index) in wordsTab"
-              @click.stop="bindTab(item)"
+              v-db-click @click.stop="bindTab(item)"
             >
               {{ item.title }}
             </div>
             <div class="right-icon">
-              <span class="iconfont iconbianji2" @click.stop="isWordShow = true"></span>
-              <span class="iconfont iconcha" @click.stop="closeBox"></span>
+              <span class="iconfont iconbianji2" v-db-click @click.stop="isWordShow = true"></span>
+              <span class="iconfont iconcha" v-db-click @click.stop="closeBox"></span>
             </div>
           </div>
           <div class="input-box">
@@ -24,14 +24,14 @@
         </div>
         <div class="scroll-box">
           <div class="scroll-left">
-            <div class="left-item add_cate" @click.stop="openCate(0)" v-if="wordsTabCur">
+            <div class="left-item add_cate" v-db-click @click.stop="openCate(0)" v-if="wordsTabCur">
               <span class="iconfont iconjiahao"></span> 分组
             </div>
             <div
               class="left-item"
               :class="{ active: wordsData.cateId == item.id }"
               v-for="item in wordsData.cate"
-              @click.stop="changeCate(item)"
+              v-db-click @click.stop="changeCate(item)"
             >
               {{ item.name }}
             </div>
@@ -41,10 +41,10 @@
               <div class="slot-load" slot="load-deactive"></div>
               <div class="slot-load" slot="load-beforeDeactive"></div>
               <div class="slot-load" slot="load-active">下滑加载更多</div>
-              <div class="msg-item add-mg" v-show="wordsTabCur" @click.stop="addMsg">
+              <div class="msg-item add-mg" v-show="wordsTabCur" v-db-click @click.stop="addMsg">
                 <span class="iconfont icontianjia11"></span>添加话术
               </div>
-              <div class="msg-item" v-for="(item, index) in wordsList" :key="index" @click.stop="selectWords(item)">
+              <div class="msg-item" v-for="(item, index) in wordsList" :key="index" v-db-click @click.stop="selectWords(item)">
                 <span class="title">{{ item.title }}</span
                 >{{ item.message }}
               </div>
@@ -63,7 +63,7 @@
     >
       <div class="mask-title">
         {{ cateData.status ? '编辑分组' : '新增分组' }}
-        <span class="iconfont iconcha" @click.stop="closeCate"></span>
+        <span class="iconfont iconcha" v-db-click @click.stop="closeCate"></span>
       </div>
       <div class="input-box">
         <el-input class="noinput" v-model="cateData.name" placeholder="请输入分组名称" />
@@ -71,7 +71,7 @@
       <div class="input-box">
         <el-input class="noinput" v-model="cateData.sort" placeholder="请输入分组排序" />
       </div>
-      <el-button @click.stop="cateConfirm" class="subBtn" type="primary" :disabled="cateStatus">确定</el-button>
+      <el-button v-db-click @click.stop="cateConfirm" class="subBtn" type="primary" :disabled="cateStatus">确定</el-button>
     </el-dialog>
     <!-- 添加话术  -->
     <el-dialog
@@ -83,7 +83,7 @@
     >
       <div class="mask-title">
         {{ msgData.status ? '修改话术' : '添加话术' }}
-        <span class="iconfont iconcha" @click.stop="closeMsgBox"></span>
+        <span class="iconfont iconcha" v-db-click @click.stop="closeMsgBox"></span>
       </div>
       <div class="input-box">
         <el-input class="noinput" v-model="msgData.title" placeholder="请输入标题名称 (选填)" />
@@ -96,13 +96,13 @@
           <el-option v-for="item in selectData" :value="item.id" :key="item.value" :label="item.name"></el-option>
         </el-select>
       </div>
-      <el-button @click.stop="msgConfirm" class="subBtn" type="primary" :disabled="msgStatus">确定</el-button>
+      <el-button v-db-click @click.stop="msgConfirm" class="subBtn" type="primary" :disabled="msgStatus">确定</el-button>
     </el-dialog>
     <!-- 编辑弹窗  -->
     <div class="edit-box" v-if="isWordShow">
       <div class="head">
         <div class="tit-bar">
-          {{ wordsTabCur ? '个人库' : '公共库' }}<span @click.stop="isWordShow = false">完成</span>
+          {{ wordsTabCur ? '个人库' : '公共库' }}<span v-db-click @click.stop="isWordShow = false">完成</span>
         </div>
         <div class="input-box noinput">
           <el-input v-model="wordsData.searchTxt" placeholder="搜索快捷回复" :search="true" @on-search="bindSearch" />
@@ -111,20 +111,20 @@
       <div class="scroll-box">
         <div class="scroll-left">
           <div class="top">
-            <div class="left-item add_cate" @click.stop="openCate(0)" v-if="wordsTabCur">
+            <div class="left-item add_cate" v-db-click @click.stop="openCate(0)" v-if="wordsTabCur">
               <span class="iconfont iconjiahao"></span> 分组
             </div>
             <div
               class="left-item"
               :class="{ active: wordsData.cateId == item.id }"
               v-for="item in wordsData.cate"
-              @click.stop="changeCate(item)"
+              v-db-click @click.stop="changeCate(item)"
             >
               {{ item.name }}
             </div>
           </div>
           <div class="bom" v-if="wordsTabCur">
-            <div class="left-item edits-box" @click.stop="editList.status = true">编辑分组</div>
+            <div class="left-item edits-box" v-db-click @click.stop="editList.status = true">编辑分组</div>
           </div>
         </div>
         <div class="right-box">
@@ -136,8 +136,8 @@
               <span class="title">{{ item.title }}</span
               >{{ item.message }}
               <div class="edit-bar" v-if="wordsTabCur">
-                <span class="iconfont iconbianji1" @click.stop="bindEdit(item)"></span>
-                <span class="iconfont iconshanchu1" @click.stop="delMsg(item, '删除话术', index)"></span>
+                <span class="iconfont iconbianji1" v-db-click @click.stop="bindEdit(item)"></span>
+                <span class="iconfont iconshanchu1" v-db-click @click.stop="delMsg(item, '删除话术', index)"></span>
               </div>
             </div>
           </vue-scroll>
@@ -154,14 +154,14 @@
     >
       <div class="mask-title">
         编辑分组
-        <span class="iconfont iconcha" @click.stop="editList.status = false"></span>
+        <span class="iconfont iconcha" v-db-click @click.stop="editList.status = false"></span>
       </div>
       <div class="list-box">
         <div class="item" v-for="(item, index) in wordsData.cate" :index="index">
           <span>{{ item.name }}</span>
           <div class="right-box">
-            <span class="iconfont iconbianji1" v-if="index > 0" @click.stop="openCate(1, item)"></span>
-            <span class="iconfont iconshanchu1" v-if="index > 0" @click.stop="delCate(item, '删除分组', index)"></span>
+            <span class="iconfont iconbianji1" v-if="index > 0" v-db-click @click.stop="openCate(1, item)"></span>
+            <span class="iconfont iconshanchu1" v-if="index > 0" v-db-click @click.stop="delCate(item, '删除分组', index)"></span>
           </div>
         </div>
       </div>

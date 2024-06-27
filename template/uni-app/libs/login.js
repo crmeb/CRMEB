@@ -68,7 +68,6 @@ function _toLogin(push, pathLogin) {
 	if (!pathLogin)
 		pathLogin = '/page/users/login/index'
 	Cache.set('login_back_url', path);
-	console.log(BASIC_CONFIG, 'BASIC_CONFIG.wechat_status')
 	// #ifdef H5
 	if (isWeixin() && BASIC_CONFIG.wechat_status) {
 		uni.navigateTo({

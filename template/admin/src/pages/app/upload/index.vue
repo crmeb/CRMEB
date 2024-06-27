@@ -21,7 +21,7 @@
           </div>
           <div slot="file" slot-scope="{ file }">
             <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-            <i class="el-icon-error btndel" @click="handleRemove(file)" />
+            <i class="el-icon-error btndel" v-db-click @click="handleRemove(file)" />
           </div>
         </el-upload>
       </div>
@@ -30,10 +30,10 @@
         <div v-if="imgList.length">共{{ imgList.length }}/{{ limit }}张，{{ (allSize / 1000000).toFixed(2) }} M</div>
         <div v-else></div>
         <div class="upload-btn">
-          <div v-if="imgList.length < limit" class="btn" @click="selectImgs">
+          <div v-if="imgList.length < limit" class="btn" v-db-click @click="selectImgs">
             {{ imgList.length ? '继续选择' : '选择图片' }}
           </div>
-          <div class="btn upload" :class="{ 'no-pic': !imgList.length }" @click="submitUpload">确认上传</div>
+          <div class="btn upload" :class="{ 'no-pic': !imgList.length }" v-db-click @click="submitUpload">确认上传</div>
         </div>
       </div>
     </div>
@@ -42,7 +42,7 @@
         <img class="image" src="@/assets/images/success.jpg" alt="" />
       </div>
       <div class="text">图片上传成功</div>
-      <div class="again" @click="again">继续上传</div>
+      <div class="again" v-db-click @click="again">继续上传</div>
     </div>
   </div>
 </template>

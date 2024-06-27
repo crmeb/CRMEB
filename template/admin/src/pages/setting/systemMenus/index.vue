@@ -19,11 +19,11 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getData">查询</el-button>
+            <el-button type="primary" v-db-click @click="getData">查询</el-button>
           </el-form-item>
           <!-- <el-row >
             <el-col v-bind="grid">
-              <el-button type="primary" @click="menusAdd('添加规则')">添加规则 </el-button>
+              <el-button type="primary" v-db-click @click="menusAdd('添加规则')">添加规则 </el-button>
             </el-col>
           </el-row> -->
         </el-form>
@@ -66,7 +66,7 @@
         </vxe-table-column>
         <vxe-table-column field="date" title="操作" align="center" width="150" fixed="right">
           <template v-slot="{ row }">
-            <a @click="edit(row, '编辑')">编辑</a>
+            <a v-db-click @click="edit(row, '编辑')">编辑</a>
           </template>
         </vxe-table-column>
       </vxe-table>
@@ -94,8 +94,8 @@
           @on-enter="searchRules"
           @on-clear="searchRules"
         />
-        <el-button class="mr10" type="primary" @click="searchRules">搜索</el-button>
-        <el-button @click="init">重置</el-button>
+        <el-button class="mr10" type="primary" v-db-click @click="searchRules">搜索</el-button>
+        <el-button v-db-click @click="init">重置</el-button>
       </div>
       <div class="route-list">
         <div class="tree">
@@ -117,7 +117,7 @@
             :class="{ 'select-rule': seletRouteIds.includes(item.id) }"
             v-for="(item, index) in children"
             :key="index"
-            @click="selectRule(item)"
+            v-db-click @click="selectRule(item)"
           >
             <div>接口名称：{{ item.name }}</div>
             <div>请求方式：{{ item.method }}</div>
@@ -129,8 +129,8 @@
         <el-tab-pane :label="item.name" :name="'' + index" v-for="(item, index) in foundationList" :key="item"></el-tab-pane>
       </el-tabs> -->
       <span slot="footer" class="dialog-footer">
-        <el-button @click="ruleModal = false">取 消</el-button>
-        <el-button type="primary" @click="addRouters">确 定</el-button>
+        <el-button v-db-click @click="ruleModal = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="addRouters">确 定</el-button>
       </span>
     </el-dialog>
   </div>

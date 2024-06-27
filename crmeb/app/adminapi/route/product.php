@@ -99,6 +99,8 @@ Route::group('product', function () {
         Route::get('reply/fictitious_reply/:product_id', 'v1.product.StoreProductReply/fictitious_reply')->option(['real_name' => '虚拟评论表单']);
         //保存虚拟评论
         Route::post('reply/save_fictitious_reply', 'v1.product.StoreProductReply/save_fictitious_reply')->option(['real_name' => '保存虚拟评论']);
+        //审核商品评论
+        Route::put('reply/set_status/:id/:status', 'v1.product.StoreProductReply/set_status')->option(['real_name' => '审核商品评论']);
     })->option(['parent' => 'product', 'cate_name' => '商品评论']);
 
     /** 商品采集 */

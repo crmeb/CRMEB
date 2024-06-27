@@ -13,12 +13,12 @@
 						</label>
 					</radio-group>
 				</view>
-				<view class="acea-row row-middle">
+				<!-- <view class="acea-row row-middle">
 					<view>{{$t(`发票类型`)}}</view>
 					<input name="type" :value="type === '2' && header_type === '2' ? $t(`增值税电子专用发票`) : $t(`增值税电子普通发票`)"
 						disabled @click="callType" />
 					<text class="iconfont icon-xiangyou"></text>
-				</view>
+				</view> -->
 				<view class="acea-row row-middle">
 					<view>{{$t(`发票抬头`)}}</view>
 					<input name="name" :value="name"

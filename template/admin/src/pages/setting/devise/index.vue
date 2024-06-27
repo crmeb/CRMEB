@@ -10,14 +10,14 @@
               :class="{ on: tabCur == index }"
               v-for="(item, index) in tabList"
               :key="index"
-              @click="bindTab(index)"
+              v-db-click @click="bindTab(index)"
             >
               {{ item.title }}
             </div>
           </div>
           <div class="wrapper" :style="'height:' + (clientHeight - 46) + 'px;'" v-if="tabCur == 0">
             <div v-for="(item, index) in leftMenu" :key="index">
-              <div class="tips" @click="item.isOpen = !item.isOpen">
+              <div class="tips" v-db-click @click="item.isOpen = !item.isOpen">
                 {{ item.title }}
                 <i class="el-icon-arrow-right" style="font-size: 16px" v-if="!item.isOpen" />
                 <i type="ios-el-icon-arrow-down" style="font-size: 16px" v-else />
@@ -37,7 +37,7 @@
                   :class="{ search: element.cname == '搜索框' }"
                   v-for="(element, index) in item.list"
                   :key="element.id"
-                  @click="addDom(element, 1)"
+                  v-db-click @click="addDom(element, 1)"
                   v-show="item.isOpen"
                 >
                   <div>
@@ -49,7 +49,7 @@
               </draggable>
             </div>
           </div>
-          <!--                    <div style="padding: 0 20px"><el-button type="primary" style="width: 100%" @click="saveConfig">保存</el-button></div>-->
+          <!--                    <div style="padding: 0 20px"><el-button type="primary" style="width: 100%" v-db-click @click="saveConfig">保存</el-button></div>-->
           <div class="wrapper" v-else :style="'height:' + (clientHeight - 46) + 'px;'">
             <div class="link-item" v-for="(item, index) in urlList" :key="index">
               <div class="name">{{ item.name }}</div>
@@ -60,7 +60,7 @@
               </div>
               <div class="lable">
                 <p class="txt">例如：{{ item.example }}</p>
-                <el-button size="small" @click="onCopy(item.example)">复制 </el-button>
+                <el-button size="small" v-db-click @click="onCopy(item.example)">复制 </el-button>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@
                 <div class="picture">
                   <img src="@/assets/images/electric.png" />
                 </div>
-                <div class="page-title" :class="{ on: activeIndex == -100 }" @click="showTitle">
+                <div class="page-title" :class="{ on: activeIndex == -100 }" v-db-click @click="showTitle">
                   {{ titleTxt }}
                   <div class="delete-box"></div>
                   <div class="handle"></div>
@@ -121,7 +121,7 @@
                         }"
                         v-for="(item, key) in mConfig"
                         :key="key"
-                        @click.stop="bindconfig(item, key)"
+                        v-db-click @click.stop="bindconfig(item, key)"
                         :style="colorTxt ? 'background-color:' + colorPickerTxt + ';' : 'background-color:#fff;'"
                       >
                         <component
@@ -133,17 +133,17 @@
                         ></component>
                         <div class="delete-box">
                           <div class="handleType">
-                            <div class="iconfont iconshanchu2" @click.stop="bindDelete(item, key)"></div>
-                            <div class="iconfont iconfuzhi" @click.stop="bindAddDom(item, 0, key)"></div>
+                            <div class="iconfont iconshanchu2" v-db-click @click.stop="bindDelete(item, key)"></div>
+                            <div class="iconfont iconfuzhi" v-db-click @click.stop="bindAddDom(item, 0, key)"></div>
                             <div
                               class="iconfont iconshangyi"
                               :class="key === 0 ? 'on' : ''"
-                              @click.stop="movePage(item, key, 1)"
+                              v-db-click @click.stop="movePage(item, key, 1)"
                             ></div>
                             <div
                               class="iconfont iconxiayi"
                               :class="key === mConfig.length - 1 ? 'on' : ''"
-                              @click.stop="movePage(item, key, 0)"
+                              v-db-click @click.stop="movePage(item, key, 0)"
                             ></div>
                           </div>
                         </div>
@@ -154,15 +154,15 @@
                 </div>
               </div>
               <div class="overflowy">
-                <div class="page-foot" @click="showFoot" :class="{ on: activeIndex == -101 }">
+                <div class="page-foot" v-db-click @click="showFoot" :class="{ on: activeIndex == -101 }">
                   <footPage></footPage>
                   <div class="delete-box"></div>
                   <div class="handle"></div>
                 </div>
               </div>
               <div class="defaultData" v-if="pageId !== 0">
-                <div class="data" @click="setmoren">设置默认</div>
-                <div class="data" @click="getmoren">恢复默认</div>
+                <div class="data" v-db-click @click="setmoren">设置默认</div>
+                <div class="data" v-db-click @click="getmoren">恢复默认</div>
               </div>
             </div>
           </div>
@@ -183,8 +183,8 @@
       </div>
     </el-card>
     <!--<div class="foot-box">-->
-    <!--<el-button @click="reast">重置</el-button>-->
-    <!--<el-button type="primary" @click="saveConfig" :loading="loading"-->
+    <!--<el-button v-db-click @click="reast">重置</el-button>-->
+    <!--<el-button type="primary" v-db-click @click="saveConfig" :loading="loading"-->
     <!--&gt;保存-->
     <!--</el-button-->
     <!--&gt;-->
@@ -258,6 +258,7 @@ export default {
       footActive: false,
       loading: false,
       isSearch: false,
+      isHomeProduct: false,
       isTab: false,
       isFllow: false,
     };
@@ -501,7 +502,7 @@ export default {
       } else {
         this.activeIndex = index + 1;
       }
-      this.$store.commit('mobildConfig/SETCONFIGNAME', item.name);
+      this.$store.commit('mobildConfig/SETCONFIGNAME', item.name); 
       this.$store.commit('mobildConfig/defaultArraySort', obj);
     },
     // 组件添加
@@ -513,6 +514,10 @@ export default {
       if (item.name == 'nav_bar') {
         if (this.isTab) return this.$message.error('该组件只能添加一次');
         this.isTab = true;
+      }
+      if (item.name == 'home_product') {
+        if (this.isHomeProduct) return this.$message.error('该组件只能添加一次');
+        this.isHomeProduct = true;
       }
       idGlobal += 1;
       let obj = {};
@@ -586,6 +591,9 @@ export default {
         this.isSearch = false;
       }
       if (item.name == 'nav_bar') {
+        this.isTab = false;
+      }
+      if (item.name == 'home_product') {
         this.isTab = false;
       }
       this.mConfig.splice(key, 1);
@@ -722,6 +730,9 @@ export default {
             this.isSearch = true;
           }
           if (el.name == 'tabNav') {
+            this.isTab = true;
+          }
+          if (el.name == 'promotionList') {
             this.isTab = true;
           }
           if (el.name == 'goodList') {

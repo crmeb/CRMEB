@@ -4,7 +4,7 @@
       <div class="feedback-header acea-row">
         <span class="sp1">商城客服已离线</span>
         <div>
-          <i class="el-icon-close" style="font-size: 18px" @click="close"></i>
+          <i class="el-icon-close" style="font-size: 18px" v-db-click @click="close"></i>
         </div>
       </div>
       <div v-if="!isShow">
@@ -23,7 +23,7 @@
               <el-input v-model="formItem.content" class="mb10" type="textarea" placeholder="请输入留言内容"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="handleSubmit('formItem')" style="width: 100%">提交留言</el-button>
+              <el-button type="primary" v-db-click @click="handleSubmit('formItem')" style="width: 100%">提交留言</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -32,7 +32,7 @@
         <div class="sure-yuan"></div>
         <div class="sp1 mb10">提交成功</div>
         <div class="sp2 mb30">您的信息提交成功，我们会尽快与您取得联系！</div>
-        <el-button type="primary" @click="close">好的</el-button>
+        <el-button type="primary" v-db-click @click="close">好的</el-button>
       </div>
     </div>
     <div class="maskModel" @touchmove.prevent v-show="change === true"></div>

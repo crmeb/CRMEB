@@ -140,6 +140,7 @@
 					</view>
 					<!-- <rich-text :nodes="description" class="conter"></rich-text> -->
 				</view>
+				<view class="uni-p-b-98"></view>
 			</scroll-view>
 		</view>
 		<view class="uni-p-b-98"></view>
@@ -214,7 +215,7 @@
 		<!-- 海报展示 -->
 		<view class="poster-pop" v-if="posterImageStatus">
 			<image src="/static/images/poster-close.png" class="close" @click="posterImageClose"></image>
-			<image :src="posterImage"></image>
+			<image class="poster-img" :src="posterImage"></image>
 			<!-- #ifndef H5  -->
 			<view class="save-poster" @click="savePosterPath">{{$t(`保存到手机`)}}</view>
 			<!-- #endif -->
@@ -1289,10 +1290,8 @@
 								'onMenuShareAppMessage', 'onMenuShareTimeline'
 							], configAppMessage)
 							.then(res => {
-								console.log(res);
 							})
 							.catch(err => {
-								console.log(err);
 							});
 					});
 				}

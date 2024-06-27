@@ -19,6 +19,8 @@ use app\services\message\notice\SmsService;
 use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\ApiException;
 use crmeb\services\CacheService;
+use crmeb\services\HttpService;
+use Firebase\JWT\JWT;
 use think\facade\Config;
 
 /**
@@ -108,44 +110,77 @@ class LoginServices extends BaseServices
                 $this->dao->update(['staff_id' => $userInfo['uid'], 'spread_uid' => $userInfo['uid']], ['spread_uid' => $spreadInfo['agent_id'], 'staff_id' => 0]);
                 $this->dao->update(['staff_id' => $userInfo['uid'], 'not_spread_uid' => $userInfo['uid']], ['staff_id' => 0]);
             }
-        }
-        if ($is_new) {
-            if ($spreadUid) {
-                $spreadInfo = $this->dao->get($spreadUid);
-                $spreadUid = (int)$spreadUid;
-                $data['spread_uid'] = $spreadUid;
-                $data['spread_time'] = time();
-                $data['agent_id'] = $spreadInfo->agent_id;
-                $data['division_id'] = $spreadInfo->division_id;
-                $data['staff_id'] = $spreadInfo->staff_id;
-                //绑定用户后置事件
-                event('UserRegisterListener', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
-                //推送消息
-                event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
-            }
+            //绑定用户后置事件
+            event('UserRegisterListener', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], $is_new]);
+            //推送消息
+            event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+
+            //自定义事件-绑定关系
+            event('CustomEventListener', ['user_spread', [
+                'uid' => $userInfo['uid'],
+                'nickname' => $userInfo['nickname'],
+                'spread_uid' => $spreadUid,
+                'spread_time' => date('Y-m-d H:i:s'),
+                'user_type' => $user->user_type,
+            ]]);
+
         } else {
-            //永久绑定
-            $store_brokerage_binding_status = sys_config('store_brokerage_binding_status', 1);
-            if ($userInfo->spread_uid && $store_brokerage_binding_status == 1 && !isset($user['is_staff'])) {
-                $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
+            if ($is_new) {
+                if ($spreadUid) {
+                    $spreadInfo = $this->dao->get($spreadUid);
+                    $spreadUid = (int)$spreadUid;
+                    $data['spread_uid'] = $spreadUid;
+                    $data['spread_time'] = time();
+                    $data['agent_id'] = $spreadInfo->agent_id;
+                    $data['division_id'] = $spreadInfo->division_id;
+                    $data['staff_id'] = $spreadInfo->staff_id;
+                    //绑定用户后置事件
+                    event('UserRegisterListener', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 1]);
+                    //推送消息
+                    event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+
+                    //自定义事件-绑定关系
+                    event('CustomEventListener', ['user_spread', [
+                        'uid' => $userInfo['uid'],
+                        'nickname' => $userInfo['nickname'],
+                        'spread_uid' => $spreadUid,
+                        'spread_time' => date('Y-m-d H:i:s'),
+                        'user_type' => $user->user_type,
+                    ]]);
+                }
             } else {
-                //绑定分销关系 = 所有用户
-                if (sys_config('brokerage_bindind', 1) == 1) {
-                    //分销绑定类型为时间段且过期 ｜｜临时
-                    $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
-                    if (!$userInfo['spread_uid'] || $store_brokerage_binding_status == 3 || ($store_brokerage_binding_status == 2 && ($userInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) < time())) {
-                        if ($spreadUid && $user['code'] != $userInfo->uid && $userInfo->uid != $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
-                            $spreadInfo = $this->dao->get($spreadUid);
-                            $spreadUid = (int)$spreadUid;
-                            $data['spread_uid'] = $spreadUid;
-                            $data['spread_time'] = time();
-                            $data['agent_id'] = $spreadInfo->agent_id;
-                            $data['division_id'] = $spreadInfo->division_id;
-                            $data['staff_id'] = $spreadInfo->staff_id;
-                            //绑定用户后置事件
-                            event('UserRegisterListener', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
-                            //推送消息
-                            event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+                //永久绑定
+                $store_brokerage_binding_status = sys_config('store_brokerage_binding_status', 1);
+                if ($userInfo->spread_uid && $store_brokerage_binding_status == 1 && !isset($user['is_staff'])) {
+                    $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
+                } else {
+                    //绑定分销关系 = 所有用户
+                    if (sys_config('brokerage_bindind', 1) == 1) {
+                        //分销绑定类型为时间段且过期 ｜｜临时
+                        $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
+                        if (!$userInfo['spread_uid'] || $store_brokerage_binding_status == 3 || ($store_brokerage_binding_status == 2 && ($userInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) < time())) {
+                            if ($spreadUid && $user['code'] != $userInfo->uid && $userInfo->uid != $this->dao->value(['uid' => $spreadUid], 'spread_uid')) {
+                                $spreadInfo = $this->dao->get($spreadUid);
+                                $spreadUid = (int)$spreadUid;
+                                $data['spread_uid'] = $spreadUid;
+                                $data['spread_time'] = time();
+                                $data['agent_id'] = $spreadInfo->agent_id;
+                                $data['division_id'] = $spreadInfo->division_id;
+                                $data['staff_id'] = $spreadInfo->staff_id;
+                                //绑定用户后置事件
+                                event('UserRegisterListener', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
+                                //推送消息
+                                event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userInfo['user_type'], 'nickname' => $userInfo['nickname']], 'bind_spread_uid']);
+
+                                //自定义事件-绑定关系
+                                event('CustomEventListener', ['user_spread', [
+                                    'uid' => $userInfo['uid'],
+                                    'nickname' => $userInfo['nickname'],
+                                    'spread_uid' => $spreadUid,
+                                    'spread_time' => date('Y-m-d H:i:s'),
+                                    'user_type' => $user->user_type,
+                                ]]);
+                            }
                         }
                     }
                 }
@@ -224,8 +259,29 @@ class LoginServices extends BaseServices
             $userServices->rewardNewUser((int)$re->uid);
             //用户生成后置事件
             event('UserRegisterListener', [$spread, $user_type, $data['nickname'], $re->uid, 1]);
-            //推送消息
-            event('NoticeListener', [['spreadUid' => $spread, 'user_type' => $user_type, 'nickname' => $data['nickname']], 'bind_spread_uid']);
+
+            //自定义事件-用户注册
+            event('CustomEventListener', ['user_register', [
+                'uid' => $re->uid,
+                'nickname' => $data['nickname'],
+                'phone' => $data['phone'],
+                'add_time' => date('Y-m-d H:i:s'),
+                'user_type' => $user_type,
+            ]]);
+
+            if ($spread) {
+                //推送消息
+                event('NoticeListener', [['spreadUid' => $spread, 'user_type' => $user_type, 'nickname' => $data['nickname']], 'bind_spread_uid']);
+
+                //自定义事件-绑定关系
+                event('CustomEventListener', ['user_spread', [
+                    'uid' => $re->uid,
+                    'nickname' => $data['nickname'],
+                    'spread_uid' => $spread,
+                    'spread_time' => date('Y-m-d H:i:s'),
+                    'user_type' => $user_type,
+                ]]);
+            }
             return $re;
         }
     }
@@ -421,5 +477,64 @@ class LoginServices extends BaseServices
             return ['msg' => 100001, 'data' => []];
         else
             throw new ApiException(100007);
+    }
+
+    /**
+     * 远程注册登录
+     * @param string $out_token
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/21
+     */
+    public function remoteRegister(string $out_token = '')
+    {
+        $info = JWT::jsonDecode(JWT::urlsafeB64Decode($out_token));
+        $userInfo = $this->dao->get(['uid' => $info->uid]);
+        $data = [];
+        if (!$userInfo) {
+            $data['uid'] = $info->uid;
+            $data['account'] = $info->phone != '' ? $info->phone : 'out_' . $info->uid;
+            $data['phone'] = $info->phone;
+            $data['pwd'] = md5('123456');
+            $data['real_name'] = $info->nickname;
+            $data['birthday'] = 0;
+            $data['card_id'] = '';
+            $data['mark'] = '';
+            $data['addres'] = '';
+            $data['user_type'] = 'h5';
+            $data['add_time'] = time();
+            $data['add_ip'] = app('request')->ip();
+            $data['last_time'] = time();
+            $data['last_ip'] = app('request')->ip();
+            $data['nickname'] = $info->nickname;
+            $data['avatar'] = $info->avatar;
+            $data['city'] = '';
+            $data['language'] = '';
+            $data['province'] = '';
+            $data['country'] = '';
+            $data['status'] = 1;
+            $data['now_money'] = $info->now_money;
+            $data['integral'] = $info->integral;
+            $data['exp'] = $info->exp;
+            $this->dao->save($data);
+        } else {
+            $data['nickname'] = $info->nickname;
+            $data['avatar'] = $info->avatar;
+            $data['now_money'] = $info->now_money;
+            $data['integral'] = $info->integral;
+            $data['exp'] = $info->exp;
+            $this->dao->update($info->uid, $data);
+        }
+        $token = $this->createToken((int)$info->uid, 'api');
+        if ($token) {
+            return ['token' => $token['token'], 'expires_time' => $token['params']['exp']];
+        } else {
+            throw new ApiException('登录失败');
+        }
     }
 }

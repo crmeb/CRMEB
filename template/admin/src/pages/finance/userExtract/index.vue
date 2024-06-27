@@ -67,7 +67,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="selChange">查询</el-button>
+            <el-button type="primary" v-db-click @click="selChange">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -157,11 +157,11 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope" v-if="scope.row.status == 0">
-            <a href="javascript:void(0);" @click="edit(scope.row)">编辑</a>
+            <a href="javascript:void(0);" v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a class="item" @click="adopt(scope.row, '审核通过', index)">通过</a>
+            <a class="item" v-db-click @click="adopt(scope.row, '审核通过', index)">通过</a>
             <el-divider direction="vertical"></el-divider>
-            <a class="item" @click="invalid(scope.row)">驳回</a>
+            <a class="item" v-db-click @click="invalid(scope.row)">驳回</a>
           </template>
         </el-table-column>
       </el-table>
@@ -182,7 +182,7 @@
     <el-dialog :visible.sync="modals" title="未通过原因" :close-on-click-modal="false" width="540px">
       <el-input v-model="fail_msg.message" type="textarea" :rows="4" placeholder="请输入未通过原因" />
       <div slot="footer">
-        <el-button type="primary" size="small" @click="oks">确定</el-button>
+        <el-button type="primary" size="small" v-db-click @click="oks">确定</el-button>
       </div>
     </el-dialog>
   </div>

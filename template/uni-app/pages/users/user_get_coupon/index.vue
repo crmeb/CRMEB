@@ -271,7 +271,7 @@ export default {
 }
 
 .coupon-list .item .text .condition .name {
-	font-size: 26rpx;
+	font-size: 28rpx;
 	font-weight: 500;
 	/* 
 	display: flex;

@@ -203,6 +203,7 @@ class StoreOrderCartInfoServices extends BaseServices
                     $item['cart_num'] = $item['cart_info']['cart_num'] ?? 0;
                 }
             }
+            $item['num'] = 1;
         }
         return $cartInfo;
     }

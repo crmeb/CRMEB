@@ -91,7 +91,7 @@
               <el-col :span="24" v-if="formValidate.attends_user == 2">
                 <el-form-item label="" :prop="formValidate.attends_user == 2 ? 'user_label' : ''">
                   <div class="acea-row row-middle">
-                    <div class="labelInput acea-row row-between-wrapper" @click="selectLabelShow = true">
+                    <div class="labelInput acea-row row-between-wrapper" v-db-click @click="selectLabelShow = true">
                       <div class="">
                         <div v-if="selectDataLabel.length">
                           <el-tag
@@ -209,7 +209,7 @@
                       <template slot-scope="scope">
                         <div
                           class="acea-row scope.row-middle scope.row-center-wrapper"
-                          @click="modalPicTap('dan', 'goods', scope.$index)"
+                          v-db-click @click="modalPicTap('dan', 'goods', scope.$index)"
                         >
                           <div class="pictrue pictrueTab" v-if="scope.row.image">
                             <img v-lazy="scope.row.image" />
@@ -267,11 +267,11 @@
                     </el-table-column>
                     <el-table-column label="操作" fixed="right" width="80">
                       <template slot-scope="scope">
-                        <a class="submission mr15" @click="editGoods(scope.$index)">编辑</a>
+                        <a class="submission mr15" v-db-click @click="editGoods(scope.$index)">编辑</a>
                       </template>
                     </el-table-column>
                   </el-table>
-                  <el-button v-if="specsData.length < 8" type="primary" class="submission mr15 mt20" @click="addGoods"
+                  <el-button v-if="specsData.length < 8" type="primary" class="submission mr15 mt20" v-db-click @click="addGoods"
                     >添加商品</el-button
                   >
                 </el-form-item>
@@ -303,9 +303,9 @@
                 <div class="acea-row">
                   <div class="pictrue" v-if="formValidate.image">
                     <img v-lazy="formValidate.image" />
-                    <i class="el-icon-circle-close btndel" @click="handleRemove()"></i>
+                    <i class="el-icon-circle-close btndel" v-db-click @click="handleRemove()"></i>
                   </div>
-                  <div v-else class="upLoad acea-row row-center-wrapper" @click="modalPicTap('dan', 'danFrom')">
+                  <div v-else class="upLoad acea-row row-center-wrapper" v-db-click @click="modalPicTap('dan', 'danFrom')">
                     <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                   </div>
                 </div>
@@ -388,7 +388,7 @@
               </el-form-item>
             </div>
             <el-form-item>
-              <el-button type="primary" :loading="submitOpen" @click="next('formValidate')">提交</el-button>
+              <el-button type="primary" :loading="submitOpen" v-db-click @click="next('formValidate')">提交</el-button>
             </el-form-item>
           </el-form>
         </el-col>

@@ -13,7 +13,7 @@
            </el-switch>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="memberAgreementSave">保存</el-button>
+          <el-button type="primary" v-db-click @click="memberAgreementSave">保存</el-button>
         </el-form-item>
       </el-form>
     </el-card>

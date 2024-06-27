@@ -120,7 +120,7 @@ class OtherOrderController
             //创建订单jspay支付
             $payPriceStatus = $OtherOrderServices->zeroYuanPayment($orderInfo);
             if ($payPriceStatus)//0元支付成功
-                return app('json')->status('success', 410199, $info);
+                return app('json')->status('success', 410217, $info);
             else
                 return app('json')->status('pay_error');
         }

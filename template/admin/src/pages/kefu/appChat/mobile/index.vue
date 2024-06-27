@@ -1,7 +1,7 @@
 <template>
   <div class="chat-box">
     <div class="head-box">
-      <div class="back" @click="goBack"><span class="iconfont iconfanhui"></span></div>
+      <div class="back" v-db-click @click="goBack"><span class="iconfont iconfanhui"></span></div>
       <div class="title">{{ nickname ? nickname + '-' : '' }}对话详情</div>
     </div>
     <!-- 商品信息 -->
@@ -15,7 +15,7 @@
           <div class="broadcast_details_pic">
             ￥{{ productInfo.price }}<span class="broadcast_details_pic_num">￥{{ productInfo.ot_price }}</span>
           </div>
-          <div class="broadcast_details_btn" @click="sendProduct">发送客服</div>
+          <div class="broadcast_details_btn" v-db-click @click="sendProduct">发送客服</div>
         </div>
       </div>
     </div>
@@ -39,7 +39,7 @@
               ￥{{ cartInfo.productInfo.price
               }}<text class="broadcast_details_pic_num">￥{{ cartInfo.productInfo.ot_price }}</text>
             </div>
-            <div class="broadcast_details_btn" @click="sendOrder">发送客服</div>
+            <div class="broadcast_details_btn" v-db-click @click="sendOrder">发送客服</div>
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
               <!-- 图片 -->
               <div class="img-box" v-if="item.msn_type == 3" v-viewer><img v-lazy="item.msn" mode="widthFix" /></div>
               <!-- 商品 -->
-              <div class="product-box" v-if="item.msn_type == 5" @click="goProduct(item)">
+              <div class="product-box" v-if="item.msn_type == 5" v-db-click @click="goProduct(item)">
                 <img :src="item.productInfo.image" />
                 <div class="info">
                   <div class="price"><span>￥</span>{{ item.productInfo.price }}</div>
@@ -73,7 +73,7 @@
                 </div>
               </div>
               <!-- 订单 -->
-              <div class="order-box" v-if="item.msn_type == 6" @click="goOrderDetail(item)">
+              <div class="order-box" v-if="item.msn_type == 6" v-db-click @click="goOrderDetail(item)">
                 <div class="title">订单ID: {{ item.orderInfo.order_id }}</div>
                 <div class="info">
                   <img :src="item.orderInfo.cartInfo[0].productInfo.image" />
@@ -89,7 +89,7 @@
       </vue-scroll>
     </div>
     <div class="footer-box">
-      <div class="words" v-if="userToken" @click="showWords">
+      <div class="words" v-if="userToken" v-db-click @click="showWords">
         <el-upload
           :show-file-list="false"
           :action="fileUrl"
@@ -107,15 +107,15 @@
       </div>
       <div class="input-box">
         <el-input v-model="con" placeholder="请输入内容" />
-        <span class="iconfont iconfasong" @click="sendText" :class="{ isSend: isSend }"></span>
+        <span class="iconfont iconfasong" v-db-click @click="sendText" :class="{ isSend: isSend }"></span>
       </div>
-      <div class="emoji" @click="openBox(1)"><span class="iconfont iconbiaoqing2"></span></div>
+      <div class="emoji" v-db-click @click="openBox(1)"><span class="iconfont iconbiaoqing2"></span></div>
     </div>
     <!-- 表情 -->
     <div class="banner slider-banner" v-show="isSwiper">
       <swiper class="swiper-wrapper" ref="mySwiper" :options="swiperOptions">
         <swiper-slide v-for="(emojiList, index) in emojiGroup" :key="index">
-          <i class="em" :class="emoji" v-for="emoji in emojiList" :key="emoji" @click="addEmoji(emoji)"></i>
+          <i class="em" :class="emoji" v-for="emoji in emojiList" :key="emoji" v-db-click @click="addEmoji(emoji)"></i>
         </swiper-slide>
       </swiper>
     </div>

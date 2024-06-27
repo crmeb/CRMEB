@@ -10,7 +10,7 @@
           'margin-bottom': vSpace + 'px',
         }"
       >
-        <div v-show="showRefresh" class="verify-refresh" style="z-index: 3" @click="refresh">
+        <div v-show="showRefresh" class="verify-refresh" style="z-index: 3" v-db-click @click="refresh">
           <i class="iconfont icon-refresh" />
         </div>
         <img
@@ -18,7 +18,7 @@
           :src="pointBackImgBase ? 'data:image/png;base64,' + pointBackImgBase : defaultImg"
           alt=""
           style="width: 100%; height: 100%; display: block"
-          @click="bindingClick ? canvasClick($event) : undefined"
+          v-db-click @click="bindingClick ? canvasClick($event) : undefined"
         />
 
         <div

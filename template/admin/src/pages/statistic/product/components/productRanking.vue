@@ -19,7 +19,7 @@
           end-placeholder="结束日期"
           class="mr20"
         ></el-date-picker>
-        <el-button type="primary" class="mr20" @click="getList">查询</el-button>
+        <el-button type="primary" class="mr20" v-db-click @click="getList">查询</el-button>
       </div>
     </div>
     <el-table ref="selection" :data="tabList" v-loading="loading" empty-text="暂无数据" highlight-current-row>
@@ -88,7 +88,7 @@
     </el-table>
     <!-- 商品弹窗 -->
     <div v-if="isProductBox">
-      <div class="bg" @click="isProductBox = false"></div>
+      <div class="bg" v-db-click @click="isProductBox = false"></div>
       <goodsDetail :goodsId="goodsId"></goodsDetail>
     </div>
   </el-card>

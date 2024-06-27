@@ -39,7 +39,7 @@
             </el-form-item>
           </el-col>
           <el-col :xl="4" :lg="4" :md="4" :sm="24" :xs="24">
-            <el-button v-auth="['export-userPoint']" class="export" icon="ios-share-outline" @click="exports"
+            <el-button v-auth="['export-userPoint']" class="export" icon="ios-share-outline" v-db-click @click="exports"
               >导出</el-button
             >
           </el-col>

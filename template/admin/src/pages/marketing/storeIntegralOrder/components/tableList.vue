@@ -50,8 +50,8 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="scope">
-          <a @click="sendOrder(scope.row)" v-if="scope.row.status === 1">发送货</a>
-          <a @click="delivery(scope.row)" v-if="scope.row.status === 2">配送信息</a>
+          <a v-db-click @click="sendOrder(scope.row)" v-if="scope.row.status === 1">发送货</a>
+          <a v-db-click @click="delivery(scope.row)" v-if="scope.row.status === 2">配送信息</a>
           <el-divider direction="vertical" v-if="scope.row.status === 1 || scope.row.status === 2" />
           <template>
             <el-dropdown size="small" @command="changeMenu(scope.row, $event)" :transfer="true">

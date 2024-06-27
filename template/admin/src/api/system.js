@@ -825,3 +825,63 @@ export function timerTask() {
     url: `system/crontab/mark`,
   });
 }
+
+
+
+// ----自定义事件
+
+/**
+ * 自定义事件列表
+ * @param {*} params
+ * @returns
+ */
+export function eventIndex(params) {
+  return request({
+    url: `system/event/list`,
+    params,
+  });
+}
+
+/**
+ * 自定义事件修改状态
+ * @param {*} params
+ * @returns
+ */
+export function eventShowTimer(id, is_open) {
+  return request({
+    url: `system/event/set_open/${id}/${is_open}`,
+  });
+}
+
+/**
+ * 自定义事件信息
+ * @param {*} params
+ * @returns
+ */
+export function eventInfo(id) {
+  return request({
+    url: `system/event/info/${id}`,
+  });
+}
+
+/**
+ * 自定义事件保存
+ * @param {*} data
+ * @returns
+ */
+export function eventSave(data) {
+  return request({
+    url: `system/event/save`,
+    method: 'post',
+    data,
+  });
+}
+/**
+ * 自定义事件更新
+ * @returns
+ */
+export function eventTask() {
+  return request({
+    url: `system/event/mark`,
+  });
+}

@@ -103,7 +103,7 @@
                       ></el-input>
                     </el-form-item>
                     <el-form-item label="选取图文：" v-if="formValidate.type === 'news'">
-                      <el-button @click="changePic">选择图文消息</el-button>
+                      <el-button v-db-click @click="changePic">选择图文消息</el-button>
                     </el-form-item>
                     <el-form-item
                       :label="formValidate.type === 'image' ? '图片地址：' : '语音地址：'"
@@ -142,7 +142,7 @@
               </el-col>
               <el-col :span="24">
                 <div class="acea-row row-center">
-                  <el-button type="primary" class="mr20" @click="submenus('formValidate')">保存并发布 </el-button>
+                  <el-button type="primary" class="mr20" v-db-click @click="submenus('formValidate')">保存并发布 </el-button>
                 </div>
               </el-col>
             </el-col>

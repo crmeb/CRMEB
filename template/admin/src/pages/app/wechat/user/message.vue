@@ -55,7 +55,7 @@
               </el-col>
               <el-col :xl="3" :lg="4" :md="12" :sm="24" :xs="24" class="btn_box">
                 <el-form-item>
-                  <el-button type="primary" label="default" class="userSearch" @click="userSearchs"
+                  <el-button type="primary" label="default" class="userSearch" v-db-click @click="userSearchs"
                     >搜索</el-button
                   >
                 </el-form-item>

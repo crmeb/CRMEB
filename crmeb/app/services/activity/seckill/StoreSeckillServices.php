@@ -180,8 +180,8 @@ class StoreSeckillServices extends BaseServices
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 1);
                 if (!$res) throw new AdminException(100007);
             } else {
-                if (!$storeProductServices->getOne(['is_show' => 1, 'is_del' => 0, 'id' => $data['product_id']])) {
-                    throw new AdminException(400091);
+                if (!$storeProductServices->getOne(['is_del' => 0, 'id' => $data['product_id']])) {
+                    throw new AdminException('无法添加回收站商品');
                 }
                 $data['add_time'] = time();
                 $res = $this->dao->save($data);
@@ -465,11 +465,8 @@ class StoreSeckillServices extends BaseServices
         $storeInfo['image'] = set_file_url($storeInfo['image'], $siteUrl);
         $storeInfo['image_base'] = set_file_url($storeInfo['image'], $siteUrl);
         $storeInfo['store_name'] = $storeInfo['title'];
-
-        /** @var StoreProductServices $storeProductService */
-        $storeProductService = app()->make(StoreProductServices::class);
-        $productInfo = $storeProductService->get($storeInfo['product_id']);
         $storeInfo['total'] = $storeInfo['sales'];
+        $storeInfo['product_is_show'] = app()->make(StoreProductServices::class)->value($storeInfo['product_id'], 'is_show');
 
         if (sys_config('share_qrcode', 0) && request()->isWechat()) {
             /** @var QrcodeServices $qrcodeService */
@@ -737,9 +734,9 @@ class StoreSeckillServices extends BaseServices
     {
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
-        $pay_count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['paid', '=', 1], ['refund_type', 'in', [0, 3]]], 'uid', false);
-        $order_count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['refund_type', 'in', [0, 3]]], 'uid', false);
-        $all_price = $orderServices->sum([['seckill_id', '=', $id], ['refund_type', 'in', [0, 3]], ['paid', '=', 1]], 'pay_price');
+        $pay_count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['pid', '<>', -1], ['paid', '=', 1], ['refund_type', 'in', [0, 3]]], 'uid', false);
+        $order_count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['pid', '<>', -1], ['refund_type', 'in', [0, 3]]], 'uid', false);
+        $all_price = $orderServices->sum([['seckill_id', '=', $id], ['pid', '<>', -1], ['refund_type', 'in', [0, 3]], ['paid', '=', 1]], 'pay_price');
         $seckillInfo = $this->dao->get($id);
         $pay_rate = $seckillInfo['quota'] . '/' . $seckillInfo['quota_show'];
         return compact('pay_count', 'order_count', 'all_price', 'pay_rate');
@@ -757,7 +754,7 @@ class StoreSeckillServices extends BaseServices
         $orderServices = app()->make(StoreOrderServices::class);
         [$page, $limit] = $this->getPageValue();
         $list = $orderServices->seckillPeople($id, $keyword, $page, $limit);
-        $count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['real_name|uid|user_phone', 'like', '%' . $keyword . '%']], 'uid', false);
+        $count = $orderServices->getDistinctCount([['seckill_id', '=', $id], ['pid', '<>', -1], ['real_name|uid|user_phone', 'like', '%' . $keyword . '%']], 'uid', false);
         foreach ($list as &$item) {
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
         }
@@ -775,7 +772,7 @@ class StoreSeckillServices extends BaseServices
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
         [$page, $limit] = $this->getPageValue();
-        $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0];
+        $where = $where + ['paid' => 1, 'refund_status' => 0, 'is_del' => 0, 'pid' => 0];
         $list = $orderServices->seckillOrder($id, $where, $page, $limit);
         $count = $orderServices->seckillCount($id, $where);
         foreach ($list as &$item) {

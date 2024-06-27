@@ -32,7 +32,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="userSearch" @click="selChange">搜索</el-button>
+            <el-button type="primary" class="userSearch" v-db-click @click="selChange">搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -50,7 +50,7 @@
     <el-card class="mt14" :bordered="false" shadow="never">
       <el-row class="mb14">
         <el-col>
-          <el-button type="primary" @click="add">添加语句</el-button>
+          <el-button type="primary" v-db-click @click="add">添加语句</el-button>
         </el-col>
       </el-row>
       <el-table ref="table" :data="tabList" class="ivu-mt" v-loading="loading" empty-text="暂无数据">
@@ -81,9 +81,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除语言', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除语言', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -115,7 +115,7 @@
             search
             @on-search="translate"
           >
-            <el-button type="primary" slot="append" @click="translate">翻译</el-button>
+            <el-button type="primary" slot="append" v-db-click @click="translate">翻译</el-button>
           </el-input>
         </el-form-item>
         <el-form-item prop="remark" class="mb20">
@@ -134,8 +134,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="addlangModal = false">取消</el-button>
-        <el-button type="primary" @click="ok">确定</el-button>
+        <el-button v-db-click @click="addlangModal = false">取消</el-button>
+        <el-button type="primary" v-db-click @click="ok">确定</el-button>
       </span>
     </el-dialog>
   </div>

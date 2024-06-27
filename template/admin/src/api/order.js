@@ -612,3 +612,76 @@ export function distributionOrder(id) {
     method: 'get',
   });
 }
+/**
+ * @description 发票管理
+ * @param id  发票id
+ */
+export function invoiceIssuanceUrl(id) {
+  return request({
+    url: `/order/invoice_issuance_url/${id}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 发票下载
+ * @param id  发票id
+ */
+export function downInvoice(id) {
+  return request({
+    url: `/order/down_invoice/${id}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 开具负数发票
+ * @param id  发票id
+ */
+export function redInvoiceIssuance(id) {
+  return request({
+    url: `/order/red_invoice_issuance/${id}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 发票状态修改
+ * @param id  发票id
+ * @param data  发票信息
+ */
+export function saveInvoiceInfo(id, data) {
+  return request({
+    url: `/order/save_invoice_info/${id}`,
+    method: 'post',
+    data: data,
+  });
+}
+/**
+ * @description 发票分类搜索
+ * @param name  发票分类名称
+ */
+export function invoiceCategory(name) {
+  return request({
+    url: `/order/invoice_category`,
+    method: 'get',
+    params: name,
+  });
+}
+/**
+ * @description 提交电子发票配置
+ * @param data  发票信息
+ */
+export function saveBasics(data) {
+  return request({
+    url: `/marketing/integral_config/save_basics`,
+    method: 'post',
+    data,
+  });
+}
+/**
+ * @description 获取电子发票配置
+ */
+export function invoiceConfig() {
+  return request({
+    url: `/order/elec_invoice_config`,
+    method: 'get',
+  });
+}

@@ -70,7 +70,7 @@
               </el-form-item>
             </el-col>
             <el-col span="1">
-              <i class="el-icon-close cur" @click="delGroup(index)"></i>
+              <i class="el-icon-close cur" v-db-click @click="delGroup(index)"></i>
             </el-col>
             <el-col
               :span="24"
@@ -92,14 +92,14 @@
           </el-col>
           <el-col>
             <el-form-item>
-              <el-button type="primary" @click="addType">添加字段</el-button>
+              <el-button type="primary" v-db-click @click="addType">添加字段</el-button>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="handleReset">取 消</el-button>
-        <el-button type="primary" @click="handleSubmit('formValidate')" :disabled="valids">确 定</el-button>
+        <el-button v-db-click @click="handleReset">取 消</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formValidate')" :disabled="valids">确 定</el-button>
       </span>
     </el-dialog>
   </div>

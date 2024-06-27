@@ -13,7 +13,7 @@
           <div
             class="item"
             :class="currentIndex === index ? 'on' : ''"
-            @click="currentTab(index, configData)"
+            v-db-click @click="currentTab(index, configData)"
             v-for="(item, index) in configData.picList"
           >
             <img :src="item.image" v-if="item.image" />
@@ -29,7 +29,7 @@
           <div
             class="item"
             :class="currentIndex === index ? 'on' : ''"
-            @click="currentTab(index, configData)"
+            v-db-click @click="currentTab(index, configData)"
             v-for="(item, index) in configData.picList"
           >
             <img :src="item.image" v-if="item.image" />
@@ -42,16 +42,16 @@
           </div>
         </div>
         <div class="advertItem04 acea-row" v-if="style === 3">
-          <div class="item" :class="currentIndex === 0 ? 'on' : ''" @click="currentTab(0, configData)">
+          <div class="item" :class="currentIndex === 0 ? 'on' : ''" v-db-click @click="currentTab(0, configData)">
             <img :src="configData.picList[0].image" v-if="configData.picList[0].image" />
             <div class="empty-box" v-else>375*375像素或同比例</div>
           </div>
           <div class="item">
-            <div class="pic" :class="currentIndex === 1 ? 'on' : ''" @click="currentTab(1, configData)">
+            <div class="pic" :class="currentIndex === 1 ? 'on' : ''" v-db-click @click="currentTab(1, configData)">
               <img :src="configData.picList[1].image" v-if="configData.picList[1].image" />
               <div class="empty-box" v-else>375*188像素或同比例</div>
             </div>
-            <div class="pic" :class="currentIndex === 2 ? 'on' : ''" @click="currentTab(2, configData)">
+            <div class="pic" :class="currentIndex === 2 ? 'on' : ''" v-db-click @click="currentTab(2, configData)">
               <img :src="configData.picList[2].image" v-if="configData.picList[2].image" />
               <div class="empty-box" v-else>375*188像素或同比例</div>
             </div>
@@ -61,7 +61,7 @@
           <div
             class="item"
             :class="currentIndex === index ? 'on' : ''"
-            @click="currentTab(index, configData)"
+            v-db-click @click="currentTab(index, configData)"
             v-for="(item, index) in configData.picList"
           >
             <img :src="item.image" v-if="item.image" />
@@ -72,7 +72,7 @@
           <div
             class="item"
             :class="currentIndex === index ? 'on' : ''"
-            @click="currentTab(index, configData)"
+            v-db-click @click="currentTab(index, configData)"
             v-for="(item, index) in configData.picList"
           >
             <img :src="item.image" v-if="item.image" />

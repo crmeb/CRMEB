@@ -285,6 +285,21 @@ class StoreOrderRefundServices extends BaseServices
         $order['phone'] = $order['user_phone'];
         event('CustomNoticeListener', [$order['uid'], $order, 'order_refund_success']);
 
+        //自定义事件-后台订单退款
+        event('CustomEventListener', ['admin_order_refund_success', [
+            'uid' => $order['uid'],
+            'order_id' => $order['order_id'],
+            'real_name' => $order['real_name'],
+            'user_phone' => $order['user_phone'],
+            'user_address' => $order['user_address'],
+            'total_num' => $order['total_num'],
+            'pay_price' => $order['pay_price'],
+            'refund_reason_wap' => $order['refund_reason_wap'],
+            'refund_reason_wap_explain' => $order['refund_reason_wap_explain'],
+            'refund_price' => $order['refund_price'],
+            'refund_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return true;
     }
 
@@ -717,6 +732,18 @@ class StoreOrderRefundServices extends BaseServices
         //自定义消息-退款失败
         event('CustomNoticeListener', [$orderRefundInfo['uid'], $orderRefundInfo->toArray(), 'order_refund_fail']);
 
+        //自定义事件-后台订单拒绝退款
+        event('CustomEventListener', ['admin_order_refund_fail', [
+            'uid' => $orderRefundInfo['uid'],
+            'id' => $orderRefundInfo['id'],
+            'store_order_id' => $orderRefundInfo['store_order_id'],
+            'order_id' => $orderRefundInfo['order_id'],
+            'refund_num' => $orderRefundInfo['refund_num'],
+            'refund_price' => $orderRefundInfo['refund_price'],
+            'refuse_reason' => $orderRefundInfo['refuse_reason'],
+            'refuse_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return true;
     }
 
@@ -1041,8 +1068,18 @@ class StoreOrderRefundServices extends BaseServices
         //推送订单
         event('OutPushListener', ['refund_create_push', ['order_id' => (int)$order['id']]]);
 
-        //自定义消息-订单发起退款
-//        event('CustomNoticeListener', [$order['uid'], $order->toArray(), 'order_initiated_refund']);
+        //自定义事件-订单申请退款
+        event('CustomEventListener', ['order_initiated_refund', [
+            'uid' => $uid,
+            'refund_order_id' => $refundData['order_id'],
+            'order_id' => $order['order_id'],
+            'real_name' => $order['real_name'],
+            'user_phone' => $order['user_phone'],
+            'user_address' => $order['user_address'],
+            'refund_num' => $refundData['refund_num'],
+            'refund_price' => $refundData['refund_price'],
+            'refund_time' => date('Y-m-d H:i:s', $refundData['add_time']),
+        ]]);
 
         try {
             ChannelService::instance()->send('NEW_REFUND_ORDER', ['order_id' => $order['order_id']]);

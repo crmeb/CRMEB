@@ -1,0 +1,105 @@
+version: "3.3"
+services:
+  # mysql 容器
+  mysql:
+    container_name: crmeb_mysql #指定容器名
+    image: mysql:5.7 #一般电脑可以用这个镜像
+    ports:
+      - 3336:3306
+    # 环境变量
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: '123456'
+      MYSQL_USER: 'crmeb'
+      MYSQL_PASS: '123456'
+      MYSQL_DATABASE: 'crmeb'
+    privileged: true
+    command:
+       --character-set-server=utf8mb4
+       --collation-server=utf8mb4_general_ci
+       --explicit_defaults_for_timestamp=true
+       --lower_case_table_names=1
+       --max_allowed_packet=128M
+       --default-authentication-plugin=mysql_native_password
+       --sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+    working_dir: /var/lib/mysql
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./mysql/data:/var/lib/mysql #挂载数据目录到本地
+      - ./mysql/log:/var/log/mysql
+    networks:
+      app_net:
+        # 固定子网ip，网段必须在子网络192.168.*.*
+        ipv4_address: 192.168.10.11
+  # redis 容器
+  redis:
+    container_name: crmeb_redis
+    image: 'redis:alpine'
+    # image: daocloud.io/library/redis:6.0.5-alpine
+    # image: redis:5.0
+    ports:
+      - "6379:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      # - ./redis/data:/data #挂载数据目录到本地
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      app_net:
+        ipv4_address: 192.168.10.10
+  # php 容器
+  phpfpm:
+    container_name: crmeb_php #指定容器名
+    # image: phpfpm-image #指定镜像名
+    image: crmeb_php #指定镜像名
+    build:
+      context: ./php #dockerfile文件路径
+      dockerfile: Dockerfile #制定dockerfile文件名称
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 9000:9000
+      - 40001:40001
+      - 40002:40002
+      - 40003:40003
+    tmpfs: /var/temp #上传临时文件夹
+    working_dir: /var/www
+    volumes:
+      - ../../crmeb:/var/www #程序运行目录
+      - ../../crmeb/runtime:/var/www/temp #程序缓存目录
+      - ./php/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+    networks:
+      app_net:
+        ipv4_address: 192.168.10.90
+#    command: /bin/bash -c "php -v"
+  # nginx 容器
+  nginx:
+    container_name: crmeb_nginx
+    image: 'nginx:alpine'
+    # image: daocloud.io/library/nginx:1.19.1-alpine
+    restart: always
+    ports:
+      - 8011:80
+      # - 443:443
+    # 依赖关系 先跑php
+    depends_on:
+      - phpfpm
+    environment:
+      TZ: Asia/Shanghai
+    working_dir: /var/www
+    volumes_from:
+      - phpfpm #继承phpfpm挂载目录
+    volumes:
+      - ./nginx/vhost.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/log:/etc/nginx/log
+    networks:
+      app_net:
+        ipv4_address: 192.168.10.80
+networks: #网络配置
+  app_net: #网络名称
+    driver: bridge
+    ipam: #网络配置
+      driver: default
+      config:
+        - subnet: 192.168.10.0/24 #IP区间
+

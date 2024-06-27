@@ -12,8 +12,8 @@
       <div class="ivu-mt card-tree b-r-1">
         <div class="tree">
           <div class="main-btn">
-            <el-button class="mb5" style="flex: 1" type="primary" @click="clickMenu(4)" long>新增分类</el-button>
-            <el-button class="mb5 mr10" type="success" @click="syncRoute()">同步</el-button>
+            <el-button class="mb5" style="flex: 1" type="primary" v-db-click @click="clickMenu(4)" long>新增分类</el-button>
+            <el-button class="mb5 mr10" type="success" v-db-click @click="syncRoute()">同步</el-button>
           </div>
 
           <vue-tree-list
@@ -35,7 +35,7 @@
                   node: slotProps.model.method,
                   open: formValidate.path == slotProps.model.path && formValidate.method == slotProps.model.method,
                 }"
-                @click.stop="onClick(slotProps.model)"
+                v-db-click @click.stop="onClick(slotProps.model)"
               >
                 <span
                   class=""
@@ -95,11 +95,11 @@
               {{ formValidate.name }}
             </div>
             <div>
-              <el-button class="submission" @click="debugging()">调试</el-button>
-              <el-button v-if="formValidate.id" type="primary" class="submission" @click="isEdit = !isEdit">{{
+              <el-button class="submission" v-db-click @click="debugging()">调试</el-button>
+              <el-button v-if="formValidate.id" type="primary" class="submission" v-db-click @click="isEdit = !isEdit">{{
                 isEdit ? '取消' : '编辑'
               }}</el-button>
-              <el-button v-if="isEdit" type="primary" class="submission" @click="handleSubmit('formValidate')"
+              <el-button v-if="isEdit" type="primary" class="submission" v-db-click @click="handleSubmit('formValidate')"
                 >保存</el-button
               >
             </div>
@@ -240,15 +240,15 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          @click="insertRow(row, 'headTable')"
+                          v-db-click @click="insertRow(row, 'headTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" @click="removeRow(row, 'headTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'headTable')">删除</vxe-button>
                       </template>
                     </vxe-column>
                   </vxe-table>
 
-                  <el-button class="mt10" v-if="isEdit" type="primary" @click="insertEvent('headTable')"
+                  <el-button class="mt10" v-if="isEdit" type="primary" v-db-click @click="insertEvent('headTable')"
                     >添加参数</el-button
                   >
                 </el-form-item>
@@ -307,14 +307,14 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          @click="insertRow(row, 'xTable')"
+                          v-db-click @click="insertRow(row, 'xTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" @click="removeRow(row, 'xTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'xTable')">删除</vxe-button>
                       </template>
                     </vxe-column>
                   </vxe-table>
-                  <el-button class="mt10" v-if="isEdit" type="primary" @click="insertEvent('xTable')"
+                  <el-button class="mt10" v-if="isEdit" type="primary" v-db-click @click="insertEvent('xTable')"
                     >添加参数</el-button
                   >
                 </el-form-item>
@@ -379,15 +379,15 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          @click="insertRow(row, 'bodyTable')"
+                          v-db-click @click="insertRow(row, 'bodyTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" @click="removeRow(row, 'bodyTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'bodyTable')">删除</vxe-button>
                       </template>
                     </vxe-column>
                   </vxe-table>
 
-                  <el-button class="mt10" v-if="isEdit" type="primary" @click="insertEvent('bodyTable')"
+                  <el-button class="mt10" v-if="isEdit" type="primary" v-db-click @click="insertEvent('bodyTable')"
                     >添加参数</el-button
                   >
                 </el-form-item>
@@ -442,14 +442,14 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          @click="insertRow(row, 'resTable')"
+                          v-db-click @click="insertRow(row, 'resTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" @click="removeRow(row, 'resTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'resTable')">删除</vxe-button>
                       </template>
                     </vxe-column>
                   </vxe-table>
-                  <el-button class="mt10" v-if="isEdit" type="primary" @click="insertEvent('resTable')"
+                  <el-button class="mt10" v-if="isEdit" type="primary" v-db-click @click="insertEvent('resTable')"
                     >添加参数</el-button
                   >
                 </el-form-item>
@@ -522,11 +522,11 @@
                     </vxe-column>
                     <vxe-column title="操作" v-if="isEdit">
                       <template #default="{ row }">
-                        <vxe-button type="text" status="primary" @click="removeRow(row, 'codeTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'codeTable')">删除</vxe-button>
                       </template>
                     </vxe-column>
                   </vxe-table>
-                  <el-button class="mt10" v-if="isEdit" type="primary" @click="insertEvent('codeTable')"
+                  <el-button class="mt10" v-if="isEdit" type="primary" v-db-click @click="insertEvent('codeTable')"
                     >添加参数</el-button
                   >
                 </el-form-item>
@@ -535,20 +535,20 @@
             <!-- <el-row :gutter="24" >
               <el-col :span="24">
                 <el-form-item>
-                  <el-button type="primary" class="submission" @click="handleSubmit('formValidate')">保存</el-button>
+                  <el-button type="primary" class="submission" v-db-click @click="handleSubmit('formValidate')">保存</el-button>
                 </el-form-item>
               </el-col>
             </el-row> -->
           </el-form>
         </div>
         <!-- <div v-else class="nothing">
-          <div class="box" @click="clickMenu(4)">
+          <div class="box" v-db-click @click="clickMenu(4)">
             <div class="icon">
               <Icon type="ios-folder" />
             </div>
             <div class="text">新建文件</div>
           </div>
-          <div class="box" @click="clickMenu(1)">
+          <div class="box" v-db-click @click="clickMenu(1)">
             <div class="icon">
               <Icon type="logo-linkedin" />
             </div>
@@ -561,8 +561,8 @@
       <label>分组名称：</label>
       <el-input v-model="value" placeholder="请输入分组名称" style="width: 85%" />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="nameModal = false">取 消</el-button>
-        <el-button type="primary" @click="asyncOK">确 定</el-button>
+        <el-button v-db-click @click="nameModal = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="asyncOK">确 定</el-button>
       </span>
     </el-dialog>
     <el-drawer

@@ -18,12 +18,12 @@ use app\services\activity\{lottery\LuckLotteryServices,
     combination\StorePinkServices
 };
 use app\services\activity\coupon\StoreCouponIssueServices;
-use app\services\order\{
-    StoreCartServices,
+use app\services\order\{StoreCartServices,
     StoreOrderCartInfoServices,
     StoreOrderComputedServices,
     StoreOrderCreateServices,
     StoreOrderEconomizeServices,
+    StoreOrderInvoiceServices,
     StoreOrderRefundServices,
     StoreOrderServices,
     StoreOrderStatusServices,
@@ -269,7 +269,7 @@ class StoreOrderController
             $success = app()->make(StoreOrderSuccessServices::class);
             $payPriceStatus = $success->zeroYuanPayment($orderInfo, $uid, $paytype);
             if ($payPriceStatus)//0元支付成功
-                return app('json')->status('success', 410195, ['order_id' => $orderInfo['order_id'], 'key' => $orderInfo['unique']]);
+                return app('json')->status('success', '支付成功', ['order_id' => $orderInfo['order_id'], 'key' => $orderInfo['unique']]);
             else
                 return app('json')->status('pay_error', 410216);
         }
@@ -571,6 +571,17 @@ class StoreOrderController
         if (!$res) {
             return app('json')->fail(410222);
         }
+
+        //自定义事件-订单评价
+        event('CustomEventListener', ['order_comment', [
+            'uid' => $uid,
+            'oid' => $cartInfo['oid'],
+            'unique' => $unique,
+            'product_id' => $productId,
+            'add_time' => date('Y-m-d H:i:s'),
+            'suk' => $cartInfo['cart_info']['productInfo']['attrInfo']['suk']
+        ]]);
+
         try {
             $this->services->checkOrderOver($replyServices, $cartInfoServices->getCartColunm(['oid' => $cartInfo['oid']], 'unique', ''), $cartInfo['oid']);
         } catch (\Exception $e) {
@@ -807,6 +818,9 @@ class StoreOrderController
         ]);
         $data['data'] = $this->decrypt($data['data'], sys_config('sms_token'));
         switch ($data['type']) {
+            case 'detection'://检测回调地址
+                return \json($data['data']);
+                break;
             case 'order_success'://下单成功
                 $update = [
                     'label' => $data['data']['label'] ?? '',
@@ -872,7 +886,23 @@ class StoreOrderController
                         ]);
                     }
                 }
-
+                break;
+            case 'success'://电子发票回调
+                $oid = $this->services->value(['order_id' => $data['data']['unique']], 'id');
+                if ($oid) {
+                    $invoiceServices = app()->make(StoreOrderInvoiceServices::class);
+                    $invoiceServices->update([
+                        'category' => 'order',
+                        'order_id' => $oid,
+                    ], [
+                        'unique' => $data['data']['unique'],
+                        'invoice_type' => $data['data']['invoice_type'],
+                        'invoice_num' => $data['data']['invoice_num'],
+                        'invoice_serial_number' => $data['data']['invoice_serial_number'],
+                        'is_invoice' => 1,
+                        'invoice_time' => time()
+                    ]);
+                }
                 break;
         }
 
@@ -895,6 +925,6 @@ class StoreOrderController
         $iv = substr($decodedData, 0, 16);
         $encrypted = substr($decodedData, 16);
         $decrypted = openssl_decrypt($encrypted, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
-        return $decrypted;
+        return json_decode($decrypted, true);
     }
 }

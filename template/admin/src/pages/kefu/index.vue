@@ -22,10 +22,10 @@
                 <el-input type="password" v-model="formInline.password" placeholder="请输入密码" size="large" />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" size="large" @click="handleSubmit('formInline')" class="btn">登录 </el-button>
+                <el-button type="primary" size="large" v-db-click @click="handleSubmit('formInline')" class="btn">登录 </el-button>
               </el-form-item>
             </el-form>
-            <div class="qh_box" v-if="!isMobile" @click="bindScan"><span class="iconfont iconerweima2"></span></div>
+            <div class="qh_box" v-if="!isMobile" v-db-click @click="bindScan"><span class="iconfont iconerweima2"></span></div>
           </div>
           <div :style="{ display: loginType ? 'block' : 'none' }">
             <div class="page-account-top">
@@ -35,10 +35,10 @@
               <div class="qrcode" ref="qrCodeUrl"></div>
               <div class="rxpired-box" v-show="rxpired">
                 <p>已过期</p>
-                <el-button type="primary" @click="bindRefresh">点击刷新</el-button>
+                <el-button type="primary" v-db-click @click="bindRefresh">点击刷新</el-button>
               </div>
             </div>
-            <div class="qh_box" @click="loginType = 0"><span class="iconfont iconzhanghaomima"></span></div>
+            <div class="qh_box" v-db-click @click="loginType = 0"><span class="iconfont iconzhanghaomima"></span></div>
           </div>
         </div>
       </div>

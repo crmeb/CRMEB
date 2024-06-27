@@ -90,6 +90,7 @@ class StoreProductReplyServices extends BaseServices
         $data['reply_type'] = 'product';
         $data['add_time'] = empty($data['add_time']) ? $time : strtotime($data['add_time']);
         $data['pics'] = json_encode($data['pics']);
+        $data['status'] = 1;
         unset($data['image']);
         if ($data['add_time'] > $time) {
             throw new AdminException(400567);

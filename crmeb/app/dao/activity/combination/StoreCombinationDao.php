@@ -47,7 +47,7 @@ class StoreCombinationDao extends BaseDao
             $query->where('start_time', '<=', $startTime)->where('stop_time', '>=', $stopTime);
         })->when(isset($where['storeProductId']), function ($query) {
             $query->where('product_id', 'IN', function ($query) {
-                $query->name('store_product')->where('is_show', 1)->where('is_del', 0)->field('id');
+                $query->name('store_product')->where('is_del', 0)->field('id');
             });
         })->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
             $query->whereIn('product_id', function ($query) use ($where) {

@@ -5,7 +5,7 @@
       v-if="collapseShow"
       class="layout-navbars-breadcrumb-icon"
       :class="getThemeConfig.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-      @click="onThemeConfigChange"
+      v-db-click @click="onThemeConfigChange"
     ></i>
     <el-breadcrumb class="layout-navbars-breadcrumb-hide" v-if="isShowcrumb" :style="{ display: isShowBreadcrumb }">
       <transition-group name="breadcrumb" mode="out-in">
@@ -17,7 +17,7 @@
               v-if="getThemeConfig.isBreadcrumbIcon"
             />{{ $t(v.title) }}
           </span>
-          <a v-else @click.prevent="onBreadcrumbClick(v)">
+          <a v-else v-db-click @click.prevent="onBreadcrumbClick(v)">
             <Icon
               :type="v.icon"
               class="ivu-icon layout-navbars-breadcrumb-iconfont"

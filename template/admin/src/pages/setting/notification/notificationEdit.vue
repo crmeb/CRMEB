@@ -36,7 +36,8 @@
                           <div class="variable">
                             <div
                               class="item"
-                              @click="changeValue(i.value)"
+                              v-db-click
+                              @click="changeValue(i.value, 'system_text')"
                               v-for="(i, index) in formData.custom_variable"
                               :key="index"
                             >
@@ -48,9 +49,7 @@
                         </el-popover>
                       </div>
                     </div>
-                    <div class="tips-info">
-                      可点击右下角图标,插入自定义变量
-                    </div>
+                    <div class="tips-info" v-if="formData.type_n == 3">可点击右下角图标,插入自定义变量</div>
                   </el-form-item>
                   <el-form-item label="状态：" prop="is_system">
                     <el-radio-group v-model="formData.is_system">
@@ -66,6 +65,7 @@
                   <el-form-item label="通知内容：">
                     <div class="content">
                       <el-input
+                        id="sms_text"
                         v-model="formData.sms_text"
                         type="textarea"
                         :disabled="formData.type_n != 3"
@@ -78,7 +78,8 @@
                           <div class="variable">
                             <div
                               class="item"
-                              @click="changeValue(i.value)"
+                              v-db-click
+                              @click="changeValue(i.value, 'sms_text')"
                               v-for="(i, index) in formData.custom_variable"
                               :key="index"
                             >
@@ -90,9 +91,7 @@
                         </el-popover>
                       </div>
                     </div>
-                    <div class="tips-info">
-                      可点击右下角图标,插入自定义变量
-                    </div>
+                    <div class="tips-info" v-if="formData.type_n == 3">可点击右下角图标,插入自定义变量</div>
                   </el-form-item>
                   <el-form-item label="状态：" prop="is_sms">
                     <el-radio-group v-model="formData.is_sms">
@@ -213,6 +212,7 @@
                   <el-form-item label="通知内容：">
                     <div class="content">
                       <el-input
+                        id="ent_wechat_text"
                         v-model="formData.ent_wechat_text"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
@@ -224,7 +224,8 @@
                           <div class="variable">
                             <div
                               class="item"
-                              @click="changeValue(i.value)"
+                              v-db-click
+                              @click="changeValue(i.value, 'ent_wechat_text')"
                               v-for="(i, index) in formData.custom_variable"
                               :key="index"
                             >
@@ -236,9 +237,7 @@
                         </el-popover>
                       </div>
                     </div>
-                    <div class="tips-info">
-                      可点击右下角图标,插入自定义变量
-                    </div>
+                    <div class="tips-info" v-if="formData.type_n == 3">可点击右下角图标,插入自定义变量</div>
                   </el-form-item>
                   <el-form-item label="机器人链接：">
                     <div class="content">
@@ -253,7 +252,7 @@
                   </el-form-item>
                 </div>
                 <el-form-item>
-                  <el-button type="primary" @click="handleSubmit('formData')">提交</el-button>
+                  <el-button type="primary" v-db-click @click="handleSubmit('formData')">提交</el-button>
                 </el-form-item>
               </el-form>
             </el-tab-pane>
@@ -392,14 +391,13 @@ export default {
     handleReset(name) {
       this.$emit('close');
     },
-    changeValue(e) {
+    changeValue(e, name) {
       // 获取dom元素
-      let textInput = document.getElementById('system_text');
+      let textInput = document.getElementById(name);
       // 获取光标初始索引
       let index = textInput.selectionStart;
       // 拼接字符串的形式来得到需要的内容
-      this.formData.system_text =
-        this.formData.system_text.substring(0, index) + e + this.formData.system_text.substring(index);
+      this.formData[name] = this.formData[name].substring(0, index) + e + this.formData[name].substring(index);
       this.$nextTick(() => {
         textInput.selectionStart = index + e.length;
         textInput.selectionEnd = index + e.length;
@@ -482,15 +480,14 @@ export default {
 }
 // 滚动条样式
 .variable::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+  width: 4px;
+  height: 4px;
 }
 .variable::-webkit-scrollbar-thumb {
-    background: var(--prev-color-primary-light-9);
-    border-radius: 4px;
+  background: var(--prev-color-primary-light-9);
+  border-radius: 4px;
 }
 .variable::-webkit-scrollbar-track {
-    background: #f2f2f2;
+  background: #f2f2f2;
 }
-
 </style>

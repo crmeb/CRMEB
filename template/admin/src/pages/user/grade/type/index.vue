@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <!-- <el-button type="primary" @click="addType">添加类型</el-button> -->
+      <!-- <el-button type="primary" v-db-click @click="addType">添加类型</el-button> -->
       <el-table
         class="mt14"
         :data="tbody"
@@ -55,12 +55,12 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a href="javascript:" @click="editType(scope.row)">编辑</a>
+            <a href="javascript:" v-db-click @click="editType(scope.row)">编辑</a>
             <!-- <el-divider direction="vertical" v-if="scope.row.type !== 'free' && scope.row.type !== 'ever'" />
             <a
               v-if="scope.row.type !== 'free' && scope.row.type !== 'ever'"
               href="javascript:"
-              @click="del(scope.row, '删除类型', scope.$index)"
+              v-db-click @click="del(scope.row, '删除类型', scope.$index)"
               >删除</a
             > -->
           </template>

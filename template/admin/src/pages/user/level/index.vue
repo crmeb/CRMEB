@@ -32,13 +32,13 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['admin-user-level_add']" type="primary" @click="add"
+      <el-button v-auth="['admin-user-level_add']" type="primary" v-db-click @click="add"
       >添加用户等级</el-button>
       <el-table
         :data="levelLists"

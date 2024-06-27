@@ -48,6 +48,7 @@
 					<tabNav v-if="item.name == 'tabNav'" :dataConfig="item" @bindHeight="bindHeighta"
 						@bindSortId="bindSortId" :isFixed="isFixed"></tabNav>
 					<titles v-if="item.name == 'titles'" :dataConfig="item" :isSortType="isSortType"></titles>
+					<hotspot v-if="item.name == 'hotspot'" :dataConfig="item" :isSortType="isSortType"></hotspot>
 				</block>
 				<!-- #endif -->
 				<!-- 分类商品模块 -->
@@ -216,6 +217,7 @@
 	import swiperBg from './components/swiperBg';
 	import tabNav from './components/tabNav';
 	import titles from './components/titles';
+	import hotspot from './components/hotspot.vue';
 	import appUpdate from "@/components/update/app-update.vue";
 	import {
 		getTempIds
@@ -288,6 +290,7 @@
 			swiperBg,
 			tabNav,
 			titles,
+			hotspot,
 			appUpdate, //APP更新
 			// #endif
 		},

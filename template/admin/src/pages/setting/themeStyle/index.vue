@@ -4,7 +4,7 @@
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
-          <el-button class="bnt" type="primary" @click="submit">保存</el-button>
+          <el-button class="bnt" type="primary" v-db-click @click="submit">保存</el-button>
         </div>
       </div>
     </div>
@@ -15,7 +15,7 @@
           v-for="(item, index) in tabList"
           :key="index"
           :class="current === index + 1 ? 'active' : ''"
-          @click="selected(index)"
+          v-db-click @click="selected(index)"
         >
           <div class="color_cont flex align-center">
             <div class="main_c mr-2" :class="item.class">
@@ -32,7 +32,7 @@
       </div>
     </el-card>
     <!--<div class="footer acea-row row-center-wrapper">-->
-    <!--<el-button type="primary" @click="submit">保存</el-button>-->
+    <!--<el-button type="primary" v-db-click @click="submit">保存</el-button>-->
     <!--</div>-->
   </div>
 </template>

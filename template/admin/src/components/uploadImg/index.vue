@@ -28,7 +28,7 @@
           </el-form-item>
           <el-form-item label="网络图片：" prop="region" v-if="ruleForm.type == 1">
             <el-input class="form-width" v-model="webImgUrl" placeholder="请网络图片地址"></el-input>
-            <span class="tq-text" @click="getImg">提取照片</span>
+            <span class="tq-text" v-db-click @click="getImg">提取照片</span>
           </el-form-item>
           <el-form-item label="上传图片：" prop="region" v-if="ruleForm.type == 0">
             <div class="acea-row">
@@ -56,10 +56,10 @@
                     @dragend="handleDragEnd($event, file)"
                   >
                     <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                    <i class="el-icon-error btndel" @click="handleWebRemove(file)" />
+                    <i class="el-icon-error btndel" v-db-click @click="handleWebRemove(file)" />
                   </div>
                 </el-upload>
-                <div class="tips">建议上传图片最大宽度750px，不超过3MB；仅支持jpeg、png格式，可拖拽调整上传顺序</div>
+                <div class="tips">建议上传图片最大宽度750px，不超过3MB；仅支持jpeg、jpg、png格式，可拖拽调整上传顺序</div>
               </div>
             </div>
           </el-form-item>
@@ -76,7 +76,7 @@
                 @dragend="handleDragEnd($event, item)"
               >
                 <img :src="item.url" />
-                <i class="el-icon-error btndel" @click="handleRemove(index)" />
+                <i class="el-icon-error btndel" v-db-click @click="handleRemove(index)" />
               </div>
             </div>
           </template>
@@ -98,7 +98,7 @@
               </el-form-item>
             </div>
             <div class="right">
-              <el-button size="small" @click="scanUploadGet">刷新图库</el-button>
+              <el-button size="small" v-db-click @click="scanUploadGet">刷新图库</el-button>
               <div class="tip">刷新图库按钮，可显示移动端上传成功的图片</div>
               <div class="img-box">
                 <div
@@ -112,7 +112,7 @@
                   @dragend="handleDragEnd($event, item)"
                 >
                   <img :src="item.att_dir" />
-                  <i class="el-icon-error btndel" @click="handleWebRemove(item)" />
+                  <i class="el-icon-error btndel" v-db-click @click="handleWebRemove(item)" />
                 </div>
               </div>
             </div>
@@ -121,8 +121,8 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="clear">取 消</el-button>
-        <el-button type="primary" :disabled="!ruleForm.imgList.length" @click="submitUpload">确 定</el-button>
+        <el-button v-db-click @click="clear">取 消</el-button>
+        <el-button type="primary" :disabled="!ruleForm.imgList.length" v-db-click @click="submitUpload">确 定</el-button>
       </span>
     </el-dialog>
   </div>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- <div class="acea-row row-center clear_tit">
-      <el-button type="primary" @click="clearCache" class="mr20">清除缓存</el-button>
-      <el-button type="primary" @click="clearlog">清除日志</el-button>
+      <el-button type="primary" v-db-click @click="clearCache" class="mr20">清除缓存</el-button>
+      <el-button type="primary" v-db-click @click="clearlog">清除日志</el-button>
     </div> -->
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row :gutter="24">
@@ -10,7 +10,7 @@
           <div class="clear_box">
             <span class="clear_box_sp1" v-text="item.title"></span>
             <span class="clear_box_sp2" v-text="item.tlt"></span>
-            <el-button :type="item.typeName" @click="onChange(index)">立即清除</el-button>
+            <el-button :type="item.typeName" v-db-click @click="onChange(index)">立即清除</el-button>
           </div>
         </el-col>
       </el-row>

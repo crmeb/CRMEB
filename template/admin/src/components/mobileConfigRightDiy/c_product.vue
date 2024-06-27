@@ -7,7 +7,7 @@
           class="item"
           v-for="(item, index) in configData.list"
           :key="index"
-          @click="activeBtn(index)"
+          v-db-click @click="activeBtn(index)"
           v-model="configData.tabCur"
         >
           <div class="move-icon">
@@ -16,7 +16,7 @@
           <div class="content">
             <div class="con-item" v-for="(list, key) in item.chiild" :key="key">
               <span>{{ list.title }}</span>
-              <div style="width: 100%" @click="getLink(index, key, item)">
+              <div style="width: 100%" v-db-click @click="getLink(index, key, item)">
                 <el-input
                   :suffix-icon="key && !item.link ? 'el-icon-arrow-right' : ''"
                   :readonly="key && !item.link ? true : false"
@@ -33,14 +33,14 @@
               </el-select>
             </div>
           </div>
-          <div class="delete" @click.stop="bindDelete(index)">
+          <div class="delete" v-db-click @click.stop="bindDelete(index)">
             <i class="el-icon-circle-close" style="font-size: 24px;"></i>
           </div>
         </div>
       </draggable>
     </div>
     <div v-if="configData.list">
-      <div class="add-btn" @click="addHotTxt" v-if="configData.list.length < configData.max">
+      <div class="add-btn" v-db-click @click="addHotTxt" v-if="configData.list.length < configData.max">
         <el-button type="primary" ghost style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
           >添加模块</el-button
         >

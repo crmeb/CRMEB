@@ -93,7 +93,7 @@ abstract class Make
     protected $attrPrefix = '_label';
 
     /**
-     * 后台前端模板根路径
+     * 代码生成功能生成前端文件的路径
      * @var string
      */
     protected $adminTemplatePath;

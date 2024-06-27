@@ -161,4 +161,14 @@ class StoreProductReply extends BaseModel
     {
         $query->where('product_score', $value);
     }
+
+    /**
+     * 状态搜索器
+     * @param Model $query
+     * @param $value
+     */
+    public function searchStatusAttr($query, $value)
+    {
+        if ($value !== '') $query->where('status', $value);
+    }
 }

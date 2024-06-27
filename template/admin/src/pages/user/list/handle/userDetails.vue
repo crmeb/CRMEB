@@ -12,9 +12,9 @@
           </div>
         </div>
         <div class="edit-btn" v-if="!this.psInfo.is_del">
-          <el-button v-if="!isEdit" type="primary" @click="edit">编辑</el-button>
-          <el-button v-if="isEdit" @click="edit">取消</el-button>
-          <el-button v-if="isEdit" type="primary" @click="editSave">保存</el-button>
+          <el-button v-if="!isEdit" type="primary" v-db-click @click="edit">编辑</el-button>
+          <el-button v-if="isEdit" v-db-click @click="edit">取消</el-button>
+          <el-button v-if="isEdit" type="primary" v-db-click @click="editSave">保存</el-button>
         </div>
       </div>
       <el-row justify="space-between" class="mt14">

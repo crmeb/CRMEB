@@ -2,7 +2,7 @@
   <div>
     <el-row class="ivu-mt box-wrapper">
       <el-col v-bind="grid1" class="left-wrapper">
-        <div class="tree_tit" @click="addSort">
+        <div class="tree_tit" v-db-click @click="addSort">
           <i class="el-icon-circle-plus"></i>
           添加分类
         </div>
@@ -40,8 +40,8 @@
         <el-card :bordered="false" shadow="never">
           <el-row class="mb14">
             <el-col :span="24">
-              <el-button v-auth="['setting-store_service-add']" type="primary" @click="add">添加话术</el-button>
-              <!-- <el-button v-auth="['setting-store_service-add']" type="success" @click="addSort">添加分类</el-button> -->
+              <el-button v-auth="['setting-store_service-add']" type="primary" v-db-click @click="add">添加话术</el-button>
+              <!-- <el-button v-auth="['setting-store_service-add']" type="success" v-db-click @click="addSort">添加分类</el-button> -->
             </el-col>
           </el-row>
           <el-table
@@ -89,9 +89,9 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="170">
               <template slot-scope="scope">
-                <a @click="edit(scope.row)">编辑</a>
+                <a v-db-click @click="edit(scope.row)">编辑</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="del(scope.row, '删除客服', scope.$index)">删除</a>
+                <a v-db-click @click="del(scope.row, '删除客服', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>

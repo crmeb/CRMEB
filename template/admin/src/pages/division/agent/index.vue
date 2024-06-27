@@ -19,7 +19,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -29,7 +29,7 @@
         <el-col :xs="24" :sm="24" ref="rightBox">
           <el-row>
             <el-col v-bind="grid">
-              <el-button type="primary" @click="groupAdd('0')" class="mr20">添加代理商</el-button>
+              <el-button type="primary" v-db-click @click="groupAdd('0')" class="mr20">添加代理商</el-button>
             </el-col>
           </el-row>
           <el-table
@@ -53,12 +53,10 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="姓名" min-width="130">
+            <el-table-column label="名称" min-width="130">
               <template slot-scope="scope">
                 <div class="acea-row">
-                  <i class="el-icon-male" v-show="scope.row.sex === '男'" style="color:#2db7f5;font-size: 15px;"></i>
-                  <i class="el-icon-female" v-show="scope.row.sex === '女'" style="color:#ed4014;font-size: 15px;"></i>
-                  <div v-text="scope.row.nickname" class="ml10"></div>
+                  <div v-text="scope.row.division_name" class="ml10"></div>
                 </div>
               </template>
             </el-table-column>
@@ -92,13 +90,13 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="220">
               <template slot-scope="scope">
-                <a @click="staffAdd(scope.row.uid)">添加员工</a>
+                <a v-db-click @click="staffAdd(scope.row.uid)">添加员工</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="jump(scope.row.uid)">查看员工</a>
+                <a v-db-click @click="jump(scope.row.uid)">查看员工</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="groupAdd(scope.row.uid)">编辑</a>
+                <a v-db-click @click="groupAdd(scope.row.uid)">编辑</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="del(scope.row, '删除代理商', scope.$index)">删除</a>
+                <a v-db-click @click="del(scope.row, '删除代理商', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>

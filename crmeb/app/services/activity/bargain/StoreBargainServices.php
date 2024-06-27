@@ -130,7 +130,7 @@ class StoreBargainServices extends BaseServices
         $items = $data['items'];
         $data['start_time'] = strtotime($data['section_time'][0]);
         $data['stop_time'] = strtotime($data['section_time'][1]);
-        $data['image'] = $data['images'][0];
+        $data['image'] = $data['image'];
         $data['images'] = json_encode($data['images']);
         $data['stock'] = $detail[0]['stock'];
         $data['quota'] = $detail[0]['quota'];
@@ -161,8 +161,8 @@ class StoreBargainServices extends BaseServices
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 2);
                 if (!$res) throw new AdminException(100007);
             } else {
-                if (!$storeProductServices->getOne(['is_show' => 1, 'is_del' => 0, 'id' => $data['product_id']])) {
-                    throw new AdminException(400091);
+                if (!$storeProductServices->getOne(['is_del' => 0, 'id' => $data['product_id']])) {
+                    throw new AdminException('无法添加回收站商品');
                 }
                 $data['add_time'] = time();
                 $res = $this->dao->save($data);
@@ -496,6 +496,7 @@ class StoreBargainServices extends BaseServices
         }
         $data['userBargainInfo'] = $userBargainInfo;
         $data['bargain']['price'] = bcsub($data['bargain']['price'], (string)$userBargainInfo['alreadyPrice'], 2);
+        $data['bargain']['product_is_show'] = app()->make(StoreProductServices::class)->value($data['bargain']['product_id'], 'is_show');
 
         //用户访问事件
         event('UserVisitListener', [$user['uid'], $id, 'bargain', $bargain['product_id'], 'view']);
@@ -631,7 +632,7 @@ class StoreBargainServices extends BaseServices
         $userHelpService = app()->make(StoreBargainUserHelpServices::class);
         /** @var StoreBargainUserServices $bargainUserService */
         $bargainUserService = app()->make(StoreBargainUserServices::class);
-        $bargainUserTableId = $bargainUserService->getBargainUserTableId($bargainId, $bargainUserUid);
+        $bargainUserTableId = $bargainUserService->getBargainUserTableId((int)$bargainId, (int)$bargainUserUid);
         if (!$bargainUserTableId) throw new ApiException(410301);
         $bargainUserInfo = $bargainUserService->get($bargainUserTableId)->toArray();
         $count = $userHelpService->isBargainUserHelpCount($bargainId, $bargainUserTableId, $uid);

@@ -2043,6 +2043,7 @@ export default {
 	// width: 380rpx;
 	text-align: justify;
 	flex: 1;
+	word-break: break-all;
 }
 
 .order-details .wrapper .item .conter .upload {

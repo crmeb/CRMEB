@@ -79,7 +79,7 @@
             </el-form-item>
           </template> -->
           <el-form-item>
-            <el-button type="primary" @click="searchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="searchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -87,7 +87,7 @@
     <el-card shadow="never" class="ivu-mt" :class="search.length ? 'mt16' : ''">
       <el-row>
         <el-col v-bind="grid">
-          <el-button type="primary" @click="add">添加</el-button>
+          <el-button type="primary" v-db-click @click="add">添加</el-button>
         </el-col>
       </el-row>
       <el-table
@@ -119,11 +119,11 @@
               <span>{{ scope.row[item.slot][0] }}--{{ scope.row[item.slot][1] }}</span>
             </template>
             <template v-else-if="item.slot === 'action'">
-              <a @click="show(scope.row)">详情</a>
+              <a v-db-click @click="show(scope.row)">详情</a>
               <el-divider direction="vertical"/>
-              <a @click="edit(scope.row)">修改</a>
+              <a v-db-click @click="edit(scope.row)">修改</a>
               <el-divider direction="vertical"></el-divider>
-              <a @click="del(scope.row, '删除', scope.$index)">删除</a>
+              <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
             </template>
             <template v-else-if="item.from_type === 'switches'">
               <el-switch

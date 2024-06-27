@@ -35,10 +35,10 @@ class SystemCrudData extends BaseModel
      */
     protected $pk = 'id';
 
-    public function getValueAttr($value)
-    {
-        return json_decode($value, true);
-    }
+//    public function getValueAttr($value)
+//    {
+//        return json_decode($value, true);
+//    }
 
     /**
      * @param $query
@@ -51,6 +51,20 @@ class SystemCrudData extends BaseModel
     {
         if ($value != '') {
             $query->where('name', 'like', '%' . $value . '%');
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function searchPidAttr($query, $value)
+    {
+        if ($value !== '') {
+            $query->where('pid', $value);
         }
     }
 }

@@ -149,6 +149,25 @@ class StoreOrderTakeServices extends BaseServices
                 $order['time'] = date('Y-m-d H:i:s');
                 $order['phone'] = $order['user_phone'];
                 event('CustomNoticeListener', [$order['uid'], $order, 'order_take']);
+
+                //自定义事件-订单收货/核销
+                event('CustomEventListener', ['order_take', [
+                    'uid' => $order['uid'],
+                    'id' => (int)$order['id'],
+                    'order_id' => $order['order_id'],
+                    'real_name' => $order['real_name'],
+                    'user_phone' => $order['user_phone'],
+                    'user_address' => $order['user_address'],
+                    'total_num' => $order['total_num'],
+                    'pay_price' => $order['pay_price'],
+                    'pay_postage' => $order['pay_postage'],
+                    'deduction_price' => $order['deduction_price'],
+                    'coupon_price' => $order['coupon_price'],
+                    'store_name' => $storeTitle,
+                    'add_time' => date('Y-m-d H:i:s', $order['add_time']),
+                ]]);
+
+
             } catch (\Throwable $exception) {
 
             }
@@ -225,12 +244,23 @@ class StoreOrderTakeServices extends BaseServices
             //自定义消息-积分到账
             event('CustomNoticeListener', [$order['uid'], [
                 'uid' => $order['uid'],
-                'phone' => app()->make(UserServices::class)->value($order['uid'], 'phone'),
+                'phone' => $userInfo['phone'],
                 'storeTitle' => $storeTitle,
                 'give_integral' => $give_integral,
                 'integral' => $integral,
                 'time' => date('Y-m-d H:i:s'),
             ], 'point_received']);
+
+            //自定义事件-积分到账
+            event('CustomEventListener', ['order_point', [
+                'uid' => $order['uid'],
+                'order_id' => $order['order_id'],
+                'phone' => $userInfo['phone'],
+                'storeTitle' => $storeTitle,
+                'give_integral' => $give_integral,
+                'integral' => $integral,
+                'add_time' => date('Y-m-d H:i:s'),
+            ]]);
 
             return true;
         }
@@ -527,16 +557,28 @@ class StoreOrderTakeServices extends BaseServices
         //提醒推送
         event('NoticeListener', [['spread_uid' => $spread_uid, 'userType' => $userType, 'brokeragePrice' => $brokeragePrice, 'goodsName' => $goodsName, 'goodsPrice' => $goodsPrice, 'add_time' => $orderInfo['add_time'] ?? time()], 'order_brokerage']);
 
+        $spreadPhone = app()->make(UserServices::class)->value($spread_uid, 'phone');
+
         //自定义消息-佣金到账
         event('CustomNoticeListener', [$spread_uid, [
             'uid' => $spread_uid,
-            'phone' => app()->make(UserServices::class)->value($spread_uid, 'phone'),
+            'phone' => $spreadPhone,
             'brokeragePrice' => $brokeragePrice,
             'goodsName' => $goodsName,
             'goodsPrice' => $goodsPrice,
             'time' => date('Y-m-d H:i:s')
         ], 'brokerage_received']);
 
+        //自定义事件-佣金到账
+        event('CustomEventListener', ['order_brokerage', [
+            'uid' => $spread_uid,
+            'order_id' => $orderInfo['order_id'],
+            'phone' => $spreadPhone,
+            'brokeragePrice' => $brokeragePrice,
+            'goodsName' => $goodsName,
+            'goodsPrice' => $goodsPrice,
+            'add_time' => date('Y-m-d H:i:s')
+        ]]);
     }
 
 

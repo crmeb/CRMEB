@@ -27,13 +27,17 @@ export function getProductDetail(id) {
  */
 // #ifdef H5  || APP-PLUS
 export function getProductCode(id) {
-	return request.get('product/code/' + id, {});
+	return request.get('product/code/' + id, {}, {
+		noAuth: true
+	});
 }
 // #endif
 // #ifdef MP
 export function getProductCode(id) {
 	return request.get('product/code/' + id, {
-		user_type: 'routine'
+		user_type: 'routine',
+	}, {
+		noAuth: true
 	});
 }
 // #endif

@@ -13,17 +13,17 @@
       </div>
       <el-row class="mb14" v-if="currentTab == 1">
         <el-col>
-          <el-button v-auth="['app-wechat-template-sync']" type="primary" @click="routineTemplate"
+          <el-button v-auth="['app-wechat-template-sync']" type="primary" v-db-click @click="routineTemplate"
             >同步小程序订阅消息</el-button
           >
-          <el-button v-auth="['app-wechat-template-sync']" type="primary" @click="wechatTemplate"
+          <el-button v-auth="['app-wechat-template-sync']" type="primary" v-db-click @click="wechatTemplate"
             >同步微信模版消息</el-button
           >
         </el-col>
       </el-row>
       <el-row class="mb14" v-if="currentTab == 3">
         <el-col>
-          <el-button type="primary" @click="notificationForm(0)">添加通知</el-button>
+          <el-button type="primary" v-db-click @click="notificationForm(0)">添加通知</el-button>
         </el-col>
       </el-row>
       <el-alert v-if="currentTab == 1" type="warning" :closable="false">
@@ -125,7 +125,7 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
-        <el-table-column label="小程序订阅" min-width="130" v-if="currentTab == 1">
+        <el-table-column label="小程序订阅" min-width="130" v-if="currentTab == 1 || currentTab == 3">
           <template slot-scope="scope">
             <el-switch
               v-if="scope.row.is_routine !== 0"
@@ -143,12 +143,12 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" :width="currentTab == 3 ? 130 :70">
           <template slot-scope="scope">
-            <a class="setting btn" @click="setting(item, scope.row)">设置</a>
+            <a class="setting btn" v-db-click @click="setting(scope.row)">设置</a>
             <template v-if="currentTab == 3">
               <el-divider direction="vertical"></el-divider>
-              <a class="setting btn" @click="notificationForm(scope.row.id)">编辑</a>
+              <a class="setting btn" v-db-click @click="notificationForm(scope.row.id)">编辑</a>
               <el-divider direction="vertical"></el-divider>
-              <a class="setting btn" @click="del(scope.row, '删除', scope.$index)">删除</a>
+              <a class="setting btn" v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
             </template>
           </template>
         </el-table-column>
@@ -224,7 +224,7 @@ export default {
     // 列表
     notice() {},
     // 设置
-    setting(item, row) {
+    setting(row) {
       this.$router.push({
         path: this.$routeProStr + '/setting/notification/notificationEdit?id=' + row.id,
       });

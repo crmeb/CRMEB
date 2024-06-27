@@ -16,11 +16,11 @@
         <el-option v-for="item in variableList" :key="item.value" :label="item.label" :value="item.value"> </el-option>
       </el-select>
 
-      <!-- <el-button v-if="keyList.length" class="deteal-btn mr10" @click="remove(index)"> 删除 </el-button> -->
+      <!-- <el-button v-if="keyList.length" class="deteal-btn mr10" v-db-click @click="remove(index)"> 删除 </el-button> -->
     </div>
 
     <div class="add-more">
-      <!-- <el-button class="h-33" type="primary" @click="add"> 新增 </el-button> -->
+      <!-- <el-button class="h-33" type="primary" v-db-click @click="add"> 新增 </el-button> -->
     </div>
   </div>
 </template>

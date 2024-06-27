@@ -118,6 +118,14 @@ class StoreProductRelationServices extends BaseServices
         }
         //收藏记录
         ProductLogJob::dispatch(['collect', ['uid' => $uid, 'product_id' => $productId]]);
+
+        //自定义事件-用户商品收藏
+        event('CustomEventListener', ['user_product_collect', [
+            'product_id' => $productId,
+            'uid' => $uid,
+            'collect_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return true;
     }
 

@@ -21,7 +21,7 @@
           <el-form-item>
             <div class="acea-row row-middle">
               <span class="mr5">{{ item.value }}</span>
-              <i class="el-icon-close" style="font-size: 14px" @click="handleRemove(index)"></i>
+              <i class="el-icon-close" style="font-size: 14px" v-db-click @click="handleRemove(index)"></i>
             </div>
             <div class="rulesBox">
               <el-tag
@@ -40,7 +40,7 @@
                 class="mb10 form_content_width"
               >
                 <template slot="append">
-                  <el-button type="primary" @click="createAttr(item.detail.attrsVal, index)">确定</el-button>
+                  <el-button type="primary" v-db-click @click="createAttr(item.detail.attrsVal, index)">确定</el-button>
                 </template>
               </el-input>
             </div>
@@ -58,18 +58,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="2">
-            <el-button type="primary" @click="createAttrName">确定</el-button>
+            <el-button type="primary" v-db-click @click="createAttrName">确定</el-button>
           </el-col>
           <el-col :span="2">
-            <el-button @click="offAttrName">取消</el-button>
+            <el-button v-db-click @click="offAttrName">取消</el-button>
           </el-col>
         </el-col>
       </el-row>
-      <el-button type="primary" @click="addBtn" v-if="!isBtn" class="add">添加新规格</el-button>
+      <el-button type="primary" v-db-click @click="addBtn" v-if="!isBtn" class="add">添加新规格</el-button>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="onClose">取消</el-button>
-      <el-button type="primary" :loading="modal_loading" @click="handleSubmit('formDynamic')">确定</el-button>
+      <el-button v-db-click @click="onClose">取消</el-button>
+      <el-button type="primary" :loading="modal_loading" v-db-click @click="handleSubmit('formDynamic')">确定</el-button>
     </span>
   </el-dialog>
 </template>

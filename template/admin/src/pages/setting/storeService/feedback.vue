@@ -36,7 +36,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="selChange">查询</el-button>
+            <el-button type="primary" v-db-click @click="selChange">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -75,9 +75,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="remarks(scope.row.id)">{{ scope.row.status === 1 ? '备注' : '处理' }}</a>
+            <a v-db-click @click="remarks(scope.row.id)">{{ scope.row.status === 1 ? '备注' : '处理' }}</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除反馈', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除反馈', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

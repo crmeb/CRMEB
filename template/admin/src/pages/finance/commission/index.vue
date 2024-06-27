@@ -32,13 +32,13 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="mt16">
-      <el-button v-auth="['export-userCommission']" class="export" @click="exports"
+      <el-button v-auth="['export-userCommission']" class="export" v-db-click @click="exports"
       >导出</el-button>
       <el-table
         ref="table"

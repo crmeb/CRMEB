@@ -6,10 +6,10 @@
           <!--          <el-card :bordered="false" shadow="never" class="tableBox">-->
           <div class="mb10">
             <!--              <span class="ivu-pl-8 mr10">数据库表列表</span>-->
-            <el-button type="primary" @click="getBackup">备份</el-button>
-            <el-button type="primary" @click="getOptimize">优化表</el-button>
-            <el-button type="primary" @click="getRepair">修复表</el-button>
-            <el-button type="primary" @click="exportData(1)">导出文件</el-button>
+            <el-button type="primary" v-db-click @click="getBackup">备份</el-button>
+            <el-button type="primary" v-db-click @click="getOptimize">优化表</el-button>
+            <el-button type="primary" v-db-click @click="getRepair">修复表</el-button>
+            <el-button type="primary" v-db-click @click="exportData(1)">导出文件</el-button>
           </div>
           <el-table
             ref="selection"
@@ -29,7 +29,7 @@
             <el-table-column label="备注" min-width="100">
               <template slot-scope="scope">
                 <div class="mark">
-                  <div v-if="scope.row.is_edit" class="table-mark" @click="isEditMark(scope.row)">
+                  <div v-if="scope.row.is_edit" class="table-mark" v-db-click @click="isEditMark(scope.row)">
                     {{ scope.row.comment }}
                   </div>
                   <el-input ref="mark" v-else v-model="scope.row.comment" @blur="isEditBlur(scope.row, 0)"></el-input>
@@ -58,7 +58,7 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="70">
               <template slot-scope="scope">
-                <a @click="Info(scope.row)">详情</a>
+                <a v-db-click @click="Info(scope.row)">详情</a>
               </template>
             </el-table-column>
           </el-table>
@@ -106,7 +106,7 @@
               <el-table-column label="备注" min-width="100">
                 <template slot-scope="scope">
                   <div class="mark">
-                    <div v-if="scope.row.is_edit" class="table-mark" @click="isEditMark(scope.row)">
+                    <div v-if="scope.row.is_edit" class="table-mark" v-db-click @click="isEditMark(scope.row)">
                       {{ scope.row.COLUMN_COMMENT }}
                     </div>
                     <el-input
@@ -157,11 +157,11 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="140">
               <template slot-scope="scope">
-                <a @click="ImportFile(scope.row)">导入</a>
+                <a v-db-click @click="ImportFile(scope.row)">导入</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="del(scope.row, '删除该备份', scope.$index)">删除</a>
+                <a v-db-click @click="del(scope.row, '删除该备份', scope.$index)">删除</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="download(scope.row)">下载</a>
+                <a v-db-click @click="download(scope.row)">下载</a>
               </template>
             </el-table-column>
           </el-table>
@@ -171,8 +171,8 @@
     <el-dialog :visible.sync="markModal" width="470px" title="修改备注" @closed="cancel">
       <el-input v-model="mark"></el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="ok">确 定</el-button>
+        <el-button v-db-click @click="cancel">取 消</el-button>
+        <el-button type="primary" v-db-click @click="ok">确 定</el-button>
       </span>
     </el-dialog>
   </div>

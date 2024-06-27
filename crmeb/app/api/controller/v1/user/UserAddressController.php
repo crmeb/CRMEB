@@ -39,10 +39,13 @@ class UserAddressController
      */
     public function address(Request $request, $id)
     {
+        $uid = (int)$request->uid();
         if (!$id) {
             return app('json')->fail(100100);
         }
-        return app('json')->success($this->services->address((int)$id));
+        $info = $this->services->address((int)$id);
+        if ($info['uid'] != $uid) return app('json')->fail(100026);
+        return app('json')->success($info);
     }
 
     /**

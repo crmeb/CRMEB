@@ -12,7 +12,7 @@
           <div v-for="(item, i) in list" :key="i">
             <div
               v-if="i === 0"
-              @click="onSubSave(i)"
+              v-db-click @click="onSubSave(i)"
               :class="{ checkClass: i === current }"
               @mouseenter="isDel = true"
               @mouseleave="isDel = false"
@@ -24,20 +24,20 @@
                   backgroundSize: '100% 100%',
                 }"
               >
-                <el-button type="error" icon="el-icon-delete" @click="del(i)" v-show="isDel"></el-button>
+                <el-button type="error" icon="el-icon-delete" v-db-click @click="del(i)" v-show="isDel"></el-button>
               </div>
               <span class="news_sp">{{ item.title }}</span>
             </div>
-            <div class="news_cent" v-else @click="onSubSave(i)" :class="{ checkClass: i === current }">
+            <div class="news_cent" v-else v-db-click @click="onSubSave(i)" :class="{ checkClass: i === current }">
               <span class="news_sp1">{{ item.title }}</span>
               <div class="news_cent_img ivu-mr-8">
                 <img :src="item.image_input ? item.image_input : baseImg" />
               </div>
-              <el-button type="error" icon="el-icon-delete" @click="del(i)"></el-button>
+              <el-button type="error" icon="el-icon-delete" v-db-click @click="del(i)"></el-button>
             </div>
           </div>
           <!-- <div class="acea-row row-center-wrapper">
-            <el-button class="mt20" type="primary" @click="handleAdd">添加图文</el-button>
+            <el-button class="mt20" type="primary" v-db-click @click="handleAdd">添加图文</el-button>
           </div> -->
         </el-col>
         <el-col :xl="18" :lg="18" :md="12" :sm="24" :xs="24">
@@ -68,7 +68,7 @@
               </el-col>
               <el-col :span="24" class="ml40">
                 <el-form-item label="图文封面：" prop="image_input">
-                  <div class="picBox" @click="modalPicTap('单选')">
+                  <div class="picBox" v-db-click @click="modalPicTap('单选')">
                     <div class="pictrue" v-if="saveForm.image_input">
                       <img :src="saveForm.image_input" />
                     </div>
@@ -83,7 +83,7 @@
               </el-col>
               <el-col :span="24" class="ml40">
                 <el-form-item>
-                  <el-button type="primary" class="submission" @click="subFrom('saveForm')">提交</el-button>
+                  <el-button type="primary" class="submission" v-db-click @click="subFrom('saveForm')">提交</el-button>
                 </el-form-item>
               </el-col>
               <el-dialog :visible.sync="modalPic" width="1024px" title="上传文章图" :close-on-click-modal="false">

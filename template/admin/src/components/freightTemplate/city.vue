@@ -5,7 +5,7 @@
         <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24" class="item">
           <div class="acea-row row-right row-middle">
             <el-checkbox v-model="iSselect" @change="allCheckbox">全选</el-checkbox>
-            <div class="empty" @click="empty">清空</div>
+            <div class="empty" v-db-click @click="empty">清空</div>
           </div>
         </el-col>
       </el-row>
@@ -49,8 +49,8 @@
         </el-col>
       </el-row>
       <div slot="footer">
-        <el-button @click="close">取消</el-button>
-        <el-button type="primary" @click="confirm">确定</el-button>
+        <el-button v-db-click @click="close">取消</el-button>
+        <el-button type="primary" v-db-click @click="confirm">确定</el-button>
       </div>
     </el-dialog>
   </div>

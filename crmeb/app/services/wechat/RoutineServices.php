@@ -207,6 +207,7 @@ class RoutineServices extends BaseServices
             $routineInfo['code'] = $spread;
             $routineInfo['session_key'] = $userInfoConfig['session_key'];
             $routineInfo['headimgurl'] = sys_config('h5_avatar');
+            $routineInfo['phone'] = $phone;
             $createData = [$openid, $routineInfo, $spid, 'routine', 'routine'];
         }
         //写入用户信息

@@ -28,7 +28,7 @@ class CrontabController
      */
     public function crontabRun()
     {
-        app()->make(SystemCrontabServices::class)->crontabRun();
+        app()->make(SystemCrontabServices::class)->crontabApiRun();
     }
 
     /**

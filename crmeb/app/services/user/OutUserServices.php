@@ -217,4 +217,23 @@ class OutUserServices extends BaseServices
             return $userServices->updateInfo($id, $data);
         });
     }
+
+    /**
+     * 修改用户数据
+     * @param $uid
+     * @param $value
+     * @param $type
+     * @return bool
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function changeUserData($uid, $value, $type)
+    {
+        /** @var UserServices $userServices */
+        $userServices = app()->make(UserServices::class);
+        $res = $userServices->update($uid, [$type => $value]);
+        if ($res) throw new ApiException('修改失败');
+        return true;
+    }
 }

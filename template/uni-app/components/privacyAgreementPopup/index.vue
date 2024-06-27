@@ -50,7 +50,6 @@
 		mounted() {
 			wx.getPrivacySetting({
 				success: res => {
-					console.log(res.needAuthorization)
 					if (res.needAuthorization) {
 						// 需要弹出隐私协议
 						this.isShow = true

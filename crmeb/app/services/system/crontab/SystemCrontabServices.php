@@ -3,18 +3,10 @@
 namespace app\services\system\crontab;
 
 use app\dao\system\crontab\SystemCrontabDao;
-use app\services\activity\combination\StorePinkServices;
-use app\services\activity\live\LiveGoodsServices;
-use app\services\activity\live\LiveRoomServices;
-use app\services\agent\AgentManageServices;
 use app\services\BaseServices;
-use app\services\order\StoreOrderServices;
-use app\services\order\StoreOrderTakeServices;
-use app\services\product\product\StoreProductServices;
-use app\services\system\attachment\SystemAttachmentServices;
 use crmeb\exceptions\AdminException;
-use think\facade\Log;
 use think\helper\Str;
+use Workerman\Crontab\Crontab;
 
 class SystemCrontabServices extends BaseServices
 {
@@ -34,7 +26,7 @@ class SystemCrontabServices extends BaseServices
     public function getTimerList(array $where = [])
     {
         [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->selectList($where, '*', $page, $limit, 'id desc');
+        $list = $this->dao->selectList($where, '*', $page, $limit, 'id desc', [], true);
         foreach ($list as &$item) {
             $item['next_execution_time'] = date('Y-m-d H:i:s', $item['next_execution_time']);
             $item['last_execution_time'] = $item['last_execution_time'] != 0 ? date('Y-m-d H:i:s', $item['last_execution_time']) : '暂未执行';
@@ -54,6 +46,7 @@ class SystemCrontabServices extends BaseServices
     public function getTimerInfo($id)
     {
         $info = $this->dao->get($id);
+        $info['customCode'] = "<?php\n\n" . json_decode($info['customCode']);
         if (!$info) throw new AdminException(100026);
         return $info->toArray();
     }
@@ -74,11 +67,21 @@ class SystemCrontabServices extends BaseServices
      */
     public function saveTimer(array $data = [])
     {
-        if (!$data['id'] && $this->dao->getCount(['mark' => $data['mark'], 'is_del' => 0])) {
+        if (!$data['id'] && $this->dao->getCount(['mark' => $data['mark'], 'is_del' => 0]) && $data['mark'] != 'customTimer') {
             throw new AdminException('该定时任务已存在，请勿重复添加');
         }
-        $data['name'] = $this->getMarkList()[$data['mark']];
+        if ($data['mark'] != 'customTimer') $data['name'] = $this->getMarkList()[$data['mark']];
         $data['add_time'] = time();
+        $data['customCode'] = json_encode(preg_replace('/<\?php\s*\n/', '', $data['customCode']));
+        $data['timeStr'] = $this->getTimerStr([
+            'type' => $data['type'],
+            'month' => $data['month'],
+            'week' => $data['week'],
+            'day' => $data['day'],
+            'hour' => $data['hour'],
+            'minute' => $data['minute'],
+            'second' => $data['second'],
+        ]);
         if (!$data['id']) {
             unset($data['id']);
             $res = $this->dao->save($data);
@@ -157,20 +160,19 @@ class SystemCrontabServices extends BaseServices
                 }
                 break;
             case 7: // 每月几日几时几分几秒
-                $d = date("d");
-                $firstDate = date('Y-m-01', time());
-                $maxDay = date('d', strtotime("$firstDate + 1 month -1 day"));
-                $todayStart = strtotime(date('Y-m-d 00:00:00', time()));
-                if ($d > $data['day']) {
-                    $cycle_time = $todayStart + (($maxDay - $d + $data['day']) * 86400) + ($data['hour'] * 3600) + ($data['minute'] * 60) + $data['second'];
-                } elseif ($d == $data['day']) {
-                    $cycle_time = $todayStart + ($data['hour'] * 3600) + ($data['minute'] * 60) + $data['second'];
-                    if ($time >= $cycle_time) {
-                        $cycle_time = $cycle_time + (($maxDay - $d + $data['day']) * 86400) + ($data['hour'] * 3600) + ($data['minute'] * 60) + $data['second'];
-                    }
+                $currentMonth = date("n");
+                $currentYear = date("Y");
+                if ($currentMonth == 12) {
+                    $nextMonth = 1;
+                    $nextYear = $currentYear + 1;
                 } else {
-                    $cycle_time = $todayStart + (($data['day'] - $d) * 86400) + ($data['hour'] * 3600) + ($data['minute'] * 60) + $data['second'];
+                    $nextMonth = $currentMonth + 1;
+                    $nextYear = $currentYear;
                 }
+                $cycle_time = mktime($data['hour'], $data['minute'], $data['second'], $nextMonth, $data['day'], $nextYear);
+                break;
+            case 8: // 每年几月几日几时几分几秒
+                $cycle_time = mktime($data['hour'], $data['minute'], $data['second'], $data['month'], $data['day'], date("Y") + 1);
                 break;
             default:
                 $cycle_time = 0;
@@ -180,7 +182,7 @@ class SystemCrontabServices extends BaseServices
     }
 
     /**
-     * 执行任务
+     * 接口执行执行任务
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
@@ -188,7 +190,7 @@ class SystemCrontabServices extends BaseServices
      * @email 442384644@qq.com
      * @date 2023/02/17
      */
-    public function crontabRun()
+    public function crontabApiRun()
     {
         $crontabRunServices = app()->make(CrontabRunServices::class);
         $time = time();
@@ -204,5 +206,87 @@ class SystemCrontabServices extends BaseServices
                 $this->dao->update(['mark' => $item['mark']], ['last_execution_time' => $time, 'next_execution_time' => $this->getTimerCycleTime($item)]);
             }
         }
+    }
+
+    /**
+     * 命令执行定时任务
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/6/5
+     */
+    public function crontabCommandRun()
+    {
+        $crontabRunServices = app()->make(CrontabRunServices::class);
+
+        //自动写入文件方便检测是否启动定时任务命令
+        new Crontab('*/6 * * * * *', function () {
+            file_put_contents(root_path() . 'runtime/.timer', time());
+        });
+
+        $list = $this->dao->selectList(['is_del' => 0, 'is_open' => 1])->toArray();
+        foreach ($list as &$item) {
+            //转化小驼峰
+            $functionName = Str::camel($item['mark']);
+            //获取自定义定时任务code
+            $customCode = json_decode($item['customCode']);
+            //获取定时任务时间字符串
+            $timeStr = $item['timeStr'] != '' ? $item['timeStr'] : $this->getTimerStr($item);
+            new Crontab($timeStr, function () use ($crontabRunServices, $functionName, $customCode) {
+                if ($functionName == 'customTimer') {
+                    $crontabRunServices->customTimer($customCode);
+                } else {
+                    $crontabRunServices->$functionName();
+                }
+            });
+        }
+    }
+
+    /**
+     * 获取定时任务时间表达式
+     * 0   1   2   3   4   5
+     * |   |   |   |   |   |
+     * |   |   |   |   |   +------ day of week (0 - 6) (Sunday=0)
+     * |   |   |   |   +------ month (1 - 12)
+     * |   |   |   +-------- day of month (1 - 31)
+     * |   |   +---------- hour (0 - 23)
+     * |   +------------ min (0 - 59)
+     * +-------------- sec (0-59)[可省略，如果没有0位,则最小时间粒度是分钟]
+     * @param $data
+     * @return string
+     */
+    public function getTimerStr($data): string
+    {
+        $timeStr = '';
+        switch ($data['type']) {
+            case 1:// 每隔几秒
+                $timeStr = '*/' . $data['second'] . ' * * * * *';
+                break;
+            case 2:// 每隔几分
+                $timeStr = '0 */' . $data['minute'] . ' * * * *';
+                break;
+            case 3:// 每隔几时第几分钟执行
+                $timeStr = '0 ' . $data['minute'] . ' */' . $data['hour'] . ' * * *';
+                break;
+            case 4:// 每隔几日第几小时第几分钟执行
+                $timeStr = '0 ' . $data['minute'] . ' ' . $data['hour'] . ' */' . $data['day'] . ' * *';
+                break;
+            case 5:// 每日几时几分几秒
+                $timeStr = $data['second'] . ' ' . $data['minute'] . ' ' . $data['hour'] . ' * * *';
+                break;
+            case 6:// 每周周几几时几分几秒
+                $timeStr = $data['second'] . ' ' . $data['minute'] . ' ' . $data['hour'] . ' * * ' . ($data['week'] == 7 ? 0 : $data['week']);
+                break;
+            case 7:// 每月几日几时几分几秒
+                $timeStr = $data['second'] . ' ' . $data['minute'] . ' ' . $data['hour'] . ' ' . $data['day'] . ' * *';
+                break;
+            case 8:// 每年几月几日几时几分几秒
+                $timeStr = $data['second'] . ' ' . $data['minute'] . ' ' . $data['hour'] . ' ' . $data['day'] . ' ' . $data['month'] . ' *';
+                break;
+        }
+        return $timeStr;
     }
 }

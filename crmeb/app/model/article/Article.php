@@ -61,7 +61,7 @@ class Article extends BaseModel
      */
     public function cateName()
     {
-        return $this->hasOne(ArticleCategory::class, 'id', 'cid')->bind(['catename'=>'title']);
+        return $this->hasOne(ArticleCategory::class, 'id', 'cid')->bind(['catename' => 'title']);
     }
 
     /**
@@ -95,7 +95,9 @@ class Article extends BaseModel
      */
     public function searchTitleAttr($query, $value, $data)
     {
-        $query->where('title', 'like', '%' . $value . '%');
+        if ($value !== '') {
+            $query->where('title', 'like', '%' . $value . '%');
+        }
     }
 
     /**
@@ -106,7 +108,9 @@ class Article extends BaseModel
      */
     public function searchIsHotAttr($query, $value, $data)
     {
-        $query->where('is_hot', $value);
+        if ($value !== '') {
+            $query->where('is_hot', $value);
+        }
     }
 
     /**
@@ -117,7 +121,9 @@ class Article extends BaseModel
      */
     public function searchIsBannerAttr($query, $value, $data)
     {
-        $query->where('is_banner', $value);
+        if ($value !== '') {
+            $query->where('is_banner', $value);
+        }
     }
 
 }

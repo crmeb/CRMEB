@@ -227,7 +227,7 @@
 				<view>{{$t(`合计`)}}:
 					<text class='font-color'>{{$t(`￥`)}}{{totalPrice || 0}}</text>
 				</view>
-				<view class='settlement' style='z-index:100' @tap.stop="SubOrder"
+				<view class='settlement' style='z-index:100' @tap.stop="Debounce(SubOrder())"
 					v-if="(valid_count>0&&!discount_id) || (valid_count==cartInfo.length&&discount_id)">{{$t(`提交订单`)}}
 				</view>
 				<view class='settlement bg-color-hui' style='z-index:100' v-else>{{$t(`提交订单`)}}</view>
@@ -290,6 +290,7 @@
 	// #endif
 	import payment from '@/components/payment';
 	import colors from "@/mixins/color";
+	import Debounce from "@/mixins/debounce";
 	export default {
 		components: {
 			payment,
@@ -302,7 +303,7 @@
 			authorize
 			// #endif
 		},
-		mixins: [colors],
+		mixins: [colors,Debounce],
 		data() {
 			const currentDate = this.getDate({
 				format: true
@@ -1017,9 +1018,9 @@
 				this.$refs.textarea.focus()
 			},
 			SubOrder(e) {
+				console.log('11111')
 				let that = this,
 					data = {};
-
 				if (!that.addressId && !that.shippingType && !that.virtual_type) return that.$util.Tips({
 					title: that.$t(`请选择收货地址`)
 				});
@@ -1222,7 +1223,7 @@
 	}
 
 	.order-submission {
-		/* #ifdef APP-PLUS */
+		/* #ifndef H5 */
 		padding-bottom: 70rpx;
 		/* #endif */
 	}

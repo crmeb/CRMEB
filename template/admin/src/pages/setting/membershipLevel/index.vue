@@ -26,10 +26,10 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="search">查询</el-button>
+            <el-button type="primary" v-db-click @click="search">查询</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="groupAdd">添加等级</el-button>
+            <el-button type="primary" v-db-click @click="groupAdd">添加等级</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -113,11 +113,11 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="addTask(scope.row)">等级任务</a>
+            <a v-db-click @click="addTask(scope.row)">等级任务</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="edit(scope.row, '编辑')">编辑</a>
+            <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -145,12 +145,12 @@
             <el-input v-model="taskData.keyword" placeholder="请输入任务名称" clearable class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="searchTask">搜索</el-button>
+            <el-button type="primary" v-db-click @click="searchTask">搜索</el-button>
           </el-form-item>
         </el-form>
         <div>
           <div class="add-task">
-            <el-button type="primary" @click="taskAdd()">添加等级任务</el-button>
+            <el-button type="primary" v-db-click @click="taskAdd()">添加等级任务</el-button>
           </div>
           <div>
             <el-table
@@ -206,9 +206,9 @@
               </el-table-column>
               <el-table-column label="操作" fixed="right" width="170">
                 <template slot-scope="scope">
-                  <a @click="editTask(scope.row, '编辑')">编辑</a>
+                  <a v-db-click @click="editTask(scope.row, '编辑')">编辑</a>
                   <el-divider direction="vertical"></el-divider>
-                  <a @click="delTask(scope.row, '删除这条信息', scope.$index)">删除</a>
+                  <a v-db-click @click="delTask(scope.row, '删除这条信息', scope.$index)">删除</a>
                 </template>
               </el-table-column>
             </el-table>

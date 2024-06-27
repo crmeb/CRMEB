@@ -177,9 +177,8 @@
 						value: 'weixin',
 						title: this.$t(`微信支付`),
 						payStatus: true
-					}
+					},
 					// #ifdef H5 ||APP-PLUS
-					,
 					{
 						name: this.$t(`支付宝支付`),
 						icon: 'icon-zhifubao',
@@ -188,6 +187,14 @@
 						payStatus: true
 					},
 					// #endif
+					{
+						name: this.$t(`余额支付`),
+						icon: 'icon-qiandai',
+						value: 'yue',
+						title: this.$t(`余额支付`),
+						payStatus: true,
+						number: 0
+					}
 				],
 				pay_close: false,
 				totalPrice: '0',
@@ -298,6 +305,7 @@
 					this.type = this.memberType[0].type;
 					this.svip = this.memberType[0];
 					this.mc_id = this.memberType[0].mc_id;
+					this.payMode[2].number = is_get_free.user_info.now_money
 					memberOverdueTime({
 						member_type: this.svip.type,
 						vip_day: this.svip.vip_day
@@ -360,9 +368,11 @@
 				basicConfig().then(res => {
 					const {
 						ali_pay_status,
-						pay_weixin_open
+						pay_weixin_open,
+						yue_pay_status
 					} = res.data;
 					this.payMode[0].payStatus = pay_weixin_open;
+					this.payMode[2].payStatus = yue_pay_status;
 					// #ifdef APP-PLUS || H5
 					this.payMode[1].payStatus = ali_pay_status;
 					// #endif

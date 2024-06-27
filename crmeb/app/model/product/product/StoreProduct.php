@@ -101,7 +101,7 @@ class StoreProduct extends BaseModel
      */
     public function searchIsShowAttr($query, $value)
     {
-        $query->where('is_show', $value ?? 1);
+        if ($value != -1) $query->where('is_show', $value ?? 1);
     }
 
     /**

@@ -36,10 +36,10 @@
             ></el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="handleSubmit('formInline')">查询</el-button>
+            <el-button type="primary" v-db-click @click="handleSubmit('formInline')">查询</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button @click="excel">导出</el-button>
+            <el-button v-db-click @click="excel">导出</el-button>
           </el-form-item>
         </el-form>
       </div>

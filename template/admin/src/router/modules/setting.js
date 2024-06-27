@@ -136,6 +136,15 @@ export default {
       component: () => import('@/pages/notify/smsConfig/index'),
     },
     {
+      path: 'elec_invoice',
+      name: `${pre}elec_invoice`,
+      meta: {
+        auth: ['setting-elec_invoice'],
+        title: '电子发票配置',
+      },
+      component: () => import('@/pages/notify/smsConfig/elecInvoice'),
+    },
+    {
       path: 'sms/sms_template_apply/index',
       name: `${pre}smsTemplateApply`,
       meta: {

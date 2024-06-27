@@ -22,7 +22,7 @@
         </el-form-item>
         <el-form-item label="用户标签：">
           <div style="display: flex">
-            <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
+            <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
               <div style="width: 90%">
                 <div v-if="dataLabel.length">
                   <el-tag closable v-for="(item, index) in dataLabel" @close="closeLabel(item)" :key="index">{{
@@ -33,11 +33,11 @@
               </div>
               <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
             </div>
-            <span class="addfont" @click="addLabel">新增标签</span>
+            <span class="addfont" v-db-click @click="addLabel">新增标签</span>
           </div>
         </el-form-item>
         <el-form-item label="关联推广员：">
-          <div class="picBox" @click="customer">
+          <div class="picBox" v-db-click @click="customer">
             <div class="pictrue" v-if="formData.avatar">
               <img v-lazy="formData.avatar" />
             </div>
@@ -84,11 +84,11 @@
           ></el-input>
         </el-form-item>
         <el-form-item label="选取图文：" v-if="formData.type === 'news'">
-          <el-button @click="modals = true">选择图文消息</el-button>
+          <el-button v-db-click @click="modals = true">选择图文消息</el-button>
           <div class="news-box" v-if="formData.content.list.title">
             <img class="news_pic" :src="formData.content.list.image_input[0]" />
             <span>{{ formData.content.list.title }}</span>
-            <i class="el-icon-error del_icon" @click="delContent"></i>
+            <i class="el-icon-error del_icon" v-db-click @click="delContent"></i>
           </div>
         </el-form-item>
         <el-form-item
@@ -124,7 +124,7 @@
           <span v-show="formData.type === 'voice'">文件最大2Mb，支持mp3格式,播放长度不超过60s</span>
         </el-form-item>
       </el-form>
-      <el-button class="submit" type="primary" @click="save" :loading="loading" :disabled="disabled"
+      <el-button class="submit" type="primary" v-db-click @click="save" :loading="loading" :disabled="disabled"
         >立即提交</el-button
       >
     </el-card>

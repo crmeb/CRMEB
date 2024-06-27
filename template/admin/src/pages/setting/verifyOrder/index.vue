@@ -48,8 +48,8 @@
             </el-select>
           </el-form-item>
           <el-form-item label="">
-            <el-button type="primary" class="mr15" @click="userSearchs">搜索</el-button>
-<!--            <el-button class="mr15" @click="refresh">刷新</el-button>-->
+            <el-button type="primary" class="mr15" v-db-click @click="userSearchs">搜索</el-button>
+<!--            <el-button class="mr15" v-db-click @click="refresh">刷新</el-button>-->
           </el-form-item>
         </el-form>
       </div>

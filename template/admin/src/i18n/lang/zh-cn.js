@@ -75,7 +75,7 @@ export default {
     dropdown4: '401',
     dropdown5: '退出登录',
     dropdown6: '个人中心',
-    searchPlaceholder: '菜单搜索：支持中文、路由路径、配置名称',
+    searchPlaceholder: '菜单搜索：菜单名称、配置名称',
     newTitle: '通知',
     newBtn: '全部已读',
     newGo: '前往通知中心',

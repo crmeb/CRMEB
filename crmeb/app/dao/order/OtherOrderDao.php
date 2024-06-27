@@ -54,7 +54,7 @@ class OtherOrderDao extends BaseDao
      */
     public function getTrendData($time, $type, $timeType)
     {
-        return $this->getModel()->when($type != '', function ($query) use ($type) {
+        return $this->getModel()->where('member_type', '<>', 0)->when($type != '', function ($query) use ($type) {
             $query->where('channel_type', $type);
         })->where(function ($query) use ($time) {
             if ($time[0] == $time[1]) {

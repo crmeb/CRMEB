@@ -134,7 +134,7 @@ class StoreBargainController
         ], true);
         /** @var StoreBargainUserServices $bargainUser */
         $bargainUser = app()->make(StoreBargainUserServices::class);
-        $bargainUserTableId = $bargainUser->getBargainUserTableId($bargainId, $bargainUserUid);
+        $bargainUserTableId = $bargainUser->getBargainUserTableId((int)$bargainId, (int)$bargainUserUid);
 
         /** @var StoreBargainUserHelpServices $bargainUserHelp */
         $bargainUserHelp = app()->make(StoreBargainUserHelpServices::class);

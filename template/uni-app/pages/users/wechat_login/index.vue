@@ -260,7 +260,6 @@
 				authLogin({
 					key: this.authKey
 				}).then(res => {
-					console.log(res)
 					let time = res.data.expires_time - this.$Cache.time();
 					this.$store.commit('LOGIN', {
 						token: res.data.token,

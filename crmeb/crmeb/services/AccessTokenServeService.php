@@ -44,7 +44,7 @@ class AccessTokenServeService extends HttpService
     /**
      * @var string
      */
-    protected $apiHost = 'http://sms.crmeb.net/api/';
+    protected $apiHost = 'https://sms.crmeb.net/api/';
 
     /**
      * 沙盒地址

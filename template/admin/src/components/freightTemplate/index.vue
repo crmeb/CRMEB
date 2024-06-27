@@ -67,7 +67,7 @@
                     <template slot-scope="scope">
                       <a
                         v-if="scope.row.regionName !== '默认全国'"
-                        @click="delCity(scope.row, '配送区域', scope.$index, 1)"
+                        v-db-click @click="delCity(scope.row, '配送区域', scope.$index, 1)"
                         >删除</a
                       >
                     </template>
@@ -75,7 +75,7 @@
                 </el-table>
                 <el-row class="addTop">
                   <el-col>
-                    <el-button type="primary" icon="md-add" @click="addCity(1)">添加配送区域</el-button>
+                    <el-button type="primary" icon="md-add" v-db-click @click="addCity(1)">添加配送区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -118,7 +118,7 @@
                     <template slot-scope="scope">
                       <a
                         v-if="scope.row.regionName !== '默认全国'"
-                        @click="delCity(scope.row, '配送区域', scope.$index, 2)"
+                        v-db-click @click="delCity(scope.row, '配送区域', scope.$index, 2)"
                         >删除</a
                       >
                     </template>
@@ -127,7 +127,7 @@
                 <div v-if="formData.appoint_check === 1" class="free_tips">指定地区需同时满足包邮（件数/重量/体积）和包邮金额的条件，才可实现包邮</div>
                 <el-row class="addTop mt5" v-if="formData.appoint_check === 1">
                   <el-col>
-                    <el-button type="primary" icon="md-add" @click="addCity(2)">添加包邮区域</el-button>
+                    <el-button type="primary" icon="md-add" v-db-click @click="addCity(2)">添加包邮区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -157,7 +157,7 @@
                     <template slot-scope="scope">
                       <a
                         v-if="scope.row.regionName !== '默认全国'"
-                        @click="delCity(scope.row, '配送区域', scope.$index, 3)"
+                        v-db-click @click="delCity(scope.row, '配送区域', scope.$index, 3)"
                         >删除</a
                       >
                     </template>
@@ -165,7 +165,7 @@
                 </el-table>
                 <el-row class="addTop" v-if="formData.no_delivery_check === 1">
                   <el-col>
-                    <el-button type="primary" icon="md-add" @click="addCity(3)">添加不送达区域</el-button>
+                    <el-button type="primary" icon="md-add" v-db-click @click="addCity(3)">添加不送达区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -186,7 +186,7 @@
           <el-row :gutter="24">
             <el-col>
               <el-form-item prop="store_name" label-for="store_name">
-                <el-button type="primary" @click="handleSubmit">{{ id ? '立即修改' : '立即提交' }}</el-button>
+                <el-button type="primary" v-db-click @click="handleSubmit">{{ id ? '立即修改' : '立即提交' }}</el-button>
               </el-form-item>
             </el-col>
           </el-row>

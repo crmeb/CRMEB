@@ -2,10 +2,10 @@
   <div class="pos-order-list" ref="container">
     <div class="head-box">
       <div class="nav acea-row row-around row-middle">
-        <div class="item" :class="where.type === '' ? 'on' : ''" @click="changeStatus('')">全部</div>
-        <div class="item" :class="where.type === 0 ? 'on' : ''" @click="changeStatus(0)">未支付</div>
-        <div class="item" :class="where.type === 1 ? 'on' : ''" @click="changeStatus(1)">未发货</div>
-        <div class="item" :class="where.type === -1 ? 'on' : ''" @click="changeStatus(-1)">退款中</div>
+        <div class="item" :class="where.type === '' ? 'on' : ''" v-db-click @click="changeStatus('')">全部</div>
+        <div class="item" :class="where.type === 0 ? 'on' : ''" v-db-click @click="changeStatus(0)">未支付</div>
+        <div class="item" :class="where.type === 1 ? 'on' : ''" v-db-click @click="changeStatus(1)">未发货</div>
+        <div class="item" :class="where.type === -1 ? 'on' : ''" v-db-click @click="changeStatus(-1)">退款中</div>
       </div>
       <div class="input-box">
         <el-input placeholder="搜索订单编号" v-model="where.search" @on-enter="bindSearch" />
@@ -19,13 +19,13 @@
         <div class="slot-load" slot="load-active">下滑加载更多</div>
         <template v-if="list.length > 0">
           <div class="item" v-for="(item, index) in list" :key="index">
-            <div class="order-num acea-row row-middle" @click="toDetail(item)">
+            <div class="order-num acea-row row-middle" v-db-click @click="toDetail(item)">
               订单号：{{ item.order_id }}
               <span class="time">下单时间：{{ item._add_time }}</span>
             </div>
             <template if="item.productList && item.productList.length">
               <div class="pos-order-goods" v-for="(val, key) in item.cartInfo" :key="key">
-                <div class="goods acea-row row-between-wrapper" @click="toDetail(item)">
+                <div class="goods acea-row row-between-wrapper" v-db-click @click="toDetail(item)">
                   <div class="picTxt acea-row row-between-wrapper">
                     <div class="pictrue">
                       <img :src="val.productInfo.image" />
@@ -57,7 +57,7 @@
             </div>
             <div class="operation acea-row row-between-wrapper">
               <div class="more">
-                <!--            <div class="iconfontYI icon-gengduo" @click="more(index)"></div>-->
+                <!--            <div class="iconfontYI icon-gengduo" v-db-click @click="more(index)"></div>-->
                 <!--            <div class="order" v-show="current === index">-->
                 <!--              <div class="items">-->
                 <!--                {{ where.status > 0 ? "删除" : "取消" }}订单-->
@@ -66,12 +66,12 @@
                 <!--            </div>-->
               </div>
               <div class="acea-row row-middle">
-                <div class="bnt" @click="modify(item, 0)" v-if="item.paid === 0">一键改价</div>
-                <div class="bnt" @click="modify(item, 1)">订单备注</div>
-                <div class="bnt" @click="modify(item, 0)" v-if="item._status._type === -1 && item.refund_status === 1">
+                <div class="bnt" v-db-click @click="modify(item, 0)" v-if="item.paid === 0">一键改价</div>
+                <div class="bnt" v-db-click @click="modify(item, 1)">订单备注</div>
+                <div class="bnt" v-db-click @click="modify(item, 0)" v-if="item._status._type === -1 && item.refund_status === 1">
                   立即退款
                 </div>
-                <div class="bnt cancel" v-if="item.pay_type === 'offline' && item.paid === 0" @click="offlinePay(item)">
+                <div class="bnt cancel" v-if="item.pay_type === 'offline' && item.paid === 0" v-db-click @click="offlinePay(item)">
                   确认付款
                 </div>
                 <router-link
@@ -83,7 +83,7 @@
                 <div
                   class="bnt cancel"
                   v-if="item._status._type === 1 && item.shipping_type === 2"
-                  @click="storeCancellation(item)"
+                  v-db-click @click="storeCancellation(item)"
                 >
                   去核销
                 </div>

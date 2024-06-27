@@ -86,7 +86,9 @@ class SystemDatabackup extends AuthController
      */
     public function optimize()
     {
-        $tables = $this->request->param('tables', '', 'htmlspecialchars');
+        [$tables] = $this->request->postMore([
+            ['tables', ''],
+        ], true);
         $res = $this->services->getDbBackup()->optimize($tables);
         return app('json')->success($res ? 100047 : 100048);
     }
@@ -96,7 +98,9 @@ class SystemDatabackup extends AuthController
      */
     public function repair()
     {
-        $tables = $this->request->param('tables', '', 'htmlspecialchars');
+        [$tables] = $this->request->postMore([
+            ['tables', ''],
+        ], true);
         $res = $this->services->getDbBackup()->repair($tables);
         return app('json')->success($res ? 100049 : 100050);
     }
@@ -106,7 +110,9 @@ class SystemDatabackup extends AuthController
      */
     public function backup()
     {
-        $tables = $this->request->param('tables', '', 'htmlspecialchars');
+        [$tables] = $this->request->postMore([
+            ['tables', ''],
+        ], true);
         $data = $this->services->backup($tables);
         return app('json')->success(100051);
     }

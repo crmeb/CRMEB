@@ -45,7 +45,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-button type="primary" @click="userSearchs">搜索</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
           </el-col>
         </el-row>
       </el-form>

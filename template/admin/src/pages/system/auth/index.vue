@@ -13,10 +13,10 @@
             <div class="code">未授权</div>
           </div>
         </div>
-        <!-- <el-button class="grey" @click="toCrmeb()" v-if="status === 1">进入官网</el-button> -->
+        <!-- <el-button class="grey" v-db-click @click="toCrmeb()" v-if="status === 1">进入官网</el-button> -->
         <div>
-          <el-button type="primary" @click="toCrmeb()" v-if="status === 1">进入官网</el-button>
-          <el-button type="primary" @click="payment('bz')" v-if="status !== 1">购买授权</el-button>
+          <el-button type="primary" v-db-click @click="toCrmeb()" v-if="status === 1">进入官网</el-button>
+          <el-button type="primary" v-db-click @click="payment('bz')" v-if="status !== 1">购买授权</el-button>
         </div>
       </div>
     </el-card>
@@ -31,7 +31,7 @@
             <div class="pro_price" v-if="productStatus">￥{{ price }}</div>
           </div>
         </div>
-        <el-button type="primary" @click="payment('copyright')">立即购买</el-button>
+        <el-button type="primary" v-db-click @click="payment('copyright')">立即购买</el-button>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt" v-if="copyright">
@@ -43,17 +43,17 @@
             <el-input style="width: 460px" v-model="copyrightText" />
           </div>
         </div>
-        <el-button type="primary" @click="saveCopyRight">保存</el-button>
+        <el-button type="primary" v-db-click @click="saveCopyRight">保存</el-button>
       </div>
       <div class="authorized auth">
         <div class="acea-row row-middle">
           <div class="box"></div>
           <span class="update">上传授权图片:</span>
         </div>
-        <div class="uploadPictrue" v-if="authorizedPicture" @click="modalPicTap('单选')">
+        <div class="uploadPictrue" v-if="authorizedPicture" v-db-click @click="modalPicTap('单选')">
           <img v-lazy="authorizedPicture" />
         </div>
-        <div class="upload" v-else @click="modalPicTap('单选')">
+        <div class="upload" v-else v-db-click @click="modalPicTap('单选')">
           <div class="iconfont">+</div>
         </div>
       </div>

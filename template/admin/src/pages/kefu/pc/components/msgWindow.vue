@@ -8,7 +8,7 @@
           :class="{ on: item.key == tabCur }"
           v-for="(item, index) in tabList"
           :key="index"
-          @click="bindTab(item)"
+          v-db-click @click="bindTab(item)"
           >{{ item.title }}</a
         >
       </div>
@@ -21,24 +21,24 @@
         <vue-scroll :ops="ops">
           <div class="left-item" v-if="tabCur">
             <p>分组</p>
-            <span class="iconfont iconaddto" @click="openAddSort"></span>
+            <span class="iconfont iconaddto" v-db-click @click="openAddSort"></span>
           </div>
           <div
             class="left-item"
             v-for="(item, index) in sortList"
             :key="index"
             :class="{ on: cateId == item.id }"
-            @click="selectSort(item)"
+            v-db-click @click="selectSort(item)"
           >
             <p>{{ item.name }}</p>
             <template v-if="tabCur">
-              <span class="iconfont iconDot" @click.top="bindEdit(item, scope.$index)"></span>
+              <span class="iconfont iconDot" v-db-click @click.top="bindEdit(item, scope.$index)"></span>
 
               <div class="edit-wrapper" v-show="item.isEdit">
-                <div class="edit-item" @click="editSort(item)">编辑</div>
-                <div class="edit-item" @click="delSort(item, '删除分类', scope.$index)">删除</div>
+                <div class="edit-item" v-db-click @click="editSort(item)">编辑</div>
+                <div class="edit-item" v-db-click @click="delSort(item, '删除分类', scope.$index)">删除</div>
               </div>
-              <div class="edit-bg" v-show="item.isEdit" @click.stop="item.isEdit = false"></div>
+              <div class="edit-bg" v-show="item.isEdit" v-db-click @click.stop="item.isEdit = false"></div>
             </template>
           </div>
         </vue-scroll>
@@ -65,8 +65,8 @@
                     </el-select>
                   </div>
                   <div class="btns-box">
-                    <el-button @click.stop="addMsg.isEdit = false">取消</el-button>
-                    <el-button type="primary" @click.stop="bindAdd">保存</el-button>
+                    <el-button v-db-click @click.stop="addMsg.isEdit = false">取消</el-button>
+                    <el-button type="primary" v-db-click @click.stop="bindAdd">保存</el-button>
                   </div>
                 </div>
               </div>
@@ -74,13 +74,13 @@
           </div>
           <div class="msg-item" v-for="(item, index) in list" :key="index" v-if="item.id">
             <div class="box1" v-if="!item.isEdit">
-              <div class="txt-box" @click="bindRadio(item)">
+              <div class="txt-box" v-db-click @click="bindRadio(item)">
                 <span class="title" v-if="item.title">{{ item.title | filtersTitle }}</span>
                 <span v-if="item.message">{{ item.message | filtersCon }}</span>
               </div>
               <div class="edit-box" v-if="tabCur">
-                <span class="iconfont iconbianji" @click.stop="editMsg(item)"></span>
-                <span class="iconfont iconshanchu" @click.stop="delMsg(item, '删除话术', index)"></span>
+                <span class="iconfont iconbianji" v-db-click @click.stop="editMsg(item)"></span>
+                <span class="iconfont iconshanchu" v-db-click @click.stop="delMsg(item, '删除话术', index)"></span>
               </div>
             </div>
             <div class="box2" v-else>
@@ -95,8 +95,8 @@
                   </el-select>
                 </div>
                 <div class="btns-box">
-                  <el-button @click.stop="item.isEdit = false">取消</el-button>
-                  <el-button type="primary" @click.stop="updataMsg(item)">保存</el-button>
+                  <el-button v-db-click @click.stop="item.isEdit = false">取消</el-button>
+                  <el-button type="primary" v-db-click @click.stop="updataMsg(item)">保存</el-button>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@
       </div>
       <div class="btn"></div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="addServiceCate">确定</el-button>
+        <el-button type="primary" v-db-click @click="addServiceCate">确定</el-button>
       </span>
     </el-dialog>
   </div>

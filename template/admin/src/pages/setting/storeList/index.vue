@@ -19,7 +19,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -34,7 +34,7 @@
       </div>
       <el-row v-auth="['setting-merchant-system_store-save']">
         <el-col v-bind="grid">
-          <el-button v-auth="['setting-merchant-system_store-save']" type="primary" @click="add"
+          <el-button v-auth="['setting-merchant-system_store-save']" type="primary" v-db-click @click="add"
             >添加提货点</el-button
           >
         </el-col>
@@ -98,10 +98,10 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row.id)">编辑</a>
+            <a v-db-click @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-if="scope.row.is_del == 0" @click="del(scope.row, '删除提货点', scope.$index)">删除</a>
-            <a v-else @click="del(scope.row, '恢复提货点', index)">恢复</a>
+            <a v-if="scope.row.is_del == 0" v-db-click @click="del(scope.row, '删除提货点', scope.$index)">删除</a>
+            <a v-else v-db-click @click="del(scope.row, '恢复提货点', index)">恢复</a>
           </template>
         </el-table-column>
       </el-table>

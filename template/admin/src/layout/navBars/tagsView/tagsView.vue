@@ -1,6 +1,6 @@
 <template>
   <div ref="tagsView" class="layout-navbars-tagsview">
-    <i v-if="scrollTagIcon" class="direction el-icon-arrow-left" @click="scrollTag('left')"></i>
+    <i v-if="scrollTagIcon" class="direction el-icon-arrow-left" v-db-click @click="scrollTag('left')"></i>
     <el-scrollbar ref="scrollbarRef" @wheel.native.prevent="onHandleScroll">
       <ul class="layout-navbars-tagsview-ul" :class="setTagsStyle" ref="tagsUlRef">
         <li
@@ -10,7 +10,7 @@
           :data-name="v.name"
           :class="{ 'is-active': v.path === tagsRoutePath }"
           @contextmenu.prevent="onContextmenu(v, $event)"
-          @click="onTagsClick(v, k)"
+          v-db-click @click="onTagsClick(v, k)"
           ref="tagsRefs"
         >
           <i
@@ -22,17 +22,17 @@
           <!-- <i
             class="el-icon-refresh-right layout-navbars-tagsview-ul-li-icon ml5"
             v-if="v.path === tagsRoutePath"
-            @click.stop="refreshCurrentTagsView(v.path)"
+            v-db-click @click.stop="refreshCurrentTagsView(v.path)"
           ></i> -->
           <i
             class="el-icon-close layout-navbars-tagsview-ul-li-icon ml5"
             v-if="!v.isAffix"
-            @click.stop="closeCurrentTagsView(v.path)"
+            v-db-click @click.stop="closeCurrentTagsView(v.path)"
           ></i>
         </li>
       </ul>
     </el-scrollbar>
-    <i v-if="scrollTagIcon" class="direction el-icon-arrow-right" @click="scrollTag('right')"></i>
+    <i v-if="scrollTagIcon" class="direction el-icon-arrow-right" v-db-click @click="scrollTag('right')"></i>
     <el-dropdown @command="clickDropdown" v-if="tagsViewList.length > 2">
       <span class="setting-tag el-dropdown-link"><i class="el-icon-menu"></i></span>
       <el-dropdown-menu slot="dropdown">

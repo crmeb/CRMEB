@@ -3,9 +3,13 @@
     <div class="c_row-item" v-if="configData[this.configNum]">
       <el-col :span="8" class="c_label">{{ configData[this.configNum][name].title }}</el-col>
       <el-col :span="14" class="color-box">
-        <div class="color-item acea-row row-middle" v-for="(color, key) in configData[this.configNum][name].color" :key="key">
+        <div
+          class="color-item acea-row row-middle"
+          v-for="(color, key) in configData[this.configNum][name].color"
+          :key="key"
+        >
           <el-color-picker v-model="color.item" @change="changeColor($event, color)" show-alpha></el-color-picker
-          ><span @click="resetBgA(color, index, key)">重置</span>
+          ><span v-db-click @click="resetBgA(color, index, key)">重置</span>
         </div>
       </el-col>
     </div>
@@ -70,20 +74,29 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-.c_row-item
-    margin-top 10px
-    margin-bottom 10px
-    ::v-deep .ivu-select-dropdown
-        left -27px !important
-.color-box
-    display flex
-    align-items center
-    justify-content flex-end
-    .color-item
-        margin-left 15px
-        span
-            margin-left 5px
-            color #999
-            font-size 13px
-            cursor pointer
+.c_row-item {
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  ::v-deep .ivu-select-dropdown {
+    left: -27px !important;
+  }
+}
+
+.color-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  .color-item {
+    margin-left: 15px;
+
+    span {
+      margin-left: 5px;
+      color: #999;
+      font-size: 13px;
+      cursor: pointer;
+    }
+  }
+}
 </style>

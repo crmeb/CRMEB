@@ -789,7 +789,7 @@ HTML;
         $createServices = app()->make(StoreOrderCreateServices::class);
         $data['order_id'] = $createServices->getNewOrderId('cp');
         if (sys_config('user_brokerage_type') == 1) {
-            $percent = bcdiv((string)$data['pay_price'], (string)$order['pay_price'], 6);
+            $percent = $order['pay_price'] != 0 ? bcdiv((string)$data['pay_price'], (string)$order['pay_price'], 6) : $order['pay_price'];
             if ($order['one_brokerage'] > 0) {
                 $data['one_brokerage'] = bcmul((string)$order['one_brokerage'], $percent, 2);
             }
@@ -822,6 +822,16 @@ HTML;
                 //自定义消息-订单改价
                 $order['change_price'] = $data['pay_price'];
                 event('NoticeListener', [$order['uid'], $order, 'price_change_price']);
+
+                //自定义事件-订单改价
+                event('CustomEventListener', ['admin_order_change', [
+                    'uid' => $order['uid'],
+                    'order_id' => $data['order_id'],
+                    'pay_price' => $data['pay_price'],
+                    'gain_integral' => $data['gain_integral'],
+                    'change_time' => date('Y-m-d H:i:s'),
+                ]]);
+
                 return $data['order_id'];
             } else {
                 throw new AdminException(100007);
@@ -1913,6 +1923,22 @@ HTML;
                 throw new ApiException(100020);
             }
         });
+
+        //自定义事件-订单取消
+        event('CustomEventListener', ['order_cancel', [
+            'uid' => $uid,
+            'id' => $order['id'],
+            'order_id' => $order_id,
+            'real_name' => $order['id'],
+            'user_phone' => $order['id'],
+            'user_address' => $order['id'],
+            'total_num' => $order['id'],
+            'pay_price' => $order['id'],
+            'deduction_price' => $order['id'],
+            'coupon_price' => $order['id'],
+            'cancel_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return true;
     }
 

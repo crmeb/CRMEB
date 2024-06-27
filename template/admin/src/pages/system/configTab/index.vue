@@ -25,13 +25,26 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询分类</el-button>
           </el-form-item>
+          <div>
+            <el-form-item label="配置名称：" label-for="status2">
+              <el-input
+                  clearable
+                  placeholder="请输入配置名称"
+                  v-model="config_name"
+                  class="form_content_width"
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" v-db-click @click="searchConfig">查询配置</el-button>
+            </el-form-item>
+          </div>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" @click="classAdd" class="mr20">添加配置分类</el-button>
+      <el-button type="primary" v-db-click @click="classAdd" class="mr20">添加配置分类</el-button>
       <vxe-table
         :border="false"
         class="vxeTable mt14"
@@ -61,11 +74,11 @@
         </vxe-table-column>
         <vxe-table-column field="action" title="操作" width="160" fixed="right">
           <template v-slot="{ row, index }">
-            <a @click="goList(row)">配置列表</a>
+            <a v-db-click @click="goList(row)">配置列表</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="edit(row)">编辑</a>
+            <a v-db-click @click="edit(row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(row, '删除分类', index)">删除</a>
+            <a v-db-click @click="del(row, '删除分类', index)">删除</a>
           </template>
         </vxe-table-column>
       </vxe-table>
@@ -113,6 +126,7 @@ export default {
       FromData: null,
       classId: 0,
       classList: [],
+      config_name: ''
     };
   },
   computed: {
@@ -198,6 +212,15 @@ export default {
     userSearchs() {
       this.formValidate.page = 1;
       this.getList();
+    },
+    //搜索配置项
+    searchConfig(){
+      if(this.config_name == '') {
+        return this.$message.error('请输入要搜索的配置名称');
+      }
+      this.$router.push({
+        path: this.$routeProStr + '/system/config/system_config_tab/list/0?config_name=' + this.config_name,
+      });
     },
     // 修改成功
     submitFail() {

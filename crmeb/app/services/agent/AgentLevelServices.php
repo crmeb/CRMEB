@@ -67,8 +67,10 @@ class AgentLevelServices extends BaseServices
         }], $page, $limit);
         $count = $this->dao->count($where);
         foreach ($list as &$item) {
-            $item['one_brokerage_ratio'] = bcdiv(bcmul((string)sys_config('store_brokerage_ratio'), bcadd('100', (string)$item['one_brokerage'], 2), 2), '100', 2);
-            $item['two_brokerage_ratio'] = bcdiv(bcmul((string)sys_config('store_brokerage_two'), bcadd('100', (string)$item['two_brokerage'], 2), 2), '100', 2);
+//            $item['one_brokerage_ratio'] = bcdiv(bcmul((string)sys_config('store_brokerage_ratio'), bcadd('100', (string)$item['one_brokerage'], 2), 2), '100', 2);
+//            $item['two_brokerage_ratio'] = bcdiv(bcmul((string)sys_config('store_brokerage_two'), bcadd('100', (string)$item['two_brokerage'], 2), 2), '100', 2);
+            $item['one_brokerage_ratio'] = $item['one_brokerage_percent'];
+            $item['two_brokerage_ratio'] = $item['two_brokerage_percent'];
         }
         return compact('count', 'list');
     }
@@ -229,22 +231,24 @@ class AgentLevelServices extends BaseServices
         if ($one_agent_level) {
             $oneLevelInfo = $this->getLevelInfo($one_agent_level);
             if ($oneLevelInfo) {
-                if ($oneLevelInfo['one_brokerage_percent'] == '0.00') {
-                    $storeBrokerageRatio = $storeBrokerageRatio + (($storeBrokerageRatio * $oneLevelInfo['one_brokerage'] ?? 0) / 100);
-                } else {
-                    $storeBrokerageRatio = $oneLevelInfo['one_brokerage_percent'];
-                }
+                $storeBrokerageRatio = $oneLevelInfo['one_brokerage_percent'];
+//                if ($oneLevelInfo['one_brokerage_percent'] == '0.00') {
+//                    $storeBrokerageRatio = $storeBrokerageRatio + (($storeBrokerageRatio * $oneLevelInfo['one_brokerage'] ?? 0) / 100);
+//                } else {
+//                    $storeBrokerageRatio = $oneLevelInfo['one_brokerage_percent'];
+//                }
             }
         }
 
         if ($two_agent_level) {
             $twoLevelInfo = $this->getLevelInfo($two_agent_level);
             if ($twoLevelInfo) {
-                if ($twoLevelInfo['two_brokerage_percent'] == '0.00') {
-                    $storeBrokerageTwo = $storeBrokerageTwo + (($storeBrokerageTwo * $twoLevelInfo['two_brokerage'] ?? 0) / 100);
-                } else {
-                    $storeBrokerageTwo = $twoLevelInfo['two_brokerage_percent'];
-                }
+                $storeBrokerageTwo = $twoLevelInfo['two_brokerage_percent'];
+//                if ($twoLevelInfo['two_brokerage_percent'] == '0.00') {
+//                    $storeBrokerageTwo = $storeBrokerageTwo + (($storeBrokerageTwo * $twoLevelInfo['two_brokerage'] ?? 0) / 100);
+//                } else {
+//                    $storeBrokerageTwo = $twoLevelInfo['two_brokerage_percent'];
+//                }
             }
         }
 

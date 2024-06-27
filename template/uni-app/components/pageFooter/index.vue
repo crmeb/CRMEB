@@ -60,7 +60,6 @@ export default {
 			handler(nVal, oVal) {
 				let self = this;
 				const query = uni.createSelectorQuery().in(this);
-				console.log(nVal, 'nVal');
 				this.newData = nVal;
 				this.$nextTick(() => {
 					query

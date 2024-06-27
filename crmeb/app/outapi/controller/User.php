@@ -185,4 +185,40 @@ class User extends AuthController
         }
         return app('json')->success(100010);
     }
+
+    /**
+     * 修改余额
+     * @param $uid
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function changeBalance($uid)
+    {
+        [$money] = $this->request->postMore([
+            ['money', 0],
+        ], true);
+        if (!$uid) return app('json')->fail(100100);
+        $this->services->changeUserData((int)$uid, $money, 'now_money');
+        return app('json')->success('修改成功');
+    }
+
+    /**
+     * 修改积分
+     * @param $uid
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/5/20
+     */
+    public function changePoint($uid)
+    {
+        [$integral] = $this->request->postMore([
+            ['integral', 0],
+        ], true);
+        if (!$uid) return app('json')->fail(100100);
+        $this->services->changeUserData((int)$uid, $integral, 'integral');
+        return app('json')->success('修改成功');
+    }
 }

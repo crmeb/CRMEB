@@ -16,7 +16,7 @@
               <div class="textbot">
                 <div class="li" v-for="(item, indx) in list" :key="indx" :class="{ active: item === formValidate }">
                   <div>
-                    <div class="add" @click="add(item, indx)">
+                    <div class="add" v-db-click @click="add(item, indx)">
                       <i class="el-icon-plus"></i>
                       <div class="arrow"></div>
                     </div>
@@ -26,16 +26,16 @@
                         v-for="(j, index) in item.sub_button"
                         :key="index"
                         :class="{ active: j === formValidate }"
-                        @click="gettem(j, index, indx)"
+                        v-db-click @click="gettem(j, index, indx)"
                       >
                         {{ j.name || '二级菜单' }}
                       </div>
                     </div>
                   </div>
-                  <div class="text" @click="gettem(item, indx, null)">{{ item.name || '一级菜单' }}</div>
+                  <div class="text" v-db-click @click="gettem(item, indx, null)">{{ item.name || '一级菜单' }}</div>
                 </div>
                 <div class="li" v-show="list.length < 3">
-                  <div class="text" @click="addtext"><i class="el-icon-plus"></i></div>
+                  <div class="text" v-db-click @click="addtext"><i class="el-icon-plus"></i></div>
                 </div>
               </div>
             </el-col>
@@ -101,8 +101,8 @@
                 </el-tab-pane>
               </el-tabs>
               <el-col :span="24" v-if="isTrue">
-                <el-button size="small" type="danger" @click="deltMenus">删除</el-button>
-                <el-button type="primary" @click="submenus('formValidate')">保存并发布</el-button>
+                <el-button size="small" type="danger" v-db-click @click="deltMenus">删除</el-button>
+                <el-button type="primary" v-db-click @click="submenus('formValidate')">保存并发布</el-button>
               </el-col>
             </el-col>
           </el-col>

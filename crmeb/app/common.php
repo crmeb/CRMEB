@@ -120,7 +120,7 @@ if (!function_exists('sys_config')) {
 
 if (!function_exists('sys_data')) {
     /**
-     * 获取系统单个配置
+     * 获取系统单个数据
      * @param string $name
      * @return string
      */
@@ -612,6 +612,49 @@ if (!function_exists('sql_filter')) {
             return strtoupper($str);
         }, $filter);
         return str_replace(array_merge($filter, $toupper, ['%20']), '', $str);
+    }
+}
+
+if (!function_exists('filter_str')) {
+    /**
+     * 过滤字符串敏感字符
+     * @param $str
+     * @return array|mixed|string|string[]|null
+     */
+    function filter_str($str)
+    {
+        $rules = [
+            '/\.\./', // 禁用包含 ../ 的参数
+            '/\<\?/', // 禁止 php 脚本出现
+            '/\bor\b.*=.*/i', // 匹配 'or 1=1'，防止 SQL 注入（注意边界词 \b 和不区分大小写 i 修饰符）
+            '/(select[\s\S]*?)(from|limit)/i', // 防止 SQL 注入
+            '/(union[\s\S]*?select)/i', // 防止 SQL 注入
+            '/(having|updatexml|extractvalue)/i', // 防止 SQL 注入
+            '/sleep\((\s*)(\d*)(\s*)\)/i', // 防止 SQL 盲注
+            '/benchmark\((.*)\,(.*)\)/i', // 防止 SQL 盲注
+            '/base64_decode\(/i', // 防止 SQL 变种注入
+            '/(?:from\W+information_schema\W)/i', // 注意这里的 (?:...) 是不合法的，应该是 (?:...) 表示非捕获组，但通常我们不需要这个
+            '/(?:current_|user|database|schema|connection_id)\s*\(/i', // 防止 SQL 注入（注意去掉了不必要的 (?:...)）
+            '/(?:etc\/\W*passwd)/i', // 防止窥探 Linux 用户信息
+            '/into(\s+)(?:dump|out)file\s*/i', // 禁用 MySQL 导出函数
+            '/group\s+by.+\(/i', // 防止 SQL 注入
+            '/(?:define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\(/i', // 禁用 webshell 相关某些函数
+            '/(gopher|doc|php|glob|file|phar|zlib|ftp|ldap|dict|ogg|data)\:\/\//i', // 防止一些协议攻击（注意协议后的三个斜杠）
+            '/\$_(GET|POST|COOKIE|FILES|SESSION|ENV|GLOBALS|SERVER)\[/i', // 禁用一些内置变量，注意 PHP 变量名通常是大写的
+            '/<(iframe|script|body|img|layer|div|meta|style|base|object|input)/i', // 防止 XSS 标签植入
+            '/(onmouseover|onerror|onload|onclick)\=/i', // 防止 XSS 事件植入
+            '/\|\|.*?(?:ls|pwd|whoami|ll|ifconfig|ipconfig|&&|chmod|cd|mkdir|rmdir|cp|mv)/i', // 防止执行 shell（注意去掉了不合适的 ifconfog）
+            '/\sand\s+.*=.*/i' // 匹配 and 1=1
+        ];
+        if (filter_var($str, FILTER_VALIDATE_URL)) {
+            $url = parse_url($str);
+            if (!isset($url['scheme'])) return $str;
+            $host = $url['scheme'] . '://' . $url['host'];
+            $str = $host . preg_replace($rules, '', str_replace($host, '', $str));
+        } else {
+            $str = preg_replace($rules, '', $str);
+        }
+        return $str;
     }
 }
 
@@ -1108,7 +1151,7 @@ if (!function_exists('out_push')) {
 
 if (!function_exists('dump_sql')) {
     /**
-     * 默认数据推送
+     * 打印sql
      * @param string $pushUrl
      * @param array $data
      * @param string $tip

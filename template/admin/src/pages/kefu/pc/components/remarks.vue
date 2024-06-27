@@ -13,8 +13,8 @@
         ></el-input>
       </el-form-item>
       <div class="mask-footer">
-        <el-button @click="close">取消</el-button>
-        <el-button type="primary" @click="handleSubmit('formValidate')">提交</el-button>
+        <el-button v-db-click @click="close">取消</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formValidate')">提交</el-button>
       </div>
     </el-form>
   </div>

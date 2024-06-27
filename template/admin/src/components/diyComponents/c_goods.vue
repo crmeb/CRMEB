@@ -9,9 +9,9 @@
           v-if="defaults.goodsList.list.length"
         >
           <img :src="type == 1 ? goods.pic : goods.image" alt="" />
-          <span class="iconfont icondel_1" @click.stop="bindDelete(index)"></span>
+          <span class="iconfont icondel_1" v-db-click @click.stop="bindDelete(index)"></span>
         </div>
-        <div class="add-item item" @click="modals = true"><span class="iconfont iconaddto"></span></div>
+        <div class="add-item item" v-db-click @click="modals = true"><span class="iconfont iconaddto"></span></div>
       </draggable>
     </div>
 
@@ -33,8 +33,8 @@
         v-if="modals && type != 1"
       ></goods-list>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="ok">确 定</el-button>
+        <el-button v-db-click @click="cancel">取 消</el-button>
+        <el-button type="primary" v-db-click @click="ok">确 定</el-button>
       </span>
     </el-dialog>
   </div>

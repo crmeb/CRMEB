@@ -146,10 +146,32 @@ class UserServices extends BaseServices
 
         //新用户注册奖励
         $this->rewardNewUser((int)$res->uid);
+
         //用户生成后置事件
         event('UserRegisterListener', [$spreadUid, $userType, $user['nickname'], $res->uid, 1]);
-        //推送消息
-        event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userType, 'nickname' => $user['nickname']], 'bind_spread_uid']);
+
+        //自定义事件-用户注册
+        event('CustomEventListener', ['user_register', [
+            'uid' => $res->uid,
+            'nickname' => $user['nickname'],
+            'phone' => $data['phone'],
+            'add_time' => date('Y-m-d H:i:s'),
+            'user_type' => $userType,
+        ]]);
+
+        if ($spreadUid) {
+            //推送消息
+            event('NoticeListener', [['spreadUid' => $spreadUid, 'user_type' => $userType, 'nickname' => $user['nickname']], 'bind_spread_uid']);
+
+            //自定义事件-绑定关系
+            event('CustomEventListener', ['user_spread', [
+                'uid' => $res->uid,
+                'nickname' => $user['nickname'],
+                'spread_uid' => $spreadUid,
+                'spread_time' => date('Y-m-d H:i:s'),
+                'user_type' => $userType,
+            ]]);
+        }
         return $res;
     }
 
@@ -1573,6 +1595,7 @@ class UserServices extends BaseServices
         $user['agent_apply_open'] = (int)sys_config('agent_apply_open', 0);
         $user['is_default_avatar'] = $user['avatar'] == sys_config('h5_avatar') ? 1 : 0;
         $user['avatar'] = strpos($user['avatar'], '/statics/system_images/') !== false ? set_file_url($user['avatar']) : $user['avatar'];
+        $user['member_func_status'] = (int)sys_config('member_func_status');
         return $user;
     }
 
@@ -1603,12 +1626,24 @@ class UserServices extends BaseServices
      */
     public function eidtNickname(int $uid, array $data)
     {
-        if (!$this->dao->count(['uid' => $uid])) {
+        $info = $this->dao->get(['uid' => $uid]);
+        if (!$info) {
             throw new ApiException(400214);
         }
         if (!$this->dao->update($uid, $data, 'uid')) {
             throw new ApiException(100007);
         }
+
+        //自定义事件-用户修改信息
+        event('CustomEventListener', ['user_change_info', [
+            'uid' => $uid,
+            'nickname' => $info['nickname'],
+            'phone' => $info['phone'],
+            'avatar' => $info['avatar'],
+            'add_time' => date('Y-m-d H:i:s', $info['add_time']),
+            'user_type' => $info['user_type'],
+        ]]);
+
         return true;
     }
 
@@ -2182,7 +2217,7 @@ class UserServices extends BaseServices
         if ($userInfo) {
             $label_ids = $userLabelRelationServices->getUserLabels($uid);
             $userInfo['label_id'] = !empty($label_ids) ? $userLabelServices->getLabelList(['ids' => $label_ids], ['id', 'label_name']) : [];
-            $userInfo['birthday'] = date('Y-m-d', (int)$userInfo['birthday']);
+            $userInfo['birthday'] = (int)$userInfo['birthday'] ? date('Y-m-d', (int)$userInfo['birthday']) : '';
             $userInfo['level'] = $userInfo['level'] != 0 ? $userInfo['level'] : '';
             $userInfo['group_id'] = $userInfo['group_id'] != 0 ? $userInfo['group_id'] : '';
         }

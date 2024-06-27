@@ -35,10 +35,9 @@
           end-placeholder="结束日期"
           :picker-options="pickerOptions"
           style="width: 250px"
-          class="mr20"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="搜索：" prop="real_name" label-for="real_name">
+      <el-form-item label="订单搜索：" prop="real_name" label-for="real_name">
         <el-input clearable v-model="orderData.real_name" placeholder="请输入" class="form_content_width">
           <el-select v-model="orderData.field_key" slot="prepend" style="width: 100px">
             <el-option value="all" label="全部"></el-option>
@@ -51,7 +50,7 @@
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="orderSearch">查询</el-button>
+        <el-button type="primary" v-db-click @click="orderSearch">查询</el-button>
       </el-form-item>
     </el-form>
   </div>

@@ -2,7 +2,7 @@
   <div>
     <el-row class="ivu-mt box-wrapper" ref="warpper">
       <el-col :span="4" class="left-wrapper">
-        <div class="tree_tit" @click="addSort">
+        <div class="tree_tit" v-db-click @click="addSort">
           <i class="el-icon-circle-plus"></i>
           添加分组
         </div>
@@ -40,14 +40,14 @@
         <el-card :bordered="false" shadow="never">
           <el-row class="mb14">
             <el-col :span="18">
-              <el-button v-auth="['marketing-channel_code-create']" type="primary" @click="add">新建二维码</el-button>
-              <!-- <el-button v-auth="['marketing-channel_code-create']" type="success" @click="addSort">添加分组</el-button> -->
+              <el-button v-auth="['marketing-channel_code-create']" type="primary" v-db-click @click="add">新建二维码</el-button>
+              <!-- <el-button v-auth="['marketing-channel_code-create']" type="success" v-db-click @click="addSort">添加分组</el-button> -->
             </el-col>
             <el-col :span="6">
               <div class="flex">
 
               <el-input class="mr10" v-model="tableFrom.name" search placeholder="请输入二维码名称"> </el-input>
-              <el-button type="primary" @click="userSearchs">搜索</el-button>
+              <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
               </div>
             </el-col>
           </el-row>
@@ -123,9 +123,9 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="170">
               <template slot-scope="scope">
-                <a @click="edit(scope.row)">编辑</a>
+                <a v-db-click @click="edit(scope.row)">编辑</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="del(scope.row, '删除二维码', scope.$index)">删除</a>
+                <a v-db-click @click="del(scope.row, '删除二维码', scope.$index)">删除</a>
                 <el-divider direction="vertical"></el-divider>
                 <el-dropdown size="small" @command="changeMenu(scope.row, $event)" :transfer="true">
                   <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>

@@ -1,9 +1,9 @@
 <template>
   <el-dialog :visible.sync="modals_son" :title="title" :close-on-click-modal="false" width="900px">
-    <el-button type="primary" id="savefile" class="mr5 mb15" @click="savefile">保存</el-button>
-    <el-button id="undo" class="mr5 mb15" @click="undofile">撤销</el-button>
-    <el-button id="redo" class="mr5 mb15" @click="redofile">回退</el-button>
-    <el-button id="refresh" class="mb15" @click="refreshfile">刷新</el-button>
+    <el-button type="primary" id="savefile" class="mr5 mb15" v-db-click @click="savefile">保存</el-button>
+    <el-button id="undo" class="mr5 mb15" v-db-click @click="undofile">撤销</el-button>
+    <el-button id="redo" class="mr5 mb15" v-db-click @click="redofile">回退</el-button>
+    <el-button id="refresh" class="mb15" v-db-click @click="refreshfile">刷新</el-button>
     <textarea ref="mycode" class="codesql public_text" v-model="code" style="height: 80vh"></textarea>
   </el-dialog>
 </template>

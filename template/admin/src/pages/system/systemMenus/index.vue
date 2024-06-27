@@ -26,13 +26,13 @@
             <el-input clearable v-model="roleData.keyword" placeholder="请输入按钮名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="getData">查询</el-button>
+            <el-button type="primary" v-db-click @click="getData">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" @click="menusAdd('添加规则')">添加规则 </el-button>
+      <el-button type="primary" v-db-click @click="menusAdd('添加规则')">添加规则 </el-button>
       <vxe-table
         :border="false"
         class="vxeTable mt14"
@@ -71,15 +71,15 @@
         <vxe-table-column field="date" title="操作" width="230" fixed="right">
           <template v-slot="{ row }">
             <span>
-              <a @click="addRoute(row)" v-if="row.auth_type === 1 || row.auth_type === 3">选择权限</a>
+              <a v-db-click @click="addRoute(row)" v-if="row.auth_type === 1 || row.auth_type === 3">选择权限</a>
               <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3" />
-              <a @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1 || row.auth_type === 3">添加下级</a>
-              <!-- <a @click="addE(row, '添加规则')" v-else>添加规则</a> -->
+              <a v-db-click @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1 || row.auth_type === 3">添加下级</a>
+              <!-- <a v-db-click @click="addE(row, '添加规则')" v-else>添加规则</a> -->
             </span>
             <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3"></el-divider>
-            <a @click="edit(row, '编辑')">编辑</a>
+            <a v-db-click @click="edit(row, '编辑')">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(row, '删除规则')">删除</a>
+            <a v-db-click @click="del(row, '删除规则')">删除</a>
           </template>
         </vxe-table-column>
       </vxe-table>
@@ -106,8 +106,8 @@
           clearable
           ref="search"
         />
-        <el-button class="mr10" type="primary" @click="searchRules">搜索</el-button>
-        <el-button @click="init">重置</el-button>
+        <el-button class="mr10" type="primary" v-db-click @click="searchRules">搜索</el-button>
+        <el-button v-db-click @click="init">重置</el-button>
       </div>
       <div class="route-list">
         <div class="tree">
@@ -129,7 +129,7 @@
             :class="{ 'select-rule': seletRouteIds.includes(item.id) }"
             v-for="(item, index) in children"
             :key="index"
-            @click="selectRule(item)"
+            v-db-click @click="selectRule(item)"
           >
             <div>接口名称：{{ item.name }}</div>
             <div>请求方式：{{ item.method }}</div>
@@ -138,8 +138,8 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="ruleModal = false">取 消</el-button>
-        <el-button type="primary" @click="addRouters">确 定</el-button>
+        <el-button v-db-click @click="ruleModal = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="addRouters">确 定</el-button>
       </span>
     </el-dialog>
   </div>

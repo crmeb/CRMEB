@@ -220,6 +220,15 @@ class UserSignServices extends BaseServices
                 throw new ApiException(410287);
             }
         });
+
+        //自定义事件-用户签到
+        event('CustomEventListener', ['user_sign', [
+            'uid' => $uid,
+            'sign_point' => $sign_point,
+            'sign_exp' => $sign_exp,
+            'sign_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return $sign_point;
     }
 

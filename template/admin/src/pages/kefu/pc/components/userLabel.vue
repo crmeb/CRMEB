@@ -8,15 +8,15 @@
           :class="{ on: label.disabled }"
           v-for="(label, j) in item.label"
           :key="j"
-          @click="selectLabel(label)"
+          v-db-click @click="selectLabel(label)"
         >
           {{ label.label_name }}
         </div>
       </div>
     </div>
     <div class="footer">
-      <el-button type="primary" class="btns" @click="subBtn">确定</el-button>
-      <el-button type="primary" class="btns" ghost @click="cancel">取消</el-button>
+      <el-button type="primary" class="btns" v-db-click @click="subBtn">确定</el-button>
+      <el-button type="primary" class="btns" ghost v-db-click @click="cancel">取消</el-button>
     </div>
   </div>
 </template>

@@ -139,6 +139,9 @@ class DivisionController
      * 绑定员工方法
      * @param Request $request
      * @return \think\Response
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      * @author 吴汐
      * @email 442384644@qq.com
      * @date 2024/2/2
@@ -150,6 +153,10 @@ class DivisionController
             ['agent_code', 0],
         ], true);
         $res = app()->make(DivisionServices::class)->agentSpreadStaff($request->uid(), (int)$agentId, (int)$agentCode);
-        return app('json')->success($res);
+        if ($res) {
+            return app('json')->success($res);
+        } else {
+            return app('json')->fail('无操作');
+        }
     }
 }

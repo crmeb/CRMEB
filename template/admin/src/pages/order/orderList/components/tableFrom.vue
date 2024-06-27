@@ -64,7 +64,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="orderSearch">查询</el-button>
+          <el-button type="primary" v-db-click @click="orderSearch">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -202,7 +202,7 @@ export default {
     onchangeTime(e) {
       this.timeVal = e || [];
       this.orderData.data = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
-      this.$store.dispatch('order/getOrderTabs', { 
+      this.$store.dispatch('order/getOrderTabs', {
         type: this.orderData.status,
         data: this.orderData.data,
         pay_type: this.orderData.pay_type,
@@ -214,7 +214,7 @@ export default {
     },
     // 选择时间
     selectChange(tab) {
-      this.$store.dispatch('order/getOrderTabs', { 
+      this.$store.dispatch('order/getOrderTabs', {
         type: this.orderData.status,
         data: this.orderData.data,
         pay_type: this.orderData.pay_type,
@@ -229,7 +229,7 @@ export default {
     // 订单选择状态
     selectChange2(tab) {
       this.onChangeTabs(Number(tab));
-      this.$store.dispatch('order/getOrderTabs', { 
+      this.$store.dispatch('order/getOrderTabs', {
         type: this.orderData.status,
         data: this.orderData.data,
         pay_type: this.orderData.pay_type,
@@ -240,7 +240,7 @@ export default {
     },
     userSearchs(type) {
       this.getOrderType(type);
-      this.$store.dispatch('order/getOrderTabs', { 
+      this.$store.dispatch('order/getOrderTabs', {
         type: this.orderData.status,
         data: this.orderData.data,
         pay_type: this.orderData.pay_type,
@@ -259,7 +259,7 @@ export default {
       this.setOrderKeyword(this.orderData.real_name);
       this.getfieldKey(this.orderData.field_key);
       this.$emit('getList', 1);
-      this.$store.dispatch('order/getOrderTabs', { 
+      this.$store.dispatch('order/getOrderTabs', {
         type: this.orderData.status,
         data: this.orderData.data,
         pay_type: this.orderData.pay_type,

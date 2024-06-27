@@ -384,7 +384,6 @@ export default {
 									});
 								},
 								fail: function (res) {
-									console.log(res);
 									that.$util.Tips({
 										title: that.$t(`保存失败`)
 									});

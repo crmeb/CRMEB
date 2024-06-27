@@ -61,8 +61,8 @@
         </el-switch>
       </template>
       <template slot-scope="{ row, index }" slot="action">
-        <a @click="edit(row)">编辑 | </a>
-        <a @click="del(row, '删除任务')"> 删除</a>
+        <a v-db-click @click="edit(row)">编辑 | </a>
+        <a v-db-click @click="del(row, '删除任务')"> 删除</a>
       </template>
     </el-table>
     <div class="acea-row row-right page">

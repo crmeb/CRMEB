@@ -47,8 +47,8 @@
           </el-col>
           <el-col :span="6">
             <el-form-item>
-              <el-button type="primary" @click="userSearchs">搜索</el-button>
-              <el-button v-auth="['export-userFinance']" class="export" @click="exports"
+              <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
+              <el-button v-auth="['export-userFinance']" class="export" v-db-click @click="exports"
                 >导出
               </el-button>
             </el-form-item>

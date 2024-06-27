@@ -4,8 +4,8 @@
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right" v-if="cardShow == 1 || cardShow == 2">
-          <el-button class="bnt" type="primary" @click="submit" :loading="loadingExist">保存</el-button>
-          <el-button v-if="cardShow == 1" class="bnt ml20" @click="reast">重置</el-button>
+          <el-button class="bnt" type="primary" v-db-click @click="submit" :loading="loadingExist">保存</el-button>
+          <el-button v-if="cardShow == 1" class="bnt ml20" v-db-click @click="reast">重置</el-button>
         </div>
       </div>
     </div>
@@ -20,15 +20,7 @@
             <el-row>
               <el-col>
                 <div class="button acea-row row-middle">
-                  <el-button type="primary"
-                    ><a
-                      class="target-add"
-                      ref="target"
-                      :href="`${url}${$routeProStr}/setting/pages/diy_index?id=0&name=首页&type=0`"
-                      target="_blank"
-                      >添加专题页
-                    </a></el-button
-                  >
+                  <el-button type="primary" @click="createdPage">添加专题页</el-button>
                 </div>
               </el-col>
             </el-row>
@@ -75,7 +67,12 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="210">
               <template slot-scope="scope">
-                <div style="display: inline-block" v-if="scope.row.status || scope.row.is_diy" @click="edit(scope.row)">
+                <div
+                  style="display: inline-block"
+                  v-if="scope.row.status || scope.row.is_diy"
+                  v-db-click
+                  @click="edit(scope.row)"
+                >
                   <a
                     v-if="scope.row.is_diy === 1"
                     class="target"
@@ -95,18 +92,18 @@
                 />
 
                 <div style="display: inline-block" v-if="scope.row.id != 1 && scope.row.status != 1">
-                  <a @click="del(scope.row, '删除此模板', scope.$index)">删除</a>
+                  <a v-db-click @click="del(scope.row, '删除此模板', scope.$index)">删除</a>
                 </div>
                 <el-divider
                   direction="vertical"
                   v-if="(scope.row.id != 1 && scope.row.status != 1) || scope.row.is_diy"
                 />
                 <div style="display: inline-block" v-if="scope.row.is_diy">
-                  <a @click="preview(scope.row, scope.$index)">预览</a>
+                  <a v-db-click @click="preview(scope.row, scope.$index)">预览</a>
                 </div>
                 <el-divider direction="vertical" v-if="scope.row.is_diy && scope.row.status != 1" />
                 <div style="display: inline-block" v-if="scope.row.status != 1">
-                  <a @click="setStatus(scope.row, scope.$index)">设为首页</a>
+                  <a v-db-click @click="setStatus(scope.row, scope.$index)">设为首页</a>
                 </div>
               </template>
             </el-table-column>
@@ -149,7 +146,7 @@
         </el-card>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleSubmit('formItem')">提交</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formItem')">提交</el-button>
       </span>
     </el-dialog>
     <el-dialog :visible.sync="modal" width="540px" title="预览">
@@ -174,7 +171,7 @@
 <script>
 import Setting from '@/setting';
 import { diyList, diyDel, setStatus, recovery, getRoutineCode, setDefault } from '@/api/diy';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import QRCode from 'qrcodejs2';
 import goodClass from './goodClass';
 import users from './users';
@@ -242,6 +239,13 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapActions('mobildConfig', ['resetState']),
+    createdPage() {
+      this.resetState();
+      this.$nextTick(() => {
+        window.open(`${this.url}${this.$routeProStr}/setting/pages/diy_index?id=0&name=首页&type=0`, '_blank');
+      });
+    },
     cancel() {
       this.$refs['formItem'].resetFields();
     },
@@ -451,8 +455,8 @@ export default {
 }
 
 .iframe-col {
-  width: 310px;
-  height: 550px;
+  width: 375px;
+  height: 650px;
   margin-right: 30px;
   position: relative;
 }

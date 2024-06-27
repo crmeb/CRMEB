@@ -125,6 +125,14 @@ class Local extends BaseUpload
             if (!in_array($fileHandle->getOriginalMime(), $this->validate['fileMime'])) {
                 return $this->setError('不合法的文件类型');
             }
+            $stream = fopen($fileHandle->getPathname(), 'r');
+            $content = (fread($stream, filesize($fileHandle->getPathname())));
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+            if (preg_match('/think|php|log|phar|Socket|Channel|Flysystem|Psr6Cache|Cached|Request|debug|Psr6Cachepool|eval/i', $content)) {
+                return $this->setError('文件内容不合法');
+            }
         }
         if ($realName) {
             $fileName = Filesystem::putFileAs($this->path, $fileHandle, $fileHandle->getOriginalName());

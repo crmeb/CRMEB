@@ -8,7 +8,7 @@
 				</view>
 			</view>
 			<view class="payment">
-				<view class="nav acea-row row-around row-middle">
+				<view class="nav acea-row row-around row-middle" v-if="navRecharge.length > 1">
 					<view class="item" :class="active==index?'on':''" v-for="(item,index) in navRecharge" :key="index"
 						@click="navRecharges(index)">{{$t(item)}}</view>
 				</view>
@@ -584,7 +584,7 @@
 		width: 100%;
 		background-color: #fff;
 		border-radius: 10rpx;
-		padding-top: 25rpx;
+		padding-top: 1rpx;
 		border-top-right-radius: 39rpx;
 		border-top-left-radius: 39rpx;
 	}
@@ -592,7 +592,7 @@
 	.payment .nav {
 		height: 75rpx;
 		line-height: 75rpx;
-		padding: 0 100rpx;
+		padding: 8rpx 100rpx;
 	}
 
 	.payment .nav .item {

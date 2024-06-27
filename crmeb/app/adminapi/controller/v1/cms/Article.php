@@ -40,6 +40,10 @@ class Article extends AuthController
     /**
      * 获取列表
      * @return mixed
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -81,6 +85,10 @@ class Article extends AuthController
      * 获取单个文章数据
      * @param int $id
      * @return mixed
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function read($id = 0)
     {

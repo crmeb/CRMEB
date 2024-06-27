@@ -11,7 +11,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
             <router-link :to="routePre + '/app/wechat/news_category/save/0'">
               <el-button type="primary" class="bnt ml15">添加图文消息</el-button>
             </router-link>
@@ -24,7 +24,7 @@
           :imgsArr="imgsArr"
           :maxCols="maxCol"
           :width="screenWidth"
-          @click="clickFn"
+          v-db-click @click="clickFn"
           @scrollReachBottom="getData"
           ref="waterfall"
           :reachBottomDistance="30"
@@ -45,20 +45,20 @@
                     type="success"
                     icon="el-icon-edit"
                     v-show="props.value.new[i].isDel && isShow"
-                    @click="clkk(props.value)"
+                    v-db-click @click="clkk(props.value)"
                   ></el-button>
                   <el-button
                     type="error"
                     icon="el-icon-delete"
                     v-show="props.value.new[i].isDel && isShow"
-                    @click="del(props.value, '删除图文', i)"
+                    v-db-click @click="del(props.value, '删除图文', i)"
                     style="margin-top: 5px"
                   ></el-button>
                   <el-button
                     type="primary"
                     icon="el-icon-s-promotion"
                     v-show="props.value.new[i].isDel && isShowSend"
-                    @click="send(props.value, '发送', i)"
+                    v-db-click @click="send(props.value, '发送', i)"
                     >推送</el-button
                   >
                 </div>

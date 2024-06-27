@@ -50,7 +50,7 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
           </template>
         </el-table-column>
       </el-table>
@@ -70,7 +70,7 @@
           <el-input v-model.trim="form.show_title" placeholder="请输入展示名称" class="w100"></el-input>
         </el-form-item>
         <el-form-item label="权益图标：" prop="image">
-          <div class="image-group" @click="callImage">
+          <div class="image-group" v-db-click @click="callImage">
             <img v-if="form.image" v-lazy="form.image" />
             <i v-else class="el-icon-picture-outline" style="font-size: 24px"></i>
           </div>
@@ -98,7 +98,7 @@
         </el-form-item>
         <el-form-item>
           <div class="acea-row row-right">
-            <el-button type="primary" @click="formSubmit('form')">提交</el-button>
+            <el-button type="primary" v-db-click @click="formSubmit('form')">提交</el-button>
           </div>
         </el-form-item>
       </el-form>

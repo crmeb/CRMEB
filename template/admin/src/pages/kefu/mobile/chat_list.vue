@@ -4,7 +4,7 @@
       <div class="hd">
         <div class="left-wrappers">
           <img v-lazy="kefuInfo.avatar" />
-          <div class="info" @click="isOnLine = !isOnLine">
+          <div class="info" v-db-click @click="isOnLine = !isOnLine">
             <div>{{ kefuInfo.nickname }}</div>
             <div class="status">
               <span class="doc" :class="{ off: !kefuInfo.online }"></span>
@@ -12,17 +12,17 @@
             </div>
           </div>
           <div class="down-wrapper" v-show="isOnLine">
-            <div class="item" @click="changOnline(1)">
+            <div class="item" v-db-click @click="changOnline(1)">
               <span class="dot green"></span>在线
               <span class="iconfont iconduihao" v-if="kefuInfo.online"></span>
             </div>
-            <div class="item" @click="changOnline(0)">
+            <div class="item" v-db-click @click="changOnline(0)">
               <span class="dot"></span>离线
               <span class="iconfont iconduihao" v-if="!kefuInfo.online"></span>
             </div>
           </div>
         </div>
-        <div class="right-wrapper" @click="outLogin">
+        <div class="right-wrapper" v-db-click @click="outLogin">
           <div class="icon-box"><span class="iconfont icontuichu"></span></div>
 
           <div style="margin-left: 5px">退出登录</div>
@@ -33,7 +33,7 @@
           class="tab-item"
           :class="{ on: tabCur == item.key }"
           v-for="(item, index) in tabList"
-          @click="changeClass(item)"
+          v-db-click @click="changeClass(item)"
         >
           {{ item.title }}
         </div>
@@ -44,7 +44,7 @@
     </div>
     <div class="list-box" v-if="list.length > 0">
       <vue-scroll ref="vs" :ops="ops" @load-before-deactivate="handleBeforeDeactivate">
-        <div class="item" v-for="(item, index) in list" :key="index" @click="goPage(item)">
+        <div class="item" v-for="(item, index) in list" :key="index" v-db-click @click="goPage(item)">
           <div class="left-wrappers">
             <div class="img-box">
               <img v-lazy="item.avatar" />
@@ -145,10 +145,6 @@ export default {
         {
           key: 0,
           title: '用户列表',
-        },
-        {
-          key: 1,
-          title: '游客列表',
         },
       ],
       wsLogin: JSON.parse(sessionStorage.getItem('wsLogin')),

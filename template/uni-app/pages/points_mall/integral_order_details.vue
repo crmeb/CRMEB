@@ -219,6 +219,11 @@
 			// #endif
 		},
 		methods: {
+			jumpCon(id) {
+				uni.navigateTo({
+					url: `/pages/points_mall/integral_goods_details?id=${id}`
+				})
+			},
 			goGoodCall() {
 				let self = this
 				uni.navigateTo({

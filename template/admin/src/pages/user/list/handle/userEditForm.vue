@@ -99,7 +99,7 @@
           <div class="item lang">
             <el-form-item label="用户标签：">
               <div style="display: flex">
-                <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
+                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
                   <div style="width: 90%">
                     <div v-if="dataLabel.length">
                       <el-tag
@@ -115,7 +115,7 @@
                   </div>
                   <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
                 </div>
-                <span class="addfont" @click="addLabel">新增标签</span>
+                <span class="addfont" v-db-click @click="addLabel">新增标签</span>
               </div>
             </el-form-item>
           </div>

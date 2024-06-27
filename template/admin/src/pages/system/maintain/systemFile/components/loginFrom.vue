@@ -13,7 +13,7 @@
             <el-input type="password" v-model="formInline.password" prefix="ios-lock-outline" placeholder="请输入密码" />
           </el-form-item>
           <el-form-item class="maxInpt">
-            <el-button type="primary" long size="large" @click="handleSubmit('formInline')" class="btn">登录</el-button>
+            <el-button type="primary" long size="large" v-db-click @click="handleSubmit('formInline')" class="btn">登录</el-button>
           </el-form-item>
         </el-form>
       </div>

@@ -78,11 +78,11 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="agree(scope.row)">同意</a>
+            <a v-db-click @click="agree(scope.row)">同意</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="refuse(scope.row)">拒绝</a>
+            <a v-db-click @click="refuse(scope.row)">拒绝</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="remark(scope.row)">备注</a>
+            <a v-db-click @click="remark(scope.row)">备注</a>
           </template>
         </el-table-column>
       </el-table>

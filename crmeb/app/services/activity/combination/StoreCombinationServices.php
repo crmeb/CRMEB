@@ -84,7 +84,7 @@ class StoreCombinationServices extends BaseServices
         $data['start_time'] = strtotime($data['section_time'][0]);
         $data['stop_time'] = strtotime($data['section_time'][1]);
         if ($data['stop_time'] < strtotime(date('Y-m-d', time()))) throw new AdminException(400096);
-        $data['image'] = $data['images'][0];
+        $data['image'] = $data['image'];
         $data['images'] = json_encode($data['images']);
         $data['price'] = min(array_column($detail, 'price'));
         $data['quota'] = $data['quota_show'] = array_sum(array_column($detail, 'quota'));
@@ -108,8 +108,8 @@ class StoreCombinationServices extends BaseServices
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$id, 3);
                 if (!$res) throw new AdminException(100007);
             } else {
-                if (!$storeProductServices->getOne(['is_show' => 1, 'is_del' => 0, 'id' => $data['product_id']])) {
-                    throw new AdminException(400091);
+                if (!$storeProductServices->getOne(['is_del' => 0, 'id' => $data['product_id']])) {
+                    throw new AdminException('无法添加回收站商品');
                 }
                 $data['add_time'] = time();
                 $res = $this->dao->save($data);
@@ -378,6 +378,8 @@ class StoreCombinationServices extends BaseServices
         $storeInfo['userCollect'] = $storeProductRelationServices->isProductRelation(['uid' => $uid, 'product_id' => $id, 'type' => 'collect', 'category' => 'product']);
         $storeInfo['userLike'] = false;
         $storeInfo['store_name'] = $storeInfo['title'];
+        $storeInfo['product_is_show'] = app()->make(StoreProductServices::class)->value($storeInfo['product_id'], 'is_show');
+
 
         if (sys_config('share_qrcode', 0) && request()->isWechat()) {
             /** @var QrcodeServices $qrcodeService */
@@ -644,7 +646,7 @@ class StoreCombinationServices extends BaseServices
         $spread_count = $pinkServices->getDistinctCount([['cid', '=', $id], ['k_id', '>', 0]], 'uid', false);
         $start_count = $pinkServices->count(['cid' => $id, 'k_id' => 0]);
         $success_count = $pinkServices->count(['cid' => $id, 'k_id' => 0, 'status' => 2]);
-        $pay_price = $orderServices->sum([['combination_id', '=', $id], ['paid', '=', 1], ['refund_type', 'in', [0, 3]], ['is_del', '=', 0]], 'pay_price', false);
+        $pay_price = $orderServices->sum([['combination_id', '=', $id], ['paid', '=', 1], ['pid', '<>', -1], ['refund_type', 'in', [0, 3]], ['is_del', '=', 0]], 'pay_price', false);
         $pay_count = $orderServices->getDistinctCount([['combination_id', '=', $id], ['paid', '=', 1], ['refund_type', 'in', [0, 3]], ['is_del', '=', 0]], 'uid', false);
         return compact('people_count', 'spread_count', 'start_count', 'success_count', 'pay_price', 'pay_count');
     }

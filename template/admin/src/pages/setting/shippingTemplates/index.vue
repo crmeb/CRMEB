@@ -19,13 +19,13 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" @click="freight">添加运费模板</el-button>
+      <el-button type="primary" v-db-click @click="freight">添加运费模板</el-button>
       <el-table
         :data="levelLists"
         ref="table"
@@ -67,9 +67,9 @@
         </el-table-column>
          <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-          <a @click="edit(scope.row.id)">修改</a>
+          <a v-db-click @click="edit(scope.row.id)">修改</a>
           <el-divider direction="vertical" v-if="scope.row.id !== 1" />
-          <a @click="del(scope.row, '删除模版', index)" v-if="scope.row.id !== 1">删除</a>
+          <a v-db-click @click="del(scope.row, '删除模版', index)" v-if="scope.row.id !== 1">删除</a>
           </template>
         </el-table-column>
       </el-table>

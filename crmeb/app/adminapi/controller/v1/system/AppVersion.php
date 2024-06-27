@@ -36,7 +36,10 @@ class AppVersion extends AuthController
 
     /**
      * 版本列表
-     * @return mixed
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/4/2
      */
     public function list()
     {
@@ -48,7 +51,12 @@ class AppVersion extends AuthController
 
     /**
      * 新增版本表单
-     * @return mixed
+     * @param $id
+     * @return \think\Response
+     * @throws \FormBuilder\Exception\FormBuilderException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/4/2
      */
     public function crate($id)
     {
@@ -57,7 +65,10 @@ class AppVersion extends AuthController
 
     /**
      * 保存数据
-     * @return mixed
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/4/2
      */
     public function save()
     {
@@ -74,5 +85,19 @@ class AppVersion extends AuthController
         unset($data['id']);
         $this->services->versionSave($id, $data);
         return app('json')->success(100021);
+    }
+
+    /**
+     * 删除App版本
+     * @param $id
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/4/2
+     */
+    public function del($id)
+    {
+        $this->services->delete($id);
+        return app('json')->success('删除成功');
     }
 }

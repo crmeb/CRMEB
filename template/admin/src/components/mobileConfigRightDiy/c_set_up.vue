@@ -1,8 +1,8 @@
 <template>
   <div class="setUp">
     <div class="tab">
-      <div class="item" :class="{ on: tabVal == 0 }" @click="onClickTab(0)"><span class="text">内容</span></div>
-      <div class="item" :class="{ on: tabVal == 1 }" @click="onClickTab(1)"><span class="text">样式</span></div>
+      <div class="item" :class="{ on: tabVal == 0 }" v-db-click @click="onClickTab(0)"><span class="text">内容</span></div>
+      <div class="item" :class="{ on: tabVal == 1 }" v-db-click @click="onClickTab(1)"><span class="text">样式</span></div>
       <div :class="tabVal == 0 ? 'bg-left' : 'bg-right'"></div>
     </div>
   </div>

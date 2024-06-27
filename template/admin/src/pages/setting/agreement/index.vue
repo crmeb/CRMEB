@@ -24,14 +24,14 @@
       </el-col>
     </el-row>
     <!-- <el-row class="mb10 content">
-      <el-button class="bnt" type="primary" @click="save" :loading="loadingExist"
+      <el-button class="bnt" type="primary" v-db-click @click="save" :loading="loadingExist"
         >保存</el-button
       >
     </el-row> -->
 
     <el-card :bordered="false" shadow="never" class="fixed-card" :style="{ left: `${fixBottomWidth}` }">
       <div class="acea-row row-center">
-        <el-button class="bnt" type="primary" @click="save" :loading="loadingExist">保存</el-button>
+        <el-button class="bnt" type="primary" v-db-click @click="save" :loading="loadingExist">保存</el-button>
       </div>
     </el-card>
   </div>

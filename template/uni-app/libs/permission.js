@@ -6,7 +6,6 @@ import Cache from '@/utils/cache';
  * @returns {boolean} - 返回布尔值，表示是否有权限
  */
 function ActivePermission(key) {
-	console.log(Cache.get('BASIC_CONFIG').site_func,'site_func')
 	// seckill 秒杀 bargain 砍价 combination 拼团
 	let arr = Cache.get('BASIC_CONFIG').site_func || ['seckill', 'bargain', 'combination']; // 定义一个数组，包含三种类型
 	let index = arr.indexOf(key); // 获取 key 在数组中的索引

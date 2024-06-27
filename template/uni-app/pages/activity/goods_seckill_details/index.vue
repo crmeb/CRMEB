@@ -127,6 +127,7 @@
 						<!-- #endif -->
 					</view>
 				</view>
+				<view class="uni-p-b-98"></view>
 			</scroll-view>
 			<view class='footer acea-row row-between-wrapper' :class="{'eject':storeInfo.id}">
 				<navigator hover-class="none" open-type="switchTab" class="item" url="/pages/index/index">
@@ -140,25 +141,25 @@
 				</view>
 				<view class="bnt acea-row"
 					v-if="status == 1 && attribute.productSelect.quota > 0 && attribute.productSelect.product_stock>0">
-					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
-					<view class="buy bnts" @tap="goCat">{{$t(`立即购买`)}}</view>
+					<view class="joinCart bnts" @tap="openAlone" v-if="storeInfo.product_is_show">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts" :class="!storeInfo.product_is_show ? 'long-btn' : ''" @tap="goCat">{{$t(`立即购买`)}}</view>
 				</view>
 				<view class="bnt acea-row"
 					v-if="(status == 1 && attribute.productSelect.quota <= 0) || (status == 3 && attribute.productSelect.quota <= 0) || (status == 1 && attribute.productSelect.product_stock <= 0) || (status == 3 && attribute.productSelect.product_stock <= 0)">
-					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
-					<view class="buy bnts bg-color-hui">{{$t(`已售罄`)}}</view>
+					<view class="joinCart bnts" @tap="openAlone" v-if="storeInfo.product_is_show">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui" :class="!storeInfo.product_is_show ? 'long-btn' : ''">{{$t(`已售罄`)}}</view>
 				</view>
 				<view class="bnt acea-row" v-if="!dataShow && status == 1">
-					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
-					<view class="buy bnts bg-color-hui">{{$t(`立即购买`)}}</view>
+					<view class="joinCart bnts" @tap="openAlone" v-if="storeInfo.product_is_show">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui" :class="!storeInfo.product_is_show ? 'long-btn' : ''">{{$t(`立即购买`)}}</view>
 				</view>
 				<view class="bnt acea-row" v-if="status == 2">
-					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
-					<view class="buy bnts bg-color-hui">{{$t(`未开始`)}}</view>
+					<view class="joinCart bnts" @tap="openAlone" v-if="storeInfo.product_is_show">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui" :class="!storeInfo.product_is_show ? 'long-btn' : ''">{{$t(`未开始`)}}</view>
 				</view>
 				<view class="bnt acea-row" v-if="status == 0">
-					<view class="joinCart bnts" @tap="openAlone">{{$t(`单独购买`)}}</view>
-					<view class="buy bnts bg-color-hui">{{$t(`已结束`)}}</view>
+					<view class="joinCart bnts" @tap="openAlone" v-if="storeInfo.product_is_show">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts bg-color-hui" :class="!storeInfo.product_is_show ? 'long-btn' : ''">{{$t(`已结束`)}}</view>
 				</view>
 			</view>
 		</view>
@@ -206,7 +207,7 @@
 		<!-- 海报展示 -->
 		<view class='poster-pop' v-if="posterImageStatus">
 			<image src='/static/images/poster-close.png' class='close' @click="posterImageClose"></image>
-			<image :src='posterImage'></image>
+			<image class="poster-img" :src='posterImage'></image>
 			<!-- #ifndef H5  -->
 			<view class='save-poster' @click="savePosterPath">{{$t(`保存到手机`)}}</view>
 			<!-- #endif -->
@@ -1436,7 +1437,10 @@
 		width: 540rpx;
 		height: 76rpx;
 	}
-
+	.product-con .footer .bnt .bnts.long-btn{
+		width: 540rpx;
+		border-radius: 50px;
+	}
 	.product-con .footer .bnt .bnts {
 		width: 270rpx;
 		text-align: center;

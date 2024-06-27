@@ -20,8 +20,8 @@
             </el-radio-group>
           </div>
           <div>
-            <el-button type="primary" @click="shortMes">短信模板</el-button>
-            <el-button style="margin-left: 20px" @click="editSign">修改签名</el-button>
+            <el-button type="primary" v-db-click @click="shortMes">短信模板</el-button>
+            <el-button style="margin-left: 20px" v-db-click @click="editSign">修改签名</el-button>
           </div>
         </div>
         <el-table
@@ -141,7 +141,7 @@
             <span class="wuSp1">电子面单打印未开通哦</span>
             <span class="wuSp2">点击立即开通按钮，即可使用电子面单打印服务哦～～～</span>
           </span>
-          <el-button size="default" type="primary" @click="onOpen">立即开通</el-button>
+          <el-button size="default" type="primary" v-db-click @click="onOpen">立即开通</el-button>
         </div>
         <!--短信立即开通-->
         <div class="smsBox" v-if="isSms && isChecked === '1'">
@@ -165,7 +165,7 @@
                 />
               </el-form-item>
               <el-form-item class="maxInpt">
-                <el-button type="primary" long size="default" @click="handleSubmit('formInline')" class="btn"
+                <el-button type="primary" long size="default" v-db-click @click="handleSubmit('formInline')" class="btn"
                   >登录</el-button
                 >
               </el-form-item>
@@ -258,7 +258,7 @@
                 />
               </el-form-item>
               <el-form-item class="maxInpt">
-                <el-button type="primary" long size="default" @click="handleSubmitDump('formInlineDump')" class="btn"
+                <el-button type="primary" long size="default" v-db-click @click="handleSubmitDump('formInlineDump')" class="btn"
                   >立即开通</el-button
                 >
               </el-form-item>
@@ -312,11 +312,11 @@
               size="large"
               style="width: 75%"
             />
-            <el-button :disabled="!this.canClick" @click="cutDown" size="large">{{ cutNUm }}</el-button>
+            <el-button :disabled="!this.canClick" v-db-click @click="cutDown" size="large">{{ cutNUm }}</el-button>
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" long size="large" @click="editSubmit('formInline')" class="btn" style="width: 87%"
+          <el-button type="primary" long size="large" v-db-click @click="editSubmit('formInline')" class="btn" style="width: 87%"
             >确认修改</el-button
           >
         </el-form-item>

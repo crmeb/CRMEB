@@ -16,7 +16,7 @@
             <el-button
               :type="item.typeName"
               v-text="item.typeName === 'primary' ? '立即更换' : '立即清理'"
-              @click="onChange(item)"
+              v-db-click @click="onChange(item)"
             ></el-button>
           </div>
         </el-col>
@@ -31,8 +31,8 @@
         <el-input v-model="value6" type="textarea" :rows="4" placeholder="请输入网站域名..." />
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="modals = false">取 消</el-button>
-        <el-button type="primary" @click="changeYU">确 定</el-button>
+        <el-button v-db-click @click="modals = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="changeYU">确 定</el-button>
       </span>
     </el-dialog>
   </div>

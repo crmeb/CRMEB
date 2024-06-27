@@ -25,7 +25,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="selChange">查询</el-button>
+            <el-button type="primary" v-db-click @click="selChange">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -34,13 +34,13 @@
       <el-button
           v-auth="['setting-system_menus-add']"
           type="primary"
-          @click="menusAdd('添加直播间')"
+          v-db-click @click="menusAdd('添加直播间')"
       >添加商品
       </el-button>
       <!-- <el-button
         v-auth="['setting-system_menus-add']"
         type="success"
-        @click="syncGoods"
+        v-db-click @click="syncGoods"
         style="margin-left: 20px"
         >同步商品
       </el-button> -->
@@ -107,9 +107,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row, '编辑')">详情</a>
+            <a v-db-click @click="edit(scope.row, '编辑')">详情</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

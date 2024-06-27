@@ -54,7 +54,7 @@
             </div>
             <div class="bnt">立即续费</div>
           </div>
-          <div class="orderCenter on dotted" :class="current == 4 ? 'solid' : ''" @click="currentShow(4)">
+          <div class="orderCenter on dotted" :class="current == 4 ? 'solid' : ''" v-db-click @click="currentShow(4)">
             <div class="title acea-row row-between-wrapper">
               <div>订单中心</div>
               <div class="all">查看全部<span class="iconfont iconjinru"></span></div>
@@ -82,7 +82,7 @@
               </div>
             </div>
           </div>
-          <div class="carousel dotted" :class="current == 5 ? 'solid' : ''" @click="currentShow(5)">
+          <div class="carousel dotted" :class="current == 5 ? 'solid' : ''" v-db-click @click="currentShow(5)">
             <swiper :options="swiperOption" class="swiperimg" v-if="userData.routine_my_banner.length">
               <swiper-slide class="swiperimg" v-for="(item, index) in userData.routine_my_banner" :key="index">
                 <img :src="item.pic" />
@@ -91,7 +91,7 @@
             </swiper>
             <div v-else class="default">暂无广告数据</div>
           </div>
-          <div class="orderCenter service dotted" :class="current == 2 ? 'solid' : ''" @click="currentShow(2)">
+          <div class="orderCenter service dotted" :class="current == 2 ? 'solid' : ''" v-db-click @click="currentShow(2)">
             <div class="title acea-row row-between-wrapper">
               <div>我的服务</div>
             </div>
@@ -105,7 +105,7 @@
               </div>
             </div>
           </div>
-          <div class="orderCenter service dotted" :class="current == 3 ? 'solid' : ''" @click="currentShow(3)">
+          <div class="orderCenter service dotted" :class="current == 3 ? 'solid' : ''" v-db-click @click="currentShow(3)">
             <div class="title acea-row row-between-wrapper">
               <div>商家管理</div>
             </div>

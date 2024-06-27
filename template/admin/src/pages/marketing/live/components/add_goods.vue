@@ -11,13 +11,13 @@
     <div class="item box">
       <div class="box-item" v-for="(item, index) in goodsList" :key="index">
         <img :src="item.image" alt="" />
-        <i class="el-icon-close" @click="bindDelete(index)" style="font-size: 20px;"></i>
+        <i class="el-icon-close" v-db-click @click="bindDelete(index)" style="font-size: 20px;"></i>
       </div>
-      <div class="upload-box" @click="modals = true">
+      <div class="upload-box" v-db-click @click="modals = true">
         <i class="el-icon-picture-outline" style="font-size: 24px"></i>
       </div>
     </div>
-    <el-button type="primary" style="width: 100%" @click="bindSub">提交</el-button>
+    <el-button type="primary" style="width: 100%" v-db-click @click="bindSub">提交</el-button>
     <el-dialog :visible.sync="modals" title="商品列表" class="paymentFooter" width="1000px">
       <goods-list
         ref="goodslist"

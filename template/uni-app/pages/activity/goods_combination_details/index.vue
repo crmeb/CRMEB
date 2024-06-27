@@ -179,6 +179,7 @@
 						<parser :html="storeInfo.description" ref="article" :tag-style="tagStyle"></parser>
 					</view>
 				</view>
+				<view class="uni-p-b-98"></view>
 			</scroll-view>
 			<view class='footer acea-row row-between-wrapper' :class="{'eject':storeInfo.id}">
 				<navigator hover-class="none" class="item" open-type="switchTab" url="/pages/index/index">
@@ -191,15 +192,15 @@
 					<view class="p_center">{{$t(`收藏`)}}</view>
 				</view>
 				<view class="bnt acea-row">
-					<view class="joinCart bnts" @tap="goProduct">{{$t(`单独购买`)}}</view>
-					<view class="buy bnts" @tap="goCat"
+					<view class="joinCart bnts" @tap="goProduct" v-if="storeInfo.product_is_show">{{$t(`单独购买`)}}</view>
+					<view class="buy bnts" :class="!storeInfo.product_is_show ? 'long-btn' : ''" @tap="goCat"
 						v-if='attribute.productSelect.product_stock>0&&attribute.productSelect.quota>0'>
 						{{$t(`立即开团`)}}
 					</view>
-					<view class="buy bnts bg-color-hui" v-if="!dataShow">
+					<view class="buy bnts bg-color-hui" :class="!storeInfo.product_is_show ? 'long-btn' : ''" v-if="!dataShow">
 						{{$t(`立即开团`)}}
 					</view>
-					<view class="buy bnts bg-color-hui"
+					<view class="buy bnts bg-color-hui" :class="!storeInfo.product_is_show ? 'long-btn' : ''"
 						v-if='attribute.productSelect.quota <= 0 || attribute.productSelect.product_stock <= 0'>
 						{{$t(`已售罄`)}}
 					</view>
@@ -242,7 +243,7 @@
 		<!-- 海报展示 -->
 		<view class='poster-pop' v-if="posterImageStatus">
 			<image src='/static/images/poster-close.png' class='close' @click="posterImageClose"></image>
-			<image :src='posterImage'></image>
+			<image class="poster-img" :src='posterImage'></image>
 			<!-- #ifndef H5  -->
 			<view class='save-poster' @click="savePosterPath">{{$t(`保存到手机`)}}</view>
 			<!-- #endif -->
@@ -1595,6 +1596,11 @@
 	.product-con .footer .bnt {
 		width: 540rpx;
 		height: 76rpx;
+	}
+
+	.product-con .footer .bnt .bnts.long-btn{
+		width: 540rpx;
+		border-radius: 50px;
 	}
 
 	.product-con .footer .bnt .bnts {

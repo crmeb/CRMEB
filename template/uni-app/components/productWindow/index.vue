@@ -153,7 +153,7 @@
 		},
 		methods: {
 			inputBindFocus(e) {
-			  this.bottomVal = 40 +  'rpx'
+			  // this.bottomVal = 40 +  'rpx'
 			},
 			inputBindBlur(){
 				this.bottomVal = '0px'

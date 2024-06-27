@@ -29,7 +29,7 @@ class DivisionServices extends BaseServices
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        $data = $userServices->getDivisionList($where + ['status' => 1], 'uid,nickname,avatar,division_percent,division_end_time,division_status,division_invite');
+        $data = $userServices->getDivisionList($where + ['status' => 1], 'uid,nickname,avatar,division_name,division_percent,division_end_time,division_status,division_invite');
         foreach ($data['list'] as &$item) {
             $item['division_end_time'] = date('Y-m-d', $item['division_end_time']);
             $item['agent_count'] = $userServices->count([
@@ -62,7 +62,7 @@ class DivisionServices extends BaseServices
         ];
         $where['status'] = 1;
         $where['is_del'] = 0;
-        $data = $userServices->getDivisionList($where, 'uid,nickname,avatar,division_percent,division_end_time,division_status');
+        $data = $userServices->getDivisionList($where, 'uid,nickname,avatar,division_name,division_percent,division_end_time,division_status');
         foreach ($data['list'] as &$item) {
             $item['agent_count'] = $userServices->count([
                 'agent_id' => $item['uid'],
@@ -98,10 +98,11 @@ class DivisionServices extends BaseServices
         }
         $field = [];
         $title = '事业部';
+        $field[] = Form::input('division_name', '事业部名称', $userInfo['division_name'] ?? '')->required('请输入事业部名称');
         if ($uid) {
             $field[] = Form::hidden('uid', $uid);
         } else {
-            $field[] = Form::frameImage('image', '用户', $this->url(config('app.admin_prefix', 'admin') . '/system.user/list', ['fodder' => 'image'], true))->icon('el-icon-user')->width('950px')->height('560px')->Props(['srcKey' => 'image', 'footer' => false]);
+            $field[] = Form::frameImage('image', '关联用户', $this->url(config('app.admin_prefix', 'admin') . '/system.user/list', ['fodder' => 'image'], true))->icon('el-icon-user')->width('950px')->height('560px')->Props(['srcKey' => 'image', 'footer' => false]);
         }
         $field[] = Form::hidden('aid', $adminInfo['id'] ?? 0);
         $field[] = Form::number('division_percent', '佣金比例', $userInfo['division_percent'] ?? '')->placeholder('区域代理佣金比例1-100')->info('填写1-100，如填写50代表返佣50%')->style(['width' => '173px'])->min(0)->max(100)->required();
@@ -110,7 +111,6 @@ class DivisionServices extends BaseServices
         $field[] = Form::input('account', '管理账号', $adminInfo['account'] ?? '')->required('请填写管理员账号');
         $field[] = Form::input('pwd', '管理密码')->type('password')->placeholder('请填写管理员密码');
         $field[] = Form::input('conf_pwd', '确认密码')->type('password')->placeholder('请输入确认密码');
-        $field[] = Form::input('real_name', '代理姓名', $adminInfo['real_name'] ?? '')->required('请输入管理员姓名');
         /** @var SystemRoleServices $service */
         $service = app()->make(SystemRoleServices::class);
         $options = $service->getRoleFormSelect(1);
@@ -129,11 +129,13 @@ class DivisionServices extends BaseServices
         if ((int)$data['uid'] == 0) throw new AdminException(400450);
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        $userInfo = $userServices->getUserInfo($data['uid'], 'is_division,is_agent,is_staff');
-        if (!$userInfo) throw new AdminException('用户不存在');
-        if ($userInfo['is_division']) throw new AdminException('此用户是事业部，请勿重复添加');
-        if ($userInfo['is_agent']) throw new AdminException('此用户是代理商，无法添加为事业部');
-        if ($userInfo['is_staff']) throw new AdminException('此用户是下级员工，无法添加为事业部');
+        if ($data['aid'] == 0) {
+            $userInfo = $userServices->getUserInfo($data['uid'], 'is_division,is_agent,is_staff');
+            if (!$userInfo) throw new AdminException('用户不存在');
+            if ($userInfo['is_division']) throw new AdminException('此用户是事业部，请勿重复添加');
+            if ($userInfo['is_agent']) throw new AdminException('此用户是代理商，无法添加为事业部');
+            if ($userInfo['is_staff']) throw new AdminException('此用户是下级员工，无法添加为事业部');
+        }
         $uid = $data['uid'];
         $aid = $data['aid'];
         $agentData = [
@@ -149,13 +151,14 @@ class DivisionServices extends BaseServices
             'division_type' => 1,
             'division_status' => $data['division_status'],
             'spread_uid' => 0,
-            'spread_time' => 0
+            'spread_time' => 0,
+            'division_name' => $data['division_name']
         ];
         $adminData = [
             'account' => $data['account'],
             'pwd' => $data['pwd'],
             'conf_pwd' => $data['conf_pwd'],
-            'real_name' => $data['real_name'],
+            'real_name' => $data['division_name'],
             'roles' => $data['roles'],
             'status' => 1,
             'level' => 1,
@@ -235,16 +238,17 @@ class DivisionServices extends BaseServices
         if ($uid && !$userInfo) throw new AdminException(400214);
         $field = [];
         $options = [];
-        $divisionList = $userService->getDivisionList(['status' => 1, 'division_type' => 1], 'uid,nickname');
+        $divisionList = $userService->getDivisionList(['status' => 1, 'division_type' => 1], 'uid,division_name');
         foreach ($divisionList['list'] as $item) {
-            $options[] = ['value' => $item['uid'], 'label' => $item['nickname']];
+            $options[] = ['value' => $item['uid'], 'label' => $item['division_name']];
         }
+        $field[] = Form::input('division_name', '代理商名称', $userInfo['division_name'] ?? '')->required('请输入代理商名称');
         if ($uid) {
             $field[] = Form::hidden('uid', $uid);
             $field[] = Form::hidden('edit', 1);
         } else {
-            $field[] = Form::select('division_id', '事业部', $info['file_name'] ?? '')->setOptions(Form::setOptions($options))->filterable(1);
-            $field[] = Form::frameImage('image', '代理商', $this->url(config('app.admin_prefix', 'admin') . '/system.user/list', ['fodder' => 'image'], true))->icon('el-icon-user')->width('950px')->height('560px')->Props(['srcKey' => 'image', 'footer' => false]);
+            $field[] = Form::select('division_id', '上级事业部', $info['file_name'] ?? '')->setOptions(Form::setOptions($options))->filterable(1);
+            $field[] = Form::frameImage('image', '关联用户', $this->url(config('app.admin_prefix', 'admin') . '/system.user/list', ['fodder' => 'image'], true))->icon('el-icon-user')->width('950px')->height('560px')->Props(['srcKey' => 'image', 'footer' => false]);
             $field[] = Form::hidden('edit', 0);
         }
         $field[] = Form::number('division_percent', '佣金比例', $userInfo['division_percent'] ?? '')->placeholder('代理商佣金比例1-100')->info('填写1-100，如填写50代表返佣50%,但是不能高于上级事业部的比例')->style(['width' => '173px'])->min(0)->max(100)->required();
@@ -278,7 +282,8 @@ class DivisionServices extends BaseServices
             'is_agent' => 1,
             'agent_id' => $uid,
             'is_staff' => 0,
-            'staff_id' => 0
+            'staff_id' => 0,
+            'division_name' => $data['division_name'],
         ];
         $division_info = $userServices->getUserInfo($data['division_id'], 'division_end_time,division_percent');
         if ($division_info) {
@@ -430,10 +435,11 @@ class DivisionServices extends BaseServices
         if ($agentCode && !$agentId) {
             /** @var QrcodeServices $qrCode */
             $qrCode = app()->make(QrcodeServices::class);
-            if ($info = $qrCode->getOne(['id' => $agentCode, 'status' => 1])) {
+            if ($info = $qrCode->getOne(['id' => $agentCode, 'third_type' => 'agent', 'status' => 1])) {
                 $agentId = $info['third_id'];
             }
         }
+        if (!$agentId) return false;
         if ($uid == $agentId) return '自己不能推荐自己';
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);

@@ -11,12 +11,12 @@
             <i class="el-icon-s-grid" style="font-size: 20px;"></i>
           </div>
           <el-input v-model="item.val" placeholder="选填，不超过十个字" :maxlength="item.maxlength || 10" />
-          <div class="close" @click="close(index)">
+          <div class="close" v-db-click @click="close(index)">
             <i class="el-icon-close" style="color: #d8d8d8;font-size: 20px;"></i>
           </div>
         </div>
       </draggable>
-      <div class="add-btn" @click="addHotTxt">
+      <div class="add-btn" v-db-click @click="addHotTxt">
         <el-button type="primary" ghost style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
           >添加热词</el-button
         >

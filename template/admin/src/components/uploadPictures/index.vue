@@ -3,7 +3,7 @@
     <div class="colLeft">
       <div class="Nav">
         <div class="trees-coadd">
-          <div v-if="isPage" class="tree_tit" @click="addSort">
+          <div v-if="isPage" class="tree_tit" v-db-click @click="addSort">
             <i class="el-icon-circle-plus"></i>
             添加分类
           </div>
@@ -51,18 +51,18 @@
             <el-button
               type="primary"
               :disabled="checkPicList.length === 0"
-              @click="checkPics"
+              v-db-click @click="checkPics"
               size="small"
               v-if="isShow !== 0"
               >使用选中图片</el-button
             >
-            <el-button size="small" type="primary" @click="uploadModal">上传图片</el-button>
+            <el-button size="small" type="primary" v-db-click @click="uploadModal">上传图片</el-button>
             <el-button
               type="error"
               class="mr10"
               size="small"
               :disabled="!checkPicList.length && !ids.length"
-              @click.stop="editPicList()"
+              v-db-click @click.stop="editPicList()"
               >删除图片</el-button
             >
             <el-cascader
@@ -85,7 +85,7 @@
               size="small"
               style="width: 150px"
             >
-              <i slot="suffix" class="el-icon-search el-input__icon" @click="getFileList"></i>
+              <i slot="suffix" class="el-icon-search el-input__icon" v-db-click @click="getFileList"></i>
             </el-input>
             <el-radio-group v-model="lietStyle" size="small" @input="radioChange">
               <el-radio-button label="list">
@@ -119,7 +119,7 @@
                   </el-badge>
                 </p>
                 <div class="img" :class="item.isSelect ? 'on' : ''">
-                  <img v-lazy="item.satt_dir" @click.stop="changImage(item, index, pictrueList)" />
+                  <img v-lazy="item.satt_dir" v-db-click @click.stop="changImage(item, index, pictrueList)" />
                 </div>
 
                 <div class="operate-item" @mouseenter="enterLeave(item)" @mouseleave="enterLeave(item)">
@@ -128,9 +128,9 @@
                   </p>
                   <el-input size="small" type="text" v-model="item.real_name" v-else @blur="bindTxt(item)" />
                   <div class="operate-height">
-                    <span class="operate mr10" @click="editPicList(item.att_id)" v-if="item.isShowEdit">删除</span>
-                    <span class="operate mr10" @click="item.isEdit = !item.isEdit" v-if="item.isShowEdit">改名</span>
-                    <span class="operate" @click="lookImg(item)" v-if="item.isShowEdit">查看</span>
+                    <span class="operate mr10" v-db-click @click="editPicList(item.att_id)" v-if="item.isShowEdit">删除</span>
+                    <span class="operate mr10" v-db-click @click="item.isEdit = !item.isEdit" v-if="item.isShowEdit">改名</span>
+                    <span class="operate" v-db-click @click="lookImg(item)" v-if="item.isShowEdit">查看</span>
                   </div>
                 </div>
               </div>
@@ -173,11 +173,11 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="170">
               <template slot-scope="scope">
-                <a @click="editPicList(scope.row)">删除</a>
+                <a v-db-click @click="editPicList(scope.row)">删除</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="scope.row.isEdit = !scope.row.isEdit">{{ scope.row.isEdit ? '确定' : '重名命' }}</a>
+                <a v-db-click @click="scope.row.isEdit = !scope.row.isEdit">{{ scope.row.isEdit ? '确定' : '重名命' }}</a>
                 <el-divider direction="vertical"></el-divider>
-                <a @click="lookImg(scope.row)">查看</a>
+                <a v-db-click @click="lookImg(scope.row)">查看</a>
               </template>
             </el-table-column>
           </el-table>

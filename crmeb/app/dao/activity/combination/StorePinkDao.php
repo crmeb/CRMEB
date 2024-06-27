@@ -133,6 +133,7 @@ class StorePinkDao extends BaseDao
     {
         return $this->search(['status' => 2, 'is_refund' => 0])
 //            ->where('uid', '<>', $uid)
+                ->limit(10)
             ->select()->toArray();
     }
 
@@ -197,6 +198,6 @@ class StorePinkDao extends BaseDao
             ->where('status', 1)
             ->where('k_id', 0)
             ->where('is_refund', 0)
-            ->field('id,people,k_id,uid,stop_time')->select()->toArray();
+            ->field('id,people,k_id,uid,stop_time,order_id_key')->select()->toArray();
     }
 }

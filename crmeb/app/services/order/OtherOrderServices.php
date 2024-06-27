@@ -348,7 +348,7 @@ class OtherOrderServices extends BaseServices
 
         $orderInfo['pay_type'] = $paytype;
         // 小程序订单服务
-        event('OrderShipping', ['member', $orderInfo, 3, '', '']);
+        event('OrderShippingListener', ['member', $orderInfo, 3, '', '']);
         return false !== $res;
     }
 

@@ -46,7 +46,7 @@
               v-auth="['marketing-store_bargain-create']"
               type="primary"
               icon="md-add"
-              @click="add"
+              v-db-click @click="add"
               class="mr10"
               >添加预售商品</el-button
             >
@@ -54,7 +54,7 @@
               v-auth="['export-storeBargain']"
               class="export"
               icon="ios-share-outline"
-              @click="exports"
+              v-db-click @click="exports"
               >导出</el-button
             > -->
           </el-col>
@@ -128,10 +128,10 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider v-if="scope.row.stop_status === 0" direction="vertical" />
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除预售商品', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除预售商品', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

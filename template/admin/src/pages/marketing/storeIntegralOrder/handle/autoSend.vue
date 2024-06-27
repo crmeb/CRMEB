@@ -40,7 +40,7 @@
                 :label="item.title"
               ></el-option>
             </el-select>
-            <el-button v-if="formItem.express_temp_id" type="text" @click="preview">预览</el-button>
+            <el-button v-if="formItem.express_temp_id" type="text" v-db-click @click="preview">预览</el-button>
           </el-form-item>
           <el-form-item label="寄件人姓名：">
             <el-input v-model="formItem.to_name" placeholder="请输入寄件人姓名" style="width: 80%"></el-input>
@@ -83,8 +83,8 @@
       </div>
     </el-form>
     <div slot="footer">
-      <el-button @click="cancel">取消</el-button>
-      <el-button type="primary" @click="putSend">提交</el-button>
+      <el-button v-db-click @click="cancel">取消</el-button>
+      <el-button type="primary" v-db-click @click="putSend">提交</el-button>
     </div>
     <div ref="viewer" v-viewer v-show="temp">
       <img :src="temp.pic" style="display: none" />

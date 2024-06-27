@@ -2,11 +2,11 @@
   <div
     class="layout-logo"
     v-if="$store.state.themeConfig.themeConfig.layout !== 'columns' && !$store.state.themeConfig.themeConfig.isCollapse"
-    @click="onThemeConfigChange"
+    v-db-click @click="onThemeConfigChange"
   >
     <img v-if="maxLogo" class="layout-logo-medium-img" :src="maxLogo" />
   </div>
-  <div class="layout-logo-size" v-else @click="onThemeConfigChange">
+  <div class="layout-logo-size" v-else v-db-click @click="onThemeConfigChange">
     <img v-if="minLogo" class="layout-logo-size-img" :src="minLogo" />
   </div>
 </template>

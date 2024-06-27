@@ -90,7 +90,7 @@ class HttpService
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         //携带参数
         if ($method == 'POST') {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         } elseif ($method == 'GET' && count($data)) {
             $url .= '?' . http_build_query($data);
             curl_setopt($curl, CURLOPT_URL, $url);

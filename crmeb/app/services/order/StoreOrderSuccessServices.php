@@ -106,10 +106,23 @@ class StoreOrderSuccessServices extends BaseServices
         $orderInfo['phone'] = $orderInfo['user_phone'];
         event('CustomNoticeListener', [$orderInfo['uid'], $orderInfo, 'order_pay_success']);
 
-        // 小程序订单管理 (自提商品)
-        if ($orderInfo['shipping_type'] == 2) {
-            event('OrderShipping', ['product', $orderInfo, 4, '', '']);
-        }
+        //自定义事件-订单支付
+        event('CustomEventListener', ['order_pay', [
+            'uid' => $orderInfo['uid'],
+            'id' => (int)$orderInfo['id'],
+            'order_id' => $orderInfo['order_id'],
+            'real_name' => $orderInfo['real_name'],
+            'user_phone' => $orderInfo['user_phone'],
+            'user_address' => $orderInfo['user_address'],
+            'total_num' => $orderInfo['total_num'],
+            'pay_price' => $orderInfo['pay_price'],
+            'pay_postage' => $orderInfo['pay_postage'],
+            'deduction_price' => $orderInfo['deduction_price'],
+            'coupon_price' => $orderInfo['coupon_price'],
+            'store_name' => $orderInfo['storeName'],
+            'add_time' => date('Y-m-d H:i:s', $orderInfo['add_time']),
+        ]]);
+
         $res = $res1 && $resPink;
         return false !== $res;
     }

@@ -2,12 +2,12 @@
   <div class="upload_img" v-if="configData">
     <div class="header">{{ configData.header }}</div>
     <div class="title">{{ configData.title }}</div>
-    <div class="box" @click="modalPicTap('单选')">
+    <div class="box" v-db-click @click="modalPicTap('单选')">
       <img :src="configData.url" alt="" v-if="configData.url" />
       <div class="upload-box" v-else>
         <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
       </div>
-      <span class="iconfont-diy icondel_1" @click.stop="bindDelete" v-if="configData.url && configData.type"></span>
+      <span class="iconfont-diy icondel_1" v-db-click @click.stop="bindDelete" v-if="configData.url && configData.type"></span>
     </div>
     <div>
       <el-dialog

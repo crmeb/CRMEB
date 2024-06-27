@@ -273,6 +273,7 @@
 							title: that.$t(`登录成功`),
 							icon: 'success'
 						}, {
+							tab: 4,
 							url: this.backUrl || 'pages/user/index'
 						});
 						// #endif

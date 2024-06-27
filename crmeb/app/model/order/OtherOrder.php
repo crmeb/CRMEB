@@ -20,6 +20,7 @@ use think\Model;
 class OtherOrder extends BaseModel
 {
     use ModelTrait;
+
     /**
      * 数据表主键
      * @var string
@@ -34,7 +35,7 @@ class OtherOrder extends BaseModel
 
     protected $insert = ['add_time'];
 
-   // protected $hidden = ['add_time', 'is_del', 'uid'];
+    // protected $hidden = ['add_time', 'is_del', 'uid'];
 
     /**订单类型
      * @param $query
@@ -44,15 +45,17 @@ class OtherOrder extends BaseModel
     {
         if (is_array($value)) {
             $query->where('type', 'in', $value);
-        }else{
+        } else {
             $query->where('type', $value);
         }
 
     }
+
     public function searchPaidAttr($query, $value)
     {
         $query->where('paid', $value);
     }
+
     /**支付方式不属于
      * @param $query
      * @param $value
@@ -61,6 +64,7 @@ class OtherOrder extends BaseModel
     {
         $query->where('pay_type', '<>', $value);
     }
+
     /**
      * 用户来源
      * @param Model $query
@@ -77,7 +81,7 @@ class OtherOrder extends BaseModel
      */
     public function searchOrderIdAttr($query, $value)
     {
-        if ($value != ""){
+        if ($value != "") {
             $query->where('order_id', $value);
         }
 
@@ -99,7 +103,11 @@ class OtherOrder extends BaseModel
     public function searchMemberTypeAttr($query, $value)
     {
         if ($value && $value != 'card' && $value != 'free') {
-            $query->where('member_type', $value);
+            if ($value == -1) {
+                $query->where('member_type', '<>', 0);
+            } else {
+                $query->where('member_type', $value);
+            }
         } elseif ($value == 'card') {
             $query->where('member_type', 'free')->where('code', '<>', '');
         } elseif ($value == 'free') {
@@ -114,14 +122,14 @@ class OtherOrder extends BaseModel
      */
     public function searchPayTypeAttr($query, $value)
     {
-        if ($value){
-            if ($value == "free"){
-                $query->where(function($query){
-                    $query->where('type', 'in', [0,2])->whereOr(function($query){
+        if ($value) {
+            if ($value == "free") {
+                $query->where(function ($query) {
+                    $query->where('type', 'in', [0, 2])->whereOr(function ($query) {
                         $query->where(['type' => 1, 'is_free' => 1]);
                     });
                 });
-            }else{
+            } else {
                 $query->where('pay_type', $value);
             }
 
@@ -134,7 +142,7 @@ class OtherOrder extends BaseModel
      */
     public function searchAddTimeAttr($query, $value)
     {
-        if ($value){
+        if ($value) {
             $query->whereTime('add_time', 'between', $value);
         }
     }
@@ -145,7 +153,7 @@ class OtherOrder extends BaseModel
      */
     public function searchUidAttr($query, $value)
     {
-        if ($value){
+        if ($value) {
             $query->where('uid', 'in', $value);
         }
     }

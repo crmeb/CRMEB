@@ -99,7 +99,7 @@ class Division extends AuthController
             ['account', ''],
             ['pwd', ''],
             ['conf_pwd', ''],
-            ['real_name', ''],
+            ['division_name', ''],
             ['roles', []],
             ['image', []]
         ]);
@@ -134,6 +134,7 @@ class Division extends AuthController
             ['division_percent', 0],
             ['division_end_time', ''],
             ['division_status', 1],
+            ['division_name', ''],
             ['edit', 0],
             ['image', []],
         ]);

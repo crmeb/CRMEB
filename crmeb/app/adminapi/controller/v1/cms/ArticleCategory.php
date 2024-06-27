@@ -87,6 +87,7 @@ class ArticleCategory extends AuthController
         $data['add_time'] = time();
         $this->service->save($data);
         CacheService::delete('ARTICLE_CATEGORY');
+        CacheService::delete('ARTICLE_CATEGORY_PC');
         return app('json')->success(100021);
     }
 
@@ -121,6 +122,7 @@ class ArticleCategory extends AuthController
         ]);
         $this->service->update($data);
         CacheService::delete('ARTICLE_CATEGORY');
+        CacheService::delete('ARTICLE_CATEGORY_PC');
         return app('json')->success(100001);
     }
 
@@ -135,6 +137,7 @@ class ArticleCategory extends AuthController
         if (!$id) return app('json')->fail(100100);
         $this->service->del($id);
         CacheService::delete('ARTICLE_CATEGORY');
+        CacheService::delete('ARTICLE_CATEGORY_PC');
         return app('json')->success(100002);
     }
 
@@ -150,6 +153,7 @@ class ArticleCategory extends AuthController
         if ($status == '' || $id == 0) return app('json')->fail(100100);
         $this->service->setStatus($id, $status);
         CacheService::delete('ARTICLE_CATEGORY');
+        CacheService::delete('ARTICLE_CATEGORY_PC');
         return app('json')->success(100014);
     }
 

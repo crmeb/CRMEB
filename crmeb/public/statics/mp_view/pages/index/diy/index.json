@@ -27,6 +27,7 @@
     "swiper-bg": "/pages/index/diy/components/swiperBg",
     "tab-nav": "/pages/index/diy/components/tabNav",
     "titles": "/pages/index/diy/components/titles",
+    "hotspot": "/pages/index/diy/components/hotspot",
     "app-update": "/components/update/app-update"
   }
 }

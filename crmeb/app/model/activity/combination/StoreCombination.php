@@ -61,7 +61,7 @@ class StoreCombination extends BaseModel
      */
     public function total()
     {
-        return $this->hasOne(StoreProduct::class, 'id', 'product_id')->where('is_show', 1)->where('is_del', 0)->field(['SUM(sales+ficti) as total', 'id', 'price'])->bind([
+        return $this->hasOne(StoreProduct::class, 'id', 'product_id')->where('is_show', 1)->where('is_del', 0)->field(['(sales+ficti) as total', 'id', 'price'])->bind([
             'total' => 'total', 'product_price' => 'price'
         ]);
     }

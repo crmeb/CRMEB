@@ -18,7 +18,7 @@
       <div class="input-box">
         <el-input type="textarea" placeholder="请填写内容" v-model="con" />
       </div>
-      <el-button class="sub_btn" @click="subMit" :disabled="isDisabled">提交</el-button>
+      <el-button class="sub_btn" v-db-click @click="subMit" :disabled="isDisabled">提交</el-button>
     </div>
   </div>
 </template>

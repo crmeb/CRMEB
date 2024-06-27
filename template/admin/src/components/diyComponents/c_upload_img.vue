@@ -1,7 +1,7 @@
 <template>
   <div class="upload_img">
     <div class="title">{{ datas[name].title }}</div>
-    <div class="box" @click="modalPicTap('单选')">
+    <div class="box" v-db-click @click="modalPicTap('单选')">
       <img :src="datas[name].url" alt="" v-if="datas[name].url" />
       <div class="upload-box" v-else>
         <i class="el-icon-picture-outline" style="font-size: 24px;"></i>

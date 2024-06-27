@@ -1,16 +1,16 @@
 <template>
   <div class="chatList">
-    <div class="tab-head">
+    <!-- <div class="tab-head">
       <div
         class="item"
         :class="{ active: item.key == hdTabCur }"
         v-for="(item, index) in hdTab"
         :key="index"
-        @click="changeTab(item)"
+        v-db-click @click="changeTab(item)"
       >
         {{ item.title }}
       </div>
-    </div>
+    </div> -->
     <div class="scroll-box">
       <vue-scroll :ops="ops" @handle-scroll="handleScroll" v-if="userList.length > 0">
         <div
@@ -18,7 +18,7 @@
           v-for="(item, index) in userList"
           :key="index"
           :class="{ active: curId == item.id }"
-          @click="selectUser(item)"
+          v-db-click @click="selectUser(item)"
         >
           <div class="avatar">
             <img v-lazy="item.wx_avatar" alt="" />
@@ -132,10 +132,6 @@ export default {
         {
           key: 0,
           title: '用户列表',
-        },
-        {
-          key: 1,
-          title: '游客列表',
         },
       ],
       userList: [],

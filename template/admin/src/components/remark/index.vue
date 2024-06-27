@@ -13,8 +13,8 @@
       </el-form-item>
     </el-form>
     <div slot="footer">
-      <el-button type="primary" @click="putRemark('formValidate')">提交</el-button>
-      <el-button @click="cancel('formValidate')">取消</el-button>
+      <el-button type="primary" v-db-click @click="putRemark('formValidate')">提交</el-button>
+      <el-button v-db-click @click="cancel('formValidate')">取消</el-button>
     </div>
   </el-dialog>
 </template>

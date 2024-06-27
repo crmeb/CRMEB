@@ -47,6 +47,16 @@ export default {
       component: () => import('@/pages/system/codeDataDictionary/index'),
     },
     {
+      path: 'code_data_dictionary_datalist',
+      name: `${pre}code_data_dictionary_datalist`,
+      meta: {
+        auth: ['system-code-data_dictionary-dataList'],
+        title: '数据管理页面',
+        activeMenu: routePre + '/system/code_data_dictionary',
+      },
+      component: () => import('@/pages/system/codeDataDictionary/dataList'),
+    },
+    {
       path: 'code_generation_list',
       name: `${pre}code_generation_list`,
       meta: {
@@ -201,6 +211,15 @@ export default {
         title: '定时任务',
       },
       component: () => import('@/pages/system/crontab/index'),
+    },
+    {
+      path: 'event',
+      name: `${pre}event`,
+      meta: {
+        auth: ['system-event-index'],
+        title: '自定义事件',
+      },
+      component: () => import('@/pages/system/event/index'),
     },
     {
       path: 'system_menus/index',

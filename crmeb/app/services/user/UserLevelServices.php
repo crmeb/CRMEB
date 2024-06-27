@@ -172,7 +172,7 @@ class UserLevelServices extends BaseServices
         $bill_data['title'] = $title;
         $bill_data['category'] = 'exp';
         $bill_data['type'] = $type;
-        $bill_data['number'] = $change_exp;
+        $bill_data['number'] = abs($change_exp);
         $bill_data['balance'] = $userinfo['exp'];
         $bill_data['mark'] = $mark;
         $bill_data['status'] = 1;

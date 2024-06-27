@@ -39,7 +39,7 @@
             <el-input v-model="formValidate.synopsis" type="textarea" placeholder="请输入" class="content_width" />
           </el-form-item>
           <el-form-item label="图文封面：" prop="image_input">
-            <div class="picBox" @click="modalPicTap('单选')">
+            <div class="picBox" v-db-click @click="modalPicTap('单选')">
               <div class="pictrue" v-if="formValidate.image_input">
                 <img :src="formValidate.image_input" />
               </div>
@@ -82,7 +82,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-button type="primary" class="submission" @click="onsubmit('formValidate')">提交</el-button>
+        <el-button type="primary" class="submission" v-db-click @click="onsubmit('formValidate')">提交</el-button>
       </el-form>
       <el-dialog :visible.sync="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false">
         <uploadPictures

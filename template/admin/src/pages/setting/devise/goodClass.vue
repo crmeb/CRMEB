@@ -8,7 +8,7 @@
           :class="activeStyle == index ? 'on' : ''"
           v-for="(item, index) in classList"
           :key="index"
-          @click="selectTap(index)"
+          v-db-click @click="selectTap(index)"
         >
           <div class="pictrue"><img :src="item.image" /></div>
           <div class="name">{{ item.name }}</div>

@@ -184,7 +184,7 @@ class StoreSeckillDao extends BaseDao
             ->where('stop_time', '>=', time() - 86400)
             ->where('time_id', $time)
             ->where('product_id', 'IN', function ($query) {
-                $query->name('store_product')->where('is_show', 1)->where('is_del', 0)->field('id');
+                $query->name('store_product')->where('is_del', 0)->field('id');
             })->when($page != 0, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })->order('sort desc,id desc')->select()->toArray();

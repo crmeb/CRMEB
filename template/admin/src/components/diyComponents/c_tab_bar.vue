@@ -8,7 +8,7 @@
         </div>
         <div class="right-wrapper">
           <div class="img-wrapper">
-            <div class="img-item" v-for="(img, j) in item.imgList" @click="modalPicTap('单选', index, j)">
+            <div class="img-item" v-for="(img, j) in item.imgList" v-db-click @click="modalPicTap('单选', index, j)">
               <img :src="img" alt="" v-if="img" />
               <p class="txt" v-if="img">{{ j == 0 ? '选中' : '未选中' }}</p>
               <div class="empty-img" v-else>
@@ -30,7 +30,7 @@
             </el-col>
           </div>
         </div>
-        <div class="del-box" @click="deleteMenu(index)">
+        <div class="del-box" v-db-click @click="deleteMenu(index)">
           <span class="iconfont iconcha"></span>
         </div>
       </div>
@@ -40,7 +40,7 @@
         type="primary"
         ghost
         style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-        @click="addMenu"
+        v-db-click @click="addMenu"
         >添加图文导航
       </el-button>
     </div>

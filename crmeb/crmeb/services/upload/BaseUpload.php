@@ -360,6 +360,26 @@ abstract class BaseUpload extends BaseStorage
     }
 
     /**
+     * 检测文件内容
+     * @param $fileHandle
+     * @return bool|void
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/4/11
+     */
+    public function checkFileContent($fileHandle)
+    {
+        $stream = fopen($fileHandle->getPathname(), 'r');
+        $content = (fread($stream, filesize($fileHandle->getPathname())));
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+        if (preg_match('/think|app|php|log|phar|Socket|Channel|Flysystem|Psr6Cache|Cached|Request|debug|Psr6Cachepool|eval/i', $content)) {
+            return $this->setError('文件内容不合法');
+        }
+    }
+
+    /**
      * 文件上传
      * @return mixed
      */

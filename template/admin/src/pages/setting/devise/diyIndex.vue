@@ -4,9 +4,9 @@
       <div class="fl_header">
         <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>
         <div class="rbtn">
-          <el-button class="ml20 header-btn look" @click="preview" :loading="loading">预览</el-button>
-          <el-button class="ml20 header-btn close" @click="closeWindow" :loading="loading">关闭</el-button>
-          <el-button class="ml20 header-btn save" @click="saveConfig(0)" :loading="loading">保存</el-button>
+          <el-button class="ml20 header-btn look" v-db-click @click="preview" :loading="loading">预览</el-button>
+          <el-button class="ml20 header-btn close" v-db-click @click="closeWindow" :loading="loading">关闭</el-button>
+          <el-button class="ml20 header-btn save" v-db-click @click="saveConfig(0)" :loading="loading">保存</el-button>
         </div>
       </div>
     </div>
@@ -21,14 +21,14 @@
               :class="{ on: tabCur == index }"
               v-for="(item, index) in tabList"
               :key="index"
-              @click="bindTab(index)"
+              v-db-click @click="bindTab(index)"
             >
               {{ item.title }}
             </div>
           </div>
           <div class="wrapper" v-if="tabCur == 0">
             <div v-for="(item, index) in leftMenu" :key="index">
-              <div class="tips" @click="item.isOpen = !item.isOpen">
+              <div class="tips" v-db-click @click="item.isOpen = !item.isOpen">
                 {{ item.title }}
 
                 <i class="el-icon-arrow-right" style="font-size: 16px" v-if="!item.isOpen" />
@@ -52,7 +52,7 @@
                   }"
                   v-for="element in item.list"
                   :key="element.id"
-                  @click="addDom(element, 1)"
+                  v-db-click @click="addDom(element, 1)"
                   v-show="item.isOpen"
                 >
                   <div>
@@ -64,12 +64,12 @@
               </draggable>
             </div>
           </div>
-          <!--                    <div style="padding: 0 20px"><el-button type="primary" style="width: 100%" @click="saveConfig">保存</el-button></div>-->
+          <!--                    <div style="padding: 0 20px"><el-button type="primary" style="width: 100%" v-db-click @click="saveConfig">保存</el-button></div>-->
           <div class="wrapper" v-else :style="'height:' + (clientHeight - 200) + 'px;'">
             <div class="link-item" v-for="(item, index) in urlList" :key="index">
               <div class="acea-row row-between-wrapper">
                 <div class="name">{{ item.name }}</div>
-                <span class="copy_btn" @click="onCopy(item.example)">复制</span>
+                <span class="copy_btn" v-db-click @click="onCopy(item.example)">复制</span>
               </div>
               <div class="link-txt">地址：{{ item.url }}</div>
               <div class="params">
@@ -88,11 +88,11 @@
           style="flex: 1; background: #f0f2f5; display: flex; justify-content: center; padding-top: 20px; height: 100%"
         >
           <div class="acticons">
-            <el-button class="bnt mb10" @click="showTitle">页面设置</el-button>
+            <el-button class="bnt mb10" v-db-click @click="showTitle">页面设置</el-button>
             <span></span>
-            <el-button class="bnt mb10" @click="nameModal = true">另存模板</el-button>
+            <el-button class="bnt mb10" v-db-click @click="nameModal = true">另存模板</el-button>
             <span></span>
-            <el-button class="bnt" @click="reast">重置</el-button>
+            <el-button class="bnt" v-db-click @click="reast">重置</el-button>
           </div>
           <div class="content">
             <div class="contxt" style="display: flex; flex-direction: column; overflow: hidden; height: 100%">
@@ -100,7 +100,7 @@
                 <div class="picture">
                   <img src="@/assets/images/electric.png" />
                 </div>
-                <div class="page-title" :class="{ on: activeIndex == -100 }" @click="showTitle">
+                <div class="page-title" :class="{ on: activeIndex == -100 }" v-db-click @click="showTitle">
                   {{ titleTxt }}
                   <div class="delete-box"></div>
                   <div class="handle"></div>
@@ -143,7 +143,7 @@
                         }"
                         v-for="(item, key) in mConfig"
                         :key="key"
-                        @click.stop="bindconfig(item, key)"
+                        v-db-click @click.stop="bindconfig(item, key)"
                         :style="colorTxt ? 'background-color:' + colorPickerTxt + ';' : 'background-color:#fff;'"
                       >
                         <component
@@ -156,19 +156,19 @@
                         <div class="delete-box">
                           <div class="handleType">
                             <el-tooltip content="删除当前模块" placement="top">
-                              <div class="iconfont iconshanchu2" @click.stop="bindDelete(item, key)"></div>
+                              <div class="iconfont iconshanchu2" v-db-click @click.stop="bindDelete(item, key)"></div>
                             </el-tooltip>
 
-                            <div class="iconfont iconfuzhi" @click.stop="bindAddDom(item, 0, key)"></div>
+                            <div class="iconfont iconfuzhi" v-db-click @click.stop="bindAddDom(item, 0, key)"></div>
                             <div
                               class="iconfont iconshangyi"
                               :class="key === 0 ? 'on' : ''"
-                              @click.stop="movePage(item, key, 1)"
+                              v-db-click @click.stop="movePage(item, key, 1)"
                             ></div>
                             <div
                               class="iconfont iconxiayi"
                               :class="key === mConfig.length - 1 ? 'on' : ''"
-                              @click.stop="movePage(item, key, 0)"
+                              v-db-click @click.stop="movePage(item, key, 0)"
                             ></div>
                           </div>
                         </div>
@@ -179,15 +179,15 @@
                 </div>
               </div>
               <div class="overflowy">
-                <div class="page-foot" @click="showFoot" :class="{ on: activeIndex == -101 }">
+                <div class="page-foot" v-db-click @click="showFoot" :class="{ on: activeIndex == -101 }">
                   <footPage></footPage>
                   <div class="delete-box"></div>
                   <div class="handle"></div>
                 </div>
               </div>
               <!-- <div class="defaultData" v-if="pageId !== 0">
-                <div class="data" @click="setmoren">设置默认</div>
-                <div class="data" @click="getmoren">恢复默认</div>
+                <div class="data" v-db-click @click="setmoren">设置默认</div>
+                <div class="data" v-db-click @click="getmoren">恢复默认</div>
               </div> -->
             </div>
           </div>
@@ -226,8 +226,8 @@
     <el-dialog :visible.sync="nameModal" width="470px" title="设置模版名称" :show-close="true">
       <el-input v-model="saveName" placeholder="请输入模版名称"></el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="nameModal = false">取 消</el-button>
-        <el-button type="primary" @click="saveModal">确 定</el-button>
+        <el-button v-db-click @click="nameModal = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="saveModal">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -307,6 +307,7 @@ export default {
       loading: false,
       isSearch: false,
       isTab: false,
+      isHomeProduct: false,
       isFllow: false,
       qrcodeImg: '',
       modal: false,
@@ -653,6 +654,7 @@ export default {
     },
     // 组件添加
     addDomCon(item, type, index) {
+    console.log(item)
       if (item.name == 'search_box') {
         if (this.isSearch) return this.$message.error('该组件只能添加一次');
         this.isSearch = true;
@@ -660,6 +662,10 @@ export default {
       if (item.name == 'nav_bar') {
         if (this.isTab) return this.$message.error('该组件只能添加一次');
         this.isTab = true;
+      }
+      if (item.name == 'home_product') {
+        if (this.isHomeProduct) return this.$message.error('该组件只能添加一次');
+        this.isHomeProduct = true;
       }
       idGlobal += 1;
       let obj = {};
@@ -734,6 +740,9 @@ export default {
       }
       if (item.name == 'nav_bar') {
         this.isTab = false;
+      }
+      if (item.name == 'home_product') {
+        this.isHomeProduct = false;
       }
       this.mConfig.splice(key, 1);
       this.rConfig.splice(0, 1);
@@ -880,6 +889,9 @@ export default {
           }
           if (el.name == 'tabNav') {
             this.isTab = true;
+          }
+          if (el.name == 'promotionList') {
+            this.isHomeProduct = true;
           }
           if (el.name == 'goodList') {
             let storage = window.localStorage;

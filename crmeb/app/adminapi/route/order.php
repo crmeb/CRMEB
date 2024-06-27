@@ -94,6 +94,22 @@ Route::group('order', function () {
     Route::post('invoice/set/:id', 'v1.order.StoreOrderInvoice/set_invoice')->name('StoreOrderorInvoiceSet')->option(['real_name' => '设置发票状态']);
     //开票订单详情
     Route::get('invoice_order_info/:id', 'v1.order.StoreOrderInvoice/orderInfo')->name('StoreOrderorInvoiceOrderInfo')->option(['real_name' => '开票订单详情']);
+    //获取发票开具页面iframe地址
+    Route::get('invoice_issuance_url/:id', 'v1.order.StoreOrderInvoice/invoiceIssuanceUrl')->name('invoiceIssuanceUrl')->option(['real_name' => '获取发票开具页面iframe地址']);
+    //保存发票信息
+    Route::post('save_invoice_info/:id', 'v1.order.StoreOrderInvoice/saveInvoiceInfo')->name('saveInvoiceInfo')->option(['real_name' => '保存发票信息']);
+    //电子发票分类
+    Route::get('invoice_category', 'v1.order.StoreOrderInvoice/invoiceCategory')->name('invoiceCategory')->option(['real_name' => '电子发票分类']);
+    //开具发票
+    Route::post('invoice_issuance', 'v1.order.StoreOrderInvoice/invoiceIssuance')->name('invoiceIssuance')->option(['real_name' => '开具发票']);
+    //查看发票详情
+    Route::get('invoice_info/:id', 'v1.order.StoreOrderInvoice/invoiceInfo')->name('invoiceInfo')->option(['real_name' => '查看发票详情']);
+    //开具负数发票
+    Route::get('red_invoice_issuance/:id', 'v1.order.StoreOrderInvoice/redInvoiceIssuance')->name('redInvoiceIssuance')->option(['real_name' => '开具负数发票']);
+    //下载发票
+    Route::get('down_invoice/:id', 'v1.order.StoreOrderInvoice/downInvoice')->name('downInvoice')->option(['real_name' => '下载发票']);
+    //电子发票配置
+    Route::get('elec_invoice_config', 'v1.order.StoreOrderInvoice/elecInvoiceConfig')->name('elecInvoiceConfig')->option(['real_name' => '电子发票配置']);
     //配送员列表
     Route::get('delivery/index', 'v1.order.DeliveryService/index')->option(['real_name' => '配送员列表']);
     //新增配送表单

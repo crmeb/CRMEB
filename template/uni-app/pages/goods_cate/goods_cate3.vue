@@ -195,12 +195,6 @@ export default {
 			scrollHeight: 0
 		};
 	},
-	onShow() {
-		// if (this.isLogin) {
-		// 	this.getCartNum();
-		// 	this.getCartList(1);
-		// }
-	},
 	onLoad() {
 		this.$nextTick(() => {
 			uni
@@ -234,6 +228,10 @@ export default {
 		uni.$on('uploadCatData', () => {
 			this.getAllCategory(1);
 		});
+		if (this.isLogin) {
+			this.getCartNum();
+			this.getCartList(1);
+		}
 		setTimeout(() => {
 			this.scrollHeight = windowHeight - 80 - sysHeight;
 		}, 1000);
@@ -505,11 +503,6 @@ export default {
 			let list = this.cartData.cartList;
 			let num = list[index];
 			let stock = list[index].trueStock;
-			if (!changeValue && num.cart_num <= list[index].productInfo.min_qty) {
-				return this.$util.Tips({
-					title: this.$t(`该商品${list[index].productInfo.min_qty}件起购`)
-				});
-			}
 			if (changeValue && list[index].productInfo.limit_type == 1 && num.cart_num >= list[index].productInfo.limit_num) {
 				this.$set(num, 'cart_num', list[index].productInfo.limit_num);
 				this.$util.Tips({
@@ -517,7 +510,6 @@ export default {
 				});
 				return;
 			}
-
 			this.ChangeCartNum(changeValue, num, stock, 0, num.product_id, index, 1);
 			if (!list.length) {
 				this.cartData.iScart = false;
@@ -555,12 +547,11 @@ export default {
 					}
 				}
 			} else {
-				if (num.cart_num <= num.min_qty) {
-					return this.$util.Tips({
-						title: this.$t(`该商品${num.min_qty}件起购`)
-					});
-				}
 				num.cart_num--;
+				if (num.cart_num < num.min_qty) {
+					this.cartData.cartList.splice(index, 1);
+					num.cart_num = 0
+				}
 				if (num.cart_num == 0) {
 					this.cartData.cartList.splice(index, 1);
 					if (isDuo) {
@@ -1115,11 +1106,10 @@ page {
 		background-color: #fff;
 		box-shadow: 0px -3px 16px rgba(36, 12, 12, 0.05);
 		z-index: 101;
-		padding-left: 30rpx;
 		box-sizing: border-box;
-		height: 100rpx;
-		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
-		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
+		padding: 12rpx 30rpx;
+		padding-bottom: calc(12rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(12rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		.cartIcon {
 			width: 124rpx;
 			height: 106rpx;

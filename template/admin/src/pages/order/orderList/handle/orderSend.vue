@@ -106,11 +106,11 @@
                 :label="item.title"
               ></el-option>
             </el-select>
-            <Button v-if="formItem.express_temp_id" type="text" @click="preview">预览</Button>
+            <Button v-if="formItem.express_temp_id" type="text" v-db-click @click="preview">预览</Button>
           </el-form-item>
           <el-form-item label="预计寄件金额：" v-if="formItem.express_record_type == 3">
             <span class="red">{{ sendPrice }}</span>
-            <a class="ml10 coumped" @click="watchPrice">立即计算</a>
+            <a class="ml10 coumped" v-db-click @click="watchPrice">立即计算</a>
           </el-form-item>
           <el-form-item label="取件日期：" v-if="formItem.express_record_type == 3">
             <el-radio-group v-model="formItem.day_type" type="button">
@@ -231,8 +231,8 @@
       </div>
     </el-form>
     <div slot="footer">
-      <el-button @click="cancel">取消</el-button>
-      <el-button type="primary" @click="putSend">提交</el-button>
+      <el-button v-db-click @click="cancel">取消</el-button>
+      <el-button type="primary" v-db-click @click="putSend">提交</el-button>
     </div>
     <!-- <viewer @inited="inited">
             <img :src="temp.pic" style="display:none" />

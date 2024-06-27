@@ -136,19 +136,19 @@ class SystemNotificationServices extends BaseServices
         ],
 
         //订单发起退款
-//        'order_initiated_refund' => [
-//            ['label' => '用户uid', 'value' => 'uid'],
-//            ['label' => '订单order_id', 'value' => 'order_id'],
-//            ['label' => '用户名称', 'value' => 'real_name'],
-//            ['label' => '用户电话', 'value' => 'user_phone'],
-//            ['label' => '用户地址', 'value' => 'user_address'],
-//            ['label' => '商品总数', 'value' => 'total_num'],
-//            ['label' => '支付金额', 'value' => 'pay_price'],
-//            ['label' => '支付邮费', 'value' => 'pay_postage'],
-//            ['label' => '积分抵扣金额', 'value' => 'deduction_price'],
-//            ['label' => '优惠券抵扣金额', 'value' => 'coupon_price'],
-//            ['label' => '支付类型', 'value' => 'pay_type'],
-//        ],
+        'order_initiated_refund' => [
+            ['label' => '用户uid', 'value' => 'uid'],
+            ['label' => '订单order_id', 'value' => 'order_id'],
+            ['label' => '用户名称', 'value' => 'real_name'],
+            ['label' => '用户电话', 'value' => 'user_phone'],
+            ['label' => '用户地址', 'value' => 'user_address'],
+            ['label' => '商品总数', 'value' => 'total_num'],
+            ['label' => '支付金额', 'value' => 'pay_price'],
+            ['label' => '支付邮费', 'value' => 'pay_postage'],
+            ['label' => '积分抵扣金额', 'value' => 'deduction_price'],
+            ['label' => '优惠券抵扣金额', 'value' => 'coupon_price'],
+            ['label' => '支付类型', 'value' => 'pay_type'],
+        ],
 
         //订单成功退款
         'order_refund_success' => [
@@ -306,12 +306,6 @@ class SystemNotificationServices extends BaseServices
             ['value' => 'extract_fail', 'label' => '提现失败场景'],
             ['value' => 'brokerage_received', 'label' => '佣金到账场景'],
             ['value' => 'point_received', 'label' => '积分到账场景'],
-//            ['value' => 'login_success', 'label' => '砍价成功场景'],
-//            ['value' => 'login_success', 'label' => '开团成功场景'],
-//            ['value' => 'login_success', 'label' => '参团成功场景'],
-//            ['value' => 'login_success', 'label' => '拼团成功场景'],
-//            ['value' => 'login_success', 'label' => '拼团失败场景'],
-//            ['value' => 'login_success', 'label' => '取消拼团场景'],
         ];
         $field = [];
         $field[] = Form::select('custom_trigger', '触发位置', $info['custom_trigger'] ?? '')->options($data);

@@ -1,5 +1,5 @@
 <template>
-	<view style="background-color: var(--view-theme); padding-bottom: 50rpx" :style="colorStyle">
+	<view class="main-warper" style="background-color: var(--view-theme); padding-bottom: 50rpx" :style="colorStyle">
 		<view class="bargain">
 			<!-- #ifndef APP-PLUS || MP -->
 			<view class="iconfont icon-xiangzuo" v-if="retunTop" @tap="goBack" :style="'top:' + navH + 'px'"></view>
@@ -32,7 +32,7 @@
 				<view class="pictxt acea-row row-between-wrapper" @tap="goProduct">
 					<view class="pictrue">
 						<image :src="bargainInfo.image"></image>
-						<view class="bargain_view">
+						<view class="bargain_view" v-if="bargainInfo.product_is_show">
 							{{ $t(`查看商品`) }}
 							<text class="iconfont icon-jiantou iconfonts"></text>
 						</view>
@@ -63,7 +63,7 @@
 				</view>
 				<!-- 帮助砍价、帮砍成功： -->
 				<view v-if="userBargainInfo.bargainType == 2">
-					<view class="bargainBnt" @tap="getBargainUserBargainPricePoster">{{ $t(`邀请好友帮砍价`) }}</view>
+					<view class="bargainBnt" @tap="shareModal">{{ $t(`邀请好友帮砍价`) }}</view>
 					<view class="tip">
 						{{ $t(`已有`) }}
 						<text class="num">{{ userBargainInfo.count }}</text>
@@ -176,10 +176,10 @@
 						{{ $t(`元，听说分享次数越多砍价成功的机会越大哦`) }}
 					</view>
 					<!-- #ifdef MP -->
-					<button class="tipBnt" @tap="getBargainUserBargainPricePoster">{{ $t(`邀请好友帮砍价`) }}</button>
+					<button class="tipBnt" @tap="shareModal">{{ $t(`邀请好友帮砍价`) }}</button>
 					<!-- #endif -->
 					<!-- #ifdef H5 -->
-					<view class="tipBnt" @tap="getBargainUserBargainPricePoster">{{ $t(`邀请好友帮砍价`) }}</view>
+					<view class="tipBnt" @tap="shareModal">{{ $t(`邀请好友帮砍价`) }}</view>
 					<!-- #endif -->
 				</view>
 				<view v-else>
@@ -190,38 +190,6 @@
 			</view>
 			<view class="mask" catchtouchmove="true" v-show="active == true" @tap="close"></view>
 		</view>
-		<!-- 分享按钮 -->
-		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
-			<!-- #ifndef MP -->
-			<button class="item" hover-class="none" v-if="weixinStatus === true" @click="H5ShareBox = true">
-				<view class="iconfont icon-weixin3"></view>
-				<view class="">{{ $t(`发送给朋友`) }}</view>
-			</button>
-			<!-- #endif -->
-			<!-- #ifdef MP -->
-			<button class="item" open-type="share" hover-class="none" @click="goFriend">
-				<view class="iconfont icon-weixin3"></view>
-				<view class="">{{ $t(`发送给朋友`) }}</view>
-			</button>
-			<!-- #endif -->
-			<!-- #ifdef APP-PLUS -->
-			<view class="item" @click="appShare('WXSceneSession')">
-				<view class="iconfont icon-weixin3"></view>
-				<view class="">{{ $t(`微信好友`) }}</view>
-			</view>
-			<view class="item" @click="appShare('WXSenceTimeline')">
-				<view class="iconfont icon-pengyouquan"></view>
-				<view class="">{{ $t(`微信朋友圈`) }}</view>
-			</view>
-			<!-- #endif -->
-			<!-- #ifndef APP-PLUS -->
-			<button class="item" hover-class="none" @tap="getBargainUserBargainPricePoster">
-				<view class="iconfont icon-haibao"></view>
-				<view class="">{{ $t(`生成海报`) }}</view>
-			</button>
-			<!-- #endif -->
-		</view>
-		<view class="mask" v-if="posters" @click="listenerActionClose"></view>
 		<!-- 发送给朋友图片 -->
 		<view class="share-box" v-if="H5ShareBox">
 			<image :src="imgHost + '/statics/images/share-info.png'" @click="H5ShareBox = false"></image>
@@ -254,11 +222,56 @@
 			@result="qrR"
 		/>
 		<!-- #endif -->
+		<!-- #ifdef MP -->
+		<canvas class="canvas posters" canvas-id="myCanvas"></canvas>
+		<!-- #endif -->
+		<div class="posters" v-if="bargainPosterModal">
+			<bargainPoster v-if="bargainPosterModal" ref="bargainPoster" comType="1" :comId="id" :comBargain="bargainUid" @getPosterImgae="getPosterImgae"></bargainPoster>
+		</div>
+		<!-- 海报展示 -->
+		<view class="mask" v-if="posterImageModal" @click="listenerActionClose"></view>
+		<view class="poster-pop" v-if="posterImageModal">
+			<image src="/static/images/poster-close.png" class="close" @click="listenerActionClose"></image>
+			<image class="poster-img" :src="posterImage"></image>
+			<!-- #ifndef H5  -->
+			<view class="save-poster" @click="savePosterPath">{{ $t(`保存到手机`) }}</view>
+			<!-- #endif -->
+			<!-- #ifdef H5 -->
+			<view class="keep">{{ $t(`长按图片可以保存到手机`) }}</view>
+			<!-- #endif -->
+		</view>
+		<!-- 分享按钮 -->
+		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
+			<!-- #ifndef MP -->
+			<button class="item" hover-class="none" v-if="weixinStatus === true" @click="H5ShareBox = true">
+				<view class="iconfont icon-weixin3"></view>
+				<view class="">{{ $t(`发送给朋友`) }}</view>
+			</button>
+			<!-- #endif -->
+			<!-- #ifdef MP -->
+			<button class="item" open-type="share" hover-class="none" @click="goFriend">
+				<view class="iconfont icon-weixin3"></view>
+				<view class="">{{ $t(`发送给朋友`) }}</view>
+			</button>
+			<!-- #endif -->
+			<!-- #ifdef APP-PLUS -->
+			<view class="item" @click="appShare('WXSceneSession')">
+				<view class="iconfont icon-weixin3"></view>
+				<view class="">{{ $t(`微信好友`) }}</view>
+			</view>
+			<!-- #endif -->
+			<button class="item" hover-class="none" @click="getBargainUserBargainPricePoster">
+				<view class="iconfont icon-haibao"></view>
+				<view class="">{{ $t(`生成海报`) }}</view>
+			</button>
+		</view>
+		<view class="mask" v-if="posters" @click="listenerActionClose"></view>
 	</view>
 </template>
 
 <script>
 import zbCode from '@/components/zb-code/zb-code.vue';
+import bargainPoster from '../poster-poster/index.vue';
 import { getBargainDetail, postBargainStartUser, postBargainStart, postBargainHelp, postBargainHelpList, postBargainShare } from '../../../api/activity.js';
 import { colorChange } from '@/api/api.js';
 import { postCartAdd } from '../../../api/store.js';
@@ -282,7 +295,8 @@ export default {
 		authorize,
 		// #endif
 		home,
-		'jyf-parser': parser
+		'jyf-parser': parser,
+		bargainPoster
 	},
 	/**
 	 * 页面的初始数据
@@ -393,7 +407,10 @@ export default {
 					support: '/statics/system_images/bargain_dt2_bg_4.jpeg',
 					lock: '/statics/system_images/bargain_dt_lock_4.png'
 				}
-			]
+			],
+			bargainPosterModal: false,
+			posterImageModal: false,
+			posterImage: ''
 		};
 	},
 	computed: mapGetters(['isLogin']),
@@ -418,6 +435,11 @@ export default {
 	 */
 	onLoad(options) {
 		var that = this;
+		// #ifdef H5
+		if (this.$wechat.isWeixin()) {
+			this.weixinStatus = true;
+		}
+		// #endif
 		if (!this.colorStatus) {
 			colorChange('color_change').then((res) => {
 				this.colorShow(res.data.status);
@@ -472,6 +494,11 @@ export default {
 		});
 	},
 	methods: {
+		getPosterImgae(url) {
+			this.posterImage = url;
+			this.bargainPosterModal = false;
+			this.posterImageModal = true;
+		},
 		colorShow(colorStatus) {
 			switch (colorStatus) {
 				case 1:
@@ -545,14 +572,26 @@ export default {
 				this.posters = true;
 			}
 		},
+		shareModal() {
+			this.active = false;
+			this.posters = true;
+		},
 		getBargainUserBargainPricePoster() {
-			uni.navigateTo({
-				url: '/pages/activity/poster-poster/index?type=1&id=' + this.id + '&bargain=' + this.bargainUid
-			});
+			if (!this.posterImage) {
+				this.bargainPosterModal = true;
+				this.posters = false;
+			} else {
+				this.bargainPosterModal = false;
+				this.posterImageModal = true;
+			}
+			// uni.navigateTo({
+			// 	url: '/pages/activity/poster-poster/index?type=1&id=' + this.id + '&bargain=' + this.bargainUid
+			// });
 		},
 		// 分享关闭
 		listenerActionClose() {
 			this.posters = false;
+			this.posterImageModal = false;
 		},
 		// 小程序关闭分享弹窗；
 		goFriend() {
@@ -567,6 +606,7 @@ export default {
 		},
 		// 去商品页
 		goProduct() {
+			if (!this.bargainInfo.product_is_show) return;
 			uni.navigateTo({
 				url: `/pages/goods_details/index?id=${this.bargainInfo.product_id}`
 			});
@@ -773,11 +813,55 @@ export default {
 					});
 			}
 		},
-		closeFollowCode: function () {
+		closeFollowCode() {
 			this.$set(this, 'followCode', false);
-		}
-
+		},
 		//#endif
+		savePosterPath() {
+			let that = this;
+			uni.getSetting({
+				success(res) {
+					if (!res.authSetting['scope.writePhotosAlbum']) {
+						uni.authorize({
+							scope: 'scope.writePhotosAlbum',
+							success() {
+								uni.saveImageToPhotosAlbum({
+									filePath: that.posterImage,
+									success: function (res) {
+										that.posterImageClose();
+										that.$util.Tips({
+											title: that.$t(`保存成功`),
+											icon: 'success'
+										});
+									},
+									fail: function (res) {
+										that.$util.Tips({
+											title: that.$t(`保存失败`)
+										});
+									}
+								});
+							}
+						});
+					} else {
+						uni.saveImageToPhotosAlbum({
+							filePath: that.posterImage,
+							success: function (res) {
+								that.posterImageClose();
+								that.$util.Tips({
+									title: that.$t(`保存成功`),
+									icon: 'success'
+								});
+							},
+							fail: function (res) {
+								that.$util.Tips({
+									title: that.$t(`保存失败`)
+								});
+							}
+						});
+					}
+				}
+			});
+		}
 	},
 	/**
 	 * 生命周期函数--监听页面隐藏
@@ -1317,5 +1401,67 @@ page {
 	.mask {
 		z-index: 9999;
 	}
+}
+.main-warper {
+	position: relative;
+	/deep/ .posterCon {
+		position: static;
+	}
+}
+.posters {
+	position: fixed;
+	bottom: -5000px;
+	left: -5000px;
+}
+
+.poster-pop {
+	width: 450rpx;
+	height: 714rpx;
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 399;
+	top: 50%;
+	margin-top: -377rpx;
+	.poster-img{
+		border-radius: 6px;
+	}
+}
+
+.poster-pop image {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.poster-pop .close {
+	width: 46rpx;
+	height: 75rpx;
+	position: fixed;
+	right: 0;
+	top: -73rpx;
+	display: block;
+}
+
+.poster-pop .save-poster {
+	background-color: #df2d0a;
+	font-size: ：22rpx;
+	color: #fff;
+	text-align: center;
+	height: 76rpx;
+	line-height: 76rpx;
+	width: 100%;
+	margin-top: 20rpx;
+}
+
+.poster-pop .keep {
+	color: #fff;
+	text-align: center;
+	font-size: 25rpx;
+	margin-top: 10rpx;
+}
+.canvas {
+	width: 700rpx;
+	height: 1100rpx;
 }
 </style>

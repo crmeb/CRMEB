@@ -19,7 +19,7 @@ export function importAll(r) {
 }
 
 export function isPicUpload(file) {
-  const typeArry = ['.jpg', '.png', '.JPG', '.PNG', '.gif', '.GIF'];
+  const typeArry = ['.jpg', '.png', 'jpeg', '.JPG', '.PNG', '.JPEG', '.gif', '.GIF'];
   const type = file.name.substring(file.name.lastIndexOf('.'));
   const isImage = typeArry.indexOf(type) > -1;
   if (!isImage) {

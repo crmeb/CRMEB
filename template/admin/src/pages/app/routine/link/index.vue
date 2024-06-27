@@ -3,7 +3,7 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row class="mb20">
         <el-col :span="24">
-          <el-button type="primary" @click="add" class="mr10">创建链接</el-button>
+          <el-button type="primary" v-db-click @click="add" class="mr10">创建链接</el-button>
         </el-col>
       </el-row>
       <el-table
@@ -31,7 +31,7 @@
         <el-table-column label="生成链接" min-width="200">
           <template slot-scope="scope">
             <span>{{ scope.row.http_url }}</span>
-            <a class="ml10" @click="onCopy(scope.row.http_url)">复制</a>
+            <a class="ml10" v-db-click @click="onCopy(scope.row.http_url)">复制</a>
           </template>
         </el-table-column>
         <el-table-column label="添加时间" min-width="130">
@@ -46,9 +46,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
-            <a @click="edit(scope.row)">编辑</a>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a @click="del(scope.row, '删除链接', scope.$index)">删除</a>
+            <a v-db-click @click="del(scope.row, '删除链接', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

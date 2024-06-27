@@ -297,6 +297,17 @@ class UserRechargeServices extends BaseServices
         $UserRecharge['now_money'] = $now_money;
         $UserRecharge['time'] = date('Y-m-d H:i:s');
         event('NoticeListener', [$UserRecharge['uid'], $UserRecharge, 'recharge_refund']);
+
+        //自定义事件-后台充值退款
+        event('CustomEventListener', ['admin_recharge_refund', [
+            'uid' => $UserRecharge['uid'],
+            'refund_price' => $UserRecharge['price'],
+            'now_money' => $now_money,
+            'nickname' => $UserRecharge['price'],
+            'phone' => $UserRecharge['phone'],
+            'refund_time' => date('Y-m-d H:i:s')
+        ]]);
+
         return true;
     }
 
@@ -514,7 +525,21 @@ class UserRechargeServices extends BaseServices
 
         $order['pay_type'] = $other['pay_type'];
         // 小程序订单服务
-        event('OrderShipping', ['recharge', $order, 3, '', '']);
+        event('OrderShippingListener', ['recharge', $order, 3, '', '']);
+
+        //自定义事件-用户充值
+        event('CustomEventListener', ['user_recharge', [
+            'uid' => $order['uid'],
+            'id' => (int)$order['id'],
+            'order_id' => $orderId,
+            'nickname' => $order['nickname'],
+            'phone' => $order['phone'],
+            'price' => $order['price'],
+            'give_price' => $order['give_price'],
+            'now_money' => $order['now_money'],
+            'recharge_time' => date('Y-m-d H:i:s'),
+        ]]);
+
         return true;
     }
 

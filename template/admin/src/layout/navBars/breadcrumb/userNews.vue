@@ -2,11 +2,11 @@
   <div class="layout-navbars-breadcrumb-user-news">
     <div class="head-box">
       <div class="head-box-title">系统通知</div>
-      <div class="head-box-btn" v-if="newsList.length > 0" @click="onAllReadClick">全部已读</div>
+      <div class="head-box-btn" v-if="newsList.length > 0" v-db-click @click="onAllReadClick">全部已读</div>
     </div>
     <div class="content-box">
       <template v-if="newsList.length > 0">
-        <div class="content-box-item" v-for="(v, k) in newsList" :key="k" @click="jumpUrl(v.url)">
+        <div class="content-box-item" v-for="(v, k) in newsList" :key="k" v-db-click @click="jumpUrl(v.url)">
           <img class="icon" :src="icon(v.type)" alt="" />
           <div class="content-box-right">
             <div class="content-box-type">{{ v.type | msgType }}</div>

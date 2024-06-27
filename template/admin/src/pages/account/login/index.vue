@@ -42,11 +42,17 @@
                 placeholder="请输入验证码"
                 size="large"
               />
-              <img :src="imgcode" class="pictrue" @click="captchas" />
+              <img :src="imgcode" class="pictrue" v-db-click @click="captchas" />
             </div>
           </el-form-item> -->
           <el-form-item class="pt10">
-            <el-button type="primary" :loading="loading" size="large" @click="handleSubmit('formInline')" class="btn"
+            <el-button
+              type="primary"
+              :loading="loading"
+              size="large"
+              v-db-click
+              @click="handleSubmit('formInline')"
+              class="btn"
               >登录</el-button
             >
           </el-form-item>
@@ -105,7 +111,7 @@ export default {
       // jigsaw: null,
       login_logo: '',
       swiperList: [],
-      defaultSwiperList: require('@/assets/images/sw.jpg'),
+      defaultSwiperList: require('@/assets/images/sw.png'),
       key: '',
       copyright: '',
       version: '',
@@ -139,19 +145,9 @@ export default {
     },
     $route(n) {},
   },
-  mounted: function () {
+  mounted() {
     this.$nextTick(() => {
-      // /* eslint-disable */
       let that = this;
-      // this.jigsaw = jigsaw.init({
-      //   el: this.$refs.captcha,
-      //   onSuccess() {
-      //     that.modals = false;
-      //     that.closeModel();
-      //   },
-      //   onFail: this.closefail,
-      //   onRefresh() {},
-      // });
       if (this.screenWidth < 768) {
         document.getElementsByTagName('canvas')[0].removeAttribute('class', 'index_bg');
       } else {
@@ -289,7 +285,7 @@ export default {
             this.$notify.warning({
               title: '温馨提示',
               message:
-                '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/7219" target="_blank">点击查看开启方法</a>',
+                '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="//doc.crmeb.com/single/default/11878" target="_blank">点击查看开启方法</a>',
               dangerouslyUseHTMLString: true,
               duration: 30000,
             });
@@ -301,7 +297,7 @@ export default {
             this.$notify.warning({
               title: '温馨提示',
               message:
-                '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/crmeb_v4/7219" target="_blank">点击查看开启方法</a>',
+                '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="//doc.crmeb.com/single/default/11878" target="_blank">点击查看开启方法</a>',
               dangerouslyUseHTMLString: true,
               duration: 30000,
             });

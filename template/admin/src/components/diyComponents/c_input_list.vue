@@ -6,7 +6,7 @@
           <span>{{ item.title }}</span>
         </el-col>
         <el-col :span="19" class="slider-box">
-          <div class="input-box" @click="getLink(index)">
+          <div class="input-box" v-db-click @click="getLink(index)">
             <el-input v-model="item.val" :placeholder="item.pla" :maxlength="item.max" suffix-icon="el-icon-arrow-right" readonly />
           </div>
         </el-col>

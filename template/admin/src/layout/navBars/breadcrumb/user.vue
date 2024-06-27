@@ -1,9 +1,9 @@
 <template>
   <div class="layout-navbars-breadcrumb-user" :style="{ flex: layoutUserFlexNum }">
-    <div class="layout-navbars-breadcrumb-user-icon" @click="refresh">
+    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="refresh">
       <i class="el-icon-refresh-right" :title="$t('message.user.title7')"></i>
     </div>
-    <div class="layout-navbars-breadcrumb-user-icon" @click="onSearchClick">
+    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onSearchClick">
       <i class="el-icon-search" :title="$t('message.user.title2')"></i>
     </div>
 
@@ -16,7 +16,7 @@
         :width="300"
         popper-class="el-tooltip-pupop-user-news"
       >
-        <el-badge :is-dot="isDot" @click.stop="openNews">
+        <el-badge :is-dot="isDot" v-db-click @click.stop="openNews">
           <i class="el-icon-bell" :title="$t('message.user.title4')"></i>
         </el-badge>
         <transition name="el-zoom-in-top" slot="content">
@@ -24,7 +24,7 @@
         </transition>
       </el-tooltip>
     </div>
-    <div class="layout-navbars-breadcrumb-user-icon mr10" @click="onScreenfullClick">
+    <div class="layout-navbars-breadcrumb-user-icon mr10" v-db-click @click="onScreenfullClick">
       <i
         :title="isScreenfull ? $t('message.user.title6') : $t('message.user.title5')"
         :class="!isScreenfull ? 'el-icon-full-screen' : 'el-icon-crop'"
@@ -41,7 +41,7 @@
         <el-dropdown-item divided command="logOut">{{ $t('message.user.dropdown5') }}</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-    <div class="layout-navbars-breadcrumb-user-icon" @click="onLayoutSetingClick">
+    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onLayoutSetingClick">
       <i class="el-icon-setting" :title="$t('message.user.title3')"></i>
     </div>
     <Search ref="searchRef" />

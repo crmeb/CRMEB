@@ -9,15 +9,15 @@
           :class="{ on: label.disabled }"
           v-for="(label, j) in item.label"
           :key="j"
-          @click="selectLabel(label)"
+          v-db-click @click="selectLabel(label)"
         >
           {{ label.label_name }}
         </div>
       </div>
     </div>
     <div class="acea-row row-right mt20">
-      <el-button @click="cancel">取 消</el-button>
-      <el-button type="primary" @click="subBtn">确 定</el-button>
+      <el-button v-db-click @click="cancel">取 消</el-button>
+      <el-button type="primary" v-db-click @click="subBtn">确 定</el-button>
     </div>
   </div>
 </template>

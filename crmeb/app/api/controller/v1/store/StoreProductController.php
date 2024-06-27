@@ -57,9 +57,9 @@ class StoreProductController
             [['news', 'd'], 0, '', 'is_new'],
             [['type', 0], 0],
             ['ids', ''],
-            ['selectId', ''],
-            ['productId', ''],
-            ['coupon_category_id', '']
+            [['selectId', 'd'], 0],
+            [['productId', 'd'], 0],
+            [['coupon_category_id', 'd'], 0],
         ]);
         if ($where['selectId'] && (!$where['sid'] || !$where['cid'])) {
             if ($services->value(['id' => $where['selectId']], 'pid')) {
@@ -92,7 +92,12 @@ class StoreProductController
      */
     public function code(Request $request, $id)
     {
-        $code = $this->services->getCode((int)$id, $request->get('user_type', 'wechat'), $request->user());
+        if ($request->uid()) {
+            $user = $request->user();
+        } else {
+            $user = ['uid' => 0, 'is_promoter' => 0];
+        }
+        $code = $this->services->getCode((int)$id, $request->get('user_type', 'wechat'), $user);
         return app('json')->success(['code' => $code]);
     }
 

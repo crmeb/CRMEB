@@ -33,7 +33,7 @@
     <el-divider direction="vertical" dashed />
     <el-row>
       <el-col v-bind="grid" class="mb15">
-        <el-button type="primary" @click="add">添加等级任务</el-button>
+        <el-button type="primary" v-db-click @click="add">添加等级任务</el-button>
       </el-col>
       <el-col :span="24" class="userAlert">
         <el-alert show-icon closable>
@@ -107,8 +107,8 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="170">
         <template slot-scope="scope">
-          <a @click="edit(scope.row)">编辑 | </a>
-          <a @click="del(scope.row, '删除等级任务', index)"> 删除</a>
+          <a v-db-click @click="edit(scope.row)">编辑 | </a>
+          <a v-db-click @click="del(scope.row, '删除等级任务', index)"> 删除</a>
         </template>
       </el-table-column>
     </el-table>

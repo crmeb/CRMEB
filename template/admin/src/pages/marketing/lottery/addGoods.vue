@@ -17,7 +17,7 @@
             item.title
           }}</el-tag>
         </div>
-        <el-button type="primary" @click="addCoupon" v-if="!couponName.length">添加优惠券</el-button>
+        <el-button type="primary" v-db-click @click="addCoupon" v-if="!couponName.length">添加优惠券</el-button>
       </el-form-item>
       <el-form-item
         :label="[3, 4].includes(formValidate.type) ? '金额信息' : '积分数量'"
@@ -46,10 +46,10 @@
         <template v-if="formValidate.goods_image">
           <div class="upload-list">
             <img :src="formValidate.goods_image" />
-            <i class="el-icon-error" @click="removeGoods()" style="font-size: 16px;"></i>
+            <i class="el-icon-error" v-db-click @click="removeGoods()" style="font-size: 16px;"></i>
           </div>
         </template>
-        <div v-else class="upLoad pictrueTab acea-row row-center-wrapper" @click="changeGoods">
+        <div v-else class="upLoad pictrueTab acea-row row-center-wrapper" v-db-click @click="changeGoods">
           <i class="el-icon-picture-outline" style="font-size: 24px"></i>
         </div>
       </el-form-item>
@@ -65,11 +65,11 @@
         <template v-if="formValidate.image">
           <div class="upload-list">
             <img :src="formValidate.image" />
-            <i class="el-icon-error" @click="remove()" style="font-size: 16px;"></i>
+            <i class="el-icon-error" v-db-click @click="remove()" style="font-size: 16px;"></i>
           </div>
         </template>
         <div v-else class="upLoad pictrueTab acea-row row-center-wrapper">
-          <i class="el-icon-picture-outline" style="font-size: 24px" @click="modalPic = true"></i>
+          <i class="el-icon-picture-outline" style="font-size: 24px" v-db-click @click="modalPic = true"></i>
         </div>
         <!-- <div class="info">选择商品</div> -->
       </el-form-item>
@@ -104,7 +104,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleSubmit('formValidate')">提交</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('formValidate')">提交</el-button>
       </el-form-item>
     </el-form>
     <!-- 上传图片-->

@@ -35,14 +35,14 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <el-card :bordered="false" shadow="never">
-      <el-button v-auth="['export-userAgent']" class="export" @click="exports"
+      <el-button v-auth="['export-userAgent']" class="export" v-db-click @click="exports"
       >导出</el-button>
       <el-table
         ref="selection"
@@ -120,7 +120,7 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
-            <a @click="promoters(scope.row, 'man')">推广人</a>
+            <a v-db-click @click="promoters(scope.row, 'man')">推广人</a>
             <el-divider direction="vertical"></el-divider>
             <template>
               <el-dropdown size="small" @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
@@ -155,15 +155,15 @@
       <div class="acea-row row-around" v-loading="spinShow">
         <div class="acea-row row-column-around row-between-wrapper">
           <div class="QRpic" v-if="code_src"><img v-lazy="code_src" /></div>
-          <span class="QRpic_sp1 mt10" @click="getWeChat">公众号推广二维码</span>
+          <span class="QRpic_sp1 mt10" v-db-click @click="getWeChat">公众号推广二维码</span>
         </div>
         <div class="acea-row row-column-around row-between-wrapper">
           <div class="QRpic" v-if="code_xcx"><img v-lazy="code_xcx" /></div>
-          <span class="QRpic_sp2 mt10" @click="getXcx">小程序推广二维码</span>
+          <span class="QRpic_sp2 mt10" v-db-click @click="getXcx">小程序推广二维码</span>
         </div>
         <div class="acea-row row-column-around row-between-wrapper">
           <div class="QRpic" v-if="code_h5"><img v-lazy="code_h5" /></div>
-          <span class="QRpic_sp2 mt10" @click="getH5">H5推广二维码</span>
+          <span class="QRpic_sp2 mt10" v-db-click @click="getH5">H5推广二维码</span>
         </div>
       </div>
     </el-dialog>
@@ -171,7 +171,7 @@
     <el-dialog :visible.sync="promoterShow" title="修改推广人" width="540px" :show-close="true">
       <el-form ref="formInline" :model="formInline" label-width="100px" @submit.native.prevent>
         <el-form-item label="用户头像：" prop="image">
-          <div class="picBox" @click="customer">
+          <div class="picBox" v-db-click @click="customer">
             <div class="pictrue" v-if="formInline.image">
               <img v-lazy="formInline.image" />
             </div>
@@ -182,8 +182,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="cancel('formInline')">取 消</el-button>
-        <el-button type="primary" @click="putSend('formInline')">提交</el-button>
+        <el-button v-db-click @click="cancel('formInline')">取 消</el-button>
+        <el-button type="primary" v-db-click @click="putSend('formInline')">提交</el-button>
       </span>
     </el-dialog>
     <el-dialog :visible.sync="customerShow" title="请选择商城用户" :show-close="true" width="1000px">
