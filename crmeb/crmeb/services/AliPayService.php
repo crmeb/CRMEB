@@ -123,11 +123,11 @@ class AliPayService
      * @param string $totalAmount 支付金额
      * @param string $passbackParams 备注
      * @param string $quitUrl 同步跳转地址
-     * @param string $siteUrl
+     * @param string $returnUrl
      * @param bool $isCode
      * @return AlipayTradeWapPayResponse
      */
-    public function create(string $title, string $orderId, string $totalAmount, string $passbackParams, string $quitUrl = '', string $siteUrl = '', bool $isCode = false)
+    public function create(string $title, string $orderId, string $totalAmount, string $passbackParams, string $quitUrl = '', string $returnUrl = '', bool $isCode = false)
     {
         $title = trim($title);
         try {
@@ -139,7 +139,7 @@ class AliPayService
                 $result = Factory::payment()->app()->optional('passback_params', $passbackParams)->pay($title, $orderId, $totalAmount);
             } else {
                 //h5支付
-                $result = Factory::payment()->wap()->optional('passback_params', $passbackParams)->pay($title, $orderId, $totalAmount, $quitUrl, $siteUrl);
+                $result = Factory::payment()->wap()->optional('passback_params', $passbackParams)->pay($title, $orderId, $totalAmount, $quitUrl, $returnUrl);
             }
             if ($this->response->success($result)) {
                 return $result->body ?? $result;

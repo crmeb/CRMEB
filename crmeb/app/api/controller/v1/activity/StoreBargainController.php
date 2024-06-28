@@ -118,7 +118,7 @@ class StoreBargainController
             ['bargainId', 0],
             ['bargainUserUid', 0]
         ], true);
-        return app('json')->success($this->services->setHelpBargain($request->uid(), $bargainId, $bargainUserUid));
+        return app('json')->success($this->services->setHelpBargain($request->uid(), (int)$bargainId, (int)$bargainUserUid));
     }
 
     /**
@@ -139,7 +139,7 @@ class StoreBargainController
         /** @var StoreBargainUserHelpServices $bargainUserHelp */
         $bargainUserHelp = app()->make(StoreBargainUserHelpServices::class);
         [$page, $limit] = $this->services->getPageValue();
-        $storeBargainUserHelp = $bargainUserHelp->getHelpList($bargainUserTableId, $page, $limit);
+        $storeBargainUserHelp = $bargainUserHelp->getHelpList((int)$bargainUserTableId, $page, $limit);
         return app('json')->success($storeBargainUserHelp);
     }
 

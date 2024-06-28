@@ -55,7 +55,7 @@ class StoreProductController
             ['priceOrder', ''],
             ['salesOrder', ''],
             [['news', 'd'], 0, '', 'is_new'],
-            [['type', 0], 0],
+            [['type', 'd'], 0],
             ['ids', ''],
             [['selectId', 'd'], 0],
             [['productId', 'd'], 0],

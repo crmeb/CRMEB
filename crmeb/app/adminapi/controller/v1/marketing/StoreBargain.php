@@ -183,7 +183,7 @@ class StoreBargain extends AuthController
     {
         /** @var StoreBargainUserHelpServices $bargainUserHelpService */
         $bargainUserHelpService = app()->make(StoreBargainUserHelpServices::class);
-        $list = $bargainUserHelpService->getHelpList($id);
+        $list = $bargainUserHelpService->getHelpList((int)$id);
         return app('json')->success(compact('list'));
     }
 
