@@ -13,16 +13,17 @@
 						</label>
 					</radio-group>
 				</view>
-				<!-- <view class="acea-row row-middle">
+				<view class="acea-row row-middle" v-if="basicConfigData.special_invoice_status === '1' && header_type === '2'">
 					<view>{{$t(`发票类型`)}}</view>
-					<input name="type" :value="type === '2' && header_type === '2' ? $t(`增值税电子专用发票`) : $t(`增值税电子普通发票`)"
-						disabled @click="callType" />
-					<text class="iconfont icon-xiangyou"></text>
-				</view> -->
+					<text class="w-fill" @click="callType">
+						<text>{{ type === '2' ? $t(`增值税电子专用发票`) : $t(`增值税电子普通发票`) }} </text>
+						<text class="iconfont icon-xiangyou"></text>
+					</text>
+
+				</view>
 				<view class="acea-row row-middle">
 					<view>{{$t(`发票抬头`)}}</view>
-					<input name="name" :value="name"
-						:placeholder="header_type === '1' ? $t(`需要开具发票的姓名`) : $t(`需要开具发票的企业名称`)" />
+					<input name="name" :value="name" :placeholder="header_type === '1' ? $t(`需要开具发票的姓名`) : $t(`需要开具发票的企业名称`)" />
 				</view>
 				<view v-show="header_type === '2'" class="acea-row row-middle">
 					<view>{{$t(`税号`)}}</view>
@@ -131,7 +132,8 @@
 				urlQuery: '',
 				from: '',
 				specialInvoice: true,
-				order_id: ''
+				order_id: '',
+				basicConfigData: uni.getStorageSync('BASIC_CONFIG') || ''
 			};
 		},
 		computed: {
@@ -143,7 +145,6 @@
 					default:
 						return '/pages/users/user_invoice_list/index?from=invoice_form';
 						break;
-
 				}
 			}
 		},
@@ -151,6 +152,7 @@
 			this.from = ''
 		},
 		onLoad(options) {
+
 			if (options.id) uni.setNavigationBarTitle({
 				title: '编辑发票'
 			})
@@ -455,7 +457,7 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 	/deep/.disabled .uni-radio-input {
 		background-color: #F8F8F8;
 	}
@@ -496,6 +498,11 @@
 		padding-right: 30rpx;
 		padding-left: 30rpx;
 		background-color: #FFFFFF;
+
+		.w-fill {
+			margin-left: auto;
+			font-size: 26rpx;
+		}
 	}
 
 	.panel~.panel {
@@ -516,7 +523,7 @@
 	}
 
 	.icon-xiangyou {
-		margin-left: 25rpx;
+		margin-left: 5rpx;
 		font-size: 26rpx;
 		color: #BFBFBF;
 		margin-top: 2rpx;

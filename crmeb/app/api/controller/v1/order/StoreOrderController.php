@@ -267,7 +267,7 @@ class StoreOrderController
             //创建订单jspay支付
             /** @var StoreOrderSuccessServices $success */
             $success = app()->make(StoreOrderSuccessServices::class);
-            $payPriceStatus = $success->zeroYuanPayment($orderInfo, $uid, $paytype);
+            $payPriceStatus = $success->zeroYuanPayment($orderInfo, $uid);
             if ($payPriceStatus)//0元支付成功
                 return app('json')->status('success', '支付成功', ['order_id' => $orderInfo['order_id'], 'key' => $orderInfo['unique']]);
             else

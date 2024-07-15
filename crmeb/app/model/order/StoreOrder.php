@@ -634,4 +634,9 @@ class StoreOrder extends BaseModel
     {
         $query->where('agent_brokerage', '>', $value);
     }
+
+    public function searchVirtualTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('virtual_type', $value);
+    }
 }

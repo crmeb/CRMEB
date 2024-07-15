@@ -136,20 +136,28 @@ class StoreCombinationServices extends BaseServices
         $countAll = $storePinkServices->getPinkCount([]);
         $countTeam = $storePinkServices->getPinkCount(['k_id' => 0, 'status' => 2]);
         $countPeople = $storePinkServices->getPinkCount(['k_id' => 0]);
+        $stopIds = [];
         foreach ($list as &$item) {
             $item['count_people'] = $countPeople[$item['id']] ?? 0;//拼团数量
             $item['count_people_all'] = $countAll[$item['id']] ?? 0;//参与人数
             $item['count_people_pink'] = $countTeam[$item['id']] ?? 0;//成团数量
             $item['stop_status'] = $item['stop_time'] < time() ? 1 : 0;
             if ($item['is_show']) {
-                if ($item['start_time'] > time())
+                if ($item['start_time'] > time()) {
                     $item['start_name'] = '未开始';
-                else if ($item['stop_time'] < time())
+                } else if ($item['stop_time'] < time()) {
                     $item['start_name'] = '已结束';
-                else if ($item['stop_time'] > time() && $item['start_time'] < time()) {
+                    $item['is_show'] = 0;
+                    $stopIds[] = $item['id'];
+                } else if ($item['stop_time'] > time() && $item['start_time'] < time()) {
                     $item['start_name'] = '进行中';
                 }
-            } else $item['start_name'] = '已结束';
+            } else {
+                $item['start_name'] = '已结束';
+            }
+        }
+        if ($stopIds) {
+            $this->dao->batchUpdate($stopIds, ['is_show' => 0]);
         }
         return compact('list', 'count');
     }

@@ -101,6 +101,11 @@
             <div>{{ scope.row.extract_fee }}</div>
           </template>
         </el-table-column>
+        <el-table-column label="到账金额" min-width="100">
+          <template slot-scope="scope">
+            <div class="f-price">{{ scope.row.receive_price }}</div>
+          </template>
+        </el-table-column>
         <el-table-column label="提现方式" min-width="130">
           <template slot-scope="scope">
             <div class="type" v-if="scope.row.extract_type === 'bank'">
@@ -436,4 +441,11 @@ export default {
     img
         width 100%
         height 100%
+.z-price {
+  color: red;
+}
+
+.f-price {
+  color: green;
+}
 </style>

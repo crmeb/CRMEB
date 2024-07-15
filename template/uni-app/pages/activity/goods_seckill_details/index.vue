@@ -605,11 +605,6 @@
 					setTimeout(() => {
 						that.infoScroll();
 					}, 500);
-
-					app.globalData.openPages = '/pages/activity/goods_seckill_details/index?id=' + that.id +
-						'&spid=' + that.storeInfo.uid;
-					// wxParse.wxParse('description', 'html', that.data.storeInfo.description || '', that, 0);
-					// wxh.time(that.data.time, that);
 				}).catch(err => {
 					that.$util.Tips({
 						title: err
@@ -1141,7 +1136,7 @@
 		onShareAppMessage() {
 			return {
 				title: this.storeInfo.title,
-				path: app.globalData.openPages,
+				path: '/pages/activity/goods_seckill_details/index?id=' + this.id + '&spid=' + this.$store.state.app.uid,
 				imageUrl: this.storeInfo.image
 			};
 		}

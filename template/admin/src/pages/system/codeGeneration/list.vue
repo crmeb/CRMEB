@@ -618,7 +618,7 @@ export default {
   .save {
     position: absolute;
     left: 50%;
-    bottom: -30px;
+    bottom: -10px;
     z-index: 99;
   }
 }

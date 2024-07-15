@@ -96,6 +96,6 @@ class StoreCategory extends BaseModel
      */
     public function searchIdAttr($query, $value, $data)
     {
-        if ($value) $query->whereIn('id', $value);
+        if ($value) $query->whereIn('id', is_array($value) ? $value : (string)$value);
     }
 }

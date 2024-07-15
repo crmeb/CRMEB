@@ -100,20 +100,28 @@ class StoreBargainServices extends BaseServices
         /** @var StoreBargainUserHelpServices $storeBargainUserHelpServices */
         $storeBargainUserHelpServices = app()->make(StoreBargainUserHelpServices::class);
         $countHelpAll = $storeBargainUserHelpServices->getHelpAllCount([['bargain_id', 'in', $ids]]);
+        $stopIds = [];
         foreach ($list as &$item) {
             $item['count_people_all'] = $countAll[$item['id']] ?? 0;//参与人数
             $item['count_people_help'] = $countHelpAll[$item['id']] ?? 0;//帮忙砍价人数
             $item['count_people_success'] = $countSuccess[$item['id']] ?? 0;//砍价成功人数
             $item['stop_status'] = $item['stop_time'] < time() ? 1 : 0;
             if ($item['status']) {
-                if ($item['start_time'] > time())
+                if ($item['start_time'] > time()) {
                     $item['start_name'] = '未开始';
-                else if ($item['stop_time'] < time())
+                } else if ($item['stop_time'] < time()) {
                     $item['start_name'] = '已结束';
-                else if ($item['stop_time'] > time() && $item['start_time'] < time()) {
+                    $item['status'] = 0;
+                    $stopIds[] = $item['id'];
+                } else if ($item['stop_time'] > time() && $item['start_time'] < time()) {
                     $item['start_name'] = '进行中';
                 }
-            } else $item['start_name'] = '已结束';
+            } else {
+                $item['start_name'] = '已结束';
+            }
+        }
+        if ($stopIds) {
+            $this->dao->batchUpdate($stopIds, ['status' => 0]);
         }
         return compact('list', 'count');
     }

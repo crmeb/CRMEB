@@ -178,7 +178,6 @@
 						title: this.$t(`微信支付`),
 						payStatus: true
 					},
-					// #ifdef H5 ||APP-PLUS
 					{
 						name: this.$t(`支付宝支付`),
 						icon: 'icon-zhifubao',
@@ -186,7 +185,6 @@
 						title: this.$t(`支付宝支付`),
 						payStatus: true
 					},
-					// #endif
 					{
 						name: this.$t(`余额支付`),
 						icon: 'icon-qiandai',

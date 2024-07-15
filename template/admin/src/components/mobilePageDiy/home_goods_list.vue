@@ -225,7 +225,7 @@ export default {
   name: 'home_goods_list',
   cname: '商品列表',
   configName: 'c_home_goods_list',
-  icon: 'iconcuxiaoliebiao1',
+  icon: 'iconshangpinliebiao1',
   type: 0, // 0 基础组件 1 营销组件 2工具组件
   defaultName: 'goodList', // 外面匹配名称
   props: {

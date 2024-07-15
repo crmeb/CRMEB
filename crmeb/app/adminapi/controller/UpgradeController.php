@@ -734,8 +734,8 @@ class UpgradeController
      */
     public function upData()
     {
-        $data['new_version'] = 'CRMEB-BZ-BETA v5.4.0';
-        $data['new_code'] = '540';
+        $data['new_version'] = 'CRMEB-BZ v5.4.0';
+        $data['new_code'] = '540.1';
         $data['update_sql'] = [
             [
                 'code' => '540',

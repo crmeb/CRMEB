@@ -1,6 +1,6 @@
 <template>
   <div v-if="FromData">
-    <el-dialog :visible.sync="modals" :title="FromData.title" :z-index="1" width="720px" @closed="cancel">
+    <el-dialog :visible.sync="modals" :title="FromData.title" width="720px" @closed="cancel">
       <template>
         <div class="radio acea-row row-middle" v-if="FromData.action === '/marketing/coupon/save.html'">
           <div class="name ivu-form-item-content">优惠券类型</div>

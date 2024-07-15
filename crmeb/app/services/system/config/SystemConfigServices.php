@@ -782,6 +782,27 @@ class SystemConfigServices extends BaseServices
                             }
                             $i++;
                         }
+                    } else {
+                        $sonData = $this->dao->getColumn(['level' => 1, 'link_id' => $data['id']], 'menu_name,link_value');
+                        if ($sonData) {
+                            $sonValue = [];
+                            foreach ($sonData as $sv) {
+                                $sonValue[$sv['link_value']][] = $sv['menu_name'];
+                            }
+                            $i = 0;
+                            foreach ($sonValue as $pk => $pv) {
+                                $label = $data['menu_name'];
+                                if ($i == 1) $label = $data['menu_name'] . '@';
+                                if ($i == 2) $label = $data['menu_name'] . '#';
+                                if (!isset($relateRule[$label])) {
+                                    $relateRule[$label]['show_value'] = (int)$pk;
+                                }
+                                foreach ($pv as $pvv) {
+                                    $relateRule[$label]['son_type'][$pvv] = '';
+                                }
+                                $i++;
+                            }
+                        }
                     }
                     if (isset($relateRule[$key])) {
                         $role = $relateRule[$key];

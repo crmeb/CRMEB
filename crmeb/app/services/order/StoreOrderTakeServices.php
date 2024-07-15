@@ -572,7 +572,7 @@ class StoreOrderTakeServices extends BaseServices
         //自定义事件-佣金到账
         event('CustomEventListener', ['order_brokerage', [
             'uid' => $spread_uid,
-            'order_id' => $orderInfo['order_id'],
+            'order_id' => $orderInfo['order_id'] ?? '',
             'phone' => $spreadPhone,
             'brokeragePrice' => $brokeragePrice,
             'goodsName' => $goodsName,

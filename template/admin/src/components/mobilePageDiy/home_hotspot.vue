@@ -37,7 +37,7 @@ export default {
   name: 'home_hotspot',
   cname: '热区',
   configName: 'c_hotspot',
-  icon: 'icontupianguanggao1',
+  icon: 'iconrequ1',
   type: 0, // 0 基础组件 1 营销组件 2工具组件
   defaultName: 'hotspot', // 外面匹配名称
   props: {

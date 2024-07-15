@@ -122,7 +122,6 @@
               :inactive-value="0"
               v-model="scope.row.status"
               :value="scope.row.status"
-              :disabled="scope.row.stop_status ? true : false"
               @change="onchangeIsShow(scope.row)"
               size="large"
             >
@@ -377,6 +376,7 @@ export default {
         })
         .catch((res) => {
           this.$message.error(res.msg);
+          row.status = !row.status
         });
     },
   },

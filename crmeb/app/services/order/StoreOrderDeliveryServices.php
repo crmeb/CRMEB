@@ -626,7 +626,7 @@ class StoreOrderDeliveryServices extends BaseServices
             }
             $orderInfo->delivery_id = $data['delivery_id'];
         }
-        if ($data['express_record_type'] != 3) {
+        if (true) {
             $data['status'] = 1;
             $orderInfo->delivery_type = $data['delivery_type'];
             $orderInfo->delivery_name = $data['delivery_name'];

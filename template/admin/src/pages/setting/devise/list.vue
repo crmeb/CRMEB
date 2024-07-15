@@ -10,7 +10,7 @@
       </div>
     </div>
     <el-card class="h100" :bordered="false" shadow="never" v-if="cardShow == 0">
-      <div class="acea-row">
+      <div class="acea-row no-warp">
         <div class="iframe-col">
           <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
           <div class="mask"></div>
@@ -447,6 +447,9 @@ export default {
   background-color: #fff;
   padding-bottom: 50px;
 }
+.no-warp{
+  flex-wrap: nowrap !important;
+}
 ::v-deep .el-card__body{
   padding: 40px;
 }
@@ -456,6 +459,7 @@ export default {
 
 .iframe-col {
   width: 375px;
+  min-width: 375px;
   height: 650px;
   margin-right: 30px;
   position: relative;

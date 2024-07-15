@@ -2,8 +2,8 @@
     "name" : "CRMEB标准版",
     "appid" : "__UNI__A3F1ED4",
     "description" : "CRMEB标准版",
-    "versionName" : "5.3.0",
-    "versionCode" : 530,
+    "versionName" : "5.4.0",
+    "versionCode" : 540,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {

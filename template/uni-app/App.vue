@@ -258,18 +258,18 @@ export default {
 			uni.setStorageSync('copyRight', res.data);
 		});
 		// #ifdef MP
-		getSystemVersion().then((res) => {
-			if (res.data.version_code != SYSTEM_VERSION) {
-				uni.showModal({
-					title: '警告',
-					content: '前后端版本不一致！',
-					success: function (res) {
-						if (res.confirm) {
-						}
-					}
-				});
-			}
-		});
+		// getSystemVersion().then((res) => {
+		// 	if (res.data.version_code != SYSTEM_VERSION) {
+		// 		uni.showModal({
+		// 			title: '警告',
+		// 			content: '前后端版本不一致！',
+		// 			success: function (res) {
+		// 				if (res.confirm) {
+		// 				}
+		// 			}
+		// 		});
+		// 	}
+		// });
 		// #endif
 	},
 	// #ifdef H5

@@ -218,7 +218,7 @@ class ExportServices extends BaseServices
         $export = $fileKey = [];
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
-        $data = $orderServices->getOrderList(['status' => 1, 'shipping_type' => 1])['data'];
+        $data = $orderServices->getOrderList(['status' => 1, 'shipping_type' => 1, 'virtual_type' => 0])['data'];
         if (!empty($data)) {
             $i = 0;
             foreach ($data as $item) {

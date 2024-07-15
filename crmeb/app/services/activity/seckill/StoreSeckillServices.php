@@ -206,20 +206,26 @@ class StoreSeckillServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, $page, $limit);
         $count = $this->dao->count($where + ['is_del' => 0]);
+        $stopIds = [];
         foreach ($list as &$item) {
             $item['store_name'] = $item['title'];
             if ($item['status']) {
-                if ($item['start_time'] > time())
+                if ($item['start_time'] > time()) {
                     $item['start_name'] = '未开始';
-                else if (bcadd($item['stop_time'], '86400') < time())
+                } else if (bcadd($item['stop_time'], '86400') < time()) {
                     $item['start_name'] = '已结束';
-                else if (bcadd($item['stop_time'], '86400') > time() && $item['start_time'] < time()) {
+                    $item['status'] = 0;
+                    $stopIds[] = $item['id'];
+                } else if (bcadd($item['stop_time'], '86400') > time() && $item['start_time'] < time()) {
                     $item['start_name'] = '进行中';
                 }
             } else $item['start_name'] = '已结束';
             $end_time = $item['stop_time'] ? date('Y/m/d', (int)$item['stop_time']) : '';
             $item['_stop_time'] = $end_time;
             $item['stop_status'] = $item['stop_time'] + 86400 < time() ? 1 : 0;
+        }
+        if ($stopIds) {
+            $this->dao->batchUpdate($stopIds, ['status' => 0]);
         }
         return compact('list', 'count');
     }

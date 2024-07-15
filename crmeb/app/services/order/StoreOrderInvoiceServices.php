@@ -271,7 +271,7 @@ class StoreOrderInvoiceServices extends BaseServices
             $data['tax_id'] = '';
             $data['is_enterprise'] = 0;
         } else {
-            $data['invoice_type'] = 81;
+            $data['invoice_type'] = $info['type'] == 1 ? 82 : 81;
             $data['tax_id'] = $info['duty_number'];
             $data['is_enterprise'] = 1;
         }

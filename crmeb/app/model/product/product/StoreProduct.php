@@ -311,7 +311,7 @@ class StoreProduct extends BaseModel
                 $query->where(['is_show' => 0, 'is_del' => 0]);
                 break;
             case 3:
-                $query->where(['is_del' => 0]);
+                $query->where(['is_del' => 0, 'vip_product' => 0]);
                 break;
             case 4:
                 $query->where(['is_del' => 0])->where(function ($query) {

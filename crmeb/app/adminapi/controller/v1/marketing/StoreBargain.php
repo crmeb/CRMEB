@@ -153,7 +153,14 @@ class StoreBargain extends AuthController
     {
         /** @var StoreBargainUserServices $bargainUserService */
         $bargainUserService = app()->make(StoreBargainUserServices::class);
-        $bargainUserService->userBargainStatusFail($id, false);
+        if ($status == 0) {
+            $bargainUserService->userBargainStatusFail($id, false);
+        } else {
+            $info = $this->services->get($id);
+            if ($info['stop_time'] < time()) {
+                return app('json')->fail('活动已结束，无法继续上架');
+            }
+        }
         $this->services->update($id, ['status' => $status]);
         return app('json')->success(100001);
     }

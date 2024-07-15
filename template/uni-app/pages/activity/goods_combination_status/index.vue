@@ -235,7 +235,6 @@
 				handler: function(newV, oldV) {
 					if (newV) {
 						this.userInfo = newV;
-						app.globalData.openPages = '/pages/activity/goods_combination_status/index?id=' + this.pinkId;
 					}
 				},
 				deep: true
@@ -269,7 +268,7 @@
 			let that = this;
 			return {
 				title: that.$t(`您的好友`) + that.userInfo.nickname + this.$t(`邀请您参团`) + that.storeCombination.title,
-				path: app.globalData.openPages,
+				path: '/pages/activity/goods_combination_status/index?id=' + that.pinkId,
 				imageUrl: that.storeCombination.image
 			};
 		},
@@ -319,7 +318,6 @@
 			// 授权后回调
 			onLoadFun: function(e) {
 				this.userInfo = e;
-				app.globalData.openPages = '/pages/activity/goods_combination_status/index?id=' + this.pinkId;
 				this.getCombinationPink();
 			},
 			/**

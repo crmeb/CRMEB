@@ -120,6 +120,12 @@ class StoreSeckill extends AuthController
      */
     public function set_status($id, $status)
     {
+        if ($status == 1) {
+            $info = $this->services->get($id);
+            if ($info['stop_time'] < time()) {
+                return app('json')->fail('活动已结束，无法继续上架');
+            }
+        }
         $this->services->update($id, ['status' => $status]);
         return app('json')->success(100014);
     }

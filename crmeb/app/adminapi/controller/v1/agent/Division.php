@@ -141,11 +141,13 @@ class Division extends AuthController
         if ((int)$data['uid'] == 0) $data['uid'] = $data['image']['uid'];
         $userInfo = $userServices->getUserInfo($data['uid'], 'is_division,is_agent,is_staff');
         if (!$userInfo) throw new AdminException(100100);
-        if ($userInfo['is_division']) throw new AdminException('此用户是事业部，请勿添加为代理商');
-        if ($userInfo['is_agent']) throw new AdminException('此用户是代理商，无法重复添加');
-        if ($userInfo['is_staff']) throw new AdminException('此用户是下级员工，无法添加为代理商');
-        $divisionUserInfo = $userServices->count(['uid' => (int)$data['division_id'], 'is_division' => 1, 'division_id' => $data['division_id']]);
-        if (!$divisionUserInfo) throw new AdminException(100100);
+        if ($data['edit'] == 0) {
+            if ($userInfo['is_division']) throw new AdminException('此用户是事业部，请勿添加为代理商');
+            if ($userInfo['is_agent']) throw new AdminException('此用户是代理商，无法重复添加');
+            if ($userInfo['is_staff']) throw new AdminException('此用户是下级员工，无法添加为代理商');
+            $divisionUserInfo = $userServices->count(['uid' => (int)$data['division_id'], 'is_division' => 1, 'division_id' => $data['division_id']]);
+            if (!$divisionUserInfo) throw new AdminException(100100);
+        }
         $this->services->divisionAgentSave($data);
         return app('json')->success(100000);
     }

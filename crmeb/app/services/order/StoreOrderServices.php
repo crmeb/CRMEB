@@ -796,6 +796,15 @@ HTML;
             if ($order['two_brokerage'] > 0) {
                 $data['two_brokerage'] = bcmul((string)$order['two_brokerage'], $percent, 2);
             }
+            if ($order['staff_brokerage'] > 0) {
+                $data['staff_brokerage'] = bcmul((string)$order['staff_brokerage'], $percent, 2);
+            }
+            if ($order['agent_brokerage'] > 0) {
+                $data['agent_brokerage'] = bcmul((string)$order['agent_brokerage'], $percent, 2);
+            }
+            if ($order['division_brokerage'] > 0) {
+                $data['division_brokerage'] = bcmul((string)$order['division_brokerage'], $percent, 2);
+            }
         }
         /** @var StoreOrderStatusServices $services */
         $services = app()->make(StoreOrderStatusServices::class);
@@ -2582,7 +2591,7 @@ HTML;
         }
         // 判断是否开启小程序订单管理
         $orderData['order_shipping_open'] = false;
-        if (sys_config('order_shipping_open', 0) && $order['is_channel'] == 1 && $order['pay_type'] == 'weixin' && MiniOrderService::isManaged()) {
+        if (sys_config('order_shipping_open', 0) && $order['pay_price'] > 0 && $order['is_channel'] == 1 && $order['pay_type'] == 'weixin' && MiniOrderService::isManaged()) {
             // 判断是否存在子未收货子订单
             if ($order['pid'] > 0) {
                 if ($this->checkSubOrderNotTake((int)$order['pid'], (int)$order['id'])) {

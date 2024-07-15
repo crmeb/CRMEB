@@ -1136,7 +1136,7 @@ export default {
 		confirmOrder(orderId) {
 			let that = this;
 			// #ifdef MP
-			if (wx.openBusinessView && this.orderInfo.order_shipping_open && this.orderInfo.trade_no) {
+			if (wx.openBusinessView && this.orderInfo.order_shipping_open && this.orderInfo.trade_no && this.orderInfo.uid == this.orderInfo.pay_uid) {
 				uni.showLoading({
 					title: this.$t(`加载中`)
 				});

@@ -123,7 +123,6 @@
               :inactive-value="0"
               v-model="scope.row.is_show"
               :value="scope.row.is_show"
-              :disabled="scope.row.stop_status ? true : false"
               @change="onchangeIsShow(scope.row)"
               size="large"
               active-text="上架"
@@ -310,6 +309,7 @@ export default {
         })
         .catch((res) => {
           this.$message.error(res.msg);
+          row.is_show = !row.is_show
         });
     },
   },
