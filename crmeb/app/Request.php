@@ -34,7 +34,7 @@ class Request extends \think\Request
      * @var array
      */
     protected $except = ['menu_path', 'api_url', 'unique_auth',
-                         'description', 'custom_form', 'content', 'tableField', 'url', 'customCode'];
+        'description', 'custom_form', 'content', 'tableField', 'url', 'customCode', 'value', 'refund_reason_wap_img'];
 
     /**
      * 获取请求的数据
@@ -83,8 +83,8 @@ class Request extends \think\Request
         $result = [];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                // 如果值是数组，递归调用 filterArrayValues
-                $result[$key] = $this->filterArrayValues($value);
+                // 如果值是数组，并且不在不过滤变量名里面，递归调用 filterArrayValues，否则直接赋值
+                $result[$key] = in_array($key, $this->except) ? $value : $this->filterArrayValues($value);
             } else {
                 if (in_array($key, $this->except) || is_int($value) || is_null($value)) {
                     $result[$key] = $value;

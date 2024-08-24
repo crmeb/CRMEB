@@ -475,6 +475,9 @@ class SystemConfigServices extends BaseServices
     public function createTextareaForm(array $data)
     {
         $data['value'] = json_decode($data['value'], true) ?: '';
+        if ($data['menu_name'] == 'param_filter_data') {
+            $data['value'] = base64_decode($data['value']);
+        }
         $formbuider[] = $this->builder->textarea($data['menu_name'], $data['info'], $data['value'])->placeholder($data['desc'])->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',

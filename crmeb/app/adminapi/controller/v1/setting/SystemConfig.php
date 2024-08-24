@@ -376,6 +376,9 @@ class SystemConfig extends AuthController
         if (isset($post['refund_time_available'])) {
             if (!ctype_digit($post['refund_time_available'])) return app('json')->fail('售后期限必须为大于0的整数');
         }
+        if (isset($post['param_filter_data'])) {
+            $post['param_filter_data'] = base64_encode($post['param_filter_data']);
+        }
         if (isset($post['sms_save_type']) && sys_config('sms_account', '') != '') return app('json')->success(100001);
         foreach ($post as $k => $v) {
             $config_one = $this->services->getOne(['menu_name' => $k]);
