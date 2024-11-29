@@ -42,7 +42,8 @@ class StoreCombination extends AuthController
         $where = $this->request->getMore([
             ['start_status', ''],
             ['is_show', ''],
-            ['store_name', '']
+            ['store_name', ''],
+            ['product_id', 0]
         ]);
         $where['is_del'] = 0;
         $list = $this->services->systemPage($where);

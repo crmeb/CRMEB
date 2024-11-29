@@ -75,15 +75,15 @@ class SystemCrud extends AuthController
      */
     public function crudVerifyPath($data)
     {
-        if (strpos($data['controller'], 'app/adminapi/controller/crud/') !== 0) return false;
-        if (strpos($data['validate'], 'app/adminapi/validate/crud/') !== 0) return false;
-        if (strpos($data['service'], 'app/services/crud/') !== 0) return false;
-        if (strpos($data['dao'], 'app/dao/crud/') !== 0) return false;
-        if (strpos($data['model'], 'app/model/crud/') !== 0) return false;
-        if (strpos($data['route'], 'app/adminapi/route/crud/') !== 0) return false;
-        if (strpos($data['router'], 'router/modules/crud/') !== 0) return false;
-        if (strpos($data['api'], 'api/crud/') !== 0) return false;
-        if (strpos($data['pages'], 'pages/crud/') !== 0) return false;
+        if (strpos($data['controller'], 'app' . DS . 'adminapi' . DS . 'controller' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['validate'], 'app' . DS . 'adminapi' . DS . 'validate' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['service'], 'app' . DS . 'services' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['dao'], 'app' . DS . 'dao' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['model'], 'app' . DS . 'model' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['route'], 'app' . DS . 'adminapi' . DS . 'route' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['router'], 'router' . DS . 'modules' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['api'], 'api' . DS . 'crud' . DS) !== 0) return false;
+        if (strpos($data['pages'], 'pages' . DS . 'crud' . DS) !== 0) return false;
         return true;
     }
 

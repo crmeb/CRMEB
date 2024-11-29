@@ -26,6 +26,7 @@ use app\services\shipping\SystemCityServices;
 use app\services\system\AppVersionServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\config\SystemConfigServices;
+use app\services\system\config\SystemStorageServices;
 use app\services\system\lang\LangCodeServices;
 use app\services\system\lang\LangCountryServices;
 use app\services\system\lang\LangTypeServices;
@@ -310,6 +311,19 @@ class PublicController
             ['image', ''],
             ['code', ''],
         ], true);
+        /** @var SystemStorageServices $systemStorageServices */
+        $systemStorageServices = app()->make(SystemStorageServices::class);
+        $domainArr = $systemStorageServices->getColumn([], 'domain');
+        $domainArr = array_merge($domainArr, [$request->host()]);
+        $domainArr = array_unique(array_diff($domainArr, ['']));
+        if (count($domainArr)) {
+            $domainArr = array_map(function ($item) {
+                return str_replace(['https://', 'http://'], '', $item);
+            }, $domainArr);
+        }
+        if ($domainArr && (($imageUrl && !in_array($imageUrl, $domainArr)) || ($codeUrl && !in_array($codeUrl, $domainArr)))) {
+            return app('json')->success(['code' => false, 'image' => false]);
+        }
         if ($imageUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $imageUrl) && strpos(strtolower($imageUrl), "phar://") !== false) {
             return app('json')->success(['code' => false, 'image' => false]);
         }

@@ -384,11 +384,9 @@ class StoreOrderInvoiceServices extends BaseServices
             throw new AdminException('发票状态有误，请检查');
         }
         $invoice = app()->make(ServeServices::class)->invoice();
-        $redInfo = $invoice->applyRedInvoice(['invoice_num' => $invoiceInfo['invoice_num'], 'apply_type' => '01']);
-        if ($redInfo['status'] != 200) throw new AdminException('申请红字发票失败，请检查');
-        $res = $invoice->redInvoiceIssuance(['invoice_num' => $invoiceInfo['invoice_num'], 'red_number' => $redInfo['data']['red_number']]);
+        $res = $invoice->redInvoiceIssuance(['invoice_num' => $invoiceInfo['invoice_num'], 'apply_type' => '01']);
         if ($res['status'] != 200) throw new AdminException('开具负数发票失败，请检查');
-        $this->dao->update($id, ['red_invoice_num' => $redInfo['data']['red_number']]);
+        $this->dao->update($id, ['red_invoice_num' => 1]);
         return true;
     }
 }

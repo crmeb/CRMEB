@@ -124,9 +124,9 @@ class StoreOrderWriteOffServices extends BaseServices
             }
         }
         if ($orderInfo->save()) {
-            /** @var StoreOrderTakeServices $storeOrdeTask */
-            $storeOrdeTask = app()->make(StoreOrderTakeServices::class);
-            $re = $storeOrdeTask->storeProductOrderUserTakeDelivery($orderInfo);
+            /** @var StoreOrderTakeServices $storeOrderTask */
+            $storeOrderTask = app()->make(StoreOrderTakeServices::class);
+            $re = $storeOrderTask->storeProductOrderUserTakeDelivery($orderInfo);
             if (!$re) {
                 throw new ApiException(410272);
             }

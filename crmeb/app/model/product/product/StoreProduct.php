@@ -356,4 +356,14 @@ class StoreProduct extends BaseModel
     {
         if ($value != '') $query->whereNotIn('id', $value);
     }
+
+    public function searchCustomFormAttr($query, $value)
+    {
+        if ($value !== '') $query->whereLike('custom_form', '%' . $value . '%');
+    }
+
+    public function searchVirtualTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('virtual_type', $value);
+    }
 }

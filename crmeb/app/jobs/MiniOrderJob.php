@@ -19,6 +19,7 @@ class MiniOrderJob extends BaseJobs
     {
         try {
             MiniOrderService::shippingByTradeNo($out_trade_no, $logistics_type, $shipping_list, $payer_openid, $path, $delivery_mode, $is_all_delivered);
+            return true;
         } catch (HttpException $e) {
             // 订单异常处理
             throw new HttpException($e);

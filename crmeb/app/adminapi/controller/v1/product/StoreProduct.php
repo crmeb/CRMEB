@@ -141,6 +141,8 @@ class StoreProduct extends AuthController
      */
     public function set_show($is_show = '', $id = '')
     {
+        $del = $this->service->value(['id' => $id], 'is_del');
+        if ($del == 1) return app('json')->fail('商品已删除，请先恢复商品');
         $this->service->setShow([$id], $is_show);
         return app('json')->success(100014);
     }

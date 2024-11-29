@@ -22,6 +22,12 @@ class SystemCrontab extends BaseModel
     protected $name = 'system_timer';
 
     /**
+     * 不自动更新update_time
+     * @var bool
+     */
+    protected $updateTime = false;
+
+    /**
      * 是否自定义定时任务搜索器
      * @param $query
      * @param $value

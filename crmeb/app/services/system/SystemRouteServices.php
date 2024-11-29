@@ -576,9 +576,8 @@ class SystemRouteServices extends BaseServices
     protected function getResponseExample($options)
     {
         $example = [];
-
         foreach ($options as $option) {
-            if (empty($examples)) {
+            if (empty($example)) {
                 $example[] = [
                     'name' => $option['name'],
                     'data' => json_decode($option['data'], true),

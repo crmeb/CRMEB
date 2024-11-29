@@ -130,7 +130,8 @@ class Local extends BaseUpload
             if (is_resource($stream)) {
                 fclose($stream);
             }
-            if (preg_match('/think|php|log|phar|Socket|Channel|Flysystem|Psr6Cache|Cached|Request|debug|Psr6Cachepool|eval/i', $content)) {
+            $image = @imagecreatefromstring($content);
+            if ($image === false) {
                 return $this->setError('文件内容不合法');
             }
         }

@@ -2,6 +2,7 @@
 <div align="center" >
     <img src="https://www.crmeb.com/static/images/dark_logo.png" />
 </div>
+
 <div align="center">
 
 CRMEB开源商城系统PHP版
@@ -23,22 +24,25 @@ CRMEB开源商城系统PHP版
     </a>
 </div>
 
-#### 
+####
 
 <div align="center">
 
 [官网](https://www.crmeb.com/) |
 [在线体验](http://v4.crmeb.net/admin/) |
 [帮助文档](https://doc.crmeb.com/single/v54/) |
-[应用市场](https://www.crmeb.com/market/)
+[应用市场](https://www.crmeb.com/market/) |
 [技术社区](https://www.crmeb.com/ask/)
 
 [comment]: <> ([宽屏预览]&#40;https://gitee.com/ZhongBangKeJi/CRMEB/blob/master/README.md&#41;)
 
 </div>
+
 <div align="center" >
 <a href="https://gitee.com/ZhongBangKeJi/CRMEB/blob/master/README.md">宽屏预览</a>
 </div>
+
+
 
 ---
 
@@ -63,7 +67,7 @@ CRMEB开源商城Java版：https://gitee.com/ZhongBangKeJi/crmeb_java
 
 ### 🫧 系统亮点
 ~~~
-1.前后端分离：后端TP6，管理端Element UI，移动端Uni-app；
+1.前后端分离：后端TP6，管理端Element UI（支持多种风格和布局切换），移动端Uni-app；
 2.代码规范：遵循PSR-2命名规范、Restful标准接口、代码严格分层、注释齐全、统一错误码；
 3.权限管理：内置强大灵活的权限管理，可以控制到每一个菜单；
 4.开发配置：低代码增加配置、系统组合数据模块；
@@ -75,23 +79,10 @@ CRMEB开源商城Java版：https://gitee.com/ZhongBangKeJi/crmeb_java
 10.二开效率：应用form-builder PHP可以快速生成表单；
 11.快速上手：详细帮助文档、后台接口管理、后台数据库字典、系统文件管理备注、代码注释、一键安装；
 12.系统安全：系统操作日志、系统生产日志、文件校验、数据备份；
-13.高 性 能：支持Redis缓存、队列、长连接、多种云储存、支持集群部署。
-
+13.高 性 能：支持Redis缓存、队列、长连接、多种云储存、支持集群部署；
+14.多 语 言:支持自动识别浏览器多语言展示；
+15.驱动扩展：支持多种支付方式、多种短信、多种云储存等；
 ~~~
----
-
-### 🖥 运行环境
-
-```
-Nignx/Apache/IIS
-PHP 7.1 ~ 7.4 
-MySQL 5.7 ～ 8.0
-Redis
-```
-
-
-> 温馨提示：虚拟空间不支持，推荐使用bt宝塔面板，服务器推荐京东云服务器：<a href="https://partner.jdcloud.com/partner/notice/b06c3232b6394fdfa496923b8e00b286" target="_blank">注册即享6.5折专属优惠，点我领取！</a>
-
 
 ###  📱 系统演示
 
@@ -111,71 +102,120 @@ APP下载：http://app.crmeb.cn/bzv （苹果手机直接在APP Store里搜索CR
 
 ---
 
-###  🔐 安装教程
-
-想要快速安装，教程来助攻！<a href="https://doc.crmeb.com/single/v5/7714" target="_blank">查看安装教程！</a>
-
----
-
-
-
 ###  📲 核心功能
-
-![输入图片说明](readme/pic/功能列表.jpg)
+系统功能
+~~~
+移动端支持DIY：22种组件；
+多种风格和布局切换：8种风格4种布局；
+多种语言配置：支持200多个国家语言；
+多应用端展示：公众号端、H5端、小程序端、APP端、PC端（需要购买）；
+多种消息通知：公众号模版、小程序模版、短信、打印机、企业微信；
+低代码：生成功能模块、增加系统配置、组合数据；
+对外接口：包含用户、商品、订单等接口，方便其它系统对接；
+多种云储存：阿里云、腾讯云、华为云、京东云、七牛云、天翼云；
+~~~
+商城功能
+~~~
+多种支付方式：微信支付、支付宝支持、通联支付；
+多种商品类型：标准商品、虚拟商品、卡密商品、优惠券商品；
+多种营销功能：拼团、砍价、秒杀、抽奖、优惠券、积分、经验、分销、充值、签到、渠道码；
+多种运费方式：快递、配送、自提、包邮、超强运费模版管理、多自提点；
+~~~
+用户管理
+~~~
+用户等级：用户等级 经验升级 经验任务；
+SVIP会员：付费会员 试用会员 实体会员卡 会员权益
+用户管理：用户类型 添加用户 用户标签/分组 用户操作 浏览记录
+登录方式：H5登录 微信快速登录 密码登录/注册
+微信端登录：微信授权登录 手机号快速登录 账号密码登录
+支持单点登录：快速接入第三方系统
+~~~
+微信小程序直播
+~~~
+直播间管理 主播管理 直播商品管理
+~~~
+CMS管理
+~~~
+文章内容	文章管理	文章分类 文章列表
+~~~
+客服系统
+~~~
+客服管理:客服添加 客服权限 关键字回复
+客服工作台:客服状态 发送信息 订单处理 商品记录 转接客服 客服常用语 客户信息管理 支持H5端和PC端
+客户端：支持平台用户H5端、PC端，支持广告配置
+~~~
+第三方设置
+~~~
+短信
+商品采集
+小票打印
+电子面单打印
+物流查询
+电子发票
+云存储
+~~~
+开发工具
+~~~
+数据库管理
+文件在线管理
+接口文档管理
+代码功能模块生成
+数据字典管理
+对外接口管理
+低代码事件
+低代码定时任务
+多语言一键配置
+数据维护
+安全维护
+~~~
 
 
 ---
 
 ###  📖 UI界面展示
 
-![输入图片说明](readme/pic/PHP_01.jpg)
-![输入图片说明](readme/pic/PHP_02.jpg)
-![输入图片说明](readme/pic/PHP_03.jpg)
-![输入图片说明](readme/pic/PHP_04.jpg)
+![输入图片说明](readme/pic/PHP_06.jpg)
+
+
 
 ---
 
+###  📖 后台界面展示
 
-###  📕 CRMEB公益
-做开源，帮助更多人！CRMEB开源项目，不仅让开发者从中受益，也在公益活动中帮助了很多人，对此，我们很荣幸，也乐此不疲！
+![输入图片说明](readme/pic/PHP_05.jpg)
 
-So~~想要用CRMEB开源商城系统做公益项目的朋友，可以来免费申请商业版系统哦！有需要的朋友，快去找官方客服咨询吧！
 
-![输入图片说明](readme/pic/gongyi1.jpg)
-![输入图片说明](readme/pic/gongyi2.jpg)
 
 ---
-[![输入图片说明](readme/pic/多商户.jpg)](https://www.crmeb.com/index/merchant)
+
+### 🖥 运行环境
+
+```
+Nignx（推荐）/Apache/IIS
+PHP 7.1 ~ 7.4
+MySQL 5.7 ～ 8.0
+Redis （可选）
+```
+
+
+> 温馨提示：虚拟空间不支持，推荐使用bt宝塔面板，服务器推荐京东云服务器：<a href="https://partner.jdcloud.com/partner/notice/b06c3232b6394fdfa496923b8e00b286" target="_blank">注册即享6.5折专属优惠，点我领取！</a>
+
+###  🔐 安装教程
+
+想要快速安装，教程来助攻！<a href="https://doc.crmeb.com/single/v5/7714" target="_blank">查看安装教程！</a>
+
 ---
+
 ###  📞 CRMEB互动
-#### CRMEB开源技术交流群
-#### 扫码进群可领取开源版接口文档、产品功能清单、高清UI设计图、思维脑图！
+#### CRMEB开源技术交流群（扫码进群可领取开源版接口文档、产品功能清单、高清UI设计图、思维脑图！）
 ![输入图片说明](readme/pic/开源群.jpg)
 #### 技术社区！找方法、提bug、看官方消息、拿活跃大奖！都在 <a href="https://www.crmeb.com/ask" target="_blank">CRMEB 技术社区</a> 应有尽有
 
 ---
 
-###  📻 感谢参与开发者
-#### 感谢大神们提交代码（排名不分先后）
-@yizhisamoye，@bys1123，@xaboy，@youngxj0，@jacklincheung，@392256866，@sxsea
-
 欢迎<a href="https://gitee.com/ZhongBangKeJi/CRMEB/issues" target="_blank">反馈问题</a>
 
 欢迎<a href="https://gitee.com/ZhongBangKeJi/CRMEB/pulls" target="_blank">提交代码</a>
-
----
-###  📸 特别鸣谢
-排名不分先后，感谢这些软件的开发者：thinkphp、iview、vue、mysql、redis、uniapp、echarts、tree-table-vue、swiper、form-create等，如有遗漏请联系我！
-
----
-###  🎬 核心开发团队
-产品：木子刀客
-
-技术：聆听、等风来、xaboy、吴汐、最后一片叶、旺仔、小小、娜娜、归来仍是少年
-
-UI：xy-yyds、LXT
-
-测试：夏天、绵绵羊、。ws、半山
 
 
 ---
@@ -206,7 +246,11 @@ All rights reserved。
 
 CRMEB® 商标和著作权所有者为西安众邦网络科技有限公司。
 
+---
 
+###  📕 多商户PHP
+
+[![输入图片说明](readme/pic/多商户PHP.jpg)](https://www.crmeb.com/index/merchant)
 
 ---
 

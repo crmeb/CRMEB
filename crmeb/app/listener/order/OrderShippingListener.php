@@ -79,10 +79,15 @@ class OrderShippingListener implements ListenerInterface
             //判断订单物流模式
             if (!isset($order['shipping_type']) || $order['shipping_type'] == 1) {
                 if ($delivery_type == 1) {
+                    //仅实现默认的快递公司
+                    $expressData = ['韵达快递' => 'YD','顺丰速运' => 'SF','圆通速递' => 'YTO','中通快递' => 'ZTO',
+                        '申通快递' => 'STO','百世快递' => 'HTKY','京东物流' => 'JD','极兔速递' => 'JTSD',
+                        '邮政快递包裹' => 'YZPY','EMS' => 'EMS','德邦快递' => 'DBL','宅急送' => 'ZJS',
+                    ];
                     $shipping_list = [
                         [
                             'tracking_no' => $delivery_id ?? '',
-                            'express_company' => $delivery_name ?? '',
+                            'express_company' => $delivery_name ? $expressData['$delivery_name'] : '',
                             'item_desc' => $item_desc,
                             'contact' => [
                                 'receiver_contact' => $order['user_phone']

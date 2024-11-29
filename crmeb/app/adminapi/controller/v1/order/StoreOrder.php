@@ -494,7 +494,7 @@ class StoreOrder extends AuthController
             return app('json')->fail('退款单生成失败');
         }
 
-        $orderRefund = $services->get(['store_order_id' => $id]);
+        $orderRefund = $services->getOrderOne(['store_order_id' => $id]);
 
 
         $data['refund_status'] = 2;

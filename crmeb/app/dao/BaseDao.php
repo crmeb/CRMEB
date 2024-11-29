@@ -364,7 +364,7 @@ abstract class BaseDao
             if ($responses->hasMethod($method)) {
                 $with[] = $key;
             } else {
-                if (!in_array($key, ['timeKey', 'store_stock', 'integral_time'])) {
+                if (!in_array($key, ['timeKey', 'store_stock', 'integral_time'], true)) {
                     if (!is_array($value)) {
                         $otherWhere[] = [$key, '=', $value];
                     } else if (count($value) === 3) {
@@ -595,5 +595,22 @@ abstract class BaseDao
     public function getMin(array $where = [], string $field = '')
     {
         return $this->getModel()->where($where)->min($field);
+    }
+
+    /**
+     * 获取(条件)按照(排序)的第一条
+     * @param array $where
+     * @param string $order
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/9/12
+     */
+    public function getOrderOne(array $where = [], string $order = 'id desc')
+    {
+        return $this->getModel()->where($where)->order($order)->find();
     }
 }

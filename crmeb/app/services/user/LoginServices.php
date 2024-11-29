@@ -121,7 +121,7 @@ class LoginServices extends BaseServices
                 'nickname' => $userInfo['nickname'],
                 'spread_uid' => $spreadUid,
                 'spread_time' => date('Y-m-d H:i:s'),
-                'user_type' => $user->user_type,
+                'user_type' => $userInfo['user_type'],
             ]]);
 
         } else {
@@ -145,7 +145,7 @@ class LoginServices extends BaseServices
                         'nickname' => $userInfo['nickname'],
                         'spread_uid' => $spreadUid,
                         'spread_time' => date('Y-m-d H:i:s'),
-                        'user_type' => $user->user_type,
+                        'user_type' => $userInfo['user_type'],
                     ]]);
                 }
             } else {
@@ -178,7 +178,7 @@ class LoginServices extends BaseServices
                                     'nickname' => $userInfo['nickname'],
                                     'spread_uid' => $spreadUid,
                                     'spread_time' => date('Y-m-d H:i:s'),
-                                    'user_type' => $user->user_type,
+                                    'user_type' => $userInfo['user_type'],
                                 ]]);
                             }
                         }

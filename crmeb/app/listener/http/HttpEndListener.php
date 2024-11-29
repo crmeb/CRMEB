@@ -23,6 +23,7 @@ class HttpEndListener
 {
     public function handle(Response $response):void
     {
+        if (!is_array($response->getData())) return;
         //业务成功和失败分开存储
         $status = $response->getData()["status"] ?? 0;
         if ($status == 200) {

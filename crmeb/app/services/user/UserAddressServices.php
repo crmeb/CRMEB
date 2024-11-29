@@ -16,6 +16,7 @@ use app\api\validate\user\AddressValidate;
 use app\services\BaseServices;
 use app\dao\user\UserAddressDao;
 use app\services\shipping\SystemCityServices;
+use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
 
@@ -201,7 +202,6 @@ class UserAddressServices extends BaseServices
         $addressInfo['city'] = $addressInfo['address']['city'];
         $addressInfo['city_id'] = $addressInfo['address']['city_id'] ?? 0;
         $addressInfo['district'] = $addressInfo['address']['district'];
-        $addressInfo['is_default'] = (int)$addressInfo['is_default'] == true ? 1 : 0;
         $addressInfo['uid'] = $uid;
         unset($addressInfo['address'], $addressInfo['type']);
         //数据验证
@@ -209,6 +209,9 @@ class UserAddressServices extends BaseServices
         $address_check = [];
         if ($addressInfo['id']) {
             $address_check = $this->getAddress((int)$addressInfo['id']);
+        }
+        if ($addressInfo['is_default']) {
+            app()->make(WechatUserServices::class)->update(['uid' => $uid], ['province' => $addressInfo['province']]);
         }
         if ($address_check && $address_check['is_del'] == 0 && $address_check['uid'] = $uid) {
             $id = (int)$addressInfo['id'];

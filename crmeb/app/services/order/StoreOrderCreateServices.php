@@ -417,6 +417,8 @@ class StoreOrderCreateServices extends BaseServices
         //设置用户默认地址
         if (!$addressServices->be(['is_default' => 1, 'uid' => $order['uid']])) {
             $addressServices->setDefaultAddress($group['addressId'], $order['uid']);
+            $province = $addressServices->value(['id' => $group['addressId']], 'province');
+            app()->make(WechatUserServices::class)->update(['uid' => $order['uid']], ['province' => $province]);
         }
         //删除购物车
         if ($group['news']) {

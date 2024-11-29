@@ -41,7 +41,8 @@ class StoreSeckill extends AuthController
         $where = $this->request->getMore([
             ['start_status', ''],
             [['status', 's'], ''],
-            [['store_name', 's'], '']
+            [['store_name', 's'], ''],
+            [['product_id', 'd'], 0],
         ]);
         return app('json')->success($this->services->systemPage($where));
     }

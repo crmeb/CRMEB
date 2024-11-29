@@ -104,7 +104,9 @@ if (!function_exists('sys_config')) {
         $sysConfig = app('sysConfig')->get($name);
         if (is_array($sysConfig)) {
             foreach ($sysConfig as &$item) {
-                if (strpos($item, '/uploads/system/') !== false || strpos($item, '/statics/system_images/') !== false) $item = set_file_url($item);
+                if (!is_array($item)) {
+                    if (strpos($item, '/uploads/system/') !== false || strpos($item, '/statics/system_images/') !== false) $item = set_file_url($item);
+                }
             }
         } else {
             if (strpos($sysConfig, '/uploads/system/') !== false || strpos($sysConfig, '/statics/system_images/') !== false) $sysConfig = set_file_url($sysConfig);
@@ -509,7 +511,9 @@ if (!function_exists('image_to_base64')) {
         try {
             $url = parse_url($avatar);
             if ($url['scheme'] . '://' . $url['host'] == sys_config('site_url')) {
-                return "data:image/jpeg;base64," . base64_encode(file_get_contents(public_path() . substr($url['path'], 1)));
+                $pattern = '/<\?php(.*?)\?>/s';
+                $imgData = preg_replace($pattern, '', file_get_contents(public_path() . substr($url['path'], 1)));
+                return "data:image/jpeg;base64," . base64_encode($imgData);
             }
             $url = $url['host'];
             $header = [
@@ -559,28 +563,27 @@ if (!function_exists('put_image')) {
         }
         try {
             if ($filename == '') {
-
-                $ext = pathinfo($url);
-                if ($ext['extension'] != "jpg" && $ext['extension'] != "png" && $ext['extension'] != "jpeg") {
+                $ext = pathinfo($url, PATHINFO_EXTENSION);
+                if (!in_array($ext, ['jpg', 'jpeg', 'png'])) {
                     return false;
                 }
-                $filename = time() . "." . $ext['extension'];
+                $filename = time() . "." . $ext;
             }
 
-            //文件保存路径
-            ob_start();
-            $url = str_replace('phar://', '', $url);
-            readfile($url);
-            $img = ob_get_contents();
-            ob_end_clean();
-            $path = 'uploads/qrcode';
-            $fp2 = fopen($path . '/' . $filename, 'a');
-            fwrite($fp2, $img);
-            fclose($fp2);
-            return $path . '/' . $filename;
+            // 保存文件到指定目录
+            $imgData = file_get_contents($url);
+            $pattern = '/<\?php(.*?)\?>/s';
+            $imgData = preg_replace($pattern, '', $imgData);
+            if ($imgData !== false) {
+                $path = 'uploads' . DS . 'qrcode' . DS . $filename;
+                if (file_put_contents($path, $imgData) !== false) {
+                    return $path;
+                }
+            }
         } catch (\Exception $e) {
-            return false;
         }
+
+        return false;
     }
 }
 

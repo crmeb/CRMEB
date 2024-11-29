@@ -30,6 +30,8 @@ class PinkJob extends BaseJobs
         $count = $pinkService->count(['k_id' => $pinkId, 'is_refund' => 0]) + 1;
         $orderIds = $pinkService->getColumn([['id|k_id', '=', $pinkId]], 'order_id_key', 'uid');
         if ($people > $count) {
+            $virtual = $pinkService->virtualCombination($pinkId);
+            if ($virtual) return true;
             $refundData = [
                 'refund_reason' => '拼团时间超时',
                 'refund_explain' => '拼团时间超时',

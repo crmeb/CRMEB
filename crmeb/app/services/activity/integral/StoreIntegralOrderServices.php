@@ -533,6 +533,7 @@ class StoreIntegralOrderServices extends BaseServices
             $expData['siid'] = sys_config('config_export_siid');
             $expData['temp_id'] = $data['express_temp_id'];
             $expData['count'] = $orderInfo->total_num;
+            $expData['weight'] = 1;
             $expData['cargo'] = $orderInfo->store_name . '(' . $orderInfo->suk . ')*' . $orderInfo->total_num;
             $expData['order_id'] = $orderInfo->order_id;
             if (!sys_config('config_export_open', 0)) {

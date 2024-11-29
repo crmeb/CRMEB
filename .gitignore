@@ -19,3 +19,8 @@
 /template/uni-app/node_modules/
 /template/uni-app/unpackage/
 /template/uni-app/.hbuilderx/
+/crmeb/.idea/
+/docker-compose/MacArm/mysql/data/
+/docker-compose/MacArm/mysql/log/
+/docker-compose/linux/mysql/data/
+/docker-compose/linux/mysql/log/

@@ -82,8 +82,8 @@ class StorePinkServices extends BaseServices
     public function getStatistics()
     {
         $res = [
-            ['col' => 6, 'count' => $this->dao->count(), 'name' => '参与人数(人)', 'className' => 'ios-speedometer-outline'],
-            ['col' => 6, 'count' => $this->dao->count(['k_id' => 0, 'status' => 2]), 'name' => '成团数量(个)', 'className' => 'md-rose'],
+            ['col' => 6, 'count' => $this->dao->count(), 'name' => '参与人数(人)', 'className' => 'iconfaqirenshu'],
+            ['col' => 6, 'count' => $this->dao->count(['k_id' => 0, 'status' => 2]), 'name' => '成团数量(个)', 'className' => 'iconshengyukucun'],
         ];
         return compact('res');
     }

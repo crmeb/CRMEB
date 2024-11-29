@@ -99,17 +99,22 @@ abstract class BaseServices
         }
         if ($type == 'api') {
             $user = app()->make(UserServices::class)->get($id);
+            $user = $user->toArray();
             //自定义消息-用户登录成功
+            $user['last_time'] = date('Y-m-d H:i:s', $user['last_time']);
+            $user['time'] = date('Y-m-d H:i:s');
             event('CustomNoticeListener', [$id, $user, 'login_success']);
 
             //自定义事件-用户登录
             event('CustomEventListener', ['user_login', [
-                'uid' => $user->uid,
-                'nickname' => $user->nickname,
-                'phone' => $user->phone,
-                'add_time' => date('Y-m-d H:i:s', $user->add_time),
+                'uid' => $user['uid'],
+                'nickname' => $user['nickname'],
+                'phone' => $user['phone'],
+                'add_time' => date('Y-m-d H:i:s', $user['add_time']),
                 'login_time' => date('Y-m-d H:i:s'),
-                'user_type' => $user->user_type,
+                'time' => $user['time'],
+                'last_time' => $user['last_time'],
+                'user_type' => $user['user_type']
             ]]);
         }
         return $jwtAuth->createToken($id, $type, ['pwd' => md5($pwd)]);

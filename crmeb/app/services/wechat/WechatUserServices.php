@@ -117,7 +117,7 @@ class WechatUserServices extends BaseServices
      */
     public function saveUser($openid)
     {
-        if ($this->getWechatUserInfo(['openid' => $openid])) {
+        if ($this->getWechatUserInfo(['openid' => $openid, 'is_del' => 0])) {
             $this->updateUser($openid);
             return false;
         } else {
@@ -175,7 +175,7 @@ class WechatUserServices extends BaseServices
         $uid = 0;
         $userInfoData = null;
         if (isset($userInfo['unionid'])) {
-            $wechatInfo = $this->getWechatUserInfo(['unionid' => $userInfo['unionid']]);
+            $wechatInfo = $this->getWechatUserInfo(['unionid' => $userInfo['unionid'], 'is_del' => 0]);
         }
         if (!$wechatInfo) {
             /** @var UserServices $userServices */
@@ -338,6 +338,10 @@ class WechatUserServices extends BaseServices
             //更新用户表和wechat_user表
             //判断该类性用户在wechatUser中是否存在
             $wechatUser = $this->dao->getOne(['uid' => $uid, 'user_type' => $userType, 'is_del' => 0]);
+            //判断获取到的 openid 和当前登录传入的 openid 不一致时，不更新用户信息
+            if ($wechatUser && $wechatUser['openid'] != $wechatInfo['openid']) {
+                return $userInfo;
+            }
             /** @var LoginServices $loginService */
             $loginService = app()->make(LoginServices::class);
             $this->transaction(function () use ($loginService, $wechatInfo, $userInfo, $uid, $userType, $spreadId, $wechatUser) {

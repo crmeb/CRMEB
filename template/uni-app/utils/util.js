@@ -613,6 +613,11 @@ export default {
 
 					}
 				})
+			},
+            fail: function(res) {
+				that.Tips({
+					title: res.errMsg
+				});
 			}
 		})
 

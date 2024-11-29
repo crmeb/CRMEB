@@ -47,6 +47,7 @@ class StoreBargain extends AuthController
             ['start_status', ''],
             ['status', ''],
             ['store_name', ''],
+            ['product_id', 0],
         ]);
         $where['is_del'] = 0;
         $list = $this->services->getStoreBargainList($where);

@@ -62,10 +62,10 @@ class EnterpriseWechatService extends NoticeService
                     $d .= $item . "\n>";
                 }
                 $d = substr($d, 0, strlen($d) - 2);
-                HttpService::postRequest($url, json_encode([
+                HttpService::postRequest($url, [
                     'msgtype' => 'markdown',
                     'markdown' => ['content' => $d]
-                ]));
+                ]);
             } catch (\Throwable $e) {
                 Log::error('发送企业群消息失败,失败原因:' . $e->getMessage());
 

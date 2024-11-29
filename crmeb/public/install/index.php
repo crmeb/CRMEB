@@ -27,8 +27,18 @@ if (phpversion() >= '8.0.0') {
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
-
-//数据库
+//mysql数据库配置容器中获取
+$MYSQL_HOST_IP = getenv('MYSQL_HOST_IP')?:'127.0.0.1';
+$MYSQL_PORT = getenv('MYSQL_PORT')?:'3306';
+$MYSQL_USER = getenv('MYSQL_USER')?:'root';
+$MYSQL_PASSWORD = getenv('MYSQL_PASSWORD')?:'123456';
+$MYSQL_DATABASE = getenv('MYSQL_DATABASE')?:'crmeb';
+//redis配置容器中获取
+$REDIS_HOST_IP = getenv('REDIS_HOST_IP')?:'127.0.0.1';
+$REDIS_PORT = getenv('REDIS_PORT')?:'6379';
+$REDIS_DATABASE = getenv('REDIS_DATABASE')?:0;
+$REDIS_PASSWORD = getenv('REDIS_PASSWORD')?:'';
+//数据库;
 $sqlFile = 'crmeb.sql';
 $configFile = '.env';
 if (!file_exists(SITE_DIR . 'install/' . $sqlFile) || !file_exists(SITE_DIR . 'install/' . $configFile)) {
@@ -49,11 +59,7 @@ $step = $_GET['step'] ?? 1;
 //地址
 $scriptName = !empty($_SERVER["REQUEST_URI"]) ? $scriptName = $_SERVER["REQUEST_URI"] : $scriptName = $_SERVER["PHP_SELF"];
 $rootPath = @preg_replace("/\/(I|i)nstall\/index\.php(.*)$/", "", $scriptName);
-$domain = empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
-if ((int)$_SERVER['SERVER_PORT'] != 80) {
-    $domain .= ":" . $_SERVER['SERVER_PORT'];
-}
-$domain = $domain . $rootPath;
+[$request_scheme, $request_host] = getSchemeAndHost();
 
 switch ($step) {
     case '1':
@@ -289,20 +295,11 @@ switch ($step) {
              * 执行SQL语句
              */
             $counts = count($sqlFormat);
-            if (isset($_SERVER['REQUEST_SCHEME'])) {
-                $request_scheme = $_SERVER['REQUEST_SCHEME'];
-            } else {
-                if ($_SERVER['HTTPS'] == 'on') {
-                    $request_scheme = 'https';
-                } else {
-                    $request_scheme = 'http';
-                }
-            }
             for ($i = $n; $i < $counts; $i++) {
                 $sql = trim($sqlFormat[$i]);
                 if (strstr($sql, 'CREATE TABLE')) {
                     preg_match('/CREATE TABLE (IF NOT EXISTS)? `eb_([^ ]*)`/is', $sql, $matches);
-                    mysqli_query($conn, "DROP TABLE IF EXISTS `$matches[2]");
+                    mysqli_query($conn, "DROP TABLE IF EXISTS `$matches[2]`");
                     $sql = str_replace('`eb_', '`' . $dbPrefix, $sql);//替换表前缀
                     $ret = mysqli_query($conn, $sql);
                     if ($ret) {
@@ -318,8 +315,8 @@ switch ($step) {
                     if (trim($sql) == '')
                         continue;
                     $sql = str_replace('`eb_', '`' . $dbPrefix, $sql);//替换表前缀
-                    $sql = str_replace('http://demo.crmeb.com', $request_scheme . '://' . $_SERVER['SERVER_NAME'], $sql);//替换图片域名
-                    $sql = str_replace('http:\\\\/\\\\/demo.crmeb.com', $request_scheme . ':\\\\/\\\\/' . $_SERVER['SERVER_NAME'], $sql);//替换图片域名
+                    $sql = str_replace('http://demo.crmeb.com', $request_scheme . '://' . $request_host, $sql);//替换图片域名
+                    $sql = str_replace('http:\\\\/\\\\/demo.crmeb.com', $request_scheme . ':\\\\/\\\\/' . $request_host, $sql);//替换图片域名
                     $ret = mysqli_query($conn, $sql);
                     $message = '';
                     $arr = array('n' => $i, 'count' => $counts, 'msg' => $message, 'time' => date('Y-m-d H:i:s'));
@@ -415,8 +412,8 @@ switch ($step) {
 (1, '" . $username . "', '/statics/system_images/admin_head_pic.png', '" . $password . "', 'admin', '1', '" . $ip . "',$time , $time, 0, 0, 1, 0)";
             $res = mysqli_query($conn, $addadminsql);
             $res2 = true;
-            if (isset($_SERVER['SERVER_NAME'])) {
-                $site_url = '\'"' . $request_scheme . '://' . $_SERVER['SERVER_NAME'] . '"\'';
+            if ($request_host) {
+                $site_url = '\'"' . $request_scheme . '://' . $request_host . '"\'';
                 $res2 = mysqli_query($conn, 'UPDATE `' . $dbPrefix . 'system_config` SET `value`=' . $site_url . ' WHERE `menu_name`="site_url"');
             }
             $arr = array('n' => 999999, 'count' => $counts, 'msg' => '安装完成', 'time' => date('Y-m-d H:i:s'));
@@ -702,6 +699,33 @@ function generateSignature()
     }
 
     file_put_contents($file, $str);
+}
+
+function getSchemeAndHost()
+{
+    // 检查反向代理设置的头信息
+    $request_scheme = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'http';
+    $request_host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? '';
+
+    // 如果没有反向代理头信息，则使用标准的 HTTP 头信息
+    if (empty($request_host)) {
+        $request_scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $request_host = $_SERVER['HTTP_HOST'] ?? '';
+    }
+
+    // 如果仍然没有获取到域名，则使用服务器变量作为备选
+    if (empty($request_host)) {
+        $request_host = $_SERVER['SERVER_NAME'] ?? 'localhost';
+
+        // 如果使用了端口号（非标准端口），则添加端口号
+        $port = $_SERVER['SERVER_PORT'] ?? '';
+        if (($request_scheme === 'https' && $port !== '443') || ($request_scheme === 'http' && $port !== '80')) {
+            $request_host .= ':' . $port;
+        }
+    }
+
+    // 构建并返回scheme和host
+    return [$request_scheme, $request_host];
 }
 
 ?>
