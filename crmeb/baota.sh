@@ -159,11 +159,19 @@ fi
 # 备份原配置文件（可选）
 cp "$CONFIG_FILE" "${CONFIG_FILE}.bak"
 echo "MySQL配置文件已备份至 ${CONFIG_FILE}.bak"
+# 获取MySQL版本主版本号
+MYSQL_VERSION_FULL=$(${setup_path}/mysql/bin/mysql -V 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)
+MYSQL_MAJOR_VER=$(echo "$MYSQL_VERSION_FULL" | cut -d. -f1)
+
+if [ "$MYSQL_MAJOR_VER" = "8" ]; then
+    SQL_MODE_VALUE="NO_ENGINE_SUBSTITUTION"
+else
+    SQL_MODE_VALUE="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+fi
 
 # 使用grep检查sql_mode是否存在，如果存在，则替换其值
 if grep -q "^[[:space:]]*sql_mode[[:space:]]*=" "$CONFIG_FILE"; then
-    # 如果存在，修改 sql_mode 的值
-    sed -i 's/^ *sql_mode *=.*$/sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/' "$CONFIG_FILE"
+    sed -i "s/^ *sql_mode *=.*$/sql_mode=${SQL_MODE_VALUE}/" "$CONFIG_FILE"
 fi
 
 # 使用grep检查sql-mode是否存在
@@ -172,8 +180,11 @@ if grep -q "^[[:space:]]*sql-mode[[:space:]]*=" "$CONFIG_FILE"; then
     sed -i 's/^ *sql-mode *=.*$/sql-mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/' "$CONFIG_FILE"
 fi
 # 使用grep -E支持扩展正则表达式，同时匹配sql_mode和sql-mode，如果行不存在，则在[mysqld]段末尾添加新的sql_mode设置
+if grep -q "^[[:space:]]*sql-mode[[:space:]]*=" "$CONFIG_FILE"; then
+    sed -i "s/^ *sql-mode *=.*$/sql-mode=${SQL_MODE_VALUE}/" "$CONFIG_FILE"
+fi
 if ! grep -qE "^[[:space:]]*(sql_mode|sql-mode)[[:space:]]*=" "$CONFIG_FILE"; then
-    sed -i '/\[mysqld\]/a\sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' "$CONFIG_FILE"
+    sed -i "/\[mysqld\]/a\sql_mode=${SQL_MODE_VALUE}" "$CONFIG_FILE"
 fi
 
 
