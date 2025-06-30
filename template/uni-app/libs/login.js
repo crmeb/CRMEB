@@ -66,8 +66,11 @@ function _toLogin(push, pathLogin) {
 	// #endif
 	const BASIC_CONFIG = Cache.get('BASIC_CONFIG')
 	if (!pathLogin)
-		pathLogin = '/page/users/login/index'
-	Cache.set('login_back_url', path);
+		pathLogin = '/pages/users/login/index'
+	//不能等于登录地址，否则登录后还是登录页面
+	if (path !== pathLogin) {
+	        Cache.set('login_back_url', path);
+	}
 	// #ifdef H5
 	if (isWeixin() && BASIC_CONFIG.wechat_status) {
 		uni.navigateTo({
