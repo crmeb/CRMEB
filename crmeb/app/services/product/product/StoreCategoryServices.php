@@ -60,6 +60,13 @@ class StoreCategoryServices extends BaseServices
                 }
             }
         }
+        foreach ($list as &$value) {
+            if ($value['pid'] == 0) {
+                $value['url'] = '/pages/goods/goods_list/index?cid=' . $value['id'] . '&title=' . $value['cate_name'];
+            } else {
+                $value['url'] = '/pages/goods/goods_list/index?sid=' . $value['id'] . '&title=' . $value['cate_name'];
+            }
+        }
         $list = get_tree_children($list);
         $count = $this->dao->count($where);
         return compact('list', 'count');
@@ -171,9 +178,9 @@ class StoreCategoryServices extends BaseServices
     public function menus($pid = '')
     {
         $list = $this->dao->getMenus(['pid' => 0]);
-        $menus = [['value' => 0, 'label' => '顶级菜单']];
+        $menus = [['value' => 0, 'label' => '顶级分类']];
         if ($pid === 0) return $menus;
-        if ($pid != '') $menus = [];
+//        if ($pid != '') $menus = [];
         foreach ($list as $menu) {
             $menus[] = ['value' => $menu['id'], 'label' => $menu['cate_name']];
         }
@@ -345,5 +352,32 @@ class StoreCategoryServices extends BaseServices
         return CacheService::remember('CATEGORY_LIST', function () use ($where) {
             return $this->dao->getALlByIndex($where, 'id, cate_name, pid, pic, big_pic, sort, is_show, add_time');
         }, 86400);
+    }
+
+    /**
+     * @param string $cate_name_one
+     * @param string $cate_name_two
+     * @return array
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/7/16
+     */
+    public function getCateId(string $cate_name_one = '', string $cate_name_two = '')
+    {
+        if ($cate_name_one != '') {
+            $cate_id_one = $this->dao->value(['cate_name' => $cate_name_one], 'id');
+            if (!$cate_id_one) {
+                $cate_id_one = $this->dao->save(['cate_name' => $cate_name_one, 'add_time' => time()])['id'];
+            }
+            if ($cate_name_two != '') {
+                $cate_id_two = $this->dao->value(['cate_name' => $cate_name_two, 'pid' => $cate_id_one], 'id');
+                if (!$cate_id_two) {
+                    $cate_id_two = $this->dao->save(['cate_name' => $cate_name_two, 'pid' => $cate_id_one, 'add_time' => time()])['id'];
+                }
+                return [$cate_id_one, $cate_id_two];
+            }
+            return [$cate_id_one];
+        }
+        return [];
     }
 }

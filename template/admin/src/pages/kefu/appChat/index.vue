@@ -8,7 +8,8 @@
         <div class="name">{{ serviceData && serviceData.nickname }}</div>
         <div
           :class="['iconfont', muted ? 'icon-shengyinjingyinxianxing' : 'icon-shengyinyinliang']"
-          v-db-click @click.stop="muted = !muted"
+          v-db-click
+          @click.stop="muted = !muted"
         ></div>
         <div class="iconfont icon-guanbi5" v-db-click @click.stop="close"></div>
       </div>
@@ -54,7 +55,9 @@
                           </div>
                           <div class="group">
                             <div class="money">￥{{ item.productInfo.price }}</div>
-                            <span style="cursor: pointer" v-db-click @click.stop="onLook(item.productInfo.id)">查看商品 ></span>
+                            <span style="cursor: pointer" v-db-click @click.stop="onLook(item.productInfo.id)"
+                              >查看商品 ></span
+                            >
                           </div>
                         </div>
                       </div>
@@ -117,7 +120,8 @@
                 <i
                   class="em"
                   :class="emoji"
-                  v-db-click @click.stop="selectEmoji(emoji)"
+                  v-db-click
+                  @click.stop="selectEmoji(emoji)"
                   v-for="(emoji, index) in emojiList"
                   :key="index"
                 ></i>
@@ -134,7 +138,8 @@
         <div class="notice">
           <div v-if="notice" class="rich" v-html="notice"></div>
           <div class="copy">
-            <a href="http://www.crmeb.com/" target="_blank">CRMEB提供技术支持</a>
+            <span v-if="copyright">{{ copyright }}</span>
+            <a v-else href="http://www.crmeb.com/" target="_blank">CRMEB提供技术支持</a>
           </div>
         </div>
       </div>
@@ -153,6 +158,7 @@ import Cookies from 'js-cookie';
 import { chatListApi, serviceListApi, getAdvApi, serviceList, getOrderApi, productApi } from '@/api/kefu';
 import feedBack from './feedback';
 import { isPicUpload } from '@/utils';
+import { Session } from '@/utils/storage.js';
 
 const chunk = function (arr, num) {
   num = num * 1 || 1;
@@ -247,6 +253,7 @@ export default {
       tourist_uid: '', //游客id
       toUid: '', //客服id
       kufuToken: '', // token
+      copyright: Session.get('copyright') || '',
     };
   },
   watch: {
@@ -984,10 +991,8 @@ li {
           padding-bottom: 15px;
           font-size: 12px;
           text-align: center;
-          a {
-            color: #cccccc !important;
-            text-decoration: none;
-          }
+          color: #cccccc !important;
+          text-decoration: none;
         }
       }
     }

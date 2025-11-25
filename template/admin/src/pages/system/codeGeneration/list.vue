@@ -135,7 +135,13 @@
         <div v-for="(item, index) in codeBuildList" :key="index">{{ item }}</div>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="pwdModal" width="470px" title="文件管理密码" :show-close="true" :close-on-click-modal="false">
+    <el-dialog
+      :visible.sync="pwdModal"
+      width="470px"
+      title="文件管理密码"
+      :show-close="true"
+      :close-on-click-modal="false"
+    >
       <el-input v-model="pwd" type="password" placeholder="请输入文件管理密码"></el-input>
       <span slot="footer" class="dialog-footer">
         <el-button v-db-click @click="pwdModal = false">取 消</el-button>

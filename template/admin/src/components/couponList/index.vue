@@ -3,7 +3,7 @@
     <el-dialog :visible.sync="isTemplate" title="优惠券列表" append-to-body width="1000px">
       <el-table
         :data="couponList"
-        ref="table"
+        ref="couponTable"
         class="mt20"
         v-loading="loading"
         highlight-current-row
@@ -20,7 +20,7 @@
             >
           </template>
         </el-table-column>
-        <el-table-column label="ID" width="60">
+        <el-table-column label="ID" width="70">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
           </template>
@@ -53,7 +53,7 @@
             <span v-if="scope.row.is_permanent">不限量</span>
             <div v-else>
               <span class="fa">发布：{{ scope.row.total_count }}</span>
-              <span class="sheng">剩余：{{ scope.row.remain_count }}</span>
+              <span class="sheng ml10">剩余：{{ scope.row.remain_count }}</span>
             </div>
           </template>
         </el-table-column>
@@ -130,7 +130,7 @@ export default {
       tableFrom: {
         receive_type: 3,
         page: 1,
-        limit: 5,
+        limit: 15,
       },
       total: 0,
       ids: [],
@@ -176,6 +176,9 @@ export default {
           let obj = {
             id: item.id,
             title: item.title,
+            full_reduction: item.full_reduction, // 满
+            use_min_price: item.use_min_price, // 满
+            coupon_price: item.coupon_price, // 减
           };
           cups.push(obj);
           ids.push(item.id);
@@ -200,10 +203,19 @@ export default {
         this.total = data.count;
         this.$nextTick(() => {
           //确保dom加载完毕
-          // this.setChecked();
+          this.selectedIds.length && this.setChecked();
           this.showSelectData();
         });
         this.loading = false;
+      });
+    },
+    setChecked() {
+      //将new Set()转化为数组
+      let ids = [...this.selectedIds];
+      this.couponList.forEach((row) => {
+        if (ids.includes(row.id)) {
+          this.$refs.couponTable.toggleRowSelection(row, true);
+        }
       });
     },
     ok() {

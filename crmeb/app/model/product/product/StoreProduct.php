@@ -11,6 +11,7 @@
 
 namespace app\model\product\product;
 
+use app\model\product\sku\StoreProductAttrValue;
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
 use think\Model;
@@ -81,6 +82,11 @@ class StoreProduct extends BaseModel
     public function cateName()
     {
         return $this->hasMany(StoreProductCate::class, 'product_id', 'id')->with('cateName');
+    }
+
+    public function attrs()
+    {
+        return $this->hasMany(StoreProductAttrValue::class, 'product_id', 'id')->where('type', 0);
     }
 
 
@@ -287,7 +293,7 @@ class StoreProduct extends BaseModel
         if ($value) {
             if (is_array($value)) {
                 $query->whereIn('id', function ($query) use ($value) {
-                    $query->name('store_product_cate')->where('cate_id', 'IN', $value)->field('product_id')->select();
+                    $query->name('store_product_cate')->where('cate_id', 'IN', $value)->whereOr('cate_pid', 'IN', $value)->field('product_id')->select();
                 });
             } else {
                 $query->whereFindInSet('cate_id', $value);
@@ -333,6 +339,9 @@ class StoreProduct extends BaseModel
             case 6:
                 $query->where(['is_del' => 1]);
                 break;
+            case 7:
+                $query->where(['is_del' => 0, 'vip_product' => 0, 'virtual_type' => 0]);
+                break;
         }
     }
 
@@ -343,7 +352,13 @@ class StoreProduct extends BaseModel
      */
     public function searchIdsAttr($query, $value)
     {
-        if (is_string($value)) $value = explode(',', $value);
+        if (is_string($value)) {
+            if ($value !== '') {
+                $value = explode(',', $value);
+            } else {
+                $value = [];
+            }
+        }
         if (count($value)) $query->whereIn('id', $value);
     }
 
@@ -357,13 +372,178 @@ class StoreProduct extends BaseModel
         if ($value != '') $query->whereNotIn('id', $value);
     }
 
+    /**
+     * 自定义表单搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
     public function searchCustomFormAttr($query, $value)
     {
         if ($value !== '') $query->whereLike('custom_form', '%' . $value . '%');
     }
 
+    /**
+     * 虚拟类型搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
     public function searchVirtualTypeAttr($query, $value)
     {
         if ($value !== '') $query->where('virtual_type', $value);
     }
+
+    /**
+     * 规格类型搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
+    public function searchSpecTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('spec_type', $value);
+    }
+
+    /**
+     * 是否礼品搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
+    public function searchIsGiftAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_gift', $value);
+    }
+
+    /**
+     * 会员专属商品搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
+    public function searchVipProductAttr($query, $value)
+    {
+        if ($value !== '') $query->where('vip_product', $value);
+    }
+
+    /**
+     * 价格区间搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
+    public function searchPriceSAttr($query, $value)
+    {
+        if (count($value) == 2 && ($value[0] !== '' || $value[1] !== '')) {
+            if ($value[0] !== '' && $value[1] !== '') {
+                $query->whereBetween('price', [$value[0], $value[1]]);
+            } elseif ($value[0] !== '') {
+                $query->where('price', '>=', $value[0]);
+            } elseif ($value[1] !== '') {
+                $query->where('price', '<=', $value[1]);
+            }
+        }
+    }
+
+    /**
+     * 库存区间搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
+    public function searchStockSAttr($query, $value)
+    {
+        if (count($value) == 2 && ($value[0] !== '' || $value[1] !== '')) {
+            if ($value[0] !== '' && $value[1] !== '') {
+                $query->whereBetween('stock', [$value[0], $value[1]]);
+            } elseif ($value[0] !== '') {
+                $query->where('stock', '>=', $value[0]);
+            } elseif ($value[1] !== '') {
+                $query->where('stock', '<=', $value[1]);
+            }
+        }
+    }
+
+    /**
+     * 销量区间搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/1/14
+     */
+    public function searchSalesSAttr($query, $value)
+    {
+        if (count($value) == 2 && ($value[0] !== '' || $value[1] !== '')) {
+            if ($value[0] !== '' && $value[1] !== '') {
+                $query->whereBetween('sales', [$value[0], $value[1]]);
+            } elseif ($value[0] !== '') {
+                $query->where('sales', '>=', $value[0]);
+            } elseif ($value[1] !== '') {
+                $query->where('sales', '<=', $value[1]);
+            }
+        }
+    }
+
+    /**
+     * 标签搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/2/19
+     */
+    public function searchStoreLabelIdAttr($query, $value)
+    {
+        if (count($value)) {
+            $query->where(function ($query) use ($value) {
+                foreach ($value as $item) {
+                    $query->whereOr('FIND_IN_SET(:value, label_list)', ['value' => $item]);
+                }
+            });
+        }
+    }
+
+    /**
+     * 配送方式搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/2/19
+     */
+    public function searchLogisticsAttr($query, $value)
+    {
+        if ($value !== '') $query->whereFindInSet('logistics', $value);
+    }
+
+    /**
+     * 商品类型搜索器
+     * @param $query
+     * @param $value
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/2/19
+     */
+    public function searchVirtualeTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('virtual_type', $value);
+    }
+
+
 }

@@ -337,5 +337,4 @@ export default {
   padding-top: 5px;
   font-size: 12px;
 }
-
 </style>

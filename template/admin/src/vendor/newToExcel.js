@@ -8,45 +8,38 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 
-import { isEmpty } from "element-ui/lib/utils/util";
-import ExcelJS from "exceljs";
-import * as FileSaver from "file-saver";
+import { isEmpty } from 'element-ui/lib/utils/util';
+import ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
 
-export default function createWorkBook(
-  header,
-  title,
-  data,
-  foot,
-  filename,
-  sheets
-) {
+export default function createWorkBook(header, title, data, foot, filename, sheets) {
   const letter = [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "H",
-    "I",
-    "J",
-    "K",
-    "L",
-    "M",
-    "N",
-    "O",
-    "P",
-    "Q",
-    "R",
-    "S",
-    "T",
-    "U",
-    "V",
-    "W",
-    "X",
-    "Y",
-    "Z"
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
   ];
   let lcomun = 1;
   let worksheet;
@@ -71,13 +64,13 @@ export default function createWorkBook(
    */
   function setTitle(title, long) {
     if (isEmpty(title)) return;
-    title = Array.isArray(title) ? title : title.split(",");
+    title = Array.isArray(title) ? title : title.split(',');
     for (let i = 0; i < title.length; i++) {
       let ti = worksheet.getRow(i + 1);
       ti.getCell(1).value = title[i];
       ti.height = 30;
-      ti.font = { bold: true, size: 20, vertAlign: "subscript" };
-      ti.alignment = { vertical: "bottom", horizontal: "center" };
+      ti.font = { bold: true, size: 20, vertAlign: 'subscript' };
+      ti.alignment = { vertical: 'bottom', horizontal: 'center' };
       ti.outlineLevel = 1;
       worksheet.mergeCells(i + 1, 1, i + 1, long);
       ti.commit();
@@ -96,8 +89,8 @@ export default function createWorkBook(
     }
     headerRow.height = 25;
     headerRow.width = 50;
-    headerRow.font = { bold: true, size: 18, vertAlign: "subscript" };
-    headerRow.alignment = { vertical: "bottom", horizontal: "center" };
+    headerRow.font = { bold: true, size: 18, vertAlign: 'subscript' };
+    headerRow.alignment = { vertical: 'bottom', horizontal: 'center' };
     headerRow.outlineLevel = 1;
     headerRow.commit();
     lcomun++;
@@ -130,12 +123,12 @@ export default function createWorkBook(
           //不是数组
           lcomunNow.getCell(getLetter(sk)).value = data[h][l];
           lcomunNow.getCell(getLetter(sk)).border = {
-            top: { style: "thin" },
-            left: { style: "thin" },
-            bottom: { style: "thin" },
-            right: { style: "thin" }
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
           };
-          lcomunNow.alignment = { vertical: "middle", horizontal: "center" };
+          lcomunNow.alignment = { vertical: 'middle', horizontal: 'center' };
           sk++;
         }
       }
@@ -161,12 +154,12 @@ export default function createWorkBook(
       for (let v = 0; v < arr[i].length; v++) {
         lcomunNow.getCell(getLetter(sk + v)).value = arr[i][v];
         lcomunNow.getCell(getLetter(sk + v)).border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" }
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
         };
-        lcomunNow.alignment = { vertical: "middle", horizontal: "center" };
+        lcomunNow.alignment = { vertical: 'middle', horizontal: 'center' };
       }
       lcomunNow.height = 25;
       lcomunNow.commit();
@@ -183,9 +176,7 @@ export default function createWorkBook(
   function setMergeLcomun(satarLcomun, endLcomun, starKey, endKey) {
     for (let ml = 0; ml < long; ml++) {
       if (ml < starKey || ml >= endKey) {
-        worksheet.mergeCells(
-          getLetter(ml) + satarLcomun + ":" + getLetter(ml) + endLcomun
-        );
+        worksheet.mergeCells(getLetter(ml) + satarLcomun + ':' + getLetter(ml) + endLcomun);
       }
     }
   }
@@ -201,42 +192,78 @@ export default function createWorkBook(
         let lcomunNow = worksheet.getRow(lcomun);
         lcomunNow.getCell(1).value = footData[f];
         lcomunNow.getCell(1).border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" }
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
         };
-        lcomunNow.alignment = { vertical: "middle", horizontal: "left" };
-        worksheet.mergeCells("A" + lcomun + ":" + getLetter(long - 1) + lcomun);
+        lcomunNow.alignment = { vertical: 'middle', horizontal: 'left' };
+        worksheet.mergeCells('A' + lcomun + ':' + getLetter(long - 1) + lcomun);
         lcomun++;
       }
     } else {
       let lcomunNow = worksheet.getRow(lcomun);
       lcomunNow.getCell(1).value = footData[f];
       lcomunNow.getCell(1).border = {
-        top: { style: "thin" },
-        left: { style: "thin" },
-        bottom: { style: "thin" },
-        right: { style: "thin" }
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
       };
-      lcomunNow.alignment = { vertical: "middle", horizontal: "left" };
-      worksheet.mergeCells("A" + lcomun + ":" + getLetter(long - 1) + lcomun);
+      lcomunNow.alignment = { vertical: 'middle', horizontal: 'left' };
+      worksheet.mergeCells('A' + lcomun + ':' + getLetter(long - 1) + lcomun);
     }
   }
 
   /**
-   *  处理超过26个字母的列
-   * @param {*} number
-   * @returns
+   * 处理超过26个字母的列
+   * @param {number} number - 列索引数字
+   * @returns {string} Excel列标识(A, B, C, ..., Z, AA, AB, ...)
    */
   function getLetter(number) {
-    if (number < 26) {
-      return letter[number];
-    } else {
-      let n = number % 26;
-      let l = Math.floor(number % 26);
-      return letter[l] + letter[n];
+    let char = new Array(
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
+      'K',
+      'L',
+      'M',
+      'N',
+      'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z',
+    );
+    let charS = char[parseInt(number / 26) - 1];
+
+    for (let i = 0; i < 26; i++) {
+      if (parseInt(number / 26) >= 1) {
+        char[i] = charS + char[i];
+      }
     }
+    let charE = [];
+    if (parseInt(number / 26) < 1) {
+      charE = char[number - 25 * parseInt(number / 26)];
+    } else {
+      charE = char[number - 25 * parseInt(number / 26) - parseInt(number / 26)];
+    }
+
+    return charE;
   }
 
   /**
@@ -245,9 +272,9 @@ export default function createWorkBook(
    */
   function saveAndDowloade(filename) {
     if (!filename) filename = new Date().getTime();
-    workBook.xlsx.writeBuffer().then(data => {
-      const blob = new Blob([data], { type: "application/octet-stream" });
-      FileSaver.saveAs(blob, filename + ".xlsx");
+    workBook.xlsx.writeBuffer().then((data) => {
+      const blob = new Blob([data], { type: 'application/octet-stream' });
+      FileSaver.saveAs(blob, filename + '.xlsx');
     });
   }
 

@@ -77,7 +77,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .right-box {
   width: 400px;
   margin-left: 50px;
@@ -86,36 +86,30 @@ export default {
   height: 700px;
   overflow-y: scroll;
   padding: 0 10px;
-
   &::-webkit-scrollbar {
     /* 滚动条整体样式 */
     width: 4px; /* 高宽分别对应横竖滚动条的尺寸 */
     height: 1px;
   }
-
   &::-webkit-scrollbar-thumb {
     /* 滚动条里面小方块 */
     border-radius: 4px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     background: #535353;
   }
-
   &::-webkit-scrollbar-track {
     /* 滚动条里面轨道 */
     box-shadow: inset 0 0 5px #fff;
     border-radius: 4px;
     background: #fff;
   }
-
   .link-item {
     padding: 10px 0;
     border-bottom: 1px solid #f5f5f5;
-
     .title {
       font-size: 14px;
       color: #2d8cf0;
     }
-
     .txt {
       margin: 5px 0;
       font-size: 12px;
@@ -132,17 +126,14 @@ export default {
         span {
           color: #333;
         }
-
         &.red {
           color: #f00;
         }
       }
     }
-
     .tips {
       font-size: 12px;
       color: #999;
-
       .copy {
         padding: 3px 5px;
         border: 1px solid #cccccc;
@@ -150,7 +141,6 @@ export default {
         color: #333;
         cursor: pointer;
         margin-left: 5px;
-
         &:hover {
           border-color: #2d8cf0;
           color: #2d8cf0;

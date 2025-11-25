@@ -152,6 +152,37 @@ class UserWechatUserDao extends BaseDao
                 $model = $model->where($userAlias . 'pay_count', '>', $where['pay_count']);
             }
         }
+        if (isset($where['pay_count_num']) && count($where['pay_count_num']) == 2) {
+            if ($where['pay_count_num'][0] != '' && $where['pay_count_num'][1] != '') {
+                $model = $model->whereBetween($userAlias . 'pay_count', $where['pay_count_num']);
+            } elseif ($where['pay_count_num'][0] != '' && $where['pay_count_num'][1] == '') {
+                $model = $model->where($userAlias . 'pay_count', '>', $where['pay_count_num'][0]);
+            } elseif ($where['pay_count_num'][0] == '' && $where['pay_count_num'][1] != '') {
+                $model = $model->where($userAlias . 'pay_count', '<', $where['pay_count_num'][1]);
+            }
+        }
+
+        //储值余额
+        if (isset($where['balance']) && count($where['balance']) == 2) {
+            if ($where['balance'][0] != '' && $where['balance'][1] != '') {
+                $model = $model->whereBetween($userAlias . 'now_money', $where['balance']);
+            } elseif ($where['balance'][0] != '' && $where['balance'][1] == '') {
+                $model = $model->where($userAlias . 'now_money', '>', $where['balance'][0]);
+            } elseif ($where['balance'][0] == '' && $where['balance'][1] != '') {
+                $model = $model->where($userAlias . 'now_money', '<', $where['balance'][1]);
+            }
+        }
+
+        //积分剩余
+        if (isset($where['integral']) && count($where['integral']) == 2) {
+            if ($where['integral'][0] != '' && $where['integral'][1] != '') {
+                $model = $model->whereBetween($userAlias . 'integral', $where['integral']);
+            } elseif ($where['integral'][0] != '' && $where['integral'][1] == '') {
+                $model = $model->where($userAlias . 'integral', '>', $where['integral'][0]);
+            } elseif ($where['integral'][0] == '' && $where['integral'][1] != '') {
+                $model = $model->where($userAlias . 'integral', '<', $where['integral'][1]);
+            }
+        }
 
         //用户等级
         if (isset($where['level']) && $where['level']) {
@@ -178,7 +209,7 @@ class UserWechatUserDao extends BaseDao
                     if (strpos($where['label_id'], ',') !== false) {
                         $query->name('user_label_relation')->whereIn('label_id', explode(',', $where['label_id']))->field('uid')->select();
                     } else {
-                        $query->name('user_label_relation')->where('label_id', $where['label_id'])->field('uid')->select();
+                        $query->name('user_label_relation')->where('label_id', (int)$where['label_id'])->field('uid')->select();
                     }
                 }
             });
@@ -248,6 +279,11 @@ class UserWechatUserDao extends BaseDao
         if (isset($where['ids']) && count($where['ids'])) {
             $model->whereIn($userAlias . 'uid', $where['ids']);
         }
+
+        if (isset($where['agent_level']) && $where['agent_level'] != '') {
+            $model->where($userAlias . 'agent_level', $where['agent_level']);
+        }
+
         return $field ? $model->field($field) : $model;
     }
 

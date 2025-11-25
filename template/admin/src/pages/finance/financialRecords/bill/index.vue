@@ -20,7 +20,7 @@
           <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
             <el-form-item label="时间范围：" class="tab_data">
               <el-date-picker
-                  clearable
+                clearable
                 :editable="false"
                 @change="onchangeTime"
                 format="yyyy/MM/dd"
@@ -29,7 +29,7 @@
                 range-separator="-"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                  style="width: 80%"
+                style="width: 80%"
               ></el-date-picker>
             </el-form-item>
           </el-col>
@@ -48,9 +48,7 @@
           <el-col :span="6">
             <el-form-item>
               <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
-              <el-button v-auth="['export-userFinance']" class="export" v-db-click @click="exports"
-                >导出
-              </el-button>
+              <el-button v-auth="['export-userFinance']" class="export" v-db-click @click="exports">导出 </el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -194,23 +192,19 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-form-label-left ::v-deep .ivu-form-item-label {
   text-align: right;
 }
-
 .tabform .export {
   margin-left: 10px;
 }
-
 .red {
-  color: #FF5722;
+  color: #ff5722;
 }
-
 .green {
   color: #009688;
 }
-
 .ivu-mt ::v-deep .ivu-select-placeholder {
   height: 32px;
 }

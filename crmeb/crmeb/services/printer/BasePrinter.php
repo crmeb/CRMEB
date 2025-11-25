@@ -33,6 +33,12 @@ abstract class BasePrinter extends BaseStorage
     protected $printerContent;
 
     /**
+     * 打印次数
+     * @var string
+     */
+    protected $times;
+
+    /**
      * BasePrinter constructor.
      * @param string $name
      * @param AccessToken $accessToken
@@ -46,16 +52,15 @@ abstract class BasePrinter extends BaseStorage
 
     /**
      * 开始打印
-     * @param array|null $systemConfig
      * @return mixed
      */
     abstract public function startPrinter();
 
     /**
      * 设置打印内容
-     * @param array $config
+     * @param $content
      * @return mixed
      */
-    abstract public function setPrinterContent(array $config);
+    abstract public function setPrinterContent($content);
 
 }

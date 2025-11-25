@@ -88,9 +88,12 @@ class DivisionAgentApplyServices extends BaseServices
         $where['is_del'] = 0;
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, $page, $limit);
+        $divisionUids = array_column($list, 'division_id');
+        $divisionArr = app()->make(UserServices::class)->getColumn([['division_id', 'in', $divisionUids]], 'division_name', 'uid');
         foreach ($list as &$item) {
             $item['images'] = json_decode($item['images'], true);
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
+            $item['division_name'] = $divisionArr[$item['division_id']] ?? '';
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');

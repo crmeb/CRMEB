@@ -3,27 +3,148 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form ref="artFrom" :model="artFrom" label-width="80px" label-position="right" inline @submit.native.prevent>
-          <el-form-item label="商品分类：" label-for="pid">
-            <el-cascader
-              v-model="artFrom.cate_id"
-              size="small"
-              :options="treeSelect"
-              :props="{ multiple: false, emitPath: false, checkStrictly: true }"
-              clearable
-              class="form_content_width"
-            ></el-cascader>
-          </el-form-item>
-          <el-form-item label="商品搜索：" label-for="store_name">
-            <el-input
-              clearable
-              placeholder="请输入商品名称/关键字/ID"
-              v-model="artFrom.store_name"
-              class="form_content_width"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
-          </el-form-item>
+          <div class="acea-row search-form">
+            <div class="search-form-box">
+              <el-form-item label="商品搜索：" label-for="store_name">
+                <el-input
+                  clearable
+                  placeholder="请输入商品名称/关键字/ID"
+                  v-model="artFrom.store_name"
+                  class="form_content_width"
+                />
+              </el-form-item>
+              <el-form-item label="商品类型：">
+                <el-select v-model="artFrom.virtual_type" clearable placeholder="全部" class="form_content_width">
+                  <el-option label="全部" value="" />
+                  <el-option label="普通商品" value="0" />
+                  <el-option label="卡密商品" value="1" />
+                  <el-option label="优惠券商品" value="2" />
+                  <el-option label="虚拟商品" value="3" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="商品分类：" label-for="pid">
+                <el-cascader
+                  v-model="artFrom.cate_id"
+                  size="small"
+                  :options="treeSelect"
+                  :props="{ multiple: false, emitPath: false, checkStrictly: true }"
+                  clearable
+                  class="form_content_width"
+                ></el-cascader>
+              </el-form-item>
+              <el-form-item label="配送方式：">
+                <el-select v-model="artFrom.logistics" clearable placeholder="全部" class="form_content_width">
+                  <el-option label="全部" value="" />
+                  <el-option label="快递配送" value="1" />
+                  <el-option label="到店自提" value="2" />
+                </el-select>
+              </el-form-item>
+              <template v-if="collapse">
+                <el-form-item label="商品标签：" label-for="store_name">
+                  <div class="labelInput acea-row row-between-wrapper form_content_width" @click="openStoreLabel">
+                    <div style="width: 90%">
+                      <div v-if="storeLabelList.length">
+                        <el-tag
+                          class="mr5"
+                          closable
+                          v-for="(item, index) in storeLabelList"
+                          :key="index"
+                          @close="closeStoreLabel(item)"
+                          >{{ item.label_name }}</el-tag
+                        >
+                      </div>
+                      <span class="span" v-else>选择商品标签</span>
+                    </div>
+                    <div class="iconfont iconxiayi"></div>
+                  </div>
+                </el-form-item>
+                <el-form-item label="商品规格：">
+                  <el-select v-model="artFrom.spec_type" clearable placeholder="全部" class="form_content_width">
+                    <el-option label="全部" value="" />
+                    <el-option label="单规格" value="0" />
+                    <el-option label="多规格" value="1" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="会员专属：">
+                  <el-select v-model="artFrom.vip_product" clearable placeholder="全部" class="form_content_width">
+                    <el-option label="全部" value="" />
+                    <el-option label="否" value="0" />
+                    <el-option label="是" value="1" />
+                  </el-select>
+                </el-form-item>
+
+                <el-form-item label="添加时间：">
+                  <el-date-picker
+                    class="form_range_content_width"
+                    clearable
+                    v-model="timeVal"
+                    type="daterange"
+                    :editable="false"
+                    @change="onchangeTime"
+                    format="yyyy/MM/dd"
+                    value-format="yyyy/MM/dd"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :picker-options="pickerOptions"
+                    style="width: 250px"
+                  ></el-date-picker>
+                </el-form-item>
+                <el-form-item label="库存：" label-for="store_name">
+                  <el-input
+                    clearable
+                    placeholder="最小值"
+                    v-model="artFrom.stock_s[0]"
+                    class="form_range_content_width"
+                  />
+                  ~
+                  <el-input
+                    clearable
+                    placeholder="最大值"
+                    v-model="artFrom.stock_s[1]"
+                    class="form_range_content_width"
+                  />
+                </el-form-item>
+                <el-form-item label="价格：" label-for="store_name">
+                  <el-input
+                    clearable
+                    placeholder="最小值"
+                    v-model="artFrom.price_s[0]"
+                    class="form_range_content_width"
+                  />
+                  ~
+                  <el-input
+                    clearable
+                    placeholder="最大值"
+                    v-model="artFrom.price_s[1]"
+                    class="form_range_content_width"
+                  />
+                </el-form-item>
+                <el-form-item label="销量：" label-for="store_name">
+                  <el-input
+                    clearable
+                    placeholder="最小值"
+                    v-model="artFrom.sales_s[0]"
+                    class="form_range_content_width"
+                  />
+                  ~
+                  <el-input
+                    clearable
+                    placeholder="最大值"
+                    v-model="artFrom.sales_s[1]"
+                    class="form_range_content_width"
+                  />
+                </el-form-item>
+              </template>
+            </div>
+            <div class="search-form-sub">
+              <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+              <el-button class="ResetSearch" v-db-click @click="reset">重置</el-button>
+              <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
+                <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
+                <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
+              </a>
+            </div>
+          </div>
         </el-form>
       </div>
     </el-card>
@@ -40,7 +161,9 @@
         <router-link v-auth="['product-product-save']" :to="$routeProStr + '/product/add_product'"
           ><el-button type="primary" class="mr14">添加商品</el-button></router-link
         >
-        <el-button v-auth="['product-crawl-save']" type="success" class="mr14" v-db-click @click="onCopy">商品采集</el-button>
+        <el-button v-auth="['product-crawl-save']" type="success" class="mr14" v-db-click @click="onCopy"
+          >商品采集</el-button
+        >
         <el-dropdown class="bnt mr14" @command="batchSelect">
           <el-button>批量修改<i class="el-icon-arrow-down el-icon--right"></i></el-button>
           <el-dropdown-menu slot="dropdown">
@@ -50,15 +173,29 @@
             <el-dropdown-item :command="4">购买送优惠券</el-dropdown-item>
             <el-dropdown-item :command="5">关联用户标签</el-dropdown-item>
             <el-dropdown-item :command="6">活动推荐</el-dropdown-item>
+            <el-dropdown-item v-auth="['product-product-product_show']" v-if="artFrom.type === '1'" :command="7"
+              >批量下架</el-dropdown-item
+            >
+            <el-dropdown-item v-auth="['product-product-product_show']" v-if="artFrom.type === '2'" :command="8"
+              >批量上架</el-dropdown-item
+            >
+            <el-dropdown-item v-auth="['product-product-product_show']" :command="9">设置商品标签</el-dropdown-item>
+            <el-dropdown-item v-auth="['product-product-product_show']" v-if="artFrom.type !== '6'" :command="11"
+              >移到回收站</el-dropdown-item
+            >
+            <el-dropdown-item v-auth="['product-product-product_show']" v-if="artFrom.type == '6'" :command="12"
+              >恢复商品</el-dropdown-item
+            >
           </el-dropdown-menu>
         </el-dropdown>
-        <el-button v-auth="['product-product-product_show']" v-db-click @click="onDismount" v-show="artFrom.type === '1'"
-          >批量下架</el-button
-        >
-        <el-button v-auth="['product-product-product_show']" v-db-click @click="onShelves" v-show="artFrom.type === '2'"
-          >批量上架</el-button
-        >
-        <el-button v-auth="['export-storeProduct']" class="export" v-db-click @click="exports">导出</el-button>
+        <el-dropdown class="bnt mr14" @command="goodsMove">
+          <el-button>商品迁移<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :command="1">商品导入</el-dropdown-item>
+            <el-dropdown-item :command="2">商品导出</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-button v-auth="['export-storeProduct']" class="export" v-db-click @click="onExports(0)">数据导出</el-button>
       </div>
       <el-table
         ref="table"
@@ -91,6 +228,37 @@
         <el-table-column label="商品名称" min-width="250">
           <template slot-scope="scope">
             <span>{{ scope.row.store_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="参与活动" width="90">
+          <template slot-scope="scope">
+            <el-tag
+              class="mb5 cup"
+              v-if="scope.row.activityExist.bargain"
+              type=""
+              @click="activityDetail(scope.row, 0)"
+              effect="dark"
+            >
+              砍价
+            </el-tag>
+            <el-tag
+              class="mb5 cup"
+              v-if="scope.row.activityExist.combination"
+              type="success"
+              @click="activityDetail(scope.row, 1)"
+              effect="dark"
+            >
+              拼团
+            </el-tag>
+            <el-tag
+              class="mb5 cup"
+              v-if="scope.row.activityExist.seckill"
+              type="warning"
+              @click="activityDetail(scope.row, 2)"
+              effect="dark"
+            >
+              秒杀
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="商品类型" min-width="100">
@@ -149,8 +317,23 @@
                     ><a>查看评论</a></router-link
                   >
                 </el-dropdown-item>
-                <el-dropdown-item v-if="artFrom.type === '6'" v-db-click @click.native="del(scope.row, '恢复商品', scope.$index)"
+                <el-dropdown-item v-db-click @click.native="openModal(scope.row, 'vipPriceSet')"
+                  >会员价管理</el-dropdown-item
+                >
+                <el-dropdown-item v-db-click @click.native="openModal(scope.row, 'brokerageSet')"
+                  >佣金管理</el-dropdown-item
+                >
+                <el-dropdown-item
+                  v-if="artFrom.type === '6'"
+                  v-db-click
+                  @click.native="del(scope.row, '恢复商品', scope.$index)"
                   >恢复商品</el-dropdown-item
+                >
+                <el-dropdown-item
+                  v-if="artFrom.type === '6'"
+                  v-db-click
+                  @click.native="fullDel(scope.row, '彻底删除', scope.$index)"
+                  >彻底删除</el-dropdown-item
                 >
                 <el-dropdown-item v-else v-db-click @click.native="del(scope.row, '移入回收站', scope.$index)"
                   >移到回收站</el-dropdown-item
@@ -278,11 +461,16 @@
             <el-form-item label="关联标签：" prop="label_id" v-if="batchType == 5">
               <div class="acea-row label_width">
                 <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
-                  <div style="width: 90%">
+                  <div style="width: auto">
                     <div v-if="dataLabel.length">
-                      <el-tag closable v-for="(item, index) in dataLabel" @close="closeLabel(item)" :key="index">{{
-                        item.label_name
-                      }}</el-tag>
+                      <el-tag
+                        class="m-r-2"
+                        closable
+                        v-for="(item, index) in dataLabel"
+                        @close="closeLabel(item)"
+                        :key="index"
+                        >{{ item.label_name }}</el-tag
+                      >
                     </div>
                     <span class="span" v-else>选择用户关联标签</span>
                   </div>
@@ -293,7 +481,7 @@
             <el-form-item label="商品推荐：" v-if="batchType == 6">
               <el-checkbox-group v-model="batchFormData.recommend">
                 <el-checkbox label="is_hot">热卖单品</el-checkbox>
-                <el-checkbox label="is_benefit">促销单品</el-checkbox>
+                <!-- <el-checkbox label="is_benefit">促销单品</el-checkbox> -->
                 <el-checkbox label="is_best">精品推荐</el-checkbox>
                 <el-checkbox label="is_new">首发新品</el-checkbox>
                 <el-checkbox label="is_good">优品推荐</el-checkbox>
@@ -306,6 +494,21 @@
         <el-button v-db-click @click="clearBatchData">取 消</el-button>
         <el-button type="primary" v-db-click @click="batchSub">确 定</el-button>
       </span>
+    </el-dialog>
+    <!-- 商品标签 -->
+    <el-dialog
+      :visible.sync="tagShow"
+      title="请选择商品标签"
+      :show-close="true"
+      width="540px"
+      :close-on-click-modal="false"
+    >
+      <goodsLabel
+        ref="goodsLabel"
+        :defaultLabelList="goodsLabelList"
+        @activeLabel="activeGoodsLabel"
+        @close="labelClose"
+      ></goodsLabel>
     </el-dialog>
     <!-- 用户标签 -->
     <el-dialog
@@ -323,6 +526,27 @@
       <goodsDetail :goodsId="goodsId"></goodsDetail>
     </div>
     <coupon-list ref="couponTemplates" @nameId="nameId" :couponids="batchFormData.coupon_ids"></coupon-list>
+    <!-- 商品导入 -->
+    <el-dialog
+      :visible.sync="importShow"
+      title="商品导入"
+      width="900px"
+      :show-close="true"
+      :close-on-click-modal="false"
+    >
+      <goodsImport v-if="importShow" @close="importShow = false"></goodsImport>
+    </el-dialog>
+    <brokerageSet ref="brokerageSet" :productId="productId"></brokerageSet>
+    <vipPriceSet ref="vipPriceSet" :productId="productId"></vipPriceSet>
+    <!-- 商品标签 -->
+    <el-dialog :visible.sync="storeLabelShow" title="选择商品标签" width="540">
+      <storeLabelList
+        v-if="storeLabelShow"
+        ref="storeLabel"
+        @activeData="activeStoreData"
+        @close="storeLabelClose"
+      ></storeLabelList>
+    </el-dialog>
   </div>
 </template>
 
@@ -334,8 +558,11 @@ import { mapState } from 'vuex';
 import taoBao from './taoBao';
 import goodsDetail from './components/goodsDetail.vue';
 import couponList from '@/components/couponList';
-import { exportProductList } from '@/api/export';
-
+import { exportProductList, exportProductExport } from '@/api/export';
+import settings from '@/setting';
+import goodsImport from './components/goodsImport.vue';
+import brokerageSet from '../components/brokerageSet.vue';
+import vipPriceSet from '../components/vipPriceSet.vue';
 import {
   getGoodHeade,
   getGoods,
@@ -346,19 +573,38 @@ import {
   storeProductApi,
   batchSetting,
   productGetTemplateApi,
+  productLabelUseListApi,
+  productBatchDelete,
 } from '@/api/product';
 import userLabel from '@/components/labelList';
+import storeLabelList from '@/components/storeLabelList';
+import goodsLabel from '@/components/goodsLabel';
 
 export default {
   name: 'product_productList',
-  components: { expandRow, attribute, taoBao, goodsDetail, userLabel, couponList },
+  components: {
+    expandRow,
+    attribute,
+    taoBao,
+    goodsDetail,
+    userLabel,
+    couponList,
+    goodsImport,
+    brokerageSet,
+    vipPriceSet,
+    storeLabelList,
+    goodsLabel,
+  },
   computed: {
     ...mapState('userLevel', ['categoryId']),
   },
   data() {
     return {
+      routePre: settings.routePre,
+      pickerOptions: this.$timeOptions,
       template: false,
       modals: false,
+      importShow: false,
       batchModal: false,
       labelShow: false,
       batchType: 1, // 批量设置类型
@@ -390,6 +636,16 @@ export default {
         cate_id: '',
         type: '1',
         store_name: '',
+        spec_type: '',
+        logistics: '',
+        vip_product: '',
+        is_gift: '',
+        sales_s: ['', ''],
+        stock_s: ['', ''],
+        price_s: ['', ''],
+        store_label_id: [],
+        time: '',
+        virtual_type: '',
       },
       list: [],
       tableList: [],
@@ -403,6 +659,15 @@ export default {
       isProductBox: false,
       treeSelect: [],
       multipleSelection: [],
+      showBrokerage: false,
+      showVipPrice: false,
+      storeLabelShow: false,
+      tagShow: false,
+      productId: 0,
+      storeLabelList: [],
+      goodsLabelList: [],
+      timeVal: [],
+      collapse: false,
     };
   },
   watch: {
@@ -416,6 +681,7 @@ export default {
   activated() {
     this.goodHeade();
     this.goodsCategory();
+    this.getLabelList();
     if (this.$route.fullPath === this.$routeProStr + '/product/product_list?type=5') {
       this.getPath();
     } else {
@@ -423,6 +689,78 @@ export default {
     }
   },
   methods: {
+    // 具体日期
+    onchangeTime(e) {
+      this.timeVal = e;
+      this.artFrom.time = this.timeVal ? this.timeVal.join('-') : '';
+      this.artFrom.page = 1;
+      this.getDataList();
+    },
+    // 标签弹窗关闭
+    storeLabelClose() {
+      this.storeLabelShow = false;
+    },
+    getLabelList() {
+      productLabelUseListApi()
+        .then((res) => {
+          res.data.map((el) => {
+            if (el.list && el.list.length) {
+              el.list.map((label) => {
+                label.active = false;
+              });
+            }
+          });
+          this.goodsLabelList = res.data;
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    openStoreLabel(row) {
+      this.storeLabelShow = true;
+      this.$nextTick((e) => {
+        this.$refs.storeLabel.storeLabel(JSON.parse(JSON.stringify(this.storeLabelList)));
+      });
+    },
+    closeStoreLabel(label) {
+      let index = this.storeLabelList.indexOf(this.storeLabelList.filter((d) => d.id == label.id)[0]);
+      this.storeLabelList.splice(index, 1);
+      this.getLabelId(this.storeLabelList);
+    },
+    activeStoreData(storeDataLabel) {
+      this.storeLabelShow = false;
+      this.storeLabelList = storeDataLabel;
+      this.getLabelId(storeDataLabel);
+    },
+    getLabelId(storeDataLabel) {
+      let storeActiveIds = [];
+      storeDataLabel.forEach((item) => {
+        storeActiveIds.push(item.id);
+      });
+      this.artFrom.store_label_id = storeActiveIds;
+      this.artFrom.page = 1;
+      this.getDataList();
+    },
+    activityDetail(row, type) {
+      let name = '';
+      if (type === 0) {
+        name = 'marketing_storeBargain';
+      } else if (type === 1) {
+        name = 'marketing_combinalist';
+      } else if (type === 2) {
+        name = 'marketing_storeSeckill';
+      }
+      this.$router.push({
+        name,
+        params: {
+          product_id: row.id,
+        },
+      });
+    },
+    openModal(row, type) {
+      this.productId = row.id;
+      this.$refs[type].visible = true;
+    },
     batchSub() {
       let data = this.batchFormData;
       data.ids = this.ids;
@@ -458,6 +796,8 @@ export default {
           label_id: [],
           coupon_ids: [],
           recommend: [],
+          is_gift: null,
+          label_list: [],
         };
         this.dataLabel = [];
       }
@@ -468,10 +808,49 @@ export default {
     batchSelect(type) {
       if (!this.ids.length) {
         this.$message.warning('请选择要修改的商品');
+      } else if (type === 7) {
+        this.onDismount();
+      } else if (type === 8) {
+        this.onShelves();
+      } else if (type === 9) {
+        this.batchType = type;
+        this.tagShow = true;
+      } else if (type === 11) {
+        this.batchGoodsSetting('全部移到回收站', 1);
+      } else if (type === 12) {
+        this.batchGoodsSetting('恢复选中商品', 2);
       } else {
         this.batchType = type;
         this.batchModal = true;
         this.productGetTemplate();
+      }
+    },
+    batchGoodsSetting(tit, type) {
+      let url = type == 1 ? 'product/product/batch_delete' : 'product/product/batch_recover';
+      let delfromData = {
+        title: tit,
+        url,
+        method: 'post',
+        ids: {
+          ids: this.ids,
+        },
+        un: 1,
+      };
+      this.$modalSure(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.goodHeade();
+          this.getDataList();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    goodsMove(type) {
+      if (type === 1) {
+        this.onImport();
+      } else {
+        this.onExports(2);
       }
     },
     activeData(dataLabel) {
@@ -501,6 +880,14 @@ export default {
     // 标签弹窗关闭
     labelClose() {
       this.labelShow = false;
+      this.tagShow = false;
+    },
+    // 选择商品标签
+    activeGoodsLabel(data) {
+      console.log(data, 'data');
+      this.tagShow = false;
+      this.batchFormData.label_list = Array.from(new Set(data));
+      this.batchSub();
     },
     look(row) {
       this.goodsId = row.id;
@@ -529,15 +916,18 @@ export default {
       this.artFrom.type = this.$route.query.type.toString();
       this.getDataList();
     },
+    onImport() {
+      this.importShow = true;
+    },
     // 导出
-    async exports() {
+    async onExports(type) {
       let [th, filekey, data, fileName] = [[], [], [], ''];
       let excelData = JSON.parse(JSON.stringify(this.artFrom));
       excelData.page = 1;
       excelData.limit = 50;
       excelData.ids = this.ids;
       for (let i = 0; i < excelData.page + 1; i++) {
-        let lebData = await this.getExcelData(excelData);
+        let lebData = await this.getExcelData(excelData, type);
         if (!fileName) fileName = lebData.filename;
         if (!filekey.length) {
           filekey = lebData.fileKey;
@@ -552,9 +942,10 @@ export default {
         }
       }
     },
-    getExcelData(excelData) {
+    getExcelData(excelData, type) {
+      let fun = type ? exportProductExport : exportProductList;
       return new Promise((resolve, reject) => {
-        exportProductList(excelData).then((res) => {
+        fun(excelData).then((res) => {
           resolve(res.data);
         });
       });
@@ -667,7 +1058,7 @@ export default {
     },
     // 获取商品表单头数量
     goodHeade() {
-      getGoodHeade({ cate_id: this.artFrom.cate_id, store_name: this.artFrom.store_name })
+      getGoodHeade(this.artFrom)
         .then((res) => {
           this.headeNum = res.data.list;
         })
@@ -783,6 +1174,49 @@ export default {
           this.$message.error(res.msg);
         });
     },
+    fullDel(row, tit, num) {
+      let delfromData = {
+        title: tit,
+        num: num,
+        url: `product/full_del/${row.id}`,
+        method: 'DELETE',
+      };
+      this.$modalSure(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.tableList.splice(num, 1);
+          this.goodHeade();
+          this.getDataList();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    // 重置
+    reset(name) {
+      this.artFrom = {
+        page: 1,
+        limit: 15,
+        cate_id: '',
+        type: '1',
+        store_name: '',
+        spec_type: '',
+        logistics: '',
+        vip_product: '',
+        is_gift: '',
+        sales_s: ['', ''],
+        stock_s: ['', ''],
+        price_s: ['', ''],
+        store_label_id: [],
+        time: '',
+        virtual_type: '',
+      };
+      this.storeLabelList = [];
+      this.tableList = [];
+      this.total = 0;
+      this.timeVal = [];
+      this.getDataList();
+    },
   },
 };
 </script>
@@ -865,8 +1299,7 @@ export default {
 
 .labelInput {
   border: 1px solid #dcdee2;
-  width: 100%;
-  padding: 0 15px;
+  padding: 0 15px 0 10px;
   border-radius: 5px;
   min-height: 30px;
   cursor: pointer;
@@ -877,6 +1310,7 @@ export default {
   }
 
   .iconxiayi {
+    margin-left: 5px;
     font-size: 12px;
   }
 }
@@ -895,5 +1329,18 @@ export default {
 }
 .label_width {
   width: 400px;
+}
+.search-form {
+  display: flex;
+  justify-content: space-between;
+  .search-form-box {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+  .search-form-sub {
+    display: flex;
+    align-items: baseline;
+  }
 }
 </style>

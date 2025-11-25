@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["components/BaseMoney"],{"2a8d":function(e,t,n){"use strict";n.r(t);var a=n("3f27"),i=n.n(a);for(var u in a)["default"].indexOf(u)<0&&function(e){n.d(t,e,(function(){return a[e]}))}(u);t["default"]=i.a},"3f27":function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var a={name:"BaseMoney",props:{digits:{type:Number,default:2},money:{type:String|Number,default:""},line:{type:Boolean,default:!1},weight:{type:Boolean,default:!1},symbol:{type:Boolean,default:!0},color:{type:String,default:"var(--view-theme)"},textColor:{type:String,default:"#999"},symbolSize:{type:String,default:"20"},integerSize:{type:String,default:"26"},decimalSize:{type:String,default:"24"},inline:{type:Boolean,default:!1},preFix:{type:String,default:""},preFixSize:{type:String,default:"24"},SemiBold:{type:Boolean,default:!0},isCoupon:{type:Boolean,default:!1}},data:function(){return{integer:0,decimal:0}},watch:{money:{handler:function(e,t){var n=Number(e).toFixed(this.digits);n=n.split("."),this.integer=n[0].replace(/\B(?=(\d{3})+(?!\d))/g,","),n[1]&&(this.decimal=n[1])},immediate:!0}},computed:{}};t.default=a},"4ad1":function(e,t,n){"use strict";n.r(t);var a=n("6ad4"),i=n("2a8d");for(var u in i)["default"].indexOf(u)<0&&function(e){n.d(t,e,(function(){return i[e]}))}(u);n("d3ad");var o=n("828b"),d=Object(o["a"])(i["default"],a["b"],a["c"],!1,null,"5112a064",null,!1,a["a"],void 0);t["default"]=d.exports},"5c72":function(e,t,n){},"6ad4":function(e,t,n){"use strict";n.d(t,"b",(function(){return a})),n.d(t,"c",(function(){return i})),n.d(t,"a",(function(){}));var a=function(){var e=this.$createElement;this._self._c},i=[]},d3ad:function(e,t,n){"use strict";var a=n("5c72"),i=n.n(a);i.a}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'components/BaseMoney-create-component',
+    {
+        'components/BaseMoney-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('df3c')['createComponent'](__webpack_require__("4ad1"))
+        })
+    },
+    [['components/BaseMoney-create-component']]
+]);

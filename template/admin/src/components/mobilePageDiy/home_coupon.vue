@@ -170,59 +170,70 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.couponOn{
-    border-radius 10px
+<style lang="scss" scoped>
+.couponOn {
+  border-radius: 10px;
 }
-.coupon
-    display flex
-    align-items center
-    padding 15px 0 15px 10px
-    background #F8F8F8
-    overflow hidden
-    .item
-        flex-shrink 0
-        position relative
-        display flex
-        width:152px;
-        height:76px;
-        background:rgba(233,51,35,1);
-        color #fff
-        border-radius 5px
-        margin-right 10px
-        &.gary
-            background #D8D8D8
-        .left
-            width 120px
-            height 76px
-            display flex
-            flex-direction column
-            align-items center
-            justify-content center
-            .num
-                font-size 24px
-                font-weight bold
-                span
-                    font-size 12px
-            .txt
-                font-size 12px
-        .right
-            flex 1
-            display flex
-            align-items center
-            justify-content center
-            font-size 12px
-            border-left 1px dashed #fff
-        .roll
-            position absolute
-            width 10px
-            height 10px
-            border-radius 50%
-            background #F8F8F8
-            &.up-roll
-                right: 26px;
-                top: -5px;
-            &.down-roll
-                right: 26px;
-                bottom: -5px;
+.coupon {
+  display: flex;
+  align-items: center;
+  padding: 15px 0 15px 10px;
+  background: #f8f8f8;
+  overflow: hidden;
+  .item {
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    width: 152px;
+    height: 76px;
+    background: rgba(233, 51, 35, 1);
+    color: #fff;
+    border-radius: 5px;
+    margin-right: 10px;
+    &.gary {
+      background: #d8d8d8;
+    }
+    .left {
+      width: 120px;
+      height: 76px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .num {
+        font-size: 24px;
+        font-weight: bold;
+        span {
+          font-size: 12px;
+        }
+      }
+      .txt {
+        font-size: 12px;
+      }
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border-left: 1px dashed #fff;
+    }
+    .roll {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #f8f8f8;
+      &.up-roll {
+        right: 26px;
+        top: -5px;
+      }
+      &.down-roll {
+        right: 26px;
+        bottom: -5px;
+      }
+    }
+  }
+}
 </style>

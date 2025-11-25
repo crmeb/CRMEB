@@ -1,6 +1,15 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-alert type="warning" :closable="false" class="alert-info">
+        <template slot="title">
+          获取访问 Token 的接口:<br />
+          请求 URL: /outapi/access_token 请求方式: POST 请求参数: appid和appsecret 返回数据: access_token: 访问令牌
+          exp_time: 令牌过期时间 auth_info: 授权信息<br />
+          使用获取到的 Token 访问对外接口:<br />
+          在 HTTP 请求头中添加 Authorization 字段 字段值为 Bearer access_token(注意 Bearer 后有一个空格)
+        </template>
+      </el-alert>
       <el-form
         ref="formValidate"
         :model="formValidate"
@@ -168,13 +177,13 @@
         <el-form-item label="推送账号：" prop="push_account">
           <div class="form-content">
             <el-input type="text" v-model="settingData.push_account" placeholder="请输入推送账号"></el-input>
-            <span class="trip">接受推送方获取token的账号</span>
+            <span class="tips-info">接受推送方获取token的账号</span>
           </div>
         </el-form-item>
         <el-form-item label="推送密码：" prop="push_password">
           <div class="form-content">
             <el-input type="text" v-model="settingData.push_password" placeholder="请输入推送密码"></el-input>
-            <span class="trip">接受推送方获取token的密码</span>
+            <span class="tips-info">接受推送方获取token的密码</span>
           </div>
         </el-form-item>
         <el-form-item label="获取TOKEN接口：" prop="push_token_url">
@@ -183,7 +192,7 @@
               <el-input type="text" v-model="settingData.push_token_url" placeholder="请输入获取TOKEN接口"></el-input>
               <el-button class="ml10" type="primary" v-db-click @click="textOutUrl(settingData.id)">测试链接</el-button>
             </div>
-            <span class="trip"
+            <span class="tips-info"
               >接受推送方获取token的URL地址，POST方法，传入push_account和push_password，返回token和有效时间time(秒)</span
             >
           </div>
@@ -195,7 +204,7 @@
               v-model="settingData.user_update_push"
               placeholder="请输入用户数据修改推送接口"
             ></el-input>
-            <span class="trip">用户修改积分，余额，经验等将用户信息推送至该地址，POST方法</span>
+            <span class="tips-info">用户修改积分，余额，经验等将用户信息推送至该地址，POST方法</span>
           </div>
         </el-form-item>
         <el-form-item label="订单创建推送接口：" prop="order_create_push">
@@ -205,13 +214,13 @@
               v-model="settingData.order_create_push"
               placeholder="请输入订单创建推送接口"
             ></el-input>
-            <span class="trip">订单创建时推送订单信息至该地址，POST方法</span>
+            <span class="tips-info">订单创建时推送订单信息至该地址，POST方法</span>
           </div>
         </el-form-item>
         <el-form-item label="订单支付推送接口：" prop="order_pay_push">
           <div class="form-content">
             <el-input type="text" v-model="settingData.order_pay_push" placeholder="请输入订单支付推送接口"></el-input>
-            <span class="trip">订单完成支付时推送订单已支付信息至该地址，POST方法</span>
+            <span class="tips-info">订单完成支付时推送订单已支付信息至该地址，POST方法</span>
           </div>
         </el-form-item>
         <el-form-item label="售后订单创建推送接口：" prop="refund_create_push">
@@ -221,7 +230,7 @@
               v-model="settingData.refund_create_push"
               placeholder="请输入售后订单创建推送接口"
             ></el-input>
-            <span class="trip">售后订单生成时推送售后单信息至该地址，POST方法</span>
+            <span class="tips-info">售后订单生成时推送售后单信息至该地址，POST方法</span>
           </div>
         </el-form-item>
         <el-form-item label="售后订单取消推送接口：" prop="refund_cancel_push">
@@ -231,7 +240,7 @@
               v-model="settingData.refund_cancel_push"
               placeholder="请输入售后订单取消推送接口"
             ></el-input>
-            <span class="trip">售后订单取消时推送售后单取消信息至该地址，POST方法</span>
+            <span class="tips-info">售后订单取消时推送售后单取消信息至该地址，POST方法</span>
           </div>
         </el-form-item>
       </el-form>
@@ -431,6 +440,7 @@ export default {
       this.modals = true;
       this.modalsdate.appid = row.appid;
       this.modalsdate.title = row.title;
+      this.modalsdate.appsecret = row.apppwd;
       this.modalsdate.rules = row.rules.map((e) => {
         return Number(e);
       });
@@ -547,11 +557,10 @@ export default {
 .input-button {
   display: flex;
 }
-w .trip {
-  color: #aaa;
-  line-height: 20px;
-}
 .setting-style ::v-deep .ivu-form-item {
+  margin-bottom: 14px;
+}
+.alert-info {
   margin-bottom: 14px;
 }
 </style>

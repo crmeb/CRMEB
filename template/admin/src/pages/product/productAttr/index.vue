@@ -27,7 +27,9 @@
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-button v-auth="['product-rule-save']" type="primary" v-db-click @click="addAttr">添加商品规格</el-button>
-      <el-button v-auth="['product-product-rule-delete']" v-db-click @click="del(null, '批量删除规格')">批量删除</el-button>
+      <el-button v-auth="['product-product-rule-delete']" v-db-click @click="del(null, '批量删除规格')"
+        >批量删除</el-button
+      >
       <el-table
         ref="table"
         :data="tableList"

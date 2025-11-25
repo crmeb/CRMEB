@@ -151,7 +151,7 @@
 					title: that.$t(`缺少订单号无法查看订单详情`)
 				});
 				uni.navigateTo({
-					url: '/pages/goods/order_details/index?order_id=' + order_id + '&isReturen=1'
+					url: '/pages/goods/order_details/index?order_id=' + order_id + '&isReturn=1'
 				})
 			},
 			changeTabs(index) {

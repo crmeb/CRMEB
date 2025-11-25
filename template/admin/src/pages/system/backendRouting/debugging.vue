@@ -4,7 +4,12 @@
       <el-input v-model="interfaceData.path">
         <template #prepend>
           <el-select v-model="interfaceData.method" style="width: 120px">
-            <el-option v-for="(item, index) in requestTypeList" :key="index" :value="item.value" :label="item.label"></el-option>
+            <el-option
+              v-for="(item, index) in requestTypeList"
+              :key="index"
+              :value="item.value"
+              :label="item.label"
+            ></el-option>
           </el-select>
         </template>
       </el-input>
@@ -76,7 +81,8 @@
                 type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                v-db-click @click="insertRow(row, 'xTable')"
+                v-db-click
+                @click="insertRow(row, 'xTable')"
                 >插入</vxe-button
               >
               <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'xTable')">删除</vxe-button>
@@ -149,7 +155,8 @@
                 type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                v-db-click @click="insertRow(row, 'yTable')"
+                v-db-click
+                @click="insertRow(row, 'yTable')"
                 >插入</vxe-button
               >
               <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'yTable')">删除</vxe-button>
@@ -193,7 +200,8 @@
                 type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                v-db-click @click="insertRow(row, 'zTable')"
+                v-db-click
+                @click="insertRow(row, 'zTable')"
                 >插入</vxe-button
               >
               <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'zTable')">删除</vxe-button>
@@ -271,16 +279,16 @@ export default {
         value: 'Bearer ' + getCookies('token'),
       });
       // this.insertEvent('zaTable');
-    }else{
-			if(this.interfaceData.header){
-				this.interfaceData.header.forEach((item,index)=>{
-					this.insertEvent('zTable', {
-					  attribute: item.attribute || '',
-					  value: item.value || '',
-					});
-				})
-			}
-		}
+    } else {
+      if (this.interfaceData.header) {
+        this.interfaceData.header.forEach((item, index) => {
+          this.insertEvent('zTable', {
+            attribute: item.attribute || '',
+            value: item.value || '',
+          });
+        });
+      }
+    }
   },
   methods: {
     async handleChange(e, row, type) {

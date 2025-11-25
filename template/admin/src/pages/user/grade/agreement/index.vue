@@ -9,8 +9,7 @@
           <WangEditor :content="agreement.content" @editorContent="getEditorContent"></WangEditor>
         </el-form-item>
         <el-form-item label="开启状态：">
-          <el-switch :active-value="1"  :inactive-value="0" v-model="agreement.status" size="large">
-           </el-switch>
+          <el-switch :active-value="1" :inactive-value="0" v-model="agreement.status" size="large"> </el-switch>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" v-db-click @click="memberAgreementSave">保存</el-button>
@@ -82,7 +81,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .ivu-form-item-content {
   line-height: unset !important;
 }

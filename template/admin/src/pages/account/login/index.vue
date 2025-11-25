@@ -69,7 +69,7 @@
     <div class="footer">
       <div class="pull-right" v-if="copyright">{{ copyright }}</div>
       <div class="pull-right" v-else>
-        Copyright © 2014-2024 <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
+        Copyright © 2014-2025 <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
       </div>
     </div>
   </div>
@@ -97,7 +97,6 @@ export default {
       },
       loading: false,
       isShow: false,
-      autoLogin: true,
       imgcode: '',
       formInline: {
         username: '',
@@ -108,64 +107,45 @@ export default {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
       },
       login_captcha: 0,
-      // jigsaw: null,
       login_logo: '',
       swiperList: [],
       defaultSwiperList: require('@/assets/images/sw.png'),
       key: '',
       copyright: '',
       version: '',
+      timer: null,
     };
   },
   created() {
-    const _this = this;
-    document.onkeydown = function () {
-      if (_this.$route.name === 'login') {
-        let key = window.event.keyCode;
-        if (key === 13) {
-          _this.handleSubmit('formInline');
-        }
+    document.onkeydown = (e) => {
+      if (this.$route.name === 'login' && (e.keyCode === 13 || e.which === 13)) {
+        this.handleSubmit('formInline');
       }
     };
     window.addEventListener('resize', this.handleResize);
   },
-  watch: {
-    fullWidth(val) {
-      // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
-      if (!this.timer) {
-        // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
-        this.screenWidth = val;
-        this.timer = true;
-        let that = this;
-        setTimeout(function () {
-          // 打印screenWidth变化的值
-          that.timer = false;
-        }, 400);
-      }
-    },
-    $route(n) {},
-  },
   mounted() {
     this.$nextTick(() => {
-      let that = this;
-      if (this.screenWidth < 768) {
-        document.getElementsByTagName('canvas')[0].removeAttribute('class', 'index_bg');
-      } else {
-        document.getElementsByTagName('canvas')[0].className = 'index_bg';
-      }
+      this.handleResize();
       this.swiperData();
     });
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+    document.onkeydown = null;
+    const canvas = document.getElementsByTagName('canvas')[0];
+    if (canvas) canvas.removeAttribute('class', 'index_bg');
   },
   methods: {
     swiperData() {
       loginInfoApi()
         .then((res) => {
-          window.document.title = `${res.data.site_name} - 登录`;
-          localStorage.setItem('ADMIN_TITLE', res.data.site_name || '');
-          this.$store.commit('setAdminTitle', res.data.site_name);
-          let data = res.data || {};
-          this.login_logo = data.login_logo ? data.login_logo : require('@/assets/images/logo.png');
-          this.swiperList = data.slide.length ? data.slide : [{ slide: this.defaultSwiperList }];
+          const data = res.data || {};
+          document.title = `${data.site_name} - 登录`;
+          localStorage.setItem('ADMIN_TITLE', data.site_name || '');
+          this.$store.commit('setAdminTitle', data.site_name);
+          this.login_logo = data.login_logo || require('@/assets/images/logo.png');
+          this.swiperList = data.slide && data.slide.length ? data.slide : [{ slide: this.defaultSwiperList }];
           this.key = data.key;
           this.copyright = data.copyright;
           this.version = data.version;
@@ -180,11 +160,8 @@ export default {
     success(params) {
       this.closeModel(params);
     },
-    // 关闭模态框
     closeModel(params) {
       this.isShow = false;
-      // noinspection JSVoidFunctionReturnValueUsed
-
       this.loading = true;
       AccountLogin({
         account: this.formInline.username,
@@ -194,25 +171,22 @@ export default {
         captchaVerification: params ? params.captchaVerification : '',
       })
         .then(async (res) => {
-          let data = res.data;
-          let expires = this.getExpiresTime(data.expires_time);
-          // 记录用户登陆信息
+          const data = res.data;
+          const expires = this.getExpiresTime(data.expires_time);
           setCookies('uuid', data.user_info.id, expires);
           setCookies('token', data.token, expires);
           setCookies('expires_time', data.expires_time, expires);
           Local.set('PERMISSIONS', data.site_func);
           this.$store.commit('userInfo/uniqueAuth', data.unique_auth);
           this.$store.commit('userInfo/userInfo', data.user_info);
-          // 保存菜单信息
           this.$store.commit('menus/setopenMenus', []);
           this.$store.commit('menus/getmenusNav', data.menus);
           this.$store.dispatch('routesList/setRoutesList', data.menus);
-          let arr = formatFlatteningRoutes(this.$router.options.routes);
+          const arr = formatFlatteningRoutes(this.$router.options.routes);
           this.formatTwoStageRoutes(arr);
           this.$store.commit('menus/setOneLvMenus', arr);
-          let routes = formatFlatteningRoutes(data.menus);
+          const routes = formatFlatteningRoutes(data.menus);
           this.$store.commit('menus/setOneLvRoute', routes);
-          // 记录用户信息
           this.$store.commit('userInfo/name', data.user_info.account);
           this.$store.commit('userInfo/avatar', data.user_info.head_pic);
           this.$store.commit('userInfo/access', data.unique_auth);
@@ -227,77 +201,67 @@ export default {
                 title: '温馨提示',
                 dangerouslyUseHTMLString: true,
                 message:
-                  '您的【消息队列】未开启，没有开启会导致异步任务无法执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13695" target="_blank">点击查看开启方法</a>',
+                  '您的【消息队列】未开启，没有开启会导致异步任务无法执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13667" target="_blank">点击查看开启方法</a>',
                 duration: 30000,
               });
             }
             if (data.timer === false) {
-              this.$notify.warning({
-                title: '温馨提示',
-                dangerouslyUseHTMLString: true,
-                message:
-                  '您的【定时任务】未开启，没有开启会导致自动收货、未支付自动取消订单、订单自动好评、拼团到期退款等任务无法正常执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13694" target="_blank">点击查看开启方法</a>',
-                duration: 30000,
-              });
+              setTimeout(() => {
+                this.$notify.warning({
+                  title: '温馨提示',
+                  dangerouslyUseHTMLString: true,
+                  message:
+                    '您的【定时任务】未开启，没有开启会导致自动收货、未支付自动取消订单、订单自动好评、拼团到期退款等任务无法正常执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13667" target="_blank">点击查看开启方法</a>',
+                  duration: 30000,
+                });
+              }, 0);
             }
-
             this.checkSocket();
           } catch (e) {}
           PrevLoading.start();
-          return this.$router.push({
-            path: res.data.menus.length ? findFirstNonNullChildren(res.data.menus).path : this.$routeProStr + '/',
+          this.$router.push({
+            path: data.menus.length ? findFirstNonNullChildren(data.menus).path : this.$routeProStr + '/',
           });
         })
         .catch((res) => {
-          let data = res === undefined ? {} : res;
+          const data = res || {};
           this.$message.error(data.msg || '登录失败');
-          this.login_captcha = res.data.login_captcha;
+          if (res && res.data) this.login_captcha = res.data.login_captcha;
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.loading = false;
+          }, 1000);
         });
-      setTimeout((e) => {
-        this.loading = false;
-      }, 1000);
     },
     formatTwoStageRoutes(arr) {
-      if (arr.length <= 0) return false;
-      const newArr = [];
+      if (!arr.length) return false;
       const cacheList = [];
       arr.forEach((v) => {
         if (v && v.meta && v.meta.keepAlive) {
-          newArr.push({ ...v });
           cacheList.push(v.name);
-          this.$store.dispatch('keepAliveNames/setCacheKeepAlive', cacheList);
         }
       });
-      return newArr;
+      if (cacheList.length) {
+        this.$store.dispatch('keepAliveNames/setCacheKeepAlive', cacheList);
+      }
     },
     checkSocket() {
       getWorkermanUrl().then((res) => {
-        let url = res.data.admin;
+        const url = res.data.admin;
         let isNotice = false;
-        let socket = new WebSocket(url);
+        const socket = new window.WebSocket(url);
         socket.onopen = () => {
           isNotice = true;
           socket.close();
         };
-        socket.onerror = (err) => {
+        socket.onerror = socket.onclose = () => {
           if (!isNotice) {
             isNotice = true;
             this.$notify.warning({
               title: '温馨提示',
               message:
-                '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13693" target="_blank">点击查看开启方法</a>',
-              dangerouslyUseHTMLString: true,
-              duration: 30000,
-            });
-          }
-        };
-        socket.onclose = (err) => {
-          if (!isNotice) {
-            isNotice = true;
-            this.$notify.warning({
-              title: '温馨提示',
-              message:
-                '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13693" target="_blank">点击查看开启方法</a>',
+                '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13667" target="_blank">点击查看开启方法</a>',
               dangerouslyUseHTMLString: true,
               duration: 30000,
             });
@@ -306,27 +270,28 @@ export default {
       });
     },
     getExpiresTime(expiresTime) {
-      let nowTimeNum = Math.round(new Date() / 1000);
-      let expiresTimeNum = expiresTime - nowTimeNum;
-      return parseFloat(parseFloat(parseFloat(expiresTimeNum / 60) / 60) / 24);
+      const nowTimeNum = Math.round(Date.now() / 1000);
+      const expiresTimeNum = expiresTime - nowTimeNum;
+      return parseFloat(expiresTimeNum / 60 / 60 / 24);
     },
-
     closefail() {
-      // if (this.jigsaw) this.jigsaw.reset();
       this.$message.error('校验错误');
     },
-    handleResize(event) {
+    handleResize() {
       this.fullWidth = document.documentElement.clientWidth;
-      if (this.fullWidth < 768) {
-        document.getElementsByTagName('canvas')[0].removeAttribute('class', 'index_bg');
-      } else {
-        document.getElementsByTagName('canvas')[0].className = 'index_bg';
+      const canvas = document.getElementsByTagName('canvas')[0];
+      if (canvas) {
+        if (this.fullWidth < 768) {
+          canvas.removeAttribute('class', 'index_bg');
+        } else {
+          canvas.className = 'index_bg';
+        }
       }
     },
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          if (this.login_captcha == 1) {
+          if (this.login_captcha === 1) {
             this.$refs.verify.show();
           } else {
             this.closeModel();
@@ -335,20 +300,9 @@ export default {
       });
     },
   },
-  beforeCreate() {
-    if (this.fullWidth < 768) {
-      document.getElementsByTagName('canvas')[0].removeAttribute('class', 'index_bg');
-    } else {
-      document.getElementsByTagName('canvas')[0].className = 'index_bg';
-    }
-  },
-  beforeDestroy: function () {
-    window.removeEventListener('resize', this.handleResize);
-    document.getElementsByTagName('canvas')[0].removeAttribute('class', 'index_bg');
-  },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .page-account {
   display: flex;
   width: 100%;
@@ -361,31 +315,27 @@ export default {
   height: 100vh;
   overflow: auto;
 }
-
 .page-account .code {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .page-account .code .pictrue {
   height: 40px;
 }
-
 .swiperPross {
   border-radius: 12px 0px 0px 12px;
 }
-
-.swiperPross, .swiperPic, .swiperPic img {
+.swiperPross,
+.swiperPic,
+.swiperPic img {
   width: 510px;
   height: 100%;
 }
-
 .swiperPic img {
   width: 100%;
   height: 100%;
 }
-
 .container {
   height: 400px !important;
   padding: 0 !important;
@@ -393,39 +343,32 @@ export default {
   z-index: 1;
   display: flex;
 }
-
 .containerSamll {
   /* width: 56% !important; */
   background: #fff !important;
 }
-
 .containerBig {
   width: auto !important;
   background: #f7f7f7 !important;
 }
-
 .index_from {
   padding: 32px 40px 32px 40px;
   height: 400px;
   box-sizing: border-box;
 }
-
 .page-account-top {
   padding: 20px 0 24px 0 !important;
   box-sizing: border-box !important;
   display: flex;
   justify-content: center;
 }
-
 .page-account-container {
   border-radius: 0px 6px 6px 0px;
 }
-
 .btn {
   width: 100%;
   background: linear-gradient(90deg, rgba(25, 180, 241, 1) 0%, rgba(14, 115, 232, 1) 100%) !important;
 }
-
 .captchaBox {
   width: 310px;
 }
@@ -449,41 +392,36 @@ input {
   text-align: center;
 }
 
-a:link, a:visited, a:hover, a:active {
+a:link,
+a:visited,
+a:hover,
+a:active {
   margin-left: 100px;
-  color: #0366D6;
+  color: #0366d6;
 }
-
 .index_from ::v-deep .ivu-input-large {
   font-size: 14px !important;
 }
-
 .from-wh {
   width: 400px;
 }
-
 .pull-right {
   float: right !important;
 }
-
 ::v-deep .el-button--primary {
   border: none;
 }
-
 ::v-deep .el-button {
   padding: 13px 20px !important;
 }
-
 .pull-right {
   float: right !important;
   color: #666;
 }
-
 .pull-right a {
   margin-left: 0;
   color: #666;
 }
-
 .footer {
   position: fixed;
   bottom: 0;

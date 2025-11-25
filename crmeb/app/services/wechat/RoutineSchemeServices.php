@@ -23,9 +23,9 @@ class RoutineSchemeServices extends BaseServices
         foreach ($list as &$item) {
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
             $item['expire_time'] = $item['expire_time'] == 0 ? '永久' : date('Y-m-d H:i:s', $item['expire_time']);
-            $item['http_url'] = sys_config('site_url') . '/api/get_scheme_url/' . $item['id'];
+            $item['http_url'] = sys_config('site_url') . '/surl/' . $item['id'];
         }
-        $count = $this->dao->getCount($where);
+        $count = $this->dao->count($where);
         return compact('list', 'count');
     }
 
@@ -61,6 +61,7 @@ class RoutineSchemeServices extends BaseServices
         ];
         $expireNum = $data['expire_type'] == 0 ? strtotime($data['expire_num']) : $data['expire_num'];
         $url = MiniProgramService::getUrlScheme($jumpWxa, $data['expire_type'], $expireNum);
+//        $url = MiniProgramService::getUrlLink($jumpWxa);
         $saveData = [];
         $saveData['title'] = $data['title'];
         $saveData['path'] = $data['path'];

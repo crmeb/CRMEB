@@ -2,9 +2,10 @@
     "name" : "CRMEB标准版",
     "appid" : "__UNI__A3F1ED4",
     "description" : "CRMEB标准版",
-    "versionName" : "5.4.0",
-    "versionCode" : 540,
+    "versionName" : "5.6.2",
+    "versionCode" : 562,
     "transformPx" : false,
+    "sassImplementationName" : "node-sass",
     /* 5+App特有相关 */
     "app-plus" : {
         "usingComponents" : true,
@@ -190,7 +191,7 @@
         },
         "permission" : {
             "scope.userLocation" : {
-                "desc" : "你的位置信息将用于和门店的距离长度"
+                "desc" : "你的位置信息将用于查看与门店的距离"
             }
         },
         "optimization" : {

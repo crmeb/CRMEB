@@ -216,4 +216,37 @@ class StoreCouponUserDao extends BaseDao
     {
         return $this->getModel()->where($where)->delete();
     }
+
+    /**
+     * 判断用户是否还能领取或者已经领取未使用
+     * @param $uid
+     * @param $coupon_id
+     * @param $receive_limit
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/7/15
+     */
+    public function getUserCouponCanUse($uid, $coupon_id, $receive_limit)
+    {
+        $list = $this->getModel()->where(['uid' => $uid, 'cid' => $coupon_id])->select()->toArray();
+        $count = count($list);
+        if ($count < $receive_limit) {
+            return true;
+        }
+        $noUserCount = 0;
+        foreach ($list as $item) {
+            if ($item['status'] == '未使用') {
+                $noUserCount++;
+            }
+        }
+        if ($noUserCount > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -181,10 +181,6 @@ class OutStoreProductServices extends BaseServices
                 $detail[0]['detail'] = ['规格' => '默认'];
             }
             if ($id) {
-                if ($this->dao->value(['id' => $id], 'is_show') == 1 && $data['is_show'] == 0) {
-                    //下架检测是否有参与活动商品
-                    $productServices->checkActivity($id);
-                }
                 $this->dao->update($id, $data);
                 $storeDescriptionServices->saveDescription($id, $description);
                 $cateData = [];
@@ -214,7 +210,7 @@ class OutStoreProductServices extends BaseServices
                     }
                 }
                 $storeProductCateServices->change($res->id, $cateData);
-                $skuList = $productServices->validateProductAttr($attr, $detail, $res->id, 0, 0);
+                $skuList = $productServices->validateProductAttr($attr, $detail, $res->id, 0, 0, true);
                 $attrRes = $storeProductAttrServices->saveProductAttr($skuList, $res->id, 0, 0, 0);
                 if (!$attrRes) throw new AdminException(100022);
                 $id = (int)$res->id;
@@ -231,12 +227,6 @@ class OutStoreProductServices extends BaseServices
     public function setShow(int $id, int $is_show)
     {
         if (empty($id)) throw new AdminException(100100);
-        if ($is_show == 0) {
-            /** @var StoreProductServices $productServices */
-            $productServices = app()->make(StoreProductServices::class);
-            //下架检测是否有参与活动商品
-            $productServices->checkActivity($id);
-        }
 
         if ($is_show) {
             // 检查商品是否可以上架
@@ -309,10 +299,11 @@ class OutStoreProductServices extends BaseServices
                 'ot_price' => $productInfo['ot_price'],
                 'stock' => $productInfo['stock'] ?? 0,
                 'bar_code' => '',
+                'bar_code_number' => '',
                 'weight' => '0.00',
                 'volume' => '0.00'
             ];
-            $skuList = $productServices->validateProductAttr($attr, $detail, $id);
+            $skuList = $productServices->validateProductAttr($attr, $detail, $id, 0, 1, true);
             $storeProductAttrServices->saveProductAttr($skuList, $id, 0);
             $this->dao->update($id, ['spec_type' => 0]);
         }
@@ -348,6 +339,7 @@ class OutStoreProductServices extends BaseServices
                 'cost' => $result['cost'] ?? '0.00',
                 'ot_price' => $result['ot_price'] ?? '0.00',
                 'bar_code' => $result['bar_code'] ?? '',
+                'bar_code_number' => $result['bar_code_number'] ?? '',
                 'weight' => $result['weight'] ?? '0.00',
                 'volume' => $result['volume'] ?? '0.00',
                 'brokerage' => $result['brokerage'] ?? '0.00',

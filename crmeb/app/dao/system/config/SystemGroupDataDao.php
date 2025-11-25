@@ -41,7 +41,9 @@ class SystemGroupDataDao extends BaseDao
      */
     public function getGroupDataList(array $where, int $page, int $limit)
     {
-        return $this->search($where)->page($page, $limit)->order('sort desc,id DESC')->select()->toArray();
+        return $this->search($where)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->order('sort desc,id DESC')->select()->toArray();
     }
 
     /**

@@ -75,4 +75,9 @@ class SystemAttachment extends BaseModel
     {
         if ($value != '') $query->where('real_name', 'LIKE', "%$value%");
     }
+
+    public function searchTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('type', $value);
+    }
 }

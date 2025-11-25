@@ -162,7 +162,7 @@ export const sharePoster = {
 			// #ifdef MP
 			let met = type === 'scombination' ? scombinationCode(that.id) : type === 'seckill' ? seckillCode(
 				that
-				.id) : getProductCode(that.id)
+				.id,{time_id:this.time_id}) : getProductCode(that.id)
 			met.then((res) => {
 					uni.downloadFile({
 						url: that.setDomain(res.data.code),

@@ -28,14 +28,13 @@
           <el-form-item>
             <el-button type="primary" v-db-click @click="search">查询</el-button>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" v-db-click @click="groupAdd">添加等级</el-button>
-          </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+      <el-button type="primary" v-db-click @click="groupAdd">添加等级</el-button>
       <el-table
+        class="mt14"
         :data="tabList"
         ref="table"
         v-loading="loading"
@@ -67,12 +66,34 @@
         </el-table-column>
         <el-table-column label="一级分佣比例" min-width="150">
           <template slot-scope="scope">
-            <span>{{ scope.row.one_brokerage_percent == '0.00' ? scope.row.one_brokerage_ratio : scope.row.one_brokerage_percent }}%</span>
+            <span
+              >{{
+                scope.row.one_brokerage_percent == '0.00'
+                  ? scope.row.one_brokerage_ratio
+                  : scope.row.one_brokerage_percent
+              }}%</span
+            >
           </template>
         </el-table-column>
         <el-table-column label="二级分佣比例" min-width="150">
           <template slot-scope="scope">
-            <span>{{ scope.row.two_brokerage_percent == '0.00' ? scope.row.two_brokerage_ratio : scope.row.two_brokerage_percent }}%</span>
+            <span
+              >{{
+                scope.row.two_brokerage_percent == '0.00'
+                  ? scope.row.two_brokerage_ratio
+                  : scope.row.two_brokerage_percent
+              }}%</span
+            >
+          </template>
+        </el-table-column>
+        <el-table-column label="任务总数" min-width="150">
+          <template slot-scope="scope">
+            <span>{{ scope.row.task_total_num }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="需完成数量" min-width="150">
+          <template slot-scope="scope">
+            <span>{{ scope.row.task_num }}</span>
           </template>
         </el-table-column>
         <!-- <el-table-column label="一级上浮比例" min-width="130">
@@ -105,8 +126,8 @@
               :value="scope.row.status"
               @change="onchangeIsShow(scope.row)"
               size="large"
-              active-text="开启"
-              inactive-text="关闭"
+              active-text="显示"
+              inactive-text="隐藏"
             >
             </el-switch>
           </template>
@@ -136,9 +157,8 @@
         <el-form :model="taskData" :label-width="labelWidth" :label-position="labelPosition" inline>
           <el-form-item label="是否显示：">
             <el-select v-model="taskData.status" class="form_content_width" clearable>
-              <!-- <el-option :value="''">全部</el-option> -->
               <el-option :value="1" label="显示"></el-option>
-              <el-option :value="0" label="显示">不显示</el-option>
+              <el-option :value="0" label="不显示"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="任务名称：">
@@ -151,6 +171,7 @@
         <div>
           <div class="add-task">
             <el-button type="primary" v-db-click @click="taskAdd()">添加等级任务</el-button>
+            <el-button type="primary" v-db-click @click="taskEdit()">设置完成数量</el-button>
           </div>
           <div>
             <el-table
@@ -230,6 +251,7 @@ import {
   levelTaskListDataAddApi,
   levelTaskDataEditApi,
   levelTaskDataAddApi,
+  getTaskNumFormApi,
 } from '@/api/membershipLevel';
 export default {
   name: 'list',
@@ -428,6 +450,9 @@ export default {
       this.taskData.page = 1;
       this.getTaskList();
     },
+    taskEdit() {
+      this.$modalForm(getTaskNumFormApi(this.id)).then(() => this.getList());
+    },
     // 添加表单
     groupAdd() {
       this.$modalForm(membershipDataAddApi({}, '/agent/level/create')).then(() => this.getList());
@@ -520,28 +545,23 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
-
 ::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
-
 .left-wrapper {
   height: 904px;
   background: #fff;
   border-right: 1px solid #f2f2f2;
 }
-
 .menu-item {
-  // z-index 50
   position: relative;
   display: flex;
   justify-content: space-between;
   word-break: break-all;
-
   .icon-box {
     z-index: 3;
     position: absolute;
@@ -550,11 +570,9 @@ export default {
     transform: translateY(-50%);
     display: none;
   }
-
   &:hover .icon-box {
     display: block;
   }
-
   .right-menu {
     z-index: 10;
     position: absolute;
@@ -564,7 +582,6 @@ export default {
     min-width: 121px;
   }
 }
-
 .tabBox-img {
   width: 36px;
   height: 36px;
@@ -576,44 +593,36 @@ export default {
     height: 100%;
   }
 }
-
 .ivu-menu {
   z-index: auto;
 }
-
-.header, .headers {
+.header,
+.headers {
   display: flex;
   flex-direction: column;
   background-color: #f2f2f2;
   padding: 8px;
-
   .search {
     display: flex;
     align-items: center;
-
-    >div {
+    > div {
       margin-right: 10px;
     }
   }
 }
-
 .search ::v-deep .ivu-select-selection {
   border: 1px solid #dcdee2 !important;
 }
-
 .headers {
   background-color: #fff;
   margin-bottom: 20px;
 }
-
 ::v-deep .ivu-modal-mask {
   z-index: 100 !important;
 }
-
 ::v-deep .ivu-modal-wrap {
   z-index: 100 !important;
 }
-
 .add-task {
   margin: 10px 0;
 }

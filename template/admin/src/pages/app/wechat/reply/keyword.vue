@@ -1,22 +1,22 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="levelFrom"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="levelFrom"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="回复类型：" prop="type" label-for="type">
             <el-select
-                v-model="formValidate.type"
-                placeholder="请选择"
-                clearable
-                @change="userSearchs"
-                class="form_content_width"
+              v-model="formValidate.type"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
             >
               <el-option value="text" label="文字消息"></el-option>
               <el-option value="image" label="图片消息"></el-option>
@@ -25,12 +25,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="关键字：" prop="key" label-for="key">
-            <el-input
-                clearable
-                v-model="formValidate.key"
-                placeholder="请输入关键字"
-                class="form_content_width"
-            />
+            <el-input clearable v-model="formValidate.key" placeholder="请输入关键字" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>

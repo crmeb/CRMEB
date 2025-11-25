@@ -205,7 +205,7 @@ class StoreProduct extends AuthController
         [$items] = $this->request->postMore([['items', []]], true);
 
         foreach ($items as $item) {
-            if (!isset($item['bar_code']) || !isset($item['qty'])) {
+            if (!isset($item['bar_code']) || !isset($item['bar_code_number']) || !isset($item['qty'])) {
                 return app('json')->fail(400742);
             }
         }

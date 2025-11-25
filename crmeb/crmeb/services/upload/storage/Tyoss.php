@@ -82,7 +82,7 @@ class Tyoss extends BaseUpload
         try {
             $uploadInfo = $this->app()->putObject($key, $body, 'application/octet-stream');
             $this->fileInfo->uploadInfo = $uploadInfo;
-            $this->fileInfo->realName = $fileHandle->getOriginalName();
+            $this->fileInfo->realName = isset($fileHandle) ? $fileHandle->getOriginalName() : $key;
             $this->fileInfo->filePath = ($this->cdn ?: $this->uploadUrl) . '/' . $key;
             $this->fileInfo->fileName = $key;
             $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);

@@ -12,7 +12,9 @@
       <div class="ivu-mt card-tree b-r-1">
         <div class="tree">
           <div class="main-btn">
-            <el-button class="mb5" style="flex: 1" type="primary" v-db-click @click="clickMenu(4)" long>新增分类</el-button>
+            <el-button class="mb5" style="flex: 1" type="primary" v-db-click @click="clickMenu(4)" long
+              >新增分类</el-button
+            >
             <el-button class="mb5 mr10" type="success" v-db-click @click="syncRoute()">同步</el-button>
           </div>
 
@@ -35,7 +37,8 @@
                   node: slotProps.model.method,
                   open: formValidate.path == slotProps.model.path && formValidate.method == slotProps.model.method,
                 }"
-                v-db-click @click.stop="onClick(slotProps.model)"
+                v-db-click
+                @click.stop="onClick(slotProps.model)"
               >
                 <span
                   class=""
@@ -96,10 +99,20 @@
             </div>
             <div>
               <el-button class="submission" v-db-click @click="debugging()">调试</el-button>
-              <el-button v-if="formValidate.id" type="primary" class="submission" v-db-click @click="isEdit = !isEdit">{{
-                isEdit ? '取消' : '编辑'
-              }}</el-button>
-              <el-button v-if="isEdit" type="primary" class="submission" v-db-click @click="handleSubmit('formValidate')"
+              <el-button
+                v-if="formValidate.id"
+                type="primary"
+                class="submission"
+                v-db-click
+                @click="isEdit = !isEdit"
+                >{{ isEdit ? '取消' : '编辑' }}</el-button
+              >
+              <el-button
+                v-if="isEdit"
+                type="primary"
+                class="submission"
+                v-db-click
+                @click="handleSubmit('formValidate')"
                 >保存</el-button
               >
             </div>
@@ -240,10 +253,13 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          v-db-click @click="insertRow(row, 'headTable')"
+                          v-db-click
+                          @click="insertRow(row, 'headTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'headTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'headTable')"
+                          >删除</vxe-button
+                        >
                       </template>
                     </vxe-column>
                   </vxe-table>
@@ -307,10 +323,13 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          v-db-click @click="insertRow(row, 'xTable')"
+                          v-db-click
+                          @click="insertRow(row, 'xTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'xTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'xTable')"
+                          >删除</vxe-button
+                        >
                       </template>
                     </vxe-column>
                   </vxe-table>
@@ -379,10 +398,13 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          v-db-click @click="insertRow(row, 'bodyTable')"
+                          v-db-click
+                          @click="insertRow(row, 'bodyTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'bodyTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'bodyTable')"
+                          >删除</vxe-button
+                        >
                       </template>
                     </vxe-column>
                   </vxe-table>
@@ -442,10 +464,13 @@
                           type="text"
                           v-if="row.type === 'array' || row.type === 'object'"
                           status="primary"
-                          v-db-click @click="insertRow(row, 'resTable')"
+                          v-db-click
+                          @click="insertRow(row, 'resTable')"
                           >插入</vxe-button
                         >
-                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'resTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'resTable')"
+                          >删除</vxe-button
+                        >
                       </template>
                     </vxe-column>
                   </vxe-table>
@@ -522,7 +547,9 @@
                     </vxe-column>
                     <vxe-column title="操作" v-if="isEdit">
                       <template #default="{ row }">
-                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'codeTable')">删除</vxe-button>
+                        <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'codeTable')"
+                          >删除</vxe-button
+                        >
                       </template>
                     </vxe-column>
                   </vxe-table>
@@ -599,7 +626,6 @@ import { VueTreeList, Tree, TreeNode } from 'vue-tree-list';
 import debugging from './debugging.vue';
 
 import { mapState } from 'vuex';
-import { interfaceDel } from '@api/systemOutAccount';
 export default {
   name: 'systemOutInterface',
   components: {
@@ -743,7 +769,6 @@ export default {
         this.formValidate.response_example.map((e) => {
           e.data = JSON.stringify(e.data);
         });
-        console.log(this.formValidate.response_example, 'this.formValidate.response_example');
       } else {
         this.formValidate.response_example.map((e) => {
           e.data = JSON.parse(e.data);
@@ -1173,33 +1198,33 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .reset {
   margin-left: 10px;
 }
-.b-r-1{
+.b-r-1 {
   border-right: 1px solid #f2f2f2;
 }
 .card-tree {
-   background: #fff;
-   height: 72px;
-   box-sizing: border-box;
-   overflow-x: scroll; /* 设置溢出滚动 */
-   white-space: nowrap;
-   overflow-y: hidden;
-   /* 隐藏滚动条 */
-   border-radius: 4px;
-   scrollbar-width: none; /* firefox */
-   -ms-overflow-style: none; /* IE 10+ */
+  background: #fff;
+  height: 72px;
+  box-sizing: border-box;
+  overflow-x: scroll; /* 设置溢出滚动 */
+  white-space: nowrap;
+  overflow-y: hidden;
+  /* 隐藏滚动条 */
+  border-radius: 4px;
+  scrollbar-width: none; /* firefox */
+  -ms-overflow-style: none; /* IE 10+ */
 }
 .card-tree::-webkit-scrollbar {
-    display: none; /* Chrome Safari */
+  display: none; /* Chrome Safari */
 }
 ::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-.tabs{
+.tabs {
   background: #fff;
   padding-left: 20px;
   border-radius: 5px 5px 0 0;
@@ -1211,7 +1236,7 @@ export default {
   background: #fff;
   border-radius: 6px;
   .main-btn {
-    display:flex;
+    display: flex;
     position: sticky;
     padding: 0px 5px 0 15px;
     width: 100%;
@@ -1221,22 +1246,22 @@ export default {
     backdrop-filter: blur(4px);
     z-index: 99;
   }
-  .card-tree{
+  .card-tree {
     width: 290px;
     height: calc(100vh - 205px);
     overflow-y: scroll;
   }
   ::v-deep .tree {
-    .tree-list{
-      margin-left:10px;
+    .tree-list {
+      margin-left: 10px;
       padding: 0 15px;
       margin-top: 10px;
     }
-    .vtl-caret{
+    .vtl-caret {
       padding-right: 2px;
     }
     .req-method {
-      display:block;
+      display: block;
       padding: 0px 2px;
       font-size: 13px;
       line-height: 13px;
@@ -1245,44 +1270,36 @@ export default {
 
       text-transform: uppercase;
     }
-
     .tree-node {
       display: flex;
       align-items: center;
       justify-content: space-between;
       cursor: pointer;
-      // width:200px;
+
       padding: 3px 7px 3px 0;
     }
-    .node{
-      // padding:3px 2px 3px 0px;
+    .node {
     }
     .open {
-      // background-color: #fff1ef;
       font-weight: 500;
       color: #333;
     }
   }
-
   ::v-deep .vtl-node-main .vtl-operation {
     position: absolute;
     right: 20px;
   }
-
   ::v-deep .vtl-node-content {
     width: 100%;
   }
-
   .pop-menu {
     display: flex;
     justify-content: space-between;
   }
-
   ::v-deep .vtl-node-content .add {
     display: none;
     margin-right: 10px;
   }
-
   ::v-deep .vtl-node-content:hover .add {
     display: flex;
     justify-content: center;
@@ -1291,15 +1308,13 @@ export default {
     width: 18px;
     height: 18px;
   }
-
   ::v-deep .vtl-node-content:hover .add:hover {
     background-color: #fff;
-
     .pop-menu {
       font-size: 16px;
     }
   }
-  ::v-deep .vtl-node-main{
+  ::v-deep .vtl-node-main {
     padding: 3px 0;
   }
   ::v-deep .line1 {
@@ -1309,82 +1324,72 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  ::v-deep .ivu-form-item{
+  ::v-deep .ivu-form-item {
     margin-bottom: 10px;
   }
-  .right-card{
+  .right-card {
     flex: 1;
     ::v-deep .el-card__body {
       max-height: calc(100vh - 205px);
       overflow-y: scroll;
       padding-bottom: 16px;
     }
-    ::v-deep .el-form-item--small.el-form-item{
+    ::v-deep .el-form-item--small.el-form-item {
       margin-bottom: 6px;
     }
   }
-
   .data {
     flex: 1;
-
     .req-method {
       text-transform: uppercase;
       border-radius: 4px;
       color: #fff;
       padding: 3px 7px;
     }
-
     .eidt-sub {
       display: flex;
       justify-content: space-between;
-
       .name {
         font-size: 20px;
         font-weight: 500;
       }
     }
-
     .title {
       font-size: 16px;
       font-weight: 500;
       margin-bottom: 15px;
     }
-
     .perW20 {
       width: 500px;
     }
-
     .text-area {
       white-space: pre-wrap;
       word-break: break-word;
     }
   }
-
   ::v-deep .ivu-tree-title {
     width: 100% !important;
   }
-  ::v-deep .vtl-tree-margin{
+  ::v-deep .vtl-tree-margin {
     margin-left: 15px;
   }
   ::v-deep .ivu-btn-icon-only.ivu-btn-small {
     width: 28px;
   }
-  ::v-deep .tree-node > span{
-    font-size: 14px
+  ::v-deep .tree-node > span {
+    font-size: 14px;
   }
-  ::v-deep .tree-node.node > span{
-    font-size: 13px
+  ::v-deep .tree-node.node > span {
+    font-size: 13px;
   }
   .nothing {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 800px;
-
     .box:hover {
       border: 1px solid pink;
     }
-
     .box {
       display: flex;
       align-items: center;
@@ -1397,7 +1402,6 @@ export default {
       cursor: pointer;
       overflow: hidden;
       border: 1px solid #fff;
-
       .icon {
         display: flex;
         align-items: center;
@@ -1408,7 +1412,6 @@ export default {
         color: #2d8cf0;
         background: #f1f1f1;
       }
-
       .text {
         width: 100%;
         height: 50px;

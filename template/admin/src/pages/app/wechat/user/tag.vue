@@ -54,7 +54,6 @@ export default {
       FromData: null,
       loading: false,
       tabList: [],
-
     };
   },
   watch: {

@@ -1,0 +1,1 @@
+<view hidden="{{!(!isSortType)}}"><view class="blankPage" style="{{$root.s0}}"><view class="bankCon" style="{{$root.s1}}"></view></view></view>

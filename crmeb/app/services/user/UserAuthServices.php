@@ -76,6 +76,9 @@ class UserAuthServices extends BaseServices
             if (!request()->isCli()) CacheService::delete($md5Token);
             throw new AuthException(110004);
         }
+
+        $this->dao->update(['uid' => $id], ['last_time' => time()]);
+
         $tokenData['type'] = $type;
         return compact('user', 'tokenData');
     }

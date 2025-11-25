@@ -1,27 +1,32 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            label-position="right"
-            inline
-            class="tabform"
-            @submit.native.prevent
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          label-position="right"
+          inline
+          class="tabform"
+          @submit.native.prevent
         >
           <el-form-item label="审核状态：">
             <el-select v-model="formValidate.status" clearable @change="selChange" class="form_content_width">
-              <el-option v-for="(item,index) in treeData.withdrawal" :value="item.value" :key="index" :label="item.title"></el-option>
+              <el-option
+                v-for="(item, index) in treeData.withdrawal"
+                :value="item.value"
+                :key="index"
+                :label="item.title"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="搜索：">
             <el-input
-                clearable
-                placeholder="请输入商品名称/ID"
-                v-model="formValidate.kerword"
-                class="form_content_width"
+              clearable
+              placeholder="请输入商品名称/ID"
+              v-model="formValidate.kerword"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -31,11 +36,8 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button
-          v-auth="['setting-system_menus-add']"
-          type="primary"
-          v-db-click @click="menusAdd('添加直播间')"
-      >添加商品
+      <el-button v-auth="['setting-system_menus-add']" type="primary" v-db-click @click="menusAdd('添加直播间')"
+        >添加商品
       </el-button>
       <!-- <el-button
         v-auth="['setting-system_menus-add']"
@@ -189,7 +191,7 @@ export default {
       loading: false,
       modals: false,
       total: 0,
-      FormData: {}
+      FormData: {},
     };
   },
   computed: {
@@ -253,13 +255,13 @@ export default {
     },
     edit(row) {
       liveGoodsDetail(row.id)
-          .then((res) => {
-            this.FormData = res.data;
-            this.modals = true;
-          })
-          .catch((error) => {
-            this.$message.error(error.msg);
-          });
+        .then((res) => {
+          this.FormData = res.data;
+          this.modals = true;
+        })
+        .catch((error) => {
+          this.$message.error(error.msg);
+        });
     },
     // 删除
     del(row, tit, num) {
@@ -285,15 +287,18 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.product_box
-    display flex
-    align-items center
-    img
-        width 36px
-        height 36px
-    .txt
-        margin-left 10px
-        color #000
-        font-size 12px
+<style lang="scss" scoped>
+.product_box {
+  display: flex;
+  align-items: center;
+  img {
+    width: 36px;
+    height: 36px;
+  }
+  .txt {
+    margin-left: 10px;
+    color: #000;
+    font-size: 12px;
+  }
+}
 </style>

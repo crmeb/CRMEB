@@ -210,7 +210,7 @@ export default {
     },
     // 编辑
     edit(row) {
-        this.$modalForm(kefuAutoReplyForm(row.id)).then(() => this.getList());
+      this.$modalForm(kefuAutoReplyForm(row.id)).then(() => this.getList());
     },
     del(row, tit, num) {
       let delfromData = {

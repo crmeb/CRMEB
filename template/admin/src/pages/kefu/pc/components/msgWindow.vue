@@ -8,7 +8,8 @@
           :class="{ on: item.key == tabCur }"
           v-for="(item, index) in tabList"
           :key="index"
-          v-db-click @click="bindTab(item)"
+          v-db-click
+          @click="bindTab(item)"
           >{{ item.title }}</a
         >
       </div>
@@ -28,7 +29,8 @@
             v-for="(item, index) in sortList"
             :key="index"
             :class="{ on: cateId == item.id }"
-            v-db-click @click="selectSort(item)"
+            v-db-click
+            @click="selectSort(item)"
           >
             <p>{{ item.name }}</p>
             <template v-if="tabCur">
@@ -44,7 +46,13 @@
         </vue-scroll>
       </div>
       <div class="right-box">
-        <div v-infinite-scroll="handleReachBottom" class="right-scroll">
+        <div
+          v-infinite-scroll="handleReachBottom"
+          class="right-scroll"
+          :infinite-scroll-immediate="false"
+          :infinite-scroll-delay="500"
+          style="overflow: auto"
+        >
           <div class="msg-item add-box" v-if="tabCur" style="margin-top: 0">
             <div class="box2">
               <el-input
@@ -104,7 +112,7 @@
         </div>
       </div>
     </div>
-    <el-dialog :visible.sync="isAddSort" :title="maskTitle" width="304px" class="class-box">
+    <el-dialog :visible.sync="isAddSort" append-to-body :title="maskTitle" width="304px" class="class-box">
       <div class="item">
         <span>分组名称：</span>
         <el-input v-model="classTitle" placeholder="分组名称" />
@@ -222,16 +230,16 @@ export default {
     let self = this;
     this.serviceCate();
     this.$nextTick(() => {
-      this.scroll = new BScroll(this.$refs.wrapper, {
-        mouseWheel: {
-          speed: 20,
-          invert: false,
-          easeTime: 300,
-        },
-        scrollbar: true,
-        disableMouse: true,
-        // and so on
-      });
+      // this.scroll = new BScroll(this.$refs.wrapper, {
+      //   mouseWheel: {
+      //     speed: 20,
+      //     invert: false,
+      //     easeTime: 300,
+      //   },
+      //   scrollbar: true,
+      //   disableMouse: true,
+      //   // and so on
+      // });
     });
   },
   methods: {
@@ -250,6 +258,8 @@ export default {
     },
     // 头部选择
     bindTab(item) {
+      console.log('1122');
+      debugger;
       this.tabCur = item.key;
       this.cateId = '';
       this.sortList = [];
@@ -475,40 +485,33 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .head {
-
   .tab-bar {
     display: flex;
-
     .tab-item {
       margin-right: 24px;
       color: #999;
       font-size: 14px;
       font-weight: 500;
-
       &.on {
         color: #333333;
       }
     }
   }
-
   .search-box {
     margin-top: 15px;
   }
 }
-
 .main {
   display: flex;
   margin-top: 15px;
   height: 365px;
-
   .left-box {
     width: 106px;
     height: 100%;
-    border-right: 1px solid #ECECEC;
+    border-right: 1px solid #ececec;
     overflow: hidden;
-
     .left-item {
       position: relative;
       display: flex;
@@ -518,33 +521,28 @@ export default {
       padding: 0 10px 0 14px;
       font-size: 13px;
       cursor: pointer;
-
       &.on {
-        background: #F0FAFE;
+        background: var(--prev-color-primary-light-9);
         color: var(--prev-color-primary);
         border-right: 2px solid var(--prev-color-primary);
-
         .iconDot {
           z-index: 1;
           opacity: 1;
         }
       }
-
-      &:nth-child(1).on, &:nth-child(2).on {
+      &:nth-child(1).on,
+      &:nth-child(2).on {
         .iconDot {
           display: none;
         }
       }
-
       .iconaddto {
         font-size: 12px;
       }
-
       .iconDot {
         z-index: -1;
         opacity: 0;
       }
-
       .edit-wrapper {
         z-index: 50;
         position: absolute;
@@ -554,14 +552,12 @@ export default {
         width: 80px;
         box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
         border-radius: 4px;
-
         .edit-item {
           padding: 8px 16px;
           color: #666 !important;
           cursor: pointer;
         }
       }
-
       .edit-bg {
         z-index: 40;
         position: fixed;
@@ -573,26 +569,21 @@ export default {
       }
     }
   }
-
   .right-box {
     flex: 1;
     padding: 0 12px;
     overflow-x: hidden;
-
     .msg-item {
       margin-top: 12px;
       transition: all 0.3s ease;
       cursor: pointer;
-
       .box1 {
         position: relative;
         display: flex;
-
         .txt-box {
           flex: 1;
           font-size: 12px;
           color: #999999;
-
           .title {
             max-width: 370px;
             margin-right: 5px;
@@ -600,7 +591,6 @@ export default {
             font-weight: 700;
           }
         }
-
         .edit-box {
           z-index: -1;
           opacity: 0;
@@ -610,7 +600,6 @@ export default {
           width: 60px;
           height: 30px;
           background: #fff;
-
           .iconfont {
             margin: 0 8px;
             color: #000000;
@@ -619,28 +608,23 @@ export default {
           }
         }
       }
-
       .box2 {
         padding-bottom: 15px;
         border-radius: 5px;
-        background: #F5F5F5;
-
+        background: #f5f5f5;
         .input-box {
-          border-bottom: 1px solid #EEEEEE;
-
+          border-bottom: 1px solid #eeeeee;
           ::v-deep .ivu-input {
             background: transparent;
             border: 0;
             border-radius: 0;
           }
         }
-
         .content {
           font-size: 12px;
           padding: 12px 11px 0;
           color: #333333;
         }
-
         .bom {
           display: flex;
           align-items: center;
@@ -654,10 +638,8 @@ export default {
           }
         }
       }
-
       &:hover {
         transition: all 0.3s ease;
-
         .box1 .edit-box {
           z-index: 1;
           opacity: 1;
@@ -665,19 +647,15 @@ export default {
         }
       }
     }
-
     .add-box {
       border-radius: 0;
       margin-bottom: 10px;
-
       .box2 {
         padding-bottom: 0;
         border-radius: 0;
-
         .conBox {
           height: 0;
           overflow: hidden;
-
           &.active {
             animation: mymove 0.4s ease;
             animation-iteration-count: 1;
@@ -688,19 +666,14 @@ export default {
     }
   }
 }
-
 .right-scroll {
-  ::v-deep .ivu-scroll-container .ivu-scroll-loader:nth-child(1) {
-    display: none;
-  }
+  height: 345px;
 }
-
 .class-box {
   .item {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-
     &:last-child {
       margin-bottom: 0;
     }

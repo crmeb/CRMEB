@@ -180,7 +180,7 @@
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 		padding: 38rpx 40rpx;
 		padding-bottom: 80rpx;
-		padding-bottom: calc(80rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(80rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		padding-bottom: calc(80rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
 		.icon-guanbi {

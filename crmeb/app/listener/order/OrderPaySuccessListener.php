@@ -5,6 +5,7 @@ namespace app\listener\order;
 
 
 use app\jobs\AgentJob;
+use app\jobs\notice\PrintJob;
 use app\jobs\OrderInvoiceJob;
 use app\jobs\OrderJob;
 use app\jobs\ProductLogJob;
@@ -66,7 +67,7 @@ class OrderPaySuccessListener implements ListenerInterface
         }
 
         //虚拟商品自动发货
-        if ($orderInfo['virtual_type'] > 0 && $orderInfo['combination_id'] == 0) {
+        if (in_array($orderInfo['virtual_type'], [1, 2]) && $orderInfo['combination_id'] == 0) {
             /** @var StoreOrderDeliveryServices $orderDeliveryServices */
             $orderDeliveryServices = app()->make(StoreOrderDeliveryServices::class);
             $orderDeliveryServices->virtualSend($orderInfo);
@@ -83,6 +84,9 @@ class OrderPaySuccessListener implements ListenerInterface
             $orderInfo['phone'] = $userInfo['phone'];
             $capitalFlowServices->setFlow($orderInfo, 'order');
         }
+
+        //小票打印
+        PrintJob::dispatch([$orderInfo['id'], 1]);
 
         //支付成功后发送消息
         OrderJob::dispatch([$orderInfo]);

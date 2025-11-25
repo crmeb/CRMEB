@@ -1,13 +1,13 @@
 <template>
 	<view class="time" :style="justifyLeft">
 		<text class="red" v-if="tipText">{{ tipText }}</text>
-		<text class="styleAll" :style="'background-color:'+ bgColor +';color:'+ colors +';'" v-if="isDay === true">{{ day }}</text>
+		<text class="styleAll" :style="[timeStyle]" v-if="isDay === true">{{ day }}</text>
 		<text class="timeTxt red" v-if="dayText">{{ dayText }}</text>
-		<text class="styleAll" :style="'background-color:'+ bgColor +';color:'+ colors +';'">{{ hour }}</text>
+		<text class="styleAll" :style="[timeStyle]">{{ hour }}</text>
 		<text class="timeTxt red" v-if="hourText">{{ hourText }}</text>
-		<text class="styleAll" :style="'background-color:'+ bgColor +';color:'+ colors +';'">{{ minute }}</text>
+		<text class="styleAll" :style="[timeStyle]">{{ minute }}</text>
 		<text class="timeTxt red" v-if="minuteText">{{ minuteText }}</text>
-		<text class="styleAll" :style="'background-color:'+ bgColor +';color:'+ colors +';'">{{ second }}</text>
+		<text class="styleAll" :style="[timeStyle]">{{ second }}</text>
 		<text class="timeTxt red" v-if="secondText">{{ secondText }}</text>
 	</view>
 </template>
@@ -58,7 +58,7 @@
 				default: ""
 			}
 		},
-		data: function() {
+		data() {
 			return {
 				day: "00",
 				hour: "00",
@@ -66,12 +66,22 @@
 				second: "00"
 			};
 		},
-		created: function() {
+		computed:{
+			timeStyle(){
+				return {
+					background: this.bgColor,
+					color: this.colors
+				}
+			}
+		},
+		created() {
+			
+		},
+		mounted() {
 			this.show_time();
 		},
-		mounted: function() {},
 		methods: {
-			show_time: function() {
+			show_time() {
 				let that = this;
 
 				function runTime() {
@@ -98,10 +108,10 @@
 						if (hour <= 9) hour = "0" + hour;
 						if (minute <= 9) minute = "0" + minute;
 						if (second <= 9) second = "0" + second;
-						that.day = day;
-						that.hour = hour;
-						that.minute = minute;
-						that.second = second;
+						that.$set(that, 'day' ,day)
+						that.$set(that, 'hour' ,hour)
+						that.$set(that, 'minute' ,minute)
+						that.$set(that, 'second' ,second)
 					} else {
 						that.day = "00";
 						that.hour = "00";

@@ -1,44 +1,44 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="订单时间：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="交易类型：">
             <el-select
-                type="button"
-                v-model="formValidate.trading_type"
-                @change="selChange"
-                class="form_content_width"
-                clearable
+              type="button"
+              v-model="formValidate.trading_type"
+              @change="selChange"
+              class="form_content_width"
+              clearable
             >
               <el-option
-                  :label="item"
-                  :value="Object.keys(withdrawal)[index]"
-                  v-for="(item, index) in Object.values(withdrawal)"
-                  :key="index"
+                :label="item"
+                :value="Object.keys(withdrawal)[index]"
+                v-for="(item, index) in Object.values(withdrawal)"
+                :key="index"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -47,7 +47,7 @@
     </el-card>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-table ref="table" :data="tabList" class="ivu-mt" v-loading="loading" empty-text="暂无数据">
-        <el-table-column label="ID" min-width="50">
+        <el-table-column label="ID" min-width="70">
           <template slot-scope="scope">
             <div>{{ scope.row.id }}</div>
           </template>
@@ -252,25 +252,21 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-mt .type .item {
   margin: 3px 0;
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
   cursor: pointer;
 }
-
 .ivu-form-item {
   margin-bottom: 10px;
 }
-
-.status ::v-deep .item~.item {
+.status ::v-deep .item ~ .item {
   margin-left: 6px;
 }
-
 .status ::v-deep .statusVal {
   margin-bottom: 7px;
 }
@@ -281,7 +277,6 @@ export default {
   padding: 3px 0;
   box-sizing: border-box;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -293,11 +288,9 @@ export default {
     height: 100%;
   }
 }
-
 .z-price {
   color: red;
 }
-
 .f-price {
   color: green;
 }

@@ -109,3 +109,48 @@ export function lotteryRecordDeliver(data) {
     data,
   });
 }
+
+/**
+ **
+ * @description 抽奖列表
+ */
+export function lotteryList(data) {
+  return request({
+    url: `marketing/lottery/list`,
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ **
+ * @description 抽奖类型获取
+ */
+export function factorListApi(data) {
+  return request({
+    url: `marketing/lottery/factor/list`,
+    method: 'get',
+  });
+}
+
+/**
+ **
+ * @description 抽奖配置保存
+ */
+export function factorUseApi(data) {
+  return request({
+    url: `marketing/lottery/factor/use`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 抽奖状态切换
+ * @param data {Object} 传值
+ */
+export function lotteryStatus(data) {
+  return request({
+    url: `marketing/lottery/set_status/${data.id}/${data.status}`,
+    method: 'put',
+  });
+}

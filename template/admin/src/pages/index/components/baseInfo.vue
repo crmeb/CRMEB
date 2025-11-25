@@ -72,7 +72,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.ivu-mb{
+.ivu-mb {
   margin-bottom: 14px;
 }
 .number {
@@ -84,11 +84,11 @@ export default {
 }
 
 .iconColor {
-  color: #F53F3F;
+  color: #f53f3f;
 }
 
 .iconColor.on {
-  color: #0FC6C2;
+  color: #0fc6c2;
 }
 
 .ivu-mr {

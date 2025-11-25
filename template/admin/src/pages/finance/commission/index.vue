@@ -1,35 +1,15 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-            ref="formValidate"
-            :label-width="labelWidth"
-            label-position="right"
-            inline
-            @submit.native.prevent
-        >
+        <el-form ref="formValidate" :label-width="labelWidth" label-position="right" inline @submit.native.prevent>
           <el-form-item label="昵称/ID：">
-            <el-input
-                placeholder="请输入"
-                v-model="formValidate.nickname"
-                clearable
-                class="form_content_width"
-            />
+            <el-input placeholder="请输入" v-model="formValidate.nickname" clearable class="form_content_width" />
           </el-form-item>
           <el-form-item label="佣金范围：" class="tab_data">
-            <el-input-number
-                :controls="false"
-                :min="0"
-                class="mr10"
-                v-model="formValidate.price_min"
-            />
+            <el-input-number :controls="false" :min="0" class="mr10" v-model="formValidate.price_min" />
             <span class="mr10">一</span>
-            <el-input-number
-                :controls="false"
-                :min="0"
-                v-model="formValidate.price_max"
-            />
+            <el-input-number :controls="false" :min="0" v-model="formValidate.price_max" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
@@ -38,8 +18,7 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="mt16">
-      <el-button v-auth="['export-userCommission']" class="export" v-db-click @click="exports"
-      >导出</el-button>
+      <el-button v-auth="['export-userCommission']" class="export" v-db-click @click="exports">导出</el-button>
       <el-table
         ref="table"
         :data="tabList"
@@ -58,17 +37,17 @@
             <span>{{ scope.row.sum_number }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="账户余额" min-width="100">
+        <!-- <el-table-column label="账户余额" min-width="100">
           <template slot-scope="scope">
             <span>{{ scope.row.now_money }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="账户佣金" min-width="100">
           <template slot-scope="scope">
             <span>{{ scope.row.brokerage_price }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="提现到账佣金" min-width="100">
+        <el-table-column label="提现佣金" min-width="100">
           <template slot-scope="scope">
             <span>{{ scope.row.extract_price }}</span>
           </template>
@@ -179,15 +158,13 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .lines {
   padding-top: 6px !important;
 }
-
 .tabform .export {
   margin-left: 10px;
 }
-
 .tab_data ::v-deep .ivu-form-item-content {
   display: flex !important;
 }

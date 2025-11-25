@@ -58,7 +58,7 @@
 							{{ $t(`最多可兑换`)}}: {{storeInfo.num}}{{$t(storeInfo.unit_name)}}
 						</view>
 						<view class="label acea-row row-middle">
-							<view class="stock delete-line">{{$t(`划线价`)}}：{{ storeInfo.product_price }}</view>
+							<view class="stock delete-line">{{ storeInfo.product_price }}</view>
 							<view class="stock">{{$t(`限量`)}}:
 								{{ storeInfo.quota_show }}
 							</view>
@@ -917,7 +917,7 @@
 		display: flex;
 		align-items: center;
 		flex-wrap: nowrap;
-		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		height: calc(100rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 	}
 

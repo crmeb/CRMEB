@@ -23,6 +23,8 @@ export default {
 		if (options.spid) {
 			this.indexUrl = this.indexUrl + '?spid=' + options.spid;
 		}
+	},
+	onShow() {
 		this.loadExecution();
 	},
 	methods: {

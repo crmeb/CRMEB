@@ -50,7 +50,9 @@
                             <div class="sku">库存：{{ item.productInfo.stock }} 销量：{{ item.productInfo.sales }}</div>
                             <div class="price-box">
                               <div class="num">¥ {{ item.productInfo.price }}</div>
-                              <a herf="javascript:;" class="more" v-db-click @click.stop="lookGoods(item)">查看商品 ></a>
+                              <a herf="javascript:;" class="more" v-db-click @click.stop="lookGoods(item)"
+                                >查看商品 ></a
+                              >
                             </div>
                           </div>
                         </div>
@@ -70,7 +72,9 @@
                             <div class="sku">商品数量：{{ item.orderInfo.total_num }}</div>
                             <div class="price-box">
                               <div class="num">¥ {{ item.orderInfo.pay_price }}</div>
-                              <a href="javascript:;" class="more" v-db-click @click.stop="lookOrder(item)">查看订单 ></a>
+                              <a href="javascript:;" class="more" v-db-click @click.stop="lookOrder(item)"
+                                >查看订单 ></a
+                              >
                             </div>
                           </div>
                         </div>
@@ -132,12 +136,14 @@
                 v-model="chatCon"
                 type="textarea"
                 :rows="7"
-                @on-keydown="listen($event)"
+                @keydown.enter.native="listen($event)"
                 placeholder="请输入文字内容"
                 style="font-size: 14px; height: 150px"
               />
               <div class="send-btn">
-                <el-button class="btns" type="primary" :disabled="disabled" v-db-click @click.stop="sendText">发送</el-button>
+                <el-button class="btns" type="primary" :disabled="disabled" v-db-click @click.stop="sendText"
+                  >发送</el-button
+                >
               </div>
             </div>
           </div>
@@ -378,7 +384,7 @@ export default {
   },
   methods: {
     beforeUpload(file) {
-     return isPicUpload(file);
+      return isPicUpload(file);
     },
     handleFormatError(file) {
       this.$message.error('上传图片只能是 jpg、jpg、jpeg、gif 格式!');
@@ -441,13 +447,13 @@ export default {
       this.online = data;
     },
     // 阻止浏览器默认换行操作
-    listen(e) {
-      if (e.shiftKey && e.keyCode == 13) {
-      } else if (e.keyCode == 13) {
-        if (e.target.value == '') {
+    listen(event) {
+      if (!event.shiftKey && event.keyCode == 13) {
+        if (event.target.value == '') {
           return this.$message.error('请输入消息');
         }
-        this.sendMsg(e.target.value, 1);
+        console.log(event.target.value);
+        this.sendMsg(event.target.value, 1);
         this.chatCon = '';
         this.$nextTick(() => this.$refs.chatInput.focus());
       }
@@ -630,14 +636,12 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 @import '../../../styles/emoji-awesome/css/google.min.css';
-
 ::v-deeptextarea.ivu-input {
   border: none;
   resize: none;
 }
-
 .kefu-layouts {
   padding-top: 30px;
   height: 100%;
@@ -645,7 +649,6 @@ export default {
   background: #ccc;
   overflow: scroll;
 }
-
 .content-wrapper {
   display: flex;
   flex-direction: column;
@@ -653,33 +656,26 @@ export default {
   height: 810px;
   margin: 0 auto;
   background: #fff;
-
   .container {
     flex: 1;
     display: flex;
-
     .chat-content {
       width: 600px;
       height: 100%;
-      border-right: 1px solid #ECECEC;
-
+      border-right: 1px solid #ececec;
       .chat-body {
         height: 530px;
-
         .chat-item {
           margin-bottom: 10px;
-
           .time {
             text-align: center;
             color: #999999;
             font-size: 14px;
             margin: 18px 0;
           }
-
           .flex-box {
             display: flex;
           }
-
           .avatar {
             width: 40px;
             height: 40px;
@@ -692,34 +688,28 @@ export default {
               border-radius: 50%;
             }
           }
-
           .msg-wrapper {
             max-width: 320px;
-            background: #F5F5F5;
+            background: #f5f5f5;
             border-radius: 10px;
             color: #000000;
             font-size: 14px;
             overflow: hidden;
-
             .txt-wrapper {
               word-break: break-all;
               white-space: pre-wrap;
             }
-
             .pad16 {
               padding: 9px;
             }
-
             .img-wraper img {
               max-width: 100%;
               height: auto;
               display: block;
             }
-
             .order-wrapper {
               display: flex;
               width: 320px;
-
               .img-box {
                 width: 60px;
                 height: 60px;
@@ -730,7 +720,6 @@ export default {
                   border-radius: 5px;
                 }
               }
-
               .order-info {
                 display: flex;
                 flex-direction: column;
@@ -738,24 +727,20 @@ export default {
                 width: 224px;
                 margin-left: 10px;
                 font-size: 12px;
-
                 .price-box {
                   display: flex;
                   align-items: center;
                   justify-content: space-between;
                   font-size: 14px;
-                  color: #FF0000;
-
+                  color: #ff0000;
                   .more {
                     font-size: 12px;
                     color: var(--prev-color-primary);
                   }
                 }
-
                 .name {
                   font-size: 14px;
                 }
-
                 .sku {
                   margin: 1px 0;
                   color: #999999;
@@ -763,60 +748,49 @@ export default {
               }
             }
           }
-
           &.right-box {
             .flex-box {
               flex-direction: row-reverse;
-
               .avatar {
                 margin-right: 0;
                 margin-left: 16px;
               }
-
               .msg-wrapper {
-                background: #CDE0FF;
+                background: #cde0ff;
               }
             }
-
             &.gary .msg-wrapper {
               background: #f5f5f5;
             }
           }
         }
       }
-
       .chat-textarea {
         height: 214px;
-        border-top: 1px solid #ECECEC;
-
+        border-top: 1px solid #ececec;
         .chat-btn-wrapper {
           position: relative;
           display: flex;
           align-items: center;
           justify-content: space-between;
           padding: 15px 0;
-
           .left-wrappers {
             display: flex;
             align-items: center;
-
             .icon-item {
               display: flex;
               align-items: center;
               margin-left: 20px;
               cursor: pointer;
-
               .iconfont {
                 font-size: 22px;
                 color: #333333;
               }
             }
           }
-
           .right-wrapper {
             position: relative;
             padding-right: 20px;
-
             .icon-item {
               display: flex;
               align-items: center;
@@ -828,7 +802,6 @@ export default {
                 margin-left: 10px;
               }
             }
-
             .transfer-box {
               z-index: 60;
               position: absolute;
@@ -839,7 +812,6 @@ export default {
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
               padding: 16px;
             }
-
             .transfer-bg {
               z-index: 50;
               position: fixed;
@@ -850,7 +822,6 @@ export default {
               background: transparent;
             }
           }
-
           .emoji-box {
             position: absolute;
             left: 0;
@@ -864,12 +835,10 @@ export default {
             background: #fff;
             overflow: auto;
             height: 240px;
-
             .emoji-item {
               margin-right: 13px;
               margin-bottom: 8px;
               cursor: pointer;
-
               &:nth-child(10n) {
                 margin-right: 0;
               }
@@ -880,7 +849,6 @@ export default {
     }
   }
 }
-
 .send-btn {
   position: absolute;
   right: 0;
@@ -890,18 +858,15 @@ export default {
   margin-top: 10px;
   margin-right: 10px;
   width: 80px;
-
   .btns {
     width: 100%;
-    background: #3875EA;
-
+    background: #3875ea;
     &[disabled] {
-      background: #CCCCCC;
+      background: #cccccc;
       color: #fff;
     }
   }
 }
-
 .bg {
   z-index: 100;
   position: fixed;
@@ -911,19 +876,16 @@ export default {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
 }
-
 ::v-deep .happy-scroll-content {
   width: 100%;
-
   .demo-spin-icon-load {
     animation: ani-demo-spin 1s linear infinite;
   }
 
-  @keyframes ani-demo-spin {
+  @-webkit-keyframes ani-demo-spin {
     from {
       transform: rotate(0deg);
     }
-
     50% {
       transform: rotate(180deg);
     }
@@ -933,27 +895,74 @@ export default {
     }
   }
 
+  @-moz-keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @-ms-keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @-o-keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
   .demo-spin-col {
     height: 100px;
     position: relative;
     border: 1px solid #eee;
   }
 }
-
 .isMsgbox {
   ::v-deep .ivu-modal-body {
     padding: 0;
   }
 }
-
 .emoji-box::-webkit-scrollbar {
   width: 0;
 }
-
 .textarea-box ::v-deep .ivu-input:focus {
   box-shadow: none;
 }
-
 .textarea-box ::v-deep .el-textarea__inner {
   border: none;
   resize: none;

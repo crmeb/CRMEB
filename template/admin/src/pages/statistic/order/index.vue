@@ -349,7 +349,7 @@ export default {
   justify-content: space-between;
 }
 .code-row-bg .ivu-mt {
-  width: calc(50% - 10px);
+  width: calc(50% - 8px);
 }
 .ech-box {
   margin-top: 10px;
@@ -381,7 +381,7 @@ export default {
   border-radius: 5px;
   height: 8px;
   background-color: var(--prev-color-primary);
-  z-index: 9999;
+  z-index: 999;
 }
 .num {
   white-space: nowrap;

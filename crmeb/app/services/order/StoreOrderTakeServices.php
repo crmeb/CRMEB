@@ -87,6 +87,11 @@ class StoreOrderTakeServices extends BaseServices
         if (!$order) {
             throw new ApiException(410173);
         }
+        $refundServices = app()->make(StoreOrderRefundServices::class);
+        $orderIsRefund = $refundServices->orderIsRefund((int)$order['id']);
+        if($orderIsRefund){
+            throw new ApiException('订单退款中，不能收货');
+        }
         /** @var StoreOrderServices $orderServices */
         $orderServices = app()->make(StoreOrderServices::class);
         $order = $orderServices->tidyOrder($order);

@@ -6,6 +6,7 @@
     "invoice-picker": "/pages/goods/components/invoicePicker/index",
     "invoice-modal": "/pages/goods/components/invoiceModal/index",
     "order-goods": "/components/orderGoods/index",
+    "gift-modal": "/pages/goods/order_pay_status/components/giftModal",
     "authorize": "/components/Authorize"
   }
 }

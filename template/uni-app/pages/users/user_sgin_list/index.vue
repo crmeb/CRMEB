@@ -113,4 +113,7 @@
 </script>
 
 <style>
+.sign-record .num{
+	color: #fe5c2d!important;
+}
 </style>

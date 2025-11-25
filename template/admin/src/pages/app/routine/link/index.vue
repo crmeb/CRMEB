@@ -28,10 +28,16 @@
             <span>{{ scope.row.path }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="生成链接" min-width="200">
+        <el-table-column label="系统链接(编辑不改变)" min-width="200">
           <template slot-scope="scope">
             <span>{{ scope.row.http_url }}</span>
             <a class="ml10" v-db-click @click="onCopy(scope.row.http_url)">复制</a>
+          </template>
+        </el-table-column>
+        <el-table-column label="微信链接(编辑改变)" min-width="200">
+          <template slot-scope="scope">
+            <span>{{ scope.row.url }}</span>
+            <a class="ml10" v-db-click @click="onCopy(scope.row.url)">复制</a>
           </template>
         </el-table-column>
         <el-table-column label="添加时间" min-width="130">
@@ -52,6 +58,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="acea-row row-right page">
+        <pagination
+          v-if="total"
+          :total="total"
+          :page.sync="tableFrom.page"
+          :limit.sync="tableFrom.limit"
+          @pagination="routineSchemeList"
+        />
+      </div>
     </el-card>
   </div>
 </template>
@@ -143,4 +158,4 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus"></style>
+<style lang="scss" scoped></style>

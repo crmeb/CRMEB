@@ -4,6 +4,7 @@
 namespace app\listener\order;
 
 
+use app\jobs\notice\PrintJob;
 use app\jobs\OrderCreateAfterJob;
 use app\jobs\OrderJob;
 use app\jobs\ProductLogJob;
@@ -53,6 +54,9 @@ class OrderCreateAfterListener implements ListenerInterface
 
         //下单记录
         ProductLogJob::dispatch(['order', ['uid' => $uid, 'order_id' => $order['id']]]);
+
+        //小票打印
+        PrintJob::dispatch([$order['id'], 2]);
     }
 
     /**

@@ -15,38 +15,53 @@ export function modalSure(delfromData) {
     if (!delfromData.info) {
       delfromData.info = '';
     }
-    const h = this.$createElement
+    const h = this.$createElement;
     this.$msgbox({
       title: '提示',
-      message: h('p', null, [
-        h('div', null, `确定要${delfromData.title}吗？`),
-        h('div', null, `${delfromData.info}`)
-      ]),
+      message: h('p', null, [h('div', null, `确定要${delfromData.title}吗？`), h('div', null, `${delfromData.info}`)]),
       showCancelButton: true,
       cancelButtonText: '取消',
       confirmButtonText: '确定',
       iconClass: 'el-icon-warning',
-      confirmButtonClass: 'btn-custom-cancel'
-    }).then(() => {
-      if (delfromData.success) {
-        delfromData.success
-          .then(async (res) => {
-            resolve(res);
-          })
-          .catch((res) => {
-            reject(res);
-          });
-      } else {
-        tableDelApi(delfromData)
-          .then(async (res) => {
-            resolve(res);
-          })
-          .catch((res) => {
-            reject(res);
-          });
-      }
-    }).catch(() => {
-
+      confirmButtonClass: 'btn-custom-cancel',
     })
+      .then(() => {
+        if (delfromData.success) {
+          delfromData.success
+            .then(async (res) => {
+              resolve(res);
+            })
+            .catch((res) => {
+              reject(res);
+            });
+        } else {
+          tableDelApi(delfromData)
+            .then(async (res) => {
+              resolve(res);
+            })
+            .catch((res) => {
+              reject(res);
+            });
+        }
+      })
+      .catch(() => {});
   });
+}
+
+export function HandlePrice(num, type) {
+  let obj = [];
+  if (typeof num == 'number') {
+    obj = num.toString().split('.');
+  } else {
+    obj = num.split('.');
+  }
+  if (type) {
+    if (obj.length && obj[1]) {
+      return '.' + obj[1];
+    } else {
+      return '';
+    }
+  } else {
+    return obj[0];
+  }
 }

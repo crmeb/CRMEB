@@ -1,7 +1,12 @@
 <template>
   <div class="emoji">
     <ul class="emoji-controller">
-      <li v-for="(pannel, index) in pannels" v-db-click @click="changeActive(index)" :class="{ active: index === activeIndex }">
+      <li
+        v-for="(pannel, index) in pannels"
+        v-db-click
+        @click="changeActive(index)"
+        :class="{ active: index === activeIndex }"
+      >
         {{ pannel }}
       </li>
     </ul>

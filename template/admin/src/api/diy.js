@@ -53,6 +53,7 @@ export function diySave(id, data) {
     data: data,
   });
 }
+
 /**
  * @description 保存DIY数据
  * @param {Object} param data {Object} 传值参数
@@ -300,5 +301,86 @@ export function saveLink(data, id) {
     url: `diy/save_link/${id}`,
     method: 'post',
     data: data,
+  });
+}
+
+/**
+ * @description diy页面-热搜词；
+ */
+export function getWordsAll() {
+  return request({
+    url: `product/words/get_all`,
+    method: 'get',
+  });
+}
+/**
+ * @description diy模板导出
+ */
+export function exportDiyDataApi(id) {
+  return request({
+    url: `diy_pro/export/data/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 保存DIY名称
+ * @param {Object} param data {Object} 传值参数
+ */
+export function diyUpdateName(id, data) {
+  return request({
+    url: 'diy_pro/update/name/' + id,
+    method: 'post',
+    data: data,
+  });
+}
+
+
+
+/** 5.6+版本使用 */
+
+/**
+ * @description DIY模板列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function diyProList(data) {
+  return request({
+    url: 'diy_pro/get_list',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 获取可视化数据
+ * @param {Object} param data {Object} 传值参数
+ */
+export function diyProInfo(id, data) {
+  return request({
+    url: 'diy_pro/get_info/' + id,
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 保存DIY数据
+ * @param {Object} param data {Object} 传值参数
+ */
+export function diyProSave(id, data) {
+  return request({
+    url: 'diy_pro/save/' + id,
+    method: 'post',
+    data: data,
+  });
+}
+/**
+ * @description 获取商品列表
+ */
+export function getProProduct(data) {
+  return request({
+    url: 'diy_pro/get_product',
+    method: 'get',
+    params: data,
   });
 }

@@ -142,6 +142,6 @@ class Yihaotong extends BaseInvoice
      */
     public function redInvoiceIssuance(array $params = [])
     {
-        return $this->accessToken->httpRequest(self::RED_INVOICE_ISSUANCE, $params);
+        return $this->accessToken->httpRequest(self::RED_INVOICE_ISSUANCE . '/' . $params['invoiceNum'], $params);
     }
 }

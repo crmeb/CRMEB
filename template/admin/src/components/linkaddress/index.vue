@@ -2,7 +2,7 @@
   <div>
     <el-dialog :visible.sync="modals" title="选择链接" :close-on-click-modal="false" append-to-body width="1000px">
       <div class="table_box">
-        <div class="left_box">
+        <div class="left_box" v-if="fromType !== 'diyPage'">
           <el-tree
             :data="categoryData"
             node-key="id"
@@ -14,43 +14,16 @@
           ></el-tree>
         </div>
         <div class="right_box" v-if="currenType == 'link'">
-          <div v-if="basicsList.length">
-            <div class="cont">基础链接</div>
+          <div v-if="tableList.length">
+            <div class="cont">请选择链接</div>
             <div class="Box">
               <div
                 class="cont_box"
                 :class="currenId == item.id ? 'on' : ''"
-                v-for="(item, index) in basicsList"
+                v-for="(item, index) in tableList"
                 :key="index"
-                v-db-click @click="getUrl(item)"
-              >
-                {{ item.name }}
-              </div>
-            </div>
-          </div>
-          <div v-if="userList.length">
-            <div class="cont">个人中心</div>
-            <div class="Box">
-              <div
-                class="cont_box"
-                :class="currenId == item.id ? 'on' : ''"
-                v-for="(item, index) in userList"
-                :key="index"
-                v-db-click @click="getUrl(item)"
-              >
-                {{ item.name }}
-              </div>
-            </div>
-          </div>
-          <div v-if="distributionList.length">
-            <div class="cont">分销</div>
-            <div class="Box">
-              <div
-                class="cont_box"
-                :class="currenId == item.id ? 'on' : ''"
-                v-for="(item, index) in distributionList"
-                :key="index"
-                v-db-click @click="getUrl(item)"
+                v-db-click
+                @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -66,61 +39,63 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in coupon"
                 :key="index"
-                v-db-click @click="getUrl(item)"
+                v-db-click
+                @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
             </div>
-          </div>
-          <div >
-          <div v-permission="'seckill'" v-if="basicsList.length">
-            <div class="cont">秒杀</div>
-            <div class="Box">
-              <div
-                class="cont_box"
-                :class="currenId == item.id ? 'on' : ''"
-                v-for="(item, index) in basicsList"
-                :key="index"
-                v-db-click @click="getUrl(item)"
-              >
-                {{ item.name }}
-              </div>
-            </div>
-          </div>
-          </div>
-          <div >
-
-          <div v-permission="'bargain'" v-if="distributionList.length">
-            <div class="cont">砍价</div>
-            <div class="Box">
-              <div
-                class="cont_box"
-                :class="currenId == item.id ? 'on' : ''"
-                v-for="(item, index) in distributionList"
-                :key="index"
-                v-db-click @click="getUrl(item)"
-              >
-                {{ item.name }}
-              </div>
-            </div>
-          </div>
           </div>
           <div>
-
-          <div v-permission="'combination'" v-if="userList.length">
-            <div class="cont">拼团</div>
-            <div class="Box">
-              <div
-                class="cont_box"
-                :class="currenId == item.id ? 'on' : ''"
-                v-for="(item, index) in userList"
-                :key="index"
-                v-db-click @click="getUrl(item)"
-              >
-                {{ item.name }}
+            <div v-permission="'seckill'" v-if="basicsList.length">
+              <div class="cont">秒杀</div>
+              <div class="Box">
+                <div
+                  class="cont_box"
+                  :class="currenId == item.id ? 'on' : ''"
+                  v-for="(item, index) in basicsList"
+                  :key="index"
+                  v-db-click
+                  @click="getUrl(item)"
+                >
+                  {{ item.name }}
+                </div>
               </div>
             </div>
           </div>
+          <div>
+            <div v-permission="'bargain'" v-if="distributionList.length">
+              <div class="cont">砍价</div>
+              <div class="Box">
+                <div
+                  class="cont_box"
+                  :class="currenId == item.id ? 'on' : ''"
+                  v-for="(item, index) in distributionList"
+                  :key="index"
+                  v-db-click
+                  @click="getUrl(item)"
+                >
+                  {{ item.name }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div v-permission="'combination'" v-if="userList.length">
+              <div class="cont">拼团</div>
+              <div class="Box">
+                <div
+                  class="cont_box"
+                  :class="currenId == item.id ? 'on' : ''"
+                  v-for="(item, index) in userList"
+                  :key="index"
+                  v-db-click
+                  @click="getUrl(item)"
+                >
+                  {{ item.name }}
+                </div>
+              </div>
+            </div>
           </div>
           <div v-if="integral.length">
             <div class="cont">积分</div>
@@ -130,7 +105,8 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in integral"
                 :key="index"
-                v-db-click @click="getUrl(item)"
+                v-db-click
+                @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -144,7 +120,8 @@
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in luckDraw"
                 :key="index"
-                v-db-click @click="getUrl(item)"
+                v-db-click
+                @click="getUrl(item)"
               >
                 {{ item.name }}
               </div>
@@ -153,6 +130,7 @@
         </div>
         <div
           class="right_box"
+          :class="fromType == 'diyPage' ? 'diy' : ''"
           v-if="
             currenType == 'special' ||
             currenType == 'product_category' ||
@@ -162,7 +140,8 @@
             currenType == 'combination' ||
             currenType == 'news' ||
             currenType == 'advance' ||
-            currenType == 'integral'
+            currenType == 'integral' ||
+            currenType == 'lottery_list'
           "
         >
           <el-form ref="formValidate" :model="formValidate" class="tabform" v-if="currenType == 'product'">
@@ -183,9 +162,10 @@
                     v-model="formValidate.cate_id"
                     size="small"
                     :options="treeSelect"
-                    :props="{ multiple: false, checkStrictly: true, emitPath: false }"
+                    :props="{ multiple: true, checkStrictly: true, emitPath: false }"
+                    filterable
                     clearable
-                     @change="userSearchs"
+                    @change="userSearchs"
                   ></el-cascader>
                 </el-form-item>
               </el-col>
@@ -224,7 +204,7 @@
             "
           >
             <el-table-column
-              :width="currenType != 'product_category' ? 50 : 80 "
+              :width="currenType != 'product_category' ? 50 : 80"
               v-if="
                 [
                   'special',
@@ -236,6 +216,8 @@
                   'advance',
                   'integral',
                   'news',
+                  'lottery_list',
+                  'link',
                 ].includes(currenType)
               "
             >
@@ -260,6 +242,10 @@
                 ? bargain
                 : currenType == 'news'
                 ? news
+                : currenType == 'lottery_list'
+                ? lottery
+                : currenType == 'link'
+                ? diyLink
                 : columns8"
               :key="index"
             >
@@ -302,7 +288,8 @@
               currenType == 'advance' ||
               currenType == 'combination' ||
               currenType == 'news' ||
-              currenType == 'integral'
+              currenType == 'integral' ||
+              currenType == 'lottery_list'
             "
           >
             <pagination
@@ -327,11 +314,11 @@
               </el-form-item> -->
               <div class="mb30 radioGroup">
                 <el-radio-group v-model="customdate.status" @input="radioTap('customdate')">
-                  <el-radio :label="1">
-                    <span>普通链接</span>
-                  </el-radio>
                   <el-radio :label="2">
                     <span>跳转其他小程序</span>
+                  </el-radio>
+                  <el-radio :label="1">
+                    <span>普通链接</span>
                   </el-radio>
                 </el-radio-group>
               </div>
@@ -354,7 +341,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button v-db-click @click="cancel">取 消</el-button>
-        <el-button type="primary" v-db-click @click="handleSubmit('customdate')" v-if="currenType == 'custom'">确 定</el-button>
+        <el-button type="primary" v-db-click @click="handleSubmit('customdate')" v-if="currenType == 'custom'"
+          >确 定</el-button
+        >
         <el-button type="primary" v-db-click @click="ok" v-else>确 定</el-button>
       </span>
     </el-dialog>
@@ -371,9 +360,17 @@ import {
   integralProductListApi,
   presellListApi,
 } from '@/api/marketing';
+import { lotteryList } from '@/api/lottery';
 import { cmsListApi } from '@/api/cms';
+import { linkListApi } from '@/api/setting';
 export default {
   name: 'linkaddress',
+  props: {
+    fromType: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       modals: false,
@@ -464,9 +461,20 @@ export default {
           key: 'title',
         },
       ],
+      lottery: [
+        {
+          title: 'ID',
+          key: 'id',
+          width: 60,
+        },
+        {
+          title: '名称',
+          key: 'name',
+        },
+      ],
       formValidate: {
         page: 1,
-        limit: 10,
+        limit: 15,
         cate_id: '',
         store_name: '',
       },
@@ -488,7 +496,7 @@ export default {
         url: '',
         appid: '',
         mpUrl: '',
-        status: 1,
+        status: 2,
       },
       customNum: 1,
       ruleValidate: {
@@ -548,6 +556,7 @@ export default {
           this.$message.error(err.msg);
         });
     },
+    getLotteryList() {},
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
@@ -608,7 +617,11 @@ export default {
         .then((res) => {
           res.data[0].children[0].selected = true;
           this.categoryData = res.data;
-          this.handleCheckChange(res.data[0].children[0]);
+          if (this.fromType === 'diyPage') {
+            this.handleCheckChange(res.data[0].children[2]);
+          } else {
+            this.handleCheckChange(res.data[0].children[0].children[0]);
+          }
         })
         .catch((err) => {
           this.$message.error(err.msg);
@@ -616,6 +629,7 @@ export default {
     },
     getList() {
       this.loading = true;
+      this.formValidate.limit = 15;
       if (this.currenType == 'product') {
         changeListApi(this.formValidate)
           .then(async (res) => {
@@ -707,6 +721,26 @@ export default {
             this.loading = false;
             this.$message.error(res.msg);
           });
+      } else if (this.currenType == 'lottery_list') {
+        this.formValidate = {
+          page: 1,
+          limit: 15,
+          factor: 1,
+        };
+        lotteryList(this.formValidate)
+          .then(async (res) => {
+            let data = res.data;
+            data.list.forEach((e) => {
+              e.url = `/pages/goods/lottery/grids/index?type=1&lottery_id=${e.id}`;
+            });
+            this.tableList = data.list;
+            this.total = data.count;
+            this.loading = false;
+          })
+          .catch((res) => {
+            this.loading = false;
+            this.$message.error(res.msg);
+          });
       } else if (this.currenType == 'integral') {
         integralProductListApi(this.formValidate)
           .then(async (res) => {
@@ -743,64 +777,82 @@ export default {
         this.currenType == 'combination' ||
         this.currenType == 'news' ||
         this.currenType == 'advance' ||
-        this.currenType == 'integral'
+        this.currenType == 'integral' ||
+        this.currenType == 'lottery_list'
       ) {
         this.getList();
       } else if (this.currenType == 'custom') {
         this.getCustomList();
       } else {
-        pageLink(id)
+        this.formValidate = {
+          id,
+          page: 1,
+        };
+        linkListApi(this.formValidate)
           .then((res) => {
             this.loading = false;
             let data = res.data.list;
-            if (this.currenType == 'marketing_link' || this.currenType == 'link') {
-              let basicsList = [];
-              let distributionList = [];
-              let userList = [];
-              let integral = [];
-              let luckDraw = [];
-              let coupon = [];
-              data.forEach((e) => {
-                if (e.type == 1) {
-                  basicsList.push(e);
-                } else if (e.type == 2) {
-                  distributionList.push(e);
-                } else if (e.type == 3) {
-                  userList.push(e);
-                } else if (e.type == 4) {
-                  integral.push(e);
-                } else if (e.type == 5) {
-                  luckDraw.push(e);
-                } else {
-                  coupon.push(e);
-                }
-              });
-              this.basicsList = basicsList;
-              this.distributionList = distributionList;
-              this.userList = userList;
-              this.coupon = coupon;
-              this.luckDraw = luckDraw;
-              this.integral = integral;
-            } else if (this.currenType == 'special') {
+            this.total = res.data.count;
+            if (this.currenType == 'special') {
               let list = [];
               data.forEach((e) => {
-                e.url = `/pages/annex/special/index?id=${e.id}`;
+                e.url = `/pages/annex/special/index?id=${e.id}&name=${e.name}`;
                 if (e.is_diy) {
                   list.push(e);
                 }
               });
               this.tableList = list;
-            } else if (this.currenType == 'product_category') {
-              data.forEach((e) => {
-                if (e.hasOwnProperty('children')) {
-                  e.children.forEach((j) => {
-                    j.url = `/pages/goods/goods_list/index?sid=${j.id}&title=${j.cate_name}`;
-                  });
-                }
-                e.url = `/pages/goods/goods_list/index?cid=${e.id}&title=${e.cate_name}`;
-              });
+            } else {
               this.tableList = data;
             }
+            // if (this.currenType == 'marketing_link' || this.currenType == 'link') {
+            //   let basicsList = [];
+            //   let distributionList = [];
+            //   let userList = [];
+            //   let integral = [];
+            //   let luckDraw = [];
+            //   let coupon = [];
+            //   data.forEach((e) => {
+            //     if (e.type == 1) {
+            //       basicsList.push(e);
+            //     } else if (e.type == 2) {
+            //       distributionList.push(e);
+            //     } else if (e.type == 3) {
+            //       userList.push(e);
+            //     } else if (e.type == 4) {
+            //       integral.push(e);
+            //     } else if (e.type == 5) {
+            //       luckDraw.push(e);
+            //     } else {
+            //       coupon.push(e);
+            //     }
+            //   });
+            //   this.basicsList = basicsList;
+            //   this.distributionList = distributionList;
+            //   this.userList = userList;
+            //   this.coupon = coupon;
+            //   this.luckDraw = luckDraw;
+            //   this.integral = integral;
+            // } else if (this.currenType == 'special') {
+            //   let list = [];
+            //   data.forEach((e) => {
+            //     e.url = `/pages/annex/special/index?id=${e.id}&name=${e.name}`;
+            //     if (e.is_diy) {
+            //       list.push(e);
+            //     }
+            //   });
+            //   this.tableList = list;
+            // } else if (this.currenType == 'product_category') {
+            //   data.forEach((e) => {
+            //     if (e.hasOwnProperty('children')) {
+            //       e.children.forEach((j) => {
+            //         j.url = `/pages/goods/goods_list/index?sid=${j.id}&title=${j.cate_name}`;
+            //       });
+            //     }
+            //     e.url = `/pages/goods/goods_list/index?cid=${e.id}&title=${e.cate_name}`;
+            //   });
+            //   this.tableList = data;
+            // }
           })
           .catch((err) => {
             this.loading = false;
@@ -825,9 +877,8 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .el-dialog__body {
-  //padding: 20px 10px 10px 10px !important;
 }
 ::v-deep .el-tree-node__content {
   height: 30px;
@@ -836,11 +887,12 @@ export default {
   background-color: var(--prev-bg-menu-hover-ba-color) !important;
   border-right: 2px solid var(--prev-color-primary);
 }
-::v-deep .ivu-tree-title-selected, ::v-deep .ivu-tree-title-selected:hover, ::v-deep .ivu-tree-title:hover {
+::v-deep .ivu-tree-title-selected,
+::v-deep .ivu-tree-title-selected:hover,
+::v-deep .ivu-tree-title:hover {
   background-color: unset;
   color: var(--prev-color-primary);
 }
-
 ::v-deep .ivu-table-cell-tree {
   border: 0;
   font-size: 15px;
@@ -853,11 +905,9 @@ export default {
 ::v-deep .ivu-table-cell-tree .ivu-icon-ios-add:before {
   content: '\F11F';
 }
-
 ::v-deep .ivu-table-cell-tree .ivu-icon-ios-remove:before {
   content: '\F116';
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -874,22 +924,18 @@ export default {
 ::-webkit-scrollbar-thumb {
   -webkit-box-shadow: inset 0 0 6px #ddd;
 }
-
 ::-webkit-scrollbar {
   width: 4px !important; /* 对垂直流动条有效 */
 }
-
 .on {
   background-color: var(--prev-color-primary) !important;
   color: #fff !important;
 }
-
 .menu-item {
   position: relative;
   display: flex;
   justify-content: space-between;
   word-break: break-all;
-
   .icon-box {
     z-index: 3;
     position: absolute;
@@ -898,11 +944,9 @@ export default {
     transform: translateY(-50%);
     display: none;
   }
-
   &:hover .icon-box {
     display: block;
   }
-
   .right-menu {
     z-index: 10;
     position: absolute;
@@ -920,20 +964,17 @@ export default {
 .table_box {
   display: flex;
   position: relative;
-
   .left_box {
     width: 171px;
     height: 470px;
     border-right: 1px solid #eeeeee;
     overflow-x: hidden;
     overflow-y: auto;
-
     .left_cont {
       margin-bottom: 12px;
       cursor: pointer;
     }
   }
-
   .right_box {
     margin-left: 23px;
     font-size: 13px;
@@ -942,18 +983,15 @@ export default {
     height: 470px;
     overflow-x: hidden;
     overflow-y: auto;
-
     .cont {
       font-weight: 500;
       color: #000000;
       font-weight: bold;
     }
-
     .Box {
       margin-top: 14px;
       display: flex;
       flex-wrap: wrap;
-
       .cont_box {
         font-weight: 400;
         color: rgba(0, 0, 0, 0.85);
@@ -964,27 +1002,22 @@ export default {
         margin-right: 10px;
         margin-bottom: 10px;
         cursor: pointer;
-
         &:hover {
           background-color: var(--prev-bg-menu-hover-ba-color);
           color: #333;
         }
       }
-
       .item {
         position: relative;
-
         .iconfont {
           display: none;
         }
-
         &:hover {
           .iconfont {
             display: block;
           }
         }
       }
-
       .iconfont {
         position: absolute;
         right: 9px;
@@ -995,19 +1028,17 @@ export default {
     }
   }
   ::v-deep .el-table .cell {
-    padding-right:0;
+    padding-right: 0;
   }
   ::v-deep .page {
-    margin-top:10px;
+    margin-top: 10px;
   }
-
   .Button {
     position: absolute;
     bottom: 15px;
     right: 15px;
     font-family: PingFangSC-Regular;
     text-align: center;
-
     .cancel {
       width: 70px;
       height: 32px;
@@ -1021,7 +1052,6 @@ export default {
       margin-right: 10px;
       cursor: pointer;
     }
-
     .ok {
       width: 70px;
       height: 32px;

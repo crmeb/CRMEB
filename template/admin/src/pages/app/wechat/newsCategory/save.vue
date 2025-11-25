@@ -12,7 +12,8 @@
           <div v-for="(item, i) in list" :key="i">
             <div
               v-if="i === 0"
-              v-db-click @click="onSubSave(i)"
+              v-db-click
+              @click="onSubSave(i)"
               :class="{ checkClass: i === current }"
               @mouseenter="isDel = true"
               @mouseleave="isDel = false"
@@ -343,13 +344,12 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .newsBox {
   ::v-deep .ivu-global-footer {
     dispaly: none !important;
   }
 }
-
 .demo-upload-list {
   display: inline-block;
   width: 60px;
@@ -364,7 +364,6 @@ export default {
   margin-right: 15px;
   position: relative;
 }
-
 .btndel {
   position: absolute;
   z-index: 111;
@@ -373,12 +372,10 @@ export default {
   left: 46px;
   top: -4px;
 }
-
 .demo-upload-list img {
   width: 100%;
   height: 100%;
 }
-
 .demo-upload-list-cover {
   display: none;
   position: absolute;
@@ -388,49 +385,41 @@ export default {
   right: 0;
   background: rgba(0, 0, 0, 0.6);
 }
-
 .demo-upload-list:hover .demo-upload-list-cover {
   display: block;
 }
-
 .demo-upload-list-cover i {
   color: #fff;
   font-size: 20px;
   cursor: pointer;
   margin: 0 2px;
 }
-
 .save_from ::v-deep .ivu-btn-error {
   width: 24px !important;
   height: 24px !important;
-  background: #FFF !important;
+  background: #fff !important;
   color: #999 !important;
   border: 1px solid #eee !important;
 }
-
 .save_from ::v-deep .ivu-btn-error:hover {
-  background: #FF5D5F !important;
+  background: #ff5d5f !important;
   border: 1px solid #fff !important;
   color: #fff !important;
 }
-
 .picBox {
   display: inline-block;
   cursor: pointer;
 }
-
 .pictrue {
   width: 60px;
   height: 60px;
   border: 1px dotted rgba(0, 0, 0, 0.1);
   margin-right: 10px;
 }
-
 .pictrue img {
   width: 100%;
   height: 100%;
 }
-
 .upLoad {
   width: 58px;
   height: 58px;
@@ -439,20 +428,15 @@ export default {
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.02);
 }
-
 .checkClass {
-  border: 1px dashed #0091FF !important;
+  border: 1px dashed #0091ff !important;
 }
-
 .checkClass2 {
-  border: 1px solid #0091FF !important;
+  border: 1px solid #0091ff !important;
 }
-
 .submission {
   width: 10%;
-  margin-left: 27px;
 }
-
 .cover {
   width: 60px;
   height: 60px;
@@ -462,7 +446,6 @@ export default {
     height: 100%;
   }
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
@@ -470,7 +453,6 @@ export default {
   line-height: 35px;
   display: inline-block;
 }
-
 .news_pic {
   width: 100%;
   height: 150px;
@@ -485,7 +467,6 @@ export default {
   flex-direction: column;
   align-items: flex-end;
 }
-
 .news_sp {
   font-size: 12px;
   color: #000000;
@@ -498,7 +479,6 @@ export default {
   display: block;
   border-bottom: 1px dashed #eee;
 }
-
 .news_cent {
   width: 100%;
   height: auto;
@@ -509,13 +489,11 @@ export default {
   box-sizing: border-box;
   justify-content: space-between;
   align-items: center;
-
   .news_sp1 {
     font-size: 12px;
     color: #000000;
     width: 71%;
   }
-
   .news_cent_img {
     width: 81px;
     height: 46px;

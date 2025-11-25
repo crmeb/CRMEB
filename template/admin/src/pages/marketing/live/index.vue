@@ -1,27 +1,32 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            label-position="right"
-            inline
-            @submit.native.prevent
-            class="tabform"
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          label-position="right"
+          inline
+          @submit.native.prevent
+          class="tabform"
         >
           <el-form-item label="直播状态：">
             <el-select v-model="formValidate.status" clearable @change="selChange" class="form_content_width">
-              <el-option v-for="(item,index) in treeData.withdrawal" :value="item.value" :key="index" :label="item.title"></el-option>
+              <el-option
+                v-for="(item, index) in treeData.withdrawal"
+                :value="item.value"
+                :key="index"
+                :label="item.title"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="搜索：">
             <el-input
-                clearable
-                placeholder="请输入直播间名称/ID/主播昵称/微信号"
-                v-model="formValidate.kerword"
-                class="form_content_width"
+              clearable
+              placeholder="请输入直播间名称/ID/主播昵称/微信号"
+              v-model="formValidate.kerword"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -31,18 +36,12 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button
-          v-auth="['setting-system_menus-add']"
-          type="primary"
-          v-db-click @click="menusAdd('添加直播间')"
-      >添加直播间</el-button
+      <el-button v-auth="['setting-system_menus-add']" type="primary" v-db-click @click="menusAdd('添加直播间')"
+        >添加直播间</el-button
       >
-      <el-button
-          v-auth="['setting-system_menus-add']"
-          type="success"
-          v-db-click @click="syncRoom"
-          style="margin-left: 20px"
-      >同步直播间</el-button>
+      <el-button v-auth="['setting-system_menus-add']" v-db-click @click="syncRoom" style="margin-left: 20px"
+        >同步直播间</el-button
+      >
       <el-table
         :data="tabList"
         ref="table"

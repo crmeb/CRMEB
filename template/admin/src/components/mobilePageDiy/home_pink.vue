@@ -256,110 +256,132 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.pinkOn{
-    border-radius 0!important
+<style lang="scss" scoped>
+.pinkOn {
+  border-radius: 0 !important;
 }
-.pageOn{
-    border-radius 10px!important
+.pageOn {
+  border-radius: 10px !important;
 }
-.mobile-page{
-    padding-top 10px
+.mobile-page {
+  padding-top: 10px;
 }
-.home_pink
-    padding 10px 12px
-    background #fff
-    border-radius 10px
-    .title-wrapper
-        display flex
-        align-items center
-        justify-content space-between
-        .left
-            display flex
-            align-items center
-            span
-                margin-left 5px
-                font-size 16px
-            .icon
-                width 18px
-                height 18px
-                border-radius 50%
-            .avatar-wrapper
-                display flex
-                align-items center
-                margin-left 14px
-                img
-                    width 15px
-                    height 15px
-                    margin-left -5px
-                    border 1px solid #fff
-                    border-radius 50%
-            .num
-                margin-left 3px
-                color #999
-                font-size 13px
-    .list-wrapper
-        display flex
-        margin-top 10px
-        overflow hidden
-        .item
-            flex-shrink 0
-            width 110px
-            background #fff
-            border-radius 8px
-            .img-box
-                position relative
-                width 100%
-                height 110px
-                img,.box
-                    width 100%
-                    height 100%
-                    border-radius:8px 8px 0px 0px;
-                .box
-                    background #D8D8D8
-                .num
-                    position absolute
-                    left 6px
-                    top 6px
-                    width:70px;
-                    height:16px;
-                    line-height 16px
-                    text-align center
-                    background:rgba(0,0,0,0.1);
-                    box-shadow:1px 1px 4px 0px rgba(0,0,0,0.06);
-                    border-radius:8px;
-                    color #fff
-                    font-size 12px
-            .info
-                padding 5px 7px
-                .title
-                    font-size 12px
-                    color #282828
-                .price
-                    display flex
-                    align-items center
-                    .label
-                        display inline-block
-                        height 20px
-                        line-height 20px
-                        padding 0 3px
-                        margin-right 3px
-                        font-size:9px;
-                        font-weight:400;
-                        text-shadow:1px 1px 4px rgba(0,0,0,0.06);
-                        color #FF4444
-                    .num
-                        color #FF4444
-                        font-size 16px
-                        font-weight bold
-                        span
-                            font-size 12px
-            .btn
-                width:110px;
-                height:24px;
-                box-shadow:1px 1px 4px 0px rgba(0,0,0,0.06);
-                border-radius:0px 0px 8px 8px;
-                text-align center
-                line-height 24px
-                color #fff
+.home_pink {
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 10px;
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .left {
+      display: flex;
+      align-items: center;
+      span {
+        margin-left: 5px;
+        font-size: 16px;
+      }
+      .icon {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+      }
+      .avatar-wrapper {
+        display: flex;
+        align-items: center;
+        margin-left: 14px;
+        img {
+          width: 15px;
+          height: 15px;
+          margin-left: -5px;
+          border: 1px solid #fff;
+          border-radius: 50%;
+        }
+      }
+      .num {
+        margin-left: 3px;
+        color: #999;
+        font-size: 13px;
+      }
+    }
+  }
+  .list-wrapper {
+    display: flex;
+    margin-top: 10px;
+    overflow: hidden;
+    .item {
+      flex-shrink: 0;
+      width: 110px;
+      background: #fff;
+      border-radius: 8px;
+      .img-box {
+        position: relative;
+        width: 100%;
+        height: 110px;
+        img,
+        .box {
+          width: 100%;
+          height: 100%;
+          border-radius: 8px 8px 0px 0px;
+        }
+        .box {
+          background: #d8d8d8;
+        }
+        .num {
+          position: absolute;
+          left: 6px;
+          top: 6px;
+          width: 70px;
+          height: 16px;
+          line-height: 16px;
+          text-align: center;
+          background: rgba(0, 0, 0, 0.1);
+          box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.06);
+          border-radius: 8px;
+          color: #fff;
+          font-size: 12px;
+        }
+      }
+      .info {
+        padding: 5px 7px;
+        .title {
+          font-size: 12px;
+          color: #282828;
+        }
+        .price {
+          display: flex;
+          align-items: center;
+          .label {
+            display: inline-block;
+            height: 20px;
+            line-height: 20px;
+            padding: 0 3px;
+            margin-right: 3px;
+            font-size: 9px;
+            font-weight: 400;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.06);
+            color: #ff4444;
+          }
+          .num {
+            color: #ff4444;
+            font-size: 16px;
+            font-weight: bold;
+            span {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+      .btn {
+        width: 110px;
+        height: 24px;
+        box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.06);
+        border-radius: 0px 0px 8px 8px;
+        text-align: center;
+        line-height: 24px;
+        color: #fff;
+      }
+    }
+  }
+}
 </style>

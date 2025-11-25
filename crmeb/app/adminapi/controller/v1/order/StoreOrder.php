@@ -908,7 +908,12 @@ class StoreOrder extends AuthController
         ], true);
         if (!$file) return app('json')->fail(400168);
         $file = public_path() . substr($file, 1);
-        $expressData = app()->make(FileService::class)->readExcel($file, 'express', 2);
+        // 获取文件后缀
+        $suffix = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (!in_array($suffix, ['xls', 'xlsx'])) {
+            return app('json')->fail('文件格式不正确，请上传xls或xlsx格式的文件！');
+        }
+        $expressData = app()->make(FileService::class)->readExcel($file, 'express', 2, ucfirst($suffix));
         foreach ($expressData as $item) {
             OrderExpressJob::dispatch([$item]);
         }

@@ -322,29 +322,24 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-mt .type .item {
   margin: 3px 0;
 }
-
 .tabform {
   margin-bottom: 10px;
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
   cursor: pointer;
 }
-
 .ivu-form-item {
   margin-bottom: 10px;
 }
-
 .status ::v-deep .item ~ .item {
   margin-left: 6px;
 }
-
 .status ::v-deep .statusVal {
   margin-bottom: 7px;
 }
@@ -355,7 +350,6 @@ export default {
   padding: 3px 0;
   box-sizing: border-box;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -367,7 +361,6 @@ export default {
     height: 100%;
   }
 }
-
 .mb20 ::v-deep .ivu-table-wrapper > .ivu-spin-fix {
   border: none;
 }

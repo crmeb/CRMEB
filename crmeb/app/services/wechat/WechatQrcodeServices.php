@@ -155,7 +155,7 @@ class WechatQrcodeServices extends BaseServices
             }
             if (!$res) throw new AdminException(400237);
             $imageInfo = $this->downloadImage($resCode['url'], $name);
-            $systemAttachment->attachmentAdd($name, $imageInfo['size'], $imageInfo['type'], $imageInfo['att_dir'], $imageInfo['att_dir'], 1, $imageInfo['image_type'], time(), 2);
+            $systemAttachment->attachmentAdd($name, $imageInfo['size'], $imageInfo['type'], $imageInfo['att_dir'], $imageInfo['att_dir'], 1, $imageInfo['image_type'], time(), 1);
         }
         return strpos($imageInfo['att_dir'], 'http') === false ? $siteUrl . $imageInfo['att_dir'] : $imageInfo['att_dir'];
     }

@@ -91,7 +91,7 @@
 		transform: translate3d(0, 100%, 0);
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 		bottom: 0rpx;
-		bottom: calc(0rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		bottom: calc(0rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		bottom: calc(0rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
 		&.on {

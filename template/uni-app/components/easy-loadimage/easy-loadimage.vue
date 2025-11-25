@@ -1,17 +1,24 @@
 <template>
-	<view class="easy-loadimage" :id="uid">
-		<image class="origin-img" :src="imageSrc" mode="" v-if="loadImg&&!isLoadError" v-show="showImg"
+	<view class="easy-loadimage" :style="[boxStyle]" :id="uid">
+		<image class="origin-img" :src="imageSrc" mode="aspectFill" 
+			v-if="loadImg&&!isLoadError" 
+			v-show="showImg"
+			:style="[imgStyle]"
 			:class="{'no-transition':!openTransition,'show-transition':showTransition&&openTransition}"
 			@load="handleImgLoad" @error="handleImgError">
+		</image>
+		<image class="border-img" :src="borderSrc" mode="aspectFill"
+			v-if="loadImg&&!isLoadError&&borderSrc"
+			v-show="showImg"
+			:style="[imgStyle]"
+			:class="{'no-transition':!openTransition,'show-transition':showTransition&&openTransition}">
 		</image>
 		<view class="loadfail-img" v-else-if="isLoadError"></view>
 		<view :class="['loading-img','spin-circle',loadingMode]" v-show="!showImg&&!isLoadError"></view>
 	</view>
 </template>
 <script>
-	import {
-		throttle
-	} from '@/libs/uniApi';
+	import {Throttle} from '@/utils/validate.js';
 
 	// 生成全局唯一id
 	function generateUUID() {
@@ -24,6 +31,10 @@
 	export default {
 		props: {
 			imageSrc: {
+				type: String,
+				default: ""
+			},
+			borderSrc: {
 				type: String,
 				default: ""
 			},
@@ -44,6 +55,18 @@
 				default () {
 					return uni.getSystemInfoSync().windowHeight;
 				}
+			},
+			width:{
+				type: String,
+				default: ''
+			},
+			height:{
+				type: String,
+				default: ''
+			},
+			borderRadius:{
+				type: String,
+				default: ''
 			}
 		},
 		data() {
@@ -54,8 +77,9 @@
 				loadImg: false,
 				showImg: false,
 				isLoadError: false,
+				borderLoaded: 0,
 				showTransition: false,
-				scrollFn: throttle(function() {
+				scrollFn: Throttle(function() {
 					// 加载img时才执行滚动监听判断是否可加载
 					if (that.loadImg || that.isLoadError) return;
 					const id = that.uid
@@ -70,12 +94,35 @@
 				}, 200)
 			}
 		},
+		computed:{
+			boxStyle(){
+				return {
+					width: this.width,
+					height: this.height,
+					borderRadius: this.borderRadius
+				}
+			},
+			imgStyle(){
+				return {
+					borderRadius: this.borderRadius
+				}
+			}
+		},
 		methods: {
 			init() {
 				this.$nextTick(this.onScroll)
 			},
+			handleBorderLoad() {
+				this.borderLoaded = 1;
+			},
+			handleBorderError() {
+				this.borderLoaded = 2;
+			},
 			handleImgLoad(e) {
 				this.showImg = true;
+				// this.$nextTick(function(){
+				//     this.showTransition = true
+				// })
 				setTimeout(() => {
 					this.showTransition = true
 				}, 50)
@@ -108,7 +155,7 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
-		max-height: 360rpx;
+		/* max-height: 360rpx; */
 		top: 0;
 		left: 0;
 	}
@@ -123,7 +170,7 @@
 		width: 100%;
 		height: 100%;
 		opacity: 0.3;
-		max-height: 360rpx;
+		/* max-height: 360rpx; */
 	}
 
 	image.origin-img.show-transition {
@@ -140,7 +187,7 @@
 		width: 100%;
 		height: 100%;
 		opacity: 0.3;
-		max-height: 360rpx;
+		/* max-height: 360rpx; */
 	}
 
 	image.border-img.show-transition {
@@ -169,11 +216,11 @@
 		background-size: 60%;
 	}
 
-
 	/* 动态灰色若隐若现 */
 	.looming-gray {
 		animation: looming-gray 1s infinite linear;
 		background-color: #e3e3e3;
+		border-radius: 12rpx;
 	}
 
 	@keyframes looming-gray {

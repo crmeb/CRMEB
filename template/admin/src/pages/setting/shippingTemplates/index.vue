@@ -1,22 +1,17 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="levelFrom"
-            :model="levelFrom"
-            :label-width="labelWidth"
-            label-position="right"
-            @submit.native.prevent
-            inline
+          ref="levelFrom"
+          :model="levelFrom"
+          :label-width="labelWidth"
+          label-position="right"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="搜索：" label-for="keyword">
-            <el-input
-                clearable
-                v-model="levelFrom.name"
-                placeholder="请输入模板名称"
-                class="form_content_width"
-            />
+            <el-input clearable v-model="levelFrom.name" placeholder="请输入模板名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
@@ -65,11 +60,11 @@
             <span>{{ scope.row.add_time }}</span>
           </template>
         </el-table-column>
-         <el-table-column label="操作" fixed="right" width="100">
+        <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-          <a v-db-click @click="edit(scope.row.id)">修改</a>
-          <el-divider direction="vertical" v-if="scope.row.id !== 1" />
-          <a v-db-click @click="del(scope.row, '删除模版', index)" v-if="scope.row.id !== 1">删除</a>
+            <a v-db-click @click="edit(scope.row.id)">修改</a>
+            <el-divider direction="vertical" v-if="scope.row.id !== 1" />
+            <a v-db-click @click="del(scope.row, '删除模版', index)" v-if="scope.row.id !== 1">删除</a>
           </template>
         </el-table-column>
       </el-table>

@@ -52,6 +52,14 @@ class StoreCouponIssueDao extends BaseDao
             }
         })->when(isset($where['receive_type']) && $where['receive_type'], function ($query) use ($where) {
             $query->where('receive_type', $where['receive_type']);
+        })->when(isset($where['receive_types']) && $where['receive_types'], function ($query) use ($where) {
+            $query->where(function ($query) use ($where) {
+                if ($where['receive_types'] == 1) {
+                    $query->where('receive_type', 1)->whereOr('receive_type', 4);
+                } else {
+                    $query->where('receive_type', 2)->whereOr('receive_type', 3);
+                }
+            });
         });
     }
 
@@ -358,5 +366,34 @@ class StoreCouponIssueDao extends BaseDao
     public function checkProductCoupon($product_id)
     {
         return (bool)$this->getModel()->whereFindInSet('product_id', $product_id)->count();
+    }
+
+    public function canReceiveCoupons($uid, $isMember)
+    {
+        return $this->getModel()->where('status', 1)
+            ->where('is_del', 0)
+            ->where('remain_count > 0 OR is_permanent = 1')
+            ->where(function ($query) use ($isMember) {
+                if ($isMember) {
+                    $query->where('receive_type', 1)->whereOr('receive_type', 4);
+                } else {
+                    $query->where('receive_type', 1);
+                }
+            })->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->where('start_time', '<', time())->where('end_time', '>', time());
+                })->whereOr(function ($query) {
+                    $query->where('start_time', 0)->where('end_time', 0);
+                });
+            })->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->where('start_use_time', '<', time())->where('end_use_time', '>', time());
+                })->whereOr(function ($query) {
+                    $query->where('start_use_time', 0)->where('end_use_time', 0);
+                });
+            })
+            ->with(['used' => function ($query) use ($uid) {
+                $query->where('uid', $uid);
+            }])->order('coupon_price desc')->select()->toArray();
     }
 }

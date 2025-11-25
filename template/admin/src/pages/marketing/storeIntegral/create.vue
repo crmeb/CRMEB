@@ -77,7 +77,8 @@
                     <div
                       v-if="formValidate.images.length < 10"
                       class="upLoad acea-row row-center-wrapper"
-                      v-db-click @click="modalPicTap('duo')"
+                      v-db-click
+                      @click="modalPicTap('duo')"
                     >
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
@@ -87,7 +88,13 @@
               <el-col :span="24">
                 <el-col v-bind="grid">
                   <el-form-item label="商品标题：" prop="title" label-for="title">
-                    <el-input placeholder="请输入商品标题" v-model="formValidate.title" class="content_width" />
+                    <el-input
+                      placeholder="请输入商品标题"
+                      v-model="formValidate.title"
+                      class="content_width"
+                      maxlength="80"
+                      show-word-limit
+                    />
                   </el-form-item>
                 </el-col>
               </el-col>
@@ -176,7 +183,8 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
-                            v-db-click @click="modalPicTap('dan', 'danTable', scope.$index)"
+                            v-db-click
+                            @click="modalPicTap('dan', 'danTable', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="scope.row.pic">
                               <img v-lazy="scope.row.pic" />
@@ -227,7 +235,8 @@
               <el-form-item>
                 <el-button
                   class="submission"
-                  v-db-click @click="step"
+                  v-db-click
+                  @click="step"
                   :disabled="($route.params.id && current === 1) || current === 0"
                   >上一步
                 </el-button>
@@ -235,7 +244,8 @@
                   :disabled="submitOpen && current === 2"
                   type="primary"
                   class="submission"
-                  v-db-click @click="next('formValidate')"
+                  v-db-click
+                  @click="next('formValidate')"
                   >{{ current === 2 ? '提交' : '下一步' }}</el-button
                 >
               </el-form-item>
@@ -650,12 +660,12 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$nextTick(e => {
+      this.$nextTick((e) => {
         this.$refs.goodslist.formValidate.is_show = -1;
-        this.$refs.goodslist.formValidate.type = 3;
+        this.$refs.goodslist.formValidate.type = 7;
         this.$refs.goodslist.getList();
         this.$refs.goodslist.goodsCategory();
-      })
+      });
     }, // 移动
     handleDragStart(e, item) {
       this.dragging = item;
@@ -682,44 +692,37 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.content_width{
-  width:460px;
+<style lang="scss" scoped>
+.content_width {
+  width: 460px;
 }
 .custom-label {
   display: inline-flex;
   line-height: 1.5;
 }
-
 .grey {
   color: #999;
 }
-
 .maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
-
 .tabBox_img {
   width: 50px;
   height: 50px;
   margin: 0 auto;
 }
-
 .tabBox_img img {
   width: 100%;
   height: 100%;
 }
-
 .priceBox {
   width: 100%;
 }
-
 .form {
   .picBox {
     display: inline-block;
     cursor: pointer;
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -733,7 +736,6 @@ export default {
       width: 100%;
       height: 100%;
     }
-
     .btndel {
       position: absolute;
       z-index: 9;
@@ -743,7 +745,6 @@ export default {
       top: -4px;
     }
   }
-
   .upLoad {
     width: 58px;
     height: 58px;

@@ -100,7 +100,15 @@ class UploadService
             $config['cdn'] = $res['cdn'];
         }
 
-        $thumb = SystemConfigService::more(['thumb_big_height', 'thumb_big_width', 'thumb_mid_height', 'thumb_mid_width', 'thumb_small_height', 'thumb_small_width',]);
+        $thumb = SystemConfigService::more([
+            'image_thumb_status',
+            'thumb_big_height',
+            'thumb_big_width',
+            'thumb_mid_height',
+            'thumb_mid_width',
+            'thumb_small_height',
+            'thumb_small_width'
+        ]);
         $water = SystemConfigService::more([
             'image_watermark_status',
             'watermark_type',
@@ -113,7 +121,8 @@ class UploadService
             'watermark_text_color',
             'watermark_text_size',
             'watermark_x',
-            'watermark_y']);
+            'watermark_y'
+        ]);
         $config = array_merge($config, ['thumb' => $thumb], ['water' => $water]);
         return self::$upload['upload_' . $type] = new Upload($type, $config);
     }

@@ -146,4 +146,13 @@ class StoreProductAttrValue extends BaseModel
         }
     }
 
+    public function searchBarCodeNumberAttr($query, $value)
+    {
+        if (is_array($value)) {
+            $query->whereIn('bar_code_number', $value);
+        } else {
+            $query->where('bar_code_number', $value);
+        }
+    }
+
 }

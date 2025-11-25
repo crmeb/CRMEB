@@ -3,6 +3,7 @@
 		<goodsCate1 v-if="category == 1" ref="classOne" :isNew="isNew"></goodsCate1>
 		<goodsCate2 v-if="category == 2" ref="classTwo" :isNew="isNew" @jumpIndex="jumpIndex"></goodsCate2>
 		<goodsCate3 v-if="category == 3" ref="classThree" :isNew="isNew" @jumpIndex="jumpIndex"></goodsCate3>
+		<pageFooter v-if="category == 1" @newDataStatus="newDataStatus" v-show="showBar"></pageFooter>
 	</view>
 </template>
 
@@ -14,14 +15,14 @@ import goodsCate3 from './goods_cate3';
 import { colorChange } from '@/api/api.js';
 import { mapGetters } from 'vuex';
 import { getCategoryVersion } from '@/api/public.js';
-import tabBar from '@/pages/index/visualization/components/tabBar.vue';
+import pageFooter from '@/components/pageFooter/index.vue';
 export default {
 	computed: mapGetters(['isLogin', 'uid']),
 	components: {
 		goodsCate1,
 		goodsCate2,
 		goodsCate3,
-		tabBar
+		pageFooter
 	},
 	mixins: [colors],
 	data() {
@@ -30,7 +31,9 @@ export default {
 			is_diy: uni.getStorageSync('is_diy'),
 			status: 0,
 			version: '',
-			isNew: false
+			isNew: false,
+			isFooter: false,
+			showBar: false
 		};
 	},
 	onLoad() {},
@@ -39,6 +42,11 @@ export default {
 		this.getCategoryVersion();
 	},
 	methods: {
+		newDataStatus(val, num) {
+			this.isFooter = val ? true : false;
+			this.showBar = val ? true : false;
+			this.pdHeight = num;
+		},
 		getCategoryVersion() {
 			uni.$emit('uploadFooter');
 			getCategoryVersion().then((res) => {
@@ -50,9 +58,9 @@ export default {
 			});
 		},
 		jumpIndex() {
-			// uni.reLaunch({
-			// 	url: '/pages/index/index'
-			// })
+			uni.reLaunch({
+				url: '/pages/index/index'
+			})
 		},
 		classStyle() {
 			colorChange('category').then((res) => {

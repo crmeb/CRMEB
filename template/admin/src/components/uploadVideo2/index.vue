@@ -1,87 +1,441 @@
 <template>
-  <div>
-    <div class="mt20 ml20">
-      <el-input class="perW35" v-model="videoLink" placeholder="请输入视频链接" />
-      <input type="file" ref="refid" style="display: none" @change="zh_uploadFile_change" />
-      <el-button
-        v-if="upload_type !== '1' || videoLink"
-        type="primary"
-        icon="ios-cloud-upload-outline"
-        class="ml10"
-        v-db-click @click="zh_uploadFile"
-        >{{ videoLink ? '确认添加' : '上传视频' }}</el-button
-      >
-      <el-upload
-        v-if="upload_type === '1' && !videoLink"
-        :show-file-list="false"
-        :action="fileUrl"
-        class="ml10"
-        :before-upload="videoSaveToUrl"
-        :data="uploadData"
-        :headers="header"
-        :multiple="true"
-        style="display: inline-block"
-        accept=".mp4"
-      >
-        <el-button type="primary" icon="ios-cloud-upload-outline">上传视频</el-button>
-      </el-upload>
-      <Progress :percent="progress" :stroke-width="5" v-if="upload.videoIng" />
-      <div class="video-style" v-if="formValidate.video_link">
-        <video
-          style="width: 100%; height: 100% !important; border-radius: 10px"
-          :src="formValidate.video_link"
-          controls="controls"
-        >
-          您的浏览器不支持 video 标签。
-        </video>
-        <div class="mark"></div>
-        <i class="el-icon-delete iconv" v-db-click @click="delVideo"></i>
+  <div class="Modal">
+    <div class="colLeft">
+      <div class="Nav">
+        <div class="trees-coadd">
+          <div v-if="isPage" class="tree_tit" v-db-click @click="addSort">
+            <i class="el-icon-circle-plus"></i>
+            添加分类
+          </div>
+          <div class="scollhide">
+            <div :class="isPage ? 'tree' : 'isTree'">
+              <el-tree
+                :data="treeData"
+                node-key="id"
+                default-expand-all
+                highlight-current
+                :expand-on-click-node="false"
+                @node-click="appendBtn"
+                :current-node-key="treeId"
+              >
+                <span class="custom-tree-node" slot-scope="{ data }">
+                  <!-- <span class="file-name">
+                    <i class="icon el-icon-folder-remove"></i>
+                    {{ data.title }}</span
+                  > -->
+                  <!-- <span class="file-name">
+                    <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
+                    <span class="name line1">{{ data.title }}</span>
+                  </span> -->
+                  <div class="file-name">
+                    <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
+                    <el-tooltip class="item" effect="dark" :content="data.title" placement="top">
+                      <div class="text line1">
+                        {{ data.title }}
+                      </div>
+                    </el-tooltip>
+                  </div>
+                  <span>
+                    <el-dropdown @command="(command) => clickMenu(data, command)">
+                      <i class="el-icon-more el-icon--right"></i>
+                      <template slot="dropdown">
+                        <el-dropdown-menu>
+                          <el-dropdown-item command="1">新增分类</el-dropdown-item>
+                          <el-dropdown-item v-if="data.id" command="2">编辑分类</el-dropdown-item>
+                          <el-dropdown-item v-if="data.id" command="3">删除</el-dropdown-item>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
+                  </span>
+                </span>
+              </el-tree>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="conter">
+        <div class="bnt acea-row row-middle df-jcsb">
+          <div class="">
+            <el-button
+              class="mr14"
+              type="primary"
+              :disabled="checkPicList.length === 0"
+              v-db-click
+              @click="checkPics"
+              size="small"
+              v-if="isShow !== 0"
+              >使用选中视频</el-button
+            >
+            <!-- <el-button size="small" type="primary" v-db-click @click="uploadModal">上传视频</el-button> -->
+            <el-button
+              class="mr14"
+              v-if="upload_type !== '1'"
+              type="primary"
+              size="small"
+              v-db-click
+              @click="zh_uploadFile"
+              >上传视频</el-button
+            >
+            <el-upload
+              v-if="upload_type === '1'"
+              :show-file-list="false"
+              :action="fileUrl"
+              :before-upload="videoSaveToUrl"
+              :data="uploadData"
+              :headers="header"
+              :multiple="true"
+              style="display: inline-block"
+              accept=".mp4"
+            >
+              <el-button class="mr14" size="small" type="primary">上传视频</el-button>
+            </el-upload>
+            <el-button
+              class="mr14"
+              size="small"
+              :disabled="!checkPicList.length && !ids.length"
+              v-db-click
+              @click.stop="editPicList()"
+              >删除视频</el-button
+            >
+            <el-cascader
+              v-model="pids"
+              placeholder="视频移动至"
+              style="width: 150px"
+              class="treeSel"
+              :options="treeData2"
+              :props="{ checkStrictly: true, emitPath: false, label: 'title', value: 'id' }"
+              clearable
+              size="small"
+              @visible-change="moveImg"
+            ></el-cascader>
+          </div>
+          <div>
+            <el-input
+              class="mr14"
+              v-model="fileData.real_name"
+              placeholder="请输入视频名"
+              size="small"
+              style="width: 150px"
+              @change="searchFile"
+            >
+              <i slot="suffix" class="el-icon-search el-input__icon" v-db-click @click="getFileList"></i>
+            </el-input>
+            <el-radio-group class="mr10" v-if="isPage" v-model="lietStyle" size="small" @input="radioChange">
+              <el-radio-button label="list">
+                <i class="el-icon-menu"></i>
+              </el-radio-button>
+              <el-radio-button label="table">
+                <!-- <i class="el-icon-files"></i> -->
+                <span class="iconfont iconliebiao"></span>
+              </el-radio-button>
+            </el-radio-group>
+          </div>
+        </div>
+        <div class="pictrueList acea-row" :class="{ 'is-modal': !isPage }">
+          <div v-if="lietStyle == 'list'" style="width: 100%">
+            <div v-show="isShowPic" class="imagesNo">
+              <i class="el-icon-picture" style="color: #dbdbdb; font-size: 60px"></i>
+              <span class="imagesNo_sp">视频库为空</span>
+            </div>
+            <div ref="imgListBox" class="acea-row mb10">
+              <div
+                class="pictrueList_pic mb10 mt10"
+                v-for="(item, index) in pictrueList"
+                :key="index"
+                :style="{ margin: picmargin }"
+                @mouseenter="enterMouse(item)"
+                @mouseleave="enterMouse(item)"
+              >
+                <p class="number" v-if="item.num > 0">
+                  <el-badge :value="item.num" type="primary">
+                    <a href="#" class="demo-badge"></a>
+                  </el-badge>
+                </p>
+                <div
+                  class="img"
+                  :class="item.isSelect ? 'on' : ''"
+                  v-db-click
+                  @click.stop="changImage(item, index, pictrueList)"
+                >
+                  <video :src="item.satt_dir" />
+                </div>
+
+                <div class="operate-item" @mouseenter="enterLeave(item)" @mouseleave="enterLeave(item)">
+                  <p v-if="!item.isEdit">
+                    {{ item.editName }}
+                  </p>
+                  <el-input size="small" type="text" v-model="item.real_name" v-else @blur="bindTxt(item)" />
+                  <div class="operate-height">
+                    <span class="operate mr10" v-db-click @click="editPicList(item.att_id)" v-if="item.isShowEdit"
+                      >删除</span
+                    >
+                    <span class="operate mr10" v-db-click @click="item.isEdit = !item.isEdit" v-if="item.isShowEdit"
+                      >改名</span
+                    >
+                    <span class="operate" v-db-click @click="lookImg(item)" v-if="item.isShowEdit">查看</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <el-table
+            v-if="lietStyle == 'table'"
+            ref="table"
+            :data="pictrueList"
+            v-loading="loading"
+            highlight-row
+            :row-key="getRowKey"
+            @selection-change="handleSelectRow"
+            no-data-text="暂无数据"
+            no-filtered-data-text="暂无筛选结果"
+          >
+            <el-table-column type="selection" width="60" :reserve-selection="true"> </el-table-column>
+            <el-table-column label="视频名称" min-width="190">
+              <template slot-scope="scope">
+                <div class="df-aic">
+                  <div class="tabBox_img mr10">
+                    <video :src="scope.row.att_dir" @click="lookImg(scope.row)" />
+                  </div>
+                  <span v-if="!scope.row.isEdit" class="line2 real-name">{{ scope.row.real_name }}</span>
+                  <el-input
+                    size="small"
+                    type="text"
+                    style="width: 90%"
+                    v-model="scope.row.real_name"
+                    v-else
+                    @blur="bindTxt(scope.row)"
+                  />
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="上传时间" min-width="100">
+              <template slot-scope="scope">
+                <span>{{ scope.row.time }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="170">
+              <template slot-scope="scope">
+                <a v-db-click @click="editPicList(scope.row)">删除</a>
+                <el-divider direction="vertical"></el-divider>
+                <a v-db-click @click="scope.row.isEdit = !scope.row.isEdit">{{
+                  scope.row.isEdit ? '确定' : '重命名'
+                }}</a>
+                <el-divider direction="vertical"></el-divider>
+                <a v-db-click @click="lookImg(scope.row)">查看</a>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="footer acea-row row-right">
+          <pagination
+            v-if="total"
+            :total="total"
+            :pageCount="9"
+            layout="total, prev, pager, next"
+            :page.sync="fileData.page"
+            @pagination="pageChange"
+            :limit.sync="fileData.limit"
+          ></pagination>
+        </div>
       </div>
     </div>
-    <div class="mt50 ml20">
-      <el-button type="primary" v-db-click @click="uploads">确认</el-button>
-    </div>
+    <uploadImg
+      ref="upload"
+      :isPage="isPage"
+      :isIframe="isIframe"
+      :categoryId="treeId"
+      :categoryList="treeData"
+      @uploadSuccess="uploadSuccess"
+    ></uploadImg>
+    <el-dialog title="查看视频" append-to-body :visible.sync="videoModal" width="1024px">
+      <video :src="imageUrl" controls />
+    </el-dialog>
+    <input type="file" ref="refid" style="display: none" @change="zh_uploadFile_change" />
   </div>
 </template>
 
 <script>
-import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
+import {
+  getCategoryListApi,
+  createApi,
+  fileListApi,
+  categoryEditApi,
+  moveApi,
+  fileUpdateApi,
+  videoCloudUpload,
+} from '@/api/uploadPictures';
 import { productGetTempKeysApi, uploadType } from '@/api/product';
+import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
+
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
+import uploadImg from '@/components/uploadImg';
+import { VueTreeList, Tree, TreeNode } from 'vue-tree-list';
 import { isVideoUpload } from '@/utils';
-// import "../../../public/UEditor/dialogs/internal";
 export default {
-  name: 'vide11o',
+  name: 'uploadPictures',
+  components: { uploadImg, VueTreeList },
+  props: {
+    isChoice: {
+      type: String,
+      default: 'one',
+    },
+    isPage: {
+      type: Boolean,
+      default: false,
+    },
+    isIframe: {
+      type: Boolean,
+      default: false,
+    },
+    gridBtn: {
+      type: Object,
+      default: null,
+    },
+    gridPic: {
+      type: Object,
+      default: null,
+    },
+    isShow: {
+      type: Number,
+      default: 1,
+    },
+    pageLimit: {
+      type: Number,
+      default: 0,
+    },
+  },
   data() {
     return {
+      spinShow: false,
       fileUrl: Setting.apiBaseURL + '/file/upload',
+      modalPic: false,
+      treeData: [],
+      treeData2: [],
+      pictrueList: [],
+      uploadData: {}, // 上传参数
+      checkPicList: [],
+      uploadName: {
+        name: '',
+        all: 1,
+        type: 1,
+      },
+      formValidate: { id: 0 },
+      FromData: null,
+      treeId: '',
+      isJudge: false,
+      buttonProps: {
+        type: 'default',
+        size: 'small',
+      },
+      fileData: {
+        pid: 0,
+        real_name: '',
+        page: 1,
+        limit: this.pageLimit || 18,
+        type: 1,
+      },
+      total: 0,
+      pids: 0,
+      list: [],
+      modalTitleSs: '',
+      isShowPic: false,
+      header: {},
+      ids: [], // 选中附件的id集合
+      lietStyle: 'list',
+      imageUrl: '',
+      loading: false,
+      multipleSelection: [],
+      picmargin: '5px', //默认距离右边距离
+      videoModal: false,
+      upload_type: '',
       upload: {
         videoIng: false, // 是否显示进度条；
       },
-      progress: 0, // 进度条默认0
-      videoLink: '',
-      formValidate: {
-        video_link: '',
-      },
-      upload_type: '',
-      uploadData: {},
-      header: {},
     };
   },
-  created() {
-    this.uploadType();
+  mounted() {
+    if (this.isPage) {
+      let hang = parseInt((document.body.clientHeight - this.$refs.imgListBox.clientHeight - 325) / 180); //计算行数
+      let col = parseInt(this.$refs.imgListBox.clientWidth / 156); //计算列数
+      this.fileData.limit = col * hang; //计算分页数量
+      this.picmargin = parseInt(this.$refs.imgListBox.clientWidth - col * 146) / (2 * col) + 'px'; //平均分布计算margin距离
+    }
     this.getToken();
+    this.uploadType();
+    this.getList();
+    this.getFileList();
   },
   methods: {
+    //获取视频上传类型
+    uploadType() {
+      uploadType().then((res) => {
+        this.upload_type = res.data.upload_type;
+      });
+    },
+    beforeUpload() {
+      this.uploadData = {};
+      let promise = new Promise((resolve) => {
+        this.$nextTick(function () {
+          resolve(true);
+        });
+      });
+      return promise;
+    },
+    zh_uploadFile() {
+      this.$refs.refid.click();
+    },
+    zh_uploadFile_change(evfile) {
+      let that = this;
+      if (evfile.target.files[0].type !== 'video/mp4') {
+        return that.$message.error('只能上传mp4文件');
+      }
+      console.log('111');
+      debugger;
+      let types = {
+        key: evfile.target.files[0].name,
+        contentType: evfile.target.files[0].type,
+      };
+      productGetTempKeysApi(types).then((res) => {
+        console.log(res, evfile, res.data.type);
+        that.$videoCloud
+          .videoUpload({
+            type: res.data.type,
+            evfile: evfile,
+            res: res,
+            uploading(status, progress) {
+              that.upload.videoIng = status;
+            },
+          })
+          .then((res) => {
+            videoCloudUpload({
+              pid: this.treeId || 0,
+              video_path: res.url,
+              video_name: evfile.target.files[0].name,
+            }).then((res) => {
+              this.getFileList();
+            });
+          })
+          .catch((res) => {
+            that.$message.error(res);
+          });
+      });
+    },
     videoSaveToUrl(file) {
       if (isVideoUpload(file))
         uploadByPieces({
           file: file, // 视频实体
           pieceSize: 3, // 分片大小
           success: (data) => {
-            this.formValidate.video_link = data.file_path;
             this.progress = 100;
+            videoCloudUpload({
+              pid: this.treeId || 0,
+              video_path: data.file_path,
+              video_name: file.name,
+            }).then((res) => {
+              this.getFileList();
+              this.$message.success('视频上传成功');
+            });
           },
           error: (e) => {
             this.$message.error(e.msg);
@@ -94,31 +448,348 @@ export default {
         });
       return false;
     },
-    // 删除视频；
-    delVideo() {
-      let that = this;
-      that.$set(that.formValidate, 'video_link', '');
+    radioChange() {
+      this.initData();
     },
-    //获取视频上传类型
-    uploadType() {
-      uploadType().then((res) => {
-        this.upload_type = res.data.upload_type;
-      });
+    lookImg(item) {
+      this.imageUrl = item.att_dir;
+      this.videoModal = true;
     },
-    // 上传成功
-    handleSuccess(res, file, fileList) {
-      if (res.status === 200) {
-        this.formValidate.video_link = res.data.src;
-        this.$message.success(res.msg);
-      } else {
-        this.$message.error(res.msg);
+    onDel(node) {
+      let method = node.cate_id ? routeDel : routeCateDel;
+      this.$msgbox({
+        title: '提示',
+        message: '是否确定删除该菜单',
+        showCancelButton: true,
+        cancelButtonText: '取消',
+        confirmButtonText: '删除',
+        iconClass: 'el-icon-warning',
+        confirmButtonClass: 'btn-custom-cancel',
+      })
+        .then(() => {
+          method(node.id)
+            .then((res) => {
+              this.$message.success(res.msg);
+              node.remove();
+            })
+            .catch((err) => {
+              this.$message.error(err);
+            });
+        })
+        .catch(() => {});
+    },
+
+    onChangeName(params) {
+      if (params.eventType == 'blur') {
+        let data = {
+          name: params.newName,
+          id: params.id,
+        };
+        interfaceEditName(data)
+          .then((res) => {
+            this.$message.success(res.msg);
+          })
+          .catch((err) => {
+            this.$message.error(err);
+          });
       }
     },
+    // 添加分类
+    addSort() {
+      this.append({ id: this.treeId || 0 });
+    },
+    // 点击菜单
+    clickMenu(data, name) {
+      if (name == 1) {
+        this.append(data);
+      } else if (name == 2) {
+        this.editPic(data);
+      } else if (name == 3) {
+        this.remove(data, '分类');
+      }
+    },
+    uploadSuccess() {
+      this.fileData.page = 1;
+      this.initData();
+      this.getFileList();
+    },
+    uploadModal() {
+      this.$refs.upload.uploadModal = true;
+    },
+    enterMouse(item) {
+      item.realName = !item.realName;
+    },
+    enterLeave(item) {
+      item.isShowEdit = !item.isShowEdit;
+    },
+    // 上传头部token
     getToken() {
       this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
     },
-    beforeUpload() {
-      this.uploadData = {};
+    moveImg(status) {
+      if (!status) {
+        this.getMove();
+      } else {
+        if (!this.ids.toString()) {
+          this.$message.warning('请先选择视频');
+          return;
+        }
+      }
+    },
+    searchImg() {},
+    // 移动分类
+    getMove() {
+      let data = {
+        pid: this.pids,
+        images: this.ids.toString(),
+      };
+      if (!data.images) return;
+      moveApi(data)
+        .then(async (res) => {
+          this.$message.success(res.msg);
+          this.getFileList();
+          this.pids = 0;
+          this.checkPicList = [];
+          this.ids = [];
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    delImg(id) {
+      let ids = {
+        ids: id,
+      };
+      let delfromData = {
+        title: '删除选中视频',
+        url: `file/file/delete`,
+        method: 'POST',
+        ids: ids,
+      };
+      this.$modalSure(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.getFileList();
+          this.checkPicList = [];
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    // 删除视频
+    editPicList(id) {
+      let ids = {
+        ids: id || this.ids.toString(),
+      };
+      let delfromData = {
+        title: '删除选中视频',
+        url: `file/file/delete`,
+        method: 'POST',
+        ids: ids,
+      };
+      this.$modalSure(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.getFileList();
+          this.initData();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    initData() {
+      this.checkPicList = [];
+      this.ids = [];
+      this.multipleSelection = [];
+    },
+    // 鼠标移入 移出
+    onMouseOver(root, node, data) {
+      event.preventDefault();
+      data.flag = !data.flag;
+      if (data.flag2) {
+        data.flag2 = false;
+      }
+    },
+    // 点击树
+    appendBtn(data) {
+      this.treeId = data.id;
+      this.fileData.page = 1;
+      this.getFileList();
+    },
+    // 点击添加
+    append(data) {
+      this.treeId = data.id;
+      this.getFrom();
+    },
+    // 删除分类
+    remove(data, tit) {
+      this.tits = tit;
+      let delfromData = {
+        title: '删除 [ ' + data.title + ' ] ' + '分类',
+        url: `file/category/${data.id}`,
+        method: 'DELETE',
+        ids: '',
+      };
+      this.$modalSure(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.getList();
+          this.checkPicList = [];
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    // 编辑树表单
+    editPic(data) {
+      this.$modalForm(categoryEditApi(data.id)).then(() => this.getList());
+    },
+    // 搜索分类
+    changePage() {
+      this.getList('search');
+    },
+    // 分类列表树
+    getList(type) {
+      let data = {
+        title: '全部视频',
+        id: '',
+        pid: 0,
+      };
+      getCategoryListApi(this.uploadName)
+        .then(async (res) => {
+          if (type !== 'search') {
+            this.treeData2 = JSON.parse(JSON.stringify([...res.data.list]));
+          }
+          res.data.list.unshift(data);
+          this.treeData = res.data.list;
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    loadData(item, callback) {
+      getCategoryListApi({
+        pid: item.id,
+      })
+        .then(async (res) => {
+          const data = res.data.list;
+          callback(data);
+        })
+        .catch((res) => {});
+    },
+    addFlag(treedata) {
+      treedata.map((item) => {
+        this.$set(item, 'flag', false);
+        this.$set(item, 'flag2', false);
+        item.children && this.addFlag(item.children);
+      });
+    },
+    // 新建分类
+    add() {
+      this.treeId = 0;
+      this.getFrom();
+    },
+    searchFile() {
+      this.fileData.page = 1;
+      this.getFileList();
+    },
+    // 文件列表
+    getFileList() {
+      this.fileData.pid = this.treeId;
+      fileListApi(this.fileData)
+        .then(async (res) => {
+          res.data.list.forEach((el) => {
+            el.isSelect = false;
+            el.isEdit = false;
+            el.isShowEdit = false;
+            el.realName = false;
+            el.num = 0;
+            this.editName(el);
+          });
+          this.pictrueList = res.data.list;
+
+          if (this.pictrueList.length) {
+            this.isShowPic = false;
+          } else {
+            this.isShowPic = true;
+          }
+          this.total = res.data.count;
+          this.$nextTick(() => {
+            //确保dom加载完毕
+            // this.showSelectData();
+          });
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    showSelectData() {
+      if (this.multipleSelection.length > 0) {
+        // 判断是否存在勾选过的数据
+        this.pictrueList.forEach((row) => {
+          // 获取数据列表接口请求到的数据
+          this.multipleSelection.forEach((item) => {
+            // 勾选到的数据
+            if (row.att_id === item.att_id) {
+              // this.$refs.table.toggleRowSelection(item, true); // 若有重合，则回显该条数据
+            }
+          });
+        });
+      }
+    },
+    getRowKey(row) {
+      return row.att_id;
+    },
+    //对象数组去重；
+    unique(arr) {
+      let result = arr.reduce((acc, curr) => {
+        const x = acc.find((item) => item.att_id === curr.att_id);
+        if (!x) {
+          return acc.concat([curr]);
+        } else {
+          return acc;
+        }
+      }, []);
+      return result;
+    },
+    //  选中某一行
+    handleSelectRow(selection) {
+      let arr = this.unique(selection);
+      const uniqueArr = [];
+      const ids = [];
+      for (let i = 0; i < arr.length; i++) {
+        const item = arr[i];
+        if (!ids.includes(item.att_id)) {
+          uniqueArr.push(item);
+          ids.push(item.att_id);
+        }
+      }
+      this.ids = ids;
+      this.multipleSelection = uniqueArr;
+    },
+    pageChange(index) {
+      this.fileData.page = index;
+      this.getFileList();
+      this.checkPicList = [];
+    },
+    // 新建分类表单
+    getFrom() {
+      this.$modalForm(createApi({ id: this.treeId, type: 1 })).then((res) => {
+        this.getList();
+      });
+    },
+    // 上传之前
+    beforeUpload(file) {
+      // if (file.size > 2097152) {
+      //   this.$message.error(file.name + "大小超过2M!");
+      // } else
+      if (!/image\/\w+/.test(file.type)) {
+        this.$message.error('请上传以jpg、jpeg、png等结尾的视频文件'); //FileExt.toLowerCase()
+        return false;
+      }
+      this.uploadData = {
+        pid: this.treeId,
+      };
       let promise = new Promise((resolve) => {
         this.$nextTick(function () {
           resolve(true);
@@ -126,76 +797,393 @@ export default {
       });
       return promise;
     },
-    zh_uploadFile() {
-      if (this.videoLink) {
-        this.formValidate.video_link = this.videoLink;
+    // 上传成功
+    handleSuccess(res, file, fileList) {
+      if (res.status === 200) {
+        this.$message.success(res.msg);
+        this.fileData.page = 1;
+        this.getFileList();
       } else {
-        this.$refs.refid.click();
+        this.$message.error(res.msg);
       }
     },
-    zh_uploadFile_change(evfile) {
-      let that = this;
-      if (evfile.target.files[0].type !== 'video/mp4') {
-        return that.$message.error('只能上传mp4文件');
+    // 关闭
+    cancel() {
+      this.$emit('changeCancel');
+    },
+    // 选中视频
+    changImage(item, index, row) {
+      let activeIndex = 0;
+      if (!item.isSelect) {
+        item.isSelect = true;
+        this.checkPicList.push(item);
+      } else {
+        item.isSelect = false;
+        this.checkPicList.map((el, index) => {
+          if (el.att_id == item.att_id) {
+            activeIndex = index;
+          }
+        });
+        this.checkPicList.splice(activeIndex, 1);
       }
-      let types = {
-        key: evfile.target.files[0].name,
-        contentType: evfile.target.files[0].type,
-      };
-      productGetTempKeysApi(types).then((res) => {
-        that.$videoCloud
-          .videoUpload({
-            type: res.data.type,
-            evfile: evfile,
-            res: res,
-            uploading(status, progress) {
-              that.upload.videoIng = status;
-            },
-          })
-          .then((res) => {
-            that.formValidate.video_link = res.url;
-            that.$message.success('视频上传成功');
-          })
-          .catch((res) => {
-            that.$message.error(res);
+
+      this.ids = [];
+      this.checkPicList.map((item, i) => {
+        this.ids.push(item.att_id);
+      });
+      this.pictrueList.map((el, i) => {
+        if (el.isSelect) {
+          this.checkPicList.filter((el2, j) => {
+            if (el.att_id == el2.att_id) {
+              el.num = j + 1;
+            }
           });
+        } else {
+          el.num = 0;
+        }
       });
     },
-    uploads() {
-      this.$emit('getVideo', this.formValidate.video_link);
+    // 点击使用选中视频
+    checkPics() {
+      console.log(this.checkPicList, 'this.checkPicList', this.isChoice);
+      if (this.isChoice === 'one') {
+        if (this.checkPicList.length > 1) return this.$message.warning('最多只能选一张视频');
+        this.$emit('getVideo', this.checkPicList[0].att_dir);
+      } else {
+        let maxLength = this.$route.query.maxLength;
+        if (maxLength != undefined && this.checkPicList.length > Number(maxLength))
+          return this.$message.warning('最多只能选' + maxLength + '张视频');
+        this.$emit('getPicD', this.checkPicList);
+        this.$emit('getVideo', this.checkPicList);
+      }
+    },
+    editName(item) {
+      let it = item.real_name.split('.');
+      let it1 = it[1] == undefined ? [] : it[1];
+      let len = it[0].length + it1.length;
+      item.editName = len < 10 ? item.real_name : item.real_name.substr(0, 4) + '...' + item.real_name.substr(-5, 5);
+    },
+    // 修改视频文字上传
+    bindTxt(item) {
+      if (item.real_name == '') {
+        this.$message.error('请填写内容');
+      }
+      fileUpdateApi(item.att_id, {
+        real_name: item.real_name,
+      })
+        .then((res) => {
+          this.editName(item);
+          item.isEdit = false;
+          this.$message.success(res.msg);
+        })
+        .catch((error) => {
+          this.$message.error(error.msg);
+        });
     },
   },
 };
 </script>
 
-<style scoped>
-.video-style {
-  width: 40%;
-  height: 180px;
-  border-radius: 10px;
-  background-color: #707070;
-  margin-top: 10px;
-  position: relative;
-  overflow: hidden;
-}
-.video-style .iconv {
-  color: #fff;
-  line-height: 180px;
-  width: 50px;
-  height: 50px;
-  display: inherit;
-  font-size: 26px;
+<style scoped lang="scss">
+.nameStyle {
   position: absolute;
-  top: -74px;
-  left: 50%;
-  margin-left: -25px;
+  white-space: nowrap;
+  z-index: 9;
+  background: #eee;
+  height: 20px;
+  line-height: 20px;
+  color: #555;
+  border: 1px solid #ebebeb;
+  padding: 0 5px;
+  left: 56px;
+  bottom: -18px;
 }
-.video-style .mark {
-  position: absolute;
+
+.iconbianji1 {
+  font-size: 13px;
+}
+
+.selectTreeClass {
+  background: #d5e8fc;
+}
+.tree_tit {
+  padding-top: 7px;
+}
+.treeBox {
   width: 100%;
-  height: 30px;
-  top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  text-align: center;
+  height: 100%;
+  max-width: 180px;
+}
+.is-modal .pictrueList_pic {
+  width: 100px;
+  margin: 10px 5px !important;
+  .img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    background-color: rgb(248, 248, 248);
+    padding: 2px;
+    img {
+      max-width: 96px;
+      max-height: 96px;
+      // object-fit: cover;
+    }
+    .operate-height {
+      bottom: -8px;
+    }
+  }
+}
+.pictrueList_pic {
+  position: relative;
+  width: 146px;
+  cursor: pointer;
+  // margin-right: 20px !important;
+  .img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 146px;
+    height: 146px;
+    background-color: rgb(248, 248, 248);
+    padding: 3px;
+    video {
+      max-width: 100px;
+      max-height: 100px;
+      // object-fit: cover;
+    }
+  }
+
+  p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 20px;
+    font-size: 12px;
+    color: #515a6d;
+    text-align: center;
+  }
+
+  .number {
+    height: 33px;
+  }
+
+  .number {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  ::v-deep .el-badge__content.is-fixed {
+    top: 13px;
+    right: 25px;
+  }
+}
+.Nav {
+  width: 100%;
+  border-right: 1px solid #eee;
+  min-width: 220px;
+  max-width: max-content;
+}
+.trees-coadd {
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+
+  .scollhide {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 0px 0 10px 0;
+    box-sizing: border-box;
+
+    .isTree {
+      min-height: 374px;
+      max-height: 550px;
+      ::v-deep .file-name {
+        display: flex;
+        align-items: center;
+        .name {
+          max-width: 7em;
+        }
+        .icon {
+          width: 12px;
+          height: 12px;
+          margin-right: 8px;
+        }
+      }
+      ::v-deep .el-tree-node {
+        margin-right: 16px;
+      }
+      ::v-deep .el-tree-node__children .el-tree-node {
+        margin-right: 0;
+      }
+      ::v-deep .el-tree-node__content {
+        width: 100%;
+        height: 36px;
+      }
+      ::v-deep .custom-tree-node {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-right: 20px;
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.6);
+        line-height: 13px;
+      }
+      ::v-deep .is-current {
+        background: #f1f9ff !important;
+        color: var(--prev-color-primary) !important;
+      }
+      ::v-deep .is-current .custom-tree-node {
+        color: var(--prev-color-primary) !important;
+      }
+    }
+  }
+
+  .scollhide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.treeSel ::v-deep .ivu-select-dropdown-list {
+  padding: 0 5px !important;
+  box-sizing: border-box;
+  width: 200px;
+}
+.imagesNo {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 65px 0;
+
+  .imagesNo_sp {
+    font-size: 13px;
+    color: #dbdbdb;
+    line-height: 3;
+  }
+}
+
+.Modal {
+  width: 100%;
+  height: 100%;
+  background: #fff !important;
+}
+.fill-window {
+  height: 100vh;
+}
+.colLeft {
+  padding-right: 0 !important;
+  height: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.conter {
+  width: 100%;
+  height: 100%;
+  margin-left: 20px !important;
+  .iconliebiao {
+    font-size: 12px;
+  }
+}
+
+.conter .bnt {
+  width: 100%;
+  padding: 0 0px 20px 0px;
+  box-sizing: border-box;
+}
+
+.conter .pictrueList {
+  // width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 463px;
+}
+.conter .pictrueList.is-modal {
+  max-height: 480px;
+}
+.right-col {
+  // flex: 1;
+}
+.conter .pictrueList img {
+  max-width: 100%;
+}
+.conter .pictrueList .img.on {
+  border: 2px solid var(--prev-color-primary);
+}
+
+.conter .footer {
+  padding: 0 20px 10px 20px;
+}
+.tabBox_img {
+  display: flex;
+  align-items: center;
+  video {
+    max-width: 90px;
+    max-height: 30px;
+  }
+}
+.real-name {
+  flex: 1;
+}
+.df-aic {
+  display: flex;
+  align-items: center;
+}
+.demo-badge {
+  width: 42px;
+  height: 42px;
+  background: transparent;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.bnt ::v-deep .ivu-tree-children {
+  padding: 5px 0;
+}
+
+.card-tree {
+  background: #fff;
+  height: 72px;
+  box-sizing: border-box;
+  overflow-x: scroll; /* 设置溢出滚动 */
+  white-space: nowrap;
+  overflow-y: hidden;
+  /* 隐藏滚动条 */
+  border-radius: 4px;
+  scrollbar-width: none; /* firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.card-tree::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
+.tabs {
+  background: #fff;
+  padding-top: 10px;
+  border-radius: 5px 5px 0 0;
+}
+.operate-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 5px 0;
+}
+.operate-height {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  position: absolute;
+  bottom: -10px;
+}
+.operate {
+  color: var(--prev-color-primary);
+  font-size: 12px;
+  white-space: nowrap;
 }
 </style>

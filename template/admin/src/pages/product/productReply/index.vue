@@ -7,7 +7,7 @@
           :model="formValidate"
           inline
           label-width="80px"
-          label-position="left"
+          label-position="right"
           @submit.native.prevent
         >
           <el-form-item label="评论时间：">
@@ -50,7 +50,7 @@
           </el-form-item>
           <el-form-item label="商品信息：" label-for="store_name">
             <el-input
-              placeholder="请输入商品ID或者商品信息"
+              placeholder="请输入商品信息"
               clearable
               v-model="formValidate.store_name"
               class="form_content_width"
@@ -66,7 +66,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -77,6 +77,9 @@
           <el-button v-auth="['product-reply-save_fictitious_reply']" type="primary" v-db-click @click="addRep"
             >添加自评</el-button
           >
+          <el-button v-auth="['product-reply-save_fictitious_reply']" v-db-click @click="openBatchModal"
+            >批量审核</el-button
+          >
         </el-col>
       </el-row>
       <el-table
@@ -85,8 +88,10 @@
         class="ivu-mt mt14"
         v-loading="loading"
         @on-sort-change="sortMethod"
+        @selection-change="handleSelectRow"
         empty-text="暂无数据"
       >
+        <el-table-column type="selection" width="60"> </el-table-column>
         <el-table-column label="评论ID" width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
@@ -148,8 +153,8 @@
               <a class="item" v-db-click @click="adopt(scope.row, '拒绝', 2)">驳回</a>
               <el-divider direction="vertical"></el-divider>
             </template>
-            <a v-db-click @click="reply(scope.row)">回复</a>
-            <el-divider direction="vertical"></el-divider>
+            <a v-if="scope.row.status != 2" v-db-click @click="reply(scope.row)">回复</a>
+            <el-divider v-if="scope.row.status != 2" direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除评论', scope.$index)">删除</a>
           </template>
         </el-table-column>
@@ -171,8 +176,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
+        <el-button @click="cancels">取消</el-button>
         <el-button type="primary" v-db-click @click="oks">确定</el-button>
-        <el-button v-db-click @click="cancels">取消</el-button>
       </div>
     </el-dialog>
     <addReply
@@ -192,7 +197,7 @@
     </el-dialog>
     <el-dialog :visible.sync="attrModal" title="选择商品规格" width="1000px">
       <el-table ref="table" :row-key="getRowKey" :data="goodsData.attrs" height="500">
-        <el-table-column label="" width="60">
+        <el-table-column label="" width="70">
           <template slot-scope="scope">
             <el-radio v-model="templateRadio" :label="scope.row.unique" @change.native="getTemplateRow(scope.row)"
               >&nbsp;</el-radio
@@ -202,7 +207,7 @@
         <el-table-column label="图片" width="120">
           <template slot-scope="scope">
             <div class="product-data">
-              <img class="image" :src="scope.row.image" />
+              <img class="image" :src="scope.row.pic" />
             </div>
           </template>
         </el-table-column>
@@ -233,12 +238,43 @@
         v-if="pictureModal"
       ></uploadPictures>
     </el-dialog>
+    <el-dialog
+      :visible.sync="batchModal"
+      class="batch-box"
+      title="审核批量设置"
+      :show-close="true"
+      :close-on-click-modal="false"
+      width="540px"
+    >
+      <el-form
+        ref="batchFormData"
+        :model="batchFormData"
+        label-width="90px"
+        label-position="right"
+        @submit.native.prevent
+      >
+        <el-row :gutter="24">
+          <el-col :span="24">
+            <el-form-item label="批量设置：" prop="status">
+              <el-radio-group v-model="batchFormData.status">
+                <el-radio :label="1">通过</el-radio>
+                <el-radio :label="2">拒绝</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button v-db-click @click="batchModal = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="batchSub">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import { replyListApi, setReplyApi, fictitiousReply } from '@/api/product';
+import { replyListApi, setReplyApi, replyBatchStatus } from '@/api/product';
 import addReply from '../components/addReply.vue';
 import goodsList from '@/components/goodsList/index';
 import uploadPictures from '@/components/uploadPictures';
@@ -257,7 +293,11 @@ export default {
       replyModal: false,
       pictureModal: false,
       goodsModal: false,
+      batchModal: false,
       attrModal: false, // 选择商品规格
+      batchFormData: {
+        status: 1,
+      },
       grid: {
         xl: 7,
         lg: 10,
@@ -313,6 +353,7 @@ export default {
         content: [{ required: true, message: '请输入回复内容', trigger: 'blur' }],
       },
       rows: {},
+      ids: [],
     };
   },
   computed: {},
@@ -336,7 +377,7 @@ export default {
     },
   },
   methods: {
-    // 通过
+    // 通过/驳回
     adopt(row, tit, num) {
       let delfromData = {
         title: tit,
@@ -384,6 +425,37 @@ export default {
           return false;
         }
       });
+    },
+    handleSelectRow(selection) {
+      const ids = [];
+      for (let i = 0; i < selection.length; i++) {
+        const item = selection[i];
+        if (!ids.includes(item.id)) {
+          ids.push(item.id);
+        }
+      }
+      this.ids = ids;
+      console.log(this.ids);
+    },
+    openBatchModal() {
+      if (!this.ids.length) return this.$message.warning('请先选择评论');
+      this.batchModal = true;
+    },
+    batchSub() {
+      let delfromData = {
+        ids: this.ids,
+        status: this.batchFormData.status,
+      };
+      replyBatchStatus(delfromData)
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.batchModal = false;
+          this.ids = [];
+          this.getList();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
     },
     cancels() {
       this.modals = false;
@@ -509,63 +581,52 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .content_font {
   color: #2b85e4;
 }
-
 .search {
   ::v-deep .ivu-form-item-content {
     margin-left: 0 !important;
   }
 }
-
 .ivu-mt .Button .bnt {
   margin-right: 6px;
 }
-
 .ivu-mt .ivu-table-row {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.65);
 }
-
 .ivu-mt ::v-deep .ivu-table-cell {
   padding: 10px 0 !important;
 }
-
 .pictrue {
   width: 36px;
   height: 36px;
   display: inline-block;
   cursor: pointer;
 }
-
 .pictrue img {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
 }
-
 .ivu-mt .imgPic .info {
   flex: 1;
   margin-left: 10px;
 }
-
 .ivu-mt .picList .pictrue {
   height: 36px;
   margin: 7px 3px 0 3px;
 }
-
 .ivu-mt .picList .pictrue img {
   height: 100%;
   display: block;
 }
-
 .product-data {
   display: flex;
   align-items: center;
-
   .image {
     width: 50px !important;
     height: 50px !important;

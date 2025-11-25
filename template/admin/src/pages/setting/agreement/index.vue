@@ -55,6 +55,7 @@ export default {
         { label: '用户协议', value: '4' },
         { label: '注销协议', value: '5' },
         { label: '积分协议', value: '6' },
+        { label: '分销协议', value: '8' },
       ],
       ueConfig: {
         autoHeightEnabled: false,
@@ -131,7 +132,7 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 ::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
@@ -139,11 +140,9 @@ export default {
 .agreemant {
   background-color: #fff;
 }
-
 .content {
   padding: 10px 16px;
 }
-
 .ifam {
   width: 344px;
   height: 644px;
@@ -152,7 +151,6 @@ export default {
   padding: 40px 20px;
   padding-top: 50px;
   margin: 0 auto 0 20px;
-
   .content {
     height: 560px;
     overflow: hidden;
@@ -161,38 +159,14 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
   }
-
   .content::-webkit-scrollbar {
     display: none; /* Chrome Safari */
   }
 }
-
 .new_tab {
   ::v-deep .ivu-tabs-nav .ivu-tabs-tab {
     padding: 4px 16px 20px !important;
     font-weight: 500;
   }
 }
-
-// .fixed-card {
-//   position: fixed;
-//   right: 0;
-//   bottom: 0;
-//   left: 200px;
-//   z-index: 8;
-//   // box-shadow: 0 -1px 2px rgb(240, 240, 240);
-//   border:none;
-//   ::v-deep .ivu-card-body {
-//     padding: 15px 16px 14px;
-//   }
-
-//   .ivu-form-item {
-//     margin-bottom: 0;
-//   }
-
-//   ::v-deep .ivu-form-item-content {
-//     margin-right: 124px;
-//     text-align: center;
-//   }
-// }
 </style>

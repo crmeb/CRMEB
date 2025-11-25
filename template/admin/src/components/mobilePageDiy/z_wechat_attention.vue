@@ -142,40 +142,47 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.flex-box
-    display flex
-    align-items center
-    justify-content space-between
-    padding 0 10px
-    height 70px
-    background #DDDDDD
-    .left
-        display flex
-        align-items center
-        .img-box
-            width 46px
-            height 46px
-            overflow hidden
-            border-radius 50%
-            img
-                width 100%
-                height 100%
-        .name
-            width 230px
-            margin-left 10px
-            font-size 18px
-            color #000
-    .btn
-        width:60px;
-        height:26px;
-        border:1px solid rgba(2,160,232,1);
-        opacity:1;
-        border-radius:3px;
-        color #02A0E8
-        font-size 14px
-        text-align center
-        line-height 26px
-    .iconfont-diy
-        font-size 20px
+<style lang="scss" scoped>
+.flex-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  height: 70px;
+  background: #dddddd;
+  .left {
+    display: flex;
+    align-items: center;
+    .img-box {
+      width: 46px;
+      height: 46px;
+      overflow: hidden;
+      border-radius: 50%;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .name {
+      width: 230px;
+      margin-left: 10px;
+      font-size: 18px;
+      color: #000;
+    }
+  }
+  .btn {
+    width: 60px;
+    height: 26px;
+    border: 1px solid rgba(2, 160, 232, 1);
+    opacity: 1;
+    border-radius: 3px;
+    color: #02a0e8;
+    font-size: 14px;
+    text-align: center;
+    line-height: 26px;
+  }
+  .iconfont-diy {
+    font-size: 20px;
+  }
+}
 </style>

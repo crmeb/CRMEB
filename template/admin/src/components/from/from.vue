@@ -126,7 +126,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .radio {
   margin-bottom: 14px;
 }

@@ -42,12 +42,10 @@ class LuckLotteryRecord extends AuthController
     public function index()
     {
         $where = $this->request->postMore([
-            ['is_receive', ''],
-            ['is_deliver', ''],
             ['type', ''],
             ['keyword', ''],
-            ['data', '', '', 'time'],
-            ['factor', ''],
+            ['time', ''],
+            ['lottery_id', ''],
         ]);
         return app('json')->success($this->services->getList($where));
     }

@@ -54,7 +54,7 @@
             <el-col v-bind="grid">
               <el-form-item label="核销时效：" label-for="valid_time">
                 <el-date-picker
-                    clearable
+                  clearable
                   :editable="false"
                   @change="onchangeDate"
                   v-model="formItem.valid_time"
@@ -90,7 +90,7 @@
                 <div class="picBox" v-db-click @click="modalPicTap('单选')">
                   <div class="pictrue" v-if="formItem.image"><img v-lazy="formItem.image" /></div>
                   <div class="upLoad acea-row row-center-wrapper" v-else>
-                    <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
+                    <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                   </div>
                 </div>
               </el-form-item>
@@ -363,28 +363,33 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.picBox
-    display: inline-block;
-    cursor: pointer;
-    .upLoad
-        width: 58px;
-        height: 58px;
-        line-height: 58px;
-        border: 1px dotted rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        background: rgba(0, 0, 0, 0.02);
-    .pictrue
-        width: 60px;
-        height: 60px;
-        border: 1px dotted rgba(0, 0, 0, 0.1);
-        margin-right: 10px;
-        img
-           width: 100%;
-           height: 100%;
-    .iconfont
-        color: #898989;
-
-.mapBox ::v-deep .ivu-modal-body
-    height: 640px !important;
+<style lang="scss" scoped>
+.picBox {
+  display: inline-block;
+  cursor: pointer;
+  .upLoad {
+    width: 58px;
+    height: 58px;
+    line-height: 58px;
+    border: 1px dotted rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.02);
+  }
+  .pictrue {
+    width: 60px;
+    height: 60px;
+    border: 1px dotted rgba(0, 0, 0, 0.1);
+    margin-right: 10px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .iconfont {
+    color: #898989;
+  }
+}
+.mapBox ::v-deep .ivu-modal-body {
+  height: 640px !important;
+}
 </style>

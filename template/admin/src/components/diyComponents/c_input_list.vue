@@ -7,7 +7,9 @@
         </el-col>
         <el-col :span="19" class="slider-box">
           <div class="input-box" v-db-click @click="getLink(index)">
-            <el-input v-model="item.val" :placeholder="item.pla" :maxlength="item.max" suffix-icon="el-icon-arrow-right" readonly />
+            <el-input v-model="item.val" :placeholder="item.pla" :maxlength="item.max">
+              <i class="el-icon-link" slot="suffix" @click="getLink(index)" />
+            </el-input>
           </div>
         </el-col>
       </div>
@@ -73,7 +75,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .numbox {
   margin: 20px 0 10px 0;
 
@@ -82,20 +84,16 @@ export default {
     color: #999;
   }
 }
-
 .c_row-item {
   width: 100%;
-
-  &~.c_row-item {
+  & ~ .c_row-item {
     margin-top: 20px;
   }
 }
-
 .dif {
   display: flex;
   align-items: center;
 }
-
 .slider-box {
   margin-left: 10px;
   width: 350px;

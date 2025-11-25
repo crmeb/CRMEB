@@ -23,10 +23,18 @@
                     <i class="icon el-icon-folder-remove"></i>
                     {{ data.title }}</span
                   > -->
-                  <span class="file-name">
+                  <!-- <span class="file-name">
                     <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
                     <span class="name line1">{{ data.title }}</span>
-                  </span>
+                  </span> -->
+                  <div class="file-name">
+                    <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
+                    <el-tooltip class="item" effect="dark" :content="data.title" placement="top">
+                      <div class="text line1">
+                        {{ data.title }}
+                      </div>
+                    </el-tooltip>
+                  </div>
                   <span>
                     <el-dropdown @command="(command) => clickMenu(data, command)">
                       <i class="el-icon-more el-icon--right"></i>
@@ -51,18 +59,19 @@
             <el-button
               type="primary"
               :disabled="checkPicList.length === 0"
-              v-db-click @click="checkPics"
+              v-db-click
+              @click="checkPics"
               size="small"
               v-if="isShow !== 0"
               >使用选中图片</el-button
             >
             <el-button size="small" type="primary" v-db-click @click="uploadModal">上传图片</el-button>
             <el-button
-              type="error"
-              class="mr10"
+              class="mr14"
               size="small"
               :disabled="!checkPicList.length && !ids.length"
-              v-db-click @click.stop="editPicList()"
+              v-db-click
+              @click.stop="editPicList()"
               >删除图片</el-button
             >
             <el-cascader
@@ -77,17 +86,18 @@
               @visible-change="moveImg"
             ></el-cascader>
           </div>
-          <div v-if="isPage">
+          <div>
             <el-input
               class="mr10"
               v-model="fileData.real_name"
               placeholder="请输入图片名"
               size="small"
               style="width: 150px"
+              @change="searchFile"
             >
               <i slot="suffix" class="el-icon-search el-input__icon" v-db-click @click="getFileList"></i>
             </el-input>
-            <el-radio-group v-model="lietStyle" size="small" @input="radioChange">
+            <el-radio-group class="mr10" v-if="isPage" v-model="lietStyle" size="small" @input="radioChange">
               <el-radio-button label="list">
                 <i class="el-icon-menu"></i>
               </el-radio-button>
@@ -118,8 +128,8 @@
                     <a href="#" class="demo-badge"></a>
                   </el-badge>
                 </p>
-                <div class="img" :class="item.isSelect ? 'on' : ''">
-                  <img v-lazy="item.satt_dir" v-db-click @click.stop="changImage(item, index, pictrueList)" />
+                <div class="img" :class="item.isSelect ? 'on' : ''" v-db-click @click.stop="changImage(item, index, pictrueList)">
+                  <img v-lazy="item.satt_dir" />
                 </div>
 
                 <div class="operate-item" @mouseenter="enterLeave(item)" @mouseleave="enterLeave(item)">
@@ -128,8 +138,12 @@
                   </p>
                   <el-input size="small" type="text" v-model="item.real_name" v-else @blur="bindTxt(item)" />
                   <div class="operate-height">
-                    <span class="operate mr10" v-db-click @click="editPicList(item.att_id)" v-if="item.isShowEdit">删除</span>
-                    <span class="operate mr10" v-db-click @click="item.isEdit = !item.isEdit" v-if="item.isShowEdit">改名</span>
+                    <span class="operate mr10" v-db-click @click="editPicList(item.att_id)" v-if="item.isShowEdit"
+                      >删除</span
+                    >
+                    <span class="operate mr10" v-db-click @click="item.isEdit = !item.isEdit" v-if="item.isShowEdit"
+                      >改名</span
+                    >
                     <span class="operate" v-db-click @click="lookImg(item)" v-if="item.isShowEdit">查看</span>
                   </div>
                 </div>
@@ -173,9 +187,11 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="170">
               <template slot-scope="scope">
-                <a v-db-click @click="editPicList(scope.row)">删除</a>
+                <a v-db-click @click="editPicList(scope.row.att_id)">删除</a>
                 <el-divider direction="vertical"></el-divider>
-                <a v-db-click @click="scope.row.isEdit = !scope.row.isEdit">{{ scope.row.isEdit ? '确定' : '重名命' }}</a>
+                <a v-db-click @click="scope.row.isEdit = !scope.row.isEdit">{{
+                  scope.row.isEdit ? '确定' : '重命名'
+                }}</a>
                 <el-divider direction="vertical"></el-divider>
                 <a v-db-click @click="lookImg(scope.row)">查看</a>
               </template>
@@ -555,6 +571,10 @@ export default {
       this.treeId = 0;
       this.getFrom();
     },
+    searchFile() {
+      this.fileData.page = 1;
+      this.getFileList();
+    },
     // 文件列表
     getFileList() {
       this.fileData.pid = this.treeId;
@@ -715,6 +735,7 @@ export default {
         if (maxLength != undefined && this.checkPicList.length > Number(maxLength))
           return this.$message.warning('最多只能选' + maxLength + '张图片');
         this.$emit('getPicD', this.checkPicList);
+        this.$emit('getPic', this.checkPicList);
       }
     },
     editName(item) {
@@ -953,7 +974,7 @@ export default {
 
 .conter .bnt {
   width: 100%;
-  padding: 0 13px 20px 0px;
+  padding: 0 0px 20px 0px;
   box-sizing: border-box;
 }
 

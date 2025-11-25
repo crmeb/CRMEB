@@ -1,14 +1,14 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <table-form
-            ref="orderData"
-            :is-all="isAll"
-            :auto-disabled="autoDisabled"
-            :form-selection="selection"
-            @getList="getData"
-            @order-data="orderDatas"
+          ref="orderData"
+          :is-all="isAll"
+          :auto-disabled="autoDisabled"
+          :form-selection="selection"
+          @getList="getData"
+          @order-data="orderDatas"
         />
       </div>
     </el-card>
@@ -102,12 +102,11 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .card_cent ::v-deep .ivu-card-body {
   width: 100%;
   height: 100%;
 }
-
 .card_box {
   width: 100%;
   height: 100%;
@@ -117,7 +116,6 @@ export default {
   padding: 25px;
   box-sizing: border-box;
   border-radius: 4px;
-
   .card_box_img {
     width: 48px;
     height: 48px;
@@ -130,17 +128,15 @@ export default {
       height: 100%;
     }
   }
-
   .card_box_txt {
     .sp1 {
       display: block;
       color: #252631;
       font-size: 24px;
     }
-
     .sp2 {
       display: block;
-      color: #98A9BC;
+      color: #98a9bc;
       font-size: 12px;
     }
   }

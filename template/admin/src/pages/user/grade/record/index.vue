@@ -1,15 +1,15 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            inline
-            @submit.native.prevent
-            class="tabform"
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          inline
+          @submit.native.prevent
+          class="tabform"
         >
           <el-form-item label="会员类型：">
             <el-select v-model="formValidate.member_type" clearable @change="userSearchs" class="form_content_width">
@@ -23,25 +23,25 @@
           </el-form-item>
           <el-form-item label="购买时间：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="搜索：">
             <el-input
-                clearable
-                placeholder="请输入用户名称搜索"
-                v-model="formValidate.name"
-                class="form_content_width"
+              clearable
+              placeholder="请输入用户名称搜索"
+              v-model="formValidate.name"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -209,7 +209,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e || [];
-      this.formValidate.add_time = this.timeVal[0] ? this.timeVal ? this.timeVal.join('-') : '' : '';
+      this.formValidate.add_time = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
       this.tablePage.page = 1;
       this.getMemberRecord();
     },

@@ -213,28 +213,85 @@ export default {
   }
 }
 </style>
-<style scoped lang="stylus">
-.bg
-    position fixed
-    left 0
-    top 0
-    width 100%
-    height 100%
-    background rgba(0,0,0,0.5)
-    z-index: 11;
-::v-deep .happy-scroll-content
-    width 100%
-    .demo-spin-icon-load{
-        animation: ani-demo-spin 1s linear infinite;
+<style lang="scss" scoped>
+.bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 11;
+}
+::v-deep .happy-scroll-content {
+  width: 100%;
+  .demo-spin-icon-load {
+    animation: ani-demo-spin 1s linear infinite;
+  }
+
+  @-webkit-keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
     }
-    @keyframes ani-demo-spin {
-        from { transform: rotate(0deg);}
-        50%  { transform: rotate(180deg);}
-        to   { transform: rotate(360deg);}
+    50% {
+      transform: rotate(180deg);
     }
-    .demo-spin-col{
-        height: 100px;
-        position: relative;
-        border: 1px solid #eee;
+    to {
+      transform: rotate(360deg);
     }
+  }
+
+  @-moz-keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @-ms-keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @-o-keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes ani-demo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .demo-spin-col {
+    height: 100px;
+    position: relative;
+    border: 1px solid #eee;
+  }
+}
 </style>

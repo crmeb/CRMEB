@@ -30,12 +30,12 @@ class PrintJob extends BaseJobs
      * @param $id
      * @return bool|void
      */
-    public function doJob($id)
+    public function doJob($id, $print_type)
     {
         try {
             /** @var StoreOrderServices $orderServices */
             $orderServices = app()->make(StoreOrderServices::class);
-            $orderServices->orderPrintTicket((int)$id);
+            $orderServices->orderPrintTicket((int)$id, $print_type);
             return true;
         } catch (\Throwable $e) {
             Log::error('小票打印失败失败,失败原因:' . $e->getMessage());

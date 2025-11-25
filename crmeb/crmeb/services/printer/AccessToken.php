@@ -11,8 +11,8 @@
 namespace crmeb\services\printer;
 
 
-use app\services\other\CacheServices;
 use crmeb\exceptions\AdminException;
+use crmeb\services\CacheService;
 use crmeb\services\HttpService;
 use think\helper\Str;
 
@@ -128,9 +128,7 @@ class AccessToken extends HttpService
      */
     protected function getYiLianYunAccessToken()
     {
-        /** @var CacheServices $cacheServices */
-        $cacheServices = app()->make(CacheServices::class);
-        $this->accessToken[$this->name] = $cacheServices->getDbCache('YLY_access_token', function () {
+        $this->accessToken[$this->name] = CacheService::remember('YLY_access_token', function () {
             $request = self::postRequest('https://open-api.10ss.net/oauth/oauth', [
                 'client_id' => $this->clientId,
                 'grant_type' => 'client_credentials',
@@ -147,9 +145,10 @@ class AccessToken extends HttpService
             }
             return '';
         }, 86400);
-        if (!$this->accessToken[$this->name])
+        if (!$this->accessToken[$this->name]){
+            CacheService::delete('YLY_access_token');
             throw new AdminException(400718);
-
+        }
         return $this->accessToken[$this->name];
     }
 

@@ -218,11 +218,12 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.titleOn{
-    border-radius 10px!important
+<style lang="scss" scoped>
+.titleOn {
+  border-radius: 10px !important;
 }
-.title-box
-    color #282828
-    padding 5px 10px
+.title-box {
+  color: #282828;
+  padding: 5px 10px;
+}
 </style>

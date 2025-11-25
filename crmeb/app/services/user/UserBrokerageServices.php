@@ -398,7 +398,7 @@ class UserBrokerageServices extends BaseServices
         }
         /** @var UserExtractServices $userExtractService */
         $userExtractService = app()->make(UserExtractServices::class);
-        $userExtract = $userExtractService->getColumn(['uid' => $uid], 'fail_msg,extract_type', 'id');
+        $userExtract = $userExtractService->getColumn(['uid' => $uid], 'fail_msg,extract_type,state,wechat_order_id', 'id');
         $list = $this->dao->getList($where, '*', $page, $limit);
         $count = $this->dao->count($where);
         $times = [];
@@ -418,6 +418,8 @@ class UserBrokerageServices extends BaseServices
                     } else {
                         $item['extract_type'] = '余额';
                     }
+                    $item['state'] = $userExtract[$item['link_id']]['state'] ?? '';
+                    $item['wechat_order_id'] = $userExtract[$item['link_id']]['wechat_order_id'] ?? '';
                 } else {
                     $item['extract_type'] = '';
                 }

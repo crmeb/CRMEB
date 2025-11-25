@@ -1,26 +1,31 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form ref="formValidate" :model="formValidate" inline label-width="80px" @submit.native.prevent>
           <el-form-item label="核销日期：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="筛选条件：">
-            <el-input enter-button placeholder="请输入搜索内容" v-model="formValidate.real_name"  class="form_content_width">
+            <el-input
+              enter-button
+              placeholder="请输入搜索内容"
+              v-model="formValidate.real_name"
+              class="form_content_width"
+            >
               <el-select v-model="field_key" slot="prepend" style="width: 100px">
                 <el-option value="all" label="全部"></el-option>
                 <el-option value="order_id" label="订单号"></el-option>
@@ -33,23 +38,18 @@
           </el-form-item>
           <el-form-item label="选择门店：">
             <el-select
-                v-model="formValidate.store_id"
-                element-id="store_id"
-                clearable
-                @change="userSearchs"
-                class="form_content_width"
+              v-model="formValidate.store_id"
+              element-id="store_id"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
             >
-              <el-option
-                  v-for="item in storeSelectList"
-                  :value="item.id"
-                  :key="item.id"
-                  :label="item.name"
-              ></el-option>
+              <el-option v-for="item in storeSelectList" :value="item.id" :key="item.id" :label="item.name"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="">
             <el-button type="primary" class="mr15" v-db-click @click="userSearchs">搜索</el-button>
-<!--            <el-button class="mr15" v-db-click @click="refresh">刷新</el-button>-->
+            <!--            <el-button class="mr15" v-db-click @click="refresh">刷新</el-button>-->
           </el-form-item>
         </el-form>
       </div>
@@ -75,17 +75,25 @@
         </el-table-column>
         <el-table-column label="商品信息" min-width="250">
           <template slot-scope="scope">
-            <div class="tab" v-for="(item,i) in scope.row._info" :key="i">
-              <img v-lazy="item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.image : item.cart_info.productInfo.image" />
+            <div class="tab" v-for="(item, i) in scope.row._info" :key="i">
+              <img
+                v-lazy="
+                  item.cart_info.productInfo.attrInfo
+                    ? item.cart_info.productInfo.attrInfo.image
+                    : item.cart_info.productInfo.image
+                "
+              />
               <el-tooltip placement="top" :open-delay="300">
                 <div slot="content">
                   <div>
                     <span>商品名称：</span>
-                    <span>{{ item.cart_info.productInfo.store_name  || '--' }}</span>
+                    <span>{{ item.cart_info.productInfo.store_name || '--' }}</span>
                   </div>
                   <div>
                     <span>规格名称：</span>
-                    <span>{{ item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.suk : '---' }}</span>
+                    <span>{{
+                      item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.suk : '---'
+                    }}</span>
                   </div>
                   <div>
                     <span>价格：</span>
@@ -238,44 +246,53 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 img {
+  height: 36px;
+  display: block;
+}
+.tabBox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  .tabBox_img {
+    width: 36px;
     height: 36px;
-    display: block;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .tabBox_tit {
+    width: 60%;
+    font-size: 12px !important;
+    margin: 0 2px 0 10px;
+    letter-spacing: 1px;
+    padding: 5px 0;
+    box-sizing: border-box;
+  }
 }
-.tabBox
-    width 100%
-    height 100%
-    display flex
-    align-items: center
-    .tabBox_img
-        width 36px
-        height 36px
-        img
-            width 100%
-            height 100%
-    .tabBox_tit
-        width 60%
-        font-size 12px !important
-        margin 0 2px 0 10px
-        letter-spacing: 1px;
-        padding: 5px 0;
-        box-sizing: border-box;
-.orderData ::v-deep .ivu-table-cell{padding-left: 0 !important;}
-.vertical-center-modal{
-    display: flex;
-    align-items: center;
-    justify-content: center;}
-.ivu-mt{
-  margin-bottom 12px
+.orderData ::v-deep .ivu-table-cell {
+  padding-left: 0 !important;
 }
-.ivu-mt a
-   color #515a6e
-.ivu-mt a:hover
-    color: #2D8cF0;
-.ivu-mt ::v-deep .ivu-form-item{
-  padding 7px 0;
-  margin-bottom 0
+.vertical-center-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ivu-mt {
+  margin-bottom: 12px;
+}
+.ivu-mt a {
+  color: #515a6e;
+}
+.ivu-mt a:hover {
+  color: #2d8cf0;
+}
+.ivu-mt ::v-deep .ivu-form-item {
+  padding: 7px 0;
+  margin-bottom: 0;
 }
 .tab {
   display: flex;

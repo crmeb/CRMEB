@@ -10,7 +10,8 @@
               :class="{ on: tabCur == index }"
               v-for="(item, index) in tabList"
               :key="index"
-              v-db-click @click="bindTab(index)"
+              v-db-click
+              @click="bindTab(index)"
             >
               {{ item.title }}
             </div>
@@ -37,7 +38,8 @@
                   :class="{ search: element.cname == '搜索框' }"
                   v-for="(element, index) in item.list"
                   :key="element.id"
-                  v-db-click @click="addDom(element, 1)"
+                  v-db-click
+                  @click="addDom(element, 1)"
                   v-show="item.isOpen"
                 >
                   <div>
@@ -121,7 +123,8 @@
                         }"
                         v-for="(item, key) in mConfig"
                         :key="key"
-                        v-db-click @click.stop="bindconfig(item, key)"
+                        v-db-click
+                        @click.stop="bindconfig(item, key)"
                         :style="colorTxt ? 'background-color:' + colorPickerTxt + ';' : 'background-color:#fff;'"
                       >
                         <component
@@ -138,12 +141,14 @@
                             <div
                               class="iconfont iconshangyi"
                               :class="key === 0 ? 'on' : ''"
-                              v-db-click @click.stop="movePage(item, key, 1)"
+                              v-db-click
+                              @click.stop="movePage(item, key, 1)"
                             ></div>
                             <div
                               class="iconfont iconxiayi"
                               :class="key === mConfig.length - 1 ? 'on' : ''"
-                              v-db-click @click.stop="movePage(item, key, 0)"
+                              v-db-click
+                              @click.stop="movePage(item, key, 0)"
                             ></div>
                           </div>
                         </div>
@@ -502,7 +507,7 @@ export default {
       } else {
         this.activeIndex = index + 1;
       }
-      this.$store.commit('mobildConfig/SETCONFIGNAME', item.name); 
+      this.$store.commit('mobildConfig/SETCONFIGNAME', item.name);
       this.$store.commit('mobildConfig/defaultArraySort', obj);
     },
     // 组件添加

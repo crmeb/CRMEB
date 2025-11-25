@@ -13,7 +13,7 @@
           <el-col span="10">
             <el-form-item label="操作时间：">
               <el-date-picker
-                  clearable
+                clearable
                 :editable="false"
                 @change="onchangeTime"
                 v-model="timeVal"
@@ -411,7 +411,7 @@ export default {
     // 搜索-操作时间
     onchangeTime(time) {
       this.timeVal = time || [];
-      this.formValidate.data = this.timeVal[0] ? this.timeVal ? this.timeVal.join('-') : '' : '';
+      this.formValidate.data = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
       this.page1.pageNum = 1;
       this.getQueue();
     },
@@ -482,17 +482,17 @@ export default {
         case '3':
           this.$msgbox({
             title: '谨慎操作',
-            message:'确认停止该任务？',
+            message: '确认停止该任务？',
             showCancelButton: true,
             cancelButtonText: '取消',
             confirmButtonText: '确定',
             iconClass: 'el-icon-warning',
-            confirmButtonClass: 'btn-custom-cancel'
-          }).then(() => {
-            this.stopQueue(row.id);
-          }).catch(() => {
-
+            confirmButtonClass: 'btn-custom-cancel',
           })
+            .then(() => {
+              this.stopQueue(row.id);
+            })
+            .catch(() => {});
           break;
         // 清除异常任务
         case '4':

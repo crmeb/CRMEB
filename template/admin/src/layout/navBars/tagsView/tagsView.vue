@@ -1,5 +1,5 @@
 <template>
-  <div ref="tagsView" class="layout-navbars-tagsview">
+  <div ref="tagsViews" class="layout-navbars-tagsview">
     <i v-if="scrollTagIcon" class="direction el-icon-arrow-left" v-db-click @click="scrollTag('left')"></i>
     <el-scrollbar ref="scrollbarRef" @wheel.native.prevent="onHandleScroll">
       <ul class="layout-navbars-tagsview-ul" :class="setTagsStyle" ref="tagsUlRef">
@@ -10,7 +10,8 @@
           :data-name="v.name"
           :class="{ 'is-active': v.path === tagsRoutePath }"
           @contextmenu.prevent="onContextmenu(v, $event)"
-          v-db-click @click="onTagsClick(v, k)"
+          v-db-click
+          @click="onTagsClick(v, k)"
           ref="tagsRefs"
         >
           <i
@@ -27,7 +28,8 @@
           <i
             class="el-icon-close layout-navbars-tagsview-ul-li-icon ml5"
             v-if="!v.isAffix"
-            v-db-click @click.stop="closeCurrentTagsView(v.path)"
+            v-db-click
+            @click.stop="closeCurrentTagsView(v.path)"
           ></i>
         </li>
       </ul>
@@ -101,11 +103,11 @@ export default {
     if (!this.$store.state.app.tagNavList.length) {
       this.getTagsViewRoutes();
     }
-    if (this.$refs.tagsView.offsetWidth < this.$refs.scrollbarRef.$refs.wrap.scrollWidth) {
+    if (this.$refs.tagsViews?.offsetWidth < this.$refs.scrollbarRef.$refs.wrap.scrollWidth) {
       this.scrollTagIcon = true;
     }
     window.addEventListener('resize', () => {
-      if (this.$refs.tagsView.offsetWidth < this.$refs.scrollbarRef.$refs.wrap.scrollWidth) {
+      if (this.$refs.tagsViews?.offsetWidth < this.$refs.scrollbarRef.$refs.wrap.scrollWidth) {
         this.scrollTagIcon = true;
       } else {
         this.scrollTagIcon = false;
@@ -293,7 +295,7 @@ export default {
     },
     refreshIcon() {
       this.$nextTick((e) => {
-        if (this.$refs.tagsView.offsetWidth < this.$refs.scrollbarRef.$refs.wrap.scrollWidth) {
+        if (this.$refs.tagsViews?.offsetWidth < this.$refs.scrollbarRef.$refs.wrap.scrollWidth) {
           this.scrollTagIcon = true;
         } else {
           this.scrollTagIcon = false;
@@ -391,8 +393,10 @@ export default {
 }
 .layout-navbars-tagsview {
   flex: 1;
+  z-index: 10;
   background-color: var(--prev-bg-white);
-  // border-bottom: 1px solid var(--prev-border-color-lighter);
+  -webkit-box-shadow: 0 1px 4px rgba(113, 128, 165, 0.1);
+  box-shadow: 0 1px 4px rgba(113, 128, 165, 0.1);
   display: flex;
   align-items: center;
   & ::v-deep .is-vertical {

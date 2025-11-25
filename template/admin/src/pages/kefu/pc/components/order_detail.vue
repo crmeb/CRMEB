@@ -112,36 +112,46 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.order_detail
-    .msg-box
-        border-bottom 1px solid #E8EAED
-        .box-title
-            padding-top 20px
-            font-size 16px
-            color #333
-        .msg-wrapper
-            margin-top 15px
-            padding-bottom 10px
-            .msg-item
-                display flex
-                .item
-                    flex 1
-                    margin-bottom 15px
-                    color: #606266;
-                    font-size: 13px;
-                    span
-                        font-size: 13px;
-                        font-weight: 400;
-                        color: #909399;
-        &:first-child .box-title
-            padding-top 0
-    .product_info
-        display flex
-        align-items center
-        img
-            width 36px
-            height 36px
-            border-radius 4px
-            margin-right 10px
+<style lang="scss" scoped>
+.order_detail {
+  .msg-box {
+    border-bottom: 1px solid #e8eaed;
+    .box-title {
+      padding-top: 20px;
+      font-size: 16px;
+      color: #333;
+    }
+    .msg-wrapper {
+      margin-top: 15px;
+      padding-bottom: 10px;
+      .msg-item {
+        display: flex;
+        .item {
+          flex: 1;
+          margin-bottom: 15px;
+          color: #606266;
+          font-size: 13px;
+          span {
+            font-size: 13px;
+            font-weight: 400;
+            color: #909399;
+          }
+        }
+      }
+    }
+    &:first-child .box-title {
+      padding-top: 0;
+    }
+  }
+  .product_info {
+    display: flex;
+    align-items: center;
+    img {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+  }
+}
 </style>

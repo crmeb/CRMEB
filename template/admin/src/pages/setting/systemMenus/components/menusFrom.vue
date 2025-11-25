@@ -84,7 +84,7 @@
           style="width: 300px"
           ref="search"
         />
-        <el-button class="mr10" type="primary" v-db-click @click="searchRules">搜索</el-button>
+        <el-button type="primary" v-db-click @click="searchRules">搜索</el-button>
         <el-button v-db-click @click="init">重置</el-button>
       </div>
       <div class="rule">
@@ -94,7 +94,8 @@
           :class="{ 'select-rule': arrs.includes(index) }"
           v-for="(item, index) in ruleList"
           :key="index"
-          v-db-click @click="selectRule(item)"
+          v-db-click
+          @click="selectRule(item)"
         >
           <div>接口名称：{{ item.real_name }}</div>
           <div>请求方式：{{ item.method }}</div>

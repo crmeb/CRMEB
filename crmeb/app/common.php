@@ -626,14 +626,24 @@ if (!function_exists('filter_str')) {
      */
     function filter_str($str)
     {
-        $rules = preg_split('/\r\n|\r|\n/', base64_decode(sys_config('param_filter_data')));
-        if (filter_var($str, FILTER_VALIDATE_URL)) {
-            $url = parse_url($str);
-            if (!isset($url['scheme'])) return $str;
-            $host = $url['scheme'] . '://' . $url['host'];
-            $str = $host . preg_replace($rules, '', str_replace($host, '', $str));
-        } else {
-            $str = preg_replace($rules, '', $str);
+        $param_filter_type = sys_config('param_filter_type');
+        if ($param_filter_type != 0) {
+            $rules = preg_split('/\r\n|\r|\n/', base64_decode(sys_config('param_filter_data')));
+            if ($param_filter_type == 1) {
+                foreach ($rules as $item) {
+                    if (preg_match($item, $str)) {
+                        throw new \Exception('接口请求失败：非法操作！');
+                    }
+                }
+            }
+            if (filter_var($str, FILTER_VALIDATE_URL)) {
+                $url = parse_url($str);
+                if (!isset($url['scheme'])) return $str;
+                $host = $url['scheme'] . '://' . $url['host'];
+                $str = $host . preg_replace($rules, '', str_replace($host, '', $str));
+            } else {
+                $str = preg_replace($rules, '', $str);
+            }
         }
         return $str;
     }
@@ -655,7 +665,7 @@ if (!function_exists('is_brokerage_statu')) {
         if ($storeBrokerageStatus == 1) {
             return false;
         } else if ($storeBrokerageStatus == 2) {
-            return false;
+            return true;
         } else {
             $storeBrokeragePrice = sys_config('store_brokerage_price', 0);
             return $price >= $storeBrokeragePrice;
@@ -895,6 +905,7 @@ if (!function_exists('get_image_thumb')) {
         if (!$filePath || !is_string($filePath) || strpos($filePath, '?') !== false) return $filePath;
         try {
             $upload = UploadService::getOssInit($filePath, $is_remote_down);
+            //TODO
             $fileArr = explode('/', $filePath);
             $data = $upload->thumb($filePath, end($fileArr), $type);
             $image = $type == 'all' ? $data : $data[$type] ?? $filePath;
@@ -906,6 +917,7 @@ if (!function_exists('get_image_thumb')) {
             $image = sys_config('site_url') . $image;
         }
         //请求是https 图片是http 需要改变图片地址
+        //TODO 是否要读取后台配置url
         if (strpos(request()->domain(), 'https:') !== false && strpos($image, 'https:') === false) {
             $image = str_replace('http:', 'https:', $image);
         }
@@ -924,6 +936,10 @@ if (!function_exists('get_thumb_water')) {
      */
     function get_thumb_water($list, string $type = 'small', array $field = ['image'], bool $is_remote_down = false)
     {
+        // 未开启缩略图功能 直接返回原数据
+        if (!sys_config('image_thumb_status', 0)) {
+            return $list;
+        }
         if (!$list || !$field) return $list;
         $baseType = $type;
         $data = $list;
@@ -1146,16 +1162,20 @@ if (!function_exists('dump_sql')) {
     }
 }
 
-if (!function_exists('stringToIntArray')) {
+if (!function_exists('toIntArray')) {
 
     /**
      * 处理ids等并过滤参数
-     * @param string $string
+     * @param $data
      * @param string $separator
      * @return array
      */
-    function stringToIntArray(string $string, string $separator = ',')
+    function toIntArray($data, string $separator = ',')
     {
-        return !empty($string) ? array_unique(array_diff(array_map('intval', explode($separator, $string)), [0])) : [];
+        if (!is_string($data)) {
+            return array_unique(array_diff(array_map('intval', $data), [0]));
+        } else {
+            return !empty($data) ? array_unique(array_diff(array_map('intval', explode($separator, $data)), [0])) : [];
+        }
     }
 }

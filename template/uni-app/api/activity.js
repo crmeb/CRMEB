@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2023 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2024 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -172,7 +172,7 @@ export function getSeckillList(time, data) {
  * @param int id
  */
 export function getSeckillDetail(id, data) {
-	return request.get('seckill/detail/' + id, data);
+	return request.get(`seckill/detail/${id}`, data);
 }
 
 /**
@@ -266,7 +266,9 @@ export function getIntegralProductDetail(id) {
  * @param object data
  */
 export function getStoreIntegralList(data) {
-	return request.get('store_integral/list', data, );
+	return request.get('store_integral/list', data, {
+		noAuth: true
+	});
 }
 
 /**

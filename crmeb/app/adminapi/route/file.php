@@ -42,7 +42,8 @@ Route::group('file', function () {
     Route::get('upload_type', 'v1.file.SystemAttachment/uploadType')->option(['real_name' => '上传类型']);
     //分片上传本地视频
     Route::post('video_upload', 'v1.file.SystemAttachment/videoUpload')->option(['real_name' => '分片上传本地视频']);
-
+    //云存储视频保存数据
+    Route::post('video_data_save', 'v1.file.SystemAttachment/videoDataSave')->option(['real_name' => '云存储视频保存数据']);
     //获取扫码上传页面链接以及参数
     Route::get('scan_upload/qrcode', 'v1.file.SystemAttachment/scanUploadQrcode')->option(['real_name' => '扫码上传页面链接']);
     //删除扫码上传token

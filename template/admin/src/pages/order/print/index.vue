@@ -20,33 +20,33 @@
         </div>
       </div>
       <div class="mt20">
-        <el-table border :columns="columns" :data="item" :disabled-hover="true">
-          <el-table-column label="商品编号" align="center">
+        <el-table border :data="item" :disabled-hover="true">
+          <el-table-column label="商品编号" width="80" align="center">
             <template slot-scope="scope">
               <span class="nickname">{{ scope.row.index }} </span>
             </template>
           </el-table-column>
-          <el-table-column label="商品名称">
+          <el-table-column label="商品名称" width="170">
             <template slot-scope="scope">
-              <span class="nickname line2">{{ scope.row.name }} </span>
+              <span class="nickname">{{ scope.row.name }} </span>
             </template>
           </el-table-column>
-          <el-table-column label="商品规格">
+          <el-table-column label="商品规格" minWidth="150">
             <template slot-scope="scope">
               <span class="nickname">{{ scope.row.sku }} </span>
             </template>
           </el-table-column>
-          <el-table-column label="单价">
+          <el-table-column label="单价" width="80">
             <template slot-scope="scope">
               <span class="nickname">{{ scope.row.price }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="数量">
+          <el-table-column label="数量" width="80">
             <template slot-scope="scope">
               <span class="nickname">{{ scope.row.num }} </span>
             </template>
           </el-table-column>
-          <el-table-column label="金额">
+          <el-table-column label="金额" width="100">
             <template slot-scope="scope">
               <span class="nickname">{{ scope.row.sum_price }}</span>
             </template>
@@ -78,56 +78,6 @@ import Setting from '@/setting';
 export default {
   data() {
     return {
-      columns: [
-        {
-          title: '商品编号',
-          key: 'index',
-          align: 'center',
-          width: 60,
-        },
-        {
-          title: '商品名称',
-          slot: 'store_name',
-          align: 'center',
-          minWidth: 253,
-        },
-        {
-          title: '商品规格',
-          slot: 'suk',
-          align: 'center',
-          width: 219,
-        },
-        // {
-        //     title: '商品条码',
-        //     key: 'bar_code',
-        //     align: 'center',
-        //     width: 109
-        // },
-        // {
-        //     title: '商品编码',
-        //     key: 'code',
-        //     align: 'center',
-        //     width: 109
-        // },
-        {
-          title: '单价',
-          key: 'price',
-          align: 'center',
-          width: 100,
-        },
-        {
-          title: '数量',
-          key: 'num',
-          align: 'center',
-          width: 60,
-        },
-        {
-          title: '金额',
-          key: 'subtotal',
-          align: 'center',
-          width: 100,
-        },
-      ],
       orderData: {},
       BaseURL: Setting.apiBaseURL.replace(/adminapi/, ''),
       newArrayData: [],
@@ -192,6 +142,7 @@ export default {
   background-color: #fff;
   height: max-content;
   min-height: 100vh;
+  font-weight: 600;
 }
 ::v-deep .el-table th {
   background-color: #fff !important;
@@ -232,7 +183,6 @@ export default {
 }
 ::v-deep .el-table--border {
   border: 1px solid #333 !important;
-  border-bottom: 0px !important;
 }
 ::v-deep .el-table:before {
   background-color: #333;
@@ -245,6 +195,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 600;
 }
 ::v-deep .el-table {
   color: #000;
@@ -259,6 +210,7 @@ export default {
   margin-top: 20px;
   .item {
     margin-right: 30px;
+    font-weight: 600;
   }
   .name {
     font-weight: 600;
@@ -283,9 +235,7 @@ export default {
       flex-direction: column;
       justify-content: space-between;
       height: 80px;
-      .name {
-        font-weight: 600;
-      }
+      font-weight: 600;
     }
     .left {
       width: 500px;

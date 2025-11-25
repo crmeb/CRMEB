@@ -149,7 +149,10 @@ class SystemConfigServices extends BaseServices
         'pay_wechat_type@' => [
             'son_type' => [
                 'pay_weixin_serial_no' => '',
-                'pay_weixin_key_v3' => ''
+                'v3_transfer_scene_id' => '',
+                'pay_weixin_key_v3' => '',
+                'v3_pay_public_key' => '',
+                'v3_pay_public_pem' => '',
             ],
             'show_value' => 1
         ],
@@ -475,9 +478,7 @@ class SystemConfigServices extends BaseServices
     public function createTextareaForm(array $data)
     {
         $data['value'] = json_decode($data['value'], true) ?: '';
-        if ($data['menu_name'] == 'param_filter_data') {
-            $data['value'] = base64_decode($data['value']);
-        }
+        if ($data['menu_name'] == 'param_filter_data') $data['value'] = base64_decode($data['value']);
         $formbuider[] = $this->builder->textarea($data['menu_name'], $data['info'], $data['value'])->placeholder($data['desc'])->appendRule('suffix', [
             'type' => 'div',
             'class' => 'tips-info',
@@ -754,7 +755,6 @@ class SystemConfigServices extends BaseServices
         if (!$list) return [];
         $list = array_combine(array_column($list, 'menu_name'), $list);
         $formbuider = [];
-        $relateRule = $this->relatedRule;
         $sonConfig = $this->getSonConfig();
         $sonConfig = array_merge($sonConfig, $this->dao->getColumn(['level' => 1], 'menu_name'));
         foreach ($list as $key => $data) {
@@ -766,6 +766,7 @@ class SystemConfigServices extends BaseServices
                     $formbuider = array_merge($formbuider, $this->createTextForm($data['input_type'], $data));
                     break;
                 case 'radio'://单选框
+                    $relateRule = $this->relatedRule;
                     $builder = [];
                     if (!isset($relateRule[$key])) {
                         $relateRule = [];

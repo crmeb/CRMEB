@@ -45,7 +45,7 @@ export function getStatusApi(url, data) {
   return request({
     url: url,
     method: 'put',
-    data
+    data,
   });
 }
 /**

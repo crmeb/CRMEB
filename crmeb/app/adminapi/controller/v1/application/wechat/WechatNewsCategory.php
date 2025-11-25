@@ -179,9 +179,15 @@ class WechatNewsCategory extends AuthController
                         $errorLog[] = $v['nickname'] . '没有关注发送失败(不是微信公众号用户)';
                     }
                 }
-            } else return app('json')->fail(100031);
-            if (!count($errorLog)) return app('json')->success(100030);
-            else return app('json')->success(100030);
+                if (!count($errorLog)) {
+                    return app('json')->success(100030);
+                } else {
+                    return app('json')->fail(100031);
+                }
+            } else {
+                return app('json')->fail(100031);
+            }
+
         }
 
     }

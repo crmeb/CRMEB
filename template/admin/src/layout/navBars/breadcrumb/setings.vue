@@ -207,6 +207,7 @@
               <el-radio-button label="slide-left">左滑</el-radio-button>
               <el-radio-button label="opacitys">透明</el-radio-button>
               <el-radio-button label="slide-right">右滑</el-radio-button>
+              <el-radio-button label="no-transition">无</el-radio-button>
             </el-radio-group>
           </div>
         </div>
@@ -289,6 +290,7 @@ export default {
       this.setLocalThemeConfig();
     },
     setLocalTheme(val) {
+      console.log(this.getThemeConfig.layout, val, 'layout');
       let themeSelect = themeList[val];
       themeSelect['--prev-border-color-lighter'] = '#ebeef5';
       /**
@@ -305,19 +307,23 @@ export default {
         // themeSelect['--prev-MenuActiveColor'] = '#6954f0';
         if (val == 'theme-1') {
           themeSelect['--prev-bg-menuBar'] = '#fff';
-          themeSelect['--prev-border-color-lighter'] = '#282c34';
+          themeSelect['--prev-border-color-lighter'] = '#e5eeff';
+          themeSelect['--prev-MenuActiveColor'] = '#0256FF';
         } else if (val == 'theme-3') {
           // themeSelect['--prev-bg-menu-hover-ba-color'] = '#41b584';
           themeSelect['--prev-bg-menuBar'] = '#fff';
           themeSelect['--prev-border-color-lighter'] = '#282c34';
+          themeSelect['--prev-MenuActiveColor'] = '#41b584';
         } else if (val == 'theme-5') {
           // themeSelect['--prev-bg-menu-hover-ba-color'] = '#6954f0';
           themeSelect['--prev-bg-menuBar'] = '#fff';
           themeSelect['--prev-border-color-lighter'] = '#282c34';
+          themeSelect['--prev-MenuActiveColor'] = '#6954f0';
         } else if (val == 'theme-7') {
           // themeSelect['--prev-bg-menu-hover-ba-color'] = '#f34d37';
           themeSelect['--prev-bg-menuBar'] = '#fff';
           themeSelect['--prev-border-color-lighter'] = '#282c34';
+          themeSelect['--prev-MenuActiveColor'] = '#f34d37';
         } else {
           themeSelect['--prev-border-color-lighter'] = '#ebeef5';
           themeSelect['--prev-bg-topBar'] = '#fff';
@@ -565,6 +571,9 @@ body .v-modal {
 }
 ::v-deep .el-radio-button--mini .el-radio-button__inner {
   padding: 7px 8px;
+}
+::v-deep .el-drawer__body {
+  padding: 0;
 }
 .layout-breadcrumb-seting-bar {
   // height: calc(100vh - 50px);

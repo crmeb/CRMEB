@@ -119,7 +119,17 @@ export function onlineUpload(data) {
 export function scanUploadCode() {
   return request({
     url: 'file/scan_upload/qrcode ',
-    method: 'delete'
+    method: 'delete',
   });
 }
 
+/**
+ * @description 素材管理-视频上传
+ */
+export function videoCloudUpload(data) {
+  return request({
+    url: 'file/video_data_save',
+    method: 'post',
+    data,
+  });
+}

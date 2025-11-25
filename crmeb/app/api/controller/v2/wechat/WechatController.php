@@ -43,9 +43,9 @@ class WechatController
      * @email: 442384644@qq.com
      * @date: 2023/8/12
      */
-    public function authLogin($spread = '')
+    public function authLogin($spread = '', $agent_id = '')
     {
-        $data = $this->services->authLogin($spread);
+        $data = $this->services->authLogin($spread, $agent_id);
         return app('json')->success($data);
     }
 

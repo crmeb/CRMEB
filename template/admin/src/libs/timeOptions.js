@@ -17,7 +17,7 @@ export default {
         start.setTime(
           start.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)),
         );
-        end.setTime(end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()- 1)));
+        end.setTime(end.setTime(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1)));
         picker.$emit('pick', [start, end]);
       },
     },

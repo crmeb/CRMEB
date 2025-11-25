@@ -413,7 +413,7 @@ class StorePinkServices extends BaseServices
         //拼团卡密和优惠券商品，成团后发放
         $orderInfos = $orderService->getColumn([['order_id', 'in', $order_ids]], '*', 'order_id');
         foreach ($orderInfos as $orderInfo) {
-            if ($orderInfo['virtual_type'] > 0) {
+            if (in_array($orderInfo['virtual_type'], [1, 2])) {
                 $orderInfo['cart_id'] = json_decode($orderInfo['cart_id'], true);
                 /** @var StoreOrderDeliveryServices $orderDeliveryServices */
                 $orderDeliveryServices = app()->make(StoreOrderDeliveryServices::class);
@@ -800,7 +800,7 @@ class StorePinkServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function virtualCombination($pinkId)
+    public function virtualCombination($pinkId, $operator = 'auto')
     {
         $pinkInfo = $this->dao->get($pinkId);
         $people = $pinkInfo['people'];
@@ -809,7 +809,7 @@ class StorePinkServices extends BaseServices
         /** @var StoreCombinationServices $services */
         $services = app()->make(StoreCombinationServices::class);
         $percent2 = $services->value(['id' => $pinkInfo['cid']], 'virtual');
-        if ($percent1 >= $percent2) {
+        if ($percent1 >= $percent2 || $operator == 'admin') {
             $time = time();
             $num = $people - $count;
             $data = [];

@@ -11,7 +11,13 @@
           inline
         >
           <el-form-item label="优惠券名称：" label-for="coupon_title">
-            <el-input v-model="tableFrom.coupon_title" placeholder="请输入优惠券名称" class="form_content_width" />
+            <el-input
+              v-model="tableFrom.coupon_title"
+              placeholder="请输入优惠券名称"
+              class="form_content_width"
+              maxlength="18"
+              show-word-limit
+            />
           </el-form-item>
           <el-form-item label="优惠券类型：" label-for="coupon_type">
             <el-select
@@ -47,10 +53,8 @@
               class="form_content_width"
             >
               <el-option value="all" label="全部"></el-option>
-              <el-option value="1" label="手动领取"></el-option>
-              <el-option value="2" label="新用户自动发放"></el-option>
-              <el-option value="3" label="后台赠送"></el-option>
-              <el-option value="4" label="付费会员专享"></el-option>
+              <el-option value="1" label="用户领取"></el-option>
+              <el-option value="2" label="系统赠送"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -97,11 +101,8 @@
         </el-table-column>
         <el-table-column label="领取方式" min-width="150">
           <template slot-scope="scope">
-            <span v-if="scope.row.receive_type === 1">手动领取</span>
-            <span v-else-if="scope.row.receive_type === 2">新人券</span>
-            <span v-else-if="scope.row.receive_type === 3">赠送券</span>
-            <span v-else-if="scope.row.receive_type === 4">会员券</span>
-            <span v-else>虚拟购买</span>
+            <span v-if="scope.row.receive_type === 1 || scope.row.receive_type === 4">用户领取</span>
+            <span v-else>系统赠送</span>
           </template>
         </el-table-column>
         <el-table-column label="领取日期" min-width="100">
@@ -126,7 +127,7 @@
             <span v-if="scope.row.is_permanent">不限量</span>
             <div v-else>
               <span class="fa">发布：{{ scope.row.total_count }}</span>
-              <span class="sheng">剩余：{{ scope.row.remain_count }}</span>
+              <span class="sheng ml10">剩余：{{ scope.row.remain_count }}</span>
             </div>
           </template>
         </el-table-column>
@@ -371,17 +372,15 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .fa {
   color: #0a6aa1;
   display: block;
 }
-
 .sheng {
   color: #ff0000;
   display: block;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;

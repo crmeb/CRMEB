@@ -1,9 +1,10 @@
 <template>
   <div>
     <pages-header
-        ref="pageHeader"
-        :title="$route.meta.title"
-        :backUrl="$routeProStr + '/marketing/live/live_goods'"></pages-header>
+      ref="pageHeader"
+      :title="$route.meta.title"
+      :backUrl="$routeProStr + '/marketing/live/live_goods'"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form
         ref="formValidate"
@@ -19,7 +20,7 @@
               <div class="box">
                 <div class="box-item" v-for="(item, index) in goodsList" :key="index">
                   <img :src="item.image" alt="" />
-                  <i class="el-icon-error" v-db-click @click="bindDelete(index, item)" style="font-size: 16px;"></i>
+                  <i class="el-icon-error" v-db-click @click="bindDelete(index, item)" style="font-size: 16px"></i>
                 </div>
                 <div class="upload-box acea-row row-center-wrapper" v-db-click @click="selectGoods">
                   <i class="el-icon-goods" style="font-size: 24px"></i>
@@ -30,7 +31,7 @@
         </el-row>
       </el-form>
       <div class="active-btn" v-if="goodsList.length > 0">
-        <el-button type="success" v-db-click @click="liveGoods">生成直播商品</el-button>
+        <el-button type="primary" v-db-click @click="liveGoods">生成直播商品</el-button>
       </div>
       <div class="table-box" v-if="isShowBox">
         <el-table
@@ -72,19 +73,20 @@
         </el-table>
 
         <div class="sub_btn">
-          <el-button type="primary" style="width: 8%" v-db-click @click="bindSub" :disabled="disabled" :loading="loadings"
+          <el-button
+            type="primary"
+            style="width: 8%"
+            v-db-click
+            @click="bindSub"
+            :disabled="disabled"
+            :loading="loadings"
             >提交</el-button
           >
         </div>
       </div>
     </el-card>
     <el-dialog :visible.sync="modals" title="商品列表" class="paymentFooter" width="1000px">
-      <goods-list
-        ref="goodslist"
-        :selectIds="selectIds"
-        @getProductId="getProductId"
-        :ischeckbox="true"
-      ></goods-list>
+      <goods-list ref="goodslist" :selectIds="selectIds" @getProductId="getProductId" :ischeckbox="true"></goods-list>
     </el-dialog>
   </div>
 </template>
@@ -118,7 +120,7 @@ export default {
       tabList: [],
       disabled: false,
       loadings: false,
-      selectIds:[]
+      selectIds: [],
     };
   },
   methods: {
@@ -190,25 +192,22 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .upload-box {
   width: 58px;
   height: 58px;
   line-height: 58px;
-  border: 1px dotted rgba(0,0,0,0.1);
+  border: 1px dotted rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-  background: rgba(0,0,0,0.02);
+  background: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
-
 .box {
   display: flex;
   flex-wrap: wrap;
-
   .box-item {
     position: relative;
     margin-right: 20px;
-
     .el-icon-error {
       position: absolute;
       right: -10px;
@@ -217,8 +216,8 @@ export default {
       cursor: pointer;
     }
   }
-
-  .upload-box, .box-item {
+  .upload-box,
+  .box-item {
     width: 60px;
     height: 60px;
     margin-bottom: 10px;
@@ -230,19 +229,15 @@ export default {
     }
   }
 }
-
 .active-btn {
   padding-left: 96px;
 }
-
 .table-box {
   margin: 0 107px;
 }
-
 .sub_btn {
   margin-top: 10px;
 }
-
 .product_box {
   display: flex;
 

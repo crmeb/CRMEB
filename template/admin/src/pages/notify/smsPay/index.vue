@@ -35,7 +35,8 @@
                 <div
                   class="list-goods-list-item mb15"
                   :class="{ active: index === current }"
-                  v-db-click @click="check(item, index)"
+                  v-db-click
+                  @click="check(item, index)"
                 >
                   <div class="list-goods-list-item-title" :class="{ active: index === current }">
                     ¥ <i>{{ item.price }}</i>

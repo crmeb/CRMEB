@@ -37,11 +37,8 @@ Route::group('v2', function () {
         })->option(['mark' => 'wechat_auto', 'mark_name' => '微信授权']);
 
         Route::group(function () {
-            //获取门店自提开启状态
             Route::get('diy/get_store_status', 'v2.PublicController/getStoreStatus')->option(['real_name' => '获取门店自提开启状态']);
-            //一键换色
             Route::get('diy/color_change/:name', 'v2.PublicController/colorChange')->option(['real_name' => '一键换色']);
-            //DIY接口
             Route::get('diy/get_diy/[:name]', 'v2.PublicController/getDiy')->option(['real_name' => '获取DIY数据']);
             Route::get('diy/get_version/[:name]', 'v2.PublicController/getVersion')->option(['real_name' => '获取DIY版本号']);
         })->option(['mark' => 'diy', 'mark_name' => 'DIY']);
@@ -84,7 +81,7 @@ Route::group('v2', function () {
         Route::get('user/clean_search', 'v2.user.UserSearchController/cleanUserSearch')->name('cleanUserSearch')->option(['real_name' => '清除搜索记录']);
 
         //抽奖活动详情
-        Route::get('lottery/info/:factor', 'v2.activity.LuckLotteryController/lotteryInfo')->name('lotteryInfo')->option(['real_name' => '抽奖活动详情']);
+        Route::get('lottery/info/:factor/[:lottery_id]', 'v2.activity.LuckLotteryController/lotteryInfo')->name('lotteryInfo')->option(['real_name' => '抽奖活动详情']);
         //参与抽奖
         Route::post('lottery', 'v2.activity.LuckLotteryController/luckLottery')->name('luckLottery')->middleware(BlockerMiddleware::class)->option(['real_name' => '参与抽奖']);
         //领取奖品
@@ -101,14 +98,12 @@ Route::group('v2', function () {
 
     //授权不通过,不会抛出异常继续执行
     Route::group(function () {
-        //用户搜索记录
         Route::get('user/search_list', 'v2.user.UserSearchController/getUserSeachList')->name('userSearchList')->option(['real_name' => '用户搜索记录']);
         Route::get('get_today_coupon', 'v2.store.StoreCouponsController/getTodayCoupon')->option(['real_name' => '新优惠券弹窗接口']);//新优惠券弹窗接口
         Route::get('subscribe', 'v2.PublicController/subscribe')->name('WechatSubscribe')->option(['real_name' => '微信公众号用户是否关注']);// 微信公众号用户是否关注
-        //公共类
         Route::get('index', 'v2.PublicController/index')->name('index')->option(['real_name' => '首页']);//首页
-        //优惠券
         Route::get('coupons', 'v2.store.StoreCouponsController/lst')->name('couponsList')->option(['real_name' => '可领取优惠券列表']); //可领取优惠券列表
+        Route::get('diy/sign', 'v2.PublicController/getDiySign')->name('getDiySign')->option(['real_name' => '获取Diy签到']);
     })->middleware(\app\api\middleware\AuthTokenMiddleware::class, false)
         ->option(['mark' => 'common', 'mark_name' => '公共接口']);
 

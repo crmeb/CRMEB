@@ -45,7 +45,9 @@
         <el-table-column label="备注" min-width="120">
           <template slot-scope="scope">
             <div class="mark">
-              <div v-if="scope.row.is_edit" class="table-mark" v-db-click @click="isEditMark(scope.row)">{{ scope.row.mark }}</div>
+              <div v-if="scope.row.is_edit" class="table-mark" v-db-click @click="isEditMark(scope.row)">
+                {{ scope.row.mark }}
+              </div>
               <el-input ref="mark" v-else v-model="scope.row.mark" @blur="isEditBlur(scope.row)"></el-input>
             </div>
           </template>
@@ -71,7 +73,8 @@
       <p slot="header" class="diy-header" ref="diyHeader">
         <span>{{ title }}</span>
         <i
-          v-db-click @click="winChanges"
+          v-db-click
+          @click="winChanges"
           class="diy-header-icon"
           :class="className ? 'el-icon-cpu' : 'el-icon-full-screen'"
           style="font-size: 20px"
@@ -79,7 +82,9 @@
       </p>
       <div style="height: 100%">
         <div class="top-button">
-          <el-button type="primary" id="savefile" class="diy-button" v-db-click @click="savefile(indexEditor)">保存</el-button>
+          <el-button type="primary" id="savefile" class="diy-button" v-db-click @click="savefile(indexEditor)"
+            >保存</el-button
+          >
           <el-button id="refresh" class="diy-button" v-db-click @click="refreshfile">刷新</el-button>
         </div>
         <div class="file-box">
@@ -132,7 +137,11 @@
                 :icon="value.icon"
                 v-if="value.tab"
               >
-                <div ref="container" :id="'container_' + value.index" style="height: 100%; min-height: calc(80vh - 100px);"></div>
+                <div
+                  ref="container"
+                  :id="'container_' + value.index"
+                  style="height: 100%; min-height: calc(80vh - 100px)"
+                ></div>
               </el-tab-pane>
             </el-tabs>
           </div>
@@ -898,77 +907,51 @@ export default {
   border-bottom: 1px solid orange;
 }
 </style>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .file-left {
   padding-left: 10px;
-
-  ::v-deep .ivu-icon-ios-arrow-forward {
-    font-size: 18px !important;
-  }
-
   color: #cccccc;
-
-  ::v-deep .ivu-icon-ios-folder-outline {
-    font-size: 14px !important;
-  }
-
-  ::v-deep .ivu-icon-ios-document-outline {
-    font-size: 18px !important;
-  }
 }
-
-::v-deep .ivu-icon-md-folder {
-  font-size: 18px !important;
-  color: #d6ab34 !important;
-}
-
-::v-deep .ivu-table-row {
-  cursor: pointer;
-}
-
 .mr5 {
   margin-right: 5px;
 }
-.backs-box{
+.backs-box {
   display: flex;
-  justify-content space-between
+  justify-content: space-between;
   min-width: 800px;
   max-width: max-content;
   border: 1px solid #cfcfcf;
   background: #f6f6f6;
-  .refresh{
+  .refresh {
     background: #fff;
     border-left: 1px solid #cfcfcf;
     padding: 0 8px 0 10px;
     font-size: 16px;
     font-weight: bold;
   }
-  .refresh{
-    display flex
-    align-items center
-    justify-content center
+  .refresh {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
   }
-  .refresh:hover,.back:hover{
-    background: #2D8cF0;
+  .refresh:hover,
+  .back:hover {
+    background: #2d8cf0;
     border-color: #38983b;
     color: #fff;
   }
-   .icon {
-    // height: 32px;
-  }
 }
-.file-name{
-  cursor pointer
+.file-name {
+  cursor: pointer;
 }
 .backs {
   cursor: pointer;
   display: inline-block;
-  display flex
-  align-items center
+  display: flex;
+  align-items: center;
   width: 100%;
-
-  .back{
+  .back {
     height: 100%;
     background: #fff;
     border-right: 1px solid #cfcfcf;
@@ -976,32 +959,27 @@ export default {
     font-size: 16px;
     font-weight: bold;
   }
-
-  .item:last-child{
+  .item:last-child {
     padding-right: 5px !important;
   }
-  .item{
-    padding: 0 0 0 8px
+  .item {
+    padding: 0 0 0 8px;
     font-size: 12px;
     line-height: 33px;
     color: #555;
-    display flex
-    align-items center
-    .key{
+    display: flex;
+    align-items: center;
+    .key {
       margin-right: 3px;
     }
   }
-
-  .item:hover{
+  .item:hover {
     background: #fff;
   }
-
 }
-
 ::v-deep .CodeMirror {
   height: 70vh !important;
 }
-
 .file-box {
   display: flex;
   align-items: flex-start;
@@ -1010,53 +988,41 @@ export default {
   min-height: calc(100% - 35px);
   overflow: hidden;
 }
-
 .file-box {
   .file-left {
     position: absolute;
     top: 58px;
     left: 0;
     height: calc(100% - 58px);
-    
-    // height: 100%;
-    // min-height: calc(100% - 35px);
+
     width: 25%;
     max-width: 250px;
     overflow: auto;
     background-color: #292929;
   }
-
   .file-fix {
     flex: 1;
     max-width: 250px;
     min-height: calc(100% - 35px);
-    // bottom: 0px;
-    // overflow: auto;
+
     min-height: calc(100% - 35px);
     background-color: #292929;
   }
 }
-
 .file-box {
   .file-content {
-    // position: absolute;
-    // top: 53px;
-    // left: 25%;
     flex: 3;
     overflow: hidden;
     min-height: calc(100% - 35px);
     height: 100%;
   }
 }
-
 ::v-deep .el-dialog__body {
   padding: 0 !important;
   height: 80vh;
   max-height: 80vh;
 }
-
 .diy-button {
-  // float: left;
   height: 35px;
   padding: 0 15px;
   font-size: 13px;
@@ -1068,7 +1034,6 @@ export default {
   border-radius: 0;
   background-color: #565656;
 }
-
 .form-mask {
   z-index: -1;
   width: 100%;
@@ -1081,20 +1046,22 @@ export default {
   margin: auto;
   background: rgba(0, 0, 0, 0.3);
 }
-.table-mark{
+.table-mark {
   cursor: text;
 }
-.table-mark:hover{
-  border:1px solid #c2c2c2;
-  padding: 3px 5px
+.table-mark:hover {
+  border: 1px solid #c2c2c2;
+  padding: 3px 5px;
 }
-.mark ::v-deep .el-input__inner{
-    background: #fff;
-    border-radius: .39rem;
+.mark ::v-deep .el-input__inner {
+  background: #fff;
+  border-radius: 0.39rem;
 }
-.mark ::v-deep .el-input__inner, .el-input__inner:hover, .el-input__inner:focus {
-    border: transparent;
-    box-shadow: none;
+.mark ::v-deep .el-input__inner,
+.el-input__inner:hover,
+.el-input__inner:focus {
+  border: transparent;
+  box-shadow: none;
 }
 .diy-from-header {
   height: 30px;
@@ -1118,7 +1085,6 @@ export default {
     text-overflow: ellipsis;
   }
 }
-
 .diy-from {
   z-index: 9999;
   width: 400px;
@@ -1132,30 +1098,27 @@ export default {
   text-align: center;
   background-color: #2f2f2f;
 }
-  .top-button{
-    background-color: #292929;
-  }
+.top-button {
+  background-color: #292929;
+}
 .show-info {
   background-color: #292929;
-  color: #FFF;
+  color: #fff;
   width: 25%;
   max-width: 250px;
   position: absolute;
   top: 0;
   left: 0;
   z-index: 1122;
-
   .diy-button {
     width: 50%;
     height: 25px;
     line-height: 8px;
   }
-
   .diy-button-list {
     display: flex;
     align-items: center;
   }
-
   .show-text {
     padding-left: 10px;
     word-break: keep-all; /* 不换行 */
@@ -1169,29 +1132,10 @@ export default {
 body ::v-deep .ivu-select-dropdown {
   background: #fff;
 }
-
-.diy-tree-render {
-  ::v-deepli {
-    overflow: hidden;
-  }
-
-  ::v-deep .ivu-tree-title {
-    width: 90%;
-    max-width: 250px;
-    padding: 0;
-    padding-left: 5px;
-  }
-}
-
-::v-deep .ivu-tree-children {
-  .ivu-tree-title:hover {
-    background-color: #2f2f2f !important;
-  }
-}
-::v-deep .el-tabs__item{
+::v-deep .el-tabs__item {
   background-color: #fff;
 }
-::v-deep .el-tree{
+::v-deep .el-tree {
   background-color: #292929 !important;
 }
 .file-box {
@@ -1199,7 +1143,6 @@ body ::v-deep .ivu-select-dropdown {
     width: 4px;
   }
 }
-
 .file-box {
   .file-left::-webkit-scrollbar-thumb {
     border-radius: 10px;
@@ -1207,7 +1150,6 @@ body ::v-deep .ivu-select-dropdown {
     background: rgba(255, 255, 255, 0.2);
   }
 }
-
 .file-box {
   .file-left::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
@@ -1215,26 +1157,20 @@ body ::v-deep .ivu-select-dropdown {
     background: rgba(0, 0, 0, 0.1);
   }
 }
-
 .diy-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   .diy-header-icon {
     margin-right: 30px;
     cursor: pointer;
   }
-
   .diy-header-icon:hover {
     opacity: 0.8;
   }
 }
-
-// 自定义方法缩小
 ::v-deep .diy-fullscreen {
   overflow: hidden;
-
   .ivu-modal {
     top: 0px;
     left: 0px;
@@ -1242,26 +1178,21 @@ body ::v-deep .ivu-select-dropdown {
     bottom: 0px;
     height: 100%;
     width: 100% !important;
-
     .ivu-modal-content {
       height: 100%;
-
       .ivu-modal-body {
         height: 100%;
       }
     }
-
     .ivu-tabs {
       .ivu-tabs-content-animated {
         height: 92%;
         background-color: #2f2f2f !important;
       }
     }
-
     .ivu-tabs-content {
       height: 100%;
     }
-
     .ivu-tabs {
       .ivu-tabs-tabpane {
         height: 92%;
@@ -1269,11 +1200,9 @@ body ::v-deep .ivu-select-dropdown {
     }
   }
 }
-
 ::v-deep .ivu-modal {
   top: 70px;
 }
-
 .ivu-modal-content {
   .ivu-modal-body {
     min-height: 632px;
@@ -1281,35 +1210,27 @@ body ::v-deep .ivu-select-dropdown {
     overflow: hidden;
   }
 }
-
 .ivu-tabs {
   .ivu-tabs-content-animated {
     min-height: 580px;
     height: 73vh;
     margin-top: -1px;
   }
-
   .ivu-tabs-tabpane {
     min-height: 580px;
     height: 73vh;
     margin-top: -1px;
   }
 }
-
 .ivu-tabs-nav .ivu-tabs-tab .ivu-icon {
   color: #f00;
 }
-
 ::v-deepbody .ivu-select-dropdown .ivu-dropdown-transfer {
   background: red !important;
 }
-
-// 导航栏右键样式 无效
 .file-left ::v-deep .ivu-select-dropdown.ivu-dropdown-transfer .ivu-dropdown-menu .ivu-dropdown-item:hover {
   background-color: #e5e5e5 !important;
 }
-
-// 选项卡头部
 ::v-deep .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container {
   background-color: #333;
 }

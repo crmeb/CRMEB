@@ -33,7 +33,7 @@
 							<view class="iconfont icon-fenxiang" @click="listenerActionSheet"></view>
 						</view>
 						<view class="label acea-row row-between-wrapper" style="padding-bottom: 20rpx;">
-							<view class="delete-line" v-text="$t(`划线价`)':'$t(`￥`) + (storeInfo.ot_price || 0)"></view>
+							<view class="delete-line" v-text="$t(`￥`) + (storeInfo.ot_price || 0)"></view>
 							<view v-text="$t(`已预订`)':' + (storeInfo.sales || 0) + (storeInfo.unit_name || '')"></view>
 						</view>
 						<view class="introduce" v-text="storeInfo.title"></view>
@@ -488,7 +488,7 @@
 				let item = e;
 				if (item.type === '1') {
 					uni.navigateTo({
-						url: `/pages/activity/goods_seckill_details/index?id=${item.id}&time=${item.time}&status=1`
+						url: `/pages/activity/goods_seckill_details/index?id=${item.id}&time_id=${item.time_id}`
 					});
 				} else if (item.type === '2') {
 					uni.navigateTo({
@@ -569,7 +569,7 @@
 				// 秒杀
 				if (item.activity && item.activity.type == 1) {
 					uni.redirectTo({
-						url: `/pages/activity/goods_seckill_details/index?id=${item.activity.id}&time=${item.activity.time}&status=1`
+						url: `/pages/activity/goods_seckill_details/index?id=${item.activity.id}&time_id=${item.activity.time_id}`
 					});
 					return;
 				}
@@ -1438,7 +1438,7 @@
 		height: 100rpx;
 		display: flex;
 		flex-wrap: nowrap;
-		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		height: calc(100rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 	}
 

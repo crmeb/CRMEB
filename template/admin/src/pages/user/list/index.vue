@@ -12,23 +12,15 @@
         >
           <div class="acea-row search-form" v-if="!collapse">
             <div>
-              <el-form-item label="用户标签：" label-for="label_id">
-                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
-                  <div style="width: 222px">
-                    <div v-if="selectDataLabel.length">
-                      <el-tag
-                        v-for="(item, index) in selectDataLabel"
-                        :key="index"
-                        closable
-                        class="mr10"
-                        @close="handleClose(item)"
-                        >{{ item.label_name }}</el-tag
-                      >
-                    </div>
-                    <span class="span" v-else>选择用户关联标签</span>
-                  </div>
-                  <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
-                </div>
+              <el-form-item label="用户搜索：" label-for="nickname">
+                <el-input v-model="userFrom.nickname" placeholder="请输入用户" clearable class="form_content_width">
+                  <el-select v-model="field_key" slot="prepend" style="width: 100px">
+                    <el-option value="all" label="全部"></el-option>
+                    <el-option value="uid" label="UID"></el-option>
+                    <el-option value="phone" label="手机号"></el-option>
+                    <el-option value="nickname" label="用户昵称"></el-option>
+                  </el-select>
+                </el-input>
               </el-form-item>
               <el-form-item label="用户等级：" label-for="level">
                 <el-select v-model="level" placeholder="请选择用户等级" clearable class="form_content_width">
@@ -41,15 +33,16 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="用户搜索：" label-for="nickname">
-                <el-input v-model="userFrom.nickname" placeholder="请输入用户" clearable class="form_content_width">
-                  <el-select v-model="field_key" slot="prepend" style="width: 100px">
-                    <el-option value="all" label="全部"></el-option>
-                    <el-option value="uid" label="UID"></el-option>
-                    <el-option value="phone" label="手机号"></el-option>
-                    <el-option value="nickname" label="用户昵称"></el-option>
-                  </el-select>
-                </el-input>
+              <el-form-item label="用户分组：">
+                <el-select v-model="group_id" placeholder="请选择用户分组" clearable class="form_content_width">
+                  <el-option value="all" label="全部"></el-option>
+                  <el-option
+                    :value="item.id"
+                    v-for="(item, index) in groupList"
+                    :key="index"
+                    :label="item.group_name"
+                  ></el-option>
+                </el-select>
               </el-form-item>
             </div>
             <el-form-item class="search-form-sub">
@@ -73,28 +66,15 @@
                   </el-select>
                 </el-input>
               </el-form-item>
-              <el-form-item label="用户标签：" label-for="label_id">
-                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
-                  <div style="width: 222px">
-                    <div v-if="selectDataLabel.length">
-                      <el-tag :closable="false" v-for="(item, index) in selectDataLabel" :key="index" class="mr10">{{
-                        item.label_name
-                      }}</el-tag>
-                    </div>
-                    <span class="span" v-else>选择用户关联标签</span>
-                  </div>
-                  <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
-                </div>
-              </el-form-item>
-              <el-form-item label="下单次数：">
-                <el-select v-model="pay_count" placeholder="请选择下单次数" clearable class="form_content_width">
-                  <el-option value="all" label="全部"></el-option>
-                  <el-option value="-1" label="0次"></el-option>
-                  <el-option value="0" label="1次以上"></el-option>
-                  <el-option value="1" label="2次以上"></el-option>
-                  <el-option value="2" label="3次以上"></el-option>
-                  <el-option value="3" label="4次以上"></el-option>
-                  <el-option value="4" label="5次以上"></el-option>
+              <el-form-item label="用户等级：" label-for="level">
+                <el-select v-model="level" placeholder="请选择用户等级" clearable class="form_content_width">
+                  <el-option value="all" label="全部">全部</el-option>
+                  <el-option
+                    :value="item.id"
+                    v-for="(item, index) in levelList"
+                    :key="index"
+                    :label="item.name"
+                  ></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="用户分组：">
@@ -108,18 +88,31 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="用户等级：" label-for="level">
-                <el-select v-model="level" placeholder="请选择用户等级" clearable class="form_content_width">
-                  <el-option value="all" label="全部">全部</el-option>
+              <el-form-item label="分销等级：">
+                <el-select v-model="agent_level" placeholder="请选择分销等级" clearable class="form_content_width">
+                  <el-option value="all" label="全部"></el-option>
                   <el-option
-                    :value="item.id"
-                    v-for="(item, index) in levelList"
+                    :value="item.grade"
+                    v-for="(item, index) in membershipList"
                     :key="index"
                     :label="item.name"
                   ></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="身份：">
+              <el-form-item label="用户标签：" label-for="label_id">
+                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
+                  <div style="width: 222px">
+                    <div v-if="selectDataLabel.length">
+                      <el-tag :closable="false" v-for="(item, index) in selectDataLabel" :key="index" class="mr10">{{
+                        item.label_name
+                      }}</el-tag>
+                    </div>
+                    <span class="span" v-else>选择用户关联标签</span>
+                  </div>
+                  <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
+                </div>
+              </el-form-item>
+              <el-form-item label="用户身份：">
                 <el-select v-model="userFrom.is_promoter" placeholder="请选择" clearable class="form_content_width">
                   <el-option value="" label="全部"></el-option>
                   <el-option value="1" label="推广员"></el-option>
@@ -132,6 +125,96 @@
                   <el-option value="1" label="是"></el-option>
                   <el-option value="0" label="否"></el-option>
                 </el-select>
+              </el-form-item>
+              <el-form-item label="储值余额：" label-for="balance">
+                <el-input
+                  clearable
+                  placeholder="最小值"
+                  v-model="userFrom.balance[0]"
+                  class="form_range_content_width"
+                />
+                ~
+                <el-input
+                  clearable
+                  placeholder="最大值"
+                  v-model="userFrom.balance[1]"
+                  class="form_range_content_width"
+                />
+              </el-form-item>
+              <el-form-item label="积分剩余：" label-for="integral">
+                <el-input
+                  clearable
+                  placeholder="最小值"
+                  v-model="userFrom.integral[0]"
+                  class="form_range_content_width"
+                />
+                ~
+                <el-input
+                  clearable
+                  placeholder="最大值"
+                  v-model="userFrom.integral[1]"
+                  class="form_range_content_width"
+                />
+              </el-form-item>
+              <el-form-item label="上次消费：" label-for="before_pay_time">
+                <el-date-picker
+                  clearable
+                  v-model="before_pay_time"
+                  type="daterange"
+                  :editable="false"
+                  @change="(e) => onchangeTime(e, 'before_pay_time')"
+                  format="yyyy/MM/dd"
+                  value-format="yyyy/MM/dd"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :picker-options="pickerOptions"
+                  style="width: 250px"
+                ></el-date-picker>
+              </el-form-item>
+              <el-form-item label="下单次数：" label-for="pay_count">
+                <el-input
+                  clearable
+                  placeholder="最小值"
+                  v-model="userFrom.pay_count_num[0]"
+                  class="form_range_content_width"
+                />
+                ~
+                <el-input
+                  clearable
+                  placeholder="最大值"
+                  v-model="userFrom.pay_count_num[1]"
+                  class="form_range_content_width"
+                />
+              </el-form-item>
+              <el-form-item label="消费金额：" label-for="store_name">
+                <el-input
+                  clearable
+                  placeholder="最小值"
+                  v-model="userFrom.pay_count_money[0]"
+                  class="form_range_content_width"
+                />
+                ~
+                <el-input
+                  clearable
+                  placeholder="最大值"
+                  v-model="userFrom.pay_count_money[1]"
+                  class="form_range_content_width"
+                />
+              </el-form-item>
+              <el-form-item label="充值次数：" label-for="store_name">
+                <el-input
+                  clearable
+                  placeholder="最小值"
+                  v-model="userFrom.recharge_count[0]"
+                  class="form_range_content_width"
+                />
+                ~
+                <el-input
+                  clearable
+                  placeholder="最大值"
+                  v-model="userFrom.recharge_count[1]"
+                  class="form_range_content_width"
+                />
               </el-form-item>
               <el-form-item label="访问情况：" label-for="user_time_type">
                 <el-select v-model="user_time_type" placeholder="请选择访问情况" clearable class="form_content_width">
@@ -147,7 +230,7 @@
                   v-model="timeVal"
                   type="daterange"
                   :editable="false"
-                  @change="onchangeTime"
+                  @change="(e) => onchangeTime(e, 'user_time')"
                   format="yyyy/MM/dd"
                   value-format="yyyy/MM/dd"
                   start-placeholder="开始日期"
@@ -156,7 +239,7 @@
                   style="width: 250px"
                 ></el-date-picker>
               </el-form-item>
-              <el-form-item label="地区：" label-for="country">
+              <!-- <el-form-item label="地区：" label-for="country">
                 <el-select
                   v-model="userFrom.country"
                   placeholder="请选择国家"
@@ -177,7 +260,7 @@
                   clearable
                   style="width: 250px"
                 ></el-cascader>
-              </el-form-item>
+              </el-form-item> -->
             </div>
 
             <el-form-item class="search-form-sub">
@@ -198,12 +281,15 @@
       </el-tabs>
       <el-row :gutter="24" justify="space-between">
         <el-col :span="24">
-          <el-button v-auth="['admin-user-save']" type="primary" v-db-click @click="edit({ uid: 0 })">添加用户</el-button>
+          <el-button v-auth="['admin-user-save']" type="primary" v-db-click @click="edit({ uid: 0 })"
+            >添加用户</el-button
+          >
           <el-button v-auth="['admin-user-coupon']" v-db-click @click="onSend">发送优惠券</el-button>
           <el-button
             v-auth="['admin-wechat-news']"
             class="greens mr10"
-            v-db-click @click="onSendPic"
+            v-db-click
+            @click="onSendPic"
             v-if="userFrom.user_type === 'wechat'"
           >
             发送图文消息
@@ -277,6 +363,11 @@
             <div>{{ scope.row.group_id }}</div>
           </template>
         </el-table-column>
+        <el-table-column label="分销等级" min-width="100">
+          <template slot-scope="scope">
+            <div>{{ scope.row.agent_level_name }}</div>
+          </template>
+        </el-table-column>
         <el-table-column label="手机号" min-width="100">
           <template slot-scope="scope">
             <div>{{ scope.row.phone }}</div>
@@ -302,13 +393,14 @@
                 <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
                 <el-dropdown-menu slot="dropdown">
                   <!-- <el-dropdown-item command="1">编辑</el-dropdown-item> -->
-                  <el-dropdown-item command="2">积分余额</el-dropdown-item>
+                  <el-dropdown-item command="2">修改余额</el-dropdown-item>
+                  <el-dropdown-item command="8">修改积分</el-dropdown-item>
                   <el-dropdown-item command="3">赠送会员</el-dropdown-item>
                   <!--                                <el-dropdown-item command="4" v-if="row.vip_name">清除等级</el-dropdown-item>-->
                   <el-dropdown-item command="5">设置分组</el-dropdown-item>
                   <el-dropdown-item command="6">设置标签</el-dropdown-item>
                   <el-dropdown-item command="7">修改上级推广人</el-dropdown-item>
-                  <el-dropdown-item command="8" v-if="scope.row.spread_uid">清除上级推广人</el-dropdown-item>
+                  <el-dropdown-item command="99" v-if="scope.row.spread_uid">清除上级推广人</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
@@ -369,7 +461,7 @@
     <el-dialog :visible.sync="customerShow" title="请选择商城用户" :show-close="true" width="1000px">
       <customerInfo v-if="customerShow" @imageObject="imageObject"></customerInfo>
     </el-dialog>
-    <el-dialog :visible.sync="labelShow" title="请选择用户标签" width="540px" :show-close="true">
+    <el-dialog :visible.sync="labelShow" append-to-body title="请选择用户标签" width="540px" :show-close="true">
       <userLabel
         v-if="labelShow"
         :uid="labelActive.uid"
@@ -379,16 +471,25 @@
         @onceGetList="onceGetList"
       ></userLabel>
     </el-dialog>
-    <el-drawer :visible.sync="modals" :wrapperClosable="false" size="720" title="用户信息填写">
-      <userEdit ref="userEdit" v-if="modals" :userData="userData"></userEdit>
-      <div class="acea-row row-center">
-        <el-button v-db-click @click="modals = false">取消</el-button>
-        <el-button type="primary" v-db-click @click="setUser">提交</el-button>
+    <el-drawer
+      custom-class="demo-drawer"
+      :visible.sync="modals"
+      :wrapperClosable="false"
+      size="720"
+      title="用户信息填写"
+    >
+      <div class="demo-drawer__content">
+        <userEdit ref="userEdit" v-if="modals" :userData="userData"></userEdit>
+        <div class="fix_footer acea-row row-center">
+          <el-button v-db-click @click="modals = false">取消</el-button>
+          <el-button type="primary" v-db-click @click="setUser">提交</el-button>
+        </div>
       </div>
     </el-drawer>
     <!-- 用户标签 -->
     <el-dialog
       :visible.sync="selectLabelShow"
+      append-to-body
       title="请选择用户标签"
       width="540px"
       :show-close="true"
@@ -399,6 +500,7 @@
         :uid="0"
         ref="userLabel"
         :only_get="true"
+        :selectDataLabel="selectDataLabel"
         @activeData="activeSelectData"
         @close="labelClose"
       ></userLabel>
@@ -438,6 +540,7 @@ import userDetails from './handle/userDetails';
 import newsCategory from '@/components/newsCategory/index';
 import customerInfo from '@/components/customerInfo';
 import { cityList } from '@/api/app';
+import { membershipDataListApi } from '@/api/membershipLevel';
 
 export default {
   name: 'user_list',
@@ -511,9 +614,14 @@ export default {
         is_promoter: '',
         country: '',
         isMember: '',
-        pay_count: '',
+        pay_count_num: ['', ''],
+        balance: ['', ''],
+        integral: ['', ''],
+        pay_count_money: ['', ''],
+        recharge_count: ['', ''],
         user_time_type: '',
         user_time: '',
+        before_pay_time: '',
         nickname: '',
         province: '',
         city: '',
@@ -521,11 +629,14 @@ export default {
         limit: 15,
         level: '',
         group_id: '',
+        agent_level: '',
         field_key: '',
       },
+      before_pay_time: '',
       field_key: '',
       level: '',
       group_id: '',
+      agent_level: '',
       label_id: '',
       user_time_type: '',
       pay_count: '',
@@ -537,6 +648,7 @@ export default {
       timeVal: [],
       groupList: [],
       levelList: [],
+      membershipList: [],
       labelFrom: {
         page: 1,
         limit: '',
@@ -556,6 +668,7 @@ export default {
   mounted() {
     this.userGroup();
     this.levelLists();
+    this.membershipDataList();
     // this.groupLists();
   },
   methods: {
@@ -689,6 +802,16 @@ export default {
         this.levelList = res.data.list;
       });
     },
+    membershipDataList() {
+      let data = {
+        page: 1,
+        limit: 0,
+        staus: 1,
+      };
+      membershipDataListApi(data).then((res) => {
+        this.membershipList = res.data.list;
+      });
+    },
     // 批量设置分组；
     setGroup() {
       if (this.ids.length === 0) {
@@ -724,6 +847,7 @@ export default {
           activeIds.push(item.id);
         });
         this.userFrom.label_id = activeIds.join(',');
+        this.getList();
       } else {
         this.userFrom.label_id = '';
       }
@@ -784,9 +908,8 @@ export default {
       this.userFrom.city = this.selectedData[1];
     },
     // 具体日期
-    onchangeTime(e) {
-      this.timeVal = e;
-      this.userFrom.user_time = this.timeVal ? this.timeVal.join('-') : '';
+    onchangeTime(e, type) {
+      this.userFrom[type] = e ? e.join('-') : '';
     },
     userDetail(row) {
       this.$refs.userDetails.modals = true;
@@ -802,7 +925,7 @@ export default {
           this.edit(row);
           break;
         case '2':
-          this.getOtherFrom(row.uid);
+          this.getOtherFrom(row.uid, 'money');
           break;
         case '3':
           this.giveLevelTime(row.uid);
@@ -818,6 +941,9 @@ export default {
           break;
         case '7':
           this.editS(row);
+          break;
+        case '8':
+          this.getOtherFrom(row.uid, 'point');
           break;
         default:
           this.del(row, '解除【 ' + this.tenText(row.nickname) + ' 】的上级推广人', index, 'tuiguang');
@@ -933,6 +1059,7 @@ export default {
       this.userFrom.field_key = this.field_key === 'all' ? '' : this.field_key;
       this.userFrom.level = this.level === 'all' ? '' : this.level;
       this.userFrom.group_id = this.group_id === 'all' ? '' : this.group_id;
+      this.userFrom.agent_level = this.agent_level === 'all' ? '' : this.agent_level;
       this.loading = true;
       userList(this.userFrom)
         .then(async (res) => {
@@ -965,6 +1092,7 @@ export default {
       this.userFrom.field_key = this.field_key === 'all' ? '' : this.field_key;
       this.userFrom.level = this.level === 'all' ? '' : this.level;
       this.userFrom.group_id = this.group_id === 'all' ? '' : this.group_id;
+      this.userFrom.agent_level = this.agent_level === 'all' ? '' : this.agent_level;
       let [th, filekey, data, fileName] = [[], [], [], ''];
       //   let fileName = "";
       let excelData = JSON.parse(JSON.stringify(this.userFrom));
@@ -1005,25 +1133,36 @@ export default {
     // 重置
     reset(name) {
       this.userFrom = {
-        user_type: this.userFrom.user_type,
+        label_id: '',
         status: '',
         sex: '',
         is_promoter: '',
         country: '',
-        pay_count: '',
+        isMember: '',
+        pay_count_num: ['', ''],
+        balance: ['', ''],
+        integral: ['', ''],
+        pay_count_money: ['', ''],
+        recharge_count: ['', ''],
         user_time_type: '',
         user_time: '',
+        before_pay_time: '',
         nickname: '',
-        field_key: '',
+        province: '',
+        city: '',
+        page: 1,
+        limit: 15,
         level: '',
         group_id: '',
-        label_id: '',
+        agent_level: '',
+        field_key: '',
         page: 1, // 当前页
         limit: 20, // 每页显示条数
       };
       this.field_key = '';
       this.level = '';
       this.group_id = '';
+      this.agent_level = '';
       this.dataLabel = [];
       this.selectDataLabel = [];
       this.user_time_type = '';
@@ -1044,8 +1183,8 @@ export default {
         });
     },
     // 获取积分余额表单
-    getOtherFrom(id) {
-      this.$modalForm(editOtherApi(id)).then(() => this.getList(1));
+    getOtherFrom(id, type) {
+      this.$modalForm(editOtherApi(id, type)).then(() => this.getList(1));
     },
     // 修改状态
     onchangeIsShow(row) {
@@ -1135,6 +1274,7 @@ export default {
   height: 54px !important;
   line-height: 54px !important;
 }
+
 .picBox {
   display: inline-block;
   cursor: pointer;
@@ -1162,7 +1302,15 @@ export default {
     }
   }
 }
-
+.fix_footer {
+  position: fixed;
+  bottom: 0;
+  width: -webkit-fill-available;
+  background: #fff;
+  padding: 20px 0px;
+  box-sizing: border-box;
+  z-index: 100;
+}
 .userFrom {
   ::v-deep .ivu-form-item-content {
     margin-left: 0px !important;
@@ -1228,6 +1376,7 @@ img {
   min-height: 30px;
   cursor: pointer;
   font-size: 12px;
+
   .span {
     color: #c5c8ce;
   }
@@ -1248,15 +1397,18 @@ img {
   text-align: right;
   background: #fff;
 }
+
 .search-form {
   display: flex;
   justify-content: space-between;
+
   .search-form-box {
     display: flex;
     flex-wrap: wrap;
     flex: 1;
   }
 }
+
 .search-form-sub {
   display: flex;
 }

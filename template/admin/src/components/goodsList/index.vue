@@ -6,7 +6,7 @@
           v-model="formValidate.cate_id"
           size="small"
           :options="treeSelect"
-          :props="{ checkStrictly: true, emitPath: false }"
+          :props="{ checkStrictly: true, emitPath: false, multiple: true }"
           clearable
           class="form_content_width"
         ></el-cascader>
@@ -20,7 +20,7 @@
       <el-form-item label="商品搜索：">
         <el-input
           clearable
-          placeholder="请输入商品名称/关键字/编号"
+          placeholder="请输入商品名称/关键字/ID"
           v-model="formValidate.store_name"
           class="form_content_width"
         />
@@ -164,21 +164,21 @@ export default {
           activeValue: 0,
           title: '商品列表',
         },
-        {
-          activeValue: '4',
-          title: '热门榜单',
-        },
-        {
-          activeValue: '5',
-          title: '首发新品',
-        },
-        {
-          activeValue: '6',
-          title: '促销单品',
-        },
+        // {
+        //   activeValue: '4',
+        //   title: '热门榜单',
+        // },
+        // {
+        //   activeValue: '5',
+        //   title: '首发新品',
+        // },
+        // {
+        //   activeValue: '6',
+        //   title: '促销单品',
+        // },
         {
           activeValue: '7',
-          title: '精品推荐',
+          title: '优品推荐',
         },
       ],
     };
@@ -289,7 +289,6 @@ export default {
         changeListApi(this.formValidate)
           .then(async (res) => {
             let data = res.data;
-            console.log(this.selectIds);
             this.tableList = data.list;
             this.total = res.data.count;
             this.loading = false;
@@ -299,9 +298,7 @@ export default {
                 this.selectIds.map((item) => {
                   data.list.map((i) => {
                     if (i.id == item) {
-                      console.log(i);
                       this.$refs.table.toggleRowSelection(i, true);
-
                       arr.push(i);
                     }
                   });
@@ -332,7 +329,6 @@ export default {
               this.selectIds.map((item) => {
                 data.list.map((i) => {
                   if (i.id == item) {
-                    console.log(i);
                     this.$refs.table.toggleRowSelection(i);
                   }
                 });
@@ -387,11 +383,13 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
+::v-deep .el-checkbox{
+  margin-bottom: 0 !important;
+}
 .footer {
   margin: 15px 0;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -403,18 +401,15 @@ export default {
     height: 100%;
   }
 }
-
 .tabform {
   ::v-deep .ivu-form-item {
     margin-bottom: 16px !important;
   }
 }
-
 .btn {
   margin-top: 20px;
   float: right;
 }
-
 .goodList {
   ::v-deeptable {
     width: 100% !important;

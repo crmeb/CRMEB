@@ -18,8 +18,8 @@
 				<div class="line"></div>
 				<div class="name acea-row row-center-wrapper">
 					{{$t(`剩余`)}}
-					<CountDown :is-day="false" :tip-text="' '" :day-text="' '" :hour-text="' : '" :minute-text="' : '"
-						:second-text="' '" :datatime="pinkT.stop_time"></CountDown>
+					<CountDown :is-day="false" :tip-text="' '" :day-text="' '" hourText=" : " minute-text=" : "
+						second-text="" :datatime="pinkT.stop_time"></CountDown>
 					{{$t(`结束`)}}
 				</div>
 				<div class="line"></div>
@@ -82,7 +82,7 @@
 				</div>
 			</div>
 		</div>
-		<product-window :attr="attr" :limitNum="storeCombination.once_num" :iSbnt="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
+		<product-window :attr="attr" :limitNum="storeCombination ? storeCombination.once_num : 0" :iSbnt="1" @myevent="onMyEvent" @ChangeAttr="ChangeAttr"
 			@ChangeCartNum="ChangeCartNum" @iptCartNum="iptCartNum" @attrVal="attrVal" @goCat="goPay"></product-window>
 		<!-- 分享按钮 -->
 		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">

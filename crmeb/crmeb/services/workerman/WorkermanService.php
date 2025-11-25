@@ -99,7 +99,7 @@ class WorkermanService
         $this->timer = Timer::add(15, function () use (&$worker) {
             $time_now = time();
             foreach ($worker->connections as $connection) {
-                if ($time_now - $connection->lastMessageTime > 12) {
+                if ($time_now - $connection->lastMessageTime > 120) {
                     $this->response->connection($connection)->close('timeout');
                 }
             }

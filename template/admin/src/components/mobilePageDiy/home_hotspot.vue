@@ -55,7 +55,6 @@ export default {
   watch: {
     pageData: {
       handler(nVal, oVal) {
-        console.log(nVal,'1112')
         this.setConfig(nVal);
       },
       deep: true,
@@ -173,7 +172,7 @@ export default {
       bgRadius: 0,
       imgUrl: '',
       mTop: 0,
-      list:[]
+      list: [],
     };
   },
   mounted() {
@@ -187,40 +186,40 @@ export default {
       if (!data) return;
       this.imgUrl = data.picStyle.url;
       this.list = data.picStyle?.list;
-        // this.bottomBgColor = data.bottomBgColor.color[0].item;
-        // this.topConfig = data.topConfig.val;
-        // this.bottomConfig = data.bottomConfig.val;
-        // this.prConfig = data.prConfig.val;
-        this.mTop = data.mbConfig.val;
-        // let fillet = data.fillet.type;
-        // let filletVal = data.fillet.val;
-        // let valList = data.fillet.valList;
-        // this.bgRadius = fillet
-        //   ? valList[0].val + 'px ' + valList[1].val + 'px ' + valList[3].val + 'px ' + valList[2].val + 'px'
-        //   : filletVal + 'px';
+      // this.bottomBgColor = data.bottomBgColor.color[0].item;
+      // this.topConfig = data.topConfig.val;
+      // this.bottomConfig = data.bottomConfig.val;
+      // this.prConfig = data.prConfig.val;
+      this.mTop = data.mbConfig.val;
+      // let fillet = data.fillet.type;
+      // let filletVal = data.fillet.val;
+      // let valList = data.fillet.valList;
+      // this.bgRadius = fillet
+      //   ? valList[0].val + 'px ' + valList[1].val + 'px ' + valList[3].val + 'px ' + valList[2].val + 'px'
+      //   : filletVal + 'px';
     },
   },
 };
 </script>
 
-<style scoped lang="stylus">
-.pictrue{
-	width 100%;
-	height 100%;
-	.empty-box{
-	    width 100%;
-	    height 379px;
-	    border-radius 0;
-		background: #F3F9FF;
+<style lang="scss" scoped>
+.pictrue {
+  width: 100%;
+  height: 100%;
+  .empty-box {
+    width: 100%;
+    height: 379px;
+    border-radius: 0;
+    background: #f3f9ff;
 
-	    img {
-			width: 65px;
-			height: 50px;
-		}
-	}
-	img {
-	    width 100%;
-	    height 100%
-	}
+    img {
+      width: 65px;
+      height: 50px;
+    }
+  }
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

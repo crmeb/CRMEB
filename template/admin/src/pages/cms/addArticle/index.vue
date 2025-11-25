@@ -20,10 +20,22 @@
         </div>
         <div class="grid_box">
           <el-form-item label="标题：" prop="title" label-for="title">
-            <el-input v-model="formValidate.title" placeholder="请输入" class="content_width" />
+            <el-input
+              v-model="formValidate.title"
+              placeholder="请输入"
+              class="content_width"
+              maxlength="80"
+              show-word-limit
+            />
           </el-form-item>
           <el-form-item label="作者：" prop="author" label-for="author">
-            <el-input v-model="formValidate.author" placeholder="请输入" class="content_width" />
+            <el-input
+              v-model="formValidate.author"
+              placeholder="请输入"
+              class="content_width"
+              maxlength="10"
+              show-word-limit
+            />
           </el-form-item>
           <el-form-item label="文章分类：" label-for="cid" prop="cid">
             <el-cascader
@@ -36,7 +48,14 @@
             ></el-cascader>
           </el-form-item>
           <el-form-item label="文章简介：" prop="synopsis" label-for="synopsis">
-            <el-input v-model="formValidate.synopsis" type="textarea" placeholder="请输入" class="content_width" />
+            <el-input
+              v-model="formValidate.synopsis"
+              type="textarea"
+              placeholder="请输入"
+              class="content_width"
+              maxlength="300"
+              show-word-limit
+            />
           </el-form-item>
           <el-form-item label="图文封面：" prop="image_input">
             <div class="picBox" v-db-click @click="modalPicTap('单选')">
@@ -81,8 +100,12 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label="">
+              <el-button type="primary" class="submission" v-db-click @click="onsubmit('formValidate')">提交</el-button>
+            </el-form-item>
+          </el-col>
         </el-row>
-        <el-button type="primary" class="submission" v-db-click @click="onsubmit('formValidate')">提交</el-button>
       </el-form>
       <el-dialog :visible.sync="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false">
         <uploadPictures
@@ -239,9 +262,28 @@ export default {
           this.$message.error(res.msg);
         });
     },
+    // 过滤详情内容
+    formatRichText(html) {
+      let newContent = html.replace(/<img[^>]*>/gi, function (match, capture) {
+        match = match.replace(/style="[^"]+"/gi, '').replace(/style='[^']+'/gi, '');
+        match = match.replace(/width="[^"]+"/gi, '').replace(/width='[^']+'/gi, '');
+        match = match.replace(/height="[^"]+"/gi, '').replace(/height='[^']+'/gi, '');
+        return match;
+      });
+      newContent = newContent.replace(/style="[^"]+"/gi, function (match, capture) {
+        match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/max-max-width:[^;]+;/gi, 'max-width:100%;');
+        return match;
+      });
+      // newContent = newContent.replace(/<br[^>]*\/>/gi, '');
+      newContent = newContent.replace(
+        /\<img/gi,
+        '<img style="max-width:100%;height:auto;display:block;margin-top:0;margin-bottom:0;"',
+      );
+      return newContent;
+    },
     // 提交数据
     onsubmit(name) {
-      this.formValidate.content = this.content;
+      this.formValidate.content = this.formatRichText(this.content);
       this.$refs[name].validate((valid) => {
         if (valid) {
           cmsAddApi(this.formValidate)
@@ -348,7 +390,6 @@ export default {
 
 .form .submission {
   width: 10%;
-  margin-left: 27px;
 }
 
 .form .upLoad {

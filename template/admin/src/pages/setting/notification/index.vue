@@ -141,7 +141,7 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" :width="currentTab == 3 ? 130 :70">
+        <el-table-column label="操作" fixed="right" :width="currentTab == 3 ? 130 : 70">
           <template slot-scope="scope">
             <a class="setting btn" v-db-click @click="setting(scope.row)">设置</a>
             <template v-if="currentTab == 3">
@@ -283,7 +283,7 @@ export default {
 .btn {
   padding: 6px 0px;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   border-radius: 3px;
 }
 .is-switch-close {

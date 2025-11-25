@@ -1,0 +1,1 @@
+<block wx:if="{{!imgSrc}}"><view class="{{['base-tag',(size=='middle')?'middle':'']}}" style="{{$root.s0}}">{{text}}</view></block><block wx:else><image class="{{['img-tag',(size=='middle')?'middle-img-tag':'']}}" src="{{imgSrc}}" mode="heightFix"></image></block>

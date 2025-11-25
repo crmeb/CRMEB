@@ -1,7 +1,7 @@
 <template>
   <div class="mobile-page" style="padding-bottom: 10px" :style="[{ background: bg }, { marginTop: cSlider + 'px' }]">
     <div class="title-box">
-      <span>直播间</span>
+      <span>直播间{{ bg }}</span>
       <span>更多</span>
     </div>
     <div class="live-wrapper-a" v-if="listStyle == 0">
@@ -302,159 +302,193 @@ export default {
       if (data.mbConfig) {
         this.cSlider = data.mbConfig.val;
         this.listStyle = data.listStyle.type;
+        this.bg = data.bg.color[0].item;
+        this.boxShadow = data.boxShadow.color[0].item;
       }
     },
   },
 };
 </script>
 
-<style scoped lang="stylus">
-.mobile-page
-    background #f5f5f5
-    font-size 12px
-.live-wrapper-a
-    padding 5px 10px 0
-    .live-item-a
-        display flex
-        position relative
-        margin-bottom 10px
-        background #fff
-        border-radius 8px
-        overflow hidden
-        .img-box
-            position relative
-            width 170px
-            height 147px
-            border-radius 8px 0 0 8px
-            overflow hidden
-        .info
-            flex 1
-            padding 5px
-            border-radius 0px 8px 8px 0
-            overflow hidden
-            .title
-                color #333333
-                font-size 14px
-            .people
-                display flex
-                align-items center
-                font-size 12px
-                margin-top 5px
-                img
-                    width 32px
-                    height 32px
-                    margin-right 5px
-                    border-radius 50%
-
-            .goods-wrapper
-                margin-top 10px
-                display flex
-                .goods-item
-                    position relative
-                    width 48px
-                    height 48px
-                    margin-right 8px
-                    &:nth-child(3n)
-                        margin-right 0
-                    img
-                        width 100%
-                        height 100%
-                    span
-                        position absolute
-                        left 0
-                        bottom 0
-                        color #fff
-                        font-size 12px
-    &.live-wrapper-c
-        .live-item-a
-            display flex
-            flex-direction column
-            .img-box
-                width 100%
-                border-radius 8px 8px 0 0
-            .info
-                display flex
-                justify-content space-between
-                align-items center
-                .left
-                    width 60%
-
-.live-wrapper-b
-    display flex
-    flex-wrap wrap
-    justify-content space-between
-    padding 10px 10px 0
-    background #fff
-    .live-item-b
-        display flex
-        flex-direction column
-        width 171px
-        margin-bottom 10px
-        border-radius 8px
-        overflow hidden
-        .img-box
-            position relative
-            height 137px
-        .info
-            width 100%
-            padding 10px
-            .people
-                display flex
-                align-items center
-                img
-                    width 32px
-                    height 32px
-                    margin-right 5px
-                    border-radius 50%
-
-.iconfont-diy
-    font-size 12px
-.icontupian
-    font-size 24px
-.bggary
-    background: linear-gradient(270deg, #999999 0%, #666666 100%);
-.bgred
-    background: linear-gradient(270deg, #F5742F 0%, #FF1717 100%);
-.empty-goods
-    display flex
-    align-items center
-    justify-content center
-    width 50px
-    height 48px
-    color #fff
-    background #B2B2B2
-    font-size 12px
-.label
-    display flex
-    align-items center
-    justify-content center
-    position absolute
-    left 10px
-    top 10px
-    width: 76px;
-    height: 19px;
-    border-radius: 11px 0px 11px 11px;
-    color #fff
-    font-size 12px
-    &.bgblue
-        justify-content inherit
-        width 110px
-        background rgba(0,0,0,0.36)
-        overflow hidden
-        .txt
-            width 38px
-            height 100%
-            text-align center
-            margin-right 5px
-            background: linear-gradient(270deg, #2FA1F5 0%, #0076FF 100%);
-    &.bggary
-        width 54px
-.title-box
-    display flex
-    justify-content space-between
-    align-items center
-    padding 10px 10px 0
-    font-size 16px
-    span:last-child
-        font-size 13px
+<style lang="scss" scoped>
+.mobile-page {
+  background: #f5f5f5;
+  font-size: 12px;
+}
+.live-wrapper-a {
+  padding: 5px 10px 0;
+  .live-item-a {
+    display: flex;
+    position: relative;
+    margin-bottom: 10px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    .img-box {
+      position: relative;
+      width: 170px;
+      height: 147px;
+      border-radius: 8px 0 0 8px;
+      overflow: hidden;
+    }
+    .info {
+      flex: 1;
+      padding: 5px;
+      border-radius: 0px 8px 8px 0;
+      overflow: hidden;
+      .title {
+        color: #333333;
+        font-size: 14px;
+      }
+      .people {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        margin-top: 5px;
+        img {
+          width: 32px;
+          height: 32px;
+          margin-right: 5px;
+          border-radius: 50%;
+        }
+      }
+      .goods-wrapper {
+        margin-top: 10px;
+        display: flex;
+        .goods-item {
+          position: relative;
+          width: 48px;
+          height: 48px;
+          margin-right: 8px;
+          &:nth-child(3n) {
+            margin-right: 0;
+          }
+          img {
+            width: 100%;
+            height: 100%;
+          }
+          span {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            color: #fff;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+  &.live-wrapper-c {
+    .live-item-a {
+      display: flex;
+      flex-direction: column;
+      .img-box {
+        width: 100%;
+        border-radius: 8px 8px 0 0;
+      }
+      .info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .left {
+          width: 60%;
+        }
+      }
+    }
+  }
+}
+.live-wrapper-b {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 10px 10px 0;
+  background: #fff;
+  .live-item-b {
+    display: flex;
+    flex-direction: column;
+    width: 171px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    .img-box {
+      position: relative;
+      height: 137px;
+    }
+    .info {
+      width: 100%;
+      padding: 10px;
+      .people {
+        display: flex;
+        align-items: center;
+        img {
+          width: 32px;
+          height: 32px;
+          margin-right: 5px;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+}
+.iconfont-diy {
+  font-size: 12px;
+}
+.icontupian {
+  font-size: 24px;
+}
+.bggary {
+  background: linear-gradient(270deg, #999999 0%, #666666 100%);
+}
+.bgred {
+  background: linear-gradient(270deg, #f5742f 0%, #ff1717 100%);
+}
+.empty-goods {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 48px;
+  color: #fff;
+  background: #b2b2b2;
+  font-size: 12px;
+}
+.label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 76px;
+  height: 19px;
+  border-radius: 11px 0px 11px 11px;
+  color: #fff;
+  font-size: 12px;
+  &.bgblue {
+    justify-content: inherit;
+    width: 110px;
+    background: rgba(0, 0, 0, 0.36);
+    overflow: hidden;
+    .txt {
+      width: 38px;
+      height: 100%;
+      text-align: center;
+      margin-right: 5px;
+      background: linear-gradient(270deg, #2fa1f5 0%, #0076ff 100%);
+    }
+  }
+  &.bggary {
+    width: 54px;
+  }
+}
+.title-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px 0;
+  font-size: 16px;
+  span:last-child {
+    font-size: 13px;
+  }
+}
 </style>

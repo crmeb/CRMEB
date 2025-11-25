@@ -20,7 +20,7 @@
                 <el-radio :label="item.val" v-for="(item, i) in fromList.fromTxt" :key="i">{{ item.text }}</el-radio>
               </el-radio-group>
               <el-date-picker
-                  clearable
+                clearable
                 :editable="false"
                 @change="onchangeTime"
                 v-model="timeVal"
@@ -30,7 +30,6 @@
                 range-separator="-"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-
               ></el-date-picker>
             </el-form-item>
           </el-col>
@@ -310,7 +309,7 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e || [];
-      this.formValidate.data = this.timeVal[0] ? this.timeVal ? this.timeVal.join('-') : '' : '';
+      this.formValidate.data = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
       this.formValidate.page = 1;
       this.getList();
     },
@@ -350,20 +349,22 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-::v-deep .ivu-tag-cyan .ivu-tag-text{
-    color #19be6b!important
+<style lang="scss" scoped>
+::v-deep .ivu-tag-cyan .ivu-tag-text {
+  color: #19be6b !important;
 }
-.ivu-tag-cyan{
-    background: rgba(25,190,170,0.1);
-    border-color: #19be6b!important;
+.ivu-tag-cyan {
+  background: rgba(25, 190, 170, 0.1);
+  border-color: #19be6b !important;
 }
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>

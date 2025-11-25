@@ -427,3 +427,224 @@ export function batchSetting(data) {
     data,
   });
 }
+
+/**
+ * @description 商品类型配置
+ */
+export function getProductTypeConfig() {
+  return request({
+    url: 'product/product_type_config',
+    method: 'get',
+  });
+}
+
+/**
+ * @description 添加商品-- 商品标签
+ */
+export function productStoreLabel() {
+  return request({
+    url: 'product/product_label',
+    method: 'get',
+  });
+}
+
+/**
+ * @description 商品参数 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function paramListApi(params) {
+  return request({
+    url: `product/param/list`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 商品参数 -- 详情
+ * @param {Number} param id {Number} 参数id
+ */
+export function paramInfoApi(id) {
+  return request({
+    url: `product/param/info/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 商品参数 -- 添加
+ * @param {Object} param data {Object} 传值参数
+ */
+export function paramSaveApi(data) {
+  return request({
+    url: `product/param/save/${data.id}`,
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @description 商品标签分类 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function labelCateListApi(params) {
+  return request({
+    url: `product/label_cate/list`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 商品标签分类 -- 添加
+ * data 请求参数
+ */
+export function productLabelCateFormApi(id) {
+  return request({
+    url: `product/label_cate/form/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 商品标签列表
+ * data 请求参数
+ */
+export function productLabelListApi(data) {
+  return request({
+    url: `product/label/list`,
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * @description 商品标签列表 -- 全部
+ * data 请求参数
+ */
+export function productLabelUseListApi(data) {
+  return request({
+    url: `product/label/use_list`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 商品标签获取
+ * data 请求参数
+ */
+export function productLabelInfoApi(data) {
+  return request({
+    url: `product/label/info/${data.id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 商品标签保存
+ * data 请求参数
+ */
+export function productLabelSaveApi(data) {
+  return request({
+    url: `product/label/save`,
+    method: 'post',
+    data: data,
+  });
+}
+/**
+ * @description 商品标签-- 修改状态
+ * @param {Object} param params {Object} 传值参数
+ */
+export function labelStatusApi(data) {
+  return request({
+    url: `product/label/status/${data.id}/${data.status}`,
+    method: 'PUT',
+  });
+}
+/**
+ * @description 商品标签-- 修改状态
+ * @param {Object} param params {Object} 传值参数
+ */
+export function labelIsShowApi(data) {
+  return request({
+    url: `product/label/is_show/${data.id}/${data.is_show}`,
+    method: 'PUT',
+  });
+}
+
+/**
+ * @description 商品保障服务 -- 列表
+ * data 请求参数
+ */
+export function productProtectionListApi(data) {
+  return request({
+    url: `product/protection/list`,
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 商品保障服务 -- 添加
+ * data 请求参数
+ */
+export function productProtectionFormApi(id) {
+  return request({
+    url: `product/protection/form/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 商品保障服务
+ * data 请求参数
+ */
+export function productProtectionInfoApi(data) {
+  return request({
+    url: `product/protection/info`,
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 商品保障服务-- 修改状态
+ * @param {Object} param params {Object} 传值参数
+ */
+export function protectionStatusApi(data) {
+  return request({
+    url: `product/protection/status/${data.id}/${data.status}`,
+    method: 'PUT',
+  });
+}
+
+/**
+ * @description 佣金列表
+ */
+export function productBrokerage(id, type) {
+  return request({
+    url: `product/other_info/${id}/${type}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 佣金  提交
+ */
+export function productBrokerageUpdate(id, type, data) {
+  return request({
+    url: `product/other_save/${id}/${type}`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 评论批量审核
+ */
+export function replyBatchStatus(data) {
+  return request({
+    url: `product/reply/batch_set_status`,
+    method: 'post',
+    data,
+  });
+}

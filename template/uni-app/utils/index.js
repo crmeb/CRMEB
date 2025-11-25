@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2023 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2024 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -26,22 +26,25 @@ import store from '@/store';
 export function silenceBindingSpread(app) {
 	//#ifdef H5
 	let puid = Cache.get('spread'),
-		code = 0;
+		code = 0,
+		agent_id = Cache.get('agent_id');
 	//#endif
 
 	//#ifdef MP || APP-PLUS
 	let puid = app.spid,
-		code = app.code;
+		code = app.code,
+		agent_id = 0;
 	//#endif
 
 	puid = parseInt(puid);
 	if (Number.isNaN(puid)) {
 		puid = 0;
 	}
-	if ((code || puid) && store.state.app.token) {
+	if ((code || puid || agent_id) && store.state.app.token) {
 		spread({
 			puid,
-			code
+			code,
+			agent_id
 		}).then(res => {
 			//#ifdef H5
 			Cache.clear('spread');

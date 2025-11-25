@@ -3,9 +3,14 @@
     <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="refresh">
       <i class="el-icon-refresh-right" :title="$t('message.user.title7')"></i>
     </div>
-    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onSearchClick">
-      <i class="el-icon-search" :title="$t('message.user.title2')"></i>
-    </div>
+    <el-popover ref="searchPopover" placement="bottom" title="" width="325" trigger="click">
+      <Search ref="searchRef" @close="closePopover" />
+      <i
+        class="el-icon-search layout-navbars-breadcrumb-user-icon"
+        slot="reference"
+        :title="$t('message.user.title2')"
+      ></i>
+    </el-popover>
 
     <div class="layout-navbars-breadcrumb-user-icon">
       <el-tooltip
@@ -24,10 +29,16 @@
         </transition>
       </el-tooltip>
     </div>
-    <div class="layout-navbars-breadcrumb-user-icon mr10" v-db-click @click="onScreenfullClick">
+    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onScreenfullClick">
       <i
         :title="isScreenfull ? $t('message.user.title6') : $t('message.user.title5')"
         :class="!isScreenfull ? 'el-icon-full-screen' : 'el-icon-crop'"
+      ></i>
+    </div>
+    <div class="layout-navbars-breadcrumb-user-icon mr10" v-db-click @click="openMobelPage">
+      <i
+        title="商城页面"
+        class="el-icon-mobile-phone"
       ></i>
     </div>
     <el-dropdown :show-timeout="70" @command="onDropdownCommand">
@@ -44,7 +55,7 @@
     <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onLayoutSetingClick">
       <i class="el-icon-setting" :title="$t('message.user.title3')"></i>
     </div>
-    <Search ref="searchRef" />
+    <!-- <Search ref="searchRef" /> -->
   </div>
 </template>
 
@@ -55,7 +66,6 @@ import { removeCookies } from '@/libs/util';
 import { Session, Local } from '@/utils/storage.js';
 import UserNews from '@/layout/navBars/breadcrumb/userNews.vue';
 import Search from '@/layout/navBars/breadcrumb/search.vue';
-import settings from '../../../setting';
 export default {
   name: 'layoutBreadcrumbUser',
   components: { UserNews, Search },
@@ -89,12 +99,19 @@ export default {
     }
   },
   methods: {
+    closePopover() {
+      this.$refs.searchPopover.doClose();
+    },
     /**
      * 初始化 isDot 属性
      * @param {boolean} status - 状态值
      */
     initIsDot(status) {
       this.isDot = status;
+    },
+    openMobelPage(){
+      // 获取域名
+      window.open(window.location.origin, '_blank')
     },
     /**
      * 打开新弹窗
@@ -238,6 +255,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  .el-icon-bell {
+    color: var(--prev-bg-topBarColor);
+  }
   &-link {
     height: 100%;
     display: flex;

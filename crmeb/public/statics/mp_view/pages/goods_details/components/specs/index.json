@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "base-drawer": "/components/tuiDrawer/tui-drawer"
+  }
+}

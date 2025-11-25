@@ -74,7 +74,7 @@ class StoreCartController
         $cartService = app()->make(StoreCartServices::class);
         if (!$product_id || !is_numeric($product_id)) return app('json')->fail(100100);
         $res = $cartService->setCartNum($request->uid(), $product_id, $num, $unique, $type);
-        if ($res) return app('json')->success(100001);
-        return app('json')->fail(100007);
+        if ($res) return app('json')->success('加入购物车成功!');
+        return app('json')->fail('加入购物车失败!');
     }
 }

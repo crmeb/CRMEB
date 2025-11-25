@@ -1,21 +1,21 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="搜索：">
             <el-input
-                clearable
-                placeholder="请输入姓名、UID"
-                v-model="formValidate.keyword"
-                class="form_content_width"
+              clearable
+              placeholder="请输入姓名、UID"
+              v-model="formValidate.keyword"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -31,8 +31,12 @@
           <el-tooltip placement="right-start">
             <i class="el-icon-question ml10"></i>
             <div slot="content">
-              <div>事业部层级说明：事业部-代理商-员工。事业部相当于总代理或者区域代理，设置成为事业部之后，关联的用户会清除上级推广人</div>
-              <div>添加时候的管理员身份需要在，设置-管理权限-角色管理中设置对应的角色，事业部可以使用添加时设置的管理员账号密码登录后台</div> 
+              <div>
+                事业部层级说明：事业部-代理商-员工。事业部相当于总代理或者区域代理，设置成为事业部之后，关联的用户会清除上级推广人
+              </div>
+              <div>
+                添加时候的管理员身份需要在，设置-管理权限-角色管理中设置对应的角色，事业部可以使用添加时设置的管理员账号密码登录后台
+              </div>
             </div>
           </el-tooltip>
           <el-table
@@ -44,7 +48,7 @@
             no-formValidate-text="暂无数据"
             no-filtered-formValidate-text="暂无筛选结果"
           >
-            <el-table-column label="用户UID" width="80">
+            <el-table-column label="用户UID" width="100">
               <template slot-scope="scope">
                 <span>{{ scope.row.uid }}</span>
               </template>
@@ -102,7 +106,7 @@
                 <el-divider direction="vertical"></el-divider>
                 <a v-db-click @click="groupAdd(scope.row.uid)">编辑</a>
                 <el-divider direction="vertical"></el-divider>
-                <a v-db-click @click="del(scope.row, '删除员工', scope.$index)">删除</a>
+                <a v-db-click @click="del(scope.row, '删除事业部', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>
@@ -164,7 +168,7 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-         <pagination
+        <pagination
           v-if="total2"
           :total="total2"
           :page.sync="clerkReqData.page"
@@ -227,7 +231,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : '80px';
+      return this.isMobile ? undefined : '50px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -315,15 +319,13 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-form-item {
   margin-bottom: 0;
 }
-
 .picBox {
   display: inline-block;
   cursor: pointer;
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -332,7 +334,6 @@ export default {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.02);
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -345,29 +346,27 @@ export default {
     }
   }
 }
-
 ::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
-
 ::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
-
 .left-wrapper {
   height: 904px;
   background: #fff;
   border-right: 1px solid #f2f2f2;
 }
-
 .menu-item {
   z-index: 50;
   position: relative;
   display: flex;
   justify-content: space-between;
   word-break: break-all;
+  &:hover .icon-box {
+    display: block;
+  }
 }
-
 .icon-box {
   z-index: 3;
   position: absolute;
@@ -375,10 +374,6 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   display: none;
-}
-
-&:hover .icon-box {
-  display: block;
 }
 
 .right-menu {
@@ -389,19 +384,14 @@ export default {
   width: auto;
   min-width: 121px;
 }
-
 .tabBox_img {
   width: 36px;
-
-  height 36px {
-    border-radius: 4px;
-  }
-
-  cursor pointer {
-    img {
-      width: 100%;
-      height: 100%;
-    }
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

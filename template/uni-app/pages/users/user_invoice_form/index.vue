@@ -591,7 +591,6 @@
 		transform: translateY(-50%);
 		font-size: 30rpx;
 		color: #707070;
-		cursor: pointer;
 	}
 
 	.popup .text .acea-row {

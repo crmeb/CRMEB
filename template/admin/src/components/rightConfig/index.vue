@@ -12,14 +12,16 @@
         ></component>
       </div>
       <div style="text-align: center" v-if="rCom.length">
-        <el-button type="primary" style="width: 100%; margin: 0 auto; height: 40px" v-db-click @click="saveConfig">保存</el-button>
+        <el-button type="primary" style="width: 100%; margin: 0 auto; height: 40px" v-db-click @click="saveConfig"
+          >保存</el-button
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getCategory, getByCategory, getProduct, diySave, storeStatus } from '@/api/diy';
+import { getCategory, getByCategory, diySave, storeStatus } from '@/api/diy';
 import toolCom from '@/components/diyComponents/index.js';
 import { mapMutations } from 'vuex';
 import { mapState } from 'vuex';
@@ -166,7 +168,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .right-box {
   width: 700px;
   margin-left: 50px;
@@ -174,20 +176,17 @@ export default {
   border-radius: 4px;
   height: 700px;
   overflow-y: scroll;
-
   &::-webkit-scrollbar {
     /* 滚动条整体样式 */
     width: 4px; /* 高宽分别对应横竖滚动条的尺寸 */
     height: 1px;
   }
-
   &::-webkit-scrollbar-thumb {
     /* 滚动条里面小方块 */
     border-radius: 4px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     background: #535353;
   }
-
   &::-webkit-scrollbar-track {
     /* 滚动条里面轨道 */
     box-shadow: inset 0 0 5px #fff;
@@ -195,7 +194,6 @@ export default {
     background: #fff;
   }
 }
-
 .title-bar {
   width: 100%;
   height: 38px;

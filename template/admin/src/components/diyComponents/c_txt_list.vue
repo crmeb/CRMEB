@@ -14,14 +14,10 @@
                   <span>{{ list.title }}</span>
                 </el-col>
                 <el-col class="slider-box">
-                  <div class="input-box" v-db-click @click="getLink(index, key)">
-                    <el-input
-                      v-model="list.val"
-                      :placeholder="list.pla"
-                      :maxlength="list.max"
-                      suffix-icon="el-icon-arrow-right"
-                      readonly
-                    />
+                  <div class="input-box" v-db-click>
+                    <el-input v-model="list.val" :placeholder="list.pla" :maxlength="list.max">
+                      <i class="el-icon-link" slot="suffix" @click="getLink(index, key)" />
+                    </el-input>
                   </div>
                 </el-col>
               </div>
@@ -30,7 +26,12 @@
                   <span>{{ list.title }}</span>
                 </el-col>
                 <el-col :span="19" class="slider-box">
-                  <el-input v-model="list.val" :placeholder="list.pla" :maxlength="list.max" style="text-align: right" />
+                  <el-input
+                    v-model="list.val"
+                    :placeholder="list.pla"
+                    :maxlength="list.max"
+                    style="text-align: right"
+                  />
                 </el-col>
               </div>
               <!-- <span>{{ list.title }}</span>
@@ -43,19 +44,27 @@
             <div class="con-item" v-if="item.link">
               <span>{{ item.link.title }}</span>
               <el-select v-model="item.link.activeVal" style="">
-                <el-option v-for="(item, j) in item.link.optiops" :value="item.value" :key="j" :label="item.label"></el-option>
+                <el-option
+                  v-for="(item, j) in item.link.optiops"
+                  :value="item.value"
+                  :key="j"
+                  :label="item.label"
+                ></el-option>
               </el-select>
             </div>
           </div>
           <div class="delete" v-db-click @click.stop="bindDelete(index)" v-if="datas[name].max > 1">
-            <i class="el-icon-circle-close" style="font-size: 24px;"></i>
+            <i class="el-icon-circle-close" style="font-size: 24px"></i>
           </div>
         </div>
       </draggable>
     </div>
     <div v-if="datas[name]">
       <div class="add-btn" v-db-click @click="addHotTxt" v-if="datas[name].list.length < datas[name].max">
-        <el-button type="primary" ghost style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
+        <el-button
+          type="primary"
+          ghost
+          style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
           >添加模块</el-button
         >
       </div>
@@ -156,15 +165,13 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .icondrag2 {
   font-size: 26px;
   color: #d8d8d8;
 }
-
 .c_product {
   margin-bottom: 20px;
-
   .list-box {
     .item {
       position: relative;
@@ -172,7 +179,6 @@ export default {
       margin-top: 23px;
       padding: 18px 20px 18px 0;
       border: 1px solid rgba(238, 238, 238, 1);
-
       .delete {
         position: absolute;
         right: 0;
@@ -183,7 +189,6 @@ export default {
         cursor: pointer;
       }
     }
-
     .move-icon {
       display: flex;
       align-items: center;
@@ -191,16 +196,13 @@ export default {
       width: 50px;
       cursor: move;
     }
-
     .content {
       flex: 1;
-
       .con-item {
         display: flex;
         align-items: center;
         margin-bottom: 15px;
         width: 300px;
-
         &:last-child {
           margin-bottom: 0;
         }
@@ -212,27 +214,22 @@ export default {
       }
     }
   }
-
   .add-btn {
     margin-top: 18px;
   }
 }
-
 .title {
   font-size: 12px;
   color: #999;
 }
-
 .iconfont {
-  color: #DDDDDD;
+  color: #dddddd;
   font-size: 28px;
 }
-
 .dif {
   display: flex;
   align-items: center;
 }
-
 .slider-box {
   margin-left: 10px;
   width: 250px;

@@ -51,6 +51,9 @@ class StoreProductAttrServices extends BaseServices
         $this->dao->del($id, $type);
         $storeProductAttrResultServices->del($id, $type);
         $storeProductAttrValueServices->del($id, $type);
+        foreach ($data['attrGroup'] as &$attr) {
+            $attr['attr_values'] = array_column($attr['attr_values'], 'value');
+        }
         $this->dao->saveAll($data['attrGroup']);
         $storeProductAttrResultServices->setResult($data['result'], $id, $type);
         $productVipPrice = 0;
@@ -162,6 +165,19 @@ class StoreProductAttrServices extends BaseServices
                 }
             }
         }
+        $attrResult = app()->make(StoreProductAttrResultServices::class)->getResult(['product_id' => $id, 'type' => $typeId]);
+        $attrPics = [];
+        foreach ($attrResult['attr'] as $resultAttr) {
+            foreach ($resultAttr['detail'] as $detail) {
+                if (is_string($detail)) {
+                    $detail = [
+                        'value' => $detail,
+                        'pic' => '',
+                    ];
+                }
+                $attrPics[$resultAttr['value']][$detail['value']] = $detail['pic'] ?? '';
+            }
+        }
         foreach ($attrDetail as $k => $v) {
             $attr = $v['attr_values'];
             //活动商品只展示参与活动sku
@@ -172,6 +188,7 @@ class StoreProductAttrServices extends BaseServices
             foreach ($attr as $kk => $vv) {
                 $attrDetail[$k]['attr_value'][$kk]['attr'] = $vv;
                 $attrDetail[$k]['attr_value'][$kk]['check'] = false;
+                $attrDetail[$k]['attr_value'][$kk]['pic'] = $attrPics[$v['attr_name']][$vv];
             }
         }
         return [$attrDetail, $values];

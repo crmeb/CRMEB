@@ -1,5 +1,5 @@
 <template>
-  <el-row >
+  <el-row>
     <el-col :span="24">
       <div class="index_from page-account-container">
         <div class="page-account-top">
@@ -13,13 +13,25 @@
           @keyup.enter="handleSubmit('formInline')"
         >
           <el-form-item prop="sms_account" class="maxInpt">
-            <el-input type="text" v-model="formInline.account" prefix="ios-contact-outline" placeholder="请输入手机号" />
+            <el-input
+              type="text"
+              v-model="formInline.account"
+              prefix="ios-contact-outline"
+              placeholder="请输入手机号"
+            />
           </el-form-item>
           <el-form-item prop="sms_token" class="maxInpt">
-            <el-input type="password" v-model="formInline.password" prefix="ios-lock-outline" placeholder="请输入密码" />
+            <el-input
+              type="password"
+              v-model="formInline.password"
+              prefix="ios-lock-outline"
+              placeholder="请输入密码"
+            />
           </el-form-item>
           <el-form-item class="maxInpt">
-            <el-button type="primary" long size="large" v-db-click @click="handleSubmit('formInline')" class="btn">登录</el-button>
+            <el-button type="primary" long size="large" v-db-click @click="handleSubmit('formInline')" class="btn"
+              >登录</el-button
+            >
           </el-form-item>
         </el-form>
         <div class="page-account-other">
@@ -93,27 +105,23 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .maxInpt {
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
 }
-
 .page-account-container {
   text-align: center;
   padding: 50px 0;
 }
-
 .page-account-top {
   margin-bottom: 20px;
 }
-
 .page-account-top-tit {
   font-size: 21px;
   color: var(--prev-color-primary);
 }
-
 .page-account-other {
   text-align: center;
   color: var(--prev-color-primary);

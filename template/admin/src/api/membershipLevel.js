@@ -48,7 +48,16 @@ export function membershipDataAddApi(id, url) {
     params: id,
   });
 }
-
+/**
+ * @description 分销任务配置
+ * @param {Number} param id {Number} 组合数据id
+ */
+export function getTaskNumFormApi(id) {
+  return request({
+    url: `agent/get_task_num_form/${id}`,
+    method: 'get',
+  });
+}
 /**
  * @description 组合数据列表 -- 修改状态
  * @param {Object} param data {Object} 组合数据列表传值

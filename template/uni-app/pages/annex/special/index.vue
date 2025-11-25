@@ -1,222 +1,142 @@
 <template>
 	<view v-if="pageShow" class="page"
-		:class="bgTabVal==2?'fullsize noRepeat':bgTabVal==1?'repeat ysize':'noRepeat ysize'"
-		:style="'background-color:'+bgColor+';background-image: url('+bgPic+');min-height:'+windowHeight+'px;'">
-		<view v-if="!errorNetwork" :style="colorStyle">
-			<skeleton :show="showSkeleton" :isNodes="isNodes" ref="skeleton" loading="chiaroscuro" selector="skeleton"
-				bgcolor="#FFF"></skeleton>
-			<view class="index skeleton" :style="{visibility: showSkeleton ? 'hidden' : 'visible'}">
-				<!-- #ifdef H5 -->
-				<view v-for="(item, index) in styleConfig" :key="index">
-					<component :is="item.name" :index="index" :dataConfig="item" @changeBarg="changeBarg"
-						@changeTab="changeTab" :tempArr="tempArr" :iSshowH="iSshowH" @detail="goDetail"
-						:isSortType="isSortType" @bindSortId="bindSortId" @bindHeight="bindHeight" :isFixed="isFixed" :isSpe='1'>
-					</component>
-				</view>
-				<!-- #endif -->
-				<!-- #ifdef MP || APP-PLUS -->
+		:class="bgTabVal==2?'fullsize noRepeat':bgTabVal==1?'repeat ysize':'noRepeat ysize'" :style="[pageStyle]">
+		<view :style="colorStyle">
+			<!-- 轮播搜索 -->
+			<homeComb v-if="showHomeComb" :dataConfig="homeCombData" :belongIndex='belongIndex' :special='1' @bindSortId="bindSortId" :isScrolled="isScrolled"  @storeTap="storeTap"></homeComb>
+			<!-- 顶部搜索框 -->
+			<headerSerch v-if="isHeaderSerch" :dataConfig="headerSerchCombData" :belongIndex='belongIndex' :special='1'  @storeTap="storeTap"></headerSerch>
+			<tabNav v-if="showCateNav" :dataConfig="cateNavData" @bindHeight="bindHeighta"
+				@bindSortId="bindSortId" :special='1' :isFixed="isFixed && !cateNavData.stickyConfig.tabVal"></tabNav>
+			<view class="index">
+				<!-- 自定义样式 -->
 				<block v-for="(item, index) in styleConfig" :key="index">
-					<activeParty v-if="item.name == 'activeParty'" :dataConfig="item" :isSortType="isSortType">
-					</activeParty>
-					<articleList v-if="item.name == 'articleList'" :dataConfig="item" :isSortType="isSortType">
-					</articleList>
-					<bargain v-if="item.name == 'bargain'" :dataConfig="item" @changeBarg="changeBarg"
-						:isSortType="isSortType"></bargain>
-					<blankPage v-if="item.name == 'blankPage'" :dataConfig="item" :isSortType="isSortType"></blankPage>
-					<combination v-if="item.name == 'combination'" :dataConfig="item" :isSortType="isSortType">
+					<!-- <homeComb v-if="item.name == 'homeComb'" :dataConfig="item" @bindSortId="bindSortId"
+						:isScrolled="isScrolled" :special='1'></homeComb> -->
+					<!-- <headerSerch v-if="item.name == 'headerSerch'" :dataConfig="item" :special='1'></headerSerch> -->
+					<!-- 顶部选项卡 -->
+					<!-- <tabNav v-if="item.name == 'tabNav'" :dataConfig="item" @bindHeight="bindHeighta"
+						@bindSortId="bindSortId" :special='1' :isFixed="isFixed && !item.stickyConfig.tabVal"></tabNav> -->
+					<userInfor v-if="item.name == 'userInfor'" :dataConfig="item" @changeLogin="changeLogin">
+					</userInfor>
+					<newVip v-if="item.name == 'newVip'" :dataConfig="item"></newVip>
+					<!-- 文章列表 -->
+					<articleList v-if="item.name == 'articleList'" :dataConfig="item"></articleList>
+					<bargain v-if="item.name == 'bargain'" :dataConfig="item" @changeBarg="changeBarg"></bargain>
+					<blankPage v-if="item.name == 'blankPage'" :dataConfig="item"></blankPage>
+					<combination v-if="item.name == 'combination'" :dataConfig="item">
 					</combination>
-					<coupon v-if="item.name == 'coupon'" :dataConfig="item" :isSortType="isSortType"></coupon>
-					<customerService v-if="item.name == 'customerService'" :dataConfig="item" :isSortType="isSortType">
+					<!-- 优惠券 -->
+					<coupon v-if="item.name == 'coupon'" :dataConfig="item" @changeLogin="changeLogin"></coupon>
+					<!-- 客户服务 -->
+					<customerService v-if="item.name == 'customerService'" :dataConfig="item">
 					</customerService>
-					<goodList v-if="item.name == 'goodList'" :dataConfig="item" @detail="goDetail"
-						:isSortType="isSortType"></goodList>
-					<guide v-if="item.name == 'guide'" :dataConfig="item" :isSortType="isSortType"></guide>
-					<headerSerch v-if="item.name == 'headerSerch'" :dataConfig="item"></headerSerch>
-					<liveBroadcast v-if="item.name == 'liveBroadcast'" :dataConfig="item" :isSortType="isSortType">
-					</liveBroadcast>
-					<menus v-if="item.name == 'menus'" :dataConfig="item" :isSortType="isSortType"></menus>
-					<news v-if="item.name == 'news'" :dataConfig="item" :isSortType="isSortType"></news>
-					<pictureCube v-if="item.name == 'pictureCube'" :dataConfig="item" :isSortType="isSortType">
+					<!-- 商品列表 -->
+					<goodList ref="goodLists" v-if="item.name == 'goodList'" :dataConfig="item"></goodList>
+					<guide v-if="item.name == 'guide'" :dataConfig="item"></guide>
+					<!-- 直播模块 -->
+					<!-- #ifdef  MP-WEIXIN -->
+					<liveBroadcast v-if="item.name == 'liveBroadcast'" :dataConfig="item"></liveBroadcast>
+					<!-- #endif -->
+					<menus v-if="item.name == 'menus'" :dataConfig="item"></menus>
+					<!-- 实时消息 -->
+					<news v-if="item.name == 'news'" :dataConfig="item"></news>
+					<!-- 图片库 -->
+					<pictureCube v-if="item.name == 'pictureCube'" :dataConfig="item">
 					</pictureCube>
-					<promotionList v-if="item.name == 'promotionList'" :dataConfig="item" @changeTab="changeTab"
-						:tempArr="tempArr" :iSshowH="iSshowH" @detail="goDetail" :isSortType="isSortType">
+					<!-- 促销列表 -->
+					<promotionList ref="promotionLists" v-if="item.name == 'promotionList'" :dataConfig="item"
+					:productVideoStatus='product_video_status' :positionTop="positionTop">
 					</promotionList>
-					<richText v-if="item.name == 'richText'" :dataConfig="item" :isSortType="isSortType"></richText>
-					<seckill v-if="item.name == 'seckill'" :dataConfig="item" :isSortType="isSortType"></seckill>
-					<swiperBg v-if="item.name == 'swiperBg'" :dataConfig="item" :isSortType="isSortType"></swiperBg>
-					<swipers v-if="item.name == 'swipers'" :dataConfig="item" :isSortType="isSortType"></swipers>
-					<tabNav v-if="item.name == 'tabNav'" :dataConfig="item" @bindHeight="bindHeighta"
-						@bindSortId="bindSortId" :isFixed="isFixed"></tabNav>
-					<titles v-if="item.name == 'titles'" :dataConfig="item" :isSortType="isSortType"></titles>
+					<richText v-if="item.name == 'richText'" :dataConfig="item"></richText>
+					<videos v-if="item.name == 'videos'" :dataConfig="item"></videos>
+					<seckill v-if="item.name == 'seckill'" :dataConfig="item"></seckill>
+					<!-- 轮播图-->
+					<swiperBg v-if="item.name == 'swiperBg'" :dataConfig="item"></swiperBg>
+					<swipers v-if="item.name == 'swipers'" :dataConfig="item"></swipers>
+					<!-- 标题 -->
+					<titles v-if="item.name == 'titles'" :dataConfig="item"></titles>
+					<ranking v-if="item.name == 'ranking'" :dataConfig="item"></ranking>
+					<presale v-if="item.name == 'presale'" :dataConfig="item"></presale>
+					<pointsMall v-if="item.name == 'pointsMall'" :dataConfig="item"></pointsMall>
+					<signIn v-if="item.name == 'signIn'" :dataConfig="item"></signIn>
+					<hotspot v-if="item.name == 'hotspot'" :dataConfig="item"></hotspot>
+					<follow v-if="item.name == 'follow'" :dataConfig="item"></follow>
 				</block>
-				<!-- #endif -->
 				<!-- 分类商品模块 -->
-				<!-- #ifdef  APP-PLUS -->
-				<view class="sort-product" v-if="isSortType == 1" style="margin-top: 0;">
-					<scroll-view scroll-x="true" style="background: #fff;">
-						<view class="sort-box" v-if="sortList.children && sortList.children.length">
-							<view class="sort-item" v-for="(item, index) in sortList.children" :key="index"
-								@click="changeSort(item, index)" :class="{ on: curSort == index }">
-								<image :src="item.pic" mode="" v-if="item.pic"></image>
-								<image src="/static/images/sort-img.png" mode="" v-else></image>
-								<view class="txt">{{ $t(item.cate_name) }}</view>
-							</view>
-						</view>
-					</scroll-view>
-					<view class="product-list" v-if="goodList.length">
-						<view class="product-item" v-for="(item, index) in goodList" @click="goGoodsDetail(item)">
-							<image :src="item.image"></image>
-							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
-							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
-							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
-							<view class="info">
-								<view class="title line1">{{ item.store_name }}</view>
-								<view class="price-box">
-									<text>{{$t(`￥`)}}</text>
-									{{ item.price }}
-								</view>
-							</view>
-						</view>
-					</view>
-					<Loading :loaded="loaded" :loading="loading"></Loading>
-					<view class="" v-if="goodList.length == 0 && loaded">
-						<view class="emptyBox">
-							<image :src="imgHost + '/statics/images/no-thing.png'"></image>
-							<view class="tips">{{$t(`暂无商品，去看点别的吧`)}}</view>
-						</view>
-						<recommend :hostProduct="hostProduct"></recommend>
-					</view>
-				</view>
-				<!-- #endif -->
 				<!-- #ifndef  APP-PLUS -->
-				<view class="sort-product" v-if="isSortType == 1" :style="{ marginTop: sortMpTop + 'px' }">
-					<scroll-view scroll-x="true" style="background: #fff;">
-						<view class="sort-box" v-if="sortList.children && sortList.children.length">
-							<view class="sort-item" v-for="(item, index) in sortList.children" :key="index"
-								@click="changeSort(item, index)" :class="{ on: curSort == index }">
-								<image :src="item.pic" mode="" v-if="item.pic"></image>
-								<image src="/static/images/sort-img.png" mode="" v-else></image>
-								<view class="txt">{{ $t(item.cate_name) }}</view>
-							</view>
-						</view>
-					</scroll-view>
-					<view class="product-list" v-if="goodList.length">
-						<view class="product-item" v-for="(item, index) in goodList" @click="goGoodsDetail(item)">
-							<image :src="item.image"></image>
-							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '1' && $permission('seckill')">{{$t(`秒杀`)}}</span>
-							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '2' && $permission('bargain')">{{$t(`砍价`)}}</span>
-							<span class="pictrue_log_big pictrue_log_class"
-								v-if="item.activity && item.activity.type === '3' && $permission('combination')">{{$t(`拼团`)}}</span>
-							<span class="pictrue_log_big pictrue_log_class" v-if="item.checkCoupon">{{$t(`券`)}}</span>
-							<view class="info">
-								<view class="title line2">{{ item.store_name }}</view>
-								<view class="price-box">
-									<text>{{$t(`￥`)}}</text>
-									{{ item.price }}
-								</view>
+				<view class="sort-product px-20" v-if="sortList.children && sortList.children.length">
+				<!-- #endif -->
+					<!-- #ifdef  APP-PLUS -->
+					<!-- 商品排序 -->
+					<view class="sort-product px-20" :style="{ marginTop: sortMpTop + 'px' }"
+						v-if="sortList.children && sortList.children.length">
+					<!-- #endif -->
+						<waterfallsFlow ref="waterfallsFlow" :wfList="goodList" :goDetail="'goDetail'" @itemTap="goDetail"></waterfallsFlow>
+						<Loading :loaded="loaded" :loading="loading"></Loading>
+						<view v-if="goodList.length == 0 && loaded" class="sort-scroll rd-16rpx">
+							<view class="empty-box pb-24">
+								<image :src="imgHost + '/statics/images/no-thing.png'"></image>
+								<view class="tips">暂无商品，去看点别的吧</view>
 							</view>
 						</view>
 					</view>
-					<Loading :loaded="loaded" :loading="loading"></Loading>
-					<view class="" v-if="goodList.length == 0 && loaded">
-						<view class="emptyBox">
-							<image :src="imgHost + '/statics/images/no-thing.png'"></image>
-							<view class="tips">{{$t(`暂无数据`)}}</view>
-						</view>
-						<recommend :hostProduct="hostProduct"></recommend>
-					</view>
-				</view>
-				<!-- #endif -->
-				<!-- #ifdef MP -->
-				<!-- <authorize @onLoadFun="onLoadFun" :isAuto="isAuto" :isShowAuth="isShowAuth" @authColse="authColse" :isGoIndex="false"></authorize> -->
-				<!-- #endif -->
-				<couponWindow :window="isCouponShow" @onColse="couponClose" :couponImage="couponObj.image"
-					:couponList="couponObj.list"></couponWindow>
-				<!-- #ifdef H5 -->
-				<view v-if="site_config.record_No" class="site-config" @click="goICP(1)">{{ site_config.record_No }}</view>
-				<view v-if="site_config.network_security" class="site-config" @click="goICP(2)">{{ site_config.network_security }}</view>
-				<!-- #endif -->
-				<view class="uni-p-b-98"></view>
-				<!-- #ifndef H5 -->
-				<pageFoot></pageFoot>
-				<!-- #endif -->
-			</view>
-		</view>
-		<view v-else>
-			<view class="error-network">
-				<image :src="imgHost + '/statics/images/error-network.png'"></image>
-				<view class="title">{{$t(`网络连接断开`)}}</view>
-				<view class="con">
-					<view class="label">{{$t(`请检查情况：`)}}：</view>
-					<view class="item">· {{$t(`在设置中是否已开启网络权限：`)}}</view>
-					<view class="item">· {{$t(`当前是否处于弱网环境`)}}</view>
-					<view class="item">· {{$t(`版本是否过低，升级试试吧`)}}</view>
-				</view>
-				<view class="btn" @click="reconnect">{{$t(`重新连接`)}}</view>
-			</view>
-		</view>
-		<!-- #ifdef APP-PLUS -->
-		<app-update v-if="!privacyStatus" ref="appUpdate" :force="true" :tabbar="false"></app-update>
-		<view class="privacy-wrapper" v-if="privacyStatus">
-			<view class="privacy-box">
-				<view class="title">{{$t(`服务协议与隐私政策`)}}</view>
-				<view class="content">
-					{{$t(`请务必审慎阅读、充分理解“服务协议与 隐私政策”各条款，包括但不限于：为了 向你提供即时通讯、内容分享等服务，我 们需要收集你的设备信息、操作日志等个 人信息。你可以在“设置”中查看、变更、删除个人信息并管理你的授权。`)}}<br>
-					{{$t(`你可以阅读`)}}
-					<navigator url="/pages/users/privacy/index?type=3">{{$t(`《服务协议与隐私政策》`)}}</navigator>
-					{{$t(`了解详细信息。如你同意，请点击“我同意”开始接受我们的服务。`)}}
-				</view>
-				<view class="btn-box">
-					<view class="btn-item" @click="confirmApp">{{$t(`我同意`)}}</view>
-					<view class="btn" @click="closeModel">{{$t(`残忍拒绝`)}}</view>
+					<view :style="[pdHeights]" v-if="isFooter"></view>
+					<pageFooter :isTabBar="false" :configData="tabBarData"></pageFooter>
 				</view>
 			</view>
 		</view>
-		<!-- #endif -->
-	</view>
 </template>
 
 <script>
 	const app = getApp();
 	import colors from "@/mixins/color";
-	import couponWindow from '@/components/couponWindow/index';
+	import couponWindow from '@/components/couponWindow/index'
 	import {
 		getCouponV2,
-		getCouponNewUser,
-		siteConfig
-	} from '@/api/api.js';
+		getCouponNewUser
+	} from '@/api/api.js'
+	import {
+		getShare
+	} from '@/api/public.js';
 	// #ifdef H5
-	import mConfig from '@/pages/index/diy/components/index.js';
+	import {
+		silenceAuth
+	} from '@/api/public.js';
 	// #endif
-	// #ifdef MP || APP-PLUS
-	import authorize from '@/components/Authorize';
-	import activeParty from '@/pages/index/diy/components/activeParty';
-	import headerSerch from '@/pages/index/diy/components/headerSerch';
-	import swipers from '@/pages/index/diy/components/swipers';
-	import coupon from '@/pages/index/diy/components/coupon';
-	import articleList from '@/pages/index/diy/components/articleList';
-	import bargain from '@/pages/index/diy/components/bargain';
-	import blankPage from '@/pages/index/diy/components/blankPage';
-	import combination from '@/pages/index/diy/components/combination';
-	import customerService from '@/pages/index/diy/components/customerService';
-	import goodList from '@/pages/index/diy/components/goodList';
-	import guide from '@/pages/index/diy/components/guide';
-	import liveBroadcast from '@/pages/index/diy/components/liveBroadcast';
-	import menus from '@/pages/index/diy/components/menus';
-	import news from '@/pages/index/diy/components/news';
-	import pictureCube from '@/pages/index/diy/components/pictureCube';
-	import promotionList from '@/pages/index/diy/components/promotionList';
-	import richText from '@/pages/index/diy/components/richText';
-	import seckill from '@/pages/index/diy/components/seckill';
-	import swiperBg from '@/pages/index/diy/components/swiperBg';
-	import tabNav from '@/pages/index/diy/components/tabNav';
-	import titles from '@/pages/index/diy/components/titles';
-	import appUpdate from "@/components/update/app-update.vue";
+
+	import userInfor from '@/pages/index/components/userInfor';
+	import homeComb from '@/pages/index/components/homeComb';
+	import newVip from '@/pages/index/components/newVip';
+	import headerSerch from '@/pages/index/components/headerSerch';
+	import swipers from '@/pages/index/components/swipers';
+	import coupon from '@/pages/index/components/coupon';
+	import articleList from '@/pages/index/components/articleList';
+	import bargain from '@/pages/index/components/bargain';
+	import blankPage from '@/pages/index/components/blankPage';
+	import combination from '@/pages/index/components/combination';
+	import customerService from '@/pages/index/components/customerService';
+	import goodList from '@/pages/index/components/goodList';
+	import guide from '@/pages/index/components/guide';
+	import liveBroadcast from '@/pages/index/components/liveBroadcast';
+	import menus from '@/pages/index/components/menus';
+	import news from '@/pages/index/components/news';
+	import pictureCube from '@/pages/index/components/pictureCube';
+	import promotionList from '@/pages/index/components/promotionList';
+	import richText from '@/pages/index/components/richText';
+	import seckill from '@/pages/index/components/seckill';
+	import swiperBg from '@/pages/index/components/swiperBg';
+	import tabNav from '@/pages/index/components/tabNav';
+	import titles from '@/pages/index/components/titles';
+	import ranking from '@/pages/index/components/ranking';
+	import presale from '@/pages/index/components/presale'
+	import pointsMall from '@/pages/index/components/pointsMall';
+	import videos from '@/pages/index/components/videos';
+	import signIn from '@/pages/index/components/signIn';
+	import hotspot from '@/pages/index/components/hotspot';
+	import follow from '@/pages/index/components/follow';
+	import waterfallsFlow from "@/components/WaterfallsFlow/WaterfallsFlow.vue";
+	// #ifdef MP
 	import {
 		getTempIds
 	} from '@/api/api.js';
@@ -224,50 +144,58 @@
 		SUBSCRIBE_MESSAGE,
 		TIPS_KEY
 	} from '@/config/cache';
-
 	// #endif
 	import {
-		mapGetters
+		mapGetters,
+		mapMutations
 	} from 'vuex';
 	import {
 		getDiy,
-		getIndexData
+		getDiyVersion,
+		getEntryStore
 	} from '@/api/api.js';
 	import {
-		getGroomList,
 		getCategoryList,
 		getProductslist,
-		getProductHot
+		getProductHot,
 	} from '@/api/store.js';
 	import {
 		goShopDetail
 	} from '@/libs/order.js';
-	import {
-		getCartCounts,
-	} from '@/api/order.js';
 	import {
 		toLogin
 	} from '@/libs/login.js';
 	import {
 		HTTP_REQUEST_URL
 	} from '@/config/app';
-	import pageFoot from '@/components/pageFooter/index.vue';
+	import pageFooter from '@/components/pageFooter/index.vue'
 	import Loading from '@/components/Loading/index.vue';
-	import recommend from '@/components/recommend';
+	import Cache from '@/utils/cache';
 	export default {
-		computed: mapGetters(['isLogin', 'uid']),
+		computed: {
+			pageStyle() {
+				return {
+					backgroundColor: this.bgColor,
+					backgroundImage: this.bgPic ? `url(${this.bgPic})` : '',
+					minHeight: this.windowHeight + 'px'
+				}
+			},
+			pdHeights(){
+				let H = `${this.pdHeight*2 + 100}rpx`
+				return{
+					height: this.isFooter?H:'100rpx'
+				}
+			},
+			...mapGetters(['isLogin', 'uid']),
+		},
 		mixins: [colors],
 		components: {
-			recommend,
 			Loading,
-			pageFoot,
+			pageFooter,
 			couponWindow,
-			// #ifdef H5
-			...mConfig,
-			// #endif
-			// #ifdef MP || APP-PLUS
-			authorize,
-			activeParty,
+			homeComb,
+			newVip,
+			userInfor,
 			headerSerch,
 			swipers,
 			coupon,
@@ -288,68 +216,76 @@
 			swiperBg,
 			tabNav,
 			titles,
-			appUpdate, //APP更新
-			// #endif
+			ranking,
+			presale,
+			pointsMall,
+			videos,
+			signIn,
+			hotspot,
+			follow,
+			waterfallsFlow
 		},
-		computed: mapGetters(['isLogin', 'cartNum']),
 		data() {
 			return {
-				imgHost: HTTP_REQUEST_URL,
-				showSkeleton: true, //骨架屏显示隐藏
-				isNodes: 0, //控制什么时候开始抓取元素节点,只要数值改变就重新抓取
+				isFixed: false,
+				isHeaderSerch: false,
+				showHomeComb: false,
+				showCateNav: false,
+				homeCombData:{},
+				headerSerchCombData:{},
+				cateNavData:{},
+				domOffsetTop: 50,
 				styleConfig: [],
-				tempArr: [],
-				goodType: 3,
 				loading: false,
+				loadend: false,
+				loadTitle: '加载更多', //提示语
 				page: 1,
 				limit: this.$config.LIMIT,
-				iSshowH: false,
 				numConfig: 0,
 				code: '',
 				isCouponShow: false,
 				couponObj: {},
-				couponObjs: {
-					show: false
-				},
+				couponObjs: {},
 				shareInfo: {},
 				footConfig: {},
-				isSortType: 0,
-				sortList: '',
-				sortAll: [],
-				goodPage: 1,
-				goodList: [],
-				newData: {},
-				sid: 0,
-				curSort: 0,
+				pageId: '',
 				sortMpTop: 0,
-				loaded: false,
-				hostProduct: [],
-				hotScroll: false,
-				hotPage: 1,
-				hotLimit: 10,
-				domOffsetTop: 50,
-				// #ifdef APP-PLUS || MP
-				isFixed: true,
-				// #endif
-
-				// #ifdef H5
-				isFixed: false,
-				// #endif
-				site_config: '',
-				errorNetwork: false, // 是否断网
-				privacyStatus: false, // 隐私政策是否同意过
-				isHeaderSerch: false,
 				bgColor: '',
 				bgPic: '',
 				bgTabVal: '',
 				pageShow: true,
 				windowHeight: 0,
-				activeRouter: '',
-				countNum: 0
+				isShowAuth: false,
+				isScrolled: false,
+				sortList: '',
+				sortAll: [],
+				isSortType: 0,
+				hostProduct: [],
+				hotScroll: false,
+				hotPage: 1,
+				hotLimit: 10,
+				curSort: 0,
+				loaded: false,
+				goodPage: 1,
+				goodList: [],
+				sid: 0,
+				positionTop: 0,
+				imgHost: HTTP_REQUEST_URL,
+                product_video_status: false,
+				isFooter: false,
+				pdHeight:0, //自定义底部导航上下边距和
+				entryData:{
+					store_id:'',
+					latitude:'',
+					longitude:'',
+					select_store_id:''
+				},
+				goodsIndex: [],
+				promotionIndex: [],
+				belongIndex:0, // 进店规则归属门店排序位置；
+				isBelongStore: false, //判断是否为归属门店；
+				tabBarData:{},
 			};
-		},
-		onPullDownRefresh() {
-			this.diyData();
 		},
 		onLoad(options) {
 			let that = this
@@ -372,42 +308,27 @@
 			}
 			// #endif
 			uni.setNavigationBarTitle({
-				title: this.$t(`专题栏`)
+				title: '专题栏'
 			});
-		
+
 			// #ifdef APP-PLUS
 			this.sortMpTop = -50
 			// #endif
-			uni.getLocation({
-				type: 'wgs84',
-				success: function(res) {
-					try {
-						uni.setStorageSync('user_latitude', res.latitude);
-						uni.setStorageSync('user_longitude', res.longitude);
-					} catch {}
-				}
-			});
 			this.diyData();
-			this.getIndexData();
+			// #ifdef H5
+			this.setOpenShare();
+			// #endif
 			// #ifdef MP || APP-PLUS
 			this.getTempIds();
 			// #endif
-			let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
-			let curRoute = routes[routes.length - 1].route //获取当前页面路由
-			this.activeRouter = '/' + curRoute + '?id=' + this.pageId
+			getShare().then(res => {
+				this.shareInfo = res.data;
+			})
 		},
-		// onReady() {
-		// 	let that = this
-		// 	uni.getSystemInfo({
-		// 		success: function(res) { // res - 各种参数
-		// 			let info = uni.createSelectorQuery().select(".hander"); // 获取某个元素
-		// 			info.boundingClientRect(function(data) { //data - 各种参数
-		// 				let view = res.windowHeight - data.height
-		// 				that.heightHome = view
-		// 			}).exec()
-		// 		}
-		// 	});
-		// },
+		onUnload() {
+			// 清除监听
+			uni.$off('activeFn');
+		},
 		watch: {
 			isLogin: {
 				deep: true, //深度监听设置为 true
@@ -416,79 +337,46 @@
 					var newDates = new Date().toLocaleDateString();
 					if (newV) {
 						try {
-							var oldDate = uni.getStorageSync('oldDate') || '';
+							var oldDate = uni.getStorageSync('oldDate') || ''
 						} catch {}
 						if (oldDate != newDates) {
 							this.getCoupon();
+
 						}
 					}
 				}
 			}
 		},
-		onReady() {},
+		onShow() {
+			uni.removeStorageSync('form_type_cart');
+			// 优惠券弹窗
+			var newDates = new Date().toLocaleDateString();
+			if (this.isLogin) {
+				try {
+					var oldDate = uni.getStorageSync('oldDate') || ''
+				} catch {}
+				if (oldDate != newDates) {
+					this.getCoupon();
+				}
+				let oldUser = uni.getStorageSync('oldUser') || 0;
+				if (!oldUser) {
+					this.getCouponOnce();
+				}
+			}
+		},
+		mounted() {},
 		methods: {
-			// #ifdef APP-PLUS
-			// 同意隐私协议
-			confirmApp() {
-				uni.setStorageSync('privacyStatus', true)
-				this.privacyStatus = false
+			...mapMutations(['SET_NEARBY']),
+			locationTap(val){
+				this.entryData.latitude = val.latitude;
+				this.entryData.longitude = val.longitude;
+				this.entryStore(1);
 			},
-			// 关闭Model
-			closeModel() {
-				//退出app
-				uni.getSystemInfo({
-					success: function(res) { // 判断为安卓的手机 
-						if (res.platform == 'android') { // 安卓退出app      
-							plus.runtime.quit();
-						} else { // 判断为ios的手机，退出App      
-							plus.ios.import("UIApplication").sharedApplication().performSelector("exit");
-
-						}
-					}
-				})
-			},
-			// #endif
-			// 重新链接
-			reconnect() {
-				uni.showLoading({
-					title: this.$t(`加载中`)
-				})
-				this.diyData();
-				this.getIndexData();
-			},
-			goICP(type) {
-				let url = type == 1 ? this.site_config.icp_url : this.site_config.network_security_url;
-				window.open(url);
-			},
-			bindHeighta(data) {
-				// #ifdef APP-PLUS
-				this.sortMpTop = data.top + data.height;
-				// #endif
-			},
-			bindHeight(data) {
-				uni.hideLoading();
-				this.domOffsetTop = data.top;
-			},
-			// 去商品详情
-			goGoodsDetail(item) {
-				goShopDetail(item, this.uid).then(res => {
-					uni.navigateTo({
-						url: `/pages/goods_details/index?id=${item.id}`
-					});
-				});
-			},
-			/**
-			 * 获取我的推荐
-			 */
-			get_host_product: function() {
-				let that = this;
-				if (that.hotScroll) return;
-				getProductHot(that.hotPage, that.hotLimit).then(res => {
-					that.hotPage++;
-					that.hotScroll = res.data.length < that.hotLimit;
-					that.hostProduct = that.hostProduct.concat(res.data);
-					// that.$set(that, 'hostProduct', res.data)
-				});
+			storeTap(id){
+				this.entryData.select_store_id = id;
+				this.entryData.store_id = '';
+				uni.removeStorageSync('rulesStoreId');
+				this.entryStore(1);
 			},
 			// 分类点击
 			changeSort(item, index) {
@@ -500,16 +388,51 @@
 				this.loaded = false;
 				this.getGoodsList();
 			},
-			// 获取分类id
+			/**
+			 * @param data {
+				classPage: 0 分类id
+				microPage: 0 微页面id
+				type: 1   0 商品分类 1 微页面
+			 }*/
 			bindSortId(data) {
-				this.isSortType = data == -99 ? 0 : 1;
-				this.getProductList(data);
-				if (this.hostProduct.length == 0) {
-					this.get_host_product();
+				this.styleConfig = [];
+				if (data.type == 1) {
+					this.getProductList(data.classPage);
+				} else {
+					this.sortList = [];
+					this.getMicroPage(data.microPage, true);
 				}
 			},
+			/**
+			 * 获取DIY
+			 * @param {number} id
+			 * @param {boolean} type 区分是否是微页面
+			 */
+			getMicroPage(id, type) {
+				let that = this;
+				that.styleConfig = []
+				uni.showLoading({
+					title: '加载中...'
+				});
+				getDiy(id).then(res => {
+					uni.hideLoading();
+					let data = res.data;
+					let diyArr = that.objToArr(res.data.value);
+					diyArr = diyArr.filter(item => !item.isHide);
+					diyArr.forEach((item,index) => {
+					  if(['headerSerch','homeComb'].includes(item.name)){
+					    diyArr.splice(index, 1);
+					  }
+					});
+					this.styleConfig = diyArr;
+				}).catch(err => {
+					return that.$util.Tips({
+						title: err
+					});
+					uni.hideLoading();
+				});
+			},
 			getProductList(data) {
-				let tempObj = '';
 				this.curSort = 0;
 				this.loaded = false;
 				if (this.sortAll.length > 0) {
@@ -535,13 +458,13 @@
 						});
 						this.goodList = [];
 						this.goodPage = 1;
-
 						this.$nextTick(() => {
 							if (this.sortList != '') this.getGoodsList();
 						});
 					});
 				}
 			},
+			// 商品列表
 			getGoodsList() {
 				if (this.loading || this.loaded) return;
 				this.loading = true;
@@ -561,60 +484,53 @@
 					this.goodList = this.goodList.concat(res.data);
 				});
 			},
+			/**
+			 * 获取我的推荐
+			 */
+			get_host_product: function() {
+				let that = this;
+				if (that.hotScroll) return;
+				getProductHot(that.hotPage, that.hotLimit).then(res => {
+					that.hotPage++;
+					that.hotScroll = res.data.length < that.hotLimit;
+					that.hostProduct = that.hostProduct.concat(res.data);
+				});
+			},
 			// 新用户优惠券
-			getNewCoupon() {
-				const oldUser = uni.getStorageSync('oldUser') || 0;
-				if (!oldUser) {
-					getCouponNewUser().then(res => {
-						const {
-							data
-						} = res;
-						if (data.show) {
-							if (data.list.length) {
-								this.isCouponShow = true;
-								this.couponObj = data;
-								uni.setStorageSync('oldUser', 1);
-							}
-						} else {
-							uni.setStorageSync('oldUser', 1);
-						}
-					});
+			getCouponOnce() {
+				getCouponNewUser().then(res => {
+					this.couponObjs = res.data;
+				});
+			},
+			couponCloses() {
+				this.couponObjs.show = false;
+				try {
+					uni.setStorageSync('oldUser', 1);
+				} catch (e) {
+
 				}
 			},
 			// 优惠券弹窗
 			getCoupon() {
-				const tagDate = uni.getStorageSync('tagDate') || '',
-					nowDate = new Date().toLocaleDateString();
-				if (tagDate === nowDate) {
-					this.getNewCoupon();
-				} else {
-					getCouponV2().then(res => {
-						const {
-							data
-						} = res;
-						if (data.list.length) {
-							this.isCouponShow = true;
-							this.couponObj = data;
-							uni.setStorageSync('tagDate', new Date().toLocaleDateString());
-						} else {
-							this.getNewCoupon();
-						}
-					});
-				}
+				getCouponV2().then(res => {
+					this.couponObj = res.data
+					if (res.data.list.length > 0) {
+						this.isCouponShow = true
+					}
+				})
 			},
 			// 优惠券弹窗关闭
 			couponClose() {
-				this.isCouponShow = false;
-				if (!uni.getStorageSync('oldUser')) {
-					this.getNewCoupon();
-				}
+				this.isCouponShow = false
+				try {
+					uni.setStorageSync('oldDate', new Date().toLocaleDateString());
+				} catch {}
 			},
-			onLoadFun() {},
 			// #ifdef H5
 			// 获取url后面的参数
 			getQueryString(name) {
-				var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
-				var reg_rewrite = new RegExp('(^|/)' + name + '/([^/]*)(/|$)', 'i');
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
 				var r = window.location.search.substr(1).match(reg);
 				var q = window.location.pathname.substr(1).match(reg_rewrite);
 				if (r != null) {
@@ -627,158 +543,185 @@
 			},
 			// #endif
 
-			// #ifdef MP
+			// #ifdef MP || APP-PLUS
 			getTempIds() {
-				getTempIds().then(res => {
-					if (res.data) wx.setStorageSync(SUBSCRIBE_MESSAGE, JSON.stringify(res.data));
-				});
+				let messageTmplIds = wx.getStorageSync(SUBSCRIBE_MESSAGE);
+				if (!messageTmplIds) {
+					// getTempIds().then(res => {
+					// 	if (res.data) wx.setStorageSync(SUBSCRIBE_MESSAGE, JSON.stringify(res.data));
+					// });
+				}
 			},
 			// #endif
 			// 对象转数组
 			objToArr(data) {
-				let obj = Object.keys(data);
-				let m = obj.map(key => data[key]);
+				const keys = Object.keys(data)
+				keys.sort((a, b) => a - b)
+				const m = keys.map(key => data[key]);
 				return m;
 			},
-			diyData() {
-				let that = this;
-				getDiy(this.pageId).then(res => {
-					uni.hideLoading()
-					uni.setStorageSync('DIY_DATA', res.data)
-					setTimeout(() => {
-						this.isNodes++;
-					}, 0);
-					this.errorNetwork = false
-					let data = res.data;
-					if (data.is_bg_color) {
-						this.bgColor = data.color_picker
-					}
-					if (data.is_bg_pic) {
-						this.bgPic = data.bg_pic
-						this.bgTabVal = data.bg_tab_val
-					}
-					this.pageShow = data.is_show
-					uni.setNavigationBarTitle({
-						title: this.$t(res.data.title)
-					});
-					let temp = [];
-					let lastArr = that.objToArr(res.data.value);
-					lastArr.forEach((item, index, arr) => {
-						if (item.name == 'headerSerch') {
-							this.isHeaderSerch = true
-						}
-						if (item.name == 'promotionList') {
-							that.numConfig = item.numConfig.val;
-							that.goodType = item.tabConfig.list[0].link.activeVal;
-							that.getGroomList();
-						}
-						temp = arr;
-					});
+			setDiyData(data) {
+				if (data.length == 0) {
+					return this.$util.Tips({
+						title: '暂无数据'
+					}, {
+						tab: 3
+					})
+				}
 
-					function sortNumber(a, b) {
-						return a.timestamp - b.timestamp;
-					}
-					temp.sort(sortNumber)
-					that.styleConfig = temp;
-					setTimeout(() => {
-						this.showSkeleton = false
-					}, 300)
-					uni.stopPullDownRefresh({
-						success: (e) => {},
-					});
-				}).catch(error => {
-					// #ifdef APP-PLUS
-					if (error.status) {
-						uni.hideLoading()
-						if (that.errorNetwork) {
-							uni.showToast({
-								title: this.$t(`连接失败`),
-								icon: 'none',
-								duration: 2000
-							})
+				if (data.is_bg_color) {
+					this.bgColor = data.color_picker
+				}
+				if (data.is_bg_pic) {
+					this.bgPic = data.bg_pic
+					this.bgTabVal = data.bg_tab_val
+				}
+				this.pageShow = data.is_show
+				uni.setNavigationBarTitle({
+					title: data.title
+				})
+				let temp = []
+				let goodsIndex = [];
+				let promotionIndex = [];
+				let lastArr = this.objToArr(data.value)
+				lastArr.forEach((item, index, arr) => {
+					if (item.name === 'homeComb' && !item.isHide) {
+						this.showHomeComb = true;
+						this.homeCombData = item;
+						if (item.searchConfig.tabVal) {
+							this.positionTop = 43
 						}
-						this.errorNetwork = true
-						this.showSkeleton = false;
 					}
-					// #endif
+					if (item.name == 'headerSerch' && !item.isHide) {
+						this.isHeaderSerch = true;
+						this.headerSerchCombData = item;
+					}
+					if (item.name == 'tabNav' && !item.isHide) {
+						this.showCateNav = true;
+						this.cateNavData = item;
+					}
+					if(item.name == 'goodList' && !item.isHide){
+						goodsIndex.push(index)
+					}
+					if(item.name == 'promotionList' && !item.isHide){
+						promotionIndex.push(index)
+					}
+					if (item.name == 'pageFoot') {
+						this.tabBarData = item;
+						this.isFooter = item.effectConfig.tabVal?true:false
+						this.pdHeight = item.topConfig.val + item.bottomConfig.val
+					}
+					if (!item.isHide) {
+						temp.push(item);
+					}
 				});
-
+				function sortNumber(a, b) {
+					return a.timestamp - b.timestamp;
+				}
+				temp.sort(sortNumber);
+				this.styleConfig = temp;
+				this.goodsIndex = goodsIndex;
+				this.promotionIndex = promotionIndex;
+				this.entryStore();
 			},
-			getIndexData() {},
+			getDiyData() {
+				getDiy(this.pageId).then(res => {
+					uni.setStorageSync('specialDiyData', JSON.stringify(res.data));
+					this.setDiyData(res.data);
+				});
+			},
+			diyData() {
+				this.getDiyData();
+				// let that = this;
+				// let diyData = uni.getStorageSync('specialDiyData');
+				// if (diyData) {
+				// 	getDiyVersion(this.pageId).then(res => {
+				// 		let diyVersion = uni.getStorageSync('specialDiyVersion');
+				// 		if ((res.data.version + this.pageId) === diyVersion) {
+				// 			this.setDiyData(JSON.parse(diyData));
+				// 		} else {
+				// 			uni.setStorageSync('specialDiyVersion', (res.data.version + this.pageId));
+				// 			this.getDiyData();
+				// 		}
+				// 	});
+				// } else {
+				// 	this.getDiyData();
+				// }
+			},
+			entryStore(num){
+				// num 更新门店或是位置时需要重新获取门店商品数据（针对得是单店模式）
+				// this.entryData.store_id = Cache('rulesStoreId');
+				// getEntryStore(this.entryData).then(res=>{
+				// 	if(res.data.user_entry_name == 'user_belong_store'){
+				// 		this.isBelongStore = true;
+				// 	}
+				// 	let storeId= res.data.store_id;
+				// 	uni.setStorageSync('user_store_id', storeId);
+				// 	uni.setStorageSync('shop_operation_type', res.data.shop_operation_type);
+				// 	this.SET_NEARBY(storeId);
+				// 	let data = {
+				// 		store_id:storeId
+				// 	}
+				// 	let changeStore = true;
+				// 	let entryRules = res.data.user_entry_rules;
+				// 	entryRules.forEach((item,index)=>{
+				// 		if(item.name == 'user_belong_store'){
+				// 			this.belongIndex = index;
+				// 			changeStore = item.is_change_store;
+				// 		}
+				// 	})
+				// 	if(res.data.shop_operation_type !=1 && num){
+				// 		this.goodsIndex.forEach((item,index)=>{
+				// 			this.$refs.goodLists[index].productslist();
+				// 		})
+				// 		this.promotionIndex.forEach((item,index)=>{
+				// 			this.$refs.promotionLists[index].$refs.goodLists.productslist();
+				// 		})
+				// 	}
+				// }).catch(err=>{
+				//    this.$util.Tips({
+				// 	   title: err
+				//    });
+				// })
+			},
 			changeBarg(item) {
 				if (!this.isLogin) {
-					toLogin();
+					toLogin()
 				} else {
 					uni.navigateTo({
-						url: `/pages/activity/goods_bargain_details/index?id=${item.id}&bargain=${this.$store.state.app.uid}`
+						url: `/pages/activity/goods_bargain_details/index?id=${item.id}&spid=${this.uid}`
 					});
 				}
 			},
-			// 促销列表的点击事件；
-			changeTab(type) {
-				this.goodType = type;
-				this.page = 1;
-				let onloadH = true;
-				this.getGroomList(onloadH);
-			},
-			// 精品推荐
-			getGroomList(onloadH) {
-				let that = this;
-				let type = that.goodType;
-				if (that.loadend) return false;
-				if (that.loading) return false;
-				if (onloadH) {
-					that.$set(that, 'iSshowH', true);
-				}
-				getGroomList(type, {
-						page: that.page,
-						limit: this.numConfig
-					})
-					.then(({
-						data
-					}) => {
-						that.$set(that, 'iSshowH', false);
-						let list = data.list
-						that.$set(that, 'tempArr', data.list);
-						that.loading = false;
-					})
-					.catch(res => {});
-			},
-			goRouter(item) {
-				var pages = getCurrentPages();
-				var page = (pages[pages.length - 1]).$page.fullPath;
-				if (item.link == page) return
-				uni.switchTab({
-					url: item.link,
-					fail(err) {
-						uni.redirectTo({
-							url: item.link
-						})
-					}
-				})
-			},
 			goDetail(item) {
-				goShopDetail(item, this.$store.state.app.uid).then(res => {
+				goShopDetail(item, this.uid).then(res => {
 					uni.navigateTo({
 						url: `/pages/goods_details/index?id=${item.id}`
 					});
 				});
 			},
-			onsollBotton() {
-				if (this.isSortType == 0) {
-					// this.getGroomList();
-				} else {
-					this.getGoodsList();
-				}
-			},
-		},
-
-		onReachBottom: function() {
-
-		},
-		onPageScroll(e) {
-			uni.$emit('scroll');
 			// #ifdef H5
+			// 微信分享；
+			setOpenShare: function() {
+				let that = this;
+				if (that.$wechat.isWeixin()) {
+					getShare().then(res => {
+						let data = res.data.data;
+						let configAppMessage = {
+							desc: data.synopsis,
+							title: data.title,
+							link: location.href,
+							imgUrl: data.img
+						};
+						that.$wechat.wechatEvevt(['updateAppMessageShareData', 'updateTimelineShareData'],
+							configAppMessage);
+					});
+				}
+			}
+			// #endif
+		},
+		onReachBottom: function() {},
+		onPageScroll(e) {
 			if (this.isHeaderSerch) {
 				if (e.scrollTop > this.domOffsetTop) {
 					this.isFixed = true;
@@ -791,162 +734,43 @@
 			} else {
 				this.isFixed = false
 			}
-			// #endif
+			if (e.scrollTop > 10) {
+				this.isScrolled = true;
+			} else {
+				this.isScrolled = false;
+			}
+			uni.$emit('scroll');
+			uni.$emit('onPageScroll', e.scrollTop);
 		},
-		//#ifdef MP
+		//#ifdef MP || APP-PLUS
 		onShareAppMessage() {
 			return {
 				title: this.shareInfo.title,
-				path: '/pages/index/index'
+				path: '/pages/index/index',
+				imageUrl: this.storeInfo.img,
 			};
 		},
-		//分享到朋友圈
-		onShareTimeline: function() {
-			return {
-				title: this.shareInfo.title,
-				imageUrl: this.shareInfo.img
-			};
-		}
 		//#endif
 	};
 </script>
 
 <style lang="scss">
-	// page {
-	// 	padding-bottom: 50px;
-	// }
-	.pictrue_log_class {
-		background-color: var(--view-theme);
+	.sort-scroll {
+		background-color: #fff;
 	}
 
-	.page {
-		padding-bottom: 50px;
-	}
+	.empty-box {
+		text-align: center;
+		padding-top: 50rpx;
 
-	.ysize {
-		background-size: 100%;
-	}
-
-	.fullsize {
-		background-size: 100% 100%;
-	}
-
-	.repeat {
-		background-repeat: repeat;
-	}
-
-	.noRepeat {
-		background-repeat: no-repeat;
-	}
-
-	.privacy-wrapper {
-		z-index: 999;
-		position: fixed;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		background: #7F7F7F;
-
-
-		.privacy-box {
-			position: absolute;
-			left: 50%;
-			top: 50%;
-			transform: translate(-50%, -50%);
-			width: 560rpx;
-			padding: 50rpx 45rpx 0;
-			background: #fff;
-			border-radius: 20rpx;
-
-			.title {
-				text-align: center;
-				font-size: 32rpx;
-				text-align: center;
-				color: #333;
-				font-weight: 700;
-			}
-
-			.content {
-				margin-top: 20rpx;
-				line-height: 1.5;
-				font-size: 26rpx;
-				color: #666;
-
-				navigator {
-					display: inline-block;
-					color: #E93323;
-				}
-			}
-
-			.btn-box {
-				margin-top: 40rpx;
-				text-align: center;
-				font-size: 30rpx;
-
-				.btn-item {
-					height: 82rpx;
-					line-height: 82rpx;
-					background: linear-gradient(90deg, #F67A38 0%, #F11B09 100%);
-					color: #fff;
-					border-radius: 41rpx;
-				}
-
-				.btn {
-					padding: 30rpx 0;
-				}
-			}
+		.tips {
+			color: #aaa;
+			font-size: 26rpx;
 		}
-	}
-
-	.error-network {
-		position: fixed;
-		left: 0;
-		top: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: 100%;
-		height: 100%;
-		padding-top: 40rpx;
-		background: #fff;
 
 		image {
 			width: 414rpx;
-			height: 336rpx;
-		}
-
-		.title {
-			position: relative;
-			top: -40rpx;
-			font-size: 32rpx;
-			color: #666;
-		}
-
-		.con {
-			font-size: 24rpx;
-			color: #999;
-
-			.label {
-				margin-bottom: 20rpx;
-			}
-
-			.item {
-				margin-bottom: 20rpx;
-			}
-		}
-
-		.btn {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 508rpx;
-			height: 86rpx;
-			margin-top: 100rpx;
-			border: 1px solid #D74432;
-			color: #E93323;
-			font-size: 30rpx;
-			border-radius: 120rpx;
+			height: 304rpx;
 		}
 	}
 
@@ -1021,8 +845,11 @@
 				background: #fff;
 				border-radius: 10rpx;
 				margin-bottom: 20rpx;
-				display: flex;
-				flex-direction: column;
+				overflow: hidden;
+
+				.pictrue {
+					position: relative;
+				}
 
 				image {
 					width: 100%;
@@ -1031,11 +858,7 @@
 				}
 
 				.info {
-					flex: 1;
 					padding: 14rpx 16rpx;
-					display: flex;
-					flex-direction: column;
-					justify-content: space-between;
 
 					.title {
 						font-size: 28rpx;
@@ -1056,33 +879,23 @@
 		}
 	}
 
-	.emptyBox {
-		text-align: center;
-		padding-top: 20rpx;
-
-		.tips {
-			color: #aaa;
-			font-size: 26rpx;
-			padding-bottom: 20rpx;
-		}
-
-		image {
-			width: 414rpx;
-			height: 304rpx;
-		}
+	.page {
+		padding-bottom: 50px;
 	}
 
-	.site-config {
-		margin-top: 40rpx;
-		font-size: 24rpx;
-		text-align: center;
-		color: #666;
+	.ysize {
+		background-size: 100%;
+	}
 
-		&.fixed {
-			position: fixed;
-			bottom: 69px;
-			left: 0;
-			width: 100%;
-		}
+	.fullsize {
+		background-size: 100% 100%;
+	}
+
+	.repeat {
+		background-repeat: repeat;
+	}
+
+	.noRepeat {
+		background-repeat: no-repeat;
 	}
 </style>

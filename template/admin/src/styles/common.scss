@@ -97,3 +97,13 @@ html {
 .w-100 {
   width: 100px;
 }
+.cup {
+  cursor: pointer;
+}
+.el-input__suffix .el-input__suffix-inner {
+  line-height: 2.5;
+}
+.el-input__suffix .el-input__suffix-inner .el-icon-link {
+  font-size: 16px;
+  cursor: pointer;
+}

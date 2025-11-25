@@ -1456,21 +1456,21 @@ export default {
                 activeValue: '0',
                 title: '商品列表',
               },
-              {
-                activeValue: '4',
-                title: '热门榜单',
-              },
-              {
-                activeValue: '5',
-                title: '首发新品',
-              },
-              {
-                activeValue: '6',
-                title: '促销单品',
-              },
+              // {
+              //   activeValue: '4',
+              //   title: '热门榜单',
+              // },
+              // {
+              //   activeValue: '5',
+              //   title: '首发新品',
+              // },
+              // {
+              //   activeValue: '6',
+              //   title: '促销单品',
+              // },
               {
                 activeValue: '7',
-                title: '精品推荐',
+                title: '优品推荐',
               },
             ],
           },
@@ -1564,18 +1564,18 @@ export default {
                 activeValue: '0',
                 title: '商品列表',
               },
-              {
-                activeValue: '4',
-                title: '热门榜单',
-              },
-              {
-                activeValue: '5',
-                title: '首发新品',
-              },
-              {
-                activeValue: '6',
-                title: '促销单品',
-              },
+              // {
+              //   activeValue: '4',
+              //   title: '热门榜单',
+              // },
+              // {
+              //   activeValue: '5',
+              //   title: '首发新品',
+              // },
+              // {
+              //   activeValue: '6',
+              //   title: '促销单品',
+              // },
               {
                 activeValue: '7',
                 title: '精品推荐',

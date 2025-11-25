@@ -4,17 +4,11 @@
     <div class="box" v-db-click @click="modalPicTap('单选')">
       <img :src="datas[name].url" alt="" v-if="datas[name].url" />
       <div class="upload-box" v-else>
-        <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
+        <i class="el-icon-picture-outline" style="font-size: 24px"></i>
       </div>
     </div>
     <div>
-      <el-dialog
-        :visible.sync="modalPic"
-        width="950px"
-        title="上传商品图"
-        :mask-closable="false"
-        :z-index="888"
-      >
+      <el-dialog :visible.sync="modalPic" width="950px" title="上传商品图" :mask-closable="false" :z-index="888">
         <uploadPictures
           :isChoice="isChoice"
           @getPic="getPic"
@@ -137,7 +131,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .title {
   margin-bottom: 10px;
   padding-bottom: 10px;
@@ -145,7 +139,6 @@ export default {
   font-size: 12px;
   color: #999;
 }
-
 .box {
   width: 60px;
   height: 60px;
@@ -157,7 +150,6 @@ export default {
     height: 100%;
   }
 }
-
 .upload-box {
   display: flex;
   align-items: center;

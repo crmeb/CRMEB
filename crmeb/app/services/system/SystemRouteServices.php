@@ -586,4 +586,9 @@ class SystemRouteServices extends BaseServices
         }
         return $example;
     }
+
+    public function getNameList(string $app = 'adminapi')
+    {
+        return $this->dao->getColumn(['app_name' => $app], 'name', 'path');
+    }
 }

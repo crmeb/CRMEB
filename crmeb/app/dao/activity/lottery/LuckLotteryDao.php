@@ -74,7 +74,7 @@ class LuckLotteryDao extends BaseDao
      * 抽奖活动列表
      * @param array $where
      * @param string $field
-     * @param array $with
+     * @param string $order
      * @param int $page
      * @param int $limit
      * @return array
@@ -82,13 +82,40 @@ class LuckLotteryDao extends BaseDao
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getList(array $where, string $field = '*', array $with = [], int $page = 0, int $limit = 0)
+    public function getList(array $where, string $field = '*', string $order = 'id desc', int $page = 0, int $limit = 0)
     {
-        return $this->search($where)->field($field)->when($with, function ($query) use ($with) {
-            $query->with($with);
-        })->when($page && $limit, function ($query) use ($page, $limit) {
+        $model = $this->getModel()->when($where['is_del'] !== '', function ($query) use ($where) {
+            $query->where('is_del', $where['is_del']);
+        })->when($where['factor'] !== '', function ($query) use ($where) {
+            $query->where('factor', $where['factor']);
+        })->when($where['start'] !== '', function ($query) use ($where) {
+            if ($where['start'] == 0) {
+                $query->where('start_time', '>', time());
+            } elseif ($where['start'] == 1) {
+                $query->where('start_time', '<', time())->where('end_time', '>', time());
+            } else {
+                $query->where('end_time', '<', time());
+            }
+        })->when($where['status'] !== '', function ($query) use ($where) {
+            $query->where('status', $where['status']);
+        })->when(count($where['time']) == 2, function ($query) use ($where) {
+            $query->where('start_time', '<=', $where['time'][0])->where('end_time', '>=', $where['time'][1]);
+        })->when($where['keyword'] !== '', function ($query) use ($where) {
+            $query->where('name|content', 'like', '%' . $where['keyword'] . '%');
+        });
+        $count = $model->count();
+        $list = $model->with(['records' => function ($query) {
+            $query->field([
+                'lottery_id',
+                'COUNT(DISTINCT uid) AS total_user',      // 总参与人数
+                'COUNT(DISTINCT CASE WHEN type != 1 THEN uid END) AS wins_user', // 中奖人数
+                'COUNT(*) AS total_num',                    // 总参与次数
+                'SUM(type != 1) AS wins_num',                  // 中奖次数
+            ])->group('lottery_id');
+        }])->field($field)->when($page && $limit, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
-        })->order('add_time desc')->select()->toArray();
+        })->order($order)->select()->toArray();
+        return compact('count', 'list');
     }
 
     /**
@@ -125,10 +152,10 @@ class LuckLotteryDao extends BaseDao
      */
     public function getFactorLottery(int $factor = 1, string $field = '*', array $with = ['prize'], bool $is_doing = false)
     {
-        $where = ['factor' => $factor, 'is_del' => 0];
+        $where = ['factor' => $factor, 'is_del' => 0, 'is_use' => 1];
         if ($is_doing) $where['start'] = 1;
         return $this->search($where)->field($field)->when($with, function ($query) use ($with) {
             $query->with($with);
-        })->find();
+        })->order('id desc')->find();
     }
 }

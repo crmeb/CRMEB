@@ -120,21 +120,21 @@
             </el-form-item>
           </div>
           <div class="item lang">
-            <el-form-item label="推广资格：">
+            <el-form-item label="分销禁用：">
               <el-radio-group v-model="formItem.spread_open" class="form-sty">
-                <el-radio :label="1">开启</el-radio>
-                <el-radio :label="0">关闭</el-radio>
+                <el-radio :label="0">是</el-radio>
+                <el-radio :label="1">否</el-radio>
               </el-radio-group>
-              <div class="tip">关闭用户的推广资格后，在任何分销模式下该用户都无分销权限</div>
+              <div class="tip">禁用用户的分销资格后，在任何分销模式下该用户都无分销权限</div>
             </el-form-item>
           </div>
-          <div class="item lang">
-            <el-form-item label="推广权限：">
+          <div class="item lang" v-if="formItem.spread_open == 1">
+            <el-form-item label="分销权限：">
               <el-radio-group v-model="formItem.is_promoter" class="form-sty">
                 <el-radio :label="1">开启</el-radio>
                 <el-radio :label="0">关闭</el-radio>
-                <div class="tip">指定分销模式下，开启或关闭用户的推广权限</div>
               </el-radio-group>
+              <div class="tip">手动开启或关闭用户的分销权限</div>
             </el-form-item>
           </div>
           <div class="item lang">
@@ -164,14 +164,9 @@
         </div>
       </div>
     </el-form>
-    <el-dialog :visible.sync="labelShow" title="请选择用户标签" :modal="false" :show-close="true" width="540px">
-      <userLabel
-        v-if="labelShow"
-        :only_get="true"
-        :uid="formItem.uid"
-        @close="labelClose"
-        @activeData="activeData"
-      ></userLabel>
+    <el-dialog :visible.sync="labelShow" append-to-body title="请选择用户标签" :show-close="true" width="540px">
+      <userLabel v-if="labelShow" :only_get="true" :uid="formItem.uid" @close="labelClose" @activeData="activeData">
+      </userLabel>
     </el-dialog>
   </div>
 </template>
@@ -371,19 +366,22 @@ export default {
     font-size: 12px;
   }
 }
+
 .width-add {
   width: 40px;
 }
+
 .mr30 {
   margin-right: 30px;
 }
 
 .user-info {
   .section {
-    padding: 25px 0;
+    padding: 25px 0 0;
     border-bottom: 1px dashed #eeeeee;
 
     &-hd {
+      margin-bottom: 18px;
       padding-left: 10px;
       border-left: 3px solid var(--prev-color-primary);
       font-weight: 500;
@@ -400,19 +398,17 @@ export default {
     .item {
       width: 50%;
       display: flex;
-      margin: 16px 0px 0 0;
       font-size: 13px;
       color: #666;
 
-      &:nth-child(3n + 3) {
-        margin: 16px 0 0;
-      }
       .form-sty {
         width: 300px;
       }
+
       .ivu-form-item {
         margin: 3px 0;
       }
+
       .addfont {
         display: inline-block;
         font-size: 12px;
@@ -423,16 +419,20 @@ export default {
         margin-left: 10px;
       }
     }
+
     .item.lang {
       width: 100%;
     }
+
     .value {
       flex: 1;
     }
+
     .avatar {
       width: 60px;
       height: 60px;
       overflow: hidden;
+
       img {
         width: 100%;
         height: 100%;

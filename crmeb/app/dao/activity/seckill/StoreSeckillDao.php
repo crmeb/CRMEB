@@ -58,8 +58,6 @@ class StoreSeckillDao extends BaseDao
             $query->where('product_id', 'IN', function ($query) {
                 $query->name('store_product')->where('is_show', 1)->where('is_del', 0)->field('id');
             });
-        })->when(isset($where['time_id']) && $where['time_id'], function ($query) use ($where) {
-            $query->where('time_id', $where['time_id']);
         });
     }
 
@@ -105,9 +103,15 @@ class StoreSeckillDao extends BaseDao
                 } else {
                     $query->whereIn('id', $where['ids'])->orderField('id', $where['ids'], 'asc');
                 }
+            })->when(isset($where['product_id']) && $where['product_id'] != 0, function ($query) use ($where) {
+                $query->where('product_id', $where['product_id']);
             })->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
-            })->with(['product'])->order('sort desc,id desc')->select()->toArray();
+            })->when(isset($where['activity_name']) && $where['activity_name'] != '', function ($query) use ($where) {
+                $query->whereIn('activity_id', function ($query) use ($where) {
+                    $query->name('store_activity')->whereLike('title', '%' . $where['activity_name'] . '%')->field('id')->select();
+                });
+            })->with(['product', 'attrs'])->order('sort desc,id desc')->select()->toArray();
     }
 
     /**获取秒杀列表
@@ -148,6 +152,10 @@ class StoreSeckillDao extends BaseDao
                 } else {
                     $query->whereIn('id', $where['ids'])->orderField('id', $where['ids'], 'asc');
                 }
+            })->when(isset($where['activity_name']) && $where['activity_name'] != '', function ($query) use ($where) {
+                $query->whereIn('activity_id', function ($query) use ($where) {
+                    $query->name('store_activity')->whereLike('title', $where['activity_name'])->field('id')->select();
+                });
             })->with(['product'])->select()->toArray();
     }
 
@@ -179,10 +187,10 @@ class StoreSeckillDao extends BaseDao
      */
     public function getListByTime(int $time, int $page, int $limit)
     {
-        return $this->search(['is_del' => 0, 'status' => 1])
+        return $this->search(['is_del' => 0, 'status' => 1])->with(['product'])
             ->where('start_time', '<=', time())
             ->where('stop_time', '>=', time() - 86400)
-            ->where('time_id', $time)
+            ->whereFindInSet('time_id', $time)
             ->where('product_id', 'IN', function ($query) {
                 $query->name('store_product')->where('is_del', 0)->field('id');
             })->when($page != 0, function ($query) use ($page, $limit) {
@@ -221,5 +229,11 @@ class StoreSeckillDao extends BaseDao
             ->where('start_time', '<', $time)
             ->where('stop_time', '>', $time - 86400)
             ->field($field)->with(['product'])->find();
+    }
+
+    public function getProductExist($productIds)
+    {
+        return $this->getModel()->where('product_id', 'in', $productIds)->where('is_show', 1)->where('is_del', 0)
+            ->group('product_id')->column('COUNT(*) as count', 'product_id');
     }
 }

@@ -205,32 +205,37 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.pageOn{
-    border-radius 6px!important
+<style lang="scss" scoped>
+.pageOn {
+  border-radius: 6px !important;
 }
-.news-box
-   .item
-        display flex
-        align-items center
-        height 30px
-        margin 0 7px;
-        .img-box
-            width 75px
-            height 18px
-            border-right 1px solid #ddd
-            padding-right 10px
-            img
-               width 100%
-               height 100%
-        .right-box
-            flex 1
-            padding 0 20px 0 10px
-            overflow: hidden;
-            text-overflow:ellipsis;
-            white-space: nowrap;
-            background-image url("~@/assets/images/right.png");
-            background-size 20px 20px
-            background-position right center
-            background-repeat no-repeat
+.news-box {
+  .item {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    margin: 0 7px;
+    .img-box {
+      width: 75px;
+      height: 18px;
+      border-right: 1px solid #ddd;
+      padding-right: 10px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .right-box {
+      flex: 1;
+      padding: 0 20px 0 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      background-image: url('~@/assets/images/right.png');
+      background-size: 20px 20px;
+      background-position: right center;
+      background-repeat: no-repeat;
+    }
+  }
+}
 </style>

@@ -48,8 +48,8 @@ class LoginController
      */
     public function login(Request $request)
     {
-        [$account, $password, $spread] = $request->postMore([
-            'account', 'password', 'spread'
+        [$account, $password, $spread, $agent_id] = $request->postMore([
+            'account', 'password', 'spread', ['agent_id', 0]
         ], true);
         if (!$account || !$password) {
             return app('json')->fail(410000);
@@ -57,7 +57,7 @@ class LoginController
         if (strlen(trim($password)) < 6 || strlen(trim($password)) > 32) {
             return app('json')->fail(400762);
         }
-        return app('json')->success(410001, $this->services->login($account, $password, $spread));
+        return app('json')->success(410001, $this->services->login($account, $password, $spread, $agent_id));
     }
 
     /**
@@ -147,7 +147,7 @@ class LoginController
         $maxMinuteCountKey = 'sms.minute.' . $phone . date('YmdHi');
         $minuteCount = 0;
         if (CacheService::has($maxMinuteCountKey)) {
-            $minuteCount = CacheService::get($maxMinuteCountKey);
+            $minuteCount = CacheService::get($maxMinuteCountKey) ?? 0;
             $maxMinuteCount = Config::get('sms.maxMinuteCount', 5);
             if ($minuteCount > $maxMinuteCount) return app('json')->fail('同一手机号每分钟最多发送' . $maxMinuteCount . '条');
 
@@ -157,7 +157,7 @@ class LoginController
         $maxPhoneCountKey = 'sms.phone.' . $phone . '.' . date('Ymd');
         $phoneCount = 0;
         if (CacheService::has($maxPhoneCountKey)) {
-            $phoneCount = CacheService::get($maxPhoneCountKey);
+            $phoneCount = CacheService::get($maxPhoneCountKey) ?? 0;
             $maxPhoneCount = Config::get('sms.maxPhoneCount', 20);
             if ($phoneCount > $maxPhoneCount) return app('json')->fail('同一手机号每天最多发送' . $maxPhoneCount . '条');
 
@@ -167,7 +167,7 @@ class LoginController
         $maxIpCountKey = 'sms.ip.' . app()->request->ip() . '.' . date('Ymd');
         $ipCount = 0;
         if (CacheService::has($maxIpCountKey)) {
-            $ipCount = CacheService::get($maxPhoneCountKey);
+            $ipCount = CacheService::get($maxPhoneCountKey) ?? 0;
             $maxIpCount = Config::get('sms.maxIpCount', 50);
             if ($ipCount > $maxIpCount) return app('json')->fail('同一IP每天最多发送' . $maxIpCount . '条');
 
@@ -189,9 +189,9 @@ class LoginController
         $smsCode = $this->services->verify($services, $phone, $type, $time);
         if ($smsCode) {
             CacheService::set('code_' . $phone, $smsCode, $time * 60);
-            CacheService::set($maxMinuteCountKey, $minuteCount + 1, 61);
-            CacheService::set($maxPhoneCountKey, $phoneCount + 1, 86401);
-            CacheService::set($maxIpCountKey, $ipCount + 1, 86401);
+            CacheService::set($maxMinuteCountKey, (int)$minuteCount + 1, 61);
+            CacheService::set($maxPhoneCountKey, (int)$phoneCount + 1, 86401);
+            CacheService::set($maxIpCountKey, (int)$ipCount + 1, 86401);
             return app('json')->success(410007);
         } else {
             return app('json')->fail(410008);
@@ -275,7 +275,7 @@ class LoginController
      */
     public function mobile(Request $request)
     {
-        [$phone, $captcha, $spread] = $request->postMore([['phone', ''], ['captcha', ''], ['spread', 0]], true);
+        [$phone, $captcha, $spread, $agent_id] = $request->postMore([['phone', ''], ['captcha', ''], ['spread', 0], ['agent_id', 0]], true);
 
         //验证手机号
         try {
@@ -293,7 +293,7 @@ class LoginController
             return app('json')->fail(410010);
         }
         $user_type = $request->getFromType() ? $request->getFromType() : 'h5';
-        $token = $this->services->mobile($phone, $spread, $user_type);
+        $token = $this->services->mobile($phone, $spread, $user_type, $agent_id);
         if ($token) {
             CacheService::delete('code_' . $phone);
             return app('json')->success(410001, $token);

@@ -135,7 +135,7 @@ export default {
         sm: 24,
         xs: 24,
       },
-      statisticsData: {},
+      statisticsData: '',
       optionTodatOrder: {}, // 今日订单数
       orderData: {},
       orderUserData: {},

@@ -104,9 +104,10 @@ class StoreOrder extends BaseModel
      */
     public function user()
     {
-        return $this->hasOne(User::class, 'uid', 'uid')->field(['uid', 'nickname', 'phone', 'spread_uid'])->bind([
+        return $this->hasOne(User::class, 'uid', 'uid')->field(['uid', 'nickname', 'phone', 'avatar', 'spread_uid'])->bind([
             'nickname' => 'nickname',
-            'phone' => 'phone'
+            'phone' => 'phone',
+            'avatar' => 'avatar',
         ]);
     }
 
@@ -309,9 +310,9 @@ class StoreOrder extends BaseModel
     public function searchUidAttr($query, $value)
     {
         if (is_array($value))
-            $query->whereIn('uid', $value);
+            $query->whereIn('uid|gift_uid', $value);
         else
-            $query->where('uid', $value);
+            $query->where('uid|gift_uid', $value);
     }
 
     /**

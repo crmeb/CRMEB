@@ -96,9 +96,9 @@ export function sendCouponApi(data) {
  * @description 修改积分余额表单
  * @param {Number} param id {Number} 用户id
  */
-export function editOtherApi(id) {
+export function editOtherApi(id, type) {
   return request({
-    url: `user/edit_other/${id}`,
+    url: `user/edit_other/${id}/${type}`,
     method: 'get',
   });
 }

@@ -1,6 +1,12 @@
 <template>
   <div>
-    <el-dialog :visible.sync="modals" width="540px" :title="titleFrom" :close-on-click-modal="false">
+    <el-dialog
+      :visible.sync="modals"
+      width="540px"
+      :title="titleFrom"
+      :close-on-click-modal="false"
+      @closed="handleClose"
+    >
       <el-form ref="formValidate" :model="formValidate" label-width="80px" @submit.native.prevent>
         <el-row :gutter="24">
           <el-col v-bind="grid">
@@ -128,7 +134,7 @@
           style="width: 300px"
           ref="search"
         />
-        <el-button class="mr10" type="primary" v-db-click @click="searchRules">搜索</el-button>
+        <el-button type="primary" v-db-click @click="searchRules">搜索</el-button>
         <el-button v-db-click @click="init">重置</el-button>
       </div>
       <div class="rule">
@@ -138,7 +144,8 @@
           :class="{ 'select-rule': arrs.includes(index) }"
           v-for="(item, index) in ruleList"
           :key="index"
-          v-db-click @click="selectRule(item)"
+          v-db-click
+          @click="selectRule(item)"
         >
           <div>接口名称：{{ item.real_name }}</div>
           <div>请求方式：{{ item.method }}</div>
@@ -286,6 +293,9 @@ export default {
     },
   },
   methods: {
+    handleClose() {
+      this.formValidate = {};
+    },
     // 获取权限列表
     getRuleList() {
       getRuleList().then((res) => {

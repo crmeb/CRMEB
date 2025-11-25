@@ -57,22 +57,27 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.list-wrapper
-    .user-item
-        display flex
-        align-items center
-        margin-bottom 12px
-        cursor pointer
-        &:last-child
-            margin-bottom 0
-        img
-            width 32px
-            height 32px
-            border-radius 50%
-            margin-right 8px
-        p
-            width 80%
-            color #333
-            font-size 13px
+<style lang="scss" scoped>
+.list-wrapper {
+  .user-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    cursor: pointer;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    p {
+      width: 80%;
+      color: #333;
+      font-size: 13px;
+    }
+  }
+}
 </style>

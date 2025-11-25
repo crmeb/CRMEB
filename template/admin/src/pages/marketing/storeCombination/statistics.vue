@@ -351,45 +351,38 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .cl {
   margin-right: 20px;
 }
-
 .code-row-bg {
   display: flex;
   flex-wrap: nowrap;
 }
-
 .code-row-bg .ivu-mt {
   width: 100%;
   margin: 0 5px;
 }
-
 .ech-box {
   margin-top: 10px;
 }
-
 .change-style {
   border: 1px solid #ccc;
   border-radius: 15px;
   padding: 0px 10px;
   cursor: pointer;
 }
-
 .table-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 .return {
   margin-bottom: 6px;
 }
-
-::v-deep .ivu-tabs-nav-scroll{
+::v-deep .ivu-tabs-nav-scroll {
   background-color: #fff;
-  padding-top 5px
+  padding-top: 5px;
 }
 .tabBox_img {
   width: 36px;

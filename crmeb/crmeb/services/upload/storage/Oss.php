@@ -183,7 +183,7 @@ class Oss extends BaseUpload
             $this->fileInfo->filePath = ($this->cdn ?: $this->uploadUrl) . '/' . $key;
             $this->fileInfo->fileName = $key;
             $this->fileInfo->filePathWater = $this->water($this->fileInfo->filePath);
-            $this->thumb($this->fileInfo->filePath);
+            $this->authThumb && $this->thumb($this->fileInfo->filePath);
             return $this->fileInfo;
         } catch (UploadException $e) {
             return $this->setError($e->getMessage());

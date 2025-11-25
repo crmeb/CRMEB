@@ -89,15 +89,13 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .product_tabs ::v-deep .ivu-tabs-bar {
   margin-bottom: 0px !important;
 }
-
 .product_tabs ::v-deep .ivu-page-header-content {
   margin-bottom: 0px !important;
 }
-
 .product_tabs ::v-deep .ivu-page-header-breadcrumb {
   margin-bottom: 0px !important;
 }

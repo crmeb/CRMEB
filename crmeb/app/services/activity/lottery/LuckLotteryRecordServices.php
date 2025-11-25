@@ -54,10 +54,6 @@ class LuckLotteryRecordServices extends BaseServices
     public function getList(array $where)
     {
         [$page, $limit] = $this->getPageValue();
-        /** @var LuckLotteryServices $luckServices */
-        $luckServices = app()->make(LuckLotteryServices::class);
-        $where['lottery_id'] = $where['factor'] == '' ? '' : $luckServices->value(['factor' => $where['factor']], 'id');
-        unset($where['factor']);
         $list = $this->dao->getList($where, '*', ['lottery', 'prize', 'user'], $page, $limit);
         foreach ($list as &$item) {
             $item['add_time'] = $item['add_time'] ? date('Y-m-d H:i:s', $item['add_time']) : '';
@@ -113,7 +109,7 @@ class LuckLotteryRecordServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function insertPrizeRecord(int $uid, array $prize, array $userInfo = [])
+    public function insertPrizeRecord(int $uid, array $prize, array $userInfo = [], $channel_type)
     {
         if (!$userInfo) {
             /** @var UserServices $userServices */
@@ -131,6 +127,8 @@ class LuckLotteryRecordServices extends BaseServices
         $data['lottery_id'] = $prize['lottery_id'];
         $data['prize_id'] = $prize['id'];
         $data['type'] = $prize['type'];
+        $data['num'] = $prize['num'];
+        $data['channel_type'] = $channel_type;
         $data['add_time'] = time();
         if (!$res = $this->dao->save($data)) {
             throw new ApiException(400439);
@@ -165,7 +163,7 @@ class LuckLotteryRecordServices extends BaseServices
         }
         $data = ['is_receive' => 1, 'receive_time' => time(), 'receive_info' => $receive_info];
         $prize = $lotteryRecord['prize'];
-        $this->transaction(function () use ($uid, $userInfo, $lottery_record_id, $data, $prize, $userServices, $receive_info) {
+        $this->transaction(function () use ($uid, $userInfo, $lottery_record_id, $data, $prize, $userServices, $receive_info, $lotteryRecord) {
             //奖品类型1：未中奖2：积分3:余额4：红包5:优惠券6：站内商品7：等级经验8：用户等级 9：svip天数
             switch ($prize['type']) {
                 case 1:
@@ -186,20 +184,19 @@ class LuckLotteryRecordServices extends BaseServices
                 case 4:
                     /** @var WechatUserServices $wechatServices */
                     $wechatServices = app()->make(WechatUserServices::class);
-                    $openid = $wechatServices->uidToOpenid((int)$uid, 'wechat');
-                    $type = 'JSAPI';
-                    if (!$openid) {
-                        $openid = $wechatServices->uidToOpenid((int)$uid, 'routine');
+                    $type = '';
+                    $openid = $wechatServices->uidToOpenid((int)$uid, $lotteryRecord['channel_type']);
+                    if ($lotteryRecord['channel_type'] == 'wechat') {
+                        $type = 'JSAPI';
+                    } elseif ($lotteryRecord['channel_type'] == 'routine') {
                         $type = 'mini';
-                    }
-                    if (!$openid) {
-                        $openid = $wechatServices->uidToOpenid((int)$uid, 'app');
+                    } elseif ($lotteryRecord['channel_type'] == 'app') {
                         $type = 'APP';
                     }
                     if ($openid) {
                         /** @var StoreOrderCreateServices $services */
                         $services = app()->make(StoreOrderCreateServices::class);
-                        $wechat_order_id = $services->getNewOrderId();
+                        $wechat_order_id = $services->getNewOrderId('hb');
                         /** @var CapitalFlowServices $capitalFlowServices */
                         $capitalFlowServices = app()->make(CapitalFlowServices::class);
                         $capitalFlowServices->setFlow([
@@ -213,13 +210,38 @@ class LuckLotteryRecordServices extends BaseServices
 
                         if (sys_config('pay_wechat_type')) {
                             $pay = new Pay('v3_wechat_pay');
-                            $pay->merchantPay($openid, $wechat_order_id, (string)$prize['num'], [
-                                'type' => $type,
-                                'batch_name' => '抽奖中奖红包',
-                                'batch_remark' => '您于' . date('Y-m-d H:i:s') . '中奖.' . $prize['num'] . '元'
+                            $res = $pay->merchantPayNew(
+                                $type,
+                                $wechat_order_id,
+                                sys_config('v3_transfer_scene_id', '1000'),
+                                $openid,
+                                '',
+                                bcmul($prize['num'], '100', 0),
+                                '抽奖活动红包中奖',
+                                sys_config('site_url') . '/api/transfer/notify/' . $type,
+                                '劳务报酬',
+                                [
+                                    [
+                                        'info_type' => '岗位类型',
+                                        'info_content' => '抽奖'
+                                    ],
+                                    [
+                                        'info_type' => '报酬说明',
+                                        'info_content' => '抽奖活动红包中奖'
+                                    ],
+                                ]
+                            );
+                            $this->dao->update($lottery_record_id, [
+                                'wechat_order_id' => $wechat_order_id,
+                                'out_bill_no' => $res['out_bill_no'] ?? '',
+                                'package_info' => $res['package_info'] ?? '',
+                                'state' => $res['state'] ?? '',
+                                'transfer_bill_no' => $res['transfer_bill_no'] ?? '',
+                                'fail_reason' => $res['fail_reason'] ?? ''
                             ]);
+                            event('NoticeListener', [['uid' => $uid, 'order_id' => $wechat_order_id, 'extractNumber' => $prize['num'], 'type' => 2], 'revenue_received']);
                         } else {
-                            WechatService::merchantPay($openid, $wechat_order_id, $prize['num'], '抽奖中奖红包');
+                            WechatService::merchantPay($openid, $wechat_order_id, (string)$prize['num'], '抽奖中奖红包');
                         }
                     }
                     break;

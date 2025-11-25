@@ -67,7 +67,8 @@
                     <template slot-scope="scope">
                       <a
                         v-if="scope.row.regionName !== '默认全国'"
-                        v-db-click @click="delCity(scope.row, '配送区域', scope.$index, 1)"
+                        v-db-click
+                        @click="delCity(scope.row, '配送区域', scope.$index, 1)"
                         >删除</a
                       >
                     </template>
@@ -118,13 +119,16 @@
                     <template slot-scope="scope">
                       <a
                         v-if="scope.row.regionName !== '默认全国'"
-                        v-db-click @click="delCity(scope.row, '配送区域', scope.$index, 2)"
+                        v-db-click
+                        @click="delCity(scope.row, '配送区域', scope.$index, 2)"
                         >删除</a
                       >
                     </template>
                   </el-table-column>
                 </el-table>
-                <div v-if="formData.appoint_check === 1" class="free_tips">指定地区需同时满足包邮（件数/重量/体积）和包邮金额的条件，才可实现包邮</div>
+                <div v-if="formData.appoint_check === 1" class="free_tips">
+                  指定地区需同时满足包邮（件数/重量/体积）和包邮金额的条件，才可实现包邮
+                </div>
                 <el-row class="addTop mt5" v-if="formData.appoint_check === 1">
                   <el-col>
                     <el-button type="primary" icon="md-add" v-db-click @click="addCity(2)">添加包邮区域</el-button>
@@ -157,7 +161,8 @@
                     <template slot-scope="scope">
                       <a
                         v-if="scope.row.regionName !== '默认全国'"
-                        v-db-click @click="delCity(scope.row, '配送区域', scope.$index, 3)"
+                        v-db-click
+                        @click="delCity(scope.row, '配送区域', scope.$index, 3)"
                         >删除</a
                       >
                     </template>
@@ -186,7 +191,9 @@
           <el-row :gutter="24">
             <el-col>
               <el-form-item prop="store_name" label-for="store_name">
-                <el-button type="primary" v-db-click @click="handleSubmit">{{ id ? '立即修改' : '立即提交' }}</el-button>
+                <el-button type="primary" v-db-click @click="handleSubmit">{{
+                  id ? '立即修改' : '立即提交'
+                }}</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -460,24 +467,21 @@ export default {
   mounted() {},
 };
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .ivu-table-wrapper {
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
 }
-
-.ivu-table-border th, .ivu-table-border td {
+.ivu-table-border th,
+.ivu-table-border td {
   padding: 0 10px !important;
 }
-
 .addTop {
   margin-top: 15px;
 }
-
 .radio {
   padding: 5px 0;
 }
-
 .ivu-input-number {
   width: 100%;
 }

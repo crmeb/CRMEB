@@ -59,7 +59,7 @@ class StoreOrderDao extends BaseDao
         })->when($status !== '', function ($query) use ($where, $status) {
             switch ((int)$status) {
                 case 0://未支付
-                    $query->where('paid', 0)->where('status', 0)->where('refund_status', 0)->where('is_del', 0);
+                    $query->where('paid', 0)->where('status', 0)->where('refund_status', 0)->where('is_del', 0)->where('is_cancel', 0);
                     break;
                 case 1://已支付 未发货
                     $query->where('paid', 1)->where('status', 0)->whereIn('refund_status', [0, 3])->when(isset($where['shipping_type']), function ($query) {
@@ -474,7 +474,7 @@ class StoreOrderDao extends BaseDao
     public function getUserOrderDetail(string $key, int $uid, $with = [])
     {
         $where = ['order_id|unique' => $key, 'is_del' => 0];
-        if ($uid > 0) $where = $where + ['uid' => $uid];
+        if ($uid > 0) $where = $where + ['uid|gift_uid' => $uid];
         return $this->getOne($where, '*', $with);
     }
 
@@ -569,7 +569,7 @@ class StoreOrderDao extends BaseDao
      */
     public function getOrderUnPaidList(array $field = ['*'])
     {
-        return $this->getModel()->where(['paid' => 0, 'is_del' => 0, 'status' => 0, 'refund_status' => 0])
+        return $this->getModel()->where(['paid' => 0, 'is_cancel' => 0, 'is_del' => 0, 'status' => 0, 'refund_status' => 0])
             ->where('pay_type', '<>', 'offline')->field($field)->select();
     }
 
@@ -1079,5 +1079,41 @@ class StoreOrderDao extends BaseDao
     public function getSubOrderNotTake(int $pid, int $order_id)
     {
         return $this->getModel()->where('pid', $pid)->where('status', 1)->where('id', '<>', $order_id)->count();
+    }
+
+    /**
+     * 分销订单统计
+     * @param $field
+     * @param $time
+     * @param $page
+     * @param $limit
+     * @param $sort
+     * @param $order
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/4/8
+     */
+    public function divisionStatistics($field, $time, $page, $limit, $sort, $order)
+    {
+        $model = $this->getModel()
+            ->where('paid', 1)
+            ->where('pid', '>=', 0)
+            ->where('refund_status', 0)
+            ->where($field, '>', 0)->group($field)
+            ->when(!empty($time), function ($query) use ($time) {
+                $query->whereBetween('add_time', [strtotime($time[0]), strtotime($time[1] . ' 23:59:59')]);
+            });
+        $count = $model->count();
+        $orderStr = $sort == '' ? 'order_sum desc' : $sort . ' ' . $order;
+        $list = $model->field([
+            $field,
+            'COUNT(*) AS order_sum',
+            'SUM(pay_price) AS order_sum_price'
+        ])->order($orderStr)->page($page, $limit)->select()->toArray();
+        return compact('count', 'list');
     }
 }

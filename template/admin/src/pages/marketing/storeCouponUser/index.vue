@@ -1,17 +1,23 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="tableFrom"
-            :model="tableFrom"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="tableFrom"
+          :model="tableFrom"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="是否有效：">
-            <el-select placeholder="请选择" clearable v-model="tableFrom.status" @change="userSearchs" class="form_content_width">
+            <el-select
+              placeholder="请选择"
+              clearable
+              v-model="tableFrom.status"
+              @change="userSearchs"
+              class="form_content_width"
+            >
               <el-option value="1" label="已使用"></el-option>
               <el-option value="0" label="未使用"></el-option>
               <el-option value="2" label="已过期"></el-option>
@@ -22,10 +28,10 @@
           </el-form-item>
           <el-form-item label="优惠券搜索：" label-for="coupon_title">
             <el-input
-                clearable
-                placeholder="请输入优惠券名称"
-                v-model="tableFrom.coupon_title"
-                class="form_content_width"
+              clearable
+              placeholder="请输入优惠券名称"
+              v-model="tableFrom.coupon_title"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -78,8 +84,8 @@
         </el-table-column>
         <el-table-column label="是否可用" min-width="150">
           <template slot-scope="scope">
-            <i class="el-icon-check" v-if="scope.row.is_fail === 0" style="color:#0092DC;font-size: 14px;"/>
-            <i class="el-icon-close" v-else style="color:#ed5565;font-size: 14px;"/>
+            <i class="el-icon-check" v-if="scope.row.is_fail === 0" style="color: #0092dc; font-size: 14px" />
+            <i class="el-icon-close" v-else style="color: #ed5565; font-size: 14px" />
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="150">

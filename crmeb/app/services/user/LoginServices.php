@@ -50,7 +50,7 @@ class LoginServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function login($account, $password, $spread)
+    public function login($account, $password, $spread, $agent_id)
     {
         $user = $this->dao->getOne(['account|phone' => $account, 'is_del' => 0]);
         if ($user) {
@@ -65,7 +65,11 @@ class LoginServices extends BaseServices
             throw new ApiException(410027);
 
         //更新用户信息
-        $this->updateUserInfo(['code' => $spread], $user);
+        if ($agent_id) {
+            $this->updateUserInfo(['code' => $agent_id, 'is_staff' => 1], $user);
+        } else {
+            $this->updateUserInfo(['code' => $spread], $user);
+        }
         $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             return ['token' => $token['token'], 'expires_time' => $token['params']['exp']];
@@ -317,7 +321,7 @@ class LoginServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function mobile($phone, $spread, string $user_type = 'h5')
+    public function mobile($phone, $spread, string $user_type = 'h5', $agent_id = 0)
     {
         //数据库查询
         $user = $this->dao->getOne(['account|phone' => $phone, 'is_del' => 0]);
@@ -332,7 +336,11 @@ class LoginServices extends BaseServices
             throw new ApiException(410027);
 
         // 设置推广关系
-        $this->updateUserInfo(['code' => $spread], $user);
+        if ($agent_id) {
+            $this->updateUserInfo(['code' => $agent_id, 'is_staff' => 1], $user);
+        } else {
+            $this->updateUserInfo(['code' => $spread], $user);
+        }
 
         $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
@@ -394,7 +402,7 @@ class LoginServices extends BaseServices
         if (!$key) {
             throw new ApiException(410037);
         }
-        [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData = CacheService::get($key);
+        [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType] = $createData = CacheService::get($key);
         if (!$createData) {
             throw new ApiException(410037);
         }
@@ -402,7 +410,7 @@ class LoginServices extends BaseServices
         /** @var WechatUserServices $wechatUser */
         $wechatUser = app()->make(WechatUserServices::class);
         //更新用户信息
-        $user = $wechatUser->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
+        $user = $wechatUser->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType]);
         $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             return [

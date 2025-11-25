@@ -24,7 +24,8 @@
             :class="active === index ? 'on' : ''"
             v-for="(item, index) in types"
             :key="index"
-            v-db-click @click="changeType(item, index)"
+            v-db-click
+            @click="changeType(item, index)"
           >
             {{ item.title }}<span class="iconfontYI icon-xuanzhong2"></span>
           </div>
@@ -38,7 +39,8 @@
             :class="activeExpTpe === index ? 'on' : ''"
             v-for="(item, index) in expressType"
             :key="index"
-            v-db-click @click="changeExpTpe(item, index)"
+            v-db-click
+            @click="changeExpTpe(item, index)"
           >
             {{ item.title }}<span class="iconfontYI icon-xuanzhong2"></span>
           </div>

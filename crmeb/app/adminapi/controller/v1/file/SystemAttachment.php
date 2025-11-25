@@ -45,7 +45,8 @@ class SystemAttachment extends AuthController
     {
         $where = $this->request->getMore([
             ['pid', 0],
-            ['real_name', '']
+            ['real_name', ''],
+            ['type', 0],
         ]);
         return app('json')->success($this->service->getImageList($where));
     }
@@ -197,6 +198,29 @@ class SystemAttachment extends AuthController
             ['images', []]
         ]);
         $this->service->onlineUpload($data);
+        return app('json')->success(100032);
+    }
+
+    public function videoDataSave()
+    {
+        $data = $this->request->postMore([
+            ['pid', 0],
+            ['video_name', ''],
+            ['video_path', '']
+        ]);
+        $this->service->attachmentAdd(
+            $data['video_name'],
+            0,
+            'video/mp4',
+            $data['video_path'],
+            $data['video_path'],
+            $data['pid'],
+            (int)sys_config('upload_type', 1),
+            time(),
+            1,
+            1,
+            $data['video_name']
+        );;
         return app('json')->success(100032);
     }
 }

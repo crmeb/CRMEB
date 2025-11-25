@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2023 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2024 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -11,10 +11,10 @@
 let app = getApp()
 
 export function goShopDetail(item, uid) {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		if (item.activity && item.activity.type === "1") {
 			uni.navigateTo({
-				url: `/pages/activity/goods_seckill_details/index?id=${item.activity.id}&time=${item.activity.time}&status=1`
+				url: `/pages/activity/goods_seckill_details/index?id=${item.activity.id}&time_id=${item.activity.time_id}`
 			})
 		} else if (item.activity && item.activity.type === "2") {
 			uni.navigateTo({

@@ -1,11 +1,5 @@
 <template>
-  <el-dialog
-    :visible.sync="modals"
-    title="选择商品"
-    :close-on-click-modal="false"
-    width="1000px"
-    @closed="handleReset"
-  >
+  <el-dialog :visible.sync="modals" title="选择商品" :close-on-click-modal="false" width="1000px" @closed="handleReset">
     <el-form
       ref="levelFrom"
       :model="levelFrom"

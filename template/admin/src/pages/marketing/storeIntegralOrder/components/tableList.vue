@@ -14,13 +14,11 @@
       <el-table-column label="订单号" min-width="150">
         <template slot-scope="scope">
           <span v-text="scope.row.order_id" style="display: block"></span>
-          <span v-show="scope.row.is_del == 1" style="color: #ed4014; display: block">用户已删除</span>
+          <span v-if="scope.row.is_del == 1" style="color: #ed4014; display: block">用户已删除</span>
         </template>
       </el-table-column>
       <el-table-column label="用户信息" min-width="100">
-        <template slot-scope="scope">
-          {{ scope.row.nickname }}/{{ scope.row.uid }}
-        </template>
+        <template slot-scope="scope"> {{ scope.row.nickname }}/{{ scope.row.uid }} </template>
       </el-table-column>
       <el-table-column label="商品信息" min-width="330">
         <template slot-scope="scope">
@@ -446,18 +444,16 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 img {
   height: 36px;
   display: block;
 }
-
 .tabBox {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
-
   .tabBox_img {
     width: 36px;
     height: 36px;
@@ -467,7 +463,6 @@ img {
       height: 100%;
     }
   }
-
   .tabBox_tit {
     width: 60%;
     font-size: 12px !important;
@@ -477,45 +472,34 @@ img {
     box-sizing: border-box;
   }
 }
-
 .orderData ::v-deep .ivu-table-cell {
   padding-left: 0 !important;
 }
-
 .vertical-center-modal {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .orderData .ivu-table {
   overflow: visible !important;
 }
-
 .orderData .ivu-table th {
   overflow: visible !important;
 }
-
 .orderData .ivu-table-header {
   overflow: visible !important;
 }
-
 ::v-deep .ivu-table-header {
-  // overflow: visible;
 }
-
 ::v-deep .ivu-table th {
   overflow: visible;
 }
-
 ::v-deep .select-item:hover {
   background-color: #f3f3f3;
 }
-
 ::v-deep .select-on {
   display: block;
 }
-
 ::v-deep .select-item.on {
   background: #f3f3f3;
 }

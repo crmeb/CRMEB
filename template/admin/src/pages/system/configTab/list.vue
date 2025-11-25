@@ -1,7 +1,10 @@
 <template>
   <div>
-    <pages-header ref="pageHeader" :title="`配置列表${$route.query.config_name ? ` - ` + $route.query.config_name : ''}`"
-      :backUrl="$routeProStr + '/system/config/system_config_tab/index'"></pages-header>
+    <pages-header
+      ref="pageHeader"
+      :title="`配置列表${$route.query.config_name ? ` - ` + $route.query.config_name : ''}`"
+      :backUrl="$routeProStr + '/system/config/system_config_tab/index'"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-row v-if="!$route.query.config_name">
         <el-col v-bind="grid">
@@ -9,8 +12,14 @@
           <el-button type="primary" v-db-click @click="configureAdd">添加配置</el-button>
         </el-col>
       </el-row>
-      <el-table :data="classList" ref="table" v-loading="loading" no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果" class="mt14">
+      <el-table
+        :data="classList"
+        ref="table"
+        v-loading="loading"
+        no-userFrom-text="暂无数据"
+        no-filtered-userFrom-text="暂无筛选结果"
+        class="mt14"
+      >
         <el-table-column label="ID" width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
@@ -33,15 +42,22 @@
         </el-table-column>
         <el-table-column label="值" min-width="130">
           <template slot-scope="scope">
-            <span v-if="scope.row.type === 'text' ||
-      scope.row.type === 'textarea' ||
-      scope.row.type === 'radio' ||
-      scope.row.type === 'checkbox'
-      ">{{ scope.row.value }}</span>
+            <span
+              v-if="
+                scope.row.type === 'text' ||
+                scope.row.type === 'textarea' ||
+                scope.row.type === 'radio' ||
+                scope.row.type === 'checkbox'
+              "
+              >{{ scope.row.value }}</span
+            >
             <div class="valBox acea-row" v-if="scope.row.type === 'upload' && scope.row.upload_type === 3">
               <div v-if="scope.row.value.length">
-                <div class="valPicbox acea-scope.row scope.row-column-around" v-for="(item, index) in scope.row.value"
-                  :key="index">
+                <div
+                  class="valPicbox acea-scope.row scope.row-column-around"
+                  v-for="(item, index) in scope.row.value"
+                  :key="index"
+                >
                   <div class="valPicbox_pic"><i class="el-icon-document" /></div>
                   <span class="valPicbox_sp">{{ item.filename }}</span>
                 </div>
@@ -70,9 +86,17 @@
         </el-table-column>
         <el-table-column label="是否显示" min-width="130">
           <template slot-scope="scope">
-            <el-switch class="defineSwitch" :active-value="1" :inactive-value="0" v-model="scope.row.status"
-              :value="scope.row.status" @change="onchangeIsShow(scope.row)" size="large" active-text="显示"
-              inactive-text="隐藏">
+            <el-switch
+              class="defineSwitch"
+              :active-value="1"
+              :inactive-value="0"
+              v-model="scope.row.status"
+              :value="scope.row.status"
+              @change="onchangeIsShow(scope.row)"
+              size="large"
+              active-text="显示"
+              inactive-text="隐藏"
+            >
             </el-switch>
           </template>
         </el-table-column>
@@ -87,8 +111,13 @@
     </el-card>
 
     <!-- 新建 表单-->
-    <el-dialog :visible.sync="modals2" :title="`${rowId ? '修改' : '添加'}配置字段`" :close-on-click-modal="false"
-      :show-close="true" width="720px">
+    <el-dialog
+      :visible.sync="modals2"
+      :title="`${rowId ? '修改' : '添加'}配置字段`"
+      :close-on-click-modal="false"
+      :show-close="true"
+      width="720px"
+    >
       <el-tabs v-if="!rowId" v-model="typeFrom.type" @tab-click="onhangeTab" class="tabsName">
         <el-tab-pane label="文本框 " name="0"></el-tab-pane>
         <el-tab-pane label="多行文本框" name="1"></el-tab-pane>
@@ -98,8 +127,16 @@
         <el-tab-pane label="下拉框" name="5"></el-tab-pane>
         <el-tab-pane label="开关" name="6"></el-tab-pane>
       </el-tabs>
-      <form-create v-if="rules.length != 0" :rule="rules" v-model="fapi" :option="config" @submit="onSubmit"
-        class="formBox" ref="fc" handleIcon="false"></form-create>
+      <form-create
+        v-if="rules.length != 0"
+        :rule="rules"
+        v-model="fapi"
+        :option="config"
+        @submit="onSubmit"
+        class="formBox"
+        ref="fc"
+        handleIcon="false"
+      ></form-create>
       <span slot="footer" class="dialog-footer">
         <el-button v-db-click @click="modals2 = false">取消</el-button>
         <el-button type="primary" v-db-click @click="submitForm">确定</el-button>
@@ -313,19 +350,16 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabsName {
   margin-bottom: 15px;
 }
-
 .valBox {
   margin: 10px 0;
 }
-
 .valPicbox {
   border: 1px solid #e7eaec;
 }
-
 .valPicbox_pic {
   width: 200px;
   height: 100px;
@@ -337,13 +371,11 @@ export default {
     width: 100%;
     height: 100%;
   }
-
   ::v-deep .ivu-icon-md-document {
     font-size: 70px;
     color: #dadada;
   }
 }
-
 .valPicbox_sp {
   display: block;
   font-size: 12px;

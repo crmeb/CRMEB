@@ -22,7 +22,8 @@
               <el-button
                 type="primary"
                 icon="md-add"
-                v-db-click @click="groupAdd('添加数据')"
+                v-db-click
+                @click="groupAdd('添加数据')"
                 style="margin-left: 14px; margin-top: 30px"
                 >添加数据</el-button
               >

@@ -2,8 +2,7 @@
 ## 1、安装docker
 docker 官网下载
 https://www.docker.com/products/docker-desktop
-
-或命令安装 
+或命令安装
 ```
 curl -sSL https://get.daocloud.io/docker | sh
 ```
@@ -32,9 +31,9 @@ http://localhost:8011/
 ### Mysql数据库信息：
 ```
 Host:192.168.10.11
-Post:3306 
-user:root 
-pwd:123456 
+Post:3306
+user:root
+pwd:123456
 ```
 ### Redis信息：
 ```
@@ -53,4 +52,4 @@ pwd:123456
 
 4. MYSQL容器无法启动，没有任何日志
   注意m1芯片下需要使用mysql镜像daocloud.io/library/mysql:5.7.5-m15；其他任何情况下都
-   使用mysql:5.7的镜像 
+   使用mysql:5.7的镜像

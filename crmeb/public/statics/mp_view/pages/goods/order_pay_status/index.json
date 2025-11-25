@@ -2,6 +2,7 @@
   "navigationBarTitleText": "支付成功",
   "usingComponents": {
     "lottery-model": "/pages/goods/order_pay_status/payLottery",
+    "gift-modal": "/pages/goods/order_pay_status/components/giftModal",
     "authorize": "/components/Authorize"
   }
 }

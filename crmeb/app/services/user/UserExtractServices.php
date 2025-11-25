@@ -20,6 +20,7 @@ use app\services\system\admin\SystemAdminServices;
 use app\services\wechat\WechatUserServices;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
+use crmeb\services\AliPayService;
 use crmeb\services\FormBuilder as Form;
 use crmeb\services\app\WechatService;
 use crmeb\services\pay\Pay;
@@ -185,29 +186,24 @@ class UserExtractServices extends BaseServices
         $userType = $userServices->value(['uid' => $userExtract['uid']], 'user_type');
         $nickname = $userServices->value(['uid' => $userExtract['uid']], 'nickname');
         $phone = $userServices->value(['uid' => $userExtract['uid']], 'phone');
+        $order_id = $userExtract['wechat_order_id'] != '' ? $userExtract['wechat_order_id'] : app()->make(StoreOrderCreateServices::class)->getNewOrderId('tx');
+        $insertData = ['wechat_order_id' => $order_id, 'nickname' => $nickname, 'phone' => $phone];
 
-        switch ($userExtract['extract_type']) {
-            case 'bank':
-                $order_id = $userExtract['bank_code'];
-                break;
-            case 'weixin':
-                $order_id = $userExtract['wechat'];
-                break;
-            case 'alipay':
-                $order_id = $userExtract['alipay_code'];
-                break;
-            default:
-                $order_id = '';
-                break;
-        }
-
-        $insertData = ['order_id' => $order_id, 'nickname' => $nickname, 'phone' => $phone];
-
-        //自动提现到零钱
-        if ($userExtract['extract_type'] == 'weixin' && sys_config('brokerage_type', 0)) {
-
-            $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'wechat');
-            $type = Order::JSAPI;
+        //微信自动提现到零钱
+        if (sys_config('weixin_extract_type', 0) && $userExtract['extract_type'] == 'weixin') {
+            $type = '';
+            $openid = $wechatServices->uidToOpenid($userExtract['uid'], $userExtract['channel_type']);
+            if ($userExtract['channel_type'] == 'wechat') {
+                $type = Order::JSAPI;
+            } elseif ($userExtract['channel_type'] == 'routine') {
+                $type = 'mini';
+            } elseif ($userExtract['channel_type'] == 'app') {
+                $type = Order::APP;
+            }
+            if (!$openid) {
+                $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'wechat');
+                $type = Order::JSAPI;
+            }
             if (!$openid) {
                 $openid = $wechatServices->uidToOpenid($userExtract['uid'], 'routine');
                 $type = 'mini';
@@ -216,47 +212,107 @@ class UserExtractServices extends BaseServices
                 $openid = $wechatServices->uidToOpenid((int)$userExtract['uid'], 'app');
                 $type = Order::APP;
             }
-
             if (!$openid) {
-                throw new ValidateException('该用户暂不支持企业付款到零钱，请手动转账');
+                throw new ValidateException('该用户暂不支持自动转账到零钱，请手动转账');
             }
-
-            /** @var StoreOrderCreateServices $services */
-            $services = app()->make(StoreOrderCreateServices::class);
-            $insertData['order_id'] = $services->getNewOrderId();
-
-            //v3商家转账到零钱
+            //v3商家转账
             if (sys_config('pay_wechat_type')) {
                 $pay = new Pay('v3_wechat_pay');
-                $res = $pay->merchantPay($openid, $insertData['order_id'], $extractNumber, [
-                    'type' => $type,
-                    'batch_name' => '提现佣金到零钱',
-                    'batch_remark' => '您于' . date('Y-m-d H:i:s') . '提现.' . $extractNumber . '元'
-                ]);
+                if (sys_config('v3_pay_public_key') != '') {
+                    $res = $pay->merchantPayNew(
+                        $type,
+                        $order_id,
+                        sys_config('v3_transfer_scene_id', '1000'),
+                        $openid,
+                        $userExtract['real_name'],
+                        bcmul($extractNumber, '100', 0),
+                        '佣金提现到零钱',
+                        sys_config('site_url') . '/api/transfer/notify/' . $type,
+                        '劳务报酬',
+                        [
+                            [
+                                'info_type' => '岗位类型',
+                                'info_content' => '推广员奖励'
+                            ],
+                            [
+                                'info_type' => '报酬说明',
+                                'info_content' => '推广订单奖励提现'
+                            ],
+                        ]
+                    );
+                    $this->dao->update($id, [
+                        'out_bill_no' => $res['out_bill_no'] ?? '',
+                        'package_info' => $res['package_info'] ?? '',
+                        'state' => $res['state'] ?? '',
+                        'transfer_bill_no' => $res['transfer_bill_no'] ?? '',
+                        'fail_reason' => $res['fail_reason'] ?? '',
+                        'status' => 1
+                    ]);
+                    event('NoticeListener', [['uid' => $userExtract['uid'], 'order_id' => $order_id, 'extractNumber' => $extractNumber, 'type' => 1], 'revenue_received']);
+                    return 'v3_extract';
+                } else {
+                    $res = $pay->merchantPay($openid, $order_id, $extractNumber, [
+                        'type' => $type,
+                        'batch_name' => '提现佣金到零钱',
+                        'batch_remark' => '您于' . date('Y-m-d H:i:s') . '提现.' . $extractNumber . '元'
+                    ]);
+                    $this->dao->update($id, ['wechat_order_id' => $order_id]);
+                }
+
             } else {
                 // 微信提现
-                $res = WechatService::merchantPay($openid, $insertData['order_id'], $extractNumber, '提现佣金到零钱');
+                $res = WechatService::merchantPay($openid, $order_id, (string)$extractNumber, '提现佣金到零钱');
             }
 
             if (!$res) {
                 throw new ApiException(400658);
             }
-
-            // 更新 提现申请记录 wechat_order_id
-            $this->dao->update($id, ['wechat_order_id' => $insertData['order_id']]);
-
-            /** @var UserServices $userService */
-            $userService = app()->make(UserServices::class);
-            $user = $userService->getUserInfo($userExtract['uid']);
-
-            $insertData['nickname'] = $user['nickname'];
-            $insertData['phone'] = $user['phone'];
         }
+        if (sys_config('alipay_extract_type', 0) && $userExtract['extract_type'] == 'alipay') {
+            // 构造支付宝提现参数
+            $alipaySignType = sys_config('alipay_sign_type');
+            if ($alipaySignType == 0) {
+                $bizParams = [
+                    'payee_type' => 'ALIPAY_LOGONID', // 收款方账户类型，ALIPAY_LOGONID-支付宝登录账号
+                    'payee_account' => $userExtract['real_name'], // 收款方账户，实名认证的支付宝账号
+                    'amount' => $extractNumber, // 提现金额
+                    'payer_show_name' => sys_config('site_name'), // 付款方姓名/个人名称
+                    'payee_real_name' => $userExtract['user_name'], // 收款方真实姓名/个人名称
+                    'remark' => '提现 ¥' . $extractNumber . ' 到支付宝', // 业务备注
+                ];
+            } else {
+                $bizParams = [
+                    'out_biz_no' => $order_id, // 商户订单号
+                    'trans_amount' => $extractNumber,
+                    'biz_scene' => 'DIRECT_TRANSFER',
+                    'product_code' => 'TRANS_ACCOUNT_NO_PWD',
+                    'order_title' => sys_config('site_name') . '提现',
+                    'payee_info' => [
+                        'identity' => $userExtract['alipay_code'],
+                        'identity_type' => 'ALIPAY_LOGON_ID',
+                        'name' => $userExtract['user_name'],
+                    ],
+                    'remark' => '提现 ¥' . $extractNumber . ' 到支付宝', // 业务备注
+                ];
+            }
+            // 调用支付宝服务发起支付宝提现请求
+            $res = AliPayService::instance()->merchantPay($bizParams, $alipaySignType);
+            // 如果支付宝提现请求失败，则抛出异常
+            if (!$res) {
+                throw new ApiException('提现失败，请稍查看日志！');
+            }
+        }
+
+        /** @var UserServices $userService */
+        $userService = app()->make(UserServices::class);
+        $user = $userService->getUserInfo($userExtract['uid']);
+        $insertData['nickname'] = $user['nickname'];
+        $insertData['phone'] = $user['phone'];
 
         /** @var CapitalFlowServices $capitalFlowServices */
         $capitalFlowServices = app()->make(CapitalFlowServices::class);
         $capitalFlowServices->setFlow([
-            'order_id' => $insertData['order_id'],
+            'order_id' => $order_id,
             'uid' => $userExtract['uid'],
             'price' => bcmul('-1', $extractNumber, 2),
             'pay_type' => $userExtract['extract_type'],
@@ -399,8 +455,9 @@ class UserExtractServices extends BaseServices
         if ($extract->status == -1) {
             throw new AdminException(400660);
         }
-        if ($this->changeSuccess($id, $extract)) {
-            return true;
+        $res = $this->changeSuccess($id, $extract);
+        if ($res) {
+            return $res;
         } else {
             throw new AdminException(100005);
         }
@@ -439,7 +496,8 @@ class UserExtractServices extends BaseServices
         $extractBank = str_replace("\r\n", "\n", $extractBank);//防止不兼容
         $data['extractBank'] = explode("\n", is_array($extractBank) ? ($extractBank[0] ?? $extractBank) : $extractBank);
         $data['minPrice'] = sys_config('user_extract_min_price');//提现最低金额
-        $data['brokerageType'] = sys_config('brokerage_type', 0);//到账方式
+        $data['weixinExtractType'] = (int)sys_config('weixin_extract_type', 0);//微信到账方式
+        $data['alipayExtractType'] = (int)sys_config('alipay_extract_type', 0);//支付宝到账方式
         $data['withdrawal_fee'] = sys_config('withdrawal_fee', 0);//提现手续费
         return $data;
     }
@@ -458,12 +516,12 @@ class UserExtractServices extends BaseServices
             throw new ApiException(100026);
         }
 
-        if ($data['extract_type'] == 'weixin' && !sys_config('brokerage_type', 0) && !$data['weixin']) {
+        if ($data['extract_type'] == 'weixin' && !sys_config('weixin_extract_type', 0) && !$data['weixin']) {
             throw new ApiException(400110);
         }
 
-        if ($data['extract_type'] == 'weixin' && bccomp($data['money'], '1', 2) < 0) {
-            throw new ApiException(410112);
+        if ($data['extract_type'] == 'weixin' && bccomp($data['money'], '0.1', 2) < 0) {
+            throw new ApiException('微信提现最低不能小于0.1元');
         }
 
         /** @var WechatUserServices $wechatServices */
@@ -471,7 +529,7 @@ class UserExtractServices extends BaseServices
         $openid = $wechatServices->uidToOpenid($uid, 'wechat');
         if (!$openid) $openid = $wechatServices->uidToOpenid($uid, 'routine');
 
-        if ($data['extract_type'] == 'weixin' && sys_config('brokerage_type', 0) && !$openid) {
+        if ($data['extract_type'] == 'weixin' && sys_config('weixin_extract_type', 0) && !$openid) {
             throw new ApiException(410024);
         }
 
@@ -503,13 +561,15 @@ class UserExtractServices extends BaseServices
         }
         $data['extract_price'] = bcmul($data['money'], '1', 2);
         $insertData = [
+            'wechat_order_id' => app()->make(StoreOrderCreateServices::class)->getNewOrderId('tx'),
             'uid' => $user['uid'],
             'extract_type' => $data['extract_type'],
             'extract_price' => $data['extract_price'],
             'extract_fee' => bcmul((string)$data['extract_price'], bcdiv((string)sys_config('withdrawal_fee', '0'), '100', 4), 2),
             'add_time' => time(),
             'balance' => $user['brokerage_price'],
-            'status' => 0
+            'status' => 0,
+            'channel_type' => $data['channel_type']
         ];
         if (isset($data['name']) && strlen(trim($data['name']))) $insertData['real_name'] = $data['name'];
         else $insertData['real_name'] = $user['nickname'];
@@ -524,14 +584,18 @@ class UserExtractServices extends BaseServices
         if ($data['extract_type'] == 'alipay') {
             $insertData['alipay_code'] = $data['alipay_code'];
             $insertData['qrcode_url'] = $data['qrcode_url'];
+            $insertData['user_name'] = $data['user_name'];
+            $insertData['real_name'] = $data['user_name'];
             $mark = '使用支付宝提现' . $insertData['extract_price'] . '元' . $feeMark;
         } else if ($data['extract_type'] == 'bank') {
             $mark = '使用银联卡' . $insertData['bank_code'] . '提现' . $insertData['extract_price'] . '元' . $feeMark;
         } else if ($data['extract_type'] == 'weixin') {
+            $insertData['user_name'] = $data['user_name'];
+            $insertData['real_name'] = $data['user_name'];
             $insertData['qrcode_url'] = $data['qrcode_url'];
             $mark = '使用微信提现' . $insertData['extract_price'] . '元' . $feeMark;
-            if (sys_config('brokerage_type', 0) && $openid) {
-                if ($data['extract_price'] < 1) {
+            if (sys_config('weixin_extract_type', 0) && $openid) {
+                if ($data['extract_price'] < 0.1) {
                     throw new ApiException(400665);
                 }
             }

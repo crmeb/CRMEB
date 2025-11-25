@@ -11,6 +11,7 @@ use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderTakeServices;
 use app\services\product\product\StoreProductServices;
 use app\services\system\attachment\SystemAttachmentServices;
+use app\services\user\UserSignServices;
 use think\facade\Log;
 
 /**
@@ -36,6 +37,7 @@ class CrontabRunServices
         'productReplay' => '订单商品自动好评',
         'clearPoster' => '清除昨日海报',
         'autoInvoice' => '自动开具发票以及退款自动冲红',
+        'signRemind' => '未签到提醒',
         'customTimer' => '自定义定时任务',
     ];
 
@@ -225,6 +227,22 @@ class CrontabRunServices
             $this->crontabLog(' 执行自动开具/冲红电子发票');
         } catch (\Throwable $e) {
             $this->crontabLog('自动开具/冲红电子发票失败,失败原因:' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 未签到提醒
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2023/9/30
+     */
+    public function signRemind()
+    {
+        try {
+            app()->make(UserSignServices::class)->sendSignRemind();
+            $this->crontabLog(' 执行未签到提醒');
+        } catch (\Throwable $e) {
+            $this->crontabLog('未签到提醒失败,失败原因:' . $e->getMessage());
         }
     }
 

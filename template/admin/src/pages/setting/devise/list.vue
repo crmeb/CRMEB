@@ -17,13 +17,21 @@
         </div>
         <div class="table-box">
           <div class="acea-row row-between-wrapper">
-            <el-row>
-              <el-col>
-                <div class="button acea-row row-middle">
-                  <el-button type="primary" @click="createdPage">添加专题页</el-button>
-                </div>
-              </el-col>
-            </el-row>
+            <div class="button acea-row row-middle">
+              <el-button class="m-r-10" type="primary" @click="createdPage">添加页面</el-button>
+              <el-upload
+                :action="UploadPath"
+                :before-upload="beforeUpload"
+                :on-success="handleSuccess"
+                :on-error="handleError"
+                :limit="1"
+                :show-file-list="false"
+                accept=".txt"
+                :headers="header"
+              >
+                <el-button type="primary">导入模板</el-button>
+              </el-upload>
+            </div>
           </div>
           <el-table
             :data="list"
@@ -47,12 +55,7 @@
             <el-table-column label="模板类型" min-width="130">
               <template slot-scope="scope">
                 <el-tag type="success" size="medium" v-if="scope.row.status == 1">首页</el-tag>
-                <el-tag type="info" size="medium" v-if="scope.row.is_diy == 1 && scope.row.status == 0" class="mr10">{{
-                  scope.row.type_name
-                }}</el-tag>
-                <el-tag type="warning" size="medium" v-if="scope.row.is_diy == 0 && scope.row.status == 0">{{
-                  scope.row.type_name
-                }}</el-tag>
+                <el-tag type="info" size="medium" v-else class="mr10">专题页</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="添加时间" min-width="130">
@@ -80,7 +83,6 @@
                     :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${scope.row.id}&name=${
                       scope.row.template_name || 'moren'
                     }`"
-                    target="_blank"
                   >
                     编辑</a
                   >
@@ -105,6 +107,10 @@
                 <div style="display: inline-block" v-if="scope.row.status != 1">
                   <a v-db-click @click="setStatus(scope.row, scope.$index)">设为首页</a>
                 </div>
+                <el-divider direction="vertical" />
+                <div style="display: inline-block">
+                  <a v-db-click @click="exportView(scope.row.id)">导出模版</a>
+                </div>
               </template>
             </el-table-column>
           </el-table>
@@ -114,7 +120,7 @@
               :total="total"
               :page.sync="diyFrom.page"
               :limit.sync="diyFrom.limit"
-              @pagination="getList"
+              @pagination="diyProList"
             />
           </div>
         </div>
@@ -170,11 +176,14 @@
 
 <script>
 import Setting from '@/setting';
-import { diyList, diyDel, setStatus, recovery, getRoutineCode, setDefault } from '@/api/diy';
+import { diyProList, diyDel, setStatus, recovery, getRoutineCode, setDefault, exportDiyDataApi } from '@/api/diy';
 import { mapState, mapActions } from 'vuex';
 import QRCode from 'qrcodejs2';
 import goodClass from './goodClass';
 import users from './users';
+import { Upload } from 'element-ui';
+import { getCookies } from '@/libs/util';
+
 export default {
   name: 'devise_list',
   computed: {
@@ -205,6 +214,7 @@ export default {
       list: [],
       iframeUrl: '',
       modal: false,
+      UploadPath: Setting.apiBaseURL + '/diy_pro/import/data',
       BaseURL: Setting.apiBaseURL.replace(/adminapi/, ''),
       cardShow: 0,
       loadingExist: false,
@@ -225,6 +235,7 @@ export default {
         link: [{ required: true, message: '请输入移动端链接', trigger: 'blur' }],
       },
       url: window.location.origin,
+      header: {},
     };
   },
   watch: {
@@ -234,17 +245,61 @@ export default {
   },
   created() {
     this.cardShow = this.$route.params.type;
-    this.getList();
+    this.diyProList();
     this.iframeUrl = `${location.origin}/pages/index/index?mdType=iframeWindow`;
+    this.getToken();
   },
-  mounted() {},
+  mounted() {
+    this.$store.commit('mobildConfig/SETEMPTY');
+  },
   methods: {
-    ...mapActions('mobildConfig', ['resetState']),
+    getToken() {
+      this.header['Authori-zation'] = 'Bearer ' + getCookies('token');
+    },
+    beforeUpload(file) {
+      const isTXT = file.type === 'text/plain';
+      if (!isTXT) {
+        this.$message.error('只能上传TXT文件');
+      }
+      return isTXT;
+    },
+    handleSuccess(response, file) {
+      if (response.status == 200) {
+        this.$message.success(response.msg);
+        this.diyProList();
+      } else {
+        this.$message.error(response.msg);
+      }
+    },
+    handleError(err, file) {
+      this.$message.error('文件上传失败');
+    },
+    exportView(id) {
+      exportDiyDataApi(id)
+        .then((res) => {
+          const textToSave = res.data.value;
+          const blob = new Blob([textToSave], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = res.data.filename; // 设置下载文件的名称
+          document.body.appendChild(a);
+          a.click(); // 模拟点击触发下载
+          document.body.removeChild(a); // 清理DOM
+          this.$message.success(res.msg);
+        })
+        .catch((err) => {
+          this.$message.error(err.msg);
+        });
+    },
     createdPage() {
-      this.resetState();
-      this.$nextTick(() => {
-        window.open(`${this.url}${this.$routeProStr}/setting/pages/diy_index?id=0&name=首页&type=0`, '_blank');
+      this.$router.push({
+        path: this.$routeProStr + '/setting/pages/diy_index',
+        query: { id: 0, name: '首页', type: 1 },
       });
+      // this.$nextTick(() => {
+      //   window.open(`${this.url}${this.$routeProStr}/setting/pages/diy_index?id=0&name=首页&type=0`);
+      // });
     },
     cancel() {
       this.$refs['formItem'].resetFields();
@@ -343,19 +398,19 @@ export default {
       setDefault(row.id)
         .then((res) => {
           this.$message.success(res.msg);
-          this.getList();
+          this.diyProList();
         })
         .catch((err) => {
           this.$message.error(err.msg);
         });
     },
     // 获取列表
-    getList() {
+    diyProList() {
       // let storage = window.localStorage;
       // this.iframeUrl = storage.getItem("iframeUrl");
       let that = this;
       this.loading = true;
-      diyList(this.diyFrom).then((res) => {
+      diyProList(this.diyFrom).then((res) => {
         this.loading = false;
         let data = res.data;
         this.list = data.list;
@@ -378,7 +433,7 @@ export default {
     },
     // 添加
     // add() {
-    //   this.$modalForm(getDiyCreate()).then(() => this.getList());
+    //   this.$modalForm(getDiyCreate()).then(() => this.diyProList());
     // },
     // 添加
     add() {
@@ -400,7 +455,7 @@ export default {
       };
       this.$modalSure(delfromData)
         .then((res) => {
-          this.getList();
+          this.diyProList();
         })
         .catch((res) => {
           this.$message.error(res.msg);
@@ -424,7 +479,7 @@ export default {
             .then((res) => {
               this.refreshFrame();
               this.$message.success(res.msg);
-              this.getList();
+              this.diyProList();
             })
             .catch((res) => {
               this.$message.error(res.msg);
@@ -435,28 +490,27 @@ export default {
     recovery(row) {
       recovery(row.id).then((res) => {
         this.$message.success(res.msg);
-        this.getList();
+        this.diyProList();
       });
     },
   },
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-mt {
   background-color: #fff;
   padding-bottom: 50px;
 }
-.no-warp{
+.no-warp {
   flex-wrap: nowrap !important;
 }
-::v-deep .el-card__body{
+::v-deep .el-card__body {
   padding: 40px;
 }
 .bnt {
   width: 80px !important;
 }
-
 .iframe-col {
   width: 375px;
   min-width: 375px;
@@ -464,19 +518,16 @@ export default {
   margin-right: 30px;
   position: relative;
 }
-
 .iframe-box {
   width: 100%;
   height: 100%;
   border-radius: 10px;
   border: 1px solid #eee;
 }
-
 .target-add {
   text-decoration: none;
   color: #fff;
 }
-
 .mask {
   position: absolute;
   left: 0;
@@ -485,101 +536,39 @@ export default {
   height: 100%;
   background-color: rgba(0, 0, 0, 0);
 }
-
-::v-deep .ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title {
+::v-deep .ivu-menu-vertical .ivu-menu-item,
+.ivu-menu-vertical .ivu-menu-submenu-title {
   text-align: center;
 }
-
 ::v-deep .i-layout-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 ::v-deep .ivu-page-header {
   border-bottom: unset;
   position: fixed;
   z-index: 9;
   width: 100%;
 }
-
 ::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
-
 ::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
-
 ::v-deep .ivu-menu {
   z-index: 0 !important;
 }
-
 ::v-deep .ivu-row {
   display: flex;
 }
-.table-box{
-  flex: 1 !important;
+.table-box {
+  flex: 1;
 }
-// @media (max-width: 2175px) {
-// .table {
-// display: block;
-// flex: 0 0 76%;
-// max-width: 76%;
-// }
-// }
-
-// @media (max-width: 2010px) {
-// .table {
-// display: block;
-// flex: 0 0 75%;
-// max-width: 75%;
-// }
-// }
-
-// @media (max-width: 1860px) {
-// .table {
-// display: block;
-// flex: 0 0 70%;
-// max-width: 70%;
-// }
-// }
-
-// @media (max-width: 1597px) {
-// .table {
-// display: block;
-// flex: 0 0 65%;
-// max-width: 65%;
-// }
-// }
-
-// @media (max-width: 1413px) {
-// .table {
-// display: block;
-// flex: 0 0 60%;
-// max-width: 60%;
-// }
-// }
-
-// @media (max-width: 1275px) {
-// .table {
-// display: block;
-// flex: 0 0 55%;
-// max-width: 55%;
-// }
-// }
-
-// @media (max-width: 1168px) {
-// .table {
-// display: block;
-// flex: 0 0 48%;
-// max-width: 48%;
-// }
-// }
 .code {
   position: relative;
 }
-
 .QRpic {
   width: 160px;
   height: 160px;
@@ -589,13 +578,11 @@ export default {
     height: 100%;
   }
 }
-
 .left-wrapper {
   padding: 20px 0 0 20px;
   background: #fff;
   border-right: unset;
 }
-
 .tree_tit {
   height: 50px;
   line-height: 50px;
@@ -605,18 +592,16 @@ export default {
   text-align: center;
   border-bottom: 1px solid #ebeef5;
 }
-
 .picCon {
   width: 280px;
   height: 510px;
-  background: #FFFFFF;
-  border: 1px solid #EEEEEE;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
   border-radius: 25px;
-
   .pictrue {
     width: 250px;
     height: 417px;
-    border: 1px solid #EEEEEE;
+    border: 1px solid #eeeeee;
     opacity: 1;
     border-radius: 10px;
     margin: 30px auto 0 auto;
@@ -627,26 +612,22 @@ export default {
       border-radius: 10px;
     }
   }
-
   .circle {
     width: 36px;
     height: 36px;
-    background: #FFFFFF;
-    border: 1px solid #EEEEEE;
+    background: #ffffff;
+    border: 1px solid #eeeeee;
     border-radius: 50%;
     margin: 13px auto 0 auto;
   }
 }
-
 .tree-vis {
   display: flex;
   flex-direction: column;
-
   .tab-item {
     padding: 15px 20px;
     cursor: pointer;
   }
-
   .active {
     background-color: var(--prev-bg-main-color);
     color: var(--prev-color-primary);

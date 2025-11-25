@@ -1,9 +1,9 @@
 <template>
   <div class="users">
     <el-card :bordered="false" shadow="never" class="h100">
-      <div class="acea-row row-top">
+      <div class="acea-row row-top  no-warp">
         <div class="left" :style="colorStyle">
-          <div class="header" :class="userData.status == 3 ? 'bgColor' : ''">
+          <div class="header" :class="{ bgColor: userData.status == 3, solid: current == 1 }" @click="currentShow(1)">
             <div class="top acea-row row-between-wrapper">
               <div class="picTxt acea-row row-middle">
                 <div class="pictrue">
@@ -54,7 +54,7 @@
             </div>
             <div class="bnt">立即续费</div>
           </div>
-          <div class="orderCenter on dotted" :class="current == 4 ? 'solid' : ''" v-db-click @click="currentShow(4)">
+          <div class="orderCenter on dotted p-y-15" :class="current == 4 ? 'solid' : ''" v-db-click @click="currentShow(4)">
             <div class="title acea-row row-between-wrapper">
               <div>订单中心</div>
               <div class="all">查看全部<span class="iconfont iconjinru"></span></div>
@@ -91,11 +91,16 @@
             </swiper>
             <div v-else class="default">暂无广告数据</div>
           </div>
-          <div class="orderCenter service dotted" :class="current == 2 ? 'solid' : ''" v-db-click @click="currentShow(2)">
-            <div class="title acea-row row-between-wrapper">
+          <div
+            class="orderCenter service dotted"
+            :class="current == 2 ? 'solid' : ''"
+            v-db-click
+            @click="currentShow(2)"
+          >
+            <div class="title acea-row row-between-wrapper" v-if="userData.my_menus_status == 1">
               <div>我的服务</div>
             </div>
-            <div class="list acea-row">
+            <div class="list acea-row" v-if="userData.my_menus_status == 1">
               <div class="item" v-for="(item, index) in MyMenus" :key="index" v-if="item.pic">
                 <div class="pictrue">
                   <img :src="item.pic" v-if="item.pic && item.pic != ''" />
@@ -104,12 +109,25 @@
                 <div>{{ item.name ? item.name : '服务名称' }}</div>
               </div>
             </div>
+            <div class="list-2" v-else-if="userData.my_menus_status == 2">
+              <div class="acea-row row-middle item" v-for="(item, index) in MyMenus" :key="index" v-if="item.pic">
+                <img class="pictrue" :src="item.pic" v-if="item.pic && item.pic != ''" />
+                <span class="iconfont icontupian1" v-else></span>
+                <div class="name">{{ item.name ? item.name : '服务名称' }}</div>
+                <i class="el-icon-arrow-right"></i>
+              </div>
+            </div>
           </div>
-          <div class="orderCenter service dotted" :class="current == 3 ? 'solid' : ''" v-db-click @click="currentShow(3)">
-            <div class="title acea-row row-between-wrapper">
+          <div
+            class="orderCenter service dotted"
+            :class="current == 3 ? 'solid' : ''"
+            v-db-click
+            @click="currentShow(3)"
+          >
+            <div class="title acea-row row-between-wrapper" v-if="userData.business_status == 1">
               <div>商家管理</div>
             </div>
-            <div class="list acea-row">
+            <div class="list acea-row" v-if="userData.business_status == 1">
               <div class="item" v-for="(item, index) in storeMenu" :key="index" v-if="item.pic">
                 <div class="pictrue">
                   <img :src="item.pic" />
@@ -117,11 +135,19 @@
                 <div>{{ item.name }}</div>
               </div>
             </div>
+            <div class="list-2" v-else-if="userData.business_status == 2">
+              <div class="acea-row row-middle item" v-for="(item, index) in storeMenu" :key="index" v-if="item.pic">
+                <img class="pictrue" :src="item.pic" v-if="item.pic && item.pic != ''" />
+                <span class="iconfont icontupian1" v-else></span>
+                <div class="name">{{ item.name ? item.name : '服务名称' }}</div>
+                <i class="el-icon-arrow-right"></i>
+              </div>
+            </div>
           </div>
         </div>
         <div class="right">
           <div class="title">页面设置</div>
-          <div class="c_row-item">
+          <div class="c_row-item" v-if="current == 1">
             <el-col class="label" :span="4"> 页面风格： </el-col>
             <el-col :span="20" class="slider-box">
               <el-radio-group v-model="userData.status">
@@ -159,6 +185,32 @@
               </el-radio-group>
             </el-col>
           </div>
+          <div class="c_row-item" v-if="current == 2">
+            <el-col class="label" :span="4"> 我的服务： </el-col>
+            <el-col :span="20" class="slider-box">
+              <el-radio-group v-model="userData.my_menus_status">
+                <el-radio :label="1">
+                  <span>样式1</span>
+                </el-radio>
+                <el-radio :label="2">
+                  <span>样式2</span>
+                </el-radio>
+              </el-radio-group>
+            </el-col>
+          </div>
+          <div class="c_row-item" v-if="current == 3">
+            <el-col class="label" :span="4"> 商家服务： </el-col>
+            <el-col :span="20" class="slider-box">
+              <el-radio-group v-model="userData.business_status" >
+                <el-radio :label="1">
+                  <span>样式1</span>
+                </el-radio>
+                <el-radio :label="2">
+                  <span>样式2</span>
+                </el-radio>
+              </el-radio-group>
+            </el-col>
+          </div>
           <div class="c_row-item acea-row row-top" v-if="current == 5">
             <el-col class="label" :span="4"> 广告位： </el-col>
             <el-col :span="20" class="slider-box">
@@ -168,7 +220,7 @@
                 v-model="userData.my_banner_status"
                 style="margin-bottom: 12px"
               />
-              <div class="info">建议尺寸：690 * 240px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
+              <div class="info">建议尺寸：375 * 65px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
               <uploadPic :listData="userData.routine_my_banner" :type="5"></uploadPic>
             </el-col>
           </div>
@@ -223,6 +275,8 @@ export default {
         routine_my_menus: [],
         status: '',
         order_status: '',
+        my_menus_status: 1,
+        business_status: 1,
       },
       MyMenus: [{ pic: '', url: '', name: '', sort: 1, status: 1 }],
       storeMenu: [{ pic: '', url: '', name: '', sort: 1, status: 1 }],
@@ -313,6 +367,8 @@ export default {
         this.userData.status = res.data.status;
         this.userData.order_status = res.data.order_status;
         this.userData.my_banner_status = res.data.my_banner_status;
+        this.userData.my_menus_status = res.data.my_menus_status || 1;
+        this.userData.business_status = res.data.business_status || 1;
         let storeMenu = [];
         let myMenu = [];
         this.switchOrder(res.data.order_status);
@@ -384,16 +440,14 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 /* 定义滑块 内阴影+圆角 */
 ::-webkit-scrollbar-thumb {
   -webkit-box-shadow: inset 0 0 0px #ddd;
 }
-
 ::-webkit-scrollbar {
   width: 4px !important; /* 对垂直流动条有效 */
 }
-
 .default {
   background-color: #fff;
   text-align: center;
@@ -401,58 +455,47 @@ export default {
   line-height: 50px;
   border-radius: 8px;
 }
-
 .bgColor {
   background-color: unset !important;
-
   .top {
     .picTxt {
       .txt {
         .name {
           color: #333 !important;
         }
-
         .phone {
           color: rgba(51, 51, 51, 0.8) !important;
           background-color: rgba(51, 51, 51, 0.13) !important;
         }
       }
     }
-
     .news {
       .iconfont {
         color: #333 !important;
       }
-
       .num {
         background-color: var(--view-theme) !important;
         color: #fff !important;
       }
     }
-
     .iconshezhi {
       color: #333 !important;
     }
   }
-
   .center {
     color: rgba(51, 51, 51, 0.7) !important;
-
     .num {
       color: #333 !important;
     }
   }
 }
-
 .dotted {
   border: 1px dashed #2d8cf0;
   cursor: pointer;
 }
-
 .solid {
   border: 1px solid #2d8cf0 !important;
 }
-
 .c_row-item {
   .slider-box {
     .info {
@@ -461,27 +504,24 @@ export default {
     }
   }
 }
-
 .bottomB {
   width: 337px;
   height: 62px;
-  background: #343A48;
+  background: #343a48;
   border-radius: 8px 8px 0px 0px;
   padding: 11px 15px 0 15px;
   margin: 10px auto 0 auto;
-  color: #BBBBBB;
+  color: #bbbbbb;
   font-size: 13px;
   z-index: 0;
   position: relative;
-
   .iconfont {
     font-size: 11px;
   }
-
   .vip {
     font-size: 13px;
     font-weight: bold;
-    color: #F8D5A8;
+    color: #f8d5a8;
 
     img {
       width: 18px;
@@ -492,10 +532,10 @@ export default {
     }
   }
 }
-
 .member {
   background-image: url('../../../assets/images/user_vip.png');
   background-repeat: no-repeat;
+  background-position-y: center;
   background-size: 100%;
   width: 334px;
   height: 48px;
@@ -503,32 +543,27 @@ export default {
   position: relative;
   z-index: 9;
   margin-bottom: 13px;
-  padding: 0 20px 0 45px;
-
+  padding: 0 20px 0 52px;
   .text {
     color: rgba(174, 90, 42, 0.8);
     font-size: 12px;
-
     .title {
       font-size: 12px;
     }
   }
-
   .bnt {
     width: 70px;
     height: 23px;
     background-color: #fff;
     border-radius: 14px;
-    color: #AE5A2A;
+    color: #ae5a2a;
     text-align: center;
     line-height: 26px;
     font-size: 12px;
   }
 }
-
 .carousel {
   margin: 10px 18px 0 18px;
-
   .swiperimg {
     width: 100%;
     height: 63px;
@@ -541,30 +576,33 @@ export default {
     }
   }
 }
-
-.swiper-pagination-fraction, .swiper-pagination-custom, .swiper-container-horizontal > .swiper-pagination-bullets {
+.swiper-pagination-fraction,
+.swiper-pagination-custom,
+.swiper-container-horizontal > .swiper-pagination-bullets {
   bottom: 2px;
 }
-
 ::v-deep .swiper-pagination-bullet {
   width: 4px;
   height: 4px;
 }
-
 ::v-deep .swiper-pagination-bullet-active {
   background: #fff;
 }
-
 .users {
+  // 隐藏滚动条
+  .left::-webkit-scrollbar {
+    display: none;
+  }
   .left {
-    background: #F7F7F7;
+    background: #f7f7f7;
     width: 375px;
+    min-width: 375px;
     height: 690px;
     padding-bottom: 1px;
     border-radius: 10px;
     margin-right: 30px;
     border: 1px solid #eee;
-    overflow:hidden;
+    overflow-y: scroll;
     .header {
       background-color: var(--view-theme);
       background-image: url('../../../assets/images/user01.png');
@@ -574,10 +612,8 @@ export default {
       height: 150px;
       position: relative;
       margin-bottom: 14px;
-
       .top {
         padding: 19px 20px 0 20px;
-
         .picTxt {
           .pictrue {
             width: 35px;
@@ -591,7 +627,6 @@ export default {
               border-radius: 50%;
             }
           }
-
           .txt {
             .name {
               font-size: 12px;
@@ -605,7 +640,6 @@ export default {
                 vertical-align: middle;
               }
             }
-
             .phone {
               width: 86px;
               height: 21px;
@@ -614,28 +648,24 @@ export default {
               font-size: 11px;
               color: #fff;
               margin-top: 4px;
-
               .iconfont {
                 font-size: 11px;
               }
             }
           }
         }
-
         .news {
           position: relative;
           margin-right: 18px;
-
           .iconfont {
             font-size: 22px;
             color: #fff;
           }
-
           .num {
             position: absolute;
             width: 14px;
             height: 14px;
-            background: #FFFFFF;
+            background: #ffffff;
             border-radius: 50%;
             font-size: 9px;
             color: var(--view-theme);
@@ -645,32 +675,26 @@ export default {
             right: -4px;
           }
         }
-
         .iconshezhi {
           font-size: 22px;
           color: #fff;
         }
       }
-
       .center {
         text-align: center;
         color: rgba(255, 255, 255, 0.8);
         margin-top: 9px;
-
         .num {
           font-size: 15px;
           font-weight: 600;
           color: rgba(255, 255, 255, 1);
         }
-
         .font {
           font-size: 13px;
         }
-
         .item {
-          &~.item {
+          & ~ .item {
             position: relative;
-
             &:before {
               position: absolute;
               content: '';
@@ -684,7 +708,6 @@ export default {
           }
         }
       }
-
       .bottom {
         background-image: url('../../../assets/images/member.png');
         width: 355px;
@@ -692,74 +715,62 @@ export default {
         background-size: 100%;
         background-repeat: no-repeat;
         position: absolute;
-        bottom: -6px;
-        padding: 0 17px 0 44px;
+        bottom: -1px;
+        padding: 5px 20px 0 55px;
         font-size: 13px;
         color: #905100;
         right: 8px;
-
         .renew {
           font-size: 12px;
-
           .iconjinru {
             font-size: 11px;
           }
         }
       }
     }
-
     .orderCenter {
-      background: #FFFFFF;
+      background: #ffffff;
       border-radius: 8px;
       margin: 0 18px 10px 18px;
       text-align: center;
-      padding: 15px 0;
-
       &.on {
         position: relative;
         margin-top: -5px;
       }
-
       .title {
         padding: 0 15px;
         font-size: 13px;
         color: #282828;
         font-weight: 600px;
-
         .all {
           font-size: 12px;
           color: #666666;
-
           .iconfont {
             font-size: 12px;
             margin-left: 2px;
           }
         }
       }
-
       .list {
         margin-top: 10px;
-
         .item {
           font-size: 12px;
           color: #454545;
-
           .iconfont {
             font-size: 20px;
             color: var(--view-theme);
           }
         }
       }
-
       &.service {
-        padding: 15px 0 0 0;
         margin-top: 10px;
-
+        .title {
+          padding-top: 15px;
+        }
         .list {
           .item {
             width: 25%;
             margin-bottom: 10px;
-
             .pictrue {
               width: 23px;
               height: 23px;
@@ -773,24 +784,42 @@ export default {
             }
           }
         }
+        .list-2 {
+          .item {
+            display: flex;
+            padding: 14px 10px 14px 16px;
+            .pictrue {
+              width: 23px;
+              height: 23px;
+              font-size: 12px;
+              margin-right: 8px;
+              img {
+                width: 100%;
+                height: 100%;
+              }
+            }
+            .name {
+              flex: 1;
+              font-size: 14px;
+              color: #333;
+              text-align: left;
+            }
+          }
+        }
       }
     }
   }
-
   .right {
     width: 540px;
-
     ::v-deep .ivu-radio-wrapper {
       font-size: 13px;
       margin-right: 20px;
     }
-
     .title {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
       position: relative;
       font-weight: bold;
-
       &:before {
         content: '';
         position: absolute;
@@ -802,7 +831,6 @@ export default {
         left: -8px;
       }
     }
-
     .c_row-item {
       margin-top: 24px;
     }

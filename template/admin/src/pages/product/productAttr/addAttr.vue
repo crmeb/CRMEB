@@ -5,7 +5,7 @@
       :model="formDynamic"
       :rules="rules"
       class="attrFrom"
-      label-width="110px"
+      label-width="120px"
       label-position="right"
       @submit.native.prevent
     >
@@ -17,59 +17,77 @@
             </el-form-item>
           </el-col>
         </el-col>
-        <el-col :span="23" class="noForm" v-for="(item, index) in formDynamic.spec" :key="index">
-          <el-form-item>
-            <div class="acea-row row-middle">
-              <span class="mr5">{{ item.value }}</span>
-              <i class="el-icon-close" style="font-size: 14px" v-db-click @click="handleRemove(index)"></i>
-            </div>
-            <div class="rulesBox">
-              <el-tag
-                class="mr14 mb10"
-                closable
-                color="primary"
-                v-for="(j, indexn) in item.detail"
-                :key="indexn"
-                @close="handleRemove2(item.detail, indexn)"
-                >{{ j }}</el-tag
-              >
-              <el-input
-                placeholder="请输入属性名称"
-                v-model.trim="item.detail.attrsVal"
-                @keyup.enter.native="createAttr(item.detail.attrsVal, index)"
-                class="mb10 form_content_width"
-              >
-                <template slot="append">
-                  <el-button type="primary" v-db-click @click="createAttr(item.detail.attrsVal, index)">确定</el-button>
-                </template>
-              </el-input>
+        <el-col :span="23" class="noForm" :key="index">
+          <el-form-item label="">
+            <div class="specifications">
+              <draggable group="specifications" :list="formDynamic.spec" handle=".move-icon" animation="300">
+                <div class="specifications-item active" v-for="(item, index) in formDynamic.spec" :key="index">
+                  <div class="move-icon">
+                    <span class="iconfont icondrag2"></span>
+                  </div>
+                  <i class="del el-icon-error" @click="handleRemoveRole(index)"></i>
+                  <div class="specifications-item-box">
+                    <div class="lineBox"></div>
+                    <div class="specifications-item-name mb18">
+                      <el-input
+                        v-model="item.value"
+                        placeholder="规格名称"
+                        class="specifications-item-name-input"
+                        maxlength="30"
+                        show-word-limit
+                      ></el-input>
+                    </div>
+                    <div class="rulesBox ml30">
+                      <draggable class="item" :list="item.detail" handle=".drag">
+                        <div v-for="(j, indexn) in item.detail" :key="indexn" class="mr10 spec drag">
+                          <i class="el-icon-error" @click="handleRemove2(item.detail, indexn)"></i>
+
+                          <el-input
+                            style="width: 120px"
+                            v-model="item.detail[indexn]"
+                            placeholder="规格值"
+                            maxlength="30"
+                          >
+                            <template slot="prefix">
+                              <span class="iconfont icondrag2"></span>
+                            </template>
+                          </el-input>
+                        </div>
+                        <el-popover
+                          :ref="'popoverRef_' + index"
+                          placement=""
+                          width="210"
+                          trigger="click"
+                          @after-enter="handleShowPop(index)"
+                        >
+                          <el-input
+                            :ref="'inputRef_' + index"
+                            placeholder="请输入规格值"
+                            v-model="item.detail.attrsVal"
+                            @keyup.enter.native="createAttr(item.detail.attrsVal, index)"
+                            @blur="createAttr(item.detail.attrsVal, index)"
+                            maxlength="30"
+                            show-word-limit
+                          >
+                          </el-input>
+                          <div class="addfont" slot="reference" type="text" v-db-click>添加规格值</div>
+                        </el-popover>
+                      </draggable>
+                    </div>
+                  </div>
+                </div>
+              </draggable>
+              <el-button v-if="formDynamic.spec.length < 4" v-db-click @click="handleAddRole()">添加新规格</el-button>
             </div>
           </el-form-item>
         </el-col>
-        <el-col :span="24" v-if="isBtn" class="mt10">
-          <el-col :span="8" class="mr15">
-            <el-form-item label="规格名称：">
-              <el-input placeholder="请输入规格" v-model="attrsName" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8" class="mr20">
-            <el-form-item label="规格值：">
-              <el-input v-model="attrsVal" placeholder="请输入规格值" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="2">
-            <el-button type="primary" v-db-click @click="createAttrName">确定</el-button>
-          </el-col>
-          <el-col :span="2">
-            <el-button v-db-click @click="offAttrName">取消</el-button>
-          </el-col>
-        </el-col>
       </el-row>
-      <el-button type="primary" v-db-click @click="addBtn" v-if="!isBtn" class="add">添加新规格</el-button>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button v-db-click @click="onClose">取消</el-button>
-      <el-button type="primary" :loading="modal_loading" v-db-click @click="handleSubmit('formDynamic')">确定</el-button>
+      <el-button type="primary" :loading="modal_loading" v-db-click @click="handleSubmit('formDynamic')"
+        >确定</el-button
+      >
     </span>
   </el-dialog>
 </template>
@@ -77,8 +95,12 @@
 <script>
 import { mapState } from 'vuex';
 import { ruleAddApi, ruleInfoApi } from '@/api/product';
+import vuedraggable from 'vuedraggable';
 export default {
   name: 'addAttr',
+  components: {
+    draggable: vuedraggable,
+  },
   data() {
     return {
       spinShow: false,
@@ -111,6 +133,23 @@ export default {
   },
   computed: {},
   methods: {
+    handleShowPop(index) {
+      this.$refs['inputRef_' + index][0].focus();
+    },
+    // 删除规格
+    handleRemoveRole(index) {
+      this.formDynamic.spec.splice(index, 1);
+      if (!this.formDynamic.spec.length) {
+        this.formDynamic.spec = [];
+      }
+    },
+    handleAddRole() {
+      let data = {
+        value: this.formDynamic.attrsName,
+        detail: [],
+      };
+      this.formDynamic.spec.push(data);
+    },
     onCancel() {
       this.ids = 0;
       this.clear();
@@ -228,20 +267,125 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .rulesBox {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
-
 .attrFrom {
   ::v-deep .ivu-form-item {
     margin-bottom: 0px !important;
   }
 }
-
+.noForm {
+  margin-left: 12px;
+}
 .add {
-  margin-left: 122px;
+  margin-left: 132px;
+}
+.drag {
+  cursor: move;
+}
+.spec {
+  display: block;
+  margin: 5px 0;
+  position: relative;
+  .el-icon-error {
+    position: absolute;
+    display: none;
+    right: -3px;
+    top: -3px;
+    z-index: 9;
+  }
+}
+.spec:hover {
+  .el-icon-error {
+    display: block;
+    z-index: 999;
+    cursor: pointer;
+  }
+}
+.move-icon {
+  width: 30px;
+  cursor: move;
+  margin-right: 10px;
+}
+.move-icon .icondrag2 {
+  font-size: 26px;
+  color: #bbb;
+}
+.specifications {
+  .specifications-item:hover {
+    background-color: var(--prev-bg-menu-hover-ba-color);
+  }
+  .specifications-item:hover .del {
+    display: block;
+  }
+  .specifications-item:last-child {
+    margin-bottom: 14px;
+  }
+  .specifications-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+    transition: all 0.1s;
+    background-color: #fafafa;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    .del {
+      display: none;
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      font-size: 22px;
+      color: var(--prev-color-primary);
+      cursor: pointer;
+    }
+    .specifications-item-box {
+      position: relative;
+      .lineBox {
+        position: absolute;
+        left: 13px;
+        top: 24px;
+        width: 30px;
+        height: 45px;
+        border-radius: 6px;
+        border-left: 1px solid #dcdfe6;
+        border-bottom: 1px solid #dcdfe6;
+      }
+      .specifications-item-name-input {
+        width: 200px;
+      }
+    }
+  }
+  .rulesBox {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    .item {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .addfont {
+      margin-top: 5px;
+    }
+    ::v-deep .el-popover {
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+  }
+  .addfont {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--prev-color-primary);
+    margin-left: 14px;
+    cursor: pointer;
+  }
 }
 </style>

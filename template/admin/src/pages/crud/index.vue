@@ -91,12 +91,12 @@
         </el-col>
       </el-row>
       <el-table
-          :data="dataList"
-          ref="table"
-          class="mt14"
-          v-loading="loading"
-          no-userFrom-text="暂无数据"
-          no-filtered-userFrom-text="暂无筛选结果"
+        :data="dataList"
+        ref="table"
+        class="mt14"
+        v-loading="loading"
+        no-userFrom-text="暂无数据"
+        no-filtered-userFrom-text="暂无筛选结果"
       >
         <el-table-column :label="item.title" :min-width="item.minWidth" v-for="(item, index) in columns" :key="index">
           <template slot-scope="scope">
@@ -105,13 +105,13 @@
             </template>
             <template v-else-if="item.from_type == 'frameImageOne'">
               <div class="tabBox_img" v-viewer>
-                <img v-lazy="scope.row[item.slot]"/>
+                <img v-lazy="scope.row[item.slot]" />
               </div>
             </template>
             <template v-else-if="item.from_type == 'frameImages'">
               <div class="frame-images">
                 <div class="tabBox_img" v-viewer v-for="(item, index) in scope.row[item.slot]" :key="index">
-                  <img v-lazy="item"/>
+                  <img v-lazy="item" />
                 </div>
               </div>
             </template>
@@ -120,19 +120,19 @@
             </template>
             <template v-else-if="item.slot === 'action'">
               <a v-db-click @click="show(scope.row)">详情</a>
-              <el-divider direction="vertical"/>
+              <el-divider direction="vertical" />
               <a v-db-click @click="edit(scope.row)">修改</a>
               <el-divider direction="vertical"></el-divider>
               <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
             </template>
             <template v-else-if="item.from_type === 'switches'">
               <el-switch
-                  :active-value="1"
-                  :inactive-value="0"
-                  v-model="scope.row[item.slot]"
-                  :value="scope.row[item.slot]"
-                  size="large"
-                  @change="onchangeIsShow(scope.row,item.slot)"
+                :active-value="1"
+                :inactive-value="0"
+                v-model="scope.row[item.slot]"
+                :value="scope.row[item.slot]"
+                size="large"
+                @change="onchangeIsShow(scope.row, item.slot)"
               >
               </el-switch>
             </template>
@@ -140,7 +140,7 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination v-if="total" :total="total" :page.sync="from.page" :limit.sync="from.limit" @pagination="getList"/>
+        <pagination v-if="total" :total="total" :page.sync="from.page" :limit.sync="from.limit" @pagination="getList" />
       </div>
     </el-card>
 
@@ -149,13 +149,13 @@
         <el-descriptions-item :label="item.comment" v-for="(item, index) in readFields.all" :key="index">
           <div v-if="item.from_type == 'frameImageOne'">
             <div class="tabBox_img" v-viewer>
-              <img v-lazy="info[item.field]"/>
+              <img v-lazy="info[item.field]" />
             </div>
           </div>
           <div v-else-if="item.from_type == 'frameImages'">
             <div class="frame-images">
               <div class="tabBox_img" v-viewer v-for="(item, index) in info[item.field]" :key="index">
-                <img v-lazy="item"/>
+                <img v-lazy="item" />
               </div>
             </div>
           </div>
@@ -170,8 +170,8 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
-import {crudApi, getList, getCreateApi, getStatusApi, getEditApi} from '@/api/crud.js';
+import { mapState } from 'vuex';
+import { crudApi, getList, getCreateApi, getStatusApi, getEditApi } from '@/api/crud.js';
 
 export default {
   name: 'crud_index',
@@ -224,23 +224,23 @@ export default {
     show(row) {
       let url = this.methodApi.read.replace('<id>', row.id);
       getCreateApi(url)
-          .then((res) => {
-            this.dialogTableVisible = true;
-            this.info = res.data;
-          })
-          .catch((res) => {
-            this.$Message.error(res.msg);
-          });
+        .then((res) => {
+          this.dialogTableVisible = true;
+          this.info = res.data;
+        })
+        .catch((res) => {
+          this.$Message.error(res.msg);
+        });
     },
     onchangeIsShow(row, field) {
       let url = this.methodApi.status.replace('<id>', row.id);
-      getStatusApi(url, {field: field, value: row[field]})
-          .then(async (res) => {
-            this.$message.success(res.msg);
-          })
-          .catch((res) => {
-            this.$message.error(res.msg);
-          });
+      getStatusApi(url, { field: field, value: row[field] })
+        .then(async (res) => {
+          this.$message.success(res.msg);
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
     },
     // 表格搜索
     searchs() {
@@ -270,25 +270,25 @@ export default {
           if (item.from_type === 'frameImageOne') {
             item.render = (h, params) => {
               return h(
-                  'div',
-                  {
-                    class: 'tabBox_img',
+                'div',
+                {
+                  class: 'tabBox_img',
+                  directives: [
+                    {
+                      name: 'viewer',
+                    },
+                  ],
+                },
+                [
+                  h('img', {
                     directives: [
                       {
-                        name: 'viewer',
+                        name: 'lazy',
+                        value: params.row[item.slot],
                       },
                     ],
-                  },
-                  [
-                    h('img', {
-                      directives: [
-                        {
-                          name: 'lazy',
-                          value: params.row[item.slot],
-                        },
-                      ],
-                    }),
-                  ],
+                  }),
+                ],
               );
             };
           } else if (item.from_type === 'frameImages') {
@@ -297,27 +297,27 @@ export default {
               let imageH = [];
               image.map((item) => {
                 imageH.push(
-                    h('img', {
-                      directives: [
-                        {
-                          name: 'lazy',
-                          value: item,
-                        },
-                      ],
-                    }),
+                  h('img', {
+                    directives: [
+                      {
+                        name: 'lazy',
+                        value: item,
+                      },
+                    ],
+                  }),
                 );
               });
               return h(
-                  'div',
-                  {
-                    class: 'tabBox_img',
-                    directives: [
-                      {
-                        name: 'viewer',
-                      },
-                    ],
-                  },
-                  imageH,
+                'div',
+                {
+                  class: 'tabBox_img',
+                  directives: [
+                    {
+                      name: 'viewer',
+                    },
+                  ],
+                },
+                imageH,
               );
             };
           }
@@ -336,16 +336,16 @@ export default {
       this.loading = true;
       let url = this.methodApi.index;
       getList(url, this.from)
-          .then(async (res) => {
-            let data = res.data;
-            this.dataList = data.list;
-            this.total = data.count;
-            this.loading = false;
-          })
-          .catch((res) => {
-            this.loading = false;
-            this.$message.error(res.msg);
-          });
+        .then(async (res) => {
+          let data = res.data;
+          this.dataList = data.list;
+          this.total = data.count;
+          this.loading = false;
+        })
+        .catch((res) => {
+          this.loading = false;
+          this.$message.error(res.msg);
+        });
     },
     // 修改
     edit(row) {
@@ -363,13 +363,13 @@ export default {
         ids: '',
       };
       this.$modalSure(delfromData)
-          .then((res) => {
-            this.$message.success(res.msg);
-            this.getList();
-          })
-          .catch((res) => {
-            this.$message.error(res.msg);
-          });
+        .then((res) => {
+          this.$message.success(res.msg);
+          this.getList();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
     },
   },
 };

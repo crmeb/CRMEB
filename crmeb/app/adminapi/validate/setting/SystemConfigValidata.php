@@ -32,7 +32,7 @@ class SystemConfigValidata extends Validate
         'site_url' => 'url',
         'store_brokerage_ratio' => 'float|egt:0|elt:100|regex:float_two',
         'store_brokerage_two' => 'float|egt:0|elt:100|regex:float_two',
-        'user_extract_min_price' => 'float|gt:0|checkMinPrice',
+        'user_extract_min_price' => 'float|gt:0',
         'extract_time' => 'number|between:0,180',
         'replenishment_num' => 'number',
         'store_stock' => 'number',
@@ -149,13 +149,4 @@ class SystemConfigValidata extends Validate
     protected $scene = [
 
     ];
-
-
-    protected function checkMinPrice($value, $rule, $data = [])
-    {
-        if ($data['brokerage_type'] == 1 && bccomp($value, '1', 2) < 0) {
-            return 410112;
-        }
-        return true;
-    }
 }

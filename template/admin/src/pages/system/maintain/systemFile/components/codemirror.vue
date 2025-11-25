@@ -145,7 +145,8 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
-::v-deep .CodeMirror
-	height: 70vh !important
+<style lang="scss" scoped>
+::v-deep .CodeMirror {
+  height: 70vh !important;
+}
 </style>

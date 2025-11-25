@@ -116,7 +116,7 @@
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 		padding: 64rpx 40rpx;
 		padding-bottom: 38rpx;
-		padding-bottom: calc(38rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(38rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		padding-bottom: calc(38rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.06);
 

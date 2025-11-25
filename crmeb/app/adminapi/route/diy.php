@@ -12,7 +12,7 @@
 use think\facade\Route;
 
 /**
- * 分销管理 相关路由
+ * diy 相关路由
  */
 Route::group('diy', function () {
 
@@ -70,10 +70,37 @@ Route::group('diy', function () {
     //推荐商品
     Route::get('groom_list/:type', 'v1.diy.Diy/getGroomList')->option(['real_name' => '推荐商品']);
 
-
+    /** 系统链接管理 */
+    Route::get('link/category', 'v1.diy.PageLink/getLinkCategory')->option(['real_name' => '获取链接分类']);
+    Route::get('link/category/form/:cate_id/[:pid]', 'v1.diy.PageLink/getLinkCategoryForm')->option(['real_name' => '链接分类表单']);
+    Route::post('link/category/save/:cate_id', 'v1.diy.PageLink/getLinkCategorySave')->option(['real_name' => '链接分类保存']);
+    Route::delete('link/category/del/:cate_id', 'v1.diy.PageLink/getLinkCategoryDel')->option(['real_name' => '链接分类删除']);
+    Route::get('link/list/:cate_id', 'v1.diy.PageLink/getLinkList')->option(['real_name' => '链接列表']);
+    Route::post('link/save/:id', 'v1.diy.PageLink/getLinkSave')->option(['real_name' => '链接保存']);
+    Route::delete('link/del/:id', 'v1.diy.PageLink/getLinkDel')->option(['real_name' => '链接删除']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
     \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
     \app\adminapi\middleware\AdminLogMiddleware::class
 ])->option(['mark' => 'diy', 'mark_name' => '页面装修']);
+
+
+/**
+ * diy_pro 相关路由
+ */
+Route::group('diy_pro', function () {
+
+    Route::get('get_list', 'v1.diy.DiyPro/getList')->option(['real_name' => 'DiyPro模板列表']);
+    Route::get('get_info/:id', 'v1.diy.DiyPro/getInfo')->option(['real_name' => 'DiyPro模板详情']);
+    Route::post('save/:id', 'v1.diy.DiyPro/saveInfo')->option(['real_name' => 'DiyPro模板保存']);
+    Route::get('get_product', 'v1.diy.DiyPro/getProduct')->option(['real_name' => '获取商品列表']);
+    Route::post('update/name/:id', 'v1.diy.DiyPro/updateName')->option(['real_name' => '修改名称']);
+    Route::get('export/data/:id', 'v1.diy.DiyPro/exportDIYData')->option(['real_name' => '导出DIY数据']);
+    Route::post('import/data', 'v1.diy.DiyPro/importDIYData')->option(['real_name' => '导入DIY数据']);
+})->middleware([
+    \app\http\middleware\AllowOriginMiddleware::class,
+    \app\adminapi\middleware\AdminAuthTokenMiddleware::class,
+    \app\adminapi\middleware\AdminCheckRoleMiddleware::class,
+    \app\adminapi\middleware\AdminLogMiddleware::class
+])->option(['mark' => 'diy_pro', 'mark_name' => '页面装修']);

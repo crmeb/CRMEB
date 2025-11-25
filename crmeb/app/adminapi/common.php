@@ -126,13 +126,21 @@ if (!function_exists('attr_format')) {
                     $result = [];
                     foreach ($temp as $item) {
                         foreach ($arr[$i + 1]['detail'] as $datum) {
-                            $result[] = trim($item) . ',' . trim($datum);
+                            if (is_array($item)) {
+                                $result[] = trim($item['value']) . ',' . trim($datum['value']);
+                            } else {
+                                $result[] = trim($item) . ',' . trim($datum);
+                            }
                         }
                     }
                 }
             } else {
                 foreach ($arr[0]['detail'] as $item) {
-                    $result[] = trim($item);
+                    if (is_array($item)) {
+                        $result[] = trim($item['value']);
+                    } else {
+                        $result[] = trim($item);
+                    }
                 }
             }
         }

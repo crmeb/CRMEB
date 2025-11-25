@@ -93,9 +93,9 @@ class SystemAttachmentCategoryServices extends BaseServices
      * @return array
      * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function createForm($pid)
+    public function createForm($pid, $type)
     {
-        return create_form('添加分类', $this->form(['pid' => $pid]), Url::buildUrl('/file/category'), 'POST');
+        return create_form('添加分类', $this->form(['pid' => $pid, 'type' => $type]), Url::buildUrl('/file/category'), 'POST');
     }
 
     /**
@@ -122,6 +122,7 @@ class SystemAttachmentCategoryServices extends BaseServices
         return [
             Form::cascader('pid', '上级分类', $data)->options($pidList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width' => '100%']),
             Form::input('name', '分类名称', $info['name'] ?? '')->maxlength(30),
+            Form::hidden('type', $info['type'] ?? 0),
         ];
     }
 

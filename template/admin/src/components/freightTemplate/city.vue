@@ -246,11 +246,10 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .modal .item {
   margin-bottom: 20px;
 }
-
 .modal .item .city {
   position: absolute;
   z-index: 9;
@@ -258,7 +257,6 @@ export default {
   width: 100%;
   padding-top: 18px;
 }
-
 .modal .item .city .checkBox {
   width: 97%;
   padding: 10px;
@@ -268,7 +266,6 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
 }
-
 .modal .item .city .checkBox .arrow {
   position: absolute;
   top: 3px;
@@ -277,7 +274,6 @@ export default {
   border: 8px solid transparent;
   border-bottom-color: #ddd;
 }
-
 .modal .item .city .checkBox .arrow:before {
   position: absolute;
   bottom: -8px;
@@ -288,20 +284,16 @@ export default {
   border: 7px solid transparent;
   border-bottom-color: #fff;
 }
-
 .modal .item .city .checkBox .itemn {
   margin-bottom: 14px;
 }
-
 .radio {
   padding: 5px 0;
   font-size: 14px !important;
 }
-
 .red {
   color: #ff0000;
 }
-
 .empty {
   cursor: pointer;
   font-size: 12px;

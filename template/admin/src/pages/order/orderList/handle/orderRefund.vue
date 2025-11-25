@@ -161,13 +161,10 @@ export default {
   mounted() {},
   methods: {
     handleChange(e, params, index) {
-      // console.log(e, params, index);
-      // params.num = e || 0;
-      // // this.manyFormValidate[index] = params;
-      // this.$set(this.manyFormValidate[index], 'num', e || 1)
       let total = 0;
       this.selectData.forEach((v, i) => {
-        total += this.manyFormValidate[i].num || 0 * this.manyFormValidate[i].cart_info.truePrice;
+        console.log(v.num)
+        total += v.num * v.cart_info.truePrice;
       });
       this.formItem.refund_price = total;
     },
@@ -176,9 +173,9 @@ export default {
       if (this.selectData.length) {
         let total = 0;
         this.selectData.forEach((v, i) => {
-          total += this.manyFormValidate[i].num * this.manyFormValidate[i].cart_info.truePrice;
+          total += v.num * v.cart_info.truePrice;
         });
-        this.formItem.refund_price = total;
+        this.formItem.refund_price = total.toFixed(2);
       }
     },
     changeModal() {

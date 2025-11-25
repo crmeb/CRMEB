@@ -62,9 +62,12 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.ivu-table-wrapper
+<style lang="scss" scoped>
+.ivu-table-wrapper {
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
-.order_box ::v-deep .ivu-table th{background: #f8f8f9 !important;}
+}
+.order_box ::v-deep .ivu-table th {
+  background: #f8f8f9 !important;
+}
 </style>

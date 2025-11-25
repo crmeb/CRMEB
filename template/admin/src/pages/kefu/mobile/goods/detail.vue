@@ -80,56 +80,68 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.scroll-box{
-    height 100%
-    overflow-y scroll
-    -webkit-overflow-scrolling touch
+<style lang="scss" scoped>
+.scroll-box {
+  height: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
-.title-box{
-    height:.8rem
-    line-height .8rem
-    background #fff
-    text-align center
-    color #333
-    font-size 16px
+.title-box {
+  height: 0.8rem;
+  line-height: 0.8rem;
+  background: #fff;
+  text-align: center;
+  color: #333;
+  font-size: 16px;
 }
-.swiper-box
-    width 100%
-    height auto
-    img
-        width 100%
-        height 100%
-        display block
-.goods_info
-    padding 15px
-    background #fff
-    .number-wrapper
-        display flex
-        align-items center
-        .price
-            color #FF3838
-            font-size .3rem
-            span
-                font-size .26rem
-        .old-price
-            font-size .3rem
-            margin-left .2rem
-            color #333333
-    .name
-        font-size .32rem
-        color #333
-    .msg
-        display flex
-        align-items center
-        justify-content space-between
-        margin-top .2rem
-        .item
-            color #999999
-            font-size .28rem
-.con-box
-    margin-top 10px
-    padding-bottom 20px
-    img
-        display block
+.swiper-box {
+  width: 100%;
+  height: auto;
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+.goods_info {
+  padding: 15px;
+  background: #fff;
+  .number-wrapper {
+    display: flex;
+    align-items: center;
+    .price {
+      color: #ff3838;
+      font-size: 0.3rem;
+      span {
+        font-size: 0.26rem;
+      }
+    }
+    .old-price {
+      font-size: 0.3rem;
+      margin-left: 0.2rem;
+      color: #333333;
+    }
+  }
+  .name {
+    font-size: 0.32rem;
+    color: #333;
+  }
+  .msg {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.2rem;
+    .item {
+      color: #999999;
+      font-size: 0.28rem;
+    }
+  }
+}
+.con-box {
+  margin-top: 10px;
+  padding-bottom: 20px;
+  img {
+    display: block;
+  }
+}
 </style>

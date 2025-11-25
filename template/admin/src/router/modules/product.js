@@ -75,5 +75,32 @@ export default {
       },
       component: () => import('@/pages/product/productAttr'),
     },
+    {
+      path: 'param/list',
+      name: `${pre}paramList`,
+      meta: {
+        auth: ['admin-product-param-list'],
+        title: '商品参数',
+      },
+      component: () => import('@/pages/product/paramList'),
+    },
+    {
+      path: 'label/list',
+      name: `${pre}labelList`,
+      meta: {
+        auth: ['admin-product-label-list'],
+        title: '商品标签',
+      },
+      component: () => import('@/pages/product/labelList'),
+    },
+    {
+      path: 'protection/list',
+      name: `${pre}labelList`,
+      meta: {
+        auth: ['admin-product-protection-list'],
+        title: '商品保障',
+      },
+      component: () => import('@/pages/product/protectionList'),
+    },
   ],
 };

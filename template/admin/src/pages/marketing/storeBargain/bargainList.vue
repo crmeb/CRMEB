@@ -1,33 +1,39 @@
 <template>
   <div class="article-manager">
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            label-position="right"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          label-position="right"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="时间选择：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="砍价状态：">
-            <el-select v-model="formValidate.status" placeholder="请选择" clearable @change="userSearchs"  class="form_content_width">
+            <el-select
+              v-model="formValidate.status"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
               <el-option :value="1" label="进行中"></el-option>
               <el-option :value="2" label="已失败"></el-option>
               <el-option :value="3" label="已成功"></el-option>
@@ -260,20 +266,22 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-::v-deep .ivu-tag-cyan .ivu-tag-text{
-    color #19be6b!important
+<style lang="scss" scoped>
+::v-deep .ivu-tag-cyan .ivu-tag-text {
+  color: #19be6b !important;
 }
-.ivu-tag-cyan{
-    background: rgba(25,190,170,0.1);
-    border-color: #19be6b!important;
+.ivu-tag-cyan {
+  background: rgba(25, 190, 170, 0.1);
+  border-color: #19be6b !important;
 }
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>

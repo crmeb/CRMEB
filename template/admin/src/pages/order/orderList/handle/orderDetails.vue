@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-drawer title="订单详情" :size="1000" :visible.sync="modals" :before-close="handleClose">
+    <el-drawer title="订单详情" :size="1000" :visible.sync="modals" wrapperClosable :before-close="handleClose">
       <div v-if="orderDatalist">
         <div class="head">
           <div class="full">
@@ -31,6 +31,10 @@
             <li class="item">
               <div class="title">实际支付</div>
               <div>¥ {{ orderDatalist.orderInfo.pay_price || '0.0' }}</div>
+            </li>
+            <li class="item" v-if="orderDatalist.orderInfo.refund_status == 2">
+              <div class="title">实际退款</div>
+              <div>¥ {{ orderDatalist.orderInfo.refunded_price || '0.0' }}</div>
             </li>
             <li class="item">
               <div class="title">支付方式</div>
@@ -126,19 +130,23 @@
               </ul>
             </div>
             <div class="section" v-if="orderDatalist.orderInfo.delivery_name">
-              <div class="title">{{orderDatalist.orderInfo.delivery_type == 'express' ? '物流信息' : '送货人信息'}}</div>
+              <div class="title">
+                {{ orderDatalist.orderInfo.delivery_type == 'express' ? '物流信息' : '送货人信息' }}
+              </div>
               <ul class="list">
                 <li class="item">
-                  <div>{{orderDatalist.orderInfo.delivery_type == 'express' ? '物流公司：' : '送货人姓名：'}}</div>
+                  <div>{{ orderDatalist.orderInfo.delivery_type == 'express' ? '物流公司：' : '送货人姓名：' }}</div>
                   <div class="value">
                     {{ orderDatalist.orderInfo.delivery_name ? orderDatalist.orderInfo.delivery_name : '-' }}
                   </div>
                 </li>
                 <li class="item">
-                  <div>{{orderDatalist.orderInfo.delivery_type == 'express' ? '物流单号：' : '送货人电话：'}}</div>
+                  <div>{{ orderDatalist.orderInfo.delivery_type == 'express' ? '物流单号：' : '送货人电话：' }}</div>
                   <div class="value">
                     {{ orderDatalist.orderInfo.delivery_id }}
-                    <a v-if="orderDatalist.orderInfo.delivery_type == 'express'" v-db-click @click="openLogistics">物流查询</a>
+                    <a v-if="orderDatalist.orderInfo.delivery_type == 'express'" v-db-click @click="openLogistics"
+                      >物流查询</a
+                    >
                   </div>
                 </li>
               </ul>
@@ -457,7 +465,7 @@ export default {
   line-height: 40px !important;
 }
 .head {
-  padding: 0 35px 24px;
+  padding: 0 30px 24px;
 
   .full {
     display: flex;

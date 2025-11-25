@@ -68,10 +68,20 @@
               <div class="acea-row row-middle">
                 <div class="bnt" v-db-click @click="modify(item, 0)" v-if="item.paid === 0">一键改价</div>
                 <div class="bnt" v-db-click @click="modify(item, 1)">订单备注</div>
-                <div class="bnt" v-db-click @click="modify(item, 0)" v-if="item._status._type === -1 && item.refund_status === 1">
+                <div
+                  class="bnt"
+                  v-db-click
+                  @click="modify(item, 0)"
+                  v-if="item._status._type === -1 && item.refund_status === 1"
+                >
                   立即退款
                 </div>
-                <div class="bnt cancel" v-if="item.pay_type === 'offline' && item.paid === 0" v-db-click @click="offlinePay(item)">
+                <div
+                  class="bnt cancel"
+                  v-if="item.pay_type === 'offline' && item.paid === 0"
+                  v-db-click
+                  @click="offlinePay(item)"
+                >
                   确认付款
                 </div>
                 <router-link
@@ -83,7 +93,8 @@
                 <div
                   class="bnt cancel"
                   v-if="item._status._type === 1 && item.shipping_type === 2"
-                  v-db-click @click="storeCancellation(item)"
+                  v-db-click
+                  @click="storeCancellation(item)"
                 >
                   去核销
                 </div>
@@ -401,60 +412,202 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
-.pos-order-goods{padding:0 0.3rem;background-color: #fff; }
-.pos-order-goods .goods{height:1.85rem;}
-.pos-order-goods .goods~.goods{border-top:1px dashed #e5e5e5;}
-.pos-order-goods .goods .picTxt{width:5.15rem;}
-.pos-order-goods .goods .picTxt .pictrue{width:1.3rem;height:1.3rem;}
-.pos-order-goods .goods .picTxt .pictrue img{width:100%;height:100%;border-radius:0.06rem;}
-.pos-order-goods .goods .picTxt .text{width:3.65rem;height:1.3rem;}
-.pos-order-goods .goods .picTxt .text .info{font-size:0.28rem;color:#282828;}
-.pos-order-goods .goods .picTxt .text .attr{font-size:0.2rem;color:#999;height: 0.8rem;
-    line-height: 0.8rem;}
-.pos-order-goods .goods .money{width:1.64rem;text-align:right;font-size:0.28rem;height: 1.3rem;}
-.pos-order-goods .goods .money .x-money{color:#282828;}
-.pos-order-goods .goods .money .num{color:#ff9600;margin:0.05rem 0;}
-.pos-order-goods .goods .money .y-money{color:#999;text-decoration:line-through;}
-.pos-order-list{display:flex;flex-direction column; background: #f5f5f5; height: 100%; }
-.pos-order-list .head-box{
-    width:100%;background-color:#fff;
-    .input-box{
-        width: 6.9rem;
-        margin: .2rem auto;
-        background: #F5F6F9;
-        border-radius: .39rem;
-        ::v-deep .ivu-input{
-            font-size: .28rem !important;
-            background: #F5F6F9;
-            border-radius: .39rem;
-        }
-        ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
-            border: transparent;
-            box-shadow: none;
-        }
-    }
+<style lang="scss" scoped>
+.pos-order-goods {
+  padding: 0 0.3rem;
+  background-color: #fff;
 }
-.pos-order-list .nav{width:100%;height:0.8rem;font-size:0.3rem;color:#282828; display: flex;align-items: center;}
-.pos-order-list .nav .item{ position: relative; line-height: .8rem}
-.pos-order-list .nav .item.on{color:#3875EA; border-bottom: 1px solid #3875EA;}
-.pos-order-list .list{flex 1; margin-top:0.1rem; overflow hidden;}
-.pos-order-list .list .item{background-color:#fff;width:100%;}
-.pos-order-list .list .item~.item{margin-top:0.24rem;}
-.pos-order-list .list .item .order-num{height:1.24rem;border-bottom:1px solid #eee;font-size:0.3rem;font-weight:bold;color:#282828;padding:0 0.3rem;}
-.pos-order-list .list .item .order-num .time{font-size:0.26rem;font-weight:normal;color:#999;margin-top: -0.4rem;}
-.pos-order-list .list .item .operation{padding:0.2rem 0.3rem;margin-top: 0.03rem;}
-.pos-order-list .list .item .operation .more{position:relative;}
-.pos-order-list .list .item .operation .icon-gengduo{font-size:0.5rem;color:#aaa;}
-
-.pos-order-list .list .item .operation .order .arrow{width: 0;height: 0;border-left: 0.11rem solid transparent;border-right: 0.11rem solid transparent;border-top: 0.2rem solid #e5e5e5;position:absolute;left: 0.15rem;bottom:-0.18rem;}
-.pos-order-list .list .item .operation .order .arrow:before{content:'';width: 0;height: 0;border-left: 0.07rem solid transparent;border-right: 0.07rem solid transparent;border-top: 0.2rem solid #fff;position:absolute;left:-0.07rem;bottom:0;}
-.pos-order-list .list .item .operation .order{width:2rem;background-color:#fff;border:1px solid #eee;border-radius:0.1rem;position:absolute;top:-1rem;z-index:9;}
-.pos-order-list .list .item .operation .order .items{height:0.77rem;line-height:0.77rem;text-align:center;}
-.pos-order-list .list .item .operation .order .items~.items{border-top:1px solid #f5f5f5;}
-
-.pos-order-list .list .item .operation .bnt{font-size:0.28rem;color:#5c5c5c;width:1.7rem;height:0.6rem;border-radius:0.3rem;border:1px solid #bbb;text-align:center;line-height:0.6rem;}
-.pos-order-list .list .item .operation .bnt~.bnt{margin-left:0.14rem;}
-.public-total{font-size:0.28rem;color:#282828;border-top:1px solid #eee;height:0.92rem;line-height:0.92rem;text-align:right;padding:0 0.3rem;background-color: #fff;}
-.public-total .money{color:#ff4c3c;}
+.pos-order-goods .goods {
+  height: 1.85rem;
+}
+.pos-order-goods .goods ~ .goods {
+  border-top: 1px dashed #e5e5e5;
+}
+.pos-order-goods .goods .picTxt {
+  width: 5.15rem;
+}
+.pos-order-goods .goods .picTxt .pictrue {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+.pos-order-goods .goods .picTxt .pictrue img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.06rem;
+}
+.pos-order-goods .goods .picTxt .text {
+  width: 3.65rem;
+  height: 1.3rem;
+}
+.pos-order-goods .goods .picTxt .text .info {
+  font-size: 0.28rem;
+  color: #282828;
+}
+.pos-order-goods .goods .picTxt .text .attr {
+  font-size: 0.2rem;
+  color: #999;
+  height: 0.8rem;
+  line-height: 0.8rem;
+}
+.pos-order-goods .goods .money {
+  width: 1.64rem;
+  text-align: right;
+  font-size: 0.28rem;
+  height: 1.3rem;
+}
+.pos-order-goods .goods .money .x-money {
+  color: #282828;
+}
+.pos-order-goods .goods .money .num {
+  color: #ff9600;
+  margin: 0.05rem 0;
+}
+.pos-order-goods .goods .money .y-money {
+  color: #999;
+  text-decoration: line-through;
+}
+.pos-order-list {
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+  height: 100%;
+}
+.pos-order-list .head-box {
+  width: 100%;
+  background-color: #fff;
+  .input-box {
+    width: 6.9rem;
+    margin: 0.2rem auto;
+    background: #f5f6f9;
+    border-radius: 0.39rem;
+    ::v-deep .ivu-input {
+      font-size: 0.28rem !important;
+      background: #f5f6f9;
+      border-radius: 0.39rem;
+    }
+    ::v-deep .ivu-input,
+    .ivu-input:hover,
+    .ivu-input:focus {
+      border: transparent;
+      box-shadow: none;
+    }
+  }
+}
+.pos-order-list .nav {
+  width: 100%;
+  height: 0.8rem;
+  font-size: 0.3rem;
+  color: #282828;
+  display: flex;
+  align-items: center;
+}
+.pos-order-list .nav .item {
+  position: relative;
+  line-height: 0.8rem;
+}
+.pos-order-list .nav .item.on {
+  color: #3875ea;
+  border-bottom: 1px solid #3875ea;
+}
+.pos-order-list .list {
+  flex: 1;
+  margin-top: 0.1rem;
+  overflow: hidden;
+}
+.pos-order-list .list .item {
+  background-color: #fff;
+  width: 100%;
+}
+.pos-order-list .list .item ~ .item {
+  margin-top: 0.24rem;
+}
+.pos-order-list .list .item .order-num {
+  height: 1.24rem;
+  border-bottom: 1px solid #eee;
+  font-size: 0.3rem;
+  font-weight: bold;
+  color: #282828;
+  padding: 0 0.3rem;
+}
+.pos-order-list .list .item .order-num .time {
+  font-size: 0.26rem;
+  font-weight: normal;
+  color: #999;
+  margin-top: -0.4rem;
+}
+.pos-order-list .list .item .operation {
+  padding: 0.2rem 0.3rem;
+  margin-top: 0.03rem;
+}
+.pos-order-list .list .item .operation .more {
+  position: relative;
+}
+.pos-order-list .list .item .operation .icon-gengduo {
+  font-size: 0.5rem;
+  color: #aaa;
+}
+.pos-order-list .list .item .operation .order .arrow {
+  width: 0;
+  height: 0;
+  border-left: 0.11rem solid transparent;
+  border-right: 0.11rem solid transparent;
+  border-top: 0.2rem solid #e5e5e5;
+  position: absolute;
+  left: 0.15rem;
+  bottom: -0.18rem;
+}
+.pos-order-list .list .item .operation .order .arrow:before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 0.07rem solid transparent;
+  border-right: 0.07rem solid transparent;
+  border-top: 0.2rem solid #fff;
+  position: absolute;
+  left: -0.07rem;
+  bottom: 0;
+}
+.pos-order-list .list .item .operation .order {
+  width: 2rem;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 0.1rem;
+  position: absolute;
+  top: -1rem;
+  z-index: 9;
+}
+.pos-order-list .list .item .operation .order .items {
+  height: 0.77rem;
+  line-height: 0.77rem;
+  text-align: center;
+}
+.pos-order-list .list .item .operation .order .items ~ .items {
+  border-top: 1px solid #f5f5f5;
+}
+.pos-order-list .list .item .operation .bnt {
+  font-size: 0.28rem;
+  color: #5c5c5c;
+  width: 1.7rem;
+  height: 0.6rem;
+  border-radius: 0.3rem;
+  border: 1px solid #bbb;
+  text-align: center;
+  line-height: 0.6rem;
+}
+.pos-order-list .list .item .operation .bnt ~ .bnt {
+  margin-left: 0.14rem;
+}
+.public-total {
+  font-size: 0.28rem;
+  color: #282828;
+  border-top: 1px solid #eee;
+  height: 0.92rem;
+  line-height: 0.92rem;
+  text-align: right;
+  padding: 0 0.3rem;
+  background-color: #fff;
+}
+.public-total .money {
+  color: #ff4c3c;
+}
 </style>

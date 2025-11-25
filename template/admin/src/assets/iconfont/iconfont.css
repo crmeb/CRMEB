@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 1945396 */
-  src: url('//at.alicdn.com/t/c/font_1945396_qp61r9cscmj.woff2?t=1719814295530') format('woff2'),
-       url('//at.alicdn.com/t/c/font_1945396_qp61r9cscmj.woff?t=1719814295530') format('woff'),
-       url('//at.alicdn.com/t/c/font_1945396_qp61r9cscmj.ttf?t=1719814295530') format('truetype');
+  src: url('./iconfont.woff2?t=1733132184649') format('woff2'),
+       url('./iconfont.woff?t=1733132184649') format('woff'),
+       url('./iconfont.ttf?t=1733132184649') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,106 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icona-zu10416:before {
+  content: "\e7c3";
+}
+
+.iconzhankai-01:before {
+  content: "\e7c1";
+}
+
+.iconshouqi-01:before {
+  content: "\e7c2";
+}
+
+.icona-zu10158:before {
+  content: "\e7c0";
+}
+
+.iconshanchu-01:before {
+  content: "\e7be";
+}
+
+.icontianjia-01:before {
+  content: "\e7bf";
+}
+
+.iconshezhi2:before {
+  content: "\e7bd";
+}
+
+.iconshangpinguanli:before {
+  content: "\e79c";
+}
+
+.icondingdanguanli1:before {
+  content: "\e79d";
+}
+
+.iconyingxiaozhongxin:before {
+  content: "\e79e";
+}
+
+.icondaogouyeji:before {
+  content: "\e79f";
+}
+
+.iconxitongshezhi1:before {
+  content: "\e7a0";
+}
+
+.iconyonghuguanli1:before {
+  content: "\e7a1";
+}
+
+.iconxiaoxipeizhi:before {
+  content: "\e7a2";
+}
+
+.iconrongqi:before {
+  content: "\e7af";
+}
+
+.iconyouhuiquan5:before {
+  content: "\e7b0";
+}
+
+.iconwenzhangguanli-01:before {
+  content: "\e7b1";
+}
+
+.icontixianshenqing-01:before {
+  content: "\e7b2";
+}
+
+.icondaogouguanli-01:before {
+  content: "\e7b3";
+}
+
+.iconfenxiaoguanli-01:before {
+  content: "\e7b4";
+}
+
+.iconshouhouguanli-01:before {
+  content: "\e7bc";
+}
+
+.iconxiayi-01:before {
+  content: "\e798";
+}
+
+.iconjinyong-01:before {
+  content: "\e799";
+}
+
+.iconshangyi-01:before {
+  content: "\e79a";
+}
+
+.iconqiyong-01:before {
+  content: "\e79b";
 }
 
 .iconrequ1:before {
@@ -1964,3 +2064,4 @@
 .iconyouhuiquan:before {
   content: "\e639";
 }
+

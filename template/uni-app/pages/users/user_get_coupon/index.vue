@@ -247,7 +247,6 @@ export default {
 .nav .acea-row {
 	border-top: 5rpx solid transparent;
 	border-bottom: 5rpx solid transparent;
-	cursor: pointer;
 }
 
 .nav .acea-row.on {

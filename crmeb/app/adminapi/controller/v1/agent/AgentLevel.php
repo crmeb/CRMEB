@@ -184,4 +184,35 @@ class AgentLevel extends AuthController
         $this->services->update($id, ['status' => $status]);
         return app('json')->success(100014);
     }
+
+    /**
+     * 获取任务表单数量
+     * @param int $id 任务ID
+     * @return \think\response\Json
+     */
+    public function getTaskNumForm($id)
+    {
+        // 判断任务ID是否为0，若为0则返回错误信息
+        if ($id == 0) return app('json')->fail(100100);
+        // 调用服务层获取任务表单数量
+        $result = $this->services->getTaskNumForm($id);
+        // 返回成功信息和任务表单数量
+        return app('json')->success($result);
+    }
+
+    /**
+     * 设置任务数量
+     * @param int $id 任务ID
+     * @return \think\response\Json
+     */
+    public function setTaskNum($id)
+    {
+        // 从请求中获取任务数量
+        $data = $this->request->postMore([
+            ['task_num', 0]
+        ]);
+        // 调用服务层设置任务数量
+        $res = $this->services->setTaskNum($id, $data);
+        return app('json')->success(100014);
+    }
 }

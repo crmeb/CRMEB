@@ -83,7 +83,7 @@ class StoreCartServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getUserProductCartListV1($uid, $cartIds = '', bool $new, $addr = [], int $shipping_type = 1)
+    public function getUserProductCartListV1($uid, $cartIds = '', bool $new, $addr = [], int $shipping_type = 1, $is_gift = 0)
     {
         if ($new) {
             $cartIds = explode(',', $cartIds);
@@ -99,6 +99,10 @@ class StoreCartServices extends BaseServices
         }
         if (!$cartInfo) {
             throw new ApiException(410233);
+        }
+        if ($is_gift == 1) {
+            $addr = [];
+            $shipping_type = 0;
         }
         [$cartInfo, $valid, $invalid] = $this->handleCartList($uid, $cartInfo, $addr, $shipping_type);
         $seckillIds = array_unique(array_column($cartInfo, 'seckill_id'));
@@ -691,6 +695,10 @@ class StoreCartServices extends BaseServices
                             $item['is_valid'] = 1;
                             $valid[] = $item;
                         }
+                        break;
+                    default:
+                        $item['is_valid'] = 1;
+                        $valid[] = $item;
                         break;
                 }
             }

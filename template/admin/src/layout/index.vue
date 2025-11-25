@@ -6,7 +6,6 @@
   <Classic v-else-if="getThemeConfig.layout === 'classic'" />
   <Transverse v-else-if="getThemeConfig.layout === 'transverse'" />
   <Columns v-else-if="getThemeConfig.layout === 'columns'" />
-
 </template>
 
 <script>

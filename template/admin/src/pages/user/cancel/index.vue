@@ -221,7 +221,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

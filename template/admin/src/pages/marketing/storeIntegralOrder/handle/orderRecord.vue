@@ -1,14 +1,7 @@
 <template>
   <el-dialog :visible.sync="modals" scrollable title="订单记录" width="720px" class="order_box">
     <el-card :bordered="false" shadow="never">
-      <el-table
-        :columns="columns"
-        :data="recordData"
-        v-loading="loading"
-        empty-text="暂无数据"
-        highlight-current-row
-        
-      >
+      <el-table :columns="columns" :data="recordData" v-loading="loading" empty-text="暂无数据" highlight-current-row>
         <el-table-column label="订单ID" width="100">
           <template slot-scope="scope">
             <span>{{ scope.row.oid }}</span>
@@ -89,9 +82,12 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.ivu-table-wrapper
-    border-left: 1px solid #dcdee2;
-    border-top: 1px solid #dcdee2;
- .order_box ::v-deep .ivu-table th{background: #f8f8f9 !important;}
+<style lang="scss" scoped>
+.ivu-table-wrapper {
+  border-left: 1px solid #dcdee2;
+  border-top: 1px solid #dcdee2;
+}
+.order_box ::v-deep .ivu-table th {
+  background: #f8f8f9 !important;
+}
 </style>

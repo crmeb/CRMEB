@@ -252,101 +252,121 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.seckillOn{
-  border-radius 0!important
+<style lang="scss" scoped>
+.seckillOn {
+  border-radius: 0 !important;
 }
-.pageOn{
-   border-radius 10px!important
+.pageOn {
+  border-radius: 10px !important;
 }
-.seckill-box
-    padding 15px 10px
-    background #fff
-    border-radius 10px
-    .hd
-        display flex
-        justify-content space-between
-        align-items center
-        .left
-            display flex
-            align-items center
-            img
-                width 18px
-                height 18px
-                margin-right 5px
-                border-radius 50%
-            p
-                font-size 16px
-                color #282828
-                font-weight:600;
-            .time
-                display flex
-                align-items center
-                margin-left 5px
-                color #FF4444
-                span
-                    width 20px
-                    height 16px
-                    font-size 12px
-                    text-align center
-                    line-height 16px
-                em
-                    font-size 12px
-                    margin 0 3px
-                    font-style: initial;
-                    font-weight bold
-    .list-wrapper
-        display flex
-        margin-top 8px
-        overflow hidden
-        .list-item
-            flex-shrink 0
-            width 110px
-            background-color: #fff;
-            .img-box
-                position: relative;
-                width 100%
-                height 110px
-                img,.box
-                    width 100%
-                    height 100%
-                    border-radius:8px;
-                .box
-                    background #D8D8D8
-                .discount
-                    position absolute
-                    left 8px
-                    bottom 8px
-                    height:18px;
-                    padding 0 3px
-                    line-height 18px
-                    background:rgba(255,255,255,1);
-                    border-radius:2px;
-                    border:1px solid transparent;
-                    font-size 12px
-            .title
-                margin-top 5px
-                font-size 13px
-                color #282828
-                padding: 0 3px;
-            .price
-                display flex
-                align-items center
-                padding: 0 3px;
-                .label
-                    font-size 9px
-                    width 16px
-                    height 16px
-                    color #fff
-                    text-align center
-                    line-height 16px
-                .num-label
-                    color #FF4444
-                    font-size 12px
-                    font-weight:600;
-                    margin 1px 2px 0
-                .num
-                    color #FF4444
-                    font-size 16px
-                    font-weight:600;
+.seckill-box {
+  padding: 15px 10px;
+  background: #fff;
+  border-radius: 10px;
+  .hd {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .left {
+      display: flex;
+      align-items: center;
+      img {
+        width: 18px;
+        height: 18px;
+        margin-right: 5px;
+        border-radius: 50%;
+      }
+      p {
+        font-size: 16px;
+        color: #282828;
+        font-weight: 600;
+      }
+      .time {
+        display: flex;
+        align-items: center;
+        margin-left: 5px;
+        color: #ff4444;
+        span {
+          width: 20px;
+          height: 16px;
+          font-size: 12px;
+          text-align: center;
+          line-height: 16px;
+        }
+        em {
+          font-size: 12px;
+          margin: 0 3px;
+          font-style: initial;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  .list-wrapper {
+    display: flex;
+    margin-top: 8px;
+    overflow: inherit;
+    .list-item {
+      flex-shrink: 0;
+      width: 110px;
+      background-color: #fff;
+      .img-box {
+        position: relative;
+        width: 100%;
+        height: 110px;
+        img,
+        .box {
+          width: 100%;
+          height: 100%;
+          border-radius: 8px;
+        }
+        .box {
+          background: #d8d8d8;
+        }
+        .discount {
+          position: absolute;
+          left: 8px;
+          bottom: 8px;
+          height: 18px;
+          padding: 0 3px;
+          line-height: 18px;
+          background: rgba(255, 255, 255, 1);
+          border-radius: 2px;
+          border: 1px solid transparent;
+          font-size: 12px;
+        }
+      }
+      .title {
+        margin-top: 5px;
+        font-size: 13px;
+        color: #282828;
+        padding: 0 3px;
+      }
+      .price {
+        display: flex;
+        align-items: center;
+        padding: 0 3px;
+        .label {
+          font-size: 9px;
+          width: 16px;
+          height: 16px;
+          color: #fff;
+          text-align: center;
+          line-height: 16px;
+        }
+        .num-label {
+          color: #ff4444;
+          font-size: 12px;
+          font-weight: 600;
+          margin: 1px 2px 0;
+        }
+        .num {
+          color: #ff4444;
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
 </style>

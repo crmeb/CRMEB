@@ -156,35 +156,85 @@ class OutStoreOrderServices extends BaseServices
 
         $order['pay_type_name'] = PayServices::PAY_TYPE[$order['pay_type']] ?? '其他方式';
 
-        if (!$order['paid'] && $order['pay_type'] == 'offline' && !$order['status'] >= 2) {
-            $order['status_name'] = '线下付款,未支付';
-        } else if (!$order['paid']) {
-            $order['status_name'] = '未支付';
-        } else if ($order['status'] == 4) {
-            if ($order['delivery_type'] == 'send') {
-                $order['status_name'] = '待收货';
-            } elseif ($order['delivery_type'] == 'express') {
-                $order['status_name'] = '待收货';
-            } elseif ($order['delivery_type'] == 'split') {//拆分发货
-                $order['status_name'] = '待收货';
+//        if (!$order['paid'] && $order['pay_type'] == 'offline' && !$order['status'] >= 2) {
+//            $order['status_name'] = '线下付款,未支付';
+//        } else if (!$order['paid']) {
+//            $order['status_name'] = '未支付';
+//        } else if ($order['status'] == 4) {
+//            if ($order['delivery_type'] == 'send') {
+//                $order['status_name'] = '待收货';
+//            } elseif ($order['delivery_type'] == 'express') {
+//                $order['status_name'] = '待收货';
+//            } elseif ($order['delivery_type'] == 'split') {//拆分发货
+//                $order['status_name'] = '待收货';
+//            } else {
+//                $order['status_name'] = '待收货';
+//            }
+//        } else if ($order['refund_status'] == 1) {
+//            if (in_array($order['refund_type'], [0, 1, 2])) {
+//                $order['status_name'] = '申请退款中';
+//            } elseif ($order['refund_type'] == 4) {
+//                $order['status_name'] = '申请退款中';
+//            } elseif ($order['refund_type'] == 5) {
+//                $order['status_name'] = '申请退款中';
+//            }
+//        } else if ($order['refund_status'] == 2 || $order['refund_type'] == 6) {
+//            $order['status_name'] = '已退款';
+//        } else if ($order['refund_status'] == 3) {
+//            $order['status_name'] = '部分退款（子订单）';
+//        } else if ($order['refund_status'] == 4) {
+//            $order['status_name'] = '子订单已全部申请退款中';
+//        } else if (!$order['status']) {
+//            if ($order['pink_id']) {
+//                /** @var StorePinkServices $pinkServices */
+//                $pinkServices = app()->make(StorePinkServices::class);
+//                if ($pinkServices->getCount(['id' => $order['pink_id'], 'status' => 1])) {
+//                    $order['status_name'] = '拼团中';
+//                } else {
+//                    $order['status_name'] = '未发货';
+//                }
+//            } else {
+//                if ($order['shipping_type'] === 1) {
+//                    $order['status_name'] = '未发货';
+//                } else {
+//                    $order['status_name'] = '待核销';
+//                }
+//            }
+//        } else if ($order['status'] == 1) {
+//            if ($order['delivery_type'] == 'send') {//TODO 送货
+//                $order['status_name'] = '待收货';
+//            } elseif ($order['delivery_type'] == 'express') {//TODO  发货
+//                $order['status_name'] = '待收货';
+//            } elseif ($order['delivery_type'] == 'split') {//拆分发货
+//                $order['status_name'] = '待收货';
+//            } else {
+//                $order['status_name'] = '待收货';
+//            }
+//        } else if ($order['status'] == 2) {
+//            $order['status_name'] = '待评价';
+//        } else if ($order['status'] == 3) {
+//            $order['status_name'] = '交易完成';
+//        }
+        // 处理未支付状态
+        if (!$order['paid']) {
+            if ($order['pay_type'] == 'offline') {
+                $order['status_name'] = '线下付款,未支付';
             } else {
-                $order['status_name'] = '待收货';
+                $order['status_name'] = '未支付';
             }
-        } else if ($order['refund_status'] == 1) {
-            if (in_array($order['refund_type'], [0, 1, 2])) {
-                $order['status_name'] = '申请退款中';
-            } elseif ($order['refund_type'] == 4) {
-                $order['status_name'] = '申请退款中';
-            } elseif ($order['refund_type'] == 5) {
+        } elseif ($order['status'] == 4 || $order['status'] == 1) { // 合并待收货逻辑
+            $order['status_name'] = '待收货';
+        } elseif ($order['refund_status'] == 1) {
+            if (in_array($order['refund_type'], [0, 1, 2, 4, 5])) {
                 $order['status_name'] = '申请退款中';
             }
-        } else if ($order['refund_status'] == 2 || $order['refund_type'] == 6) {
+        } elseif ($order['refund_status'] == 2 || $order['refund_type'] == 6) {
             $order['status_name'] = '已退款';
-        } else if ($order['refund_status'] == 3) {
+        } elseif ($order['refund_status'] == 3) {
             $order['status_name'] = '部分退款（子订单）';
-        } else if ($order['refund_status'] == 4) {
-            $order['status_name'] = '子订单已全部申请退款中';
-        } else if (!$order['status']) {
+        } elseif ($order['refund_status'] == 4) {
+            $order['status_name'] = '子订单全部申请退款中';
+        } elseif (!$order['status']) {
             if ($order['pink_id']) {
                 /** @var StorePinkServices $pinkServices */
                 $pinkServices = app()->make(StorePinkServices::class);
@@ -200,20 +250,13 @@ class OutStoreOrderServices extends BaseServices
                     $order['status_name'] = '待核销';
                 }
             }
-        } else if ($order['status'] == 1) {
-            if ($order['delivery_type'] == 'send') {//TODO 送货
-                $order['status_name'] = '待收货';
-            } elseif ($order['delivery_type'] == 'express') {//TODO  发货
-                $order['status_name'] = '待收货';
-            } elseif ($order['delivery_type'] == 'split') {//拆分发货
-                $order['status_name'] = '待收货';
-            } else {
-                $order['status_name'] = '待收货';
-            }
-        } else if ($order['status'] == 2) {
+        } elseif ($order['status'] == 2) {
             $order['status_name'] = '待评价';
-        } else if ($order['status'] == 3) {
+        } elseif ($order['status'] == 3) {
             $order['status_name'] = '交易完成';
+        } else {
+            // 处理未知状态
+            $order['status_name'] = '未知状态';
         }
         unset($order['pink_id'], $order['refund_type']);
         return $order;

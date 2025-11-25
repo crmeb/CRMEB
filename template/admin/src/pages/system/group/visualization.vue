@@ -16,7 +16,8 @@
             :class="{ active: item.id == pageId }"
             v-for="(item, index) in groupAll"
             :key="index"
-            v-db-click @click="edits(item)"
+            v-db-click
+            @click="edits(item)"
           >
             {{ item.name }}
           </div>
@@ -191,7 +192,11 @@
           <div>
             <div v-bind="grid">
               <div class="title">签到天数设置</div>
-              <el-button type="primary" v-db-click @click="groupAdd('添加数据')" style="margin-left: 14px; margin-top: 30px"
+              <el-button
+                type="primary"
+                v-db-click
+                @click="groupAdd('添加数据')"
+                style="margin-left: 14px; margin-top: 30px"
                 >添加数据</el-button
               >
             </div>
@@ -256,7 +261,11 @@
           <div>
             <div v-bind="grid">
               <div class="title">充值金额设置</div>
-              <el-button type="primary" v-db-click @click="groupAdd('添加数据')" style="margin-left: 14px; margin-top: 30px"
+              <el-button
+                type="primary"
+                v-db-click
+                @click="groupAdd('添加数据')"
+                style="margin-left: 14px; margin-top: 30px"
                 >添加数据</el-button
               >
             </div>
@@ -362,8 +371,10 @@
                       </div>
                       <div class="info-item">
                         <span>链接地址：</span>
-                        <div class="input-box" v-db-click @click="link(index)">
-                          <el-input v-model="item.link" readonly placeholder="选择链接" suffix-icon="el-icon-arrow-right" />
+                        <div class="input-box" v-db-click>
+                          <el-input v-model="item.link" placeholder="选择链接">
+                            <i class="el-icon-link" slot="suffix" @click="getLink(index)" />
+                          </el-input>
                         </div>
                       </div>
                     </div>
@@ -393,7 +404,8 @@
                     type="primary"
                     ghost
                     style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
-                    v-db-click @click="addBox"
+                    v-db-click
+                    @click="addBox"
                     >添加图片
                   </el-button>
                 </div>
@@ -447,8 +459,10 @@
                     </div>
                     <div class="info-item">
                       <span>链接地址：</span>
-                      <div class="input-box" v-db-click @click="link(index)">
-                        <el-input v-model="item.link" readonly placeholder="选择链接" />
+                      <div class="input-box" v-db-click>
+                        <el-input v-model="item.link" placeholder="选择链接">
+                          <i class="el-icon-link" slot="suffix" @click="getLink(index)" />
+                        </el-input>
                       </div>
                     </div>
                   </div>
@@ -472,7 +486,8 @@
                   type="primary"
                   ghost
                   style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
-                  v-db-click @click="addBox"
+                  v-db-click
+                  @click="addBox"
                   >添加图片
                 </el-button>
               </div>
@@ -914,7 +929,7 @@ export default {
           });
       }
     },
-    link(index) {
+    getLink(index) {
       this.activeIndexs = index;
       this.$refs.linkaddres.modals = true;
     },

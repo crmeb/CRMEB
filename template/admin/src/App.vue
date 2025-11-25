@@ -28,35 +28,6 @@ export default {
       isVersion: false,
     };
   },
-  watch: {
-    // 监听路由 控制侧边栏显示 标记当前顶栏菜单（如需要）
-    $route(to, from) {
-      const onRoutes = to.meta.activeMenu ? to.meta.activeMenu : to.meta.path;
-      this.$store.commit('menu/setActivePath', onRoutes);
-      if (to.name == 'crud_crud') {
-        this.$store.state.menus.oneLvRoutes.map((e) => {
-          if (e.path === to.path) {
-            to.meta.title = e.title;
-          }
-        });
-      }
-      if (
-        [
-          'product_productAdd',
-          'marketing_bargainCreate',
-          'marketing_storeSeckillCreate',
-          'marketing_storeIntegralCreate',
-        ].includes(to.name)
-      ) {
-        let route = to.matched[1].path.split(':')[0];
-        this.$store.state.menus.oneLvRoutes.map((e) => {
-          if (route.indexOf(e.path) != -1) {
-            to.meta.title = `${e.title} ${to.params.id ? 'ID:' + to.params.id : ''}`;
-          }
-        });
-      }
-    },
-  },
   methods: {
     ...mapMutations('media', ['setDevice']),
     handleWindowResize() {
@@ -78,7 +49,7 @@ export default {
     },
     reload() {
       this.isRouterAlive = false;
-      this.$nextTick(function () {
+      this.$nextTick(() => {
         this.isRouterAlive = true;
       });
     },
@@ -118,7 +89,15 @@ export default {
   },
 };
 </script>
-
+<style type="text/css">
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+</style>
 <style lang="scss">
 html,
 body {
@@ -132,35 +111,6 @@ body {
   width: 100%;
   height: 100%;
   font-family: PingFang SC, Arial, Microsoft YaHei, sans-serif;
-}
-// .dialog-fade-enter-active {
-//   animation: anim-open 0.3s;
-// }
-// .dialog-fade-leave-active {
-//   animation: anim-close 0.3s;
-// }
-// @keyframes anim-open {
-//   0% {
-//     transform: translate3d(100%, 0, 0);
-//     opacity: 0;
-//   }
-//   100% {
-//     transform: translate3d(0, 0, 0);
-//     opacity: 1;
-//   }
-// }
-// @keyframes anim-close {
-//   0% {
-//     transform: translate3d(0, 0, 0);
-//     opacity: 1;
-//   }
-//   100% {
-//     transform: translate3d(100%, 0, 0);
-//     opacity: 0;
-//   }
-// }
-.ivu-modal-wrap ::v-deep .connect_customerServer_img {
-  display: none;
 }
 .right-box .ivu-color-picker .ivu-select-dropdown {
   position: absolute;

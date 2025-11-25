@@ -202,7 +202,7 @@
 	.coupon-list .item{
 	}
 	.coupon-list .item .text{
-		padding: 14rpx 10rpx;
+		padding: 14rpx 24rpx;
 	}
 	.coupon-list .item .text .condition {
 		display: flex;

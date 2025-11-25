@@ -1,87 +1,71 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <div class="auth acea-row row-between-wrapper">
-        <div class="acea-row row-middle">
-          <i class="iconfont iconshangyeshouquan iconIos blue" />
-          <div class="text" v-if="status === 1">
-            <div>商业授权</div>
-            <div class="code">授权码：{{ authCode }}</div>
-          </div>
-          <div class="text" v-else>
-            <div>商业授权</div>
-            <div class="code">未授权</div>
-          </div>
-        </div>
-        <!-- <el-button class="grey" v-db-click @click="toCrmeb()" v-if="status === 1">进入官网</el-button> -->
-        <div>
-          <el-button type="primary" v-db-click @click="toCrmeb()" v-if="status === 1">进入官网</el-button>
-          <el-button type="primary" v-db-click @click="payment('bz')" v-if="status !== 1">购买授权</el-button>
-        </div>
-      </div>
-    </el-card>
-    <el-card :bordered="false" shadow="never" class="mt16" v-if="!copyright && status == 1">
-      <!-- v-if="copyright == '0' && status == 1" -->
-      <div class="auth acea-row row-between-wrapper">
-        <div class="acea-row row-middle">
-          <span class="iconfont iconbanquan iconIos blue"></span>
-          <div class="text">
-            <div>去版权服务</div>
-            <div class="code">购买之后可以设置</div>
-            <div class="pro_price" v-if="productStatus">￥{{ price }}</div>
-          </div>
-        </div>
-        <el-button type="primary" v-db-click @click="payment('copyright')">立即购买</el-button>
-      </div>
-    </el-card>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" v-if="copyright">
-      <div class="auth acea-row row-between-wrapper">
-        <div class="acea-row row-middle">
-          <span class="iconfont iconbanquan iconIos blue"></span>
-          <div class="acea-row row-middle">
-            <span class="update">修改授权信息:</span>
-            <el-input style="width: 460px" v-model="copyrightText" />
-          </div>
-        </div>
-        <el-button type="primary" v-db-click @click="saveCopyRight">保存</el-button>
-      </div>
-      <div class="authorized auth">
-        <div class="acea-row row-middle">
-          <div class="box"></div>
-          <span class="update">上传授权图片:</span>
-        </div>
-        <div class="uploadPictrue" v-if="authorizedPicture" v-db-click @click="modalPicTap('单选')">
-          <img v-lazy="authorizedPicture" />
-        </div>
-        <div class="upload" v-else v-db-click @click="modalPicTap('单选')">
-          <div class="iconfont">+</div>
-        </div>
-      </div>
-      <span class="prompt">建议尺寸：宽290px*高100px</span>
+    <el-card v-for="(value, key, index) in tableList" :key="index" :bordered="false" shadow="never" class="ivu-mt mt16">
+      <div class="head acea-row row-between-wrapper">{{ key | headText }}</div>
+      <el-table ref="table" :data="tableList[key]" empty-text="暂无数据">
+        <el-table-column :label="key == 'permissions' ? '文件/目录' : '环境'" minWidth="180">
+          <template slot-scope="scope">{{ scope.row.name }} </template>
+        </el-table-column>
+        <el-table-column label="要求" minWidth="180">
+          <template slot-scope="scope">
+            <span>{{ scope.row.require }} </span>
+            <el-tooltip placement="top" v-if="key == 'process' && !scope.row.value">
+              <div slot="content" v-html="trips[scope.$index].message"></div>
+              <i class="el-icon-warning-outline"></i>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="180">
+          <template slot-scope="scope">
+            <span v-if="typeof scope.row.value === 'boolean'">
+              <i v-if="scope.row.value === true" class="el-icon-check"></i>
+              <i v-else class="el-icon-close"></i>
+            </span>
+            <span v-else>{{ scope.row.value }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
 
     <el-dialog :visible.sync="isTemplate" title="商业授权" width="550px" @closed="cancel">
       <iframe width="100%" height="780" :src="iframeUrl" frameborder="0"></iframe>
     </el-dialog>
+    <el-dialog :visible.sync="modalCopyright" title="版权信息" width="550px">
+      <div class="auth">
+        <div class="update">修改版权信息:</div>
+        <el-input style="width: 460px" v-model="copyrightText" />
+      </div>
+      <div class="auth">
+        <div class="update">上传版权图片:</div>
+        <div>
+          <div class="uploadPictrue" v-if="authorizedPicture" v-db-click @click="modalPicTap('单选')">
+            <img v-lazy="authorizedPicture" />
+            <i class="el-icon-error" @click.stop="authorizedPicture = ''"></i>
+          </div>
+          <div class="upload" v-else v-db-click @click="modalPicTap('单选')">
+            <div class="iconfont">+</div>
+          </div>
+          <div class="tips-info">建议尺寸：宽290px*高100px</div>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button v-db-click @click="modalCopyright = false">取 消</el-button>
+        <el-button type="primary" v-db-click @click="saveCopyRight">保存</el-button>
+      </span>
+    </el-dialog>
     <el-dialog :visible.sync="modalPic" width="1024px" title="上传授权图片" :close-on-click-modal="false">
-      <uploadPictures
-        :isChoice="isChoice"
-        @getPic="getPic"
-        :gridBtn="gridBtn"
-        :gridPic="gridPic"
-        v-if="modalPic"
-      ></uploadPictures>
+      <uploadPictures :isChoice="isChoice" @getPic="getPic" :gridBtn="gridBtn" :gridPic="gridPic" v-if="modalPic">
+      </uploadPictures>
     </el-dialog>
   </div>
 </template>
 <script>
 import uploadPictures from '@/components/uploadPictures';
-import { auth, getVersion, crmebProduct, saveCrmebCopyRight, getCrmebCopyRight } from '@/api/system';
+import { auth, getVersion, crmebProduct, saveCrmebCopyRight, getCrmebCopyRight, copyrightList } from '@/api/system';
 import { mapState } from 'vuex';
 import { formatDate } from '@/utils/validate';
 import QRCode from 'qrcodejs2';
-// import Vcode from 'vue-puzzle-vcode';
-
+import { t } from 'vxe-table';
 export default {
   name: 'system_auth',
   computed: {
@@ -105,6 +89,7 @@ export default {
       dayNum: 0,
       copyright: '',
       isTemplate: false,
+      modalCopyright: false,
       price: '',
       proPrice: '',
       productStatus: false,
@@ -135,6 +120,28 @@ export default {
         sm: 8,
         xs: 8,
       },
+      tableList: [],
+      licensingTable: [],
+      copyrightTableData: [],
+      copyrightList: [{}],
+      loading: false,
+      trips: [
+        {
+          title: '温馨提示',
+          message:
+            '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13667" target="_blank">点击查看开启方法</a>',
+        },
+        {
+          title: '温馨提示',
+          message:
+            '您的【定时任务】未开启，没有开启会导致自动收货、未支付自动取消订单、订单自动好评、拼团到期退款等任务无法正常执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13667" target="_blank">点击查看开启方法</a>',
+        },
+        {
+          title: '温馨提示',
+          message:
+            '您的【消息队列】未开启，没有开启会导致异步任务无法执行。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13667" target="_blank">点击查看开启方法</a>',
+        },
+      ],
     };
   },
   filters: {
@@ -142,6 +149,17 @@ export default {
       if (time !== 0) {
         let date = new Date(time * 1000);
         return formatDate(date, 'yyyy-MM-dd hh:mm');
+      }
+    },
+    headText(z) {
+      if (z === 'server') {
+        return '服务器信息';
+      } else if (z === 'environment') {
+        return '系统环境要求';
+      } else if (z === 'permissions') {
+        return '权限状态';
+      } else if (z === 'process') {
+        return '启动进程';
       }
     },
   },
@@ -156,8 +174,14 @@ export default {
         this.cancel();
       }
     });
+    copyrightList().then((res) => {
+      this.tableList = res.data;
+    });
   },
   methods: {
+    editCopyright() {
+      this.modalCopyright = true;
+    },
     getVersion() {
       getVersion().then((res) => {
         this.version = res.data.version;
@@ -175,6 +199,8 @@ export default {
         copyright: this.copyrightText,
         copyright_img: this.authorizedPicture,
       }).then((res) => {
+        this.getCopyRight();
+        this.modalCopyright = false;
         return this.$message.success(res.msg);
       });
     },
@@ -190,8 +216,15 @@ export default {
     //获取版权信息
     getCopyRight() {
       getCrmebCopyRight().then((res) => {
-        this.copyrightText = res.data.copyrightContext || '';
-        this.authorizedPicture = res.data.copyrightImage || '';
+        const { copyrightContext, copyrightImage } = res.data;
+        this.copyrightTableData = [
+          {
+            copyrightContext,
+            copyrightImage,
+          },
+        ];
+        this.copyrightText = copyrightContext || '';
+        this.authorizedPicture = copyrightImage || '';
       });
     },
     cancel() {
@@ -210,8 +243,12 @@ export default {
       auth()
         .then((res) => {
           let data = res.data || {};
-          this.authCode = data.authCode || '';
-          this.status = data.status === undefined ? -1 : data.status;
+          this.licensingTable = [
+            {
+              authCode: data.authCode || '',
+              status: data.status === undefined ? -1 : data.status,
+            },
+          ];
           this.dayNum = data.day || 0;
           this.copyright = data.copyright;
           if (this.copyright) {
@@ -266,8 +303,26 @@ export default {
 <style scoped lang="scss">
 .auth {
   padding: 9px 16px 9px 10px;
-  .box{
+  display: flex;
+
+  .box {
     width: 50px;
+  }
+
+  .update {
+    white-space: nowrap;
+    margin-bottom: 12px;
+  }
+
+  .upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
+    border: 1px solid #dddddd;
   }
 }
 
@@ -305,20 +360,7 @@ export default {
   color: #ed4014 !important;
 }
 
-.authorized {
-  display: flex;
-
-  .upload {
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 0, 0, 0.02);
-    border-radius: 4px;
-    border: 1px solid #dddddd;
-  }
-}
-
 .upload .iconfont {
-  text-align: center;
   line-height: 60px;
 }
 
@@ -327,11 +369,21 @@ export default {
   height: 60px;
   border: 1px dotted rgba(0, 0, 0, 0.1);
   margin-left: 2px;
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  .el-icon-error{
+    position: absolute;
+    top:-3px;
+    right: -3px;
+    color: #999999;
+  }
 }
 
 .uploadPictrue img {
   width: 100%;
   height: 100%;
+  border-radius: 3px;
 }
 
 .phone_code {
@@ -427,12 +479,40 @@ export default {
 }
 
 .active_tab {
-  border-bottom: 2px solid #1495ed;
-  color: #1495ed;
+  border-bottom: 2px solid var(--prev-color-primary);
+  color: var(--prev-color-primary);
   font-weight: 600;
 }
+
 iframe {
   height: 550px;
   overflow: hidden;
+}
+
+.head {
+  font-weight: 400;
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 20px;
+}
+
+.el-icon-check {
+  color: var(--prev-color-primary);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.el-icon-close {
+  color: #f5222d;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.btn {
+  color: var(--prev-color-primary);
+  margin-right: 10px;
+}
+.el-icon-warning-outline {
+  font-size: 13px;
 }
 </style>

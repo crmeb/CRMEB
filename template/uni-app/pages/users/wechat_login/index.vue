@@ -36,6 +36,7 @@
 				</template>
 				<button v-if="configData.phone_auth_switch" hover-class="none" @click="phoneLogin"
 					class="btn2">{{$t(`手机号登录`)}}</button>
+				<view class="cancel-login" @click="onReject">取消登录</view>
 				<!-- #endif -->
 			</view>
 		</view>
@@ -157,10 +158,12 @@
 			} = options;
 			if (code) {
 				let spread = this.$Cache.get("spread") || '';
+				let agent_id = this.$Cache.get("agent_id") || '';
 				let backUrl = state ? decodeURIComponent(state) : ''
 				this.wechatAuthLogin({
 					code,
-					spread
+					spread,
+					agent_id
 				}, backUrl)
 			}
 			// #endif
@@ -222,7 +225,7 @@
 						authType({
 								code,
 								spread_spid: app.globalData.spid,
-								spread_code: app.globalData.code
+								spread_code: app.globalData.code,
 							}).then(res => {
 								uni.hideLoading();
 								this.authKey = res.data.key;
@@ -286,6 +289,7 @@
 					url: `/pages/users/binding_phone/index?authKey=${this.authKey}&pageType=0`
 				})
 			},
+			
 			closeEdit() {
 				this.isShow = false
 				this.$util.Tips({
@@ -377,6 +381,7 @@
 						code: code,
 						spread_spid: app.globalData.spid,
 						spread_code: app.globalData.code,
+						agent_id: app.globalData.agent_id,
 						key: this.authKey
 					})
 					.then(res => {
@@ -599,7 +604,13 @@
 				&.btn2 {
 					color: #666666;
 					border: 1px solid #E4E4E4;
+					margin-bottom: 30rpx;
 				}
+			}
+			.cancel-login{
+				color: #999;
+				font-size: 28rpx;
+				text-align: center;
 			}
 		}
 	}
@@ -641,7 +652,7 @@
 		font-size: 24rpx;
 		line-height: 22rpx;
 		text-align: center;
-		bottom: calc(52rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		bottom: calc(52rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		bottom: calc(52rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
 		.main-color {

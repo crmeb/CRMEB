@@ -1,5 +1,20 @@
 <template>
   <div>
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <el-button
+          class="btn-back"
+          icon="el-icon-arrow-left"
+          size="small"
+          type="text"
+          v-db-click
+          @click="$router.go(-1)"
+          >返回</el-button
+        >
+        <el-divider direction="vertical"></el-divider>
+        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+      </div>
+    </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
@@ -10,19 +25,6 @@
           @submit.native.prevent
           inline
         >
-          <el-form-item label="活动类型：" clearable>
-            <el-select
-              type="button"
-              v-model="tableFrom.factor"
-              @change="selectChangeFactor"
-              class="form_content_width"
-              clearable
-            >
-              <el-option label="积分抽取" :value="1"></el-option>
-              <el-option label="订单支付" :value="3"></el-option>
-              <el-option label="订单评价" :value="4"></el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="时间选择：">
             <el-date-picker
               clearable
@@ -100,8 +102,12 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template slot-scope="scope">
-            <a v-db-click @click="deliver(scope.row, 1)" v-if="scope.row.type == 6 && scope.row.is_deliver === 0">发货</a>
-            <a v-else-if="scope.row.type == 6 && scope.row.is_deliver === 1" v-db-click @click="isDeliver(scope.row)">配送信息</a>
+            <a v-db-click @click="deliver(scope.row, 1)" v-if="scope.row.type == 6 && scope.row.is_deliver === 0"
+              >发货</a
+            >
+            <a v-else-if="scope.row.type == 6 && scope.row.is_deliver === 1" v-db-click @click="isDeliver(scope.row)"
+              >配送信息</a
+            >
             <el-divider direction="vertical" v-if="scope.row.type == 6" />
             <a v-db-click @click="deliver(scope.row, 2)">备注</a>
           </template>
@@ -209,10 +215,10 @@ export default {
       },
       tableFrom: {
         keyword: '',
-        date: [],
+        time: [],
         page: 1,
         limit: 15,
-        factor: '',
+        lottery_id: 0,
       },
       total: 0,
       timeVal: [],
@@ -296,14 +302,14 @@ export default {
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e || [];
-      this.tableFrom.data = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
+      this.tableFrom.time = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
       this.tableFrom.page = 1;
       this.getList();
     },
     // 选择时间
     selectChange(tab) {
       this.tableFrom.page = 1;
-      this.tableFrom.date = tab;
+      this.tableFrom.time = tab;
       this.timeVal = [];
       this.getList();
     },
@@ -341,7 +347,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -353,12 +359,10 @@ export default {
     height: 100%;
   }
 }
-
 .prize {
   display: flex;
   align-items: center;
 }
-
 .prize img {
   width: 36px;
   height: 36px;
@@ -366,11 +370,10 @@ export default {
   cursor: pointer;
   margin-right: 5px;
 }
-
 .trips {
   color: #ccc;
 }
-  .w414{
-    width 414px;
-  }
+.w414 {
+  width: 414px;
+}
 </style>

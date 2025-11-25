@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace app\dao\activity\coupon;
 
@@ -55,5 +55,10 @@ class StoreCouponIssueUserDao extends BaseDao
     public function delIssueUserCoupon($where)
     {
         return $this->getModel()->where($where)->delete();
+    }
+
+    public function getIssueUserCount($uid, $coupon_id)
+    {
+        return $this->getModel()->where('uid', $uid)->where('issue_coupon_id', $coupon_id)->count();
     }
 }

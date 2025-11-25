@@ -22,7 +22,7 @@
       </div>
       <div style="margin-left: 40px">
         <div class="table_box">
-          <div >
+          <div>
             <div v-bind="grid">
               <div class="title">隐私权限页面展示：</div>
             </div>
@@ -58,19 +58,10 @@ import WangEditor from '@/components/wangEditor/index.vue';
 import Setting from '@/setting';
 import { getColorChange } from '@/api/diy';
 import { mapState } from 'vuex';
-import { productGetTempKeysApi, uploadType } from '@/api/product';
 import {
-  groupAllApi,
-  groupDataListApi,
-  groupSaveApi,
-  openAdvSave,
-  groupDataAddApi,
   groupDataHeaderApi,
-  groupDataEditApi,
-  groupDataSetApi,
   getAgreement,
   setAgreement,
-  getOpenAdv,
 } from '@/api/system';
 import uploadPictures from '@/components/uploadPictures';
 import linkaddress from '@/components/linkaddress';
@@ -239,50 +230,43 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .save {
   width: 100%;
   margin: 0 auto;
   text-align: center;
-  background-color: #FFF;
+  background-color: #fff;
   bottom: 0;
   padding: 16px;
   border-top: 3px solid #f5f7f9;
 }
-
 .form {
   .goodsTitle {
     margin-bottom: 25px;
   }
-
   .goodsTitle ~ .goodsTitle {
     margin-top: 20px;
   }
-
   .goodsTitle .title {
     border-bottom: 2px solid var(--prev-color-primary);
     padding: 0 8px 12px 5px;
     color: #000;
     font-size: 14px;
   }
-
   .goodsTitle .icons {
     font-size: 15px;
     margin-right: 8px;
     color: #999;
   }
-
   .add {
     font-size: 12px;
     color: var(--prev-color-primary);
     padding: 0 12px;
     cursor: pointer;
   }
-
   .radio {
     margin-right: 20px;
   }
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -291,33 +275,28 @@ export default {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.02);
   }
-
   .iconfont {
     color: #898989;
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
     border: 1px dotted rgba(0, 0, 0, 0.1);
     margin-right: 10px;
   }
-
   .pictrue img {
     width: 100%;
     height: 100%;
   }
 }
-
 .agreement-box {
   width: 310px;
   height: 550px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0);
-  border: 1px solid #EEEEEE;
+  border: 1px solid #eeeeee;
   opacity: 1;
   position: relative;
-
   .template {
     position: absolute;
     width: 100%;
@@ -327,7 +306,6 @@ export default {
     border-radius: 10px;
     background-color: #817e81;
   }
-
   .htmls_box {
     font-size: 12px;
     width: 259px;
@@ -337,7 +315,6 @@ export default {
     position: absolute;
     top: 58px;
     left: 26px;
-
     .htmls_top {
       position: absolute;
       top: 8px;
@@ -349,7 +326,6 @@ export default {
       font-weight: 600;
       font-size: 20px;
     }
-
     .htmls_font {
       position: absolute;
       bottom: 0;
@@ -363,13 +339,11 @@ export default {
         line-height: 35px;
         border-radius: 20px;
       }
-
       .ok {
         background-color: #f33316;
-        color: #FFFFFF;
+        color: #ffffff;
       }
     }
-
     .htmls {
       position: absolute;
       background-color: #fff;
@@ -382,13 +356,11 @@ export default {
       padding: 5px 15px;
       word-break: break-word;
     }
-
     .htmls::-webkit-scrollbar {
       display: none;
     }
   }
 }
-
 .item {
   margin-right: 15px;
   border: 1px dashed #dbdbdb;
@@ -396,7 +368,6 @@ export default {
   padding-right: 15px;
   padding-top: 20px;
 }
-
 .swiperimg {
   width: 310px;
   border-top-left-radius: 10px;
@@ -407,7 +378,6 @@ export default {
     height: 100%;
   }
 }
-
 .title {
   padding: 0 0 13px 0;
   font-weight: bold;
@@ -416,23 +386,19 @@ export default {
   height: 23px;
   padding-left: 10px;
 }
-
 .content {
-  // width 510px;
   .right-box {
     margin-left: 40px;
   }
 }
-
 .box {
   border-top: 3px solid #f5f7f9;
   padding: 10px;
   padding-top: 25px;
   width: 100%;
-
   .save {
     background-color: var(--prev-color-primary);
-    color: #FFFFFF;
+    color: #ffffff;
     width: 71px;
     height: 30px;
     margin: 0 auto;
@@ -441,23 +407,20 @@ export default {
     cursor: pointer;
   }
 }
-
 .iframe {
   margin-left: 20px;
   position: relative;
   width: 310px;
-  // height: 550px;
-  background: #FFFFFF;
-  border: 1px solid #EEEEEE;
+
+  background: #ffffff;
+  border: 1px solid #eeeeee;
   opacity: 1;
   border-radius: 10px;
 }
-
 .iconfont {
-  color: #DDDDDD;
+  color: #dddddd;
   font-size: 28px;
 }
-
 .box-wrapper {
   display: flex;
   flex-wrap: nowrap;

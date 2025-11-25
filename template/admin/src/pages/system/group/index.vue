@@ -1,21 +1,21 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="数据搜索：">
             <el-input
-                clearable
-                placeholder="请输入ID,KEY,数据组名称,简介"
-                v-model="formValidate.title"
-                class="form_content_width"
+              clearable
+              placeholder="请输入ID,KEY,数据组名称,简介"
+              v-model="formValidate.title"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>

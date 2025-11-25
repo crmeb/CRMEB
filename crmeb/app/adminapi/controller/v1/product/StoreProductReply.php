@@ -126,4 +126,21 @@ class StoreProductReply extends AuthController
         $this->services->update($id, ['status' => $status]);
         return app('json')->success($status == 1 ? '审核通过' : '拒绝成功');
     }
+
+    /**
+     * 批量商品评论审核
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/6/18
+     */
+    public function batch_set_status()
+    {
+        list($ids, $status) = $this->request->postMore([
+            ['ids', []],
+            ['status', 0]
+        ], true);
+        $this->services->batchUpdate($ids, ['status' => $status]);
+        return app('json')->success($status == 1 ? '审核通过' : '拒绝成功');
+    }
 }

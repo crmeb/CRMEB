@@ -68,66 +68,81 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.goods_detail
-    .goods_detail_wrapper{
-        z-index 101
-        position absolute
-        left 50%
-        top 50%
-        transform translate(-50%,-50%)
-        width 375px
-        background #F0F2F5
+<style lang="scss" scoped>
+.goods_detail {
+  .goods_detail_wrapper {
+    z-index: 101;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 375px;
+    background: #f0f2f5;
+  }
+  .title-box {
+    height: 46px;
+    line-height: 46px;
+    background: #fff;
+    text-align: center;
+    color: #333;
+    font-size: 16px;
+  }
+  .swiper-box {
+    height: 375px;
+    .demo-carousel {
+      width: 375px;
+      height: 375px;
+      img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
     }
-    .title-box{
-        height:46px
-        line-height 46px
-        background #fff
-        text-align center
-        color #333
-        font-size 16px
+  }
+  .goods_info {
+    padding: 15px;
+    background: #fff;
+    .number-wrapper {
+      display: flex;
+      align-items: center;
+      .price {
+        color: #ff3838;
+        font-size: 25px;
+        span {
+          font-size: 15px;
+        }
+      }
+      .old-price {
+        font-size: 15px;
+        margin-left: 10px;
+        color: #333333;
+      }
     }
-    .swiper-box
-        height 375px
-        .demo-carousel
-            width 375px
-            height 375px
-            img
-                width 100%
-                height 100%
-                display block
-    .goods_info
-        padding 15px
-        background #fff
-        .number-wrapper
-            display flex
-            align-items center
-            .price
-                color #FF3838
-                font-size 25px
-                span
-                    font-size 15px
-            .old-price
-                font-size 15px
-                margin-left 10px
-                color #333333
-        .name
-            font-size 16px
-            color #333
-        .msg
-            display flex
-            align-items center
-            justify-content space-between
-            margin-top 10px
-            .item
-                color #999999
-                font-size 14px
-    .con-box
-        margin-top 10px
-        padding-bottom 20px
-    .content
-        width 100%
-        img
-            max-width 100%
-            display block
+    .name {
+      font-size: 16px;
+      color: #333;
+    }
+    .msg {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      .item {
+        color: #999999;
+        font-size: 14px;
+      }
+    }
+  }
+  .con-box {
+    margin-top: 10px;
+    padding-bottom: 20px;
+  }
+  .content {
+    width: 100%;
+    img {
+      max-width: 100%;
+      display: block;
+    }
+  }
+}
 </style>

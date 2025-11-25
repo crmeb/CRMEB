@@ -1,13 +1,23 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '0 20px 20px' }">
-      <div>
-        <el-tabs v-model="formValidate.factor" @tab-click="onClickTab">
-          <el-tab-pane v-for="(item, index) in tabs" :label="item.name" :name="item.type" :key="index" />
-        </el-tabs>
+    <div class="i-layout-page-header header-title">
+      <div class="fl_header">
+        <el-button
+          class="btn-back"
+          icon="el-icon-arrow-left"
+          size="small"
+          type="text"
+          v-db-click
+          @click="$router.go(-1)"
+          >返回</el-button
+        >
+        <el-divider direction="vertical"></el-divider>
+        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>
-      <el-row class="mt10 acea-row row-middle row-center">
-        <el-col :span="23" v-loading="spinShow">
+    </div>
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '0 20px 20px' }">
+      <el-row class="mt30 acea-row row-middle row-center">
+        <el-col :span="24" v-loading="spinShow">
           <el-form
             class="form"
             ref="formValidate"
@@ -20,8 +30,23 @@
           >
             <el-row>
               <el-col :span="24">
+                <el-form-item label="活动类型：" prop="name" label-for="name">
+                  <el-radio-group v-model="formValidate.factor" @input="onClickTab">
+                    <el-radio v-for="(item, index) in tabs" :label="item.type" :disabled="!!lottery_id" :key="index">{{
+                      item.name
+                    }}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
                 <el-form-item label="活动名称：" prop="name" label-for="name">
-                  <el-input placeholder="请输入活动名称" v-model="formValidate.name" class="content_width" />
+                  <el-input
+                    placeholder="请输入活动名称"
+                    v-model="formValidate.name"
+                    class="content_width"
+                    maxlength="80"
+                    show-word-limit
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
@@ -31,8 +56,8 @@
                       v-model="formValidate.period"
                       :editable="false"
                       type="datetimerange"
-                      format="yyyy-MM-dd HH:mm"
-                      value-format="yyyy-MM-dd HH:mm"
+                      format="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd"
                       range-separator="-"
                       start-placeholder="开始日期"
                       end-placeholder="结束日期"
@@ -108,7 +133,7 @@
                       <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
                     </div>
                   </div>
-                  <div class="ml100 grey">三个条件都设置后,必须这些条件都满足的用户才能参加抽奖</div>
+                  <div class="tips-info ml100 grey">三个条件都设置后,必须这些条件都满足的用户才能参加抽奖</div>
                 </el-form-item>
               </el-col>
               <el-col :span="24" v-if="formValidate.factor == 5">
@@ -177,7 +202,7 @@
                   label-for="factor_num"
                 >
                   <div class="acea-row row-middle">
-                    <div class="mr10 grey"></div>
+                    <!-- <div class="mr10 grey"></div> -->
                     <el-input-number
                       :controls="false"
                       placeholder=""
@@ -188,7 +213,7 @@
                       class="content_width"
                     >
                     </el-input-number>
-                    <div class="ml10 grey" v-if="formValidate.factor !== 1">次</div>
+                    <!-- <div class="ml10 grey" v-if="formValidate.factor !== 1">次</div> -->
                   </div>
                 </el-form-item>
               </el-col>
@@ -197,7 +222,7 @@
               <el-col :span="24">
                 <el-form-item label="规格选择：" prop="prize">
                   <el-table ref="selection" :data="specsData">
-                    <el-table-column label="" min-width="40">
+                    <el-table-column min-width="30">
                       <template slot-scope="scope">
                         <div class="drag" @on-drag-drop="onDragDrop">
                           <img class="handle" src="@/assets/images/drag-icon.png" alt="" />
@@ -209,7 +234,8 @@
                       <template slot-scope="scope">
                         <div
                           class="acea-row scope.row-middle scope.row-center-wrapper"
-                          v-db-click @click="modalPicTap('dan', 'goods', scope.$index)"
+                          v-db-click
+                          @click="modalPicTap('dan', 'goods', scope.$index)"
                         >
                           <div class="pictrue pictrueTab" v-if="scope.row.image">
                             <img v-lazy="scope.row.image" />
@@ -247,22 +273,16 @@
                         ></el-input-number>
                       </template>
                     </el-table-column>
-                    <el-table-column label="奖品权重" min-width="80">
+                    <el-table-column label="奖品概率(%)" min-width="80">
                       <template slot-scope="scope">
                         <el-input-number
                           :controls="false"
-                          v-model="scope.row.chance"
+                          v-model="scope.row.percent"
                           :max="100"
                           :min="0"
-                          :precision="0"
+                          :precision="2"
                           class="priceBox"
-                          @blur="(e) => changeChance(e, scope.$index)"
                         ></el-input-number>
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="奖品概率" min-width="80">
-                      <template slot-scope="scope">
-                        <div>{{ scope.row.probability }}</div>
                       </template>
                     </el-table-column>
                     <el-table-column label="操作" fixed="right" width="80">
@@ -271,7 +291,12 @@
                       </template>
                     </el-table-column>
                   </el-table>
-                  <el-button v-if="specsData.length < 8" type="primary" class="submission mr15 mt20" v-db-click @click="addGoods"
+                  <el-button
+                    v-if="specsData.length < 8"
+                    type="primary"
+                    class="submission mr15 mt20"
+                    v-db-click
+                    @click="addGoods"
                     >添加商品</el-button
                   >
                 </el-form-item>
@@ -305,7 +330,12 @@
                     <img v-lazy="formValidate.image" />
                     <i class="el-icon-circle-close btndel" v-db-click @click="handleRemove()"></i>
                   </div>
-                  <div v-else class="upLoad acea-row row-center-wrapper" v-db-click @click="modalPicTap('dan', 'danFrom')">
+                  <div
+                    v-else
+                    class="upLoad acea-row row-center-wrapper"
+                    v-db-click
+                    @click="modalPicTap('dan', 'danFrom')"
+                  >
                     <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                   </div>
                 </div>
@@ -401,7 +431,11 @@
     </el-dialog>
     <!-- 上传图片-->
     <el-dialog :visible.sync="addGoodsModel" width="720px" :title="title" :close-on-click-modal="false">
-      <addGoods v-if="addGoodsModel" @addGoodsData="addGoodsData" :editData="editData"></addGoods>
+      <addGoods ref="addGoodsForm" v-if="addGoodsModel" @addGoodsData="addGoodsData" :editData="editData"></addGoods>
+      <div class="acea-row row-right mt20">
+        <el-button v-db-click @click="addGoodsModel = false">取消</el-button>
+        <el-button type="primary" v-db-click @click="submitAddGoods">提交</el-button>
+      </div>
     </el-dialog>
     <!-- 用户标签 -->
     <el-dialog
@@ -501,71 +535,87 @@ export default {
           name: '', //活动名称
           num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
         {
-          type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+          type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
           name: '', //活动名称
-          num: 0, //奖品数量
+          num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
         {
-          type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+          type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
           name: '', //活动名称
-          num: 0, //奖品数量
+          num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
         {
-          type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+          type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
           name: '', //活动名称
-          num: 0, //奖品数量
+          num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
         {
-          type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+          type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
           name: '', //活动名称
-          num: 0, //奖品数量
+          num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
         {
-          type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+          type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
           name: '', //活动名称
-          num: 0, //奖品数量
+          num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
         {
-          type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+          type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
           name: '', //活动名称
-          num: 0, //奖品数量
+          num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
         {
-          type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+          type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
           name: '', //活动名称
-          num: 0, //奖品数量
+          num: 10, //奖品数量
           image: '', //奖品图片
-          chance: 0, //中奖权重
+          chance: 1, //中奖权重
           total: 0, //奖品数量
+          percent: 0, //中奖概率
+          min_try_num: 0, //抽奖次数尝试
           prompt: '', //提示语
         },
       ],
@@ -600,6 +650,7 @@ export default {
       editIndex: null,
       id: '',
       copy: 0,
+      lottery_id: 0,
     };
   },
   filters: {
@@ -629,14 +680,23 @@ export default {
     },
   },
   mounted() {
-    this.getInfo();
     this.labelListApi();
     this.levelListApi();
+    if (this.$route.query.type) {
+      this.formValidate.factor = this.$route.query.type;
+    }
+    if (this.$route.query.lottery_id) {
+      this.lottery_id = this.$route.query.lottery_id;
+      this.getInfo();
+    }
     this.$nextTick((e) => {
       this.setSort();
     });
   },
   methods: {
+    submitAddGoods() {
+      this.$refs.addGoodsForm.handleSubmit('formValidate');
+    },
     changeUsers(e) {
       if (e == 1) {
         this.formValidate.user_level = []; //参与用户等级
@@ -654,7 +714,7 @@ export default {
       this.selectDataLabel = data;
     },
     onClickTab(e) {
-      this.getInfo(this.formValidate.factor);
+      if (this.lottery_id) this.getInfo();
     },
     getEditorContent(data) {
       this.content = data;
@@ -678,7 +738,7 @@ export default {
     // 详情
     getInfo(e) {
       this.spinShow = true;
-      lotteryNewDetailApi(this.formValidate.factor)
+      lotteryDetailApi(this.lottery_id)
         .then((res) => {
           if (res.status == 200 && !Array.isArray(res.data)) {
             this.formValidate = res.data;
@@ -687,10 +747,6 @@ export default {
             this.formValidate.is_svip = res.data.is_svip;
             this.content = res.data.is_content ? res.data.content : '';
             this.formValidate.factor = res.data.factor.toString();
-            // setTimeout(() => {
-            //   this.formValidate.period = ;
-
-            // }, 2000);
             this.$set(this.formValidate, 'period', [
               this.formatDate(res.data.start_time) || '',
               this.formatDate(res.data.end_time) || '',
@@ -727,71 +783,87 @@ export default {
                 name: '', //活动名称
                 num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
               {
-                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
                 name: '', //活动名称
-                num: 0, //奖品数量
+                num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
               {
-                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
                 name: '', //活动名称
-                num: 0, //奖品数量
+                num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
               {
-                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
                 name: '', //活动名称
-                num: 0, //奖品数量
+                num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
               {
-                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
                 name: '', //活动名称
-                num: 0, //奖品数量
+                num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
               {
-                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
                 name: '', //活动名称
-                num: 0, //奖品数量
+                num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
               {
-                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
                 name: '', //活动名称
-                num: 0, //奖品数量
+                num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
               {
-                type: 1, //类型 1：未中奖2：积分  3:余额  4：红包 5:优惠券 6：站内商品
+                type: 1, //类型 1：未中奖 2：积分  3:余额  4：红包 5:优惠券 6：站内商品
                 name: '', //活动名称
-                num: 0, //奖品数量
+                num: 10, //奖品数量
                 image: '', //奖品图片
-                chance: 0, //中奖权重
+                chance: 1, //中奖权重
                 total: 0, //奖品数量
+                percent: 0, //中奖概率
+                min_try_num: 0, //抽奖次数尝试
                 prompt: '', //提示语
               },
             ];
@@ -826,12 +898,11 @@ export default {
               .then(async (res) => {
                 this.$message.success(res.msg);
                 this.submitOpen = false;
-                // setTimeout(() => {
-                //   this.submitOpen = false;
-                //   this.$router.push({
-                //     path: "/admin/marketing/lottery/recording_list",
-                //   });
-                // }, 500);
+                setTimeout(() => {
+                  this.$router.push({
+                    path: '/admin/marketing/lottery/list',
+                  });
+                }, 500);
               })
               .catch((res) => {
                 this.submitOpen = false;
@@ -842,12 +913,11 @@ export default {
               .then(async (res) => {
                 this.submitOpen = false;
                 this.$message.success(res.msg);
-                // setTimeout(() => {
-                //   this.submitOpen = false;
-                //   this.$router.push({
-                //     path: "/admin/marketing/lottery/recording_list",
-                //   });
-                // }, 500);
+                setTimeout(() => {
+                  this.$router.push({
+                    path: '/admin/marketing/lottery/list',
+                  });
+                }, 500);
               })
               .catch((res) => {
                 this.submitOpen = false;
@@ -929,11 +999,9 @@ export default {
       this.editIndex = null;
     },
     changeChance(e, index) {
+      console.log(e, index);
       let value = e.target.value;
-      this.$set(this.specsData[index], 'chance', value);
-      this.$nextTick((e) => {
-        this.getProbability();
-      });
+      this.$set(this.specsData[index], 'percent', value);
     },
     changeTotal(data, index) {
       this.$set(this.specsData[index], 'total', data);
@@ -998,9 +1066,9 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.content_width{
-  width:460px;
+<style lang="scss" scoped>
+.content_width {
+  width: 460px;
 }
 ::v-deep .el-tabs__item {
   height: 54px !important;
@@ -1010,40 +1078,32 @@ export default {
   display: inline-flex;
   line-height: 1.5;
 }
-
 .grey {
   color: #999;
 }
-
 .maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
-
 .ivu-table-wrapper {
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
 }
-
 .tabBox_img {
   width: 50px;
   height: 50px;
 }
-
 .tabBox_img img {
   width: 100%;
   height: 100%;
 }
-
 .priceBox {
   width: 100%;
 }
-
 .form {
   .picBox {
     display: inline-block;
     cursor: pointer;
   }
-
   .pictrue {
     width: 58px;
     height: 58px;
@@ -1057,16 +1117,14 @@ export default {
       width: 100%;
       height: 100%;
     }
-
     .btndel {
       position: absolute;
       z-index: 9;
-      font-size 20px;
+      font-size: 20px;
       left: 46px;
       top: -4px;
     }
   }
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -1077,7 +1135,6 @@ export default {
     cursor: pointer;
   }
 }
-
 .labelInput {
   border: 1px solid #dcdee2;
   padding: 0 15px;
@@ -1085,12 +1142,10 @@ export default {
   border-radius: 5px;
   min-height: 30px;
   cursor: pointer;
-
   .span {
-    font-size:12px;
+    font-size: 12px;
     color: #c5c8ce;
   }
-
   .ivu-icon-ios-arrow-down {
     font-size: 14px;
     color: #808695;

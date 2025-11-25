@@ -4,7 +4,7 @@
       <div class="acea-row head">
         <div class="avatar mr15"><img :src="psInfo.avatar" /></div>
         <div class="dashboard-workplace-header-tip">
-          <p class="dashboard-workplace-header-tip-title" v-text="psInfo.nickname || '-'"></p>
+          <p class="dashboard-workplace-header-tip-title f-w-b" v-text="psInfo.nickname || '-'"></p>
           <div class="dashboard-workplace-header-tip-desc">
             <span class="dashboard-workplace-header-tip-desc-sp" v-for="(item, index) in detailsData" :key="index">{{
               item.title + '：' + item.value
@@ -398,7 +398,7 @@ export default {
   padding: 0 15px;
   .edit-btn {
     position: absolute;
-    right: 10px;
+    right: 20px;
     top: 0px;
     display: flex;
     align-items: center;
@@ -459,7 +459,7 @@ export default {
   }
 }
 </style>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .user_menu ::v-deep .ivu-menu {
   width: 100% !important;
 }

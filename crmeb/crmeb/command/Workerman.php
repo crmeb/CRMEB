@@ -103,6 +103,7 @@ class Workerman extends Command
             $context = [];
         }
         Worker::$pidFile = app()->getRootPath() . 'runtime/workerman.pid';
+        Worker::$logFile = app()->getRootPath() . 'runtime/workerman.log';
         if (!$server || $server == 'admin') {
             var_dump('admin');
             //创建 admin 长连接服务

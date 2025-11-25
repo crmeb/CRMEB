@@ -16,7 +16,7 @@ class OrderShippingListener implements ListenerInterface
     public function handle($event): void
     {
         /** @var StoreOrder $order */
-        [$order_type, $order, $delivery_type, $delivery_id, $delivery_name] = $event;
+        [$order_type, $order, $delivery_type, $delivery_id, $delivery_code] = $event;
         $order_shipping_open = sys_config('order_shipping_open', 0);  // 小程序发货信息管理服务开关
         $secs = 0;
         if ($order && $order_shipping_open) {
@@ -87,7 +87,7 @@ class OrderShippingListener implements ListenerInterface
                     $shipping_list = [
                         [
                             'tracking_no' => $delivery_id ?? '',
-                            'express_company' => $delivery_name ? $expressData['$delivery_name'] : '',
+                            'express_company' => $delivery_code,
                             'item_desc' => $item_desc,
                             'contact' => [
                                 'receiver_contact' => $order['user_phone']

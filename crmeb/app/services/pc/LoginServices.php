@@ -126,7 +126,7 @@ class LoginServices extends BaseServices
         /** @var WechatUserServices $wechatUserServices */
         $wechatUserServices = app()->make(WechatUserServices::class);
         $user = $wechatUserServices->getAuthUserInfo($openid, 'pc');
-        $createData = [$openid, $wechatInfo, 0, 'pc', 'pc'];
+        $createData = [$openid, $wechatInfo, 0, 0, 'pc', 'pc'];
         if (!$user) {
             $user = $wechatUserServices->wechatOauthAfter($createData);
         } else {

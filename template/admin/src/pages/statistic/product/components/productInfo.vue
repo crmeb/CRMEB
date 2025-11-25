@@ -93,9 +93,9 @@ export default {
       spinShow: false,
       grid: {
         xl: 4,
-        lg: 4,
+        lg: 8,
         md: 8,
-        sm: 24,
+        sm: 8,
         xs: 24,
       },
       pickerOptions: this.$timeOptions,

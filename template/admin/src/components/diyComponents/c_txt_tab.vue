@@ -6,7 +6,7 @@
         <span>{{ datas[name].list[datas[name].type].val }}</span>
       </el-col>
       <el-col class="color-box">
-        <el-radio-group v-model="datas[name].type" type="button" @input="radioChange($event)">
+        <el-radio-group v-model="datas[name].type" size="mini" type="button" @input="radioChange($event)">
           <el-radio-button :label="key" v-for="(radio, key) in datas[name].list" :key="key">
             <span class="iconfont" :class="radio.icon" v-if="radio.icon"></span>
             <span v-else>{{ radio.val }}</span>
@@ -56,15 +56,19 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.txt_tab
-    margin-top 20px
-.c_row-item
-    margin-bottom 20px
-.row-item
-    display flex
-    justify-content space-between
-    align-items center
-.iconfont
-    font-size 18px
+<style lang="scss" scoped>
+.txt_tab {
+  margin-top: 20px;
+}
+.c_row-item {
+  margin-bottom: 20px;
+}
+.row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.iconfont {
+  font-size: 18px;
+}
 </style>

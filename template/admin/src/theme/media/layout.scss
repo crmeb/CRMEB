@@ -1,4 +1,4 @@
-@import './index.scss';
+@use './index.scss' as *;
 
 /* 页面宽度小于576px
 ------------------------------- */
@@ -16,6 +16,7 @@
   .layout-navbars-breadcrumb-hide {
     display: none;
   }
+
   // 外链视图
   .layout-view-link {
     a {
@@ -23,11 +24,13 @@
       text-align: center;
     }
   }
+
   // 菜单搜索
   .layout-search-dialog {
-    .el-autocomplete {
-      width: 80% !important;
-    }
+  }
+
+  .el-autocomplete {
+    width: 80% !important;
   }
 }
 
@@ -37,6 +40,7 @@
   // 布局配置
   .layout-drawer-content-flex {
     position: relative;
+
     &::after {
       content: '手机版不支持切换布局';
       position: absolute;

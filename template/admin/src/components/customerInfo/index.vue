@@ -178,39 +178,45 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.customer{
-  height 100%
+<style lang="scss" scoped>
+.customer {
+  height: 100%;
   background-color: #fff;
 }
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px;
-    cursor pointer
-    img
-        width 100%
-        height 100%
-.modelBox
-    ::v-deep 
-    .ivu-table-header
-        width 100% !important
-.trees-coadd
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
     width: 100%;
-    height: 385px;
-    .scollhide
-        width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-        overflow-y: scroll;
+    height: 100%;
+  }
+}
+.modelBox {
+  ::v-deep,
+  .ivu-table-header {
+    width: 100% !important;
+  }
+}
+.trees-coadd {
+  width: 100%;
+  height: 385px;
+  .scollhide {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+}
 .scollhide::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
-.footer{
-    margin: 15px 0;
-    padding-right: 20px;
+.footer {
+  margin: 15px 0;
+  padding-right: 20px;
 }
-::v-deep .el-form--inline .el-form-item{
-  margin-bottom 0
+::v-deep .el-form--inline .el-form-item {
+  margin-bottom: 0;
 }
 </style>

@@ -6,7 +6,7 @@
     <!--头部-->
     <base-info ref="baseInfo" />
     <!--小方块-->
-    <grid-menu />
+    <grid-menu v-if="userInfo.level == 0" />
     <!--订单统计-->
     <visit-chart ref="visitChart" />
     <!--用户-->
@@ -22,7 +22,7 @@ import gridMenu from './components/gridMenu';
 import visitChart from './components/visitChart';
 import userChart from './components/userChart';
 import { auth } from '@/api/system';
-
+import { mapState } from 'vuex';
 export default {
   name: 'index',
   components: {
@@ -39,8 +39,12 @@ export default {
       force_reminder: null,
     };
   },
+  computed: {
+    ...mapState('userInfo', ['userInfo']),
+  },
   mounted() {
     this.getAuth();
+    console.log(this.userInfo, 'userInfo');
   },
   methods: {
     getAuth() {

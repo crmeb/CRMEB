@@ -74,9 +74,10 @@ class SystemGroupDataServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getGroupDataList(array $where)
+    public function getGroupDataList(array $where, $type = 'limit')
     {
         [$page, $limit] = $this->getPageValue();
+        if ($type == 'all') $page = $limit = 0;
         $list = $this->dao->getGroupDataList($where, $page, $limit);
         $count = $this->dao->count($where);
         $type = '';
@@ -282,7 +283,7 @@ class SystemGroupDataServices extends BaseServices
     {
         $systemGroup = [];
         if (!empty($ids)) {
-            $systemGroupData = $this->dao->idByGroupList($ids);
+            $systemGroupData = $this->dao->idByGroupList($ids, '*');
             if (!empty($systemGroupData))
                 $systemGroup = array_combine(array_column($systemGroupData, 'id'), $systemGroupData);
         }

@@ -301,11 +301,10 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .empty-box {
   height: 170px;
 }
-
 .mobile-page {
   position: relative;
   width: auto;
@@ -322,25 +321,21 @@ export default {
       width: 100%;
       height: 100%;
       border-radius: 6px;
-
       &.doc {
         border-radius: 0;
       }
     }
   }
-
   .bg {
     width: 100%;
     height: 50px;
-    background: linear-gradient(90deg, #F62C2C 0%, #F96E29 100%);
+    background: linear-gradient(90deg, #f62c2c 0%, #f96e29 100%);
   }
-
   .bgset {
     width: 100%;
     height: 50px;
   }
 }
-
 .dot {
   position: absolute;
   left: 0;
@@ -348,11 +343,9 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
-
   &.number {
     bottom: 4px;
   }
-
   .num {
     width: 25px;
     height: 18px;
@@ -364,22 +357,19 @@ export default {
     font-size: 12px;
     text-align: center;
   }
-
   .dot-item {
     width: 5px;
     height: 5px;
-    background: #AAAAAA;
+    background: #aaaaaa;
     border-radius: 50%;
     margin: 0 3px;
   }
-
   &.line-dot {
     bottom: 20px;
-
     .line_dot-item {
       width: 8px;
       height: 2px;
-      background: #AAAAAA;
+      background: #aaaaaa;
       margin: 0 3px;
     }
   }

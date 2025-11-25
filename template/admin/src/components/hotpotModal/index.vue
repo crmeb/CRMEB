@@ -50,14 +50,15 @@
               <span class="num">热区{{ item.number }}</span>
             </div>
             <div class="form-item label">
-              <div @click="getLink(index)">
+              <div>
                 <el-input
                   icon="ios-arrow-forward"
                   v-model="item.link"
                   :style="linkInputStyle"
-                  readonly
                   placeholder="选择跳转链接"
-                />
+                >
+                  <i class="el-icon-link" slot="suffix" @click="getLink(index)" />
+                </el-input>
               </div>
             </div>
             <i class="el-icon-delete" @click="delAreaBox(index)" />
@@ -191,7 +192,6 @@ export default {
   computed: {},
   watch: {
     imgAreaData(val) {
-      console.log(val, '1111');
       this.areaData = [...val];
     },
   },
@@ -230,18 +230,18 @@ export default {
       e.preventDefault();
       this.caseShow = true;
       // 记录滑动的初始值
-      this.starX = e.layerX;
-      this.starY = e.layerY;
+      this.starX = e.layerX -5;
+      this.starY = e.layerY -5;
       // 鼠标滑动的过程
       if (!document.onmousemove) {
         let maxWidth = this.defaultWidth - e.layerX;
         document.onmousemove = (ev) => {
           if (ev.layerX - this.starX < maxWidth) {
-            this.areaWidth = ev.layerX - this.starX;
+            this.areaWidth = ev.layerX - this.starX - 5;
           } else {
             this.areaWidth = maxWidth;
           }
-          this.areaHeight = ev.layerY - this.starY;
+          this.areaHeight = ev.layerY - this.starY -5;
         };
       }
     },
@@ -287,7 +287,6 @@ export default {
     },
     // 添加网址
     addURL(index, url) {
-      console.log(index, url);
       let obj = {
         ...this.areaData[index],
         link: url,
@@ -297,12 +296,12 @@ export default {
     // 保存热区信息
     saveAreaData() {
       if ((this.areaData && !this.areaData.length) || !this.checkData(this.areaData)) {
-        this.$Message.error('热区是否配置链接、是否至少添加一个热区?');
+        this.$message.error('热区是否配置链接、是否至少添加一个热区?');
         return;
       }
       this.$emit('saveAreaData', this.areaData);
       this.dialogVisible = false;
-      this.$Message.success('编辑成功!');
+      this.$message.success('编辑成功!');
     },
     /**
      * 检查列表中每个元素是否都有 link 属性
@@ -340,14 +339,14 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-/deep/ .el-dialog{
+<style lang="scss" scoped>
+::v-deep .el-dialog {
   border-radius: 0px !important;
-  .el-alert__icon.is-big{
+  .el-alert__icon.is-big {
     font-size: 14px;
     width: 16px;
   }
-  .el-alert .el-alert__description{
+  .el-alert .el-alert__description {
     margin: 0;
   }
 }
@@ -357,49 +356,41 @@ export default {
   align-items: center;
   padding: 16px 0;
 }
-
 .dialog-footer {
   text-align: right;
   margin-top: 20px;
   margin-right: 20px;
 }
-
 .operationFloor {
   display: flex;
   position: relative;
   max-height: 80vh;
-
   .header {
     .titleBox {
       display: flex;
       justify-content: space-between;
       align-items: center;
       height: 100px;
-
       .name {
         font-size: 13px;
         font-weight: bold;
       }
     }
-
     .textBox {
       font-size: 12px;
       color: #777;
       margin-bottom: 10px;
     }
   }
-
   .imgBox::-webkit-scrollbar {
     display: none; /* Chrome Safari */
   }
-
   .imgBox {
     display: flex;
     justify-content: center;
     width: 65%;
     overflow-y: scroll;
-    max-height 800px;
-
+    max-height: 800px;
     .container {
       position: relative;
       border: 1px solid #f5f5f5;
@@ -410,7 +401,6 @@ export default {
       display: block;
       width: 750px;
     }
-
     .area {
       position: absolute;
       width: 200px;
@@ -422,17 +412,15 @@ export default {
     }
   }
 }
-
 .form {
   font-size: 12px;
   width: 30%;
-  max-height 800px;
+  max-height: 800px;
   overflow-y: scroll;
   .form-row {
     display: flex;
     margin: 12px 0;
     align-items: center;
-
     .form-item {
       display: flex;
       justify-content: space-between;
@@ -440,19 +428,16 @@ export default {
       white-space: nowrap;
       margin: 0 5px;
       font-size: 12px;
-
       .num {
         width: 69px;
         color: #999;
         font-size: 12px;
       }
-
       .label {
-        color: #C7C7C7;
+        color: #c7c7c7;
       }
     }
   }
-
   .el-icon-delete {
     font-size: 16px;
     cursor: pointer;

@@ -35,5 +35,14 @@ export default {
       },
       component: () => import('@/pages/agent/agentManage'),
     },
+    {
+      path: 'spread/apply',
+      name: `${pre}agentManage`,
+      meta: {
+        auth: ['admin-agent-spread-apply'],
+        title: '分销员申请',
+      },
+      component: () => import('@/pages/agent/spread/apply'),
+    },
   ],
 };

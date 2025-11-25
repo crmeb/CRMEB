@@ -15,7 +15,8 @@
           v-for="(item, index) in tabList"
           :key="index"
           :class="current === index + 1 ? 'active' : ''"
-          v-db-click @click="selected(index)"
+          v-db-click
+          @click="selected(index)"
         >
           <div class="color_cont flex align-center">
             <div class="main_c mr-2" :class="item.class">
@@ -25,8 +26,13 @@
           </div>
         </div>
       </div>
-      <div class="acea-row row-top">
-        <div class="pictrue" v-for="(item, index) in picList" :key="index">
+      <div class="acea-row row-top position-relative">
+        <div
+          class="pictrue position-absolute"
+          :class="{ sel: current == index + 1 }"
+          v-for="(item, index) in picList"
+          :key="index"
+        >
           <img :src="item.image" />
         </div>
       </div>
@@ -58,12 +64,13 @@ export default {
         { tit: '魅力粉', class: 'pink' },
         { tit: '活力橙', class: 'orange' },
       ],
-      picList: [],
-      picListBule: [{ image: require('@/assets/images/bule.jpg') }],
-      picListGreen: [{ image: require('@/assets/images/green.jpg') }],
-      picListRed: [{ image: require('@/assets/images/red.jpg') }],
-      picListPink: [{ image: require('@/assets/images/pink.jpg') }],
-      picListOrange: [{ image: require('@/assets/images/orange.jpg') }],
+      picList: [
+        { image: require('@/assets/images/bule.jpg') },
+        { image: require('@/assets/images/green.jpg') },
+        { image: require('@/assets/images/red.jpg') },
+        { image: require('@/assets/images/pink.jpg') },
+        { image: require('@/assets/images/orange.jpg') },
+      ],
       current: '',
       clientHeight: 0,
       loadingExist: false,
@@ -79,7 +86,7 @@ export default {
     },
   },
   created() {
-    this.picList = this.picListBule;
+    // this.picList = this.picListBule;
     this.getInfo();
   },
   mounted: function () {
@@ -94,17 +101,6 @@ export default {
   methods: {
     selected(index) {
       this.current = index + 1;
-      if (index == 0) {
-        this.$set(this, 'picList', this.picListBule);
-      } else if (index == 1) {
-        this.$set(this, 'picList', this.picListGreen);
-      } else if (index == 2) {
-        this.$set(this, 'picList', this.picListRed);
-      } else if (index == 3) {
-        this.$set(this, 'picList', this.picListPink);
-      } else if (index == 4) {
-        this.$set(this, 'picList', this.picListOrange);
-      }
     },
     getInfo() {
       getColorChange('color_change')
@@ -128,25 +124,7 @@ export default {
         });
     },
     changeColor(e) {
-      switch (e) {
-        case 1:
-          this.picList = this.picListBule;
-          break;
-        case 2:
-          this.picList = this.picListGreen;
-          break;
-        case 3:
-          this.picList = this.picListRed;
-          break;
-        case 4:
-          this.picList = this.picListPink;
-          break;
-        case 5:
-          this.picList = this.picListOrange;
-          break;
-        default:
-          break;
-      }
+      this.current = e;
     },
   },
 };
@@ -163,13 +141,18 @@ export default {
 }
 
 .pictrue {
-  width: 800px;
-  height: 100%;
+  top: 0;
+  left: 0;
+  max-width: 1000px;
   margin: 10px 24px 0 0;
-
   img {
     width: 100%;
     height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  &.sel img {
+    opacity: 1;
   }
 }
 

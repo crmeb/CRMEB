@@ -1,14 +1,14 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            label-width="80px"
-            label-position="right"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          label-width="80px"
+          label-position="right"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="状态：" label-for="status1">
             <el-select v-model="status" placeholder="请选择" @change="userSearchs" clearable class="form_content_width">
@@ -19,10 +19,10 @@
           </el-form-item>
           <el-form-item label="搜索：" label-for="status2">
             <el-input
-                clearable
-                placeholder="请输入姓名或者账号"
-                v-model="formValidate.name"
-                class="form_content_width"
+              clearable
+              placeholder="请输入姓名或者账号"
+              v-model="formValidate.name"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -32,8 +32,7 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button v-auth="['setting-system_admin-add']" type="primary" v-db-click @click="add"
-      >添加管理员</el-button>
+      <el-button v-auth="['setting-system_admin-add']" type="primary" v-db-click @click="add">添加管理员</el-button>
       <el-table
         :data="list"
         class="mt14"

@@ -1,66 +1,46 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="pagination"
-            :model="pagination"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="pagination"
+          :model="pagination"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="退款状态：">
             <el-select
-                v-model="pagination.refund_type"
-                clearable
-                class="form_content_width"
-                @change="selectChange2"
-                placeholder="全部"
+              v-model="pagination.refund_type"
+              clearable
+              class="form_content_width"
+              @change="selectChange2"
+              placeholder="全部"
             >
-              <el-option
-                  v-for="(item,index) in num"
-                  :value="index"
-                  :key="index"
-                  :label="item.name"
-              >{{item.name}}</el-option>
+              <el-option v-for="(item, index) in num" :value="index" :key="index" :label="item.name">{{
+                item.name
+              }}</el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="退款时间：">
-<!--            <el-date-picker-->
-<!--                clearable-->
-<!--                :editable="false"-->
-<!--                @change="onchangeTime"-->
-<!--                v-model="timeVal"-->
-<!--                format="yyyy/MM/dd"-->
-<!--                type="daterange"-->
-<!--                value-format="yyyy/MM/dd"-->
-<!--                start-placeholder="开始日期"-->
-<!--                end-placeholder="结束日期"-->
-<!--                style="width:250px;"-->
-<!--            ></el-date-picker>-->
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
-          <el-form-item label="订单号：" label-for="title">
-            <el-input
-                clearable
-                v-model="pagination.order_id"
-                placeholder="请输入订单号"
-                class="form_content_width"
-            />
+          <el-form-item label="订单搜索：" label-for="title">
+            <el-input clearable v-model="pagination.order_id" placeholder="请输入订单号" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="orderSearch">查询</el-button>
@@ -79,28 +59,46 @@
       >
         <el-table-column label="退款订单号" min-width="150">
           <template slot-scope="scope">
-            <span v-text="scope.row.order_id" style="display: block"></span>
-            <span v-show="scope.row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
+            <span
+              class="cup hover-pimary"
+              v-text="scope.row.order_id"
+              style="display: block"
+              @click="changeMenu(scope.row, '2')"
+            ></span>
+            <span v-if="scope.row.is_del === 1" style="color: #ed4014; display: block">用户已删除</span>
           </template>
         </el-table-column>
         <el-table-column label="原订单号" min-width="150">
           <template slot-scope="scope">
-            <span v-text="scope.row.store_order_order_id" style="display: block"></span>
+            <span
+              class="cup hover-pimary"
+              v-text="scope.row.store_order_order_id"
+              style="display: block"
+              @click="changeMenu(scope.row, '3')"
+            ></span>
           </template>
         </el-table-column>
         <el-table-column label="商品信息" min-width="250">
           <template slot-scope="scope">
-            <div class="tab" v-for="(item,i) in scope.row._info" :key="i">
-              <img v-lazy="item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.image : item.cart_info.productInfo.image" />
+            <div class="tab" v-for="(item, i) in scope.row._info" :key="i">
+              <img
+                v-lazy="
+                  item.cart_info.productInfo.attrInfo
+                    ? item.cart_info.productInfo.attrInfo.image
+                    : item.cart_info.productInfo.image
+                "
+              />
               <el-tooltip placement="top" :open-delay="300">
                 <div slot="content">
                   <div>
                     <span>商品名称：</span>
-                    <span>{{ item.cart_info.productInfo.store_name  || '--' }}</span>
+                    <span>{{ item.cart_info.productInfo.store_name || '--' }}</span>
                   </div>
                   <div>
                     <span>规格名称：</span>
-                    <span>{{ item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.suk : '---' }}</span>
+                    <span>{{
+                      item.cart_info.productInfo.attrInfo ? item.cart_info.productInfo.attrInfo.suk : '---'
+                    }}</span>
                   </div>
                   <div>
                     <span>价格：</span>
@@ -118,7 +116,7 @@
         </el-table-column>
         <el-table-column label="用户信息" min-width="100">
           <template slot-scope="scope">
-            <span>{{ scope.row.nickname }}</span>
+            <span class="cup hover-pimary" @click="userDetail(scope.row, '2')">{{ scope.row.nickname }}</span>
           </template>
         </el-table-column>
         <el-table-column label="实际支付" min-width="70">
@@ -137,7 +135,7 @@
             <div v-else-if="scope.row.refund_type == 2">退货退款</div>
             <div v-else-if="scope.row.refund_type == 3">
               <div>拒绝退款</div>
-              <div>原因：{{ scope.row.refuse_reason }}</div>
+              <div class="c-red">原因：{{ scope.row.refuse_reason }}</div>
             </div>
             <div v-else-if="scope.row.refund_type == 4">商品待退货</div>
             <div v-else-if="scope.row.refund_type == 5">
@@ -215,6 +213,8 @@
     </el-card>
     <!-- 编辑 退款 退积分 不退款-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail"></edit-from>
+    <!-- 会员详情-->
+    <user-details ref="userDetails"></user-details>
     <!-- 详情 -->
     <details-from ref="detailss" :orderDatalist="orderDatalist" :orderId="orderId" :is_refund="1"></details-from>
     <!-- 备注 -->
@@ -226,23 +226,21 @@
 import { mapState } from 'vuex';
 import {
   orderRefundList,
-  orderList,
-  getOrdeDatas,
+  getDataInfo,
   getDataInfoNew,
-  getRefundFrom,
   getNewRefundFrom,
-  getnoRefund,
   getNewnoRefundFrom,
   refundIntegral,
   getDistribution,
-  writeUpdate,
 } from '@/api/order';
+import userDetails from '@/pages/user/list/handle/userDetails';
+
 import editFrom from '@/components/from/from';
 import detailsFrom from '../orderList/handle/orderDetails';
 import orderRemark from '../orderList/handle/orderRemark';
-import timeOptions from "@/libs/timeOptions";
+import timeOptions from '@/libs/timeOptions';
 export default {
-  components: { editFrom, detailsFrom, orderRemark },
+  components: { editFrom, detailsFrom, orderRemark, userDetails },
   data() {
     return {
       grid: {
@@ -297,8 +295,12 @@ export default {
     onchangeTime(e) {
       this.pagination.page = 1;
       this.timeVal = e || [];
-      this.pagination.time = this.timeVal[0] ? this.timeVal ? this.timeVal.join('-') : '' : '';
+      this.pagination.time = this.timeVal[0] ? (this.timeVal ? this.timeVal.join('-') : '') : '';
       this.getOrderList();
+    },
+    userDetail(row) {
+      this.$refs.userDetails.modals = true;
+      this.$refs.userDetails.getDetails(row.uid);
     },
     // 操作
     changeMenu(row, name) {
@@ -322,7 +324,10 @@ export default {
           // this.modalTitleSs = '修改立即支付';
           break;
         case '2':
-          this.getData(row.order_id);
+          this.getData(row.order_id, 2);
+          break;
+        case '3':
+          this.getData(row.store_order_id, 3);
           break;
         case '4':
           this.$refs.remarks.modals = true;
@@ -427,8 +432,14 @@ export default {
         });
     },
     // 获取详情表单数据
-    getData(id) {
-      getDataInfoNew(id)
+    getData(id, type) {
+      let fun;
+      if (type == 2) {
+        fun = getDataInfoNew;
+      } else {
+        fun = getDataInfo;
+      }
+      fun(id)
         .then(async (res) => {
           this.orderDatalist = res.data;
           // if (this.orderDatalist.orderInfo.refund_img.length) {
@@ -517,12 +528,11 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .code {
   position: relative;
 }
-.ivu-form-item{
-
+.ivu-form-item {
 }
 .QRpic {
   width: 180px;
@@ -533,13 +543,11 @@ export default {
     height: 100%;
   }
 }
-
 .tabBox {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
-
   .tabBox_img {
     width: 36px;
     height: 36px;
@@ -549,7 +557,6 @@ export default {
       height: 100%;
     }
   }
-
   .tabBox_tit {
     width: 60%;
     font-size: 12px !important;
@@ -559,12 +566,10 @@ export default {
     box-sizing: border-box;
   }
 }
-
 .pictrue-box {
   display: flex;
   align-item: center;
 }
-
 .pictrue {
   width: 25px;
   height: 25px;

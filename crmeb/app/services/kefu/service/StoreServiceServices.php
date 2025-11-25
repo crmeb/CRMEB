@@ -109,8 +109,8 @@ class StoreServiceServices extends BaseServices
             $field[] = $this->builder->input('true_password', '确认密码')->type('password')->col(24)->required();
         }
         $field[] = $this->builder->switches('status', '客服状态', (string)($formData['status'] ?? 1))->appendControl('1', [
-            $this->builder->switches('customer', '手机订单管理', (string)($formData['customer'] ?? 0)),
-            $this->builder->switches('notify', '订单通知', (string)($formData['notify'] ?? 0)),
+            $this->builder->switches('customer', '手机订单管理：', (string)($formData['customer'] ?? 0)),
+            $this->builder->switches('notify', '订单通知：', (string)($formData['notify'] ?? 0)),
         ])->activeValue('1')->inactiveValue('0');
         return $field;
     }

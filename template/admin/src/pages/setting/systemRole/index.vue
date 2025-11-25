@@ -37,7 +37,9 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" v-loading="spinShow">
-      <el-button v-auth="['setting-system_role-add']" type="primary" v-db-click @click="add('添加')">添加身份</el-button>
+      <el-button v-auth="['setting-system_role-add']" type="primary" v-db-click @click="add('添加')"
+        >添加身份</el-button
+      >
       <el-table
         :data="tableList"
         ref="table"
@@ -136,9 +138,11 @@
                   :default-checked-keys="selectIds"
                   :props="defaultProps"
                   @check="clickDeal"
+                  :default-expand-all="defaultExpandAll"
                 ></el-tree>
               </div>
             </div>
+            <span class="iconlist-btn" @click="changeExpandAll">{{ defaultExpandAll ? '折叠' : '展开' }}</span>
           </div>
         </el-form-item>
       </el-form>
@@ -167,6 +171,7 @@ export default {
         xs: 24,
       },
       loading: false,
+      defaultExpandAll: false,
       formValidate: {
         status: '',
         role_name: '',
@@ -212,6 +217,20 @@ export default {
     this.getList();
   },
   methods: {
+    changeExpandAll() {
+      // 控制按钮点击之后失焦
+      if (this.defaultExpandAll) {
+        this.defaultExpandAll = false;
+        for (let key in this.$refs.tree.store.nodesMap) {
+          this.$refs.tree.store.nodesMap[key].expanded = false;
+        }
+      } else {
+        this.defaultExpandAll = true;
+        for (let key in this.$refs.tree.store.nodesMap) {
+          this.$refs.tree.store.nodesMap[key].expanded = true;
+        }
+      }
+    },
     closed() {
       this.formInline = {
         role_name: '',
@@ -470,17 +489,26 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.trees-coadd
+<style scoped lang="scss">
+.trees-coadd {
+  width: 100%;
+  height: 385px;
+  display: flex;
+  .scollhide {
+    position: relative;
     width: 100%;
-    height: 385px;
-    .scollhide
-        width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-        overflow-y: scroll;
-       // margin-left: 18px;
+    height: 100%;
+    margin-top: 4px;
+    overflow-y: scroll;
+  }
+  .iconlist-btn {
+    white-space: nowrap;
+    cursor: pointer;
+    color: var(--prev-color-primary);
+  }
+}
+// margin-left: 18px;
 .scollhide::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 </style>

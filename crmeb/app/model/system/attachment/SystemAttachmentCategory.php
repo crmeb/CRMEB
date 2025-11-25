@@ -57,4 +57,8 @@ class SystemAttachmentCategory extends BaseModel
         if ($value !== '') $query->where('pid', $value);
     }
 
+    public function searchTypeAttr($query, $value)
+    {
+        if ($value !== '') $query->where('type', $value);
+    }
 }

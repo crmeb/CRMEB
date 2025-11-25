@@ -29,8 +29,10 @@
       <el-dialog :visible.sync="editBoxShow" title="设置热区" width="560px" append-to-body>
         <div class="area-set">
           <div class="area-label">热区跳转链接：</div>
-          <div class="area-content" @click="getLink()">
-            <el-input icon="ios-arrow-forward" v-model="url" readonly style="width: 100%" placeholder="选择跳转链接" />
+          <div class="area-content">
+            <el-input v-model="url" style="width: 100%" placeholder="选择跳转链接">
+              <i class="el-icon-link" slot="suffix" @click="getLink()" />
+            </el-input>
           </div>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -119,7 +121,7 @@ export default {
     // 添加网址
     addURL() {
       if (!this.url) {
-        this.$Message.error('请输入链接');
+        this.$message.error('请输入链接');
       } else {
         this.$emit('addURL', this.areaDataIndex, this.url);
         this.editBoxShow = false;
@@ -127,7 +129,6 @@ export default {
     },
     // 开始拖动限制范围
     mouseDownLint(e) {
-      console.log(e);
       e.preventDefault();
       this.starX = e.clientX;
       this.starY = e.clientY;
@@ -205,18 +206,17 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .areaBox {
   position: absolute;
   background: rgba(24, 144, 255, 0.5);
-  border: 1px dashed #1890FF;
+  border: 1px dashed var(--prev-color-primary);
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #1989FA;
+  color: var(--prev-color-primary);
   font-size: 12px;
   cursor: move;
-
   .prompt-text {
     overflow: hidden;
     display: flex;
@@ -227,17 +227,14 @@ export default {
     text-align: center;
     align-items: center;
     color: #fff;
-
     .num {
       font-size: 12px;
     }
-
     .prompt-item {
       color: #fff;
       margin: 0 2px;
     }
   }
-
   .del {
     display: flex;
     justify-content: center;
@@ -246,7 +243,7 @@ export default {
     height: 16px;
     line-height: 16px;
     font-size: 12px;
-    background: #1890FF;
+    background: var(--prev-color-primary);
     color: #fff;
     text-align: center;
     border-radius: 0 0 0 3px;
@@ -256,13 +253,11 @@ export default {
     transform: translate3d(50%, -50%, 0);
     cursor: default;
   }
-
   .del:hover {
     width: 16px;
     height: 16px;
     line-height: 16px;
   }
-
   .shape {
     position: absolute;
     width: 7px;
@@ -274,17 +269,14 @@ export default {
     cursor: nwse-resize;
   }
 }
-
 .area-set {
   display: flex;
   align-items: center;
   margin: 16px 0;
 }
-
 .area-label {
   width: 100px;
 }
-
 .area-content {
   flex: 1;
 }

@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-drawer :visible.sync="modal" :title="formValidate.id ? '编辑事件' : '添加事件'" size="1000px" @closed="initData">
+    <el-drawer
+      :visible.sync="modal"
+      :title="formValidate.id ? '编辑事件' : '添加事件'"
+      size="1000px"
+      @closed="initData"
+    >
       <el-form v-if="modal" class="pb-20" ref="formValidate" :model="formValidate" label-width="97px" label-colon>
         <el-form-item label="事件名称：" required>
           <el-row :gutter="16">
@@ -21,8 +26,12 @@
         <el-form-item label="事件说明：">
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-input v-model="formValidate.content" type="textarea" :autosize="{ minRows: 3, maxRows: 5 }"
-                placeholder="请输入事件说明"></el-input>
+              <el-input
+                v-model="formValidate.content"
+                type="textarea"
+                :autosize="{ minRows: 3, maxRows: 5 }"
+                placeholder="请输入事件说明"
+              ></el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -48,8 +57,14 @@
         <el-form-item label="可用参数：" v-if="copyData">
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-input class="text-area" v-model="copyData" type="textarea" :autosize="{ minRows: 7, maxRows: 7 }"
-                placeholder="请输入事件说明" readonly></el-input>
+              <el-input
+                class="text-area"
+                v-model="copyData"
+                type="textarea"
+                :autosize="{ minRows: 7, maxRows: 7 }"
+                placeholder="请输入事件说明"
+                readonly
+              ></el-input>
               <!-- <span class="text-area">{{ copyData }}</span> -->
             </el-col>
           </el-row>
@@ -58,7 +73,7 @@
         <el-form-item label="开发密码：" required>
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-input v-model="formValidate.password" type="password" placeholder="请输入系统开发密码"></el-input>
+              <el-input v-model="formValidate.password" type="password" placeholder="请输入系统开发密码，开发密码在crmeb/config/filesystem.php中修改password"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -131,8 +146,8 @@ export default {
             overviewRulerBorder: false, // 不要滚动条的边框
             minimap: { enabled: false },
             scrollbar: {
-              vertical: "hidden",
-              horizontal: "hidden",
+              vertical: 'hidden',
+              horizontal: 'hidden',
             },
             wordWrap: 'on',
             autoIndent: true, // 自动布局
@@ -175,7 +190,9 @@ export default {
     eventInfo(id) {
       if (!id) {
         this.modal = true;
-        this.initEditor("<?php\n\n//示例代码\n//参数使用实例  $data['uid']\n\n//直接写入数据库\n\\think\\facade\\Db::name('cache')->insert(['key' => 'custom_event_' . rand(), 'result' => $data['nickname'] . rand(), 'expire_time' => 0]);\n\n//调用系统方法\napp()->make(\\app\\services\\other\\CacheServices::class)->setDbCache('custom_event_' . rand(), $data['nickname']);");
+        this.initEditor(
+          "<?php\n\n//示例代码\n//参数使用实例  $data['uid']\n\n//直接写入数据库\n\\think\\facade\\Db::name('cache')->insert(['key' => 'custom_event_' . rand(), 'result' => $data['nickname'] . rand(), 'expire_time' => 0]);\n\n//调用系统方法\napp()->make(\\app\\services\\other\\CacheServices::class)->setDbCache('custom_event_' . rand(), $data['nickname']);",
+        );
         return;
       }
       eventInfo(id).then((res) => {

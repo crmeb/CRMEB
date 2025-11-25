@@ -21,6 +21,7 @@
 
 <script>
 import uploadFrom from './index';
+// import uploadFrom from './model';
 // import '../../../public/UEditor/dialogs/internal';
 export default {
   name: 'widgetImg',
@@ -77,7 +78,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .box {
   width: 100%;
   background: #fff;

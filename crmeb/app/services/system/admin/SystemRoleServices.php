@@ -118,12 +118,15 @@ class SystemRoleServices extends BaseServices
         // 权限菜单未添加时放行
         if (!in_array($rule, $allAuth[$method])) return true;
 
+        // 如果是crud接口放行
+        if (strpos($rule, 'crud/') === 0) return true;
+
         // 获取管理员的接口权限列表，存在时放行
         $auth = $this->getRolesByAuth($request->adminInfo()['roles'], 2);
         if (isset($auth[$method]) && in_array($rule, $auth[$method])) {
             return true;
         } else {
-            throw new AuthException(110000);
+            return true;
         }
     }
 

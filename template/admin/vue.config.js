@@ -1,38 +1,29 @@
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2023 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
 const path = require('path');
-const Setting = require('./src/setting.env');
 // 引入js打包工具
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const resolve = (dir) => {
   return path.join(__dirname, dir);
 };
 // 项目部署基础
-// 默认情况下，我们假设你的应用将被部署在域的根目录下,
-// 例如：https://www.my-app.com/
-// 默认：'/'
-// 如果您的应用程序部署在子路径中，则需要在这指定子路径
-// 例如：https://www.foobar.com/my-app/
-// 需要将它改为'/my-app/'
-// iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
-const BASE_URL = process.env.NODE_ENV === 'production' ? '/' : '/';
-const env = process.env.NODE_ENV;
-
 module.exports = {
-  // Project deployment base
-  // By default we assume your app will be deployed at the root of a domain,
-  // e.g. https://www.my-app.com/
-  // If your app is deployed at a sub-path, you will need to specify that
-  // sub-path here. For example, if your app is deployed at
-  // https://www.foobar.com/my-app/
-  // then change this to '/my-app/'
-  outputDir: Setting.outputDir,
+  // 打包路径
+  outputDir: 'dist',
+  // 打包路径--线上部署文件地址
+  // outputDir: '../../crmeb/public/admin',
   runtimeCompiler: true,
   productionSourceMap: false, //关闭生产环境下的SourceMap映射文件
-  baseUrl: BASE_URL,
-  // tweak internal webpack configuration.
-  // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   // 如果你不需要使用eslint，把lintOnSave设为false即可
   lintOnSave: false,
   // 打包优化
@@ -55,29 +46,15 @@ module.exports = {
     if (process.env.NODE_ENV === 'production') {
       config.plugins = [...config.plugins, ...pluginsPro];
     }
-    if (process.env.NODE_ENV === 'production') {
-      // 开启分离js
-      // config.optimization = {
-      //   runtimeChunk: 'single',
-      //   splitChunks: {
-      //     chunks: 'all',
-      //     maxInitialRequests: Infinity,
-      //     minSize: 20000,
-      //     cacheGroups: {
-      //       vendor: {
-      //         test: /[\\/]node_modules[\\/]/,
-      //         name(module) {
-      //           // get the name. E.g. node_modules/packageName/not/this/part.js
-      //           // or node_modules/packageName
-      //           const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-      //           // npm package names are URL-safe, but some servers don't like @ symbols
-      //           return `npm.${packageName.replace('@', '')}`;
-      //         },
-      //       },
-      //     },
-      //   },
-      // };
-    }
+  },
+  css: {
+    loaderOptions: {
+      scss: {
+        sassOptions: {
+          silenceDeprecations: ['legacy-js-api'],
+        },
+      },
+    },
   },
   chainWebpack: (config) => {
     config.plugins.delete('prefetch');

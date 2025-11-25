@@ -44,7 +44,8 @@
               <el-button
                 type="primary"
                 icon="md-add"
-                v-db-click @click="groupAdd('添加数据')"
+                v-db-click
+                @click="groupAdd('添加数据')"
                 style="margin-left: 14px; margin-top: 14px"
                 >添加数据</el-button
               >
@@ -60,13 +61,8 @@
               no-userFrom-text="暂无数据"
               no-filtered-userFrom-text="暂无筛选结果"
             >
-              <el-table-column
-                :label="item.title"
-                min-width="130"
-                v-for="(item, index) in columns1"
-                :key="index"
-              >
-                <template slot-scope="scope" >
+              <el-table-column :label="item.title" min-width="130" v-for="(item, index) in columns1" :key="index">
+                <template slot-scope="scope">
                   <template v-if="item.key">
                     <div>
                       <span>{{ scope.row[item.key] }}</span>
@@ -124,7 +120,7 @@ export default {
   name: 'list',
   components: {
     draggable,
-    uploadPictures
+    uploadPictures,
   },
   computed: {
     bgcolors() {

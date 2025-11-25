@@ -11,6 +11,7 @@
 namespace app\adminapi\controller\v1\agent;
 
 use app\adminapi\controller\AuthController;
+use app\services\agent\AgentLevelServices;
 use app\services\agent\AgentLevelTaskServices;
 use think\facade\App;
 
@@ -93,6 +94,10 @@ class AgentLevelTask extends AuthController
         $this->services->checkTypeTask(0, $data);
         $data['add_time'] = time();
         $this->services->save($data);
+        $levelInfo = app()->make(AgentLevelServices::class)->get((int)$data['level_id']);
+        $levelInfo->task_num = $levelInfo->task_num + 1;
+        $levelInfo->task_total_num = $levelInfo->task_total_num + 1;
+        $levelInfo->save();
         return app('json')->success(400210);
     }
 
@@ -162,8 +167,15 @@ class AgentLevelTask extends AuthController
         $levelTaskInfo = $this->services->getLevelTaskInfo((int)$id);
         if ($levelTaskInfo) {
             $res = $this->services->update($id, ['is_del' => 1]);
-            if (!$res)
+            if ($res) {
+                $levelInfo = app()->make(AgentLevelServices::class)->get((int)$levelTaskInfo['level_id']);
+                $levelInfo->task_num = $levelInfo->task_num - 1;
+                $levelInfo->task_total_num = $levelInfo->task_total_num - 1;
+                if ($levelInfo->task_num <= 0) $levelInfo->task_num = $levelInfo->task_total_num;
+                $levelInfo->save();
+            } else {
                 return app('json')->fail(100008);
+            }
         }
         return app('json')->success(100002);
     }

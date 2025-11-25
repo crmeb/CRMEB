@@ -72,7 +72,8 @@
               type="primary"
               long
               size="large"
-              v-db-click @click="handleSubmit1('formInline', current)"
+              v-db-click
+              @click="handleSubmit1('formInline', current)"
               class="mb20"
               >下一步</el-button
             >
@@ -81,7 +82,8 @@
               type="primary"
               long
               size="large"
-              v-db-click @click="handleSubmit2('formInline', current)"
+              v-db-click
+              @click="handleSubmit2('formInline', current)"
               class="mb20"
               >提交</el-button
             >
@@ -90,7 +92,8 @@
               type="primary"
               long
               size="large"
-              v-db-click @click="handleSubmit('formInline', current)"
+              v-db-click
+              @click="handleSubmit('formInline', current)"
               class="mb20"
               >登录</el-button
             >

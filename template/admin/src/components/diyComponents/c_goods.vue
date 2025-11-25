@@ -6,7 +6,7 @@
           class="item"
           v-for="(goods, index) in defaults.goodsList.list"
           :key="index"
-          v-if="defaults.goodsList.list.length"
+          v-show="defaults.goodsList.list.length"
         >
           <img :src="type == 1 ? goods.pic : goods.image" alt="" />
           <span class="iconfont icondel_1" v-db-click @click.stop="bindDelete(index)"></span>
@@ -144,46 +144,55 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.middleTop ::v-deep .ivu-modal-wrap .ivu-modal{
-    top:50%!important;
-    margin-top:-350px;
+<style lang="scss" scoped>
+.middleTop ::v-deep .ivu-modal-wrap .ivu-modal {
+  top: 50% !important;
+  margin-top: -350px;
 }
-.goods-box
-    padding 16px 0
-    margin-bottom 16px
-    border-top 1px solid rgba(0,0,0,0.05)
-    border-bottom 1px solid rgba(0,0,0,0.05)
-    .wrapper,.list-group
-        display flex
-        flex-wrap wrap
-    .add-item
-        display flex
-        align-items center
-        justify-content center
-        width 80px
-        height 80px
-        margin-bottom 10px
-        background #F7F7F7
-        .iconfont
-            font-size 18px
-            color #D8D8D8
-    .item
-        position relative
-        width 80px
-        height 80px
-        margin-bottom 20px
-        margin-right 12px
-        &:nth-child(4n)
-           margin-right 0
-        img
-            width 100%
-            height 100%
-        .icondel_1
-            position absolute
-            right -10px
-            top -16px
-            color #999999
-            font-size 28px
-            cursor pointer
+.goods-box {
+  padding: 16px 0;
+  margin-bottom: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  .wrapper,
+  .list-group {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .add-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    background: #f7f7f7;
+    .iconfont {
+      font-size: 18px;
+      color: #d8d8d8;
+    }
+  }
+  .item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    margin-right: 12px;
+    &:nth-child(4n) {
+      margin-right: 0;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .icondel_1 {
+      position: absolute;
+      right: -10px;
+      top: -16px;
+      color: #999999;
+      font-size: 28px;
+      cursor: pointer;
+    }
+  }
+}
 </style>

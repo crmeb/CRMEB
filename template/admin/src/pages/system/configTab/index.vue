@@ -1,40 +1,36 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="是否显示：">
-            <el-select v-model="formValidate.status" placeholder="请选择" clearable @change="userSearchs" class="form_content_width">
+            <el-select
+              v-model="formValidate.status"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="分类名称：" label-for="status2">
-            <el-input
-                clearable
-                placeholder="请输入分类名称"
-                v-model="formValidate.title"
-                class="form_content_width"
-            />
+            <el-input clearable placeholder="请输入分类名称" v-model="formValidate.title" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询分类</el-button>
           </el-form-item>
           <div>
             <el-form-item label="配置名称：" label-for="status2">
-              <el-input
-                  clearable
-                  placeholder="请输入配置名称"
-                  v-model="config_name"
-                  class="form_content_width"
-              />
+              <el-input clearable placeholder="请输入配置名称" v-model="config_name" class="form_content_width" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" v-db-click @click="searchConfig">查询配置</el-button>
@@ -56,10 +52,10 @@
         :data="classList"
         row-id="id"
       >
-        <vxe-table-column field="id" title="ID" tooltip width="60"></vxe-table-column>
+        <vxe-table-column field="id" title="ID" tooltip width="85"></vxe-table-column>
         <vxe-table-column field="title" tree-node title="分类名称" min-width="150"></vxe-table-column>
         <vxe-table-column field="eng_title" title="分类字段" min-width="150"></vxe-table-column>
-        <vxe-table-column field="statuss" title="状态" min-width="150">
+        <vxe-table-column field="statuss" title="状态" width="250">
           <template v-slot="{ row }">
             <el-switch
               :active-value="1"
@@ -126,7 +122,7 @@ export default {
       FromData: null,
       classId: 0,
       classList: [],
-      config_name: ''
+      config_name: '',
     };
   },
   computed: {
@@ -214,8 +210,8 @@ export default {
       this.getList();
     },
     //搜索配置项
-    searchConfig(){
-      if(this.config_name == '') {
+    searchConfig() {
+      if (this.config_name == '') {
         return this.$message.error('请输入要搜索的配置名称');
       }
       this.$router.push({

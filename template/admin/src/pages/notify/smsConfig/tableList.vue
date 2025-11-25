@@ -258,7 +258,13 @@
                 />
               </el-form-item>
               <el-form-item class="maxInpt">
-                <el-button type="primary" long size="default" v-db-click @click="handleSubmitDump('formInlineDump')" class="btn"
+                <el-button
+                  type="primary"
+                  long
+                  size="default"
+                  v-db-click
+                  @click="handleSubmitDump('formInlineDump')"
+                  class="btn"
                   >立即开通</el-button
                 >
               </el-form-item>
@@ -316,7 +322,14 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" long size="large" v-db-click @click="editSubmit('formInline')" class="btn" style="width: 87%"
+          <el-button
+            type="primary"
+            long
+            size="large"
+            v-db-click
+            @click="editSubmit('formInline')"
+            class="btn"
+            style="width: 87%"
             >确认修改</el-button
           >
         </el-form-item>
@@ -856,12 +869,12 @@ export default {
   }
 }
 .tempId {
-  ::v-deep .ivu-form-item-content {
-    text-align: left !important;
-  }
   cursor: pointer;
   margin-left: 11px;
   color: var(--prev-color-primary);
+  ::v-deep .ivu-form-item-content {
+    text-align: left !important;
+  }
 }
 .tabBox_img {
   opacity: 0;
@@ -918,13 +931,12 @@ export default {
   }
 }
 .tempId {
-  ::v-deep .ivu-form-item-content {
-    text-align: left !important;
-  }
-
   cursor: pointer;
   margin-left: 11px;
   color: var(--prev-color-primary);
+  ::v-deep .ivu-form-item-content {
+    text-align: left !important;
+  }
 }
 .tabBox_img {
   opacity: 0;

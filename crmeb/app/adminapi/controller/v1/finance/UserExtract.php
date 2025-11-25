@@ -135,6 +135,15 @@ class UserExtract extends AuthController
     public function adopt($id)
     {
         if (!$id) app('json')->fail(100100);
-        return app('json')->success($this->services->adopt((int)$id) ? 100014 : 100015);
+        $res = $this->services->adopt((int)$id);
+        if ($res) {
+            if ($res === 'v3_extract') {
+                return app('json')->success('提现成功，等待用户确认收款');
+            } else {
+                return app('json')->success('提现成功');
+            }
+        } else {
+            return app('json')->success('操作失败');
+        }
     }
 }

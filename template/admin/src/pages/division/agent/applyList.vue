@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
           ref="formValidate"
@@ -10,29 +10,12 @@
           @submit.native.prevent
           inline
         >
-          <el-form-item label="状态：">
-            <el-select
-                clearable
-                v-model="formValidate.status"
-                placeholder="请选择状态"
-                @change="userSearchs"
-                class="form_content_width"
-            >
-              <el-option value="all" label="全部"></el-option>
-              <el-option
-                  :value="item.id"
-                  v-for="(item, index) in statusList"
-                  :key="index"
-                  :label="item.status_name"
-              ></el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="搜索：">
             <el-input
-                clearable
-                placeholder="请输入姓名、UID"
-                v-model="formValidate.keyword"
-                class="form_content_width"
+              clearable
+              placeholder="请输入姓名、UID"
+              v-model="formValidate.keyword"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -41,9 +24,18 @@
         </el-form>
       </div>
     </el-card>
-    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16" :body-style="{ padding: '0 20px 20px' }">
       <el-row class="ivu-mt box-wrapper">
         <el-col :xs="24" :sm="24" ref="rightBox">
+          <el-tabs v-model="formValidate.status" @tab-click="userSearchs">
+            <el-tab-pane name="all" label="全部"></el-tab-pane>
+            <el-tab-pane
+              v-for="(item, index) in statusList"
+              :key="index"
+              :label="item.status_name"
+              :name="item.id"
+            ></el-tab-pane>
+          </el-tabs>
           <el-table
             :data="userLists"
             ref="table"
@@ -52,7 +44,7 @@
             no-formValidate-text="暂无数据"
             no-filtered-formValidate-text="暂无筛选结果"
           >
-            <el-table-column label="用户UID" width="80">
+            <el-table-column label="用户UID" width="100">
               <template slot-scope="scope">
                 <span>{{ scope.row.uid }}</span>
               </template>
@@ -67,9 +59,9 @@
                 <span>{{ scope.row.phone }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="事业部ID" min-width="150">
+            <el-table-column label="事业部名称" min-width="150">
               <template slot-scope="scope">
-                <span>{{ scope.row.division_id }}</span>
+                <span>{{ scope.row.division_name }}</span>
               </template>
             </el-table-column>
             <el-table-column label="申请图片" min-width="150">
@@ -147,15 +139,15 @@ export default {
       statusList: [
         {
           status_name: '申请中',
-          id: 0,
+          id: '0',
         },
         {
           status_name: '已同意',
-          id: 1,
+          id: '1',
         },
         {
           status_name: '已拒绝',
-          id: 2,
+          id: '2',
         },
       ],
       FromData: null,
@@ -187,7 +179,7 @@ export default {
   computed: {
     ...mapState('media', ['isMobile']),
     labelWidth() {
-      return this.isMobile ? undefined : '80px';
+      return this.isMobile ? undefined : '50px';
     },
     labelPosition() {
       return this.isMobile ? 'top' : 'right';
@@ -281,15 +273,13 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-form-item {
   margin-bottom: 0;
 }
-
 .picBox {
   display: inline-block;
   cursor: pointer;
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -298,7 +288,6 @@ export default {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.02);
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -311,21 +300,17 @@ export default {
     }
   }
 }
-
 ::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
-
 ::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
-
 .left-wrapper {
   height: 904px;
   background: #fff;
   border-right: 1px solid #f2f2f2;
 }
-
 .menu-item {
   z-index: 50;
   position: relative;
@@ -333,7 +318,10 @@ export default {
   justify-content: space-between;
   word-break: break-all;
 }
-
+::v-deep .el-tabs__item {
+  height: 54px;
+  line-height: 54px;
+}
 .icon-box {
   z-index: 3;
   position: absolute;
@@ -341,10 +329,6 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   display: none;
-}
-
-&:hover .icon-box {
-  display: block;
 }
 
 .right-menu {
@@ -355,27 +339,20 @@ export default {
   width: auto;
   min-width: 121px;
 }
-
 .tabBox_img {
   width: 36px;
-
-  height 36px {
-    border-radius: 4px;
-  }
-
-  cursor pointer {
-    img {
-      width: 100%;
-      height: 100%;
-    }
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
   }
 }
-
 .pictrue-box {
   display: flex;
   align-item: center;
 }
-
 .pictrue {
   width: 25px;
   height: 25px;

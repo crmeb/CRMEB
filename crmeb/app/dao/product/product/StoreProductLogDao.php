@@ -90,4 +90,20 @@ class StoreProductLogDao extends BaseDao
                 $query->group($group);
             })->order('add_time desc')->select()->toArray();
     }
+
+    /**
+     * 获取用户访问商品数量
+     * @param $uid
+     * @return int
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/2/17
+     */
+    public function getCountByUser($uid)
+    {
+        return $this->getModel()->where('uid', $uid)
+            ->where('type', 'visit')
+            ->group('product_id')
+            ->count();
+    }
 }

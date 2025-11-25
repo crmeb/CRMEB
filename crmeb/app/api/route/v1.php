@@ -18,8 +18,10 @@ Route::group(function () {
     Route::any('wechat/serve', 'v1.wechat.WechatController/serve')->option(['real_name' => '公众号服务']);//公众号服务
     Route::any('wechat/miniServe', 'v1.wechat.WechatController/miniServe')->option(['real_name' => '小程序服务']);//公众号服务
     Route::any('pay/notify/:type', 'v1.PayController/notify')->option(['real_name' => '支付回调']);//支付回调
+    Route::any('transfer/notify/:type', 'v1.PayController/transferNotify')->option(['real_name' => '商户转账回调']);//商户转账回调
     Route::any('order_call_back', 'v1.order.StoreOrderController/callBack')->option(['real_name' => '商家寄件回调']);//商家寄件回调
-    Route::get('get_script', 'v1.PublicController/getScript')->option(['real_name' => '获取统计代码']);//获取统计代码
+    Route::get('get_script', 'v1.PublicController/getScript')->option(['real_name' => '移动端自定义JS']);//移动端自定义JS
+    Route::get('custom_pc_js', 'v1.PublicController/customPcJs')->option(['real_name' => 'PC端自定义JS']);//PC端自定义JS
     Route::get('version', 'v1.PublicController/getVersion')->option(['real_name' => '获取代码版本号']);
     Route::get('service_pay_result', 'v1.PublicController/servicePayResult')->option(['real_name' => '服务商支付商家小票接口']);
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->option(['mark' => 'serve', 'mark_name' => '服务接口']);
@@ -109,6 +111,9 @@ Route::group(function () {
         Route::post('switch_h5', 'v1.LoginController/switch_h5')->name('switch_h5')->option(['real_name' => '切换账号']);// 切换账号
         //公共类
         Route::post('upload/image', 'v1.PublicController/upload_image')->name('uploadImage')->option(['real_name' => '图片上传']);//图片上传
+        // 用户微信转账详情接口
+        Route::get('transfer/info', 'v1.PublicController/getTransferInfo')->name('getTransferInfo')->option(['real_name' => '用户微信转账详情接口']);// 用户微信转账详情接口
+
     })->option(['mark' => 'common', 'mark_name' => '公共接口']);
 
     Route::group(function () {
@@ -201,10 +206,10 @@ Route::group(function () {
         Route::post('order/product', 'v1.order.StoreOrderController/product')->name('orderProduct')->option(['real_name' => '订单商品信息']); //订单商品信息
         Route::post('order/comment', 'v1.order.StoreOrderController/comment')->name('orderComment')->option(['real_name' => '订单评价']); //订单评价
         Route::get('order/cashier/:orderId/[:type]', 'v1.order.StoreOrderController/cashier')->name('orderCashier')->option(['real_name' => '订单收银台']); //订单收银台
-        /** 好友代付 */
         Route::get('order/friend_detail', 'v1.order.StoreOrderController/friendDetail')->name('friendDetail')->option(['real_name' => '代付详情']);//代付详情
-        //首页获取未支付订单
-        Route::get('order/nopay', 'v1.order.StoreOrderController/get_noPay')->name('getNoPay')->option(['real_name' => '获取未支付订单']);//获取未支付订单
+        Route::post('order/receive_gift/:oid', 'v1.order.StoreOrderController/receiveGift')->name('receiveGift')->option(['real_name' => '领取礼物']);//领取礼物
+        Route::get('order/gift_detail/:oid', 'v1.order.StoreOrderController/giftDetail')->name('giftDetail')->option(['real_name' => '礼品详情']); //礼品详情
+
     })->option(['mark' => 'order', 'mark_name' => '订单']);
 
     Route::group(function () {
@@ -338,6 +343,12 @@ Route::group(function () {
         Route::delete('user/visit', 'v1.user.UserController/visitDelete')->name('visitDelete')->option(['real_name' => '商品浏览记录删除']);//商品浏览记录删除
     })->option(['mark' => 'user', 'mark_name' => '用户']);
 
+    Route::group(function () {
+        /** 分销员申请 */
+        Route::get('user/spread/apply/info', 'v1.user.SpreadApplyController/applyInfo')->name('申请信息');//申请信息
+        Route::post('user/spread/apply/:id', 'v1.user.SpreadApplyController/applyPromoter')->name('申请分销员');//申请分销员
+    })->option(['mark' => 'spread', 'mark_name' => '分销员申请']);
+
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, true);
 //未授权接口
 Route::group(function () {
@@ -367,6 +378,7 @@ Route::group(function () {
         Route::get('reply/config/:id', 'v1.store.StoreProductController/reply_config')->name('replyConfig')->option(['real_name' => '商品评价数量和好评度']);//商品评价数量和好评度
         Route::get('advance/list', 'v1.store.StoreProductController/advanceList')->name('advanceList')->option(['real_name' => '预售商品列表']);//预售商品列表
         Route::get('product/code/:id', 'v1.store.StoreProductController/code')->name('productCode')->option(['real_name' => '商品分享二维码']);//商品分享二维码 推广员
+        Route::get('product/real_price/:id/:unique', 'v1.store.StoreProductController/realPrice')->name('realPrice')->option(['real_name' => '商品到手价']);//商品到手价
     })->option(['mark' => 'product', 'mark_name' => '商品']);
 
     Route::group(function () {
@@ -386,7 +398,7 @@ Route::group(function () {
             //活动---秒杀
             Route::get('seckill/index', 'v1.activity.StoreSeckillController/index')->name('seckillIndex')->option(['real_name' => '秒杀商品时间区间']);//秒杀商品时间区间
             Route::get('seckill/list/:time', 'v1.activity.StoreSeckillController/lst')->name('seckillList')->option(['real_name' => '秒杀商品列表']);//秒杀商品列表
-            Route::get('seckill/detail/:id/[:time]', 'v1.activity.StoreSeckillController/detail')->name('seckillDetail')->option(['real_name' => '秒杀商品详情']);//秒杀商品详情
+            Route::get('seckill/detail/:id', 'v1.activity.StoreSeckillController/detail')->name('seckillDetail')->option(['real_name' => '秒杀商品详情']);//秒杀商品详情
         })->option(['parent' => 'activity_nologin', 'cate_name' => '秒杀(未授权)']);
 
         Route::group(function () {

@@ -1,0 +1,1 @@
+<view hidden="{{!(!isSortType)}}"><view class="lines" style="{{$root.s0}}"><view class="item" style="{{$root.s1}}"></view></view></view>

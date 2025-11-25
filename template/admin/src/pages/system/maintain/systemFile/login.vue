@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row >
+    <el-row>
       <el-col :span="24">
         <div class="index_from page-account-container">
           <div class="page-account-top">
@@ -21,7 +21,9 @@
               <div class="trip">提示：密码配置在 /config/filesystem.php 文件中修改 'password' => '密码'</div>
             </el-form-item>
             <el-form-item class="maxInpt">
-              <el-button type="primary" long size="large" v-db-click @click="handleSubmit('formInline')" class="btn">登录</el-button>
+              <el-button type="primary" long size="large" v-db-click @click="handleSubmit('formInline')" class="btn"
+                >登录</el-button
+              >
             </el-form-item>
           </el-form>
         </div>
@@ -75,7 +77,7 @@ export default {
               this.$message.success('登录成功!');
               //   this.$emit('on-Login', res.data);
               let expires = this.getExpiresTime(res.data.expires_time);
-              // 记录用户登陆信息
+              // 记录用户登录信息
               setCookies('file_token', res.data.token, expires);
               this.$router.push({
                 path: this.$routeProStr + '/system/maintain/system_file/opendir',
@@ -99,48 +101,44 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-
-.maxInpt{
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+<style lang="scss" scoped>
+.maxInpt {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.index_from{
+.index_from {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.trip{
-    width: 580px;
-    text-align: left;
-    color: #aaa;
+.trip {
+  width: 580px;
+  text-align: left;
+  color: #aaa;
 }
-.page-account-container{
-    text-align: center;
-    padding: 200px 0;
+.page-account-container {
+  text-align: center;
+  padding: 200px 0;
 }
-.page-account-top{
-    margin-bottom: 50px;
+.page-account-top {
+  margin-bottom: 50px;
 }
-.page-account-top-tit{
-  font-size:30px;
-  color:var(--prev-color-primary);
-  font-weight:500;
+.page-account-top-tit {
+  font-size: 30px;
+  color: var(--prev-color-primary);
+  font-weight: 500;
 }
-
-.page-account-other{
-  text-align:center;
-  color:var(--prev-color-primary);
-  font-size:12px;
-  span{
+.page-account-other {
+  text-align: center;
+  color: var(--prev-color-primary);
+  font-size: 12px;
+  span {
     cursor: pointe;
   }
 }
-
-
-::v-deep .btn{
+::v-deep .btn {
   font-size: 15px !important;
 }
 </style>

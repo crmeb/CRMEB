@@ -191,7 +191,9 @@ class SmsService extends NoticeService
             case 'recharge_success':
                 $result = [$data['price'], $data['now_money']];
                 break;
-
+            case 'sign_remind':
+                $result = [$data['site_name']];
+                break;
         }
         return $result;
     }

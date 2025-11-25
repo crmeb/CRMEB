@@ -1,47 +1,43 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            label-position="right"
-            inline
-            @submit.native.prevent
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          label-position="right"
+          inline
+          @submit.native.prevent
         >
           <el-form-item label="订单时间：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="交易类型：">
-            <el-select
-                v-model="formValidate.status"
-                @change="selChange"
-                class="form_content_width"
-            >
+            <el-select v-model="formValidate.status" @change="selChange" class="form_content_width">
               <el-option :label="item" :value="index" v-for="(item, index) in withdrawal" :key="index"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="流水搜索：">
             <div class="acea-row row-middle">
               <el-input
-                  clearable
-                  placeholder="订单号/昵称/电话/用户ID"
-                  v-model="formValidate.keywords"
-                  class="form_content_width"
+                clearable
+                placeholder="订单号/昵称/电话/用户ID"
+                v-model="formValidate.keywords"
+                class="form_content_width"
               />
             </div>
           </el-form-item>
@@ -223,7 +219,6 @@ export default {
     // 选择
     selChange(e) {
       this.formValidate.page = 1;
-      this.formValidate.trading_type = e;
       this.getList();
     },
     // 列表
@@ -249,28 +244,23 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-mt .type .item {
   margin: 3px 0;
 }
-
 .tabform {
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
   cursor: pointer;
 }
-
 .ivu-form-item {
   margin-bottom: 10px;
 }
-
-.status ::v-deep .item~.item {
+.status ::v-deep .item ~ .item {
   margin-left: 6px;
 }
-
 .status ::v-deep .statusVal {
   margin-bottom: 7px;
 }
@@ -281,7 +271,6 @@ export default {
   padding: 3px 0;
   box-sizing: border-box;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -293,11 +282,9 @@ export default {
     height: 100%;
   }
 }
-
 .z-price {
   color: red;
 }
-
 .f-price {
   color: green;
 }

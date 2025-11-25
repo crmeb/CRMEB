@@ -13,6 +13,7 @@ namespace app\services\user;
 
 use app\dao\user\UserMoneyDao;
 use app\services\BaseServices;
+use app\services\order\OtherOrderServices;
 use app\services\order\StoreOrderServices;
 use crmeb\exceptions\AdminException;
 
@@ -27,6 +28,13 @@ class UserMoneyServices extends BaseServices
             'title' => '余额支付购买商品',
             'type' => 'pay_product',
             'mark' => '余额支付{%num%}元购买商品',
+            'status' => 1,
+            'pm' => 0
+        ],
+        'pay_member' => [
+            'title' => '余额支付购买会员',
+            'type' => 'pay_member',
+            'mark' => '余额支付{%num%}元购买会员',
             'status' => 1,
             'pm' => 0
         ],
@@ -162,13 +170,17 @@ class UserMoneyServices extends BaseServices
         $orderServices = app()->make(StoreOrderServices::class);
         /** @var UserRechargeServices $rechargeServices */
         $rechargeServices = app()->make(UserRechargeServices::class);
+        /** @var OtherOrderServices $otherOrderServices */
+        $otherOrderServices = app()->make(OtherOrderServices::class);
         foreach ($list as &$item) {
             $item['nickname'] = $nicknameArr[$item['uid']];
             if ($item['type'] == 'pay_product' || $item['type'] == 'pay_product_refund') {
                 $item['relation'] = $orderServices->value(['id' => $item['link_id']], 'order_id');
             } elseif ($item['type'] == 'recharge' || $item['type'] == 'recharge_refund') {
                 $item['relation'] = $rechargeServices->value(['id' => $item['link_id']], 'order_id');
-            } else {
+            } elseif ($item['type'] == 'pay_member') {
+                $item['relation'] = $otherOrderServices->value(['id' => $item['link_id']], 'order_id');
+            }  else {
                 $item['relation'] = $status[$item['type']];
             }
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
@@ -317,9 +329,9 @@ class UserMoneyServices extends BaseServices
      */
     public function getType($where)
     {
-        $bing_xdata = ['系统减少', '充值退款', '购买商品'];
+        $bing_xdata = ['系统减少', '充值退款', '购买商品', '购买会员'];
         $color = ['#64a1f4', '#3edeb5', '#70869f'];
-        $data = ['system_sub', 'recharge_refund', 'pay_product'];
+        $data = ['system_sub', 'recharge_refund', 'pay_product', 'pay_member'];
         $bing_data = [];
         foreach ($data as $key => $item) {
             $bing_data[] = [

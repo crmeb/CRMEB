@@ -20,7 +20,6 @@
 								@columnchange="bindMultiPickerColumnChange" :value="valueRegion" :range="multiArray">
 								<view class='acea-row'>
 									<view class="picker">{{region[0]}}，{{region[1]}}，{{region[2]}}</view>
-									<view class='iconfont icon-dizhi fontcolor'></view>
 								</view>
 							</picker>
 						</view>
@@ -105,7 +104,9 @@
 				defaultRegion: [this.$t(`广东省`), this.$t(`广州市`), this.$t(`番禺区`)],
 				defaultRegionCode: '110101',
 				news: '',
-				noCoupon: 0
+				noCoupon: 0,
+				is_gift: 0,
+				order_id: 0,
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -127,6 +128,8 @@
 				this.id = options.id || 0;
 				this.noCoupon = options.noCoupon || 0;
 				this.news = options.new || '';
+				this.is_gift = options.is_gift || '';
+				this.orderId = options.order_id || '';
 				uni.setNavigationBarTitle({
 					title: options.id ? this.$t(`修改地址`) : this.$t(`添加地址`)
 				})
@@ -320,7 +323,9 @@
 													'&new=' + that
 													.news +
 													'&noCoupon=' + that
-													.noCoupon
+													.noCoupon + '&is_gift=' + that.is_gift
+													+
+													'&order_id=' + that.orderId
 											});
 										} else {
 											uni.navigateBack({
@@ -402,7 +407,8 @@
 												res.data
 												.id) + '&pinkId=' + pinkId +
 											'&couponId=' +
-											couponId + '&new=' + that.news
+											couponId + '&new=' + that.news + '&is_gift=' + that.is_gift + 
+						'&order_id=' + that.orderId
 									});
 								} else {
 									uni.navigateTo({
@@ -481,7 +487,8 @@
 										res.data.id) + '&pinkId=' + pinkId + '&couponId=' +
 									couponId +
 									'&noCoupon=' + that
-									.noCoupon
+									.noCoupon + '&is_gift=' + that.is_gift + 
+									'&order_id=' + that.orderId
 							});
 						} else {
 							// #ifdef H5

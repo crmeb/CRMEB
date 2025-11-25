@@ -34,7 +34,7 @@ class Request extends \think\Request
      * @var array
      */
     protected $except = ['menu_path', 'api_url', 'unique_auth',
-        'description', 'custom_form', 'content', 'tableField', 'url', 'customCode', 'value', 'refund_reason_wap_img'];
+        'description', 'custom_form', 'params_list', 'content', 'tableField', 'url', 'customCode', 'value', 'refund_reason_wap_img'];
 
     /**
      * 获取请求的数据
@@ -178,7 +178,7 @@ class Request extends \think\Request
     }
 
     /**
-     * 是否是app端
+     * 是否是pc端
      * @return bool
      */
     public function isPc()

@@ -40,7 +40,8 @@
         type="primary"
         ghost
         style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-        v-db-click @click="addMenu"
+        v-db-click
+        @click="addMenu"
         >添加图文导航
       </el-button>
     </div>
@@ -138,20 +139,20 @@ export default {
     deleteMenu(index) {
       this.$msgbox({
         title: '提示',
-        message:'是否确定删除该菜单',
+        message: '是否确定删除该菜单',
         showCancelButton: true,
         cancelButtonText: '取消',
         confirmButtonText: '删除',
         iconClass: 'el-icon-warning',
-        confirmButtonClass: 'btn-custom-cancel'
-      }).then(() => {
-        if (this.configData[this.configNum][this.name].list.length == 1) {
-          this.lastObj = this.configData[this.configNum][this.name].list[0];
-        }
-        this.configData[this.configNum][this.name].list.splice(index, 1);
-      }).catch(() => {
-
+        confirmButtonClass: 'btn-custom-cancel',
       })
+        .then(() => {
+          if (this.configData[this.configNum][this.name].list.length == 1) {
+            this.lastObj = this.configData[this.configNum][this.name].list[0];
+          }
+          this.configData[this.configNum][this.name].list.splice(index, 1);
+        })
+        .catch(() => {});
     },
     // 点击图文封面
     modalPicTap(title, index, select) {
@@ -169,82 +170,98 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
-.tabBars .box-item:last-child{
-    margin-bottom 20px;
+<style lang="scss" scoped>
+.tabBars .box-item:last-child {
+  margin-bottom: 20px;
 }
-.tabBars
-       .title
-            margin-bottom: 10px;
-            padding-bottom 10px
-            border-bottom:1px solid rgba(0,0,0,0.05);
-            font-size:12px;
-            color:#999;
-       .box-item
-            position relative
-            display flex
-            margin-top 15px
-            padding 20px 30px 20px 0
-            border 1px solid #DDDDDD;
-            border-radius 3px;
-            .del-box
-                position absolute
-                right -13px
-                top -18px
-                cursor pointer
-                .iconfont
-                    color #999
-                    font-size 30px
-            .left-tool
-                display flex
-                align-items center
-                justify-content center
-                width 72px
-                .iconfont
-                    color #999
-                    font-size 36px
-                    cursor move
-            .right-wrapper
-                flex 1
-                .img-wrapper
-                    display flex
-                    .img-item
-                        position relative
-                        width 80px
-                        height 80px
-                        margin-right 20px
-                        cursor pointer
-                        img
-                            display block
-                            width 100%
-                            height 100%
-                        .empty-img
-                            display flex
-                            align-items center
-                            justify-content center
-                            flex-direction column
-                            width 100%
-                            height 100%
-                            background #f7f7f7
-                            font-size 12px
-                            color #BFBFBF
-                            .iconfont
-                                font-size 16px
-                        .txt
-                            position absolute
-                            left 0
-                            bottom 0
-                            width 100%
-                            height 22px
-                            line-height 22px
-                            text-align center
-                            background: rgba(0, 0, 0, 0.4)
-                            color #fff
-                            font-size 12px
-                .c_row-item
-                    margin-top 10px
-       .add-btn
-            margin-bottom 20px
-            width 100%
-            height 40px
+.tabBars {
+  .title {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 12px;
+    color: #999;
+  }
+  .box-item {
+    position: relative;
+    display: flex;
+    margin-top: 15px;
+    padding: 20px 30px 20px 0;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    .del-box {
+      position: absolute;
+      right: -13px;
+      top: -18px;
+      cursor: pointer;
+      .iconfont {
+        color: #999;
+        font-size: 30px;
+      }
+    }
+    .left-tool {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      .iconfont {
+        color: #999;
+        font-size: 36px;
+        cursor: move;
+      }
+    }
+    .right-wrapper {
+      flex: 1;
+      .img-wrapper {
+        display: flex;
+        .img-item {
+          position: relative;
+          width: 80px;
+          height: 80px;
+          margin-right: 20px;
+          cursor: pointer;
+          img {
+            display: block;
+            width: 100%;
+            height: 100%;
+          }
+          .empty-img {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #f7f7f7;
+            font-size: 12px;
+            color: #bfbfbf;
+            .iconfont {
+              font-size: 16px;
+            }
+          }
+          .txt {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 12px;
+          }
+        }
+      }
+      .c_row-item {
+        margin-top: 10px;
+      }
+    }
+  }
+  .add-btn {
+    margin-bottom: 20px;
+    width: 100%;
+    height: 40px;
+  }
+}
 </style>

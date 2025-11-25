@@ -49,7 +49,8 @@ class SystemAttachmentCategory extends AuthController
         $where = $this->request->getMore([
             ['name', ''],
             ['pid', 0],
-            ['all', 0]
+            ['all', 0],
+            ['type', 0],
         ]);
         if ($where['name'] != '' || $where['all'] == 1) $where['pid'] = '';
         return app('json')->success($this->service->getAll($where));
@@ -60,9 +61,13 @@ class SystemAttachmentCategory extends AuthController
      * @return mixed
      * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function create($id)
+    public function create()
     {
-        return app('json')->success($this->service->createForm($id));
+        [$id, $type] = $this->request->getMore([
+            ['id', 0],
+            ['type', 0],
+        ], true);
+        return app('json')->success($this->service->createForm($id, $type));
     }
 
     /**
@@ -73,7 +78,8 @@ class SystemAttachmentCategory extends AuthController
     {
         $data = $this->request->postMore([
             ['pid', 0],
-            ['name', '']
+            ['name', ''],
+            ['type', 0],
         ]);
         if (is_array($data['pid'])) $data['pid'] = end($data['pid']);
         if (!$data['name']) {

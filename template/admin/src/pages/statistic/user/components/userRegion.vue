@@ -123,6 +123,7 @@ export default {
         tooltip: {
           trigger: 'item',
           formatter: function (params) {
+            console.log(params, 'params');
             return params.data
               ? `地区:${params.name}</br>累计用户: ${params.data.value}</br>新增用户: ${params.data.newNum}</br>访客数: ${params.data.visitNum}</br>支付金额: ${params.data.payPrice}`
               : `地区:${params.name}</br>累计用户: 0</br>新增用户: 0</br>访客数: 0</br>支付金额: 0`;
@@ -185,7 +186,7 @@ export default {
           this.resdataList = res.data;
           this.resdata = res.data.map((item) => {
             let jsonData = {};
-            jsonData.name = item.province;
+            jsonData.name = item.province.replace('省', '');
             jsonData.value = item.allNum;
             jsonData.newNum = item.newNum;
             jsonData.payPrice = item.payPrice;

@@ -1,21 +1,21 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="artFrom"
-            :model="artFrom"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="artFrom"
+          :model="artFrom"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="提货点搜索：">
             <el-input
-                clearable
-                placeholder="请输入提货点名称,电话"
-                v-model="artFrom.keywords"
-                class="form_content_width"
+              clearable
+              placeholder="请输入提货点名称,电话"
+              v-model="artFrom.keywords"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -101,7 +101,7 @@
             <a v-db-click @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-if="scope.row.is_del == 0" v-db-click @click="del(scope.row, '删除提货点', scope.$index)">删除</a>
-            <a v-else v-db-click @click="del(scope.row, '恢复提货点', index)">恢复</a>
+            <a v-else v-db-click @click="del(scope.row, '恢复提货点', scope.$index)">恢复</a>
           </template>
         </el-table-column>
       </el-table>
@@ -240,17 +240,19 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>

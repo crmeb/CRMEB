@@ -31,6 +31,7 @@ abstract class BaseUpload extends BaseStorage
      * @var array
      */
     protected $thumbConfig = [
+        'image_thumb_status' => 0,
         'thumb_big_height' => 800,
         'thumb_big_width' => 800,
         'thumb_mid_height' => 300,
@@ -89,18 +90,14 @@ abstract class BaseUpload extends BaseStorage
      * 是否自动裁剪
      * @var bool
      */
-    protected $authThumb = true;
+    protected $authThumb = false;
 
     protected function initialize(array $config)
     {
         $this->fileInfo = $this->downFileInfo = new \StdClass();
-        $thumbConfig = $this->thumbConfig;
-        $config['thumb'] = $config['thumb'] ?? [];
-        $this->thumbConfig = $config['thumb'] ?? [];
-        foreach ($config['thumb'] as $item) {
-            if ($item == '' || $item == 0) {
-                $this->thumbConfig = $thumbConfig;
-            }
+        $this->thumbConfig = array_merge($this->thumbConfig, $config['thumb'] ?? []);
+        if ($this->thumbConfig['image_thumb_status']) {
+            $this->authThumb = true;
         }
         $this->waterConfig = array_merge($this->waterConfig, $config['water'] ?? []);
     }

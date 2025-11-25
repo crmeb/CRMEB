@@ -63,7 +63,8 @@
                     <div
                       v-if="formValidate.images.length < 10"
                       class="upLoad acea-row row-center-wrapper"
-                      v-db-click @click="modalPicTap('duo')"
+                      v-db-click
+                      @click="modalPicTap('duo')"
                     >
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
@@ -73,7 +74,13 @@
               <el-col :span="24">
                 <el-col v-bind="grid">
                   <el-form-item label="砍价活动名称：" prop="title" label-for="title">
-                    <el-input placeholder="请输入砍价活动名称" v-model="formValidate.title" class="content_width" />
+                    <el-input
+                      placeholder="请输入砍价活动名称"
+                      v-model="formValidate.title"
+                      class="content_width"
+                      maxlength="30"
+                      show-word-limit
+                    />
                   </el-form-item>
                 </el-col>
               </el-col>
@@ -86,6 +93,8 @@
                       :rows="4"
                       v-model="formValidate.info"
                       class="content_width"
+                      maxlength="100"
+                      show-word-limit
                     />
                   </el-form-item>
                 </el-col>
@@ -174,7 +183,8 @@
                       :max="10000"
                       :precision="0"
                       v-model="formValidate.people_num"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      class-unit="人"
                     />
                     <div class="grey">需要多少人砍价成功</div>
                   </div>
@@ -190,12 +200,23 @@
                       :max="10000"
                       :precision="0"
                       v-model="formValidate.bargain_num"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      class-unit="次"
                     />
                     <div class="grey">
                       单个商品用户可以帮砍的次数，例：次数设置为1，甲和乙同时将商品A的砍价链接发给丙，丙只能帮甲或乙其中一个人砍价
                     </div>
                   </div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="单位：" prop="unit_name" label-for="unit_name">
+                  <el-input
+                    placeholder="请输入单位"
+                    element-id="unit_name"
+                    v-model="formValidate.unit_name"
+                    class="content_width"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
@@ -208,20 +229,11 @@
                       :max="10000"
                       :precision="0"
                       v-model="formValidate.num"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      :class-unit="formValidate.unit_name || '件'"
                     />
                     <div class="grey">单个活动每个用户发起砍价次数限制</div>
                   </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="24">
-                <el-form-item label="单位：" prop="unit_name" label-for="unit_name">
-                  <el-input
-                    placeholder="请输入单位"
-                    element-id="unit_name"
-                    v-model="formValidate.unit_name"
-                    class="content_width"
-                  />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
@@ -294,7 +306,8 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
-                            v-db-click @click="modalPicTap('dan', 'danTable', scope.$index)"
+                            v-db-click
+                            @click="modalPicTap('dan', 'danTable', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="scope.row.pic">
                               <img v-lazy="scope.row.pic" />
@@ -361,7 +374,8 @@
               <el-button
                 v-if="current !== 0"
                 class="submission"
-                v-db-click @click="step"
+                v-db-click
+                @click="step"
                 :disabled="($route.params.id && $route.params.id !== '0' && current === 1) || current === 0"
                 >上一步</el-button
               >
@@ -369,7 +383,8 @@
                 type="primary"
                 :disabled="submitOpen && current === 3"
                 class="submission"
-                v-db-click @click="next('formValidate')"
+                v-db-click
+                @click="next('formValidate')"
                 >{{ current === 3 ? '提交' : '下一步' }}</el-button
               >
             </el-form-item>
@@ -500,7 +515,7 @@ export default {
         logistics: [], //选择物流方式
         freight: 2, //运费设置
         postage: 1, //设置运费金额
-        is_commission: 0
+        is_commission: 0,
       },
       description: '',
       rule: '',
@@ -705,7 +720,7 @@ export default {
           postage: row.postage, //设置运费金额
           custom_form: row.custom_form, //自定义表单数据
           virtual_type: row.virtual_type, //虚拟商品类型
-          is_commission: row.is_commission
+          is_commission: row.is_commission,
         };
         this.productAttrs(row);
       }, 500);
@@ -882,12 +897,12 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$nextTick(e => {
+      this.$nextTick((e) => {
         this.$refs.goodslist.formValidate.is_show = -1;
         this.$refs.goodslist.formValidate.type = 3;
         this.$refs.goodslist.getList();
         this.$refs.goodslist.goodsCategory();
-      })
+      });
     },
     // 表单验证
     validate(prop, status, error) {
@@ -933,44 +948,37 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.content_width{
-  width:460px;
+<style lang="scss" scoped>
+.content_width {
+  width: 460px;
 }
 .grey {
   color: #999;
-  font-size 12px
+  font-size: 12px;
 }
-
 .maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
-
 .ivu-table-wrapper {
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
 }
-
 .tabBox_img {
   width: 50px;
   height: 50px;
 }
-
 .tabBox_img img {
   width: 100%;
   height: 100%;
 }
-
 .priceBox {
   width: 100%;
 }
-
 .form {
   .picBox {
     display: inline-block;
     cursor: pointer;
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -984,7 +992,6 @@ export default {
       width: 100%;
       height: 100%;
     }
-
     .btndel {
       position: absolute;
       z-index: 9;
@@ -994,7 +1001,6 @@ export default {
       top: -4px;
     }
   }
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -1004,13 +1010,11 @@ export default {
     background: rgba(0, 0, 0, 0.02);
     cursor: pointer;
   }
-
   .col {
     color: #2d8cf0;
     cursor: pointer;
   }
 }
-
 .addfont {
   font-size: 12px;
   color: var(--prev-color-primary);

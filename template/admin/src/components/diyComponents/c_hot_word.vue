@@ -8,16 +8,19 @@
       <draggable class="dragArea list-group" :list="datas[name].list" group="peoples" handle=".icon">
         <div class="input-item" v-for="(item, index) in datas[name].list" :key="index">
           <div class="icon">
-            <i class="el-icon-s-grid" style="font-size: 20px;"></i>
+            <i class="el-icon-s-grid" style="font-size: 20px"></i>
           </div>
           <el-input v-model="item.val" placeholder="选填，不超过十个字" :maxlength="item.maxlength || 10" />
           <div class="close" v-db-click @click="close(index)">
-            <i class="el-icon-close" style="color: #d8d8d8;font-size: 20px;"></i>
+            <i class="el-icon-close" style="color: #d8d8d8; font-size: 20px"></i>
           </div>
         </div>
       </draggable>
       <div class="add-btn" v-db-click @click="addHotTxt">
-        <el-button type="primary" ghost style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
+        <el-button
+          type="primary"
+          ghost
+          style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
           >添加热词</el-button
         >
       </div>
@@ -78,13 +81,12 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .line-box {
   margin-top: 20px;
   padding: 10px 0 20px;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-
   .title {
     p {
       font-size: 14px;
@@ -95,36 +97,30 @@ export default {
       color: #999999;
     }
   }
-
   .input-box {
     position: relative;
     margin-top: 10px;
-
     .add-btn {
       margin-top: 18px;
     }
-
     .input-item {
       position: relative;
       display: flex;
       align-items: center;
       margin-bottom: 15px;
-
       .icon {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 36px;
         cursor: move;
-        color: #D8D8D8;
+        color: #d8d8d8;
       }
-
       ::v-deep .ivu-input {
         flex: 1;
         height: 36px;
       }
     }
-
     .close {
       position: absolute;
       right: 10px;

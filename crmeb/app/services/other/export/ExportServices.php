@@ -16,7 +16,10 @@ use app\services\activity\combination\StoreCombinationServices;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\BaseServices;
 use app\services\order\StoreOrderServices;
+use app\services\product\product\StoreCategoryServices;
+use app\services\product\product\StoreDescriptionServices;
 use app\services\product\product\StoreProductServices;
+use app\services\product\sku\StoreProductAttrResultServices;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use crmeb\services\SpreadsheetExcelService;
@@ -269,29 +272,91 @@ class ExportServices extends BaseServices
      */
     public function exportProductList($where)
     {
-        $header = ['商品名称', '商品类型', '商品分类', '售价', '销量', '库存', '添加时间'];
-        $filename = '商品列表_' . date('YmdHis', time());
-        $export = $fileKey = [];
         /** @var StoreProductServices $productServices */
         $productServices = app()->make(StoreProductServices::class);
-        $data = $productServices->getList($where)['list'];
-        if (!empty($data)) {
+        [$page, $limit] = $this->getPageValue();
+        $cateIds = [];
+        if (isset($where['cate_id']) && $where['cate_id']) {
+            /** @var StoreCategoryServices $storeCategory */
+            $storeCategory = app()->make(StoreCategoryServices::class);
+            $cateIds = $storeCategory->getColumn(['pid' => $where['cate_id']], 'id');
+        }
+        if ($cateIds) {
+            $cateIds[] = $where['cate_id'];
+            $where['cate_id'] = $cateIds;
+        }
+        $productList = $productServices->dao->getList($where, $page, $limit);
+        $header = [
+            '商品编号',
+            '商品名称', '商品类型', '商品分类(一级)', '商品分类(二级)', '商品单位',
+            '已售数量', '起购数量',
+            '规格类型', '规格名称', '售价', '划线价', '成本价', '库存', '重量', '体积', '商品编码', '条形码',
+            '商品简介', '商品关键字', '商品口令',
+            '购买送积分'
+        ];
+        $filename = '商品导出_' . date('YmdHis', time());
+        $virtualType = ['普通商品', '卡密/网盘', '优惠券', '虚拟商品'];
+        $export = $fileKey = [];
+        if (!empty($productList)) {
+            $productList = array_column($productList, null, 'id');
+            $productIds = array_column($productList, 'id');
+            $descriptionArr = app()->make(StoreDescriptionServices::class)->getColumn([['product_id', 'in', $productIds], ['type', '=', 0]], 'description', 'product_id');
+            $cateIds = implode(',', array_column($productList, 'cate_id'));
+            /** @var StoreCategoryServices $categoryService */
+            $categoryService = app()->make(StoreCategoryServices::class);
+            $cateList = $categoryService->getCateParentAndChildName($cateIds);
+            $attrResultArr = app()->make(StoreProductAttrResultServices::class)->getColumn([['product_id', 'in', $productIds], ['type', '=', 0]], 'result', 'product_id');
             $i = 0;
-            foreach ($data as $item) {
-                $one_data = [
-                    'store_name' => $item['store_name'],
-                    'product_type' => $item['product_type'],
-                    'cate_name' => $item['cate_name'],
-                    'price' => $item['price'],
-                    'sales' => $item['sales'],
-                    'stock' => $item['stock'],
-                    'add_time' => date('Y-m-d H:i:s', $item['add_time'])
-                ];
-                $export[] = $one_data;
-                if ($i == 0) {
-                    $fileKey = array_keys($one_data);
+            foreach ($attrResultArr as $product_id => &$attrResult) {
+                $attrResult = json_decode($attrResult, true);
+                foreach ($attrResult['value'] as &$value) {
+                    $productInfo = $productList[$product_id];
+                    $cateName = array_filter($cateList, function ($val) use ($productInfo) {
+                        if (in_array($val['id'], explode(',', $productInfo['cate_id']))) {
+                            return $val;
+                        }
+                    });
+                    $skuArr = array_combine(array_column($attrResult['attr'], 'value'), $value['detail']);
+                    $attrArr = [];
+                    foreach ($attrResult['attr'] as $attrArray) {
+                        // 将每个子数组的 'value' 和 'detail' 组合成字符串
+                        if (isset($attrArray['detail'][0]['value'])) {
+                            $attrArray['detail'] = array_column($attrArray['detail'], 'value');
+                        }
+                        $detailString = implode(',', $attrArray['detail']); // 将 detail 数组转换为逗号分隔的字符串
+                        $attrArr[] = $attrArray['value'] . '=' . $detailString;
+                    }
+                    $attrString = implode(';', $attrArr);
+                    $one_data = [
+                        'id' => intval($product_id),
+                        'store_name' => $productInfo['store_name'],
+                        'virtual_type' => $virtualType[$productInfo['virtual_type']],
+                        'cate_name_one' => reset($cateName)['one'] ?? '',
+                        'cate_name_two' => reset($cateName)['two'] ?? '',
+                        'unit_name' => $productInfo['unit_name'],
+                        'ficti' => intval($productInfo['ficti']),
+                        'min_qty' => intval($productInfo['min_qty']),
+                        'spec_type' => intval($productInfo['spec_type']) == 1 ? '多规格' : '单规格',
+                        'sku_name' => implode(',', $value['detail']),
+                        'price' => floatval($value['price']),
+                        'ot_price' => floatval($value['ot_price']),
+                        'cost' => floatval($value['cost']),
+                        'stock' => intval($value['stock']),
+                        'volume' => intval($value['volume'] ?? 0),
+                        'weight' => intval($value['weight'] ?? 0),
+                        'bar_code' => $value['bar_code'] ?? '',
+                        'bar_code_number' => $value['bar_code_number'] ?? '',
+                        'store_info' => $productInfo['store_info'],
+                        'keyword' => $productInfo['keyword'],
+                        'command_word' => $productInfo['command_word'],
+                        'give_integral' => $productInfo['give_integral'],
+                    ];
+                    $export[] = $one_data;
+                    if ($i == 0) {
+                        $fileKey = array_keys($one_data);
+                    }
+                    $i++;
                 }
-                $i++;
             }
         }
         return compact('header', 'fileKey', 'export', 'filename');
@@ -324,7 +389,7 @@ class ExportServices extends BaseServices
                     'count_people_success' => $item['count_people_success'],
                     'quota' => $item['quota'],
                     'start_name' => $item['start_name'],
-                    'activity_time' => date('Y-m-d H:i:s', $item['start_time']) . '至' . date('Y-m-d H:i:s', $item['stop_time']),
+                    'activity_time' => $item['start_time'] . '至' . $item['stop_time'],
                     'add_time' => $item['add_time']
                 ];
                 $export[] = $one_data;
@@ -362,7 +427,7 @@ class ExportServices extends BaseServices
                     'count_people_pink' => $item['count_people_pink'],
                     'quota' => $item['quota'],
                     'start_name' => $item['start_name'],
-                    'activity_time' => date('Y-m-d H:i:s', $item['start_time']) . '至' . date('Y-m-d H:i:s', $item['stop_time']),
+                    'activity_time' => $item['start_time'] . '至' . $item['stop_time'],
                     'add_time' => $item['add_time']
                 ];
                 $export[] = $one_data;
@@ -400,7 +465,7 @@ class ExportServices extends BaseServices
                     'ot_price' => $item['ot_price'],
                     'quota' => $item['quota'],
                     'start_name' => $item['start_name'],
-                    'activity_time' => date('Y-m-d', $item['start_time']) . '至' . date('Y-m-d', $item['stop_time']),
+                    'activity_time' => $item['start_time'] . '至' . $item['stop_time'],
                     'add_time' => $item['add_time']
                 ];
                 $export[] = $one_data;

@@ -59,7 +59,9 @@
                     <i class="el-icon-error btndel" v-db-click @click="handleWebRemove(file)" />
                   </div>
                 </el-upload>
-                <div class="tips">建议上传图片最大宽度750px，不超过3MB；仅支持jpeg、jpg、png格式，可拖拽调整上传顺序</div>
+                <div class="tips">
+                  建议上传图片最大宽度750px，不超过3MB；仅支持jpeg、jpg、png格式，可拖拽调整上传顺序
+                </div>
               </div>
             </div>
           </el-form-item>
@@ -122,7 +124,9 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button v-db-click @click="clear">取 消</el-button>
-        <el-button type="primary" :disabled="!ruleForm.imgList.length" v-db-click @click="submitUpload">确 定</el-button>
+        <el-button type="primary" :disabled="!ruleForm.imgList.length" v-db-click @click="submitUpload"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </div>

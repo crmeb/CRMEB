@@ -73,7 +73,9 @@
             <span>
               <a v-db-click @click="addRoute(row)" v-if="row.auth_type === 1 || row.auth_type === 3">选择权限</a>
               <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3" />
-              <a v-db-click @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1 || row.auth_type === 3">添加下级</a>
+              <a v-db-click @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1 || row.auth_type === 3"
+                >添加下级</a
+              >
               <!-- <a v-db-click @click="addE(row, '添加规则')" v-else>添加规则</a> -->
             </span>
             <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3"></el-divider>
@@ -106,7 +108,7 @@
           clearable
           ref="search"
         />
-        <el-button class="mr10" type="primary" v-db-click @click="searchRules">搜索</el-button>
+        <el-button type="primary" v-db-click @click="searchRules">搜索</el-button>
         <el-button v-db-click @click="init">重置</el-button>
       </div>
       <div class="route-list">
@@ -129,7 +131,8 @@
             :class="{ 'select-rule': seletRouteIds.includes(item.id) }"
             v-for="(item, index) in children"
             :key="index"
-            v-db-click @click="selectRule(item)"
+            v-db-click
+            @click="selectRule(item)"
           >
             <div>接口名称：{{ item.name }}</div>
             <div>请求方式：{{ item.method }}</div>
@@ -407,6 +410,8 @@ export default {
     },
     // 编辑
     edit(row, title, index) {
+      this.modals = true;
+
       this.formValidate = {};
       this.menusDetails(row.id);
       this.titleFrom = title;
@@ -416,6 +421,7 @@ export default {
     // 添加
     menusAdd(title) {
       // this.formValidate = {};
+      this.modals = true;
       this.$refs.menusFrom.modals = true;
       this.$refs.menusFrom.valids = false;
       this.$refs.menusFrom.getAddFrom();

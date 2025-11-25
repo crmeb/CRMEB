@@ -50,23 +50,30 @@
     </el-form>
   </div>
 </template>
-<style scoped lang="stylus">
-.Refresh
-    font-size 12px
-    color var(--prev-color-primary)
-    cursor pointer
-.ivu-form-item
-    margin-bottom 10px
-.tabform ::v-deep .ivu-col
-    padding 0!important;
-.tabform ::v-deep .ivu-row-flex
-   margin 0!important;
-.withdrawal ::v-deep .item
-   margin-right 10px;
-.tab_data ::v-deep .ivu-form-item-content
-   margin-left 10px!important
-.ivu-form-label-left ::v-deep .ivu-form-item-label
-    text-align: right;
+<style lang="scss" scoped>
+.Refresh {
+  font-size: 12px;
+  color: var(--prev-color-primary);
+  cursor: pointer;
+}
+.ivu-form-item {
+  margin-bottom: 10px;
+}
+.tabform ::v-deep .ivu-col {
+  padding: 0 !important;
+}
+.tabform ::v-deep .ivu-row-flex {
+  margin: 0 !important;
+}
+.withdrawal ::v-deep .item {
+  margin-right: 10px;
+}
+.tab_data ::v-deep .ivu-form-item-content {
+  margin-left: 10px !important;
+}
+.ivu-form-label-left ::v-deep .ivu-form-item-label {
+  text-align: right;
+}
 </style>
 <script>
 import { mapState } from 'vuex';

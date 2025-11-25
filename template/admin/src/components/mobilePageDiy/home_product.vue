@@ -34,7 +34,12 @@
           <div class="img-box">
             <img v-if="item.image" :src="item.image" alt="" />
             <div v-else class="empty-box"><span class="iconfont-diy icontupian"></span></div>
-            <div v-permission="'seckill'" class="label" :style="{ background: labelColor }" v-if="item.activity && item.activity.type === '1'">
+            <div
+              v-permission="'seckill'"
+              class="label"
+              :style="{ background: labelColor }"
+              v-if="item.activity && item.activity.type === '1'"
+            >
               秒杀
             </div>
             <div class="label" :style="{ background: labelColor }" v-if="item.activity && item.activity.type === '2'">
@@ -323,92 +328,116 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.home_product
-    .hd_nav
-        display flex
-        height 65px
-        padding 0 5px
-        .item
-            display flex
-            flex-direction column
-            justify-content center
-            width 25%
-            .title
-                font-size 16px
-                color #282828
-                width 65px
-                text-align center
-            .label
-                width:62px;
-                height:18px;
-                line-height 18px
-                text-align center
-                background:transparent;
-                border-radius:8px;
-                color #999999
-                font-size 12px
-            &.active
-                .title
-                    color #FF4444
-                .label
-                    color #fff
-                    background:linear-gradient(270deg,rgba(255,84,0,1) 0%,rgba(255,0,0,1) 100%);
-    .list-wrapper
-        display flex
-        flex-wrap wrap
-        justify-content space-between
-        .item
-            width 170px
-            margin-bottom 10px
-            .img-box
-                position relative
-                width 100%
-                height 173px
-                img,.box
-                    width 100%
-                    height 100%
-                    border-radius:10px 10px 0px 0px;
-                .box
-                    background #D8D8D8
-                .label
-                    position absolute
-                    left 0
-                    top 0
-                    width:46px;
-                    height:22px;
-                    border-radius:10px 0px 10px 0px;
-                    color #fff
-                    font-size 13px
-                    text-align center
-                    line-height 22px
-            .info
-                padding 7px 10px
-                background #fff
-                border-radius: 0px 0px 10px 10px;
-                .title
-                    font-size 14px
-                    color #282828
-                .old-price
-                    color #aaa
-                    font-size 13px
-                    text-decoration: line-through;
-                .price
-                    display flex
-                    align-items center
-                    .num
-                        font-size 16px
-                        font-weight bold
-                        span
-                            font-size 12px
-                    .label
-                        width:16px;
-                        height:18px;
-                        margin-left 5px
-                        text-align center
-                        line-height 18px
-                        font-size 11px
-                        border-radius 3px
-                        &.on
-                           margin-left 0;
+<style lang="scss" scoped>
+.home_product {
+  .hd_nav {
+    display: flex;
+    height: 65px;
+    padding: 0 5px;
+    .item {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 25%;
+      .title {
+        font-size: 16px;
+        color: #282828;
+        width: 65px;
+        text-align: center;
+      }
+      .label {
+        width: 62px;
+        height: 18px;
+        line-height: 18px;
+        text-align: center;
+        background: transparent;
+        border-radius: 8px;
+        color: #999999;
+        font-size: 12px;
+      }
+      &.active {
+        .title {
+          color: #ff4444;
+        }
+        .label {
+          color: #fff;
+          background: linear-gradient(270deg, rgba(255, 84, 0, 1) 0%, rgba(255, 0, 0, 1) 100%);
+        }
+      }
+    }
+  }
+  .list-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .item {
+      width: 170px;
+      margin-bottom: 10px;
+      .img-box {
+        position: relative;
+        width: 100%;
+        height: 173px;
+        img,
+        .box {
+          width: 100%;
+          height: 100%;
+          border-radius: 10px 10px 0px 0px;
+        }
+        .box {
+          background: #d8d8d8;
+        }
+        .label {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 46px;
+          height: 22px;
+          border-radius: 10px 0px 10px 0px;
+          color: #fff;
+          font-size: 13px;
+          text-align: center;
+          line-height: 22px;
+        }
+      }
+      .info {
+        padding: 7px 10px;
+        background: #fff;
+        border-radius: 0px 0px 10px 10px;
+        .title {
+          font-size: 14px;
+          color: #282828;
+        }
+        .old-price {
+          color: #aaa;
+          font-size: 13px;
+          text-decoration: line-through;
+        }
+        .price {
+          display: flex;
+          align-items: center;
+          .num {
+            font-size: 16px;
+            font-weight: bold;
+            span {
+              font-size: 12px;
+            }
+          }
+          .label {
+            width: 16px;
+            height: 18px;
+            margin-left: 5px;
+            text-align: center;
+            line-height: 18px;
+            font-size: 11px;
+            border-radius: 3px;
+            &.on {
+              margin-left: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
 </style>

@@ -16,6 +16,7 @@ use app\services\activity\bargain\StoreBargainServices;
 use app\services\activity\combination\StoreCombinationServices;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\agent\AgentLevelServices;
+use app\services\agent\SpreadApplyServices;
 use app\services\BaseServices;
 use app\dao\user\UserDao;
 use app\services\activity\coupon\StoreCouponUserServices;
@@ -27,6 +28,7 @@ use app\services\order\StoreOrderCreateServices;
 use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderTakeServices;
 use app\services\other\QrcodeServices;
+use app\services\product\product\StoreProductLogServices;
 use app\services\product\product\StoreProductRelationServices;
 use app\services\message\MessageSystemServices;
 use app\services\system\SystemUserLevelServices;
@@ -591,6 +593,7 @@ class UserServices extends BaseServices
             $userExtract = app()->make(UserExtractServices::class)->getUsersSumList($uids);
             $levelName = app()->make(SystemUserLevelServices::class)->getUsersLevel(array_unique(array_column($list, 'level')));
             $userLevel = app()->make(UserLevelServices::class)->getUsersLevelInfo($uids);
+            $agentLevel = app()->make(AgentLevelServices::class)->getAgentLevelArr();
             $spread_names = $this->dao->getColumn([['uid', 'in', array_unique(array_column($list, 'spread_uid'))]], 'nickname', 'uid');
             foreach ($list as &$item) {
                 if (empty($item['addres'])) {
@@ -625,12 +628,13 @@ class UserServices extends BaseServices
                 $item['group_id'] = $userGroup[$item['group_id']] ?? '无';
                 //用户等级
                 $item['vip_name'] = false;
-                $levelinfo = $userLevel[$item['uid']] ?? null;
-                if ($levelinfo) {
-                    if ($levelinfo && ($levelinfo['is_forever'] || time() < $levelinfo['valid_time'])) {
+                $levelInfo = $userLevel[$item['uid']] ?? null;
+                if ($levelInfo) {
+                    if ($levelInfo && ($levelInfo['is_forever'] || time() < $levelInfo['valid_time'])) {
                         $item['vip_name'] = $item['level'] != '无' ? $item['level'] : false;
                     }
                 }
+                $item['agent_level_name'] = $agentLevel[$item['agent_level']] ?? '无';
                 $item['labels'] = $userlabel[$item['uid']] ?? '';
                 $item['isMember'] = $item['is_money_level'] > 0 ? 1 : 0;
                 if (strpos($item['avatar'], '/statics/system_images/') !== false) {
@@ -856,6 +860,9 @@ class UserServices extends BaseServices
                 $userLevelService = app()->make(UserLevelServices::class);
                 $userLevelService->setUserLevel((int)$user['uid'], (int)$data['level']);
             }
+            if ($data['is_promoter'] == 0) {
+                app()->make(SpreadApplyServices::class)->delete(['uid' => $user['uid']]);
+            }
         }
         if ($edit) $res3 = $this->dao->update($id, $edit);
 
@@ -871,17 +878,20 @@ class UserServices extends BaseServices
      * @return mixed
      * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function editOther($id)
+    public function editOther($id, $type)
     {
         $user = $this->getUserInfo($id);
         if (!$user) {
             throw new AdminException(100026);
         }
         $f = array();
-        $f[] = Form::radio('money_status', '修改余额', 1)->options([['value' => 1, 'label' => '增加'], ['value' => 2, 'label' => '减少']]);
-        $f[] = Form::number('money', '余额', 0)->min(0)->max(999999.99);
-        $f[] = Form::radio('integration_status', '修改积分', 1)->options([['value' => 1, 'label' => '增加'], ['value' => 2, 'label' => '减少']]);
-        $f[] = Form::number('integration', '积分', 0)->min(0)->precision(0)->max(999999);
+        if ($type == 'money') {
+            $f[] = Form::radio('money_status', '修改余额', 1)->options([['value' => 1, 'label' => '增加'], ['value' => 2, 'label' => '减少']]);
+            $f[] = Form::number('money', '余额', 0)->min(0)->max(999999.99);
+        } else {
+            $f[] = Form::radio('integration_status', '修改积分', 1)->options([['value' => 1, 'label' => '增加'], ['value' => 2, 'label' => '减少']]);
+            $f[] = Form::number('integration', '积分', 0)->min(0)->precision(0)->max(999999);
+        }
         return create_form('修改其他', $f, Url::buildUrl('/user/update_other/' . $id), 'PUT');
     }
 
@@ -1063,7 +1073,11 @@ class UserServices extends BaseServices
         if (!$userInfo) {
             throw new AdminException(400214);
         }
-        $timeDiff = $userInfo['is_ever_level'] == 1 ? '永久' : date('Y-m-d H:i:s', $userInfo['overdue_time']);
+        if ($userInfo['is_ever_level'] == 1) {
+            $timeDiff = '永久';
+        } else {
+            $timeDiff = $userInfo['overdue_time'] < time() ? '无' : date('Y-m-d H:i:s', $userInfo['overdue_time']);
+        }
         $dayDiff = $userInfo['overdue_time'] > time() ? intval(($userInfo['overdue_time'] - time()) / 86400) : 0;
         $field[] = Form::input('time_diff', '到期时间', $timeDiff)->readonly(true);
         if ($userInfo['is_ever_level'] == 0) {
@@ -1511,15 +1525,11 @@ class UserServices extends BaseServices
         $user['extractTotalPrice'] = $userExtract->getExtractSum(['uid' => $uid, 'status' => 1]);//累计提现
         $user['extractPrice'] = $user['brokerage_price'];//可提现
         $user['statu'] = (int)sys_config('store_brokerage_statu');
-        if (!$user['is_promoter'] && $user['statu'] == 2) {
+        if (!$user['is_promoter']) {
             $price = $storeOrder->sum(['paid' => 1, 'refund_status' => 0, 'uid' => $user['uid']], 'pay_price');
-            $status = is_brokerage_statu($price);
-            if ($status) {
+            if (is_brokerage_statu($price)) {
                 $this->dao->update($uid, ['is_promoter' => 1], 'uid');
                 $user['is_promoter'] = 1;
-            } else {
-                $storeBrokeragePrice = sys_config('store_brokerage_price', 0);
-                $user['promoter_price'] = bcsub((string)$storeBrokeragePrice, (string)$price, 2);
             }
         }
         /** @var UserBrokerageServices $frozenPrices */
@@ -1596,6 +1606,7 @@ class UserServices extends BaseServices
         $user['is_default_avatar'] = $user['avatar'] == sys_config('h5_avatar') ? 1 : 0;
         $user['avatar'] = strpos($user['avatar'], '/statics/system_images/') !== false ? set_file_url($user['avatar']) : $user['avatar'];
         $user['member_func_status'] = (int)sys_config('member_func_status');
+        $user['visit_num'] = app()->make(StoreProductLogServices::class)->getCountByUser($uid);
         return $user;
     }
 
@@ -1682,9 +1693,9 @@ class UserServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function spread(int $uid, int $spreadUid, $code)
+    public function spread(int $uid, int $spreadUid, $code, $agent_id)
     {
-        $userInfo = $this->dao->getOne(['uid' => $uid], 'uid,spread_uid,spread_time,add_time,last_time');
+        $userInfo = $this->dao->getOne(['uid' => $uid]);
         if (!$userInfo) {
             throw new ApiException(100026);
         }
@@ -1692,7 +1703,27 @@ class UserServices extends BaseServices
             /** @var QrcodeServices $qrCode */
             $qrCode = app()->make(QrcodeServices::class);
             if ($info = $qrCode->getOne(['id' => $code, 'status' => 1])) {
-                $spreadUid = $info['third_id'];
+                if ($info['third_type'] == 'agent') {
+                    $agent_id = $info['third_id'];
+                } else {
+                    $spreadUid = $info['third_id'];
+                }
+            }
+        }
+        if ($agent_id) {
+            $spreadInfo = $this->dao->getOne(['uid' => $agent_id]);
+            if ($agent_id == $uid) {
+                return '自己不能推荐自己';
+            } else if (!$userInfo) {
+                return '用户不存在';
+            } else if (!$spreadInfo) {
+                return '上级用户不存在';
+            } else if ($userInfo->is_division) {
+                return '您是事业部,不能绑定成为别人的员工';
+            } else if ($userInfo->is_agent) {
+                return '您是代理商,不能绑定成为别人的员工';
+            } else if (app()->make(LoginServices::class)->updateUserInfo(['code' => $agent_id, 'is_staff' => 1], $userInfo, false)) {
+                return '绑定店员成功!';
             }
         }
         if ($spreadUid == 0) return '不绑定';
@@ -1876,16 +1907,18 @@ class UserServices extends BaseServices
         if (!sys_config('brokerage_func_status')) {
             return false;
         }
-        //用户分校推广资格是否开启4.0.32
         if (isset($user['spread_open']) && !$user['spread_open']) {
             return false;
         }
         /** @var StoreOrderServices $storeOrder */
         $storeOrder = app()->make(StoreOrderServices::class);
-        $sumPrice = $storeOrder->sum(['uid' => $uid, 'paid' => 1, 'is_del' => 0], 'pay_price');//累计消费
+        $sumPrice = $storeOrder->sum(['uid' => $uid, 'paid' => 1], 'pay_price');//累计消费
         $store_brokerage_statu = sys_config('store_brokerage_statu');
         $store_brokerage_price = sys_config('store_brokerage_price');
         if ($user['is_promoter'] || $store_brokerage_statu == 2 || ($store_brokerage_statu == 3 && $sumPrice > $store_brokerage_price)) {
+            if (!$user['is_promoter']) {
+                $this->dao->update($uid, ['is_promoter' => 1]);
+            }
             return true;
         }
         return false;
@@ -2268,12 +2301,16 @@ class UserServices extends BaseServices
         } else {
             $res2 = true;
         }
-        if ($edit) $res3 = $this->dao->update($id, $edit);
-
-        else $res3 = true;
-        if ($res1 && $res2 && $res3)
+        if ($edit) {
+            $res3 = $this->dao->update($id, $edit);
+        } else {
+            $res3 = true;
+        }
+        if ($res1 && $res2 && $res3) {
             return true;
-        else throw new AdminException(100007);
+        } else {
+            throw new AdminException(100007);
+        }
     }
 
     /**

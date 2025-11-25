@@ -1,27 +1,33 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="tableFrom"
-            :model="tableFrom"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="tableFrom"
+          :model="tableFrom"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="砍价状态：">
-            <el-select placeholder="请选择" v-model="tableFrom.status" clearable @change="userSearchs" class="form_content_width">
+            <el-select
+              placeholder="请选择"
+              v-model="tableFrom.status"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
               <el-option value="1" label="开启"></el-option>
               <el-option value="0" label="关闭"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="商品搜索：" label-for="store_name">
             <el-input
-                clearable
-                placeholder="请输入商品名称，ID"
-                v-model="tableFrom.store_name"
-                class="form_content_width"
+              clearable
+              placeholder="请输入砍价名称，ID"
+              v-model="tableFrom.store_name"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -31,14 +37,11 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button
-          v-auth="['marketing-store_bargain-create']"
-          type="primary"
-          v-db-click @click="add"
-      >添加砍价商品</el-button
+      <el-button v-auth="['marketing-store_bargain-create']" type="primary" v-db-click @click="add"
+        >添加砍价商品</el-button
       >
       <el-button v-auth="['export-storeBargain']" class="export" icon="ios-share-outline" v-db-click @click="exportList"
-      >导出</el-button
+        >导出</el-button
       >
       <el-table
         :data="tableList"
@@ -110,20 +113,24 @@
             <el-tag size="medium" type="info" v-show="scope.row.start_name === '已结束'">已结束</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" min-width="140">
+        <el-table-column label="活动时间" min-width="180">
           <template slot-scope="scope">
-            <span> {{ scope.row.stop_time | formatDate }}</span>
+            <p>开始：{{ scope.row.start_time }}</p>
+            <p>结束：{{ scope.row.stop_time }}</p>
           </template>
         </el-table-column>
         <el-table-column label="上架状态" min-width="100">
           <template slot-scope="scope">
             <el-switch
+              class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               :value="scope.row.status"
               @change="onchangeIsShow(scope.row)"
               size="large"
+              active-text="上架"
+              inactive-text="下架"
             >
             </el-switch>
           </template>
@@ -346,6 +353,7 @@ export default {
     getList() {
       this.loading = true;
       this.tableFrom.status = this.tableFrom.status || '';
+      this.tableFrom.product_id = this.$route.params.product_id || '';
       bargainListApi(this.tableFrom)
         .then(async (res) => {
           let data = res.data;
@@ -376,14 +384,14 @@ export default {
         })
         .catch((res) => {
           this.$message.error(res.msg);
-          row.status = !row.status
+          row.status = !row.status;
         });
     },
   },
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

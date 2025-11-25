@@ -25,7 +25,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="数类型：" prop="cate_id">
+            <el-form-item label="数据类型：" prop="cate_id">
               <el-radio-group v-model="formValidate.cate_id">
                 <el-radio :label="0">默认</el-radio>
                 <el-radio :label="1">数据</el-radio>
@@ -45,14 +45,14 @@
             </el-col>
             <el-col v-bind="grid" class="goupBox">
               <el-form-item
-                  label-width="0"
+                label-width="0"
                 :prop="'typelist.' + index + '.title.value'"
                 :rules="{ required: true, message: '请输入字段配置名', trigger: 'blur' }"
               >
                 <el-input v-model="item.title.value" placeholder="字段配置名：name"></el-input>
               </el-form-item>
             </el-col>
-            <el-col v-bind="grid" prop="type" class="goupBox mr15">
+            <el-col v-bind="grid" prop="type" class="goupBox">
               <el-form-item
                 :prop="'typelist.' + index + '.type.value'"
                 :rules="{ required: true, message: '请选择字段类型', trigger: 'change' }"
@@ -69,9 +69,8 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col span="1">
-              <i class="el-icon-close cur" v-db-click @click="delGroup(index)"></i>
-            </el-col>
+            <el-button icon="el-icon-delete" v-db-click @click="delGroup(index)"></el-button>
+            <!-- <el-col span="1"> </el-col> -->
             <el-col
               :span="24"
               v-if="item.type.value === 'radio' || item.type.value === 'checkbox' || item.type.value === 'select'"
@@ -232,9 +231,11 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.cur
-   cursor pointer
-.goupBox ::v-deep .ivu-form-item-content
-   margin-left: 43px!important;
+<style lang="scss" scoped>
+.cur {
+  cursor: pointer;
+}
+.goupBox ::v-deep .ivu-form-item-content {
+  margin-left: 43px !important;
+}
 </style>

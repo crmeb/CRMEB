@@ -1200,6 +1200,104 @@ export function pcHomeMenusSave(data) {
 export function pcHomeMenus(name) {
   return request({
     url: `setting/group_data?config_name=${name}`,
-    method: 'get'
+    method: 'get',
+  });
+}
+
+/**
+ * 打印机列表
+ * @param {*} type
+ * @returns
+ */
+export function printList(data) {
+  return request({
+    url: `/system/ticket/list`,
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * 打印机创建
+ * @param {*} type
+ * @returns
+ */
+export function printForm(id) {
+  return request({
+    url: `/system/ticket/form/${id}`,
+    method: 'get',
+  });
+}
+/**
+ * 打印机状态切换
+ * @param {*} type
+ * @returns
+ */
+export function printSetStatus(data) {
+  return request({
+    url: `/system/ticket/set_status/${data.id}/${data.status}`,
+    method: 'post',
+  });
+}
+
+/**
+ * 发票配置保存
+ * @returns
+ */
+export function printSaveContent(id, data) {
+  return request({
+    url: `/system/ticket/save_content/${id}`,
+    method: 'post',
+    data,
+  });
+}
+/**
+ * 获取发票配置
+ */
+export function printContent(id) {
+  return request({
+    url: `/system/ticket/content/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * 链接列表分类
+ * @param {*} type
+ * @returns
+ */
+export function diyLinkCategoryListApi() {
+  return request({
+    url: `/diy/link/category`,
+    method: 'get',
+  });
+}
+/**
+ * @description 添加/编辑分类
+ */
+export function linkCategoryFormApi(cate_id, pid) {
+  return request({
+    url: `diy/link/category/form/${cate_id}/${pid}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 列表
+ */
+export function linkListApi(data) {
+  return request({
+    url: `diy/link/list/${data.id}`,
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * @description 创建/编辑链接
+ */
+export function linkCreateApi(data) {
+  return request({
+    url: `diy/link/save/${data.id}`,
+    method: 'post',
+    data,
   });
 }

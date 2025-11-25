@@ -2,7 +2,7 @@
   <div class="c_row-item">
     <el-col class="label" :span="4"> 是否显示 </el-col>
     <el-col :span="19">
-      <el-switch :active-value="1"  :inactive-value="0" v-model="datas[name].val" />
+      <el-switch v-model="datas[name].val" />
     </el-col>
   </div>
 </template>

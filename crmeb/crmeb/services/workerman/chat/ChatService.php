@@ -140,7 +140,7 @@ class ChatService
         $this->timer = Timer::add(15, function () use (&$worker) {
             $time_now = time();
             foreach ($worker->connections as $connection) {
-                if ($time_now - $connection->lastMessageTime > 12) {
+                if ($time_now - $connection->lastMessageTime > 120) {
                     //定时器判断当前用户是否下线
                     if (isset($connection->user->uid) && !isset($connection->user->isTourist)) {
                         /** @var StoreServiceRecordServices $service */

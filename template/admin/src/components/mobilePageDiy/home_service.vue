@@ -93,21 +93,25 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.service-box
-    width 100%
-    display flex
-    justify-content flex-end
-    .img-box
-        width 43px
-        height 43px
-        img
-            width 100%
-            height 100%
-            border-radius 50%
-        .empty-box
-
-            border-radius 50%
-            .iconfont-diy
-                font-size 20px
+<style lang="scss" scoped>
+.service-box {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  .img-box {
+    width: 43px;
+    height: 43px;
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    .empty-box {
+      border-radius: 50%;
+      .iconfont-diy {
+        font-size: 20px;
+      }
+    }
+  }
+}
 </style>

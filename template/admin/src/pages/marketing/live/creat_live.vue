@@ -19,7 +19,10 @@
           <el-col :span="24">
             <el-alert class="mb10" type="warning" show-icon :closable="false">
               <span slot="title"
-                >必须前往微信小程序官方后台开通直播权限，关注<span style="color: red; cursor: pointer" v-db-click @click="codeImg"
+                >必须前往微信小程序官方后台开通直播权限，关注<span
+                  style="color: red; cursor: pointer"
+                  v-db-click
+                  @click="codeImg"
                   >【小程序直播】</span
                 >须知直播状态</span
               >
@@ -51,6 +54,8 @@
                 element-id="name"
                 v-model="formValidate.name"
                 class="content_width"
+                maxlength="80"
+                show-word-limit
               />
             </el-form-item>
           </el-col>
@@ -87,7 +92,13 @@
           <!--</el-col>-->
           <el-col :span="24">
             <el-form-item label="联系电话：">
-              <el-input placeholder="请输入主播联系电话" v-model="formValidate.phone" class="content_width" />
+              <el-input
+                placeholder="请输入主播联系电话"
+                v-model="formValidate.phone"
+                class="content_width"
+                maxlength="11"
+                show-word-limit
+              />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -175,7 +186,13 @@
         </el-row>
         <el-row :gutter="24">
           <el-col v-bind="grid" :span="24">
-            <el-button :loading="loading" type="primary" style="margin-left: 99px" v-db-click @click="handleSubmit('formItem')">
+            <el-button
+              :loading="loading"
+              type="primary"
+              style="margin-left: 120px"
+              v-db-click
+              @click="handleSubmit('formItem')"
+            >
               提交
             </el-button>
             <!-- <el-button
@@ -189,13 +206,7 @@
       </el-form>
     </el-card>
     <div>
-      <el-dialog
-        :visible.sync="modalPic"
-        width="950px"
-        title="上传商品图"
-        :close-on-click-modal="false"
-        :z-index="888"
-      >
+      <el-dialog :visible.sync="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false" :z-index="888">
         <uploadPictures
           :isChoice="isChoice"
           @getPic="getPic"
@@ -408,8 +419,8 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.content_width{
+<style lang="scss" scoped>
+.content_width {
   width: 460px;
 }
 .QRpic {
@@ -421,7 +432,7 @@ export default {
     height: 100%;
   }
 }
-.desc{
+.desc {
   font-size: 12px;
   color: #999;
 }
@@ -429,12 +440,11 @@ export default {
   width: 58px;
   height: 58px;
   line-height: 58px;
-  border: 1px dotted rgba(0,0,0,0.1);
+  border: 1px dotted rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-  background: rgba(0,0,0,0.02);
+  background: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
-
 .box {
   width: 60px;
   height: 60px;

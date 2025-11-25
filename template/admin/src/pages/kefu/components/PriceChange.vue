@@ -41,7 +41,9 @@
       <div class="modify" v-db-click @click="save">
         {{ orderInfo.refund_status === 0 || status === 1 ? '立即修改' : '确认退款' }}
       </div>
-      <div class="modify1" v-db-click @click="refuse" v-if="orderInfo.refund_status === 1 && status === 0">拒绝退款</div>
+      <div class="modify1" v-db-click @click="refuse" v-if="orderInfo.refund_status === 1 && status === 0">
+        拒绝退款
+      </div>
     </div>
     <div class="maskModel" @touchmove.prevent v-show="change === true"></div>
   </div>

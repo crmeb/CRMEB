@@ -185,7 +185,7 @@ class SystemAttachmentServices extends BaseServices
      * @param int $time
      * @return SystemAttachment
      */
-    public function attachmentAdd($name, $att_size, $att_type, $att_dir, $satt_dir = '', $pid = 0, $imageType = 1, $time = 0, $module_type = 1)
+    public function attachmentAdd($name, $att_size, $att_type, $att_dir, $satt_dir = '', $pid = 0, $imageType = 1, $time = 0, $module_type = 1, $type = 0, $real_name = '')
     {
         $data['name'] = $name;
         $data['att_dir'] = $att_dir;
@@ -196,6 +196,8 @@ class SystemAttachmentServices extends BaseServices
         $data['module_type'] = $module_type;
         $data['time'] = $time ?: time();
         $data['pid'] = $pid;
+        $data['type'] = $type;
+        $data['real_name'] = $real_name != '' ? $real_name : $name;
         if (!$this->dao->save($data)) {
             throw new ApiException(100022);
         }

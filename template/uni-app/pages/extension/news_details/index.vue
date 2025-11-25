@@ -7,8 +7,13 @@
 				<view class='item'></text>{{articleInfo.add_time || ''}}</view>
 				<view class='item'><text class='iconfont icon-liulan'></text>{{articleInfo.visit || ''}}</view>
 			</view>
-			<view class='conters'>
-				<jyf-parser :html="content" ref="article" :tag-style="tagStyle"></jyf-parser>
+			<view class='conters' v-if="description">
+				<!-- #ifndef APP-PLUS -->
+				<parser :html="description" ref="article" :tag-style="tagStyle"></parser>
+				<!-- #endif -->
+				<!-- #ifdef APP-PLUS -->
+				<view v-html="description"></view>
+				<!-- #endif -->
 			</view>
 			<navigator class="picTxt acea-row row-between-wrapper" v-if="store_info.id"
 				:url="'/pages/goods_details/index?id='+store_info.id" hover-class="none">
@@ -54,7 +59,7 @@
 		components: {
 			shareInfo,
 			home,
-			"jyf-parser": parser
+			parser
 		},
 		mixins: [colors],
 		data() {
@@ -62,7 +67,7 @@
 				id: 0,
 				articleInfo: [],
 				store_info: {},
-				content: '',
+				description: '',
 				shareInfoStatus: false,
 				tagStyle: {
 					img: 'width:100%;display:block;',
@@ -122,7 +127,11 @@
 					});
 					that.$set(that, 'articleInfo', res.data);
 					that.$set(that, 'store_info', res.data.store_info ? res.data.store_info : {});
-					that.content = res.data.content;
+					that.$set(that,'description', res.data.content);
+					if (this.description) {
+						this.description = this.description.replace(/<img/gi, '<img style="max-width:100%;height:auto;float:left;display:block" ');
+						this.description = this.description.replace(/<video/gi, '<video style="width:100%;height:300px;display:block" ');
+					}
 					// #ifdef H5
 					if (this.$wechat.isWeixin()) {
 						this.setShareInfo();
@@ -157,7 +166,9 @@
 	page {
 		background-color: #fff !important;
 	}
-
+	.newsDetail{
+		padding-bottom: 40rpx;
+	}
 	.newsDetail .title {
 		padding: 0 30rpx;
 		font-size: 34rpx;
@@ -199,10 +210,19 @@
 	}
 
 	.newsDetail .conters {
+		position: relative;
+		margin-top: 20rpx;
+		width: 100%;
+		// padding-bottom: 100rpx;
+		overflow: hidden;
 		padding: 0 30rpx;
 		font-size: 28rpx;
 		color: #8A8B8C;
 		line-height: 1.7;
+		display: block;
+		img {
+			display: block;
+		}
 	}
 
 	.newsDetail .picTxt {

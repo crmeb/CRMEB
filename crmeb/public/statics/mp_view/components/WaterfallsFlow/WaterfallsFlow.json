@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "waterfalls-flow-item": "/components/WaterfallsFlow/WaterfallsFlowItem"
+  }
+}

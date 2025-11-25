@@ -1,6 +1,6 @@
 <template>
 	<view class='product-bg'>
-		<swiper :indicator-dots="indicatorDots" indicator-active-color="var(--view-theme)" :autoplay="autoplay"
+		<swiper :indicator-dots="imgUrls.length > 1 ? true : false" indicator-active-color="var(--view-theme)" :autoplay="autoplay"
 			:circular="circular" :interval="interval" :duration="duration" @change="change" v-if="isPlay">
 			<!-- #ifndef APP-PLUS -->
 			<swiper-item v-if="videoline">

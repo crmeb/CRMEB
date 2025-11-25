@@ -11,10 +11,6 @@ module.exports = {
 	HTTP_REQUEST_URL: window.location.protocol + "//" + window.location.host,
 	// #endif 
 
-
-	// 后台版本号
-	SYSTEM_VERSION: 540,
-
 	// 以下配置在不做二开的前提下,不需要做任何的修改
 	HEADER: {
 		'content-type': 'application/json',

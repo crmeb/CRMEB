@@ -62,7 +62,7 @@ class UnpaidOrderCancelJob extends BaseJobs
                 return true;
             });
             if ($res) {
-                $orderInfo->is_del = 1;
+                $orderInfo->is_cancel = 1;
                 $orderInfo->mark = '订单未支付已超过系统预设时间';
                 $orderInfo->save();
             }

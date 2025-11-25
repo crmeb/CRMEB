@@ -308,12 +308,11 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .treeSel ::v-deep .ivu-select-dropdown-list {
   padding: 0 10px !important;
   box-sizing: border-box;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;

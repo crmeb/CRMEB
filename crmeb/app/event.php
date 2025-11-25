@@ -18,9 +18,7 @@
 */ 
 
 return [
-    'bind' => [
-
-    ],
+    'bind' => [],
 
     'listen' => [
         'AppInit' => [],

@@ -1,30 +1,30 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="levelFrom"
-            :model="levelFrom"
-            :label-width="labelWidth"
-            label-position="right"
-            @submit.native.prevent
-            inline
+          ref="levelFrom"
+          :model="levelFrom"
+          :label-width="labelWidth"
+          label-position="right"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="是否显示：">
-            <el-select v-model="levelFrom.is_show"
-                       placeholder="请选择" clearable
-                       @change="userSearchs"
-                       class="form_content_width">
+            <el-select
+              v-model="levelFrom.is_show"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
               <el-option value="" label="全部"></el-option>
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="搜索：" label-for="keyword">
-            <el-input
-                v-model="levelFrom.keyword"
-                placeholder="请输入物流公司名称或者编码"
-            />
+            <el-input class="form_content_width" v-model="levelFrom.keyword" placeholder="请输入物流公司名称或者编码" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
@@ -258,13 +258,15 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
+<style lang="scss" scoped>
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>

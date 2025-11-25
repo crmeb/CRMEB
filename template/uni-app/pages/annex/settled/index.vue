@@ -1,13 +1,12 @@
 <template>
 	<view v-if="status == -1 && !inloading" :style="colorStyle">
-		<form report-submit='true'>
 			<view class='merchantsSettled'>
-				<image mode="widthFix" class="merchantBg" src="../static/img.jpg" alt="">
+				<image mode="widthFix" class="merchantBg" :src="headerBg" alt="">
 					<!-- <view class="application-record" @click="jumpToList">
 						申请记录
 						<text class="iconfont icon-xiangyou"></text>
 					</view> -->
-					<view class='list'>
+					<view class='list' v-if="isAgent">
 						<view class="item">
 							<view class="acea-row row-middle">
 								<!-- <i class="icon iconfont icon-qiye"></i> -->
@@ -73,7 +72,7 @@
 							</view>
 						</view>
 
-						<view class="item no-border">
+						<view class="item no-border acea-row row-middle">
 							<checkbox-group @change='ChangeIsAgree'>
 								<checkbox class="checkbox" :checked="isAgree ? true : false" />{{$t(`已阅读并同意`)}}
 							</checkbox-group>
@@ -83,18 +82,74 @@
 							@click="formSubmit">{{$t(`提交申请`)}}</button>
 
 					</view>
+					<view class='list' v-else>
+						<view class="item">
+							<view class="acea-row row-middle row-between">
+								<!-- <i class="icon iconfont icon-qiye"></i> -->
+								<text class="item-name">{{$t(`用户昵称`)}}</text>
+								<view class="text-right">{{ form.nickname }}</view>
+							</view>
+						</view>
+						<view class="item">
+							<view class="acea-row row-middle row-between">
+								<!-- <i class="icon iconfont icon-yonghu3"></i> -->
+								<text class="item-name">{{$t(`用户ID`)}}</text>
+								<view class="fs-28 text-right">{{ form.uid }}123</view>
+							</view>
+						</view>
+						<view class="item">
+							<view class="acea-row row-middle row-between">
+								<!-- <i class="icon iconfont icon-shoujihao"></i> -->
+								<text class="item-name">{{$t(`分销员姓名`)}}</text>
+								<input class="text-right" type="text" :placeholder="$t(`请输入分销员姓名`)" v-model="form.real_name"
+									@input="validateBtn" placeholder-class='placeholder' />
+							</view>
+						</view><view class="item">
+							<view class="acea-row row-middle row-between">
+								<!-- <i class="icon iconfont icon-shoujihao"></i> -->
+								<text class="item-name">{{$t(`联系电话`)}}</text>
+								<input class="text-right" type="text" :placeholder="$t(`请输入手机号`)" v-model="form.phone"
+									@input="validateBtn" placeholder-class='placeholder' />
+							</view>
+						</view>
+						<view class="item rel">
+							<view class="acea-row row-middle">
+								<!-- <i class="icon iconfont icon-yanzhengma"></i> -->
+								<text class="item-name">{{$t(`验证码`)}}</text>
+								<input type="text" :placeholder="$t(`填写验证码`)" v-model="form.code"
+									@input="validateBtn" class="codeIput" placeholder-class='placeholder' />
+								<button class="code" :disabled="disabled" :class="disabled === true ? 'on' : ''"
+									@click="code">
+									{{ text }}
+								</button>
+						
+							</view>
+						</view>
+						<view class="item">
+							<view class="acea-row row-middle row-between">
+								<!-- <i class="icon iconfont icon-shoujihao"></i> -->
+								<text class="item-name">{{$t(`申请理由`)}}</text>
+								<textarea class="text-area" :placeholder="$t(`请输入申请理由`)" v-model="form.content" cols="3" rows="4" placeholder-class='placeholder'></textarea>
+							</view>
+						</view>
+						<view class="item no-border  acea-row row-middle">
+							<checkbox-group @change='ChangeIsAgree'>
+								<checkbox class="checkbox" :checked="isAgree ? true : false" />{{$t(`已阅读并同意`)}}
+							</checkbox-group>
+							<button class="settleAgree" @click="getAgentAgreement">《{{$t(`分销员协议`)}}》</button>
+						</view>
+						<button class='submitBtn' :class="isAgree === true ? 'on':''"
+							@click="formSpeadSubmit">{{$t(`提交申请`)}}</button>
+					</view>
 			</view>
-		</form>
 
 		<view class="settlementAgreement" v-if="showProtocol">
 			<view class="setAgCount">
 				<i class="icon iconfont icon-cha" @click="showProtocol = false"></i>
-				<div class="title">{{$t(`代理商入驻协议`)}}</div>
+				<div class="title">{{ $t(isAgent?`代理商入驻协议`:'分销说明')}}</div>
 				<view class="content">
 					<jyf-parser :html="protocol" ref="article" :tag-style="tagStyle"></jyf-parser>
-					<!-- <view v-html="protocol"></view> -->
 				</view>
-
 			</view>
 		</view>
 		<view class='loadingicon acea-row row-center-wrapper' v-if="loading">
@@ -147,9 +202,11 @@
 		create,
 		getCodeApi,
 		registerVerify,
-		getGoodsDetails,
+		getHistoryData,
 		updateGoodsRecord,
-		getAgentAgreement
+		getAgentAgreement,
+		userSpreadInfo,
+		spreadCreateApi
 	} from '@/api/store.js';
 	import {
 		getCaptcha
@@ -164,6 +221,7 @@
 	import colors from "@/mixins/color";
 	import Verify from '../components/verify/verify.vue';
 	import sendVerifyCode from "@/mixins/SendVerifyCode";
+	import { HTTP_REQUEST_URL } from '@/config/app';
 	const app = getApp();
 	export default {
 		components: {
@@ -176,6 +234,7 @@
 		mixins: [sendVerifyCode, colors],
 		data() {
 			return {
+				isAgent: false,
 				inloading: true,
 				status: -1,
 				isAuto: false, //没有授权的不会自动授权
@@ -193,6 +252,13 @@
 					phone: "",
 					classification: '',
 					division_invite: ''
+				},
+				form: {
+					nickname: '',
+					uid: '',
+					phone: '',
+					code: '',
+					real_name: ''
 				},
 				validate: false,
 				successful: false,
@@ -215,17 +281,33 @@
 				id: 0,
 				refusal_reason: "",
 				keyCode: '',
-				type: ''
+				type: 'agent'
 			};
 		},
 		beforeDestroy() {
 			clearTimeout(this.timer)
 		},
-		computed: mapGetters(['isLogin']),
+		computed:{
+			...mapGetters(['isLogin']),
+			headerBg() {
+				return HTTP_REQUEST_URL + `/statics/images/${this.isAgent? 'agent_apply.jpg' :'spread_apply.jpg'}`;
+			}
+		},
 		onLoad(options) {
+			if (options.id) {
+				this.id = id
+				uni.showLoading({
+					title: this.$t(`正在加载中`),
+				});
+			}
 			if (this.isLogin) {
-				this.$nextTick(function() {
-					this.getGoodsDetails()
+				if(options.type) this.isAgent = true
+				this.$nextTick(()=> {
+					if(!this.isAgent){
+						this.getInfo()
+					} else {
+						this.getHistoryData()
+					}
 				})
 			} else {
 				// #ifdef H5 || APP-PLUS
@@ -236,30 +318,32 @@
 				this.$set(this, 'isShowAuth', true)
 				// #endif
 			}
-			if (options.id) {
-				this.id = id
-				uni.showLoading({
-					title: this.$t(`正在加载中`),
-				});
-			}
+		
 		},
 		onShow() {
 
 		},
 		methods: {
 			getAgentAgreement() {
-				getAgentAgreement().then(res => {
+				if(this.isAgent){
+					getAgentAgreement().then(res => {
+						this.isType = false;
+						this.showProtocol = true;
+						this.protocol = res.data.content
+					})
+				} else {
 					this.isType = false;
 					this.showProtocol = true;
-					this.protocol = res.data.content
-				})
+				}
+				
 			},
 			code() {
 				let that = this
-				if (!that.merchantData.phone) return that.$util.Tips({
+				let phone = this.isAgent ? this.merchantData.phone : this.form.phone
+				if (!phone) return that.$util.Tips({
 					title: that.$t(`请填写手机号码`)
 				});
-				if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(that.merchantData.phone)) return that.$util.Tips({
+				if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(phone)) return that.$util.Tips({
 					title: that.$t(`请输入正确的手机号码`)
 				});
 				this.$refs.verify.show()
@@ -280,7 +364,7 @@
 			async getCode(data) {
 				let that = this;
 				await registerVerify({
-						phone: that.merchantData.phone,
+						phone: this.isAgent ? that.merchantData.phone : this.form.phone,
 						type: that.type,
 						key: that.keyCode,
 						captchaType: this.captchaType,
@@ -299,8 +383,8 @@
 					});
 			},
 			// 获取历史提交数据详情
-			getGoodsDetails() {
-				getGoodsDetails().then(res => {
+			getHistoryData() {
+				getHistoryData().then(res => {
 					this.status = res.data.status
 					let resData = res.data
 					if (res.data.status !== -1) {
@@ -384,29 +468,6 @@
 				that.$set(that, 'images', that.images);
 			},
 
-			// 获取验证码
-			// async code() {
-			// 	let that = this;
-			// 	if (!that.merchantData.phone) return that.$util.Tips({
-			// 		title: that.$t(`请输入手机号`)
-			// 	});
-			// 	if (!/^1(3|4|5|7|8|9|6)\d{9}$/i.test(that.merchantData.phone)) return that.$util.Tips({
-			// 		title: that.$t(`请输入正确的手机号码`)
-			// 	});
-			// 	await registerVerify({
-			// 		phone: that.merchantData.phone,
-			// 		key: that.keyCode,
-			// 	}).then(res => {
-			// 		that.$util.Tips({
-			// 			title: res.msg
-			// 		});
-			// 		that.sendCode();
-			// 	}).catch(err => {
-			// 		return that.$util.Tips({
-			// 			title: err
-			// 		})
-			// 	})
-			// },
 			getcaptcha() {
 				let that = this
 				getCaptcha().then(data => {
@@ -440,7 +501,41 @@
 				this.isAgree = !this.isAgree;
 				this.validateBtn()
 			},
-
+			getInfo() {
+				userSpreadInfo()
+					.then((res) => {
+						let data = res.data.user;
+						this.id = data.id || 0;
+						this.form.nickname = data.nickname || '';
+						this.form.uid = data.uid || '';
+						this.form.phone = data.phone || '';
+						this.form.real_name = data.real_name || '';
+						this.form.content = data.content || '';
+						this.status = data.status;
+						this.refusal_reason = data.refusal_reason;
+						this.protocol = res.data.agreement.content
+						this.inloading = false
+					})
+					.catch((err) => {
+						return this.$util.Tips({
+							title: err
+						});
+					}); 
+			},
+			formSpeadSubmit(){
+				if(!this.isAgree) return that.$util.Tips({
+					title: that.$t(`请阅读并同意分销员协议`)
+				});
+				spreadCreateApi(this.id, this.form)
+					.then((res) => {
+						this.getInfo()
+					})
+					.catch((err) => {
+						return this.$util.Tips({
+							title: err
+						});
+					});
+			},
 			formSubmit: function(e) {
 				let that = this;
 				if (that.validateForm() && that.validate) {
@@ -457,7 +552,7 @@
 					create(requestData).then(data => {
 						if (data.status == 200) {
 							this.timer = setTimeout(() => {
-								that.getGoodsDetails()
+								that.getHistoryData()
 							}, 1000)
 						}
 
@@ -466,10 +561,7 @@
 							title: res
 						});
 					})
-
 				}
-
-
 			},
 			validateBtn: function() {
 				let that = this,
@@ -557,8 +649,10 @@
 	}
 
 	.merchantsSettled {
+		height: 100vh;
+		overflow-y: scroll;
 		background: linear-gradient(#fd3d1d 0%, #fd151b 100%);
-		height: 140vh;
+		padding-bottom: 30px;
 	}
 
 	.merchantsSettled .merchantBg {
@@ -571,9 +665,10 @@
 		border-radius: 12px;
 		padding: 22px 0;
 		margin: 0 15px;
-		position: absolute;
-		top: 300rpx;
-		// margin-top: -160px;
+		// position: absolute;
+		// top: 300rpx;
+		position: sticky;
+		margin-top: -60px;
 		width: calc(100% - 30px);
 	}
 
@@ -595,7 +690,11 @@
 		border-bottom: 1rpx solid #eee;
 		position: relative;
 		margin: 0 20px;
-
+		.text-area{
+			height: 200rpx;
+			margin-top: 10rpx;
+			font-size: 24rpx;
+		}
 		&.no-border {
 			border-bottom: none;
 			padding-left: 0;
@@ -748,12 +847,13 @@
 
 	.merchantsSettled .list .item input {
 		width: 400rpx;
-		font-size: 30rpx;
+		font-size: 28rpx;
 		// margin-left: 30px;
 	}
 
 	.merchantsSettled .list .item .placeholder {
 		color: #b2b2b2;
+		font-size: 28rpx
 	}
 
 	.merchantsSettled .default {
@@ -841,9 +941,9 @@
 
 	.settleAgree {
 		color: #E93323;
-		position: relative;
-		top: 2px;
-		left: 8px;
+		// position: relative;
+		// top: 2px;
+		// left: 8px;
 	}
 
 	.merchantsSettled uni-checkbox .uni-checkbox-wrapper {

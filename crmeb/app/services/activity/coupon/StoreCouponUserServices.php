@@ -16,6 +16,7 @@ use app\services\BaseServices;
 use app\dao\activity\coupon\StoreCouponUserDao;
 use app\services\product\product\StoreCategoryServices;
 use app\services\product\product\StoreProductCateServices;
+use app\services\user\UserServices;
 use crmeb\utils\Arr;
 
 /**
@@ -460,5 +461,81 @@ class StoreCouponUserServices extends BaseServices
             }
         }
         return $have;
+    }
+
+    public function autoReceiveCoupon($uid, $cartGroup)
+    {
+        $isMember = boolval(app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level'));
+        $canReceiveCoupons = app()->make(StoreCouponIssueServices::class)->canReceiveCoupons($uid, $isMember);
+        $cartInfo = $cartGroup['valid'];
+        $canReceiveCoupon = [];
+        if ($canReceiveCoupons) {
+            foreach ($canReceiveCoupons as $canReceive) {
+                $price = 0;
+                $count = 0;
+                switch ($canReceive['type']) {
+                    case 0:
+                    case 3:
+                        foreach ($cartInfo as $cart) {
+                            $price += bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
+                            $count++;
+                        }
+                        break;
+                    case 1://品类券
+                        /** @var StoreCategoryServices $storeCategoryServices */
+                        $storeCategoryServices = app()->make(StoreCategoryServices::class);
+                        $coupon_category = explode(',', (string)$canReceive['category_id']);
+                        $category_ids = $storeCategoryServices->getAllById($coupon_category);
+                        if ($category_ids) {
+                            $cateIds = array_column($category_ids, 'id');
+                            foreach ($cartInfo as $cart) {
+                                if (isset($cart['productInfo']['cate_id']) && array_intersect(explode(',', $cart['productInfo']['cate_id']), $cateIds)) {
+                                    $price += bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
+                                    $count++;
+                                }
+                            }
+                        }
+                        break;
+                    case 2:
+                        foreach ($cartInfo as $cart) {
+                            if (isset($cart['product_id']) && in_array($cart['product_id'], explode(',', $canReceive['product_id']))) {
+                                $price += bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
+                                $count++;
+                            }
+                        }
+                        break;
+                }
+                if ($count && $canReceive['use_min_price'] <= $price && !count($canReceive['used'])) {
+                    $canReceiveCoupon = $canReceive;
+                    break;
+                }
+            }
+        }
+        if ($canReceiveCoupon) {
+            $data = [];
+            $issueData = [];
+            /** @var StoreCouponIssueUserServices $storeCouponIssueUser */
+            $storeCouponIssueUser = app()->make(StoreCouponIssueUserServices::class);
+            $data['cid'] = $canReceiveCoupon['id'];
+            $data['uid'] = $uid;
+            $data['coupon_title'] = $canReceiveCoupon['title'];
+            $data['coupon_price'] = $canReceiveCoupon['coupon_price'];
+            $data['use_min_price'] = $canReceiveCoupon['use_min_price'];
+            $data['add_time'] = time();
+            if ($canReceiveCoupon['coupon_time']) {
+                $data['start_time'] = $data['add_time'];
+                $data['end_time'] = $data['add_time'] + $canReceiveCoupon['coupon_time'] * 86400;
+            } else {
+                $data['start_time'] = $canReceiveCoupon['start_use_time'];
+                $data['end_time'] = $canReceiveCoupon['end_use_time'];
+            }
+            $data['type'] = 'get';
+            $issueData['uid'] = $uid;
+            $issueData['issue_coupon_id'] = $canReceiveCoupon['id'];
+            $issueData['add_time'] = time();
+            $this->dao->save($data);
+            $storeCouponIssueUser->save($issueData);
+        }
+        return true;
     }
 }

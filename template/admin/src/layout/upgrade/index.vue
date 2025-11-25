@@ -23,7 +23,9 @@
       </div>
       <div class="upgrade-btn">
         <el-button round size="small" v-db-click @click="onCancel">{{ $t('message.upgrade.btnOne') }}</el-button>
-        <el-button type="primary" round size="small" v-db-click @click="onUpgrade" :loading="isLoading">{{ btnTxt }}</el-button>
+        <el-button type="primary" round size="small" v-db-click @click="onUpgrade" :loading="isLoading">{{
+          btnTxt
+        }}</el-button>
       </div>
     </el-dialog>
   </div>

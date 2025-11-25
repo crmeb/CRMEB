@@ -2,13 +2,20 @@
 	<view :style="colorStyle">
 		<view class='order-submission'>
 			<view class="allAddress" :style="store_self_mention && is_shipping ? '':'padding-top:10rpx'"
-				v-if="!virtual_type">
-
+				v-if="!virtual_type && (!is_gift || is_gift == 2)">
 				<view class="nav acea-row">
 					<view class="item font-num" :class="shippingType == 0 ? 'on' : 'on2'" @tap="addressType(0)"
-						v-if='store_self_mention && is_shipping'></view>
+						v-if='store_self_mention && is_shipping'>
+						<view class="before">
+							{{$t(`快递配送`)}}
+						</view>
+					</view>
 					<view class="item font-num" :class="shippingType == 1 ? 'on' : 'on2'" @tap="addressType(1)"
-						v-if='store_self_mention && is_shipping'></view>
+						v-if='store_self_mention && is_shipping'>
+						<view class="before">
+							{{$t(`到店自提`)}}
+						</view>
+					</view>
 				</view>
 				<view class="add-title acea-row row-between-wrapper" v-if="!store_self_mention || !is_shipping"
 					@click.prevent="openList">
@@ -20,8 +27,8 @@
 						<view class="text add-text line1" v-if="shippingType==1">{{$t(`线上下单，到店自提`)}}</view>
 					</view>
 
-					<view class="text">{{shippingType == 0 ? $t('切换地址') : $t('切换门店')}} <text
-							class='iconfont icon-jiantou'></text></view>
+					<view class="text">{{shippingType == 0 ? $t('切换地址') : $t('切换门店')}} <text class='iconfont icon-jiantou'></text>
+					</view>
 				</view>
 				<view class='address acea-row row-between-wrapper' @tap='onAddress' v-if='shippingType == 0'>
 					<view class='addressCon' v-if="addressInfo.real_name || ''">
@@ -61,8 +68,44 @@
 					<image src='/static/images/line.jpg'></image>
 				</view>
 			</view>
-			<orderGoods :cartInfo="cartInfo" :is_confirm='true' :shipping_type="shippingType"></orderGoods>
-			<view class='wrapper'>
+			<view v-if="giftData" class="gift-box">
+				<view class="acea-row row-middle user-msg">
+					<image class="avatar mr-12" :src="giftData.avatar" mode=""></image>
+					<text class="nickname">{{ giftData.nickname}} 赠您一份礼物，请查收！</text>
+				</view>
+				<view class="line"></view>
+				<view class="gift-mark" v-if="giftData.gift_mark">
+					{{giftData.gift_mark}}
+				</view>
+			</view>
+			<orderGoods :cartInfo="cartInfo" :is_confirm='true' :is_gift='is_gift' :shipping_type="shippingType"></orderGoods>
+			<view v-if="is_gift == 1" class="gift-msg acea-row row-between-wrapper">
+				<view>{{$t(`好友留言`)}}</view>
+				<view class="discount">
+					<input style="text-align: right;" v-model="gift_mark" type="text" :placeholder="$t(`填写好友留言，最多40字`)"
+						placeholder-class="placeholder"></input>
+				</view>
+			</view>
+			<view class='wrapper' v-if="(!is_gift && is_gift == 2) && shippingType == 1">
+				<view class="item acea-row row-between-wrapper">
+					<view>{{$t(`用户姓名`)}}</view>
+					<view class="discount">
+						<input style="text-align: right;" v-model="contacts" type="text" :placeholder="$t(`请输入姓名`)"
+							placeholder-class="placeholder"></input>
+					</view>
+				</view>
+				<view class="item acea-row row-between-wrapper">
+					<view>{{$t(`联系电话`)}}</view>
+					<view class="discount">
+						<input style="text-align: right;" v-model="contactsTel" type="text" :placeholder="$t(`请输入手机号`)"
+							placeholder-class="placeholder"></input>
+					</view>
+				</view>
+			</view>
+			<view v-if="is_gift == 2" class="receive-btn" @click="receiveGift">
+				立即领取
+			</view>
+			<view class='wrapper' v-if="!is_gift || is_gift == 1">
 				<view class='item acea-row row-between-wrapper' @tap='couponTap'
 					v-if="!pinkId && !BargainId && !combinationId && !seckillId&& !noCoupon && !discountId && !advanceId">
 					<view>{{$t(`优惠券`)}}</view>
@@ -101,8 +144,8 @@
 					<view class="item acea-row row-between-wrapper">
 						<view>{{$t(`联系电话`)}}</view>
 						<view class="discount">
-							<input style="text-align: right;" v-model="contactsTel" type="text"
-								:placeholder="$t(`请输入手机号`)" placeholder-class="placeholder"></input>
+							<input style="text-align: right;" v-model="contactsTel" type="text" :placeholder="$t(`请输入手机号`)"
+								placeholder-class="placeholder"></input>
 						</view>
 					</view>
 				</view>
@@ -112,12 +155,12 @@
 						<view :class="{'mark-msg': mark}" v-text="mark || $t(`填写备注信息，100字以内`)"></view>
 					</view>
 					<textarea placeholder-class='placeholder' :placeholder="$t(`填写备注信息，100字以内`)"
-						v-if="!coupon.coupon && inputTrip" @input='bindHideKeyboard' :focus="focus"
-						@blur="inputTrip = false" :value="mark" :maxlength="150" name="mark">
+						v-if="!coupon.coupon && inputTrip" @input='bindHideKeyboard' :focus="focus" @blur="inputTrip = false"
+						:value="mark" :maxlength="150" name="mark">
 						</textarea>
 				</view>
 			</view>
-			<view class='wrapper' v-if="confirm.length">
+			<view class='wrapper' v-if="confirm.length && (!is_gift || is_gift == 1)">
 				<view class='item acea-row row-between-wrapper' v-for="(item,index) in confirm" :key="index">
 					<view>
 						<span v-if="item.status" style="color: red;">*</span>
@@ -176,8 +219,8 @@
 								<image :src='items' class="img"></image>
 								<text class='iconfont icon-guanbi1 font-num del' @click='DelPic(index,indexs)'></text>
 							</view>
-							<view class='pictrue acea-row row-center-wrapper row-column bor'
-								@click='uploadpic(index,item)' v-if="item.value.length < 8">
+							<view class='pictrue acea-row row-center-wrapper row-column bor' @click='uploadpic(index,item)'
+								v-if="item.value.length < 8">
 								<text class='iconfont icon-icon25201'></text>
 								<view>{{$t(`上传图片`)}}</view>
 							</view>
@@ -185,11 +228,17 @@
 					</view>
 				</view>
 			</view>
-			<view class='moneyList'>
+			<view class='moneyList' v-if="!is_gift || is_gift == 1">
 				<view class='item acea-row row-between-wrapper'>
 					<view>{{$t(`商品总价`)}}：</view>
 					<view class='money'>
 						{{$t(`￥`)}}{{allPrice || 0}}
+					</view>
+				</view>
+				<view v-if="is_gift && priceGroup.giftPrice > 0" class='item acea-row row-between-wrapper'>
+					<view>{{$t(`礼品附加费`)}}：</view>
+					<view class='money'>
+						{{$t(`￥`)}}{{parseFloat(priceGroup.giftPrice)}}
 					</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'
@@ -223,7 +272,7 @@
 				</view>
 			</view>
 			<view style='height:120rpx;'></view>
-			<view class='footer acea-row row-between-wrapper'>
+			<view class='footer acea-row row-between-wrapper' v-if="!is_gift || is_gift == 1">
 				<view>{{$t(`合计`)}}:
 					<text class='font-color'>{{$t(`￥`)}}{{totalPrice || 0}}</text>
 				</view>
@@ -256,7 +305,9 @@
 		getCouponsOrderPrice,
 		orderCreate,
 		postOrderComputed,
-		checkShipping
+		checkShipping,
+		getGiftOrderDetail,
+		orderReceiveGift
 	} from '@/api/order.js';
 	import {
 		getAddressDefault,
@@ -303,7 +354,7 @@
 			authorize
 			// #endif
 		},
-		mixins: [colors,Debounce],
+		mixins: [colors, Debounce],
 		data() {
 			const currentDate = this.getDate({
 				format: true
@@ -376,6 +427,7 @@
 				addressId: 0, //地址id
 				couponId: 0, //优惠券id
 				cartId: '', //购物车id
+				orderId: '', // 订单id, 领取礼物页面传参
 				BargainId: 0,
 				combinationId: 0,
 				seckillId: 0,
@@ -397,6 +449,7 @@
 				system_store: {},
 				storePostage: 0,
 				advanceId: 0,
+				gift_mark: '这是送您的一份礼物~', // 礼物留言
 				contacts: '',
 				contactsTel: '',
 				mydata: {},
@@ -433,7 +486,9 @@
 				inputTrip: false,
 				focus: true,
 				integral_open: false,
-				jumpData: {}
+				jumpData: {},
+				is_gift: 0, // 1 购买的礼品 2领取礼品
+				giftData: null
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -455,17 +510,21 @@
 			// #ifdef APP-PLUS
 			this.from = 'app'
 			// #endif
-			if (!options.cartId) return this.$util.Tips({
+			if (!options.cartId && !options.order_id) return this.$util.Tips({
 				title: this.$t(`请选择要购买的商品`)
 			}, {
 				tab: 3,
 				url: 1
 			});
+			if(options.is_gift){
+				this.is_gift = Number(options.is_gift);
+			}
 			this.couponId = options.couponId || 0;
 			this.noCoupon = Number(options.noCoupon) || 0;
 			this.pinkId = options.pinkId ? parseInt(options.pinkId) : 0;
 			this.addressId = options.addressId || 0;
 			this.cartId = options.cartId;
+			this.orderId = options.order_id || 0
 			this.is_address = options.is_address ? true : false;
 			this.news = !options.new || options.new === '0' ? 0 : 1;
 			this.invChecked = options.invoice_id || '';
@@ -481,13 +540,10 @@
 			// #ifndef APP-PLUS
 			this.textareaStatus = true;
 			// #endif
-			if (this.isLogin && this.toPay == false) {
+			if (this.isLogin && this.toPay == false && (this.is_gift == 0 || this.is_gift == 1)) {
 				this.checkShipping();
-				// this.getaddressInfo();
-				// this.getConfirm();
-				// this.$nextTick(function() {
-				// 	this.$refs.addressWindow.getAddressList();
-				// })
+			}else if(this.is_gift && this.isLogin){
+				this.getOrderDetail()
 			} else {
 				toLogin();
 			}
@@ -543,6 +599,7 @@
 					});
 				});
 			},
+
 			// 不开发票
 			invCancel() {
 				this.invChecked = '';
@@ -662,7 +719,6 @@
 			 * 跳转门店列表
 			 */
 			showStoreList: function() {
-
 				let _this = this
 				if (this.storeList.length > 0) {
 					uni.navigateTo({
@@ -674,15 +730,17 @@
 				this.payType = type
 				this.computedPrice()
 			},
-			computedPrice: function() {
+			computedPrice() {
 				let shippingType = this.shippingType;
-				postOrderComputed(this.orderKey, {
+				let data = {
 					addressId: this.addressId,
 					useIntegral: this.useIntegral ? 1 : 0,
 					couponId: this.couponId,
 					shipping_type: parseInt(shippingType) + 1,
 					payType: this.payType
-				}).then(res => {
+				}
+				if (this.is_gift) data.is_gift = this.is_gift
+				postOrderComputed(this.orderKey, data).then(res => {
 					let result = res.data.result;
 					if (result) {
 						this.totalPrice = result.pay_price;
@@ -726,8 +784,10 @@
 					// #endif
 				};
 				this.$nextTick(e => {
-					this.getConfirm();
-					this.computedPrice();
+					if(!this.is_gift){
+						this.getConfirm();
+						this.computedPrice();
+					}
 				})
 			},
 			bindPickerChange: function(e) {
@@ -796,12 +856,44 @@
 				this.textareaStatus = true;
 				this.addressId = e;
 				this.address.address = false;
-				this.getConfirm()
 				this.getaddressInfo();
-				this.computedPrice();
+				if(!this.is_gift){
+					this.getConfirm()
+					this.computedPrice();
+				}
 			},
 			bindHideKeyboard: function(e) {
 				this.mark = e.detail.value;
+			},
+			getOrderDetail() {
+				getGiftOrderDetail(this.orderId).then(res => {
+					this.giftData = res.data
+					this.$set(this, 'cartInfo', res.data.cartInfo);
+					this.virtual_type = res.data.type
+					this.store_self_mention = res.data.store_self_mention
+					if (res.data.type == 0) {
+						this.is_shipping = true;
+						this.shippingType = 0;
+						this.getaddressInfo();
+						this.$nextTick(()=> {
+							this.$refs.addressWindow.getAddressList();
+						})
+					} else {
+						if (res.data.type == 1) {
+							this.is_shipping = false;
+							this.shippingType = 0;
+							this.getaddressInfo();
+							this.$nextTick(()=> {
+								this.$refs.addressWindow.getAddressList();
+							})
+						} else if (res.data.type == 2) {
+							this.is_shipping = false;
+							this.shippingType = 1;
+							this.addressType(1)
+							this.getList();
+						}
+					}
+				})
 			},
 			/**
 			 * 获取当前订单详细信息
@@ -814,7 +906,14 @@
 					title: that.$t(`正在加载中`),
 					mask: true
 				});
-				orderConfirm(that.cartId, that.news, that.addressId, that.shippingType + 1).then(res => {
+				let data = {
+					cartId: that.cartId,
+					new: that.news,
+					addressId: that.addressId,
+					shipping_type: that.shippingType + 1
+				}
+				if (that.is_gift) data.is_gift = that.is_gift
+				orderConfirm(data).then(res => {
 					that.$set(that, 'userInfo', res.data.userInfo);
 					that.$set(that, 'confirm', res.data.custom_form || []);
 					this.confirm.map(e => {
@@ -823,7 +922,8 @@
 					that.$set(that, 'integral', res.data.usable_integral);
 					that.$set(that, 'usable_integral', res.data.usable_integral);
 					that.$set(that, 'contacts', res.data.userInfo.real_name);
-					that.$set(that, 'contactsTel', res.data.userInfo.record_phone === '0' ? res.data.userInfo.phone : res.data
+					that.$set(that, 'contactsTel', res.data.userInfo.record_phone === '0' ? res.data.userInfo.phone : res
+						.data
 						.userInfo.record_phone);
 					that.$set(that, 'cartInfo', res.data.cartInfo);
 					that.$set(that, 'integralRatio', res.data.integralRatio);
@@ -866,8 +966,10 @@
 					// that.$set(that, 'cartArr', that.cartArr);
 					that.$set(that, 'ChangePrice', that.totalPrice);
 					that.getBargainId();
-					that.getCouponList();
-					if (this.addressId) {
+					setTimeout(() => {
+						that.getCouponList();
+					}, 500);
+					if (this.addressId && !this.is_gift) {
 						this.computedPrice();
 					}
 				}).catch(err => {
@@ -915,8 +1017,11 @@
 					'shippingType': parseInt(shippingType) + 1
 				}
 				getCouponsOrderPrice(this.totalPrice, data).then(res => {
-					that.$set(that.coupon, 'list', res.data);
-					that.openType = 1;
+					this.$set(this.coupon, 'list', res.data);
+					if (!this.pinkId && !this.BargainId && !this.combinationId && !this.seckillId && !this.noCoupon && !this.discountId && !this.advanceId) {
+						this.coupon.list.length && this.ChangCoupons(0)
+					}
+					this.openType = 1;
 				});
 			},
 			/*
@@ -974,13 +1079,16 @@
 						'&pinkId=' +
 						this.pinkId +
 						'&couponId=' +
-						this.couponId;
-
+						this.couponId + 
+						'&is_gift=' +
+						that.is_gift + 
+						'&order_id=' + that.orderId
 				} else {
-					uni.navigateTo({
-						url: '/pages/users/user_address/index?cartId=' + this.cartId + '&pinkId=' + this
+					let url = '/pages/users/user_address/index?cartId=' + this.cartId + '&pinkId=' + this
 							.pinkId +
-							'&couponId=' + this.couponId + '&new=' + this.news
+							'&couponId=' + this.couponId + '&new=' + this.news + '&is_gift=' + that.is_gift + '&order_id=' + that.orderId
+					uni.navigateTo({
+						url: url
 					})
 				}
 			},
@@ -1004,8 +1112,9 @@
 			payment(data) {
 				let that = this;
 				orderCreate(that.orderKey, data).then(res => {
+					let url = `/pages/goods/cashier/index?order_id=${res.data.result.orderId}&from_type=order`
 					uni.reLaunch({
-						url: `/pages/goods/cashier/index?order_id=${res.data.result.orderId}&from_type=order`
+						url
 					})
 				}).catch(err => {
 					uni.hideLoading();
@@ -1018,10 +1127,9 @@
 				this.$refs.textarea.focus()
 			},
 			SubOrder(e) {
-				console.log('11111')
 				let that = this,
 					data = {};
-				if (!that.addressId && !that.shippingType && !that.virtual_type) return that.$util.Tips({
+				if (!that.addressId && !that.shippingType && !that.virtual_type && !that.is_gift) return that.$util.Tips({
 					title: that.$t(`请选择收货地址`)
 				});
 				if (that.shippingType == 1) {
@@ -1092,6 +1200,7 @@
 				}
 				data = {
 					custom_form: that.confirm,
+					gift_mark: that.gift_mark, // 礼物留言
 					real_name: that.contacts,
 					phone: that.contactsTel,
 					addressId: that.addressId,
@@ -1119,6 +1228,7 @@
 					quitUrl: '/pages/goods/order_details/index?order_id=' + this.order_id
 					// #endif
 				};
+				if (that.is_gift) data.is_gift = that.is_gift
 				if (data.payType == 'yue' && parseFloat(that.userInfo.now_money) < parseFloat(that.totalPrice))
 					return that.$util.Tips({
 						title: that.$t(`余额不足`)
@@ -1134,6 +1244,25 @@
 				// #ifndef MP
 				that.payment(data);
 				// #endif
+			},
+			receiveGift() {
+				let data = {
+					gift_key: this.giftData.gift_key,
+					shipping_type: this.$util.$h.Add(this.shippingType, 1),
+					name: this.contacts,
+					phone: this.contactsTel,
+					address_id: this.addressId,
+					store_id: this.system_store ? this.system_store.id : 0,
+				}
+				orderReceiveGift(this.orderId, data).then(res => {
+					uni.reLaunch({
+						url: `/pages/goods/receive_gifts_status/index?status=${res.data.status}&order_id=${this.giftData.order_id}`
+					})
+				}).catch(err => {
+					uni.showToast({
+						title: err.msg
+					})
+				})
 			},
 			bindDateChange: function(e, index) {
 				this.confirm[index].value = e.target.value
@@ -1291,6 +1420,59 @@
 		color: #707070;
 	}
 
+	.gift-box {
+		background: #FFFFFF;
+		margin: 20rpx 0;
+
+		.user-msg {
+			padding: 28rpx 30rpx;
+		}
+
+		image {
+			width: 36rpx;
+			height: 36rpx;
+			border-radius: 70rpx 70rpx 70rpx 70rpx;
+			border: 2rpx solid #FFFFFF;
+		}
+
+		.nickname {
+			font-weight: 400;
+			font-size: 28rpx;
+			color: #AE5A2A;
+		}
+
+		.gift-mark {
+			border-top: 1px solid #F0F0F0;
+			font-weight: 400;
+			font-size: 28rpx;
+			color: #333333;
+			padding: 28rpx 30rpx;
+		}
+	}
+
+	.receive-btn {
+		color: #fff;
+		text-align: center;
+		height: 84rpx;
+		line-height: 84rpx;
+		border-radius: 80rpx;
+		margin: 66rpx 40rpx;
+		background-color: var(--view-theme);
+	}
+
+	.gift-msg {
+		padding: 0rpx 30rpx 20rpx 30rpx;
+		background-color: #fff;
+
+		input {
+			font-size: 30rpx;
+		}
+
+		.placeholder {
+			font-size: 28rpx;
+		}
+	}
+
 	.order-submission .allAddress {
 		width: 100%;
 		background: linear-gradient(to bottom, var(--view-theme) 0%, #f5f5f5 100%);
@@ -1356,17 +1538,18 @@
 
 	.order-submission .allAddress .nav .item.on {
 		position: relative;
-		width: 250rpx;
+		width: 270rpx;
 	}
 
-	.order-submission .allAddress .nav .item.on::before {
+	.order-submission .allAddress .nav .item.on .before {
 		position: absolute;
 		bottom: 0;
-		content: "快递配送";
+		// content: "快递配送";
+		left: 0;
 		font-size: 28rpx;
 		display: block;
 		height: 0;
-		width: 336rpx;
+		width: 356rpx;
 		border-width: 0 20rpx 80rpx 0;
 		border-style: none solid solid;
 		border-color: transparent transparent #fff;
@@ -1376,8 +1559,8 @@
 		line-height: 80rpx;
 	}
 
-	.order-submission .allAddress .nav .item:nth-of-type(2).on::before {
-		content: "到店自提";
+	.order-submission .allAddress .nav .item:nth-of-type(2).on .before {
+		// content: "到店自提";
 		border-width: 0 0 80rpx 20rpx;
 		border-radius: 30rpx 7rpx 0 0;
 	}
@@ -1386,14 +1569,15 @@
 		position: relative;
 	}
 
-	.order-submission .allAddress .nav .item.on2::before {
+	.order-submission .allAddress .nav .item.on2 .before {
 		position: absolute;
 		bottom: 0;
-		content: "到店自提";
+		left: 0;
+		// content: "到店自提";
 		font-size: 28rpx;
 		display: block;
 		height: 0;
-		width: 400rpx;
+		width: 440rpx;
 		border-width: 0 0 60rpx 60rpx;
 		border-style: none solid solid;
 		border-color: transparent transparent rgba(255, 255, 255, 0.6);
@@ -1402,8 +1586,8 @@
 		line-height: 60rpx;
 	}
 
-	.order-submission .allAddress .nav .item:nth-of-type(1).on2::before {
-		content: "快递配送";
+	.order-submission .allAddress .nav .item:nth-of-type(1).on2 .before {
+		// content: "快递配送";
 		border-width: 0 60rpx 60rpx 0;
 		border-radius: 6rpx 40rpx 0 0;
 	}

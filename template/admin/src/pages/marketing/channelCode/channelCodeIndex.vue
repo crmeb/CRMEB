@@ -17,10 +17,14 @@
             :current-node-key="treeId"
           >
             <span class="custom-tree-node" slot-scope="{ data }">
-              <span class="file-name">
+              <div class="file-name">
                 <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
-                {{ data.cate_name }}</span
-              >
+                <el-tooltip class="item" effect="dark" :content="data.cate_name" placement="top">
+                  <div class="text line1">
+                    {{ data.cate_name }}
+                  </div>
+                </el-tooltip>
+              </div>
               <span v-if="data.id">
                 <el-dropdown @command="(command) => clickMenu(data, command)">
                   <i class="el-icon-more el-icon--right"></i>
@@ -37,17 +41,18 @@
         </div>
       </el-col>
       <el-col :span="20" ref="rightBox">
-        <el-card :bordered="false" shadow="never">
+        <el-card :bordered="false" shadow="never" class="left-radius-none">
           <el-row class="mb14">
             <el-col :span="18">
-              <el-button v-auth="['marketing-channel_code-create']" type="primary" v-db-click @click="add">新建二维码</el-button>
+              <el-button v-auth="['marketing-channel_code-create']" type="primary" v-db-click @click="add"
+                >新建渠道码</el-button
+              >
               <!-- <el-button v-auth="['marketing-channel_code-create']" type="success" v-db-click @click="addSort">添加分组</el-button> -->
             </el-col>
             <el-col :span="6">
               <div class="flex">
-
-              <el-input class="mr10" v-model="tableFrom.name" search placeholder="请输入二维码名称"> </el-input>
-              <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
+                <el-input class="mr10" v-model="tableFrom.name" search placeholder="请输入渠道码名称"> </el-input>
+                <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
               </div>
             </el-col>
           </el-row>
@@ -58,14 +63,14 @@
             no-userFrom-text="暂无数据"
             no-filtered-userFrom-text="暂无筛选结果"
           >
-            <el-table-column label="二维码" width="80">
+            <el-table-column label="渠道码" width="80">
               <template slot-scope="scope">
                 <div class="tabBox_img" v-viewer>
                   <img v-lazy="scope.row.image" />
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="二维码名称" min-width="80">
+            <el-table-column label="渠道码名称" min-width="80">
               <template slot-scope="scope">
                 <span>{{ scope.row.name }}</span>
               </template>
@@ -108,6 +113,7 @@
             <el-table-column label="状态" min-width="80">
               <template slot-scope="scope">
                 <el-switch
+                  class="defineSwitch"
                   :active-value="1"
                   :inactive-value="0"
                   v-model="scope.row.status"
@@ -511,13 +517,12 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .showOn {
   color: #2d8cf0;
   background: #f0faff;
   z-index: 2;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -529,21 +534,18 @@ export default {
     height: 100%;
   }
 }
-
 .modelBox {
-  ::v-deep, .ivu-table-header {
+  ::v-deep,
+  .ivu-table-header {
     width: 100% !important;
   }
 }
-
 .label-name {
   margin: 2px 2px;
 }
-
 .trees-coadd {
   width: 100%;
   height: 385px;
-
   .scollhide {
     width: 100%;
     height: 100%;
@@ -551,33 +553,26 @@ export default {
     overflow-y: scroll;
   }
 }
-
-// margin-left: 18px;
 .scollhide::-webkit-scrollbar {
   display: none;
 }
-
 ::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
-
 ::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
-
 .left-wrapper {
   height: 904px;
   background: #fff;
   border-right: 1px solid #f2f2f2;
 }
-
 .menu-item {
   z-index: 50;
   position: relative;
   display: flex;
   justify-content: space-between;
   word-break: break-all;
-
   .icon-box {
     z-index: 3;
     position: absolute;
@@ -586,11 +581,9 @@ export default {
     transform: translateY(-50%);
     display: none;
   }
-
   &:hover .icon-box {
     display: block;
   }
-
   .right-menu {
     z-index: 10;
     position: absolute;

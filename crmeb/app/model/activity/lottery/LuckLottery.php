@@ -144,4 +144,9 @@ class LuckLottery extends BaseModel
     {
         if ($value !== '') $query->where('is_del', $value);
     }
+
+    public function records()
+    {
+        return $this->hasMany(LuckLotteryRecord::class, 'lottery_id', 'id');
+    }
 }

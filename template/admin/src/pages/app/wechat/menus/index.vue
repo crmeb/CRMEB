@@ -1,9 +1,10 @@
 <template>
   <div class="article-manager">
-    <div class="i-layout-page-header header-title">
+    <!-- <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-    </div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt">
+    </div> -->
+    <pages-header ref="pageHeader" :title="$route.meta.title"></pages-header>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <!-- 公众号设置 -->
       <el-row :gutter="24">
         <el-col :span="24" class="ml40">
@@ -26,7 +27,8 @@
                         v-for="(j, index) in item.sub_button"
                         :key="index"
                         :class="{ active: j === formValidate }"
-                        v-db-click @click="gettem(j, index, indx)"
+                        v-db-click
+                        @click="gettem(j, index, indx)"
                       >
                         {{ j.name || '二级菜单' }}
                       </div>
@@ -346,9 +348,7 @@ export default {
   -khtml-user-select: none; /*早期浏览器*/
   user-select: none;
 }
-::v-deep .el-card__body {
-  padding: 60px 20px;
-}
+
 .left {
   min-width: 390px;
   min-height: 550px;

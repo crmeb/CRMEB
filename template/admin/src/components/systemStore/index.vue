@@ -149,10 +149,19 @@
         </el-dialog>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" long v-db-click @click="handleSubmit('formItem')">{{ formItem.id ? '修改' : '提交' }}</el-button>
+        <el-button type="primary" long v-db-click @click="handleSubmit('formItem')">{{
+          formItem.id ? '修改' : '提交'
+        }}</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="modalMap" title="请选择地址" append-to-body :close-on-click-modal="false" width="720px" class="mapBox">
+    <el-dialog
+      :visible.sync="modalMap"
+      title="请选择地址"
+      append-to-body
+      :close-on-click-modal="false"
+      width="720px"
+      class="mapBox"
+    >
       <iframe id="mapPage" width="100%" height="600px" frameborder="0" v-bind:src="keyUrl"></iframe>
     </el-dialog>
   </div>
@@ -420,11 +429,10 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .picBox {
   display: inline-block;
   cursor: pointer;
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -433,7 +441,6 @@ export default {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.02);
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -445,16 +452,13 @@ export default {
       height: 100%;
     }
   }
-
   .iconfont {
     color: #898989;
   }
 }
-
 .mapBox ::v-deep .ivu-modal-body {
   height: 640px !important;
 }
-
 .btn {
   margin: 0 auto;
   width: 40%;

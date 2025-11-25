@@ -1,20 +1,18 @@
 <template>
   <div class="layout-search-dialog">
-    <el-dialog :visible.sync="isShowSearch" width="540px" destroy-on-close :modal="false" fullscreen :show-close="true">
-      <el-autocomplete
-        v-model="menuQuery"
-        :fetch-suggestions="menuSearch"
-        :placeholder="$t('message.user.searchPlaceholder')"
-        prefix-icon="el-icon-search"
-        ref="layoutMenuAutocompleteRef"
-        @select="onHandleSelect"
-        @blur="onSearchBlur"
-      >
-        <template slot-scope="{ item }">
-          <div><i :class="item.icon" class="mr10"></i>{{ $t(item.title) }}</div>
-        </template>
-      </el-autocomplete>
-    </el-dialog>
+    <el-autocomplete
+      v-model="menuQuery"
+      :fetch-suggestions="menuSearch"
+      :placeholder="$t('message.user.searchPlaceholder')"
+      prefix-icon="el-icon-search"
+      ref="layoutMenuAutocompleteRef"
+      @select="onHandleSelect"
+      @blur="onSearchBlur"
+    >
+      <template slot-scope="{ item }">
+        <div><i :class="item.icon" class="mr10"></i>{{ $t(item.title) }}</div>
+      </template>
+    </el-autocomplete>
   </div>
 </template>
 
@@ -44,6 +42,7 @@ export default {
     // 搜索弹窗关闭
     closeSearch() {
       setTimeout(() => {
+        this.$emit('close');
         this.isShowSearch = false;
       }, 150);
     },
@@ -103,11 +102,11 @@ export default {
     background: rgba(0, 0, 0, 0.5);
   }
   ::v-deep .el-autocomplete {
-    width: 560px;
-    position: absolute;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%);
+    width: 300px;
+    // position: absolute;
+    // top: 100px;
+    // left: 50%;
+    // transform: translateX(-50%);
   }
 }
 ::v-deep .el-dialog__header {

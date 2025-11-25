@@ -277,7 +277,7 @@ export default {
 			this.pay_close = false;
 			this.getDetail();
 			uni.navigateTo({
-				url: '/pages/users/payment_on_behalf/pay_status?oid=' + this.oid
+				url: '/pages/users/payment_on_behalf/pay_status?order_id=' + this.oid
 			});
 		},
 		goOrderDetail() {

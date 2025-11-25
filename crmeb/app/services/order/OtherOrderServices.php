@@ -339,7 +339,7 @@ class OtherOrderServices extends BaseServices
         //购买付费会员返佣设置
         if (sys_config('member_brokerage', 0) == 1 && sys_config('brokerage_func_status', 0) == 1) {
             $spread_one = sys_config('is_self_brokerage') ? $orderInfo['uid'] : $userServices->getSpreadUid($orderInfo['uid']);
-            $spread_two = sys_config('brokerage_level', 2) == 2 ? $userServices->getSpreadUid($spread_one) : 0;
+            $spread_two = sys_config('brokerage_level', 2) == 2 ? $userServices->getSpreadUid($spread_one, [], false) : 0;
             $spread_one_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_ratio', 0), '100', 4), 2);
             $spread_two_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_two', 0), '100', 4), 2);
             if ($spread_one && $spread_one_price > 0 && $userServices->checkUserPromoter($spread_one)) $this->memberBrokerage($spread_one, $spread_one_price, sys_config('is_self_brokerage') ? 'get_self_member_brokerage' : 'get_member_brokerage', $orderInfo);

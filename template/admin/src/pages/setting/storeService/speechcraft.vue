@@ -17,10 +17,14 @@
             :current-node-key="treeId"
           >
             <span class="custom-tree-node" slot-scope="{ data }">
-              <span class="file-name">
+              <div class="file-name">
                 <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
-                {{ data.name }}</span
-              >
+                <el-tooltip class="item" effect="dark" :content="data.name" placement="top">
+                  <div class="text line1">
+                    {{ data.name }}
+                  </div>
+                </el-tooltip>
+              </div>
               <span v-show="data.id !== '' && data.id !== 0">
                 <el-dropdown @command="(command) => clickMenu(data, command)">
                   <i class="el-icon-more el-icon--right"></i>
@@ -40,7 +44,9 @@
         <el-card :bordered="false" shadow="never">
           <el-row class="mb14">
             <el-col :span="24">
-              <el-button v-auth="['setting-store_service-add']" type="primary" v-db-click @click="add">添加话术</el-button>
+              <el-button v-auth="['setting-store_service-add']" type="primary" v-db-click @click="add"
+                >添加话术</el-button
+              >
               <!-- <el-button v-auth="['setting-store_service-add']" type="success" v-db-click @click="addSort">添加分类</el-button> -->
             </el-col>
           </el-row>
@@ -536,67 +542,76 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.showOn{
-    color: #2d8cf0;
-    background: #f0faff;
-    z-index: 2;
+<style lang="scss" scoped>
+.showOn {
+  color: #2d8cf0;
+  background: #f0faff;
+  z-index: 2;
 }
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px;
-    cursor pointer
-    img
-        width 100%
-        height 100%
-.modelBox
-    ::v-deep 
-    .ivu-table-header
-        width 100% !important
-.trees-coadd
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
     width: 100%;
-    height: 385px;
-    .scollhide
-        width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-        overflow-y: scroll;
-// margin-left: 18px;
+    height: 100%;
+  }
+}
+.modelBox {
+  ::v-deep,
+  .ivu-table-header {
+    width: 100% !important;
+  }
+}
+.trees-coadd {
+  width: 100%;
+  height: 385px;
+  .scollhide {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+}
 .scollhide::-webkit-scrollbar {
+  display: none;
+}
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
+  display: none;
+}
+::v-deep .ivu-menu-vertical.ivu-menu-light:after {
+  display: none;
+}
+.left-wrapper {
+  height: 904px;
+  background: #fff;
+  border-right: 1px solid #f2f2f2;
+}
+.menu-item {
+  z-index: 50;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  word-break: break-all;
+  .icon-box {
+    z-index: 3;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     display: none;
+  }
+  &:hover .icon-box {
+    display: block;
+  }
+  .right-menu {
+    z-index: 10;
+    position: absolute;
+    right: -106px;
+    top: -11px;
+    width: auto;
+    min-width: 121px;
+  }
 }
-::v-deep .ivu-menu-vertical .ivu-menu-item-group-title{
-    display: none;
-}
-::v-deep .ivu-menu-vertical.ivu-menu-light:after{
-    display none
-}
-
-.left-wrapper
-    height 904px
-    background #fff
-    border-right 1px solid #f2f2f2
-.menu-item
-    z-index 50
-    position: relative;
-    display flex
-    justify-content space-between
-    word-break break-all
-    .icon-box
-        z-index 3
-        position absolute
-        right 20px
-        top 50%
-        transform translateY(-50%)
-        display none
-    &:hover .icon-box
-        display block
-    .right-menu
-        z-index 10
-        position absolute
-        right: -106px;
-        top: -11px;
-        width auto
-        min-width: 121px;
 </style>

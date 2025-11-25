@@ -43,7 +43,7 @@ class UserSearchController
     public function cleanUserSearch(Request $request)
     {
         $uid = (int)$request->uid();
-        $this->services->update(['uid' => $uid], ['is_del' => 1]);
+        $this->services->delete(['uid' => $uid]);
         return app('json')->success(100002);
     }
 }

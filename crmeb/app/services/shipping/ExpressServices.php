@@ -191,12 +191,13 @@ class ExpressServices extends BaseServices
      * @param string $cacheName
      * @param string $expressNum
      * @param string|null $com
+     * @param string $phone
      * @return array
      */
     public function query(string $cacheName, string $expressNum, string $com = null, $phone = '')
     {
         $resultData = CacheService::get($cacheName, null);
-        if ($resultData === null || !is_array($resultData)) {
+        if (!is_array($resultData) || empty($resultData)) {
             $data = [];
             $cacheTime = 0;
             switch ((int)sys_config('logistics_type')) {
@@ -240,38 +241,28 @@ class ExpressServices extends BaseServices
      */
     public function syncExpress()
     {
-        if (CacheService::get('sync_express')) {
-            return true;
-        }
         $expressList = $this->getPlatExpress();
         $data = $data_all = [];
-        $selfExpress = $this->dao->getExpress([], 'id,code', 'id');
-        $codes = [];
-        if ($selfExpress) {
-            $codes = array_column($selfExpress, 'code');
-        }
+        $this->dao->delete([['id', '>', 0]]);
         foreach ($expressList as $express) {
-            if (!in_array($express['code'], $codes)) {
-                $data['name'] = $express['name'] ?? '';
-                $data['code'] = $express['code'] ?? '';
-                $data['partner_id'] = $express['partner_id'] ?? '';
-                $data['partner_key'] = $express['partner_key'] ?? '';
-                $data['check_man'] = $express['check_man'] ?? '';
-                $data['partner_name'] = $express['partner_name'] ?? '';
-                $data['is_code'] = $express['is_code'] ?? '';
-                $data['net'] = $express['net'] ?? '';
-                $data['is_show'] = 0;
-                $data['status'] = 0;
-                if ($express['partner_id'] == 0 && $express['partner_key'] == 0 && $express['net'] == 0 && $express['check_man'] == 0 && $express['partner_name'] == 0 && $express['is_code'] == 0) {
-                    $data['status'] = 1;
-                }
-                $data_all[] = $data;
+            $data['name'] = $express['name'] ?? '';
+            $data['code'] = $express['code'] ?? '';
+            $data['partner_id'] = $express['partner_id'] ?? '';
+            $data['partner_key'] = $express['partner_key'] ?? '';
+            $data['check_man'] = $express['check_man'] ?? '';
+            $data['partner_name'] = $express['partner_name'] ?? '';
+            $data['is_code'] = $express['is_code'] ?? '';
+            $data['net'] = $express['net'] ?? '';
+            $data['is_show'] = 0;
+            $data['status'] = 0;
+            if ($express['partner_id'] == 0 && $express['partner_key'] == 0 && $express['net'] == 0 && $express['check_man'] == 0 && $express['partner_name'] == 0 && $express['is_code'] == 0) {
+                $data['status'] = 1;
             }
+            $data_all[] = $data;
         }
         if ($data_all) {
             $this->dao->saveAll($data_all);
         }
-        CacheService::set('sync_express', 1, 3600);
         return true;
     }
 

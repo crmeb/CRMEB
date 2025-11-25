@@ -826,8 +826,6 @@ export function timerTask() {
   });
 }
 
-
-
 // ----自定义事件
 
 /**
@@ -883,5 +881,15 @@ export function eventSave(data) {
 export function eventTask() {
   return request({
     url: `system/event/mark`,
+  });
+}
+
+/**
+ * 版权模块列表信息
+ * @returns
+ */
+export function copyrightList() {
+  return request({
+    url: `system/info`,
   });
 }

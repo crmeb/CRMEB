@@ -420,57 +420,46 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tab_data ::v-deep .ivu-form-item-content {
   margin-left: 0 !important;
 }
-
 .table_box ::v-deep .ivu-divider-horizontal {
   margin-top: 0px !important;
 }
-
 .table_box ::v-deep .ivu-form-item {
   margin-bottom: 15px !important;
 }
-
 .tabform {
   margin-bottom: 10px;
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
   cursor: pointer;
 }
-
 .order-wrapper {
   margin-top: 10px;
   padding: 10px;
   border: 1px solid #ddd;
-
   .title {
     font-size: 16px;
   }
-
   .order-box {
     margin-top: 10px;
     border: 1px solid #ddd;
-
     .item {
       display: flex;
       align-items: center;
       border-bottom: 1px solid #ddd;
-
       &:last-child {
         border-bottom: 0;
       }
-
       .label {
         width: 100px;
         padding: 10px 0 10px 10px;
         border-right: 1px solid #ddd;
       }
-
       .con {
         flex: 1;
         padding: 10px 0 10px 10px;
@@ -478,12 +467,10 @@ export default {
     }
   }
 }
-
 .manual-modal {
   display: flex;
   align-items: center;
 }
-
 .df {
   display: flex;
 }

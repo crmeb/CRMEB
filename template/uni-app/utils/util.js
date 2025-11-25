@@ -1,7 +1,7 @@
 // +----------------------------------------------------------------------
 // | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016~2023 https://www.crmeb.com All rights reserved.
+// | Copyright (c) 2016~2024 https://www.crmeb.com All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
 // +----------------------------------------------------------------------
@@ -217,7 +217,7 @@ export default {
 				if (contentRows > 2) {
 					contentRows = 2;
 					let textArray = contentArray.slice(0, 2);
-					textArray[textArray.length - 1] += '……';
+					textArray[textArray.length - 1] += '…';
 					contentArray = textArray;
 				}
 				ctx.setTextAlign('left');
@@ -613,11 +613,6 @@ export default {
 
 					}
 				})
-			},
-            fail: function(res) {
-				that.Tips({
-					title: res.errMsg
-				});
 			}
 		})
 
@@ -1045,5 +1040,29 @@ export default {
 			}
 		}
 	},
-
+	// 计算头部自定义导航高度；
+	getWXStatusHeight() {
+		// 获取距上
+		const barTop = uni.getSystemInfoSync().statusBarHeight;
+		// #ifdef MP
+		// 获取胶囊按钮位置信息
+		const menuButtonInfo = wx.getMenuButtonBoundingClientRect() || 0
+		// 获取导航栏高度
+		const barHeight = menuButtonInfo.height + (menuButtonInfo.top - barTop) * 2
+		let barWidth = menuButtonInfo.width
+		// #endif
+		// #ifndef MP
+		// 获取导航栏高度
+		const barHeight = parseInt(barTop) + 10;
+		let barWidth = '100%'
+		// #endif
+		return {
+			// #ifdef MP
+			menuButtonInfo,
+			// #endif
+			barHeight,
+			barTop,
+			barWidth
+		}
+	},
 }

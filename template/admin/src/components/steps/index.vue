@@ -5,7 +5,8 @@
       :class="index <= isActive ? 'active' : ''"
       v-for="(step, index) in stepList"
       :key="index"
-      v-db-click @click="stepActive(index)"
+      v-db-click
+      @click="stepActive(index)"
     >
       <div class="dot df-cc">{{ index + 1 }}</div>
       <span class="title">{{ step }}</span>

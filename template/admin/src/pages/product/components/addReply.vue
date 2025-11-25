@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item v-if="goods.id" label="商品规格：">
         <div class="upload-box" v-db-click @click="callAttr">
-          <img v-if="attr.image" :src="attr.image" class="image" />
+          <img v-if="attr.pic" :src="attr.pic" class="image" />
           <i v-else class="el-icon-plus" />
         </div>
         <div>{{ attr.suk }}</div>
@@ -28,10 +28,23 @@
         </div>
       </el-form-item>
       <el-form-item label="用户名称：">
-        <el-input v-model="formData.nickname" placeholder="请输入用户名称" class="w100"></el-input>
+        <el-input
+          v-model="formData.nickname"
+          placeholder="请输入用户名称"
+          class="w100"
+          maxlength="20"
+          show-word-limit
+        ></el-input>
       </el-form-item>
       <el-form-item label="评价文字：">
-        <el-input v-model="formData.comment" type="textarea" placeholder="请输入评价文字" class="w100"></el-input>
+        <el-input
+          v-model="formData.comment"
+          type="textarea"
+          placeholder="请输入评价文字"
+          class="w100"
+          maxlength="200"
+          show-word-limit
+        ></el-input>
       </el-form-item>
       <el-form-item label="商品分数：">
         <el-rate v-model="product_score" />
@@ -157,7 +170,7 @@ export default {
       if (!this.goods.id) {
         return this.$message.error('请选择商品');
       }
-      if (!this.attr.image) {
+      if (!this.attr.pic) {
         return this.$message.error('请选择商品规格');
       }
       if (!this.avatar.att_dir) {
@@ -205,17 +218,17 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .upload-box {
   position: relative;
   display: flex;
-  align-items center
-  justify-content center
+  align-items: center;
+  justify-content: center;
   width: 58px;
   height: 58px;
   border: 1px dashed #c0ccda;
   border-radius: 4px;
-  //box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+
   vertical-align: middle;
   text-align: center;
   line-height: 58px;
@@ -224,30 +237,31 @@ export default {
   + .upload-box {
     margin-left: 10px;
   }
-
   .ivu-icon {
     vertical-align: middle;
     font-size: 20px;
   }
-
   .image {
     width: 100%;
     height: 100%;
     border-radius: 3px;
   }
-
   .btn {
     position: absolute;
     top: 0;
     right: 0;
-    font-size: 14px
+    font-size: 14px;
     transform: translate(50%, -50%);
   }
-} .df-aic{
-  display flex
-  flex-wrap: wrap
 }
-  .w414{
-    width:414px;
-  }
+.df-aic {
+  display: flex;
+  flex-wrap: wrap;
+}
+.w414 {
+  width: 414px;
+}
+.el-rate {
+  line-height: 2;
+}
 </style>

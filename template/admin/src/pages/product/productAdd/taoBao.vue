@@ -5,7 +5,9 @@
         生成的商品默认是没有上架的，请手动上架商品！
         <a href="https://doc.crmeb.com/single/v5/7785" v-if="copyConfig.copy_type == 2" target="_blank">如何配置密钥</a>
         <span v-else
-          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<span class="add" v-db-click @click="mealPay()">增加采集次数</span></span
+          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<span class="add" v-db-click @click="mealPay()"
+            >增加采集次数</span
+          ></span
         >
       </div>
       <div>商品采集设置：设置 > 系统设置 > 第三方接口设置 > 采集商品配置</div>
@@ -100,19 +102,18 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .ivu-form-item-content {
-    line-height unset !important;
+  line-height: unset !important;
 }
-
 .Box .ivu-radio-wrapper {
-    margin-right: 25px;
+  margin-right: 25px;
 }
-.add{
-  color: #2D8cF0;
-  cursor pointer
+.add {
+  color: #2d8cf0;
+  cursor: pointer;
 }
 .Box .numPut {
-    width: 414px !important;
+  width: 414px !important;
 }
 </style>

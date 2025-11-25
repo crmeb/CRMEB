@@ -14,20 +14,20 @@ import config from '@/config';
 import { forEach, hasOneOf, objEqual } from '@/libs/tools';
 import { cloneDeep } from 'lodash';
 const { title, useI18n } = config;
-
+import packageConfig from '../../package.json';
 // 设置setCookies；
 // setToken
 export const setCookies = (key, val, cookieExpires) => {
-  Cookies.set(key, val, { expires: cookieExpires || 1 });
+  Cookies.set(`${packageConfig.name}:${key}`, val, { expires: cookieExpires || 1 });
 };
 // 获取getCookies；
 // getToken
 export const getCookies = (key) => {
-  return Cookies.get(key);
+  return Cookies.get(`${packageConfig.name}:${key}`);
 };
 
 export const removeCookies = (key) => {
-  return Cookies.remove(key);
+  return Cookies.remove(`${packageConfig.name}:${key}`);
 };
 
 export const hasChild = (item) => {

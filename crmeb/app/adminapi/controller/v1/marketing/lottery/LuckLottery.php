@@ -41,11 +41,12 @@ class LuckLottery extends AuthController
      */
     public function index()
     {
-        $where = $this->request->postMore([
-            ['start_status', '', '', 'start'],
-            ['status', ''],
+        $where = $this->request->getMore([
             ['factor', ''],
-            ['store_name', '', '', 'keyword'],
+            ['start', ''],
+            ['status', ''],
+            ['time', ''],
+            ['keyword', ''],
         ]);
         return app('json')->success($this->services->getList($where));
     }
@@ -63,23 +64,7 @@ class LuckLottery extends AuthController
         if (!$id) {
             return app('json')->fail(100100);
         }
-        return app('json')->success($this->services->getlotteryInfo((int)$id));
-    }
-
-    /**
-     * 根据类型获取详情
-     * @param $factor
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function factorInfo($factor)
-    {
-        if (!$factor) {
-            return app('json')->fail(100100);
-        }
-        return app('json')->success($this->services->getlotteryFactorInfo((int)$factor));
+        return app('json')->success($this->services->getLotteryInfo((int)$id));
     }
 
     /**
@@ -221,5 +206,21 @@ class LuckLottery extends AuthController
         if ($status == '' || $id == '') return app('json')->fail(100100);
         $this->services->setStatus((int)$id, (int)$status);
         return app('json')->success(100014);
+    }
+
+    public function factorList()
+    {
+        return app('json')->success($this->services->factorList());
+    }
+
+    public function factorUse()
+    {
+        $data = $this->request->postMore([
+            [['point', 'd'], 0],
+            [['pay', 'd'], 0],
+            [['evaluate', 'd'], 0],
+        ]);
+        $this->services->factorUse($data);
+        return app('json')->success('保存成功');
     }
 }

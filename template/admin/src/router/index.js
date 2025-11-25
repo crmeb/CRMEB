@@ -72,6 +72,35 @@ export function keepAliveSplice(to) {
   }
 }
 
+// 编辑模块
+export function editRouterFun(to, from) {
+  const onRoutes = to.meta.activeMenu ? to.meta.activeMenu : to.meta.path;
+  store.commit('menu/setActivePath', onRoutes);
+  if (to.name == 'crud_crud') {
+    store.state.menus.oneLvRoutes.map((e) => {
+      if (e.path === to.path) {
+        to.meta.title = e.title;
+      }
+    });
+  }
+  if (
+    [
+      'product_productAdd',
+      'marketing_bargainCreate',
+      'marketing_storeSeckillCreate',
+      'marketing_storeIntegralCreate',
+      'marketing_storeCouponCreate',
+    ].includes(to.name)
+  ) {
+    let route = to.matched[1].path.split(':')[0];
+    store.state.menus.oneLvRoutes.map((e) => {
+      if (route.indexOf(e.path) != -1) {
+        to.meta.title = `${to.params.id ? e.title + 'ID: ' + to.params.id : '添加' + e.title}`;
+      }
+    });
+  }
+}
+
 // 延迟关闭进度条
 export function delayNProgressDone(time = 300) {
   setTimeout(() => {
@@ -87,6 +116,7 @@ export function delayNProgressDone(time = 300) {
 router.beforeEach(async (to, from, next) => {
   // PrevLoading.start();
   keepAliveSplice(to);
+  editRouterFun(to, from);
   if (to.fullPath.indexOf('kefu') != -1 || to.name == 'mobile_upload') {
     return next();
   }
@@ -120,7 +150,7 @@ router.beforeEach(async (to, from, next) => {
       // next();
     } else {
       // 没有登录的时候跳转到登录界面
-      // 携带上登陆成功之后需要跳转的页面完整路径
+      // 携带上登录成功之后需要跳转的页面完整路径
       next({
         name: 'login',
         query: {

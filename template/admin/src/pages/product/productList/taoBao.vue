@@ -5,7 +5,9 @@
         生成的商品默认是没有上架的，请手动上架商品！
         <a href="https://doc.crmeb.com/single/v5/7785" v-if="copyConfig.copy_type == 2" target="_blank">如何配置密钥</a>
         <span v-else
-          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a class="add" v-db-click @click="mealPay('copy')">增加采集次数</a></span
+          >您当前剩余{{ copyConfig.copy_num }}条采集次数，<a class="add" v-db-click @click="mealPay('copy')"
+            >增加采集次数</a
+          ></span
         >
       </div>
       <div>商品采集设置：设置 > 系统设置 > 第三方接口设置 > 采集商品配置</div>
@@ -68,6 +70,7 @@
                   size="small"
                   :options="treeSelect"
                   :props="{ multiple: true, emitPath: false, checkStrictly: true }"
+                  filterable
                   clearable
                 ></el-cascader>
               </el-form-item>
@@ -170,7 +173,8 @@
                           <template v-else-if="item.slot === 'pic'">
                             <div
                               class="acea-row row-middle row-center-wrapper"
-                              v-db-click @click="modalPicTap('dan', 'duopi', scope.$index)"
+                              v-db-click
+                              @click="modalPicTap('dan', 'duopi', scope.$index)"
                             >
                               <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
                                 <img v-lazy="oneFormBatch[0].pic" />
@@ -263,7 +267,8 @@
                           <template v-else-if="item.slot === 'pic'">
                             <div
                               class="acea-row row-middle row-center-wrapper"
-                              v-db-click @click="modalPicTap('dan', scope.$index)"
+                              v-db-click
+                              @click="modalPicTap('dan', scope.$index)"
                             >
                               <div class="pictrue pictrueTab" v-if="formValidate.attrs[scope.$index].pic">
                                 <img v-lazy="formValidate.attrs[scope.$index].pic" />
@@ -347,7 +352,8 @@
                   type="primary"
                   :loading="modal_loading"
                   class="submission"
-                  v-db-click @click="handleSubmit('formValidate')"
+                  v-db-click
+                  @click="handleSubmit('formValidate')"
                   >提交</el-button
                 >
               </el-form-item>
@@ -428,7 +434,7 @@ export default {
           minWidth: 95,
         },
         {
-          title: '商品编号',
+          title: '商品编码',
           slot: 'bar_code',
           align: 'center',
           minWidth: 120,
@@ -820,21 +826,19 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .ivu-form-item-content {
   line-height: unset !important;
 }
-
 .Box .ivu-radio-wrapper {
   margin-right: 25px;
 }
-
 .Box .numPut {
   width: 100% !important;
 }
-.add{
-  color: #2D8cF0;
-  cursor pointer
+.add {
+  color: #2d8cf0;
+  cursor: pointer;
 }
 .lunBox {
   /* width 80px */
@@ -842,11 +846,9 @@ export default {
   flex-direction: column;
   border: 1px solid #0bb20c;
 }
-
 .pictrueBox {
   display: inline-block;
 }
-
 .pictrue {
   width: 85px;
   height: 85px;
@@ -860,12 +862,10 @@ export default {
     height: 100%;
   }
 }
-
 .pictrueTab {
   width: 40px !important;
   height: 40px !important;
 }
-
 .upLoad {
   width: 40px;
   height: 40px;
@@ -874,12 +874,10 @@ export default {
   background: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
-
 .ivu-table-wrapper {
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
 }
-
 .ft {
   color: red;
 }

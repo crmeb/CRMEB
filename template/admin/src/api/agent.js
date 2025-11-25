@@ -129,6 +129,17 @@ export function divisionList(data) {
     params: data,
   });
 }
+/**
+ * @description 事业部统计--列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function divisionStatistics(data) {
+  return request({
+    url: 'agent/division/statistics',
+    method: 'get',
+    params: data,
+  });
+}
 
 /**
  * @description 代理商添加--表单
@@ -189,9 +200,33 @@ export function isShowApi(data) {
  * @description 员工添加--表单
  * @param {Object} param data {Object} 传值参数
  */
- export function staffAddFrom(uid) {
+export function staffAddFrom(uid) {
   return request({
     url: `agent/division/staff/create/${uid}`,
     method: 'get',
+  });
+}
+
+/**
+ * @description 申请列表--分销员
+ * @param {Object} param data {Object} 传值参数
+ */
+export function spreadList(data) {
+  return request({
+    url: 'agent/spread/apply/list',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 审核--分销员
+ * @param {Object} param data {Object} 传值参数
+ */
+export function spreadFrom(id, uid, type, data) {
+  return request({
+    url: `agent/spread/apply/examine/${id}/${uid}/${type}`,
+    method: 'post',
+    data,
   });
 }

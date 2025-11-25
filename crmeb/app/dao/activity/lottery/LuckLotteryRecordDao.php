@@ -64,4 +64,10 @@ class LuckLotteryRecordDao extends BaseDao
             $query->group($group);
         })->count();
     }
+
+    public function getRecordByOrderId($uid, $order_id)
+    {
+        $info = $this->getModel()->where('uid', $uid)->where('wechat_order_id', $order_id)->find();
+        return $info ? $info->toArray() : [];
+    }
 }

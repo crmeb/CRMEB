@@ -53,6 +53,7 @@ class ArticleServices extends BaseServices
             $item['store_name'] = $item['storeInfo']['store_name'] ?? '';
             $item['copy_url'] = sys_config('site_url') . '/pages/extension/news_details/index?id=' . $item['id'];
             $item['copy_url_pc'] = sys_config('site_url') . '/news_detail?id=' . $item['id'];
+            unset($item['content']);
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');

@@ -6,7 +6,7 @@
           <el-col v-bind="grid">
             <div class="button acea-row row-middle">
               <el-button type="primary" v-db-click @click="add(0)">添加省份</el-button>
-              <el-button type="primary" v-db-click @click="cleanCache">清除缓存</el-button>
+              <el-button v-db-click @click="cleanCache">清除缓存</el-button>
             </div>
           </el-col>
         </el-row>
@@ -173,21 +173,18 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .ivu-table-cell-tree {
   border: 0;
   font-size: 15px;
   background-color: unset;
 }
-
 ::v-deep .ivu-table-cell-tree .ivu-icon-ios-add:before {
   content: '\F11F';
 }
-
 ::v-deep .ivu-table-cell-tree .ivu-icon-ios-remove:before {
   content: '\F116';
 }
-
 .button {
   width: 300px;
 }

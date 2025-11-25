@@ -281,72 +281,89 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.paddingBox{
-    padding 0 10px!important
+<style lang="scss" scoped>
+.paddingBox {
+  padding: 0 10px !important;
 }
-.home-hot
-    padding 15px 10px
-    background #FFE5E3
-    border-radius:12px;
-    .hd
-        display flex
-        align-items center
-        .txt
-            margin-right 10px
-            color #FC3C3E
-            font-size 16px
-            font-weight bold
-        .color-txt
-            width: 110px;
-            height: 18px;
-            border-radius: 13px 0 13px 0;
-            color: #fff;
-            text-align: center;
-            font-size: 11px;
-            box-shadow: 3px 1px 1px 1px rgba(255,203,199,.8);
-    .bd
-        display flex
-        flex-wrap wrap
-        .item
-            display flex
-            width 158px
-            margin-top 10px
-            margin-right 13px
-            padding 10px
-            background #fff
-            border-radius:8px;
-            &:nth-child(2n)
-                margin-right 0
-            .left
-                width 69px
-                .title
-                    font-size 14px
-                .des
-                    font-size 12px
-                    color #999999
-                .link
-                    width:56px;
-                    height:18px;
-                    padding 0 10px
-                    margin-top: 3px;
-                    background:linear-gradient(90deg,#4BC4FF,#207EFF 100%);
-                    border-radius:9px;
-                    color #fff
-                    font-size 13px
-            .img-box
-                flex 1
-                img
-                    width 100%
-                    height 100%
-                .box
-                    width 100%
-                    height 100%
-                    background #D8D8D8
-            &:nth-child(2) .left .link
-                background:linear-gradient(90deg,#FF9043,#FF531D 100%);
-            &:nth-child(3) .left .link
-                background:linear-gradient(90deg,#96E187,#48CE2C 100%);
-            &:nth-child(4) .left .link
-                background:linear-gradient(90deg,#FFC560,#FF9C00 100%);
+.home-hot {
+  padding: 15px 10px;
+  background: #ffe5e3;
+  border-radius: 12px;
+  .hd {
+    display: flex;
+    align-items: center;
+    .txt {
+      margin-right: 10px;
+      color: #fc3c3e;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .color-txt {
+      width: 110px;
+      height: 18px;
+      border-radius: 13px 0 13px 0;
+      color: #fff;
+      text-align: center;
+      font-size: 11px;
+      box-shadow: 3px 1px 1px 1px rgba(255, 203, 199, 0.8);
+    }
+  }
+  .bd {
+    display: flex;
+    flex-wrap: wrap;
+    .item {
+      display: flex;
+      width: 158px;
+      margin-top: 10px;
+      margin-right: 13px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      &:nth-child(2n) {
+        margin-right: 0;
+      }
+      .left {
+        width: 69px;
+        .title {
+          font-size: 14px;
+        }
+        .des {
+          font-size: 12px;
+          color: #999999;
+        }
+        .link {
+          width: 56px;
+          height: 18px;
+          padding: 0 10px;
+          margin-top: 3px;
+          background: linear-gradient(90deg, #4bc4ff, #207eff 100%);
+          border-radius: 9px;
+          color: #fff;
+          font-size: 13px;
+        }
+      }
+      .img-box {
+        flex: 1;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+        .box {
+          width: 100%;
+          height: 100%;
+          background: #d8d8d8;
+        }
+      }
+      &:nth-child(2) .left .link {
+        background: linear-gradient(90deg, #ff9043, #ff531d 100%);
+      }
+      &:nth-child(3) .left .link {
+        background: linear-gradient(90deg, #96e187, #48ce2c 100%);
+      }
+      &:nth-child(4) .left .link {
+        background: linear-gradient(90deg, #ffc560, #ff9c00 100%);
+      }
+    }
+  }
+}
 </style>

@@ -15,6 +15,8 @@ namespace app\services\diy;
 use app\services\BaseServices;
 use app\dao\diy\PageLinkDao;
 use crmeb\exceptions\AdminException;
+use crmeb\services\FormBuilder as Form;
+use think\facade\Route as Url;
 
 
 /**
@@ -44,6 +46,10 @@ class PageLinkServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, '*', $page, $limit);
         $count = $this->dao->count($where);
+        foreach ($list as &$item) {
+            $item['h5_url'] = sys_config('site_url') . $item['url'];
+            $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
+        }
         return compact('list', 'count');
     }
 
@@ -51,8 +57,26 @@ class PageLinkServices extends BaseServices
      * 删除
      * @param int $id
      */
-    public function del(int $id){
+    public function del(int $id)
+    {
         $res = $this->dao->delete($id);
         if (!$res) throw new AdminException(100008);
+    }
+
+    public function getLinkSave($id, $data)
+    {
+        unset($data['id']);
+        if ($id) {
+            $res = $this->dao->update($id, $data);
+        } else {
+            $data['add_time'] = time();
+            $data['status'] = 1;
+            $res = $this->dao->save($data);
+        }
+        if (!$res) {
+            throw new AdminException('保存失败');
+        } else {
+            return true;
+        }
     }
 }

@@ -98,8 +98,9 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.box
-    height 20px
-    background #F5F5F5
+<style lang="scss" scoped>
+.box {
+  height: 20px;
+  background: #f5f5f5;
+}
 </style>

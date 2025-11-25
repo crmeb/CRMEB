@@ -29,11 +29,11 @@
 import { liveGoodsDetail } from '@/api/live';
 export default {
   name: 'live_detail',
-  props:{
-    FormData:{
+  props: {
+    FormData: {
       type: Object,
-      default: ()=> {}
-    }
+      default: () => {},
+    },
   },
   data() {
     return {

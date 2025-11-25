@@ -117,15 +117,17 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.mobile-page ::v-deepvideo{
-    width 100%!important
+<style lang="scss" scoped>
+.mobile-page ::v-deepvideo {
+  width: 100% !important;
 }
-.box
-    min-height 100px
-    padding 10px
-    background #F5F5F5
-    img
-        max-width 100%
-        height auto
+.box {
+  min-height: 100px;
+  padding: 10px;
+  background: #f5f5f5;
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
 </style>

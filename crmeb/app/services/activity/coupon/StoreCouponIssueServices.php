@@ -110,6 +110,15 @@ class StoreCouponIssueServices extends BaseServices
             throw new AdminException(400758);
         }
 
+        if ($data['user_type'] == 2) {
+            $data['receive_type'] = 4;
+        }
+
+        if ($data['receive_type'] == 3) {
+            $data['is_permanent'] = 1;
+            $data['total_count'] = 0;
+        }
+
         if (!in_array((int)$data['is_permanent'], [0, 1])) {
             throw new AdminException(400758);
         }
@@ -141,13 +150,13 @@ class StoreCouponIssueServices extends BaseServices
         $data['title'] = $data['coupon_title'];
         $data['remain_count'] = $data['total_count'];
         $data['category_id'] = implode(',', $data['category_id']);
-        if ($data['receive_type'] == 2 || $data['receive_type'] == 3) {
-            $data['is_permanent'] = 1;
-            $data['total_count'] = 0;
-        }
+//        if ($data['receive_type'] == 2 || $data['receive_type'] == 3) {
+//            $data['is_permanent'] = 1;
+//            $data['total_count'] = 0;
+//        }
 
         if ($data['is_permanent'] != 1 && $data['receive_limit'] > $data['total_count']) {
-            throw new AdminException(500031);
+            throw new AdminException('用户领取数量不能大于发布数量');
         }
 
         $data['add_time'] = time();
@@ -221,9 +230,13 @@ class StoreCouponIssueServices extends BaseServices
      */
     public function userFirstSubGiveCoupon(int $uid)
     {
-        $couponList = $this->dao->getGiveCoupon(['receive_type' => 2]);
-        $this->giveUserCoupon($uid, $couponList ?: []);
-        return true;
+        $giveCoupon = sys_config('reward_coupon', []);
+        if (count($giveCoupon)) {
+            $couponList = $this->dao->getGiveCoupon([['id', 'in', array_column($giveCoupon, 'id')]]);
+            $this->giveUserCoupon($uid, $couponList ?: []);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -385,15 +398,20 @@ class StoreCouponIssueServices extends BaseServices
     public function issueUserCoupon($id, $user, bool $is_receive = false)
     {
         $issueCouponInfo = $this->dao->getInfo((int)$id);
+        if (!$issueCouponInfo) throw new ApiException(400516);
         if ($user->is_money_level <= 0 && $issueCouponInfo['receive_type'] == 4) {
-            throw new ApiException(400097);
+            throw new ApiException('请先开通付费会员才能领取会员券');
         }
         $uid = $user->uid;
-        if (!$issueCouponInfo) throw new ApiException(400516);
         /** @var StoreCouponIssueUserServices $issueUserService */
         $issueUserService = app()->make(StoreCouponIssueUserServices::class);
         /** @var StoreCouponUserServices $couponUserService */
         $couponUserService = app()->make(StoreCouponUserServices::class);
+        // 已经领取过的数量
+        $issueUserCount = $issueUserService->getIssueUserCount($uid, $id);
+        if ($issueUserCount >= $issueCouponInfo['receive_limit']) {
+            throw new ApiException('不能再次领取此优惠券');
+        }
         $this->transaction(function () use ($issueUserService, $uid, $id, $couponUserService, $issueCouponInfo, $is_receive) {
             $issueUserService->save(['uid' => $uid, 'issue_coupon_id' => $id, 'add_time' => time()]);
             $couponUserService->addUserCoupon($uid, $issueCouponInfo, $is_receive ? 'get' : 'send');
@@ -548,6 +566,7 @@ class StoreCouponIssueServices extends BaseServices
     {
         $date1_stamp = strtotime($date1);
         $date2_stamp = strtotime($date2);
+        $date_1 = $date_2 = [];
         list($date_1['y'], $date_1['m']) = explode("-", date('Y-m', $date1_stamp));
         list($date_2['y'], $date_2['m']) = explode("-", date('Y-m', $date2_stamp));
         return abs($date_1['y'] - $date_2['y']) * 12 + $date_2['m'] - $date_1['m'];

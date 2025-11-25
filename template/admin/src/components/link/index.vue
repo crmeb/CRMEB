@@ -4,9 +4,10 @@
     :target="target"
     class="i-link"
     :class="{ 'i-link-color': !linkColor }"
-    v-db-click @click.exact="handleClickItem($event, false)"
-    v-db-click @click.ctrl="handleClickItem($event, true)"
-    v-db-click @click.meta="handleClickItem($event, true)"
+    v-db-click
+    @click.exact="handleClickItem($event, false)"
+    @click.ctrl="handleClickItem($event, true)"
+    @click.meta="handleClickItem($event, true)"
     ><slot></slot
   ></a>
 </template>

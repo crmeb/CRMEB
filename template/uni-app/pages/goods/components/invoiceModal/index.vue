@@ -68,6 +68,14 @@
 					{{invoiceData.email}}
 				</view>
 			</view>
+			<view class="label">
+				<view class="">
+					{{$t(`发票备注`)}}
+				</view>
+				<view class="label-value">
+					{{invoiceData.remark}}
+				</view>
+			</view>
 		</view>
 		<view class="btn" @click="close">
 {{$t(`确认`)}}

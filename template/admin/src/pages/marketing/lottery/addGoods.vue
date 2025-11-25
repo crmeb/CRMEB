@@ -29,7 +29,7 @@
           v-model="formValidate.num"
           placeholder="请输入金额数量"
           :max="9999999999"
-          :min="1"
+          :min="0.1"
           style="width: 300px"
         ></el-input-number>
         <div class="ml100 grey">
@@ -37,7 +37,7 @@
             formValidate.type == 3
               ? '用户领取余额后会自动到账余额账户'
               : formValidate.type == 4
-              ? '用户领取红包后会自动到账微信零钱，添加此奖品需开通微信支付,并且账户中金额不能小于1元'
+              ? '用户抽到之后需要在抽奖列表中手动领取，需要开通微信支付的商家转账功能，金额不能小于0.1元'
               : ''
           }}
         </div>
@@ -46,7 +46,7 @@
         <template v-if="formValidate.goods_image">
           <div class="upload-list">
             <img :src="formValidate.goods_image" />
-            <i class="el-icon-error" v-db-click @click="removeGoods()" style="font-size: 16px;"></i>
+            <i class="el-icon-error" v-db-click @click="removeGoods()" style="font-size: 16px"></i>
           </div>
         </template>
         <div v-else class="upLoad pictrueTab acea-row row-center-wrapper" v-db-click @click="changeGoods">
@@ -65,7 +65,7 @@
         <template v-if="formValidate.image">
           <div class="upload-list">
             <img :src="formValidate.image" />
-            <i class="el-icon-error" v-db-click @click="remove()" style="font-size: 16px;"></i>
+            <i class="el-icon-error" v-db-click @click="remove()" style="font-size: 16px"></i>
           </div>
         </template>
         <div v-else class="upLoad pictrueTab acea-row row-center-wrapper">
@@ -84,14 +84,14 @@
           style="width: 300px"
         ></el-input-number>
       </el-form-item>
-      <el-form-item label="奖品权重：" prop="chance">
+      <el-form-item label="奖品概率(%)：" prop="percent">
         <el-input-number
           :controls="false"
-          v-model="formValidate.chance"
-          placeholder="请输入奖品权重"
+          v-model="formValidate.percent"
+          placeholder="请输入奖品概率"
           :max="100"
-          :min="1"
-          :precision="0"
+          :min="0"
+          :precision="2"
           style="width: 300px"
         ></el-input-number>
       </el-form-item>
@@ -103,9 +103,9 @@
           style="width: 300px"
         ></el-input>
       </el-form-item>
-      <el-form-item>
+      <!-- <el-form-item>
         <el-button type="primary" v-db-click @click="handleSubmit('formValidate')">提交</el-button>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <!-- 上传图片-->
     <el-dialog :visible.sync="modalPic" :modal="false" width="1024px" title="上传图片" :close-on-click-modal="false">
@@ -302,11 +302,10 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .pictrueBox {
   display: inline-block;
 }
-
 .pictrue {
   width: 60px;
   height: 60px;
@@ -320,7 +319,6 @@ export default {
     width: 100%;
     height: 100%;
   }
-
   .btndel {
     position: absolute;
     z-index: 1;
@@ -330,7 +328,6 @@ export default {
     top: -4px;
   }
 }
-
 .upload-list {
   width: 58px;
   height: 58px;
@@ -340,19 +337,17 @@ export default {
   background: rgba(0, 0, 0, 0.02);
   cursor: pointer;
   position: relative;
-  .el-icon-error{
-    position absolute;
-    right -8px;
-    top -8px
+  .el-icon-error {
+    position: absolute;
+    right: -8px;
+    top: -8px;
   }
 }
-
 .upload-list img {
   display: block;
   width: 100%;
   height: 100%;
 }
-
 .upLoad {
   width: 58px;
   height: 58px;
@@ -362,14 +357,12 @@ export default {
   background: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
-
 .ivu-icon-ios-close-circle {
   position: absolute;
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
 }
-
 .grey {
   color: #999;
 }

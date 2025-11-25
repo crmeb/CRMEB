@@ -232,6 +232,17 @@ Route::group('system', function () {
         Route::post('crud', 'v1.setting.SystemCrud/save')->option(['real_name' => '保存生成CRUD']);
     })->option(['parent' => 'system', 'cate_name' => '代码生成']);
 
+    /** 小票打印 */
+    Route::group(function () {
+        Route::get('ticket/list', 'v1.system.SystemTicket/ticketList')->option(['real_name' => '小票打印列表']);
+        Route::get('ticket/form/:id', 'v1.system.SystemTicket/ticketForm')->option(['real_name' => '添加修改小票打印表单']);
+        Route::post('ticket/save/:id', 'v1.system.SystemTicket/ticketSave')->option(['real_name' => '添加修改小票打印']);
+        Route::post('ticket/set_status/:id/:status', 'v1.system.SystemTicket/ticketSetStatus')->option(['real_name' => '修改小票打印状态']);
+        Route::delete('ticket/del/:id', 'v1.system.SystemTicket/ticketDel')->option(['real_name' => '删除小票打印']);
+        Route::get('ticket/content/:id', 'v1.system.SystemTicket/ticketContent')->option(['real_name' => '获取小票打印详情']);
+        Route::post('ticket/save_content/:id', 'v1.system.SystemTicket/ticketContentSave')->option(['real_name' => '保存小票打印详情']);
+    })->option(['parent' => 'system', 'cate_name' => '小票打印']);
+
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

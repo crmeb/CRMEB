@@ -31,7 +31,7 @@ export default {
       iconVal: '',
       modals2: false,
       list: icon,
-      searchData: []
+      searchData: [],
     };
   },
   methods: {
@@ -50,46 +50,48 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.f-s-24
-  font-size 24px
-.iconBox
-    background #fff
-
-.icons-item
-    float: left;
-    margin: 6px 6px 6px 0;
-    width: 53px;
-    text-align: center;
-    list-style: none;
-    cursor: pointer;
-    height: 50px;
-    color: #5c6b77;
-    transition: all .2s ease;
-    position: relative;
-    padding-top: 10px;
-
-    ::v-deep .ivu-icon
-        font-size: 32px !important;
-
-.trees-coadd
-    width: 100%;
-    height: 500px;
-    border-radius: 4px;
-    overflow: hidden;
-
-.scollhide
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    margin-left: 18px;
-    padding: 10px 0 10px 0;
-    box-sizing: border-box;
-
-    .content
-        font-size 12px
-
-    .time
-        font-size 12px
-        color: #2d8cf0
+<style lang="scss" scoped>
+.f-s-24 {
+  font-size: 24px;
+}
+.iconBox {
+  background: #fff;
+}
+.icons-item {
+  float: left;
+  margin: 6px 6px 6px 0;
+  width: 53px;
+  text-align: center;
+  list-style: none;
+  cursor: pointer;
+  height: 50px;
+  color: #5c6b77;
+  transition: all 0.2s ease;
+  position: relative;
+  padding-top: 10px;
+  ::v-deep .ivu-icon {
+    font-size: 32px !important;
+  }
+}
+.trees-coadd {
+  width: 100%;
+  height: 500px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.scollhide {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  margin-left: 18px;
+  padding: 10px 0 10px 0;
+  box-sizing: border-box;
+  .content {
+    font-size: 12px;
+  }
+  .time {
+    font-size: 12px;
+    color: #2d8cf0;
+  }
+}
 </style>

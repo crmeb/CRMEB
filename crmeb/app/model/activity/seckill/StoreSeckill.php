@@ -13,6 +13,7 @@ namespace app\model\activity\seckill;
 
 use app\model\product\product\StoreDescription;
 use app\model\product\product\StoreProduct;
+use app\model\product\sku\StoreProductAttrValue;
 use crmeb\basic\BaseModel;
 use crmeb\traits\ModelTrait;
 use think\Model;
@@ -55,9 +56,15 @@ class StoreSeckill extends BaseModel
      */
     public function product()
     {
-        return $this->hasOne(StoreProduct::class, 'id', 'product_id')->where('is_show', 1)->where('is_del', 0)->field(['id','cate_id'])->bind([
-            'cate_id' => 'cate_id'
+        return $this->hasOne(StoreProduct::class, 'id', 'product_id')->where('is_show', 1)->where('is_del', 0)->field(['id','cate_id','price'])->bind([
+            'cate_id' => 'cate_id',
+            'product_price' => 'price'
         ]);
+    }
+
+    public function attrs()
+    {
+        return $this->hasMany(StoreProductAttrValue::class, 'product_id', 'id')->where('type', 1);
     }
 
     /**
@@ -164,5 +171,10 @@ class StoreSeckill extends BaseModel
             $time = time();
             $query->where('start_time', '<=', $time)->where('stop_time', '>=', $time - 86400);
         }
+    }
+
+    public function searchActivityIdAttr($query, $value)
+    {
+        if ($value != '') $query->where('activity_id', $value);
     }
 }

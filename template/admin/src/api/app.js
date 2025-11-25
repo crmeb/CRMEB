@@ -387,7 +387,7 @@ export function cityList() {
  * @description  客服自动回复 -- 关键字 列表
  * @param {Object} param data {Object} 传值参数
  */
- export function kefuAutoReplyListApi(params) {
+export function kefuAutoReplyListApi(params) {
   return request({
     url: `app/kefu/auto_reply/list`,
     method: 'get',
@@ -399,7 +399,7 @@ export function cityList() {
  * @description  客服自动回复添加编辑表单
  * @param {Object} param data {Object} 传值参数
  */
- export function kefuAutoReplyForm(id) {
+export function kefuAutoReplyForm(id) {
   return request({
     url: `app/kefu/auto_reply/form/` + id,
     method: 'get',
@@ -410,7 +410,7 @@ export function cityList() {
  * @description 小程序链接 -- 列表
  * @param {Object} param data {Object} 传值参数
  */
- export function routineSchemeList(data) {
+export function routineSchemeList(data) {
   return request({
     url: 'app/routine/scheme_list',
     method: 'get',
@@ -422,7 +422,7 @@ export function cityList() {
  * @description 小程序链接 -- 创建修改表单
  * @param {Number} param id {Number} 标签id
  */
- export function routineSchemeForm(id) {
+export function routineSchemeForm(id) {
   return request({
     url: `app/routine/scheme_form/${id}`,
     method: 'get',
@@ -433,7 +433,7 @@ export function cityList() {
  * @description 小程序链接 -- 删除
  * @param {Number} param id {Number} 标签id
  */
- export function routineSchemeDel(id) {
+export function routineSchemeDel(id) {
   return request({
     url: `app/routine/scheme_del/${id}`,
     method: 'delete',

@@ -1,27 +1,33 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            label-position="right"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          label-position="right"
+          @submit.native.prevent
+          inline
         >
-          <el-form-item label="拼团状态：" clearable>
-            <el-select v-model="formValidate.is_show" placeholder="请选择" clearable @change="userSearchs"  class="form_content_width">
-              <el-option :value="1" label="开启"></el-option>
-              <el-option :value="0" label="关闭"></el-option>
+          <el-form-item label="上架状态：">
+            <el-select
+              v-model="formValidate.is_show"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
+              <el-option :value="1" label="上架"></el-option>
+              <el-option :value="0" label="下架"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="商品搜索：" prop="store_name" label-for="store_name">
+          <el-form-item label="拼团搜索：" prop="store_name" label-for="store_name">
             <el-input
-                clearable
-                placeholder="请输入请输入商品名称/ID"
-                v-model="formValidate.store_name"
-                class="form_content_width"
+              clearable
+              placeholder="请输入请输入拼团名称/ID"
+              v-model="formValidate.store_name"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -31,15 +37,10 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button
-          v-auth="['marketing-store_combination-create']"
-          type="primary"
-          v-db-click @click="add"
-      >添加拼团商品</el-button
+      <el-button v-auth="['marketing-store_combination-create']" type="primary" v-db-click @click="add"
+        >添加拼团商品</el-button
       >
-      <el-button v-auth="['export-storeCombination']" class="export" v-db-click @click="exports"
-      >导出</el-button
-      >
+      <el-button v-auth="['export-storeCombination']" class="export" v-db-click @click="exports">导出</el-button>
       <el-table
         :data="tableList"
         class="mt14"
@@ -78,27 +79,27 @@
             <span>{{ scope.row.price }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="拼团人数" min-width="130">
+        <el-table-column label="拼团人数" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.count_people }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="参与人数" min-width="100">
+        <el-table-column label="参与人数" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.count_people_all }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="成团数量" min-width="100">
+        <el-table-column label="成团数量" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.count_people_pink }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="限量" min-width="100">
+        <el-table-column label="限量" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.quota_show }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="限量剩余" min-width="100">
+        <el-table-column label="限量剩余" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.quota }}</span>
           </template>
@@ -110,9 +111,10 @@
             <el-tag size="medium" type="info" v-show="scope.row.start_name === '已结束'">已结束</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" min-width="150">
+        <el-table-column label="活动时间" min-width="180">
           <template slot-scope="scope">
-            <span> {{ scope.row.stop_time | formatDate }}</span>
+            <p>开始：{{ scope.row.start_time }}</p>
+            <p>结束：{{ scope.row.stop_time }}</p>
           </template>
         </el-table-column>
         <el-table-column label="上架状态" min-width="150">
@@ -280,6 +282,8 @@ export default {
     getList() {
       this.loading = true;
       // this.formValidate.is_show = this.formValidate.is_show
+      this.formValidate.product_id = this.$route.params.product_id || '';
+
       combinationListApi(this.formValidate)
         .then(async (res) => {
           let data = res.data;
@@ -309,14 +313,14 @@ export default {
         })
         .catch((res) => {
           this.$message.error(res.msg);
-          row.is_show = !row.is_show
+          row.is_show = !row.is_show;
         });
     },
   },
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

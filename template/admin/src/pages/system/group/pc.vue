@@ -1,14 +1,17 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
+    <!-- <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
       <div>
         <div style="float: right">
           <el-button class="bnt" type="primary" v-db-click @click="save">保存</el-button>
         </div>
       </div>
-    </div>
-    <el-card :bordered="false" shadow="never" class="h100">
+    </div> -->
+    <pages-header ref="pageHeader" :title="$route.meta.title">
+      <el-button class="bnt" type="primary" v-db-click @click="save">保存</el-button>
+    </pages-header>
+    <el-card :bordered="false" shadow="never" class="h100 mt16">
       <el-row class="box-wrapper">
         <el-col :xs="24" :sm="24" :md="6" :lg="3">
           <div class="left_box">
@@ -93,7 +96,7 @@
                             <span>链接地址：</span>
                             <!-- v-db-click @click="link(index)"-->
                             <div class="input-box">
-                              <el-input v-model="item.url" placeholder="选择链接" />
+                              <el-input v-model="item.url" placeholder="请填写链接" />
                             </div>
                           </div>
                         </div>
@@ -201,12 +204,7 @@
                         <div class="move-icon">
                           <span class="iconfont icondrag2"></span>
                         </div>
-                        <div
-                          class="delect-btn"
-                          style="line-height: 0px"
-                          v-db-click
-                          @click.stop="menuDelete(index)"
-                        >
+                        <div class="delect-btn" style="line-height: 0px" v-db-click @click.stop="menuDelete(index)">
                           <i class="el-icon-circle-close" style="font-size: 24px" />
                         </div>
                         <div class="info">
@@ -220,7 +218,7 @@
                             <span>链接地址：</span>
                             <!-- v-db-click @click="link(index)"-->
                             <div class="input-box">
-                              <el-input v-model="item.url" placeholder="选择链接" />
+                              <el-input v-model="item.url" placeholder="请填写链接" />
                             </div>
                           </div>
                           <!-- <div class="info-item">
@@ -279,7 +277,7 @@
                             <span>链接地址：</span>
                             <!-- v-db-click @click="link(index)"-->
                             <div class="input-box">
-                              <el-input v-model="item.url" placeholder="选择链接" />
+                              <el-input v-model="item.url" placeholder="请填写链接" />
                             </div>
                           </div>
                         </div>
@@ -483,6 +481,7 @@ export default {
         });
     },
     getAboutUs(id) {
+      this.formValidate.content = '';
       getAgreements(id).then((res) => {
         this.formValidate.content = res.data.content;
       });

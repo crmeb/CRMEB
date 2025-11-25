@@ -1,13 +1,15 @@
 <template>
   <el-dialog :visible.sync="modals" title="取消寄件" class="order_box" :show-close="true" width="540px">
-    <Form ref="formValidate"
-          :model="formValidate"
-          :rules="ruleValidate"
-          label-width="80px"
-          label-position="right"
-          @submit.native.prevent>
+    <Form
+      ref="formValidate"
+      :model="formValidate"
+      :rules="ruleValidate"
+      label-width="80px"
+      label-position="right"
+      @submit.native.prevent
+    >
       <FormItem label="备注：" prop="msg">
-        <Input
+        <el-input
           v-model="formValidate.msg"
           :maxlength="200"
           show-word-limit

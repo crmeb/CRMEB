@@ -37,7 +37,12 @@
         </el-row>
         <el-row>
           <el-col v-bind="grid">
-            <el-button v-auth="['admin-marketing-store_coupon-add']" type="primary" icon="md-add" v-db-click @click="add"
+            <el-button
+              v-auth="['admin-marketing-store_coupon-add']"
+              type="primary"
+              icon="md-add"
+              v-db-click
+              @click="add"
               >添加优惠券</el-button
             >
           </el-col>
@@ -89,8 +94,8 @@
         </el-table-column>
         <el-table-column label="是否有效" min-width="130">
           <template slot-scope="scope">
-            <i class="el-icon-check" v-if="scope.row.status === 1" style="color:#0092DC;font-size: 14px;"/>
-            <i class="el-icon-close" v-else style="color:#ed5565;font-size: 14px;"/>
+            <i class="el-icon-check" v-if="scope.row.status === 1" style="color: #0092dc; font-size: 14px" />
+            <i class="el-icon-close" v-else style="color: #ed5565; font-size: 14px" />
           </template>
         </el-table-column>
         <el-table-column label="添加时间" min-width="130">
@@ -102,7 +107,11 @@
           <template slot-scope="scope">
             <a v-db-click @click="couponInvalid(scope.row, '修改优惠券', index)" v-if="scope.row.status">立即失效</a>
             <el-divider direction="vertical" v-if="scope.row.status" />
-            <a v-db-click @click="couponSend(scope.row)" v-if="scope.row.status" v-auth="['admin-marketing-store_coupon-push']"
+            <a
+              v-db-click
+              @click="couponSend(scope.row)"
+              v-if="scope.row.status"
+              v-auth="['admin-marketing-store_coupon-push']"
               >发布</a
             >
             <el-divider direction="vertical" v-if="scope.row.status" />

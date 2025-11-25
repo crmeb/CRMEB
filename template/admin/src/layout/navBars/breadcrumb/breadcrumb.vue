@@ -5,7 +5,8 @@
       v-if="collapseShow"
       class="layout-navbars-breadcrumb-icon"
       :class="getThemeConfig.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-      v-db-click @click="onThemeConfigChange"
+      v-db-click
+      @click="onThemeConfigChange"
     ></i>
     <el-breadcrumb class="layout-navbars-breadcrumb-hide" v-if="isShowcrumb" :style="{ display: isShowBreadcrumb }">
       <transition-group name="breadcrumb" mode="out-in">
@@ -98,7 +99,7 @@ export default {
       }
     },
     collapseShow() {
-      return  ['defaults','columns'].includes(this.$store.state.themeConfig.themeConfig.layout);
+      return ['defaults', 'columns'].includes(this.$store.state.themeConfig.themeConfig.layout);
     },
   },
   mounted() {

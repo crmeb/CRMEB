@@ -112,7 +112,7 @@ class WechatServices extends BaseServices
      * @email: 442384644@qq.com
      * @date: 2023/8/12
      */
-    public function authLogin($spread = '')
+    public function authLogin($spread = '', $agent_id = '')
     {
         /** @var OAuth $oauth */
         $oauth = app()->make(OAuth::class);
@@ -131,18 +131,15 @@ class WechatServices extends BaseServices
         /** @var WechatUserServices $wechatUserServices */
         $wechatUserServices = app()->make(WechatUserServices::class);
         $user = $wechatUserServices->getAuthUserInfo($openid, 'wechat');
-        $createData = [$openid, $wechatInfo, $spread, 'wechat', 'wechat'];
+        $createData = [$openid, $wechatInfo, $spread, $agent_id, 'wechat', 'wechat'];
         $storeUserMobile = sys_config('store_user_mobile');
         if ($storeUserMobile && (($user && $user['phone'] == '') || !$user)) {
             $userInfoKey = md5($openid . '_' . time() . '_wechat');
             CacheService::set($userInfoKey, $createData, 7200);
             return ['bindPhone' => true, 'key' => $userInfoKey];
         }
-        if (!$user) {
-            $user = $wechatUserServices->wechatOauthAfter($createData);
-        } else {
-            $wechatUserServices->wechatUpdata([$user['uid'], $wechatInfo]);
-        }
+        $user = $wechatUserServices->wechatOauthAfter($createData);
+        $wechatUserServices->wechatUpdata([$user['uid'], $wechatInfo]);
         $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             app()->make(UserVisitServices::class)->loginSaveVisit($user);
@@ -172,10 +169,10 @@ class WechatServices extends BaseServices
      */
     public function authBindingPhone($key, $phone)
     {
-        [$openid, $wechatInfo, $spreadId, $login_type, $userType] = CacheService::get($key);
+        [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType] = CacheService::get($key);
         $wechatInfo['phone'] = $phone;
         //写入用户信息
-        $user = app()->make(WechatUserServices::class)->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
+        $user = app()->make(WechatUserServices::class)->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType]);
         $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             app()->make(UserVisitServices::class)->loginSaveVisit($user);
@@ -277,7 +274,7 @@ class WechatServices extends BaseServices
         /** @var WechatUserServices $wechatUser */
         $wechatUser = app()->make(WechatUserServices::class);
         //更新用户信息
-        $user = $wechatUser->wechatOauthAfter([$openid, $userInfo, $spreadId, $login_type, $userType]);
+        $user = $wechatUser->wechatOauthAfter([$openid, $userInfo, $spreadId, 0, $login_type, $userType]);
         $token = $this->createToken((int)$user['uid'], 'api');
         if ($token) {
             /** @var UserVisitServices $visitServices */

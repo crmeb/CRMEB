@@ -108,7 +108,8 @@
 					msg: ''
 				},
 				formContent: '',
-				oid: 0
+				oid: 0,
+				is_gift: 0
 			}
 		},
 		watch: {
@@ -152,12 +153,14 @@
 					});
 				} else {
 					if (extraData.code == 'success') {
+						let url = `/pages/goods/order_pay_status/index?order_id=${this.orderId}&msg=${this.jumpData.msg}&type=3&totalPrice=${this.payPriceShow}`
+						if(this.is_gift) url += '&is_gift=1'
 						this.$util.Tips({
 							title: this.$t(`支付成功`),
 							icon: 'success'
 						}, {
 							tab: 5,
-							url: `/pages/goods/order_pay_status/index?order_id=${this.orderId}&msg=${this.jumpData.msg}&type=3&totalPrice=${this.payPriceShow}`
+							url
 						});
 					} else if (extraData.code == 'cancel') {
 						// "支付已取消";
@@ -215,6 +218,7 @@
 					this.cartArr[2].number = res.data.now_money;
 					this.number = Number(res.data.now_money) || 0;
 					this.oid = res.data.oid
+					this.is_gift = res.data.is_gift
 					uni.hideLoading();
 				}).catch(err => {
 					uni.hideLoading();
@@ -295,13 +299,12 @@
 					quitUrl: '/pages/goods/order_details/index?order_id=' + this.orderId
 					// #endif
 				}).then(res => {
+					let goPage = '/pages/goods/order_pay_status/index?order_id=' + this.orderId + '&msg=' + res.msg + '&type=3' + '&totalPrice=' + this.payPriceShow
+					if(this.is_gift) goPage += '&is_gift=1'
 					let status = res.data.status,
 						orderId = res.data.result.order_id,
 						jsConfig = res.data.result.jsConfig,
-						goPages = '/pages/goods/order_pay_status/index?order_id=' + this.orderId + '&msg=' +
-						res
-						.msg +
-						'&type=3' + '&totalPrice=' + this.payPriceShow,
+						goPages = goPage,
 						friendPay = '/pages/users/payment_on_behalf/index?order_id=' + this.orderId +
 						'&spread=' +
 						this

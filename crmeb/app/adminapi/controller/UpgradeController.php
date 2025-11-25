@@ -734,298 +734,393 @@ class UpgradeController
      */
     public function upData()
     {
-        $data['new_version'] = 'CRMEB-BZ v5.4.0';
-        $data['new_code'] = '540.1';
+        $data['new_version'] = 'CRMEB-BZ v5.6.3';
+        $data['new_code'] = 563;
         $data['update_sql'] = [
             [
-                'code' => '540',
+                'code' => 560,
                 'type' => 3,
-                'table' => "store_order_invoice",
-                'field' => "unique_num",
-                'findSql' => "show columns from `@table` like 'unique_num'",
-                'sql' => "ALTER TABLE `@table` ADD `unique_num` varchar(255) NOT NULL DEFAULT '' COMMENT '唯一值'"
-            ],
-            [
-                'code' => '540',
+                'table' => "diy",
+                'field' => "my_menus_status",
+                'findSql' => "show columns from `@table` like 'my_menus_status'",
+                'sql' => "ALTER TABLE `@table` ADD `my_menus_status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '个人中心我的服务样式' AFTER `my_banner_status`"
+            ],[
+                'code' => 560,
                 'type' => 3,
-                'table' => "store_order_invoice",
-                'field' => "invoice_num",
-                'findSql' => "show columns from `@table` like 'invoice_num'",
-                'sql' => "ALTER TABLE `@table` ADD `invoice_num` varchar(255) NOT NULL DEFAULT '' COMMENT '发票号码'"
-            ],
-            [
-                'code' => '540',
+                'table' => "diy",
+                'field' => "business_status",
+                'findSql' => "show columns from `@table` like 'business_status'",
+                'sql' => "ALTER TABLE `@table` ADD `business_status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '个人中心商家管理样式' AFTER `my_menus_status`"
+            ],[
+                'code' => 560,
                 'type' => 3,
-                'table' => "store_order_invoice",
-                'field' => "invoice_type",
-                'findSql' => "show columns from `@table` like 'invoice_type'",
-                'sql' => "ALTER TABLE `@table` ADD `invoice_type` varchar(255) NOT NULL DEFAULT '' COMMENT '发票类型'"
-            ],
-            [
-                'code' => '540',
+                'table' => "diy",
+                'field' => "is_pro",
+                'findSql' => "show columns from `@table` like 'is_pro'",
+                'sql' => "ALTER TABLE `@table` ADD `is_pro` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否新版本' AFTER `title`"
+            ],[
+                'code' => 560,
                 'type' => 3,
-                'table' => "store_order_invoice",
-                'field' => "invoice_serial_number",
-                'findSql' => "show columns from `@table` like 'invoice_serial_number'",
-                'sql' => "ALTER TABLE `@table` ADD `invoice_serial_number` varchar(255) NOT NULL DEFAULT '' COMMENT '发票流水号'"
-            ],
-            [
-                'code' => '540',
+                'table' => "luck_lottery",
+                'field' => "is_use",
+                'findSql' => "show columns from `@table` like 'is_use'",
+                'sql' => "ALTER TABLE `@table` ADD `is_use` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否使用' AFTER `status`"
+            ],[
+                'code' => 560,
                 'type' => 3,
-                'table' => "store_order_invoice",
-                'field' => "red_invoice_num",
-                'findSql' => "show columns from `@table` like 'red_invoice_num'",
-                'sql' => "ALTER TABLE `@table` ADD `red_invoice_num` varchar(255) NOT NULL DEFAULT '' COMMENT '发票红字编码'"
-            ],
-            [
-                'code' => '540',
+                'table' => "luck_lottery_record",
+                'field' => "wechat_order_id",
+                'findSql' => "show columns from `@table` like 'wechat_order_id'",
+                'sql' => "ALTER TABLE `@table` ADD `wechat_order_id` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '订单id' AFTER `id`"
+            ],[
+                'code' => 560,
                 'type' => 3,
-                'table' => "store_order_invoice",
-                'field' => "is_del",
-                'findSql' => "show columns from `@table` like 'is_del'",
-                'sql' => "ALTER TABLE `@table` ADD `is_del` tinyint(1) DEFAULT '0' COMMENT '是否删除'"
-            ],
-            [
-                'code' => '540',
+                'table' => "luck_lottery_record",
+                'field' => "num",
+                'findSql' => "show columns from `@table` like 'num'",
+                'sql' => "ALTER TABLE `@table` ADD `num` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '积分、余额、svip天数、红包' AFTER `type`"
+            ],[
+                'code' => 560,
                 'type' => 3,
-                'table' => "store_product_reply",
-                'field' => "status",
-                'findSql' => "show columns from `@table` like 'status'",
-                'sql' => "ALTER TABLE `@table` ADD `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '评论状态'"
-            ],
-            [
-                'code' => '540',
+                'table' => "luck_lottery_record",
+                'field' => "channel_type",
+                'findSql' => "show columns from `@table` like 'channel_type'",
+                'sql' => "ALTER TABLE `@table` ADD `channel_type` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '抽奖来源' AFTER `add_time`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "luck_lottery_record",
+                'field' => "out_bill_no",
+                'findSql' => "show columns from `@table` like 'out_bill_no'",
+                'sql' => "ALTER TABLE `@table` ADD `out_bill_no` varchar(255) NOT NULL DEFAULT '' COMMENT '商户单号' AFTER `channel_type`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "luck_lottery_record",
+                'field' => "transfer_bill_no",
+                'findSql' => "show columns from `@table` like 'transfer_bill_no'",
+                'sql' => "ALTER TABLE `@table` ADD `transfer_bill_no` varchar(255) NOT NULL DEFAULT '' COMMENT '微信转账单号' AFTER `out_bill_no`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "luck_lottery_record",
+                'field' => "state",
+                'findSql' => "show columns from `@table` like 'state'",
+                'sql' => "ALTER TABLE `@table` ADD `state` varchar(32) NOT NULL DEFAULT '' COMMENT '单据状态' AFTER `transfer_bill_no`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "luck_lottery_record",
+                'field' => "package_info",
+                'findSql' => "show columns from `@table` like 'package_info'",
+                'sql' => "ALTER TABLE `@table` ADD `package_info` varchar(2000) NOT NULL DEFAULT '' COMMENT '跳转领取页面的package信息' AFTER `state`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "luck_lottery_record",
+                'field' => "fail_reason",
+                'findSql' => "show columns from `@table` like 'fail_reason'",
+                'sql' => "ALTER TABLE `@table` ADD `fail_reason` varchar(255) NOT NULL DEFAULT '' COMMENT '失败原因' AFTER `package_info`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "luck_prize",
+                'field' => "percent",
+                'findSql' => "show columns from `@table` like 'percent'",
+                'sql' => "ALTER TABLE `@table` ADD `percent` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '中奖概率' AFTER `chance`"
+            ],[
+                'code' => 560,
                 'type' => -1,
-                'table' => "system_config_tab",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 129, '远程登录配置', 'remote_login', 1, 0, '', 0, 0, 23)"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_config",
-                'field' => "level",
-                'findSql' => "show columns from `@table` like 'level'",
-                'sql' => "ALTER TABLE `@table` ADD `level` int(11) NOT NULL DEFAULT '0' COMMENT '配置层级0顶级1次级'"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_config",
-                'field' => "link_id",
-                'findSql' => "show columns from `@table` like 'link_id'",
-                'sql' => "ALTER TABLE `@table` ADD `link_id` int(11) NOT NULL DEFAULT '0' COMMENT '关联上级配置id'"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_config",
-                'field' => "link_value",
-                'findSql' => "show columns from `@table` like 'link_value'",
-                'sql' => "ALTER TABLE `@table` ADD `link_value` int(11) NOT NULL DEFAULT '0' COMMENT '关联上级配置的值'"
-            ],
-            [
-                'code' => '540',
-                'type' => 6,
-                'table' => "system_config",
-                'whereTable' => "system_config_tab",
-                'findSql' => "select id from @table where `menu_name` = 'brokerage_window_switch'",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='brokerage_type'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 'brokerage_window_switch', 'radio', 'input', @tabId, '1=>开启\n0=>关闭', 1, '', 0, 0, '1', '佣金悬浮窗开关', '佣金悬浮窗开关，关闭之后，商品详情不显示佣金悬浮窗', 0, 1, 0, 0, 0)"
-            ],
-            [
-                'code' => '540',
-                'type' => 6,
-                'table' => "system_config",
-                'whereTable' => "system_config_tab",
-                'findSql' => "select id from @table where `menu_name` = 'elec_invoice'",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='system_sms'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 'elec_invoice', 'radio', 'input', @tabId, '1=>开启\n0=>关闭', 1, '', 0, 0, '\"0\"', '电子发票状态', '是否开启电子发票', 0, 0, 0, 0, 0)"
-            ],
-            [
-                'code' => '540',
-                'type' => 6,
-                'table' => "system_config",
-                'whereTable' => "system_config_tab",
-                'findSql' => "select id from @table where `menu_name` = 'auto_invoice'",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='system_sms'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 'auto_invoice', 'radio', 'input', @tabId, '1=>开启\n0=>关闭', 1, '', 0, 0, '\"0\"', '是否自动开票', '是否开启自动开票功能', 0, 0, 0, 0, 0)"
-            ],
-            [
-                'code' => '540',
-                'type' => 6,
-                'table' => "system_config",
-                'whereTable' => "system_config_tab",
-                'findSql' => "select id from @table where `menu_name` = 'elec_invoice_cate'",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='system_sms'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 'elec_invoice_cate', 'text', 'input', @tabId, '', 1, '', 100, 0, '\"0\"', '电子发票分类', '电子发票的商品分类', 0, 0, 0, 0, 0)"
-            ],
-            [
-                'code' => '540',
-                'type' => 6,
-                'table' => "system_config",
-                'whereTable' => "system_config_tab",
-                'findSql' => "select id from @table where `menu_name` = 'elec_invoice_tax_rate'",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='system_sms'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 'elec_invoice_tax_rate', 'text', 'input', @tabId, '', 1, '', 100, 0, '\"0\"', '电子发票税率', '请填写电子发票的税率，填写0-100直接的整数，如：13%的税率请填写13', 0, 0, 0, 0, 0)"
-            ],
-            [
-                'code' => '540',
-                'type' => 6,
-                'table' => "system_config",
-                'whereTable' => "system_config_tab",
-                'findSql' => "select id from @table where `menu_name` = 'elec_invoice_cate_name'",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='system_sms'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 'elec_invoice_cate_name', 'text', 'input', @tabId, '', 1, '', 100, 0, '\"\"', '发票分类名称', '电子发票分类对应的名称，用于回显', 0, 0, 0, 0, 0)"
-            ],
-            [
-                'code' => '540',
-                'type' => 6,
-                'table' => "system_config",
-                'whereTable' => "system_config_tab",
-                'findSql' => "select id from @table where `menu_name` = 'get_remote_login_url'",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='remote_login'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 'get_remote_login_url', 'text', 'input', @tabId, '', 1, '', 100, 0, '\"\"', '远程登录地址', '内嵌商城跳转h5页面链接携带（remote_token=远程用户生成的token）参数时，可自动登录商城，若remote_token为空的时候，本系统认定在外部系统中未登录，会跳转此地址进行登录', 0, 1, 0, 0, 0)"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_crud_data",
-                'field' => "cid",
-                'findSql' => "show columns from `@table` like 'cid'",
-                'sql' => "ALTER TABLE `@table` ADD `cid` int(11) NOT NULL DEFAULT '0' COMMENT '列表id' AFTER `id`"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_crud_data",
-                'field' => "pid",
-                'findSql' => "show columns from `@table` like 'pid'",
-                'sql' => "ALTER TABLE `@table` ADD `pid` int(11) NOT NULL DEFAULT '0' COMMENT '上级id' AFTER `cid`"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_crud_data",
-                'field' => "sort",
-                'findSql' => "show columns from `@table` like 'sort'",
-                'sql' => "ALTER TABLE `@table` ADD `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序' AFTER `value`"
-            ],
-            [
-                'code' => '540',
+                'table' => "luck_prize",
+                'sql' => "ALTER TABLE `@table` CHANGE `num` `num` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '积分 经验 会员天数';"
+            ],[
+                'code' => 560,
+                'type' => -1,
+                'table' => "page_categroy",
+                'sql' => "truncate table `@table`"
+            ],[
+                'code' => 560,
+                'type' => -1,
+                'table' => "page_categroy",
+                'sql' => <<<SQL
+INSERT INTO `@table` (`id`, `pid`, `type`, `name`, `sort`, `status`, `add_time`) VALUES
+(1, 0, 'link', '商城页面', 100, 1, 1626831994),
+(2, 0, 'diy', 'DIY页面', 95, 1, 1626831994),
+(3, 0, 'product', '商品页面', 90, 1, 1626831994),
+(4, 0, 'article', '文章页面', 85, 1, 1626831994),
+(5, 0, 'lottery_list', '抽奖页面', 80, 1, 1626831994),
+(6, 0, 'custom', '自定义', 75, 1, 1626831994),
+(7, 1, 'link', '商城链接', 100, 1, 1626831994),
+(8, 1, 'link', '营销链接', 95, 1, 1626831994),
+(9, 2, 'special', 'DIY页面', 100, 1, 1626831994),
+(10, 3, 'product_category', '商品分类', 100, 1, 1626831994),
+(11, 3, 'product', '商品', 95, 1, 1626831994),
+(12, 3, 'seckill', '秒杀商品', 90, 1, 1626831994),
+(13, 3, 'bargain', '砍价商品', 85, 1, 1626831994),
+(14, 3, 'combination', '拼团商品', 80, 1, 1626831994),
+(15, 3, 'integral', '积分商品', 75, 1, 1626831994),
+(16, 4, 'news', '文章', 100, 1, 1626831994),
+(17, 5, 'lottery_list', '积分抽奖', 100, 1, 1626831994),
+(18, 6, 'custom', '自定义链接', 100, 1, 1626831994),
+(19, 7, 'link', '基础链接', 100, 1, 1626831994),
+(20, 7, 'link', '个人中心链接', 95, 1, 1626831994),
+(21, 8, 'link', '秒杀链接', 100, 1, 1626831994),
+(22, 8, 'link', '砍价链接', 95, 1, 1626831994),
+(23, 8, 'link', '拼团链接', 90, 1, 1626831994),
+(24, 8, 'link', '积分链接', 85, 1, 1626831994),
+(25, 8, 'link', '抽奖链接', 80, 1, 1626831994),
+(26, 8, 'link', '优惠券链接', 75, 1, 1626831994);
+SQL
+            ],[
+                'code' => 560,
+                'type' => -1,
+                'table' => "page_link",
+                'sql' => "truncate table `@table`"
+            ],[
+                'code' => 560,
+                'type' => -1,
+                'table' => "page_link",
+                'sql' => <<<SQL
+INSERT INTO `@table` (`id`, `cate_id`, `type`, `name`, `url`, `param`, `example`, `status`, `sort`, `add_time`) VALUES
+(1, 19, 1, '商城首页', '/pages/index/index', '', '', 1, 0, 1735111883),
+(2, 19, 1, '商品分类', '/pages/goods_cate/goods_cate', '', '', 1, 0, 1735112646),
+(3, 19, 1, '购物车', '/pages/order_addcart/order_addcart', '', '', 1, 0, 1735112666),
+(4, 19, 1, '个人中心', '/pages/user/index', '', '', 1, 0, 1735112677),
+(5, 19, 1, '商品列表', '/pages/goods/goods_list/index', '', '', 1, 0, 1735112726),
+(6, 19, 1, '我的订单', '/pages/goods/order_list/index', '', '', 1, 0, 1735112748),
+(7, 19, 1, '文章列表', '/pages/extension/news_list/index', '', '', 1, 0, 1735112767),
+(8, 19, 1, '退款订单', '/pages/users/user_return_list/index', '', '', 1, 0, 1735112790),
+(9, 20, 1, '用户信息', '/pages/users/user_info/index', '', '', 1, 0, 1735113292),
+(10, 20, 1, '我的账户', '/pages/users/user_money/index', '', '', 1, 0, 1735113357),
+(11, 20, 1, '我的优惠券', '/pages/users/user_coupon/index', '', '', 1, 0, 1735113368),
+(12, 20, 1, '我的积分', '/pages/users/user_integral/index', '', '', 1, 0, 1735113378),
+(13, 20, 1, '付费会员', '/pages/annex/vip_paid/index', '', '', 1, 0, 1735113402),
+(14, 20, 1, '订单中心', '/pages/goods/order_list/index', '', '', 1, 0, 1735113414),
+(15, 20, 1, '我的地址', '/pages/users/user_address_list/index', '', '', 1, 0, 1735113429),
+(16, 20, 1, '砍价记录', '/pages/activity/bargain/index', '', '', 1, 0, 1735113439),
+(17, 20, 1, '浏览记录', '/pages/users/visit_list/index', '', '', 1, 0, 1735113451),
+(18, 20, 1, '订单管理', '/pages/admin/order/index', '', '', 1, 0, 1735113467),
+(19, 20, 1, '我的消息', '/pages/users/message_center/index', '', '', 1, 0, 1735113479),
+(20, 20, 1, '我的推广', '/pages/users/user_spread_user/index', '', '', 1, 0, 1735113521),
+(21, 20, 1, '我的等级', '/pages/users/user_vip/index', '', '', 1, 0, 1735113554),
+(22, 21, 1, '秒杀列表', '/pages/activity/goods_seckill/index', '', '', 1, 0, 1735114620),
+(23, 22, 1, '砍价列表', '/pages/activity/goods_bargain/index', '', '', 1, 0, 1735114633),
+(24, 23, 1, '拼团列表', '/pages/activity/goods_combination/index', '', '', 1, 0, 1735114646),
+(25, 24, 1, '积分商城', '/pages/points_mall/index', '', '', 1, 0, 1735114739),
+(26, 24, 1, '积分商品', '/pages/points_mall/integral_goods_list', '', '', 1, 0, 1735114753),
+(27, 24, 1, '积分兑换记录', '/pages/points_mall/exchange_record', '', '', 1, 0, 1735114771),
+(28, 25, 1, '中奖记录', '/pages/goods/lottery/grids/record', '', '', 1, 0, 1735114807),
+(29, 26, 1, '优惠券列表', '/pages/users/user_get_coupon/index', '', '', 1, 0, 1735114823);
+SQL
+            ],[
+                'code' => 560,
                 'type' => 1,
-                'table' => "system_crud_list",
+                'table' => "store_activity",
                 'findSql' => "select * from information_schema.tables where table_name ='@table'",
                 'sql' => "CREATE TABLE IF NOT EXISTS `@table` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
-  `mark` varchar(255) NOT NULL DEFAULT '' COMMENT '标识',
-  `level` int(11) NOT NULL DEFAULT '0' COMMENT '层级0一级，1多级',
-  `status` int(11) NOT NULL DEFAULT '1' COMMENT '状态',
-  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='crud数据字典列表'"
-            ],
-            [
-                'code' => '540',
-                'type' => 1,
-                'table' => "system_event",
-                'findSql' => "select * from information_schema.tables where table_name ='@table'",
-                'sql' => "CREATE TABLE IF NOT EXISTS `@table` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '事件名称',
-  `mark` varchar(255) NOT NULL DEFAULT '' COMMENT '标签',
-  `content` varchar(255) NOT NULL DEFAULT '' COMMENT '说明',
-  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:秒杀',
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '活动名称',
+  `start_day` int(10) NOT NULL DEFAULT '0' COMMENT '开始日期',
+  `end_day` int(10) NOT NULL DEFAULT '0' COMMENT '结束日期',
+  `time_ids` varchar(255) NOT NULL DEFAULT '' COMMENT '时间段ID多个',
+  `once_num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '活动期间每人每日购买数量，0不限制',
+  `num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '全部活动期间，用户购买总数限制，0不限制',
+  `is_commission` int(11) NOT NULL DEFAULT '0' COMMENT '是否参与分佣',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否显示',
+  `link_id` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '关联ID',
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
-  `is_open` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启',
-  `customCode` text NOT NULL COMMENT '执行代码',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='自定义事件'"
-            ],
-            [
-                'code' => '540',
+  `add_time` int(10) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `start_day` (`start_day`,`end_day`) USING BTREE,
+  KEY `type` (`type`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动表'"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_order",
+                'field' => "is_gift",
+                'findSql' => "show columns from `@table` like 'is_gift'",
+                'sql' => "ALTER TABLE `@table` ADD `is_gift` int(1) NOT NULL DEFAULT '0' COMMENT '是否礼品订单' AFTER `division_brokerage`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_order",
+                'field' => "gift_price",
+                'findSql' => "show columns from `@table` like 'gift_price'",
+                'sql' => "ALTER TABLE `@table` ADD `gift_price` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '礼品附加费' AFTER `is_gift`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_order",
+                'field' => "gift_uid",
+                'findSql' => "show columns from `@table` like 'gift_uid'",
+                'sql' => "ALTER TABLE `@table` ADD `gift_uid` int(11) NOT NULL DEFAULT '0' COMMENT '接受礼品用户uid' AFTER `gift_price`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_order",
+                'field' => "gift_mark",
+                'findSql' => "show columns from `@table` like 'gift_mark'",
+                'sql' => "ALTER TABLE `@table` ADD `gift_mark` varchar(255) NOT NULL DEFAULT '' COMMENT '礼物留言' AFTER `gift_uid`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_product",
+                'field' => "params_list",
+                'findSql' => "show columns from `@table` like 'params_list'",
+                'sql' => "ALTER TABLE `@table` ADD `params_list` varchar(2000) NOT NULL DEFAULT '' COMMENT '商品参数' AFTER `default_sku`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_product",
+                'field' => "label_list",
+                'findSql' => "show columns from `@table` like 'label_list'",
+                'sql' => "ALTER TABLE `@table` ADD `label_list` varchar(255) NOT NULL DEFAULT '' COMMENT '商品标签' AFTER `params_list`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_product",
+                'field' => "protection_list",
+                'findSql' => "show columns from `@table` like 'protection_list'",
+                'sql' => "ALTER TABLE `@table` ADD `protection_list` varchar(255) NOT NULL DEFAULT '' COMMENT '商品保障' AFTER `label_list`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_product",
+                'field' => "is_gift",
+                'findSql' => "show columns from `@table` like 'is_gift'",
+                'sql' => "ALTER TABLE `@table` ADD `is_gift` int(1) NOT NULL DEFAULT '0' COMMENT '是否是礼品' AFTER `protection_list`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_product",
+                'field' => "gift_price",
+                'findSql' => "show columns from `@table` like 'gift_price'",
+                'sql' => "ALTER TABLE `@table` ADD `gift_price` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '礼品附加费' AFTER `is_gift`"
+            ],[
+                'code' => 560,
                 'type' => 1,
-                'table' => "system_event_data",
+                'table' => "store_product_label",
                 'findSql' => "select * from information_schema.tables where table_name ='@table'",
                 'sql' => "CREATE TABLE IF NOT EXISTS `@table` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
-  `label` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
-  `value` varchar(255) NOT NULL DEFAULT '' COMMENT '类型',
-  `data` text NOT NULL COMMENT '数据',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '标签名称',
+  `cate_id` int(11) NOT NULL DEFAULT '0' COMMENT '分类id',
+  `type` int(11) NOT NULL DEFAULT '0' COMMENT '效果设置0自定义1图片',
+  `font_color` varchar(255) NOT NULL DEFAULT '' COMMENT '字体颜色',
+  `bg_color` varchar(255) NOT NULL DEFAULT '' COMMENT '背景颜色',
+  `border_color` varchar(255) NOT NULL DEFAULT '' COMMENT '边框颜色',
+  `image` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+  `is_show` int(11) NOT NULL DEFAULT '1' COMMENT '移动端展示',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '是否开启',
+  `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `is_del` int(11) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='事件参数'"
-            ],
-            [
-                'code' => '540',
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品标签'"
+            ],[
+                'code' => 560,
+                'type' => 1,
+                'table' => "store_product_label_cate",
+                'findSql' => "select * from information_schema.tables where table_name ='@table'",
+                'sql' => "CREATE TABLE IF NOT EXISTS `@table` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '名称',
+  `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `is_del` int(11) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品标签分类'"
+            ],[
+                'code' => 560,
+                'type' => 1,
+                'table' => "store_product_param",
+                'findSql' => "select * from information_schema.tables where table_name ='@table'",
+                'sql' => "CREATE TABLE IF NOT EXISTS `@table` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '参数名称',
+  `value` text COMMENT '参数内容',
+  `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `is_del` int(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '参数状态',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品参数表'"
+            ],[
+                'code' => 560,
+                'type' => 1,
+                'table' => "store_product_protection",
+                'findSql' => "select * from information_schema.tables where table_name ='@table'",
+                'sql' => "CREATE TABLE IF NOT EXISTS `@table` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '标题',
+  `content` varchar(2000) NOT NULL DEFAULT '' COMMENT '内容',
+  `image` varchar(255) NOT NULL DEFAULT '' COMMENT '图标',
+  `num` int(11) NOT NULL DEFAULT '0' COMMENT '使用数量',
+  `status` int(1) NOT NULL DEFAULT '1' COMMENT '状态',
+  `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+  `add_time` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `is_del` int(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品保障表'"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "store_seckill",
+                'field' => "activity_id",
+                'findSql' => "show columns from `@table` like 'activity_id'",
+                'sql' => "ALTER TABLE `@table` ADD `activity_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '活动id' AFTER `id`"
+            ],[
+                'code' => 560,
                 'type' => -1,
-                'table' => "system_event_data",
-                'sql' => <<<SQL
-INSERT INTO `@table` (`id`, `label`, `value`, `data`) VALUES
-(1, '用户注册', 'user_register', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u624b\\\\u673a\\\\u53f7\",\"add_time\":\"\\\\u7528\\\\u6237\\\\u6ce8\\\\u518c\\\\u65f6\\\\u95f4\",\"user_type\":\"\\\\u7528\\\\u6237\\\\u6765\\\\u6e90\"}'),
-(2, '用户登录', 'user_login', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u624b\\\\u673a\\\\u53f7\",\"add_time\":\"\\\\u7528\\\\u6237\\\\u6ce8\\\\u518c\\\\u65f6\\\\u95f4\",\"login_time\":\"\\\\u7528\\\\u6237\\\\u767b\\\\u5f55\\\\u65f6\\\\u95f4\",\"user_type\":\"\\\\u7528\\\\u6237\\\\u6765\\\\u6e90\"}'),
-(3, '用户注销', 'user_cancel', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u624b\\\\u673a\\\\u53f7\",\"add_time\":\"\\\\u7528\\\\u6237\\\\u6ce8\\\\u518c\\\\u65f6\\\\u95f4\",\"cancel_time\":\"\\\\u7528\\\\u6237\\\\u6ce8\\\\u9500\\\\u65f6\\\\u95f4\",\"user_type\":\"\\\\u7528\\\\u6237\\\\u6765\\\\u6e90\"}'),
-(4, '用户修改信息', 'user_change_info', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u624b\\\\u673a\\\\u53f7\",\"avatar\":\"\\\\u7528\\\\u6237\\\\u5934\\\\u50cf\",\"add_time\":\"\\\\u7528\\\\u6237\\\\u6ce8\\\\u518c\\\\u65f6\\\\u95f4\",\"user_type\":\"\\\\u7528\\\\u6237\\\\u6765\\\\u6e90\"}'),
-(5, '用户绑定关系', 'user_spread', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"spread_uid\":\"\\\\u4e0a\\\\u7ea7\\\\u7528\\\\u6237uid\",\"spread_time\":\"\\\\u7528\\\\u6237\\\\u7ed1\\\\u5b9a\\\\u65f6\\\\u95f4\",\"user_type\":\"\\\\u7528\\\\u6237\\\\u6765\\\\u6e90\"}'),
-(6, '用户签到', 'user_sign', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"sign_point\":\"\\\\u7b7e\\\\u5230\\\\u79ef\\\\u5206\",\"sign_exp\":\"\\\\u7b7e\\\\u5230\\\\u7ecf\\\\u9a8c\",\"sign_time\":\"\\\\u7b7e\\\\u5230\\\\u65f6\\\\u95f4\"}'),
-(7, '用户充值', 'user_recharge', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"id\":\"\\\\u8ba2\\\\u5355id\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"price\":\"\\\\u5145\\\\u503c\\\\u91d1\\\\u989d\",\"give_price\":\"\\\\u8d60\\\\u9001\\\\u91d1\\\\u989d\",\"now_money\":\"\\\\u5f53\\\\u524d\\\\u4f59\\\\u989d\",\"recharge_time\":\"\\\\u5145\\\\u503c\\\\u65f6\\\\u95f4\"}'),
-(8, '用户提现', 'user_extract', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"extract_type\":\"\\\\u63d0\\\\u73b0\\\\u7c7b\\\\u578b\",\"extract_price\":\"\\\\u63d0\\\\u73b0\\\\u91d1\\\\u989d\",\"extract_fee\":\"\\\\u63d0\\\\u73b0\\\\u624b\\\\u7eed\\\\u8d39\",\"extract_time\":\"\\\\u63d0\\\\u73b0\\\\u65f6\\\\u95f4\"}'),
-(9, '用户商品访问', 'user_product_visit', '{\"product_id\":\"\\\\u5546\\\\u54c1id\",\"uid\":\"\\\\u7528\\\\u6237uid\",\"visit_time\":\"\\\\u8bbf\\\\u95ee\\\\u65f6\\\\u95f4\"}'),
-(10, '用户商品收藏', 'user_product_collect', '{\"product_id\":\"\\\\u5546\\\\u54c1id\",\"uid\":\"\\\\u7528\\\\u6237uid\",\"collect_time\":\"\\\\u8bbf\\\\u95ee\\\\u65f6\\\\u95f4\"}'),
-(11, '用户加入购物车', 'user_add_cart', '{\"product_id\":\"\\\\u5546\\\\u54c1id\",\"uid\":\"\\\\u7528\\\\u6237uid\",\"cart_num\":\"\\\\u5546\\\\u54c1\\\\u6570\\\\u91cf\",\"add_time\":\"\\\\u6dfb\\\\u52a0\\\\u65f6\\\\u95f4\"}'),
-(12, '用户抽奖', 'user_lottery', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"lottery_id\":\"\\\\u62bd\\\\u5956id\",\"prize_id\":\"\\\\u5956\\\\u54c1id\",\"record_id\":\"\\\\u4e2d\\\\u5956\\\\u8bb0\\\\u5f55id\",\"lottery_time\":\"\\\\u62bd\\\\u5956\\\\u65f6\\\\u95f4\"}'),
-(13, '订单创建', 'order_create', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"id\":\"\\\\u8ba2\\\\u5355id\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"real_name\":\"\\\\u7528\\\\u6237\\\\u540d\\\\u79f0\",\"user_phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"user_address\":\"\\\\u7528\\\\u6237\\\\u5730\\\\u5740\",\"total_num\":\"\\\\u5546\\\\u54c1\\\\u603b\\\\u6570\",\"pay_price\":\"\\\\u652f\\\\u4ed8\\\\u91d1\\\\u989d\",\"pay_postage\":\"\\\\u652f\\\\u4ed8\\\\u90ae\\\\u8d39\",\"deduction_price\":\"\\\\u79ef\\\\u5206\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"coupon_price\":\"\\\\u4f18\\\\u60e0\\\\u5238\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"store_name\":\"\\\\u5546\\\\u54c1\\\\u540d\\\\u79f0\",\"add_time\":\"\\\\u8ba2\\\\u5355\\\\u521b\\\\u5efa\\\\u65f6\\\\u95f4\"}'),
-(14, '订单取消', 'order_cancel', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"id\":\"\\\\u8ba2\\\\u5355id\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"real_name\":\"\\\\u7528\\\\u6237\\\\u540d\\\\u79f0\",\"user_phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"user_address\":\"\\\\u7528\\\\u6237\\\\u5730\\\\u5740\",\"total_num\":\"\\\\u5546\\\\u54c1\\\\u603b\\\\u6570\",\"pay_price\":\"\\\\u652f\\\\u4ed8\\\\u91d1\\\\u989d\",\"deduction_price\":\"\\\\u79ef\\\\u5206\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"coupon_price\":\"\\\\u4f18\\\\u60e0\\\\u5238\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"cancel_time\":\"\\\\u8ba2\\\\u5355\\\\u53d6\\\\u6d88\\\\u65f6\\\\u95f4\"}'),
-(15, '订单支付', 'order_pay', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"id\":\"\\\\u8ba2\\\\u5355id\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"real_name\":\"\\\\u7528\\\\u6237\\\\u540d\\\\u79f0\",\"user_phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"user_address\":\"\\\\u7528\\\\u6237\\\\u5730\\\\u5740\",\"total_num\":\"\\\\u5546\\\\u54c1\\\\u603b\\\\u6570\",\"pay_price\":\"\\\\u652f\\\\u4ed8\\\\u91d1\\\\u989d\",\"pay_postage\":\"\\\\u652f\\\\u4ed8\\\\u90ae\\\\u8d39\",\"deduction_price\":\"\\\\u79ef\\\\u5206\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"coupon_price\":\"\\\\u4f18\\\\u60e0\\\\u5238\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"store_name\":\"\\\\u5546\\\\u54c1\\\\u540d\\\\u79f0\",\"add_time\":\"\\\\u8ba2\\\\u5355\\\\u521b\\\\u5efa\\\\u65f6\\\\u95f4\"}'),
-(16, '订单收货/核销', 'order_take', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"id\":\"\\\\u8ba2\\\\u5355id\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"real_name\":\"\\\\u7528\\\\u6237\\\\u540d\\\\u79f0\",\"user_phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"user_address\":\"\\\\u7528\\\\u6237\\\\u5730\\\\u5740\",\"total_num\":\"\\\\u5546\\\\u54c1\\\\u603b\\\\u6570\",\"pay_price\":\"\\\\u652f\\\\u4ed8\\\\u91d1\\\\u989d\",\"pay_postage\":\"\\\\u652f\\\\u4ed8\\\\u90ae\\\\u8d39\",\"deduction_price\":\"\\\\u79ef\\\\u5206\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"coupon_price\":\"\\\\u4f18\\\\u60e0\\\\u5238\\\\u62b5\\\\u6263\\\\u91d1\\\\u989d\",\"store_name\":\"\\\\u5546\\\\u54c1\\\\u540d\\\\u79f0\",\"add_time\":\"\\\\u8ba2\\\\u5355\\\\u521b\\\\u5efa\\\\u65f6\\\\u95f4\"}'),
-(17, '订单发起退款', 'order_initiated_refund', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"refund_order_id\":\"\\\\u9000\\\\u6b3e\\\\u8ba2\\\\u5355order_id\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"real_name\":\"\\\\u7528\\\\u6237\\\\u540d\\\\u79f0\",\"user_phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"user_address\":\"\\\\u7528\\\\u6237\\\\u5730\\\\u5740\",\"refund_num\":\"\\\\u9000\\\\u6b3e\\\\u6570\\\\u91cf\",\"refund_price\":\"\\\\u9000\\\\u6b3e\\\\u91d1\\\\u989d\",\"refund_time\":\"\\\\u9000\\\\u6b3e\\\\u53d1\\\\u8d77\\\\u65f6\\\\u95f4\"}'),
-(18, '订单取消退款', 'order_refund_cancel', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"id\":\"\\\\u9000\\\\u6b3e\\\\u8ba2\\\\u5355id\",\"store_order_id\":\"\\\\u5bf9\\\\u5e94\\\\u6b63\\\\u5e38\\\\u8ba2\\\\u5355id\",\"order_id\":\"\\\\u9000\\\\u6b3e\\\\u8ba2\\\\u5355order_id\",\"refund_num\":\"\\\\u9000\\\\u6b3e\\\\u6570\\\\u91cf\",\"refund_price\":\"\\\\u9000\\\\u6b3e\\\\u91d1\\\\u989d\",\"cancel_time\":\"\\\\u62d2\\\\u7edd\\\\u65f6\\\\u95f4\"}'),
-(19, '佣金到账', 'order_brokerage', '{\"uid\":\"\\\\u63a8\\\\u5e7f\\\\u4ebauid\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"phone\":\"\\\\u63a8\\\\u5e7f\\\\u4eba\\\\u7535\\\\u8bdd\",\"brokeragePrice\":\"\\\\u4f63\\\\u91d1\\\\u91d1\\\\u989d\",\"goodsName\":\"\\\\u5546\\\\u54c1\\\\u540d\\\\u79f0\",\"goodsPrice\":\"\\\\u8ba2\\\\u5355\\\\u91d1\\\\u989d\",\"add_time\":\"\\\\u5230\\\\u8d26\\\\u65f6\\\\u95f4\"}'),
-(20, '积分到账', 'order_point', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"storeTitle\":\"\\\\u5546\\\\u54c1\\\\u540d\\\\u79f0\",\"give_integral\":\"\\\\u8d60\\\\u9001\\\\u79ef\\\\u5206\",\"integral\":\"\\\\u603b\\\\u79ef\\\\u5206\",\"add_time\":\"\\\\u8d60\\\\u9001\\\\u65f6\\\\u95f4\"}'),
-(21, '申请开票', 'order_invoice', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"invoice_id\":\"\\\\u53d1\\\\u7968id\",\"add_time\":\"\\\\u5f00\\\\u7968\\\\u65f6\\\\u95f4\"}'),
-(22, '订单评价', 'order_comment', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"oid\":\"\\\\u8ba2\\\\u5355id\",\"unique\":\"\\\\u5546\\\\u54c1\\\\u89c4\\\\u683c\\\\u552f\\\\u4e00\\\\u503c\",\"suk\":\"\\\\u5546\\\\u54c1\\\\u89c4\\\\u683c\",\"product_id\":\"\\\\u5546\\\\u54c1id\",\"add_time\":\"\\\\u8bc4\\\\u4ef7\\\\u65f6\\\\u95f4\"}'),
-(23, '后台管理员登录', 'admin_login', '{\"id\":\"\\\\u7ba1\\\\u7406\\\\u5458id\",\"account\":\"\\\\u7ba1\\\\u7406\\\\u5458\\\\u8d26\\\\u53f7\",\"head_pic\":\"\\\\u7ba1\\\\u7406\\\\u5458\\\\u5934\\\\u50cf\",\"real_name\":\"\\\\u7ba1\\\\u7406\\\\u5458\\\\u540d\\\\u79f0\",\"login_time\":\"\\\\u767b\\\\u5f55\\\\u65f6\\\\u95f4\"}'),
-(24, '后台提现成功', 'admin_extract_success', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"price\":\"\\\\u63d0\\\\u73b0\\\\u91d1\\\\u989d\",\"pay_type\":\"\\\\u63d0\\\\u73b0\\\\u7c7b\\\\u578b\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"success_time\":\"\\\\u6210\\\\u529f\\\\u65f6\\\\u95f4\"}'),
-(25, '后台提现失败', 'admin_extract_fail', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"price\":\"\\\\u63d0\\\\u73b0\\\\u91d1\\\\u989d\",\"pay_type\":\"\\\\u63d0\\\\u73b0\\\\u7c7b\\\\u578b\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"fail_time\":\"\\\\u5931\\\\u8d25\\\\u65f6\\\\u95f4\"}'),
-(26, '后台充值退款', 'admin_recharge_refund', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"refund_price\":\"\\\\u9000\\\\u6b3e\\\\u91d1\\\\u989d\",\"now_money\":\"\\\\u5269\\\\u4f59\\\\u4f59\\\\u989d\",\"nickname\":\"\\\\u7528\\\\u6237\\\\u6635\\\\u79f0\",\"phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"refund_time\":\"\\\\u9000\\\\u6b3e\\\\u65f6\\\\u95f4\"}'),
-(27, '后台修改订单改价', 'admin_order_change', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"pay_price\":\"\\\\u4fee\\\\u6539\\\\u540e\\\\u8ba2\\\\u5355\\\\u91d1\\\\u989d\",\"gain_integral\":\"\\\\u4fee\\\\u6539\\\\u540e\\\\u8ba2\\\\u5355\\\\u8d60\\\\u9001\\\\u79ef\\\\u5206\",\"change_time\":\"\\\\u4fee\\\\u6539\\\\u65f6\\\\u95f4\"}'),
-(28, '后台订单发货', 'admin_order_express', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"real_name\":\"\\\\u7528\\\\u6237\\\\u540d\\\\u79f0\",\"user_phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"user_address\":\"\\\\u7528\\\\u6237\\\\u5730\\\\u5740\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"delivery_name\":\"\\\\u5feb\\\\u9012\\\\u540d\\\\u79f0\\\\/\\\\u914d\\\\u9001\\\\u5458\\\\u540d\\\\u79f0\",\"delivery_id\":\"\\\\u5feb\\\\u9012\\\\u5355\\\\u53f7\\\\/\\\\u914d\\\\u9001\\\\u5458\\\\u7535\\\\u8bdd\",\"express_time\":\"\\\\u53d1\\\\u8d27\\\\u4e8b\\\\u4ef6\"}'),
-(29, '后台订单退款', 'admin_order_refund_success', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"order_id\":\"\\\\u8ba2\\\\u5355order_id\",\"real_name\":\"\\\\u7528\\\\u6237\\\\u540d\\\\u79f0\",\"user_phone\":\"\\\\u7528\\\\u6237\\\\u7535\\\\u8bdd\",\"user_address\":\"\\\\u7528\\\\u6237\\\\u5730\\\\u5740\",\"total_num\":\"\\\\u5546\\\\u54c1\\\\u603b\\\\u6570\",\"pay_price\":\"\\\\u652f\\\\u4ed8\\\\u91d1\\\\u989d\",\"refund_reason_wap\":\"\\\\u9000\\\\u6b3e\\\\u7406\\\\u7531\\\\u7c7b\\\\u578b\",\"refund_reason_wap_explain\":\"\\\\u9000\\\\u6b3e\\\\u7406\\\\u7531\",\"refund_price\":\"\\\\u5b9e\\\\u9645\\\\u9000\\\\u6b3e\\\\u91d1\\\\u989d\",\"refund_time\":\"\\\\u9000\\\\u6b3e\\\\u65f6\\\\u95f4\"}'),
-(30, '后台订单拒绝退款', 'admin_order_refund_fail', '{\"uid\":\"\\\\u7528\\\\u6237uid\",\"id\":\"\\\\u9000\\\\u6b3e\\\\u8ba2\\\\u5355id\",\"store_order_id\":\"\\\\u5bf9\\\\u5e94\\\\u6b63\\\\u5e38\\\\u8ba2\\\\u5355id\",\"order_id\":\"\\\\u9000\\\\u6b3e\\\\u8ba2\\\\u5355order_id\",\"refund_num\":\"\\\\u9000\\\\u6b3e\\\\u6570\\\\u91cf\",\"refund_price\":\"\\\\u9000\\\\u6b3e\\\\u91d1\\\\u989d\",\"refuse_reason\":\"\\\\u62d2\\\\u7edd\\\\u9000\\\\u6b3e\\\\u7406\\\\u7531\",\"refuse_time\":\"\\\\u62d2\\\\u7edd\\\\u65f6\\\\u95f4\"}');
-SQL
-            ],
-            [
-                'code' => '540',
-                'type' => -1,
-                'table' => "system_group",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 0, 'PC顶部菜单', 'PC顶部菜单', 'pc_home_menus', '[{\"name\":\"\\\\u83dc\\\\u5355\\\\u540d\\\\u79f0\",\"title\":\"title\",\"type\":\"input\",\"param\":\"\"},{\"name\":\"\\\\u8df3\\\\u8f6c\\\\u94fe\\\\u63a5\",\"title\":\"url\",\"type\":\"input\",\"param\":\"\"}]')"
-            ],
-            [
-                'code' => '540',
-                'type' => -1,
-                'table' => "system_group",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, 0, 'PC模版友情链接', 'PC模版友情链接', 'pc_home_links', '[{\"name\":\"\\\\u540d\\\\u79f0\",\"title\":\"title\",\"type\":\"input\",\"param\":\"\"},{\"name\":\"\\\\u94fe\\\\u63a5\",\"title\":\"url\",\"type\":\"input\",\"param\":\"\"}]')"
-            ],
-            [
-                'code' => '540',
+                'table' => "store_seckill",
+                'sql' => "ALTER TABLE `@table` CHANGE `time_id` `time_id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '时间段ID'"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "system_attachment",
+                'field' => "type",
+                'findSql' => "show columns from `@table` like 'type'",
+                'sql' => "ALTER TABLE `@table` ADD `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型，0图片，1视频' AFTER `scan_token`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "system_attachment_category",
+                'field' => "type",
+                'findSql' => "show columns from `@table` like 'type'",
+                'sql' => "ALTER TABLE `@table` ADD `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型，0图片，1视频' AFTER `enname`"
+            ],[
+                'code' => 560,
                 'type' => 6,
-                'table' => "system_group_data",
-                'whereTable' => "system_group",
-                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `config_name`='pc_home_menus'",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, @tabId, '{\"title\":{\"type\":\"input\",\"value\":\"\\\\u4ea7\\\\u54c1\\\\u5206\\\\u7c7b\"},\"url\":{\"type\":\"input\",\"value\":\"\\\\/goods_cate\"}}', 1714960169, 6, 1),
-(NULL, @tabId, '{\"title\":{\"type\":\"input\",\"value\":\"\\\\u9650\\\\u65f6\\\\u79d2\\\\u6740\"},\"url\":{\"type\":\"input\",\"value\":\"\\\\/goods_seckill\"}}', 1714960169, 5, 1),
-(NULL, @tabId, '{\"title\":{\"type\":\"input\",\"value\":\"\\\\u9650\\\\u65f6\\\\u9884\\\\u552e\"},\"url\":{\"type\":\"input\",\"value\":\"\\\\/goods_presell\"}}', 1714960169, 4, 1),
-(NULL, @tabId, '{\"title\":{\"type\":\"input\",\"value\":\"\\\\u9886\\\\u4f18\\\\u60e0\\\\u5238\"},\"url\":{\"type\":\"input\",\"value\":\"\\\\/user\\\\/userCoupon?page_type=6\"}}', 1714960169, 3, 1),
-(NULL, @tabId, '{\"title\":{\"type\":\"input\",\"value\":\"\\\\u65b0\\\\u95fb\\\\u5217\\\\u8868\"},\"url\":{\"type\":\"input\",\"value\":\"\\\\/news_list\"}}', 1714960169, 2, 1),
-(NULL, @tabId, '{\"title\":{\"type\":\"input\",\"value\":\"\\\\u5173\\\\u4e8e\\\\u6211\\\\u4eec\"},\"url\":{\"type\":\"input\",\"value\":\"\\\\/about_us\"}}', 1714960169, 1, 1)"
-            ],
-            [
-                'code' => '540',
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'v3_pay_public_key'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='pay'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'v3_pay_public_key', 'text', 'input', @tabId, '', 1, '', 100, 0, '\"\"', 'v3支付公钥', 'v3支付公钥，新版本使用公钥请填写', 0, 1, 0, 0, 0)"
+            ],[
+                'code' => 560,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'v3_pay_public_pem'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='pay'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'v3_pay_public_pem', 'upload', 'input', @tabId, '', 3, '', 0, 0, '\"\"', 'v3支付公钥证书', 'v3支付公钥证书，使用新版本支付公钥上传此证书', 0, 1, 0, 0, 0)"
+            ],[
+                'code' => 560,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'v3_transfer_scene_id'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='pay'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'v3_transfer_scene_id', 'text', 'input', @tabId, '', '1', '', '0', '0', '\"1000\"', '微信自动提现场景值', '微信自动提现场景值', 0, 1, 0, 0, 0)"
+            ],[
+                'code' => 560,
                 'type' => -1,
                 'table' => "system_menus",
                 'sql' => "truncate table `@table`"
-            ],
-            [
-                'code' => '540',
+            ],[
+                'code' => 560,
                 'type' => -1,
                 'table' => "system_menus",
                 'sql' => <<<SQL
@@ -1105,7 +1200,7 @@ INSERT INTO `@table` (`id`, `pid`, `icon`, `menu_name`, `module`, `controller`, 
 (303, 12, '', '发货设置', 'admin', 'setting', 'index', '', '', '[]', 0, 1, 1, 1, '/setting/freight', '12', 1, '', 0, 'admin-setting-freight', 0, '发货设置'),
 (566, 656, '', '素材管理', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/system/file', '12/656', 1, '', 0, 'system-file', 0, '素材管理'),
 (589, 9, '', '用户标签', 'admin', 'user.user_label', 'index', '', '', '[]', 8, 1, 1, 1, '/user/label', '', 1, 'user', 0, 'user-user-label', 0, '用户标签'),
-(605, 25, '', '商业授权', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/system/maintain/auth', '', 1, '', 0, 'system-maintain-auth', 0, '商业授权'),
+(605, 25, '', '系统信息', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/system/maintain/auth', '', 1, '', 0, 'system-maintain-auth', 0, '系统信息'),
 (655, 65, '', '在线升级', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/system/onlineUpgrade/index', '25/65', 1, '', 0, 'system-onlineUpgrade-index', 0, '在线升级'),
 (656, 0, 's-open', '装修', 'admin', '', '', '', '', '[]', 80, 1, 1, 1, '/setting/pages', '', 1, '', 0, 'admin-setting-pages', 0, '装修'),
 (657, 656, '', '首页装修', 'admin', '', '', '', '', '[]', 100, 1, 1, 1, '/setting/pages/devise/0', '12/656', 1, '', 0, 'admin-setting-pages-devise', 0, '页面设计'),
@@ -1157,13 +1252,10 @@ INSERT INTO `@table` (`id`, `pid`, `icon`, `menu_name`, `module`, `controller`, 
 (1014, 1013, '', '事业部列表', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/division/index', '26/1013', 1, '', 0, 'agent-division-index', 0, '事业部列表'),
 (1015, 1013, '', '代理商列表', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/division/agent/index', '26/1013', 1, '', 0, 'agent-division-agent-index', 0, '代理商列表'),
 (1016, 1013, '', '代理商申请', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/division/agent/applyList', '26/1013', 1, '', 0, 'agent-division-agent-applyList', 0, '代理商申请'),
-(1018, 909, '', '抽奖配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/marketing/lottery/create', '27/909', 1, '', 0, 'admin-marketing-lottery-create', 0, '抽奖配置'),
-(1019, 909, '', '中奖记录', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/marketing/lottery/recording_list', '27/909', 1, '', 0, 'admin-marketing-lottery-recording_list-id', 0, '中奖记录'),
 (1023, 27, '', '渠道码', 'admin', '', '', '', '', '[]', 55, 1, 1, 1, '/marketing/channel_code/channelCodeIndex', '27', 1, '', 0, 'marketing-channel_code-index', 0, '渠道码'),
 (1053, 3420, '', '金额设置', 'admin', '', '', '', '', '[]', 60, 1, 1, 1, '/marketing/recharge', '27/3420', 1, '', 0, 'marketing-recharge-index', 0, '充值配置'),
 (1055, 1009, '', '版本管理', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/app/app/version', '135/1009', 1, '', 0, 'admin-app-version', 0, '版本管理'),
 (1056, 12, '', '接口配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/other_config', '12', 1, '', 0, 'setting-other', 0, '接口配置'),
-(1057, 1056, '', '小票打印配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/other_config/print/2/21', '12/1056', 1, '', 0, 'setting-other-print', 0, '小票打印配置'),
 (1058, 1056, '', '商品采集配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/other_config/copy/2/41', '12/1056', 1, '', 0, 'setting-other-copy', 0, '商品采集配置'),
 (1059, 1056, '', '物流查询配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/other_config/logistics/2/64', '12/1056', 1, '', 0, 'setting-other-logistics', 0, '物流查询配置'),
 (1060, 1056, '', '电子面单配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/other_config/electronic/2/66', '12/1056', 1, '', 0, 'setting-other-electronic', 0, '电子面单配置'),
@@ -1454,12 +1546,6 @@ INSERT INTO `@table` (`id`, `pid`, `icon`, `menu_name`, `module`, `controller`, 
 (2741, 2728, '', '积分订单确认收货', '', '', '', 'marketing/integral/order/take/<id>', 'PUT', '[]', 1, 1, 1, 1, '', '', 2, '', 0, 'marketing-integral-order-take', 0, '积分订单确认收货'),
 (2742, 1001, '', '积分记录备注', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/', '27/34/1001', 3, '', 0, 'point-record', 0, '积分记录备注'),
 (2743, 2742, '', '积分记录列表备注', '', '', '', 'marketing/point_record/remark/<id>', 'POST', '[]', 1, 1, 1, 1, '', '', 2, '', 0, 'marketing-point_record-remark-6465fd1a75f76', 0, '积分记录列表备注'),
-(2744, 1018, '', '抽奖保存', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/', '27/909/1018', 3, '', 0, 'lottery-save', 0, '抽奖保存'),
-(2745, 2744, '', '修改抽奖活动数据', '', '', '', 'marketing/lottery/edit/<id>', 'PUT', '[]', 1, 1, 1, 1, '', '', 2, '', 0, 'marketing-lottery-edit', 0, '修改抽奖活动数据'),
-(2746, 1019, '', '中奖发货', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/', '27/909/1019', 3, '', 0, 'lottery-send', 0, '中奖发货'),
-(2747, 1019, '', '中奖备注', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/', '27/909/1019', 3, '', 0, 'lottery-mark', 0, '中奖备注'),
-(2748, 2746, '', '抽奖中奖发货、备注处理', '', '', '', 'marketing/lottery/record/deliver', 'POST', '[]', 1, 1, 1, 1, '', '', 2, '', 0, 'marketing-lottery-record-deliver', 0, '抽奖中奖发货、备注处理'),
-(2749, 2747, '', '抽奖中奖发货、备注处理', '', '', '', 'marketing/lottery/record/deliver', 'POST', '[]', 1, 1, 1, 1, '', '', 2, '', 0, 'marketing-lottery-record-deliver-6465fe30cf185', 0, '抽奖中奖发货、备注处理'),
 (2750, 74, '', '添加砍价', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/', '27/31/74', 3, '', 0, 'bargain-add', 0, '添加砍价'),
 (2751, 74, '', '导出砍价', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/', '27/31/74', 3, '', 0, 'bargain-export', 0, '导出砍价'),
 (2752, 74, '', '编辑砍价', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/', '27/31/74', 3, '', 0, 'bargain-edit', 0, '编辑砍价'),
@@ -2151,46 +2237,178 @@ INSERT INTO `@table` (`id`, `pid`, `icon`, `menu_name`, `module`, `controller`, 
 (3442, 993, '', '小程序链接', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/app/routine/link', '135/993', 1, '', 0, '', 0, ''),
 (3443, 56, '', '模块配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/marketing/integral/system_config/2/134', '25/56', 1, '', 0, 'system-model-system_config', 0, ''),
 (3444, 3417, '', '电子发票', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/elec_invoice', '12/1056/3417', 1, '', 0, 'setting-elec-invoice', 0, ''),
-(3445, 56, '', '自定事件', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/system/event', '25/56', 1, '', 0, 'system-event-index', 0, '');
+(3445, 56, '', '自定事件', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/system/event', '25/56', 1, '', 0, 'system-event-index', 0, ''),
+(3446, 27, '', '新人礼', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/marketing/newuser/gift', '27', 1, '', 0, 'admin-marketing-new-user-gift', 0, ''),
+(3447, 1, '', '商品配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/system_config/2/136', '1', 1, '', 0, 'admin-setting-system_config', 0, ''),
+(3448, 12, '', '小票配置', 'admin', '', '', '', '', '[]', 8, 1, 1, 1, '/setting/ticket', '12', 1, '', 0, 'admi-setting-ticket', 0, ''),
+(3449, 3448, '', '内容设置', 'admin', '', '', '', '', '[]', 0, 0, 0, 1, '/setting/ticket/content', '12/3448', 1, '', 0, 'admin-setting-ticket-content', 0, ''),
+(3450, 26, '', '分销员申请', 'admin', '', '', '', '', '[]', 97, 1, 1, 1, '/agent/spread/apply', '26', 1, '', 0, 'admin-agent-spread-apply', 0, ''),
+(3451, 909, '', '抽奖列表', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/marketing/lottery/list', '27/909', 1, '', 0, 'admin-marketing-lottery-list', 0, ''),
+(3452, 1, '', '商品参数', 'admin', '', '', '', '', '[]', 1, 1, 1, 1, '/product/param/list', '1', 1, '', 0, 'admin-product-param-list', 0, ''),
+(3453, 656, '', '链接管理', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/setting/pages/link', '656', 1, '', 0, 'admin-setting-pages-link', 0, ''),
+(3454, 1, '', '商品标签', 'admin', '', '', '', '', '[]', 1, 1, 1, 1, '/product/label/list', '1', 1, '', 0, 'admin-product-label-list', 0, ''),
+(3455, 1, '', '商品保障', 'admin', '', '', '', '', '[]', 1, 1, 1, 1, '/product/protection/list', '1', 1, '', 0, 'admin-product-protection-list', 0, ''),
+(3456, 33, '', '秒杀列表', 'admin', '', '', '', '', '[]', 1, 1, 1, 1, '/marketing/store_seckill/list', '27/33', 1, '', 0, 'marketing-store_seckill-list', 0, ''),
+(3457, 909, '', '抽奖配置', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/marketing/lottery/config', '27/909', 1, '', 0, 'admin-marketing-lottery-config', 0, '');
 SQL
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_timer",
-                'field' => "month",
-                'findSql' => "show columns from `@table` like 'month'",
-                'sql' => "ALTER TABLE `@table` ADD `month` int(11) NOT NULL DEFAULT '0' COMMENT '月' AFTER `type`"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_timer",
-                'field' => "customCode",
-                'findSql' => "show columns from `@table` like 'customCode'",
-                'sql' => "ALTER TABLE `@table` ADD `customCode` text NOT NULL COMMENT '执行代码'"
-            ],
-            [
-                'code' => '540',
-                'type' => 3,
-                'table' => "system_timer",
-                'field' => "timeStr",
-                'findSql' => "show columns from `@table` like 'timeStr'",
-                'sql' => "ALTER TABLE `@table` ADD `timeStr` varchar(255) NOT NULL DEFAULT '' COMMENT '时间代码'"
-            ],
-            [
-                'code' => '540',
+            ],[
+                'code' => 560,
                 'type' => -1,
-                'table' => "system_timer",
-                'sql' => "INSERT INTO `@table` VALUES (NULL, '自动开具/冲红电子发票', 'autoInvoice', '每隔10分钟执行自动开具/冲红电子发票', 2, 0, 1, 1, 1, 10, 0, 0, 0, 1715760152, 0, 1, '', '')"
-            ],
-            [
-                'code' => '540',
+                'table' => "system_notification",
+                'sql' => "INSERT INTO `eb_system_notification` (`id`, `mark`, `name`, `title`, `is_system`, `system_title`, `system_text`, `is_wechat`, `wechat_tempkey`, `wechat_content`, `wechat_kid`, `wechat_tempid`, `is_routine`, `routine_tempkey`, `routine_content`, `routine_kid`, `routine_tempid`, `is_sms`, `sms_id`, `sms_text`, `is_ent_wechat`, `ent_wechat_text`, `url`, `is_app`, `app_id`, `variable`, `type`, `add_time`) VALUES (NULL, 'revenue_received', '收益到账通知', '收益到账给用户通知', 0, '', '', 1, '47862', '订单号{{character_string9.DATA}}\n交易类型{{thing3.DATA}}\n交易金额{{amount4.DATA}}\n交易时间{{time2.DATA}}', '', '', 1, '1493', '订单编号{{character_string1.DATA}}\r\n收款项目{{thing7.DATA}}\r\n收益金额{{amount3.DATA}}\r\n订单时间{{time10.DATA}}', '', '', 0, '', '', 0, '', '', 0, 0, '', 1, 0)"
+            ],[
+                'code' => 560,
                 'type' => 3,
-                'table' => "user",
-                'field' => "division_name",
-                'findSql' => "show columns from `@table` like 'division_name'",
-                'sql' => "ALTER TABLE `@table` ADD `division_name` varchar(255) NOT NULL DEFAULT '' COMMENT '事业部/代理商名称' AFTER `uniqid`"
+                'table' => "user_extract",
+                'field' => "channel_type",
+                'findSql' => "show columns from `@table` like 'channel_type'",
+                'sql' => "ALTER TABLE `@table` ADD `channel_type` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '提现来源' AFTER `qrcode_url`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "user_extract",
+                'field' => "out_bill_no",
+                'findSql' => "show columns from `@table` like 'out_bill_no'",
+                'sql' => "ALTER TABLE `@table` ADD `out_bill_no` varchar(255) NOT NULL DEFAULT '' COMMENT '商户单号' AFTER `channel_type`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "user_extract",
+                'field' => "transfer_bill_no",
+                'findSql' => "show columns from `@table` like 'transfer_bill_no'",
+                'sql' => "ALTER TABLE `@table` ADD `transfer_bill_no` varchar(255) NOT NULL DEFAULT '' COMMENT '微信转账单号' AFTER `out_bill_no`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "user_extract",
+                'field' => "state",
+                'findSql' => "show columns from `@table` like 'state'",
+                'sql' => "ALTER TABLE `@table` ADD `state` varchar(32) NOT NULL DEFAULT '' COMMENT '单据状态' AFTER `transfer_bill_no`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "user_extract",
+                'field' => "package_info",
+                'findSql' => "show columns from `@table` like 'package_info'",
+                'sql' => "ALTER TABLE `@table` ADD `package_info` varchar(2000) NOT NULL DEFAULT '' COMMENT '跳转领取页面的package信息' AFTER `state`"
+            ],[
+                'code' => 560,
+                'type' => 3,
+                'table' => "user_extract",
+                'field' => "fail_reason",
+                'findSql' => "show columns from `@table` like 'fail_reason'",
+                'sql' => "ALTER TABLE `@table` ADD `fail_reason` varchar(255) NOT NULL DEFAULT '' COMMENT '失败原因' AFTER `package_info`"
+            ],[
+                'code' => 560.1,
+                'type' => -1,
+                'table' => "agreement",
+                'sql' => "ALTER TABLE `@table` CHANGE `content` `content` LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '协议内容';"
+            ],[
+                'code' => 560.1,
+                'type' => -1,
+                'table' => "article_content",
+                'sql' => "ALTER TABLE `@table` CHANGE `content` `content` LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '文章内容';"
+            ],[
+                'code' => 560.1,
+                'type' => -1,
+                'table' => "store_bargain",
+                'sql' => "ALTER TABLE `@table` CHANGE `rule` `rule` LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '砍价规则';"
+            ],[
+                'code' => 560.1,
+                'type' => -1,
+                'table' => "store_product_description",
+                'sql' => "ALTER TABLE `@table` CHANGE `description` `description` LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商品详情';"
+            ],[
+                'code' => 561,
+                'type' => -1,
+                'table' => "store_coupon_issue",
+                'sql' => "ALTER TABLE `@table` CHANGE `product_id` `product_id` VARCHAR(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '所属商品id';"
+            ],[
+                'code' => 561,
+                'type' => -1,
+                'table' => "store_coupon_issue",
+                'sql' => "ALTER TABLE `@table` CHANGE `category_id` `category_id` VARCHAR(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '分类id';"
+            ],[
+                'code' => 561,
+                'type' => -1,
+                'table' => "system_config",
+                'sql' => "UPDATE `@table` SET `info` = '移动端自定义JS', `desc` = '在移动端加载的自定义JS' WHERE `menu_name` = 'statistic_script';"
+            ],[
+                'code' => 561,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'custom_admin_js'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='statistics_config'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'custom_admin_js', 'textarea', 'input', @tabId, '', 1, '', 100, 10, '\"\"', '管理端自定义JS', '在管理端加载的自定义JS', 0, 1, 0, 0, 0);"
+            ],[
+                'code' => 561,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'custom_pc_js'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='statistics_config'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'custom_pc_js', 'textarea', 'input', @tabId, '', 1, '', 100, 10, '\"\"', 'PC端自定义JS', '在PC端加载的自定义JS', 0, 1, 0, 0, 0);"
+            ],[
+                'code' => 561,
+                'type' => -1,
+                'table' => "system_config_tab",
+                'sql' => "UPDATE `@table` SET `title` = '自定义JS' WHERE `eng_title` = 'statistics_config';"
+            ],[
+                'code' => 562,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'merchant_cert_path'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='ali_pay'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'merchant_cert_path', 'upload', 'input', @tabId, '', 3, '', 0, 0, '\"\"', '应用公钥证书', '支付宝接口加签完成之后下载的应用公钥证书', 0, 1, 1, 489, 1);"
+            ],[
+                'code' => 562,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'alipay_cert_path'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='ali_pay'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'alipay_cert_path', 'upload', 'input', @tabId, '', 3, '', 0, 0, '\"\"', '支付宝公钥证书', '支付宝接口加签完成下载的支付宝公钥证书', 0, 1, 1, 489, 1);"
+            ],[
+                'code' => 562,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'alipay_root_cert_path'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='ali_pay'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'alipay_root_cert_path', 'upload', 'input', @tabId, '', 3, '', 0, 0, '\"\"', '支付宝根证书', '支付宝接口加签完成下载的支付宝根证书', 0, 1, 1, 489, 1);"
+            ],[
+                'code' => 562,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'alipay_sign_type'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='ali_pay'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'alipay_sign_type', 'radio', 'input', @tabId, '0=>密钥\n1=>证书', 1, '', 0, 0, '0', '接口加签类型', '接口加签类型：密钥或证书', 80, 1, 0, 0, 0);"
+            ],[
+                'code' => 562,
+                'type' => -1,
+                'table' => "system_config",
+                'sql' => "UPDATE `@table` SET `level` = 1, `link_id` = 489, `link_value` = 0 WHERE `menu_name` = 'alipay_public_key';"
+            ],[
+                'code' => 562,
+                'type' => -1,
+                'table' => "system_config",
+                'sql' => "UPDATE `@table` SET `sort` = 85 WHERE `menu_name` = 'alipay_merchant_private_key';"
+            ],[
+                'code' => 562,
+                'type' => -1,
+                'table' => "system_config",
+                'sql' => "UPDATE `@table` SET `sort` = 91 WHERE `menu_name` = 'ali_pay_appid';"
+            ],[
+                'code' => 562,
+                'type' => 6,
+                'table' => "system_config",
+                'whereTable' => "system_config_tab",
+                'findSql' => "select id from @table where `menu_name` = 'image_thumb_status'",
+                'whereSql' => "SELECT id as tabId FROM `@whereTable` WHERE `eng_title`='base_config'",
+                'sql' => "INSERT INTO `@table` VALUES (null, 'image_thumb_status', 'radio', 'input', @tabId, '1=>开启\n0=>关闭', 1, '', 0, 0, '0', '缩略图开关', '是否开启缩略图', 0, 1, 0, 0, 0);"
             ],
         ];
         return $data;

@@ -14,7 +14,8 @@
               :class="{ on: label.disabled }"
               v-for="(label, j) in item.label"
               :key="j"
-              v-db-click @click="selectLabel(label)"
+              v-db-click
+              @click="selectLabel(label)"
             >
               {{ label.label_name }}
             </div>
@@ -97,36 +98,43 @@ export default {
   },
 };
 </script>
-<style lang="stylus" scoped>
-.label-wrapper
-    height 9rem
-    overflow: scroll;
-    .list
-        display flex
-        flex-wrap wrap
-        .label-item
-            margin: 0.2rem 0.3rem 0.1rem 0;
-            padding: 0 0.2rem;
-            background #EEEEEE
-            color #282828
-            border-radius 6px
-            cursor pointer
-            font-size 0.28rem
-            height 0.56rem
-            line-height 0.56rem
-            &.on
-                color #fff
-                background #3875EA
-.footer
-    margin-top: 0.25rem;
-.btn
-    width 100%
-    height 0.76rem
-    border-radius: 43px;
-    background #3875EA
-.title
-    font-size 0.32rem
-    color #282828
+<style lang="scss" scoped>
+.label-wrapper {
+  height: 9rem;
+  overflow: scroll;
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    .label-item {
+      margin: 0.2rem 0.3rem 0.1rem 0;
+      padding: 0 0.2rem;
+      background: #eeeeee;
+      color: #282828;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.28rem;
+      height: 0.56rem;
+      line-height: 0.56rem;
+      &.on {
+        color: #fff;
+        background: #3875ea;
+      }
+    }
+  }
+}
+.footer {
+  margin-top: 0.25rem;
+}
+.btn {
+  width: 100%;
+  height: 0.76rem;
+  border-radius: 43px;
+  background: #3875ea;
+}
+.title {
+  font-size: 0.32rem;
+  color: #282828;
+}
 </style>
 <style scoped lang="scss">
 .label {

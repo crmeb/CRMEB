@@ -39,12 +39,14 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.empty-wrapper
-    margin-top 60px
-    text-align center
-    font-size 12px
-    color #666
-    img
-        width 36%
+<style lang="scss" scoped>
+.empty-wrapper {
+  margin-top: 60px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  img {
+    width: 36%;
+  }
+}
 </style>

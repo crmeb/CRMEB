@@ -5,7 +5,7 @@
       :title="$route.params.id ? '编辑商品' : '添加商品'"
       :backUrl="$routeProStr + '/product/product_list'"
     ></pages-header>
-    <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0 20px 20px' }">
+    <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0px 20px' }">
       <el-tabs v-model="currentTab">
         <el-tab-pane v-for="(item, index) in headTab" :key="index" :label="item.tit" :name="item.name"></el-tab-pane>
       </el-tabs>
@@ -19,1307 +19,152 @@
         @submit.native.prevent
       >
         <!-- 基础信息-->
-        <el-row :gutter="24" v-show="currentTab === '1'">
-          <el-col :span="24">
-            <el-form-item label="商品类型：" props="is_virtual">
-              <div
-                class="virtual"
-                :class="formValidate.virtual_type == item.id ? 'virtual_boder' : 'virtual_boder2'"
-                v-for="(item, index) in virtual"
-                :key="index"
-                v-db-click
-                @click="virtualbtn(item.id, 2)"
-              >
-                <div class="virtual_top">{{ item.tit }}</div>
-                <div class="virtual_bottom">({{ item.tit2 }})</div>
-                <div v-if="formValidate.virtual_type == item.id" class="virtual_san"></div>
-                <div v-if="formValidate.virtual_type == item.id" class="virtual_dui">✓</div>
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="商品分类：" prop="cate_id">
-              <!-- {{ formValidate.cate_id }}
-              <el-select v-model="formValidate.cate_id" placeholder="请选择商品分类" multiple class="content_width">
-                <el-option v-for="item in treeSelect" :disabled="item.pid === 0" :value="item.id" :key="item.id">{{
-                  item.html + item.cate_name
-                }}</el-option>
-              </el-select>
-              {{ formValidate.cate_id }} -->
-              <el-cascader
-                class="content_width"
-                v-model="formValidate.cate_id"
-                size="small"
-                :options="treeSelect"
-                :props="{ multiple: true, checkStrictly: true, emitPath: false }"
-                clearable
-              ></el-cascader>
-              <span class="addfont" v-db-click @click="addCate">新增分类</span>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="商品名称：" prop="store_name">
-              <el-input class="content_width" v-model.trim="formValidate.store_name" placeholder="请输入商品名称" />
-            </el-form-item>
-          </el-col>
+        <basic-info
+          v-show="currentTab === '1'"
+          :isCai="type"
+          :formValidate="formValidate"
+          :goodsType="goodsType"
+          :treeSelect="treeSelect"
+          :tileLabelList="tileLabelList"
+          :progress="progress"
+          :upload="upload"
+          :videoIng="videoIng"
+          @virtualbtn="virtualbtn"
+          @handleDragStart="handleDragStart"
+          @handleDragOver="handleDragOver"
+          @handleDragEnter="handleDragEnter"
+          @handleDragEnd="handleDragEnd"
+          @handleRemove="handleRemove"
+          @modalPicTap="modalPicTap"
+          @addVideo="addVideo"
+          @delVideo="delVideo"
+          @addCate="addCate"
+          @addGoodsTag="addGoodsTag"
+        ></basic-info>
 
-          <el-col :span="24">
-            <el-form-item label="单位：" prop="unit_name">
-              <el-input class="content_width" v-model="formValidate.unit_name" placeholder="请输入单位" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="商品轮播图：" prop="slider_image">
-              <div class="acea-row">
-                <div
-                  class="pictrue"
-                  v-for="(item, index) in formValidate.slider_image"
-                  :key="index"
-                  draggable="true"
-                  @dragstart="handleDragStart($event, item)"
-                  @dragover.prevent="handleDragOver($event, item)"
-                  @dragenter="handleDragEnter($event, item)"
-                  @dragend="handleDragEnd($event, item)"
-                >
-                  <img v-lazy="item" />
-                  <i class="el-icon-error btndel" v-db-click @click="handleRemove(index)"></i>
-                </div>
-                <div
-                  v-if="formValidate.slider_image.length < 10"
-                  class="upLoad acea-row row-center-wrapper"
-                  v-db-click
-                  @click="modalPicTap('duo')"
-                >
-                  <i class="el-icon-picture-outline" style="font-size: 24px"></i>
-                </div>
-                <el-input v-model="formValidate.slider_image[0]" style="display: none"></el-input>
-              </div>
-
-              <div class="titTip">建议尺寸：800*800，可拖拽改变图片顺序，默认首张图为主图，最多上传10张</div>
-
-              <!-- <div class="tips">(最多10张<br />750*750)</div> -->
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="添加视频：">
-              <el-switch :active-value="1" :inactive-value="0" v-model="formValidate.video_open" size="large">
-                <span slot="open">开启</span>
-                <span slot="close">关闭</span>
-              </el-switch>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.video_open && !formValidate.video_link">
-            <el-form-item label="视频类型：">
-              <el-radio-group v-model="seletVideo" @input="changeVideo">
-                <el-radio :label="0" class="radio">上传视频</el-radio>
-                <el-radio :label="1">视频链接</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.video_open" id="selectvideo">
-            <el-form-item label="" prop="video_link">
-              <el-input
-                v-if="seletVideo == 1 && !formValidate.video_link"
-                class="content_width"
-                v-model="videoLink"
-                placeholder="请输入视频链接"
-              />
-              <input type="file" ref="refid" @change="zh_uploadFile_change" style="display: none" />
-              <div
-                v-if="seletVideo == 0 && (upload_type !== '1' || videoLink) && !formValidate.video_link"
-                class="ml10 videbox"
-                v-db-click
-                @click="zh_uploadFile"
-              >
-                +
-              </div>
-              <el-button
-                v-if="seletVideo == 1 && (upload_type !== '1' || videoLink) && !formValidate.video_link"
-                type="primary"
-                class="ml10"
-                v-db-click
-                @click="zh_uploadFile"
-                >确认添加</el-button
-              >
-              <el-upload
-                v-if="upload_type === '1' && !videoLink && !formValidate.video_link"
-                :show-file-list="false"
-                :action="fileUrl2"
-                :before-upload="videoSaveToUrl"
-                :data="uploadData"
-                :headers="header"
-                :multiple="false"
-                style="display: inline-block"
-                accept=".mp4"
-              >
-                <div v-if="seletVideo === 0 && !formValidate.video_link" class="videbox">+</div>
-              </el-upload>
-              <div class="box-video-style" v-if="formValidate.video_link">
-                <video style="width: 100%; height: 100%" :src="formValidate.video_link" controls="controls">
-                  您的浏览器不支持 video 标签。
-                </video>
-                <div class="mark"></div>
-                <i class="el-icon-delete iconv" v-db-click @click="delVideo"></i>
-              </div>
-              <Progress class="progress" :percent="progress" :stroke-width="5" v-if="upload.videoIng || videoIng" />
-              <div class="titTip">建议时长：9～30秒，视频宽高比16:9</div>
-            </el-form-item>
-          </el-col>
-          <el-col v-bind="grid">
-            <el-form-item label="商品状态：">
-              <el-radio-group v-model="formValidate.is_show">
-                <el-radio :label="1" class="radio">上架</el-radio>
-                <el-radio :label="0">下架</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-
-          <!-- <el-col :span="24">
-                        <el-form-item label="商品标签：" prop="label_id">
-                            <el-select v-model="formValidate.label_id" multiple v-width="'50%'">
-                                <el-option v-for="item in dataLabel" :value="item.id" :key="item.id">{{ item.label_name }}</el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col> -->
-        </el-row>
         <!-- 规格库存-->
-        <el-row :gutter="24" v-show="currentTab === '2'">
-          <el-col :span="24">
-            <el-form-item label="商品规格：" props="spec_type">
-              <el-radio-group v-model="formValidate.spec_type" @input="changeSpec">
-                <el-radio :label="0" class="radio">单规格</el-radio>
-                <el-radio :label="1">多规格</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <!-- 多规格添加-->
-          <el-col :span="24" v-if="formValidate.spec_type === 1" class="noForm">
-            <el-form-item label="选择规格：" prop="">
-              <div class="acea-row row-middle">
-                <el-select v-model="formValidate.selectRule" class="content_width mr14">
-                  <el-option
-                    v-for="(item, index) in ruleList"
-                    :value="item.rule_name"
-                    :key="index"
-                    :label="item.rule_name"
-                  ></el-option>
-                </el-select>
-                <el-button type="primary" v-db-click @click="confirm">确认</el-button>
-                <el-button v-db-click @click="addRule">添加规格模板</el-button>
-              </div>
-            </el-form-item>
+        <spec-stock
+          ref="specStock"
+          v-show="currentTab === '2'"
+          :formValidate="formValidate"
+          :ruleList="ruleList"
+          :attrs="attrs"
+          :manyFormValidate="manyFormValidate"
+          :oneFormValidate="oneFormValidate"
+          :tableKey="tableKey"
+          :oneFormBatch="oneFormBatch"
+          :formDynamic="formDynamic"
+          :canSel="canSel"
+          @changeSpec="changeSpec"
+          @confirm="confirm"
+          @onMoveSpec="onMoveSpec"
+          @changeCurrentIndex="changeCurrentIndex"
+          @handleRemoveRole="handleRemoveRole"
+          @attrChangeValue="attrChangeValue"
+          @handleFocus="handleFocus"
+          @addPic="addPic"
+          @handleRemove2="handleRemove2"
+          @attrDetailChangeValue="attrDetailChangeValue"
+          @handleBlur="handleBlur"
+          @handleSelImg="handleSelImg"
+          @handleRemoveImg="handleRemoveImg"
+          @handleShowPop="handleShowPop"
+          @createAttr="createAttr"
+          @handleAddRole="handleAddRole"
+          @handleSaveAsTemplate="handleSaveAsTemplate"
+          @batchAdd="batchAdd"
+          @batchDel="batchDel"
+          @modalPicTap="modalPicTap"
+          @changeDefaultSelect="changeDefaultSelect"
+          @changeDefaultShow="changeDefaultShow"
+          @addGoodsCoupon="addGoodsCoupon"
+          @see="see"
+          @addVirtual="addVirtual"
+        ></spec-stock>
 
-            <el-form-item v-if="attrs.length !== 0">
-              <draggable
-                class="dragArea list-group"
-                :list="attrs"
-                group="peoples"
-                handle=".move-icon"
-                :move="checkMove"
-                @end="end"
-              >
-                <div v-for="(item, index) in attrs" :key="index" class="acea-row row-middle mb10">
-                  <div class="move-icon">
-                    <span class="iconfont icondrag2"></span>
-                  </div>
-                  <div style="width: 90%" :class="moveIndex === index ? 'borderStyle' : ''">
-                    <div class="acea-row row-middle">
-                      <span class="mr5">{{ item.value }}</span>
-                      <i size="14" class="curs el-icon-error" v-db-click @click="handleRemoveRole(index)" />
-                    </div>
-                    <div class="rulesBox">
-                      <draggable class="item" :list="item.detail" handle=".drag">
-                        <el-tag
-                          closable
-                          color="primary"
-                          v-for="(j, indexn) in item.detail"
-                          :key="indexn"
-                          class="mr20 drag"
-                          @close="handleRemove2(item.detail, indexn)"
-                          >{{ j }}</el-tag
-                        >
-                      </draggable>
-                      <el-input
-                        placeholder="请输入属性名称"
-                        v-model="item.detail.attrsVal"
-                        @keyup.enter.native="createAttr(item.detail.attrsVal, index)"
-                        style="width: 190px"
-                      >
-                        <template slot="append"
-                          ><el-button type="primary" v-db-click @click="createAttr(item.detail.attrsVal, index)"
-                            >添加</el-button
-                          ></template
-                        >
-                      </el-input>
-                    </div>
-                  </div>
-                </div>
-              </draggable>
-              <!-- <div  v-for="(item, index) in attrs" :key="index">
-                                    <div class="acea-row row-middle"><span class="mr5">{{item.value}}</span><Icon type="ios-close-circle" size="14" class="curs" v-db-click @click="handleRemoveRole(index)"/></div>
-                                    <div class="rulesBox">
-                                        <el-tag type="dot" closable color="primary" v-for="(j, indexn) in item.detail" :key="indexn" :name="j" class="mr20" @on-close="handleRemove2(item.detail,indexn)">{{j}}</el-tag>
-                                        <el-input search enter-button="添加" placeholder="请输入属性名称" v-model="item.detail.attrsVal" @on-search="createAttr(item.detail.attrsVal,index)" style="width: 150px"/>
-                                    </div>
-                                </div> -->
-            </el-form-item>
-            <!-- <el-col :span="24" v-if="createBnt"> -->
-            <el-form-item v-if="createBnt">
-              <el-button type="primary" v-db-click @click="addBtn">添加新规格</el-button>
-              <el-button type="success" v-db-click @click="generate(1)">立即生成</el-button>
-            </el-form-item>
-            <!-- </el-col> -->
-            <el-col :span="24" v-if="showIput">
-              <el-col :xl="6" :lg="9" :md="10" :sm="24" :xs="24">
-                <el-form-item label="规格：">
-                  <el-input placeholder="请输入规格" v-model="formDynamic.attrsName" />
-                </el-form-item>
-              </el-col>
-              <el-col :xl="6" :lg="9" :md="10" :sm="24" :xs="24">
-                <el-form-item label="规格值：">
-                  <el-input v-model="formDynamic.attrsVal" placeholder="请输入规格值" />
-                </el-form-item>
-              </el-col>
-              <el-col :xl="6" :lg="5" :md="10" :sm="24" :xs="24">
-                <div class="df-n-warp">
-                  <el-button type="primary" v-db-click @click="createAttrName">确定</el-button>
-                  <el-button v-db-click @click="offAttrName">取消</el-button>
-                </div>
-              </el-col>
-            </el-col>
-            <!-- 多规格设置-->
-            <el-col
-              :xl="24"
-              :lg="24"
-              :md="24"
-              :sm="24"
-              :xs="24"
-              v-if="manyFormValidate.length && formValidate.header.length !== 0 && attrs.length !== 0"
-            >
-              <!-- 批量设置-->
-              <el-col :span="24" v-if="[0, 3].includes(formValidate.virtual_type)">
-                <el-form-item label="批量设置：" class="labeltop">
-                  <el-table :data="oneFormBatch" border>
-                    <el-table-column
-                      :label="item.title"
-                      :min-width="item.minWidth"
-                      v-for="(item, index) in formValidate.is_virtual ? columns3 : columns2"
-                      :key="index"
-                    >
-                      <template slot-scope="scope">
-                        <template v-if="item.key">
-                          <div>
-                            <span>{{ scope.row[item.key] }}</span>
-                          </div>
-                        </template>
-                        <template v-else-if="item.slot === 'pic'">
-                          <div
-                            class="acea-row row-middle row-center-wrapper"
-                            v-db-click
-                            @click="modalPicTap('dan', 'duopi', scope.$index)"
-                          >
-                            <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
-                              <img v-lazy="oneFormBatch[0].pic" />
-                            </div>
-                            <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
-                              <i class="el-icon-picture-outline" style="font-size: 24px"></i>
-                            </div>
-                          </div>
-                        </template>
-                        <template v-else-if="item.slot === 'price'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="oneFormBatch[0].price"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'cost'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="oneFormBatch[0].cost"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'ot_price'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="oneFormBatch[0].ot_price"
-                            :min="0"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'stock'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="oneFormBatch[0].stock"
-                            :disabled="formValidate.virtual_type == 1"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'fictitious'">
-                          <el-button
-                            v-if="!scope.row.coupon_id && formValidate.virtual_type == 2"
-                            v-db-click
-                            @click="addGoodsCoupon(scope.$index, 'oneFormBatch')"
-                            >添加优惠券</el-button
-                          >
-                          <span
-                            class="see"
-                            v-else-if="formValidate.virtual_type == 2 && scope.row.coupon_id"
-                            v-db-click
-                            @click="see(scope.row, 'manyFormValidate', scope.$index)"
-                            >{{ scope.row.coupon_name }}</span
-                          >
-                          <el-button
-                            v-else-if="!scope.row.virtual_list.length && formValidate.virtual_type == 1"
-                            v-db-click
-                            @click="addVirtual(scope.$index, 'oneFormBatch')"
-                            >添加卡密</el-button
-                          >
-                          <span
-                            class="see"
-                            v-else-if="scope.row.virtual_list.length && formValidate.virtual_type == 1"
-                            v-db-click
-                            @click="see(scope.row, 'oneFormBatch', scope.$index)"
-                            >已设置</span
-                          >
-                        </template>
-                        <template v-else-if="item.slot === 'bar_code'">
-                          <el-input v-model="oneFormBatch[0].bar_code"></el-input>
-                        </template>
-                        <template v-else-if="item.slot === 'weight'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="oneFormBatch[0].weight"
-                            :step="0.1"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'volume'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="oneFormBatch[0].volume"
-                            :step="0.1"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'action'">
-                          <a v-db-click @click="batchAdd">批量添加</a>
-                          <el-divider direction="vertical"></el-divider>
-                          <a v-db-click @click="batchDel">清空</a>
-                        </template>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </el-form-item>
-              </el-col>
-              <!-- 多规格表格-->
-              <el-col :span="24">
-                <el-form-item label="商品属性：" class="labeltop">
-                  <el-table :data="manyFormValidate" border>
-                    <el-table-column
-                      :label="item.title"
-                      :min-width="item.minWidth"
-                      v-for="(item, index) in formValidate.header"
-                      :key="index"
-                    >
-                      <template slot-scope="scope">
-                        <template v-if="item.key">
-                          <div>
-                            <span>{{ scope.row[item.key] }}</span>
-                          </div>
-                        </template>
-                        <template v-else-if="item.slot === 'pic'">
-                          <div
-                            class="acea-row row-middle row-center-wrapper"
-                            v-db-click
-                            @click="modalPicTap('dan', 'duoTable', scope.$index)"
-                          >
-                            <div class="pictrue pictrueTab" v-if="manyFormValidate[scope.$index].pic">
-                              <img v-lazy="manyFormValidate[scope.$index].pic" />
-                            </div>
-                            <div class="upLoad pictrueTab acea-row row-center-wrapper" v-else>
-                              <i class="el-icon-picture-outline" style="font-size: 24px"></i>
-                            </div>
-                          </div>
-                        </template>
-                        <template v-else-if="item.slot === 'price'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="manyFormValidate[scope.$index].price"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'cost'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="manyFormValidate[scope.$index].cost"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'ot_price'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="manyFormValidate[scope.$index].ot_price"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'stock'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="manyFormValidate[scope.$index].stock"
-                            :disabled="formValidate.virtual_type == 1"
-                            :min="0"
-                            :max="9999999999"
-                            :precision="0"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'bar_code'">
-                          <el-input v-model="manyFormValidate[scope.$index].bar_code"></el-input>
-                        </template>
-                        <template v-else-if="item.slot === 'weight'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="manyFormValidate[scope.$index].weight"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'volume'">
-                          <el-input-number
-                            :controls="false"
-                            v-model="manyFormValidate[scope.$index].volume"
-                            :min="0"
-                            :max="9999999999"
-                            class="priceBox"
-                          ></el-input-number>
-                        </template>
-                        <template v-else-if="item.slot === 'fictitious'">
-                          <el-button
-                            v-if="!scope.row.coupon_id && formValidate.virtual_type == 2"
-                            v-db-click
-                            @click="addGoodsCoupon(scope.$index, 'manyFormValidate')"
-                            >添加优惠券</el-button
-                          >
-                          <span
-                            class="see"
-                            v-else-if="scope.row.coupon_id && formValidate.virtual_type == 2"
-                            v-db-click
-                            @click="see(scope.row, 'manyFormValidate', scope.$index)"
-                            >{{ scope.row.coupon_name }}</span
-                          >
-                          <el-button
-                            v-else-if="!scope.row.virtual_list && !scope.row.stock && formValidate.virtual_type == 1"
-                            v-db-click
-                            @click="addVirtual(scope.$index, 'manyFormValidate')"
-                            >添加卡密</el-button
-                          >
-                          <span
-                            class="see"
-                            v-else-if="
-                              (scope.row.virtual_list.length || scope.row.stock) && formValidate.virtual_type == 1
-                            "
-                            v-db-click
-                            @click="see(scope.row, 'manyFormValidate', scope.$index)"
-                            >已设置</span
-                          >
-                        </template>
-                        <template v-else-if="item.slot === 'action'">
-                          <a v-db-click @click="delAttrTable(scope.$index)">删除</a>
-                        </template>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </el-form-item>
-              </el-col>
-            </el-col>
-          </el-col>
-          <!-- 单规格表格-->
-          <div v-if="formValidate.spec_type === 0">
-            <el-col :span="24">
-              <el-form-item label="图片：">
-                <div class="pictrueBox" v-db-click @click="modalPicTap('dan', 'danTable', 0)">
-                  <div class="pictrue" v-if="oneFormValidate[0].pic">
-                    <img v-lazy="oneFormValidate[0].pic" />
-                    <el-input v-model="oneFormValidate[0].pic" style="display: none"></el-input>
-                  </div>
-                  <div class="upLoad acea-row row-center-wrapper" v-else>
-                    <el-input v-model="oneFormValidate[0].pic" style="display: none"></el-input>
-                    <i class="el-icon-picture-outline" style="font-size: 24px"></i>
-                  </div>
-                </div>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="售价：">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].price"
-                  :min="0"
-                  :precision="2"
-                  :max="9999999999"
-                  class="content_width"
-                  :active-change="false"
-                ></el-input-number>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="成本价：">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].cost"
-                  :min="0"
-                  :max="9999999999"
-                  :precision="2"
-                  :active-change="false"
-                  class="content_width"
-                ></el-input-number>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="原价：">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].ot_price"
-                  :min="0"
-                  :max="9999999999"
-                  :precision="2"
-                  :active-change="false"
-                  class="content_width"
-                ></el-input-number>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="库存：">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].stock"
-                  :min="0"
-                  :max="9999999999"
-                  :disabled="formValidate.virtual_type == 1"
-                  :precision="0"
-                  class="content_width"
-                ></el-input-number>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="商品编号：">
-                <el-input v-model.trim="oneFormValidate[0].bar_code" class="content_width"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24" v-if="formValidate.virtual_type == 0">
-              <el-form-item label="重量(KG)：">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].weight"
-                  :min="0"
-                  :max="9999999999"
-                  class="content_width"
-                ></el-input-number>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="体积(m³)：" v-if="formValidate.virtual_type == 0">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].volume"
-                  :min="0"
-                  :max="9999999999"
-                  class="content_width"
-                ></el-input-number>
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="24">
-              <el-form-item label="虚拟商品：" v-if="formValidate.virtual_type == 1 || formValidate.virtual_type == 2">
-                <el-button
-                  v-if="!oneFormValidate[0].coupon_id && formValidate.virtual_type == 2"
-                  v-db-click
-                  @click="addGoodsCoupon(0, 'oneFormValidate')"
-                  >添加优惠券</el-button
-                >
-                <span
-                  class="see"
-                  v-else-if="oneFormValidate[0].coupon_id && formValidate.virtual_type == 2"
-                  v-db-click
-                  @click="see(oneFormValidate[0], 'oneFormValidate', 0)"
-                  >{{ oneFormValidate[0].coupon_name }}</span
-                >
-                <el-button
-                  v-if="
-                    !oneFormValidate[0].virtual_list.length &&
-                    !oneFormValidate[0].stock &&
-                    formValidate.virtual_type == 1
-                  "
-                  v-db-click
-                  @click="addVirtual(0, 'oneFormValidate')"
-                  >添加卡密</el-button
-                >
-                <span
-                  class="see"
-                  v-else-if="
-                    (oneFormValidate[0].virtual_list.length || oneFormValidate[0].stock > 0) &&
-                    formValidate.virtual_type == 1
-                  "
-                  v-db-click
-                  @click="see(oneFormValidate[0], 'oneFormValidate', 0)"
-                  >已设置</span
-                >
-              </el-form-item>
-            </el-col>
-          </div>
-        </el-row>
         <!-- 商品详情-->
-        <el-row v-show="currentTab === '3'">
-          <el-col :span="16">
-            <el-form-item label="商品详情：">
-              <WangEditor style="width: 100%" :content="contents" @editorContent="getEditorContent"></WangEditor>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6" style="width: 33%">
-            <div class="ifam">
-              <div class="content" v-html="content"></div>
-            </div>
-          </el-col>
-        </el-row>
+        <product-detail
+          v-show="currentTab === '3'"
+          :contents="contents"
+          :content="content"
+          @getEditorContent="getEditorContent"
+        ></product-detail>
 
         <!-- 物流设置-->
-        <el-row v-show="headTab.length === 6 ? currentTab === '4' : false">
-          <el-col :span="24">
-            <el-form-item label="物流方式：" prop="logistics">
-              <el-checkbox-group v-model="formValidate.logistics" @change="logisticsBtn">
-                <el-checkbox label="1">快递</el-checkbox>
-                <el-checkbox label="2">到店</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="运费设置：">
-              <el-radio-group v-model="formValidate.freight">
-                <!-- <el-radio :label="1">包邮</el-radio> -->
-                <el-radio :label="2">固定邮费</el-radio>
-                <el-radio :label="3">运费模板</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.freight != 3 && formValidate.freight != 1">
-            <el-form-item label="" :prop="formValidate.freight != 1 ? 'freight' : ''">
-              <div class="acea-row">
-                <el-input-number
-                  :controls="false"
-                  :min="0"
-                  v-model="formValidate.postage"
-                  placeholder="请输入金额"
-                  class="content_width maxW"
-                />
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.freight == 3">
-            <el-form-item label="" prop="temp_id">
-              <div class="acea-row">
-                <el-select
-                  v-model="formValidate.temp_id"
-                  clearable
-                  placeholder="请选择运费模板"
-                  class="content_width maxW"
-                >
-                  <el-option
-                    v-for="(item, index) in templateList"
-                    :value="item.id"
-                    :key="index"
-                    :label="item.name"
-                  ></el-option>
-                </el-select>
-                <span class="addfont" v-db-click @click="addTemp">新增运费模板</span>
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <logistics-setting
+          v-show="headTab.length === 7 ? currentTab === '4' : false"
+          :formValidate="formValidate"
+          :templateList="templateList"
+          @logisticsBtn="logisticsBtn"
+          @addTemp="addTemp"
+        ></logistics-setting>
+
+        <!-- 会员价/佣金 -->
+        <price-commission
+          v-show="headTab.length === 7 ? currentTab === '5' : currentTab === '4'"
+          :formValidate="formValidate"
+          :oneFormValidate="oneFormValidate"
+          :manyFormValidate="manyFormValidate"
+          :columnsInstall="columnsInstall"
+          :columnsInstal2="columnsInstal2"
+          :manyBrokerage.sync="manyBrokerage"
+          :manyBrokerageTwo.sync="manyBrokerageTwo"
+          :manyVipPrice.sync="manyVipPrice"
+          :manyVipDiscount.sync="manyVipDiscount"
+          @checkAllGroupChange="checkAllGroupChange"
+          @changeVipPrice="changeVipPrice"
+          @changeDiscount="changeDiscount"
+          @brokerageSetUp="brokerageSetUp"
+        ></price-commission>
+
         <!-- 营销设置-->
-        <el-row :gutter="24" v-show="headTab.length === 6 ? currentTab === '5' : currentTab === '4'">
-          <el-col :span="24">
-            <el-form-item label="已售数量：">
-              <el-input-number
-                :controls="false"
-                :min="0"
-                :max="9999999999"
-                v-model="formValidate.ficti"
-                placeholder="请输入虚拟销量"
-                class="content_width"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="排序：">
-              <el-input-number
-                :controls="false"
-                :min="0"
-                :max="9999999999"
-                v-model="formValidate.sort"
-                placeholder="请输入排序"
-                class="content_width"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <div class="line"></div>
-          </el-col>
+        <marketing-setting
+          v-show="headTab.length === 7 ? currentTab === '6' : currentTab === '5'"
+          :formValidate="formValidate"
+          :couponName="couponName"
+          :dataLabel="dataLabel"
+          :activity="activity"
+          @handleClose="handleClose"
+          @addCoupon="addCoupon"
+          @openLabel="openLabel"
+          @closeLabel="closeLabel"
+          @addLabel="addLabel"
+          @onchangeTime="onchangeTime"
+          @handleRemoveRecommend="handleRemoveRecommend"
+          @changeGoods="changeGoods"
+        ></marketing-setting>
 
-          <el-col :span="24">
-            <el-form-item label="购买送积分：" prop="give_integral">
-              <el-input-number
-                :controls="false"
-                v-model="formValidate.give_integral"
-                :min="0"
-                :max="9999999999"
-                placeholder="请输入积分"
-                class="content_width"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col v-bind="grid3">
-            <el-form-item label="购买送优惠券：">
-              <div v-if="couponName.length" class="mb20">
-                <el-tag closable v-for="(item, index) in couponName" :key="index" @close="handleClose(item)">{{
-                  item.title
-                }}</el-tag>
-              </div>
-              <el-button type="primary" v-db-click @click="addCoupon">添加优惠券</el-button>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="关联用户标签：" prop="label_id">
-              <div style="display: flex">
-                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
-                  <div style="width: 90%">
-                    <div v-if="dataLabel.length">
-                      <el-tag closable v-for="(item, index) in dataLabel" @close="closeLabel(item)" :key="index">{{
-                        item.label_name
-                      }}</el-tag>
-                    </div>
-                    <span class="span" v-else>选择用户关联标签</span>
-                  </div>
-                  <div class="iconfont iconxiayi"></div>
-                </div>
-                <span class="addfont" v-db-click @click="addLabel">新增标签</span>
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <div class="line"></div>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="付费会员专属：">
-              <el-switch :active-value="1" :inactive-value="0" v-model="formValidate.vip_product" size="large">
-                <span slot="open">开启</span>
-                <span slot="close">关闭</span>
-              </el-switch>
-              <div class="titTip">开启后仅付费会员可以看见并购买此商品</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="单独设置：">
-              <el-checkbox-group v-model="formValidate.is_sub" @change="checkAllGroupChange">
-                <el-checkbox :label="1">佣金设置（数字即返佣金额）</el-checkbox>
-                <el-checkbox :label="0">付费会员价</el-checkbox>
-              </el-checkbox-group>
-              <!-- <el-radio-group v-model="formValidate.is_sub">
-                                <el-radio :label="1" class="radio">佣金设置</el-radio>
-                                <el-radio :label="0">会员价</el-radio>
-                            </el-radio-group> -->
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.is_sub.length">
-            <!--单规格返佣-->
-            <el-form-item label="商品属性：" v-if="formValidate.spec_type === 0">
-              <el-table :data="oneFormValidate" border>
-                <el-table-column
-                  :label="item.title"
-                  :min-width="item.minWidth"
-                  v-for="(item, index) in columnsInstall"
-                  :key="index"
-                >
-                  <template slot-scope="scope">
-                    <template v-if="item.key">
-                      <div>
-                        <span>{{ scope.row[item.key] }}</span>
-                      </div>
-                    </template>
-                    <template v-else-if="item.slot === 'pic'">
-                      <div class="pictrue pictrueTab">
-                        <img v-lazy="oneFormValidate[0].pic" />
-                      </div>
-                    </template>
-                    <template v-else-if="item.slot === 'price'">
-                      <span>{{ oneFormValidate[0].price }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'cost'">
-                      <span>{{ oneFormValidate[0].cost }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'ot_price'">
-                      <span>{{ oneFormValidate[0].ot_price }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'stock'">
-                      <span>{{ oneFormValidate[0].stock }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'bar_code'">
-                      <span>{{ oneFormValidate[0].bar_code }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'weight'">
-                      <span>{{ oneFormValidate[0].weight }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'fictitious'">
-                      <el-button
-                        v-if="!row.coupon_id && formValidate.virtual_type == 2"
-                        v-db-click
-                        @click="addGoodsCoupon(scope.$index, 'oneFormValidate')"
-                        >添加优惠券</el-button
-                      >
-                      <span
-                        class="see"
-                        v-else-if="row.coupon_id && formValidate.virtual_type == 2"
-                        v-db-click
-                        @click="see(row, 'manyFormValidate', scope.$index)"
-                        >{{ row.coupon_name }}</span
-                      >
-                      <el-button
-                        v-else-if="!row.virtual_list.length && !row.stock && formValidate.virtual_type == 1"
-                        v-db-click
-                        @click="addVirtual(scope.$index, 'oneFormValidate')"
-                        >添加卡密</el-button
-                      >
-                      <span
-                        class="see"
-                        v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
-                        v-db-click
-                        @click="see(row, 'oneFormValidate', scope.$index)"
-                        >已设置</span
-                      >
-                    </template>
-                    <template v-else-if="item.slot === 'brokerage'">
-                      <el-input-number
-                        :controls="false"
-                        v-model="oneFormValidate[0].brokerage"
-                        :min="0"
-                        :max="9999999999"
-                        class="priceBox"
-                      ></el-input-number>
-                    </template>
-                    <template v-else-if="item.slot === 'brokerage_two'">
-                      <el-input-number
-                        :controls="false"
-                        v-model="oneFormValidate[0].brokerage_two"
-                        :min="0"
-                        :max="9999999999"
-                        class="priceBox"
-                      ></el-input-number>
-                    </template>
-                    <template v-else-if="item.slot === 'vip_price'">
-                      <el-input-number
-                        :controls="false"
-                        v-model="oneFormValidate[0].vip_price"
-                        :min="0"
-                        :max="9999999999"
-                        class="priceBox"
-                      ></el-input-number>
-                    </template>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-form-item>
-            <!--多规格返佣-->
-            <el-form-item label="批量设置：" v-if="formValidate.spec_type === 1">
-              <span v-if="formValidate.is_sub.indexOf(1) > -1">
-                <span class="brokerage">一级返佣：</span
-                ><el-input
-                  type="number"
-                  :controls="false"
-                  placeholder="请输入一级返佣"
-                  class="columnsBox content_width"
-                  v-model="manyBrokerage"
-                >
-                </el-input>
-                <span class="brokerage">二级返佣：</span
-                ><el-input
-                  type="number"
-                  :controls="false"
-                  placeholder="请输入二级返佣"
-                  class="columnsBox content_width"
-                  v-model="manyBrokerageTwo"
-                ></el-input>
-              </span>
-              <span v-if="formValidate.is_sub.indexOf(0) > -1">
-                会员价：<el-input-number
-                  :controls="false"
-                  placeholder="请输入会员价"
-                  :min="0"
-                  :max="9999999999"
-                  class="columnsBox content_width"
-                  v-model="manyVipPrice"
-                ></el-input-number>
-              </span>
-              <el-button type="primary" v-db-click @click="brokerageSetUp">批量设置</el-button>
-              <!-- <template v-if="formValidate.is_sub">
-                                <el-input-number controls-position="right" v-width="'20%'" placeholder="请输入一级返佣" :min="0" class="columnsBox" v-model="manyBrokerage"></el-input-number>
-                                <el-input-number controls-position="right" v-width="'20%'" placeholder="请输入二级返佣" :min="0" class="columnsBox" v-model="manyBrokerageTwo"></el-input-number>
-                                <el-button type="primary" v-db-click @click="brokerageSetUp">批量设置</el-button>
-                            </template>
-                            <template v-else>
-                                <el-input-number controls-position="right" v-width="'20%'" placeholder="请输入会员价" :min="0" class="columnsBox" v-model="manyVipPrice"></el-input-number>
-                                <el-button type="primary" v-db-click @click="vipPriceSetUp">批量设置</el-button>
-                            </template> -->
-            </el-form-item>
-            <el-form-item label="商品属性：" v-if="formValidate.spec_type === 1 && manyFormValidate.length">
-              <el-table v-if="formValidate.is_sub" :data="manyFormValidate" border>
-                <el-table-column
-                  :label="item.title"
-                  :min-width="item.minWidth"
-                  v-for="(item, index) in columnsInstal2"
-                  :key="index"
-                >
-                  <template slot-scope="scope">
-                    <template v-if="item.key">
-                      <div>
-                        <span>{{ scope.row[item.key] }}</span>
-                      </div>
-                    </template>
-                    <template v-else-if="item.slot === 'pic'">
-                      <div class="pictrue pictrueTab">
-                        <img v-lazy="manyFormValidate[scope.$index].pic" />
-                      </div>
-                    </template>
-                    <template v-else-if="item.slot === 'price'">
-                      <span>{{ manyFormValidate[scope.$index].price }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'cost'">
-                      <span>{{ manyFormValidate[scope.$index].cost }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'ot_price'">
-                      <span>{{ manyFormValidate[scope.$index].ot_price }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'stock'">
-                      <span>{{ manyFormValidate[scope.$index].stock }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'bar_code'">
-                      <span>{{ manyFormValidate[scope.$index].bar_code }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'weight'">
-                      <span>{{ manyFormValidate[index].weight }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'fictitious'">
-                      <el-button
-                        v-if="!row.coupon_id && formValidate.virtual_type == 2"
-                        v-db-click
-                        @click="addGoodsCoupon(scope.$index, 'manyFormValidate')"
-                        >添加优惠券</el-button
-                      >
-                      <span
-                        class="see"
-                        v-else-if="row.coupon_id && formValidate.virtual_type == 2"
-                        v-db-click
-                        @click="see(row, 'manyFormValidate', scope.$index)"
-                        >{{ row.coupon_name }}</span
-                      >
-                      <el-button
-                        v-else-if="!row.virtual_list.length && !row.stock && formValidate.virtual_type == 1"
-                        v-db-click
-                        @click="addVirtual(scope.$index, 'manyFormValidate')"
-                        >添加卡密</el-button
-                      >
-                      <span
-                        class="see"
-                        v-else-if="(row.virtual_list.length || row.stock) && formValidate.virtual_type == 1"
-                        v-db-click
-                        @click="see(row, 'manyFormValidate', scope.$index)"
-                        >已设置</span
-                      >
-                    </template>
-                    <template v-else-if="item.slot === 'volume'">
-                      <span>{{ manyFormValidate[scope.$index].volume }}</span>
-                    </template>
-                    <template v-else-if="item.slot === 'brokerage'">
-                      <el-input-number
-                        :controls="false"
-                        v-model="manyFormValidate[scope.$index].brokerage"
-                        :min="0"
-                        :max="9999999999"
-                        class="priceBox"
-                      ></el-input-number>
-                    </template>
-                    <template v-else-if="item.slot === 'brokerage_two'">
-                      <el-input-number
-                        :controls="false"
-                        v-model="manyFormValidate[scope.$index].brokerage_two"
-                        :min="0"
-                        :max="9999999999"
-                        class="priceBox"
-                      ></el-input-number>
-                    </template>
-                    <template v-else-if="item.slot === 'vip_price'">
-                      <el-input-number
-                        :controls="false"
-                        v-model="manyFormValidate[scope.$index].vip_price"
-                        :min="0"
-                        :max="9999999999"
-                        class="priceBox"
-                      ></el-input-number>
-                    </template>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <div class="line"></div>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="起购数量：">
-              <el-input-number
-                :controls="false"
-                :min="1"
-                :max="9999999999"
-                :precision="0"
-                v-model="formValidate.min_qty"
-                placeholder="请输入起购数量"
-                class="content_width"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="是否限购：">
-              <el-switch :active-value="1" :inactive-value="0" v-model="formValidate.is_limit" size="large">
-                <span slot="open">开启</span>
-                <span slot="close">关闭</span>
-              </el-switch>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="限购类型：" v-if="formValidate.is_limit">
-              <el-radio-group v-model="formValidate.limit_type">
-                <el-radio :label="1">单次限购</el-radio>
-                <el-radio :label="2">单人限购</el-radio>
-              </el-radio-group>
-              <div class="titTip">单次限购是限制每次下单最多购买的数量，单人限购是限制一个用户总共可以购买的数量</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.is_limit">
-            <el-form-item label="限购数量：" prop="limit_num">
-              <div class="acea-row row-middle">
-                <el-input-number
-                  :controls="false"
-                  placeholder="请输入限购数量"
-                  :precision="0"
-                  :min="1"
-                  v-model="formValidate.limit_num"
-                  class="content_width"
-                />
-                <span class="ml10"> 件 </span>
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.virtual_type == 0 || formValidate.virtual_type == 3">
-            <el-form-item label="预售商品：">
-              <el-switch :active-value="1" :inactive-value="0" v-model="formValidate.presale" size="large">
-                <span slot="open">开启</span>
-                <span slot="close">关闭</span>
-              </el-switch>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.presale">
-            <el-form-item label="预售活动时间：" prop="presale_time">
-              <div class="acea-row row-middle">
-                <el-date-picker
-                  clearable
-                  :editable="false"
-                  type="datetimerange"
-                  format="yyyy-MM-dd HH:mm"
-                  value-format="yyyy-MM-dd HH:mm"
-                  range-separator="-"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  @change="onchangeTime"
-                  v-model="formValidate.presale_time"
-                ></el-date-picker>
-              </div>
-              <div class="titTip">设置活动开启结束时间，用户可以在设置时间内发起参与预售</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="formValidate.presale">
-            <el-form-item label="发货时间：" prop="presale_day">
-              <div class="acea-row row-middle">
-                <span class="mr10">预售活动结束后</span>
-                <el-input-number
-                  class="w-80"
-                  :controls="false"
-                  placeholder="请输入发货时间"
-                  :precision="0"
-                  :min="1"
-                  v-model="formValidate.presale_day"
-                />
-                <span class="ml10"> 天之内 </span>
-              </div>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="商品推荐：">
-              <el-checkbox-group v-model="formValidate.recommend">
-                <el-checkbox label="is_hot">热卖单品</el-checkbox>
-                <el-checkbox label="is_benefit">促销单品</el-checkbox>
-                <el-checkbox label="is_best">精品推荐</el-checkbox>
-                <el-checkbox label="is_new">首发新品</el-checkbox>
-                <el-checkbox label="is_good">优品推荐</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-          </el-col>
-          <el-col v-bind="grid3">
-            <el-form-item label="活动优先级：">
-              <div class="color-list acea-row row-middle">
-                <div
-                  class="color-item"
-                  :class="activity[color]"
-                  v-for="color in formValidate.activity"
-                  v-dragging="{
-                    item: color,
-                    list: formValidate.activity,
-                    group: 'color',
-                  }"
-                  :key="color"
-                >
-                  {{ color }}
-                </div>
-              </div>
-              <div class="titTip">可拖动按钮调整活动的优先展示顺序</div>
-            </el-form-item>
-          </el-col>
-          <el-col v-bind="grid3">
-            <el-form-item label="选择优品推荐商品：">
-              <div class="picBox">
-                <div class="pictrue" v-for="(item, index) in formValidate.recommend_list" :key="index">
-                  <img v-lazy="item.image" />
-                  <i class="el-icon-error btndel" v-db-click @click="handleRemoveRecommend(index)"></i>
-                </div>
-                <div class="upLoad acea-row row-center-wrapper" v-db-click @click="changeGoods">
-                  <i class="el-icon-picture-outline" style="font-size: 24px"></i>
-                </div>
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
         <!-- 其他设置-->
-        <el-row justify="space-between" v-show="headTab.length === 6 ? currentTab === '6' : currentTab === '5'">
-          <el-col :span="24">
-            <el-form-item label="商品关键字：">
-              <el-input class="content_width" v-model.trim="formValidate.keyword" placeholder="请输入商品关键字" />
-              <div class="titTip">PC端的SEO优化以及可以根据关键字进行商品搜索</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="商品简介：">
-              <el-input
-                class="content_width"
-                v-model.trim="formValidate.store_info"
-                type="textarea"
-                :rows="3"
-                placeholder="请输入商品简介"
-              />
-              <div class="titTip">公众号分享商品以及PC端SEO优化使用</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="商品口令：">
-              <el-input
-                v-model.trim="formValidate.command_word"
-                placeholder="请输入商品口令"
-                type="textarea"
-                :rows="3"
-                class="content_width"
-              />
-              <div class="titTip">将其他平台的商品口令填写保存，移动端进入商品详情的时候自动复制</div>
-            </el-form-item>
-          </el-col>
+        <other-setting
+          v-show="headTab.length === 7 ? currentTab === '7' : currentTab === '6'"
+          :formValidate="formValidate"
+          :customBtn.sync="customBtn"
+          :paramsType="paramsType"
+          :paramsTypeList="paramsTypeList"
+          :protectionList="protectionList"
+          :CustomList="CustomList"
+          @modalPicTap="modalPicTap"
+          @changeParamsType="changeParamsType"
+          @deleteRow="deleteRow"
+          @handleAddParams="handleAddParams"
+          @addProtection="addProtection"
+          @customMessBtn="customMessBtn"
+          @delcustom="delcustom"
+          @addcustom="addcustom"
+        ></other-setting>
 
-          <el-col :span="24">
-            <el-form-item label="商品推荐图：">
-              <div class="pictrueBox" v-db-click @click="modalPicTap('dan', 'recommend_image')">
-                <div class="pictrue" v-if="formValidate.recommend_image">
-                  <img v-lazy="formValidate.recommend_image" />
-                  <el-input v-model.trim="formValidate.recommend_image" style="display: none"></el-input>
-                </div>
-                <div class="upLoad acea-row row-center-wrapper" v-else>
-                  <el-input v-model.trim="formValidate.recommend_image" style="display: none"></el-input>
-                  <i class="el-icon-picture-outline" style="font-size: 24px"></i>
-                </div>
-                <div class="titTip">移动端分类样式3显示的长方形图片，建议比例：5:2</div>
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="自定义表单：">
-              <el-switch :active-value="1" :inactive-value="0" v-model="customBtn" @change="customMessBtn" size="large">
-                <span slot="open">开启</span>
-                <span slot="close">关闭</span>
-              </el-switch>
-              <div class="addCustom_content" v-if="customBtn">
-                <div v-for="(item, index) in formValidate.custom_form" :key="index" class="custom_box">
-                  <el-input
-                    v-model.trim="item.title"
-                    :placeholder="'表单标题' + (index + 1)"
-                    style="width: 150px; margin-right: 10px"
-                    :maxlength="10"
-                  />
-                  <el-select v-model="item.label" style="width: 200px; margin-left: 6px; margin-right: 10px">
-                    <el-option
-                      v-for="items in CustomList"
-                      :value="items.value"
-                      :key="items.value"
-                      :label="items.label"
-                    ></el-option>
-                  </el-select>
-                  <el-checkbox v-model="item.status">必填</el-checkbox>
-                  <div class="addfont" v-db-click @click="delcustom()">删除</div>
-                </div>
-              </div>
-              <div class="addCustomBox" v-show="customBtn">
-                <div class="btn" v-db-click @click="addcustom">+ 添加表单</div>
-                <div class="titTip">用户下单时需填写的信息，最多可设置10条，设置了自定义表单的商品不能加入购物车</div>
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
         <el-form-item>
           <el-button v-if="currentTab !== '1'" v-db-click @click="upTab">上一步</el-button>
           <el-button
-            type="primary"
             class="submission"
-            v-if="currentTab !== '6' && formValidate.virtual_type == 0"
+            v-if="currentTab !== '7' && formValidate.virtual_type == 0"
             v-db-click
             @click="downTab"
             >下一步</el-button
           >
           <el-button
-            type="primary"
             class="submission"
-            v-if="currentTab !== '5' && formValidate.virtual_type != 0"
+            v-if="currentTab !== '6' && formValidate.virtual_type != 0"
             v-db-click
             @click="downTab"
             >下一步</el-button
@@ -1329,15 +174,7 @@
             class="submission"
             v-db-click
             @click="handleSubmit('formValidate')"
-            v-if="($route.params.id || currentTab === '6') && formValidate.virtual_type == 0"
-            >保存</el-button
-          >
-          <el-button
-            type="primary"
-            class="submission"
-            v-db-click
-            @click="handleSubmit('formValidate')"
-            v-if="($route.params.id || currentTab === '5') && formValidate.virtual_type != 0"
+            v-if="$route.params.id || currentTab !== '1'"
             >保存</el-button
           >
         </el-form-item>
@@ -1423,7 +260,12 @@
         </span>
       </el-dialog>
     </el-card>
-    <freightTemplate :template="template" v-on:changeTemplate="changeTemplate" ref="templates"></freightTemplate>
+    <freightTemplate
+      :template="template"
+      v-on:changeTemplate="changeTemplate"
+      @addSuccess="productGetTemplate"
+      ref="templates"
+    ></freightTemplate>
     <add-attr ref="addattr" @getList="userSearchs"></add-attr>
     <coupon-list
       ref="couponTemplates"
@@ -1457,20 +299,35 @@
     >
       <userLabel ref="userLabel" @activeData="activeData" @close="labelClose"></userLabel>
     </el-dialog>
+    <!-- 商品标签 -->
+    <el-dialog
+      :visible.sync="tagShow"
+      title="请选择商品标签"
+      :show-close="true"
+      width="540px"
+      :close-on-click-modal="false"
+    >
+      <goodsLabel
+        ref="goodsLabel"
+        :defaultLabelList="labelList"
+        @activeLabel="activeLabel"
+        @close="labelClose"
+      ></goodsLabel>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import userLabel from '@/components/labelList';
+import useLabel from '@/components/goodsLabel/useLabel';
+import goodsLabel from '@/components/goodsLabel';
 import { mapState } from 'vuex';
-import vuedraggable from 'vuedraggable';
 import uploadPictures from '@/components/uploadPictures';
 import freightTemplate from '@/components/freightTemplate';
 import couponList from '@/components/couponList';
 import addAttr from '../productAttr/addAttr';
 import goodsList from '@/components/goodsList/index';
 import taoBao from './taoBao';
-import WangEditor from '@/components/wangEditor/index.vue';
 import { userLabelAddApi } from '@/api/user';
 import {
   productInfoApi,
@@ -1486,38 +343,69 @@ import {
   uploadType,
   importCard,
   productCreateApi,
+  getProductTypeConfig,
+  ruleAddApi,
+  paramListApi,
+  paramInfoApi,
+  productProtectionListApi,
+  productLabelUseListApi,
 } from '@/api/product';
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
-import { isFileUpload, isVideoUpload } from '@/utils';
+import { isFileUpload, isVideoUpload, arraysEqual } from '@/utils';
 import checkArray from '@/libs/permission';
+import {
+  GoodsTableHead,
+  VirtualTableHead,
+  VirtualTableHead2,
+  columns2,
+  columns3,
+  CustomList,
+  RuleValidate,
+} from './defaultData.js';
+import BasicInfo from './components/BasicInfo.vue';
+import SpecStock from './components/SpecStock.vue';
+import ProductDetail from './components/ProductDetail.vue';
+import LogisticsSetting from './components/LogisticsSetting.vue';
+import PriceCommission from './components/PriceCommission.vue';
+import MarketingSetting from './components/MarketingSetting.vue';
+import OtherSetting from './components/OtherSetting.vue';
+import { formatRichText } from '@/utils/editorImg';
 
 export default {
-  name: 'product_productAdd',
+  name: 'ProductAdd',
   components: {
-    // VueUeditorWrap,
     uploadPictures,
     freightTemplate,
     addAttr,
     couponList,
     taoBao,
-    draggable: vuedraggable,
     goodsList,
-    WangEditor,
     userLabel,
+    goodsLabel,
+    useLabel,
+    BasicInfo,
+    SpecStock,
+    ProductDetail,
+    LogisticsSetting,
+    PriceCommission,
+    MarketingSetting,
+    OtherSetting,
   },
   data() {
     return {
       labelShow: false,
+      tagShow: false,
       dataLabel: [],
       headTab: [
         { tit: '基础信息', name: '1' },
         { tit: '规格库存', name: '2' },
         { tit: '商品详情', name: '3' },
         { tit: '物流设置', name: '4' },
-        { tit: '营销设置', name: '5' },
-        { tit: '其他设置', name: '6' },
+        { tit: '会员价/佣金', name: '5' },
+        { tit: '营销设置', name: '6' },
+        { tit: '其他设置', name: '7' },
       ],
       virtual: [
         { tit: '普通商品', id: 0, tit2: '物流发货' },
@@ -1535,47 +423,33 @@ export default {
       upload_type: '', //视频上传类型 1 本地上传 2 3 4 OSS上传
       uploadData: {}, // 上传参数
       header: {},
-
       type: 0,
       modals: false,
       goods_modals: false,
       spinShow: false,
       openSubimit: false,
-      virtualData: '',
       virtualList: [
         {
           key: '',
           value: '',
         },
       ],
-      grid2: {
-        xl: 10,
-        lg: 12,
-        md: 12,
-        sm: 24,
-        xs: 24,
-      },
-      grid3: {
-        xl: 18,
-        lg: 18,
-        md: 20,
-        sm: 24,
-        xs: 24,
-      },
       // 批量设置表格data
       oneFormBatch: [
         {
           pic: '',
-          price: 0,
-          cost: 0,
-          ot_price: 0,
-          stock: 0,
+          price: void 0,
+          cost: void 0,
+          ot_price: void 0,
+          stock: void 0,
           bar_code: '',
-          weight: 0,
-          volume: 0,
+          bar_code_number: '',
+          weight: void 0,
+          volume: void 0,
           virtual_list: [],
         },
       ],
+
       // 规格数据
       formDynamic: {
         attrsName: '',
@@ -1586,108 +460,8 @@ export default {
       tabName: '',
       formDynamicNameData: [],
       isBtn: false,
-      columns2: [
-        {
-          title: '图片',
-          slot: 'pic',
-          align: 'center',
-          minWidth: 80,
-        },
-        {
-          title: '售价',
-          slot: 'price',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '成本价',
-          slot: 'cost',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '原价',
-          slot: 'ot_price',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '库存',
-          slot: 'stock',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '商品编号',
-          slot: 'bar_code',
-          align: 'center',
-          minWidth: 120,
-        },
-        {
-          title: '重量（KG）',
-          slot: 'weight',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '体积(m³)',
-          slot: 'volume',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          align: 'center',
-          minWidth: 120,
-        },
-      ],
-      columns3: [
-        {
-          title: '图片',
-          slot: 'pic',
-          align: 'center',
-          minWidth: 80,
-        },
-        {
-          title: '售价',
-          slot: 'price',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '成本价',
-          slot: 'cost',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '原价',
-          slot: 'ot_price',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '库存',
-          slot: 'stock',
-          align: 'center',
-          minWidth: 95,
-        },
-        {
-          title: '商品编号',
-          slot: 'bar_code',
-          align: 'center',
-          minWidth: 120,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          align: 'center',
-          minWidth: 120,
-        },
-      ],
+      columns2: columns2,
+      columns3: columns3,
       columns: [],
       columnsInstall: [],
       columnsInstal2: [],
@@ -1706,43 +480,9 @@ export default {
         xs: 8,
       },
       //自定义留言下拉选择
-      CustomList: [
-        {
-          value: 'text',
-          label: '文本框',
-        },
-        {
-          value: 'number',
-          label: '数字',
-        },
-        {
-          value: 'email',
-          label: '邮件',
-        },
-        {
-          value: 'data',
-          label: '日期',
-        },
-        {
-          value: 'time',
-          label: '时间',
-        },
-        {
-          value: 'id',
-          label: '身份证',
-        },
-        {
-          value: 'phone',
-          label: '手机号',
-        },
-        {
-          value: 'img',
-          label: '图片',
-        },
-      ],
-      customess: {
-        content: [],
-      }, //自定义留言内容
+      CustomList: CustomList,
+      //自定义留言内容
+      currentIndex: 0,
 
       formValidate: {
         disk_info: '', //卡密类型
@@ -1755,7 +495,6 @@ export default {
         is_limit: false,
         limit_type: 0,
         limit_num: 0,
-        video_open: false, //视频按钮是否显示
         vip_product: false, //付费会员专属开关
         custom_form: [], //自定义留言
         store_name: '',
@@ -1772,6 +511,8 @@ export default {
         give_integral: 0,
         sort: 0,
         is_show: 1,
+        is_gift: 0, // 开启送礼品
+        gift_price: 0,
         is_hot: 0,
         is_benefit: 0,
         is_best: 0,
@@ -1780,6 +521,7 @@ export default {
         is_postage: 0,
         is_sub: [],
         recommend_list: [],
+        params_list: [], //商品参数
         virtual_type: 0,
         // is_sub: 0,
         id: 0,
@@ -1797,6 +539,7 @@ export default {
             ot_price: 0,
             stock: 0,
             bar_code: '',
+            bar_code_number: '',
           },
         ],
         activity: ['默认', '秒杀', '砍价', '拼团'],
@@ -1806,6 +549,8 @@ export default {
         coupon_ids: [],
         command_word: '',
         min_qty: 1,
+        label_list: [],
+        protection_list: [],
       },
       ruleList: [],
       templateList: [],
@@ -1821,6 +566,7 @@ export default {
           ot_price: 0,
           stock: 0,
           bar_code: '',
+          bar_code_number: '',
           weight: 0,
           volume: 0,
           brokerage: 0,
@@ -1834,13 +580,6 @@ export default {
       imagesTable: '',
       currentTab: '1',
       isChoice: '',
-      grid: {
-        xl: 8,
-        lg: 8,
-        md: 12,
-        sm: 24,
-        xs: 24,
-      },
       loading: false,
       modalPic: false,
       addVirtualModel: false,
@@ -1849,66 +588,11 @@ export default {
       treeSelect: [],
       picTit: '',
       tableIndex: 0,
-      ruleValidate: {
-        store_name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
-        cate_id: [
-          {
-            required: true,
-            message: '请选择商品分类',
-            trigger: 'change',
-            type: 'array',
-            min: '1',
-          },
-        ],
-        unit_name: [{ required: true, message: '请输入单位', trigger: 'blur' }],
-        // image: [{ required: true, message: "请上传商品图", trigger: "change" }],
-        slider_image: [
-          {
-            required: true,
-            message: '请上传商品轮播图',
-            type: 'array',
-            trigger: 'change',
-          },
-        ],
-        spec_type: [{ required: true, message: '请选择商品规格', trigger: 'change' }],
-        is_virtual: [{ required: true, message: '请选择商品类型', trigger: 'change' }],
-        selectRule: [{ required: true, message: '请选择商品规格属性', trigger: 'change' }],
-        temp_id: [
-          {
-            required: true,
-            message: '请选择运费模板',
-            trigger: 'change',
-            type: 'number',
-          },
-        ],
-        presale_time: [
-          {
-            required: true,
-            type: 'array',
-            message: '请选择活动时间',
-            trigger: 'change',
-          },
-        ],
-        logistics: [
-          {
-            required: true,
-            type: 'array',
-            min: 1,
-            message: '请选择物流方式',
-            trigger: 'change',
-          },
-          {
-            type: 'array',
-            max: 2,
-            message: '请选择物流方式',
-            trigger: 'change',
-          },
-        ],
-        give_integral: [{ type: 'integer', message: '请输入整数' }],
-      },
-      manyBrokerage: 0,
-      manyBrokerageTwo: 0,
-      manyVipPrice: 0,
+      ruleValidate: RuleValidate,
+      manyBrokerage: undefined,
+      manyBrokerageTwo: undefined,
+      manyVipPrice: undefined,
+      manyVipDiscount: undefined,
       upload: {
         videoIng: false, // 是否显示进度条；
       },
@@ -1926,13 +610,13 @@ export default {
       couponNames: [],
       rakeBack: [
         {
-          title: '一级返佣',
+          title: '一级返佣(元)',
           slot: 'brokerage',
           align: 'center',
           width: 95,
         },
         {
-          title: '二级返佣',
+          title: '二级返佣(元)',
           slot: 'brokerage_two',
           align: 'center',
           width: 95,
@@ -1945,9 +629,27 @@ export default {
           align: 'center',
           width: 95,
         },
+        {
+          title: '会员折扣',
+          slot: 'vip_proportion',
+          align: 'center',
+          width: 95,
+        },
       ],
       columnsInstalM: [],
       moveIndex: '',
+      addValue: '',
+      visible: false,
+      typeConfig: [],
+      goodsType: [],
+      paramsTypeList: [],
+      paramsType: null,
+      canSel: true, // 规格图片添加判断
+      changeAttrValue: '', //修改的规格值
+      tableKey: 0,
+      protectionList: [], // 服务保障
+      labelList: [],
+      tileLabelList: [],
     };
   },
   computed: {
@@ -1962,6 +664,18 @@ export default {
       return this.isMobile ? undefined : '15px';
     },
   },
+  watch: {
+    typeConfig(val) {
+      if (val.length) {
+        // 对virtual中的id等于val中的id的
+        this.goodsType = this.virtual.filter((item) => {
+          return val.includes(item.id + '');
+        });
+      } else {
+        this.goodsType = this.virtual;
+      }
+    },
+  },
   beforeRouteUpdate(to, from, next) {
     this.bus.$emit('onTagsViewRefreshRouterView', this.$route.path);
     next();
@@ -1969,44 +683,59 @@ export default {
   created() {
     this.columns = this.columns2.slice(0, 8);
     this.getToken();
-
-    // this.columnsInstall = this.columns2.slice(0, 4).concat(this.columnsInstall);
-    // this.columnsInsta8 = this.columns2.slice(0, 4).concat(this.columnsInsta8);
   },
-  mounted() {
+  async mounted() {
     if (this.$route.params.id !== '0' && this.$route.params.id) {
-      this.getInfo();
+      await this.getInfo();
     } else if (this.$route.params.id === '0') {
+      this.getProductCache();
+    } else {
+      this.getproductLabelUseListApi();
+    }
+    if (this.$route.query.type) {
+      this.modals = true;
+      this.type = this.$route.query.type;
+    } else {
+      this.type = 0;
+    }
+    this.goodsCategory();
+    this.productGetRule();
+    this.productGetTemplate();
+    this.paramsGetTemplate();
+    this.uploadType();
+    this.productConfig();
+    this.watchActivity();
+    this.getProtectionList();
+  },
+  methods: {
+    getProductCache() {
       productCache()
         .then((res) => {
           let data = res.data.info;
+          this.getproductLabelUseListApi();
+
           if (!Array.isArray(data)) {
             let cate_id = data.cate_id.map(Number);
             let label_id = data.label_id.map(Number);
             this.attrs = data.items || [];
             let ids = [];
-            // let names = [];
             if (data.coupons) {
               data.coupons.map((item) => {
                 ids.push(item.id);
-                // names.push(item.title);
               });
               this.couponName = data.coupons;
             }
 
             this.formValidate = data;
-            // this.couponName = data.coupons;
-            // that.couponName = names;
             this.dataLabel = data.label_id;
             this.formValidate.coupon_ids = ids;
             this.updateIds = ids;
             this.updateName = data.coupons;
             this.formValidate.cate_id = cate_id;
-            // this.formValidate.label_id = label_id;
             this.oneFormValidate = data.attrs;
+            this.generateHeader(this.attrs);
             this.formValidate.logistics = data.logistics || ['1'];
             this.formValidate.header = [];
-            this.generate(0);
             this.manyFormValidate = data.attrs;
             this.spec_type = data.spec_type;
             this.formValidate.is_virtual = data.is_virtual;
@@ -2014,6 +743,9 @@ export default {
             if (this.formValidate.custom_form.length != 0) {
               this.customBtn = 1;
             }
+            this.attrs.map((item) => {
+              if (item.add_pic) this.canSel = false;
+            });
             this.virtualbtn(data.virtual_type, 1);
             if (data.spec_type === 0) {
               this.manyFormValidate = [];
@@ -2027,6 +759,7 @@ export default {
                   ot_price: 0,
                   stock: 0,
                   bar_code: '',
+                  bar_code_number: '',
                   weight: 0,
                   volume: 0,
                   brokerage: 0,
@@ -2044,21 +777,47 @@ export default {
         .catch((err) => {
           this.$message.error(err.msg);
         });
-    }
-    if (this.$route.query.type) {
-      this.modals = true;
-      this.type = this.$route.query.type;
-    } else {
-      this.type = 0;
-    }
-    this.goodsCategory();
-    this.productGetRule();
-    this.productGetTemplate();
-    // this.userLabel();
-    this.uploadType();
-    this.watchActivity();
-  },
-  methods: {
+    },
+    getProtectionList() {
+      productProtectionListApi({ page: 0, limit: 0, status: 1 }).then((res) => {
+        this.protectionList = res.data.list;
+      });
+    },
+    getproductLabelUseListApi() {
+      productLabelUseListApi().then((res) => {
+        // 合并数组中所有的list
+        this.tileLabelList = res.data.flatMap((item) => item.list);
+        let labelList = res.data;
+        if (this.formValidate.label_list.length) {
+          this.formValidate.label_list.map((el) => {
+            labelList.map((re) => {
+              re.list.map((label) => {
+                if (label.id === el) {
+                  label.active = true;
+                } else {
+                  label.active = false;
+                }
+              });
+            });
+          });
+        } else {
+          labelList.map((el) => {
+            el.list.map((label) => {
+              label.active = false;
+            });
+          });
+        }
+        this.labelList = labelList;
+      });
+    },
+    addProtection() {
+      this.$router.push({ path: this.$routeProStr + '/product/protection/list' });
+    },
+    productConfig() {
+      getProductTypeConfig().then((res) => {
+        this.typeConfig = res.data;
+      });
+    },
     beforeUpload(file) {
       return isFileUpload(file);
     },
@@ -2087,6 +846,7 @@ export default {
     // 类型选择/填入内容判断
     virtualbtn(index, type) {
       if (type != 1) {
+        if (this.$route.params.id) return this.$message.error('编辑商品不支持切换商品类型');
         this.formValidate.is_sub = [];
         let id = this.$route.params.id;
         if (id) {
@@ -2102,55 +862,49 @@ export default {
           }
         }
       }
+      // 定义基础商品和虚拟商品的标签页配置
+      const baseHeadTabs = [
+        { tit: '基础信息', name: '1' },
+        { tit: '规格库存', name: '2' },
+        { tit: '商品详情', name: '3' },
+        { tit: '物流设置', name: '4' },
+        { tit: '会员价/佣金', name: '5' },
+        { tit: '营销设置', name: '6' },
+        { tit: '其他设置', name: '7' },
+      ];
+      const virtualHeadTabs = [
+        { tit: '基础信息', name: '1' },
+        { tit: '规格库存', name: '2' },
+        { tit: '商品详情', name: '3' },
+        { tit: '会员价/佣金', name: '4' },
+        { tit: '营销设置', name: '5' },
+        { tit: '其他设置', name: '6' },
+      ];
+
       switch (index) {
-        case 0:
+        case 0: // 普通商品
           this.formValidate.virtual_type = 0;
           this.formValidate.is_virtual = 0;
-          this.headTab = [
-            { tit: '基础信息', name: '1' },
-            { tit: '规格库存', name: '2' },
-            { tit: '商品详情', name: '3' },
-            { tit: '物流设置', name: '4' },
-            { tit: '营销设置', name: '5' },
-            { tit: '其他设置', name: '6' },
-          ];
+          this.headTab = baseHeadTabs;
           break;
-        case 1:
+
+        case 1: // 卡密/网盘商品
           this.formValidate.virtual_type = 1;
           this.formValidate.postage = 0;
           this.formValidate.is_virtual = 1;
-          this.headTab = [
-            { tit: '基础信息', name: '1' },
-            { tit: '规格库存', name: '2' },
-            { tit: '商品详情', name: '3' },
-            // { tit: "物流设置", name: "4" },
-            { tit: '营销设置', name: '4' },
-            { tit: '其他设置', name: '5' },
-          ];
+          this.headTab = virtualHeadTabs;
           break;
-        case 2:
+
+        case 2: // 优惠券商品
           this.formValidate.virtual_type = 2;
           this.formValidate.is_virtual = 1;
-          this.headTab = [
-            { tit: '基础信息', name: '1' },
-            { tit: '规格库存', name: '2' },
-            { tit: '商品详情', name: '3' },
-            // { tit: "物流设置", name: "4" },
-            { tit: '营销设置', name: '4' },
-            { tit: '其他设置', name: '5' },
-          ];
+          this.headTab = virtualHeadTabs;
           break;
-        case 3:
+
+        case 3: // 虚拟商品
           this.formValidate.virtual_type = 3;
           this.formValidate.is_virtual = 1;
-          this.headTab = [
-            { tit: '基础信息', name: '1' },
-            { tit: '规格库存', name: '2' },
-            { tit: '商品详情', name: '3' },
-            // { tit: "物流设置", name: "4" },
-            { tit: '营销设置', name: '4' },
-            { tit: '其他设置', name: '5' },
-          ];
+          this.headTab = virtualHeadTabs;
           break;
       }
     },
@@ -2166,11 +920,16 @@ export default {
     addLabel() {
       this.$modalForm(userLabelAddApi(0)).then(() => this.userLabel());
     },
+    // 选择标签
+    addGoodsTag() {
+      this.tagShow = true;
+    },
     // 自定义留言 开启关闭
     customMessBtn(e) {
       if (!e) {
         this.formValidate.custom_form = [];
       }
+      this.customBtn = e;
     },
     // 自定义留言 新增表单
     addcustom() {
@@ -2242,13 +1001,20 @@ export default {
       this.formValidate.cate_id = cate_id;
       if (data.attr) {
         this.oneFormValidate = [data.attr];
+        this.oneFormValidate[0].vip_proportion = (
+          (this.oneFormValidate[0].vip_price / this.oneFormValidate[0].price) *
+          100
+        ).toFixed(2);
       }
+      this.getproductLabelUseListApi();
+
       this.formValidate.header = [];
-      this.generate(0, isCopy, data.attrs);
-      // this.manyFormValidate = data.attrs;
-      // this.$set(this, 'manyFormValidate', data.attrs);
       this.spec_type = data.spec_type;
+      this.formValidate.spec_type = this.spec_type;
       this.formValidate.is_virtual = data.is_virtual;
+      this.attrs.map((item) => {
+        if (item.add_pic) this.canSel = false;
+      });
       if (data.spec_type === 0) {
         this.manyFormValidate = [];
       } else {
@@ -2261,6 +1027,7 @@ export default {
             ot_price: 0,
             stock: 0,
             bar_code: '',
+            bar_code_number: '',
             weight: 0,
             volume: 0,
             brokerage: 0,
@@ -2270,7 +1037,14 @@ export default {
             coupon_id: 0,
           },
         ];
+
+        this.generateHeader(this.attrs);
+        this.manyFormValidate = [...this.oneFormBatch, ...data.attrs];
       }
+
+      setTimeout((e) => {
+        this.checkAllGroup(data.is_sub);
+      }, 1000);
       this.watchActivity();
     },
     //关闭淘宝弹窗并生成数据；
@@ -2291,27 +1065,29 @@ export default {
       this.checkAllGroup(data);
     },
     checkAllGroup(data) {
+      let endLength = this.attrs.length + 3;
       if (this.formValidate.spec_type === 0) {
-        if (data.indexOf(0) > -1) {
-          this.columnsInstall = this.columns2.slice(0, 4).concat(this.member);
-        } else if (data.indexOf(1) > -1) {
-          this.columnsInstall = this.columns2.slice(0, 4).concat(this.rakeBack);
-        } else {
-          this.columnsInstall = this.columns2.slice(0, 4);
-        }
         if (data.length === 2) {
-          this.columnsInstall = this.columns2.slice(0, 4).concat(this.rakeBack).concat(this.member);
+          this.columnsInstall = this.columns2.slice(0, endLength).concat(this.rakeBack).concat(this.member);
+        } else if (data.indexOf(0) > -1) {
+          this.columnsInstall = this.columns2.slice(0, endLength).concat(this.member);
+        } else if (data.indexOf(1) > -1) {
+          this.columnsInstall = this.columns2.slice(0, endLength).concat(this.rakeBack);
+        } else {
+          this.columnsInstall = this.columns2.slice(0, endLength);
         }
       } else {
-        if (data.indexOf(0) > -1) {
-          this.columnsInstal2 = this.columnsInstalM.slice(0, 4).concat(this.member);
-        } else if (data.indexOf(1) > -1) {
-          this.columnsInstal2 = this.columnsInstalM.slice(0, 4).concat(this.rakeBack);
-        } else {
-          this.columnsInstal2 = this.columnsInstalM.slice(0, 4);
-        }
         if (data.length === 2) {
-          this.columnsInstal2 = this.columnsInstalM.slice(0, 4).concat(this.rakeBack).concat(this.member);
+          this.columnsInstal2 = this.columnsInstalM
+            .slice(0, endLength + 1)
+            .concat(this.rakeBack)
+            .concat(this.member);
+        } else if (data.indexOf(0) > -1) {
+          this.columnsInstal2 = this.columnsInstalM.slice(0, endLength).concat(this.member);
+        } else if (data.indexOf(1) > -1) {
+          this.columnsInstal2 = this.columnsInstalM.slice(0, endLength).concat(this.rakeBack);
+        } else {
+          this.columnsInstal2 = this.columnsInstalM.slice(0, endLength);
         }
       }
     },
@@ -2339,6 +1115,16 @@ export default {
         this.$refs.goodsCoupon.isTemplate = true;
         this.$refs.goodsCoupon.tableList(3);
       }
+    },
+    // 修改分佣比例
+    changeDiscount(index, type = 'manyFormValidate') {
+      // 根据分佣比例 vip_proportion 修改会员价 保留2位小数
+      this[type][index].vip_price = (this[type][index].price * (this[type][index].vip_proportion / 100)).toFixed(2);
+    },
+    // 修改会员价
+    changeVipPrice(index, type = 'manyFormValidate') {
+      // 根据会员价计算出分佣比例
+      this[type][index].vip_proportion = ((this[type][index].vip_price / this[type][index].price) * 100).toFixed(2);
     },
     // 添加优惠券
     addGoodsCoupon(index, name) {
@@ -2399,19 +1185,25 @@ export default {
       this.stock = 0;
     },
     //对象数组去重；
-    unique(arr) {
-      const res = new Map();
-      return arr.filter((arr) => !res.has(arr.id) && res.set(arr.id, 1));
+    uniqueArray(arr) {
+      const seen = {};
+      return arr.filter((item) => {
+        const key = JSON.stringify(item); // 使用 JSON.stringify 生成唯一键
+        if (seen[key]) {
+          return false;
+        } else {
+          seen[key] = true;
+          return true;
+        }
+      });
     },
     // 获取优惠券id数据
     nameId(id, names) {
       this.formValidate.coupon_ids = id;
-      this.couponName = this.unique(names);
+      this.couponName = this.uniqueArray(names);
     },
     // 获取优惠券信息
     goodsCouponId(data) {
-      // this[this.tabName][this.tabIndex].coupon_id = data.id;
-      // this[this.tabName][this.tabIndex].coupon_name = data.title;
       this.$set(this[this.tabName][this.tabIndex], 'coupon_id', data.id);
       this.$set(this[this.tabName][this.tabIndex], 'coupon_name', data.title);
       this.$refs.goodsCoupon.isTemplate = false;
@@ -2424,21 +1216,21 @@ export default {
       this.updateIds = couponIds;
       this.updateName = this.couponName;
     },
-    // 运费模板
-    getList() {
-      this.productGetTemplate();
-    },
     // 添加运费模板
     addTemp() {
       this.$refs.templates.isTemplate = true;
     },
+    addVideo() {
+      this.$videoModal((e) => {
+        this.formValidate.video_link = e;
+      });
+    },
     // 删除视频；
     delVideo() {
-      let that = this;
-      that.$set(that.formValidate, 'video_link', '');
-      that.$set(that, 'progress', 0);
-      that.videoIng = false;
-      that.upload.videoIng = false;
+      this.$set(this.formValidate, 'video_link', '');
+      this.$set(this, 'progress', 0);
+      this.videoIng = false;
+      this.upload.videoIng = false;
     },
     zh_uploadFile() {
       if (this.seletVideo == 1) {
@@ -2449,10 +1241,9 @@ export default {
     },
     // 上传视频
     zh_uploadFile_change(evfile) {
-      let that = this;
       let suffix = evfile.target.files[0].name.substr(evfile.target.files[0].name.indexOf('.'));
       if (suffix.indexOf('.mp4') === -1) {
-        return that.$message.error('只能上传MP4文件');
+        return this.$message.error('只能上传MP4文件');
       }
       let types = {
         key: evfile.target.files[0].name,
@@ -2460,29 +1251,29 @@ export default {
       };
       productGetTempKeysApi(types)
         .then((res) => {
-          that.$videoCloud
+          this.$videoCloud
             .videoUpload({
               type: res.data.type,
               evfile: evfile,
               res: res,
               uploading(status, progress) {
-                that.upload.videoIng = status;
+                this.upload.videoIng = status;
                 if (res.status == 200) {
-                  that.progress = 100;
+                  this.progress = 100;
                 }
               },
             })
             .then((res) => {
-              that.formValidate.video_link = res.url;
-              that.$message.success('视频上传成功');
-              that.upload.videoIng = false;
+              this.formValidate.video_link = res.url;
+              this.$message.success('视频上传成功');
+              this.upload.videoIng = false;
             })
             .catch((res) => {
-              that.$message.error(res);
+              this.$message.error(res);
             });
         })
         .catch((res) => {
-          that.$message.error(res.msg);
+          this.$message.error(res.msg);
         });
     },
     // 上一页；
@@ -2503,35 +1294,42 @@ export default {
     },
     // 批量设置分佣；
     brokerageSetUp() {
-      let that = this;
-      if (that.formValidate.is_sub.indexOf(1) > -1) {
-        if (that.manyBrokerage <= 0 || that.manyBrokerageTwo <= 0) {
-          return that.$message.error('请填写返佣金额后进行批量添加');
+      if (this.formValidate.is_sub.indexOf(1) > -1) {
+        if (this.manyBrokerage <= 0 || this.manyBrokerageTwo <= 0) {
+          return this.$message.error('请填写返佣金额后进行批量添加');
         }
-      } else if (that.formValidate.is_sub.indexOf(0) > -1) {
-        if (that.manyVipPrice <= 0) {
-          return that.$message.error('请填写会员价后进行批量添加');
+      } else if (this.formValidate.is_sub.indexOf(0) > -1) {
+        if (this.manyVipPrice <= 0) {
+          return this.$message.error('请填写会员价后进行批量添加');
         }
       }
       if (this.formValidate.is_sub.length === 2) {
-        if (that.manyBrokerage <= 0 || that.manyBrokerageTwo <= 0 || that.manyVipPrice <= 0) {
-          return that.$message.error('请填写完金额后进行批量添加');
+        if (this.manyBrokerage <= 0 || this.manyBrokerageTwo <= 0) {
+          return this.$message.error('请填写完金额后进行批量添加');
+        }
+        if (this.manyVipPrice > 0 && this.manyVipDiscount > 0) {
+          return this.$message.error('会员价和会员折扣只能二选一添加');
         }
       }
-      for (let val of that.manyFormValidate) {
-        this.$set(val, 'brokerage', that.manyBrokerage);
-        this.$set(val, 'brokerage_two', that.manyBrokerageTwo);
-        this.$set(val, 'vip_price', that.manyVipPrice);
+      for (let val of this.manyFormValidate) {
+        this.manyBrokerage != undefined && this.$set(val, 'brokerage', this.manyBrokerage);
+        this.manyBrokerageTwo != undefined && this.$set(val, 'brokerage_two', this.manyBrokerageTwo);
+        if (this.manyVipPrice != undefined) {
+          this.$set(val, 'vip_price', this.manyVipPrice);
+          this.$set(val, 'vip_proportion', ((val.vip_price / val.price) * 100).toFixed(2));
+        } else {
+          this.$set(val, 'vip_proportion', this.manyVipDiscount);
+          this.$set(val, 'vip_price', (val.price * (this.manyVipDiscount / 100)).toFixed(2));
+        }
       }
     },
     // 批量设置会员价
     vipPriceSetUp() {
-      let that = this;
-      if (that.manyVipPrice <= 0) {
-        return that.$message.error('请填写会员价在进行批量添加');
+      if (this.manyVipPrice <= 0) {
+        return this.$message.error('请填写会员价在进行批量添加');
       } else {
-        for (let val of that.manyFormValidate) {
-          this.$set(val, 'vip_price', that.manyVipPrice);
+        for (let val of this.manyFormValidate) {
+          this.$set(val, 'vip_price', this.manyVipPrice);
         }
       }
     },
@@ -2559,29 +1357,35 @@ export default {
       this.oneFormBatch = [
         {
           pic: '',
-          price: 0,
-          cost: 0,
-          ot_price: 0,
-          stock: 0,
+          price: void 0,
+          cost: void 0,
+          ot_price: void 0,
+          stock: void 0,
           bar_code: '',
-          weight: 0,
-          volume: 0,
+          bar_code_number: '',
+          weight: void 0,
+          volume: void 0,
           virtual_list: [],
         },
       ];
     },
-    confirm() {
-      let that = this;
-      that.createBnt = true;
-      if (that.formValidate.selectRule.trim().length <= 0) {
-        return that.$message.error('请选择属性');
+    confirm(name) {
+      this.createBnt = true;
+      this.formValidate.selectRule = name;
+      this.attrs = [];
+      if (this.formValidate.selectRule.trim().length <= 0) {
+        return this.$message.error('请选择属性');
       }
-      that.ruleList.forEach(function (item, index) {
-        if (item.rule_name === that.formValidate.selectRule) {
-          that.attrs = item.rule_value;
+      this.ruleList.forEach((item, index) => {
+        if (item.rule_name === this.formValidate.selectRule) {
+          this.attrs = [...item.rule_value];
         }
       });
+      this.canSel = true;
+      this.generateAttr(this.attrs);
     },
+    // 选择规格模板
+    handleCommand(e) {},
     // 获取商品属性模板；
     productGetRule() {
       productGetRuleApi().then((res) => {
@@ -2594,156 +1398,459 @@ export default {
         this.templateList = res.data;
       });
     },
-    // 删除表格中的属性
-    delAttrTable(index) {
-      let id = this.$route.params.id;
-      if (id) {
-        checkActivityApi(id)
-          .then((res) => {
-            this.manyFormValidate.splice(index, 1);
-            this.$message.success(res.msg);
-          })
-          .catch((res) => {
-            this.$message.error(res.msg);
-          });
-      } else {
-        this.manyFormValidate.splice(index, 1);
+    paramsGetTemplate() {
+      paramListApi().then((res) => {
+        this.paramsTypeList = res.data.list;
+      });
+    },
+    changeParamsType(e) {
+      e ? this.getParams(e) : (this.formValidate.params_list = []);
+    },
+    getParams(id) {
+      paramInfoApi(id).then((res) => {
+        this.formValidate.params_list = res.data.value;
+      });
+    },
+    isSubset(arr1, arr2) {
+      // 将数组转换为 Set，以便进行高效的包含检查
+      const set1 = new Set(arr1);
+      const set2 = new Set(arr2);
+
+      // 检查 set2 中的每个元素是否都在 set1 中
+      for (let elem of set2) {
+        if (!set1.has(elem)) {
+          return false;
+        }
       }
+      return true;
     },
     // 批量添加
     batchAdd() {
+      let arr = [];
+      for (let val of this.attrs) {
+        if (this.oneFormBatch[0][val.value]) {
+          arr.push(this.oneFormBatch[0][val.value]);
+        }
+      }
+
+      // 批量设置商品规格属性
+      const batchFields = [
+        'pic',
+        'price',
+        'cost',
+        'ot_price',
+        'stock',
+        'weight',
+        'volume',
+        'bar_code',
+        'bar_code_number',
+      ];
+      // const defaultFields = ['bar_code', 'bar_code_number'];
+
       for (let val of this.manyFormValidate) {
-        if (this.oneFormBatch[0].pic) {
-          this.$set(val, 'pic', this.oneFormBatch[0].pic);
-        }
-        if (this.oneFormBatch[0].price > 0) {
-          this.$set(val, 'price', this.oneFormBatch[0].price);
-        }
-        if (this.oneFormBatch[0].cost > 0) {
-          this.$set(val, 'cost', this.oneFormBatch[0].cost);
-        }
-        if (this.oneFormBatch[0].ot_price > 0) {
-          this.$set(val, 'ot_price', this.oneFormBatch[0].ot_price);
-        }
-        if (this.oneFormBatch[0].stock > 0) {
-          this.$set(val, 'stock', this.oneFormBatch[0].stock);
-        }
-        if (this.oneFormBatch[0].bar_code !== '') {
-          this.$set(val, 'bar_code', this.oneFormBatch[0].bar_code);
-        }
-        if (this.oneFormBatch[0].weight > 0) {
-          this.$set(val, 'weight', this.oneFormBatch[0].weight);
-        }
-        if (this.oneFormBatch[0].volume > 0) {
-          this.$set(val, 'volume', this.oneFormBatch[0].volume);
+        const batch = this.oneFormBatch[0];
+        // 如果存在筛选条件且满足条件,或无筛选条件时
+        if (!arr.length || this.isSubset(val.attr_arr, arr)) {
+          // 设置有值的批量字段
+          batchFields.forEach((field) => {
+            if (batch[field] && batch[field] !== undefined) {
+              if (field === 'pic' && batch[field]) {
+                this.$set(val, field, batch[field]);
+              } else if (field != 'pic') {
+                this.$set(val, field, batch[field]);
+              }
+            }
+          });
+
+          // 设置默认字段
+          // defaultFields.forEach((field) => {
+          //   this.$set(val, field, batch[field]);
+          // });
         }
       }
     },
-    // 添加按钮
-    addBtn() {
-      this.clearAttr();
-      this.createBnt = false;
-      this.showIput = true;
+    changeSpecImg(arr, img) {
+      // 判断是否存在规格图
+      let isHas = false;
+      for (let i = 1; i < this.manyFormValidate.length; i++) {
+        let item = this.manyFormValidate[i];
+        if (item.pic && this.isSubset(item.attr_arr, arr)) {
+          isHas = true;
+          break;
+        }
+      }
+      if (isHas) {
+        this.$confirm('可以同步修改下方该规格图片，确定要替换吗？', '提示', {
+          confirmButtonText: '替换',
+          cancelButtonText: '暂不',
+          type: 'warning',
+        })
+          .then(() => {
+            for (let val of this.manyFormValidate) {
+              if (this.isSubset(val.attr_arr, arr)) {
+                this.$set(val, 'pic', img);
+              }
+            }
+          })
+          .catch(() => {});
+      } else {
+        for (let val of this.manyFormValidate) {
+          if (this.isSubset(val.attr_arr, arr)) {
+            this.$set(val, 'pic', img);
+          }
+        }
+      }
     },
     // 立即生成
     generate(type, isCopy, arr) {
-      generateAttrApi(
-        {
-          attrs: this.attrs,
-          is_virtual: [1, 2].includes(this.formValidate.virtual_type) ? 1 : 0,
-          virtual_type: this.formValidate.virtual_type,
-        },
-        this.formValidate.id,
-        type,
-      )
-        .then((res) => {
-          let info = res.data.info,
-            header1 = JSON.parse(JSON.stringify(info.header));
-          if (this.$route.params.id !== '0' && (this.$route.query.type != -1 || type) && !isCopy) {
-            this.manyFormValidate = info.value;
-          }
-          if (isCopy) {
-            this.manyFormValidate = arr;
-          }
-          let header = info.header;
-          if ([1, 2].includes(this.formValidate.virtual_type)) {
-            this.columnsInstalM = header;
-            this.formValidate.header = header;
-          } else {
-            this.formValidate.header = header1;
-            this.columnsInstalM = info.header;
-          }
-          this.checkAllGroup(this.formValidate.is_sub);
-          if (!this.$route.params.id && this.formValidate.spec_type === 1 && !isCopy) {
-            this.manyFormValidate.map((item) => {
-              item.pic = this.formValidate.image;
-            });
-            this.oneFormBatch[0].pic = this.formValidate.image;
-          } else if (this.$route.params.id) {
-            this.manyFormValidate.map((item) => {
-              if (!item.pic) {
-                item.pic = this.formValidate.image;
-              }
-            });
-            this.oneFormBatch[0].pic = this.formValidate.image;
-          }
-        })
-        .catch((res) => {
-          this.$message.error(res.msg);
-        });
-    },
-    // 取消
-    offAttrName() {
-      this.showIput = false;
-      this.createBnt = true;
+      this.manyFormValidate = [];
+      this.formValidate.header = [];
     },
     clearAttr() {
       this.formDynamic.attrsName = '';
       this.formDynamic.attrsVal = '';
     },
+
     // 删除规格
     handleRemoveRole(index) {
       this.attrs.splice(index, 1);
       this.manyFormValidate.splice(index, 1);
+      if (!this.attrs.length) {
+        this.formValidate.header = [];
+        this.manyFormValidate = [];
+      } else {
+        this.generateAttr(this.attrs);
+      }
+    },
+    // 删除表格中 对应属性
+    delAttrTable(val) {
+      for (let i = 0; i < this.manyFormValidate.length; i++) {
+        let item = this.manyFormValidate[i];
+        if (item.attr_arr && item.attr_arr.includes(val)) {
+          this.manyFormValidate.splice(i, 1);
+          i--;
+        }
+      }
     },
     // 删除属性
-    handleRemove2(item, index) {
+    handleRemove2(item, index, val) {
+      // 删除 manyFormValidate中 title = item.value 的属性值
       item.splice(index, 1);
+      // this.generateAttr(this.attrs);
+      this.delAttrTable(val);
     },
-    // 添加规则名称
-    createAttrName() {
-      if (this.formDynamic.attrsName && this.formDynamic.attrsVal) {
-        let data = {
-          value: this.formDynamic.attrsName,
-          detail: [this.formDynamic.attrsVal],
-        };
-        this.attrs.push(data);
-        var hash = {};
-        this.attrs = this.attrs.reduce(function (item, next) {
-          /* eslint-disable */
-          hash[next.value] ? '' : (hash[next.value] = true && item.push(next));
-          return item;
-        }, []);
-        this.clearAttr();
-        this.showIput = false;
-        this.createBnt = true;
+    // 新增规格
+    handleAddRole() {
+      let data = {
+        value: this.formDynamic.attrsName,
+        add_pic: 0,
+        detail: [],
+      };
+      this.attrs.push(data);
+    },
+    handleAddParams() {
+      let data = {
+        name: '',
+        value: '',
+      };
+      this.formValidate.params_list.push(data);
+    },
+    handleSaveAsTemplate() {
+      this.$prompt('', '请输入模板名称', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      })
+        .then(({ value }) => {
+          let spec = this.attrs.map((item) => {
+            return {
+              value: item.value,
+              detail: item.detail.map((e) => e.value),
+            };
+          });
+          let formDynamic = {
+            rule_name: value,
+            spec: spec,
+          };
+          ruleAddApi(formDynamic, 0)
+            .then((res) => {
+              this.$message.success(res.msg);
+              this.productGetRule();
+            })
+            .catch((res) => {
+              this.$message.error(res.msg);
+            });
+        })
+        .catch(() => {});
+    },
+    // 新增一条属性
+    addOneAttr(val, val2) {
+      this.generateAttr(this.attrs, val2);
+    },
+    handleFocus(val) {
+      this.changeAttrValue = val;
+    },
+    handleBlur() {
+      this.changeAttrValue = '';
+    },
+    handleSelImg(item) {
+      this.$imgModal((e) => {
+        item.pic = e.att_dir;
+        this.changeSpecImg([item.value], e.att_dir);
+      });
+    },
+    handleRemoveImg(item) {
+      item.pic = '';
+    },
+    // 规格名称改变
+    attrChangeValue(i, val) {
+      if (val.trim().length && this.attrs[i].detail.length) {
+        this.generateHeader(this.attrs);
+        if (this.manyFormValidate.length) {
+          this.manyFormValidate.map((item, i) => {
+            if (i > 0) {
+              if (Object.keys(item.detail).includes(this.changeAttrValue)) {
+                item.detail[val] = item.detail[this.changeAttrValue];
+                item[val] = item[this.changeAttrValue];
+                delete item.detail[this.changeAttrValue];
+                delete item[this.changeAttrValue];
+              }
+            }
+          });
+          this.changeAttrValue = val;
+        }
       } else {
-        this.$message.warning('请添加完整的规格！');
+        this.generateAttr(this.attrs);
       }
+    },
+    // 规格值改变
+    attrDetailChangeValue(val, i) {
+      if (this.manyFormValidate.length) {
+        let key = this.attrs[i].value;
+        this.manyFormValidate.map((item, i) => {
+          if (i > 0) {
+            if (Object.keys(item.detail).includes(key) && item.detail[key] === this.changeAttrValue) {
+              item.detail[key] = val;
+              let index = item.attr_arr.findIndex((item) => item === this.changeAttrValue);
+              item.attr_arr[index] = val;
+            }
+          }
+        });
+        this.changeAttrValue = val;
+      } else {
+        this.generateAttr(this.attrs, 1);
+      }
+    },
+    // 规格图片添加开关
+    addPic(e, i) {
+      if (e) {
+        this.attrs.map((item, ii) => {
+          if (ii !== i) {
+            this.$set(item, 'add_pic', 0);
+          }
+        });
+        this.canSel = false;
+      } else {
+        this.canSel = true;
+      }
+    },
+    // 规格拖拽排序后
+    onMoveSpec() {
+      this.generateAttr(this.attrs);
+    },
+    changeCurrentIndex(i) {
+      this.currentIndex = i;
+    },
+    // 生成商品规格表头
+    generateHeader(data) {
+      let specificationsColumns = data.map((item) => ({
+        title: item.value,
+        key: item.value,
+        minWidth: 140,
+        fixed: 'left',
+      }));
+      let arr;
+      if ([1, 2].includes(Number(this.formValidate.virtual_type))) {
+        arr = [...specificationsColumns, ...VirtualTableHead];
+        // 找到slot 等于 fictitious 将title改为规格名称
+        this.formValidate.header.map((item) => {
+          if (item.slot === 'fictitious') {
+            item.title = this.formValidate.virtual_type == 1 ? '添加卡密/网盘' : '选择优惠券';
+          }
+        });
+      } else if (this.formValidate.virtual_type == 3) {
+        arr = [...specificationsColumns, ...VirtualTableHead2];
+      } else {
+        arr = [...specificationsColumns, ...GoodsTableHead];
+      }
+      this.$set(this.formValidate, 'header', arr);
+      this.tableKey += 1;
+      this.columnsInstalM = arr;
+    },
+    /*
+     * 生成属性
+     * @param {Array} data 规格数据
+     * */
+    generateAttr(data, val) {
+      this.generateHeader(data);
+      const combinations = this.generateCombinations(data);
+      console.log('规格组合总数：' + combinations.length);
+      const virtualType = this.formValidate.virtual_type;
+      // 如果combinations数量超过 500，则分批次生成属性
+      let rows = [];
+      if (combinations.length > 500) {
+        const batchSize = Math.ceil(combinations.length / 500);
+        for (let i = 0; i < combinations.length; i += batchSize) {
+          setTimeout((e) => {
+            let d = this.generateAttrBatch(data, combinations.slice(i, i + batchSize), val);
+            rows = [...rows, ...d];
+            this.manyFormValidate = [...this.oneFormBatch, ...rows];
+          }, 0);
+        }
+      } else {
+        rows = this.generateAttrBatch(data, combinations, val);
+        this.manyFormValidate = [...this.oneFormBatch, ...rows];
+      }
+    },
+    // 生成属性批次
+    generateAttrBatch(data, combinations, val) {
+      const existingItems = this.manyFormValidate.slice(1); // 排除第一项默认数据
+
+      const rows = combinations.map((combination) => {
+        const row = {
+          attr_arr: combination,
+          detail: {},
+          title: '',
+          key: '',
+          price: 0,
+          pic: '',
+          ot_price: 0,
+          cost: 0,
+          stock: 0,
+          is_show: 1,
+          is_default_select: 0,
+          unique: '',
+          weight: '',
+          volume: '',
+          brokerage: 0,
+          brokerage_two: 0,
+          vip_price: 0,
+          vip_proportion: 0,
+        };
+
+        // 设置虚拟类型相关属性
+        if (this.formValidate.virtual_type === 1) {
+          row.virtual_list = [];
+          row.disk_info = '';
+        } else if (this.formValidate.virtual_type === 2) {
+          row.coupon_id = 0;
+          row.coupon_name = '';
+        }
+
+        // 处理规格属性
+        data.forEach((item, i) => {
+          const value = combination[i];
+          row[item.value] = value;
+          row.title = item.value;
+          row.key = item.value;
+          row.detail[item.value] = value;
+
+          // 查找匹配的现有规格项
+          const matchedItem = existingItems.find((item) => item.attr_arr && arraysEqual(item.attr_arr, combination));
+
+          if (matchedItem) {
+            Object.assign(row, {
+              price: matchedItem.price,
+              cost: matchedItem.cost,
+              ot_price: matchedItem.ot_price,
+              stock: matchedItem.stock,
+              pic: matchedItem.pic,
+              unique: matchedItem.unique || '',
+              weight: matchedItem.weight || '',
+              volume: matchedItem.volume || '',
+              is_show: matchedItem.is_show || 1,
+              is_default_select: matchedItem.is_default_select || 0,
+              volume: matchedItem.volume || 0,
+              bar_code_number: matchedItem.bar_code_number || 0,
+              is_virtual: matchedItem.is_virtual,
+              brokerage: matchedItem.brokerage,
+              brokerage_two: matchedItem.brokerage_two,
+              vip_price: matchedItem.vip_price,
+              vip_proportion: matchedItem.vip_proportion,
+            });
+
+            if (this.formValidate.virtual_type === 1) {
+              row.virtual_list = matchedItem.virtual_list;
+              row.disk_info = matchedItem.disk_info;
+            } else if (this.formValidate.virtual_type === 2 && matchedItem.coupon_id) {
+              row.coupon_id = matchedItem.coupon_id;
+              row.coupon_name = matchedItem.coupon_name;
+            }
+          } else if (item.add_pic && combination.includes(val)) {
+            const picItem = item.detail.find((e) => combination.includes(e.value));
+            if (picItem) row.pic = picItem.pic;
+          }
+        });
+        return row;
+      });
+      return rows;
+    },
+    // 切换默认选中规格
+    changeDefaultSelect(e, index) {
+      // 一个开启 其他关闭
+      this.manyFormValidate.map((item, i) => {
+        if (i !== index) {
+          item.is_default_select = 0;
+        }
+      });
+      if (e) this.manyFormValidate[index].is_show = 1;
+    },
+    // 改变是否显示
+    changeDefaultShow(index) {
+      // 如果默认选中开启 则不可隐藏
+      if (this.manyFormValidate[index].is_default_select === 1) {
+        this.manyFormValidate[index].is_show = 1;
+        this.$message.error('默认规格不可隐藏');
+      }
+    },
+    // 生成规格组合
+    generateCombinations(arr, prefix = []) {
+      if (arr.length === 0) {
+        return [prefix];
+      }
+      const [first, ...rest] = arr;
+      return first.detail.flatMap((detail) => this.generateCombinations(rest, [...prefix, detail.value]));
     },
     // 添加属性
     createAttr(num, idx) {
       if (num) {
-        this.attrs[idx].detail.push(num);
-        var hash = {};
-        this.attrs[idx].detail = this.attrs[idx].detail.reduce(function (item, next) {
-          /* eslint-disable */
-          hash[next] ? '' : (hash[next] = true && item.push(next));
-          return item;
-        }, []);
+        // 判断是否存在同样熟悉
+        var isExist = this.attrs[idx].detail.some((item) => item.value === num);
+        if (isExist) {
+          this.$message.error('规格值已存在');
+          return;
+        }
+        this.attrs[idx].detail.push({ value: num, pic: '' });
+        if (this.manyFormValidate.length) {
+          this.addOneAttr(this.attrs[idx].value, num);
+        } else {
+          this.generateAttr(this.attrs);
+        }
+
+        this.$refs.specStock.$refs['popoverRef_' + idx][0].doClose(); //关闭的
+        this.clearAttr();
+        setTimeout(() => {
+          if (this.$refs.specStock.$refs['popoverRef_' + idx]) {
+            //重点是以下两句
+            this.$refs.specStock.$refs['popoverRef_' + idx][0].doShow(); //打开的
+            //重点是以上两句
+          }
+        }, 20);
       } else {
-        this.$message.warning('请添加属性');
+        this.$refs.specStock.$refs['popoverRef_' + idx][0].doClose(); //关闭的
       }
+    },
+    handleShowPop(index) {
+      this.$refs.specStock.$refs['inputRef_' + index][0].focus();
     },
     // 商品分类；
     goodsCategory() {
@@ -2754,11 +1861,6 @@ export default {
         .catch((res) => {
           this.$message.error(res.msg);
         });
-    },
-    //视视上传类型
-    changeVideo(e) {
-      this.formValidate.video_link = '';
-      this.videoLink = '';
     },
     // 改变规格
     changeSpec() {
@@ -2775,9 +1877,8 @@ export default {
     },
     // 详情
     getInfo() {
-      let that = this;
-      that.spinShow = true;
-      productInfoApi(that.$route.params.id)
+      this.spinShow = true;
+      productInfoApi(this.$route.params.id)
         .then(async (res) => {
           let data = res.data.productInfo;
           this.infoData(data);
@@ -2798,7 +1899,7 @@ export default {
       this.modalPic = false;
     },
     // 点击商品图
-    modalPicTap(tit, picTit, index) {
+    modalPicTap(tit, picTit = '', index = 0) {
       this.modalPic = true;
       this.isChoice = tit === 'dan' ? '单选' : '多选';
       this.picTit = picTit;
@@ -2830,9 +1931,12 @@ export default {
           this.formValidate.recommend_image = pc.att_dir;
           break;
         default:
-          this.manyFormValidate[this.tableIndex].pic = pc.att_dir;
+          if (this.manyFormValidate.length) this.manyFormValidate[this.tableIndex].pic = pc.att_dir;
       }
       this.modalPic = false;
+    },
+    deleteRow(index) {
+      this.formValidate.params_list.splice(index, 1);
     },
     // 获取多张图信息
     getPicD(pc) {
@@ -2849,21 +1953,13 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           this.formValidate.type = this.type;
-          if (this.formValidate.spec_type === 0) {
-            this.formValidate.attrs = this.oneFormValidate;
-            this.formValidate.header = [];
-            this.formValidate.items = [];
-            this.formValidate.is_copy = 0;
-          } else {
-            this.formValidate.items = this.attrs;
-            this.formValidate.attrs = this.manyFormValidate;
-            this.formValidate.is_copy = 1;
+          let arr = this.formValidate.spec_type === 0 ? this.oneFormValidate : this.manyFormValidate;
+          let item = JSON.parse(JSON.stringify(arr));
+          if (this.formValidate.spec_type === 1) {
+            if (item.length < 2) return this.$message.warning('商品规格-规格数量最少1个');
+            // 删除第一项
+            item.shift();
           }
-          if (this.formValidate.spec_type === 1 && this.manyFormValidate.length === 0) {
-            return this.$message.warning('商品信息-请点击生成多规格');
-            // return this.$message.warning('请点击生成规格！');
-          }
-          let item = this.formValidate.attrs;
           for (let i = 0; i < item.length; i++) {
             if (item[i].stock > 1000000) {
               return this.$message.error('规格库存-库存超出系统范围(1000000)');
@@ -2899,7 +1995,17 @@ export default {
           this.formValidate.label_id = activeIds;
           if (this.openSubimit) return;
           this.openSubimit = true;
-          this.formValidate.description = this.formatRichText(this.content);
+          this.formValidate.description = formatRichText(this.content);
+          if (this.formValidate.spec_type === 0) {
+            this.formValidate.attrs = item;
+            this.formValidate.header = [];
+            this.formValidate.items = [];
+            this.formValidate.is_copy = 0;
+          } else {
+            this.formValidate.items = this.attrs;
+            this.formValidate.attrs = item;
+            this.formValidate.is_copy = 1;
+          }
           productAddApi(this.formValidate)
             .then(async (res) => {
               this.openSubimit = false;
@@ -2967,25 +2073,6 @@ export default {
       newItems.splice(dst, 0, ...newItems.splice(src, 1));
       this.formValidate.slider_image = newItems;
     },
-    // 过滤详情内容
-    formatRichText(html) {
-      let newContent = html.replace(/<img[^>]*>/gi, function (match, capture) {
-        match = match.replace(/style="[^"]+"/gi, '').replace(/style='[^']+'/gi, '');
-        match = match.replace(/width="[^"]+"/gi, '').replace(/width='[^']+'/gi, '');
-        match = match.replace(/height="[^"]+"/gi, '').replace(/height='[^']+'/gi, '');
-        return match;
-      });
-      newContent = newContent.replace(/style="[^"]+"/gi, function (match, capture) {
-        match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/max-max-width:[^;]+;/gi, 'max-width:100%;');
-        return match;
-      });
-      newContent = newContent.replace(/<br[^>]*\/>/gi, '');
-      newContent = newContent.replace(
-        /\<img/gi,
-        '<img style="max-width:100%;height:auto;display:block;margin-top:0;margin-bottom:0;"',
-      );
-      return newContent;
-    },
     //对象数组去重；
     unique(arr) {
       const res = new Map();
@@ -3007,9 +2094,15 @@ export default {
       this.labelShow = false;
       this.dataLabel = dataLabel;
     },
+    // 选择商品标签
+    activeLabel(data) {
+      this.tagShow = false;
+      this.formValidate.label_list = Array.from(new Set(data));
+    },
     // 标签弹窗关闭
     labelClose() {
       this.labelShow = false;
+      this.tagShow = false;
     },
     // 删除用户标签
     closeLabel(label) {
@@ -3019,37 +2112,22 @@ export default {
     // 打开选择用户标签
     openLabel(row) {
       this.labelShow = true;
-      this.$nextTick((e) => {
-        // this.$refs.userLabel.userLabel(JSON.parse(JSON.stringify(this.dataLabel)));
-      });
-    },
-    uniques(songs) {
-      let result = {};
-      let finalResult = [];
-      for (let i = 0; i < songs.length; i++) {
-        result[songs[i].product_id] = songs[i];
-      }
-      for (let item in result) {
-        finalResult.push(result[item]);
-      }
-      return finalResult;
     },
     handleRemoveRecommend(i) {
       this.formValidate.recommend_list.splice(i, 1);
     },
+    // 打开的营销活动标签
     watchActivity() {
       let marketing = [];
-      this.formValidate.activity.map((el) => {
-        if (el == '默认') {
-          marketing.push(el);
-        }
-        if (el == '秒杀' && checkArray('seckill')) {
-          marketing.push(el);
-        }
-        if (el == '砍价' && checkArray('bargain')) {
-          marketing.push(el);
-        }
-        if (el == '拼团' && checkArray('combination')) {
+      // 使用对象映射优化权限判断逻辑
+      const permissionMap = {
+        默认: true,
+        秒杀: 'seckill',
+        砍价: 'bargain',
+        拼团: 'combination',
+      };
+      this.formValidate.activity.forEach((el) => {
+        if (permissionMap[el] === true || (permissionMap[el] && checkArray(permissionMap[el]))) {
           marketing.push(el);
         }
       });
@@ -3058,490 +2136,6 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
-::v-deep .el-tabs__item {
-  height: 54px !important;
-  line-height: 54px !important;
-}
-
-.content_width {
-  width: 460px;
-}
-
-.list-group {
-  margin-left: -8px;
-}
-
-.borderStyle {
-  border: 1px solid #ccc;
-  padding: 8px;
-  border-radius: 4px;
-}
-
-.drag {
-  cursor: move;
-  margin: 3px 0;
-}
-
-.move-icon {
-  width: 30px;
-  cursor: move;
-  margin-right: 10px;
-}
-
-.move-icon .icondrag2 {
-  font-size: 26px;
-  color: #d8d8d8;
-}
-
-.maxW ::v-deep .ivu-select-dropdown {
-  max-width: 600px;
-}
-
-#shopp-manager .ivu-table-wrapper {
-  border-left: 1px solid #dcdee2;
-  border-top: 1px solid #dcdee2;
-}
-
-.noLeft {
-  ::v-deep .ivu-form-item-content {
-    margin-left: 0 !important;
-  }
-}
-
-#shopp-manager .ivu-form-item {
-  position: relative;
-}
-
-#shopp-manager .ivu-form-item .tips {
-  position: absolute;
-  color: #999;
-  top: 29px;
-  left: -77px;
-  font-size: 12px;
-}
-
-.box-video-style {
-  width: 375px;
-  height: 211px;
-  border-radius: 10px;
-  background-color: #707070;
-  margin-top: 10px;
-  position: relative;
-  overflow: hidden;
-}
-
-.box-video-style .iconv {
-  color: #fff;
-  line-height: 180px;
-  width: 50px;
-  height: 50px;
-  display: inherit;
-  font-size: 26px;
-  position: absolute;
-  top: -74px;
-  left: 50%;
-  margin-left: -25px;
-  cursor: pointer;
-}
-
-.box-video-style .mark {
-  position: absolute;
-  width: 100%;
-  height: 30px;
-  top: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  text-align: center;
-}
-
-.submission {
-  margin-left: 10px;
-}
-
-.color-list .tip {
-  color: #c9c9c9;
-  font-size: 12px;
-}
-
-.color-list .color-item {
-  height: 30px;
-  line-height: 30px;
-  padding: 0 10px;
-  color: #fff;
-  margin-right: 10px;
-  font-size: 12px;
-}
-
-.color-list .color-item.blue {
-  background-color: #1E9FFF;
-}
-
-.color-list .color-item.yellow {
-  background-color: rgb(254, 185, 0);
-}
-
-.color-list .color-item.green {
-  background-color: #009688;
-}
-
-.color-list .color-item.red {
-  background-color: #ed4014;
-}
-
-.columnsBox {
-  margin-right: 10px;
-  width: 200px;
-}
-
-.priceBox {
-  width: 100%;
-}
-
-.rulesBox {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-
-  .item {
-    display: flex;
-    flex-wrap: wrap;
-  }
-}
-
-.pictrueBox {
-  display: inline-block;
-}
-
-.pictrueTab {
-  width: 40px !important;
-  height: 40px !important;
-}
-
-.pictrue {
-  width: 60px;
-  height: 60px;
-  border: 1px dotted rgba(0, 0, 0, 0.1);
-  margin-right: 15px;
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .btndel {
-    position: absolute;
-    z-index: 1;
-    width: 20px !important;
-    height: 20px !important;
-    left: 46px;
-    top: -4px;
-  }
-}
-
-.upLoad {
-  width: 58px;
-  height: 58px;
-  line-height: 58px;
-  border: 1px dotted rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.02);
-  cursor: pointer;
-}
-
-.curs {
-  cursor: pointer;
-}
-
-.inpWith {
-  width: 60%;
-}
-
-.labeltop {
-  ::v-deep .ivu-form-item-label {
-    float: none !important;
-    display: inline-block !important;
-    margin-left: 120px !important;
-    width: auto !important;
-  }
-}
-
-.video-icon {
-  background-image: url('https://cdn.oss.9gt.net/prov1.1/1/icons.png'); // cdn.oss.9gt.net/prov1.1/1/icons.png);
-  background-color: #fff;
-  background-position: -9999px;
-  background-repeat: no-repeat;
-}
-
-.see {
-  color: #2d8cf0;
-  cursor: pointer;
-}
-
-.trip {
-  color: #bbb;
-  margin-bottom: 10px;
-  font-size: 12px;
-}
-
-.virtual-data {
-  display: flex;
-  align-items: center;
-}
-
-.add-more {
-  margin-top: 20px;
-  display: flex;
-}
-
-.virtual-title {
-  width: 60px;
-}
-
-.scroll-virtual {
-  max-height: 400px;
-  overflow-y: auto;
-  margin-top: 10px;
-}
-
-.footer {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 30px;
-
-  .clear, .submit {
-    padding: 10px 20px;
-    border-radius: 5px;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  .clear {
-    background-color: #ccc;
-    margin-right: 20px;
-  }
-
-  .submit {
-    background-color: #2d8cf0;
-  }
-}
-
-.picBox {
-  display: flex;
-}
-
-.btndel {
-  position: absolute;
-  z-index: 9;
-  width: 20px !important;
-  height: 20px !important;
-  left: 46px;
-  top: -4px;
-}
-
-.ifam {
-  width: 344px;
-  height: 644px;
-  background: url('../../../assets/images/phonebg.png') no-repeat center top;
-  background-size: 344px 644px;
-  padding: 40px 20px;
-  padding-top: 50px;
-  margin: 0 auto;
-
-  .content {
-    height: 560px;
-    overflow: hidden;
-    scrollbar-width: none; /* firefox */
-    -ms-overflow-style: none; /* IE 10+ */
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .content::-webkit-scrollbar {
-    display: none; /* Chrome Safari */
-  }
-}
-</style>
-<style scoped lang="stylus">
-::v-deep .ivu-date-picker {
-  width: 300px;
-}
-
-.virtual_boder {
-  border: 1px solid var(--prev-color-primary);
-}
-
-.virtual_boder2 {
-  border: 1px solid #E7E7E7;
-}
-
-.virtual_san {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-bottom: 26px solid var(--prev-color-primary);
-  border-left: 26px solid transparent;
-}
-
-.virtual_dui {
-  position: absolute;
-  bottom: -2px;
-  right: 2px;
-  color: #FFFFFF;
-  font-family: system-ui;
-}
-
-.virtual {
-  width: 120px;
-  height: 60px;
-  background: #FFFFFF;
-  border-radius: 3px;
-  // border: 1px solid #E7E7E7;
-  float: left;
-  text-align: center;
-  padding-top: 8px;
-  position: relative;
-  cursor: pointer;
-  line-height: 23px;
-
-  .virtual_top {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.85);
-  }
-
-  .virtual_bottom {
-    font-size: 12px;
-    font-weight: 400;
-    color: #999999;
-  }
-}
-
-.virtual:nth-child(2n) {
-  margin: 0 12px;
-}
-
-.addfont {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--prev-color-primary);
-  margin-left: 14px;
-  cursor: pointer;
-}
-
-.titTip {
-  display: inline-bolck;
-  font-size: 12px;
-  line-height: 24px;
-  font-weight: 400;
-  color: #999999;
-}
-
-.videbox {
-  width: 60px;
-  height: 60px;
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 4px;
-  border: 1px dashed #DDDDDD;
-  line-height: 50px;
-  text-align: center;
-  color: #898989;
-  font-size: 30px;
-  font-weight: 400;
-  cursor: pointer;
-}
-
-.addCustom_content {
-  margin-top: 20px;
-
-  .custom_box {
-    margin-bottom: 10px;
-  }
-}
-
-.addCustomBox {
-  margin-top: 12px;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--prev-color-primary);
-
-  .btn {
-    cursor: pointer;
-    width: max-content;
-  }
-}
-
-.type-radio {
-  margin-buttom: 10px;
-}
-
-.deteal-btn {
-  color: #5179ea;
-}
-
-.stock-disk {
-  margin: 10px 0;
-}
-
-.line {
-  border-bottom: 1px dashed #eee;
-  margin-bottom: 20px;
-}
-
-.labelInput {
-  border: 1px solid #dcdee2;
-  width: 414px;
-  padding: 0 15px;
-  border-radius: 5px;
-  min-height: 30px;
-  cursor: pointer;
-  font-size: 12px;
-
-  .span {
-    color: #c5c8ce;
-  }
-
-  .iconxiayi {
-    font-size: 12px;
-  }
-}
-
-#shopp-manager ::v-deep .ivu-form-item-content {
-  line-height: 33px !important;
-}
-
-#selectvideo ::v-deep .ivu-form-item-content {
-  line-height: 0px !important;
-}
-
-.progress {
-  margin-top: 10px;
-}
-
-.labelInput ::v-deep .el-tag {
-  color: #606266;
-  background-color: #F0F2F5;
-  border-color: #F0F2F5;
-  margin-right: 6px;
-}
-
-.labelInput ::v-deep .el-tag .el-tag__close {
-  color: #909399;
-}
-
-.labelInput ::v-deep .el-tag .el-tag__close:hover {
-  color: #fff;
-  background-color: #909399;
-}
-
-.brokerage {
-  font-size: 12px;
-}
+<style lang="scss" scoped>
+@use './productAdd.scss' as *;
 </style>

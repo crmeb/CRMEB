@@ -1,6 +1,6 @@
 <template>
   <div>
-    <product-list-details v-if="currentTab === 'article' || 'project' || 'app'" ref="productlist"></product-list-details>
+    <product-list-details ref="productlist"></product-list-details>
   </div>
 </template>
 
@@ -91,19 +91,16 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .product_tabs ::v-deep .ivu-tabs-bar {
   margin-bottom: 0px !important;
 }
-
 .product_tabs ::v-deep .ivu-page-header-content {
   margin-bottom: 0px !important;
 }
-
 .product_tabs ::v-deep .ivu-page-header-breadcrumb {
   margin-bottom: 0px !important;
 }
-
 ::v-deep .el-badge__content.is-fixed {
   top: 7px;
 }

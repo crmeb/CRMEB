@@ -100,11 +100,15 @@ class SystemClearData extends AuthController
      * 清除回收站商品
      * @return mixed
      */
-    public function recycleProduct()
+    public function recycleProduct($id = 0)
     {
         /** @var StoreProductServices $product */
         $product = app()->make(StoreProductServices::class);
-        $ids = $product->getColumn(['is_del' => 1], 'id');
+        if ($id) {
+            $ids = [$id];
+        } else {
+            $ids = $product->getColumn(['is_del' => 1], 'id');
+        }
         //清除规格表数据
         /** @var StoreProductAttrServices $ProductAttr */
         $productAttr = app()->make(StoreProductAttrServices::class);
@@ -145,8 +149,13 @@ class SystemClearData extends AuthController
 
         /** @var StoreProductServices $services */
         $services = app()->make(StoreProductServices::class);
-        $services->delete(1, 'is_del');
-        return app('json')->success(100046);
+        if ($id) {
+            $services->delete($id);
+            return true;
+        } else {
+            $services->delete(1, 'is_del');
+            return app('json')->success(100046);
+        }
     }
 
     /**

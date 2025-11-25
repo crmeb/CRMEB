@@ -142,5 +142,8 @@ export default {
 .card-title {
   display: flex;
   align-items: center;
+  ::v-deep .el-avatar--small {
+    background-color: var(--prev-color-primary-light-9) !important;
+  }
 }
 </style>

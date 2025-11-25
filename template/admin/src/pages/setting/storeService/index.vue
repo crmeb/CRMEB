@@ -509,7 +509,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;
@@ -521,17 +521,15 @@ export default {
     height: 100%;
   }
 }
-
 .modelBox {
-  ::v-deep, .ivu-table-header {
+  ::v-deep,
+  .ivu-table-header {
     width: 100% !important;
   }
 }
-
 .trees-coadd {
   width: 100%;
   height: 385px;
-
   .scollhide {
     width: 100%;
     height: 100%;
@@ -539,8 +537,6 @@ export default {
     overflow-y: scroll;
   }
 }
-
-// margin-left: 18px;
 .scollhide::-webkit-scrollbar {
   display: none;
 }

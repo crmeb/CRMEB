@@ -19,10 +19,8 @@
                 @change="userSearchs"
               >
                 <el-option value="1" label="积分抽取"></el-option>
-                <!-- <el-option value="2">余额</el-option> -->
                 <el-option value="3" label="订单支付"></el-option>
                 <el-option value="4" label="订单评价"></el-option>
-                <!-- <el-option value="5">关注公众号</el-option> -->
               </el-select>
             </el-form-item>
           </el-col>
@@ -305,7 +303,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

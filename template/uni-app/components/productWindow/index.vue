@@ -12,12 +12,13 @@
 					</view>
 					<view class="money font-color">
 						<view class="acea-row row-middle">
-							{{$t(`￥`)}}<text class="num">{{ attr.productSelect.price }}</text>
-							<text class='vip-money'
-								v-if="is_vip>0 && attr.productSelect.vip_price">{{$t(`￥`)}}{{attr.productSelect.vip_price}}</text>
-							<view class="vipImg" v-if="is_vip>0 && attr.productSelect.vip_price">
+							{{ $t(`到手价`) }}
+							<baseMoney class="mr-12" :money="attr.productSelect.price" symbolSize="24" integerSize="40" decimalSize="24" weight color="var(--view-theme)"></baseMoney>
+							<!-- <text class='vip-money'
+								v-if="is_vip == 0 && attr.productSelect.vip_price">{{$t(`￥`)}}{{attr.productSelect.vip_price}}</text>
+							<view class="vipImg" v-if="is_vip == 0 && attr.productSelect.vip_price">
 								<image src="../../static/images/svip.gif"></image>
-							</view>
+							</view> -->
 						</view>
 						
 						<text class="stock"
@@ -36,6 +37,7 @@
 							<view class="itemn" :class="item.index === itemn.attr ? 'on' : ''"
 								v-for="(itemn, indexn) in item.attr_value" @click="tapAttr(indexw, indexn)"
 								:key="indexn">
+								<img v-if="itemn.pic" class="attr-img" :src="itemn.pic" alt="" srcset="" />
 								{{ $t(itemn.attr) }}
 							</view>
 						</view>
@@ -254,7 +256,7 @@
 		transform: translate3d(0, 100%, 0);
 		transition: all .3s cubic-bezier(.25, .5, .5, .9);
 		padding-bottom: 140rpx;
-		padding-bottom: calc(140rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(140rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		padding-bottom: calc(140rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 	}
 
@@ -345,6 +347,13 @@
 		border-radius: 25rpx;
 		margin: 20rpx 0 0 14rpx;
 		background-color: #F2F2F2;
+		display: flex;
+		align-items: center;
+		.attr-img{
+			width: 37rpx;
+			height: 37rpx;
+			margin-right: 8rpx;
+		}
 	}
 
 	.product-window .productWinList .item .listn .itemn.on {

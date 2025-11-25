@@ -59,9 +59,10 @@ class StoreBargain extends BaseModel
      */
     public function product()
     {
-        return $this->hasOne(StoreProduct::class, 'id', 'product_id')->field(['id', 'ot_price','cate_id'])->bind([
-            'ot_price'=>'ot_price',
-            'cate_id'=>'cate_id'
+        return $this->hasOne(StoreProduct::class, 'id', 'product_id')->field(['id', 'ot_price', 'cate_id', 'price'])->bind([
+            'ot_price' => 'ot_price',
+            'product_price' => 'price',
+            'cate_id' => 'cate_id'
         ]);
     }
 

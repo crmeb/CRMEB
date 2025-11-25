@@ -408,43 +408,51 @@ export default {
     },
     // 编辑提交成功
     submitFail() {
-      this.getList();
+      // this.getList();
     },
   },
 };
 </script>
-<style scoped lang="stylus">
-.ivu-mt .type .item
-    margin:3px 0;
-.tabform
-    margin-bottom 10px
-.Refresh
-    font-size 12px
-    color var(--prev-color-primary)
-    cursor pointer
-.ivu-form-item
-    margin-bottom 10px
-.status ::v-deep .item~.item
-    margin-left 6px
-.status ::v-deep .statusVal
-    margin-bottom 7px
+<style lang="scss" scoped>
+.ivu-mt .type .item {
+  margin: 3px 0;
+}
+.tabform {
+  margin-bottom: 10px;
+}
+.Refresh {
+  font-size: 12px;
+  color: var(--prev-color-primary);
+  cursor: pointer;
+}
+.ivu-form-item {
+  margin-bottom: 10px;
+}
+.status ::v-deep .item ~ .item {
+  margin-left: 6px;
+}
+.status ::v-deep .statusVal {
+  margin-bottom: 7px;
+}
 /*.ivu-mt ::v-deep .ivu-table-header*/
 /*    border-top:1px dashed #ddd!important*/
-.type
-   padding 3px 0
-   box-sizing border-box
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
+.type {
+  padding: 3px 0;
+  box-sizing: border-box;
+}
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
 .z-price {
   color: red;
 }
-
 .f-price {
   color: green;
 }

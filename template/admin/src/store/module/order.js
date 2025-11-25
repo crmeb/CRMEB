@@ -34,7 +34,7 @@ export default {
     delIdList: [],
     iconsaaaa: '',
     orderPayType: '',
-    real_name: ''
+    real_name: '',
     // modelLists: function
   },
   mutations: {
@@ -78,7 +78,7 @@ export default {
     /**
      * @description 搜索关键词
      * */
-    setOrderKeyword(state, real_name){
+    setOrderKeyword(state, real_name) {
       state.real_name = real_name;
     },
     /**
@@ -107,6 +107,13 @@ export default {
      */
     getisDelIdListl(state, delIdList) {
       state.delIdList = delIdList;
+    },
+    resetSearch(state) {
+      state.orderType = '';
+      state.orderTime = '';
+      state.orderNum = '';
+      state.orderPayType = '';
+      state.real_name = '';
     },
   },
   actions: {

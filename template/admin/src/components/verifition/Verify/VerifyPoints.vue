@@ -18,7 +18,8 @@
           :src="pointBackImgBase ? 'data:image/png;base64,' + pointBackImgBase : defaultImg"
           alt=""
           style="width: 100%; height: 100%; display: block"
-          v-db-click @click="bindingClick ? canvasClick($event) : undefined"
+          v-db-click
+          @click="bindingClick ? canvasClick($event) : undefined"
         />
 
         <div

@@ -97,12 +97,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
-.el-tag {
-  color: var(--prev-color-primary) !important;
-  background-color: #fff !important;
-  border-color: var(--prev-color-primary-light-6) !important;
-}
+<style lang="scss" scoped>
 .dashboard-console-grid {
   text-align: center;
   .ivu-card-body {

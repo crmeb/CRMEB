@@ -74,7 +74,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .ivu-form-item-content {
   line-height: unset !important;
 }

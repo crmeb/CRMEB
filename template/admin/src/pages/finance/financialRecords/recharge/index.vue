@@ -104,14 +104,16 @@
             <a
               href="javascript:void(0);"
               v-if="scope.row.refund_price <= 0 && scope.row.paid && scope.row.recharge_type != 'system'"
-              v-db-click @click="refund(scope.row)"
+              v-db-click
+              @click="refund(scope.row)"
               >退款</a
             >
             <!--                    <el-divider direction="vertical"  v-if="scope.row.paid"/>-->
             <a
               href="javascript:void(0);"
               v-if="scope.row.paid === 0"
-              v-db-click @click="del(scope.row, '此条充值记录', scope.$index)"
+              v-db-click
+              @click="del(scope.row, '此条充值记录', scope.$index)"
               >删除</a
             >
             <span class="refund" v-if="scope.row.refund_price > 0">已退款</span>
@@ -288,21 +290,27 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
-.ivu-mt .type .item
-    margin:3px 0;
-.tabform
-    margin-bottom 10px
-.Refresh
-    font-size 12px
-    color var(--prev-color-primary)
-    cursor pointer
-.ivu-form-item
-    margin-bottom 10px
-.status ::v-deep .item~.item
-    margin-left 6px
-.status ::v-deep .statusVal
-    margin-bottom 7px
+<style lang="scss" scoped>
+.ivu-mt .type .item {
+  margin: 3px 0;
+}
+.tabform {
+  margin-bottom: 10px;
+}
+.Refresh {
+  font-size: 12px;
+  color: var(--prev-color-primary);
+  cursor: pointer;
+}
+.ivu-form-item {
+  margin-bottom: 10px;
+}
+.status ::v-deep .item ~ .item {
+  margin-left: 6px;
+}
+.status ::v-deep .statusVal {
+  margin-bottom: 7px;
+}
 /*.ivu-mt ::v-deep .ivu-table-header*/
 /*    border-top:1px dashed #ddd!important*/
 </style>

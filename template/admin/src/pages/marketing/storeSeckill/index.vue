@@ -1,27 +1,31 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-            ref="tableFrom"
-            :model="tableFrom"
-            :label-width="labelWidth"
-            label-position="right"
-            @submit.native.prevent
-            inline
-        >
-          <el-form-item label="秒杀状态：">
-            <el-select placeholder="请选择" clearable v-model="tableFrom.status" @change="userSearchs" class="form_content_width">
+        <el-form ref="tableFrom" :model="tableFrom" :label-width="labelWidth" label-position="right"
+          @submit.native.prevent inline>
+          <el-form-item label="商品搜索：" label-for="store_name">
+            <el-input placeholder="请输入商品名称，ID" v-model="tableFrom.store_name" class="form_content_width" />
+          </el-form-item>
+          <el-form-item label="活动搜索：" label-for="store_name">
+            <el-input placeholder="请输入活动名称" v-model="tableFrom.activity_name" class="form_content_width" />
+          </el-form-item>
+          <el-form-item label="活动状态：">
+            <el-select placeholder="请选择" clearable v-model="tableFrom.status" @change="userSearchs"
+              class="form_content_width">
               <el-option value="1" label="开启"></el-option>
               <el-option value="0" label="关闭"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="商品搜索：" label-for="store_name">
-            <el-input
-                placeholder="请输入商品名称，ID"
-                v-model="tableFrom.store_name"
-                class="form_content_width"
-            />
+          <!-- <el-form-item label="活动时段：">
+            <el-select v-model="tableFrom.time_ids" multiple class="form_content_width" @change="userSearchs">
+              <el-option v-for="item in timeList" :value="item.id" :key="item.id" :label="item.time_name"></el-option>
+            </el-select>
+          </el-form-item> -->
+          <el-form-item label="活动时间：">
+            <el-date-picker clearable v-model="timeVal" type="daterange" :editable="false" @change="onchangeTime"
+              format="yyyy/MM/dd" value-format="yyyy/MM/dd" start-placeholder="开始日期" end-placeholder="结束日期"
+              style="width: 250px"></el-date-picker>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
@@ -30,20 +34,12 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button
-          v-auth="['marketing-store_seckill-create']"
-          type="primary"
-          v-db-click @click="add"
-      >添加秒杀商品</el-button>
+      <!-- <el-button v-auth="['marketing-store_seckill-create']" type="primary" v-db-click @click="add"
+        >添加秒杀商品</el-button
+      > -->
       <el-button v-auth="['export-storeSeckill']" class="export" v-db-click @click="exports">导出</el-button>
-      <el-table
-        :data="tableList"
-        v-loading="loading"
-        highlight-current-row
-        no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-        class="mt14"
-      >
+      <el-table :data="tableList" v-loading="loading" highlight-current-row no-userFrom-text="暂无数据"
+        no-filtered-userFrom-text="暂无筛选结果" class="mt14">
         <el-table-column label="ID" width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
@@ -56,7 +52,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="活动标题" min-width="130">
+        <el-table-column label="商品标题" min-width="130">
           <template slot-scope="scope">
             <el-tooltip placement="top" :open-delay="600">
               <div slot="content">{{ scope.row.title }}</div>
@@ -64,7 +60,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="活动简介" min-width="100">
+        <el-table-column label="商品简介" min-width="100">
           <template slot-scope="scope">
             <el-tooltip placement="top" :open-delay="600">
               <div slot="content">{{ scope.row.info }}</div>
@@ -72,58 +68,59 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="原价" min-width="100">
+        <el-table-column label="活动名称" min-width="100">
           <template slot-scope="scope">
-            <span>{{ scope.row.ot_price }}</span>
+            <el-tooltip placement="top" :open-delay="600">
+              <div slot="content">{{ scope.row.activity_name }}</div>
+              <span class="line2">{{ scope.row.activity_name }}</span>
+            </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column label="秒杀价" min-width="100">
+        <el-table-column label="售价" min-width="90">
+          <template slot-scope="scope">
+            <span>{{ scope.row.product_price }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="秒杀价" min-width="90">
           <template slot-scope="scope">
             <span>{{ scope.row.price }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="限量" min-width="100">
+        <el-table-column label="限量" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.quota_show }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="限量剩余" min-width="100">
+        <el-table-column label="限量剩余" min-width="80">
           <template slot-scope="scope">
             <span>{{ scope.row.quota }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="秒杀状态" min-width="100">
+        <el-table-column label="秒杀状态" min-width="90">
           <template slot-scope="scope">
             <span>{{ scope.row.start_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="结束时间" min-width="100">
+        <el-table-column label="活动时间" min-width="190">
           <template slot-scope="scope">
-            <span> {{ scope.row.stop_time | formatDate }}</span>
+            <p>开始：{{ scope.row.start_time}}</p>
+            <p>结束：{{ scope.row.stop_time}}</p>
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="100">
           <template slot-scope="scope">
-            <el-switch
-              class="defineSwitch"
-              :active-value="1"
-              :inactive-value="0"
-              v-model="scope.row.status"
-              :value="scope.row.status"
-              @change="onchangeIsShow(scope.row)"
-              size="large"
-              active-text="开启"
-              inactive-text="关闭"
-            >
+            <el-switch class="defineSwitch" :active-value="1" :inactive-value="0" v-model="scope.row.status"
+              :value="scope.row.status" @change="onchangeIsShow(scope.row)" size="large" active-text="开启"
+              inactive-text="关闭">
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="170">
+        <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-            <a v-if="scope.row.stop_status === 0" v-db-click @click="edit(scope.row)">编辑</a>
+            <!-- <a v-if="scope.row.stop_status === 0" v-db-click @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical" v-if="scope.row.stop_status === 0" />
             <a v-db-click @click="copy(scope.row)">复制</a>
-            <el-divider direction="vertical"></el-divider>
+            <el-divider direction="vertical"></el-divider> -->
             <a v-db-click @click="del(scope.row, '删除秒杀商品', scope.$index)">删除</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="viewInfo(scope.row)">统计</a>
@@ -131,13 +128,8 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
-          :total="total"
-          :page.sync="tableFrom.page"
-          :limit.sync="tableFrom.limit"
-          @pagination="getList"
-        />
+        <pagination v-if="total" :total="total" :page.sync="tableFrom.page" :limit.sync="tableFrom.limit"
+          @pagination="getList" />
       </div>
     </el-card>
   </div>
@@ -145,7 +137,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { seckillListApi, seckillStatusApi, storeSeckillApi } from '@/api/marketing';
+import { seckillListApi, seckillStatusApi, storeSeckillApi, seckillTimeListApi } from '@/api/marketing';
 import { formatDate } from '@/utils/validate';
 import { exportSeckillList } from '@/api/export.js';
 
@@ -226,6 +218,7 @@ export default {
         },
       ],
       tableList: [],
+      timeList: [],
       grid: {
         xl: 7,
         lg: 10,
@@ -238,7 +231,11 @@ export default {
         store_name: '',
         page: 1,
         limit: 15,
+        time_ids: [],
+        time: '',
+        activity_name: '',
       },
+      timeVal: [],
       total: 0,
     };
   },
@@ -253,8 +250,28 @@ export default {
   },
   activated() {
     this.getList();
+    this.seckillTimeList();
   },
   methods: {
+    seckillTimeList() {
+      seckillTimeListApi()
+        .then((res) => {
+          this.timeList = res.data.list.data;
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
+    // 具体日期
+    onchangeTime(e) {
+      this.timeVal = e;
+      this.tableFrom.time = this.timeVal ? this.timeVal.join('-') : '';
+      this.tableFrom.page = 1;
+      if (!e[0]) {
+        this.tableFrom.time = '';
+      }
+      this.getList();
+    },
     // 添加
     add() {
       this.$router.push({ path: this.$routeProStr + '/marketing/store_seckill/create' });
@@ -328,6 +345,7 @@ export default {
     getList() {
       this.loading = true;
       this.tableFrom.status = this.tableFrom.status || '';
+      this.tableFrom.product_id = this.$route.params.product_id || '';
       seckillListApi(this.tableFrom)
         .then(async (res) => {
           let data = res.data;
@@ -359,14 +377,14 @@ export default {
         })
         .catch((res) => {
           this.$message.error(res.msg);
-          row.status = !row.status
+          row.status = !row.status;
         });
     },
   },
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

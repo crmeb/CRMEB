@@ -47,6 +47,10 @@ class PayClient extends BaseClient
     const API_REFUND_URL = 'v3/refund/domestic/refunds';
     //退款查询接口
     const API_REFUND_QUERY_URL = 'v3/refund/domestic/refunds/{out_refund_no}';
+    //发起转账
+    const API_TRANSFER_BILLS_URL = 'v3/fund-app/mch-transfer/transfer-bills';
+    //查询转账
+    const API_TRANSFER_QUERY_URL = 'v3/fund-app/mch-transfer/transfer-bills/out-bill-no/{out_bill_no}';
 
     /**
      * @var string
@@ -312,6 +316,56 @@ class PayClient extends BaseClient
 
     }
 
+    public function transferBills($order_id, $transfer_scene_id, $openid, $user_name, $transfer_amount, $transfer_remark, $notify_url, $user_recv_perception, $transfer_scene_report_infos)
+    {
+        $appid = '';
+        if ($this->type === Order::JSAPI) {
+            $appid = $this->app['config']['wechat']['appid'];
+        } else if ($this->type === 'mini') {
+            $appid = $this->app['config']['miniprog']['appid'];
+        } else if ($this->type === Order::APP) {
+            $appid = $this->app['config']['app']['appid'];
+        }
+        if ($appid === '') {
+            throw new PayException('暂时只支持微信用户、小程序用户、APP微信登录用户提现');
+        }
+        if ($transfer_amount > 200000) {
+            if ($user_name === '') {
+                throw new PayException('金额大于等于2000时，收款人姓名必须填写');
+            }
+            $user_name = $this->encryptor($user_name);
+        } else {
+            $user_name = '';
+        }
+        $data = [];
+        $data['appid'] = $appid;
+        $data['out_bill_no'] = $order_id;
+        $data['transfer_scene_id'] = $transfer_scene_id;
+        $data['openid'] = $openid;
+        $data['user_name'] = $user_name;
+        $data['transfer_amount'] = (int)$transfer_amount;
+        $data['transfer_remark'] = $transfer_remark;
+        $data['notify_url'] = $notify_url;
+        $data['user_recv_perception'] = $user_recv_perception;
+        $data['transfer_scene_report_infos'] = $transfer_scene_report_infos;
+        $res = $this->request(self::API_TRANSFER_BILLS_URL, 'POST', ['json' => $data]);
+        if (!$res || isset($res['code'], $res['message'])) {
+            throw new PayException($res['message'] ?? '微信支付:发起商家转账失败');
+        }
+        return $res;
+    }
+
+    public function queryTransferBills(string $outBillNo)
+    {
+        $res = $this->request($this->getApiUrl(self::API_TRANSFER_QUERY_URL, ['out_bill_no'], [$outBillNo]), 'GET');
+
+        if (!$res) {
+            throw new PayException(500000);
+        }
+
+        return $res;
+    }
+
     /**
      * 退款
      * @param string $outTradeNo
@@ -466,6 +520,28 @@ class PayClient extends BaseClient
     {
         $request = request();
         $success = $request->post('event_type') === 'TRANSACTION.SUCCESS';
+        $data = $this->decrypt($request->post('resource', []));
+
+        $handleResult = call_user_func_array($callback, [json_decode($data), $success]);
+        if (is_bool($handleResult) && $handleResult) {
+            $response = [
+                'code' => 'SUCCESS',
+                'message' => 'OK',
+            ];
+        } else {
+            $response = [
+                'code' => 'FAIL',
+                'message' => $handleResult,
+            ];
+        }
+
+        return response($response, 200, [], 'json');
+    }
+
+    public function handleTransferNotify($callback)
+    {
+        $request = request();
+        $success = $request->post('event_type') === 'MCHTRANSFER.BILL.FINISHED';
         $data = $this->decrypt($request->post('resource', []));
 
         $handleResult = call_user_func_array($callback, [json_decode($data), $success]);

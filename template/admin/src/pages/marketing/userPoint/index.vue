@@ -24,7 +24,7 @@
           <el-col :xl="6" :lg="10" :md="10" :sm="24" :xs="24">
             <el-form-item label="选择时间：" label-for="user_time">
               <el-date-picker
-                  clearable
+                clearable
                 :editable="false"
                 @change="onchangeTime"
                 v-model="timeVal"
@@ -215,14 +215,14 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.tab_data ::v-deep .ivu-form-item-content
-    display flex!important
-.z-price {
-    color: red;
+<style lang="scss" scoped>
+.tab_data ::v-deep .ivu-form-item-content {
+  display: flex !important;
 }
-
+.z-price {
+  color: red;
+}
 .f-price {
-    color: green;
+  color: green;
 }
 </style>

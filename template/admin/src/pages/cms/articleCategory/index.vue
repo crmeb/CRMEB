@@ -17,8 +17,8 @@
               <el-option value="0" label="不显示"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="分类昵称：" prop="title" label-for="status2">
-            <el-input clearable placeholder="请输入分类昵称" v-model="formValidate.title" class="form_content_width" />
+          <el-form-item label="分类名称：" prop="title" label-for="status2">
+            <el-input clearable placeholder="请输入分类名称" v-model="formValidate.title" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
@@ -37,7 +37,11 @@
         :data="categoryList"
       >
         <vxe-table-column field="id" title="ID" tooltip width="80"></vxe-table-column>
-        <vxe-table-column field="title" tree-node title="分类昵称" min-width="130"></vxe-table-column>
+        <vxe-table-column field="title" tree-node title="分类名称" min-width="130">
+          <template v-slot="{ row }">
+            <span>{{ row.title }}</span>
+          </template>
+        </vxe-table-column>
         <vxe-table-column field="image" title="分类图片" min-width="130">
           <template v-slot="{ row }">
             <div class="tabBox_img" v-viewer v-if="row.image">
@@ -103,34 +107,7 @@ export default {
       },
       status: '',
       total: 0,
-      columns1: [
-        {
-          title: 'ID',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: '分类昵称',
-          key: 'title',
-          minWidth: 130,
-        },
-        {
-          title: '分类图片',
-          slot: 'images',
-          minWidth: 130,
-        },
-        {
-          title: '状态',
-          slot: 'statuss',
-          minWidth: 130,
-        },
-        {
-          title: '操作',
-          slot: 'action',
-          fixed: 'right',
-          minWidth: 120,
-        },
-      ],
+      
       FromData: null,
       modalTitleSs: '',
       categoryId: 0,
@@ -154,22 +131,10 @@ export default {
     // 添加
     add() {
       this.$modalForm(categoryAddApi()).then(() => this.getList());
-      // categoryAddApi().then(async res => {
-      //     this.$refs.edits.modals = true;
-      //     this.FromData = res.data;
-      // }).catch(res => {
-      //     this.$message.error(res.msg);
-      // })
     },
     // 编辑
     edit(row) {
       this.$modalForm(categoryEditApi(row.id)).then(() => this.getList());
-      // categoryEditApi(row.id).then(async res => {
-      //     this.FromData = res.data;
-      //     this.$refs.edits.modals = true;
-      // }).catch(res => {
-      //     this.$message.error(res.msg);
-      // })
     },
     // 删除
     del(row, tit) {
@@ -239,7 +204,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

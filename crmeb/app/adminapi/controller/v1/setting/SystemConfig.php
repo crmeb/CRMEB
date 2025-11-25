@@ -14,6 +14,7 @@ use app\adminapi\controller\AuthController;
 use app\Request;
 use app\services\system\config\SystemConfigServices;
 use app\services\system\config\SystemConfigTabServices;
+use app\services\system\SystemPemServices;
 use crmeb\services\CacheService;
 use crmeb\services\easywechat\orderShipping\MiniOrderService;
 use think\facade\App;
@@ -352,34 +353,106 @@ class SystemConfig extends AuthController
         }
 
         if (isset($post['sign_give_point'])) {
-            if (!is_int($post['sign_give_point']) || $post['sign_give_point'] < 0) return app('json')->fail('签到赠送积分请填写大于等于0的整数');
+            if (!is_int($post['sign_give_point']) || $post['sign_give_point'] < 0) {
+                return app('json')->fail('签到赠送积分请填写大于等于0的整数');
+            }
         }
         if (isset($post['sign_give_exp'])) {
-            if ((int)$post['sign_give_exp'] < 0) return app('json')->fail('签到赠送经验请填写大于等于0的整数');
+            if ((int)$post['sign_give_exp'] < 0) {
+                return app('json')->fail('签到赠送经验请填写大于等于0的整数');
+            }
         }
         if (isset($post['integral_frozen'])) {
-            if (!ctype_digit($post['integral_frozen']) || $post['integral_frozen'] < 0) return app('json')->fail('积分冻结天数请填写大于等于0的整数');
+            if (!ctype_digit($post['integral_frozen']) || $post['integral_frozen'] < 0) {
+                return app('json')->fail('积分冻结天数请填写大于等于0的整数');
+            }
         }
         if (isset($post['store_free_postage'])) {
-            if (!is_int($post['store_free_postage']) || $post['store_free_postage'] < 0) return app('json')->fail('满额包邮请填写大于等于0的整数');
+            if (!is_int($post['store_free_postage']) || $post['store_free_postage'] < 0) {
+                return app('json')->fail('满额包邮请填写大于等于0的整数');
+            }
         }
         if (isset($post['withdrawal_fee'])) {
-            if ($post['withdrawal_fee'] < 0 || $post['withdrawal_fee'] > 100) return app('json')->fail('提现手续费范围在0-100之间');
+            if ($post['withdrawal_fee'] < 0 || $post['withdrawal_fee'] > 100) {
+                return app('json')->fail('提现手续费范围在0-100之间');
+            }
         }
-        if (isset($post['routine_auth_type']) && count($post['routine_auth_type']) == 0) return app('json')->fail('微信和手机号登录开关至少开启一个');
+        if (isset($post['routine_auth_type']) && count($post['routine_auth_type']) == 0) {
+            return app('json')->fail('微信和手机号登录开关至少开启一个');
+        }
         if (isset($post['integral_max_num'])) {
-            if (!ctype_digit($post['integral_max_num']) || $post['integral_max_num'] < 0) return app('json')->fail('积分抵扣上限请填写大于等于0的整数');
+            if (!ctype_digit($post['integral_max_num']) || $post['integral_max_num'] < 0) {
+                return app('json')->fail('积分抵扣上限请填写大于等于0的整数');
+            }
         }
         if (isset($post['customer_phone'])) {
-            if (!ctype_digit($post['customer_phone']) || strlen($post['customer_phone']) > 11) return app('json')->fail('客服手机号为11位数字');
+            if (!ctype_digit($post['customer_phone']) || strlen($post['customer_phone']) > 11) {
+                return app('json')->fail('客服手机号为11位数字');
+            }
         }
         if (isset($post['refund_time_available'])) {
-            if (!ctype_digit($post['refund_time_available'])) return app('json')->fail('售后期限必须为大于0的整数');
+            if (!ctype_digit($post['refund_time_available'])) {
+                return app('json')->fail('售后期限必须为大于0的整数');
+            }
+        }
+        if (isset($post['sms_save_type']) && sys_config('sms_account', '') != '') {
+            return app('json')->success(100001);
         }
         if (isset($post['param_filter_data'])) {
             $post['param_filter_data'] = base64_encode($post['param_filter_data']);
         }
-        if (isset($post['sms_save_type']) && sys_config('sms_account', '') != '') return app('json')->success(100001);
+        if (isset($post['product_type_config'])) {
+            if (count($post['product_type_config']) == 0) {
+                return app('json')->fail('商品类型至少选择一项');
+            }
+        }
+        if (isset($post['yue_pay_status']) && $post['yue_pay_status'] == 1) {
+            $post['balance_func_status'] = 1;
+        }
+        if (isset($post['pay_weixin_client_cert'])) {
+            $certData = [
+                'type' => 'wechat',
+                'name' => 'pay_weixin_client_cert',
+                'path' => 'cert' . time() . rand(1000, 9999),
+                'content' => $post['pay_weixin_client_cert'] != '' ? file_get_contents($this->getPemPath($post['pay_weixin_client_cert'])) : '',
+            ];
+            $keyData = [
+                'type' => 'wechat',
+                'name' => 'pay_weixin_client_key',
+                'path' => 'key' . time() . rand(1000, 9999),
+                'content' => $post['pay_weixin_client_key'] != '' ? file_get_contents($this->getPemPath($post['pay_weixin_client_key'])) : '',
+            ];
+            $systemPemServices = app()->make(SystemPemServices::class);
+            $systemPemServices->savePem($certData);
+            $systemPemServices->savePem($keyData);
+        }
+
+        if (isset($post['merchant_cert_path'])) {
+            $merchantCertData = [
+                'type' => 'alipay',
+                'name' => 'merchant_cert_path',
+                'path' => 'merchant_cert' . time() . rand(1000, 9999),
+                'content' => $post['merchant_cert_path'] != '' ? file_get_contents($this->getPemPath($post['merchant_cert_path'])) : '',
+            ];
+            $alipayCertData = [
+                'type' => 'alipay',
+                'name' => 'alipay_cert_path',
+                'path' => 'alipay_cert' . time() . rand(1000, 9999),
+                'content' => $post['alipay_cert_path'] != '' ? file_get_contents($this->getPemPath($post['alipay_cert_path'])) : '',
+            ];
+            $alipayRootCertData = [
+                'type' => 'alipay',
+                'name' => 'alipay_root_cert_path',
+                'path' => 'alipay_root_cert' . time() . rand(1000, 9999),
+                'content' => $post['alipay_root_cert_path'] != '' ? file_get_contents($this->getPemPath($post['alipay_root_cert_path'])) : '',
+            ];
+            $systemPemServices = app()->make(SystemPemServices::class);
+            $systemPemServices->savePem($merchantCertData);
+            $systemPemServices->savePem($alipayCertData);
+            $systemPemServices->savePem($alipayRootCertData);
+        }
+
+
         foreach ($post as $k => $v) {
             $config_one = $this->services->getOne(['menu_name' => $k]);
             if ($config_one) {
@@ -390,6 +463,26 @@ class SystemConfig extends AuthController
         }
         CacheService::clear();
         return app('json')->success(100001);
+    }
+
+    /**
+     * 获取证书文件路径
+     * @param string $path
+     * @return string
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/10/21
+     */
+    public function getPemPath(string $path)
+    {
+        if (strstr($path, 'http://') || strstr($path, 'https://')) {
+            $path = parse_url($path)['path'] ?? '';
+        }
+        $path = root_path('runtime/pem') . ltrim($path, '/');
+        if (!file_exists($path)) {
+            $path = public_path('uploads') . ltrim($path, '/');
+        }
+        return $path;
     }
 
     /**

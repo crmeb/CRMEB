@@ -236,54 +236,63 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.pageOn{
-    border-radius 10px!important
+<style lang="scss" scoped>
+.pageOn {
+  border-radius: 10px !important;
 }
-.list-wrapper
-    padding 10px 0
-    .item
-        display flex
-        align-items center
-        justify-content space-between
-        padding 7px
-        background-color #fff
-        margin 0 10px
-        &:nth-last-child(1)
-            margin-bottom 0!important
-        &.on
-            flex-flow row-reverse
-            .info{
-              .time{  
-                  text-align: left;
-              }
-            }
-
-        .img-box
-            width:125px;
-            height:78px;
-            background #E8E8E8
-        .info
-            display flex
-            flex-direction column
-            justify-content space-between
-            width 209px
-            height:78px;
-            .title
-                color #282828
-                font-size 15px
-            .time
-                color #999999
-                font-size 12px
-                text-align: right ;
-
-        .empty-box
-            width:125px;
-            height:78px;
-        .pictrue
-            width 125px;
-            height 78px;
-            img
-               width 100%;
-               height 100%;
+.list-wrapper {
+  padding: 10px 0;
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px;
+    background-color: #fff;
+    margin: 0 10px;
+    &:nth-last-child(1) {
+      margin-bottom: 0 !important;
+    }
+    &.on {
+      flex-flow: row-reverse;
+      .info {
+        .time {
+          text-align: left;
+        }
+      }
+    }
+    .img-box {
+      width: 125px;
+      height: 78px;
+      background: #e8e8e8;
+    }
+    .info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 209px;
+      height: 78px;
+      .title {
+        color: #282828;
+        font-size: 15px;
+      }
+      .time {
+        color: #999999;
+        font-size: 12px;
+        text-align: right;
+      }
+    }
+    .empty-box {
+      width: 125px;
+      height: 78px;
+    }
+    .pictrue {
+      width: 125px;
+      height: 78px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
 </style>

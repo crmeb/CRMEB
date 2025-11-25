@@ -12,24 +12,20 @@
           <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
             <img :src="item.img" alt="" v-if="item.img" />
             <div class="upload-box" v-else>
-              <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
+              <i class="el-icon-picture-outline" style="font-size: 24px"></i>
             </div>
             <div v-if="!datas[name].isDelete" class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
-              <i class="el-icon-circle-close" style="font-size: 24px;"></i>
+              <i class="el-icon-circle-close" style="font-size: 24px"></i>
             </div>
           </div>
           <div class="info">
             <div class="info-item" v-for="(infos, key) in item.info" :key="key">
               <div class="info-item" v-if="infos.title === '链接'">
                 <span>{{ infos.title }}</span>
-                <div class="input-box" v-db-click @click="getLink(index, key)">
-                  <el-input
-                    v-model="infos.value"
-                    :placeholder="infos.tips"
-                    :maxlength="infos.maxlength"
-                    suffix-icon="el-icon-arrow-right"
-                    readonly
-                  />
+                <div class="input-box" v-db-click>
+                  <el-input v-model="infos.value" :placeholder="infos.tips" :maxlength="infos.maxlength">
+                    <i class="el-icon-link" slot="suffix" @click="getLink(index, key)" />
+                  </el-input>
                 </div>
               </div>
               <div v-else class="info-item">
@@ -71,7 +67,8 @@
           type="primary"
           ghost
           style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-          v-db-click @click="addBox"
+          v-db-click
+          @click="addBox"
           >添加图片
         </el-button>
       </div>
@@ -241,28 +238,25 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .icondrag2 {
   font-size: 26px;
   color: #d8d8d8;
 }
-
 .hot_imgs {
   margin-bottom: 20px;
-
   .title {
     padding: 0 0 13px 0;
     color: #999;
     font-size: 12px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
-
   .list-box {
     .item {
       position: relative;
       display: flex;
+      align-items: center;
       margin-top: 14px;
-
       .move-icon {
         display: flex;
         align-items: center;
@@ -270,9 +264,8 @@ export default {
         width: 30px;
         height: 80px;
         cursor: move;
-        color: #D8D8D8;
+        color: #d8d8d8;
       }
-
       .img-box {
         position: relative;
         width: 80px;
@@ -283,11 +276,9 @@ export default {
           height: 100%;
         }
       }
-
       .info {
         flex: 1;
         margin-left: 22px;
-
         .info-item {
           display: flex;
           align-items: center;
@@ -298,19 +289,16 @@ export default {
             width: 40px;
             font-size: 13px;
           }
-
           .input-box {
             flex: 1;
           }
         }
       }
-
       .delect-btn {
         position: absolute;
         right: -12px;
         top: -12px;
         color: #999999;
-
         .iconfont {
           font-size: 28px;
           color: #999;
@@ -318,12 +306,10 @@ export default {
       }
     }
   }
-
   .add-btn {
     margin-top: 10px;
   }
 }
-
 .upload-box {
   display: flex;
   align-items: center;
@@ -332,9 +318,8 @@ export default {
   height: 100%;
   background: #ccc;
 }
-
 .iconfont {
-  color: #DDDDDD;
+  color: #dddddd;
   font-size: 28px;
 }
 </style>

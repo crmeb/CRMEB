@@ -68,6 +68,8 @@ class NoticeListener implements ListenerInterface
         'send_admin_confirm_take_over' => 'handleSendAdminConfirmTakeOver',
         'send_order_apply_refund' => 'handleSendOrderApplyRefund',
         'kefu_send_extract_application' => 'handleKefuSendExtractApplication',
+        'sign_remind' => 'handleSignRemind',
+        'revenue_received' => 'handleRevenueReceived',
         // add more event-method mappings here...
     ];
 
@@ -166,8 +168,6 @@ class NoticeListener implements ListenerInterface
         $this->getNoticeService('Wechat')->sendOrderPaySuccess($data['uid'], $data);
         //模板消息小程序订阅消息
         $this->getNoticeService('Routine')->sendOrderSuccess($data['uid'], $data['pay_price'], $data['order_id']);
-        //小票打印
-        if (isset($data['cart_id']) && $data['cart_id']) PrintJob::dispatch([$data['id']]);
         return true;
     }
 
@@ -670,6 +670,39 @@ class NoticeListener implements ListenerInterface
         $this->getNoticeService('SysMsg')->kefuSystemSend($data);
         //企业微信通知
         $this->getNoticeService('WeWork')->weComSend($data);
+        return true;
+    }
+
+    /**
+     * 签到提醒
+     * @param $data
+     * @return bool
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2023/9/30
+     */
+    public function handleSignRemind($data)
+    {
+        //站内信
+        $this->getNoticeService('SysMsg')->sendMsg($data['uid'], ['site_name' => sys_config('site_name')]);
+        //短信
+        if ($data['phone']) {
+            $this->getNoticeService('Sms')->sendSms($data['phone'], ['site_name' => sys_config('site_name')]);
+        }
+        return true;
+    }
+
+    protected function handleRevenueReceived($data)
+    {
+        $extractNumber = $data['extractNumber'];
+        $uid = $data['uid'];
+        $order_id = $data['order_id'];
+        $type = $data['type'];
+
+        //模板消息公众号模版消息
+        $this->getNoticeService('Wechat')->sendRevenueReceived($uid, $extractNumber, $order_id, $type);
+        //模板消息小程序订阅消息
+        $this->getNoticeService('Routine')->sendRevenueReceived($uid, $extractNumber, $order_id, $type);
         return true;
     }
 }

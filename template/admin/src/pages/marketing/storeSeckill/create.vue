@@ -1,15 +1,26 @@
 <template>
   <div v-loading="spinShow">
-    <pages-header ref="pageHeader" :title="$route.params.id ? '编辑秒杀商品' : '添加秒杀商品'"
-      :backUrl="$routeProStr + '/marketing/store_seckill/index'"></pages-header>
+    <pages-header
+      ref="pageHeader"
+      :title="$route.params.id ? '编辑秒杀商品' : '添加秒杀商品'"
+      :backUrl="$routeProStr + '/marketing/store_seckill/index'"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-row class="mt30 acea-row row-middle row-center">
         <el-col :span="20">
           <steps :stepList="stepList" :isActive="current"></steps>
         </el-col>
         <el-col :span="23">
-          <el-form class="form mt30" ref="formValidate" :model="formValidate" :rules="ruleValidate"
-            @on-validate="validate" :label-width="labelWidth" :label-position="labelPosition" @submit.native.prevent>
+          <el-form
+            class="form mt30"
+            ref="formValidate"
+            :model="formValidate"
+            :rules="ruleValidate"
+            @on-validate="validate"
+            :label-width="labelWidth"
+            :label-position="labelPosition"
+            @submit.native.prevent
+          >
             <el-form-item label="选择商品：" prop="image_input" v-if="current === 0">
               <div class="picBox" v-db-click @click="changeGoods">
                 <div class="pictrue" v-if="formValidate.image">
@@ -24,14 +35,25 @@
               <el-col :span="24">
                 <el-form-item label="商品轮播图：" prop="images">
                   <div class="acea-row">
-                    <div class="pictrue" v-for="(item, index) in formValidate.images" :key="index" draggable="true"
-                      @dragstart="handleDragStart($event, item)" @dragover.prevent="handleDragOver($event, item)"
-                      @dragenter="handleDragEnter($event, item)" @dragend="handleDragEnd($event, item)">
+                    <div
+                      class="pictrue"
+                      v-for="(item, index) in formValidate.images"
+                      :key="index"
+                      draggable="true"
+                      @dragstart="handleDragStart($event, item)"
+                      @dragover.prevent="handleDragOver($event, item)"
+                      @dragenter="handleDragEnter($event, item)"
+                      @dragend="handleDragEnd($event, item)"
+                    >
                       <img v-lazy="item" />
                       <i class="el-icon-circle-close btndel" v-db-click @click="handleRemove(index)"></i>
                     </div>
-                    <div v-if="formValidate.images.length < 10" class="upLoad acea-row row-center-wrapper" v-db-click
-                      @click="modalPicTap('duo')">
+                    <div
+                      v-if="formValidate.images.length < 10"
+                      class="upLoad acea-row row-center-wrapper"
+                      v-db-click
+                      @click="modalPicTap('duo')"
+                    >
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
                   </div>
@@ -40,24 +62,48 @@
               <el-col :span="24">
                 <el-col v-bind="grid">
                   <el-form-item label="商品标题：" prop="title" label-for="title">
-                    <el-input clearable placeholder="请输入商品标题" v-model="formValidate.title" class="content_width" />
+                    <el-input
+                      clearable
+                      placeholder="请输入商品标题"
+                      v-model="formValidate.title"
+                      class="content_width"
+                      maxlength="80"
+                      show-word-limit
+                    />
                   </el-form-item>
                 </el-col>
               </el-col>
               <el-col :span="24">
                 <el-col v-bind="grid">
                   <el-form-item label="秒杀活动简介：" prop="info" label-for="info">
-                    <el-input placeholder="请输入秒杀活动简介" type="textarea" :rows="4" v-model="formValidate.info"
-                      class="content_width" />
+                    <el-input
+                      placeholder="请输入秒杀活动简介"
+                      type="textarea"
+                      :rows="4"
+                      v-model="formValidate.info"
+                      class="content_width"
+                      maxlength="100"
+                      show-word-limit
+                    />
                   </el-form-item>
                 </el-col>
               </el-col>
               <el-col :span="24">
                 <el-form-item label="活动时间：" prop="section_time">
                   <div>
-                    <el-date-picker clearable :editable="false" type="daterange" format="yyyy-MM-dd"
-                      value-format="yyyy-MM-dd" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"
-                      @change="onchangeTime" class="content_width" v-model="formValidate.section_time"></el-date-picker>
+                    <el-date-picker
+                      clearable
+                      :editable="false"
+                      type="daterange"
+                      format="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd"
+                      range-separator="-"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      @change="onchangeTime"
+                      class="content_width"
+                      v-model="formValidate.section_time"
+                    ></el-date-picker>
                     <div class="grey">设置活动开启结束时间，用户可以在有效时间内参与秒杀</div>
                   </div>
                 </el-form-item>
@@ -78,21 +124,39 @@
                   </el-radio-group>
                 </el-form-item>
               </el-col>
-              <el-col :span="24"
-                v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0">
+              <el-col
+                :span="24"
+                v-if="formValidate.freight != 3 && formValidate.freight != 1 && formValidate.virtual_type == 0"
+              >
                 <el-form-item label="">
                   <div class="acea-row">
-                    <el-input-number :controls="false" :min="0" :max="9999999999" v-model="formValidate.postage"
-                      placeholder="请输入金额" class="content_width" />
+                    <el-input-number
+                      :controls="false"
+                      :min="0"
+                      :max="9999999999"
+                      v-model="formValidate.postage"
+                      placeholder="请输入金额"
+                      class="content_width input-number-unit-class"
+                      class-unit="元"
+                    />
                   </div>
                 </el-form-item>
               </el-col>
               <el-col :span="24" v-if="formValidate.freight == 3 && formValidate.virtual_type == 0">
                 <el-form-item label="" prop="temp_id">
                   <div class="acea-row">
-                    <el-select v-model="formValidate.temp_id" clearable placeholder="请选择运费模板" class="content_width">
-                      <el-option v-for="(item, index) in templateList" :value="item.id" :key="index"
-                        :label="item.name"></el-option>
+                    <el-select
+                      v-model="formValidate.temp_id"
+                      clearable
+                      placeholder="请选择运费模板"
+                      class="content_width"
+                    >
+                      <el-option
+                        v-for="(item, index) in templateList"
+                        :value="item.id"
+                        :key="index"
+                        :label="item.name"
+                      ></el-option>
                     </el-select>
                     <span class="addfont" v-db-click @click="freight">新增运费模板</span>
                   </div>
@@ -102,9 +166,13 @@
               <el-col :span="24">
                 <el-form-item label="开始时间：" prop="time_id">
                   <div>
-                    <el-select v-model="formValidate.time_id" class="content_width">
-                      <el-option v-for="item in timeList" :value="item.id" :key="item.id"
-                        :label="`${item.time}点开始,持续${item.continued}小时`"></el-option>
+                    <el-select v-model="formValidate.time_id" multiple class="content_width">
+                      <el-option
+                        v-for="item in timeList"
+                        :value="item.id"
+                        :key="item.id"
+                        :label="item.time_name"
+                      ></el-option>
                     </el-select>
                     <div class="grey">
                       选择产品开始时间段，该时间段内用户可参与购买；其它时间段会显示活动未开始或已结束。如活动超过一天，则活动期内，每天都会定时开启
@@ -115,8 +183,16 @@
               <el-col :span="24">
                 <el-form-item label="总购买数量限制：" prop="num">
                   <div>
-                    <el-input-number :controls="false" :min="1" placeholder="请输入数量限制" element-id="num" :precision="0"
-                      :max="10000" v-model="formValidate.num" class="content_width" />
+                    <el-input-number
+                      :controls="false"
+                      :min="1"
+                      placeholder="请输入数量限制"
+                      element-id="num"
+                      :precision="0"
+                      :max="10000"
+                      v-model="formValidate.num"
+                      class="content_width"
+                    />
                     <div class="grey">
                       活动有效期内每个用户可购买该商品总数限制。例如设置为4，表示本次活动有效期内，每个用户最多可购买总数4个
                     </div>
@@ -126,8 +202,16 @@
               <el-col :span="24">
                 <el-form-item label="单次购买数量限制：" prop="once_num">
                   <div>
-                    <el-input-number :controls="false" :min="1" placeholder="请输入单次购买数量限制" element-id="once_num"
-                      :precision="0" :max="10000" v-model="formValidate.once_num" class="content_width" />
+                    <el-input-number
+                      :controls="false"
+                      :min="1"
+                      placeholder="请输入单次购买数量限制"
+                      element-id="once_num"
+                      :precision="0"
+                      :max="10000"
+                      v-model="formValidate.once_num"
+                      class="content_width"
+                    />
                     <div class="grey">
                       用户参与秒杀时，一次购买最大数量限制。例如设置为2，表示参与秒杀时，用户一次购买数量最大可选择2个
                     </div>
@@ -136,21 +220,40 @@
               </el-col>
               <el-col :span="24">
                 <el-form-item label="单位：" prop="unit_name" label-for="unit_name">
-                  <el-input placeholder="请输入单位" element-id="unit_name" v-model="formValidate.unit_name"
-                    class="content_width" />
+                  <el-input
+                    placeholder="请输入单位"
+                    element-id="unit_name"
+                    v-model="formValidate.unit_name"
+                    class="content_width"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
                 <el-form-item label="排序：">
-                  <el-input-number :controls="false" placeholder="请输入排序" element-id="sort" :precision="0" :max="10000"
-                    :min="0" v-model="formValidate.sort" class="content_width" />
+                  <el-input-number
+                    :controls="false"
+                    placeholder="请输入排序"
+                    element-id="sort"
+                    :precision="0"
+                    :max="10000"
+                    :min="0"
+                    v-model="formValidate.sort"
+                    class="content_width"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
                 <el-form-item label="秒杀是否参与分销：" props="is_commission" label-for="is_commission">
                   <div>
-                    <el-switch class="defineSwitch" :active-value="1" :inactive-value="0"
-                      v-model="formValidate.is_commission" size="large" active-text="开启" inactive-text="关闭">
+                    <el-switch
+                      class="defineSwitch"
+                      :active-value="1"
+                      :inactive-value="0"
+                      v-model="formValidate.is_commission"
+                      size="large"
+                      active-text="开启"
+                      inactive-text="关闭"
+                    >
                     </el-switch>
                     <div class="grey">商品是否参与商城分销返佣</div>
                   </div>
@@ -158,18 +261,34 @@
               </el-col>
               <el-col :span="24">
                 <el-form-item label="活动状态：" props="status" label-for="status">
-                  <el-switch class="defineSwitch" :active-value="1" :inactive-value="0" v-model="formValidate.status"
-                    size="large" active-text="开启" inactive-text="关闭">
+                  <el-switch
+                    class="defineSwitch"
+                    :active-value="1"
+                    :inactive-value="0"
+                    v-model="formValidate.status"
+                    size="large"
+                    active-text="开启"
+                    inactive-text="关闭"
+                  >
                   </el-switch>
                 </el-form-item>
               </el-col>
               <el-col :span="24">
                 <el-form-item label="规格选择：">
-                  <el-table ref="multipleTable" :row-key="getRowKeys" :data="specsData" border
-                    @selection-change="changeCheckbox">
+                  <el-table
+                    ref="multipleTable"
+                    :row-key="getRowKeys"
+                    :data="specsData"
+                    border
+                    @selection-change="changeCheckbox"
+                  >
                     <el-table-column type="selection" :reserve-selection="true" width="55"> </el-table-column>
-                    <el-table-column :label="item.title" :min-width="item.minWidth" v-for="(item, index) in columns"
-                      :key="index">
+                    <el-table-column
+                      :label="item.title"
+                      :min-width="item.minWidth"
+                      v-for="(item, index) in columns"
+                      :key="index"
+                    >
                       <template slot-scope="scope">
                         <template v-if="item.key">
                           <div>
@@ -177,8 +296,11 @@
                           </div>
                         </template>
                         <template v-else-if="item.slot === 'pic'">
-                          <div class="acea-row row-middle row-center-wrapper" v-db-click
-                            @click="modalPicTap('dan', 'danTable', scope.$index)">
+                          <div
+                            class="acea-row row-middle row-center-wrapper"
+                            v-db-click
+                            @click="modalPicTap('dan', 'danTable', scope.$index)"
+                          >
                             <div class="pictrue pictrueTab" v-if="scope.row.pic">
                               <img v-lazy="scope.row.pic" />
                             </div>
@@ -188,12 +310,23 @@
                           </div>
                         </template>
                         <template v-else-if="item.slot === 'price'">
-                          <el-input-number :controls="false" v-model="scope.row.price" :min="0" :precision="2"
-                            class="priceBox" :active-change="false"></el-input-number>
+                          <el-input-number
+                            :controls="false"
+                            v-model="scope.row.price"
+                            :min="0"
+                            :precision="2"
+                            class="priceBox"
+                            :active-change="false"
+                          ></el-input-number>
                         </template>
                         <template v-else-if="item.slot === 'quota'">
-                          <el-input-number :controls="false" v-model="scope.row.quota" :min="1" active-change
-                            class="priceBox"></el-input-number>
+                          <el-input-number
+                            :controls="false"
+                            v-model="scope.row.quota"
+                            :min="1"
+                            active-change
+                            class="priceBox"
+                          ></el-input-number>
                         </template>
                       </template>
                     </el-table-column>
@@ -211,11 +344,21 @@
             </el-row>
             <el-col :span="24">
               <el-form-item>
-                <el-button class="submission" v-db-click @click="step"
-                  :disabled="($route.params.id && current === 1) || current === 0">上一步
+                <el-button
+                  class="submission"
+                  v-db-click
+                  @click="step"
+                  :disabled="($route.params.id && current === 1) || current === 0"
+                  >上一步
                 </el-button>
-                <el-button :disabled="submitOpen && current === 2" type="primary" class="submission" v-db-click
-                  @click="next('formValidate')">{{ current === 2 ? '提交' : '下一步' }}</el-button>
+                <el-button
+                  :disabled="submitOpen && current === 2"
+                  type="primary"
+                  class="submission"
+                  v-db-click
+                  @click="next('formValidate')"
+                  >{{ current === 2 ? '提交' : '下一步' }}</el-button
+                >
               </el-form-item>
             </el-col>
           </el-form>
@@ -228,8 +371,14 @@
     </el-dialog>
     <!-- 上传图片-->
     <el-dialog :visible.sync="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false">
-      <uploadPictures :isChoice="isChoice" @getPic="getPic" @getPicD="getPicD" :gridBtn="gridBtn" :gridPic="gridPic"
-        v-if="modalPic"></uploadPictures>
+      <uploadPictures
+        :isChoice="isChoice"
+        @getPic="getPic"
+        @getPicD="getPicD"
+        :gridBtn="gridBtn"
+        :gridPic="gridPic"
+        v-if="modalPic"
+      ></uploadPictures>
     </el-dialog>
     <!-- 运费模板-->
     <freight-template ref="template" @addSuccess="productGetTemplate"></freight-template>
@@ -328,10 +477,10 @@ export default {
         id: 0,
         product_id: 0,
         temp_id: '',
-        time_id: '',
+        time_id: [],
         attrs: [],
         items: [],
-        is_commission: 0
+        is_commission: 0,
       },
       description: '',
       templateList: [],
@@ -428,7 +577,7 @@ export default {
             required: true,
             message: '请选择开始时间',
             trigger: 'change',
-            type: 'number',
+            type: 'array',
           },
         ],
       },
@@ -545,7 +694,7 @@ export default {
           postage: row.postage, //设置运费金额
           custom_form: row.custom_form, //自定义表单数据
           virtual_type: row.virtual_type, //虚拟商品类型
-          is_commission: row.is_commission
+          is_commission: row.is_commission,
         };
         this.productAttrs(row);
         this.$refs.goodslist.productRow = null;
@@ -708,12 +857,12 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$nextTick(e => {
+      this.$nextTick((e) => {
         this.$refs.goodslist.formValidate.is_show = -1;
         this.$refs.goodslist.formValidate.type = 3;
         this.$refs.goodslist.getList();
         this.$refs.goodslist.goodsCategory();
-      })
+      });
     }, // 移动
     handleDragStart(e, item) {
       this.dragging = item;
@@ -740,14 +889,14 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.content_width{
+<style lang="scss" scoped>
+.content_width {
   width: 460px;
 }
 .maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
-.grey{
+.grey {
   color: #999;
   font-size: 12px;
 }
@@ -756,22 +905,18 @@ export default {
   height: 50px;
   margin: 0 auto;
 }
-
 .tabBox_img img {
   width: 100%;
   height: 100%;
 }
-
 .priceBox {
   width: 100%;
 }
-
 .form {
   .picBox {
     display: inline-block;
     cursor: pointer;
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -785,7 +930,6 @@ export default {
       width: 100%;
       height: 100%;
     }
-
     .btndel {
       position: absolute;
       z-index: 9;
@@ -795,7 +939,6 @@ export default {
       top: -4px;
     }
   }
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -805,13 +948,11 @@ export default {
     background: rgba(0, 0, 0, 0.02);
     cursor: pointer;
   }
-
   .col {
     color: #2d8cf0;
     cursor: pointer;
   }
 }
-
 .addfont {
   font-size: 12px;
   color: var(--prev-color-primary);

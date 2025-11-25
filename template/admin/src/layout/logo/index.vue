@@ -2,7 +2,8 @@
   <div
     class="layout-logo"
     v-if="$store.state.themeConfig.themeConfig.layout !== 'columns' && !$store.state.themeConfig.themeConfig.isCollapse"
-    v-db-click @click="onThemeConfigChange"
+    v-db-click
+    @click="onThemeConfigChange"
   >
     <img v-if="maxLogo" class="layout-logo-medium-img" :src="maxLogo" />
   </div>
@@ -45,7 +46,11 @@ export default {
         this.$store.state.themeConfig.themeConfig.isCollapse
       )
         return;
-      if (this.$store.state.themeConfig.themeConfig.layout === 'transverse' || this.$store.state.themeConfig.themeConfig.layout === 'classic') return false;
+      if (
+        this.$store.state.themeConfig.themeConfig.layout === 'transverse' ||
+        this.$store.state.themeConfig.themeConfig.layout === 'classic'
+      )
+        return false;
       this.$store.state.themeConfig.themeConfig.isCollapse = !this.$store.state.themeConfig.themeConfig.isCollapse;
     },
     getLogo() {

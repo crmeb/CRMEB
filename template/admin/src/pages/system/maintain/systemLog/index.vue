@@ -1,56 +1,52 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
-            class="tabform"
+          ref="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
+          class="tabform"
         >
           <el-form-item :label="fromList.title + '：'">
             <el-date-picker
-                clearable
-                :editable="false"
-                @change="onchangeTime"
-                v-model="timeVal"
-                format="yyyy/MM/dd"
-                type="daterange"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                style="width:250px;"
+              clearable
+              :editable="false"
+              @change="onchangeTime"
+              v-model="timeVal"
+              format="yyyy/MM/dd"
+              type="daterange"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              style="width: 250px"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="名称：">
             <el-select v-model="formValidate.admin_id" clearable @change="userSearchs" class="form_content_width">
               <el-option
-                  :value="item.id"
-                  v-for="(item, index) in dataList"
-                  :key="index"
-                  :label="item.real_name"
+                :value="item.id"
+                v-for="(item, index) in dataList"
+                :key="index"
+                :label="item.real_name"
               ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="链接：">
             <el-input
-                placeholder="请输入链接"
-                v-model="formValidate.path"
-                class="form_content_width"
-                clearable
+              placeholder="请输入链接"
+              v-model="formValidate.path"
+              class="form_content_width"
+              clearable
             ></el-input>
           </el-form-item>
           <el-form-item label="IP：">
-            <el-input placeholder="请输入IP"
-              v-model="formValidate.ip"
-              clearable
-              class="form_content_width"
-              ></el-input>
+            <el-input placeholder="请输入IP" v-model="formValidate.ip" clearable class="form_content_width"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="userSearch" v-db-click @click="userSearchs">搜索</el-button >
+            <el-button type="primary" class="userSearch" v-db-click @click="userSearchs">搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -65,6 +61,11 @@
         <el-table-column label="ID/名称" min-width="100">
           <template slot-scope="scope">
             <span>{{ scope.row.admin_id + ' / ' + scope.row.admin_name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="100">
+          <template slot-scope="scope">
+            <span>{{ scope.row.path_name }}</span>
           </template>
         </el-table-column>
         <el-table-column label="链接" min-width="100">

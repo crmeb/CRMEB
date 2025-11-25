@@ -8,8 +8,8 @@
           v-for="(color, key) in configData[this.configNum][name].color"
           :key="key"
         >
-          <el-color-picker v-model="color.item" @change="changeColor($event, color)" show-alpha></el-color-picker
-          ><span v-db-click @click="resetBgA(color, index, key)">重置</span>
+          <el-color-picker v-model="color.item" @change="changeColor($event, color)"></el-color-picker
+          ><span class="white-space-nowrap" v-db-click @click="resetBgA(color, index, key)">重置</span>
         </div>
       </el-col>
     </div>
@@ -61,7 +61,7 @@ export default {
   methods: {
     changeColor(e, color) {
       if (!e) {
-        color.item = 'transparent';
+        // color.item = 'transparent';
       }
       // this.$emit('getConfig', this.defaults)
     },
@@ -73,21 +73,18 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .c_row-item {
   margin-top: 10px;
   margin-bottom: 10px;
-
   ::v-deep .ivu-select-dropdown {
     left: -27px !important;
   }
 }
-
 .color-box {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-
   .color-item {
     margin-left: 15px;
 

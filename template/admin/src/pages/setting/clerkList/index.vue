@@ -1,31 +1,25 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="artFrom"
-            :model="artFrom"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="artFrom"
+          :model="artFrom"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="提货点名称：">
-              <el-select v-model="artFrom.store_id" clearable @change="userSearchs" class="form_content_width">
-                <el-option
-                    v-for="item in storeSelectList"
-                    :value="item.id"
-                    :key="item.id"
-                    :label="item.name"
-                ></el-option>
-              </el-select>
+            <el-select v-model="artFrom.store_id" clearable @change="userSearchs" class="form_content_width">
+              <el-option v-for="item in storeSelectList" :value="item.id" :key="item.id" :label="item.name"></el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-        <el-button v-auth="['merchant-store_staff-create']" type="primary" v-db-click @click="add"
-        >添加核销员</el-button>
+      <el-button v-auth="['merchant-store_staff-create']" type="primary" v-db-click @click="add">添加核销员</el-button>
       <el-table
         :data="storeLists"
         ref="table"
@@ -211,13 +205,15 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
+<style lang="scss" scoped>
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>

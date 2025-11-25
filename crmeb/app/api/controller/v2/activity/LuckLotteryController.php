@@ -30,10 +30,14 @@ class LuckLotteryController
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function LotteryInfo(Request $request, $factor)
+    public function LotteryInfo(Request $request, $factor, $lottery_id = 0)
     {
         if (!$factor) return app('json')->fail(100100);
-        $lottery = $this->services->getFactorLottery((int)$factor, '*', ['prize'], true);
+        if ($lottery_id) {
+            $lottery = $this->services->getLottery($lottery_id, '*', ['prize'], true);
+        } else {
+            $lottery = $this->services->getFactorLottery((int)$factor, '*', ['prize'], true);
+        }
         if (!$lottery) {
             return app('json')->fail(410318);
         }
@@ -74,6 +78,7 @@ class LuckLotteryController
         ], true);
 
         $uid = (int)$request->uid();
+        $channel_type = $request->getFromType();
         $key = 'lucklotter_limit_' . $uid;
         if (CacheService::get($key)) {
             return app('json')->fail('您求的频率太过频繁,请稍后请求!');
@@ -96,7 +101,7 @@ class LuckLotteryController
             return app('json')->fail(100100);
         }
 
-        return app('json')->success($this->services->luckLottery($uid, $id));
+        return app('json')->success($this->services->luckLottery($uid, $id, $channel_type));
     }
 
     /**
@@ -110,18 +115,19 @@ class LuckLotteryController
      */
     public function lotteryReceive(Request $request, LuckLotteryRecordServices $lotteryRecordServices)
     {
-        [$id, $name, $phone, $address, $mark] = $request->postMore([
+        [$id, $name, $phone, $address, $detail, $mark] = $request->postMore([
             ['id', 0],
             ['name', ''],
             ['phone', ''],
             ['address', ''],
+            ['detail', ''],
             ['mark', '']
         ], true);
         if (!$id) {
             return app('json')->fail(100100);
         }
         $uid = (int)$request->uid();
-        return app('json')->success($lotteryRecordServices->receivePrize($uid, $id, compact('name', 'phone', 'address', 'mark')) ? 410319 : 410320);
+        return app('json')->success($lotteryRecordServices->receivePrize($uid, $id, compact('name', 'phone', 'address', 'detail', 'mark')) ? 410319 : 410320);
     }
 
     /**

@@ -126,7 +126,7 @@ export default {
     getInvoiceConfig() {
       invoiceConfig().then((res) => {
         this.formItem = res.data;
-        this.formItem.elec_invoice_cate = res.data.elec_invoice_cate || ''
+        this.formItem.elec_invoice_cate = res.data.elec_invoice_cate || '';
         let { elec_invoice_cate, elec_invoice_cate_name } = res.data;
         if (elec_invoice_cate) {
           this.options = [{ id: elec_invoice_cate, name: elec_invoice_cate_name }];
@@ -169,8 +169,8 @@ export default {
   },
 };
 </script>
-<style lang="stylus" scoped>
-.input-width{
+<style lang="scss" scoped>
+.input-width {
   width: 100%;
 }
 </style>

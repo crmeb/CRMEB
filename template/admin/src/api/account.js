@@ -22,7 +22,7 @@ export function AccountLogin(data) {
 }
 
 /**
- * 退出登陆
+ * 退出登录
  * @constructor
  */
 export function AccountLogout() {

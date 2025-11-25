@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-50">
     <el-form ref="formItem" :rules="ruleValidate" :model="formItem" label-width="100px" @submit.native.prevent>
       <el-form-item label="用户ID：" v-if="formItem.uid">
         <el-input
@@ -115,19 +115,19 @@
           <span class="addfont" v-db-click @click="addLabel">新增标签</span>
         </div>
       </el-form-item>
-      <el-form-item label="推广资格：">
+      <el-form-item label="分销禁用：">
         <el-radio-group v-model="formItem.spread_open" class="form-sty">
-          <el-radio :label="1">启用</el-radio>
-          <el-radio :label="0">禁用</el-radio>
+          <el-radio :label="0">是</el-radio>
+          <el-radio :label="1">否</el-radio>
         </el-radio-group>
-        <div class="tip">禁用用户的推广资格后，在任何分销模式下该用户都无分销权限</div>
+        <div class="tip">禁用用户的分销资格后，在任何分销模式下该用户都无分销权限</div>
       </el-form-item>
-      <el-form-item label="推广权限：">
+      <el-form-item label="分销权限：" v-if="formItem.spread_open == 1">
         <el-radio-group v-model="formItem.is_promoter" class="form-sty">
           <el-radio :label="1">开启</el-radio>
-          <el-radio :label="0">锁定</el-radio>
+          <el-radio :label="0">关闭</el-radio>
         </el-radio-group>
-        <div class="tip">指定分销模式下，开启或关闭用户的推广权限</div>
+        <div class="tip">手动开启或关闭用户的分销权限</div>
       </el-form-item>
       <el-form-item label="用户状态：">
         <el-radio-group v-model="formItem.status" class="form-sty">
@@ -191,7 +191,7 @@ export default {
         level: '',
         group_id: '',
         label_id: [],
-        spread_open: 0,
+        spread_open: 1,
         is_promoter: 0,
         status: 1,
       },
@@ -272,7 +272,7 @@ export default {
         level: '',
         group_id: '',
         label_id: [],
-        spread_open: 0,
+        spread_open: 1,
         is_promoter: 0,
         status: 1,
       };
@@ -281,7 +281,7 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .labelInput {
   border: 1px solid #dcdee2;
   width: 400px;
@@ -290,24 +290,19 @@ export default {
   min-height: 30px;
   cursor: pointer;
   font-size: 12px;
-
   .span {
     color: #c5c8ce;
   }
-
   .iconxiayi {
     font-size: 12px;
   }
 }
-
 .ivu-form-item {
   margin-bottom: 10px;
 }
-
 .form-sty {
   width: 400px !important;
 }
-
 .addfont {
   display: inline-block;
   font-size: 12px;
@@ -317,14 +312,15 @@ export default {
   cursor: pointer;
   margin-left: 10px;
 }
-
 .ivu-icon-ios-arrow-down {
   font-size: 14px;
 }
-
 .tip {
   color: #bbb;
   font-size: 12px;
   line-height: 12px;
+}
+.pb-50{
+  padding-bottom: 50px;
 }
 </style>

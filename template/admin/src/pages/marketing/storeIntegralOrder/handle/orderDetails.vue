@@ -127,75 +127,97 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-    .ivu-description-list-title {
-        margin-bottom: 16px;
-        color: #17233d;
-        font-weight: 500;
-        font-size: 14px;
+<style lang="scss" scoped>
+.ivu-description-list-title {
+  margin-bottom: 16px;
+  color: #17233d;
+  font-weight: 500;
+  font-size: 14px;
+}
+.logistics {
+  align-items: center;
+  padding: 10px 0px;
+  .logistics_img {
+    width: 45px;
+    height: 45px;
+    margin-right: 12px;
+    img {
+      width: 100%;
+      height: 100%;
     }
-    .logistics
-        align-items: center
-        padding: 10px 0px
-        .logistics_img
-            width 45px
-            height 45px
-            margin-right: 12px
-            img
-             width 100%
-             height 100%
-        .logistics_cent
-            span
-              display block
-              font-size 12px
-    .trees-coadd
-        width: 100%;
-        height: 400px;
-        border-radius: 4px;
-        overflow: hidden;
-        .scollhide
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            margin-left: 18px;
-            padding: 10px 0 10px 0;
-            box-sizing: border-box;
-            .content
-              font-size 12px
-            .time
-              font-size 12px
-              color: #2d8cf0
-.order_box2
-   position absolute
-   z-index 999999999
-.order_box ::v-deep .ivu-modal-header
-   padding 30x 16px !important
-.order_box ::v-deep .ivu-card
-    font-size 12px !important
-.fontColor1 ::v-deep .ivu-description-term
-    color red !important
-.fontColor1 ::v-deep .ivu-description-detail
-    color red !important
-    padding-bottom 14px !important
-.fontColor2 ::v-deep .ivu-description-detail
-    color #733AF9 !important
-.order_box ::v-deep .ivu-description-term
-    padding-bottom 10px !important
-.order_box ::v-deep .ivu-description-detail
-    padding-bottom 10px !important
-.order_box ::v-deep .ivu-modal-body
-    padding: 0 16px !important
-.fontColor3 ::v-deep .ivu-description-term
-    color #f1a417 !important
-.fontColor3 ::v-deep .ivu-description-detail
-    color #f1a417 !important
-.tabBox_img
-    width 100px
-    height 70px
-    border-radius:4px
-    cursor pointer
-    img
-       width 100%
-       height 100%
-       padding 2px
+  }
+  .logistics_cent {
+    span {
+      display: block;
+      font-size: 12px;
+    }
+  }
+}
+.trees-coadd {
+  width: 100%;
+  height: 400px;
+  border-radius: 4px;
+  overflow: hidden;
+  .scollhide {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    margin-left: 18px;
+    padding: 10px 0 10px 0;
+    box-sizing: border-box;
+    .content {
+      font-size: 12px;
+    }
+    .time {
+      font-size: 12px;
+      color: #2d8cf0;
+    }
+  }
+}
+.order_box2 {
+  position: absolute;
+  z-index: 999999999;
+}
+.order_box ::v-deep .ivu-modal-header {
+  padding: 30x 16px !important;
+}
+.order_box ::v-deep .ivu-card {
+  font-size: 12px !important;
+}
+.fontColor1 ::v-deep .ivu-description-term {
+  color: red !important;
+}
+.fontColor1 ::v-deep .ivu-description-detail {
+  color: red !important;
+  padding-bottom: 14px !important;
+}
+.fontColor2 ::v-deep .ivu-description-detail {
+  color: #733af9 !important;
+}
+.order_box ::v-deep .ivu-description-term {
+  padding-bottom: 10px !important;
+}
+.order_box ::v-deep .ivu-description-detail {
+  padding-bottom: 10px !important;
+}
+.order_box ::v-deep .ivu-modal-body {
+  padding: 0 16px !important;
+}
+.fontColor3 ::v-deep .ivu-description-term {
+  color: #f1a417 !important;
+}
+.fontColor3 ::v-deep .ivu-description-detail {
+  color: #f1a417 !important;
+}
+.tabBox_img {
+  width: 100px;
+  height: 70px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+  }
+}
 </style>

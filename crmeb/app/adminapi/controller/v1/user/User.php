@@ -10,8 +10,10 @@
 // +----------------------------------------------------------------------
 namespace app\adminapi\controller\v1\user;
 
+use app\services\system\config\SystemConfigServices;
 use app\services\user\UserServices;
 use app\adminapi\controller\AuthController;
+use crmeb\services\CacheService;
 use think\exception\ValidateException;
 use think\facade\App;
 
@@ -55,9 +57,16 @@ class User extends AuthController
             ['label_id', ''],
             ['now_money', 'normal'],
             ['field_key', ''],
-            ['isMember', '']
+            ['isMember', ''],
+            ['balance', []],
+            ['integral', []],
+            ['before_pay_time', ''],
+            ['pay_count_num', []],
+            ['pay_count_money', []],
+            ['recharge_count', []],
+            ['agent_level', 0],
         ]);
-        $where['label_id'] = stringToIntArray($where['label_id']);
+        $where['label_id'] = toIntArray($where['label_id']);
         return app('json')->success($this->services->index($where));
     }
 
@@ -316,10 +325,10 @@ class User extends AuthController
      * @return mixed
      * @throws \FormBuilder\Exception\FormBuilderException
      */
-    public function edit_other($id)
+    public function edit_other($id, $type)
     {
         if (!$id) return app('json')->fail(100026);
-        return app('json')->success($this->services->editOther((int)$id));
+        return app('json')->success($this->services->editOther((int)$id, $type));
     }
 
     /**
@@ -450,4 +459,42 @@ class User extends AuthController
         return app('json')->success(400318);
     }
 
+    /**
+     * 新人礼
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/9/21
+     */
+    public function getNewGift()
+    {
+        $data = [
+            'reward_money' => intval(sys_config('reward_money')),
+            'reward_integral' => intval(sys_config('reward_integral')),
+            'reward_coupon' => sys_config('reward_coupon') == '' ? [] : sys_config('reward_coupon')
+        ];
+        return app('json')->success($data);
+    }
+
+    /**
+     * 保存新人礼
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/9/21
+     */
+    public function saveNewGift()
+    {
+        $data = $this->request->postMore([
+            ['reward_money', 0],
+            ['reward_integral', 0],
+            ['reward_coupon', '']
+        ]);
+        $configServices = app()->make(SystemConfigServices::class);
+        foreach ($data as $k => $v) {
+            $configServices->update($k, ['value' => json_encode($v)], 'menu_name');
+        }
+        CacheService::clear();
+        return app('json')->success('保存成功');
+    }
 }

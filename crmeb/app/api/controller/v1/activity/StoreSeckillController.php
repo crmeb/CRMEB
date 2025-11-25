@@ -122,7 +122,10 @@ class StoreSeckillController
      */
     public function detail(Request $request, $id)
     {
-        $data = $this->services->seckillDetail($request, $id);
+        [$time_id] = $request->getMore([
+            ['time_id', 0]
+        ], true);
+        $data = $this->services->seckillDetail($request, $id, $time_id);
         return app('json')->success($data);
     }
 
@@ -134,9 +137,12 @@ class StoreSeckillController
      */
     public function code(Request $request, $id)
     {
+        [$time_id] = $request->getMore([
+            ['time_id', 0]
+        ], true);
         /** @var QrcodeServices $qrcodeService */
         $qrcodeService = app()->make(QrcodeServices::class);
-        $url = $qrcodeService->getRoutineQrcodePath($id, $request->uid(), 2);
+        $url = $qrcodeService->getRoutineQrcodePath($id, $request->uid(), 2, ['time_id' => $time_id]);
         if ($url) {
             return app('json')->success(['code' => $url]);
         } else {

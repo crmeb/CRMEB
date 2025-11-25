@@ -63,8 +63,6 @@
 				</scroll-view>
 			</view>
 		</view>
-		<tabBar v-if="!is_diy" :pagePath="'/pages/goods_cate/goods_cate'"></tabBar>
-		<pageFooter v-else></pageFooter>
 	</view>
 </template>
 
@@ -81,12 +79,10 @@
 		getNavigation
 	} from '@/api/public.js'
 	import pageFooter from '@/components/pageFooter/index.vue'
-	import tabBar from "@/pages/index/visualization/components/tabBar.vue";
 	const app = getApp();
 	export default {
 		components: {
-			pageFooter,
-			tabBar
+			pageFooter
 		},
 		data() {
 			return {

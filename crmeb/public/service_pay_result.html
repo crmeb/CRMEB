@@ -142,7 +142,7 @@
 
         $.ajax({
             type: "GET",
-            url: "https://qhcs.yhlsm.com/api/service_pay_result",
+            url: window.location.protocol + "//" + window.location.host + "/api/service_pay_result",
             data: {
                 sub_mch_id: sub_mch_id,
                 out_trade_no: out_trade_no

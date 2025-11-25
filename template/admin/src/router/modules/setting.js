@@ -414,6 +414,15 @@ export default {
       component: () => import('@/pages/setting/devise/list'),
     },
     {
+      path: 'pages/link',
+      name: `${pre}link`,
+      meta: {
+        auth: ['admin-setting-pages-link'],
+        title: '链接管理',
+      },
+      component: () => import('@/pages/setting/link'),
+    },
+    {
       path: 'pages/cate_page/:type',
       name: `${pre}cate`,
       meta: {
@@ -756,6 +765,27 @@ export default {
         title: '签到配置',
       },
       component: () => import('@/pages/setting/setSystem/index'),
+    },
+    {
+      path: 'ticket',
+      name: `${pre}document`,
+      meta: {
+        ...meta,
+        auth: ['admin-setting-ticket'],
+        title: '打印机设置',
+      },
+      component: () => import('@/pages/setting/ticket'),
+    },
+    {
+      path: 'ticket/content',
+      name: `${pre}content`,
+      meta: {
+        ...meta,
+        auth: ['admin-setting-ticket-content'],
+        title: '小票配置',
+        activeMenu: routePre + '/setting/ticket',
+      },
+      component: () => import('@/pages/setting/ticket/content'),
     },
   ],
 };

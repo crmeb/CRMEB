@@ -88,7 +88,8 @@
             v-for="(item, index) in menuList"
             :key="index"
             :class="{ active: orderConfig.type === item.key }"
-            v-db-click @click.stop="bindTab(item)"
+            v-db-click
+            @click.stop="bindTab(item)"
           >
             {{ item.title }}
           </div>
@@ -134,7 +135,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="more-box" v-if="item.cartInfo.length > 2" v-db-click @click.stop="isOrderHidden = !isOrderHidden">
+                <div
+                  class="more-box"
+                  v-if="item.cartInfo.length > 2"
+                  v-db-click
+                  @click.stop="isOrderHidden = !isOrderHidden"
+                >
                   <span>{{ isOrderHidden ? '展开' : '合上' }}</span>
                 </div>
                 <div class="order-info">
@@ -151,17 +157,33 @@
                     class="btn"
                     type="primary"
                     v-if="item._status._type == 1 && item._status._type != 0 && item.shipping_type != 2"
-                    v-db-click @click.stop="openDelivery(item)"
+                    v-db-click
+                    @click.stop="openDelivery(item)"
                     >发货</el-button
                   >
                   <el-button
                     class="btn"
                     type="primary"
                     v-if="item.refund_status == 1"
-                    v-db-click @click.stop="orderRecord(item.id)"
+                    v-db-click
+                    @click.stop="orderRecord(item.id)"
                     >退款</el-button
                   >
-                  <el-button class="btn" ghost v-db-click @click.stop="orderEdit(item.id)" v-if="item._status._type == 0"
+                  <el-button
+                    class="btn"
+                    ghost
+                    v-db-click
+                    type="primary"
+                    @click.stop="orderPaid(item.id)"
+                    v-if="item.pay_type == 'offline' && item.paid == 0"
+                    >确认付款</el-button
+                  >
+                  <el-button
+                    class="btn"
+                    ghost
+                    v-db-click
+                    @click.stop="orderEdit(item.id)"
+                    v-if="item._status._type == 0"
                     >改价</el-button
                   >
                   <el-button v-if="item.refund_status == 0" class="btn" ghost v-db-click @click.stop="bindRemark(item)"
@@ -186,7 +208,8 @@
             v-for="(item, index) in goodsTab"
             :key="index"
             :class="{ active: goodsConfig.type === item.key }"
-            v-db-click @click.stop="bindGoodsTab(item)"
+            v-db-click
+            @click.stop="bindGoodsTab(item)"
           >
             {{ item.title }}
           </div>
@@ -528,6 +551,23 @@ export default {
         this.getOrderList();
       });
     },
+    orderPaid(id) {
+      this.$modalSure({
+        title: '修改订单为已支付',
+        url: `/order/pay_offline/${id}`,
+        method: 'post',
+        ids: '',
+      })
+        .then((res) => {
+          this.orderConfig.page = 1;
+          this.isOrderScroll = true;
+          this.orderList = [];
+          this.getOrderList();
+        })
+        .catch((res) => {
+          this.$message.error(res.msg);
+        });
+    },
     // 订单退款
     orderRecord(id) {
       this.$modalForm(orderRecord(id)).then(() => this.getOrderList());
@@ -632,28 +672,26 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-::v-deep .ivu-select .ivu-select-dropdown, ::v-deep .ivu-date-picker .ivu-select-dropdown {
+<style lang="scss" scoped>
+::v-deep .ivu-select .ivu-select-dropdown,
+::v-deep .ivu-date-picker .ivu-select-dropdown {
   top: unset !important;
 }
-
 .right-scroll {
   max-height: 650px;
   overflow-y: scroll;
 }
-
 .right-wrapper {
   width: 280px;
-
   .user-wrapper {
     padding: 0 8px;
-
     .user {
       display: flex;
       align-items: center;
       padding: 16px 0;
-      border-bottom: 1px solid #ECECEC;
+      color: #6440c2;
 
+      border-bottom: 1px solid #ececec;
       .avatar {
         width: 42px;
         height: 42px;
@@ -665,49 +703,41 @@ export default {
           border-radius: 50%;
         }
       }
-
       .name {
         max-width: 150px;
         margin-left: 10px;
         font-size: 16px;
         color: rgba(0, 0, 0, 0.65);
       }
-
       .label {
         margin-left: 5px;
         font-size: 12px;
         border-radius: 2px;
         padding: 2px 5px;
-
         &.H5 {
-          background: #FAF1D0;
-          color: #DC9A04;
+          background: #faf1d0;
+          color: #dc9a04;
         }
-
         &.wechat {
           background: rgba(64, 194, 73, 0.16);
-          color: #40C249;
+          color: #40c249;
         }
-
         &.pc {
           background: rgba(100, 64, 194, 0.16);
           color: #6440c2;
+        }
+        .routine {
+          color: #3875ea;
+          background: #d8e5ff;
         }
       }
     }
   }
 }
-
-color #6440C2, &.routine {
-  color: #3875EA;
-  background: #d8e5ff;
-}
-
 .user-info {
   padding-top: 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #ECECEC;
-
+  border-bottom: 1px solid #ececec;
   .item {
     display: flex;
     align-items: center;
@@ -721,7 +751,6 @@ color #6440C2, &.routine {
       color: #666;
     }
   }
-
   .label-list {
     position: relative;
     display: flex;
@@ -731,12 +760,10 @@ color #6440C2, &.routine {
       font-size: 13px;
       color: #666;
     }
-
     .con {
       display: flex;
       flex-wrap: wrap;
       flex: 1;
-
       .label-item {
         margin-right: 8px;
         margin-bottom: 8px;
@@ -746,7 +773,6 @@ color #6440C2, &.routine {
         font-size: 13px;
       }
     }
-
     .right-icon {
       position: absolute;
       right: 0;
@@ -755,26 +781,22 @@ color #6440C2, &.routine {
     }
   }
 }
-
 .order-wrapper {
   .tab-head {
     display: flex;
     align-items: center;
     height: 46px;
-    border-bottom: 1px solid #ECECEC;
-
+    border-bottom: 1px solid #ececec;
     .tab-item {
       position: relative;
       flex: 1;
       text-align: center;
       font-size: 14px;
       cursor: pointer;
-
       &.active {
         color: var(--prev-color-primary);
         font-size: 15px;
         font-weight: 600;
-
         &::after {
           content: ' ';
           position: absolute;
@@ -787,60 +809,48 @@ color #6440C2, &.routine {
       }
     }
   }
-
   .search-box {
     padding: 0 8px;
     margin-top: 12px;
-
     ::v-deep .ivu-input {
       border-radius: 17px;
     }
   }
-
   .order-list {
     padding: 0 8px;
     margin-top: 10px;
   }
-
   .order-item {
     margin-bottom: 18px;
-
     .head {
       display: flex;
       align-items: center;
       justify-content: space-between;
       height: 36px;
       padding: 0 10px;
-      background: #F5F5F5;
+      background: #f5f5f5;
       font-size: 13px;
-
       .left {
         display: flex;
         align-items: center;
         color: var(--prev-color-primary);
-
         .font-box {
           margin-right: 5px;
-
           .iconfont {
             font-size: 18px;
           }
         }
       }
     }
-
     .goods-list {
       max-height: 152px;
       overflow: hidden;
-
       &.auto {
         max-height: none;
       }
-
       .goods-item {
         display: flex;
         margin-top: 15px;
-
         .img-box {
           width: 60px;
           height: 60px;
@@ -852,7 +862,6 @@ color #6440C2, &.routine {
             border-radius: 2px;
           }
         }
-
         .info {
           display: flex;
           flex-direction: column;
@@ -860,7 +869,6 @@ color #6440C2, &.routine {
           width: 180px;
           margin-left: 10px;
           font-size: 14px;
-
           .sku {
             font-size: 12px;
             color: #999999;
@@ -869,7 +877,6 @@ color #6440C2, &.routine {
       }
     }
   }
-
   .more-box {
     text-align: right;
     color: var(--prev-color-primary);
@@ -880,10 +887,8 @@ color #6440C2, &.routine {
       cursor: pointer;
     }
   }
-
   .order-info {
     margin-top: 15px;
-
     .info-item {
       margin-bottom: 5px;
       font-size: 13px;
@@ -895,38 +900,29 @@ color #6440C2, &.routine {
       }
     }
   }
-
   .btn-wrapper {
     margin-top: 10px;
-
     .btn {
-      width: 59px;
-
-      // margin-right: 5px;
       &:last-child {
         margin-right: 0;
       }
     }
   }
 }
-
 .goods-wrapper {
   .goods-tab {
     display: flex;
     justify-content: space-between;
     padding: 0 40px;
-    border-bottom: 1px solid #ECECEC;
-
+    border-bottom: 1px solid #ececec;
     .tab-item {
       position: relative;
       height: 50px;
       line-height: 50px;
       font-size: 14px;
       cursor: pointer;
-
       &.active {
         color: var(--prev-color-primary);
-
         &::after {
           content: ' ';
           position: absolute;
@@ -939,23 +935,18 @@ color #6440C2, &.routine {
       }
     }
   }
-
   .search-box {
     margin-top: 10px;
     padding: 0 8px;
-
     ::v-deep .ivu-input {
       border-radius: 17px;
     }
   }
-
   .list-wrapper {
     padding: 0 8px;
-
     .list-item {
       display: flex;
       margin-top: 15px;
-
       .img-box {
         width: 60px;
         height: 60px;
@@ -967,7 +958,6 @@ color #6440C2, &.routine {
           border-radius: 2px;
         }
       }
-
       .info {
         display: flex;
         flex-direction: column;
@@ -975,7 +965,6 @@ color #6440C2, &.routine {
         width: 180px;
         margin-left: 10px;
         font-size: 14px;
-
         .sku {
           font-size: 12px;
           color: #999999;
@@ -984,12 +973,10 @@ color #6440C2, &.routine {
             margin-right: 10px;
           }
         }
-
         .price {
           display: flex;
           justify-content: space-between;
-          color: #FF0000;
-
+          color: #ff0000;
           .push {
             color: var(--prev-color-primary);
             cursor: pointer;
@@ -999,7 +986,6 @@ color #6440C2, &.routine {
     }
   }
 }
-
 .label-box {
   ::v-deep .ivu-modal-header {
     padding: 0;
@@ -1008,14 +994,13 @@ color #6440C2, &.routine {
     height: 50px;
     border-radius: 6px;
   }
-
   .label-head {
     height: 50px;
     line-height: 50px;
     text-align: center;
     font-size: 13px;
     color: #333333;
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: 1px solid #f0f0f0;
   }
 }
 </style>

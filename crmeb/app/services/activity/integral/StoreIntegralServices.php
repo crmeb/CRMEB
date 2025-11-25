@@ -96,7 +96,7 @@ class StoreIntegralServices extends BaseServices
                 $data['add_time'] = time();
                 $res = $this->dao->save($data);
                 $storeDescriptionServices->saveDescription((int)$res->id, $description, 4);
-                $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 4);
+                $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 4, 1, true);
                 $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 4);
                 if (!$res) throw new AdminException(100022);
             }
@@ -217,7 +217,8 @@ class StoreIntegralServices extends BaseServices
         $header[] = ['title' => '兑换次数', 'slot' => 'quota', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '重量(KG)', 'key' => 'weight', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '体积(m³)', 'key' => 'volume', 'align' => 'center', 'minWidth' => 80];
-        $header[] = ['title' => '商品编号', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '商品编码', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '条形码', 'key' => 'bar_code_number', 'align' => 'center', 'minWidth' => 80];
         $attrs['header'] = $header;
         return $attrs;
     }
@@ -238,7 +239,7 @@ class StoreIntegralServices extends BaseServices
         $count = 0;
         foreach ($value as $suk) {
             $detail = explode(',', $suk);
-            $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => $type, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota,quota_show', 'suk');
+            $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => $type, 'suk' => $suk], 'bar_code,bar_code_number,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota,quota_show', 'suk');
             if (count($sukValue)) {
                 foreach ($detail as $k => $v) {
                     $valueNew[$count]['value' . ($k + 1)] = $v;
@@ -249,9 +250,9 @@ class StoreIntegralServices extends BaseServices
                 $valueNew[$count]['cost'] = $sukValue[$suk]['cost'] ? floatval($sukValue[$suk]['cost']) : 0;
                 $valueNew[$count]['ot_price'] = isset($sukValue[$suk]['ot_price']) ? floatval($sukValue[$suk]['ot_price']) : 0;
                 $valueNew[$count]['stock'] = $sukValue[$suk]['stock'] ? intval($sukValue[$suk]['stock']) : 0;
-//                $valueNew[$count]['quota'] = $sukValue[$suk]['quota'] ? intval($sukValue[$suk]['quota']) : 0;
                 $valueNew[$count]['quota'] = isset($sukValue[$suk]['quota_show']) && $sukValue[$suk]['quota_show'] ? intval($sukValue[$suk]['quota_show']) : 0;
                 $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
+                $valueNew[$count]['bar_code_number'] = $sukValue[$suk]['bar_code_number'] ?? '';
                 $valueNew[$count]['weight'] = $sukValue[$suk]['weight'] ? floatval($sukValue[$suk]['weight']) : 0;
                 $valueNew[$count]['volume'] = $sukValue[$suk]['volume'] ? floatval($sukValue[$suk]['volume']) : 0;
                 $valueNew[$count]['brokerage'] = $sukValue[$suk]['brokerage'] ? floatval($sukValue[$suk]['brokerage']) : 0;

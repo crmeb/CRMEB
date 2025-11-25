@@ -5,18 +5,18 @@
       <div class="acea-row row-middle">
         <span class="label_text">时间选择：</span>
         <el-date-picker
-            clearable
-            v-model="timeVal"
-            type="daterange"
-            :editable="false"
-            @change="onchangeTime"
-            format="yyyy/MM/dd"
-            value-format="yyyy/MM/dd"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            :picker-options="pickerOptions"
-            style="width: 250px"
-            class="mr20"
+          clearable
+          v-model="timeVal"
+          type="daterange"
+          :editable="false"
+          @change="onchangeTime"
+          format="yyyy/MM/dd"
+          value-format="yyyy/MM/dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+          style="width: 250px"
+          class="mr20"
         ></el-date-picker>
       </div>
     </el-card>
@@ -25,7 +25,7 @@
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     </el-card>
     <div class="code-row-bg">
-      <el-card :bordered="false" shadow="never" class="ivu-mt">
+      <el-card :bordered="false" shadow="never" class="ivu-mt mr8">
         <div class="acea-row row-between-wrapper">
           <h3 class="statics-header-title">余额来源分析</h3>
           <div class="change-style" v-db-click @click="echartLeft = !echartLeft">切换样式</div>
@@ -65,7 +65,7 @@
           </el-table>
         </div>
       </el-card>
-      <el-card :bordered="false" shadow="never" class="ivu-mt ml10">
+      <el-card :bordered="false" shadow="never" class="ivu-mt ml8 pr10">
         <div class="acea-row row-between-wrapper">
           <h3 class="statics-header-title">余额消耗</h3>
           <div class="change-style" v-db-click @click="echartRight = !echartRight">切换样式</div>
@@ -325,7 +325,7 @@ export default {
   justify-content: space-between;
 }
 .code-row-bg .ivu-mt {
-  min-width: 49%;
+  min-width: 50%;
 }
 .ech-box {
   margin-top: 10px;
@@ -357,7 +357,7 @@ export default {
   border-radius: 5px;
   height: 8px;
   background-color: var(--prev-color-primary);
-  z-index: 9999;
+  z-index: 999;
 }
 .num {
   white-space: nowrap;

@@ -7,10 +7,17 @@
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form :model="formData" label-width="100px" :rules="ruleValidate">
-        <el-form-item label="二维码名称：">
-          <el-input clearable v-model="formData.name" placeholder="请输入二维码名称" class="content_width"></el-input>
+        <el-form-item label="渠道码名称：">
+          <el-input
+            clearable
+            v-model="formData.name"
+            placeholder="请输入渠道码名称"
+            class="content_width"
+            maxlength="20"
+            show-word-limit
+          ></el-input>
         </el-form-item>
-        <el-form-item label="二维码分组：">
+        <el-form-item label="渠道码分组：">
           <el-select clearable v-model="formData.cate_id" class="content_width">
             <el-option
               :value="item.id"
@@ -59,9 +66,9 @@
               :precision="0"
               v-model="formData.time"
               placeholder="请输入天数"
-              class="content_width"
+              class="content_width input-number-unit-class"
+              class-unit="天"
             ></el-input-number>
-            天
           </div>
           <div class="trip">临时码过期后不能再扫码,永久二维码最大创建数量为10万个</div>
         </el-form-item>
@@ -114,7 +121,7 @@
               :on-exceeded-size="handleMaxSize"
               class="mr20"
               style="margin-top: 1px"
-              accept="image/*"
+              accept="image/*,.mp3"
               :before-upload="beforeUpload"
             >
               <el-button type="primary">上传</el-button>
@@ -123,10 +130,12 @@
           <span v-show="formData.type === 'image'">文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span>
           <span v-show="formData.type === 'voice'">文件最大2Mb，支持mp3格式,播放长度不超过60s</span>
         </el-form-item>
+        <el-form-item>
+          <el-button class="submit" type="primary" v-db-click @click="save" :loading="loading" :disabled="disabled"
+            >立即提交</el-button
+          >
+        </el-form-item>
       </el-form>
-      <el-button class="submit" type="primary" v-db-click @click="save" :loading="loading" :disabled="disabled"
-        >立即提交</el-button
-      >
     </el-card>
     <el-dialog :visible.sync="customerShow" title="请选择商城用户" :show-close="true" width="1000px">
       <customerInfo v-if="customerShow" @imageObject="imageObject"></customerInfo>
@@ -168,10 +177,10 @@ import { wechatQrcodeSaveApi, wechatQrcodeTree, wechatQrcodeDetail } from '@/api
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import customerInfo from '@/components/customerInfo';
-import { isPicUpload } from '@/utils';
+import { isPicUpload, isVoiceUpload } from '@/utils';
 
 export default {
-  name: 'storeCouponCreate',
+  name: 'createCode',
   components: {
     goodsList,
     newsCategory,
@@ -245,7 +254,12 @@ export default {
   },
   methods: {
     beforeUpload(file) {
-      return isPicUpload(file);
+      if (this.formData.type === 'image') {
+        return isPicUpload(file);
+      }
+      if (this.formData.type === 'voice') {
+        return isVoiceUpload(file);
+      }
     },
     activeData(dataLabel) {
       this.labelShow = false;
@@ -398,51 +412,41 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .content_width {
   width: 460px;
 }
-
 .info {
   color: #888;
   font-size: 12px;
 }
-
 .ivu-row {
   border: 1px solid #f2f2f2;
 }
-
 .ivu-form-item {
   padding: 10px 0;
   max-width: 1100px;
 }
-
 .ivu-form ::v-deep .ivu-form-item-label {
   font-weight: 700;
   font-size: 14px !important;
 }
-
 .ivu-input-wrapper {
   width: 320px;
 }
-
 .ivu-radio-wrapper {
   margin-right: 30px;
   font-size: 14px !important;
 }
-
 .ivu-radio-wrapper ::v-deep .ivu-radio {
   margin-right: 10px;
 }
-
 .ivu-input-number {
   width: 160px;
 }
-
 .ivu-date-picker {
   width: 320px;
 }
-
 .ivu-icon-ios-camera-outline {
   width: 58px;
   height: 58px;
@@ -453,7 +457,6 @@ export default {
   cursor: pointer;
   vertical-align: middle;
 }
-
 .upload-list {
   width: 58px;
   height: 58px;
@@ -465,40 +468,30 @@ export default {
   cursor: pointer;
   vertical-align: middle;
 }
-
 ::v-deep .el-tag {
   margin-right: 5px;
 }
-
 .upload-list img {
   display: block;
   width: 100%;
   height: 100%;
 }
-
 .ivu-icon-ios-close-circle {
   position: absolute;
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
 }
-
 .modelBox ::v-deep .ivu-modal-body {
   padding: 0 16px 16px 16px !important;
 }
-
 .header-save {
   display: flex;
   justify-content: space-between;
 }
-
 .trip {
   font-size: 12px;
   color: #ccc;
-}
-
-.submit {
-  margin: 30px 0 30px 50px;
 }
 
 textarea {
@@ -508,11 +501,9 @@ textarea {
   outline-color: #2d8cf0;
   font-size: 14px;
 }
-
 .picBox {
   display: inline-block;
   cursor: pointer;
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -521,7 +512,6 @@ textarea {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.02);
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -533,12 +523,10 @@ textarea {
       height: 100%;
     }
   }
-
   .iconfont {
     color: #898989;
   }
 }
-
 .addfont {
   display: inline-block;
   font-size: 12px;
@@ -548,15 +536,12 @@ textarea {
   cursor: pointer;
   margin-left: 10px;
 }
-
 .iconxiayi {
   font-size: 14px;
 }
-
 .ivu-page-header-title {
   padding-bottom: 0;
 }
-
 .news-box {
   width: 200px;
   background-color: #f2f2f2;
@@ -564,12 +549,10 @@ textarea {
   border-radius: 10px;
   margin-top: 20px;
   position: relative;
-
   .news_pic {
     width: 100%;
     height: 150px;
   }
-
   .del_icon {
     position: absolute;
     right: -8px;
@@ -577,7 +560,6 @@ textarea {
     cursor: pointer;
   }
 }
-
 .labelInput {
   border: 1px solid #dcdee2;
   width: 460px;
@@ -585,12 +567,10 @@ textarea {
   border-radius: 5px;
   min-height: 30px;
   cursor: pointer;
-
   .span {
     font-size: 12px;
     color: #c5c8ce;
   }
-
   .ivu-icon-ios-arrow-down {
     font-size: 14px;
     color: #808695;

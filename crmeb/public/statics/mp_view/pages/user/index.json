@@ -4,7 +4,6 @@
   "navigationStyle": "custom",
   "navigationBarTextStyle": "black",
   "usingComponents": {
-    "tab-bar": "/pages/index/visualization/components/tabBar",
     "page-footer": "/components/pageFooter/index",
     "edit-user-modal": "/components/eidtUserModal/index"
   }

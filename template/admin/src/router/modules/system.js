@@ -162,7 +162,7 @@ export default {
       meta: {
         auth: ['system-config-system_config_tab-list'],
         title: '配置列表',
-        activeMenu: routePre + "/system/config/system_config_tab/index"
+        activeMenu: routePre + '/system/config/system_config_tab/index',
       },
       component: () => import('@/pages/system/configTab/list'),
     },

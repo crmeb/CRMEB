@@ -18,7 +18,9 @@ export function formatRichText(html) {
     match = match.replace(/width:[^;]+;/gi, 'max-width:100%;').replace(/width:[^;]+;/gi, 'max-width:100%;');
     return match;
   });
-  newContent = newContent.replace(/<br[^>]*\/>/gi, '');
+
+  // 如果需要移除换行请打开
+  // newContent = newContent.replace(/<br[^>]*\/>/gi, '');
   newContent = newContent.replace(
     /\<img/gi,
     '<img style="max-width:100%;height:auto;display:block;margin-top:0;margin-bottom:0;"',

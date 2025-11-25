@@ -10,7 +10,8 @@
         <el-form-item label="优惠券名称：">
           <el-input
             v-model="formData.coupon_title"
-            :maxlength="18"
+            maxlength="18"
+            show-word-limit
             placeholder="请输入优惠券名称"
             class="content_width"
           ></el-input>
@@ -21,22 +22,29 @@
             :min="1"
             :max="9999999999"
             v-model="formData.coupon_price"
-            class="content_width"
+            class="content_width input-number-unit-class"
+            class-unit="元"
             :disabled="isEdit"
           ></el-input-number>
         </el-form-item>
-        <el-form-item label="发送方式：">
+        <el-form-item label="用户类型：">
+          <el-radio-group v-model="formData.user_type" :disabled="isEdit" @input="changeUserType">
+            <el-radio :label="1">普通用户</el-radio>
+            <el-radio :label="2">付费会员用户</el-radio>
+          </el-radio-group>
+          <div class="tip">
+            普通用户：所有用户都能获取到的优惠券；<br />
+            付费会员用户：仅付费会员才能领取的优惠券；
+          </div>
+        </el-form-item>
+        <el-form-item label="发送方式：" v-show="formData.user_type == 1">
           <el-radio-group v-model="formData.receive_type" :disabled="isEdit">
             <el-radio :label="1">用户领取</el-radio>
-            <el-radio :label="2">新用户自动发放</el-radio>
             <el-radio :label="3">系统赠送</el-radio>
-            <el-radio :label="4">付费会员专享</el-radio>
           </el-radio-group>
           <div class="tip">
             用户领取：用户需要手动领取优惠券；<br />
-            新用户自动发放：新注册的用户自动发放；<br />
-            系统赠送：后台发放指定用户或者添加到商品里面用户购买该商品获得；<br />
-            付费会员专享：仅付费会员可以领取和使用
+            系统赠送：1.后台发放指定用户。2.添加到商品里面用户购买该商品获得。3.设置新人礼页面新用户注册赠送优惠券；
           </div>
         </el-form-item>
         <el-form-item label="优惠劵类型：">
@@ -52,9 +60,9 @@
             <div class="acea-row">
               <div v-for="(item, index) in productList" :key="index" class="pictrue">
                 <img v-lazy="item.image" />
-                <i class="el-icon-error btndel" v-db-click @click="remove(item.product_id)"></i>
+                <i  v-if="formData.type == 2 && !formData.id" class="el-icon-error btndel" v-db-click @click="remove(item.product_id)"></i>
               </div>
-              <div class="upLoad acea-row row-center-wrapper" v-db-click @click="modals = true">
+              <div v-if="formData.type == 2 && !formData.id" class="upLoad acea-row row-center-wrapper" v-db-click @click="modals = true">
                 <i class="el-icon-goods" style="font-size: 24px"></i>
               </div>
             </div>
@@ -84,12 +92,13 @@
             :min="0"
             :max="9999999999"
             v-model="formData.use_min_price"
-            class="content_width"
+            class="content_width input-number-unit-class"
             :disabled="isEdit"
+            class-unit="元"
           ></el-input-number>
           <div class="info">填写优惠券的最低消费金额</div>
         </el-form-item>
-        <el-form-item label="使用时间：">
+        <el-form-item label="有效期：">
           <el-radio-group v-model="isCouponTime" :disabled="isEdit">
             <el-radio :label="1">天数</el-radio>
             <el-radio :label="0">时间段</el-radio>
@@ -101,8 +110,9 @@
             :min="0"
             v-model="formData.coupon_time"
             :precision="0"
-            class="content_width"
+            class="content_width input-number-unit-class"
             :disabled="isEdit"
+            class-unit="天"
           ></el-input-number>
           <div class="info">领取后多少天内有效</div>
         </el-form-item>
@@ -142,24 +152,21 @@
             :disabled="isEdit"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="优惠券发布数量：" v-if="formData.receive_type != 2 && formData.receive_type != 3">
+        <el-form-item label="优惠券发布数量：" v-show="formData.receive_type == 1">
           <el-radio-group v-model="formData.is_permanent" :disabled="isEdit">
             <el-radio :label="0">限量</el-radio>
             <el-radio :label="1">不限量</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item
-          v-show="!formData.is_permanent"
-          label=""
-          v-if="formData.receive_type != 2 && formData.receive_type != 3"
-        >
+        <el-form-item v-show="!formData.is_permanent" label="">
           <el-input-number
             :controls="false"
             :min="isEdit ? formData.total_count : 1"
             :max="9999999999"
             v-model="formData.total_count"
             :precision="0"
-            class="content_width"
+            class="content_width input-number-unit-class"
+            class-unit="张"
           ></el-input-number>
           <div class="info">填写优惠券的发布数量</div>
         </el-form-item>
@@ -170,7 +177,8 @@
             :max="9999999999"
             v-model="formData.receive_limit"
             :precision="0"
-            class="content_width"
+            class="content_width input-number-unit-class"
+            class-unit="张"
           ></el-input-number>
           <div class="info">填写每个用户可以领取多少张</div>
         </el-form-item>
@@ -216,6 +224,7 @@ export default {
         end_use_time: 0,
         start_time: 0,
         end_time: 0,
+        user_type: 1,
         receive_type: 1,
         is_permanent: 1,
         total_count: 1,
@@ -249,6 +258,11 @@ export default {
     }
   },
   methods: {
+    changeUserType() {
+      if (this.formData.user_type == 2) {
+        this.formData.receive_type = 1;
+      }
+    },
     // 品类
     getCategoryList() {
       cascaderListApi(1).then(async (res) => {
@@ -270,6 +284,7 @@ export default {
           }
           this.formData.coupon_time = data.coupon_time;
           this.formData.receive_type = data.receive_type;
+          this.formData.user_type = data.user_type;
           this.formData.is_permanent = data.is_permanent;
           this.formData.status = data.status;
           this.formData.product_id = data.product_id;
@@ -287,7 +302,6 @@ export default {
             this.formData.start_use_time = this.makeDate(data.start_use_time * 1000);
             this.formData.end_use_time = this.makeDate(data.end_use_time * 1000);
           }
-          console.log(this.datetime1);
           if (data.start_time) {
             this.isReceiveTime = 1;
             this.datetime2 = [data.start_time * 1000, data.end_time * 1000];
@@ -354,9 +368,9 @@ export default {
         this.formData.start_time = 0;
         this.formData.end_time = 0;
       }
-      if (this.formData.receive_type == 2 || this.formData.receive_type == 3) {
-        this.formData.is_permanent = 1;
-      }
+      // if (this.formData.receive_type == 2 || this.formData.receive_type == 3) {
+      //   this.formData.is_permanent = 1;
+      // }
       if (this.formData.is_permanent) {
         this.formData.total_count = 0;
       } else {
@@ -449,6 +463,7 @@ export default {
 .content_width {
   width: 414px;
 }
+
 .info {
   color: #888;
   font-size: 12px;
@@ -494,6 +509,7 @@ export default {
   right: 0;
   transform: translate(50%, -50%);
 }
+
 .tip {
   color: #888;
   font-size: 12px;

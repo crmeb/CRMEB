@@ -1,8 +1,7 @@
-@import './base.scss';
-@import './app.scss';
-@import './other.scss';
-@import './element.scss';
-@import './iview.scss';
-@import './media/media.scss';
-@import './variables.scss';
-@import './dark.scss';
+@use './base.scss' as *;
+@use './app.scss' as *;
+@use './other.scss' as *;
+@use './element.scss' as *;
+@use './media/media.scss' as *;
+@use './variables.scss' as *;
+@use './dark.scss' as *;

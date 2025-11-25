@@ -119,6 +119,8 @@ class StoreBargainServices extends BaseServices
             } else {
                 $item['start_name'] = '已结束';
             }
+            $item['start_time'] = $item['start_time'] ? date('Y-m-d H:i:s', $item['start_time']) : '';
+            $item['stop_time'] = $item['stop_time'] ? date('Y-m-d 23:59:59', $item['stop_time']) : '';
         }
         if ($stopIds) {
             $this->dao->batchUpdate($stopIds, ['status' => 0]);
@@ -175,7 +177,7 @@ class StoreBargainServices extends BaseServices
                 $data['add_time'] = time();
                 $res = $this->dao->save($data);
                 $storeDescriptionServices->saveDescription((int)$res->id, $description, 2);
-                $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 2);
+                $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 2, 1, true);
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 2);
                 if (!$res) throw new AdminException(100022);
             }
@@ -237,9 +239,11 @@ class StoreBargainServices extends BaseServices
             foreach ($bargainAttr as &$sv) {
                 if ($pv['detail'] == $sv['detail']) {
                     $productAttr[$pk] = $sv;
+                    $productAttr[$pk]['r_price'] = $pv['price'];
                 }
             }
             $productAttr[$pk]['detail'] = json_decode($productAttr[$pk]['detail']);
+            $productAttr[$pk]['r_price'] = $productAttr[$pk]['r_price'] ?? $productAttr[$pk]['price'];
         }
         $attrs['items'] = $items;
         $attrs['value'] = $productAttr;
@@ -250,12 +254,13 @@ class StoreBargainServices extends BaseServices
         $header[] = ['title' => '砍价起始金额', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '砍价最低价', 'slot' => 'min_price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
-        $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '日常售价', 'key' => 'r_price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '库存', 'key' => 'stock', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '限量', 'slot' => 'quota', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '重量(KG)', 'key' => 'weight', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '体积(m³)', 'key' => 'volume', 'align' => 'center', 'minWidth' => 80];
-        $header[] = ['title' => '商品编号', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '商品编码', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '条形码', 'key' => 'bar_code_number', 'align' => 'center', 'minWidth' => 80];
         $attrs['header'] = $header;
         return $attrs;
     }
@@ -282,7 +287,7 @@ class StoreBargainServices extends BaseServices
         foreach ($value as $suk) {
             $detail = explode(',', $suk);
 
-            $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => $type, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota', 'suk');
+            $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => $type, 'suk' => $suk], 'bar_code,bar_code_number,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota', 'suk');
             if (count($sukValue)) {
                 foreach ($detail as $k => $v) {
                     $valueNew[$count]['value' . ($k + 1)] = $v;
@@ -296,6 +301,7 @@ class StoreBargainServices extends BaseServices
                 $valueNew[$count]['stock'] = $sukValue[$suk]['stock'] ? intval($sukValue[$suk]['stock']) : 0;
                 $valueNew[$count]['quota'] = $sukValue[$suk]['quota'] ? intval($sukValue[$suk]['quota']) : 0;
                 $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
+                $valueNew[$count]['bar_code_number'] = $sukValue[$suk]['bar_code_number'] ?? '';
                 $valueNew[$count]['weight'] = $sukValue[$suk]['weight'] ? floatval($sukValue[$suk]['weight']) : 0;
                 $valueNew[$count]['volume'] = $sukValue[$suk]['volume'] ? floatval($sukValue[$suk]['volume']) : 0;
                 $valueNew[$count]['brokerage'] = $sukValue[$suk]['brokerage'] ? floatval($sukValue[$suk]['brokerage']) : 0;
@@ -371,6 +377,7 @@ class StoreBargainServices extends BaseServices
         foreach ($list as &$item) {
             $item['people'] = $bargainUserService->getUserIdList($item['id']);
             $item['price'] = floatval($item['price']);
+            $item['product_price'] = floatval($item['product_price']);
         }
         return $list;
     }

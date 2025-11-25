@@ -40,7 +40,7 @@ class StoreOrderRefundDao extends BaseDao
             }
         })->when(isset($where['order_id']) && $where['order_id'] != '', function ($query) use ($where) {
             $query->where(function ($q) use ($where) {
-                $q->whereLike('order_id', '%' . $where['order_id'] . '%')->whereOr('store_order_id', 'IN', function ($orderModel) use ($where) {
+                $q->where('order_id|refund_express', 'like', '%' . $where['order_id'] . '%')->whereOr('store_order_id', 'IN', function ($orderModel) use ($where) {
                     $orderModel->name('store_order')->field('id')->whereLike('order_id', '%' . $where['order_id'] . '%');
                 });
             });
@@ -190,5 +190,10 @@ class StoreOrderRefundDao extends BaseDao
                 $query->whereTime($field, 'between', $time);
             }
         })->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
+    }
+
+    public function orderIsRefund($store_order_id)
+    {
+        return boolval($this->getModel()->where('store_order_id', $store_order_id)->whereIn('refund_type', [1, 2, 4, 5])->where('is_cancel', 0)->count());
     }
 }

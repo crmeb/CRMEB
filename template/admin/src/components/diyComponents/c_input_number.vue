@@ -67,7 +67,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .numbox {
   display: flex;
   align-items: center;

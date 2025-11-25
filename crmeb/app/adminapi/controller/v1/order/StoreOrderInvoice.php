@@ -180,7 +180,7 @@ class StoreOrderInvoice extends AuthController
         foreach ($cartInfo as $item) {
             $goods[] = [
                 'store_name' => $item['cart_info']['productInfo']['store_name'],
-                'unit_price' => bcadd($item['cart_info']['sum_price'], $item['cart_info']['postage_price'], 2),
+                'unit_price' => bcadd($item['cart_info']['truePrice'], $item['cart_info']['postage_price'], 2),
                 'num' => $item['cart_info']['cart_num']
             ];
         }

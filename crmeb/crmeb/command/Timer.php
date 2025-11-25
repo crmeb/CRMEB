@@ -58,12 +58,12 @@ class Timer extends Command
     protected function execute(Input $input, Output $output)
     {
         $this->init($input, $output);
-        Worker::$pidFile = app()->getRootPath().'runtime/timer.pid';
+        Worker::$pidFile = app()->getRootPath() . 'runtime/timer.pid';
         $task = new Worker();
         date_default_timezone_set('PRC');
         $task->count = 1;
-        $task->onWorkerStart = function () {
-            app()->make(SystemCrontabServices::class)->crontabCommandRun();
+        $task->onWorkerStart = function () use ($task) {
+            app()->make(SystemCrontabServices::class)->crontabCommandRun($task);
         };
         $task->runAll();
     }

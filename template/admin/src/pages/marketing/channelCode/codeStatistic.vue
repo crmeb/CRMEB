@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       timeVal: [],
-      pickerOptions:this.$timeOptions,
+      pickerOptions: this.$timeOptions,
       style: { height: '400px' },
       infoList: {},
       infoList2: {},
@@ -101,7 +101,7 @@ export default {
         },
       ],
       optionData: {},
-      spinShow: false
+      spinShow: false,
     };
   },
   created() {

@@ -45,11 +45,11 @@ class LuckLotteryServices extends BaseServices
      * @var string[]
      */
     protected $lottery_factor = [
-        '1' => '积分',
-        '2' => '余额',
-        '3' => '下单支付成功',
+        '1' => '积分抽取',
+//        '2' => '余额抽奖',
+        '3' => '订单支付',
         '4' => '订单评价',
-        '5' => '关注公众号'
+//        '5' => '关注公众号抽奖'
     ];
 
     /**
@@ -65,39 +65,40 @@ class LuckLotteryServices extends BaseServices
     {
         [$page, $limit] = $this->getPageValue();
         $where['is_del'] = 0;
-        $list = $this->dao->getList($where, '*', ['prize'], $page, $limit);
-        $lottery_factor = $this->lottery_factor;
-        /** @var LuckLotteryRecordServices $luckLotteryRecordServices */
-        $luckLotteryRecordServices = app()->make(LuckLotteryRecordServices::class);
-        foreach ($list as &$item) {
-            $item['lottery_type'] = $lottery_factor[$item['factor']] ?? '';
-            $data = $luckLotteryRecordServices->getLotteryRecordData((int)$item['id']);
-            $item['lottery_all'] = $data['all'] ?? 0;
-            $item['lottery_people'] = $data['people'] ?? 0;
-            $item['lottery_win'] = $data['win'] ?? 0;
-
-            if ($item['start_time'] == 0 && $item['end_time'] == 0) {
-                $status_name = '进行中';
-                $item['lottery_status'] = 1;
-            } else {
-                if ($item['start_time'] > time()) {
-                    $status_name = '未开始';
-                    $item['lottery_status'] = 0;
-                } else if ($item['end_time'] < time()) {
-                    $status_name = '已结束';
-                    $item['lottery_status'] = 2;
-                } else if ($item['end_time'] > time() && $item['start_time'] < time()) {
-                    $status_name = '进行中';
-                    $item['lottery_status'] = 1;
-                }
-            }
-            $item['status_name'] = $status_name;
-
-            $item['start_time'] = $item['start_time'] ? date('Y-m-d H:i:s', $item['start_time']) : '';
-            $item['end_time'] = $item['end_time'] ? date('Y-m-d H:i:s', $item['end_time']) : '';
+        if ($where['time'] == '') {
+            $where['time'] = [];
+        } else {
+            $time = explode('-', $where['time']);
+            $where['time'] = [strtotime($time[0]), strtotime($time[1]) + 86399];
         }
-        $count = $this->dao->count($where);
-        return compact('list', 'count');
+        $data = $this->dao->getList($where, '*', 'id desc', $page, $limit);
+        foreach ($data['list'] as &$item) {
+            $item['lottery_type'] = $this->lottery_factor[$item['factor']] ?? '未知';
+            if ($item['start_time'] > time()) {
+                $item['status_name'] = '未开始';
+                $item['lottery_status'] = 0;
+            } else if ($item['end_time'] < time()) {
+                $item['status_name'] = '已结束';
+                $item['lottery_status'] = 2;
+            } else if ($item['end_time'] > time() && $item['start_time'] < time()) {
+                $item['status_name'] = '进行中';
+                $item['lottery_status'] = 1;
+            }
+            $item['start_time'] = $item['start_time'] ? date('Y-m-d H:i:s', $item['start_time']) : '';
+            $item['end_time'] = $item['end_time'] ? date('Y-m-d 23:59:59', $item['end_time']) : '';
+            if (!count($item['records'])) {
+                $item['records_total_user'] = 0;
+                $item['records_wins_user'] = 0;
+                $item['records_total_num'] = 0;
+                $item['records_wins_num'] = 0;
+            } else {
+                $item['records_total_user'] = $item['records'][0]['total_user'];
+                $item['records_wins_user'] = $item['records'][0]['wins_user'];
+                $item['records_total_num'] = $item['records'][0]['total_num'];
+                $item['records_wins_num'] = $item['records'][0]['wins_num'];
+            }
+        }
+        return $data;
     }
 
     /**
@@ -108,7 +109,7 @@ class LuckLotteryServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getlotteryInfo(int $id)
+    public function getLotteryInfo(int $id)
     {
         $lottery = $this->dao->getLottery($id, '*', ['prize']);
         if (!$lottery) {
@@ -116,7 +117,6 @@ class LuckLotteryServices extends BaseServices
         }
         $lottery = $lottery->toArray();
         if (isset($lottery['prize']) && $lottery['prize']) {
-            $products = $coupons = [];
             $product_ids = array_unique(array_column($lottery['prize'], 'product_id'));
             $coupon_ids = array_unique(array_column($lottery['prize'], 'coupon_id'));
             /** @var StoreProductServices $productServices */
@@ -192,6 +192,10 @@ class LuckLotteryServices extends BaseServices
     public function add(array $data)
     {
         $prizes = $data['prize'];
+        $total = array_sum(array_column($prizes, 'percent'));
+        if ($total != 100) {
+            throw new AdminException('奖品概率之和不是100%，请检查！');
+        }
         $prize_num = $this->lottery_type[1];
         if (count($prizes) != $prize_num) {
             throw new AdminException(400535);
@@ -247,6 +251,14 @@ class LuckLotteryServices extends BaseServices
             throw new AdminException(400537);
         }
         $newPrizes = $data['prize'];
+        $percentArr = array_column($newPrizes, 'percent');
+        $allPercent = 0;
+        foreach ($percentArr as $k => $v) {
+            $allPercent = bcadd((string)$allPercent, (string)$v, 2);
+        }
+        if ($allPercent != 100) {
+            throw new AdminException('奖品概率之和不是100%，请检查！');
+        }
         unset($data['prize'], $data['id']);
         $prize_num = $this->lottery_type[1];
         if (count($newPrizes) != $prize_num) {
@@ -421,7 +433,7 @@ class LuckLotteryServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function luckLottery(int $uid, int $lottery_id)
+    public function luckLottery(int $uid, int $lottery_id, $channel_type)
     {
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
@@ -461,7 +473,7 @@ class LuckLotteryServices extends BaseServices
                     throw new ApiException(410058);
             }
         }
-        return $this->transaction(function () use ($uid, $lotteryPrize, $userInfo, $lottery) {
+        return $this->transaction(function () use ($uid, $lotteryPrize, $userInfo, $lottery, $channel_type) {
             /** @var LuckPrizeServices $luckPrizeServices */
             $luckPrizeServices = app()->make(LuckPrizeServices::class);
             //随机抽奖
@@ -476,7 +488,7 @@ class LuckLotteryServices extends BaseServices
             /** @var LuckLotteryRecordServices $lotteryRecordServices */
             $lotteryRecordServices = app()->make(LuckLotteryRecordServices::class);
             //中奖写入记录
-            $record = $lotteryRecordServices->insertPrizeRecord($uid, $prize, $userInfo);
+            $record = $lotteryRecordServices->insertPrizeRecord($uid, $prize, $userInfo, $channel_type);
             //不是站内商品直接领奖
             if ($prize['type'] != 6) {
                 $lotteryRecordServices->receivePrize($uid, (int)$record->id);
@@ -573,8 +585,10 @@ class LuckLotteryServices extends BaseServices
      */
     public function delLottery(int $id)
     {
-        if ($lottery = $this->dao->getLottery($id)) {
-            if (!$this->dao->update(['id' => $id], ['is_del' => 1])) {
+        $lottery = $this->dao->getLottery($id);
+        if ($lottery) {
+            $res = $this->dao->update(['id' => $id], ['is_del' => 1]);
+            if (!$res) {
                 throw new AdminException(100008);
             }
         }
@@ -594,13 +608,7 @@ class LuckLotteryServices extends BaseServices
     {
         if (!$id) return false;
         $lottery = $this->dao->getLottery($id, 'id,factor');
-        if (!$lottery) {
-            return false;
-        }
-        //每一种抽奖类型只有一个上架
-        if ($status) {
-            $this->dao->update(['factor' => $lottery['factor']], ['status' => 0]);
-        }
+        if (!$lottery) return false;
         return $this->dao->update($id, ['status' => $status], 'id');
     }
 
@@ -623,7 +631,7 @@ class LuckLotteryServices extends BaseServices
     }
 
     /**
-     * 取出下单支付、评论得到的抽奖此处
+     * 取出下单支付、评论得到的抽奖次数
      * @param int $uid
      * @param string $type
      * @return int|mixed
@@ -637,7 +645,7 @@ class LuckLotteryServices extends BaseServices
     }
 
     /**
-     *  抽奖之后销毁缓存
+     * 抽奖之后销毁缓存
      * @param int $uid
      * @param string $type
      * @return bool
@@ -651,6 +659,55 @@ class LuckLotteryServices extends BaseServices
             CacheService::set($key, $num - 1, 120);
         } else {
             CacheService::delete($key);
+        }
+        return true;
+    }
+
+    public function factorList()
+    {
+        $list = $this->dao->selectList(['status' => 1, 'is_del' => 0], 'id,name,factor,is_use')->toArray();
+        $data = [
+            'info' => [
+                'point' => '',
+                'pay' => '',
+                'evaluate' => ''
+            ],
+            'point' => [],
+            'pay' => [],
+            'evaluate' => []
+        ];
+        foreach ($list as $item) {
+            if ($item['factor'] == 1) {
+                $data['point'][] = $item;
+                if ($data['info']['point'] == '') {
+                    $data['info']['point'] = $item['is_use'] ? $item['id'] : '';
+                }
+            } elseif ($item['factor'] == 3) {
+                $data['pay'][] = $item;
+                if ($data['info']['pay'] == '') {
+                    $data['info']['pay'] = $item['is_use'] ? $item['id'] : '';
+                }
+            } else {
+                $data['evaluate'][] = $item;
+                if ($data['info']['evaluate'] == '') {
+                    $data['info']['evaluate'] = $item['is_use'] ? $item['id'] : '';
+                }
+            }
+        }
+        return $data;
+    }
+
+    public function factorUse($data)
+    {
+        $this->dao->update(['is_del' => 0], ['is_use' => 0]);
+        if ($data['point']) {
+            $this->dao->update(['factor' => 1, 'id' => $data['point']], ['is_use' => 1]);
+        }
+        if ($data['pay']) {
+            $this->dao->update(['factor' => 3, 'id' => $data['pay']], ['is_use' => 1]);
+        }
+        if ($data['evaluate']) {
+            $this->dao->update(['factor' => 4, 'id' => $data['evaluate']], ['is_use' => 1]);
         }
         return true;
     }

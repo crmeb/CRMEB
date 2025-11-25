@@ -97,6 +97,10 @@ class CopyTaobaoServices extends BaseServices
             }
             $data['cateList'] = $menus;
             $productInfo['attrs'] = $result['data']['info']['value'];
+            foreach ($productInfo['attrs'] as $attrs_k => $attrs_v) {
+                $productInfo['attrs'][$attrs_k]['attr_arr'] = array_values($attrs_v['detail']);
+                $productInfo['attrs'][$attrs_k]['is_show'] = 1;
+            }
             $productInfo['activity'] = ['默认', '秒杀', '砍价', '拼团'];
             $productInfo['bar_code'] = '';
             $productInfo['browse'] = 0;
@@ -133,6 +137,20 @@ class CopyTaobaoServices extends BaseServices
             $productInfo['freight'] = 3;
             $productInfo['recommend'] = [];
             $productInfo['logistics'] = ['1', '2'];
+$productInfo['params_list'] = [];
+$productInfo['label_list'] = [];
+$productInfo['protection_list'] = [];
+            foreach ($productInfo['items'] as &$items) {
+                $details = [];
+                foreach ($items['detail'] as $detail) {
+                    $details[] = [
+                        'value' => $detail,
+                        'pic' => '',
+                    ];
+                }
+                $items['detail'] = $details;
+                $items['add_pic'] = 0;
+            }
             $data['productInfo'] = $productInfo;
             return $data;
         } else {

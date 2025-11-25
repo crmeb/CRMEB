@@ -50,8 +50,8 @@ class RegisterListener implements ListenerInterface
 
             //自定义消息-下级用户绑定成功
             if ($res) {
-                $phone = app()->make(UserServices::class)->value($uid, 'phone');
-                event('CustomNoticeListener', [$uid, ['nickname' => $name, 'time' => date('Y-m-d H:i:s'), 'phone' => $phone], 'spread_success']);
+                $phone = app()->make(UserServices::class)->value($spreadUid, 'phone');
+                event('CustomNoticeListener', [$spreadUid, ['nickname' => $name, 'time' => date('Y-m-d H:i:s'), 'phone' => $phone], 'spread_success']);
             }
         }
 

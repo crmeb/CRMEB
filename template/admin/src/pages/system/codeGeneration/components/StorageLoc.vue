@@ -67,14 +67,12 @@ export default {
       storageRules: {},
     };
   },
-  created() {
-  },
-  mounted() {
-  },
+  created() {},
+  mounted() {},
   methods: {},
 };
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .form-width {
   width: 500px;
 }

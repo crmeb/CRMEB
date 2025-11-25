@@ -5,6 +5,7 @@ namespace app\services\system\crontab;
 use app\dao\system\crontab\SystemCrontabDao;
 use app\services\BaseServices;
 use crmeb\exceptions\AdminException;
+use think\facade\Cache;
 use think\helper\Str;
 use Workerman\Crontab\Crontab;
 
@@ -64,6 +65,10 @@ class SystemCrontabServices extends BaseServices
      * 保存定时任务
      * @param array $data
      * @return bool
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function saveTimer(array $data = [])
     {
@@ -71,7 +76,6 @@ class SystemCrontabServices extends BaseServices
             throw new AdminException('该定时任务已存在，请勿重复添加');
         }
         if ($data['mark'] != 'customTimer') $data['name'] = $this->getMarkList()[$data['mark']];
-        $data['add_time'] = time();
         $data['customCode'] = json_encode(preg_replace('/<\?php\s*\n/', '', $data['customCode']));
         $data['timeStr'] = $this->getTimerStr([
             'type' => $data['type'],
@@ -84,11 +88,15 @@ class SystemCrontabServices extends BaseServices
         ]);
         if (!$data['id']) {
             unset($data['id']);
+            $data['add_time'] = $data['update_time'] = time();
             $res = $this->dao->save($data);
         } else {
+            $data['update_time'] = time();
             $res = $this->dao->update(['id' => $data['id']], $data);
         }
         if (!$res) throw new AdminException(100006);
+        Cache::delete('crontabCache');
+        Cache::set('crontabCache', $this->dao->selectList(['is_open' => 1, 'is_del' => 0])->toArray());
         return true;
     }
 
@@ -96,11 +104,19 @@ class SystemCrontabServices extends BaseServices
      * 删除定时任务
      * @param $id
      * @return bool
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function delTimer($id)
     {
-        $res = $this->dao->update(['id' => $id], ['is_del' => 1]);
+        $data['update_time'] = time();
+        $data['is_del'] = 1;
+        $res = $this->dao->update(['id' => $id], $data);
         if (!$res) throw new AdminException(100008);
+        Cache::delete('crontabCache');
+        Cache::set('crontabCache', $this->dao->selectList(['is_open' => 1, 'is_del' => 0])->toArray());
         return true;
     }
 
@@ -109,11 +125,19 @@ class SystemCrontabServices extends BaseServices
      * @param $id
      * @param $is_open
      * @return bool
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function setTimerStatus($id, $is_open)
     {
-        $res = $this->dao->update(['id' => $id], ['is_open' => $is_open]);
+        $data['update_time'] = time();
+        $data['is_open'] = $is_open;
+        $res = $this->dao->update(['id' => $id], $data);
         if (!$res) throw new AdminException(100014);
+        Cache::delete('crontabCache');
+        Cache::set('crontabCache', $this->dao->selectList(['is_open' => 1, 'is_del' => 0])->toArray());
         return true;
     }
 
@@ -201,7 +225,11 @@ class SystemCrontabServices extends BaseServices
                 //转化小驼峰方法名
                 $functionName = Str::camel($item['mark']);
                 //执行定时任务
-                $crontabRunServices->$functionName();
+                if (strpos($functionName, 'customTimer') === 0) {
+                    $crontabRunServices->customTimer(json_decode($item['customCode']));
+                } else {
+                    $crontabRunServices->$functionName();
+                }
                 //写入本次执行时间和下次执行时间
                 $this->dao->update(['mark' => $item['mark']], ['last_execution_time' => $time, 'next_execution_time' => $this->getTimerCycleTime($item)]);
             }
@@ -209,40 +237,65 @@ class SystemCrontabServices extends BaseServices
     }
 
     /**
-     * 命令执行定时任务
-     * @throws \ReflectionException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @author wuhaotian
-     * @email 442384644@qq.com
-     * @date 2024/6/5
+     * 运行定时任务
+     *
+     * @param object $task 任务对象
+     * @return void
      */
-    public function crontabCommandRun()
+    public function crontabCommandRun($task)
     {
+        file_put_contents(root_path() . 'runtime/.timer', time());
+        // 获取 CrontabRunServices 实例
         $crontabRunServices = app()->make(CrontabRunServices::class);
-
-        //自动写入文件方便检测是否启动定时任务命令
-        new Crontab('*/6 * * * * *', function () {
-            file_put_contents(root_path() . 'runtime/.timer', time());
-        });
-
-        $list = $this->dao->selectList(['is_del' => 0, 'is_open' => 1])->toArray();
-        foreach ($list as &$item) {
-            //转化小驼峰
-            $functionName = Str::camel($item['mark']);
-            //获取自定义定时任务code
-            $customCode = json_decode($item['customCode']);
-            //获取定时任务时间字符串
-            $timeStr = $item['timeStr'] != '' ? $item['timeStr'] : $this->getTimerStr($item);
-            new Crontab($timeStr, function () use ($crontabRunServices, $functionName, $customCode) {
+        // 创建一个每秒钟执行一次的定时任务
+        new Crontab('*/1 * * * * *', function () use ($task, $crontabRunServices) {
+            // 写入时间戳，用于检测定时任务是否正常执行
+            $timerTime = file_get_contents(root_path() . 'runtime/.timer');
+            if ($timerTime < (time() - 60)) {
+                file_put_contents(root_path() . 'runtime/.timer', time());
+            }
+            // 从缓存中获取定时任务列表
+            $list = Cache::get('crontabCache');
+            if (!$list) {
+                $list = $this->dao->selectList(['is_open' => 1, 'is_del' => 0])->toArray();
+                Cache::set('crontabCache', $list);
+            }
+            // 遍历定时任务列表
+            foreach ($list as &$item) {
+                // 获取函数名
+                $functionName = Str::camel($item['mark']);
                 if ($functionName == 'customTimer') {
-                    $crontabRunServices->customTimer($customCode);
-                } else {
-                    $crontabRunServices->$functionName();
+                    $functionName = 'customTimer_' . $item['id'];
                 }
-            });
-        }
+                // 如果更新时间不存在，则将其设置为添加时间
+                $item['update_time'] = $item['update_time'] ?: $item['add_time'];
+                // 如果任务已经被执行过，则跳过此次循环
+                if (isset($task->task_ids[$functionName]) && $task->task_ids[$functionName]['time'] == $item['update_time']) {
+                    continue;
+                }
+                // 获取定时器字符串
+                $timeStr = $item['timeStr'] != '' ? $item['timeStr'] : $this->getTimerStr($item);
+                // 获取自定义代码
+                $customCode = json_decode($item['customCode']);
+                // 如果任务已经被执行过，并且当前时间和上次执行时间不同，则销毁之前的定时任务
+                if (isset($task->task_ids[$functionName]) && $task->task_ids[$functionName]['time'] != $item['update_time'] && isset($task->task_ids[$functionName]['crontab']) && $task->task_ids[$functionName]['crontab'] instanceof Crontab) {
+                    $task->task_ids[$functionName]['crontab']->destroy();
+                    unset($task->task_ids[$functionName]);
+                }
+                // 如果任务是开启状态，则创建一个新的定时任务
+                if ($item['is_open'] == 1) {
+                    $crontab = new Crontab($timeStr, function () use ($crontabRunServices, $functionName, $customCode) {
+                        // 根据函数名调用相应的方法
+                        if (strpos($functionName, 'customTimer_') === 0) {
+                            $crontabRunServices->customTimer($customCode);
+                        } else {
+                            $crontabRunServices->$functionName();
+                        }
+                    });
+                    $task->task_ids[$functionName] = ['crontab' => $crontab, 'time' => $item['update_time']];
+                }
+            }
+        });
     }
 
     /**

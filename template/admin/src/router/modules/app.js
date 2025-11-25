@@ -10,6 +10,7 @@
 
 import LayoutMain from '@/layout';
 import setting from '@/setting';
+import { active } from 'sortablejs';
 let routePre = setting.routePre;
 
 const pre = 'app_';
@@ -105,6 +106,7 @@ export default {
       meta: {
         auth: ['wechat-wechat-reply-save'],
         title: '关键字添加',
+        activeMenu: routePre + '/app/wechat/reply/keyword',
       },
       component: () => import('@/pages/app/wechat/reply/follow'),
     },

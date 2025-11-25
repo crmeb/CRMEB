@@ -1,22 +1,17 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="roleData"
-            :model="roleData"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="roleData"
+          :model="roleData"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="按钮名称：" prop="status2" label-for="status2">
-            <el-input
-                clearable
-                v-model="roleData.keyword"
-                placeholder="请输入按钮名称"
-                class="form_content_width"
-            />
+            <el-input clearable v-model="roleData.keyword" placeholder="请输入按钮名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="getData">查询</el-button>
@@ -94,7 +89,7 @@
           @on-enter="searchRules"
           @on-clear="searchRules"
         />
-        <el-button class="mr10" type="primary" v-db-click @click="searchRules">搜索</el-button>
+        <el-button type="primary" v-db-click @click="searchRules">搜索</el-button>
         <el-button v-db-click @click="init">重置</el-button>
       </div>
       <div class="route-list">
@@ -117,7 +112,8 @@
             :class="{ 'select-rule': seletRouteIds.includes(item.id) }"
             v-for="(item, index) in children"
             :key="index"
-            v-db-click @click="selectRule(item)"
+            v-db-click
+            @click="selectRule(item)"
           >
             <div>接口名称：{{ item.name }}</div>
             <div>请求方式：{{ item.method }}</div>

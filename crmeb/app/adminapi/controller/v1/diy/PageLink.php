@@ -12,6 +12,7 @@
 namespace app\adminapi\controller\v1\diy;
 
 use app\adminapi\controller\AuthController;
+use app\services\diy\DiyProServices;
 use app\services\diy\DiyServices;
 use app\services\diy\PageCategoryServices;
 use app\services\diy\PageLinkServices;
@@ -110,6 +111,79 @@ class PageLink extends AuthController
         if (!$id) return app('json')->fail(100100);
         $this->services->del($id);
         return app('json')->success(100002);
+    }
+
+    public function getLinkCategory()
+    {
+        return app('json')->success(app()->make(PageCategoryServices::class)->getSonCategoryList(1));
+    }
+
+    public function getLinkCategoryForm($cate_id, $pid)
+    {
+        return app('json')->success(app()->make(PageCategoryServices::class)->getLinkCategoryForm($cate_id, $pid));
+    }
+
+    public function getLinkCategorySave($cate_id)
+    {
+        $data = $this->request->postMore([
+            ['pid', 0],
+            ['name', ''],
+            ['type', ''],
+            ['sort', 0],
+            ['status', ''],
+        ]);
+        $res = app()->make(PageCategoryServices::class)->getLinkCategorySave($cate_id, $data);
+        return app('json')->success('保存成功');
+    }
+
+    public function getLinkCategoryDel($cate_id)
+    {
+        $res = app()->make(PageCategoryServices::class)->getLinkCategoryDel($cate_id);
+        return app('json')->success('删除成功');
+    }
+
+    public function getLinkList($cate_id, PageCategoryServices $pageCategoryServices)
+    {
+        if (!$cate_id) return app('json')->fail('参数错误');
+        $category = $pageCategoryServices->get((int)$cate_id);
+        if (!$category) {
+            return app('json')->fail(400103);
+        }
+        switch ($category['type']) {
+            case 'special':
+                /** @var DiyProServices $diyServices */
+                $diyProServices = app()->make(DiyProServices::class);
+                $data = $diyProServices->getList('link');
+                break;
+            case 'product_category':
+                /** @var StoreCategoryServices $storeCategoryServices */
+                $storeCategoryServices = app()->make(StoreCategoryServices::class);
+                $data = $storeCategoryServices->getList(['cate_name' => '', 'pid' => '', 'is_show' => '']);
+                break;
+            default:
+                $data = $this->services->getLinkList(['cate_id' => $cate_id]);
+                break;
+        }
+        return app('json')->success($data);
+    }
+
+    public function getLinkSave($id)
+    {
+        $data = $this->request->postMore([
+            ['cate_id', 0],
+            ['name', ''],
+            ['url', ''],
+            ['sort', 0],
+            ['status', 1],
+        ]);
+        $this->services->getLinkSave($id, $data);
+        return app('json')->success('保存成功');
+    }
+
+    public function getLinkDel($id)
+    {
+        $this->services->del($id);
+        return app('json')->success('删除成功');
     }
 
 }

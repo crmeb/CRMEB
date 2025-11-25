@@ -1,9 +1,9 @@
 <template>
 	<view class="goodCate">
-		<view class="header acea-row row-center-wrapper">
-			<navigator open-type="switchTab" url="/pages/index/index" @click="jumpIndex" class="pageIndex acea-row row-center-wrapper" hover-class="none">
+		<view id="head" class="header acea-row row-center-wrapper">
+			<view class="pageIndex acea-row row-center-wrapper" @click="jumpIndex">
 				<text class="iconfont icon-fanhuishouye"></text>
-			</navigator>
+			</view>
 			<navigator url="/pages/goods/goods_search/index" class="search acea-row row-middle" hover-class="none">
 				<text class="iconfont icon-sousuo5"></text>
 				{{ $t(`搜索商品名称`) }}
@@ -19,7 +19,7 @@
 			</view>
 			<view class="wrapper">
 				<view class="bgcolor" v-if="iSlong">
-					<view class="longTab acea-row row-middle">
+					<view class="longTab acea-row row-middle" id="category">
 						<scroll-view scroll-x="true" style="white-space: nowrap; display: flex; height: 44rpx" scroll-with-animation :scroll-left="tabLeft" show-scrollbar="true">
 							<view
 								class="longItem"
@@ -56,7 +56,7 @@
 					scroll-with-animation="true"
 					:scroll-top="0"
 					@scroll="scroll"
-					:style="{ height: scrollHeight * 2 + 'rpx' }"
+					:style="{ height: scrollHeight + 'px' }"
 					:lower-threshold="50"
 					@scrolltolower="productslist"
 				>
@@ -126,6 +126,7 @@ import { goShopDetail } from '@/libs/order.js';
 import { toLogin } from '@/libs/login.js';
 let windowHeight = uni.getSystemInfoSync().windowHeight;
 let sysHeight = uni.getSystemInfoSync().statusBarHeight;
+let titleBarHeight = uni.getSystemInfo().titleBarHeight;
 export default {
 	computed: mapGetters(['isLogin', 'uid']),
 	components: {
@@ -150,6 +151,7 @@ export default {
 			windowHeight: windowHeight,
 			showCateDrawer: false,
 			sysHeight: sysHeight,
+			titleBarHeight: titleBarHeight,
 			categoryList: [],
 			navActive: 0,
 			categoryTitle: '',
@@ -197,22 +199,22 @@ export default {
 	},
 	onLoad() {
 		this.$nextTick(() => {
-			uni
-				.createSelectorQuery()
-				.select('#cart')
-				.boundingClientRect((res) => {
-					const { windowTop } = uni.getSystemInfoSync();
-					this.endLocation = {
-						x: res.left + uni.upx2px(120) / 2,
-						// #ifdef H5
-						y: res.top + windowTop,
-						// #endif
-						// #ifndef H5
-						y: res.top
-						// #endif
-					};
-				})
-				.exec();
+			// uni
+			// 	.createSelectorQuery()
+			// 	.select('#cart')
+			// 	.boundingClientRect((res) => {
+			// 		const { windowTop } = uni.getSystemInfoSync();
+			// 		this.endLocation = {
+			// 			x: res.left + uni.upx2px(120) / 2,
+			// 			// #ifdef H5
+			// 			y: res.top + windowTop,
+			// 			// #endif
+			// 			// #ifndef H5
+			// 			y: res.top
+			// 			// #endif
+			// 		};
+			// 	})
+			// 	.exec();
 		});
 	},
 	mounted() {
@@ -232,9 +234,58 @@ export default {
 			this.getCartNum();
 			this.getCartList(1);
 		}
+		// #ifndef MP
 		setTimeout(() => {
-			this.scrollHeight = windowHeight - 80 - sysHeight;
+			const query = uni.createSelectorQuery().in(this);
+			let h = 0;
+			query
+				.select('#head')
+				.boundingClientRect((data) => {
+					h += data.height;
+					console.log(data.height);
+				})
+
+				.exec();
+			const query2 = uni.createSelectorQuery().in(this);
+			query2
+				.select('#category')
+				.boundingClientRect((data) => {
+					h += data.height;
+					console.log(data.height);
+				})
+				.exec();
+			const query3 = uni.createSelectorQuery().in(this);
+			query3
+				.select('#cart')
+				.boundingClientRect((data) => {
+					h += data.height;
+					console.log(data.height);
+				})
+				.exec();
+			this.scrollHeight = windowHeight - h - sysHeight;
+			console.log(windowHeight, h, sysHeight, this.scrollHeight);
 		}, 1000);
+		// #endif
+		// #ifdef MP
+		uni.getSystemInfo({
+			success: (e) => {
+				let StatusBar = e.statusBarHeight;
+				let rect = uni.getMenuButtonBoundingClientRect();
+				let CustomBar, HeaderBar;
+				if (e.system.toLowerCase().indexOf('ios') > -1) {
+					//IOS
+					CustomBar = rect.bottom + (rect.top - e.statusBarHeight) * 2;
+					HeaderBar = CustomBar - e.statusBarHeight;
+				} else {
+					//安卓
+					HeaderBar = rect.height + (rect.top - e.statusBarHeight) * 2;
+					CustomBar = HeaderBar + e.statusBarHeight;
+				}
+				console.log(e, windowHeight, CustomBar, HeaderBar);
+				this.scrollHeight = windowHeight - HeaderBar - CustomBar;
+			}
+		});
+		// #endif
 	},
 	methods: {
 		jumpIndex() {
@@ -550,9 +601,8 @@ export default {
 				num.cart_num--;
 				if (num.cart_num < num.min_qty) {
 					this.cartData.cartList.splice(index, 1);
-					num.cart_num = 0
-				}
-				if (num.cart_num == 0) {
+					num.cart_num = 0;
+				} else if (num.cart_num == 0) {
 					this.cartData.cartList.splice(index, 1);
 					if (isDuo) {
 						this.$set(this.attr.productSelect, 'cart_num', this.storeInfo.min_qty);
@@ -811,7 +861,9 @@ page {
 	color: transparent;
 	display: none;
 }
-
+.loadingicon {
+	padding-bottom: 106rpx;
+}
 .goodCate {
 	/deep/.mask {
 		z-index: 99;
@@ -844,11 +896,6 @@ page {
 				color: #fff;
 				font-size: 30rpx;
 			}
-
-			// image{
-			// 	width: 29rpx;
-			// 	height: 30rpx;
-			// }
 		}
 
 		.search {
@@ -867,12 +914,6 @@ page {
 				margin-right: 18rpx;
 				color: #666666;
 			}
-
-			// image{
-			// 	width: 27rpx;
-			// 	height: 27rpx;
-			// 	margin-right: 18rpx;
-			// }
 		}
 	}
 
@@ -1108,7 +1149,7 @@ page {
 		z-index: 101;
 		box-sizing: border-box;
 		padding: 12rpx 30rpx;
-		padding-bottom: calc(12rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		padding-bottom: calc(12rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		padding-bottom: calc(12rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		.cartIcon {
 			width: 124rpx;

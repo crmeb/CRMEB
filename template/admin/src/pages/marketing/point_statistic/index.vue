@@ -4,28 +4,28 @@
       <div class="acea-row row-middle">
         <span class="label_text">时间选择：</span>
         <el-date-picker
-            clearable
-            v-model="timeVal"
-            type="daterange"
-            :editable="false"
-            @change="onchangeTime"
-            format="yyyy/MM/dd"
-            value-format="yyyy/MM/dd"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            :picker-options="pickerOptions"
-            style="width: 250px"
-            class="mr20"
+          clearable
+          v-model="timeVal"
+          type="daterange"
+          :editable="false"
+          @change="onchangeTime"
+          format="yyyy/MM/dd"
+          value-format="yyyy/MM/dd"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+          style="width: 250px"
+          class="mr20"
         ></el-date-picker>
       </div>
     </el-card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <el-card :bordered="false" shadow="never">
-      <h4>积分使用趋势</h4>
+      <h4 class="statics-header-title">积分使用趋势</h4>
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
     </el-card>
     <div class="code-row-bg">
-      <el-card :bordered="false" shadow="never" class="ivu-mt mt10 mr10">
+      <el-card :bordered="false" shadow="never" class="ivu-mt mt16 mr16">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">积分来源分析</h4>
           <div class="change-style" v-db-click @click="echartLeft = !echartLeft">切换样式</div>
@@ -65,7 +65,7 @@
           </el-table>
         </div>
       </el-card>
-      <el-card :bordered="false" shadow="never" class="ivu-mt mt10">
+      <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">积分消耗</h4>
           <div class="change-style" v-db-click @click="echartRight = !echartRight">切换样式</div>
@@ -355,7 +355,7 @@ export default {
   border-radius: 5px;
   height: 8px;
   background-color: var(--prev-color-primary);
-  z-index: 9999;
+  z-index: 999;
 }
 .num {
   white-space: nowrap;

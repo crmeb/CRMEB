@@ -80,15 +80,13 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .content {
   width: 450px;
 }
-
 .flex-wrapper {
   display: flex;
 }
-
 .iframe-box {
   width: 375px;
   height: 700px;
@@ -96,13 +94,11 @@ export default {
   border-radius: 4px;
   box-shadow: 0 0 7px #cccccc;
 }
-
 .right-box {
   width: 400px;
   margin-left: 50px;
   border: 1px solid #ddd;
   border-radius: 4px;
-
   .title-bar {
     width: 100%;
     height: 38px;

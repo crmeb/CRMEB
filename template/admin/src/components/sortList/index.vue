@@ -26,7 +26,6 @@
     <el-table
       ref="table"
       empty-text="暂无数据"
-      
       max-height="400"
       :data="tableList"
       v-loading="loading"
@@ -145,26 +144,32 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.footer
-    margin 15px 0;
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius: 4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
-
-.tabform
-    ::v-deep .ivu-form-item
-        margin-bottom 16px !important
-
-.btn
-    margin-top 20px
-    float right
-.goodList
-    ::v-deeptable
-        width 100% !important
+<style lang="scss" scoped>
+.footer {
+  margin: 15px 0;
+}
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+.tabform {
+  ::v-deep .ivu-form-item {
+    margin-bottom: 16px !important;
+  }
+}
+.btn {
+  margin-top: 20px;
+  float: right;
+}
+.goodList {
+  ::v-deeptable {
+    width: 100% !important;
+  }
+}
 </style>

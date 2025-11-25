@@ -33,12 +33,7 @@
             </el-col>
             <el-col v-if="[8].includes(formValidate.type)" :span="4">
               <div class="input-number-wrapper">
-                <el-input-number
-                  :controls="false"
-                  v-model="formValidate.month"
-                  :max="12"
-                  :min="1"
-                ></el-input-number>
+                <el-input-number :controls="false" v-model="formValidate.month" :max="12" :min="1"></el-input-number>
                 <span class="suffix">月</span>
               </div>
             </el-col>
@@ -113,7 +108,11 @@
         <el-form-item label="开发密码：" v-if="currentTab === '1'">
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-input v-model="formValidate.password" type="password" placeholder="请输入系统开发密码，开发密码在crmeb/config/filesystem.php中修改password"></el-input>
+              <el-input
+                v-model="formValidate.password"
+                type="password"
+                placeholder="请输入系统开发密码，开发密码在crmeb/config/filesystem.php中修改password"
+              ></el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -272,10 +271,10 @@ export default {
             theme: 'vs-dark', //官方自带三种主题vs, hc-black, or vs-dark
             foldingStrategy: 'indentation', // 代码可分小段折叠
             overviewRulerBorder: false, // 不要滚动条的边框
-            minimap:{enabled:false},
+            minimap: { enabled: false },
             scrollbar: {
-              vertical:"hidden",
-              horizontal: "hidden",
+              vertical: 'hidden',
+              horizontal: 'hidden',
             },
             wordWrap: 'on',
             autoIndent: true, // 自动布局
@@ -319,13 +318,17 @@ export default {
         });
       } else {
         this.modal = true;
-        this.initEditor("<?php\n\n//示例代码\n\n//直接写入数据库\n\\think\\facade\\Db::name('cache')->insert(['key' => 'custom_timer_' . rand(), 'result' => rand(), 'expire_time' => 0]);\n\n//调用系统方法\napp()->make(\\app\\services\\other\\CacheServices::class)->setDbCache('custom_timer_' . rand(), rand());");
+        this.initEditor(
+          "<?php\n\n//示例代码\n\n//直接写入数据库\n\\think\\facade\\Db::name('cache')->insert(['key' => 'custom_timer_' . rand(), 'result' => rand(), 'expire_time' => 0]);\n\n//调用系统方法\napp()->make(\\app\\services\\other\\CacheServices::class)->setDbCache('custom_timer_' . rand(), rand());",
+        );
       }
     },
     // 提交
     handleSubmit() {
+      console.log(this.currentTab);
       if (this.currentTab === '1') {
         this.formValidate.customCode = this.editor.getValue();
+        this.formValidate.mark = 'customTimer';
       }
       if (!this.formValidate.mark) {
         return this.$message.error({

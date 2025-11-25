@@ -347,6 +347,47 @@ export function seckillStatusApi(data) {
 }
 
 /**
+ * @description 秒杀活动 -- 列表
+ */
+export function seckillActivityListApi(params) {
+  return request({
+    url: `marketing/seckill_activity/list`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 秒杀商品 -- 批量保存编辑
+ */
+export function seckillActivityAddApi(data) {
+  return request({
+    url: `marketing/seckill_activity/save/${data.id}`,
+    method: 'post',
+    data,
+  });
+}
+/**
+ * @description 批量秒杀活动 -- 详情
+ */
+export function seckillActivityInfoApi(id) {
+  return request({
+    url: `marketing/seckill_activity/info/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 秒杀活动 -- 修改状态
+ */
+export function seckillActivityStatusApi(data) {
+  return request({
+    url: `marketing/seckill_activity/status/${data.id}/${data.status}`,
+    method: 'put',
+  });
+}
+
+/**
  * @description 积分日志 -- 列表
  */
 export function integralListApi(params) {
@@ -882,6 +923,36 @@ export function addSignRewards(data) {
 export function editSignRewards(id) {
   return request({
     url: 'marketing/sign/edit_rewards/' + id,
+    method: 'get',
+  });
+}
+
+/**
+ * 编辑新人礼
+ */
+export function editNewbie(data) {
+  return request({
+    url: 'user/new_gift/save',
+    method: 'post',
+    data,
+  });
+}
+/**
+ * 编辑新人礼
+ */
+export function getNewbie(data) {
+  return request({
+    url: 'user/new_gift',
+    method: 'get',
+  });
+}
+
+/**
+ * 拼团立即成团
+ */
+export function combineJoinApi(id) {
+  return request({
+    url: 'marketing/combination/immediately/' + id,
     method: 'get',
   });
 }

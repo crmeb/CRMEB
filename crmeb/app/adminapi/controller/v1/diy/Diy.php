@@ -610,6 +610,8 @@ class Diy extends AuthController
             ['status', 0],
             ['order_status', 0],
             ['my_banner_status', 0],
+            ['my_menus_status', 0],
+            ['business_status', 0],
             ['routine_my_banner', []],
             ['routine_my_menus', []]
         ]);

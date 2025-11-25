@@ -3,7 +3,7 @@
     <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       <span class="clear_tit">
-        <i class="el-icon-info" style="color: #ED4014" />
+        <i class="el-icon-info" style="color: #ed4014" />
         <span>清除数据请谨慎，清除就无法恢复哦！</span>
       </span>
     </div>
@@ -16,7 +16,8 @@
             <el-button
               :type="item.typeName"
               v-text="item.typeName === 'primary' ? '立即更换' : '立即清理'"
-              v-db-click @click="onChange(item)"
+              v-db-click
+              @click="onChange(item)"
             ></el-button>
           </div>
         </el-col>
@@ -168,34 +169,41 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.clear_tit
-    align-items center
-    margin: 15px
-    span
-        font-size 14px
-        color #ED4014
-.clear_box
-    border 1px solid #DADFE6
-    border-radius 3px
-    display flex
-    flex-direction column
-    align-items: center
-    padding 30px 10px
-    box-sizing border-box
-    .clear_box_sp1
-        font-size 16px
-        color #000000
-        display block
-    .clear_box_sp2
-        font-size 14px
-        color #808695
-        display block
-        margin: 12px 0
-.clear_box ::v-deep .ivu-btn-error
-    color: #fff;
-    background-color: #ED4014;
-    border-color: #ED4014;
-.product_tabs ::v-deep .ivu-page-header-title
-    margin-bottom 0!important
+<style lang="scss" scoped>
+.clear_tit {
+  align-items: center;
+  margin: 15px;
+  span {
+    font-size: 14px;
+    color: #ed4014;
+  }
+}
+.clear_box {
+  border: 1px solid #dadfe6;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 10px;
+  box-sizing: border-box;
+  .clear_box_sp1 {
+    font-size: 16px;
+    color: #000000;
+    display: block;
+  }
+  .clear_box_sp2 {
+    font-size: 14px;
+    color: #808695;
+    display: block;
+    margin: 12px 0;
+  }
+}
+.clear_box ::v-deep .ivu-btn-error {
+  color: #fff;
+  background-color: #ed4014;
+  border-color: #ed4014;
+}
+.product_tabs ::v-deep .ivu-page-header-title {
+  margin-bottom: 0 !important;
+}
 </style>

@@ -8,11 +8,11 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-declare (strict_types=1);
 
 namespace app\services\activity\seckill;
 
 use app\Request;
+use app\services\activity\StoreActivityServices;
 use app\services\BaseServices;
 use app\dao\activity\seckill\StoreSeckillDao;
 use app\services\order\StoreOrderServices;
@@ -71,27 +71,7 @@ class StoreSeckillServices extends BaseServices
             $where[] = ['id', '=', $id];
             $where[] = ['start_time', '<=', $time];
             $where[] = ['stop_time', '>=', $time - 86400];
-            $seckill_one = $this->dao->getOne($where, $field);
-            if (!$seckill_one) {
-                throw new ApiException(410322);
-            }
-            /** @var SystemGroupDataServices $systemGroupDataService */
-            $systemGroupDataService = app()->make(SystemGroupDataServices::class);
-            $seckillTime = array_column($systemGroupDataService->getConfigNameValue('routine_seckill_time'), null, 'id');
-            $config = $seckillTime[$seckill_one['time_id']] ?? false;
-            if (!$config) {
-                throw new ApiException(410322);
-            }
-            $now_hour = date('H', time());
-            $start_hour = $config['time'];
-            $end_hour = (int)$start_hour + (int)$config['continued'];
-            if ($start_hour <= $now_hour && $end_hour > $now_hour) {
-                return $seckill_one;
-            } else if ($start_hour > $now_hour) {
-                throw new ApiException(410321);
-            } else {
-                throw new ApiException(410322);
-            }
+            return $this->dao->getOne($where, $field);
         } else {
             $seckillTime = sys_data('routine_seckill_time') ?: [];//秒杀时间段
             $timeInfo = ['time' => 0, 'continued' => 0];
@@ -137,11 +117,11 @@ class StoreSeckillServices extends BaseServices
             }
         }
         //限制编辑
-        if ($data['copy'] == 0 && $seckill) {
-            if ($seckill['stop_time'] + 86400 < time()) {
-                throw new AdminException(400508);
-            }
-        }
+//        if ($data['copy'] == 0 && $seckill) {
+//            if ($seckill['stop_time'] + 86400 < time()) {
+//                throw new AdminException(400508);
+//            }
+//        }
         if ($data['num'] < $data['once_num']) {
             throw new AdminException(400500);
         }
@@ -162,6 +142,7 @@ class StoreSeckillServices extends BaseServices
         $data['quota'] = $data['quota_show'] = array_sum(array_column($detail, 'quota'));
         $data['stock'] = array_sum(array_column($detail, 'stock'));
         $data['logistics'] = implode(',', $data['logistics']);
+        $data['time_id'] = implode(',', $data['time_id']);
         unset($data['section_time'], $data['description'], $data['attrs'], $data['items']);
         /** @var StoreDescriptionServices $storeDescriptionServices */
         $storeDescriptionServices = app()->make(StoreDescriptionServices::class);
@@ -186,7 +167,7 @@ class StoreSeckillServices extends BaseServices
                 $data['add_time'] = time();
                 $res = $this->dao->save($data);
                 $storeDescriptionServices->saveDescription((int)$res->id, $description, 1);
-                $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 1);
+                $skuList = $storeProductServices->validateProductAttr($items, $detail, (int)$res->id, 1, 1, true);
                 $valueGroup = $storeProductAttrServices->saveProductAttr($skuList, (int)$res->id, 1);
                 if (!$res) throw new AdminException(100022);
             }
@@ -206,6 +187,8 @@ class StoreSeckillServices extends BaseServices
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, $page, $limit);
         $count = $this->dao->count($where + ['is_del' => 0]);
+        $activityIds = array_unique(array_column($list, 'activity_id'));
+        $activityInfos = app()->make(StoreActivityServices::class)->getColumn(['id' => $activityIds], 'title', 'id');
         $stopIds = [];
         foreach ($list as &$item) {
             $item['store_name'] = $item['title'];
@@ -223,6 +206,9 @@ class StoreSeckillServices extends BaseServices
             $end_time = $item['stop_time'] ? date('Y/m/d', (int)$item['stop_time']) : '';
             $item['_stop_time'] = $end_time;
             $item['stop_status'] = $item['stop_time'] + 86400 < time() ? 1 : 0;
+            $item['start_time'] = date('Y-m-d H:i:s', $item['start_time']);
+            $item['stop_time'] = date('Y-m-d 23:59:59', $item['stop_time']);
+            $item['activity_name'] = $activityInfos[$item['activity_id']] ?? '';
         }
         if ($stopIds) {
             $this->dao->batchUpdate($stopIds, ['status' => 0]);
@@ -336,6 +322,7 @@ class StoreSeckillServices extends BaseServices
             $storeDescriptionServices = app()->make(StoreDescriptionServices::class);
             $info['description'] = $storeDescriptionServices->getDescription(['product_id' => $id, 'type' => 1]);
             $info['attrs'] = $this->attrList($id, $info['product_id']);
+            $info['time_id'] = strpos($info['time_id'], ',') === false ? [(int)$info['time_id']] : array_map('intval', explode(',', $info['time_id']));
         }
         return $info;
     }
@@ -370,12 +357,13 @@ class StoreSeckillServices extends BaseServices
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 120];
         $header[] = ['title' => '秒杀价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
-        $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '划线价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '库存', 'key' => 'stock', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '限量', 'slot' => 'quota', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '重量(KG)', 'key' => 'weight', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '体积(m³)', 'key' => 'volume', 'align' => 'center', 'minWidth' => 80];
-        $header[] = ['title' => '商品编号', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '商品编码', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '条形码', 'key' => 'bar_code_number', 'align' => 'center', 'minWidth' => 80];
         $attrs['header'] = $header;
         return $attrs;
     }
@@ -396,7 +384,7 @@ class StoreSeckillServices extends BaseServices
         $count = 0;
         foreach ($value as $suk) {
             $detail = explode(',', $suk);
-            $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => $type, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota', 'suk');
+            $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => $type, 'suk' => $suk], 'bar_code,bar_code_number,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,quota', 'suk');
             if (count($sukValue)) {
                 foreach ($detail as $k => $v) {
                     $valueNew[$count]['value' . ($k + 1)] = $v;
@@ -409,6 +397,7 @@ class StoreSeckillServices extends BaseServices
                 $valueNew[$count]['stock'] = $sukValue[$suk]['stock'] ? intval($sukValue[$suk]['stock']) : 0;
                 $valueNew[$count]['quota'] = $sukValue[$suk]['quota'] ? intval($sukValue[$suk]['quota']) : 0;
                 $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
+                $valueNew[$count]['bar_code_number'] = $sukValue[$suk]['bar_code_number'] ?? '';
                 $valueNew[$count]['weight'] = $sukValue[$suk]['weight'] ? floatval($sukValue[$suk]['weight']) : 0;
                 $valueNew[$count]['volume'] = $sukValue[$suk]['volume'] ? floatval($sukValue[$suk]['volume']) : 0;
                 $valueNew[$count]['brokerage'] = $sukValue[$suk]['brokerage'] ? floatval($sukValue[$suk]['brokerage']) : 0;
@@ -458,10 +447,10 @@ class StoreSeckillServices extends BaseServices
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function seckillDetail(Request $request, int $id)
+    public function seckillDetail(Request $request, int $id, int $time_id = 0)
     {
         $uid = (int)$request->uid();
-        $storeInfo = $this->dao->getOne(['id' => $id], '*', ['description']);
+        $storeInfo = $this->dao->getOne(['id' => $id], '*', ['description', 'product']);
         if (!$storeInfo) {
             throw new ApiException(410294);
         } else {
@@ -501,14 +490,6 @@ class StoreSeckillServices extends BaseServices
             $storeInfo['stock'] = 0;
         }
 
-        //到期时间
-        /** @var SystemGroupDataServices $groupDataService */
-        $groupDataService = app()->make(SystemGroupDataServices::class);
-        $timeInfo = json_decode($groupDataService->value(['id' => $storeInfo['time_id']], 'value'), true);
-        $today = strtotime(date('Y-m-d'));
-        $activityEndHour = $timeInfo['time']['value'] + $timeInfo['continued']['value'];
-        $storeInfo['last_time'] = (int)bcadd((string)$today, (string)bcmul((string)$activityEndHour, '3600', 0));
-
         //获取秒杀商品状态
         if ($storeInfo['status'] == 1) {
             if ($storeInfo['start_time'] > time()) {
@@ -519,7 +500,7 @@ class StoreSeckillServices extends BaseServices
                 /** @var SystemGroupDataServices $systemGroupDataService */
                 $systemGroupDataService = app()->make(SystemGroupDataServices::class);
                 $seckillTime = array_column($systemGroupDataService->getConfigNameValue('routine_seckill_time'), null, 'id');
-                $config = $seckillTime[$storeInfo['time_id']] ?? false;
+                $config = $seckillTime[$time_id] ?? false;
                 if (!$config) {
                     throw new ApiException(410322);
                 }
@@ -535,12 +516,12 @@ class StoreSeckillServices extends BaseServices
                 }
             }
         } else {
-            $storeInfo['status'] == 0;
+            $storeInfo['status'] = 0;
         }
 
         /** @var SystemGroupDataServices $groupDataService */
         $groupDataService = app()->make(SystemGroupDataServices::class);
-        $timeInfo = json_decode($groupDataService->value(['id' => $storeInfo['time_id']], 'value'), true);
+        $timeInfo = json_decode($groupDataService->value(['id' => $time_id], 'value'), true);
         $today = strtotime(date('Y-m-d'));
         $activityEndHour = $timeInfo['time']['value'] + $timeInfo['continued']['value'];
         $storeInfo['last_time'] = (int)bcadd((string)$today, (string)bcmul((string)$activityEndHour, '3600', 0));
@@ -803,5 +784,142 @@ class StoreSeckillServices extends BaseServices
             $item['pay_time'] = $item['pay_time'] ? date('Y-m-d H:i:s', $item['pay_time']) : '';
         }
         return compact('list', 'count');
+    }
+
+    public function seckillActivitySave($id, $data)
+    {
+        if ($data['section_time']) {
+            [$start_time, $end_time] = $data['section_time'];
+            if (strtotime($end_time) + 86400 < time()) {
+                throw new AdminException('活动结束时间不能小于当前时间');
+            }
+        }
+        if ($data['num'] < $data['once_num']) {
+            throw new AdminException('限制单次购买数量不能大于总购买数量');
+        }
+
+        $data['start_day'] = strtotime($data['section_time'][0]);
+        $data['end_day'] = strtotime($data['section_time'][1]);
+        $data['type'] = 1;
+        $timeIds = $data['time_ids'];
+        $data['time_ids'] = implode(',', $data['time_ids']);
+
+        return $this->transaction(function () use ($id, $data, $timeIds) {
+
+            $productInfos = $data['product_infos'];
+            $productIds = array_column($productInfos, 'id');
+            /** @var StoreProductServices $productServices */
+            $productServices = app()->make(StoreProductServices::class);
+            $productList = $productServices->searchList(['id' => $productIds, 'is_del' => 0]);
+            $productList = $productList['list'] ?? [];
+            $productInfos = array_combine($productIds, $productInfos);
+
+            /** @var StoreActivityServices $StoreActivityServices */
+            $StoreActivityServices = app()->make(StoreActivityServices::class);
+            if ($id) {
+                $StoreActivityServices->update($id, $data);
+                $this->clearActivitySeckill($id, $productIds);
+            } else {
+                $data['add_time'] = time();
+                $res = $StoreActivityServices->save($data);
+                $id = (int)$res->id;
+            }
+            foreach ($productList as &$product) {
+                $attrInfo = $productServices->getProductRules((int)$product['id']);
+                $seckillData = [];
+                $seckillData['copy'] = 0;
+                $seckillData['activity_id'] = $id;
+                $seckillData['product_id'] = $product['id'] ?? 0;
+                $seckillData['title'] = $product['store_name'] ?? '';
+                $seckillData['info'] = $product['store_info'] ?? '';
+                $seckillData['unit_name'] = $product['unit_name'] ?? '';
+                $seckillData['section_time'] = $data['section_time'];
+                $seckillData['images'] = $product['slider_image'] ?? '';
+                $seckillData['description'] = $product['description'] ?? '';
+                $seckillData['status'] = $productInfos[$product['id']]['status'] ?? 1;
+                $seckillData['time_id'] = $timeIds;
+                $seckillData['num'] = $data['num'] ?? 0;
+                $seckillData['once_num'] = $data['once_num'] ?? 0;
+                $seckillData['temp_id'] = $product['temp_id'];//运费设置
+                $seckillData['freight'] = $product['freight'];//运费设置
+                $seckillData['logistics'] = $product['logistics'];//运费设置
+                $seckillData['postage'] = $product['postage'];//邮费
+                $seckillData['custom_form'] = $product['custom_form'];//自定义表单
+                $seckillData['virtual_type'] = $product['virtual_type'];//商品类型
+                $seckillData['is_commission'] = $data['is_commission'];//是否返佣
+                $seckillData['items'] = $attrInfo['items'];
+                $attrs = $attrInfo['attrs'] ?? [];
+                if ($attrs) {
+                    $seckillAttrValue = $productInfos[$product['id']]['attrs'] ?? [];
+                    if (!$seckillAttrValue) {
+                        throw new AdminException('请选择商品规格');
+                    }
+                    foreach ($seckillAttrValue as $sattr) {
+                        if (!isset($sattr['status']) || !$sattr['status']) {//不参与的规格不验证
+                            continue;
+                        }
+                        if (!isset($sattr['price']) || !$sattr['price']) {
+                            throw new AdminException('请填写商品（' . $product['store_name'] . ' | ' . $sattr['suk'] . '）活动价');
+                        }
+//                        if ($sattr['price'] > $sattr['ot_price']) {
+//                            throw new AdminException('商品（' . $product['store_name'] . ' | ' . $sattr['suk'] . '）活动价不能大于原价');
+//                        }
+                        if (!isset($sattr['quota']) || !$sattr['quota']) {
+                            throw new AdminException('请填写商品（' . $product['store_name'] . ' | ' . $sattr['suk'] . '）限量');
+                        }
+                    }
+                    $seckillAttrValue = array_combine(array_column($seckillAttrValue, 'suk'), $seckillAttrValue);
+                    foreach ($attrs as $attr) {
+                        $sku = implode(',', $attr['detail']);
+                        if (!isset($seckillAttrValue[$sku])) {
+                            throw new AdminException('请重新选择商品规格');
+                        }
+                        if (!isset($seckillAttrValue[$sku]['status']) || !$seckillAttrValue[$sku]['status']) {
+                            continue;
+                        }
+                        if (($seckillAttrValue[$sku]['quota'] ?? 0) > $attr['stock']) {
+                            throw new AdminException('限量超过了商品库存');
+                        }
+                        $attr['quota'] = $attr['quota_show'] = $seckillAttrValue[$sku]['quota'] ?? 0;
+                        $attr['price'] = $seckillAttrValue[$sku]['price'] ?? 0;
+                        $attr['cost'] = $seckillAttrValue[$sku]['cost'] ?? 0;
+                        $attr['ot_price'] = $seckillAttrValue[$sku]['ot_price'] ?? 0;
+                        $seckillData['attrs'][] = $attr;
+                    }
+                }
+                $seckillId = $this->dao->value(['activity_id' => $id, 'product_id' => $seckillData['product_id']], 'id') ?? 0;
+                $seckillData['description'] = app()->make(StoreDescriptionServices::class)->getDescription(['product_id' => $seckillData['product_id'], 'type' => 1]);
+                $this->saveData($seckillId, $seckillData);
+            }
+            return true;
+        });
+    }
+
+    public function clearActivitySeckill($id, $productIds = [])
+    {
+        $seckill = $this->dao->getList(['activity_id' => $id, 'is_del' => 0]);
+        $seckillIds = [];
+        foreach ($seckill as $item) {
+            if (!in_array($item['product_id'], $productIds)) {
+                $seckillIds[] = $item['id'];
+            }
+        }
+        if (count($seckillIds)) {
+            /** @var StoreProductAttrResultServices $storeProductAttrResultServices */
+            $storeProductAttrResultServices = app()->make(StoreProductAttrResultServices::class);
+            /** @var StoreDescriptionServices $storeDescriptionServices */
+            $storeDescriptionServices = app()->make(StoreDescriptionServices::class);
+            /** @var StoreProductAttrServices $storeProductAttrServices */
+            $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
+            /** @var StoreProductAttrValueServices $storeProductAttrValueServices */
+            $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
+            $where = ['product_id' => $seckillIds, 'type' => 1];
+            $storeProductAttrResultServices->delete($where);
+            $storeDescriptionServices->delete($where);
+            $storeProductAttrServices->delete($where);
+            $storeProductAttrValueServices->delete($where);
+            $this->dao->delete(['activity_id' => $id, 'is_del' => 0]);
+        }
+        return true;
     }
 }

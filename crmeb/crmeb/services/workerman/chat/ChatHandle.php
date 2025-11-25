@@ -277,7 +277,12 @@ class ChatHandle
             //用户在线，可是没有和当前用户进行聊天，给当前用户发送未读条数
             if (isset($connections[$to_uid])) {
                 $data['recored']['nickname'] = $_userInfo['nickname'];
-                $data['recored']['avatar'] = $_userInfo['avatar'];
+                if (!preg_match('/^https?:\/\//i', $_userInfo['avatar'])) {
+                    // 若不以http/https开头，则拼接站点域名
+                    $data['recored']['avatar'] = sys_config('site_url') . $_userInfo['avatar'];
+                } else {
+                    $data['recored']['avatar'] = $_userInfo['avatar'];
+                }
                 $response->connection($this->service->user()[$to_uid])->send('mssage_num', [
                     'uid' => $uid,
                     'num' => $unMessagesCount,

@@ -9,7 +9,8 @@
           :class="{ on: label.disabled }"
           v-for="(label, j) in item.label"
           :key="j"
-          v-db-click @click="selectLabel(label)"
+          v-db-click
+          @click="selectLabel(label)"
         >
           {{ label.label_name }}
         </div>

@@ -79,6 +79,10 @@ Route::group('agent', function () {
         Route::get('get_level_form', 'v1.agent.AgentManage/getLevelForm')->name('getLevelForm')->option(['real_name' => '获取赠送分销等级表单']);
         //赠送分销等级
         Route::post('give_level', 'v1.agent.AgentManage/giveAgentLevel')->name('giveAgentLevel')->option(['real_name' => '赠送分销等级']);
+        //设置任务完成数量表单
+        Route::get('get_task_num_form/:id', 'v1.agent.AgentLevel/getTaskNumForm')->name('getTaskNumForm')->option(['real_name' => '获取任务完成数量表单']);
+        //设置完成任务数量
+        Route::post('set_task_num/:id', 'v1.agent.AgentLevel/setTaskNum')->name('setTaskNum')->option(['real_name' => '设置完成任务数量']);
     })->option(['parent' => 'agent', 'cate_name' => '分销等级']);
 
     /** 事业部 */
@@ -97,7 +101,15 @@ Route::group('agent', function () {
         Route::get('division/examine_apply/:id/:type', 'v1.agent.Division/examineApply')->name('examineApply')->option(['real_name' => '审核表单']);//审核表单
         Route::post('division/apply_agent/save', 'v1.agent.Division/applyAgentSave')->name('applyAgentSave')->option(['real_name' => '提交审核']);//提交审核
         Route::delete('division/del_apply/:id', 'v1.agent.Division/delApply')->name('delApply')->option(['real_name' => '删除审核']);//删除审核
+        Route::get('division/statistics', 'v1.agent.Division/divisionStatistics')->name('divisionStatistics')->option(['real_name' => '事业部统计']);//事业部统计
     })->option(['parent' => 'agent', 'cate_name' => '事业部']);
+
+    /** 分销员申请 */
+    Route::group(function () {
+        Route::get('spread/apply/list', 'v1.agent.SpreadApply/applyList')->name('applyList')->option(['real_name' => '分销员申请列表']);
+        Route::post('spread/apply/examine/:id/:uid/:status', 'v1.agent.SpreadApply/applyExamine')->name('applyExamine')->option(['real_name' => '分销员审核']);
+        Route::delete('spread/apply/del/:id', 'v1.agent.SpreadApply/applyDelete')->name('applyDelete')->option(['real_name' => '删除分销员申请']);
+    })->option(['parent' => 'agent', 'cate_name' => '分销员申请']);
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

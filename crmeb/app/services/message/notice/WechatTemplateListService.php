@@ -200,6 +200,25 @@ class WechatTemplateListService extends NoticeService
             'amount2' => $extractNumber,
         ]);
     }
+
+    /**
+     * 提现成功
+     * @param $uid
+     * @param $extractNumber
+     * @param $order_id
+     * @param $type
+     * @return bool|void
+     */
+    public function sendRevenueReceived($uid, $extractNumber, $order_id, $type)
+    {
+        return $this->sendTemplate((int)$uid, [
+            'character_string9' => $order_id,
+            'thing3' => '平台发放佣金',
+            'amount4' => $extractNumber,
+            'time2' => date('Y-m-d H:i:s', time()),
+        ], '/pages/users/user_spread_money/receiving?id=' . $order_id . '&type=' . $type);
+    }
+
     /**
      * 订单给客服提醒
      * @param $orderId

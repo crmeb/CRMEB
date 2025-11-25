@@ -410,112 +410,132 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.pageOn{
-    border-radius 10px!important
+<style lang="scss" scoped>
+.pageOn {
+  border-radius: 10px !important;
 }
-.list_menu
-    padding 0 12px 12px
-    display flex
-    flex-wrap wrap
-    .item
-        margin-top 12px
-        font-size 11px
-        color #282828
-        text-align center
-        width 33.3333%
-        &.four
-            width 25%
-        &.five
-            width 20%
-        .img-box
-             width 50px
-             height 50px
-             margin 0 auto 5px auto
-             &.on
-                 border-radius 50%;
-                 img,.empty-box
-                   border-radius 50%;
-
-             img
-               width 100%
-               height 100%
-    .icontupian
-        font-size 16px
-.home_menu
-    padding 0 12px 12px
-    display flex
-    overflow hidden
-    .menu-item
-        margin-top 12px
-        font-size 11px
-        color #282828
-        text-align center
-        margin-right 30px
-
-        .img-box
-            width 50px
-            height 50px
-            &.on
-                border-radius 50%;
-                img,.empty-box
-                    border-radius 50%;
-        .box,img
-            width 100%
-            height 100%
-        .box
-            background #D8D8D8
-        p
-            margin-top 5px
-        &:nth-child(5n)
-            margin-right 0
-    &.on
-        .menu-item
-            margin-right 51px
-            &:nth-child(5n)
-                margin-right 51px
-            &:nth-child(4n)
-                margin-right 0
-    .icontupian
-        font-size 16px
-.dot {
-    display: flex;
-    align-items: center;
-    justify-content center;
-    padding-bottom 10px;
-
-    &.number{
-        bottom: 15px;
+.list_menu {
+  padding: 0 12px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  .item {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #282828;
+    text-align: center;
+    width: 33.3333%;
+    &.four {
+      width: 25%;
     }
-
-    .num{
-        width 25px;
-        height 18px;
-        line-height 18px;
-        background-color #000;
-        color #fff;
-        opacity 0.3;
-        border-radius 8px;
-        font-size 12px;
-        text-align center;
+    &.five {
+      width: 20%;
     }
-
-    .dot-item {
-        width: 5px;
-        height: 5px;
-        background: #AAAAAA;
+    .img-box {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 5px auto;
+      &.on {
         border-radius: 50%;
-        margin: 0 3px;
-    }
-
-    &.line-dot {
-
-        .dot-item {
-            width: 8px;
-            height: 2px;
-            background: #AAAAAA;
-            margin: 0 3px;
+        img,
+        .empty-box {
+          border-radius: 50%;
         }
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
+  }
+  .icontupian {
+    font-size: 16px;
+  }
+}
+.home_menu {
+  padding: 0 12px 12px;
+  display: flex;
+  overflow: hidden;
+  .menu-item {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #282828;
+    text-align: center;
+    margin-right: 30px;
+    .img-box {
+      width: 50px;
+      height: 50px;
+      &.on {
+        border-radius: 50%;
+        img,
+        .empty-box {
+          border-radius: 50%;
+        }
+      }
+    }
+    .box,
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .box {
+      background: #d8d8d8;
+    }
+    p {
+      margin-top: 5px;
+    }
+    &:nth-child(5n) {
+      margin-right: 0;
+    }
+  }
+  &.on {
+    .menu-item {
+      margin-right: 51px;
+      &:nth-child(5n) {
+        margin-right: 51px;
+      }
+      &:nth-child(4n) {
+        margin-right: 0;
+      }
+    }
+  }
+  .icontupian {
+    font-size: 16px;
+  }
+}
+.dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 10px;
+  &.number {
+    bottom: 15px;
+  }
+  .num {
+    width: 25px;
+    height: 18px;
+    line-height: 18px;
+    background-color: #000;
+    color: #fff;
+    opacity: 0.3;
+    border-radius: 8px;
+    font-size: 12px;
+    text-align: center;
+  }
+  .dot-item {
+    width: 5px;
+    height: 5px;
+    background: #aaaaaa;
+    border-radius: 50%;
+    margin: 0 3px;
+  }
+  &.line-dot {
+    .dot-item {
+      width: 8px;
+      height: 2px;
+      background: #aaaaaa;
+      margin: 0 3px;
+    }
+  }
 }
 </style>

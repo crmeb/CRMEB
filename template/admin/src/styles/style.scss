@@ -178,7 +178,6 @@
 
 .mobile-config {
   width: 100%;
-  padding: 15px;
 }
 
 /*表单公共样式*/
@@ -236,6 +235,10 @@ body {
 
 .form_content_width {
   width: 250px;
+}
+
+.form_range_content_width {
+  width: 117px;
 }
 
 .ivu-btn {
@@ -462,6 +465,24 @@ body {
   margin-bottom: 10px !important;
 }
 
+.my2 {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.my5 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.m2 {
+  margin: 2px;
+}
+
+.m5 {
+  margin: 5px;
+}
+
 .spBlock {
   display: block;
 }
@@ -537,6 +558,10 @@ body {
   top: 0;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 /*字体上移变蓝色*/
 .font-blue:hover {
   color: #2d8cf0;
@@ -549,11 +574,16 @@ body {
 }
 
 .vxe-header--row th:nth-of-type(1) {
-  padding-left: 10px !important;
+  padding-left: 26px !important;
 }
 
 .vxe-table--body td:nth-of-type(1) {
-  padding-left: 10px !important;
+  padding-left: 26px !important;
+}
+
+.el-table th:nth-of-type(1) > .cell,
+.el-table td:nth-of-type(1) > .cell {
+  padding-left: 26px;
 }
 
 .ivu-modal-header {
@@ -599,7 +629,7 @@ body {
 }
 
 .statics-header-title {
-  font-size: 16px;
+  font-size: 14px;
   color: #303133;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -616,7 +646,7 @@ body {
   display: inline-block;
   color: #17233d;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 32px;
 }
 
@@ -726,7 +756,7 @@ body {
 .content img {
   display: block;
   max-width: 100%;
-  object-fit: contain;
+  // object-fit: contain;
 }
 
 .none-radius .ivu-modal-content {
@@ -736,6 +766,21 @@ body {
 .transfer-mask .ivu-modal-wrap {
   width: 1200px;
   margin: 0 auto;
+}
+
+.position-relative {
+  position: relative;
+}
+.position-absolute {
+  position: absolute;
+}
+
+.m-auto {
+  margin: 0 auto;
+}
+
+.no-warp {
+  flex-wrap: nowrap;
 }
 
 .transfer-mask .ivu-modal {
@@ -898,7 +943,6 @@ body {
 }
 
 .el-table {
-
   .el-table__header-wrapper,
   .el-table__fixed-header-wrapper {
     th {
@@ -947,6 +991,18 @@ a {
   }
 }
 
+.mt-20 {
+  margin-top: 20px;
+}
+
+.cup {
+  cursor: pointer;
+}
+
+.hover-pimary:hover {
+  color: var(--prev-color-primary);
+}
+
 .tree {
   min-height: 374px;
 
@@ -959,6 +1015,10 @@ a {
     align-items: center;
     color: #303133;
     font-size: 14px;
+
+    .text {
+      max-width: 160px;
+    }
 
     .icon {
       width: 15px;
@@ -1001,7 +1061,7 @@ a {
     color: var(--prev-color-primary) !important;
   }
 
-  .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+  .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
     background-color: var(--prev-color-primary-light-9) !important;
     border-right: 2px solid var(--prev-color-primary);
   }
@@ -1023,7 +1083,7 @@ a {
   position: fixed;
   right: 16px;
   bottom: 10px;
-  left: 200px;
+  left: 265px !important;
   z-index: 8;
   // box-shadow: 0 -1px 2px rgb(240, 240, 240);
   border: none;
@@ -1056,4 +1116,109 @@ a {
     width: 9px;
     height: 15px;
   }
+}
+
+.c-red {
+  color: #f56464;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.align-end {
+  align-items: end;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-x-center {
+  display: flex;
+  justify-content: center;
+}
+
+.flex-y-center {
+  display: flex;
+  align-items: center;
+}
+
+.pt-100px {
+  padding-top: 100px;
+}
+
+.pt-10,
+.pt-10px {
+  padding-top: 10px;
+}
+
+.pt-20,
+.pt-20px {
+  padding-top: 20px;
+}
+
+.left-wrapper {
+  border-radius: 4px 0 0 4px;
+}
+
+.left-radius-none {
+  border-radius: 0 4px 4px 0;
+}
+
+.input-number-unit-class[class-unit] {
+  --el-input-number-unit-offset-x: 0px;
+  position: relative;
+}
+
+.input-number-unit-class[class-unit]::after {
+  content: attr(class-unit);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  font-size: 12px;
+  right: var(--el-input-number-unit-offset-x);
+  padding: 0 10px;
+  color: #555;
+  // background-color: var(--prev-color-primary-light-3);
+  border-radius: 0 4px 4px 0;
+}
+
+.p-y-15 {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.p-x-10 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.p-x-15 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.p-x-20 {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.pb-50{
+  padding-bottom: 50px;
+}
+
+.m-r-2 {
+  margin-right: 2px;
+}
+
+.m-r-10 {
+  margin-right: 10px;
+}
+
+.f-w-b {
+  font-weight: bold;
 }

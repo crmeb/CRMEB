@@ -78,7 +78,7 @@ class OrderOfflineServices extends BaseServices
         }
 
         //虚拟商品自动发货
-        if ($orderInfo['virtual_type'] > 0) {
+        if (in_array($orderInfo['virtual_type'], [1, 2])) {
             /** @var StoreOrderDeliveryServices $orderDeliveryServices */
             $orderDeliveryServices = app()->make(StoreOrderDeliveryServices::class);
             $orderDeliveryServices->virtualSend($orderInfo);

@@ -68,8 +68,8 @@ export default {
   methods: {},
 };
 </script>
-<style lang="stylus" scoped>
-.monaco-editor{
-    min-height: 300px
+<style lang="scss" scoped>
+.monaco-editor {
+  min-height: 300px;
 }
 </style>

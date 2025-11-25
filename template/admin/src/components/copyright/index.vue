@@ -5,13 +5,15 @@
     </div>
     <div class="ivu-global-footer-copyright" v-if="copyright">{{ copyright }}</div>
     <div class="ivu-global-footer-copyright" v-else>
-      Copyright © 2014-2024
+      Copyright © 2014-2025
       <a href="https://www.crmeb.com" target="_blank">{{ version }}</a>
     </div>
   </div>
 </template>
 <script>
 import { getCrmebCopyRight } from '@/api/system';
+import { Session } from '@/utils/storage.js';
+
 export default {
   name: 'i-copyright',
   data() {
@@ -35,7 +37,7 @@ export default {
       ],
       copyright: '',
       version: '',
-      isShow: false
+      isShow: false,
     };
   },
   created() {
@@ -46,7 +48,8 @@ export default {
       this.version = this.$store.state.userInfo.version;
       getCrmebCopyRight().then((res) => {
         this.copyright = res.data.copyrightContext;
-        this.isShow = true
+        Session.set('copyright', res.data.copyrightContext);
+        this.isShow = true;
       });
     },
   },

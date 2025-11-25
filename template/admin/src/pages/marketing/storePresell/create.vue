@@ -67,14 +67,16 @@
                       <el-button
                         shape="circle"
                         icon="md-close"
-                        v-db-click @click.native="handleRemove(index)"
+                        v-db-click
+                        @click.native="handleRemove(index)"
                         class="btndel"
                       ></el-button>
                     </div>
                     <div
                       v-if="formValidate.images.length < 10"
                       class="upLoad acea-row row-center-wrapper"
-                      v-db-click @click="modalPicTap('duo')"
+                      v-db-click
+                      @click="modalPicTap('duo')"
                     >
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
@@ -250,7 +252,8 @@
             <el-form-item>
               <el-button
                 class="submission"
-                v-db-click @click="step"
+                v-db-click
+                @click="step"
                 :disabled="($route.params.id && current === 1) || current === 0"
                 >上一步
               </el-button>
@@ -258,7 +261,8 @@
                 type="primary"
                 :disabled="submitOpen && current === 2"
                 class="submission"
-                v-db-click @click="next('formValidate')"
+                v-db-click
+                @click="next('formValidate')"
                 >{{ current === 2 ? '提交' : '下一步' }}</el-button
               >
             </el-form-item>
@@ -753,10 +757,10 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$nextTick(e => {
+      this.$nextTick((e) => {
         this.$refs.goodslist.getList();
         this.$refs.goodslist.goodsCategory();
-      })
+      });
     },
     // 移动
     handleDragStart(e, item) {
@@ -784,40 +788,33 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .grey {
   color: #999;
 }
-
 .maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
-
 .ivu-table-wrapper {
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
 }
-
 .tabBox_img {
   width: 50px;
   height: 50px;
 }
-
 .tabBox_img img {
   width: 100%;
   height: 100%;
 }
-
 .priceBox {
   width: 100%;
 }
-
 .form {
   .picBox {
     display: inline-block;
     cursor: pointer;
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -831,7 +828,6 @@ export default {
       width: 100%;
       height: 100%;
     }
-
     .btndel {
       position: absolute;
       z-index: 9;
@@ -841,7 +837,6 @@ export default {
       top: -4px;
     }
   }
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -851,7 +846,6 @@ export default {
     background: rgba(0, 0, 0, 0.02);
     cursor: pointer;
   }
-
   .col {
     color: #2d8cf0;
     cursor: pointer;

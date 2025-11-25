@@ -185,30 +185,35 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.search-box
-    display flex
-    align-items center
-    width 100%
-    height 48px
-    padding 10px 10px 10px 0
-    cursor pointer;
-    img
-        width 76px
-        height 30px
-        margin-right 10px
-    .box
-        flex 1
-        height 30px
-        line-height 30px
-        color #999
-        font-size 12px
-        padding-left 10px
-        background #fff
-        border-radius:15px;
-        &.on
-            border-radius 0
-        &.center
-            text-align center
-            padding-left 0
+<style lang="scss" scoped>
+.search-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  padding: 10px 10px 10px 0;
+  cursor: pointer;
+  img {
+    width: 76px;
+    height: 30px;
+    margin-right: 10px;
+  }
+  .box {
+    flex: 1;
+    height: 30px;
+    line-height: 30px;
+    color: #999;
+    font-size: 12px;
+    padding-left: 10px;
+    background: #fff;
+    border-radius: 15px;
+    &.on {
+      border-radius: 0;
+    }
+    &.center {
+      text-align: center;
+      padding-left: 0;
+    }
+  }
+}
 </style>

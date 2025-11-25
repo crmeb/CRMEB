@@ -105,6 +105,7 @@
                     <el-form-item label="选取图文：" v-if="formValidate.type === 'news'">
                       <el-button v-db-click @click="changePic">选择图文消息</el-button>
                     </el-form-item>
+
                     <el-form-item
                       :label="formValidate.type === 'image' ? '图片地址：' : '语音地址：'"
                       prop="src"
@@ -137,14 +138,19 @@
                       <span v-show="formValidate.type === 'image'">文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式</span>
                       <span v-show="formValidate.type === 'voice'">文件最大2Mb，支持mp3格式,播放长度不超过60s</span>
                     </el-form-item>
+                    <el-form-item>
+                      <el-button type="primary" class="mr20" v-db-click @click="submenus('formValidate')"
+                        >保存并发布
+                      </el-button>
+                    </el-form-item>
                   </el-form>
                 </div>
               </el-col>
-              <el-col :span="24">
+              <!-- <el-col :span="24">
                 <div class="acea-row row-center">
                   <el-button type="primary" class="mr20" v-db-click @click="submenus('formValidate')">保存并发布 </el-button>
                 </div>
-              </el-col>
+              </el-col> -->
             </el-col>
           </el-col>
         </el-col>
@@ -423,7 +429,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 * {
   -moz-user-select: none; /* 火狐 */
   -webkit-user-select: none; /* webkit浏览器 */
@@ -431,7 +437,6 @@ export default {
   -khtml-user-select: none; /* 早期浏览器 */
   user-select: none;
 }
-
 .arrbox {
   background-color: white;
   font-size: 12px;
@@ -442,12 +447,10 @@ export default {
   text-align: left;
   box-sizing: border-box;
   width: 90%;
-
   .el-tag {
     margin-right: 3px;
   }
 }
-
 .arrbox_ip {
   font-size: 12px;
   border: none;
@@ -465,24 +468,20 @@ export default {
   margin: 2px;
   line-height: 30px;
 }
-
 .left {
   min-width: 390px;
   min-height: 550px;
   position: relative;
   padding-left: 40px;
 }
-
 .top {
   position: absolute;
   top: 0px;
 }
-
 .bottom {
   position: absolute;
   bottom: 0px;
 }
-
 .centent {
   background: #f4f5f9;
   min-height: 438px;
@@ -495,12 +494,10 @@ export default {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
-
 .right {
   background: #fff;
   min-height: 300px;
 }
-
 .box-content {
   position: relative;
   max-width: 60%;
@@ -514,16 +511,13 @@ export default {
   line-height: 1.5;
   border-radius: 5px;
 }
-
 .box-content_pic {
   width: 100%;
 }
-
 .box-content_pic img {
   width: 100%;
   height: auto;
 }
-
 .box-content:before {
   content: '';
   position: absolute;
@@ -538,7 +532,6 @@ export default {
   -webkit-transform: rotate(90deg);
   transform: rotate(90deg);
 }
-
 .box-content:after {
   content: '';
   content: '';
@@ -554,12 +547,10 @@ export default {
   -webkit-transform: rotate(90deg);
   transform: rotate(90deg);
 }
-
 .time-wrapper {
   margin-bottom: 10px;
   text-align: center;
 }
-
 .time {
   display: inline-block;
   color: #f5f5f5;
@@ -568,27 +559,22 @@ export default {
   border-radius: 3px;
   font-size: 12px;
 }
-
 .text-box {
   display: flex;
 }
-
 .avatar {
   width: 40px;
   height: 40px;
 }
-
 .avatar img {
   width: 100%;
   height: 100%;
 }
-
 .modelBox {
   ::v-deep .ivu-modal-body {
     padding: 0 16px 16px 16px !important;
   }
 }
-
 .news_pic {
   width: 100%;
   height: 150px;
@@ -603,7 +589,6 @@ export default {
   flex-direction: column;
   align-items: flex-end;
 }
-
 .news_sp {
   font-size: 12px;
   color: #000000;
@@ -615,7 +600,6 @@ export default {
   box-sizing: border-box;
   display: block;
 }
-
 .news_cent {
   width: 100%;
   height: auto;
@@ -625,13 +609,11 @@ export default {
   padding: 10px;
   box-sizing: border-box;
   justify-content: space-between;
-
   .news_sp1 {
     font-size: 12px;
     color: #000000;
     width: 71%;
   }
-
   .news_cent_img {
     width: 81px;
     height: 46px;

@@ -1,35 +1,30 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="levelFrom"
-            :model="levelFrom"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            inline
-            @submit.native.prevent
+          ref="levelFrom"
+          :model="levelFrom"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          inline
+          @submit.native.prevent
         >
           <el-form-item label="等级状态：" label-for="status1">
             <el-select
-                v-model="levelFrom.is_show"
-                placeholder="请选择"
-                clearable
-                element-id="status1"
-                @change="userSearchs"
-                class="form_content_width"
+              v-model="levelFrom.is_show"
+              placeholder="请选择"
+              clearable
+              element-id="status1"
+              @change="userSearchs"
+              class="form_content_width"
             >
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="等级名称：" label-for="title">
-            <el-input
-                clearable
-                v-model="levelFrom.title"
-                placeholder="请输入等级名称"
-                class="form_content_width"
-            />
+            <el-input clearable v-model="levelFrom.title" placeholder="请输入等级名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
@@ -38,8 +33,7 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['admin-user-level_add']" type="primary" v-db-click @click="add"
-      >添加用户等级</el-button>
+      <el-button v-auth="['admin-user-level_add']" type="primary" v-db-click @click="add">添加用户等级</el-button>
       <el-table
         :data="levelLists"
         ref="table"
@@ -103,14 +97,9 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
-            <el-dropdown size="small" @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
-              <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
-              <el-dropdown-menu slot="dropdown">
-                <!--                                                <el-dropdown-item name="1">等级任务</el-dropdown-item>-->
-                <el-dropdown-item command="3">编辑等级</el-dropdown-item>
-                <el-dropdown-item command="2">删除等级</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a v-db-click @click="del(scope.row, '删除等级', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
@@ -177,22 +166,7 @@ export default {
   },
   methods: {
     ...mapMutations('userLevel', ['getlevelId']),
-    // 操作
-    changeMenu(row, name, num) {
-      this.levelId = row.id;
-      switch (name) {
-        case '1':
-          this.getlevelId(this.levelId);
-          this.$refs.tasks.modals = true;
-          this.$refs.tasks.getList();
-          break;
-        case '3':
-          this.edit(row);
-          break;
-        default:
-          this.del(row, '删除等级', num);
-      }
-    },
+
     // 删除
     del(row, tit, num) {
       let delfromData = {
@@ -270,13 +244,15 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
+<style lang="scss" scoped>
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>

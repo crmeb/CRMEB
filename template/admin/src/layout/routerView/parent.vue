@@ -29,9 +29,9 @@ export default {
   },
   created() {
     /**
-  * 获取需要保持活动状态的组件名称列表
-  */
- this.keepAliveNameList = this.getKeepAliveNames();
+     * 获取需要保持活动状态的组件名称列表
+     */
+    this.keepAliveNameList = this.getKeepAliveNames();
     // 监听标签页视图刷新路由视图事件
     this.bus.$on('onTagsViewRefreshRouterView', (path) => {
       // 如果当前路由路径不等于传入的路径，则直接返回false
@@ -49,7 +49,6 @@ export default {
         this.keepAliveNameList = this.getKeepAliveNames();
       });
     });
-
   },
 
   methods: {

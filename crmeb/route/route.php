@@ -2,6 +2,10 @@
 
 use think\facade\Route;
 
+Route::get('surl/:id', function(\app\Request $request){
+    return app()->make(\app\api\controller\v1\PublicController::class)->getSchemeUrl($request->param('id'));
+});
+
 Route::miss(function () {
     $appRequest = request()->pathinfo();
     if ($appRequest === null) {

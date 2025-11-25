@@ -154,21 +154,19 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .menus {
   display: flex;
   align-items: center;
   width: 100%;
   height: 46px;
-  cursor pointer;
-  background: linear-gradient(90deg, #F62C2C 0%, #F96E29 100%);
-
+  cursor: pointer;
+  background: linear-gradient(90deg, #f62c2c 0%, #f96e29 100%);
   .item {
     position: relative;
     flex: 1;
     text-align: center;
     color: #fff;
-
     &.on span {
       display: block;
       position: absolute;

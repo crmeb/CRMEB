@@ -23,7 +23,9 @@
               <el-input v-model="formItem.content" class="mb10" type="textarea" placeholder="请输入留言内容"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" v-db-click @click="handleSubmit('formItem')" style="width: 100%">提交留言</el-button>
+              <el-button type="primary" v-db-click @click="handleSubmit('formItem')" style="width: 100%"
+                >提交留言</el-button
+              >
             </el-form-item>
           </el-form>
         </div>

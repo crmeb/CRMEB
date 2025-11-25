@@ -228,78 +228,94 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.mobile-page{
-    /*margin-bottom 10px*/
+<style lang="scss" scoped>
+.mobile-page {
+  /*margin-bottom 10px*/
 }
-.bargainOn{
-    border-radius 0!important
+.bargainOn {
+  border-radius: 0 !important;
 }
-.home_bargain
-    width 100%
-    padding 15px 10px 10px
-    background-size 100% 100%
-    border-radius 6px
-    .title-bar
-        width 100%
-        height 29px
-        font-size 19px
-        text-align center
-    .list-wrapper
-        display flex
-        margin-top 10px
-        width 100%
-        overflow hidden
-        .item
-            flex-shrink 0
-            width 105px
-            border-radius:8px 8px 0px 0px;
-            overflow hidden
-            .img-box
-                width 100%
-                height 105px
-                img,.box
-                    width 100%
-                    height 100%
-                .box
-                    background #D8D8D8
-            .con-box
-                display flex
-                flex-direction column
-                align-items center
-                padding 6px 0 10px
-                background #fff
-                border-radius:0 0 8px 8px;
-                .price
-                    display flex
-                    align-items center
-                    justify-content center
-                    color #FF4444
-                    p
-                        font-size 16px
-                        font-weight bold
-                    span
-                        font-size 12px
-                .btn
-                    width:68px;
-                    height:17px;
-                    background:linear-gradient(270deg,rgba(255,84,0,1) 0%,rgba(255,0,0,1) 100%);
-                    border-radius:9px;
-                    color #fff
-                    text-align center
-                    line-height 19px
-                    font-size 12px
-    .doc
-        display flex
-        align-items center
-        justify-content center
-        margin-top 10px
-        span
-            width:4px;
-            height:2px;
-            margin 0 3px
-            background:#979797;
-            &.active
-                width 8px
-                background #fff
+.home_bargain {
+  width: 100%;
+  padding: 15px 10px 10px;
+  background-size: 100% 100%;
+  border-radius: 6px;
+  .title-bar {
+    width: 100%;
+    height: 29px;
+    font-size: 19px;
+    text-align: center;
+  }
+  .list-wrapper {
+    display: flex;
+    margin-top: 10px;
+    width: 100%;
+    overflow: hidden;
+    .item {
+      flex-shrink: 0;
+      width: 105px;
+      border-radius: 8px 8px 0px 0px;
+      overflow: hidden;
+      .img-box {
+        width: 100%;
+        height: 105px;
+        img,
+        .box {
+          width: 100%;
+          height: 100%;
+        }
+        .box {
+          background: #d8d8d8;
+        }
+      }
+      .con-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 6px 0 10px;
+        background: #fff;
+        border-radius: 0 0 8px 8px;
+        .price {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ff4444;
+          p {
+            font-size: 16px;
+            font-weight: bold;
+          }
+          span {
+            font-size: 12px;
+          }
+        }
+        .btn {
+          width: 68px;
+          height: 17px;
+          background: linear-gradient(270deg, rgba(255, 84, 0, 1) 0%, rgba(255, 0, 0, 1) 100%);
+          border-radius: 9px;
+          color: #fff;
+          text-align: center;
+          line-height: 19px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+  .doc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    span {
+      width: 4px;
+      height: 2px;
+      margin: 0 3px;
+      background: #979797;
+      &.active {
+        width: 8px;
+        background: #fff;
+      }
+    }
+  }
+}
 </style>

@@ -16,14 +16,14 @@ import store from '@/store';
 import { includeArray } from '@/libs/auth';
 
 export default {
-    inserted (el, binding, vnode) {
-        const { value } = binding;
-        const access = store.state.userInfo.access;
-        if (value && value instanceof Array && value.length && access && access.length) {
-            const isPermission = includeArray(value, access);
-            if (!isPermission) {
-                // el.parentNode && el.parentNode.removeChild(el);
-            }
-        }
+  inserted(el, binding, vnode) {
+    const { value } = binding;
+    const access = store.state.userInfo.access;
+    if (value && value instanceof Array && value.length && access && access.length) {
+      const isPermission = includeArray(value, access);
+      if (!isPermission) {
+        // el.parentNode && el.parentNode.removeChild(el);
+      }
     }
-}
+  },
+};

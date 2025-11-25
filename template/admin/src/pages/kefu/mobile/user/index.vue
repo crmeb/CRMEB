@@ -28,7 +28,8 @@
           class="checkName"
           v-if="activeUserInfo.group_name"
           v-text="activeUserInfo.group_name"
-          v-db-click @click="showName"
+          v-db-click
+          @click="showName"
         ></span>
         <span v-else v-db-click @click="showName">无</span>
         <vue-pickers
@@ -185,6 +186,9 @@ export default {
 }
 .user {
   &-header {
+    padding: 0 0.3rem;
+    background: #fff;
+    margin-bottom: 0.15rem;
     width: 100%;
     height: 1.5rem;
     line-height: 1.5rem;
@@ -212,9 +216,6 @@ export default {
         border-radius: 4px;
       }
     }
-    padding: 0 0.3rem;
-    background: #fff;
-    margin-bottom: 0.15rem;
   }
   &-list {
     padding: 0 0.2rem;

@@ -795,7 +795,7 @@
 	}
 
 	.pos-order-goods .goods {
-		height: 185upx;
+		min-height: 185upx;
 	}
 
 	.pos-order-goods .goods~.goods {
@@ -822,7 +822,8 @@
 		display: flex;
 		justify-content: space-between;
 		flex-direction: column;
-		height: 130upx;
+		flex-wrap: nowrap;
+		/* height: 132upx; */
 	}
 
 	.pos-order-goods .goods .picTxt .text .info {
@@ -834,9 +835,7 @@
 		font-size: 24upx;
 		color: #999;
 		width: 100%;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
+		word-break: break-all;
 	}
 
 	.pos-order-goods .goods .money {

@@ -54,12 +54,14 @@ class UserExtractController
             ['alipay_code', ''],
             ['extract_type', ''],
             ['money', 0],
+            ['user_name', ''],
             ['name', ''],
             ['bankname', ''],
             ['cardnum', ''],
             ['weixin', ''],
             ['qrcode_url', ''],
         ]);
+        $extractInfo['channel_type'] = $request->getFromType();
         $extractType = Config::get('pay.extractType', []);
         if (!in_array($extractInfo['extract_type'], $extractType))
             return app('json')->fail(410114);
@@ -67,9 +69,12 @@ class UserExtractController
         if (!$extractInfo['cardnum'] == '')
             if (!preg_match('/^([1-9]{1})(\d{15}|\d{16}|\d{18})$/', $extractInfo['cardnum']))
                 return app('json')->fail(410116);
-        if ($extractInfo['extract_type'] == 'alipay') {
-            if (trim($extractInfo['name']) == '') return app('json')->fail(410117);
-        } else if ($extractInfo['extract_type'] == 'bank') {
+        if ($extractInfo['extract_type'] == 'weixin') {
+            if (trim($extractInfo['user_name']) == '') return app('json')->fail('请填写真实姓名');
+        } elseif ($extractInfo['extract_type'] == 'alipay') {
+            if (trim($extractInfo['alipay_code']) == '') return app('json')->fail(410117);
+            if (trim($extractInfo['user_name']) == '') return app('json')->fail('请填写真实姓名');
+        } elseif ($extractInfo['extract_type'] == 'bank') {
             if (!$extractInfo['cardnum']) return app('json')->fail(410118);
             if (!$extractInfo['bankname']) return app('json')->fail(410119);
         }

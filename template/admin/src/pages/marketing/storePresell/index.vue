@@ -46,7 +46,8 @@
               v-auth="['marketing-store_bargain-create']"
               type="primary"
               icon="md-add"
-              v-db-click @click="add"
+              v-db-click
+              @click="add"
               class="mr10"
               >添加预售商品</el-button
             >
@@ -290,7 +291,7 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .tabBox_img {
   width: 36px;
   height: 36px;

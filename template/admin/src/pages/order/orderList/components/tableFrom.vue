@@ -10,13 +10,7 @@
         @submit.native.prevent
       >
         <el-form-item label="订单类型：">
-          <el-select
-            v-model="orderData.status"
-            clearable
-            @change="selectChange2"
-            placeholder="全部"
-            class="form_content_width"
-          >
+          <el-select v-model="orderData.status" clearable @change="selectChange2" placeholder="全部">
             <el-option label="全部订单" value="" />
             <el-option label="普通订单" value="1" />
             <el-option v-permission="'combination'" label="拼团订单" value="2" />
@@ -48,10 +42,9 @@
             end-placeholder="结束日期"
             :picker-options="pickerOptions"
             style="width: 250px"
-            class="mr20"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="搜索：" prop="real_name" label-for="real_name">
+        <el-form-item label="订单搜索：" prop="real_name" label-for="real_name">
           <el-input clearable v-model="orderData.real_name" placeholder="请输入" class="form_content_width">
             <el-select v-model="orderData.field_key" slot="prepend" style="width: 100px">
               <el-option value="all" label="全部"></el-option>
@@ -65,6 +58,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" v-db-click @click="orderSearch">查询</el-button>
+          <el-button v-db-click @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -161,6 +155,7 @@ export default {
       'onChangeTabs',
       'setOrderKeyword',
       'getfieldKey',
+      'resetSearch',
     ]),
     getPath() {
       this.orderData.status = this.$route.query.status.toString();
@@ -305,8 +300,10 @@ export default {
     },
     //
     handleReset() {
-      this.$refs.form.resetFields();
-      this.$emit('on-reset');
+      this.timeVal = [];
+      this.time = '';
+      this.resetSearch();
+      this.$emit('getList');
     },
   },
 };

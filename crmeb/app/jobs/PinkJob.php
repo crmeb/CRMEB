@@ -17,6 +17,9 @@ use app\services\order\StoreOrderRefundServices;
 use app\services\order\StoreOrderServices;
 use crmeb\basic\BaseJobs;
 use crmeb\traits\QueueTrait;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
 class PinkJob extends BaseJobs
 {

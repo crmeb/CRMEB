@@ -17,7 +17,7 @@
   --prev-bg-columnsMenuActiveColor: #ffffff;
   --prev-bg-menu-hover-ba-color: rgba(0, 0, 0, 0.2);
   --prev-bg-menu-active-color: #0256ff;
-  --prev-bg-main-color: #F0F2F5;
+  --prev-bg-main-color: #f0f2f5;
   --prev-bg-color: #f5f7fa;
   --prev-bg-white: #ffffff;
   --prev-color-primary: #0256ff;
@@ -247,6 +247,9 @@ body,
   overflow: hidden !important;
 }
 
+.white-space-nowrap {
+  white-space: nowrap;
+}
 .p30 {
   padding: 30px;
 }

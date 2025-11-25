@@ -60,6 +60,8 @@ class StoreBargainDao extends BaseDao
                 }
             })->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
+            })->when(isset($where['product_id']) && $where['product_id'] != 0, function ($query) use ($where) {
+                $query->where('product_id', $where['product_id']);
             })->order('sort desc,id desc')->select()->toArray();
     }
 
@@ -242,5 +244,11 @@ class StoreBargainDao extends BaseDao
     public function addBargain(int $id, string $field)
     {
         return $this->getModel()->where('id', $id)->inc($field, 1)->update();
+    }
+
+    public function getProductExist($productIds)
+    {
+        return $this->getModel()->where('product_id', 'in', $productIds)->where('is_del', 0)
+            ->group('product_id')->column('COUNT(*) as count', 'product_id');
     }
 }

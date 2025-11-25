@@ -17,10 +17,14 @@
             :current-node-key="treeId"
           >
             <span class="custom-tree-node" slot-scope="{ data }">
-              <span class="file-name">
+              <div class="file-name">
                 <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
-                {{ data.name }}</span
-              >
+                <el-tooltip class="item" effect="dark" :content="data.name" placement="top">
+                  <div class="text line1">
+                    {{ data.name }}
+                  </div>
+                </el-tooltip>
+              </div>
               <span v-if="data.id">
                 <el-dropdown @command="(command) => clickMenu(data, command)">
                   <i class="el-icon-more el-icon--right"></i>
@@ -37,7 +41,7 @@
         </div>
       </el-col>
       <el-col v-bind="grid2" ref="rightBox">
-        <el-card :bordered="false" shadow="never">
+        <el-card :bordered="false" shadow="never" class="left-radius-none">
           <el-row>
             <el-col>
               <el-button v-auth="['admin-user-label_add']" type="primary" v-db-click @click="add">添加标签</el-button>
@@ -262,25 +266,29 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .showOn {
   color: #2d8cf0;
   background: #f0faff;
   z-index: 2;
 }
-
 ::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
   display: none;
 }
-
 ::v-deep .ivu-menu-vertical.ivu-menu-light:after {
   display: none;
 }
-
 .left-wrapper {
-  height: 920px;
   background: #fff;
   border-right: 1px solid #f2f2f2;
+  .tree {
+    // height: 100%;
+    height: calc(-220px + 100vh);
+    overflow-y: scroll;
+  }
+  .tree::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .menu-item {
@@ -289,7 +297,6 @@ export default {
   display: flex;
   justify-content: space-between;
   word-break: break-all;
-
   .icon-box {
     z-index: 3;
     position: absolute;
@@ -298,11 +305,9 @@ export default {
     transform: translateY(-50%);
     display: none;
   }
-
   &:hover .icon-box {
     display: block;
   }
-
   .right-menu {
     z-index: 10;
     position: absolute;

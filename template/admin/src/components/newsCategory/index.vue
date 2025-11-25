@@ -1,30 +1,33 @@
 <template>
   <div :style="{ height: scrollerHeight + 'px' || '' }">
-      <div>
-        <el-form ref="formValidate" inline :model="formValidate" label-width="80px" label-position="right" class="tabform">
-          <el-form-item label="图文搜索：" prop="cate_name" label-for="cate_name">
-            <el-input
-                clearable
-                placeholder="请输入"
-                v-model="formValidate.cate_name"
-                class="form_content_width"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
-            <router-link :to="routePre + '/app/wechat/news_category/save/0'">
-              <el-button type="primary" class="bnt ml15">添加图文消息</el-button>
-            </router-link>
-          </el-form-item>
-        </el-form>
-      </div>
+    <div>
+      <el-form
+        ref="formValidate"
+        inline
+        :model="formValidate"
+        label-width="80px"
+        label-position="right"
+        class="tabform"
+      >
+        <el-form-item label="图文搜索：" prop="cate_name" label-for="cate_name">
+          <el-input clearable placeholder="请输入" v-model="formValidate.cate_name" class="form_content_width" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+          <router-link :to="routePre + '/app/wechat/news_category/save/0'">
+            <el-button type="primary" class="bnt ml15">添加图文消息</el-button>
+          </router-link>
+        </el-form-item>
+      </el-form>
+    </div>
     <div class="contentBox">
       <div id="content" :style="{ top: contentTop + 'px' || '', width: contentWidth }" ref="content">
         <vue-waterfall-easy
           :imgsArr="imgsArr"
           :maxCols="maxCol"
           :width="screenWidth"
-          v-db-click @click="clickFn"
+          v-db-click
+          @click="clickFn"
           @scrollReachBottom="getData"
           ref="waterfall"
           :reachBottomDistance="30"
@@ -45,20 +48,23 @@
                     type="success"
                     icon="el-icon-edit"
                     v-show="props.value.new[i].isDel && isShow"
-                    v-db-click @click="clkk(props.value)"
+                    v-db-click
+                    @click="clkk(props.value)"
                   ></el-button>
                   <el-button
                     type="error"
                     icon="el-icon-delete"
                     v-show="props.value.new[i].isDel && isShow"
-                    v-db-click @click="del(props.value, '删除图文', i)"
+                    v-db-click
+                    @click="del(props.value, '删除图文', i)"
                     style="margin-top: 5px"
                   ></el-button>
                   <el-button
                     type="primary"
                     icon="el-icon-s-promotion"
                     v-show="props.value.new[i].isDel && isShowSend"
-                    v-db-click @click="send(props.value, '发送', i)"
+                    v-db-click
+                    @click="send(props.value, '发送', i)"
                     >推送</el-button
                   >
                 </div>
@@ -278,12 +284,11 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .contentBox {
-   height: 600px;
+  height: 600px;
   width: 100%;
   position: relative;
-
   #content {
     position: absolute;
     /* top: 280px; */
@@ -292,24 +297,20 @@ export default {
     /* height 1000px; */
   }
 }
-
 .contentBox ::v-deep .vue-waterfall-easy {
   width: 100% !important;
   left: 0 !important;
   margin-left: 0 !important;
 }
-
 .contentBox ::v-deep .vue-waterfall-easy-scroll::-webkit-scrollbar {
   display: none;
 }
-
 .contentBox ::v-deep .vue-waterfall-easy-scroll {
   scrollbar-width: none; /* firefox */
   -ms-overflow-style: none; /* IE 10+ */
   overflow-x: hidden;
   overflow-y: auto;
 }
-
 .some-info {
   padding: 7px;
   box-sizing: border-box;
@@ -318,7 +319,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
@@ -326,7 +326,6 @@ export default {
   line-height: 35px;
   display: inline-block;
 }
-
 .news_pic {
   width: 100%;
   height: 150px;
@@ -340,7 +339,6 @@ export default {
   flex-direction: column;
   align-items: flex-end;
 }
-
 .news_sp {
   font-size: 12px;
   color: #000000;
@@ -352,7 +350,6 @@ export default {
   box-sizing: border-box;
   display: block;
 }
-
 .news_cent {
   width: 100%;
   height: auto;
@@ -362,13 +359,11 @@ export default {
   padding: 10px;
   box-sizing: border-box;
   justify-content: space-between;
-
   .news_sp1 {
     font-size: 12px;
     color: #000000;
     width: 71%;
   }
-
   .news_cent_img {
     width: 81px;
     height: 46px;
@@ -381,21 +376,18 @@ export default {
     }
   }
 }
-
 .news_pic ::v-deep .ivu-btn-error {
   width: 24px !important;
   height: 24px !important;
-  background: #FF5D5F !important;
+  background: #ff5d5f !important;
   color: #fff !important;
   border: 1px solid #eee !important;
 }
-
 .news_pic ::v-deep .ivu-btn-error:hover {
-  background: #FF5D5F !important;
+  background: #ff5d5f !important;
   border: 1px solid #fff !important;
   color: #fff !important;
 }
-
 .news_pic ::v-deep .ivu-btn-success {
   width: 24px !important;
   height: 24px !important;

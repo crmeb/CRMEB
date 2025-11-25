@@ -1,9 +1,10 @@
 <template>
   <div>
-    <div class="i-layout-page-header header-title">
+    <!-- <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-    </div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt">
+    </div> -->
+    <pages-header ref="pageHeader" :title="$route.meta.title"></pages-header>
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->
         <div>
@@ -149,83 +150,68 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .template_sp_box {
   padding: 5px 0;
   box-sizing: border-box;
 }
-
 .template_sp {
   display: block;
   padding: 2px 0;
   box-sizing: border-box;
 }
-
 .flex-wrapper {
   display: flex;
   border-radius: 10px;
 }
-
 .iframe-box {
   width: 312px;
   height: 550px;
   border-radius: 10px;
 }
-
 .ivu-mt {
   height: 600px;
 }
-
 .content {
   padding: 0 20px;
 }
-
 .content > .title {
   padding-bottom: 26px;
 }
-
 .content-box {
   display: flex;
   align-items: center;
   margin: 20px 20px 0 20px;
   color: #333;
 }
-
 .content-box.last {
   margin-top: 0;
   color: #999999;
 }
-
 .line {
   width: 3px;
   height: 16px;
   background-color: var(--prev-color-primary);
   margin-right: 11px;
 }
-
 .content-box .title {
   font-size: 16px;
   font-weight: bold;
 }
-
 .content-box > span {
-  color: #F5222D;
+  color: #f5222d;
   font-size: 20px;
 }
-
 .content-box .left {
   width: 100px;
   text-align: right;
 }
-
 .content-box .right {
   width: 400px;
 }
-
 .rad {
   margin-left: 20px;
 }
-
 .mask {
   position: absolute;
   left: 0;

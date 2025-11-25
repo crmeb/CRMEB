@@ -216,6 +216,9 @@ export default {
       timeVal: [],
       columns4: [],
       listTitle: '',
+      rowsList: {
+        division_type: 0,
+      },
     };
   },
   computed: {
@@ -239,6 +242,8 @@ export default {
         uid: 0,
       };
       this.timeVal = [];
+      rowsList: {
+      }
     },
     // 具体日期
     onchangeTime(e) {

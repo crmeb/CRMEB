@@ -42,7 +42,6 @@ export default {
       messageList: [],
     };
   },
-  props: ['vm'],
   mounted() {
     this.getNotict();
     this.newOrderAudioLink = newOrderAudioLink;
@@ -61,7 +60,7 @@ export default {
           title: '新订单',
           message: '您有一个新的订单,ID为(' + data.order_id + '),请注意查看',
         });
-        if (this.newOrderAudioLink) this.newOrderAudioLink.play();
+        if (newOrderAudioLink) newOrderAudioLink.play();
         that.messageList.push({
           title: '新订单提醒',
           icon: 'md-bulb',
@@ -75,7 +74,7 @@ export default {
           title: '退款订单提醒',
           message: '您有一个订单申请退款,ID为(' + data.order_id + '),请注意查看',
         });
-        if (window.newOrderAudioLink) this.newOrderAudioLink.play();
+        if (newOrderAudioLink) newOrderAudioLink.play();
         that.messageList.push({
           title: '退款订单提醒',
           icon: 'md-information',
@@ -170,7 +169,7 @@ export default {
         .catch(() => {});
     },
     jumpUrl(path) {
-      this.vm.$router.push({
+      this.$router.push({
         path,
       });
     },

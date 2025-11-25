@@ -4,14 +4,7 @@
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-table
-        ref="selection"
-        :data="tabList"
-        v-loading="loading"
-        empty-text="暂无数据"
-        highlight-current-row
-        
-      >
+      <el-table ref="selection" :data="tabList" v-loading="loading" empty-text="暂无数据" highlight-current-row>
         <el-table-column label="类型" width="100">
           <template slot-scope="scope">
             <span>{{ scope.row.type }}</span>

@@ -115,7 +115,9 @@
 				isAuto: false, //没有授权的不会自动授权
 				isShowAuth: false, //是否隐藏授权
 				news: '',
-				noCoupon: 0
+				noCoupon: 0,
+				is_gift: 0,
+				order_id: 0
 			};
 		},
 		computed: mapGetters(['isLogin']),
@@ -126,6 +128,8 @@
 				this.pinkId = options.pinkId || 0;
 				this.couponId = options.couponId || 0;
 				this.news = options.news || 0;
+				this.orderId = options.order_id || 0;
+				this.is_gift = options.is_gift || 0;
 				this.getAddressList(true);
 			} else {
 				toLogin();
@@ -316,7 +320,7 @@
 				uni.navigateTo({
 					url: '/pages/users/user_address/index?id=' + id + '&cartId=' + cartId + '&pinkId=' +
 						pinkId + '&couponId=' +
-						couponId + '&new=' + this.news
+						couponId + '&new=' + this.news + '&is_gift=' + this.is_gift + '&order_id=' + this.orderId
 				})
 			},
 			/**
@@ -354,7 +358,7 @@
 				this.couponId = '';
 				uni.navigateTo({
 					url: '/pages/users/user_address/index?cartId=' + cartId + '&pinkId=' + pinkId +
-						'&couponId=' + couponId + '&new=' + this.news
+						'&couponId=' + couponId + '&new=' + this.news + '&is_gift=' + this.is_gift + '&order_id=' + this.orderId
 				})
 			},
 			goOrder: function(id) {
@@ -371,7 +375,7 @@
 					uni.redirectTo({
 						url: '/pages/goods/order_confirm/index?is_address=1&new=' + this.news + '&cartId=' +
 							cartId + '&addressId=' + id + '&pinkId=' +
-							pinkId + '&couponId=' + couponId + '&noCoupon=' + this.noCoupon
+							pinkId + '&couponId=' + couponId + '&noCoupon=' + this.noCoupon + '&is_gift=' + this.is_gift + '&order_id=' + this.orderId
 
 					})
 				}

@@ -286,4 +286,27 @@ class Division extends AuthController
         $this->services->divisionStaffSave($data);
         return app('json')->success(100000);
     }
+
+    /**
+     * 分销统计
+     * @return \think\Response
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/4/8
+     */
+    public function divisionStatistics()
+    {
+        [$type, $time, $page, $limit, $sort, $order] = $this->request->getMore([
+            ['type', 0],
+            ['time', ''],
+            ['page', 1],
+            ['limit', 15],
+            ['sort', 'order_sum'],
+            ['order', 'desc'],
+        ], true);
+        $time = $time != '' ? explode('-', $time) : [];
+        $data = $this->services->divisionStatistics($type, $time, $page, $limit, $sort, $order);
+        return app('json')->success($data);
+
+    }
 }

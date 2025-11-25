@@ -1,37 +1,37 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="时间选择：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="搜索：" label-for="status">
             <el-input
-                clearable
-                placeholder="请输入姓名、电话、UID"
-                v-model="formValidate.nickname"
-                class="form_content_width"
+              clearable
+              placeholder="请输入姓名、电话、UID"
+              v-model="formValidate.nickname"
+              class="form_content_width"
             />
           </el-form-item>
           <el-form-item>
@@ -42,8 +42,7 @@
     </el-card>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <el-card :bordered="false" shadow="never">
-      <el-button v-auth="['export-userAgent']" class="export" v-db-click @click="exports"
-      >导出</el-button>
+      <el-button v-auth="['export-userAgent']" class="export" v-db-click @click="exports">导出</el-button>
       <el-table
         ref="selection"
         :data="tableList"
@@ -176,7 +175,7 @@
               <img v-lazy="formInline.image" />
             </div>
             <div class="upLoad acea-row row-center-wrapper" v-else>
-              <i class="el-icon-picture-outline" style="font-size: 24px;"></i>
+              <i class="el-icon-picture-outline" style="font-size: 24px"></i>
             </div>
           </div>
         </el-form-item>
@@ -493,11 +492,10 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .picBox {
   display: inline-block;
   cursor: pointer;
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -506,7 +504,6 @@ export default {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.02);
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -518,12 +515,10 @@ export default {
       height: 100%;
     }
   }
-
   .iconfont {
     color: #898989;
   }
 }
-
 .QRpic {
   width: 180px;
   height: 180px;
@@ -533,13 +528,11 @@ export default {
     height: 100%;
   }
 }
-
 .QRpic_sp1 {
   font-size: 13px;
   color: #19be6b;
   cursor: pointer;
 }
-
 .QRpic_sp2 {
   font-size: 13px;
   color: #2d8cf0;
@@ -550,21 +543,17 @@ img {
   height: 36px;
   display: block;
 }
-
 .ivu-mt .name .item {
   margin: 3px 0;
 }
-
 .tabform {
   margin-bottom: 10px;
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
   cursor: pointer;
 }
-
 .ivu-form-item {
   margin-bottom: 10px;
 }

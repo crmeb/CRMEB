@@ -16,6 +16,7 @@ use app\dao\product\product\StoreProductDao;
 use app\Request;
 use app\services\activity\bargain\StoreBargainServices;
 use app\services\activity\combination\StoreCombinationServices;
+use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\activity\seckill\StoreSeckillServices;
 use app\services\BaseServices;
 use app\services\activity\coupon\StoreCouponIssueServices;
@@ -31,11 +32,14 @@ use app\services\shipping\ShippingTemplatesServices;
 use app\services\system\SystemUserLevelServices;
 use app\services\user\UserLabelServices;
 use app\services\user\member\MemberCardServices;
+use app\services\user\UserLevelServices;
+use app\services\user\UserSearchServices;
 use app\services\user\UserServices;
 use crmeb\exceptions\AdminException;
 use app\jobs\ProductLogJob;
 use app\jobs\ProductCopyJob;
 use crmeb\exceptions\ApiException;
+use crmeb\services\FileService;
 use crmeb\services\GroupDataService;
 use think\facade\Config;
 
@@ -56,7 +60,7 @@ use think\facade\Config;
  */
 class StoreProductServices extends BaseServices
 {
-    protected $productType = ['普通商品', '卡密商品', '优惠券', '虚拟商品'];
+    protected $productType = ['普通商品', '卡密商品', '优惠券商品', '虚拟商品'];
 
 
     public function __construct(StoreProductDao $dao)
@@ -134,6 +138,7 @@ class StoreProductServices extends BaseServices
         $parentCateList = $categoryService->getColumn([
             ['id', 'in', $cateIds]
         ], 'cate_name', 'id');
+        $activityExist = $this->getActivityExist(array_column($list, 'id'));
         foreach ($list as &$item) {
             $cateName = array_filter($cateList, function ($val) use ($item) {
                 if (in_array($val['id'], explode(',', $item['cate_id']))) {
@@ -150,12 +155,42 @@ class StoreProductServices extends BaseServices
             $item['cate_name'] = is_array($item['cate_name']) ? implode(',', $item['cate_name']) : '';
             $item['stock_attr'] = $item['stock'] > 0;//库存
             $item['product_type'] = $this->productType[$item['virtual_type']];
-            if ($item['presale'] == 1) $item['product_type'] = '预售商品';
             $item['image'] = set_file_url($item['image']);
             $item['slider_image'] = set_file_url($item['slider_image']);
+            $item['activityExist'] = $activityExist[$item['id']];
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');
+    }
+
+    public function getActivityExist($productIds)
+    {
+        if (!count($productIds)) return [];
+        $seckill = app()->make(StoreSeckillServices::class)->getProductExist($productIds);
+        $bargain = app()->make(StoreBargainServices::class)->getProductExist($productIds);
+        $combination = app()->make(StoreCombinationServices::class)->getProductExist($productIds);
+        $activityExist = [];
+        foreach ($productIds as $productId) {
+            $activityExist[$productId]['seckill'] = false;
+            $activityExist[$productId]['bargain'] = false;
+            $activityExist[$productId]['combination'] = false;
+            foreach ($seckill as $key1 => $item1) {
+                if ($productId == $key1) {
+                    $activityExist[$productId]['seckill'] = true;
+                }
+            }
+            foreach ($bargain as $key2 => $item2) {
+                if ($productId == $key2) {
+                    $activityExist[$productId]['bargain'] = true;
+                }
+            }
+            foreach ($combination as $key3 => $item3) {
+                if ($productId == $key3) {
+                    $activityExist[$productId]['combination'] = true;
+                }
+            }
+        }
+        return $activityExist;
     }
 
     /**
@@ -193,6 +228,14 @@ class StoreProductServices extends BaseServices
         $list = $storeProductRuleServices->getList()['list'];
         foreach ($list as &$item) {
             $item['rule_value'] = json_decode($item['rule_value'], true);
+            foreach ($item['rule_value'] as $ruleKey => $ruleItem) {
+                foreach ($ruleItem['detail'] as $valueKey => $valueItem) {
+                    if (is_string($valueItem)) {
+                        $item['rule_value'][$ruleKey]['detail'][$valueKey] = ['value' => $valueItem, 'pic' => ''];
+                        $item['rule_value'][$ruleKey]['add_pic'] = 0;
+                    }
+                }
+            }
         }
         return $list;
     }
@@ -268,6 +311,9 @@ class StoreProductServices extends BaseServices
         $productInfo['presale_time'] = $productInfo['presale_start_time'] == 0 ? [] : [date('Y-m-d H:i:s', $productInfo['presale_start_time']), date('Y-m-d H:i:s', $productInfo['presale_end_time'])];
         $productInfo['description'] = $storeDescriptionServices->getDescription(['product_id' => $id, 'type' => 0]);
         $productInfo['custom_form'] = json_decode($productInfo['custom_form'], true);
+        $productInfo['params_list'] = json_decode($productInfo['params_list'], true) ?? [];
+        $productInfo['label_list'] = $productInfo['label_list'] != '' ? array_map('intval', explode(',', $productInfo['label_list'])) : [];
+        $productInfo['protection_list'] = $productInfo['protection_list'] != '' ? array_map('intval', explode(',', $productInfo['protection_list'])) : [];
         /** @var StoreProductAttrServices $storeProductAttrServices */
         $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
         //无属性添加默认属性
@@ -281,6 +327,7 @@ class StoreProductServices extends BaseServices
                 ]
             ];
             $detail[0] = [
+                'attr_arr' => ['默认'],
                 'value1' => '默认',
                 'detail' => ['规格' => '默认'],
                 'pic' => $productInfo['image'],
@@ -289,27 +336,52 @@ class StoreProductServices extends BaseServices
                 'ot_price' => $productInfo['ot_price'],
                 'stock' => $productInfo['stock'],
                 'bar_code' => '',
+                'bar_code_number' => '',
                 'weight' => 0,
                 'volume' => 0,
                 'brokerage' => 0,
                 'brokerage_two' => 0,
             ];
-            $skuList = $this->validateProductAttr($attr, $detail, $id);
+            $skuList = $this->validateProductAttr($attr, $detail, $id, 0, 1, true);
             $storeProductAttrServices->saveProductAttr($skuList, $id, 0);
             $this->dao->update($id, ['spec_type' => 0]);
         }
         if ($productInfo['spec_type'] == 1) {
             $result = $storeProductAttrResultServices->getResult(['product_id' => $id, 'type' => 0]);
+            $attrInfo = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => 0]);
             foreach ($result['value'] as $k => $v) {
+                if (!isset($v['is_show'])) {
+                    $result['value'][$k]['is_show'] = 1;
+                }
                 $num = 1;
                 foreach ($v['detail'] as $dv) {
                     $result['value'][$k]['value' . $num] = $dv;
                     $num++;
                 }
+                if (!isset($v['attr_arr'])) {
+                    $result['value'][$k]['attr_arr'] = array_values($v['detail']);
+                    foreach ($v['detail'] as $detailKey => $detailValue) {
+                        $result['value'][$k][$detailKey] = $detailValue;
+                    }
+                }
+                foreach ($attrInfo as $attrKey => $attrItem) {
+                    if (implode(',', $result['value'][$k]['attr_arr']) == $attrKey) {
+                        $result['value'][$k]['unique'] = $attrItem['unique'];
+                        $result['value'][$k]['stock'] = $attrItem['stock'];
+                    }
+                }
+            }
+            foreach ($result['attr'] as $attrKey => $attrItem) {
+                foreach ($attrItem['detail'] as $valueKey => $valueItem) {
+                    if (is_string($valueItem)) {
+                        $result['attr'][$attrKey]['detail'][$valueKey] = ['value' => $valueItem, 'pic' => ''];
+                        $result['attr'][$attrKey]['add_pic'] = 0;
+                    }
+                }
             }
             $productInfo['items'] = $result['attr'];
             $productInfo['attrs'] = $result['value'];
-            $productInfo['attr'] = ['pic' => '', 'vip_price' => 0, 'price' => 0, 'cost' => 0, 'ot_price' => 0, 'stock' => 0, 'bar_code' => '', 'weight' => 0, 'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0];
+            $productInfo['attr'] = ['pic' => '', 'vip_price' => 0, 'price' => 0, 'cost' => 0, 'ot_price' => 0, 'stock' => 0, 'bar_code' => '', 'bar_code_number' => '', 'weight' => 0, 'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0];
         } else {
             /** @var StoreProductVirtualServices $virtualService */
             $virtualService = app()->make(StoreProductVirtualServices::class);
@@ -324,6 +396,7 @@ class StoreProductServices extends BaseServices
                 'ot_price' => $result['ot_price'] ? floatval($result['ot_price']) : 0,
                 'stock' => $result['stock'] ? floatval($result['stock']) : 0,
                 'bar_code' => $result['bar_code'] ?? '',
+                'bar_code_number' => $result['bar_code_number'] ?? '',
                 'virtual_list' => $virtualService->getArr($result['unique'], $id),
                 'weight' => $result['weight'] ? floatval($result['weight']) : 0,
                 'volume' => $result['volume'] ? floatval($result['volume']) : 0,
@@ -331,7 +404,8 @@ class StoreProductServices extends BaseServices
                 'brokerage_two' => $result['brokerage_two'] ? floatval($result['brokerage_two']) : 0,
                 'coupon_id' => $result['coupon_id'],
                 'coupon_name' => $storeCouponIssueServices->value(['id' => $result['coupon_id']], 'title'),
-                'disk_info' => $result['disk_info']
+                'disk_info' => $result['disk_info'],
+                'unique' => $result['unique'],
             ];
         }
         if ($productInfo['activity']) {
@@ -394,7 +468,7 @@ class StoreProductServices extends BaseServices
 
             $types = 1;
             if ($id) {
-                $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => 0, 'suk' => $suk], 'bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,vip_price,is_virtual,coupon_id,unique,disk_info', 'suk');
+                $sukValue = $storeProductAttrValueServices->getColumn(['product_id' => $id, 'type' => 0, 'suk' => $suk], 'bar_code,bar_code_number,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two,vip_price,is_virtual,coupon_id,unique,disk_info', 'suk');
                 if (!$sukValue) {
                     if ($type == 0) $types = 0; //编辑商品时，将没有规格的数据不生成默认值
                     $sukValue[$suk]['pic'] = '';
@@ -403,6 +477,7 @@ class StoreProductServices extends BaseServices
                     $sukValue[$suk]['ot_price'] = 0;
                     $sukValue[$suk]['stock'] = 0;
                     $sukValue[$suk]['bar_code'] = '';
+                    $sukValue[$suk]['bar_code_number'] = '';
                     if ($is_virtual) {
                         if ($virtual_type == 1) {
                             $sukValue[$suk]['virtual_list'] = [];
@@ -422,6 +497,7 @@ class StoreProductServices extends BaseServices
                 $sukValue[$suk]['ot_price'] = 0;
                 $sukValue[$suk]['stock'] = 0;
                 $sukValue[$suk]['bar_code'] = '';
+                $sukValue[$suk]['bar_code_number'] = '';
                 if ($is_virtual) {
                     if ($virtual_type == 1) {
                         $sukValue[$suk]['virtual_list'] = [];
@@ -452,6 +528,7 @@ class StoreProductServices extends BaseServices
                 $valueNew[$count]['vip_price'] = isset($sukValue[$suk]['vip_price']) ? floatval($sukValue[$suk]['vip_price']) : 0;
                 $valueNew[$count]['stock'] = $sukValue[$suk]['stock'] ? intval($sukValue[$suk]['stock']) : 0;
                 $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
+                $valueNew[$count]['bar_code_number'] = $sukValue[$suk]['bar_code_number'] ?? '';
                 if ($is_virtual) {
                     if ($virtual_type == 1) {
                         if (!$type) {
@@ -473,9 +550,10 @@ class StoreProductServices extends BaseServices
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '售价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 120];
         $header[] = ['title' => '成本价', 'slot' => 'cost', 'align' => 'center', 'minWidth' => 140];
-        $header[] = ['title' => '原价', 'slot' => 'ot_price', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '划线价', 'slot' => 'ot_price', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '库存', 'slot' => 'stock', 'align' => 'center', 'minWidth' => 140];
-        $header[] = ['title' => '产品编号', 'slot' => 'bar_code', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '商品编码', 'slot' => 'bar_code', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '条形码', 'slot' => 'bar_code_number', 'align' => 'center', 'minWidth' => 140];
         if ($is_virtual) {
             if ($virtual_type == 1) {
                 $header[] = ['title' => '虚拟商品', 'slot' => 'fictitious', 'align' => 'center', 'minWidth' => 140];
@@ -509,6 +587,7 @@ class StoreProductServices extends BaseServices
         if (count($data['cate_id']) < 1) throw new AdminException(400373);
         if (!$data['store_name']) throw new AdminException(400338);
         if (count($data['slider_image']) < 1) throw new AdminException(400349);
+        if ($data['is_limit'] == 1 && $data['min_qty'] > $data['limit_num']) throw new AdminException('起购数量不能大于限购数量');
 
         $detail = $data['attrs'];
         $attr = $data['items'];
@@ -534,6 +613,9 @@ class StoreProductServices extends BaseServices
         $data['is_virtual'] = in_array($data['virtual_type'], [1, 2]) > 0 ? 1 : 0;
         $data['logistics'] = implode(',', $data['logistics']);
         $data['custom_form'] = json_encode($data['custom_form']);
+        $data['params_list'] = json_encode($data['params_list']);
+        $data['label_list'] = implode(',', $data['label_list']);
+        $data['protection_list'] = implode(',', $data['protection_list']);
         if ($data['freight'] == 2) {
             $data['temp_id'] = 0;
         } elseif ($data['freight'] == 3) {
@@ -550,6 +632,13 @@ class StoreProductServices extends BaseServices
             }
             if (($item['brokerage'] + $item['brokerage_two']) > $item['price']) {
                 throw new AdminException(400572);
+            }
+            if (isset($item['detail'])) {
+                foreach ($item['detail'] as $detail_k => $detail_v) {
+                    if (preg_match('/[=;]/', $detail_k) === 1 || preg_match('/[=;]/', $detail_v) === 1) {
+                        throw new AdminException('规格以及规格值中不能包含=或;符号');
+                    }
+                }
             }
         }
         foreach ($data['activity'] as $k => $v) {
@@ -606,15 +695,17 @@ class StoreProductServices extends BaseServices
                 ];
                 $detail[0]['value1'] = '规格';
                 $detail[0]['detail'] = ['规格' => '默认'];
+                $data['default_sku'] = '';
             }
             foreach ($detail as &$item) {
                 $item['is_virtual'] = $data['is_virtual'];
+                if ($data['spec_type'] == 1) {
+                    if ($item['is_default_select'] == 1) {
+                        $data['default_sku'] = implode(",", $item['attr_arr']);
+                    }
+                }
             }
             if ($id) {
-                if ($this->dao->value(['id' => $id], 'is_show') == 1 && $data['is_show'] == 0) {
-                    //下架检测是否有参与活动商品
-                    $this->checkActivity($id);
-                }
                 $oldInfo = $this->get($id)->toArray();
                 if ($oldInfo['virtual_type'] != $data['virtual_type']) {
                     throw new AdminException(400573);
@@ -654,7 +745,7 @@ class StoreProductServices extends BaseServices
                     }
                 }
                 $storeProductCateServices->change($res->id, $cateData);
-                $skuList = $this->validateProductAttr($attr, $detail, $res->id);
+                $skuList = $this->validateProductAttr($attr, $detail, $res->id, 0, 1, true);
                 $attrRes = $storeProductAttrServices->saveProductAttr($skuList, $res->id, 0, $data['is_vip'], $data['virtual_type']);
                 if (!empty($coupon_ids)) $storeProductCouponServices->setCoupon($res->id, $coupon_ids);
                 if (!$attrRes) throw new AdminException(100022);
@@ -711,9 +802,10 @@ class StoreProductServices extends BaseServices
      * @param int $productId
      * @param int $type
      * @param int $validate
+     * @param bool $isNew
      * @return array
      */
-    public function validateProductAttr(array $attrList, array $valueList, int $productId, $type = 0, int $validate = 1)
+    public function validateProductAttr(array $attrList, array $valueList, int $productId, $type = 0, int $validate = 1, bool $isNew = false)
     {
         $result = ['attr' => $attrList, 'value' => $valueList];
         $attrValueList = [];
@@ -730,13 +822,20 @@ class StoreProductServices extends BaseServices
                 throw new AdminException(400575);
             }
             foreach ($attr['detail'] as $k => $attrValue) {
-                $attrValue = trim($attrValue);
-                if (empty($attrValue)) {
+                if (is_string($attrValue)) {
+                    $attrValueTemp = $attrValue;
+                    $attrValue = [];
+                    $attrValue['value'] = $attrValueTemp;
+                    $attrValue['pic'] = '';
+                } else {
+                    $attrValue['value'] = trim($attrValue['value']);
+                    $attrValue['pic'] = isset($attr['add_pic']) ? $attr['add_pic'] == 1 ? trim($attrValue['pic']) : '' : '';
+                }
+                if (empty($attrValue['value'])) {
                     throw new AdminException(400576);
                 }
                 $attr['detail'][$k] = $attrValue;
                 $attrValueList[] = $attrValue;
-                $attr['detail'][$k] = $attrValue;
             }
             $attrNameList[] = $attr['value'];
             $attrList[$index] = $attr;
@@ -756,7 +855,7 @@ class StoreProductServices extends BaseServices
                 throw new AdminException(400580);
             }
             if ($validate && (!isset($value['pic']) || empty($value['pic']))) {
-                throw new AdminException(400581);
+                throw new AdminException('请设置规格图片');
             }
             foreach ($value['detail'] as $attrName => $attrValue) {
                 //如果attrName 存在空格 则这个规格key 会出现两次
@@ -766,7 +865,7 @@ class StoreProductServices extends BaseServices
                 if (!in_array($attrName, $attrNameList, true)) {
                     throw new AdminException(400582, ['name' => $attrName]);
                 }
-                if (!in_array($attrValue, $attrValueList, true)) {
+                if (!in_array($attrValue, array_column($attrValueList, 'value'), true)) {
                     throw new AdminException(400583, ['name' => $attrValue]);
                 }
                 if (empty($attrName)) {
@@ -789,16 +888,19 @@ class StoreProductServices extends BaseServices
         $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
         $skuArray = $storeProductAttrValueServices->getColumn(['product_id' => $productId, 'type' => $type], 'unique', 'suk');
         foreach ($valueList as $k => $value) {
-            $sku = implode(',', $value['detail']);
+            $sku = implode(',', array_map(function ($key) use ($value) {
+                return $value['detail'][$key];
+            }, array_column($attrList, 'value')));
             $skuValue = [
                 'product_id' => $productId,
                 'suk' => $sku,
                 'price' => $value['price'],
                 'cost' => $value['cost'],
                 'ot_price' => $value['ot_price'],
-                'unique' => $skuArray[$sku] ?? '',
+                'unique' => $isNew ? '' : $value['unique'] ?? '',
                 'image' => $value['pic'],
                 'bar_code' => $value['bar_code'] ?? '',
+                'bar_code_number' => $value['bar_code_number'] ?? '',
                 'weight' => $value['weight'] ?? 0,
                 'volume' => $value['volume'] ?? 0,
                 'brokerage' => $value['brokerage'] ?? 0,
@@ -811,6 +913,8 @@ class StoreProductServices extends BaseServices
                 'coupon_id' => $value['coupon_id'] ?? 0,
                 'virtual_list' => $value['virtual_list'] ?? [],
                 'disk_info' => $value['disk_info'] ?? '',
+                'is_show' => $value['is_show'] ?? 1,
+                'is_default_select' => $value['is_default_select'] ?? 0,
             ];
 
             if ($validate) {
@@ -822,6 +926,7 @@ class StoreProductServices extends BaseServices
         if (!count($attrGroup) || !count($valueGroup)) {
             throw new AdminException(400584);
         }
+        $result = ['attr' => $attrList, 'value' => $valueList];
         return compact('result', 'attrGroup', 'valueGroup');
     }
 
@@ -835,17 +940,18 @@ class StoreProductServices extends BaseServices
         if (!$id) throw new AdminException(100100);
         $productInfo = $this->dao->get($id);
         if (!$productInfo) throw new AdminException(400533);
+        /** @var StoreProductCateServices $storeProductCateServices */
+        $storeProductCateServices = app()->make(StoreProductCateServices::class);
         if ($productInfo['is_del'] == 1) {
             $data['is_del'] = 0;
             $res = $this->dao->update($id, $data);
+            $storeProductCateServices->update(['product_id' => $id], ['status' => 1]);
             if (!$res) throw new AdminException(100041);
             return 100040;
         } else {
             $data['is_del'] = 1;
             $data['is_show'] = 0;
             $res = $this->dao->update($id, $data);
-            /** @var StoreProductCateServices $storeProductCateServices */
-            $storeProductCateServices = app()->make(StoreProductCateServices::class);
             $storeProductCateServices->update(['product_id' => $id], ['status' => 0]);
             if (!$res) throw new AdminException(100008);
             return 100002;
@@ -884,14 +990,11 @@ class StoreProductServices extends BaseServices
             $item['is_product_type'] = 1;
             $item['logistics'] = explode(',', $item['logistics']);
             $attrs = $this->getProductRules($item['id'], 0)['attrs'];
+            $key = 0;
             foreach ($attrs as $items) {
-                $item['attrs'][] = [
-                    'image' => $items['pic'],
-                    'price' => $items['price'],
-                    'ot_price' => $items['ot_price'],
-                    'suk' => implode(',', $items['detail']),
-                    'unique' => $items['unique'],
-                ];
+                $item['attrs'][$key] = $items;
+                $item['attrs'][$key]['suk'] = implode(',', $items['detail']);
+                $key += 1;
             }
         }
         return $data;
@@ -919,6 +1022,14 @@ class StoreProductServices extends BaseServices
         }
         [$page, $limit] = $this->getPageValue($is_page);
         $list = $this->dao->getSearchList($where, $page, $limit, $field);
+        foreach ($list as &$product) {
+            $product['product_price'] = $product['price'];
+            $attrValue = $product['attrs'] ?? [];
+            foreach ($attrValue as &$value) {
+                $value['product_price'] = $value['price'];
+            }
+            $product['attrs'] = $attrValue;
+        }
         $count = $this->dao->getCount($where);
         return compact('count', 'list');
     }
@@ -964,29 +1075,31 @@ class StoreProductServices extends BaseServices
             $valueNew[$count]['pic'] = $sukValue[$suk]['pic'];
             $valueNew[$count]['price'] = floatval($sukValue[$suk]['price']);
             if ($type == 2) $valueNew[$count]['min_price'] = 0;
-            if ($type == 3) $valueNew[$count]['r_price'] = floatval($sukValue[$suk]['price']);
+            if (in_array($type, [1, 2, 3])) $valueNew[$count]['r_price'] = floatval($sukValue[$suk]['price']);
             $valueNew[$count]['cost'] = floatval($sukValue[$suk]['cost']);
             $valueNew[$count]['ot_price'] = floatval($sukValue[$suk]['ot_price']);
             $valueNew[$count]['stock'] = intval($sukValue[$suk]['stock']);
             $valueNew[$count]['quota'] = intval($sukValue[$suk]['quota']);
             $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'];
+            $valueNew[$count]['bar_code_number'] = $sukValue[$suk]['bar_code_number'];
             $valueNew[$count]['unique'] = $sukValue[$suk]['unique'];
             $valueNew[$count]['weight'] = $sukValue[$suk]['weight'] ? floatval($sukValue[$suk]['weight']) : 0;
             $valueNew[$count]['volume'] = $sukValue[$suk]['volume'] ? floatval($sukValue[$suk]['volume']) : 0;
             $valueNew[$count]['brokerage'] = $sukValue[$suk]['brokerage'] ? floatval($sukValue[$suk]['brokerage']) : 0;
             $valueNew[$count]['brokerage_two'] = $sukValue[$suk]['brokerage_two'] ? floatval($sukValue[$suk]['brokerage_two']) : 0;
+            $valueNew[$count]['vip_price'] = $sukValue[$suk]['vip_price'] ? floatval($sukValue[$suk]['vip_price']) : 0;
             $count++;
         }
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 120];
         if ($type == 1) {
             $header[] = ['title' => '秒杀价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
-            $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '日常售价', 'key' => 'r_price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 2) {
             $header[] = ['title' => '砍价起始金额', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '砍价最低价', 'slot' => 'min_price', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
-            $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '日常售价', 'key' => 'r_price', 'align' => 'center', 'minWidth' => 80];
         } elseif ($type == 3) {
             $header[] = ['title' => '拼团价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
@@ -996,16 +1109,17 @@ class StoreProductServices extends BaseServices
         } elseif ($type == 6) {
             $header[] = ['title' => '预售价', 'key' => 'price', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
-            $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '划线价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
         } else {
             $header[] = ['title' => '成本价', 'key' => 'cost', 'align' => 'center', 'minWidth' => 80];
-            $header[] = ['title' => '原价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
+            $header[] = ['title' => '划线价', 'key' => 'ot_price', 'align' => 'center', 'minWidth' => 80];
         }
         $header[] = ['title' => '库存', 'key' => 'stock', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '限量', 'slot' => 'quota', 'type' => 1, 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '重量(KG)', 'key' => 'weight', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '体积(m³)', 'key' => 'volume', 'align' => 'center', 'minWidth' => 80];
-        $header[] = ['title' => '商品编号', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '商品编码', 'key' => 'bar_code', 'align' => 'center', 'minWidth' => 80];
+        $header[] = ['title' => '条形码', 'key' => 'bar_code_number', 'align' => 'center', 'minWidth' => 80];
         return ['items' => $attr, 'attrs' => $valueNew, 'header' => $header];
     }
 
@@ -1014,26 +1128,38 @@ class StoreProductServices extends BaseServices
      * @param  $id
      * @return bool
      */
-    public function checkActivity($id = 0)
+    public function checkActivity($id = 0, $return = false)
     {
         if ($id) {
             /** @var StoreSeckillServices $storeSeckillService */
             $storeSeckillService = app()->make(StoreSeckillServices::class);
             $res1 = $storeSeckillService->count(['product_id' => $id, 'is_del' => 0]);
             if ($res1) {
-                throw new AdminException(400585);
+                if ($return) {
+                    return false;
+                } else {
+                    throw new AdminException(400585);
+                }
             }
             /** @var StoreBargainServices $storeBargainService */
             $storeBargainService = app()->make(StoreBargainServices::class);
             $res2 = $storeBargainService->count(['product_id' => $id, 'is_del' => 0]);
             if ($res2) {
-                throw new AdminException(400586);
+                if ($return) {
+                    return false;
+                } else {
+                    throw new AdminException(400586);
+                }
             }
             /** @var StoreCombinationServices $storeCombinationService */
             $storeCombinationService = app()->make(StoreCombinationServices::class);
             $res3 = $storeCombinationService->count(['product_id' => $id, 'is_del' => 0]);
             if ($res3) {
-                throw new AdminException(400587);
+                if ($return) {
+                    return false;
+                } else {
+                    throw new AdminException(400587);
+                }
             }
         }
         return true;
@@ -1062,17 +1188,51 @@ class StoreProductServices extends BaseServices
     {
         $where['is_show'] = 1;
         $where['is_del'] = 0;
+        $where['star'] = 1;
+        $ifKeyword = isset($where['store_name']) && $where['store_name'];
+        if ($ifKeyword) {
+            app()->make(UserSearchServices::class)->saveUserSearch($uid, $where['store_name'], [$where['store_name']], []);
+        }
         [$page, $limit] = $this->getPageValue();
         $where['vip_user'] = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
-        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price,is_virtual,presale,custom_form,virtual_type,min_qty']);
+        $list = $this->dao->getSearchList($where, $page, $limit, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(ficti, 0) as sales,price,stock,activity,ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price,is_virtual,presale,custom_form,virtual_type,min_qty,label_list']);
         /** @var MemberCardServices $memberCardService */
         $memberCardService = app()->make(MemberCardServices::class);
         $vipStatus = $memberCardService->isOpenMemberCard('vip_price');
+
+        // 提取所有 label_list 并过滤空值
+        $labelLists = array_map(function ($item) {
+            return $item['label_list'];
+        }, $list);
+
+        // 将 label_list 转换为数组，过滤空值，并去重
+        $uniqueLabels = array_unique(array_reduce($labelLists, function ($carry, $labels) {
+            // 将 label_list 按逗号分割成数组
+            $labelsArray = explode(',', $labels);
+            // 过滤掉空值
+            $labelsArray = array_filter($labelsArray, function ($label) {
+                return !empty(trim($label));
+            });
+            return array_merge($carry, $labelsArray);
+        }, []));
+
+        $labelList = app()->make(StoreProductLabelServices::class)->labelListByIds($uniqueLabels);
+        // 使用 id 作为键
+        $labelList = array_column($labelList, null, 'id');
+
         foreach ($list as &$item) {
             if (!$this->vipIsOpen(!!$item['is_vip'], $vipStatus)) {
                 $item['vip_price'] = 0;
             }
             $item['cart_button'] = $item['is_virtual'] || $item['virtual_type'] == 3 || $item['presale'] || json_decode($item['custom_form'], true) ? 0 : 1;
+            if (count($item['star'])) {
+                $item['star'] = bcdiv((string)array_sum(array_column($item['star'], 'product_score')), (string)count($item['star']), 1);
+            } else {
+                $item['star'] = '5.0';
+            }
+            $item['label_list'] = $item['label_list'] != '' ? array_map(function ($labelId) use ($labelList) {
+                return $labelList[$labelId] ?? [];
+            }, explode(',', $item['label_list'])) : [];
         }
         $list = $this->getActivityList($list);
         $list = $this->getProduceOtherList($list, $uid, !!$where['type']);
@@ -1194,14 +1354,15 @@ class StoreProductServices extends BaseServices
         $activity = explode(',', $activity);
         if ($activity[0] == 0 && $status) return [];
         $activityId = [];
-        $time = 0;
+        $time_id = 0;
         if ($seckillId) {
             foreach ($seckillId as $v) {
-                $timeInfo = GroupDataService::getDataNumber((int)$v['time_id']);
-                if ($timeInfo && isset($timeInfo['time']) && isset($timeInfo['continued'])) {
-                    if (date('H') >= $timeInfo['time'] && date('H') < ($timeInfo['time'] + $timeInfo['continued'])) {
+                $timeInfo = GroupDataService::getDataNumbers($v['time_id']);
+                foreach ($timeInfo as $time) {
+                    $value = json_decode($time['value'], true);
+                    if (date('H') >= $value['time']['value'] && date('H') < ($value['time']['value'] + $value['continued']['value'])) {
                         $activityId[1] = $v['id'];
-                        $time = strtotime(date("Y-m-d"), time()) + 3600 * ($timeInfo['time'] + $timeInfo['continued']);
+                        $time_id = $time['id'];
                         break;
                     }
                 }
@@ -1215,13 +1376,13 @@ class StoreProductServices extends BaseServices
                 if ($status) {
                     $data['type'] = $v;
                     $data['id'] = $activityId[$v];
-                    if ($v == 1) $data['time'] = $time;
+                    if ($v == 1) $data['time_id'] = $time_id;
                     break;
                 } else {
                     if ($v != 0) {
                         $arr['type'] = $v;
                         $arr['id'] = $activityId[$v];
-                        if ($v == 1) $arr['time'] = $time;
+                        if ($v == 1) $arr['time_id'] = $time_id;
                         $data[] = $arr;
                     }
                 }
@@ -1278,6 +1439,17 @@ class StoreProductServices extends BaseServices
         $storeInfo['video_link'] = empty($storeInfo['video_link']) ? '' : (strpos($storeInfo['video_link'], 'http') === false ? (sys_config('site_url') . $storeInfo['video_link']) : $storeInfo['video_link']);
         $storeInfo['fsales'] = $storeInfo['ficti'] + $storeInfo['sales'];
         $storeInfo['custom_form'] = json_decode($storeInfo['custom_form'], true);
+        $storeInfo['params_list'] = json_decode($storeInfo['params_list'], true) ?? [];
+        if ($storeInfo['label_list'] != '') {
+            $storeInfo['label_list'] = app()->make(StoreProductLabelServices::class)->labelListByIds(explode(',', $storeInfo['label_list']));
+        } else {
+            $storeInfo['label_list'] = [];
+        }
+        if ($storeInfo['protection_list'] != '') {
+            $storeInfo['protection_list'] = app()->make(StoreProductProtectionServices::class)->protectionListByIds(explode(',', $storeInfo['protection_list']));
+        } else {
+            $storeInfo['protection_list'] = [];
+        }
         $storeInfo['slider_image'] = set_file_url($storeInfo['slider_image'], $siteUrl);
 
         if (sys_config('share_qrcode', 0) && request()->isWechat()) {
@@ -1318,6 +1490,15 @@ class StoreProductServices extends BaseServices
         /** @var StoreProductAttrServices $storeProductAttrServices */
         $storeProductAttrServices = app()->make(StoreProductAttrServices::class);
         list($productAttr, $productValue) = $storeProductAttrServices->getProductAttrDetail($id, $uid, $type, 0);
+        $attrPics = [];
+        foreach ($productAttr as $attrValues) {
+            foreach ($attrValues['attr_value'] as $picArr) {
+                if (isset($picArr['pic']) && $picArr['pic'] != '') {
+                    $attrPics[] = $picArr['pic'];
+                }
+            }
+        }
+        $storeInfo['attrPics'] = $attrPics;
         //无属性添加默认属性
         if (empty($productValue)) {
             $attr = [
@@ -1337,18 +1518,28 @@ class StoreProductServices extends BaseServices
                 'ot_price' => $storeInfo['ot_price'],
                 'stock' => $storeInfo['stock'],
                 'bar_code' => '',
+                'bar_code_number' => '',
                 'weight' => 0,
                 'volume' => 0,
                 'brokerage' => 0,
                 'brokerage_two' => 0,
             ];
-            $skuList = $this->validateProductAttr($attr, $detail, $id);
+            $skuList = $this->validateProductAttr($attr, $detail, $id, 0, 1, true);
             $storeProductAttrServices->saveProductAttr($skuList, $id, 0);
         }
         $attrValue = $productValue;
         if (!$storeInfo['spec_type']) {
             $productAttr = [];
             $productValue = [];
+            $data['spec_unique'] = $attrValue['默认']['unique'];
+        } else {
+            foreach ($productValue as &$sku) {
+                if ($sku['is_show'] == 0) {
+                    $storeInfo['stock'] = $storeInfo['stock'] - $sku['stock'];
+                    $sku['stock'] = 0;
+                }
+            }
+            $data['spec_unique'] = '';
         }
         $data['productAttr'] = $productAttr;
         $data['productValue'] = $productValue;
@@ -1392,11 +1583,11 @@ class StoreProductServices extends BaseServices
         $vip_user = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
         if ($storeInfo['recommend_list'] != '') {
             $recommend_list = explode(',', $storeInfo['recommend_list']);
-            $data['good_list'] = get_thumb_water($this->getProducts(['ids' => $recommend_list, 'is_del' => 0, 'is_show' => 1], 12));
+            $data['good_list'] = $this->getProducts(['ids' => $recommend_list, 'is_del' => 0, 'is_show' => 1], 12);
             $recommend_count = 12 - count($data['good_list']);
-            if ($recommend_count) $data['good_list'] = array_merge($data['good_list'], get_thumb_water($this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1, 'vip_user' => $vip_user, 'not_ids' => $recommend_list], $recommend_count)));
+            if ($recommend_count) $data['good_list'] = array_merge($data['good_list'], $this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1, 'vip_user' => $vip_user, 'not_ids' => $recommend_list], $recommend_count));
         } else {
-            $data['good_list'] = get_thumb_water($this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1, 'vip_user' => $vip_user], 12));
+            $data['good_list'] = $this->getProducts(['is_good' => 1, 'is_del' => 0, 'is_show' => 1, 'vip_user' => $vip_user], 12);
         }
         $data['mapKey'] = sys_config('tengxun_map_key');
         $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
@@ -2065,8 +2256,461 @@ class StoreProductServices extends BaseServices
                 }
                 if (count($batchData)) $this->dao->saveAll($batchData);
                 break;
+            case 9:
+                foreach ($ids as $product_id) {
+                    $batchData[] = [
+                        'id' => $product_id,
+                        'label_list' => implode(',', $data['label_list'])
+                    ];
+                }
+                if (count($batchData)) $this->dao->saveAll($batchData);
+                break;
+            case 10:
+                $productVirtualInfo = $this->dao->getColumn(['id' => $ids], 'virtual_type', 'id');
+                foreach ($ids as $product_id) {
+                    if ($productVirtualInfo[$product_id] == 0) {
+                        $batchData[] = [
+                            'id' => $product_id,
+                            'is_gift' => $data['is_gift'],
+                            'gift_price' => $data['gift_price'],
+                        ];
+                    }
+                }
+                if (count($batchData)) $this->dao->saveAll($batchData);
+                break;
             default:
                 return true;
+        }
+        return true;
+    }
+
+    /**
+     * 商品迁移导出
+     * @param $where
+     * @return array
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2024/10/9
+     */
+    public function productExportList($where)
+    {
+        [$page, $limit] = $this->getPageValue();
+        $cateIds = [];
+        if (isset($where['cate_id']) && $where['cate_id']) {
+            /** @var StoreCategoryServices $storeCategory */
+            $storeCategory = app()->make(StoreCategoryServices::class);
+            $cateIds = $storeCategory->getColumn(['pid' => $where['cate_id']], 'id');
+        }
+        if ($cateIds) {
+            $cateIds[] = $where['cate_id'];
+            $where['cate_id'] = $cateIds;
+        }
+        $productList = $this->dao->getList($where, $page, $limit);
+        $header = [
+            '商品编号',
+            '商品名称', '商品类型', '商品分类(一级)', '商品分类(二级)', '商品单位',
+            '商品图片', '商品视频', '商品详情',
+            '已售数量', '起购数量',
+            '规格类型', '规格类型值', '规格名称', '规格值组合', '规格图片', '售价', '划线价', '成本价', '库存', '重量', '体积', '商品编码', '条形码',
+            '商品简介', '商品关键字', '商品口令',
+            '购买送积分'
+        ];
+        $filename = '商品迁移数据_' . date('YmdHis', time());
+        $virtualType = ['普通商品', '卡密/网盘', '优惠券', '虚拟商品'];
+        $export = $fileKey = [];
+        if (!empty($productList)) {
+            $productList = array_column($productList, null, 'id');
+            $productIds = array_column($productList, 'id');
+            $descriptionArr = app()->make(StoreDescriptionServices::class)->getColumn([['product_id', 'in', $productIds], ['type', '=', 0]], 'description', 'product_id');
+            $cateIds = implode(',', array_column($productList, 'cate_id'));
+            /** @var StoreCategoryServices $categoryService */
+            $categoryService = app()->make(StoreCategoryServices::class);
+            $cateList = $categoryService->getCateParentAndChildName($cateIds);
+            $attrResultArr = app()->make(StoreProductAttrResultServices::class)->getColumn([['product_id', 'in', $productIds], ['type', '=', 0]], 'result', 'product_id');
+            $i = 0;
+            foreach ($attrResultArr as $product_id => &$attrResult) {
+                $attrResult = json_decode($attrResult, true);
+                foreach ($attrResult['value'] as &$value) {
+                    $productInfo = $productList[$product_id];
+                    $cateName = array_filter($cateList, function ($val) use ($productInfo) {
+                        if (in_array($val['id'], explode(',', $productInfo['cate_id']))) {
+                            return $val;
+                        }
+                    });
+                    $skuArr = array_combine(array_column($attrResult['attr'], 'value'), $value['detail']);
+                    $attrArr = [];
+                    foreach ($attrResult['attr'] as $attrArray) {
+                        // 将每个子数组的 'value' 和 'detail' 组合成字符串
+                        if (isset($attrArray['detail'][0]['value'])) {
+                            $attrArray['detail'] = array_column($attrArray['detail'], 'value');
+                        }
+                        $detailString = implode(',', $attrArray['detail']); // 将 detail 数组转换为逗号分隔的字符串
+                        $attrArr[] = $attrArray['value'] . '=' . $detailString;
+                    }
+                    $attrString = implode(';', $attrArr);
+                    $one_data = [
+                        'id' => intval($product_id),
+                        'store_name' => $productInfo['store_name'],
+                        'virtual_type' => $virtualType[$productInfo['virtual_type']],
+                        'cate_name_one' => reset($cateName)['one'] ?? '',
+                        'cate_name_two' => reset($cateName)['two'] ?? '',
+                        'unit_name' => $productInfo['unit_name'],
+                        'slider_image' => implode(';', $productInfo['slider_image']),
+                        'video_link' => $productInfo['video_link'],
+                        'description' => htmlspecialchars_decode($descriptionArr[$productInfo['id']]),
+                        'ficti' => intval($productInfo['ficti']),
+                        'min_qty' => intval($productInfo['min_qty']),
+                        'spec_type' => intval($productInfo['spec_type']) == 1 ? '多规格' : '单规格',
+                        'sku_type_value' => $attrString,
+                        'sku_name' => implode(',', $value['detail']),
+                        'sku_value' => implode(';', array_map(function ($key, $value) {
+                            return "$key=$value";
+                        }, array_keys($skuArr), $skuArr)),
+                        'pic' => $value['pic'],
+                        'price' => floatval($value['price']),
+                        'ot_price' => floatval($value['ot_price']),
+                        'cost' => floatval($value['cost']),
+                        'stock' => intval($value['stock']),
+                        'volume' => intval($value['volume'] ?? 0),
+                        'weight' => intval($value['weight'] ?? 0),
+                        'bar_code' => $value['bar_code'] ?? '',
+                        'bar_code_number' => $value['bar_code_number'] ?? '',
+                        'store_info' => $productInfo['store_info'],
+                        'keyword' => $productInfo['keyword'],
+                        'command_word' => $productInfo['command_word'],
+                        'give_integral' => $productInfo['give_integral'],
+                    ];
+                    $export[] = $one_data;
+                    if ($i == 0) {
+                        $fileKey = array_keys($one_data);
+                    }
+                    $i++;
+                }
+            }
+        }
+        return compact('header', 'fileKey', 'export', 'filename');
+    }
+
+    public function productImport($file)
+    {
+        $all = $success = $fail = 0;
+        $file = public_path() . substr($file, 1);
+        // 获取文件后缀
+        $suffix = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (!in_array($suffix, ['xls', 'xlsx'])) {
+            return app('json')->fail('文件格式不正确，请上传xls或xlsx格式的文件！');
+        }
+        $importData = app()->make(FileService::class)->readExcel($file, 'product', 1, ucfirst($suffix));
+        if (!$importData) {
+            throw new AdminException('导入数据为空');
+        }
+        $productCateServices = app()->make(StoreCategoryServices::class);
+        $productData = $issetProductArr = [];
+        $virtualType = ['普通商品' => 0, '卡密/网盘' => 1, '优惠券' => 2, '虚拟商品' => 3];
+        $productAttrValueServices = app()->make(StoreProductAttrValueServices::class);
+        $barCodeArr = array_unique($productAttrValueServices->getColumn(['type' => 0], 'bar_code', 'id'));
+        $barCodeNumberArr = array_unique($productAttrValueServices->getColumn(['type' => 0], 'bar_code_number', 'id'));
+        foreach ($importData as $sku) {
+            if ($sku['id'] == null) continue;
+            if (!isset($productData[$sku['id']])) {
+                $productData[$sku['id']]['disk_info'] = '';
+                $productData[$sku['id']]['logistics'] = [1, 2];
+                $productData[$sku['id']]['freight'] = 2;
+                $productData[$sku['id']]['postage'] = 0;
+                $productData[$sku['id']]['recommend'] = [];
+                $productData[$sku['id']]['presale'] = 0;
+                $productData[$sku['id']]['is_limit'] = 0;
+                $productData[$sku['id']]['limit_type'] = 0;
+                $productData[$sku['id']]['limit_num'] = 0;
+                $productData[$sku['id']]['video_open'] = $sku['video_link'] != '' ? 1 : 0;
+                $productData[$sku['id']]['vip_product'] = 0;
+                $productData[$sku['id']]['custom_form'] = [];
+                $productData[$sku['id']]['store_name'] = $sku['store_name'];
+                $productData[$sku['id']]['cate_id'] = $productCateServices->getCateId($sku['cate_name_one'], $sku['cate_name_two']);
+                $productData[$sku['id']]['keyword'] = $sku['keyword'] ?? '';
+                $productData[$sku['id']]['unit_name'] = $sku['unit_name'] ?? '';
+                $productData[$sku['id']]['store_info'] = $sku['store_info'] ?? '';
+                $productData[$sku['id']]['image'] = '';
+                $productData[$sku['id']]['recommend_image'] = '';
+                $productData[$sku['id']]['slider_image'] = explode(';', $sku['slider_image']);
+                $productData[$sku['id']]['description'] = $sku['description'] ?? '';
+                $productData[$sku['id']]['ficti'] = $sku['ficti'];
+                $productData[$sku['id']]['give_integral'] = $sku['give_integral'];
+                $productData[$sku['id']]['sort'] = 0;
+                $productData[$sku['id']]['is_show'] = 0;
+                $productData[$sku['id']]['is_hot'] = 0;
+                $productData[$sku['id']]['is_benefit'] = 0;
+                $productData[$sku['id']]['is_best'] = 0;
+                $productData[$sku['id']]['is_new'] = 0;
+                $productData[$sku['id']]['is_good'] = 0;
+                $productData[$sku['id']]['is_postage'] = 0;
+                $productData[$sku['id']]['is_sub'] = [];
+                $productData[$sku['id']]['recommend_list'] = [];
+                $productData[$sku['id']]['virtual_type'] = $virtualType[$sku['virtual_type']];
+                $productData[$sku['id']]['spec_type'] = $sku['spec_type'] == '多规格' ? 1 : 0;
+                $productData[$sku['id']]['is_virtual'] = 0;
+                $productData[$sku['id']]['video_link'] = is_null($sku['video_link']) ? '' : $sku['video_link'];
+                $productData[$sku['id']]['temp_id'] = '';
+                $productData[$sku['id']]['activity'] = ['默认', '秒杀', '砍价', '拼团'];
+                $productData[$sku['id']]['couponName'] = [];
+                $productData[$sku['id']]['coupon_ids'] = [];
+                $productData[$sku['id']]['command_word'] = $sku['command_word'] ?? '';
+                $productData[$sku['id']]['min_qty'] = $sku['min_qty'];
+                $productData[$sku['id']]['type'] = 0;
+                $productData[$sku['id']]['is_copy'] = 0;
+                $productData[$sku['id']]['label_id'] = [];
+                $productData[$sku['id']]['params_list'] = [];
+                $productData[$sku['id']]['label_list'] = [];
+                $productData[$sku['id']]['protection_list'] = [];
+            }
+            $detail = [];
+            foreach (explode(';', $sku['sku_value']) as $pair) {
+                list($key, $value) = explode('=', $pair);
+                $detail[$key] = $value;
+            }
+            if ($sku['bar_code'] != '' && in_array($sku['bar_code'], $barCodeArr)) {
+                $issetProductArr[] = $sku['id'];
+            }
+            if ($sku['bar_code_number'] != '' && in_array($sku['bar_code_number'], $barCodeNumberArr)) {
+                $issetProductArr[] = $sku['id'];
+            }
+            $productData[$sku['id']]['attrs'][] = [
+                'attr_arr' => explode(',', $sku['sku_name']),
+                'detail' => $detail,
+                'price' => $sku['price'],
+                'pic' => $sku['pic'],
+                'ot_price' => $sku['ot_price'],
+                'cost' => $sku['cost'],
+                'stock' => $sku['stock'],
+                'is_show' => 1,
+                'is_default_select' => 0,
+                'is_virtual' => 0,
+                'brokerage' => 0,
+                'brokerage_two' => 0,
+                'vip_price' => 0,
+                'vip_proportion' => 0,
+                'unique' => '',
+                'weight' => $sku['weight'],
+                'volume' => $sku['volume'],
+                'bar_code' => $sku['bar_code'],
+                'bar_code_number' => $sku['bar_code_number'],
+            ];
+            $items = [];
+            $pairs = explode(';', $sku['sku_type_value']);
+            foreach ($pairs as $pair) {
+                // 将每个部分按等号分割成 key 和 value
+                list($key, $values) = explode('=', $pair);
+                // 将 value 部分按逗号分割为数组
+                $detailArray = explode(',', $values);
+                $detail = [];
+                foreach ($detailArray as &$det) {
+                    $detail[] = [
+                        'value' => $det,
+                        'pic' => '',
+                    ];
+                }
+                // 重新构建原始数组的结构
+                $items[] = [
+                    'value' => $key,
+                    'detail' => $detail
+                ];
+            }
+            $productData[$sku['id']]['items'] = $items;
+        }
+        $all = count($productData);
+        foreach (array_unique($issetProductArr) as $issetProduct) {
+            if (isset($productData[$issetProduct])) {
+                unset($productData[$issetProduct]);
+            }
+        }
+        $success = count($productData);
+        $jump = $all - $success;
+        foreach ($productData as $info) {
+            $this->save(0, $info);
+        }
+        $fail = 0;
+        return compact('all', 'success', 'jump', 'fail');
+    }
+
+    public function otherInfo($id, $type)
+    {
+        $storeInfo = $this->dao->get($id, ['id', 'is_sub', 'is_vip', 'vip_product']);
+        if (!$storeInfo) throw new AdminException('商品不存在');
+        $storeInfo = $storeInfo->toArray();
+        $storeInfo['store_brokerage_ratio'] = sys_config('store_brokerage_ratio');
+        $storeInfo['store_brokerage_two'] = sys_config('store_brokerage_two');
+        /** @var StoreProductAttrValueServices $storeProductAttrValueServices */
+        $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
+        $attrValue = $storeProductAttrValueServices->getSkuArray(['product_id' => $id, 'type' => 0]);
+        return compact('storeInfo', 'attrValue');
+    }
+
+    public function otherSave($id, $type, $data)
+    {
+        $upProductData = [];
+        if ($type == 1) {
+            $upProductData = [
+                'is_sub' => $data['is_sub'],
+            ];
+        } elseif ($type == 2) {
+            $upProductData = [
+                'is_vip' => $data['is_vip'],
+                'vip_product' => $data['vip_product']
+            ];
+        }
+        if ($upProductData) $this->dao->update($id, $upProductData);
+        /** @var StoreProductAttrValueServices $storeProductAttrValueServices */
+        $storeProductAttrValueServices = app()->make(StoreProductAttrValueServices::class);
+        /** @var StoreProductAttrResultServices $storeProductAttrValueServices */
+        $storeProductAttrResultServices = app()->make(StoreProductAttrResultServices::class);
+        $attrResult = json_decode($storeProductAttrResultServices->get(['product_id' => $id, 'type' => 0])->toArray()['result'], true);
+        foreach ($data['attr_value'] as $item) {
+            $upAttrData = [];
+            if ($type == 1) {
+                $upAttrData = [
+                    'brokerage' => $data['is_sub'] ? $item['brokerage'] : 0,
+                    'brokerage_two' => $data['is_sub'] ? $item['brokerage_two'] : 0
+                ];
+
+            } elseif ($type == 2) {
+                $upAttrData = [
+                    'vip_price' => $data['is_vip'] ? $item['vip_price'] : 0
+                ];
+            }
+            if ($upAttrData) $storeProductAttrValueServices->update($item['id'], $upAttrData);
+            foreach ($attrResult['value'] as $key => $result) {
+                if (isset($result['unique'])) {
+                    if ($result['unique'] == $item['unique']) {
+                        if ($type == 1) {
+                            $attrResult['value'][$key]['brokerage'] = $data['is_sub'] ? $item['brokerage'] : 0;
+                            $attrResult['value'][$key]['brokerage_two'] = $data['is_sub'] ? $item['brokerage_two'] : 0;
+                        } elseif ($type == 2) {
+                            $attrResult['value'][$key]['vip_price'] = $data['is_vip'] ? $item['vip_price'] : 0;
+                            $attrResult['value'][$key]['vip_proportion'] = $data['is_vip'] ? bcmul(bcdiv($item['vip_price'], $item['price'], 4), 100, 2) : 0;
+                        }
+                    }
+                }
+            }
+            $storeProductAttrResultServices->update(['product_id' => $id, 'type' => 0], ['result' => json_encode($attrResult)]);
+        }
+        return true;
+    }
+
+    /**
+     * 真实价格
+     * @param $uid
+     * @param $id
+     * @param $unique
+     * @return array
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/2/5
+     */
+    public function realPrice($uid, $id, $unique)
+    {
+        $isMember = $isVip = $levelPrice = $memberPrice = $realPrice = $price = 0;
+        $levelDiscount = 100;
+        if ($uid) {
+            $isMember = app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level');
+            if (sys_config('member_func_status', 0)) {
+                $levelDiscount = app()->make(UserLevelServices::class)->getUerLevelInfoByUid($uid, 'discount');
+            }
+        }
+        $productIsVip = $this->dao->value(['id' => $id], 'is_vip');
+        $attrInfo = app()->make(StoreProductAttrValueServices::class)->get(['unique' => $unique, 'product_id' => $id, 'type' => 0], ['price', 'vip_price', 'ot_price']);
+        $attrInfo = $attrInfo->toArray();
+        $realPrice = $price = $attrInfo['price'];
+        $levelPrice = bcmul($attrInfo['price'], bcdiv($levelDiscount, 100, 2), 2);
+        $memberPrice = $attrInfo['vip_price'];
+        $otPrice = $attrInfo['ot_price'];
+        if ($levelDiscount && $isMember && $productIsVip) {
+            $realPrice = min($levelPrice, $memberPrice);
+            $isVip = $memberPrice < $levelPrice ? 1 : 0;
+        }
+        if ($levelDiscount && (!$isMember || !$productIsVip)) {
+            $realPrice = $levelPrice;
+            $isVip = 0;
+        }
+        if (!$levelDiscount && $isMember && $productIsVip) {
+            $realPrice = $memberPrice;
+            $isVip = 1;
+        }
+        /** @var StoreProductServices $storeProductService */
+        $storeProductService = app()->make(StoreProductServices::class);
+        /** @var StoreCategoryServices $storeCategoryService */
+        $storeCategoryService = app()->make(StoreCategoryServices::class);
+        $cateId = $storeProductService->value(['id' => $id], 'cate_id');
+        $cateId = explode(',', (string)$cateId);
+        $cateId = array_merge($cateId, $storeCategoryService->cateIdByPid($cateId));
+        $cateId = array_diff($cateId, [0]);
+        $list = app()->make(StoreCouponIssueServices::class)->getPcIssueCouponList($uid, $cateId, $id);
+        usort($list, function ($a, $b) {
+            return $b['coupon_price'] - $a['coupon_price'];
+        });
+        $time = time();
+        foreach ($list as $item) {
+            // 优惠券不在使用时间范围内
+            if ($item['start_use_time'] != 0 && ($item['start_use_time'] > $time || $item['end_use_time'] < $time)) {
+                continue;
+            }
+            // 用户未登录或者不是付费会员跳过付费会员券
+            if ($item['receive_type'] == 4 && !$isMember) {
+                continue;
+            }
+            // 判断用户是否还能领取或者已经领取未使用
+            if ($uid) {
+                $canUserCoupon = app()->make(StoreCouponUserServices::class)->getUserCouponCanUse($uid, $item['id'], $item['receive_limit']);
+                if (!$canUserCoupon) {
+                    continue;
+                }
+            }
+            // 满足优惠券使用门槛
+            if ($realPrice >= $item['use_min_price']) {
+                $realPrice = bcsub($realPrice, $item['coupon_price'], 2);
+                if ($realPrice < 0) $realPrice = 0;
+                break;
+            }
+        }
+        return ['real_price' => $realPrice, 'price' => $price, 'is_vip' => $isVip, 'product_is_vip' => $productIsVip, 'member_price' => $memberPrice, 'level_price' => $levelPrice, 'user_is_member' => $isMember, 'ot_price' => $otPrice];
+    }
+
+    /**
+     * 批量移动回收站
+     * @param $ids
+     * @return bool
+     * @author wuhaotian
+     * @email 442384644@qq.com
+     * @date 2025/6/18
+     */
+    public function batchDelete($ids)
+    {
+        $passNum = 0;
+        foreach ($ids as $id) {
+            //删除商品检测是否有参与活动
+            $res = $this->checkActivity($id, true);
+            if ($res) {
+                $data['is_del'] = 1;
+                $data['is_show'] = 0;
+                $this->dao->update($id, $data);
+                app()->make(StoreProductCateServices::class)->update(['product_id' => $id], ['status' => 0]);
+                app()->make(StoreCartServices::class)->changeStatus($id, 0);
+            } else {
+                $passNum++;
+            }
+        }
+        return $passNum ? $passNum . '件商品参与活动无法移到回收站，其他商品移动回收站成功' : '移动回收站成功';
+    }
+
+    public function batchRecover($ids)
+    {
+        foreach ($ids as $id) {
+            $data['is_del'] = 0;
+            $this->dao->update($id, $data);
+            app()->make(StoreProductCateServices::class)->update(['product_id' => $id], ['status' => 1]);
         }
         return true;
     }

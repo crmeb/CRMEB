@@ -109,4 +109,9 @@ class Diy extends BaseModel
         if ($value !== '') $query->where('is_del', $value);
     }
 
+    public function searchIsProAttr($query, $value)
+    {
+        if ($value !== '') $query->where('is_pro', $value);
+    }
+
 }

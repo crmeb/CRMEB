@@ -322,6 +322,7 @@ export default {
 	line-height: 42rpx;
 	text-align: center;
 	color: #d67300;
+	padding: 0 8rpx;
 }
 
 .list .type.special {
@@ -353,7 +354,6 @@ export default {
 .list .btn {
 	font-size: 26rpx;
 	color: #282828;
-	cursor: pointer;
 }
 
 .list .btn ~ .btn {

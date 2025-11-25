@@ -3,12 +3,7 @@
     <el-dialog :visible.sync="modals" :z-index="100" title="发送优惠券" :close-on-click-modal="false" width="1000px">
       <div class="acea-row">
         <span class="sp">优惠券名称：</span
-        ><el-input
-          clearable
-          v-model="page.coupon_title"
-          placeholder="请输入优惠券名称"
-          class="form_content_width"
-        />
+        ><el-input clearable v-model="page.coupon_title" placeholder="请输入优惠券名称" class="form_content_width" />
         <el-button type="primary" v-db-click @click="userSearchs" class="ml15">查询</el-button>
       </div>
       <el-table
@@ -127,10 +122,10 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .sp {
-  font-size 12px;
-  color:#606266;
+  font-size: 12px;
+  color: #606266;
   line-height: 32px;
 }
 </style>

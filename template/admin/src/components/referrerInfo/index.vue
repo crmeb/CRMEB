@@ -83,31 +83,40 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.Modals
-   width 100%
-   border 1px solid #e8eaec
-.Modals .header
-    background-color #f5f5f5
-    padding 10px 15px
-.Modals .header .pictrue
-    width 50px
-    height 50px
-    border-radius 50%
-.Modals .header .pictrue img
-    width 100%
-    height 100%
-    border-radius 50%
-.Modals .header .name
-    color #333
-    margin-left 15px
-.Modals .list .item .name.money
-    color #ff0005 !important
-.Modals .list .item .name.commission
-    color green !important
-.Modals .list .item
-    border-top 1px solid #e8eaec
-.Modals .list .item .name
-    padding 10px 15px
-    width 50%
+<style lang="scss" scoped>
+.Modals {
+  width: 100%;
+  border: 1px solid #e8eaec;
+}
+.Modals .header {
+  background-color: #f5f5f5;
+  padding: 10px 15px;
+}
+.Modals .header .pictrue {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.Modals .header .pictrue img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.Modals .header .name {
+  color: #333;
+  margin-left: 15px;
+}
+.Modals .list .item .name.money {
+  color: #ff0005 !important;
+}
+.Modals .list .item .name.commission {
+  color: green !important;
+}
+.Modals .list .item {
+  border-top: 1px solid #e8eaec;
+}
+.Modals .list .item .name {
+  padding: 10px 15px;
+  width: 50%;
+}
 </style>

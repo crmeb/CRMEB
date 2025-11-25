@@ -12,17 +12,17 @@
 				<view :hidden='currentTab != 0' class='list'>
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`持卡人`)}}</view>
+							<view class='name'><text class='red'>*</text> {{$t(`持卡人`)}}</view>
 							<view class='input'><input :placeholder='$t(`请输入持卡人姓名`)' placeholder-class='placeholder'
 									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`卡号`)}}</view>
+							<view class='name'><text class='red'>*</text> {{$t(`卡号`)}}</view>
 							<view class='input'><input type='number' :placeholder='$t(`请填写卡号`)' placeholder-class='placeholder'
 									name="cardnum"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`银行`)}}</view>
+							<view class='name'><text class='red'>*</text> {{$t(`银行`)}}</view>
 							<view class='input'>
 								<picker @change="bindPickerChange" :value="index" :range="array">
 									<text class='Bank'>{{array[index]}}</text>
@@ -31,7 +31,7 @@
 							</view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`提现`)}}</view>
+							<view class='name'><text class='red'>*</text> {{$t(`提现`)}}</view>
 							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice'
 									placeholder-class='placeholder' name="money" type='digit'></input></view>
 						</view>
@@ -51,18 +51,23 @@
 				</view>
 				<view :hidden='currentTab != 1' class='list'>
 					<form @submit="subCash">
-						<view class='item acea-row row-between-wrapper' v-if="!brokerageType">
-							<view class='name'>{{$t(`账号`)}}</view>
+						<view class='item acea-row row-between-wrapper'>
+							<view class='name'><text class='red'>*</text> {{$t(`姓名`)}}</view>
+							<view class='input'><input :placeholder='$t(`请填写您的真实姓名`)' placeholder-class='placeholder'
+									name="user_name"></input></view>
+						</view>
+						<view class='item acea-row row-between-wrapper' v-if="!weixinExtractType">
+							<view class='name'><text class='red'>*</text> {{$t(`账号`)}}</view>
 							<view class='input'><input :placeholder='$t(`请填写您的微信账号`)' placeholder-class='placeholder'
 									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`提现`)}}</view>
-							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice'
+							<view class='name'><text class='red'>*</text> {{$t(`提现`)}}</view>
+							<view class='input'><input @input='inputNum' :placeholder='$t(`提现最低`)+minPrice+$t(`元，最高500元`)'
 									placeholder-class='placeholder' name="money" type='digit'></input></view>
 						</view>
-						<view class='item acea-row row-top row-between' v-if="!brokerageType">
-							<view class='name'>{{$t(`收款码`)}}</view>
+						<view class='item acea-row row-top row-between' v-if="!weixinExtractType">
+							<view class='name pos'>{{$t(`收款码`)}}</view>
 							<view class="input acea-row">
 								<view class="picEwm" v-if="qrcodeUrlW">
 									<image :src="qrcodeUrlW"></image>
@@ -91,17 +96,22 @@
 				<view :hidden='currentTab != 2' class='list'>
 					<form @submit="subCash">
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`账号`)}}</view>
+							<view class='name'><text class='red'>*</text> {{$t(`账号`)}}</view>
 							<view class='input'><input :placeholder='$t(`请填写您的支付宝账号`)' placeholder-class='placeholder'
 									name="name"></input></view>
 						</view>
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`提现`)}}</view>
+							<view class='name'><text class='red'>*</text> {{$t(`姓名`)}}</view>
+							<view class='input'><input :placeholder='$t(`请填写支付宝绑定的真实姓名`)' placeholder-class='placeholder'
+									name="user_name"></input></view>
+						</view>
+						<view class='item acea-row row-between-wrapper'>
+							<view class='name'><text class='red'>*</text> {{$t(`提现`)}}</view>
 							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice'
 									placeholder-class='placeholder' name="money" type='digit'></input></view>
 						</view>
 						<view class='item acea-row row-top row-between'>
-							<view class='name'>{{$t(`收款码`)}}</view>
+							<view class='name pos'>{{$t(`收款码`)}}</view>
 							<view class="input acea-row">
 								<view class="picEwm" v-if="qrcodeUrlZ">
 									<image :src="qrcodeUrlZ"></image>
@@ -130,7 +140,7 @@
 				<view :hidden='currentTab != 3' class='list'>
 					<form @submit="importNowMoney">
 						<view class='item acea-row row-between-wrapper'>
-							<view class='name'>{{$t(`提现`)}}</view>
+							<view class='name'><text class='red'>*</text> {{$t(`提现`)}}</view>
 							<view class='input'><input @input='inputNum' placeholder='请输入提现金额' placeholder-class='placeholder'
 									name="money" type='digit'></input></view>
 						</view>
@@ -164,6 +174,9 @@
 	} from "vuex";
 	// #ifdef MP
 	import authorize from '@/components/Authorize';
+	import {
+		openRevenueSubscribe
+	} from '@/utils/SubscribeMessage.js';
 	// #endif
 	import colors from '@/mixins/color.js';
 	export default {
@@ -187,7 +200,8 @@
 				qrcodeUrlW: "",
 				qrcodeUrlZ: "",
 				prevent: false, //避免重复提交成功多次
-				brokerageType: 0, // 佣金到账方式
+				weixinExtractType: 0, // 佣金到账方式
+				alipayExtractType: 0, // 佣金到账方式
 				withdrawal_fee: 0, //提现手续费
 				true_money: 0
 			};
@@ -273,7 +287,8 @@
 					that.$set(that, 'array', array);
 					that.minPrice = res.data.minPrice;
 					that.withdrawal_fee = res.data.withdrawal_fee;
-					that.brokerageType = res.data.brokerageType ? parseInt(res.data.brokerageType) : 0;
+					that.alipayExtractType = res.data.alipayExtractType ? parseInt(res.data.alipayExtractType) : 0;
+					that.weixinExtractType = res.data.weixinExtractType ? parseInt(res.data.weixinExtractType) : 0;
 				});
 			},
 			/**
@@ -339,16 +354,20 @@
 				} else if (that.currentTab == 1) { //微信
 					value.extract_type = 'weixin';
 
+					if (!value.user_name.trim()) return this.$util.Tips({
+						title: this.$t(`请填写姓名`)
+					});
 					// 自动提现隐藏账号
-					if (!that.brokerageType && !value.name.trim()) return this.$util.Tips({
+					if (!that.weixinExtractType && !value.name.trim()) return this.$util.Tips({
 						title: this.$t(`请填写微信号`)
 					});
 					value.weixin = value.name;
 					value.qrcode_url = that.qrcodeUrlW;
+					
 				} else if (that.currentTab == 2) { //支付宝
 					value.extract_type = 'alipay';
 					if (value.name.length == 0) return this.$util.Tips({
-						title: this.$t(`请填写账号`)
+						title: this.$t(`请填写支付宝号`)
 					});
 					value.alipay_code = value.name;
 					value.qrcode_url = that.qrcodeUrlZ;
@@ -359,9 +378,18 @@
 				if (Number(value.money) < Number(that.minPrice)) return this.$util.Tips({
 					title: this.$t(`提现金额不能低于`) + that.minPrice
 				});
+				if (Number(value.money) > 500) return this.$util.Tips({
+					title: this.$t(`提现金额不能高于500`)
+				});
 				this.prevent = true
 				extractCash(value).then(res => {
 					that.getUserInfo();
+					if(this.weixinExtractType == 1 && this.currentTab == 1){
+						// #ifdef MP
+							this.openSubscribe('/pages/users/user_spread_user/index')
+						// #endif
+						return
+					}
 					return this.$util.Tips({
 						title: res.msg,
 						icon: 'success'
@@ -381,6 +409,21 @@
 					});
 				});
 			},
+			// #ifdef MP
+			openSubscribe(page) {
+				// uni.showLoading({
+				// 	title: this.$t(`正在加载`),
+				// })
+				openRevenueSubscribe().then(res => {
+					uni.hideLoading();
+					uni.navigateTo({
+						url: page,
+					});
+				}).catch(() => {
+					uni.hideLoading();
+				});
+			},
+			// #endif
 			importNowMoney(e) {
 				let that = this
 				let value = e.detail.value.money;
@@ -579,5 +622,12 @@
 
 	.price {
 		color: var(--view-priceColor);
+	}
+	.pos{
+		padding-left: 26rpx;
+	}
+	.red{
+		padding-right: 10rpx;
+		color: var(--view-theme) !important;
 	}
 </style>

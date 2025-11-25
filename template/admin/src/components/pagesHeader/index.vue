@@ -1,12 +1,13 @@
 <template>
   <el-card shadow="never" class="box-card">
     <div class="acea-row row-middle">
-      <div class="font-sm after-line" v-db-click @click="goBack">
+      <div v-if="backUrl" class="font-sm after-line" v-db-click @click="goBack">
         <span class="el-icon-arrow-left"></span>
         <span class="pl10">返回</span>
       </div>
       <span class="ht_title ml10">{{ title }}</span>
     </div>
+    <slot></slot>
   </el-card>
 </template>
 
@@ -36,7 +37,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.box-card {
+  ::v-deep .el-card__body {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
 .after-line {
   display: inline-block;
   position: relative;
@@ -54,10 +62,11 @@ export default {
   background: #eee;
 }
 .font-sm {
-  font-size: 12px;
+  font-size: 14px;
 }
 .ht_title {
   font-weight: 500;
   font-size: 18px;
+  color: #303133;
 }
 </style>

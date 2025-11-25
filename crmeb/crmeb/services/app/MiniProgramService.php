@@ -13,6 +13,7 @@ namespace crmeb\services\app;
 
 use app\services\order\StoreOrderTakeServices;
 use app\services\pay\PayServices;
+use app\services\system\SystemPemServices;
 use crmeb\exceptions\AdminException;
 use crmeb\services\CacheService;
 use crmeb\services\easywechat\orderShipping\MiniOrderService;
@@ -20,6 +21,7 @@ use crmeb\services\SystemConfigService;
 use app\services\pay\PayNotifyServices;
 use crmeb\services\easywechat\Application;
 use EasyWeChat\Payment\Order;
+use think\facade\Env;
 use think\facade\Event;
 use think\facade\Log;
 use crmeb\utils\Hook;
@@ -119,11 +121,32 @@ class MiniProgramService
             'app_id' => $appId,
             'merchant_id' => empty($payment['pay_new_weixin_open']) ? trim($payment['pay_weixin_mchid']) : trim($payment['pay_new_weixin_mchid']),
             'key' => trim($payment['pay_weixin_key']),
-            'cert_path' => substr(public_path(parse_url($payment['pay_weixin_client_cert'])['path']), 0, strlen(public_path(parse_url($payment['pay_weixin_client_cert'])['path'])) - 1),
-            'key_path' => substr(public_path(parse_url($payment['pay_weixin_client_key'])['path']), 0, strlen(public_path(parse_url($payment['pay_weixin_client_key'])['path'])) - 1),
+            'cert_path' => self::getPemPath('pay_weixin_client_cert'),
+            'key_path' => self::getPemPath('pay_weixin_client_key'),
             'notify_url' => trim($wechat['site_url']) . '/api/pay/notify/routine'
         ];
+//        if (Env::get('cache.driver', 'file') == 'redis') {
+//            $cache = new \Doctrine\Common\Cache\RedisCache();
+//            $cache->setRedis(\think\facade\Cache::store('redis')->handler());
+//            $config['cache'] = $cache;
+//        }
         return $config;
+    }
+
+    public static function getPemPath(string $name)
+    {
+        $systemPemServices = app()->make(SystemPemServices::class);
+        $path = $systemPemServices->getPemPath($name);
+        if ($path) return $path;
+        $path = sys_config($name);
+        if (strstr($path, 'http://') || strstr($path, 'https://')) {
+            $path = parse_url($path)['path'] ?? '';
+        }
+        $path = root_path('runtime/pem') . ltrim($path, '/');
+        if (!file_exists($path)) {
+            $path = public_path('uploads') . ltrim($path, '/');
+        }
+        return $path;
     }
 
     /**
@@ -930,6 +953,20 @@ class MiniProgramService
             $res = self::miniprogram()->mini_scheme->getUrlScheme($jumpWxa, $expireType, $expireNum);
             if (isset($res['errcode']) && $res['errcode'] == 0) {
                 return $res['openlink'];
+            } else {
+                return '';
+            }
+        } catch (\Throwable $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public static function getUrlLink($jumpWxa = [])
+    {
+        try {
+            $res = self::miniprogram()->mini_scheme->getUrlLink($jumpWxa);
+            if (isset($res['errcode']) && $res['errcode'] == 0) {
+                return $res['url_link'];
             } else {
                 return '';
             }

@@ -205,7 +205,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template slot-scope="scope">
-            <a v-if="!scope.row.primaryKey && !disabledInput(scope.$index)" v-db-click @click="del(row, scope.$index)">删除</a>
+            <a v-if="!scope.row.primaryKey && !disabledInput(scope.$index)" v-db-click @click="del(row, scope.$index)"
+              >删除</a
+            >
             <span v-else>--</span>
           </template>
         </el-table-column>
@@ -237,9 +239,16 @@
                 v-if="index == optionsList.length - 1"
                 class="el-icon-circle-plus-outline add"
                 title="新增"
-                v-db-click @click="addOneOptions"
+                v-db-click
+                @click="addOneOptions"
               />
-              <i v-if="index > 0" class="el-icon-remove-outline delete" title="删除" v-db-click @click="delOneOptions(index)" />
+              <i
+                v-if="index > 0"
+                class="el-icon-remove-outline delete"
+                title="删除"
+                v-db-click
+                @click="delOneOptions(index)"
+              />
             </div>
           </div>
         </el-form>
@@ -262,7 +271,7 @@ import {
   crudAssociationTableName,
   crudDataDictionaryList,
   saveCrudDataDictionaryList,
-  getDataDictionaryList
+  getDataDictionaryList,
 } from '@/api/systemCodeGeneration';
 import Sortable from 'sortablejs';
 export default {
@@ -656,7 +665,7 @@ export default {
   }
 }
 ::v-deep .el-input-group__prepend .el-select {
-  width: 85px;
+  width: 86px;
 }
 .drag {
   display: flex;

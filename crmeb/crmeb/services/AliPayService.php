@@ -13,6 +13,7 @@ namespace crmeb\services;
 
 use Alipay\EasySDK\Payment\Wap\Models\AlipayTradeWapPayResponse;
 use app\services\pay\PayServices;
+use app\services\system\SystemPemServices;
 use think\facade\Event;
 use think\facade\Log;
 use think\facade\Route as Url;
@@ -38,6 +39,9 @@ class AliPayService
         'alipayPublicKey' => '',//支付宝公钥
         'notifyUrl' => '',//可设置异步通知接收服务地址
         'encryptKey' => '',//可设置AES密钥，调用AES加解密相关接口时需要（可选）
+        'alipayCertPath' => '',//支付宝证书路径(可选)
+        'alipayRootCertPath' => '',//支付宝根证书路径(可选)
+        'merchantCertPath' => '',//商户证书路径(可选)
     ];
 
     /**
@@ -62,11 +66,30 @@ class AliPayService
                 'merchantPrivateKey' => sys_config('alipay_merchant_private_key'),
                 'alipayPublicKey' => sys_config('alipay_public_key'),
                 'notifyUrl' => sys_config('site_url') . Url::buildUrl('/api/pay/notify/alipay'),
+                'alipayCertPath' => $this->getPemPath('alipay_cert_path'),
+                'alipayRootCertPath' => $this->getPemPath('alipay_root_cert_path'),
+                'merchantCertPath' => $this->getPemPath('merchant_cert_path'),
             ];
         }
         $this->config = array_merge($this->config, $config);
         $this->initialize();
         $this->response = new ResponseChecker();
+    }
+
+    public function getPemPath(string $name)
+    {
+        $systemPemServices = app()->make(SystemPemServices::class);
+        $path = $systemPemServices->getPemPath($name);
+        if ($path) return $path;
+        $path = sys_config($name);
+        if (strstr($path, 'http://') || strstr($path, 'https://')) {
+            $path = parse_url($path)['path'] ?? '';
+        }
+        $path = root_path('runtime/pem') . ltrim($path, '/');
+        if (!file_exists($path)) {
+            $path = public_path('uploads') . ltrim($path, '/');
+        }
+        return $path;
     }
 
     /**
@@ -104,8 +127,17 @@ class AliPayService
         $options->appId = $this->config['appId'];
         // 为避免私钥随源码泄露，推荐从文件中读取私钥字符串而不是写入源码中
         $options->merchantPrivateKey = $this->config['merchantPrivateKey'];
-        //注：如果采用非证书模式，则无需赋值上面的三个证书路径，改为赋值如下的支付宝公钥字符串即可
-        $options->alipayPublicKey = $this->config['alipayPublicKey'];
+
+        if (sys_config('alipay_sign_type') == 0) {
+            // 密钥模式
+            $options->alipayPublicKey = $this->config['alipayPublicKey'];
+        } else {
+            // 证书模式
+            $options->alipayCertPath = $this->config['alipayCertPath'];
+            $options->alipayRootCertPath = $this->config['alipayRootCertPath'];
+            $options->merchantCertPath = $this->config['merchantCertPath'];
+            $options->alipayPublicKey = '';
+        }
         //可设置异步通知接收服务地址（可选）
         $options->notifyUrl = $this->config['notifyUrl'];
         //可设置AES密钥，调用AES加解密相关接口时需要（可选）
@@ -260,4 +292,32 @@ class AliPayService
         }
         return false;
     }
+
+    /**
+     * 商家支付接口
+     *
+     * @param array $bizParams 业务参数
+     * @return mixed|false 支付结果或者false
+     * @throws PayException 支付异常
+     */
+    public function merchantPay(array $bizParams, $alipaySignType = 0)
+    {
+        try {
+            // 调用工厂类的通用方法执行支付宝转账操作
+            $method = $alipaySignType == 0 ? 'alipay.fund.trans.toaccount.transfer' : 'alipay.fund.trans.uni.transfer';
+            $result = Factory::util()->generic()->execute($method, [], $bizParams);
+            // 判断支付是否成功
+            if ($this->response->success($result)) {
+                return $result;
+            } else {
+                Log::error('支付宝转账失败，失败原因:' . $result->msg . ' | ' . $result->subCode . ' | ' . $result->subMsg);
+                return false;
+            }
+        } catch (\Exception $e) {
+            // 记录日志并返回false
+            Log::error('支付宝转账失败，失败原因:' . $e->getMessage());
+            return false;
+        }
+    }
+
 }

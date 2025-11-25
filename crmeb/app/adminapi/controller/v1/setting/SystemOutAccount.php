@@ -91,11 +91,8 @@ class SystemOutAccount extends AuthController
         ]);
         $this->validate($data, StoreOutAccountValidate::class, 'save');
         if ($this->services->getOne(['appid' => $data['appid']])) return app('json')->fail('账号重复');
-        if (!$data['appsecret']) {
-            unset($data['appsecret']);
-        } else {
-            $data['appsecret'] = password_hash($data['appsecret'], PASSWORD_DEFAULT);
-        }
+        $data['apppwd'] = $data['appsecret'];
+        $data['appsecret'] = password_hash($data['appsecret'], PASSWORD_DEFAULT);
         $data['add_time'] = time();
         $data['rules'] = implode(',', $data['rules']);
         if (!$this->services->save($data)) {
@@ -122,12 +119,9 @@ class SystemOutAccount extends AuthController
         ]);
 
         $this->validate($data, StoreOutAccountValidate::class, 'update');
-        if (!$data['appsecret']) {
-            unset($data['appsecret']);
-        } else {
-            $data['appsecret'] = password_hash($data['appsecret'], PASSWORD_DEFAULT);
-        }
         if (!$this->services->getOne(['id' => $id])) return app('json')->fail('没有此账号');
+        $data['apppwd'] = $data['appsecret'];
+        $data['appsecret'] = password_hash($data['appsecret'], PASSWORD_DEFAULT);
         $data['rules'] = implode(',', $data['rules']);
         $res = $this->services->update($id, $data);
         if (!$res) {
@@ -256,6 +250,6 @@ class SystemOutAccount extends AuthController
             ['push_password', 0],
             ['push_token_url', '']
         ]);
-        return app('json')->success('100014',$this->services->textOutUrl($data));
+        return app('json')->success('100014', $this->services->textOutUrl($data));
     }
 }

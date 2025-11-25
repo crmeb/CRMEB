@@ -1,33 +1,39 @@
 <template>
   <div class="article-manager">
-    <el-card :bordered="false" shadow="never" class="ivu-mt ivu-mb-16" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-            ref="formValidate"
-            :model="formValidate"
-            :label-width="labelWidth"
-            :label-position="labelPosition"
-            @submit.native.prevent
-            inline
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          :label-position="labelPosition"
+          @submit.native.prevent
+          inline
         >
           <el-form-item label="时间选择：">
             <el-date-picker
-                clearable
-                v-model="timeVal"
-                type="daterange"
-                :editable="false"
-                @change="onchangeTime"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions"
-                style="width: 250px"
-                class="mr20"
+              clearable
+              v-model="timeVal"
+              type="daterange"
+              :editable="false"
+              @change="onchangeTime"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              style="width: 250px"
+              class="mr20"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="拼团状态：">
-            <el-select v-model="formValidate.status" placeholder="请选择" clearable @change="userSearchs" class="form_content_width">
+            <el-select
+              v-model="formValidate.status"
+              placeholder="请选择"
+              clearable
+              @change="userSearchs"
+              class="form_content_width"
+            >
               <el-option :value="1" label="进行中"></el-option>
               <el-option :value="2" label="已完成"></el-option>
               <el-option :value="3" label="未完成"></el-option>
@@ -89,9 +95,11 @@
             <el-tag type="warning" v-show="scope.row.status === 3">未完成</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="100">
+        <el-table-column label="操作" fixed="right" width="150">
           <template slot-scope="scope">
             <a v-db-click @click="Info(scope.row)">查看详情</a>
+            <el-divider v-if="scope.row.status === 1" direction="vertical"></el-divider>
+            <a v-if="scope.row.status === 1" v-db-click @click="joinCombination(scope.row)">立即成团</a>
           </template>
         </el-table-column>
       </el-table>
@@ -159,7 +167,7 @@
 import cardsData from '@/components/cards/cards';
 import { mapState } from 'vuex';
 import { formatDate } from '@/utils/validate';
-import { combineListApi, orderPinkListApi, statisticsApi } from '@/api/marketing';
+import { combineListApi, orderPinkListApi, statisticsApi, combineJoinApi } from '@/api/marketing';
 export default {
   name: 'combinalist',
   filters: {
@@ -232,6 +240,29 @@ export default {
           this.$message.error(res.msg);
         });
     },
+    joinCombination(row) {
+      this.$confirm('确认成团？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          combineJoinApi(row.id)
+            .then((res) => {
+              this.$message.success(res.msg);
+              this.getList();
+            })
+            .catch((res) => {
+              this.$message.error(res.msg);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消',
+          });
+        });
+    },
     // 具体日期
     onchangeTime(e) {
       this.timeVal = e || [];
@@ -279,19 +310,18 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.article-manager{
+<style lang="scss" scoped>
+.article-manager {
   margin-top: 3px;
 }
-.tabBox_img{
+.tabBox_img {
   width: 36px;
   height: 36px;
-  border-radius:4px;
+  border-radius: 4px;
   cursor: pointer;
-  img{
+  img {
     width: 100%;
     height: 100%;
   }
-
 }
 </style>

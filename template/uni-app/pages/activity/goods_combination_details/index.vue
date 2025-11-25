@@ -159,7 +159,16 @@
 							</view>
 						</view>
 					</view>
+					<view class='playWay'>
+						<view class='title acea-row row-between-wrapper'>
+							<view>{{$t(`拼团简介`)}}</view>
+						</view>
+						<view class='way acea-row row-middle py-16'>
+							{{storeInfo.info}}
+						</view>
+					</view>
 				</view>
+				
 				<view class='userEvaluation' id="past1" v-if="replyCount">
 					<view class='title acea-row row-between-wrapper'>
 						<view>{{$t(`用户评价`)}}({{replyCount}})</view>
@@ -568,10 +577,6 @@
 				});
 			},
 			// #endif
-
-
-
-
 
 			showAll: function() {
 				this.AllIndexDefault = this.AllIndex;
@@ -1543,7 +1548,7 @@
 		z-index: 277;
 		border-top: 1rpx solid #f0f0f0;
 		height: 100rpx;
-		height: calc(100rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		height: calc(100rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		height: calc(100rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 		background-color: rgba(255, 255, 255, 0.85);
 		backdrop-filter: blur(10px);

@@ -84,4 +84,19 @@ class GroupDataService
             return $callable();
         }
     }
+
+    public static function getDataNumbers($ids)
+    {
+        try {
+            if (is_string($ids)) $ids = explode(',', $ids);
+            /** @var SystemGroupDataServices $service */
+            $service = app()->make(SystemGroupDataServices::class);
+            $data = $service->getGroupDataColumn($ids);
+            if (is_object($data))
+                $data = $data->toArray();
+            return $data;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
 }

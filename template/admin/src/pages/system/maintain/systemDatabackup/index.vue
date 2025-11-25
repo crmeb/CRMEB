@@ -6,10 +6,10 @@
           <!--          <el-card :bordered="false" shadow="never" class="tableBox">-->
           <div class="mb10">
             <!--              <span class="ivu-pl-8 mr10">数据库表列表</span>-->
-            <el-button type="primary" v-db-click @click="getBackup">备份</el-button>
-            <el-button type="primary" v-db-click @click="getOptimize">优化表</el-button>
-            <el-button type="primary" v-db-click @click="getRepair">修复表</el-button>
-            <el-button type="primary" v-db-click @click="exportData(1)">导出文件</el-button>
+            <el-button v-db-click @click="getBackup">备份</el-button>
+            <el-button v-db-click @click="getOptimize">优化表</el-button>
+            <el-button v-db-click @click="getRepair">修复表</el-button>
+            <el-button v-db-click @click="exportData(1)">导出文件</el-button>
           </div>
           <el-table
             ref="selection"
@@ -440,27 +440,29 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 ::v-deep .el-tabs__item {
   height: 54px !important;
   line-height: 54px !important;
 }
-.tableBox ::v-deep .ivu-table-header table
-   border none !important
-
-.table-mark{
+.tableBox ::v-deep .ivu-table-header table {
+  border: none !important;
+}
+.table-mark {
   cursor: text;
 }
-.table-mark:hover{
-  border:1px solid #c2c2c2;
-  padding: 3px 5px
+.table-mark:hover {
+  border: 1px solid #c2c2c2;
+  padding: 3px 5px;
 }
-.mark ::v-deep .ivu-input{
-    background: #fff;
-    border-radius: .39rem;
+.mark ::v-deep .ivu-input {
+  background: #fff;
+  border-radius: 0.39rem;
 }
-.mark ::v-deep .ivu-input, .ivu-input:hover, .ivu-input:focus {
-    border: transparent;
-    box-shadow: none;
+.mark ::v-deep .ivu-input,
+.ivu-input:hover,
+.ivu-input:focus {
+  border: transparent;
+  box-shadow: none;
 }
 </style>

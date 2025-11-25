@@ -232,6 +232,10 @@ class Copy99api extends BaseCopyProduct
                 if (isset($item['value'])) {
                     if ($item['value'] == '') unset($result['items'][$k]);
                     if (!$item['detail'] || !isset($item['detail'][0]) || $item['detail'][0] == '') unset($result['items'][$k]);
+                    $item['detail'] = [
+                        'value' => $item['detail'][0] ?? '',
+                        'pic' => ''
+                    ];
                 } else {
                     unset($result['items'][$k]);
                 }
@@ -242,7 +246,8 @@ class Copy99api extends BaseCopyProduct
                 [
                     'value' => '默认',
                     'detail' => [
-                        '默认'
+                        'value' => '默认',
+                        'pic' => ''
                     ]
                 ]
             ];
@@ -693,6 +698,7 @@ class Copy99api extends BaseCopyProduct
             $sukValue[$suk]['ot_price'] = 0;
             $sukValue[$suk]['stock'] = 0;
             $sukValue[$suk]['bar_code'] = '';
+            $sukValue[$suk]['bar_code_number'] = '';
             $sukValue[$suk]['weight'] = 0;
             $sukValue[$suk]['volume'] = 0;
             $sukValue[$suk]['brokerage'] = 0;
@@ -717,6 +723,7 @@ class Copy99api extends BaseCopyProduct
             $valueNew[$count]['vip_price'] = isset($sukValue[$suk]['vip_price']) ? floatval($sukValue[$suk]['vip_price']) : 0;
             $valueNew[$count]['stock'] = $sukValue[$suk]['stock'] ? intval($sukValue[$suk]['stock']) : 0;
             $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
+            $valueNew[$count]['bar_code_number'] = $sukValue[$suk]['bar_code_number'] ?? '';
             $valueNew[$count]['weight'] = $sukValue[$suk]['weight'] ? floatval($sukValue[$suk]['weight']) : 0;
             $valueNew[$count]['volume'] = $sukValue[$suk]['volume'] ? floatval($sukValue[$suk]['volume']) : 0;
             $valueNew[$count]['brokerage'] = $sukValue[$suk]['brokerage'] ? floatval($sukValue[$suk]['brokerage']) : 0;
@@ -726,10 +733,11 @@ class Copy99api extends BaseCopyProduct
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 80];
         $header[] = ['title' => '售价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 95];
         $header[] = ['title' => '成本价', 'slot' => 'cost', 'align' => 'center', 'minWidth' => 95];
-        $header[] = ['title' => '原价', 'slot' => 'ot_price', 'align' => 'center', 'minWidth' => 95];
+        $header[] = ['title' => '划线价', 'slot' => 'ot_price', 'align' => 'center', 'minWidth' => 95];
         $header[] = ['title' => '会员价', 'slot' => 'vip_price', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '库存', 'slot' => 'stock', 'align' => 'center', 'minWidth' => 95];
-        $header[] = ['title' => '商品编号', 'slot' => 'bar_code', 'align' => 'center', 'minWidth' => 120];
+        $header[] = ['title' => '商品编码', 'slot' => 'bar_code', 'align' => 'center', 'minWidth' => 120];
+        $header[] = ['title' => '条形码', 'slot' => 'bar_code_number', 'align' => 'center', 'minWidth' => 120];
         $header[] = ['title' => '重量(KG)', 'slot' => 'weight', 'align' => 'center', 'minWidth' => 95];
         $header[] = ['title' => '体积(m³)', 'slot' => 'volume', 'align' => 'center', 'minWidth' => 95];
         $header[] = ['title' => '操作', 'slot' => 'action', 'align' => 'center', 'minWidth' => 70];

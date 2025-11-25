@@ -208,6 +208,10 @@ page {
 	justify-content: space-between
 }
 
+.acea-row.row-end{
+	align-items: end;
+}
+
 .start {
 	width: 122rpx;
 	height: 30rpx;
@@ -426,8 +430,8 @@ checkbox .uni-checkbox-input.uni-checkbox-input-checked::before {
 	animation: load linear 1s infinite;
 	font-size: 45rpx;
 	color: #000;
-	width: 50rpx;
-	height: 50rpx;
+/* 	width: 50rpx;
+	height: 50rpx; */
 }
 
 .loadingicon {
@@ -439,11 +443,30 @@ checkbox .uni-checkbox-input.uni-checkbox-input-checked::before {
 .uni-p-b-98 {
 	height: 100rpx;
 	/* 兼容 IOS<11.2 */
-	height: calc(100rpx+ constant(safe-area-inset-bottom));
+	height: calc(100rpx + constant(safe-area-inset-bottom));
 	/* 兼容 IOS>11.2 */
 	height: calc(100rpx + env(safe-area-inset-bottom));
 }
 
 .pd10 {
 	padding: 10rpx;
+}
+
+.text-right{
+	text-align: right;
+}
+
+.flex{
+	display: flex;
+}
+.justify-between{
+	justify-content: space-between;
+}
+
+.p-x-15{
+	padding-left: 30rpx;
+	padding-right: 30rpx;
+}
+.mt-3{
+	margin-top: 3rpx;
 }

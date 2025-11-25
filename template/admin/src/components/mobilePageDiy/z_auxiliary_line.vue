@@ -144,10 +144,11 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.mobile-page{
-    padding 7px 0;
+<style lang="scss" scoped>
+.mobile-page {
+  padding: 7px 0;
 }
+
 /*.box*/
 /*    height 20px*/
 /*    background #F5F5F5*/

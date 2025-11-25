@@ -102,17 +102,18 @@ class StoreOrderController
         if (!$services->get(1, ['id'])) {
             return app('json')->fail(410207);
         }
-        [$cartId, $new, $addressId, $shipping_type] = $request->postMore([
+        [$cartId, $new, $addressId, $shipping_type, $is_gift] = $request->postMore([
             'cartId',
             'new',
             ['addressId', 0],
             ['shipping_type', 1],
+            ['is_gift', 0],
         ], true);
         if (!is_string($cartId) || !$cartId) {
             return app('json')->fail(410201);
         }
         $user = $request->user()->toArray();
-        return app('json')->success($this->services->getOrderConfirmData($user, $cartId, !!$new, $addressId, (int)$shipping_type));
+        return app('json')->success($this->services->getOrderConfirmData($user, $cartId, !!$new, $addressId, (int)$shipping_type, (int)$is_gift));
     }
 
     /**
@@ -128,9 +129,18 @@ class StoreOrderController
         $uid = $request->uid();
         if ($this->services->be(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]))
             return app('json')->status('extend_order', 410173, ['orderId' => $key, 'key' => $key]);
-        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $shipping_type) = $request->postMore([
-            'addressId', 'couponId', ['payType', ''], ['useIntegral', 0], 'mark', ['combinationId', 0], ['pinkId', 0], ['seckill_id', 0], ['bargainId', ''],
+        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $shipping_type, $is_gift) = $request->postMore([
+            'addressId',
+            'couponId',
+            ['payType', ''],
+            ['useIntegral', 0],
+            'mark',
+            ['combinationId', 0],
+            ['pinkId', 0],
+            ['seckill_id', 0],
+            ['bargainId', 0],
             ['shipping_type', 1],
+            ['is_gift', 0],
         ], true);
         $payType = strtolower($payType);
         $cartGroup = $this->services->getCacheOrderInfo($uid, $key);
@@ -140,7 +150,7 @@ class StoreOrderController
             'pinkId' => $pinkId,
             'seckill_id' => $seckill_id,
             'bargainId' => $bargainId,
-        ])->computedOrder($request->uid(), $request->user()->toArray(), $cartGroup, $addressId, $payType, !!$useIntegral, (int)$couponId, false, (int)$shipping_type);
+        ])->computedOrder($request->uid(), $request->user()->toArray(), $cartGroup, $addressId, $payType, !!$useIntegral, (int)$couponId, false, (int)$shipping_type, $is_gift);
         if ($priceGroup)
             return app('json')->status('NONE', 100010, $priceGroup);
         else
@@ -163,7 +173,7 @@ class StoreOrderController
         $userInfo = $request->user()->toArray();
         if ($checkOrder = $this->services->getOne(['order_id|unique' => $key, 'uid' => $userInfo['uid'], 'is_del' => 0]))
             return app('json')->status('extend_order', 410209, ['orderId' => $checkOrder['order_id'], 'key' => $key]);
-        [$addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $invoice_id, $advanceId, $customForm] = $request->postMore([
+        [$addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $invoice_id, $advanceId, $customForm, $is_gift, $gift_mark] = $request->postMore([
             [['addressId', 'd'], 0],
             [['couponId', 'd'], 0],
             ['payType', ''],
@@ -181,10 +191,12 @@ class StoreOrderController
             [['invoice_id', 'd'], 0],
             [['advanceId', 'd'], 0],
             ['custom_form', []],
+            ['is_gift', 0],
+            ['gift_mark', ''],
         ], true);
         $payType = strtolower($payType);
-        $order = CacheService::lock('orderCreate' . $key, function () use ($createServices, $userInfo, $key, $addressId, $payType, $useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $advanceId, $customForm, $invoice_id) {
-            return $createServices->createOrder($userInfo['uid'], $key, $userInfo, $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, !!$news, $advanceId, $customForm, $invoice_id);
+        $order = CacheService::lock('orderCreate' . $key, function () use ($createServices, $userInfo, $key, $addressId, $payType, $useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, $news, $advanceId, $customForm, $invoice_id, $is_gift, $gift_mark) {
+            return $createServices->createOrder($userInfo['uid'], $key, $userInfo, $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckillId, $bargainId, $shipping_type, $real_name, $phone, $storeId, !!$news, $advanceId, $customForm, $invoice_id, $is_gift, $gift_mark);
         });
         $orderId = $order['order_id'];
         return app('json')->status('success', 410203, compact('orderId', 'key'));
@@ -544,9 +556,10 @@ class StoreOrderController
         $user_info = $request->user();
         $group['nickname'] = $user_info['nickname'];
         $group['avatar'] = $user_info['avatar'];
-        if (!$cartInfo) return app('json')->fail(410294);
-        $orderUid = $this->services->value(['id' => $cartInfo['oid']], 'uid');
-        if ($uid != $orderUid) return app('json')->fail(410294);
+        if (!$cartInfo) return app('json')->fail('商品不存在');
+        $orderInfo = $this->services->get($cartInfo['oid']);
+        if (!$orderInfo) return app('json')->fail('订单不存在');
+        if ($uid != $orderInfo['uid'] && $uid != $orderInfo['gift_uid']) return app('json')->fail('不是您自己的订单，无法评价');
         if ($replyServices->be(['oid' => $cartInfo['oid'], 'unique' => $unique]))
             return app('json')->fail(410219);
         $group['comment'] = htmlspecialchars(trim($group['comment']));
@@ -566,6 +579,8 @@ class StoreOrderController
             'reply_type' => 'product',
             'suk' => $cartInfo['cart_info']['productInfo']['attrInfo']['suk']
         ]);
+        //评价是否需要审核
+        $group['status'] = sys_config('product_reply_examine') == 1 ? 0 : 1;
 
         $res = $replyServices->save($group);
         if (!$res) {
@@ -590,7 +605,7 @@ class StoreOrderController
         //缓存抽奖次数
         /** @var LuckLotteryServices $luckLotteryServices */
         $luckLotteryServices = app()->make(LuckLotteryServices::class);
-        $luckLotteryServices->setCacheLotteryNum((int)$orderUid, 'comment');
+        $luckLotteryServices->setCacheLotteryNum((int)$uid == $orderInfo['uid'] ? $orderInfo['uid'] : $orderInfo['gift_uid'], 'comment');
 
         /** @var SystemAdminServices $systemAdmin */
         $systemAdmin = app()->make(SystemAdminServices::class);
@@ -926,5 +941,39 @@ class StoreOrderController
         $encrypted = substr($decodedData, 16);
         $decrypted = openssl_decrypt($encrypted, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         return json_decode($decrypted, true);
+    }
+
+    public function giftDetail($oid)
+    {
+        if (!$oid) {
+            return app('json')->fail('缺少参数');
+        }
+        return app('json')->success($this->services->giftDetail($oid));
+    }
+
+    public function receiveGift(Request $request, $oid)
+    {
+        [$gift_key, $shipping_type, $name, $phone, $address_id, $store_id] = $request->postMore([
+            ['gift_key', ''],
+            ['shipping_type', 1],
+            ['name', ''],
+            ['phone', ''],
+            ['address_id', 0],
+            ['store_id', 0],
+        ], true);
+        if (!$oid) {
+            return app('json')->fail('缺少参数');
+        }
+        if ($shipping_type == 1 && $address_id == 0) {
+            return app('json')->fail('请选择收货地址');
+        }
+        $uid = $request->uid();
+        $res = $this->services->receiveGift($uid, $oid, $gift_key, $shipping_type, $name, $phone, $address_id, $store_id);
+        if ($res) {
+            return app('json')->success('领取成功', ['status' => 1]);
+        } else {
+            return app('json')->success('该礼品已经被别人领取', ['status' => 0]);
+        }
+
     }
 }

@@ -1,11 +1,11 @@
 {
   "name": "from-crmeb-admin",
-  "version": "5.4.0",
+  "version": "5.6.0",
   "author": "sugar1569<763569752@qq.com>",
   "private": false,
   "scripts": {
-    "serve": "vue-cli-service serve --open --mode=dev",
-    "dev": "vue-cli-service serve --open --mode=dev",
+    "serve": "node src/libs/start.js && vue-cli-service serve --open --mode=dev",
+    "dev": "node src/libs/start.js && vue-cli-service serve --open --mode=dev",
     "build": "vue-cli-service build --mode=production",
     "eslint:comment": "使用 ESLint 检查并自动修复 src 目录下所有扩展名为 .js 和 .vue 的文件",
     "eslint": "eslint --ext .js,.vue,.ts --ignore-path .gitignore --fix src",
@@ -70,8 +70,9 @@
     "vuescroll": "^4.16.1",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.2.0",
-    "vxe-table": "^3.4.15",
-    "wangeditor": "^4.7.9",
+    "vxe-pc-ui": "^3.7.5",
+    "vxe-table": "^3.16.3",
+    "wangeditor": "^4.7.15",
     "xe-utils": "^3.5.4",
     "xlsx": "^0.13.5"
   },
@@ -101,14 +102,15 @@
     "sass": "^1.69.5",
     "sass-loader": "^10.4.1",
     "script-loader": "^0.7.2",
-    "style-loader": "^1.2.1",
-    "stylus": "^0.54.7",
-    "stylus-loader": "^3.0.2",
     "svg-sprite-loader": "^3.8.0",
     "text-loader": "0.0.1",
     "vue-lazyload": "^1.3.3",
     "vue-template-compiler": "^2.5.13",
     "vue-waterfall-easy": "^2.4.4"
+  },
+  "engines": {
+    "node": ">14.0.0 < 23.0.0",
+    "npm": ">=6"
   },
   "browserslist": [
     "> 1%",

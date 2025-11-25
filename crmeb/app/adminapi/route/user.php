@@ -46,7 +46,7 @@ Route::group('user', function () {
         //清除会员等级
         Route::delete('del_level/:id', 'v1.user.User/del_level')->option(['real_name' => '清除用户等级']);
         //编辑其他
-        Route::get('edit_other/:id', 'v1.user.User/edit_other')->option(['real_name' => '修改积分余额表单']);
+        Route::get('edit_other/:id/:type', 'v1.user.User/edit_other')->option(['real_name' => '修改积分余额表单']);
         //编辑其他
         Route::put('update_other/:id', 'v1.user.User/update_other')->option(['real_name' => '修改积分余额']);
         //修改用户状态
@@ -179,6 +179,12 @@ Route::group('user', function () {
         Route::get('cancel/agree/:id', 'v1.user.UserCancel/agreeCancel')->option(['real_name' => '同意注销']);
         Route::get('cancel/refuse/:id', 'v1.user.UserCancel/refuseCancel')->option(['real_name' => '拒绝注销']);
     })->option(['parent' => 'user', 'cate_name' => '用户注销']);
+
+    /** 新人礼 */
+    Route::group(function () {
+        Route::get('new_gift', 'v1.user.User/getNewGift')->option(['real_name' => '获取新人礼']);
+        Route::post('new_gift/save', 'v1.user.User/saveNewGift')->option(['real_name' => '保存新人礼']);
+    })->option(['parent' => 'user', 'cate_name' => '新人礼']);
 
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,

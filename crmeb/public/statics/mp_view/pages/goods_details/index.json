@@ -13,6 +13,8 @@
     "swiper-previe": "/components/cusPreviewImg/swiperPrevie",
     "authorize": "/components/Authorize",
     "parser": "/components/jyf-parser/jyf-parser",
-    "home-list": "/components/homeList/index"
+    "home-list": "/components/homeList/index",
+    "specs": "/pages/goods_details/components/specs/index",
+    "service-modal": "/pages/goods_details/components/serviceModal/index"
   }
 }

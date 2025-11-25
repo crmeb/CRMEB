@@ -14,6 +14,7 @@
 namespace crmeb\services\pay\storage;
 
 use app\services\pay\PayServices;
+use app\services\system\SystemPemServices;
 use crmeb\exceptions\PayException;
 use crmeb\services\app\MiniProgramService;
 use crmeb\services\easywechat\Application;
@@ -64,9 +65,11 @@ class V3WechatPay extends BasePay implements PayInterface
                 'mchid' => sys_config('pay_weixin_mchid'),
                 'key' => sys_config('pay_weixin_key_v3'),
                 'serial_no' => sys_config('pay_weixin_serial_no'),
-                'cert_path' => public_path() . $this->getPemPath(sys_config('pay_weixin_client_cert')),
-                'key_path' => public_path() . $this->getPemPath(sys_config('pay_weixin_client_key')),
+                'cert_path' => $this->getPemPath('pay_weixin_client_cert'),
+                'key_path' => $this->getPemPath('pay_weixin_client_key'),
                 'notify_url' => trim(sys_config('site_url')) . '/api/pay/notify/v3wechat',
+                'v3_pay_public_key' => sys_config('v3_pay_public_key'),
+                'v3_pay_public_pem' => $this->getPemPath('v3_pay_public_pem'),
             ]
         ];
 
@@ -87,14 +90,20 @@ class V3WechatPay extends BasePay implements PayInterface
      * @email 136327134@qq.com
      * @date 2022/9/22
      */
-    public function getPemPath(string $path)
+    public function getPemPath(string $name)
     {
-        if (strstr($path, 'http://') === false && strstr($path, 'https://') === false) {
-            return $path;
-        } else {
-            $res = parse_url($path);
-            return $res['path'] ?? '';
+        $systemPemServices = app()->make(SystemPemServices::class);
+        $path = $systemPemServices->getPemPath($name);
+        if ($path) return $path;
+        $path = sys_config($name);
+        if (strstr($path, 'http://') || strstr($path, 'https://')) {
+            $path = parse_url($path)['path'] ?? '';
         }
+        $path = root_path('runtime/pem') . ltrim($path, '/');
+        if (!file_exists($path)) {
+            $path = public_path('uploads') . ltrim($path, '/');
+        }
+        return $path;
     }
 
     /**
@@ -169,6 +178,26 @@ class V3WechatPay extends BasePay implements PayInterface
         );
     }
 
+    public function merchantPayNew($type, $order_id, $transfer_scene_id, $openid, $user_name, $transfer_amount, $transfer_remark, $notify_url, $user_recv_perception, $transfer_scene_report_infos)
+    {
+        return $this->instance->v3pay->setType($type)->transferBills(
+            $order_id,
+            $transfer_scene_id,
+            $openid,
+            $user_name,
+            $transfer_amount,
+            $transfer_remark,
+            $notify_url,
+            $user_recv_perception,
+            $transfer_scene_report_infos
+        );
+    }
+
+    public function queryTransferBills($order_id)
+    {
+        return $this->instance->v3pay->queryTransferBills((string)$order_id);
+    }
+
     /**
      * 发起退款
      * @param string $outTradeNo
@@ -209,6 +238,23 @@ class V3WechatPay extends BasePay implements PayInterface
                     'transaction_id' => $notify->transaction_id
                 ];
 
+                return Event::until('NotifyListener', [$data, PayServices::WEIXIN_PAY]);
+            }
+
+            return false;
+        });
+    }
+
+    public function handleTransferNotify()
+    {
+        return $this->instance->v3pay->handleTransferNotify(function ($notify, $successful) {
+            if ($successful) {
+                $data = [
+                    'out_bill_no' => $notify->out_bill_no,
+                    'transfer_bill_no' => $notify->transfer_bill_no,
+                    'state' => $notify->state,
+                    'fail_reason' => $notify->fail_reason ?? ''
+                ];
                 return Event::until('NotifyListener', [$data, PayServices::WEIXIN_PAY]);
             }
 

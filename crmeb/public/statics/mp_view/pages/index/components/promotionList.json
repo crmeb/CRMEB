@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "good-list": "/pages/index/components/goodList"
+  }
+}

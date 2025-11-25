@@ -36,6 +36,8 @@
         "order_details/index",
         "order_list/index",
         "order_refund_goods/index",
+        "receive_gifts_status/index",
+        "receive_gift/index",
         "cashier/index"
       ],
       "name": "goods"
@@ -68,6 +70,7 @@
         "user_spread_user/index",
         "user_spread_code/index",
         "user_spread_money/index",
+        "user_spread_money/receiving",
         "user_cash/index",
         "user_vip/index",
         "user_distribution_level/index",
@@ -173,7 +176,8 @@
     "navigationBarTitleText": "加载中",
     "navigationBarBackgroundColor": "#fff",
     "backgroundColor": "#F8F8F8",
-    "titleNView": false
+    "titleNView": false,
+    "pageOrientation": "portrait"
   },
   "tabBar": {
     "color": "#282828",
@@ -209,7 +213,7 @@
   },
   "permission": {
     "scope.userLocation": {
-      "desc": "你的位置信息将用于和门店的距离长度"
+      "desc": "你的位置信息将用于查看与门店的距离"
     }
   },
   "requiredPrivateInfos": [
@@ -222,7 +226,9 @@
   "usingComponents": {
     "skeleton": "/components/skeleton/index",
     "page-loading": "/components/pageLoading",
-    "easy-loadimage": "/components/easy-loadimage/easy-loadimage"
+    "easy-loadimage": "/components/easy-loadimage/easy-loadimage",
+    "base-money": "/components/BaseMoney",
+    "base-tag": "/components/BaseTag"
   },
   "sitemapLocation": "sitemap.json"
 }

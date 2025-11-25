@@ -18,10 +18,12 @@
           启动定时任务两种方式：<br />
           1、使用命令启动：php think timer start
           --d；如果更改了执行周期、编辑是否开启、删除定时任务需要重新启动下定时任务确保生效；<br />
-          2、使用接口触发定时任务，建议每分钟调用一次，接口地址 {{ apiBaseURL }}/api/crontab/run <br />
+          2、使用接口触发定时任务，建议每分钟调用一次，接口地址 {{ apiBaseURL }}api/crontab/run <br />
         </template>
       </el-alert>
-      <el-button v-if="currentTab === '1'" type="primary" v-db-click @click="addTask" class="mt14">添加定时任务</el-button>
+      <el-button v-if="currentTab === '1'" type="primary" v-db-click @click="addTask" class="mt14"
+        >添加定时任务</el-button
+      >
       <el-table :data="tableData" v-loading="loading" class="ivu-mt">
         <el-table-column label="标题" min-width="150">
           <template slot-scope="scope">
@@ -98,7 +100,7 @@ export default {
     };
   },
   created() {
-    this.apiBaseURL = setting.apiBaseURL;
+    this.apiBaseURL = setting.apiBaseURL.replace(/adminapi/, '');
     this.getList();
   },
   methods: {
@@ -180,8 +182,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .ivu-mt {
-  padding-top:10px
+  padding-top: 10px;
 }
 </style>

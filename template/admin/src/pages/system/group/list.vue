@@ -331,45 +331,52 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-::v-deep .ivu-menu-vertical .ivu-menu-item-group-title{
+<style lang="scss" scoped>
+::v-deep .ivu-menu-vertical .ivu-menu-item-group-title {
+  display: none;
+}
+::v-deep .ivu-menu-vertical.ivu-menu-light:after {
+  display: none;
+}
+.left-wrapper {
+  height: 904px;
+  background: #fff;
+  border-right: 1px solid #dcdee2;
+}
+.menu-item {
+  z-index: 50;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  word-break: break-all;
+  .icon-box {
+    z-index: 3;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     display: none;
+  }
+  &:hover .icon-box {
+    display: block;
+  }
+  .right-menu {
+    z-index: 10;
+    position: absolute;
+    right: -106px;
+    top: -11px;
+    width: auto;
+    min-width: 121px;
+  }
 }
-::v-deep .ivu-menu-vertical.ivu-menu-light:after{
-    display none
+.tabBox_img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
-.left-wrapper
-    height 904px
-    background #fff
-    border-right 1px solid #dcdee2
-.menu-item
-    z-index 50
-    position: relative;
-    display flex
-    justify-content space-between
-    word-break break-all
-    .icon-box
-        z-index 3
-        position absolute
-        right 20px
-        top 50%
-        transform translateY(-50%)
-        display none
-    &:hover .icon-box
-        display block
-    .right-menu
-        z-index 10
-        position absolute
-        right: -106px;
-        top: -11px;
-        width auto
-        min-width: 121px;
-.tabBox_img
-    width 36px
-    height 36px
-    border-radius:4px
-    cursor pointer
-    img
-        width 100%
-        height 100%
 </style>

@@ -170,6 +170,10 @@
 	.pic-num {
 		font-size: 24rpx;
 	}
+	
+	.coupon-list .item .text {
+		padding: 14rpx 24rpx;
+	}
 
 	.coupon-list .item .text .condition {
 		display: flex;

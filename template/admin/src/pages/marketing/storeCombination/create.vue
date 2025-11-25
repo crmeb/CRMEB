@@ -63,7 +63,8 @@
                     <div
                       v-if="formValidate.images.length < 10"
                       class="upLoad acea-row row-center-wrapper"
-                      v-db-click @click="modalPicTap('duo')"
+                      v-db-click
+                      @click="modalPicTap('duo')"
                     >
                       <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                     </div>
@@ -78,6 +79,8 @@
                       placeholder="请输入拼团名称"
                       v-model="formValidate.title"
                       class="content_width"
+                      maxlength="80"
+                      show-word-limit
                     />
                   </el-form-item>
                 </el-col>
@@ -91,6 +94,8 @@
                       :rows="4"
                       v-model="formValidate.info"
                       class="content_width"
+                      maxlength="100"
+                      show-word-limit
                     />
                   </el-form-item>
                 </el-col>
@@ -143,7 +148,8 @@
                       :max="9999999999"
                       v-model="formValidate.postage"
                       placeholder="请输入金额"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      class-unit="元"
                     />
                   </div>
                 </el-form-item>
@@ -169,12 +175,13 @@
                 </el-form-item>
               </el-col>
               <el-col :span="24">
-                <el-form-item label="拼团时效(单位 小时)：" prop="effective_time">
+                <el-form-item label="拼团时效：" prop="effective_time">
                   <div>
                     <el-input-number
                       :controls="false"
-                      placeholder="请输入拼团时效(单位 小时)"
-                      class="content_width"
+                      placeholder="请输入拼团时效"
+                      class="content_width input-number-unit-class"
+                      class-unit="小时"
                       v-model="formValidate.effective_time"
                     />
                     <div class="grey">
@@ -193,7 +200,8 @@
                       placeholder="请输入拼团人数"
                       :precision="0"
                       v-model="formValidate.people"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      class-unit="人"
                     />
                     <div class="grey">单次拼团需要参与的用户数</div>
                   </div>
@@ -209,12 +217,18 @@
                       :max="10000"
                       :min="0"
                       v-model="formValidate.virtualPeople"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      class-unit="人"
                     />
                     <div class="grey">
                       设置虚拟成团的补齐人数，如：5人团设置补齐2人，当团队成员大于等于3人时，拼团结束时自动补齐剩余最多2个位置，不开启虚拟成团请设置为0
                     </div>
                   </div>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="单位：" prop="unit_name" label-for="unit_name">
+                  <el-input clearable placeholder="请输入单位" v-model="formValidate.unit_name" class="content_width" />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
@@ -227,7 +241,8 @@
                       :precision="0"
                       :max="10000"
                       v-model="formValidate.num"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      :class-unit="formValidate.unit_name || '件'"
                     />
                     <div class="grey">
                       该商品活动期间内，用户可购买的最大数量。例如设置为4，表示本次活动有效期内，每个用户最多可购买4件
@@ -245,7 +260,8 @@
                       :precision="0"
                       :max="10000"
                       v-model="formValidate.once_num"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      :class-unit="formValidate.unit_name || '件'"
                     />
                     <div class="grey">
                       用户参与拼团时，一次购买最大数量限制。例如设置为2，表示每次参与拼团时，用户一次购买数量最大可选择2个
@@ -253,11 +269,7 @@
                   </div>
                 </el-form-item>
               </el-col>
-              <el-col :span="24">
-                <el-form-item label="单位：" prop="unit_name" label-for="unit_name">
-                  <el-input clearable placeholder="请输入单位" v-model="formValidate.unit_name" class="content_width" />
-                </el-form-item>
-              </el-col>
+
               <el-col :span="24">
                 <el-form-item label="团长返佣比例：" prop="head_commission">
                   <div>
@@ -268,7 +280,8 @@
                       placeholder="团长返佣比例"
                       :precision="0"
                       v-model="formValidate.head_commission"
-                      class="content_width"
+                      class="content_width input-number-unit-class"
+                      class-unit="%"
                     />
                     <div class="grey">
                       拼团成功后，如果团长是分销员，则在订单确认收货时会给团长返一定的佣金，佣金比例是实际支付金额的0-100%
@@ -359,7 +372,8 @@
                         <template v-else-if="item.slot === 'pic'">
                           <div
                             class="acea-row row-middle row-center-wrapper"
-                            v-db-click @click="modalPicTap('dan', 'danTable', scope.$index)"
+                            v-db-click
+                            @click="modalPicTap('dan', 'danTable', scope.$index)"
                           >
                             <div class="pictrue pictrueTab" v-if="scope.row.pic">
                               <img v-lazy="scope.row.pic" />
@@ -408,7 +422,8 @@
             <el-form-item>
               <el-button
                 class="submission"
-                v-db-click @click="step"
+                v-db-click
+                @click="step"
                 :disabled="($route.params.id && current === 1) || current === 0"
                 >上一步</el-button
               >
@@ -416,7 +431,8 @@
                 type="primary"
                 :disabled="submitOpen && current === 2"
                 class="submission"
-                v-db-click @click="next('formValidate')"
+                v-db-click
+                @click="next('formValidate')"
                 >{{ current === 2 ? '提交' : '下一步' }}</el-button
               >
             </el-form-item>
@@ -930,12 +946,12 @@ export default {
     // 选择商品
     changeGoods() {
       this.modals = true;
-      this.$nextTick(e => {
+      this.$nextTick((e) => {
         this.$refs.goodslist.formValidate.is_show = -1;
         this.$refs.goodslist.formValidate.type = 3;
         this.$refs.goodslist.getList();
         this.$refs.goodslist.goodsCategory();
-      })
+      });
     },
     // 移动
     handleDragStart(e, item) {
@@ -963,44 +979,37 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.content_width{
-  width:460px;
+<style lang="scss" scoped>
+.content_width {
+  width: 460px;
 }
 .grey {
-  font-size 12px
+  font-size: 12px;
   color: #999;
 }
-
 .maxW ::v-deep .ivu-select-dropdown {
   max-width: 600px;
 }
-
 .ivu-table-wrapper {
   border-left: 1px solid #dcdee2;
   border-top: 1px solid #dcdee2;
 }
-
 .tabBox_img {
   width: 50px;
   height: 50px;
 }
-
 .tabBox_img img {
   width: 100%;
   height: 100%;
 }
-
 .priceBox {
   width: 100%;
 }
-
 .form {
   .picBox {
     display: inline-block;
     cursor: pointer;
   }
-
   .pictrue {
     width: 60px;
     height: 60px;
@@ -1014,7 +1023,6 @@ export default {
       width: 100%;
       height: 100%;
     }
-
     .btndel {
       position: absolute;
       z-index: 9;
@@ -1024,7 +1032,6 @@ export default {
       top: -4px;
     }
   }
-
   .upLoad {
     width: 58px;
     height: 58px;
@@ -1034,13 +1041,11 @@ export default {
     background: rgba(0, 0, 0, 0.02);
     cursor: pointer;
   }
-
   .col {
     color: #2d8cf0;
     cursor: pointer;
   }
 }
-
 .addfont {
   font-size: 12px;
   color: var(--prev-color-primary);

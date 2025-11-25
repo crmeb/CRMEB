@@ -148,8 +148,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .ivu-mt {
-  padding-top:10px
+  padding-top: 10px;
 }
 </style>

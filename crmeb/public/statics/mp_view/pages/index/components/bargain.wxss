@@ -1,0 +1,1 @@
+.Regular{font-family:Regular}.bg-cover{background-size:cover}.item ~ .item{margin-top:32rpx}.badge{padding:0 10rpx;height:26rpx;background:linear-gradient(270deg,var(--view-theme),var(--view-gradient));border-radius:20rpx;display:inline-flex;justify-content:center;align-items:center;vertical-align:middle}.line-price{padding-left:3px}scroll-view{box-sizing:border-box}

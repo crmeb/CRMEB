@@ -15,6 +15,11 @@ return [
             'url'        => '/uploads',
             'visibility' => 'public',
         ],
+        'pem' => [
+            'type'       => 'local',
+            'root'       => app()->getRootPath() . 'runtime/pem',
+            'url'        => '',
+        ],
         // 更多的磁盘配置信息
     ],
     //系统开发密码

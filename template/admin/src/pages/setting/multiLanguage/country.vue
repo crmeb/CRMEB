@@ -1,29 +1,29 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt mb10" :body-style="{padding:0}">
+    <el-card :bordered="false" shadow="never" class="ivu-mt mb10" :body-style="{ padding: 0 }">
       <div class="padding-add">
-      <el-form
-        ref="formValidate"
-        :model="formValidate"
-        :label-width="labelWidth"
-        label-position="right"
-        @submit.native.prevent
-        inline
-      >
-        <el-form-item label="搜索：">
-          <div class="acea-row row-middle">
-            <el-input
+        <el-form
+          ref="formValidate"
+          :model="formValidate"
+          :label-width="labelWidth"
+          label-position="right"
+          @submit.native.prevent
+          inline
+        >
+          <el-form-item label="搜索：">
+            <div class="acea-row row-middle">
+              <el-input
                 clearable
                 placeholder="请输入语言Code"
                 v-model="formValidate.keyword"
                 class="form_content_width"
-            />
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" v-db-click @click="selChange">搜索</el-button >
-        </el-form-item>
-      </el-form>
+              />
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-db-click @click="selChange">搜索</el-button>
+          </el-form-item>
+        </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never">
@@ -32,13 +32,7 @@
           <el-button type="primary" v-db-click @click="add">添加语言地区</el-button>
         </el-col>
       </el-row>
-      <el-table
-        ref="table"
-        :data="tabList"
-        class="ivu-mt mt14"
-        v-loading="loading"
-        empty-text="暂无数据"
-      >
+      <el-table ref="table" :data="tabList" class="ivu-mt mt14" v-loading="loading" empty-text="暂无数据">
         <el-table-column label="编号" min-width="100">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
@@ -163,29 +157,24 @@ export default {
   },
 };
 </script>
-<style scoped lang="stylus">
+<style lang="scss" scoped>
 .ivu-mt .type .item {
   margin: 3px 0;
 }
-
 .tabform {
   margin-bottom: 10px;
 }
-
 .Refresh {
   font-size: 12px;
   color: var(--prev-color-primary);
   cursor: pointer;
 }
-
 .ivu-form-item {
   margin-bottom: 10px;
 }
-
-.status ::v-deep .item~.item {
+.status ::v-deep .item ~ .item {
   margin-left: 6px;
 }
-
 .status ::v-deep .statusVal {
   margin-bottom: 7px;
 }
@@ -196,7 +185,6 @@ export default {
   padding: 3px 0;
   box-sizing: border-box;
 }
-
 .tabBox_img {
   width: 36px;
   height: 36px;

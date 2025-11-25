@@ -91,30 +91,36 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.clear_tit
-    margin-top 150px
-.clear_box
-  border 1px solid #DADFE6
-  border-radius 3px
-  display flex
-  flex-direction column
-  justify-content space-between
-  align-items: center
-  padding 20px 10px
-  height 150px
-  box-sizing border-box
-  .clear_box_sp1
-      font-size 16px
-      color #000000
-      display block
-  .clear_box_sp2
-      font-size 14px
-      color #808695
-      display block
-        margin: 12px 0
-.clear_box ::v-deep .ivu-btn-error
-    color: #fff;
-    background-color: #ED4014;
-    border-color: #ED4014;
+<style lang="scss" scoped>
+.clear_tit {
+  margin-top: 150px;
+}
+.clear_box {
+  border: 1px solid #dadfe6;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10px;
+  height: 150px;
+  box-sizing: border-box;
+  .clear_box_sp1 {
+    font-size: 16px;
+    color: #000000;
+    display: block;
+  }
+  .clear_box_sp2 {
+    font-size: 14px;
+    color: #808695;
+    display block {
+      margin: 12px 0;
+    }
+  }
+}
+.clear_box ::v-deep .ivu-btn-error {
+  color: #fff;
+  background-color: #ed4014;
+  border-color: #ed4014;
+}
 </style>

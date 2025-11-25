@@ -50,23 +50,22 @@ class YuePayServices extends BaseServices
         if ($userInfo['now_money'] < $orderInfo['pay_price']) {
             return ['status' => 'pay_deficiency', 'msg' => '余额不足' . floatval($orderInfo['pay_price'])];
         }
-
         $this->transaction(function () use ($services, $orderInfo, $userInfo, $type) {
             $res = false !== $services->bcDec($userInfo['uid'], 'now_money', $orderInfo['pay_price'], 'uid');
+            /** @var UserMoneyServices $userMoneyServices */
+            $userMoneyServices = app()->make(UserMoneyServices::class);
+            //写入余额记录
+            $now_money = bcsub((string)$userInfo['now_money'], (string)$orderInfo['pay_price'], 2);
+            $number = $orderInfo['pay_price'];
             switch ($type) {
                 case 'pay_product'://商品余额
-                    //写入余额记录
-                    $now_money = bcsub((string)$userInfo['now_money'], (string)$orderInfo['pay_price'], 2);
-                    $number = $orderInfo['pay_price'];
-                    /** @var UserMoneyServices $userMoneyServices */
-                    $userMoneyServices = app()->make(UserMoneyServices::class);
                     $res = $res && $userMoneyServices->income('pay_product', $userInfo['uid'], $number, $now_money, $orderInfo['id']);
-
                     /** @var StoreOrderSuccessServices $orderServices */
                     $orderServices = app()->make(StoreOrderSuccessServices::class);
                     $res = $res && $orderServices->paySuccess($orderInfo, PayServices::YUE_PAY);//余额支付成功
                     break;
                 case 'pay_member'://会员卡支付
+                    $res = $res && $userMoneyServices->income('pay_member', $userInfo['uid'], $number, $now_money, $orderInfo['id']);
                     /** @var OtherOrderServices $OtherOrderServices */
                     $OtherOrderServices = app()->make(OtherOrderServices::class);
                     $res = $res && $OtherOrderServices->paySuccess($orderInfo, PayServices::YUE_PAY);//余额支付成功

@@ -477,7 +477,7 @@
 		font-size: 24rpx;
 		line-height: 22rpx;
 		text-align: center;
-		bottom: calc(52rpx+ constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
+		bottom: calc(52rpx + constant(safe-area-inset-bottom)); ///兼容 IOS<11.2/
 		bottom: calc(52rpx + env(safe-area-inset-bottom)); ///兼容 IOS>11.2/
 
 		.main-color {

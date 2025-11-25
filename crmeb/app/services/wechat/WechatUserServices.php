@@ -235,7 +235,7 @@ class WechatUserServices extends BaseServices
         [$uid, $userData] = $data;
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        if (!$userInfo = $userServices->getUserInfo($uid)) {
+        if (!$userInfo = $userServices->getUserInfo((int)$uid)) {
             return false;
         }
         /** @var LoginServices $loginService */
@@ -276,7 +276,7 @@ class WechatUserServices extends BaseServices
     public function wechatOauthAfter($data)
     {
         if (!$data) throw new ApiException('用户信息获取失败，请刷新页面重试');
-        [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $data;
+        [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType] = $data;
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $spreadInfo = $userServices->getUserInfo((int)$spreadId);
@@ -344,8 +344,13 @@ class WechatUserServices extends BaseServices
             }
             /** @var LoginServices $loginService */
             $loginService = app()->make(LoginServices::class);
-            $this->transaction(function () use ($loginService, $wechatInfo, $userInfo, $uid, $userType, $spreadId, $wechatUser) {
-                $wechatInfo['code'] = $spreadId;
+            $this->transaction(function () use ($loginService, $wechatInfo, $userInfo, $uid, $userType, $spreadId, $wechatUser, $agent_id) {
+                if ($agent_id) {
+                    $wechatInfo['code'] = $agent_id;
+                    $wechatInfo['is_staff'] = 1;
+                } else {
+                    $wechatInfo['code'] = $spreadId;
+                }
                 $loginService->updateUserInfo($wechatInfo, $userInfo);
                 if ($wechatUser) {
                     if (!$this->dao->update($wechatUser['id'], $wechatInfo, 'id')) {

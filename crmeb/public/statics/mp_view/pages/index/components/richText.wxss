@@ -1,0 +1,1 @@
+.richText{padding:30rpx;background-color:#fff}.richText::after{content:"";display:table;clear:both}uni-video{width:100%!important}video{width:100%!important}

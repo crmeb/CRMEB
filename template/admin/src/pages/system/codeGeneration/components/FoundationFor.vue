@@ -137,16 +137,16 @@ export default {
   },
 };
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .form-width {
   width: 500px;
 }
-.item{
-  display flex
-  margin-bottom 10px
-  .row{
-    width 140px
-    margin-right 10px
+.item {
+  display: flex;
+  margin-bottom: 10px;
+  .row {
+    width: 140px;
+    margin-right: 10px;
   }
 }
 </style>

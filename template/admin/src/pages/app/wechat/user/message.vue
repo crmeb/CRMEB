@@ -24,7 +24,7 @@
                   }}</el-radio-button>
                 </el-radio-group>
                 <el-date-picker
-                    clearable
+                  clearable
                   :editable="false"
                   @change="onchangeTime"
                   :value="timeVal"
@@ -198,7 +198,8 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.btn_box ::v-deep .ivu-form-item-content
-    margin-left 0 !important
+<style lang="scss" scoped>
+.btn_box ::v-deep .ivu-form-item-content {
+  margin-left: 0 !important;
+}
 </style>

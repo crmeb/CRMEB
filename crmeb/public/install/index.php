@@ -27,18 +27,8 @@ if (phpversion() >= '8.0.0') {
 date_default_timezone_set('PRC');
 error_reporting(E_ALL & ~E_NOTICE);
 header('Content-Type: text/html; charset=UTF-8');
-//mysql数据库配置容器中获取
-$MYSQL_HOST_IP = getenv('MYSQL_HOST_IP')?:'127.0.0.1';
-$MYSQL_PORT = getenv('MYSQL_PORT')?:'3306';
-$MYSQL_USER = getenv('MYSQL_USER')?:'root';
-$MYSQL_PASSWORD = getenv('MYSQL_PASSWORD')?:'123456';
-$MYSQL_DATABASE = getenv('MYSQL_DATABASE')?:'crmeb';
-//redis配置容器中获取
-$REDIS_HOST_IP = getenv('REDIS_HOST_IP')?:'127.0.0.1';
-$REDIS_PORT = getenv('REDIS_PORT')?:'6379';
-$REDIS_DATABASE = getenv('REDIS_DATABASE')?:0;
-$REDIS_PASSWORD = getenv('REDIS_PASSWORD')?:'';
-//数据库;
+
+//数据库
 $sqlFile = 'crmeb.sql';
 $configFile = '.env';
 if (!file_exists(SITE_DIR . 'install/' . $sqlFile) || !file_exists(SITE_DIR . 'install/' . $configFile)) {
