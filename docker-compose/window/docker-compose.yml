@@ -5,13 +5,13 @@ services:
     container_name: crmeb_mysql #指定容器名
     image: mysql:5.7 #一般电脑可以用这个镜像
     ports:
-      - 3336:3306
+      - "127.0.0.1:3336:3306"
     # 环境变量
     environment:
       TZ: UTC
       MYSQL_ROOT_PASSWORD: "123456"
       MYSQL_USER: "crmeb"
-      MYSQL_PASS: "123456"
+      MYSQL_PASSWORD: "123456"
       MYSQL_DATABASE: "crmeb"
     privileged: true
     command: --character-set-server=utf8mb4
@@ -37,7 +37,7 @@ services:
     # image: daocloud.io/library/redis:6.0.5-alpine
     # image: redis:5.0
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       # - ./redis/data:/data #挂载数据目录到本地
