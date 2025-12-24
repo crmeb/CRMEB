@@ -1,0 +1,16 @@
+# CRMEB MySQL 备份 cron 示例
+# 复制到 /etc/cron.d/crmeb-backup 或添加到 crontab
+
+# 环境变量
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+MYSQL_USER=crmeb
+MYSQL_PASSWORD=your_password_here
+MYSQL_DATABASE=crmeb
+BACKUP_DIR=/var/backups/crmeb
+
+# 每天凌晨 3 点执行全量备份
+0 3 * * * root /var/www/CRMEB/current/ops/backup/mysql_backup.sh
+
+# 保留最近 7 天备份（可选）
+0 4 * * * root find /var/backups/crmeb -name "*.sql.gz" -mtime +7 -delete

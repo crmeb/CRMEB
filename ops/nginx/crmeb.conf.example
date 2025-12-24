@@ -24,6 +24,35 @@ server {
     location ~* ^/uploads/.*\.php$ { return 404; }
     location ~* ^/(static|statics|assets)/.*\.php$ { return 404; }
 
+    # 后台路径 IP 白名单（可选，建议生产启用）
+    # location ^~ /admin {
+    #     allow 10.0.0.0/8;
+    #     allow 192.168.0.0/16;
+    #     deny all;
+    #     try_files $uri $uri/ /index.php?s=$uri&$args;
+    # }
+
+    # WebSocket 代理（workerman 长连接）
+    location /notice {
+        proxy_pass http://127.0.0.1:20002;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 86400s;
+    }
+
+    location /msg {
+        proxy_pass http://127.0.0.1:20003/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 86400s;
+    }
+
     location / {
         if (!-e $request_filename) {
             rewrite ^(.*)$ /index.php?s=$1 last;
