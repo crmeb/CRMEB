@@ -35,11 +35,11 @@ return [
             // 数据库连接参数
             'params'          => [],
             // 数据库编码默认采用utf8
-            'charset'         => Env::get('database.charset', 'utf8'),
+            'charset'         => Env::get('database.charset', 'utf8mb4'),
             // 数据库表前缀
             'prefix'          => Env::get('database.prefix', 'eb_'),
-            // 数据库调试模式
-            'debug'           => Env::get('database.debug', true),
+            // 数据库调试模式（生产环境默认关闭）
+            'debug'           => Env::get('database.debug', Env::get('app_debug', false)),
             // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
             'deploy'          => 0,
             // 数据库读写是否分离 主从式有效
