@@ -34,6 +34,12 @@ class PayServices
     //支付宝
     const ALIAPY_PAY = 'alipay';
 
+    //Stripe
+    const PAY_TYPE_STRIPE = 'stripe';
+
+    //PayPal
+    const PAY_TYPE_PAYPAL = 'paypal';
+
     //通联支付
     const ALLIN_PAY = 'allinpay';
 
@@ -49,6 +55,8 @@ class PayServices
         PayServices::YUE_PAY => '余额支付',
         PayServices::OFFLINE_PAY => '线下支付',
         PayServices::ALIAPY_PAY => '支付宝',
+        PayServices::PAY_TYPE_STRIPE => 'Stripe',
+        PayServices::PAY_TYPE_PAYPAL => 'PayPal',
         PayServices::FRIEND => '好友代付',
         PayServices::ALLIN_PAY => '通联支付',
         PayServices::BANK => '银行转账',

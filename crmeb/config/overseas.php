@@ -98,4 +98,18 @@ return [
         '/export' => 'Export',
         '/statistic' => 'Reports',
     ],
+
+    // 海外支付渠道配置（用于收敛/展示海外可用支付方式）
+    'payment_channels' => [
+        // 允许的支付方式（与 config/pay.php 的 payType key 对齐）
+        'allow' => [
+            'stripe',
+            'paypal',
+        ],
+        // 支付方式展示名称（可按需覆盖）
+        'labels' => [
+            'stripe' => 'Stripe',
+            'paypal' => 'PayPal',
+        ],
+    ],
 ];

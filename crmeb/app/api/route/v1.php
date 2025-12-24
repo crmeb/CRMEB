@@ -18,6 +18,8 @@ Route::group(function () {
     Route::any('wechat/serve', 'v1.wechat.WechatController/serve')->option(['real_name' => '公众号服务']);//公众号服务
     Route::any('wechat/miniServe', 'v1.wechat.WechatController/miniServe')->option(['real_name' => '小程序服务']);//公众号服务
     Route::any('pay/notify/:type', 'v1.PayController/notify')->option(['real_name' => '支付回调']);//支付回调
+    Route::any('stripe/webhook', 'v1.PayController/notify')->append(['type' => 'stripe'])->option(['real_name' => 'Stripe 回调']);//Stripe webhook
+    Route::any('paypal/webhook', 'v1.PayController/notify')->append(['type' => 'paypal'])->option(['real_name' => 'PayPal 回调']);//PayPal webhook
     Route::any('transfer/notify/:type', 'v1.PayController/transferNotify')->option(['real_name' => '商户转账回调']);//商户转账回调
     Route::any('order_call_back', 'v1.order.StoreOrderController/callBack')->option(['real_name' => '商家寄件回调']);//商家寄件回调
     Route::get('get_script', 'v1.PublicController/getScript')->option(['real_name' => '移动端自定义JS']);//移动端自定义JS

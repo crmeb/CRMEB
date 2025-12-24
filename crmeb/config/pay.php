@@ -13,7 +13,7 @@ return [
     //默认支付模式
     'default' => 'wechat_pay',
     //支付方式
-    'payType' => ['weixin' => '微信支付', 'yue' => '余额支付', 'offline' => '线下支付'],
+    'payType' => ['weixin' => '微信支付', 'yue' => '余额支付', 'offline' => '线下支付', 'stripe' => 'Stripe支付', 'paypal' => 'PayPal支付'],
     //提现方式
     'extractType' => ['alipay', 'bank', 'weixin'],
     //配送方式
@@ -26,5 +26,9 @@ return [
         'ali_pay' => [],
         //余额支付
         'yue' => [],
+        //Stripe支付
+        'stripe' => [],
+        //PayPal支付
+        'paypal' => [],
     ]
 ];
