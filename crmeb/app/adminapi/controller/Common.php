@@ -338,6 +338,78 @@ class Common extends AuthController
                 $data[$key]['type'] = 0;
             }
         }
+        // Overseas Lite：收敛并英文化“菜单搜索”数据（不改库，仅改返回）
+        if (config('overseas.enabled', false)) {
+            $adminPrefix = '/' . trim((string)config('app.admin_prefix', 'admin'), '/');
+            $allowPrefixes = (array)config('overseas.admin_menu_allow_prefixes', []);
+            $titleMap = (array)config('overseas.admin_menu_title_map', []);
+
+            $mapKeys = array_keys($titleMap);
+            usort($mapKeys, static function ($a, $b) {
+                return strlen($b) <=> strlen($a);
+            });
+
+            $stripAdminPrefix = static function (string $path) use ($adminPrefix): string {
+                if ($path === $adminPrefix) {
+                    return '/';
+                }
+                if (strpos($path, $adminPrefix . '/') === 0) {
+                    return substr($path, strlen($adminPrefix));
+                }
+                return $path;
+            };
+
+            if ($allowPrefixes) {
+                $idToPid = [];
+                foreach ($data as $item) {
+                    if (isset($item['id'])) {
+                        $idToPid[(int)$item['id']] = (int)($item['pid'] ?? 0);
+                    }
+                }
+
+                $includeIds = [];
+                foreach ($data as $item) {
+                    $id = (int)($item['id'] ?? 0);
+                    if (!$id) {
+                        continue;
+                    }
+                    $path = $stripAdminPrefix((string)($item['menu_path'] ?? ''));
+                    foreach ($allowPrefixes as $prefix) {
+                        if ($prefix !== '' && strpos($path, $prefix) === 0) {
+                            $includeIds[$id] = true;
+                            break;
+                        }
+                    }
+                }
+
+                foreach (array_keys($includeIds) as $id) {
+                    $pid = $idToPid[$id] ?? 0;
+                    while ($pid && !isset($includeIds[$pid])) {
+                        $includeIds[$pid] = true;
+                        $pid = $idToPid[$pid] ?? 0;
+                    }
+                }
+
+                $data = array_values(array_filter($data, function ($row) use ($includeIds) {
+                    $id = (int)($row['id'] ?? 0);
+                    return $id && isset($includeIds[$id]);
+                }));
+            }
+
+            if ($mapKeys) {
+                foreach ($data as &$row) {
+                    $path = $stripAdminPrefix((string)($row['menu_path'] ?? ''));
+                    foreach ($mapKeys as $prefix) {
+                        if ($prefix !== '' && strpos($path, $prefix) === 0) {
+                            $row['menu_name'] = $titleMap[$prefix];
+                            break;
+                        }
+                    }
+                }
+                unset($row);
+            }
+        }
+
         return app('json')->success(sort_list_tier($data));
     }
 

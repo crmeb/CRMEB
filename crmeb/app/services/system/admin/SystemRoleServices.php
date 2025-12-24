@@ -12,7 +12,6 @@
 namespace app\services\system\admin;
 
 use app\dao\system\admin\SystemRoleDao;
-
 use app\Request;
 use app\services\BaseServices;
 use app\services\system\SystemMenusServices;
@@ -94,16 +93,13 @@ class SystemRoleServices extends BaseServices
      */
     public function verifyAuth(Request $request)
     {
-        // 获取当前的接口于接口类型
         $rule = trim(strtolower($request->rule()->getRule()));
         $method = trim(strtolower($request->method()));
 
-        // 判断接口是一下两种的时候放行
         if (in_array($rule, ['setting/admin/logout', 'menuslist'])) {
             return true;
         }
 
-        // 获取所有接口类型以及对应的接口
         $allAuth = CacheService::remember('all_auth', function () {
             /** @var SystemMenusServices $menusService */
             $menusService = app()->make(SystemMenusServices::class);
@@ -115,19 +111,26 @@ class SystemRoleServices extends BaseServices
             return $allAuth;
         });
 
-        // 权限菜单未添加时放行
-        if (!in_array($rule, $allAuth[$method])) return true;
-
-        // 如果是crud接口放行
-        if (strpos($rule, 'crud/') === 0) return true;
-
-        // 获取管理员的接口权限列表，存在时放行
-        $auth = $this->getRolesByAuth($request->adminInfo()['roles'], 2);
-        if (isset($auth[$method]) && in_array($rule, $auth[$method])) {
-            return true;
-        } else {
+        $allAuthByMethod = $allAuth[$method] ?? [];
+        if (!$allAuthByMethod || !in_array($rule, $allAuthByMethod)) {
             return true;
         }
+
+        if (strpos($rule, 'crud/') === 0) {
+            return true;
+        }
+
+        $roles = $request->adminInfo()['roles'] ?? [];
+        if (!is_array($roles)) {
+            $roles = $roles ? explode(',', (string)$roles) : [];
+        }
+
+        $auth = $this->getRolesByAuth($roles, 2);
+        if (isset($auth[$method]) && in_array($rule, $auth[$method])) {
+            return true;
+        }
+
+        throw new AuthException(110001);
     }
 
     /**

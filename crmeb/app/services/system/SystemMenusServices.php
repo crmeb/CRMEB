@@ -31,6 +31,143 @@ use crmeb\utils\Arr;
  */
 class SystemMenusServices extends BaseServices
 {
+    /**
+     * @return bool
+     */
+    protected function isOverseasEnabled(): bool
+    {
+        return (bool)config('overseas.enabled', false);
+    }
+
+    /**
+     * menu_path 在 getMenusData 中会被加上 /{admin_prefix} 前缀，这里统一剥离
+     */
+    protected function stripAdminPrefix(string $menuPath): string
+    {
+        $adminPrefix = '/' . trim((string)config('app.admin_prefix', 'admin'), '/');
+        if ($menuPath === $adminPrefix) {
+            return '/';
+        }
+        if (strpos($menuPath, $adminPrefix . '/') === 0) {
+            return substr($menuPath, strlen($adminPrefix));
+        }
+        return $menuPath;
+    }
+
+    protected function startsWithAny(string $value, array $prefixes): bool
+    {
+        foreach ($prefixes as $prefix) {
+            if ($prefix === '') {
+                continue;
+            }
+            if (strpos($value, $prefix) === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Overseas Lite：收敛后台导航菜单（不改库，仅改返回）
+     * @param array $menusData
+     * @return array
+     */
+    protected function filterOverseasMenus(array $menusData): array
+    {
+        $allowPrefixes = (array)config('overseas.admin_menu_allow_prefixes', []);
+        if (!$allowPrefixes) {
+            return $menusData;
+        }
+
+        $idToPid = [];
+        foreach ($menusData as $item) {
+            if (isset($item['id'])) {
+                $idToPid[(int)$item['id']] = (int)($item['pid'] ?? 0);
+            }
+        }
+
+        $includeIds = [];
+        foreach ($menusData as $item) {
+            $id = (int)($item['id'] ?? 0);
+            if (!$id) {
+                continue;
+            }
+            $rawPath = $this->stripAdminPrefix((string)($item['menu_path'] ?? ''));
+            if ($this->startsWithAny($rawPath, $allowPrefixes)) {
+                $includeIds[$id] = true;
+            }
+        }
+
+        // 把祖先节点补齐（保证树结构完整）
+        foreach (array_keys($includeIds) as $id) {
+            $pid = $idToPid[$id] ?? 0;
+            while ($pid && !isset($includeIds[$pid])) {
+                $includeIds[$pid] = true;
+                $pid = $idToPid[$pid] ?? 0;
+            }
+        }
+
+        $filtered = [];
+        foreach ($menusData as $item) {
+            $id = (int)($item['id'] ?? 0);
+            if ($id && isset($includeIds[$id])) {
+                $filtered[] = $item;
+            }
+        }
+        return $this->translateOverseasMenuTitles($filtered);
+    }
+
+    /**
+     * Overseas Lite：菜单标题英文化（基于 menu_path 前缀匹配）
+     */
+    protected function translateOverseasMenuTitles(array $menusData): array
+    {
+        $titleMap = (array)config('overseas.admin_menu_title_map', []);
+        if (!$titleMap) {
+            return $menusData;
+        }
+
+        $keys = array_keys($titleMap);
+        usort($keys, static function ($a, $b) {
+            return strlen($b) <=> strlen($a);
+        });
+
+        foreach ($menusData as &$item) {
+            $rawPath = $this->stripAdminPrefix((string)($item['menu_path'] ?? ''));
+            foreach ($keys as $prefix) {
+                if ($prefix !== '' && strpos($rawPath, $prefix) === 0) {
+                    $item['menu_name'] = $titleMap[$prefix];
+                    break;
+                }
+            }
+        }
+        unset($item);
+
+        return $menusData;
+    }
+
+    /**
+     * Overseas Lite：收敛权限点（unique_auth）以匹配被禁用的模块
+     */
+    protected function filterOverseasUniqueAuth(array $uniqueAuth): array
+    {
+        $denyPrefixes = (array)config('overseas.deny_unique_auth_prefixes', []);
+        if (!$denyPrefixes) {
+            return $uniqueAuth;
+        }
+        $filtered = [];
+        foreach ($uniqueAuth as $item) {
+            $item = (string)$item;
+            if ($item === '') {
+                continue;
+            }
+            if ($this->startsWithAny($item, $denyPrefixes)) {
+                continue;
+            }
+            $filtered[] = $item;
+        }
+        return array_values(array_unique($filtered));
+    }
 
     /**
      * 初始化
@@ -78,7 +215,14 @@ class SystemMenusServices extends BaseServices
         $rulesStr = Arr::unique($rules);
         $menusList = $this->dao->getMenusRoule(['route' => $level ? $rulesStr : '', 'is_show_path' => 1]);
         $unique = $this->dao->getMenusUnique(['unique' => $level ? $rulesStr : '']);
-        return [Arr::getMenuIviewList($this->getMenusData($menusList)), $unique];
+
+        $menusData = $this->getMenusData($menusList);
+        if ($this->isOverseasEnabled()) {
+            $menusData = $this->filterOverseasMenus($menusData);
+            $unique = $this->filterOverseasUniqueAuth($unique);
+        }
+
+        return [Arr::getMenuIviewList($menusData), $unique];
     }
 
     /**

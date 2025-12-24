@@ -47,8 +47,10 @@ Route::group(function () {
 Route::group(function () {
     //服务器信息
     Route::get('system/info', 'PublicController/getSystemInfo')->option(['real_name' => '服务器信息']);
-    //路由导入
-    Route::get('route/import_api', 'PublicController/import')->option(['real_name' => '路由导入']);
+    //路由导入（Overseas Lite 默认关闭，避免在线导入带来运维与安全复杂度）
+    if (!config('overseas.enabled', false)) {
+        Route::get('route/import_api', 'PublicController/import')->option(['real_name' => '路由导入']);
+    }
     //下载文件
     Route::get('download/[:key]', 'PublicController/download')->option(['real_name' => '下载文件']);
 })->middleware([

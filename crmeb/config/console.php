@@ -14,12 +14,13 @@
 // +----------------------------------------------------------------------
 return [
     // 执行用户（Windows下无效）
-    'user' => null,
+    "user" => null,
     // 指令定义
-    'commands' => [
-        'workerman' => \crmeb\command\Workerman::class,
-        'timer' => \crmeb\command\Timer::class,
-        'util' => \crmeb\command\Util::class,
-        'npm' => \crmeb\command\Npm::class
+    "commands" => [
+        "workerman" => \crmeb\command\Workerman::class,
+        "timer" => \crmeb\command\Timer::class,
+        "util" => \crmeb\command\Util::class,
+        "npm" => \crmeb\command\Npm::class,
+        "overseas:init" => \crmeb\command\OverseasInit::class,
     ],
 ];
