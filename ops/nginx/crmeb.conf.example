@@ -1,0 +1,43 @@
+server {
+    listen 80;
+    server_name example.com;
+
+    # 仓库根目录以 current 为例：/var/www/CRMEB/current/
+    root /var/www/CRMEB/current/crmeb/public;
+    index index.php index.html;
+
+    client_max_body_size 120m;
+    server_tokens off;
+
+    access_log /var/log/nginx/crmeb.access.log;
+    error_log  /var/log/nginx/crmeb.error.log;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # dotfiles / env / 版本控制文件禁止访问
+    location ~ /\.(?!well-known).* { deny all; }
+    location ~* /(composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|\.env(\..*)?)$ { deny all; }
+
+    # uploads 等目录禁止执行 PHP，避免上传 WebShell
+    location ~* ^/uploads/.*\.php$ { return 404; }
+    location ~* ^/(static|statics|assets)/.*\.php$ { return 404; }
+
+    location / {
+        if (!-e $request_filename) {
+            rewrite ^(.*)$ /index.php?s=$1 last;
+        }
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTP_PROXY "";
+
+        # 按你的环境修改：unix socket 或 TCP
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+        fastcgi_read_timeout 120s;
+    }
+}
