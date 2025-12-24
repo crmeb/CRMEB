@@ -17,6 +17,10 @@ https://www.runoob.com/docker/docker-compose.html
 
 运行命令：docker-compose up -d
 ```
+建议：先复制一份环境变量文件并修改密码（尤其是准备对外提供服务时）
+```
+cp .env.example .env
+```
 进入PHP容器启动队列、定时任务、长连接命令
 ```
 进入容器：docker exec -it crmeb_php /bin/bash
@@ -33,14 +37,14 @@ http://localhost:8011/
 Host:192.168.10.11
 Post:3306
 user:root
-pwd:123456
+pwd:见 docker-compose/.env（MYSQL_ROOT_PASSWORD）
 ```
 ### Redis信息：
 ```
 Host:192.168.10.10
 Post:6379
 db:0
-pwd:123456
+pwd:默认无密码（仅用于本地开发）；生产环境建议开启 requirepass 且不要对公网暴露
 ```
 ## 7、常见问题
 1. 端口被占用进入docker-compose.yml 里面修改端口
