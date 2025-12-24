@@ -105,7 +105,6 @@ class Workerman extends Command
         Worker::$pidFile = app()->getRootPath() . 'runtime/workerman.pid';
         Worker::$logFile = app()->getRootPath() . 'runtime/workerman.log';
         if (!$server || $server == 'admin') {
-            var_dump('admin');
             //创建 admin 长连接服务
             $this->workerServer = new Worker($this->config['admin']['protocol'] . '://' . $this->config['admin']['ip'] . ':' . $this->config['admin']['port'], $context);
             $this->workerServer->count = $this->config['admin']['serverCount'];
@@ -115,7 +114,6 @@ class Workerman extends Command
         }
 
         if (!$server || $server == 'chat') {
-            var_dump('chat');
             //创建 h5 chat 长连接服务
             $this->chatWorkerServer = new Worker($this->config['chat']['protocol'] . '://' . $this->config['chat']['ip'] . ':' . $this->config['chat']['port'], $context);
             $this->chatWorkerServer->count = $this->config['chat']['serverCount'];
@@ -125,7 +123,6 @@ class Workerman extends Command
         }
 
         if (!$server || $server == 'channel') {
-            var_dump('channel');
             //创建内部通讯服务
             $this->channelServer = new Server($this->config['channel']['ip'], $this->config['channel']['port']);
         }

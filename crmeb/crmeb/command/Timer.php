@@ -60,7 +60,7 @@ class Timer extends Command
         $this->init($input, $output);
         Worker::$pidFile = app()->getRootPath() . 'runtime/timer.pid';
         $task = new Worker();
-        date_default_timezone_set('PRC');
+        date_default_timezone_set(config('app.default_timezone', 'PRC'));
         $task->count = 1;
         $task->onWorkerStart = function () use ($task) {
             app()->make(SystemCrontabServices::class)->crontabCommandRun($task);
