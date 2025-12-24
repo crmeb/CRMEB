@@ -39,6 +39,8 @@ services:
     # image: redis:5.0
     ports:
       - "127.0.0.1:6379:6379"
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD:-}
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       # - ./redis/data:/data #挂载数据目录到本地
@@ -58,10 +60,10 @@ services:
     environment:
       TZ: UTC
     ports:
-      - 9000:9000
-      - 40001:40001
-      - 40002:40002
-      - 40003:40003
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:40001:40001"
+      - "127.0.0.1:40002:40002"
+      - "127.0.0.1:40003:40003"
     tmpfs: /var/temp #上传临时文件夹
     working_dir: /var/www
     volumes:
@@ -78,7 +80,7 @@ services:
     # image: daocloud.io/library/nginx:1.19.1-alpine
     restart: always
     ports:
-      - 8011:80
+      - "127.0.0.1:8011:80"
       # - 443:443
     # 依赖关系 先跑php
     depends_on:

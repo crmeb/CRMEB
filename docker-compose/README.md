@@ -21,6 +21,7 @@ https://www.runoob.com/docker/docker-compose.html
 ```
 cp .env.example .env
 ```
+说明：为避免误暴露，本仓库 `docker-compose` 默认将 MySQL/Redis/PHP-FPM/Nginx 端口仅绑定到 `127.0.0.1`（本机可访问）。
 进入PHP容器启动队列、定时任务、长连接命令
 ```
 进入容器：docker exec -it crmeb_php /bin/bash
@@ -39,6 +40,7 @@ Post:3306
 user:root
 pwd:见 docker-compose/.env（MYSQL_ROOT_PASSWORD）
 ```
+（宿主机访问：`127.0.0.1:3336`）
 ### Redis信息：
 ```
 Host:192.168.10.10
@@ -46,6 +48,11 @@ Post:6379
 db:0
 pwd:默认无密码（仅用于本地开发）；生产环境建议开启 requirepass 且不要对公网暴露
 ```
+（宿主机访问：`127.0.0.1:6379`）
+
+如需开启 Redis 密码：
+- 在对应的 `redis/redis.conf` 中取消注释 `requirepass` 并设置强密码
+- 同时在 `docker-compose/.env` 设置 `REDIS_PASSWORD` 为同一密码（用于 healthcheck 的 redis-cli 自动鉴权）
 ## 7、常见问题
 1. 端口被占用进入docker-compose.yml 里面修改端口
 
