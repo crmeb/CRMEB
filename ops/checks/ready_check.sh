@@ -10,23 +10,53 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 2
 fi
 
-get_kv() {
-  local key="$1"
-  # Matches: KEY=value (no spaces). ThinkPHP env is INI-like; this is a best-effort check.
-  grep -E "^${key}=" "${ENV_FILE}" | tail -n 1 | cut -d= -f2- || true
+get_ini_kv() {
+  local section="$1"
+  local key="$2"
+  awk -v want_section="${section}" -v want_key="${key}" '
+    BEGIN { cur=""; val="" }
+    /^[[:space:]]*;/ { next }
+    /^[[:space:]]*#/ { next }
+    /^[[:space:]]*\\[[^\\]]+\\][[:space:]]*$/ {
+      gsub(/^[[:space:]]*\\[|\\][[:space:]]*$/, "", $0)
+      cur=$0
+      next
+    }
+    {
+      line=$0
+      sub(/^[[:space:]]+/, "", line)
+      if (line ~ /^[A-Za-z0-9_]+[[:space:]]*=/) {
+        split(line, parts, "=")
+        k=parts[1]
+        gsub(/[[:space:]]+$/, "", k)
+        if (k == want_key && cur == want_section) {
+          sub(/^[^=]*=/, "", line)
+          gsub(/^[[:space:]]+/, "", line)
+          gsub(/[[:space:]]+$/, "", line)
+          val=line
+        }
+      }
+    }
+    END { print val }
+  ' "${ENV_FILE}" 2>/dev/null || true
 }
 
-APP_DEBUG="$(get_kv 'APP_DEBUG')"
-ALLOW_CUSTOM_CODE="$(get_kv 'ALLOW_CUSTOM_CRONTAB_CODE')"
-COOKIE_DOMAIN="$(get_kv 'DOMAIN')"
-ALLOWED_ORIGINS="$(get_kv 'ALLOWED_ORIGINS')"
-DB_PASSWORD="$(get_kv 'PASSWORD')"
-REDIS_PASSWORD="$(get_kv 'REDIS_PASSWORD')"
+get_global_kv() {
+  get_ini_kv "" "$1"
+}
+
+APP_DEBUG="$(get_global_kv 'APP_DEBUG')"
+ALLOW_CUSTOM_CODE="$(get_ini_kv 'SECURITY' 'ALLOW_CUSTOM_CRONTAB_CODE')"
+COOKIE_DOMAIN="$(get_ini_kv 'COOKIE' 'DOMAIN')"
+ALLOWED_ORIGINS="$(get_ini_kv 'CORS' 'ALLOWED_ORIGINS')"
+DB_PASSWORD="$(get_ini_kv 'DATABASE' 'PASSWORD')"
+REDIS_PASSWORD="$(get_ini_kv 'REDIS' 'REDIS_PASSWORD')"
 
 warn_count=0
 
 if [[ "${APP_DEBUG}" != "false" ]]; then
   echo "[WARN] APP_DEBUG is not false (current: ${APP_DEBUG:-<missing>})."
+  ((warn_count++)) || true
 fi
 
 if [[ "${ALLOW_CUSTOM_CODE}" == "true" ]]; then
@@ -53,6 +83,7 @@ if [[ "${APP_DEBUG}" == "false" ]]; then
   if [[ -z "${ALLOWED_ORIGINS}" && -z "${COOKIE_DOMAIN}" ]]; then
     echo "[WARN] CORS whitelist is empty (CORS.ALLOWED_ORIGINS and COOKIE.DOMAIN are both empty)."
     echo "       Cross-origin requests will be denied by default. Configure one of them if needed."
+    ((warn_count++)) || true
   fi
 fi
 
