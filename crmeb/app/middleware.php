@@ -9,6 +9,8 @@
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
 return [
+    // CORS 预检统一处理（生产默认收紧，避免 miss 路由绕过）
+    \app\http\middleware\CorsMiddleware::class,
     // 全局请求缓存
     // \think\middleware\CheckRequestCache::class,
     // 多语言加载

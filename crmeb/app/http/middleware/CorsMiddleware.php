@@ -16,33 +16,23 @@ use crmeb\interfaces\MiddlewareInterface;
 use crmeb\utils\Cors;
 use think\Response;
 
-/**
- * 跨域中间件
- * Class AllowOriginMiddleware
- * @package app\http\middleware
- */
-class AllowOriginMiddleware implements MiddlewareInterface
+class CorsMiddleware implements MiddlewareInterface
 {
-
-    /**
-     * @param Request $request
-     * @param \Closure $next
-     * @return Response
-     */
     public function handle(Request $request, \Closure $next)
     {
-        $origin = $request->header('origin');
+        $origin = $request->header("origin");
         $header = Cors::buildHeaders($origin);
 
-        if ($request->method(true) == 'OPTIONS') {
-            if ($origin && Cors::allowedOrigin($origin) === '') {
-                return Response::create('forbidden')->code(403)->header($header);
+        if ($request->method(true) === "OPTIONS") {
+            // 预检请求：无 Origin 的 OPTIONS 直接 200（不下发 Allow-Origin），避免影响非浏览器客户端。
+            // 有 Origin 且不在白名单：403。
+            if ($origin && Cors::allowedOrigin($origin) === "") {
+                return Response::create("forbidden")
+                    ->code(403)
+                    ->header($header);
             }
-            $response = Response::create('ok')->code(200)->header($header);
-        } else {
-            $response = $next($request)->header($header);
+            return Response::create("ok")->code(200)->header($header);
         }
-//        $request->filter(['strip_tags', 'addslashes', 'trim']);
-        return $response;
+        return $next($request);
     }
 }

@@ -106,8 +106,11 @@ Route::group(function () {
 
 Route::miss(function () {
     if (app()->request->isOptions()) {
-        $header = Config::get('cookie.header');
-        $header['Access-Control-Allow-Origin'] = app()->request->header('origin');
+        $origin = app()->request->header('origin');
+        $header = \crmeb\utils\Cors::buildHeaders($origin);
+        if ($origin && \crmeb\utils\Cors::allowedOrigin($origin) === '') {
+            return Response::create('forbidden')->code(403)->header($header);
+        }
         return Response::create('ok')->code(200)->header($header);
     } else
         return Response::create()->code(404);
