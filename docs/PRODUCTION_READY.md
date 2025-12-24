@@ -46,4 +46,4 @@
 **健康检查与回滚**
 - `GET /healthz`；`/healthz?deep=1`（失败 503，避免对公网暴露）
 - 发布回滚：保留上一个 release（见 `ops/deploy/`）
-- 自检脚本：`ops/checks/ready_check.sh`（上线前快速扫一遍关键风险项）
+- 自检脚本：`ops/checks/ready_check.sh`（上线前快速扫一遍关键风险项；需要先复制 `crmeb/.env.example` 为 `crmeb/.env`）

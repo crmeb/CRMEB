@@ -29,3 +29,6 @@
 ### 生产前自检（最小）
 
 - `ops/checks/ready_check.sh`：检查 `crmeb/.env` 的关键生产安全项（如 `APP_DEBUG`、自定义定时任务开关、CORS 白名单）
+  - 首次使用：复制 `crmeb/.env.example` 为 `crmeb/.env` 并按实际环境修改（仓库内的 `crmeb/.env` 仅为占位）
+  - 自检脚本不会修改任何配置，仅输出 WARN/FAIL 提示
+- `ops/checks/ready_check_test.sh`：ready-check 的最小自测用例（用于回归脚本解析逻辑）
