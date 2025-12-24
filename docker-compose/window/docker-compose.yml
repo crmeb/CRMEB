@@ -8,20 +8,19 @@ services:
       - 3336:3306
     # 环境变量
     environment:
-      TZ: Asia/Shanghai
-      MYSQL_ROOT_PASSWORD: '123456'
-      MYSQL_USER: 'crmeb'
-      MYSQL_PASS: '123456'
-      MYSQL_DATABASE: 'crmeb'
+      TZ: UTC
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_USER: "crmeb"
+      MYSQL_PASS: "123456"
+      MYSQL_DATABASE: "crmeb"
     privileged: true
-    command:
-       --character-set-server=utf8mb4
-       --collation-server=utf8mb4_general_ci
-       --explicit_defaults_for_timestamp=true
-       --lower_case_table_names=1
-       --max_allowed_packet=128M
-       --default-authentication-plugin=mysql_native_password
-       --sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+    command: --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=128M
+      --default-authentication-plugin=mysql_native_password
+      --sql-mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
     working_dir: /var/lib/mysql
     volumes:
       - ./mysql/my.cnf:/etc/mysql/my.cnf
@@ -34,7 +33,7 @@ services:
   # redis 容器
   redis:
     container_name: crmeb_redis
-    image: 'redis:alpine'
+    image: "redis:alpine"
     # image: daocloud.io/library/redis:6.0.5-alpine
     # image: redis:5.0
     ports:
@@ -56,7 +55,7 @@ services:
       dockerfile: Dockerfile #制定dockerfile文件名称
     restart: always
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
     ports:
       - 9000:9000
       - 40001:40001
@@ -67,15 +66,15 @@ services:
     volumes:
       - ../../crmeb:/var/www #程序运行目录
       - ../../crmeb/runtime:/var/www/temp #程序缓存目录
-      - ./php/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+      - ./php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
     networks:
       app_net:
         ipv4_address: 192.168.10.90
-#    command: /bin/bash -c "php -v"
+  #    command: /bin/bash -c "php -v"
   # nginx 容器
   nginx:
     container_name: crmeb_nginx
-    image: 'nginx:alpine'
+    image: "nginx:alpine"
     # image: daocloud.io/library/nginx:1.19.1-alpine
     restart: always
     ports:
@@ -85,7 +84,7 @@ services:
     depends_on:
       - phpfpm
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
     working_dir: /var/www
     volumes_from:
       - phpfpm #继承phpfpm挂载目录
@@ -102,4 +101,3 @@ networks: #网络配置
       driver: default
       config:
         - subnet: 192.168.10.0/24 #IP区间
-

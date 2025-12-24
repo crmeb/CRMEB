@@ -39,7 +39,7 @@ return [
 
     'app_express'      => true,
     // 默认时区
-    'default_timezone' => 'Asia/Shanghai',
+    'default_timezone' => Env::get('app.timezone', 'Asia/Shanghai'),
     // 异常页面的模板文件
     'exception_tmpl'   => app()->getRootPath() . 'public/statics/exception.tpl',
     // 错误显示信息,非调试模式有效

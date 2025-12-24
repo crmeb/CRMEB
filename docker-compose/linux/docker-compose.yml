@@ -9,7 +9,7 @@ services:
       - 3336:3306
     # 环境变量
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
       MYSQL_ROOT_PASSWORD: "123456"
       MYSQL_USER: "crmeb"
       MYSQL_PASS: "123456"
@@ -56,7 +56,7 @@ services:
       dockerfile: Dockerfile #制定dockerfile文件名称
     restart: always
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
     ports:
       - 9000:9000
       - 40001:40001
@@ -67,7 +67,7 @@ services:
     volumes:
       - ../../crmeb:/var/www #程序运行目录
       - ../../crmeb/runtime:/var/www/temp #程序缓存目录
-      - ./php/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+      - ./php/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
     networks:
       app_net:
         ipv4_address: 192.168.10.90
@@ -84,7 +84,7 @@ services:
     depends_on:
       - phpfpm
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
     working_dir: /var/www
     volumes_from:
       - phpfpm #继承phpfpm挂载目录
@@ -101,4 +101,3 @@ networks: #网络配置
       driver: default
       config:
         - subnet: 192.168.10.0/24 #IP区间
-
