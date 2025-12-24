@@ -12,6 +12,7 @@ use app\services\order\StoreOrderTakeServices;
 use app\services\product\product\StoreProductServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\user\UserSignServices;
+use think\facade\Env;
 use think\facade\Log;
 
 /**
@@ -255,6 +256,11 @@ class CrontabRunServices
      */
     public function customTimer($customCode = '')
     {
+        if (!Env::get('security.allow_custom_crontab_code', false)) {
+            $this->crontabLog(' 自定义定时器已被禁用（[SECURITY] ALLOW_CUSTOM_CRONTAB_CODE=false）');
+            return;
+        }
+
         try {
             eval($customCode);
             $this->crontabLog(' 自定义定时器执行成功');
