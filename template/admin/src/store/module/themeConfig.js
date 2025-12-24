@@ -12,9 +12,9 @@ const themeConfigModule = {
        * 全局主题
        */
       // 默认 primary 主题颜色
-      primary: '#409eff',
+      primary: '#ff9900',
       // 菜单背景色
-      menuBgColor: '#282c34',
+      menuBgColor: '#232f3e',
       // 是否开启深色模式
       isIsDark: false,
       themeStyle: 'theme-1',
@@ -26,13 +26,13 @@ const themeConfigModule = {
       // 默认顶栏导航背景颜色
       topBar: '#ffffff',
       // 默认顶栏导航字体颜色
-      topBarColor: '#606266',
+      topBarColor: '#232f3e',
       // 默认菜单导航背景颜色
-      menuBar: '#282c34',
+      menuBar: '#232f3e',
       // 默认菜单导航字体颜色
       menuBarColor: '#eaeaea',
       // 默认分栏菜单背景颜色
-      columnsMenuBar: '#282c34',
+      columnsMenuBar: '#232f3e',
       // 默认分栏菜单字体颜色
       columnsMenuBarColor: '#e6e6e6',
 
@@ -93,13 +93,13 @@ const themeConfigModule = {
        * 全局网站标题 / 副标题
        */
       // 网站主标题（菜单导航、浏览器当前网页标题）
-      globalTitle: 'crmeb-admin',
+      globalTitle: 'overseas-admin',
       // 网站副标题（登录页顶部文字）
       globalViceTitle: '',
       // 网站描述（登录页顶部文字）
-      globalViceDes: 'vue2',
+      globalViceDes: '',
       // 默认初始语言，可选值"<zh-cn|en|zh-tw>"，默认 zh-cn
-      globalI18n: 'zh-cn',
+      globalI18n: 'en',
       // 默认全局组件大小，可选值"<|medium|small|mini>"，默认 ''
       globalComponentSize: '',
     },

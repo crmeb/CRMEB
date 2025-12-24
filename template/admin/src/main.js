@@ -91,7 +91,8 @@ Vue.component('Pagination', Pagination);
 Vue.component('pagesHeader', pagesHeader);
 
 // 配置第三方库
-moment.locale('zh-cn');
+const locale = store.state.themeConfig?.themeConfig?.globalI18n || 'zh-cn';
+moment.locale(locale === 'en' ? 'en' : locale);
 Vue.prototype.$moment = moment;
 
 VueClipboard.config.copyText = true;
@@ -187,18 +188,22 @@ Object.keys(filters).forEach((key) => {
   Vue.filter(key, filters[key]);
 });
 
-// 添加统计脚本
-(function () {
-  var hm = document.createElement('script');
-  hm.src = 'https://cdn.oss.9gt.net/js/es.js?version=bzv5.6.1';
-  var s = document.getElementsByTagName('script')[0];
-  s.parentNode.insertBefore(hm, s);
-})();
+// 添加统计脚本（Overseas Lite 默认不加载）
+if (localStorage.getItem('overseasLiteThemeApplied') !== '1') {
+  (function () {
+    var hm = document.createElement('script');
+    hm.src = 'https://cdn.oss.9gt.net/js/es.js?version=bzv5.6.1';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+}
 
-// 添加crmeb chat 统计
+// 自定义脚本（海外版仍可使用，用于注入自定义样式/行为；不强依赖 CRMEB 统计）
 fetch(`${settings.apiBaseURL}/custom_admin_js`)
   .then((response) => response.text())
   .then((content) => {
+    if (!content || !content.trim()) return;
+
     // 尝试解析是否为HTML（带<script>标签）
     const isHTML = content.trim().startsWith('<script');
 
