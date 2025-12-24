@@ -10,6 +10,12 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 2
 fi
 
+if ! grep -Eq '^[A-Za-z0-9_]+[[:space:]]*=' "${ENV_FILE}"; then
+  echo "[FAIL] Env file looks like a placeholder: ${ENV_FILE}"
+  echo "       Copy and edit: ${ROOT_DIR}/crmeb/.env.example"
+  exit 2
+fi
+
 get_ini_kv() {
   local section="$1"
   local key="$2"
