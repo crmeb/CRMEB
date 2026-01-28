@@ -3,13 +3,68 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## Unreleased
 
-## [1.7.0] - 2020-09-30
+## 1.9.1 - 2023-04-17
+
+### Fixed
+
+- Fixed header validation issue
+
+## 1.9.0 - 2022-06-20
+
+### Added
+
+- Added `UriComparator::isCrossOrigin` method
+
+## 1.8.5 - 2022-03-20
+
+### Fixed
+
+- Correct header value validation
+
+## 1.8.4 - 2022-03-20
+
+### Fixed
+
+- Validate header values properly
+
+## 1.8.3 - 2021-10-05
+
+### Fixed
+
+- Return `null` in caching stream size if remote size is `null`
+
+## 1.8.2 - 2021-04-26
+
+### Fixed
+
+- Handle possibly unset `url` in `stream_get_meta_data`
+
+## 1.8.1 - 2021-03-21
+
+### Fixed
+
+- Issue parsing IPv6 URLs
+- Issue modifying ServerRequest lost all its attributes
+
+## 1.8.0 - 2021-03-21
+
+### Added
+
+- Locale independent URL parsing
+- Most classes got a `@final` annotation to prepare for 2.0
+
+### Fixed
+
+- Issue when creating stream from `php://input` and curl-ext is not installed
+- Broken `Utils::tryFopen()` on PHP 8
+
+## 1.7.0 - 2020-09-30
 
 ### Added
 
@@ -253,7 +308,6 @@ Currently unsupported:
 
 
 
-[Unreleased]: https://github.com/guzzle/psr7/compare/1.6.0...HEAD
 [1.6.0]: https://github.com/guzzle/psr7/compare/1.5.2...1.6.0
 [1.5.2]: https://github.com/guzzle/psr7/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/guzzle/psr7/compare/1.5.0...1.5.1

@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Promise;
 
 /**
@@ -13,9 +14,10 @@ class FulfilledPromise implements PromiseInterface
 
     public function __construct($value)
     {
-        if (method_exists($value, 'then')) {
+        if (is_object($value) && method_exists($value, 'then')) {
             throw new \InvalidArgumentException(
-                'You cannot create a FulfilledPromise with a promise.');
+                'You cannot create a FulfilledPromise with a promise.'
+            );
         }
 
         $this->value = $value;
@@ -30,11 +32,11 @@ class FulfilledPromise implements PromiseInterface
             return $this;
         }
 
-        $queue = queue();
+        $queue = Utils::queue();
         $p = new Promise([$queue, 'run']);
         $value = $this->value;
         $queue->add(static function () use ($p, $value, $onFulfilled) {
-            if ($p->getState() === self::PENDING) {
+            if (Is::pending($p)) {
                 try {
                     $p->resolve($onFulfilled($value));
                 } catch (\Throwable $e) {

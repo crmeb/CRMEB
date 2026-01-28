@@ -17,7 +17,7 @@ class Request implements RequestInterface
     /** @var string */
     private $method;
 
-    /** @var null|string */
+    /** @var string|null */
     private $requestTarget;
 
     /** @var UriInterface */
@@ -27,7 +27,7 @@ class Request implements RequestInterface
      * @param string                               $method  HTTP method
      * @param string|UriInterface                  $uri     URI
      * @param array                                $headers Request headers
-     * @param string|null|resource|StreamInterface $body    Request body
+     * @param string|resource|StreamInterface|null $body    Request body
      * @param string                               $version Protocol version
      */
     public function __construct(

@@ -41,8 +41,7 @@
         "phpoffice/phpspreadsheet": "^1.12",
         "godruoyi/php-snowflake": "^1.0",
         "qcloud_sts/qcloud-sts-sdk": "^3.0",
-        "guzzlehttp/psr7": "^1.7",
-        "guzzlehttp/guzzle": "6.5.5",
+        "guzzlehttp/guzzle": "6.5.8",
         "alipaysdk/easysdk": "2.0",
         "lizhichao/word": "^2.1",
         "alibabacloud/dysmsapi-20170525": "2.0.16",
@@ -63,8 +62,10 @@
         }
     },
     "config": {
+        "optimize-autoloader": true,
         "preferred-install": "dist",
-        "platform-check": false
+        "platform-check": false,
+        "sort-packages": true
     },
     "scripts": {
         "post-autoload-dump": [

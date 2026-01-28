@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Promise;
 
 /**
@@ -17,18 +18,12 @@ namespace GuzzleHttp\Promise;
  * @param TaskQueueInterface $assign Optionally specify a new queue instance.
  *
  * @return TaskQueueInterface
+ *
+ * @deprecated queue will be removed in guzzlehttp/promises:2.0. Use Utils::queue instead.
  */
 function queue(TaskQueueInterface $assign = null)
 {
-    static $queue;
-
-    if ($assign) {
-        $queue = $assign;
-    } elseif (!$queue) {
-        $queue = new TaskQueue();
-    }
-
-    return $queue;
+    return Utils::queue($assign);
 }
 
 /**
@@ -38,22 +33,12 @@ function queue(TaskQueueInterface $assign = null)
  * @param callable $task Task function to run.
  *
  * @return PromiseInterface
+ *
+ * @deprecated task will be removed in guzzlehttp/promises:2.0. Use Utils::task instead.
  */
 function task(callable $task)
 {
-    $queue = queue();
-    $promise = new Promise([$queue, 'run']);
-    $queue->add(function () use ($task, $promise) {
-        try {
-            $promise->resolve($task());
-        } catch (\Throwable $e) {
-            $promise->reject($e);
-        } catch (\Exception $e) {
-            $promise->reject($e);
-        }
-    });
-
-    return $promise;
+    return Utils::task($task);
 }
 
 /**
@@ -62,23 +47,12 @@ function task(callable $task)
  * @param mixed $value Promise or value.
  *
  * @return PromiseInterface
+ *
+ * @deprecated promise_for will be removed in guzzlehttp/promises:2.0. Use Create::promiseFor instead.
  */
 function promise_for($value)
 {
-    if ($value instanceof PromiseInterface) {
-        return $value;
-    }
-
-    // Return a Guzzle promise that shadows the given promise.
-    if (method_exists($value, 'then')) {
-        $wfn = method_exists($value, 'wait') ? [$value, 'wait'] : null;
-        $cfn = method_exists($value, 'cancel') ? [$value, 'cancel'] : null;
-        $promise = new Promise($wfn, $cfn);
-        $value->then([$promise, 'resolve'], [$promise, 'reject']);
-        return $promise;
-    }
-
-    return new FulfilledPromise($value);
+    return Create::promiseFor($value);
 }
 
 /**
@@ -88,14 +62,12 @@ function promise_for($value)
  * @param mixed $reason Promise or reason.
  *
  * @return PromiseInterface
+ *
+ * @deprecated rejection_for will be removed in guzzlehttp/promises:2.0. Use Create::rejectionFor instead.
  */
 function rejection_for($reason)
 {
-    if ($reason instanceof PromiseInterface) {
-        return $reason;
-    }
-
-    return new RejectedPromise($reason);
+    return Create::rejectionFor($reason);
 }
 
 /**
@@ -104,12 +76,12 @@ function rejection_for($reason)
  * @param mixed $reason
  *
  * @return \Exception|\Throwable
+ *
+ * @deprecated exception_for will be removed in guzzlehttp/promises:2.0. Use Create::exceptionFor instead.
  */
 function exception_for($reason)
 {
-    return $reason instanceof \Exception || $reason instanceof \Throwable
-        ? $reason
-        : new RejectionException($reason);
+    return Create::exceptionFor($reason);
 }
 
 /**
@@ -118,16 +90,12 @@ function exception_for($reason)
  * @param mixed $value
  *
  * @return \Iterator
+ *
+ * @deprecated iter_for will be removed in guzzlehttp/promises:2.0. Use Create::iterFor instead.
  */
 function iter_for($value)
 {
-    if ($value instanceof \Iterator) {
-        return $value;
-    } elseif (is_array($value)) {
-        return new \ArrayIterator($value);
-    } else {
-        return new \ArrayIterator([$value]);
-    }
+    return Create::iterFor($value);
 }
 
 /**
@@ -143,21 +111,12 @@ function iter_for($value)
  * @param PromiseInterface $promise Promise or value.
  *
  * @return array
+ *
+ * @deprecated inspect will be removed in guzzlehttp/promises:2.0. Use Utils::inspect instead.
  */
 function inspect(PromiseInterface $promise)
 {
-    try {
-        return [
-            'state' => PromiseInterface::FULFILLED,
-            'value' => $promise->wait()
-        ];
-    } catch (RejectionException $e) {
-        return ['state' => PromiseInterface::REJECTED, 'reason' => $e->getReason()];
-    } catch (\Throwable $e) {
-        return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
-    } catch (\Exception $e) {
-        return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
-    }
+    return Utils::inspect($promise);
 }
 
 /**
@@ -166,19 +125,17 @@ function inspect(PromiseInterface $promise)
  *
  * Returns an array of inspection state arrays.
  *
+ * @see inspect for the inspection state array format.
+ *
  * @param PromiseInterface[] $promises Traversable of promises to wait upon.
  *
  * @return array
- * @see GuzzleHttp\Promise\inspect for the inspection state array format.
+ *
+ * @deprecated inspect will be removed in guzzlehttp/promises:2.0. Use Utils::inspectAll instead.
  */
 function inspect_all($promises)
 {
-    $results = [];
-    foreach ($promises as $key => $promise) {
-        $results[$key] = inspect($promise);
-    }
-
-    return $results;
+    return Utils::inspectAll($promises);
 }
 
 /**
@@ -188,20 +145,18 @@ function inspect_all($promises)
  * the promises were provided). An exception is thrown if any of the promises
  * are rejected.
  *
- * @param mixed $promises Iterable of PromiseInterface objects to wait on.
+ * @param iterable<PromiseInterface> $promises Iterable of PromiseInterface objects to wait on.
  *
  * @return array
+ *
  * @throws \Exception on error
  * @throws \Throwable on error in PHP >=7
+ *
+ * @deprecated unwrap will be removed in guzzlehttp/promises:2.0. Use Utils::unwrap instead.
  */
 function unwrap($promises)
 {
-    $results = [];
-    foreach ($promises as $key => $promise) {
-        $results[$key] = $promise->wait();
-    }
-
-    return $results;
+    return Utils::unwrap($promises);
 }
 
 /**
@@ -212,25 +167,16 @@ function unwrap($promises)
  * respective positions to the original array. If any promise in the array
  * rejects, the returned promise is rejected with the rejection reason.
  *
- * @param mixed $promises Promises or values.
+ * @param mixed $promises  Promises or values.
+ * @param bool  $recursive If true, resolves new promises that might have been added to the stack during its own resolution.
  *
  * @return PromiseInterface
+ *
+ * @deprecated all will be removed in guzzlehttp/promises:2.0. Use Utils::all instead.
  */
-function all($promises)
+function all($promises, $recursive = false)
 {
-    $results = [];
-    return each(
-        $promises,
-        function ($value, $idx) use (&$results) {
-            $results[$idx] = $value;
-        },
-        function ($reason, $idx, Promise $aggregate) {
-            $aggregate->reject($reason);
-        }
-    )->then(function () use (&$results) {
-        ksort($results);
-        return $results;
-    });
+    return Utils::all($promises, $recursive);
 }
 
 /**
@@ -241,45 +187,19 @@ function all($promises)
  * fulfilled with an array that contains the fulfillment values of the winners
  * in order of resolution.
  *
- * This prommise is rejected with a {@see GuzzleHttp\Promise\AggregateException}
- * if the number of fulfilled promises is less than the desired $count.
+ * This promise is rejected with a {@see AggregateException} if the number of
+ * fulfilled promises is less than the desired $count.
  *
  * @param int   $count    Total number of promises.
  * @param mixed $promises Promises or values.
  *
  * @return PromiseInterface
+ *
+ * @deprecated some will be removed in guzzlehttp/promises:2.0. Use Utils::some instead.
  */
 function some($count, $promises)
 {
-    $results = [];
-    $rejections = [];
-
-    return each(
-        $promises,
-        function ($value, $idx, PromiseInterface $p) use (&$results, $count) {
-            if ($p->getState() !== PromiseInterface::PENDING) {
-                return;
-            }
-            $results[$idx] = $value;
-            if (count($results) >= $count) {
-                $p->resolve(null);
-            }
-        },
-        function ($reason) use (&$rejections) {
-            $rejections[] = $reason;
-        }
-    )->then(
-        function () use (&$results, &$rejections, $count) {
-            if (count($results) !== $count) {
-                throw new AggregateException(
-                    'Not enough promises to fulfill count',
-                    $rejections
-                );
-            }
-            ksort($results);
-            return array_values($results);
-        }
-    );
+    return Utils::some($count, $promises);
 }
 
 /**
@@ -289,10 +209,12 @@ function some($count, $promises)
  * @param mixed $promises Promises or values.
  *
  * @return PromiseInterface
+ *
+ * @deprecated any will be removed in guzzlehttp/promises:2.0. Use Utils::any instead.
  */
 function any($promises)
 {
-    return some(1, $promises)->then(function ($values) { return $values[0]; });
+    return Utils::any($promises);
 }
 
 /**
@@ -301,27 +223,17 @@ function any($promises)
  *
  * The returned promise is fulfilled with an array of inspection state arrays.
  *
+ * @see inspect for the inspection state array format.
+ *
  * @param mixed $promises Promises or values.
  *
  * @return PromiseInterface
- * @see GuzzleHttp\Promise\inspect for the inspection state array format.
+ *
+ * @deprecated settle will be removed in guzzlehttp/promises:2.0. Use Utils::settle instead.
  */
 function settle($promises)
 {
-    $results = [];
-
-    return each(
-        $promises,
-        function ($value, $idx) use (&$results) {
-            $results[$idx] = ['state' => PromiseInterface::FULFILLED, 'value' => $value];
-        },
-        function ($reason, $idx) use (&$results) {
-            $results[$idx] = ['state' => PromiseInterface::REJECTED, 'reason' => $reason];
-        }
-    )->then(function () use (&$results) {
-        ksort($results);
-        return $results;
-    });
+    return Utils::settle($promises);
 }
 
 /**
@@ -329,29 +241,28 @@ function settle($promises)
  * fulfilled with a null value when the iterator has been consumed or the
  * aggregate promise has been fulfilled or rejected.
  *
- * $onFulfilled is a function that accepts the fulfilled value, iterator
- * index, and the aggregate promise. The callback can invoke any necessary side
- * effects and choose to resolve or reject the aggregate promise if needed.
+ * $onFulfilled is a function that accepts the fulfilled value, iterator index,
+ * and the aggregate promise. The callback can invoke any necessary side
+ * effects and choose to resolve or reject the aggregate if needed.
  *
- * $onRejected is a function that accepts the rejection reason, iterator
- * index, and the aggregate promise. The callback can invoke any necessary side
- * effects and choose to resolve or reject the aggregate promise if needed.
+ * $onRejected is a function that accepts the rejection reason, iterator index,
+ * and the aggregate promise. The callback can invoke any necessary side
+ * effects and choose to resolve or reject the aggregate if needed.
  *
  * @param mixed    $iterable    Iterator or array to iterate over.
  * @param callable $onFulfilled
  * @param callable $onRejected
  *
  * @return PromiseInterface
+ *
+ * @deprecated each will be removed in guzzlehttp/promises:2.0. Use Each::of instead.
  */
 function each(
     $iterable,
     callable $onFulfilled = null,
     callable $onRejected = null
 ) {
-    return (new EachPromise($iterable, [
-        'fulfilled' => $onFulfilled,
-        'rejected'  => $onRejected
-    ]))->promise();
+    return Each::of($iterable, $onFulfilled, $onRejected);
 }
 
 /**
@@ -368,6 +279,8 @@ function each(
  * @param callable     $onRejected
  *
  * @return PromiseInterface
+ *
+ * @deprecated each_limit will be removed in guzzlehttp/promises:2.0. Use Each::ofLimit instead.
  */
 function each_limit(
     $iterable,
@@ -375,11 +288,7 @@ function each_limit(
     callable $onFulfilled = null,
     callable $onRejected = null
 ) {
-    return (new EachPromise($iterable, [
-        'fulfilled'   => $onFulfilled,
-        'rejected'    => $onRejected,
-        'concurrency' => $concurrency
-    ]))->promise();
+    return Each::ofLimit($iterable, $concurrency, $onFulfilled, $onRejected);
 }
 
 /**
@@ -392,66 +301,63 @@ function each_limit(
  * @param callable     $onFulfilled
  *
  * @return PromiseInterface
+ *
+ * @deprecated each_limit_all will be removed in guzzlehttp/promises:2.0. Use Each::ofLimitAll instead.
  */
 function each_limit_all(
     $iterable,
     $concurrency,
     callable $onFulfilled = null
 ) {
-    return each_limit(
-        $iterable,
-        $concurrency,
-        $onFulfilled,
-        function ($reason, $idx, PromiseInterface $aggregate) {
-            $aggregate->reject($reason);
-        }
-    );
+    return Each::ofLimitAll($iterable, $concurrency, $onFulfilled);
 }
 
 /**
  * Returns true if a promise is fulfilled.
  *
- * @param PromiseInterface $promise
- *
  * @return bool
+ *
+ * @deprecated is_fulfilled will be removed in guzzlehttp/promises:2.0. Use Is::fulfilled instead.
  */
 function is_fulfilled(PromiseInterface $promise)
 {
-    return $promise->getState() === PromiseInterface::FULFILLED;
+    return Is::fulfilled($promise);
 }
 
 /**
  * Returns true if a promise is rejected.
  *
- * @param PromiseInterface $promise
- *
  * @return bool
+ *
+ * @deprecated is_rejected will be removed in guzzlehttp/promises:2.0. Use Is::rejected instead.
  */
 function is_rejected(PromiseInterface $promise)
 {
-    return $promise->getState() === PromiseInterface::REJECTED;
+    return Is::rejected($promise);
 }
 
 /**
  * Returns true if a promise is fulfilled or rejected.
  *
- * @param PromiseInterface $promise
- *
  * @return bool
+ *
+ * @deprecated is_settled will be removed in guzzlehttp/promises:2.0. Use Is::settled instead.
  */
 function is_settled(PromiseInterface $promise)
 {
-    return $promise->getState() !== PromiseInterface::PENDING;
+    return Is::settled($promise);
 }
 
 /**
+ * Create a new coroutine.
+ *
  * @see Coroutine
  *
- * @param callable $generatorFn
- *
  * @return PromiseInterface
+ *
+ * @deprecated coroutine will be removed in guzzlehttp/promises:2.0. Use Coroutine::of instead.
  */
 function coroutine(callable $generatorFn)
 {
-    return new Coroutine($generatorFn);
+    return Coroutine::of($generatorFn);
 }

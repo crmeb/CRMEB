@@ -11,6 +11,8 @@ use Psr\Http\Message\StreamInterface;
  * This stream returns a "hwm" metadata value that tells upstream consumers
  * what the configured high water mark of the stream is, or the maximum
  * preferred size of the buffer.
+ *
+ * @final
  */
 class BufferStream implements StreamInterface
 {

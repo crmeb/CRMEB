@@ -34,7 +34,9 @@ final class Query
         } elseif ($urlEncoding === PHP_QUERY_RFC1738) {
             $decoder = 'urldecode';
         } else {
-            $decoder = function ($str) { return $str; };
+            $decoder = function ($str) {
+                return $str;
+            };
         }
 
         foreach (explode('&', $str) as $kvp) {
@@ -65,6 +67,7 @@ final class Query
      * @param int|false $encoding Set to false to not encode, PHP_QUERY_RFC3986
      *                            to encode using RFC3986, or PHP_QUERY_RFC1738
      *                            to encode using RFC1738.
+     *
      * @return string
      */
     public static function build(array $params, $encoding = PHP_QUERY_RFC3986)
@@ -74,7 +77,9 @@ final class Query
         }
 
         if ($encoding === false) {
-            $encoder = function ($str) { return $str; };
+            $encoder = function ($str) {
+                return $str;
+            };
         } elseif ($encoding === PHP_QUERY_RFC3986) {
             $encoder = 'rawurlencode';
         } elseif ($encoding === PHP_QUERY_RFC1738) {
