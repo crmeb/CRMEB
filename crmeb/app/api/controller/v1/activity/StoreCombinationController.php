@@ -125,6 +125,7 @@ class StoreCombinationController
         /** @var QrcodeServices $qrcodeService */
         $qrcodeService = app()->make(QrcodeServices::class);
         $url = $qrcodeService->getRoutineQrcodePath($id, $request->uid(), 1);
+        if ($url === 'unpublished') $url = '';
         if ($url) {
             return app('json')->success(['code' => $url]);
         } else {

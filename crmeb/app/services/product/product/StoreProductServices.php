@@ -670,6 +670,10 @@ class StoreProductServices extends BaseServices
                 $data['activity'][$k] = 0;
             }
         }
+        foreach ($detail as &$item) {
+            $item['is_default_select'] = (int)($item['is_default_select'] ?? 0);
+        }
+        unset($item);
 
         if ($data['spec_type'] == 1) {
             $defaultItems = array_filter($detail, function ($item) {
@@ -684,6 +688,7 @@ class StoreProductServices extends BaseServices
                 $filtered = array_filter($detail, function ($item) {
                     return $item['is_show'] == 1;
                 });
+                $data['default_sku'] = '';
                 $data['price'] = min(array_column($filtered, 'price'));
                 $data['ot_price'] = min(array_column($filtered, 'ot_price'));
                 $data['cost'] = isset($data['cost']) ? min(array_column($filtered, 'cost')) : 0;
@@ -1130,6 +1135,7 @@ class StoreProductServices extends BaseServices
             $valueNew[$count]['brokerage'] = $sukValue[$suk]['brokerage'] ? floatval($sukValue[$suk]['brokerage']) : 0;
             $valueNew[$count]['brokerage_two'] = $sukValue[$suk]['brokerage_two'] ? floatval($sukValue[$suk]['brokerage_two']) : 0;
             $valueNew[$count]['vip_price'] = $sukValue[$suk]['vip_price'] ? floatval($sukValue[$suk]['vip_price']) : 0;
+            $valueNew[$count]['is_default_select'] = (int)($sukValue[$suk]['is_default_select'] ?? 0);
             $count++;
         }
         $header[] = ['title' => '图片', 'slot' => 'pic', 'align' => 'center', 'minWidth' => 120];
@@ -2201,18 +2207,51 @@ class StoreProductServices extends BaseServices
         if (!$id || !$this->isValidProduct($id, 'id')) {
             throw new ApiException('商品不存在');
         }
-        if ($userType == 'routine') {
+        try {
             /** @var QrcodeServices $qrcodeService */
             $qrcodeService = app()->make(QrcodeServices::class);
-            $url = $qrcodeService->getRoutineQrcodePath($id, $user['uid'], 0, ['is_promoter' => $user['is_promoter']]);
-            if (!$url) {
-                throw new ApiException('二维码生成失败');
-            } else {
+            $uid = (int)($user['uid'] ?? 0);
+            $isPromoter = (int)($user['is_promoter'] ?? 0);
+            if ($userType == 'routine') {
+                if (!sys_config('routine_appId') || !sys_config('routine_appsecret')) {
+                    throw new ApiException('请先配置小程序appid、appSecret等参数');
+                }
+                $url = $qrcodeService->getRoutineQrcodePath($id, $uid, 0, ['is_promoter' => $isPromoter]);
                 if ($url == 'unpublished') throw new ApiException('小程序尚未发布,无法生成商品海报');
+                if (!$url) throw new ApiException('二维码生成失败');
                 return $url;
             }
+            if ($userType == 'wechat') {
+                if (sys_config('share_qrcode', 0)) {
+                    if (!sys_config('wechat_appid') || !sys_config('wechat_appsecret')) {
+                        throw new ApiException('请先配置公众号appid、appSecret等参数');
+                    }
+                    $url = $qrcodeService->getTemporaryQrcode('product-' . $id, $uid)->url;
+                    if (!$url) throw new ApiException('二维码生成失败');
+                    return $url;
+                }
+                $userType = 'h5';
+            }
+            if ($userType == 'h5') {
+                if (trim((string)sys_config('site_url')) === '') {
+                    throw new ApiException('请前往后台设置->系统设置->网站域名 填写您的域名格式为：http://域名');
+                }
+                $name = $id . '_' . $uid . '_' . $isPromoter . '_product_wap.jpg';
+                $link = '/pages/goods_details/index?id=' . $id;
+                if ($uid) {
+                    $link .= '&spread=' . $uid;
+                }
+                $url = $qrcodeService->getWechatQrcodePath($name, $link);
+                if (!$url) throw new ApiException('二维码生成失败');
+                return $url;
+            }
+            throw new ApiException('暂不支持该类型二维码');
+        } catch (\Throwable $e) {
+            if ($e instanceof ApiException) {
+                throw $e;
+            }
+            throw new ApiException($e->getMessage() ?: '二维码生成失败');
         }
-        return '';
     }
 
     /**

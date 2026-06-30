@@ -2680,6 +2680,7 @@ HTML;
             /** @var QrcodeServices $qrcodeService */
             $qrcodeService = app()->make(QrcodeServices::class);
             $orderData['gift_code'] = $qrcodeService->getRoutineQrcodePath($order['id'], $order['uid'], 7, ['gift_key' => $orderData['gift_key']]);
+            if ($orderData['gift_code'] === 'unpublished') $orderData['gift_code'] = '';
         }
         $orderData['avatar'] = set_file_url($orderData['avatar']);
         return $orderData;

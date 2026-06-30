@@ -348,6 +348,14 @@ class UserBillController
     public function getRoutineCode(Request $request)
     {
         $user = $request->user();
+        $routineAppId = trim((string)sys_config('routine_appId', ''));
+        $routineAppSecret = trim((string)sys_config('routine_appsecret', ''));
+        if (!$routineAppId || !$routineAppSecret) {
+            return app('json')->fail('请先配置小程序appid、appSecret等参数');
+        }
+        if (!preg_match('/^wx[a-zA-Z0-9]{16}$/', $routineAppId)) {
+            return app('json')->fail('小程序appid配置错误');
+        }
         /** @var SystemAttachmentServices $systemAttachment */
         $systemAttachment = app()->make(SystemAttachmentServices::class);
         //小程序
@@ -362,8 +370,15 @@ class UserBillController
         /** @var QrcodeServices $qrCode */
         $qrCode = app()->make(QrcodeServices::class);
         if (!$imageInfo) {
-            $resForever = $qrCode->qrCodeForever($user['uid'], 'spread', '', '');
-            $resCode = MiniProgramService::appCodeUnlimitService($resForever->id, '', 280);
+            try {
+                $resForever = $qrCode->qrCodeForever($user['uid'], 'spread', '', '');
+                $resCode = MiniProgramService::appCodeUnlimitService($resForever->id, '', 280);
+            } catch (\Throwable $e) {
+                return app('json')->fail('二维码生成失败');
+            }
+            if (is_object($resCode) && method_exists($resCode, 'getSize') && $resCode->getSize() < 100) {
+                return app('json')->fail('二维码生成失败');
+            }
             if ($resCode) {
                 $res = ['res' => $resCode, 'id' => $resForever->id];
             } else {

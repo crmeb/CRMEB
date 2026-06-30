@@ -143,6 +143,7 @@ class StoreSeckillController
         /** @var QrcodeServices $qrcodeService */
         $qrcodeService = app()->make(QrcodeServices::class);
         $url = $qrcodeService->getRoutineQrcodePath($id, $request->uid(), 2, ['time_id' => $time_id]);
+        if ($url === 'unpublished') $url = '';
         if ($url) {
             return app('json')->success(['code' => $url]);
         } else {

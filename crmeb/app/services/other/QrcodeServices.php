@@ -40,6 +40,45 @@ class QrcodeServices extends BaseServices
     }
 
     /**
+     * 获取站点域名配置
+     * @return string
+     */
+    protected function getRequiredSiteUrl(): string
+    {
+        $siteUrl = trim((string)sys_config('site_url'));
+        if ($siteUrl === '') {
+            throw new AdminException('请前往后台设置->系统设置->网站域名 填写您的域名格式为：http://域名');
+        }
+        return $siteUrl;
+    }
+
+    /**
+     * 校验小程序配置
+     * @return void
+     */
+    protected function requireRoutineConfig(): void
+    {
+        if (!sys_config('routine_appId') || !sys_config('routine_appsecret')) {
+            throw new AdminException('请先配置小程序appid、appSecret等参数');
+        }
+    }
+
+    /**
+     * 统一抛出二维码异常
+     * @param \Throwable $e
+     * @param string $defaultMessage
+     * @throws AdminException
+     */
+    protected function throwQrcodeException(\Throwable $e, string $defaultMessage = '二维码生成失败')
+    {
+        if ($e instanceof AdminException) {
+            throw $e;
+        }
+        $message = trim($e->getMessage()) ?: $defaultMessage;
+        throw new AdminException($message, [], $e->getCode() ?: 400, $e);
+    }
+
+    /**
      * 获取临时二维码
      * @param $type
      * @param $id
@@ -142,12 +181,13 @@ class QrcodeServices extends BaseServices
         $systemAttchment = app()->make(SystemAttachmentServices::class);
         try {
             $imageInfo = $systemAttchment->getInfo(['name' => $name]);
-            $siteUrl = sys_config('site_url');
+            $siteUrl = $this->getRequiredSiteUrl();
             if (!$imageInfo) {
                 $codeUrl = PosterServices::setHttpType($siteUrl . $link, request()->isSsl() ? 0 : 1);//二维码链接
                 $imageInfo = PosterServices::getQRCodePath($codeUrl, $name);
-                if (is_string($imageInfo) && $force)
-                    return false;
+                if (is_string($imageInfo)) {
+                    throw new AdminException($imageInfo);
+                }
                 if (is_array($imageInfo)) {
                     $systemAttchment->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
                     $url = $imageInfo['dir'];
@@ -159,10 +199,7 @@ class QrcodeServices extends BaseServices
             if ($imageInfo['image_type'] == 1 && $url) $url = $siteUrl . $url;
             return $url;
         } catch (\Throwable $e) {
-            if ($force)
-                return false;
-            else
-                return '';
+            return $force ? false : '';
         }
     }
 
@@ -183,12 +220,13 @@ class QrcodeServices extends BaseServices
             } else {
                 $imageInfo = $systemAttachmentService->getOne(['name' => $name]);
             }
-            $siteUrl = sys_config('site_url');
+            $siteUrl = $this->getRequiredSiteUrl();
             if (!$imageInfo) {
                 $codeUrl = PosterServices::setHttpType($siteUrl . $link, request()->isSsl() ? 0 : 1);//二维码链接
                 $imageInfo = PosterServices::getQRCodePath($codeUrl, $name);
-                if (is_string($imageInfo) && $force)
-                    return false;
+                if (is_string($imageInfo)) {
+                    throw new AdminException($imageInfo);
+                }
                 if (is_array($imageInfo)) {
                     if ($isSaveAttach) {
                         $systemAttachmentService->save([
@@ -213,10 +251,7 @@ class QrcodeServices extends BaseServices
             if ($imageInfo['image_type'] == 1 && $url) $url = $siteUrl . $url;
             return $url;
         } catch (\Throwable $e) {
-            if ($force)
-                return false;
-            else
-                return '';
+            return $force ? false : '';
         }
     }
 
@@ -275,28 +310,33 @@ class QrcodeServices extends BaseServices
             return false;
         }
         try {
+            $this->requireRoutineConfig();
             if (!$isSaveAttach) {
                 $imageInfo = "";
             } else {
                 $imageInfo = $systemAttachmentService->getOne(['name' => $namePath]);
             }
-            $siteUrl = sys_config('site_url');
+            $siteUrl = $this->getRequiredSiteUrl();
             if (!$imageInfo) {
                 $res = MiniProgramService::appCodeUnlimitService($data, $page, 280);
-                if (!$res) return false;
+                if (!$res) {
+                    throw new AdminException('二维码生成失败');
+                }
                 if ($res->getSize() < 100) return 'unpublished';
                 $uploadType = (int)sys_config('upload_type', 1);
                 $upload = UploadService::init();
                 $res = (string)EntityBody::factory($res);
                 $res = $upload->to('routine/product')->validate()->setAuthThumb(false)->stream($res, $namePath);
                 if ($res === false) {
-                    return false;
+                    throw new AdminException($upload->getError() ?: '二维码生成失败');
                 }
                 $imageInfo = $upload->getUploadInfo();
                 $imageInfo['image_type'] = $uploadType;
                 if ($imageInfo['image_type'] == 1) $remoteImage = PosterServices::remoteImage($siteUrl . $imageInfo['dir']);
                 else $remoteImage = PosterServices::remoteImage($imageInfo['dir']);
-                if (!$remoteImage['status']) return false;
+                if (!$remoteImage['status']) {
+                    throw new AdminException($remoteImage['msg'] ?? '二维码生成失败');
+                }
                 if ($isSaveAttach) {
                     $systemAttachmentService->save([
                         'name' => $imageInfo['name'],

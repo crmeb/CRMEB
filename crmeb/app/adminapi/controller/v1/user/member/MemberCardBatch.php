@@ -100,6 +100,7 @@ class MemberCardBatch extends AuthController
         $wechatQrcode = $QrcodeService->getWechatQrcodePath($weixinFileName,$weixinPage, false, false);
         //生成小程序地址
         $routineQrcode = $QrcodeService->getRoutineQrcodePath(4,6,4, [], false);
+        if ($routineQrcode === 'unpublished') $routineQrcode = '';
         return app('json')->success(['wechat_img' => $wechatQrcode, 'routine' => $routineQrcode ?: ""]);
     }
 

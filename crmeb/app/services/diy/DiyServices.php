@@ -421,6 +421,10 @@ class DiyServices extends BaseServices
         }
         /** @var QrcodeServices $QrcodeService */
         $QrcodeService = app()->make(QrcodeServices::class);
-        return $QrcodeService->getRoutineQrcodePath($id, 0, 6, [], false);
+        $codeUrl = $QrcodeService->getRoutineQrcodePath($id, 0, 6, [], false);
+        if ($codeUrl === 'unpublished') {
+            throw new AdminException('小程序尚未发布,无法生成二维码');
+        }
+        return $codeUrl;
     }
 }

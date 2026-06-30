@@ -72,6 +72,7 @@ class OtherOrder extends AuthController
         $wechatQrcode = $QrcodeService->getWechatQrcodePath($weixinFileName, $weixinPage, false, false);
         //生成小程序地址
         $routineQrcode = $QrcodeService->getRoutineQrcodePath(4, 6, 3, [], false);
+        if ($routineQrcode === 'unpublished') $routineQrcode = '';
         $qrcod = ['wechat' => $wechatQrcode, 'routine' => $routineQrcode];
         $data = [];
         if ($type) {

@@ -83,6 +83,7 @@ class HomeController
         } else {
             //生成小程序地址
             $codeUrl = $QrcodeService->getRoutineQrcodePath(0, 0, 5, [], false);
+            if ($codeUrl === 'unpublished') $codeUrl = '';
         }
         return app('json')->success(['url' => $codeUrl ?: '']);
     }
