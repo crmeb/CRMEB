@@ -76,7 +76,7 @@ class Mcp extends AuthController
             $this->outInfo = $accountInfo;
 
             // 验证接口权限（参考 AuthTokenMiddleware）
-            // $this->verifyAuth();
+            $this->verifyAuth();
 
         } catch (\crmeb\exceptions\AuthException $e) {
             // AuthException 转换为友好错误
