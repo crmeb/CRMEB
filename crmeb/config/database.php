@@ -59,6 +59,8 @@ return [
             'slave_no'        => '',
             // 是否严格检查字段是否存在
             'fields_strict'   => true,
+            // 缓存表字段元数据，减少新进程重复 SHOW FULL COLUMNS 开销
+            'fields_cache'    => true,
             // 是否需要进行SQL性能分析
             'sql_explain'     => false,
             // Builder类
