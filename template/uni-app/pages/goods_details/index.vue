@@ -142,6 +142,7 @@
       ></couponListWindow>
       <!-- 分享按钮 -->
       <view
+        v-if="posters"
         class="generate-posters acea-row row-middle"
         :class="posters ? 'on' : ''"
       >

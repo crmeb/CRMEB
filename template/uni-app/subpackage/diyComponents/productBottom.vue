@@ -414,6 +414,9 @@ export default {
     goGift() {
       this.$emit("goGift");
     },
+    goShare() {
+      this.$emit("share");
+    },
     joinCart() {
       this.$emit("joinCart");
     },
