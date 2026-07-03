@@ -55,7 +55,6 @@ class MiniOrderJob extends BaseJobs
                     ]
                 ];
                 $res = MiniOrderService::shippingOrderList($params);
-                var_dump($res['order_list']);
                 if ($res['errcode'] == 0 && isset($res['order_list']) && count($res['order_list']) > 0) {
                     foreach ($res['order_list'] as $item) {
                         $shipping_list = [
