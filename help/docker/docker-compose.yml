@@ -1,3 +1,5 @@
+name: crmeb
+
 services:
   # mysql 容器
   mysql:
@@ -29,11 +31,21 @@ services:
     networks:
       app_net:
         ipv4_address: 192.168.10.10
+  vendor-init:
+    image: ccr.ccs.tencentyun.com/crmebky_php/php:v7.4
+    command: sh -lc 'if [ ! -f /vendor/autoload.php ]; then cp -a /host-vendor/. /vendor/; fi'
+    network_mode: none
+    volumes:
+      - ../../crmeb/vendor:/host-vendor:ro
+      - crmeb_vendor:/vendor
   # php 容器
   phpfpm:
     container_name: crmeb_php
     image: ccr.ccs.tencentyun.com/crmebky_php/php:v7.4
     restart: always
+    depends_on:
+      vendor-init:
+        condition: service_completed_successfully
     environment:
       TZ: Asia/Shanghai
       MYSQL_HOST_IP: crmeb_mysql
@@ -55,6 +67,8 @@ services:
     volumes:
       - ../../crmeb:/var/www
       - ../../crmeb/runtime:/var/www/runtime
+      - crmeb_vendor:/var/www/vendor
+      - ./php/opcache.ini:/usr/local/etc/php/conf.d/docker-php-ext-opcache.ini:ro
     networks:
       app_net:
         ipv4_address: 192.168.10.90
@@ -85,3 +99,7 @@ networks:
       driver: default
       config:
         - subnet: 192.168.10.0/24
+
+volumes:
+  crmeb_vendor:
+    name: crmeb_vendor
