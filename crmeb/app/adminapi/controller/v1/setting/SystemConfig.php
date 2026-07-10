@@ -26,18 +26,16 @@ use think\facade\App;
  */
 class SystemConfig extends AuthController
 {
-    /** @var SystemConfigServices */
-    protected $services;
 
     /**
      * SystemConfig constructor.
      * @param App $app
-     * @param SystemConfigServices $configServices
+     * @param SystemConfigServices $services
      */
-    public function __construct(App $app, SystemConfigServices $configServices)
+    public function __construct(App $app, SystemConfigServices $services)
     {
         parent::__construct($app);
-        $this->services = $configServices;
+        $this->services = $services;
     }
 
     /**
@@ -77,7 +75,7 @@ class SystemConfig extends AuthController
             [['type', 'd'], ''],
             [['tab_id', 'd'], 1]
         ], true);
-        return app('json')->success($this->services->addFieldForm($type, $tabId));
+        return app('json')->success($this->services->createFormRule($type, $tabId));
     }
 
     /**
@@ -93,10 +91,7 @@ class SystemConfig extends AuthController
             ['config_tab_id', 0],
             ['parameter', ''],
             ['upload_type', 1],
-            ['required', 0],
-            ['rule', ''], // 输入框验证
-            ['min', null], // 数字最小值
-            ['max', null], // 数字最大值
+            ['required', ''],
             ['width', 0],
             ['high', 0],
             ['value', ''],
@@ -110,11 +105,14 @@ class SystemConfig extends AuthController
         if (is_array($data['config_tab_id'])) $data['config_tab_id'] = end($data['config_tab_id']);
         if (!$data['info']) return app('json')->fail('请输入配置名称');
         if (!$data['menu_name']) return app('json')->fail('请输入字段名称');
-        // if (!$data['desc']) return app('json')->fail('请输入配置简介');
+        if (!$data['desc']) return app('json')->fail('请输入配置简介');
         if ($data['sort'] < 0) {
             $data['sort'] = 0;
         }
-       
+        if ($data['type'] == 'text') {
+            if (!$data['width']) return app('json')->fail('请输入文本框的宽度');
+            if ($data['width'] <= 0) return app('json')->fail('请输入正确的文本框的宽度');
+        }
         if ($data['type'] == 'textarea') {
             if (!$data['width']) return app('json')->fail('请输入多行文本框的宽度');
             if (!$data['high']) return app('json')->fail('请输入多行文本框的高度');
@@ -125,36 +123,11 @@ class SystemConfig extends AuthController
             if (!$data['parameter']) return app('json')->fail('请输入配置参数');
             $this->services->valiDateRadioAndCheckbox($data);
         }
-        // 关联顶级选项
         if ($data['level'] == 1) {
             if (!$data['link_data']) return app('json')->fail('请选择关联顶级选项');
             $data['link_id'] = $data['link_data'][0];
             $data['link_value'] = $data['link_data'][1];
         }
-        // 合并必填、格式规则和数字范围为 JSON 格式
-        $requiredRules = [];
-        if ($data['required']) {
-            $requiredRules['required'] = true;
-        } else {
-            $requiredRules['required'] = false;
-        }
-        if ($data['rule']) {
-            $requiredRules['regex'] = $data['rule'];
-        }
-        if ($data['type'] == 'text' && $data['input_type'] == 'number') {
-            if ($data['min'] !== null) {
-                $requiredRules['min'] = (int)$data['min'];
-            }
-            if ($data['max'] !== null) {
-                $requiredRules['max'] = (int)$data['max'];
-            }
-        }
-        // min不能大于max
-        if ($data['min'] !== null && $data['max'] !== null && $data['min'] > $data['max']) {
-            return app('json')->fail('最小值不能大于最大值');
-        }
-        $data['required'] = json_encode($requiredRules);
-        unset($data['rule'], $data['min'], $data['max']);
         $data['value'] = json_encode($data['value']);
         $config = $this->services->getOne(['menu_name' => $data['menu_name']]);
         if ($config) {
@@ -189,10 +162,7 @@ class SystemConfig extends AuthController
      */
     public function edit($id)
     {
-        if (!$id) {
-            return app('json')->fail('参数错误');
-        }
-        return app('json')->success($this->services->editFieldForm((int)$id));
+        return app('json')->success($this->services->editConfigForm((int)$id));
     }
 
     /**
@@ -217,10 +187,7 @@ class SystemConfig extends AuthController
             ['config_tab_id', 0],
             ['parameter', ''],
             ['upload_type', 1],
-            ['required', 0],
-            ['regex', ''], // 输入框验证
-            ['min', ''], // 数字最小值
-            ['max', ''], // 数字最大值
+            ['required', ''],
             ['width', 0],
             ['high', 0],
             ['value', $value],
@@ -235,33 +202,6 @@ class SystemConfig extends AuthController
         if (!$this->services->get($id)) {
             return app('json')->fail('数据不存在');
         }
-        // 合并必填、格式规则和数字范围为 JSON 格式
-        $requiredRules = [];
-        if ($data['required']) {
-            $requiredRules['required'] = true;
-        } else {
-            $requiredRules['required'] = false;
-        }
-        // 正则表达式验证
-        if ($data['regex']) {
-            $requiredRules['regex'] = $data['regex'];
-        }
-        // 数字类型额外保存 min 和 max
-        if ($data['type'] == 'text' && $data['input_type'] == 'number') {
-            if ($data['min'] !== '') {
-                $requiredRules['min'] = (int)$data['min'];
-            }
-            if ($data['max'] !== '') {
-                $requiredRules['max'] = (int)$data['max'];
-            }
-        }
-        // min不能大于max
-        if ($data['min'] !== '' && $data['max'] !== '' && $data['min'] > $data['max']) {
-            return app('json')->fail('最小值不能大于最大值');
-        }
-        $data['required'] = json_encode($requiredRules);
-        unset($data['regex'], $data['min'], $data['max']);
-        // 关联选项
         if ($data['level'] == 1) {
             if (!$data['link_data']) return app('json')->fail('请选择关联顶级选项');
             $data['link_id'] = $data['link_data'][0];
@@ -294,7 +234,7 @@ class SystemConfig extends AuthController
      * @param $status
      * @return mixed
      */
-    public function setStatus($id, $status)
+    public function set_status($id, $status)
     {
         if ($status == '' || $id == 0) {
             return app('json')->fail('参数错误');
@@ -307,7 +247,7 @@ class SystemConfig extends AuthController
     /**
      * 基础配置
      * */
-    public function editBasics(Request $request)
+    public function edit_basics(Request $request)
     {
         $tabId = $this->request->param('tab_id', 1);
         if (!$tabId) {
@@ -320,7 +260,7 @@ class SystemConfig extends AuthController
     /**
      * 保存数据    true
      * */
-    public function saveBasics(Request $request)
+    public function save_basics(Request $request)
     {
         $post = $this->request->post();
         foreach ($post as $k => $v) {
@@ -342,11 +282,9 @@ class SystemConfig extends AuthController
         if (isset($post['extract_type']) && !count($post['extract_type'])) {
             return app('json')->fail('提现方式最少选一种');
         }
-        // 检查佣金绑定状态
         if (isset($post['store_brokerage_binding_status'])) {
             $this->services->checkBrokerageBinding($post);
         }
-        // 检查一级返佣比例和二级返佣比例是否大于100%
         if (isset($post['store_brokerage_ratio']) && isset($post['store_brokerage_two'])) {
             $num = $post['store_brokerage_ratio'] + $post['store_brokerage_two'];
             if ($num > 100) {
@@ -461,13 +399,6 @@ class SystemConfig extends AuthController
             return app('json')->success('修改成功');
         }
         if (isset($post['param_filter_data'])) {
-            $rules = preg_split('/\r\n|\r|\n/', $post['param_filter_data'], -1, PREG_SPLIT_NO_EMPTY);
-            foreach ($rules as $rule) {
-                $rule = trim($rule);
-                if ($rule !== '' && @preg_match($rule, '') === false) {
-                    return app('json')->fail('WAF配置规则格式错误：' . $rule);
-                }
-            }
             $post['param_filter_data'] = base64_encode($post['param_filter_data']);
         }
         if (isset($post['product_type_config'])) {
@@ -562,7 +493,7 @@ class SystemConfig extends AuthController
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function headerBasics(SystemConfigTabServices $services)
+    public function header_basics(SystemConfigTabServices $services)
     {
         [$type, $pid] = $this->request->getMore([
             [['type', 'd'], 0],
@@ -582,7 +513,7 @@ class SystemConfig extends AuthController
      * @param $name
      * @return mixed
      */
-    public function getSystem($name)
+    public function get_system($name)
     {
         $value = sys_config($name);
         return app('json')->success(compact('value'));
@@ -593,9 +524,9 @@ class SystemConfig extends AuthController
      * @param $tabId
      * @return mixed
      */
-    public function getConfigList($tabId)
+    public function get_config_list($tabId)
     {
-        $list = $this->services->getReadList($tabId);
+        $list = $this->services->getConfigTabAllList($tabId);
         $data = [];
         foreach ($list as $item) {
             $data[$item['menu_name']] = json_decode($item['value']);

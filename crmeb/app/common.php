@@ -670,23 +670,9 @@ if (!function_exists('filter_str')) {
      */
     function filter_str($str)
     {
-        $param_filter_type = (int)sys_config('param_filter_type');
+        $param_filter_type = sys_config('param_filter_type');
         if ($param_filter_type != 0) {
-            $ruleData = base64_decode((string)sys_config('param_filter_data'), true);
-            $rules = preg_split('/\r\n|\r|\n/', $ruleData === false ? '' : $ruleData, -1, PREG_SPLIT_NO_EMPTY);
-            $rules = array_values(array_filter(array_map('trim', $rules), function ($rule) {
-                return $rule !== '' && @preg_match($rule, '') !== false;
-            }));
-            if (!$rules) return $str;
-
-            $str = (string)$str;
-            if (preg_match('/^\s*([a-z][a-z0-9+.-]*):/i', $str, $matches)) {
-                $dangerSchemes = ['gopher', 'doc', 'php', 'glob', 'file', 'phar', 'zlib', 'zlib_filter', 'ftp', 'ldap', 'dict', 'ogg', 'data', 'javascript', 'vbscript'];
-                if (in_array(strtolower($matches[1]), $dangerSchemes, true)) {
-                    throw new \Exception('接口请求失败：非法操作！');
-                }
-            }
-
+            $rules = preg_split('/\r\n|\r|\n/', base64_decode(sys_config('param_filter_data')));
             if ($param_filter_type == 1) {
                 foreach ($rules as $item) {
                     if (preg_match($item, $str)) {
@@ -694,8 +680,14 @@ if (!function_exists('filter_str')) {
                     }
                 }
             }
-            $filterStr = preg_replace($rules, '', $str);
-            $str = $filterStr === null ? $str : $filterStr;
+            if (filter_var($str, FILTER_VALIDATE_URL)) {
+                $url = parse_url($str);
+                if (!isset($url['scheme'])) return $str;
+                $host = $url['scheme'] . '://' . $url['host'];
+                $str = $host . preg_replace($rules, '', str_replace($host, '', $str));
+            } else {
+                $str = preg_replace($rules, '', $str);
+            }
         }
         return $str;
     }
