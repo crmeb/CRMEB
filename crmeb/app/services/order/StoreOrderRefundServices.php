@@ -926,8 +926,8 @@ class StoreOrderRefundServices extends BaseServices
                     'change_message' => '用户已退货，订单号：' . $data['refund_express'],
                     'change_time' => time()
                 ]);
-            if ($data['refund_img'] != '') unset($data['refund_img']);
-            if ($data['refund_explain'] != '') unset($data['refund_explain']);
+            unset($data['refund_img']);
+            unset($data['refund_explain']);
             $res2 = false !== $this->dao->update(['id' => $id], $data);
             $res = $res1 && $res2;
             if (!$res)
