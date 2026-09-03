@@ -107,7 +107,7 @@ class OtherOrderDao extends BaseDao
                 $query->field("sum($field) as number,FROM_UNIXTIME($group, '$timeUinx') as time");
                 $query->group("FROM_UNIXTIME($group, '$timeUinx')");
             })
-            ->order('add_time ASC')->select()->toArray();
+            ->order('time ASC')->select()->toArray();
     }
 
     /**根据条件获取单条信息

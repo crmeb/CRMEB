@@ -88,7 +88,7 @@ class UserRechargeDao extends BaseDao
                     $timeUinx = "%Y-%m";
                 }
                 $query->field("sum($field) as number,FROM_UNIXTIME($group, '$timeUinx') as time");
-                $query->group("FROM_UNIXTIME($group, '$timeUinx')");
+                $query->group("time");
             })
             ->order('add_time ASC')->select()->toArray();
 

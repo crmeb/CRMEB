@@ -176,7 +176,7 @@ class StoreCouponUserDao extends BaseDao
             ->whereMonth('add_time')
             ->whereIn('cid', $where['couponIds'])
             ->field('count(id) as num,FROM_UNIXTIME(add_time, \'%Y-%m\') as time')
-            ->group("FROM_UNIXTIME(add_time, '%Y-%m')")
+            ->group("time")
             ->select()->toArray();
     }
 

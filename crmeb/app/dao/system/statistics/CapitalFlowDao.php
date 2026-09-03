@@ -69,7 +69,7 @@ class CapitalFlowDao extends BaseDao
         $model = $this->search($where, false)
             ->when(isset($where['type']) && $where['type'] !== '', function ($query) use ($where, $timeUnix) {
                 $query->field("FROM_UNIXTIME(add_time,'$timeUnix') as day,sum(if(price >= 0,price,0)) as income_price,sum(if(price < 0,price,0)) as exp_price,add_time");
-                $query->group("FROM_UNIXTIME(add_time, '$timeUnix')");
+                $query->group("day");
             });
         $count = $model->count();
         $list = $model->when($page && $limit, function ($query) use ($page, $limit) {

@@ -352,9 +352,9 @@ class StoreOrderDao extends BaseDao
                         break;
                 }
                 $query->field("FROM_UNIXTIME(add_time,'$timeUnix') as day,count(*) as count,sum(pay_price) as price");
-                $query->group("FROM_UNIXTIME(add_time, '$timeUnix')");
+                $query->group("day");
             })
-            ->order('add_time asc')
+            ->order('day asc')
             ->select()->toArray();
     }
 
@@ -397,9 +397,9 @@ class StoreOrderDao extends BaseDao
                         break;
                 }
                 $query->field("FROM_UNIXTIME(add_time,'$timeUnix') as day,count(*) as count,sum(pay_price) as price");
-                $query->group("FROM_UNIXTIME(add_time, '$timeUnix')");
+                $query->group("day");
             })
-            ->order('add_time asc')
+            ->order('day asc')
             ->select()->toArray();
     }
 
@@ -712,7 +712,7 @@ class StoreOrderDao extends BaseDao
                     $timeUinx = "%Y-%m";
                 }
                 $query->field("sum($sumField) as number,FROM_UNIXTIME($group, '$timeUinx') as time");
-                $query->group("FROM_UNIXTIME($group, '$timeUinx')");
+                $query->group("time");
             })
             ->order('pay_time ASC,id DESC')->select()->toArray();
     }
@@ -740,7 +740,7 @@ class StoreOrderDao extends BaseDao
                     $timeUinx = "%Y-%m";
                 }
                 $query->field("count($sumField) as number,FROM_UNIXTIME(pay_time, '$timeUinx') as time");
-                $query->group("FROM_UNIXTIME(pay_time, '$timeUinx')");
+                $query->group("time");
             })
             ->order('pay_time ASC,id DESC')->select()->toArray();
     }
@@ -783,7 +783,7 @@ class StoreOrderDao extends BaseDao
                     $timeUinx = "%H";
                 }
                 $query->field("count(distinct uid) as number,FROM_UNIXTIME(pay_time, '$timeUinx') as time");
-                $query->group("FROM_UNIXTIME(pay_time, '$timeUinx')");
+                $query->group("time");
             })
             ->order('pay_time ASC,id DESC')->select()->toArray();
     }
