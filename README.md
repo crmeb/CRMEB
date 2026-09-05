@@ -128,6 +128,10 @@ docker run -d --name crmeb -p 8080:80 ccr.ccs.tencentyun.com/crmebky_php/crmebky
 > Click here for detailed information [Help Documentation](/help/docker/docker.md)。
 ---
 
+![输入图片说明](help/resource/pic/开源banner-PHP.jpg)
+
+
+
 ### 🫧 Technical Features
 
 ~~~
