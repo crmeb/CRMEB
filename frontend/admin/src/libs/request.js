@@ -87,17 +87,7 @@ service.interceptors.response.use(
       case 401:
         redirectToLogin();
         return Promise.reject({ ...obj, msg: obj.msg || '未登录' });
-      case 402:
-        removeCookies('kefuInfo');
-        removeCookies('kefu_token');
-        removeCookies('kefu_expires_time');
-        removeCookies('kefu_uuid');
-        router.replace({ path: Setting.routePre + '/kefu' }).catch(() => {});
-        return Promise.reject({ msg: '未登录' });
       case 403:
-        // 403 仅由 AdminEditorTokenMiddleware（文件编辑 token 过期）抛出，跳转文件管理登录页
-        // 路由名见 pages/plugin/system_file_manage/routes.js：pre('system_file_') + opendir_login
-        router.replace({ name: 'system_file_opendir_login' }).catch(() => {});
         return Promise.reject({ msg: '没有权限' });
       default:
         return Promise.reject(obj || { msg: '未知错误' });

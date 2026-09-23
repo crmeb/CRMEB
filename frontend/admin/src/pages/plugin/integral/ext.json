@@ -1,9 +1,0 @@
-{
-  "key": "integral",
-  "title": "积分商城",
-  "version": "1.0.0",
-  "pages": [
-    { "path": "product", "title": "积分商品管理" },
-    { "path": "order", "title": "积分订单管理" }
-  ]
-}

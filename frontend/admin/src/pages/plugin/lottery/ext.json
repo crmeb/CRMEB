@@ -1,9 +1,0 @@
-{
-  "key": "lottery",
-  "title": "抽奖活动",
-  "version": "1.0.0",
-  "pages": [
-    { "path": "lotteryList", "title": "抽奖活动管理" },
-    { "path": "config", "title": "抽奖配置" }
-  ]
-}
