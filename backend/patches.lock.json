@@ -1,0 +1,17 @@
+{
+    "_hash": "99eefa35c262e3c5b43046ef33c9f8d7c4cd9ca50d396f487e5bd18d55667204",
+    "patches": {
+        "qiniu/php-sdk": [
+            {
+                "package": "qiniu/php-sdk",
+                "description": "Fix PHP 8.4 implicit nullable parameter deprecation",
+                "url": "crmeb/patches/qiniu-php-sdk-php84-nullable.patch",
+                "sha256": "9361c863c56d1693a082f6fa94d738e2eeb6d21e46c64a0080f5ee30be56f23a",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}

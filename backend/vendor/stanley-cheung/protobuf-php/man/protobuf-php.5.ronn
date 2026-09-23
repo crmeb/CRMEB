@@ -1,0 +1,59 @@
+protobuf-php(5) -- Proto files
+================================
+
+## SYNOPSIS
+
+Protobuf for PHP supports a few custom options for proto files.
+
+
+## DESCRIPTION
+
+Proto files processed with Protobuf for PHP can use a number of custom options
+that affect the generated source code.
+
+  * `php.suffix` <string>:
+    Sets a custom suffix for the generated PHP files. By default ".php" is used.
+
+  * `php.namespace` <string>:
+    Defines the namespace to use for the generated PHP classes.
+
+  * `php.package` <string>:
+    An alias for `php.namespace`
+
+  * `php.multifile` <boolean>:
+    By default a single PHP file is generated for each Proto file processed,
+    including in it all the messages, enums and extensions defined in the proto
+    definition. If this option is set to `true` then each message and enum is
+    generated in a separate file, following PEAR's conventions, and if extensions
+    are pressent in the proto definition a file named after the proto file with the
+    suffix "-extensions" will contain them.
+
+  * `php.generic_services` <boolean>:
+    By default no service interfaces will be generated. If this option is set
+    to true then Interfaces will be created for each `service` definition found,
+    including a method named after each `rpc` entry.
+
+
+
+## EXAMPLES ##
+
+    option (php.suffix) = ".pb.php"
+    option (php.namespace) = "MyOrg.Protos"
+    option (php.multifile) = true
+    option (php.generic_services) = true
+
+
+## BUGS ##
+
+Please report bugs using GitHub's issue tracker at http://github.com/drslump/protobuf-php/issues
+
+
+## COPYRIGHT ##
+
+Protobuf for PHP is Copyright (C) 2011 Ivan -DrSlump- Montes <http://pollinimini.net>
+
+
+## SEE ALSO
+
+protoc-gen-php(1), protobuf-php(3),
+<http://github.com/drslump/protobuf-php>

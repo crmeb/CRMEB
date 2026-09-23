@@ -1,0 +1,232 @@
+{
+  "code": 200,
+  "msg": "ok",
+  "data": {
+    "uid": 27,
+    "is_money_level": 0,
+    "spec_unique": "default",
+    "storeInfo": {
+      "id": 1003,
+      "product_type": "cardkey",
+      "product_type_name": "卡密商品",
+      "image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",
+      "image_base": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",
+      "slider_image": [
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc1.jpg",
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc2.jpg"
+      ],
+      "recommend_image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",
+      "small_image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",
+      "store_name": "腾讯视频VIP会员年卡 官方直充 24小时到账",
+      "store_info": "官方授权 即充即用 全国通用",
+      "keyword": "腾讯视频,VIP,会员,年卡",
+      "bar_code": "",
+      "cate_id": "5",
+      "unit_name": "张",
+      "price": "138.00",
+      "vip_price": "128.00",
+      "ot_price": "253.00",
+      "postage": "0.00",
+      "cost": "120.00",
+      "give_integral": "0.00",
+      "svip_economize_price": "10.00",
+      "stock": 50,
+      "sales": 1842,
+      "fsales": "1842",
+      "ficti": 800,
+      "browse": 12850,
+      "sort": 0,
+      "is_show": 1,
+      "is_hot": 1,
+      "is_benefit": 1,
+      "is_best": 0,
+      "is_new": 0,
+      "is_virtual": 1,
+      "virtual_type": 2,
+      "is_postage": 1,
+      "is_del": 0,
+      "is_seckill": 0,
+      "is_bargain": null,
+      "is_good": 0,
+      "is_sub": 0,
+      "is_vip": 0,
+      "is_gift": 0,
+      "gift_price": "0.00",
+      "is_limit": 1,
+      "limit_type": 1,
+      "limit_num": 5,
+      "min_qty": 1,
+      "spec_type": 0,
+      "activity": "",
+      "spu": "QQVIDEO2026Y",
+      "label_id": "4,6,7",
+      "video_link": "",
+      "command_word": "",
+      "recommend_list": "1002,1004",
+      "vip_product": 0,
+      "vip_exclusive": false,
+      "presale": 0,
+      "presale_start_time": "1970-01-01 08:00",
+      "presale_end_time": "1970-01-01 08:00",
+      "presale_day": 0,
+      "presale_pay_status": 0,
+      "logistics": "",
+      "freight": 0,
+      "temp_id": 0,
+      "mer_id": 0,
+      "mer_use": 0,
+      "default_sku": "default",
+      "add_time": 1722422400,
+      "code_path": "",
+      "soure_link": "",
+      "description": "<p>腾讯视频VIP会员年卡，官方授权直充，下单后自动发货到订单中心。</p><p>支持所有腾讯视频客户端，电视端、手机端、电脑端通用，365天超长有效期。</p><p><img src='https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc1.jpg'/></p><p><img src='https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc2.jpg'/></p>",
+      "wechat_code": "",
+      "userCollect": false,
+      "userLike": false,
+      "attrPics": [
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg"
+      ],
+      "custom_form": [],
+      "params_list": [
+        { "name": "会员时长", "value": "12个月（365天）" },
+        { "name": "充值方式", "value": "账号直充" },
+        { "name": "到账时间", "value": "1-24小时内自动到账" },
+        { "name": "适用设备", "value": "电视/手机/电脑全端通用" },
+        { "name": "授权来源", "value": "官方正规授权" }
+      ],
+      "protection_list": [
+        { "id": 4, "name": "未使用可退" }
+      ],
+      "label_list": [
+        { "id": 4, "name": "自动发货" },
+        { "id": 6, "name": "官方授权" },
+        { "id": 7, "name": "全国通用" }
+      ],
+      "selection_spec": {
+        "selection_model": "none",
+        "confirm_window": "readonly",
+        "required_selections": [],
+        "cart_unit": "item"
+      },
+      "cart_strategy": {
+        "cart_mode": "cart",
+        "multi_item": false,
+        "button_text": ""
+      },
+      "cart_button": 1
+    },
+    "productAttr": [
+      {
+        "attr_name": "规格",
+        "attr_values": ["默认"],
+        "attr_value": [
+          { "attr": "默认", "check": false, "pic": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg" }
+        ]
+      }
+    ],
+    "productValue": {
+      "默认": {
+        "suk": "默认",
+        "price": "138.00",
+        "stock": 50,
+        "image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",
+        "unique": "default",
+        "cost": "120.00",
+        "ot_price": "253.00",
+        "bar_code": "",
+        "is_show": 1
+      }
+    },
+    "svip_open": true,
+    "svip_price_open": 1,
+    "priceName": 0,
+    "reply": [
+      {
+        "id": 9001,
+        "product_id": 1003,
+        "nickname": "云端漫步",
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u3.jpg",
+        "comment": "下单后5分钟就收到卡密了，激活后立即生效，电视端手机端都能用，非常方便。",
+        "pics": ["https://demo.crmeb.com/static/images/reply/cardkey-reply1.jpg"],
+        "star": 5,
+        "add_time": "2026-07-20 09:18:33"
+      },
+      {
+        "id": 9002,
+        "product_id": 1003,
+        "nickname": "夜色温柔",
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u4.jpg",
+        "comment": "比官方便宜不少，自动发货省心，年卡性价比超高，已经用了半年没问题。",
+        "pics": [],
+        "star": 5,
+        "add_time": "2026-07-25 14:42:07"
+      }
+    ],
+    "replyChance": 92,
+    "replyCount": 1842,
+    "mer_id": 0,
+    "good_list": [
+      { "id": 1002, "image": "https://demo.crmeb.com/static/images/products/cardkey-related-iqiyi.jpg", "store_name": "爱奇艺VIP会员年卡 官方直充", "price": "128.00", "sales": 2156 },
+      { "id": 1004, "image": "https://demo.crmeb.com/static/images/products/cardkey-related-youku.jpg", "store_name": "优酷VIP会员年卡 官方直充", "price": "118.00", "sales": 1632 }
+    ],
+    "mapKey": "TXABCD-1234-EFGH-5678-IJKL",
+    "store_self_mention": 0,
+    "activity": [],
+    "coupons": [
+      { "id": 503, "title": "满128减8", "coupon_price": "8.00", "use_min_price": "128.00", "surplus": 80 }
+    ],
+    "routine_contact_type": 0,
+    "display_sections": [
+      {
+        "key": "spec",
+        "component": "spec_preview",
+        "visible": true,
+        "order": 10,
+        "data": {
+          "blocks": [
+            {
+              "type": "chips",
+              "title": "卡密属性",
+              "items": [
+                { "label": "面值", "value": "¥253" },
+                { "label": "有效期", "value": "365天" },
+                { "label": "发放方式", "value": "自动发放" },
+                { "label": "可用库存", "value": "50张" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "key": "fulfillment",
+        "component": "info_card",
+        "title": "卡密发货",
+        "visible": true,
+        "order": 20,
+        "data": {
+          "items": [
+            { "label": "发货方式", "value": "支付后自动发卡", "icon": "auto" },
+            { "label": "物流", "value": "无需物流", "icon": "none" },
+            { "label": "使用方式", "value": "订单详情查看卡密", "icon": "card" },
+            { "label": "到账时间", "value": "1-24小时内", "icon": "time" }
+          ]
+        }
+      },
+      {
+        "key": "after_sale",
+        "component": "info_card",
+        "title": "售后政策",
+        "visible": true,
+        "order": 30,
+        "data": {
+          "items": [
+            { "label": "售后类型", "value": "仅退款", "icon": "refund" },
+            { "label": "售后期限", "value": "1小时内（未发卡前）", "icon": "deadline" },
+            { "label": "特别说明", "value": "卡密已发放不支持售后", "icon": "warning" }
+          ]
+        }
+      }
+    ]
+  }
+}

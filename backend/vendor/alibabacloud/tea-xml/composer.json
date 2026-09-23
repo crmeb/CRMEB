@@ -1,0 +1,44 @@
+{
+  "name": "alibabacloud/tea-xml",
+  "description": "Alibaba Cloud Tea XML Library for PHP",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "require": {
+    "php": ">5.5"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "symfony/var-dumper": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "AlibabaCloud\\Tea\\XML\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AlibabaCloud\\Tea\\XML\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "fixer": "php-cs-fixer fix ./",
+    "test": [
+      "@clearCache",
+      "phpunit --colors=always"
+    ],
+    "clearCache": "rm -rf cache/*"
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev"
+}

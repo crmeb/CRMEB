@@ -1,0 +1,48 @@
+{
+    "key": "yihaotong",
+    "name": "一号通物流查询",
+    "description": "一号通物流查询驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/logistics/Yihaotong",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "一号通物流查询",
+        "driver_key": "yihaotong",
+        "class_name": "Driver",
+        "icon": "icon-crmeb",
+        "is_builtin": true,
+        "sort": 100,
+        "config_fields": [
+            {
+                "field": "yihaotong_appid",
+                "label": "一号通appid",
+                "type": "text",
+                "required": false,
+                "readonly": true,
+                "group": "一号通配置",
+                "tip": "从一号通平台配置自动读取"
+            },
+            {
+                "field": "yihaotong_appsecret",
+                "label": "一号通appsecret",
+                "type": "password",
+                "required": false,
+                "readonly": true,
+                "group": "一号通配置",
+                "tip": "从一号通平台配置自动读取"
+            }
+        ],
+        "help_doc": [
+            {
+                "title": "物流接口申请",
+                "url": "https://api.crmeb.com/"
+            }
+        ]
+    }
+}

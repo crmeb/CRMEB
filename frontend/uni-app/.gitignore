@@ -1,0 +1,13 @@
+# Dependencies and generated output (also used when working on this app alone)
+/node_modules/
+/dist/
+/unpackage/
+/coverage/
+
+# Local environment overrides
+.env.local
+.env.*.local
+
+# Local tool settings and operating system files
+/.zcode/
+.DS_Store

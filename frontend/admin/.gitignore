@@ -1,0 +1,17 @@
+# 依赖与构建产物（保留端内规则，供独立开发及端内工具使用）
+/node_modules/
+/dist/
+/dist-ssr/
+/coverage/
+
+# 本机覆盖配置；共享默认配置不在这里排除
+*.local
+
+# 编辑器/系统；通用规则也维护在根 .gitignore
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+/.zcode/

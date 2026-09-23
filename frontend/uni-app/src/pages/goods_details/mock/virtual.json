@@ -1,0 +1,248 @@
+{
+  "code": 200,
+  "msg": "ok",
+  "data": {
+    "uid": 27,
+    "is_money_level": 0,
+    "spec_unique": "1",
+    "storeInfo": {
+      "id": 1002,
+      "product_type": "virtual",
+      "product_type_name": "网盘产品",
+      "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-cover.jpg",
+      "image_base": "https://demo.crmeb.com/static/images/products/virtual-photoshop-cover.jpg",
+      "slider_image": [
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-cover.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-preview1.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-preview2.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-preview3.jpg"
+      ],
+      "recommend_image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-recommend.jpg",
+      "small_image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-small.jpg",
+      "store_name": "Adobe Photoshop 2026 设计素材大合集 200GB 网盘资源",
+      "store_info": "支付后自动发货 即买即用 永久更新",
+      "keyword": "PS,设计素材,网盘,Photoshop",
+      "bar_code": "",
+      "cate_id": "8",
+      "unit_name": "份",
+      "price": "29.90",
+      "vip_price": "26.90",
+      "ot_price": "99.00",
+      "postage": "0.00",
+      "cost": "0.00",
+      "give_integral": "0.00",
+      "svip_economize_price": "3.00",
+      "stock": 9999,
+      "sales": 5841,
+      "fsales": "5841",
+      "ficti": 2000,
+      "browse": 28540,
+      "sort": 0,
+      "is_show": 1,
+      "is_hot": 1,
+      "is_benefit": 1,
+      "is_best": 0,
+      "is_new": 0,
+      "is_virtual": 1,
+      "virtual_type": 1,
+      "is_postage": 1,
+      "is_del": 0,
+      "is_seckill": 0,
+      "is_bargain": null,
+      "is_good": 0,
+      "is_sub": 0,
+      "is_vip": 0,
+      "is_gift": 0,
+      "gift_price": "0.00",
+      "is_limit": 0,
+      "limit_type": 0,
+      "limit_num": 0,
+      "min_qty": 1,
+      "spec_type": 1,
+      "activity": "",
+      "spu": "PS2026DESIGN",
+      "label_id": "4,5",
+      "video_link": "",
+      "command_word": "",
+      "recommend_list": "",
+      "vip_product": 0,
+      "vip_exclusive": false,
+      "presale": 0,
+      "presale_start_time": "1970-01-01 08:00",
+      "presale_end_time": "1970-01-01 08:00",
+      "presale_day": 0,
+      "presale_pay_status": 0,
+      "logistics": "",
+      "freight": 0,
+      "temp_id": 0,
+      "mer_id": 0,
+      "mer_use": 0,
+      "default_sku": "1",
+      "add_time": 1722422400,
+      "code_path": "",
+      "soure_link": "",
+      "description": "<p>包含 200GB 设计素材：笔刷、动作、模板、字体、矢量图、PSD 源文件等，涵盖海报、UI、插画、修图、合成等全场景应用。</p><p>支付后系统自动发送网盘链接与提取码到您的订单，永久有效，每月持续更新，无需重复购买。</p>",
+      "wechat_code": "",
+      "userCollect": false,
+      "userLike": false,
+      "attrPics": [
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg"
+      ],
+      "custom_form": [],
+      "params_list": [
+        { "name": "资源容量", "value": "200GB" },
+        { "name": "网盘类型", "value": "百度网盘" },
+        { "name": "发货方式", "value": "自动发货" },
+        { "name": "更新频率", "value": "每月持续更新" },
+        { "name": "适用版本", "value": "PS CC 2018-2026 通用" }
+      ],
+      "protection_list": [
+        { "id": 3, "name": "发货前可退款" }
+      ],
+      "label_list": [
+        { "id": 4, "name": "自动发货" },
+        { "id": 5, "name": "永久更新" }
+      ],
+      "selection_spec": {
+        "selection_model": "matrix",
+        "confirm_window": "editable",
+        "required_selections": ["sku"],
+        "cart_unit": "item"
+      },
+      "cart_strategy": {
+        "cart_mode": "cart",
+        "multi_item": true,
+        "button_text": ""
+      },
+      "cart_button": 1
+    },
+    "productAttr": [
+      {
+        "attr_name": "套餐版本",
+        "attr_values": ["基础版", "完整版", "设计师专享版"],
+        "attr_value": [
+          { "attr": "基础版", "check": false, "pic": "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg" },
+          { "attr": "完整版", "check": false, "pic": "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg" },
+          { "attr": "设计师专享版", "check": false, "pic": "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg" }
+        ]
+      }
+    ],
+    "productValue": {
+      "基础版": {
+        "suk": "基础版",
+        "price": "29.90",
+        "stock": 9999,
+        "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg",
+        "unique": "1",
+        "cost": "0.00",
+        "ot_price": "99.00",
+        "bar_code": "",
+        "download_url": "https://pan.baidu.com/s/1abcDEF123",
+        "download_password": "p2k3",
+        "is_show": 1
+      },
+      "完整版": {
+        "suk": "完整版",
+        "price": "49.90",
+        "stock": 9999,
+        "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg",
+        "unique": "2",
+        "cost": "0.00",
+        "ot_price": "159.00",
+        "bar_code": "",
+        "download_url": "https://pan.baidu.com/s/2ghiJKL456",
+        "download_password": "f8h9",
+        "is_show": 1
+      },
+      "设计师专享版": {
+        "suk": "设计师专享版",
+        "price": "99.00",
+        "stock": 9999,
+        "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg",
+        "unique": "3",
+        "cost": "0.00",
+        "ot_price": "299.00",
+        "bar_code": "",
+        "download_url": "https://pan.baidu.com/s/3mnoPQR789",
+        "download_password": "d5g6",
+        "is_show": 1
+      }
+    },
+    "svip_open": true,
+    "svip_price_open": 1,
+    "priceName": 0,
+    "reply": [
+      { "id": 8101, "product_id": 1002, "nickname": "设计小怪兽", "avatar": "https://demo.crmeb.com/static/images/avatar/avatar-01.jpg", "comment": "素材质量很高，链接秒发，值得购买。", "pics": [], "star": 5, "add_time": "2026-07-20 14:25:08" },
+      { "id": 8102, "product_id": 1002, "nickname": "AI设计师", "avatar": "https://demo.crmeb.com/static/images/avatar/avatar-02.jpg", "comment": "网盘速度很快，已收藏。", "pics": [], "star": 5, "add_time": "2026-07-22 09:18:33" }
+    ],
+    "replyChance": 94,
+    "replyCount": 5841,
+    "mer_id": 0,
+    "good_list": [
+      { "id": 1005, "image": "https://demo.crmeb.com/static/images/products/virtual-related1.jpg", "store_name": "Adobe Illustrator 矢量素材包", "price": "39.90", "sales": 1240 },
+      { "id": 1006, "image": "https://demo.crmeb.com/static/images/products/virtual-related2.jpg", "store_name": "字体合集 5000款商用字体", "price": "19.90", "sales": 3520 }
+    ],
+    "mapKey": "TXABCD-1234-EFGH-5678-IJKL",
+    "store_self_mention": 0,
+    "activity": [],
+    "coupons": [
+      { "id": 511, "title": "满29减3", "coupon_price": "3.00", "use_min_price": "29.00", "surplus": 100 }
+    ],
+    "routine_contact_type": 0,
+    "display_sections": [
+      {
+        "key": "spec",
+        "component": "spec_preview",
+        "visible": true,
+        "order": 10,
+        "data": {
+          "blocks": [
+            {
+              "type": "matrix",
+              "title": "套餐版本",
+              "attrs": [
+                { "name": "套餐版本", "values": ["基础版", "完整版", "设计师专享版"] }
+              ],
+              "skus": [
+                { "suk": "基础版", "price": 29.9, "stock": 9999, "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg" },
+                { "suk": "完整版", "price": 49.9, "stock": 9999, "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg" },
+                { "suk": "设计师专享版", "price": 99, "stock": 9999, "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "key": "fulfillment",
+        "component": "info_card",
+        "title": "发货说明",
+        "visible": true,
+        "order": 20,
+        "data": {
+          "items": [
+            { "label": "发货方式", "value": "支付后自动发货", "icon": "auto" },
+            { "label": "物流", "value": "无需物流", "icon": "none" },
+            { "label": "使用方式", "value": "网盘链接 + 提取码下载", "icon": "link" },
+            { "label": "有效期", "value": "永久有效", "icon": "permanent" }
+          ]
+        }
+      },
+      {
+        "key": "after_sale",
+        "component": "info_card",
+        "title": "售后政策",
+        "visible": true,
+        "order": 30,
+        "data": {
+          "items": [
+            { "label": "售后类型", "value": "仅退款", "icon": "refund" },
+            { "label": "售后期限", "value": "24小时内（未发放前）", "icon": "deadline" },
+            { "label": "特别说明", "value": "网盘链接已发放不支持售后", "icon": "warning" }
+          ]
+        }
+      }
+    ]
+  }
+}

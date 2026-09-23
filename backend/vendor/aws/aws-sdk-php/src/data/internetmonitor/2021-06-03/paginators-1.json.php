@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/internetmonitor/2021-06-03/paginators-1.json
+return [ 'pagination' => [ 'GetQueryResults' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', ], 'ListHealthEvents' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'HealthEvents', ], 'ListInternetEvents' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'InternetEvents', ], 'ListMonitors' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'Monitors', ], ],];

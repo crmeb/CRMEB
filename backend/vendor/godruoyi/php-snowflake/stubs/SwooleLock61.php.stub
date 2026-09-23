@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Swoole;
+
+/**
+ * We override this method for phpstan, because Swoole has breaking change in 6.1
+ *
+ * @see https://github.com/swoole/swoole-src/releases/tag/v6.1.0
+ *
+ * @phpstan-method bool lock(int $operation = LOCK_EX, float $timeout = -1)
+ */
+class Lock
+{
+    public function __construct(int $type = SWOOLE_MUTEX) {}
+
+    /**
+     * @return bool
+     */
+    public function unlock(): bool {}
+}

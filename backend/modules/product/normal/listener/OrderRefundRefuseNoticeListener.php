@@ -1,0 +1,88 @@
+<?php
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2026 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+declare(strict_types=1);
+
+namespace modules\product\normal\listener;
+
+use app\services\message\Notice;
+use think\facade\Log;
+
+/**
+ * 实物商品退款失败通知监听器
+ *
+ * 监听 OrderRefundRefuse 事件，通过 Notice API 发送退款失败通知。
+ * 不再经过 NoticeSubscriber 事件系统中转。
+ */
+class OrderRefundRefuseNoticeListener
+{
+    /**
+     * 处理退款拒绝事件
+     * @param array $event [$orderRefundInfo]
+     */
+    public function handle(array $event): void
+    {
+        $order = $event[0] ?? [];
+        $uid = (int)($order['uid'] ?? 0);
+        $orderId = (string)($order['order_id'] ?? $order['order_no'] ?? '');
+
+        try {
+            if (!$uid) {
+                Log::warning('[退款拒绝通知] 缺少用户ID ' . json_encode([
+                    'order_id' => $orderId,
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                return;
+            }
+
+            $title = $order['store_name'] ?? $order['title'] ?? '';
+            $extraInfo = $order['extra_info'] ?? [];
+            if (is_string($extraInfo)) {
+                $extraInfo = json_decode($extraInfo, true) ?: [];
+            }
+            $phone = (string)($order['user_phone'] ?? ($extraInfo['contact']['phone'] ?? ''));
+            Log::info('[退款拒绝通知] 发送通知前日志 ' . json_encode([
+                'mark'      => 'send_order_refund_no_status',
+                'uid'       => $uid,
+                'order_id'  => $orderId,
+                'title'     => $title,
+                'phone'     => $phone,
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            // 场景：管理员拒绝退款申请后，告知用户拒绝原因
+            // 扁平业务数据：各渠道模板直接用业务变量名，新增渠道无需改监听器
+            $results = Notice::to($uid)->sendMsg('send_order_refund_no_status', '退款失败', [
+                'order_id'      => (string)($order['order_id'] ?? ''),                                               // 订单号
+                'pay_price'     => (string)($order['pay_price'] ?? 0),                                                // 订单金额（元）
+                'refund_price'  => (string)($order['refund_price'] ?? $order['refunded_price'] ?? 0),                 // 申请退款金额（元）
+                'refuse_reason' => (string)($order['refuse_reason'] ?? ''),                                           // 拒绝原因
+                'store_name'    => (string)$title,                                                                    // 商品名称
+                'user_phone'    => (string)$phone,                                                                     // 联系电话
+                'link'          => '/pages/goods/order_details/index?order_id=' . ($order['order_id'] ?? '') . '&isReturn=1', // 订单详情页链接
+            ]);
+            // sendMsg 返回 [channel_key => ['success'=>bool,'error'=>string]]，空数组 = 没有渠道实际执行
+            $succeeded = count(array_filter($results, fn($r) => !empty($r['success'])));
+            if ($succeeded === 0) {
+                Log::warning('[退款拒绝通知] 未成功投递 ' . json_encode([
+                    'mark'      => 'send_order_refund_no_status',
+                    'uid'       => $uid,
+                    'order_id'  => $orderId,
+                    'results'   => $results,
+                ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            }
+        } catch (\Throwable $e) {
+            Log::error('[退款拒绝通知] 发送异常 ' . json_encode([
+                'mark'      => 'send_order_refund_no_status',
+                'uid'       => $uid,
+                'order_id'  => $orderId,
+                'exception' => get_class($e),
+                'error'     => $e->getMessage(),
+                'file'      => $e->getFile(),
+                'line'      => $e->getLine(),
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        }
+    }
+}

@@ -1,0 +1,36 @@
+import "descriptor.proto";
+
+package json;
+
+extend google.protobuf.FileOptions {
+
+    // Set the namespace (overrides package)
+    optional string namespace   = 50102;
+    // Suffix for file names
+    optional string suffix      = 50103 [default = ".pb.js"];
+
+}
+
+//extend google.protobuf.MessageOptions {
+//
+//}
+//
+//extend google.protobuf.FieldOptions {
+//
+//}
+//
+//extend google.protobuf.EnumOptions {
+//
+//}
+//
+//extend google.protobuf.EnumValueOptions {
+//
+//}
+//
+//extend google.protobuf.ServiceOptions {
+//
+//}
+//
+//extend google.protobuf.MethodOptions {
+//
+//}

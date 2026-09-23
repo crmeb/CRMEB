@@ -1,0 +1,21 @@
+name: 📖 Documentation request/feedback
+description: "If you need more information in the documentation or have feedback about existing information, open an issue."
+labels: [ documentation ]
+body:
+  - type: checkboxes
+    attributes:
+      label: Verification
+      description: Please verify that you've followed these steps.
+      options:
+        - label: I have searched existing issues _and_ discussions for my problem.
+          required: true
+  - type: input
+    id: file
+    attributes:
+      label: "Which file do you have feedback about? (leave blank if not applicable)"
+      description: "If this is feedback or a request about a specific file, enter the path here."
+  - type: textarea
+    attributes:
+      label: Feedback
+    validations:
+      required: true

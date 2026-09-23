@@ -1,0 +1,506 @@
+<template>
+  <el-card :bordered="false" shadow="never" class="ivu-mt">
+    <el-row>
+      <el-col v-if="statisticsData" class="br" v-bind="grid">
+        <div>
+          <h4 class="title mb15">今日订单金额</h4>
+          <div class="price">
+            ￥<i>{{ statisticsData.left.series[0].money }}</i>
+          </div>
+        </div>
+        <echarts-new
+          v-if="optionData"
+          key="1"
+          ref="visitChart"
+          height="100%"
+          width="100%"
+          :option-data="optionData"
+          :styles="style"
+        />
+      </el-col>
+      <el-col v-if="statisticsData" v-bind="grid">
+        <div class="pl25">
+          <div class="toDay">
+            <span class="toDay-title spBlock mb10">今日订单数</span>
+            <span class="toDay-number spBlock mb10">{{ statisticsData.right.today.series[0].now_money }}</span>
+            <span class="toDay-time spBlock">昨日：{{ statisticsData.right.today.series[0].last_money }}</span>
+            <span class="toDay-time spBlock"
+              >日环比：
+              <i class="content-is" :class="Number(statisticsData.right.today.series[0].rate) >= 0 ? 'up' : 'down'"
+                >{{ Math.floor(statisticsData.right.today.series[0].rate) }}%</i
+              >
+              <i
+                :style="{ color: Number(statisticsData.right.today.series[0].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.today.series[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
+              />
+            </span>
+            <echarts-new
+              v-if="optionTodatOrder"
+              key="2"
+              ref="visitChart"
+              height="100%"
+              width="100%"
+              :option-data="optionTodatOrder"
+              :styles="styleToday"
+            />
+            <span class="toDay-title spBlock mb10">本月订单数</span>
+            <span class="toDay-number spBlock mb10">{{ statisticsData.right.month[0].now_money }}</span>
+            <span class="toDay-time spBlock">上月：{{ statisticsData.right.month[0].last_money }}</span>
+            <span class="toDay-time spBlock"
+              >月环比：
+              <i class="content-is" :class="Number(statisticsData.right.month[0].rate) >= 0 ? 'up' : 'down'"
+                >{{ Math.floor(statisticsData.right.month[0].rate) }}%</i
+              >
+              <i
+                :style="{ color: Number(statisticsData.right.month[0].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.month[0].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
+              />
+            </span>
+          </div>
+          <div class="toDay" style="border: none">
+            <span class="toDay-title spBlock mb10">今日支付人数</span>
+            <span class="toDay-number spBlock mb10">{{ statisticsData.right.today.series[1].now_money }}</span>
+            <span class="toDay-time spBlock">昨日：{{ statisticsData.right.today.series[1].last_money }}</span>
+            <span class="toDay-time spBlock"
+              >日环比：
+              <i class="content-is" :class="Number(statisticsData.right.today.series[1].rate) >= 0 ? 'up' : 'down'"
+                >{{ Math.floor(statisticsData.right.today.series[1].rate) }}%</i
+              >
+              <i
+                :style="{ color: Number(statisticsData.right.today.series[1].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.today.series[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
+              />
+            </span>
+            <echarts-new
+              v-if="optionOrderUser"
+              key="3"
+              ref="visitChart"
+              height="100%"
+              width="100%"
+              :option-data="optionOrderUser"
+              :styles="styleToday"
+            />
+            <span class="toDay-title spBlock mb10">本月支付人数</span>
+            <span class="toDay-number spBlock mb10">{{ statisticsData.right.month[1].now_money }}</span>
+            <span class="toDay-time spBlock">上月：{{ statisticsData.right.month[1].last_money }}</span>
+            <span class="toDay-time spBlock"
+              >月环比：
+              <i class="content-is" :class="Number(statisticsData.right.month[1].rate) >= 0 ? 'up' : 'down'"
+                >{{ Math.floor(statisticsData.right.month[1].rate) }}%</i
+              >
+              <i
+                :style="{ color: Number(statisticsData.right.month[1].rate) >= 0 ? '#F5222D' : '#39C15B' }"
+                :class="[
+                  Number(statisticsData.right.month[1].rate) >= 0 ? 'el-icon-caret-top' : 'el-icon-caret-bottom',
+                ]"
+              />
+            </span>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+  </el-card>
+</template>
+
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ElMessage } from 'element-plus';
+import { statisticTopTradeApi } from '@/api/statistic';
+import echartsNew from '@/components/echartsNew/index';
+// 统一从按需注册入口引入（echarts/core，含 graphic 命名空间）
+import * as echarts from '@/libs/echarts';
+
+defineOptions({ name: 'ToDay' });
+
+const style = {
+  height: '200px',
+};
+const styleToday = {
+  height: '130px',
+};
+const legendData = ['今天', '昨天'];
+const seriesData = ref([]);
+const timer = ref([]);
+const grid = {
+  xl: 12,
+  lg: 12,
+  md: 12,
+  sm: 24,
+  xs: 24,
+};
+const statisticsData = ref('');
+const optionTodatOrder = ref({}); // 今日订单数
+const orderData = ref({});
+const orderUserData = ref({});
+const optionData = ref({}); // 今日交易数据
+const listLoading = ref(false);
+const optionDataOrder = ref({});
+const optionOrderUser = ref({}); // 今日支付人数
+const visitChart = ref(null);
+
+onBeforeUnmount(() => {
+  if (visitChart.value) {
+    visitChart.value.dispose?.();
+    visitChart.value = null;
+  }
+});
+
+onMounted(() => {
+  getList();
+  // getOrder()
+  // getOrderUser()
+});
+
+function getList() {
+  listLoading.value = true;
+  statisticTopTradeApi({ time: 'today' })
+    .then((res) => {
+      // 今日交易数据
+      statisticsData.value = res.data;
+      const leftOrder = res.data.left;
+      const leftToday = [];
+      const leftLegendData = leftOrder.x;
+      Object.keys(leftOrder.series[0].value).forEach((key) => {
+        leftToday.push(Number(leftOrder.series[0].value[key]));
+      });
+      const leftYesterday = [];
+      Object.keys(leftOrder.series[1].value).forEach((key) => {
+        leftYesterday.push(Number(leftOrder.series[1].value[key]));
+      });
+      const seriesData = [
+        {
+          name: '今天',
+          type: 'line',
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: '#5B8FF9',
+                },
+                {
+                  offset: 0.5,
+                  color: '#fff',
+                },
+                {
+                  offset: 1,
+                  color: '#fff',
+                },
+              ]),
+            },
+          },
+          itemStyle: {
+            normal: {
+              color: '#5B8FF9',
+              lineStyle: {
+                color: '#5B8FF9',
+              },
+            },
+          },
+          data: leftToday,
+          symbol: 'none',
+          smooth: true,
+        },
+        {
+          name: '昨天',
+          type: 'line',
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: '#BFBFBF',
+                },
+                {
+                  offset: 0.5,
+                  color: '#fff',
+                },
+                {
+                  offset: 1,
+                  color: '#fff',
+                },
+              ]),
+            },
+          },
+          itemStyle: {
+            normal: {
+              color: '#D9D9D9',
+              lineStyle: {
+                color: '#D9D9D9',
+              },
+            },
+          },
+          data: leftYesterday,
+          symbol: 'none',
+          smooth: true,
+        },
+      ];
+      optionData.value = {
+        tooltip: {
+          trigger: 'axis',
+        },
+        legend: {
+          x: '1px',
+          y: '10px',
+          data: ['今天', '昨天'],
+        },
+        grid: {
+          left: '0%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            boundaryGap: false,
+            data: leftLegendData,
+            axisLine: {
+              show: false,
+            },
+            show: false,
+          },
+        ],
+        yAxis: {
+          show: false,
+        },
+        series: seriesData,
+      };
+
+      // 今日订单数
+      const rightOrder = res.data.right;
+      const rightLegendData = rightOrder.today.x;
+      const rightTodayOrder = [];
+      Object.keys(rightOrder.today.series[0].value).forEach((key) => {
+        rightTodayOrder.push(Number(rightOrder.today.series[0].value[key]));
+      });
+      const rightSeriesDataOrder = [
+        {
+          name: '今天',
+          type: 'line',
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: '#5B8FF9',
+                },
+                {
+                  offset: 0.5,
+                  color: '#fff',
+                },
+                {
+                  offset: 1,
+                  color: '#fff',
+                },
+              ]),
+            },
+          },
+          itemStyle: {
+            normal: {
+              color: '#5B8FF9',
+              lineStyle: {
+                color: '#5B8FF9',
+              },
+            },
+          },
+          data: rightTodayOrder,
+          symbol: 'none',
+          smooth: true,
+        },
+      ];
+      optionTodatOrder.value = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985',
+            },
+          },
+        },
+        legend: {
+          x: '1px',
+          y: '10px',
+          data: ['今天'],
+        },
+        grid: {
+          left: '0%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true,
+        },
+        axisLine: {
+          show: false,
+        },
+        xAxis: [
+          {
+            type: 'category',
+            boundaryGap: false,
+            data: rightLegendData,
+            axisLine: {
+              show: false,
+            },
+            show: false,
+          },
+        ],
+        yAxis: {
+          show: false,
+        },
+        series: rightSeriesDataOrder,
+      };
+
+      // 今日支付人数
+      const rightTodayPay = [];
+      Object.keys(rightOrder.today.series[1].value).forEach((key) => {
+        rightTodayPay.push(Number(rightOrder.today.series[1].value[key]));
+      });
+      const seriesDataPay = [
+        {
+          name: '今天',
+          type: 'line',
+          areaStyle: {
+            normal: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: '#5B8FF9',
+                },
+                {
+                  offset: 0.5,
+                  color: '#fff',
+                },
+                {
+                  offset: 1,
+                  color: '#fff',
+                },
+              ]),
+            },
+          },
+          itemStyle: {
+            normal: {
+              color: '#5B8FF9',
+              lineStyle: {
+                color: '#5B8FF9',
+              },
+            },
+          },
+          data: rightTodayPay,
+          symbol: 'none',
+          smooth: true,
+        },
+      ];
+      optionOrderUser.value = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985',
+            },
+          },
+        },
+        legend: {
+          x: '1px',
+          y: '10px',
+          data: ['今天'],
+        },
+        grid: {
+          left: '0%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true,
+        },
+        axisLine: {
+          show: false,
+        },
+        xAxis: [
+          {
+            type: 'category',
+            boundaryGap: false,
+            data: leftLegendData,
+            axisLine: {
+              show: false,
+            },
+            show: false,
+          },
+        ],
+        yAxis: {
+          show: false,
+        },
+        series: seriesDataPay,
+      };
+    })
+    .catch((res) => {
+      listLoading.value = false;
+      ElMessage.error(res.msg);
+    });
+}
+function getOrder() {}
+function getOrderUser() {}
+</script>
+
+<style lang="scss" scoped>
+.up,
+.el-icon-caret-top,
+.content-is {
+  color: #f5222d;
+  font-size: 12px;
+  opacity: 1 !important;
+
+  &.down {
+    color: #39c15b;
+  }
+}
+
+.down,
+.el-icon-caret-bottom .content-is {
+  font-size: 12px;
+}
+
+.el-icon-caret-bottom {
+  color: #39c15b;
+}
+
+.br {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.toDay {
+  width: 49%;
+  display: inline-block;
+
+  &-title {
+    font-size: 14px;
+  }
+
+  &-number {
+    font-size: 20px;
+  }
+
+  &-time {
+    font-size: 12px;
+    color: #8c8c8c;
+    margin-bottom: 5px;
+  }
+}
+
+.title {
+  font-size: 16px;
+  color: #000000;
+  font-weight: 500;
+}
+
+.price {
+  i {
+    font-style: normal;
+    font-size: 21px;
+    color: #000;
+  }
+}
+</style>

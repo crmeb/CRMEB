@@ -1,0 +1,204 @@
+import EasySDKKernel;
+
+type @kernel = EasySDKKernel
+
+init(kernel: EasySDKKernel) {
+  @kernel = kernel;
+}
+
+model IdentityParam {
+  identityType: string(name='identity_type'),
+  certType: string(name='cert_type'),
+  certName: string(name='cert_name'),
+  certNo: string(name='cert_no')
+}
+
+model MerchantConfig {
+  returnUrl: string(name='return_url')
+}
+
+model AlipayUserCertifyOpenInitializeResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  certifyId: string(name='certify_id')
+}
+
+model AlipayUserCertifyOpenCertifyResponse {
+  body: string(name='body', description='认证服务请求地址')
+}
+
+model AlipayUserCertifyOpenQueryResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  passed: string(name='passed'),
+  identityInfo: string(name='identity_info'),
+  materialInfo: string(name='material_info')
+}
+
+api init(outerOrderNo: string, bizCode: string, identityParam: IdentityParam, merchantConfig: MerchantConfig): AlipayUserCertifyOpenInitializeResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.user.certify.open.initialize',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    outer_order_no = outerOrderNo,
+    biz_code = bizCode,
+    identity_param = identityParam,
+    merchant_config = merchantConfig
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.user.certify.open.initialize");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  ignoreSSL = @kernel.getConfig("ignoreSSL"),
+  httpProxy = @kernel.getConfig("httpProxy"),
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}
+
+function certify(certifyId: string): AlipayUserCertifyOpenCertifyResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.user.certify.open.certify',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    certify_id = certifyId
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  var sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig('merchantPrivateKey'));
+
+  var response: map[string]string = {
+    body = @kernel.generatePage('GET', systemParams, bizParams, textParams, sign)
+  };
+  return response;
+}
+
+api query(certifyId: string): AlipayUserCertifyOpenQueryResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.user.certify.open.query',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+    certify_id = certifyId
+  };
+
+  var textParams: map[string]string = {
+  };
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = 'application/x-www-form-urlencoded;charset=utf-8'
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+    ... textParams
+  });
+
+  __request.body = @kernel.toUrlEncodedRequestBody(bizParams);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.user.certify.open.query");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  ignoreSSL = @kernel.getConfig("ignoreSSL"),
+  httpProxy = @kernel.getConfig("httpProxy"),
+  connectTimeout = 15000,
+  readTimeout = 15000,
+  retry = {
+    maxAttempts = 0
+  }
+}

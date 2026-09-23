@@ -1,0 +1,4 @@
+interface:
+  display_name: "CRMEB 插件开发"
+  short_description: "CRMEB 插件、驱动与 modules 业务模块（产品类型、交易模式、营销、渠道、分销）开发"
+  default_prompt: "使用 $crmeb-plugin-dev 创建或修改这个 CRMEB 插件或业务模块。"

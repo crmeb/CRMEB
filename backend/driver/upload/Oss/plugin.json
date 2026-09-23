@@ -1,0 +1,149 @@
+{
+    "key": "oss",
+    "name": "阿里云OSS",
+    "description": "阿里云OSS驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/upload/Oss",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "阿里云OSS",
+        "driver_key": "oss",
+        "class_name": "Driver",
+        "icon": "icon-aliyun",
+        "is_builtin": false,
+        "sort": 80,
+        "domain_template": "https://{name}.{region}.aliyuncs.com",
+        "capabilities": [
+            "upload",
+            "delete",
+            "stream",
+            "thumb",
+            "water",
+            "bucket_create",
+            "bucket_list",
+            "bucket_delete",
+            "domain_bind",
+            "cors_set",
+            "temp_keys"
+        ],
+        "help_doc": {
+            "title": "阿里云OSS开通方法",
+            "link": "https://www.aliyun.com/product/oss",
+            "steps": [
+                "第一步：注册阿里云账号，开通对象存储OSS服务",
+                "第二步：进入OSS控制台，创建Bucket（空间名称不能重复）",
+                "第三步（必选）：在Bucket列表中，设置读写权限为【公共读】",
+                "第四步（可选）：使用自定义域名时，在Bucket详情中绑定域名并进行CNAME解析"
+            ]
+        },
+        "config_fields": [
+            {
+                "field": "accessKey",
+                "label": "AccessKey",
+                "type": "text",
+                "required": true,
+                "group": "密钥配置",
+                "tip": "阿里云 AccessKey"
+            },
+            {
+                "field": "secretKey",
+                "label": "SecretKey",
+                "type": "password",
+                "required": true,
+                "group": "密钥配置",
+                "tip": "阿里云 SecretKey"
+            }
+        ],
+        "region_map": {
+            "oss-cn-hangzhou": "华东1(杭州)",
+            "oss-cn-shanghai": "华东2(上海)",
+            "oss-cn-qingdao": "华北1(青岛)",
+            "oss-cn-beijing": "华北2(北京)",
+            "oss-cn-zhangjiakou": "华北3(张家口)",
+            "oss-cn-huhehaote": "华北5(呼和浩特)",
+            "oss-cn-shenzhen": "华南1(深圳)",
+            "oss-cn-hongkong": "中国香港",
+            "oss-us-west-1": "美国(硅谷)",
+            "oss-ap-southeast-1": "新加坡"
+        },
+        "bucket_fields": [
+            {
+                "field": "name",
+                "label": "空间名称",
+                "type": "text",
+                "required": true
+            },
+            {
+                "field": "region",
+                "label": "空间区域",
+                "type": "select",
+                "required": true,
+                "options": [
+                    {
+                        "value": "oss-cn-hangzhou",
+                        "label": "华东1(杭州)"
+                    },
+                    {
+                        "value": "oss-cn-shanghai",
+                        "label": "华东2(上海)"
+                    },
+                    {
+                        "value": "oss-cn-qingdao",
+                        "label": "华北1(青岛)"
+                    },
+                    {
+                        "value": "oss-cn-beijing",
+                        "label": "华北2(北京)"
+                    },
+                    {
+                        "value": "oss-cn-zhangjiakou",
+                        "label": "华北3(张家口)"
+                    },
+                    {
+                        "value": "oss-cn-huhehaote",
+                        "label": "华北5(呼和浩特)"
+                    },
+                    {
+                        "value": "oss-cn-shenzhen",
+                        "label": "华南1(深圳)"
+                    },
+                    {
+                        "value": "oss-cn-hongkong",
+                        "label": "中国香港"
+                    },
+                    {
+                        "value": "oss-us-west-1",
+                        "label": "美国(硅谷)"
+                    },
+                    {
+                        "value": "oss-ap-southeast-1",
+                        "label": "新加坡"
+                    }
+                ]
+            },
+            {
+                "field": "acl",
+                "label": "读写权限",
+                "type": "radio",
+                "required": true,
+                "options": [
+                    {
+                        "value": "public-read",
+                        "label": "公共读(推荐)"
+                    },
+                    {
+                        "value": "public-read-write",
+                        "label": "公共读写"
+                    }
+                ],
+                "value": "public-read"
+            }
+        ]
+    }
+}

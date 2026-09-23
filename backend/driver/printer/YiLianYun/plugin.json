@@ -1,0 +1,61 @@
+{
+    "key": "YiLianYun",
+    "name": "易联云",
+    "description": "易联云驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/printer/YiLianYun",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "易联云",
+        "driver_key": "YiLianYun",
+        "driver": "YiLianYun",
+        "icon": "",
+        "description": "易联云打印机驱动，支持易联云 K4 无线版等型号",
+        "config_fields": [
+            {
+                "field": "yly_user_id",
+                "label": "用户ID",
+                "type": "text",
+                "group": "基础配置",
+                "tip": "易联云开发者ID"
+            },
+            {
+                "field": "yly_app_id",
+                "label": "应用ID",
+                "type": "text",
+                "group": "基础配置",
+                "tip": "易联应用ID"
+            },
+            {
+                "field": "yly_app_secret",
+                "label": "应用密钥",
+                "type": "password",
+                "group": "基础配置",
+                "tip": "易联应用密钥"
+            }
+        ],
+        "capabilities": {
+            "device_id": {
+                "label": "终端号",
+                "tip": "易联云打印机终端号"
+            }
+        },
+        "help_doc": {
+            "title": "易联云打印机使用说明",
+            "steps": [
+                "注册易联云开发者账号（https://www.yilianyun.net）",
+                "创建应用，获取应用ID和应用密钥",
+                "获取开发者用户ID（userId）",
+                "在打印机上获取终端号（SN）",
+                "在驱动管理中填写账号配置，在打印设置中填写设备终端号"
+            ],
+            "link": "https://www.yilianyun.net"
+        }
+    }
+}

@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/mediapackagev2/2022-12-25/waiters-2.json
+return [ 'version' => 2, 'waiters' => [ 'HarvestJobFinished' => [ 'delay' => 2, 'maxAttempts' => 60, 'operation' => 'GetHarvestJob', 'acceptors' => [ [ 'matcher' => 'path', 'argument' => 'Status', 'state' => 'success', 'expected' => 'COMPLETED', ], [ 'matcher' => 'path', 'argument' => 'Status', 'state' => 'success', 'expected' => 'CANCELLED', ], [ 'matcher' => 'path', 'argument' => 'Status', 'state' => 'failure', 'expected' => 'FAILED', ], [ 'matcher' => 'path', 'argument' => 'Status', 'state' => 'retry', 'expected' => 'QUEUED', ], [ 'matcher' => 'path', 'argument' => 'Status', 'state' => 'retry', 'expected' => 'IN_PROGRESS', ], ], ], ],];

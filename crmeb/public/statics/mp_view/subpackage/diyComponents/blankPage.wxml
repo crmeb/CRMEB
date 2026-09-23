@@ -1,1 +1,0 @@
-<common-wrapper data-custom-hidden="{{!(!isSortType)}}" vue-id="78db843a-1" config="{{configData}}" bind:__l="__l" vue-slots="{{['default']}}"><view class="blankPage"><view class="bankCon" style="{{$root.s0}}"></view></view></common-wrapper>

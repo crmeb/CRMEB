@@ -1,0 +1,53 @@
+name: 🪲 Reproducible bug
+description: "If you're sure it's reproducible and not just your environment: submit an issue so we can investigate."
+labels: [ bug ]
+body:
+  - type: checkboxes
+    attributes:
+      label: Verification
+      description: Please verify that you've followed these steps.
+      options:
+        - label: I have updated Composer to the most recent stable release (`composer self-update`)
+          required: true
+        - label: I have updated Composer Patches to the most recent stable release (`composer update cweagans/composer-patches`)
+          required: true
+        - label: I am using one of the supported PHP versions (8.0+)
+          required: true
+        - label: I have searched existing issues _and_ discussions for my problem.
+          required: true
+        - label: My problem is _not_ addressed in the [troubleshooting guide](https://docs.cweagans.net/composer-patches/troubleshooting/guide).
+          required: true
+  - type: textarea
+    attributes:
+      label: "What were you trying to do (and why)?"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "What happened? What did you expect to happen?"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      render: shell
+      label: "Contents of `composer.json`"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      render: shell
+      label: "Contents of `patches.lock`"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      render: shell
+      label: "Full output of `composer patches-doctor`"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      render: shell
+      label: "Full output of relevant Composer command with the `-vvv` flag added"
+    validations:
+      required: true

@@ -1,0 +1,68 @@
+name: Bug 反馈
+description: 反馈您所遇到的问题，以帮助我们更好的改进
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: addon
+    attributes:
+      label: 所属功能组件
+      options:
+        - 路由(Route)
+        - 控制器(Controller)
+        - 中间件(Middleware)
+        - 服务(Service)
+        - 门面(Facade)
+        - 事件(Event)
+        - 请求(Request)
+        - 缓存(Cache)
+        - 响应(Response)
+        - 视图(View)
+        - 异常(Exception)
+        - 日志(Log)
+        - 多语言(Lang)
+        - Session/Cookie
+        - 命令行(Command)
+        - 其它
+      description: |
+        * 模型(Model)和数据库(Db)功能请前往 https://github.com/top-think/think-orm/issues 反馈
+        * 多应用(MultiApp)功能请前往 https://github.com/top-think/think-multi-app/issues 反馈
+        * 容器(Container)功能请前往 https://github.com/top-think/think-container/issues 反馈
+        * 验证器(Validate)功能请前往 https://github.com/top-think/think-validate/issues 反馈
+        * 文件系统(Filesystem)功能请前往 https://github.com/top-think/think-filesystem/issues 反馈
+        * Swoole 功能请前往 https://github.com/top-think/think-swoole/issues 反馈
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ThinkPHP 版本
+      description: 您所使用的 ThinkPHP 版本是？
+      placeholder: 如：8.0.3
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: 操作系统
+      description: 您代码在什么系统上运行？
+      placeholder: 如：Windows、Centos、Ubuntu、Debian
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 错误信息
+      description: 如果有报错信息，请附上相关错误信息或截图。如：错误提示语、出错文件路径、出错行号和 Traces 等信息
+      placeholder: |
+        信息：控制器不存在
+        路径：vendor/topthink/framework/src/think/App.php
+        行号：313
+        Traces：
+          ......
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: 其它说明
+      description: 如您还有其它需要补充，可在此输入。
+    validations:
+      required: false

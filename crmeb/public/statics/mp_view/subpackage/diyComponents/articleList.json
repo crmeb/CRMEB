@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "easy-loadimage": "/components/easy-loadimage/easy-loadimage",
-    "common-wrapper": "/subpackage/diyComponents/commonWrapper"
-  }
-}

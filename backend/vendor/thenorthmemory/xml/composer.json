@@ -1,0 +1,35 @@
+{
+    "name": "thenorthmemory/xml",
+    "description": "A wrapper of the XML parser and builder",
+    "type": "library",
+    "keywords": [
+        "xml-parser",
+        "xml-builder"
+    ],
+    "authors": [
+        {
+            "name": "James ZHANG",
+            "homepage": "https://github.com/TheNorthMemory"
+        }
+    ],
+    "homepage": "https://github.com/TheNorthMemory/xml",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=7.1.2",
+        "ext-libxml": "*",
+        "ext-simplexml": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5 || ^8.5.16 || ^9.3.5",
+        "phpstan/phpstan": "^0.12.89 || ^1.0"
+    },
+    "autoload": {
+        "psr-4": { "TheNorthMemory\\Xml\\" : "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "TheNorthMemory\\Xml\\Tests\\" : "tests/" }
+    },
+    "scripts": {
+        "test": ["phpstan", "phpunit"]
+    }
+}

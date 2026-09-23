@@ -1,0 +1,41 @@
+name: 🚀 Feature request
+description: "Suggest an idea for this project."
+labels: [ enhancement ]
+body:
+  - type: checkboxes
+    attributes:
+      label: Verification
+      description: Please verify that you've followed these steps.
+      options:
+        - label: I have updated Composer to the most recent stable release (`composer self-update`)
+          required: true
+        - label: I have updated Composer Patches to the most recent stable release (`composer update cweagans/composer-patches`)
+          required: true
+        - label: I am using one of the supported PHP versions (8.0+)
+          required: true
+        - label: I have searched existing issues _and_ discussions for my idea.
+          required: true
+  - type: textarea
+    attributes:
+      label: "Is your feature request related to a problem?"
+      description: "Clearly and concisely describe the problem (eg: I'm always frustrated when...)"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Describe your proposed solution(s)"
+      description: "Clearly and concisely describe what you want to happen."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Describe alternatives"
+      description: "Clearly and concisely describe any alternative solutions or features you've considered."
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: "Additional context"
+      description: "Add any other context or screenshots about the feature request that would be helpful to the discussion."
+    validations:
+      required: false

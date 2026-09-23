@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: ThinkPHP 完全开发手册
+    url: https://doc.thinkphp.cn/
+    about: 在创建 Issue 之前，请仔细查阅开发手册，以便对其有更深入的了解，和更好地分析问题。
+  - name: ThinkPHP 轻社区
+    url: https://q.thinkphp.cn/
+    about: 欢迎来到ThinkPHP轻社区和大家一起交流。

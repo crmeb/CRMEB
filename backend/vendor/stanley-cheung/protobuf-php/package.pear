@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.8.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+    http://pear.php.net/dtd/tasks-1.0.xsd
+    http://pear.php.net/dtd/package-2.0
+    http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Protobuf</name>
+ <channel>__uri</channel>
+ <summary>PHP implementation of Google's Protocol Buffers</summary>
+ <description>
+Protobuf for PHP is an implementation of Google's Protocol Buffers for the
+PHP language, supporting its binary data serialization and including a
+protoc plugin to generate PHP classes from .proto files.
+ </description>
+ <lead>
+  <name>Iván -DrSlump- Montes</name>
+  <user>drslump</user>
+  <email>drslump@pollinimini.net</email>
+  <active>yes</active>
+ </lead>
+ <date>{DATE}</date>
+ <time>{TIME}</time>
+ <version>
+     <release>{VERSION}</release>
+     <api>{VERSION}</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://creativecommons.org/licenses/MIT">The MIT License</license>
+ <notes>http://github.com/drslump/Protobuf-PHP</notes>
+ <contents>
+     <dir name="/">
+         <file baseinstalldir="/" name="LICENSE" role="doc"/>
+         <file baseinstalldir="/" name="README.md" role="doc"/>
+         <file baseinstalldir="/" name="protoc-gen-php.php" role="script">
+             <tasks:replace from="/usr/bin/env php" to="php_bin" type="pear-config"/>
+             <tasks:replace from="@php_bin@" to="php_bin" type="pear-config" />
+             <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+         <file baseinstalldir="/" name="protoc-gen-php.bat" role="script">
+             <tasks:replace from="@php_bin@" to="php_bin" type="pear-config" />
+             <tasks:replace from="@bin_dir@" to="bin_dir" type="pear-config" />
+             <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+
+         {DIRS}
+    </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.3.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.9.2</min>
+   </pearinstaller>
+   <package>
+    <name>Console_CommandLine</name>
+    <channel>pear.php.net</channel>
+    <min>1.1.0</min>
+   </package>
+  </required>
+ </dependencies>
+ <phprelease>
+  <installconditions>
+   <os>
+    <name>windows</name>
+   </os>
+  </installconditions>
+  <filelist>
+   <install as="protoc-gen-php" name="protoc-gen-php.php" />
+   <install as="protoc-gen-php.bat" name="protoc-gen-php.bat" />
+  </filelist>
+ </phprelease>
+ <phprelease>
+  <filelist>
+   <install as="protoc-gen-php" name="protoc-gen-php.php" />
+   <ignore name="protoc-gen-php.bat" />
+  </filelist>
+ </phprelease>
+</package>

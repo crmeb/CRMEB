@@ -1,9 +1,0 @@
-/vendor
-composer.phar
-composer.lock
-.DS_Store
-/.idea
-Thumbs.db
-/*.php
-sftp-config.json
-.php_cs.cache

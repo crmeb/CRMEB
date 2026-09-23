@@ -1,0 +1,38 @@
+{
+    "key": "dingtalk",
+    "name": "钉钉机器人",
+    "description": "钉钉机器人驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/bot/DingTalk",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "钉钉机器人",
+        "driver_key": "dingtalk",
+        "icon": "icon-dingtalk",
+        "is_builtin": true,
+        "sort": 100,
+        "capabilities": ["send_text", "send_markdown", "send_card"],
+        "config_fields": [
+            {
+                "field": "webhook",
+                "label": "Webhook地址",
+                "type": "text",
+                "required": true,
+                "group": "配置",
+                "tip": "钉钉机器人的Webhook地址"
+            }
+        ],
+        "help_doc": [
+            {
+                "title": "钉钉自定义机器人配置",
+                "url": "https://open.dingtalk.com/document/robots/custom-robot-access"
+            }
+        ]
+    }
+}

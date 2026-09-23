@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup PHP environment
+      uses: shivammathur/setup-php@v2
+    - name: Install dependencies
+      run: composer install
+    - name: PHPCSFixer check
+      run: composer check-style
+  phpunit:
+    strategy:
+      matrix:
+        php_version: [7.3, 7.4, 8.0]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup PHP environment
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php_version }}
+        coverage: xdebug
+    - name: Install dependencies
+      run: composer install
+    - name: PHPUnit check
+      run: ./vendor/bin/phpunit --coverage-text

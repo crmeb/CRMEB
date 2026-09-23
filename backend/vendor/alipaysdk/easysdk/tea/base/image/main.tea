@@ -1,0 +1,88 @@
+import EasySDKKernel;
+
+type @kernel = EasySDKKernel
+
+init(kernel: EasySDKKernel) {
+  @kernel = kernel;
+}
+
+model AlipayOfflineMaterialImageUploadResponse {
+  httpBody: string(name='http_body', description='响应原始字符串'),
+  code: string(name='code'),
+  msg: string(name='msg'),
+  subCode: string(name='sub_code'),
+  subMsg: string(name='sub_msg'),
+
+  imageId: string(name='image_id'),
+  imageUrl: string(name='image_url')
+}
+
+api upload(imageName: string, imageFilePath: string): AlipayOfflineMaterialImageUploadResponse {
+  var systemParams: map[string]string = {
+    method = 'alipay.offline.material.image.upload',
+    app_id = @kernel.getConfig("appId"),
+    timestamp = @kernel.getTimestamp(),
+    format = 'json',
+    version = '1.0',
+    alipay_sdk = @kernel.getSdkVersion(),
+    charset = 'UTF-8',
+    sign_type = @kernel.getConfig("signType"),
+    app_cert_sn = @kernel.getMerchantCertSN(),
+    alipay_root_cert_sn = @kernel.getAlipayRootCertSN()
+  };
+
+  var bizParams: map[string]any = {
+  };
+
+  var textParams: map[string]string = {
+    image_type = 'jpg',
+    image_name = imageName
+  };
+
+  var fileParams: map[string]string = {
+    image_content = imageFilePath
+  };
+
+  var boundary = @kernel.getRandomBoundary();
+
+  __request.protocol = @kernel.getConfig("protocol");
+  __request.method = 'POST';
+  __request.pathname = '/gateway.do';
+
+  __request.headers = {
+    host = @kernel.getConfig("gatewayHost"),
+    content-type = @kernel.concatStr('multipart/form-data;charset=utf-8;boundary=', boundary)
+  };
+
+  __request.query = @kernel.sortMap({
+    sign = @kernel.sign(systemParams, bizParams, textParams, @kernel.getConfig("merchantPrivateKey")),
+    ... systemParams,
+  });
+
+  __request.body = @kernel.toMultipartRequestBody(textParams, fileParams, boundary);
+} returns {
+  var respMap: map[string]any = @kernel.readAsJson(__response, "alipay.offline.material.image.upload");
+
+  if (@kernel.isCertMode()) {
+    if (@kernel.verify(respMap, @kernel.extractAlipayPublicKey(@kernel.getAlipayCertSN(respMap)))) {
+      return @kernel.toRespModel(respMap);
+    }
+  } else {
+    if (@kernel.verify(respMap, @kernel.getConfig("alipayPublicKey"))) {
+      return @kernel.toRespModel(respMap);
+    }
+  }
+  
+  throw {
+    message = '验签失败，请检查支付宝公钥设置是否正确。'
+  }
+  
+} runtime {
+  ignoreSSL = @kernel.getConfig("ignoreSSL"),
+  httpProxy = @kernel.getConfig("httpProxy"),
+  connectTimeout = 100000,
+  readTimeout = 100000,
+  retry = {
+    maxAttempts = 0
+  }
+}

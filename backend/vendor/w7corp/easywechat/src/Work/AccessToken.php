@@ -1,0 +1,92 @@
+<?php
+
+declare(strict_types=1);
+
+namespace EasyWeChat\Work;
+
+use const JSON_UNESCAPED_UNICODE;
+
+use EasyWeChat\Kernel\Contracts\RefreshableAccessToken;
+use EasyWeChat\Kernel\Exceptions\HttpException;
+use JetBrains\PhpStorm\ArrayShape;
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+use function intval;
+use function is_string;
+use function json_encode;
+use function sprintf;
+
+class AccessToken implements RefreshableAccessToken
+{
+    protected HttpClientInterface $httpClient;
+
+    protected CacheInterface $cache;
+
+    public function __construct(
+        protected string $corpId,
+        protected string $secret,
+        protected ?string $key = null,
+        ?CacheInterface $cache = null,
+        ?HttpClientInterface $httpClient = null
+    ) {
+        $this->httpClient = $httpClient ?? HttpClient::create(['base_uri' => 'https://qyapi.weixin.qq.com/']);
+        $this->cache = $cache ?? new Psr16Cache(new FilesystemAdapter(namespace: 'easywechat', defaultLifetime: 1500));
+    }
+
+    public function getKey(): string
+    {
+        return $this->key ?? $this->key = sprintf('work.access_token.%s.%s', $this->corpId, $this->secret);
+    }
+
+    public function setKey(string $key): static
+    {
+        $this->key = $key;
+
+        return $this;
+    }
+
+    public function getToken(): string
+    {
+        $token = $this->cache->get($this->getKey());
+
+        if ($token && is_string($token)) {
+            return $token;
+        }
+
+        return $this->refresh();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    #[ArrayShape(['access_token' => 'string'])]
+    public function toQuery(): array
+    {
+        return ['access_token' => $this->getToken()];
+    }
+
+    /**
+     * @throws HttpException
+     */
+    public function refresh(): string
+    {
+        $response = $this->httpClient->request('GET', '/cgi-bin/gettoken', [
+            'query' => [
+                'corpid' => $this->corpId,
+                'corpsecret' => $this->secret,
+            ],
+        ])->toArray(false);
+
+        if (empty($response['access_token'])) {
+            throw new HttpException('Failed to get access_token: '.json_encode($response, JSON_UNESCAPED_UNICODE));
+        }
+
+        $this->cache->set($this->getKey(), $response['access_token'], intval($response['expires_in']));
+
+        return $response['access_token'];
+    }
+}

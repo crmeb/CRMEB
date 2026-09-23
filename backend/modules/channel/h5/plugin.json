@@ -1,0 +1,14 @@
+{
+    "key": "channel/h5",
+    "name": "H5浏览器",
+    "description": "H5浏览器端用户渠道，支持OAuth登录",
+    "version": "1.0.0",
+    "author": "CRMEB Team",
+    "type": "channel",
+    "path": "modules/channel/h5",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.2|^8.3|^8.4"
+    }
+}

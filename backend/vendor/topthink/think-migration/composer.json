@@ -1,0 +1,44 @@
+{
+    "name": "topthink/think-migration",
+    "authors": [
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "Phinx\\": "phinx",
+            "think\\migration\\": "src"
+        }
+    },
+    "require": {
+        "php": ">=7.2",
+        "topthink/framework": "^6.0 || ^8.0",
+        "topthink/think-helper": "^3.0.3"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "^1.8",
+        "robmorgan/phinx": "^0.13.4",
+        "composer/composer": "^2.5.8"
+    },
+    "suggest": {
+        "fzaninotto/faker": "Required to use the factory builder (^1.8)."
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "think\\migration\\UsePhinx::run"
+        ],
+        "post-update-cmd": [
+            "think\\migration\\UsePhinx::run"
+        ]
+    },
+    "extra": {
+        "think": {
+            "services": [
+                "think\\migration\\Service"
+            ]
+        }
+    }
+}

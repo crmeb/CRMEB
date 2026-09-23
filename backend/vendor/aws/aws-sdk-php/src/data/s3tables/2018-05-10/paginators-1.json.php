@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/s3tables/2018-05-10/paginators-1.json
+return [ 'pagination' => [ 'ListNamespaces' => [ 'input_token' => 'continuationToken', 'output_token' => 'continuationToken', 'limit_key' => 'maxNamespaces', 'result_key' => 'namespaces', ], 'ListTableBuckets' => [ 'input_token' => 'continuationToken', 'output_token' => 'continuationToken', 'limit_key' => 'maxBuckets', 'result_key' => 'tableBuckets', ], 'ListTables' => [ 'input_token' => 'continuationToken', 'output_token' => 'continuationToken', 'limit_key' => 'maxTables', 'result_key' => 'tables', ], ],];

@@ -1,0 +1,52 @@
+{
+    "key": "yihaotong",
+    "name": "一号通短信",
+    "description": "一号通短信驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/sms/Yihaotong",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "一号通短信",
+        "driver_key": "yihaotong",
+        "class_name": "Driver",
+        "icon": "icon-yihaotong",
+        "is_builtin": true,
+        "sort": 100,
+        "capabilities": ["send", "record", "template", "apply", "open", "modify", "info"],
+        "help_doc": {
+            "title": "一号通短信平台开通方法",
+            "link": "https://api.crmeb.com",
+            "steps": [
+                "第一步：注册一号通平台账号",
+                "第二步：登录后开通短信服务，设置短信签名",
+                "第三步：在系统中填写账号信息并启用"
+            ]
+        },
+        "config_fields": [
+            {
+                "field": "yihaotong_appid",
+                "label": "一号通appid",
+                "type": "text",
+                "required": true,
+                "readonly": true,
+                "group": "基础配置",
+                "tip": "一号通平台 AppId，系统全局共享，请通过一号通登录/设置页面修改"
+            },
+            {
+                "field": "yihaotong_appsecret",
+                "label": "一号通appsecret",
+                "type": "password",
+                "required": true,
+                "readonly": true,
+                "group": "基础配置",
+                "tip": "一号通平台 AppSecret，系统全局共享，请通过一号通登录/设置页面修改"
+            }
+        ]
+    }
+}

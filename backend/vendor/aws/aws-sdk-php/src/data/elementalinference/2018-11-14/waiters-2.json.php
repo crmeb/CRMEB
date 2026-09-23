@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/elementalinference/2018-11-14/waiters-2.json
+return [ 'version' => 2, 'waiters' => [ 'FeedDeleted' => [ 'description' => 'Wait until a Feed is deleted', 'delay' => 3, 'maxAttempts' => 40, 'operation' => 'GetFeed', 'acceptors' => [ [ 'matcher' => 'error', 'state' => 'success', 'expected' => 'ResourceNotFoundException', ], [ 'matcher' => 'path', 'argument' => 'status', 'state' => 'success', 'expected' => 'DELETED', ], [ 'matcher' => 'path', 'argument' => 'status', 'state' => 'retry', 'expected' => 'DELETING', ], [ 'matcher' => 'error', 'state' => 'retry', 'expected' => 'InternalServerErrorException', ], [ 'matcher' => 'error', 'state' => 'retry', 'expected' => 'TooManyRequestException', ], ], ], ],];

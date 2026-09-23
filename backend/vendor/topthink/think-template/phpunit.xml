@@ -1,0 +1,12 @@
+<phpunit
+        bootstrap="tests/bootstrap.php"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+>
+    <testsuites>
+        <testsuite name="unit">
+            <directory phpVersion="8.0.0" phpVersionOperator=">=">tests/think</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

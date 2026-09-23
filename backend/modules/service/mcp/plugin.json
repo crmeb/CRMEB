@@ -1,0 +1,14 @@
+{
+    "key": "service_mcp",
+    "name": "MCP 服务",
+    "description": "Model Context Protocol 服务：向 AI 助手（WorkBuddy/豆包办公/TraeWork/千问办公 等）开放商品、订单、售后、优惠券、用户等查询工具及第三方驱动检查与配置工具，并提供二开知识工具（开发文档检索、路由定义检索、数据表结构查询），支持其他插件通过事件追加自定义工具",
+    "version": "1.0.1",
+    "author": "CRMEB Team",
+    "type": "service",
+    "path": "modules/service/mcp",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "key": "cardkey",
+  "title": "卡密商品",
+  "version": "1.0.0",
+  "pages": [
+    { "path": "list", "title": "卡密商品列表" },
+    { "path": "add", "title": "添加/编辑卡密商品" },
+    { "path": "stock", "title": "卡密库存" },
+    { "path": "order", "title": "卡密订单" },
+    { "path": "order_detail", "title": "卡密订单详情" }
+  ]
+}

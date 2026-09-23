@@ -1,0 +1,38 @@
+{
+    "key": "feishu",
+    "name": "飞书机器人",
+    "description": "飞书机器人驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/bot/Feishu",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "飞书机器人",
+        "driver_key": "feishu",
+        "icon": "icon-feishu",
+        "is_builtin": true,
+        "sort": 300,
+        "capabilities": ["send_text", "send_markdown", "send_card"],
+        "config_fields": [
+            {
+                "field": "webhook",
+                "label": "Webhook地址",
+                "type": "text",
+                "required": true,
+                "group": "配置",
+                "tip": "飞书机器人的Webhook地址"
+            }
+        ],
+        "help_doc": [
+            {
+                "title": "飞书自定义机器人配置",
+                "url": "https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN"
+            }
+        ]
+    }
+}

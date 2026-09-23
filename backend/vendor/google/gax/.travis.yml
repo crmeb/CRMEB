@@ -1,0 +1,14 @@
+language: php
+php:
+  - '5.5.38'
+  - '5.6.25'
+sudo: required
+dist: trusty
+install:
+  - pecl install grpc
+  - composer install
+script:
+  - vendor/bin/phpunit --coverage-clover=coverage.xml
+  - vendor/bin/phpcs --standard=./ruleset.xml
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

@@ -1,0 +1,367 @@
+/* 初始化样式
+------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+:root {
+  --prev-bg-menuBar: #282c34;
+  --prev-bg-menuBarColor: #ffffff;
+  --prev-bg-topBar: #ffffff;
+  --prev-bg-topBarColor: #282c34;
+  --prev-bg-columnsMenuBar: #282c34;
+  --prev-bg-columnsMenuBarColor: #e6e6e6;
+  --prev-bg-columnsMenuActiveColor: #ffffff;
+  --prev-bg-menu-hover-ba-color: rgba(0, 0, 0, 0.2);
+  --prev-bg-menu-active-color: #0256ff;
+  --prev-bg-main-color: #f0f2f5;
+  --prev-bg-color: #f5f7fa;
+  --prev-bg-white: #ffffff;
+  --prev-color-primary: #0256ff;
+  --prev-color-text-white: #ffffff;
+  --prev-color-text-black: #000000;
+  --prev-color-text-primary: #606266;
+  --prev-color-text-regular: #303133;
+  --prev-color-text-secondary: #909399;
+  --prev-color-text-placeholder: #c0c4cc;
+  --prev-color-hover: rgba(0, 0, 0, 0.04);
+  --prev-color-seting-main: #e9eef3;
+  --prev-color-seting-aside: #d3dce6;
+  --prev-color-seting-header: #b3c0d1;
+  --prev-border-color-hover: #c0c4cc;
+  --prev-border-color-base: #dcdfe6;
+  --prev-border-color-light: #e4e7ed;
+  --prev-border-color-lighter: #ebeef5;
+  --prev-border-color-extra-light: #f2f6fc;
+  --prev-tag-active-color: #fff;
+  --prev-MenuActiveColor: #fff;
+  --prev-table-header-bag: #f2f6ff;
+
+  /* 主色浅色阶 / 深色阶：与 utils/theme.js 的 getLightColor（向白混色 level）算法一致。
+     此前只有 setings.vue 在 window.load 后写入 documentElement 行内样式，
+     首屏渲染前 variables.scss 的 hover/disabled 与 .el-table 表头背景取不到值。 */
+  --prev-color-primary-light-1: color-mix(in srgb, var(--prev-color-primary) 90%, #ffffff);
+  --prev-color-primary-light-2: color-mix(in srgb, var(--prev-color-primary) 80%, #ffffff);
+  --prev-color-primary-light-3: color-mix(in srgb, var(--prev-color-primary) 70%, #ffffff);
+  --prev-color-primary-light-4: color-mix(in srgb, var(--prev-color-primary) 60%, #ffffff);
+  --prev-color-primary-light-5: color-mix(in srgb, var(--prev-color-primary) 50%, #ffffff);
+  --prev-color-primary-light-6: color-mix(in srgb, var(--prev-color-primary) 40%, #ffffff);
+  --prev-color-primary-light-7: color-mix(in srgb, var(--prev-color-primary) 30%, #ffffff);
+  --prev-color-primary-light-8: color-mix(in srgb, var(--prev-color-primary) 20%, #ffffff);
+  --prev-color-primary-light-9: color-mix(in srgb, var(--prev-color-primary) 10%, #ffffff);
+  --prev-color-primary-dark-2: color-mix(in srgb, var(--prev-color-primary) 80%, #000000);
+
+  /* 语义色：与 Element Plus 默认配色保持一致（见 variables.scss「Tag 标签」注释） */
+  --prev-color-success: #67c23a;
+  --prev-color-warning: #e6a23c;
+  --prev-color-danger: #f56c6c;
+  --prev-color-info: #909399;
+}
+
+:root {
+  /* Element Plus 主题变量桥接：跟随原有 --prev-* 体系，保持换肤/主色一致 */
+  --el-color-primary: var(--prev-color-primary);
+  --el-color-primary-light-3: color-mix(in srgb, var(--prev-color-primary) 70%, #ffffff);
+  --el-color-primary-light-5: color-mix(in srgb, var(--prev-color-primary) 50%, #ffffff);
+  --el-color-primary-light-7: color-mix(in srgb, var(--prev-color-primary) 30%, #ffffff);
+  --el-color-primary-light-8: color-mix(in srgb, var(--prev-color-primary) 20%, #ffffff);
+  --el-color-primary-light-9: color-mix(in srgb, var(--prev-color-primary) 10%, #ffffff);
+  --el-color-primary-dark-2: color-mix(in srgb, var(--prev-color-primary) 80%, #000000);
+  --el-text-color-primary: var(--prev-color-text-primary);
+  --el-text-color-regular: var(--prev-color-text-regular);
+  --el-text-color-secondary: var(--prev-color-text-secondary);
+  --el-text-color-placeholder: var(--prev-color-text-placeholder);
+  --el-border-color: var(--prev-border-color-base);
+  --el-border-color-light: var(--prev-border-color-light);
+  --el-border-color-lighter: var(--prev-border-color-lighter);
+  --el-border-color-extra-light: var(--prev-border-color-extra-light);
+  --el-fill-color-light: var(--prev-color-hover);
+  --el-bg-color: var(--prev-bg-white);
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  background-color: var(--prev-bg-main-color);
+  font-size: 14px;
+}
+
+/* Element Plus 在 .el-table 组件级把表头背景重置为白色，且 fixed 列表头规则
+   （--el-table-header-bg-color）优先级高于主题 th 规则，导致 fixed 操作列
+   表头背景缺失；组件级覆盖回主题色（本文件后于 element-plus 样式加载） */
+.el-table {
+  --el-table-header-bg-color: var(--prev-color-primary-light-9);
+  /* 悬浮行背景必须不透明：--el-fill-color-light 桥接的 --prev-color-hover 是半透明色，
+     会让 sticky 固定列在悬浮时透出底层滚动单元格的文字（本文件后于 element-plus 样式加载） */
+  --el-table-row-hover-bg-color: var(--prev-bg-color);
+}
+
+/* 主布局样式
+------------------------------- */
+.layout-container {
+  width: 100%;
+  height: 100%;
+
+  .layout-aside {
+    background: var(--prev-bg-menuBar);
+    // box-shadow: 0px 0 1px rgba(0, 21, 41, 1%);
+    height: inherit;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden !important;
+
+    .el-scrollbar__view {
+      overflow: hidden;
+    }
+  }
+
+  .layout-header {
+    padding: 0 !important;
+  }
+
+  .layout-main {
+    padding: 0 !important;
+    overflow: hidden;
+    width: 100%;
+    background-color: var(--prev-bg-main-color);
+    position: relative;
+  }
+
+  .el-scrollbar {
+    width: 100%;
+  }
+
+  .layout-view-bg-white {
+    background: var(--prev-bg-white);
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    border: 1px solid var(--prev-border-color-lighter);
+  }
+
+  .layout-el-aside-br-color {
+    // border-right: 1px solid rgb(238, 238, 238);
+  }
+
+  .layout-aside-width-default {
+    width: 180px !important;
+    transition: width 0.2s ease;
+    box-shadow: 1px 1px 4px rgba(0, 21, 41, 0.08);
+  }
+
+  .layout-aside-width64 {
+    width: 64px !important;
+    transition: width 0.2s ease;
+  }
+
+  .layout-aside-width1 {
+    width: 0px !important;
+    transition: width 0.2s ease;
+  }
+
+  .layout-scrollbar {
+    @extend .el-scrollbar;
+    padding: 16px;
+
+    // 容器内边距已提供 16px 顶部留白，页面首位卡片/行自带的上边距会叠加成 32px 双重间距，统一清零
+    // 动作按钮行（.action-row）需保留 -6px 偏移实现距卡顶 14px，不在此清零范围
+    > .el-scrollbar__wrap {
+      .el-card:first-child,
+      .el-row:first-child:not(.action-row) {
+        margin-top: 0 !important;
+      }
+    }
+  }
+
+  .layout-mian-height-50 {
+    height: calc(100vh - 50px);
+  }
+
+  .layout-columns-warp {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .layout-hide {
+    display: none;
+  }
+}
+
+/* 进度条颜色
+------------------------------- */
+#nprogress .bar {
+  background: var(--prev-color-primary) !important;
+}
+
+/* flex 弹性布局
+------------------------------- */
+.flex {
+  display: flex;
+}
+
+.flex-auto {
+  flex: 1;
+}
+
+.flex-center {
+  @extend .flex;
+  flex-direction: column !important;
+  width: 100%;
+  overflow: hidden;
+}
+
+.flex-margin {
+  margin: auto;
+}
+
+.flex-warp {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  margin: 0 -5px;
+
+  .flex-warp-item {
+    padding: 5px;
+
+    .flex-warp-item-box {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+/* 宽高 100%
+------------------------------- */
+.w100 {
+  width: 100% !important;
+}
+
+.h100 {
+  height: 100% !important;
+  min-height: calc(100vh - 186px);
+}
+
+.h101 {
+  height: 100% !important;
+  min-height: calc(100vh - 150px);
+}
+
+.vh100 {
+  height: 100vh !important;
+}
+
+.max100vh {
+  max-height: 100vh !important;
+}
+
+.min100vh {
+  min-height: 100vh !important;
+}
+
+/* 颜色值
+------------------------------- */
+.color-primary {
+  color: var(--prev-color-primary);
+}
+
+.color-success {
+  color: var(--prev-color-success);
+}
+
+.color-warning {
+  color: var(--prev-color-warning);
+}
+
+.color-danger {
+  color: var(--prev-color-danger);
+}
+
+.color-info {
+  color: var(--prev-color-info);
+}
+
+/* 溢出省略号
+------------------------------- */
+.one-text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.two-text-overflow {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.overflow {
+  overflow: hidden !important;
+}
+
+.white-space-nowrap {
+  white-space: nowrap;
+}
+.p30 {
+  padding: 30px;
+}
+
+.p20 {
+  padding: 20px;
+}
+
+.p40 {
+  padding: 40px;
+}
+
+/* 字体大小全局样式
+------------------------------- */
+@for $i from 10 through 32 {
+  .font#{$i} {
+    font-size: #{$i}px !important;
+  }
+}
+
+/* 外边距、内边距全局样式
+------------------------------- */
+@for $i from 5 through 35 {
+  .mt#{$i} {
+    margin-top: #{$i}px !important;
+  }
+
+  .mr#{$i} {
+    margin-right: #{$i}px !important;
+  }
+
+  .mb#{$i} {
+    margin-bottom: #{$i}px !important;
+  }
+
+  .ml#{$i} {
+    margin-left: #{$i}px !important;
+  }
+
+  .pt#{$i} {
+    padding-top: #{$i}px !important;
+  }
+
+  .pr#{$i} {
+    padding-right: #{$i}px !important;
+  }
+
+  .pb#{$i} {
+    padding-bottom: #{$i}px !important;
+  }
+
+  .pl#{$i} {
+    padding-left: #{$i}px !important;
+  }
+}

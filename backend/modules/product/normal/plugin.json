@@ -1,0 +1,14 @@
+{
+    "key": "product_normal",
+    "name": "实物商品",
+    "description": "实物商品产品类型",
+    "version": "1.0.0",
+    "author": "CRMEB Team",
+    "type": "product_type",
+    "path": "modules/product/normal",
+    "required": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    }
+}

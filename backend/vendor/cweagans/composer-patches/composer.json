@@ -1,0 +1,68 @@
+{
+  "name": "cweagans/composer-patches",
+  "description": "Provides a way to patch Composer packages.",
+  "license": "BSD-3-Clause",
+  "type": "composer-plugin",
+  "extra": {
+    "class": "cweagans\\Composer\\Plugin\\Patches",
+    "_": "The following two lines ensure that composer-patches is loaded as early as possible.",
+    "plugin-modifies-downloads": true,
+    "plugin-modifies-install-path": true
+  },
+  "authors": [
+    {
+      "name": "Cameron Eagans",
+      "email": "me@cweagans.net"
+    }
+  ],
+  "require": {
+    "php": ">=8.0.0",
+    "ext-json": "*",
+    "composer-plugin-api": "^2.0",
+    "cweagans/composer-configurable-plugin": "^2.0"
+  },
+  "require-dev": {
+    "composer/composer": "~2.0",
+    "codeception/codeception": "~4.0",
+    "php-coveralls/php-coveralls": "~2.0",
+    "phpro/grumphp": "^1.8.0",
+    "php-parallel-lint/php-parallel-lint": "^1.0.0",
+    "sebastian/phpcpd": "^6.0",
+    "squizlabs/php_codesniffer": "^4.0",
+    "codeception/module-cli": "^2.0",
+    "codeception/module-filesystem": "^2.0",
+    "codeception/module-asserts": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "cweagans\\Composer\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "cweagans\\Composer\\Tests\\Acceptance\\": "tests/acceptance/",
+      "cweagans\\Composer\\Tests\\Unit\\": "tests/unit/",
+      "cweagans\\Composer\\Tests\\": "tests/_support/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "phpro/grumphp": true
+    },
+    "platform": {
+      "php": "8.0"
+    }
+  },
+  "scripts": {
+    "static": "grumphp run",
+    "unit": "codecept run unit",
+    "acceptance": "codecept run acceptance",
+    "coverage": "codecept run --coverage-xml",
+    "coveralls": "php-coveralls",
+    "test": [
+      "@static",
+      "@unit",
+      "@acceptance"
+    ]
+  }
+}

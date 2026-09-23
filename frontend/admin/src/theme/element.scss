@@ -1,0 +1,548 @@
+/* 防止页面切换时，滚动条高度不变的问题（滚动条高度非滚动条滚动高度）
+------------------------------- */
+.el-scrollbar {
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.el-scrollbar__wrap {
+  overflow: auto !important;
+  overflow-x: hidden !important;
+  max-height: 100%;
+  /*防止页面切换时，滚动条高度不变的问题（滚动条高度非滚动条滚动高度）*/
+}
+
+.el-select-dropdown .el-scrollbar__wrap {
+  overflow-x: scroll !important;
+}
+
+.el-select-dropdown__wrap {
+  max-height: 274px !important;
+  /*修复Select 选择器高度问题*/
+}
+
+.el-select__wrapper {
+  font-size: 12px !important;
+}
+
+.el-autocomplete-suggestion__wrap {
+  max-height: 280px !important;
+}
+
+/* Button 按钮
+------------------------------- */
+.el-button {
+  font-weight: 400 !important;
+  font-size: 12px !important;
+  padding: 9px 15px !important;
+  border-radius: 4px;
+}
+
+.el-button.is-loading {
+}
+
+.el-button + .el-button {
+  margin-left: 14px !important;
+}
+
+// 第三方字体图标大小
+.el-button i.iconfont,
+.el-button i.fa {
+  font-size: 14px !important;
+  margin-right: 5px;
+}
+
+.el-button i.iconfont,
+.el-button i.fa {
+  font-size: 14px !important;
+  margin-right: 5px;
+}
+
+.el-button--small i.iconfont,
+.el-button--small i.fa {
+  font-size: 12px !important;
+  margin-right: 5px;
+}
+
+.el-button--small i.iconfont,
+.el-button--small i.fa {
+  font-size: 12px !important;
+  margin-right: 5px;
+}
+
+/* Dialog 对话框
+------------------------------- */
+.el-dialog__body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 720px;
+  padding: 15px 15px 15px 15px !important;
+}
+
+.el-dialog {
+  /* EP2.9 起根元素自带 16px 内边距，会与 header/body 的 15px 叠成双重边距 */
+  padding: 0 !important;
+  box-shadow: unset !important;
+  border-radius: 6px !important;
+  // left: 50%;
+  // top: 50%;
+  // transform: translate(-50%);
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid #eee;
+  padding: 15px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.el-dialog__title {
+  font-size: 14px !important;
+  font-weight: 500;
+  font-weight: 500;
+  color: #303133;
+  line-height: 14px !important;
+}
+
+.el-dialog__headerbtn {
+  position: initial !important;
+  /* EP 默认 48px，流内布局时会撑高标题栏 */
+  height: auto !important;
+  width: auto !important;
+  display: flex;
+  align-items: center;
+}
+
+.el-dialog__footer {
+  /* 根内边距归零后，底部留白由 footer 自身补足 */
+  padding: 10px 15px 15px !important;
+}
+
+.el-dialog__body > img {
+  // max-width: 600px;
+  max-height: 600px;
+}
+
+/* Alert 警告
+------------------------------- */
+.el-alert--warning.is-light {
+  // border: 1px solid rgba(230, 162, 60, 0.3) !important;
+}
+
+.el-alert--success.is-light {
+  // border: 1px solid rgba(103, 194, 58, 0.3) !important;
+}
+
+// .el-alert--info.is-light {
+//   color: #f7ba1e;
+//   background-color: #fef8e8;
+//   // border: 1px solid rgba(144, 147, 153, 0.3) !important;
+// }
+.el-alert--error.is-light {
+  // border: 1px solid rgba(245, 108, 108, 0.3) !important;
+}
+
+/* Table 表格
+------------------------------- */
+
+.el-table-column--selection {
+  .el-checkbox {
+    margin-right: unset !important;
+  }
+}
+
+.el-table::before,
+.el-table--group::after,
+.el-table--border::after {
+  z-index: 1 !important;
+}
+
+/* 下拉选择器/时间选择器滚动条
+------------------------------- */
+.el-table__body tr.current-row > td.el-table__cell,
+.vxe-table--render-default .vxe-body--row.row--current {
+  background-color: #f5f7fa !important;
+}
+
+.hover-row .el-select-dropdown .el-scrollbar__wrap,
+.el-picker-panel .el-scrollbar__wrap {
+  overflow-x: scroll !important;
+}
+
+.el-table--enable-row-transition .el-table__body td {
+  // display: flex;
+  // align-items: center;
+  height: 50px;
+}
+
+.vxe-table--body-wrapper .vxe-cell {
+  min-height: 24px;
+}
+
+/* Tabs 标签页
+------------------------------- */
+.el-tabs {
+  /* 页面页签高度 54px（2026-09-23 用户以「实物订单」页效果重新裁定，文档 4.4 同步） */
+  --el-tabs-header-height: 54px;
+}
+
+.el-tabs__item {
+  font-size: 14px;
+}
+
+.el-tabs__item.is-active {
+  font-weight: 500;
+}
+
+.el-tabs__active-bar {
+  height: 3px;
+}
+
+/* 弹窗/抽屉内页签维持紧凑规格 */
+.el-dialog .el-tabs,
+.el-drawer .el-tabs {
+  --el-tabs-header-height: 40px;
+}
+
+.el-dialog .el-tabs__item,
+.el-drawer .el-tabs__item {
+  font-size: 13px;
+}
+
+/* NavMenu 导航菜单
+------------------------------- */
+// 默认样式修改
+.el-menu {
+  border-right: none !important;
+}
+
+.el-menu-item,
+.el-sub-menu__title {
+  height: 50px !important;
+  line-height: 50px !important;
+  color: var(--prev-bg-menuBarColor) !important;
+  transition: none !important;
+}
+
+// horizontal 水平方向时
+.el-menu--horizontal > .el-menu-item.is-active,
+.el-menu--horizontal > .el-sub-menu.is-active .el-sub-menu__title {
+  border-bottom: 3px solid !important;
+  border-bottom-color: var(--prev-color-primary) !important;
+  // color: var(--prev-color-primary) !important;
+}
+
+// 横向顶栏一级叶子菜单选中时：文字保持顶栏文字色，选中态由主题色下划线标识。
+// EP 默认激活色（--el-menu-active-color = 主题色）优先级更高，会把选中文字染成主题色，
+// 在深色顶栏或浅色选中底上与背景同色系导致看不清
+.el-menu--horizontal > .el-menu-item.is-active {
+  color: var(--prev-bg-topBarColor) !important;
+}
+
+.el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
+.el-menu--horizontal .el-menu-item:not(.is-disabled):hover,
+.el-menu--horizontal > .el-sub-menu:focus .el-sub-menu__title,
+.el-menu--horizontal > .el-sub-menu:hover .el-sub-menu__title,
+.el-menu--horizontal .el-menu .el-menu-item.is-active,
+.el-menu--horizontal .el-menu .el-sub-menu.is-active > .el-sub-menu__title {
+  color: var(--prev-MenuActiveColor) !important;
+}
+
+.el-menu.el-menu--horizontal {
+  border-bottom: none !important;
+}
+
+.el-menu--horizontal > .el-menu-item,
+.el-menu--horizontal > .el-sub-menu .el-sub-menu__title {
+  padding: 0 14px;
+  color: var(--prev-bg-topBarColor) !important;
+}
+
+// 横向顶栏一级子菜单标题：重新给展开箭头预留右侧空间。
+// 上方的 padding: 0 14px 覆盖了 EP 为箭头预留的 padding-right，
+// 而箭头是绝对定位（right: --el-menu-base-level-padding），会压在菜单名称上
+.el-menu--horizontal > .el-sub-menu .el-sub-menu__title {
+  padding-right: 32px;
+}
+.el-menu--horizontal > .el-sub-menu .el-sub-menu__title .el-sub-menu__icon-arrow {
+  right: 14px;
+}
+
+// 外部链接时
+.el-menu-item a,
+.el-menu-item a:hover,
+.el-menu-item i,
+.el-sub-menu__title i {
+  color: var(--prev-bg-menuBarColor) !important;
+  text-decoration: none;
+  margin-right: 8px;
+  margin-left: 5px;
+}
+
+.el-menu-item a {
+  width: 86%;
+  display: inline-block;
+}
+
+// 默认 hover 时：中性半透明底色、文字颜色不变，避免与选中态主题色混淆
+.el-menu-item:hover,
+.el-sub-menu__title:hover {
+  background-color: color-mix(in srgb, var(--prev-bg-menuBarColor) 10%, transparent) !important;
+}
+
+// 鼠标 hover 时颜色
+.el-menu-hover-bg-color {
+  background-color: var(--prev-bg-menu-hover-ba-color) !important;
+}
+
+// 高亮（选中）时：仅叶子菜单项保留主题色背景，父级菜单不做任何选中标识
+.el-menu-item.is-active {
+  color: var(--prev-MenuActiveColor) !important;
+  @extend .el-menu-hover-bg-color;
+
+  //   background-color: var(--prev-bg-menu-hover-ba-color) !important;
+  .el-sub-menu__title i {
+    color: var(--prev-MenuActiveColor) !important;
+  }
+}
+
+.el-active-extend {
+  color: #ffffff !important;
+  //   background-color: var(--prev-color-primary) !important;
+  //   background-color: var(--prev-bg-menu-hover-ba-color) !important;
+
+  i {
+    color: #ffffff !important;
+  }
+}
+
+.columns-round {
+  .el-menu-item {
+    margin: 5px 5px 0px 5px;
+    border-radius: 5px;
+  }
+
+  .el-sub-menu {
+    border-radius: 5px;
+
+    .el-sub-menu__title {
+      margin: 5px 5px;
+    }
+
+    .el-sub-menu__title:hover {
+      border-radius: 5px;
+    }
+  }
+
+  .el-sub-menu .el-menu-item {
+    min-width: min-content !important;
+    width: 94%;
+  }
+}
+
+// 菜单层级对齐：带图标嵌套项（二级菜单/子分组）回到 EP 原生级差缩进（padding-left 40px，
+// 图标起点 45px，与一级图标起点 25px 拉开层级差，避免图标同轴分不清级数）；
+// 无图标叶子项（三级页面）文字对齐直接上级带图标项的文字起点（padding + 图标 16px + 间距 10px）：
+// 一层嵌套（分栏第二列，上级 padding 20px）→ 46px；两层嵌套（默认/经典侧栏，上级 padding 40px）→ 66px。
+// EP 原生按级数递增缩进且不区分有无图标，此处统一覆盖。
+// 注意：规则全部限定在侧栏容器 .layout-aside 内——弹出层（el-menu--popup-container，
+// 含横向顶栏「···」ellipsis 收纳层、侧栏收起悬停层）由 EP 原生样式管理，弹层内各项
+// 原生统一 padding 20px 天然对齐，若被内联规则命中会出现 title 与叶子错位。
+.layout-aside .el-menu .el-sub-menu .el-menu-item {
+  padding-left: 40px !important;
+}
+
+// 顶层分组标题（根菜单直接子级，如布局一「设置」、布局二第二列「管理权限」）：
+// 与顶层叶子菜单同轴（padding 20px，图标起点 25px）
+.layout-aside .el-menu > .el-sub-menu > .el-sub-menu__title {
+  padding-left: 20px !important;
+}
+
+// 深层分组标题（有父级分组的组菜单，即二级分组）：与二级叶子同缩进（40px）
+.layout-aside .el-menu .el-sub-menu .el-sub-menu > .el-sub-menu__title {
+  padding-left: 40px !important;
+}
+
+// 无图标叶子：模板中不含任何 <i> 图标元素，用 :has() 与带图标项区分
+.layout-aside .el-menu .el-sub-menu .el-menu-item:not(:has(i)) {
+  padding-left: 46px !important;
+}
+
+.layout-aside .el-menu .el-sub-menu .el-sub-menu .el-menu-item:not(:has(i)) {
+  padding-left: 66px !important;
+}
+
+// 小屏侧栏抽屉（layout/aside.vue）：清零全局抽屉 body 的 20px 35px 内边距——
+// 该内边距面向详情/编辑抽屉内容；侧栏菜单需占满抽屉宽度，
+// 否则 180px 抽屉被左右各吃 35px 后仅剩 110px，二级菜单（缩进 40 + 图标 + 文字）被截断
+.layout-aside-drawer .el-drawer__body {
+  padding: 0;
+}
+
+#add-is-active {
+  //   @extend .el-active-extend;
+  //   &:hover {
+  //     @extend .el-active-extend;
+  //   }
+}
+
+// 菜单收起时且是a链接
+.is-dark a {
+  color: #ffffff !important;
+  text-decoration: none;
+}
+
+// 菜单收起时鼠标经过背景颜色/字体颜色
+.el-menu--vertical {
+  background: var(--prev-bg-menuBar) !important;
+}
+
+.el-menu--horizontal {
+  .el-menu {
+    background: var(--prev-bg-topBar) !important;
+  }
+
+  .el-menu-item,
+  .el-sub-menu__title {
+    color: var(--prev-bg-topBarColor) !important;
+  }
+}
+
+// 第三方图标字体间距/大小设置
+.el-menu-item .iconfont,
+.el-sub-menu .iconfont,
+.el-menu-item .fa,
+.el-sub-menu__title .fa {
+  font-size: 14px !important;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+  width: 24px;
+  text-align: center;
+}
+
+// element plus 本身字体图标
+.el-sub-menu [class^='el-icon-'],
+.el-menu-item [class^='el-icon-'] {
+  font-size: 14px !important;
+}
+
+// 去掉离开浏览器时，菜单的默认高亮
+.el-menu-item:focus {
+  //   background-color: transparent !important;
+}
+
+/* Alert 警告
+------------------------------- */
+.el-alert__title {
+  word-break: break-all;
+}
+
+// tooltip
+.el-popper.is-light {
+  border-color: #f2f2f2 !important;
+}
+
+.el-popper .el-popper__arrow,
+.el-popper .el-popper__arrow::after {
+  color: #f2f2f2 !important;
+}
+
+.el-popper .el-popper__arrow {
+  border-bottom-color: #f2f2f2 !important;
+}
+
+// 下拉菜单
+.el-dropdown {
+  font-size: 12px !important;
+  line-height: inherit;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: var(--prev-color-primary);
+}
+
+.el-icon-arrow-down {
+  font-size: 12px;
+}
+
+.el-message {
+  min-width: 100px !important;
+  padding-right: 25px !important;
+}
+
+.el-message-box {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  -webkit-transform: translate(-50%);
+  transform: translate(-50%);
+}
+
+.el-message-box__wrapper {
+  overflow-y: auto;
+}
+
+.el-notification__content {
+  color: var(--prev-color-text-regular);
+
+  p {
+    word-break: break-all;
+  }
+}
+
+// input
+
+// 取消input的上下箭头
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+}
+
+input::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+  background-color: var(--prev-color-primary) !important;
+  border-color: var(--prev-color-primary) !important;
+}
+
+// primary
+.el-button--primary {
+  color: var(--prev-color-text-white) !important;
+  background: var(--prev-color-primary) !important;
+  border-color: var(--prev-color-primary) !important;
+
+  &:hover,
+  &:focus {
+    color: var(--prev-color-text-white);
+    background: var(--prev-color-primary-light-3) !important;
+    border-color: var(--prev-color-primary-light-3) !important;
+  }
+}
+
+// loading
+.vxe-loading > .vxe-loading--chunk {
+  color: var(--prev-color-primary) !important;
+}
+
+.el-form-item--small .el-form-item__label {
+  word-break: break-word;
+}
+
+/* 表单行内的日期/时间范围选择器不被 flex 拉伸：EP 的 .el-range-editor 复用 .el-input__wrapper
+   自带 flex-grow: 1，在 .el-form-item__content（flex 容器）内即使写了 width 也会占满整行剩余空间；
+   置 0 后写了宽度按宽度显示，未写的回落 EP 默认（daterange 350px / datetimerange 640px），
+   width: 100% 的场景不受影响 */
+.el-form-item__content .el-range-editor {
+  flex-grow: 0;
+}
+
+/* 数字输入框统一默认宽 180px：EP 默认 150px（small 120px）放不下带单位后缀的数字，
+   页面显式宽度类（scoped）与 form-create 的 100% 仍正常覆盖 */
+.el-input-number {
+  width: 180px;
+}

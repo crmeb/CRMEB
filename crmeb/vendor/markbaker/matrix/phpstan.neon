@@ -1,4 +1,0 @@
-parameters:
-    ignoreErrors:
-        - '#Property [A-Za-z\\]+::\$[A-Za-z]+ has no typehint specified#'
-        - '#Method [A-Za-z\\]+::[A-Za-z]+\(\) has no return typehint specified#'

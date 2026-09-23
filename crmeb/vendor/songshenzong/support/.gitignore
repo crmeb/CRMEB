@@ -1,7 +1,0 @@
-.DS_Store
-.idea
-/vendor/
-/support.iml
-build
-composer.lock
-/.php_cs.cache

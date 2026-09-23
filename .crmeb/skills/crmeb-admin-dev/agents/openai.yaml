@@ -1,0 +1,4 @@
+interface:
+  display_name: "CRMEB Admin 开发"
+  short_description: "CRMEB Vue 3 管理端页面、接口、路由与插件 UI 开发"
+  default_prompt: "使用 $crmeb-admin-dev 完成这个 CRMEB Admin 管理端需求。"

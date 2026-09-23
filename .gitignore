@@ -1,78 +1,113 @@
-/.git
-/.idea
-.vscode/
+# 本文件只影响未跟踪文件；已有跟踪项不会因新增规则自动退出仓库。
+# backend/vendor 保持现有随仓库分发方式。
+
+# 系统文件与临时产物
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
 *.log
-*.DS_Store
-*.iml
+*.tmp.md
+*.swp
+*.swo
 
-# CRMEB运行时
-/crmeb/runtime/*
-/crmeb/backup/*
+# 编辑器本地设置（适用于各层目录）
+.idea/
+.vscode/
+.hbuilderx/
+*.code-workspace
+
+# 可选本地开发容器配置：Dev Containers 只识别仓库根的 /.devcontainer/ 或 /.devcontainer.json
+# 入库版本已移除，需要容器化开发者本地自建，不入库
+/.devcontainer/
+/.devcontainer.json
+
+# 根目录本地 AI 工具入口；规则、技能、角色与各端约定维护在 .crmeb/
+/.agents/
+/.claude/
+/.codebuddy/
+/.codex/
+/.codegraph/
+/.cursor/
+/.gemini/
+# `.github/` 整体忽略：Copilot 入口已移除且不再入库。若将来要添加 GitHub Actions
+# 工作流等 GitHub 配置，需把本行收窄为只忽略具体文件，否则会被静默忽略
+/.github/
+/.qoder/
+/.reasonix/
+/.shared/
+/.trae/
+/.workbuddy/
+/.zcode/
+/frontend/.codebuddy/
+/frontend/.trae/
+/.mcp.json
+/reasonix.toml
+
+# 本地环境与凭据；示例文件和随源码分发的默认配置保留
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!/backend/public/install/.env
+!/frontend/admin/.env.production
+!/frontend/uni-app/.env.production
+/backend/.constant
+/backend/pem/
+
+# 前端依赖与构建产物
+/frontend/admin/dist/
+/frontend/admin/node_modules/
+/frontend/uni-app/dist/
+/frontend/uni-app/node_modules/
+
+# Node 依赖（包括插件或扩展的独立构建目录）
+node_modules/
+
+# 首版不再维护的后端历史升级目录
+/backend/app/install/
+
+# 历史手工补丁目录已移除，结构真源为 backend/public/install/crmeb_table.sql；本地再生成不入库
+/backend/database/
+
+# 后端运行数据与导出文件
+/backend/runtime/
+/backend/public/install.lock
+/backend/public/uploads/
+/backend/public/phpExcel/
+/backend/backup/*
+!/backend/backup/README.md
+/backend/.phpunit.cache/
+/backend/.phpunit.result.cache
+/backend/vendor/dh2y/think-qrcode/src/phpqrcode/*-errors.txt
+
+# 发布到后端的前端构建资源
+/backend/public/admin/
+/backend/public/theme/
+
+# 升级程序包二进制产物：目录内脚本/清单/增量文本入库，zip 与前端构建产物出包时现生成（见 .crmeb/rules/升级包规范.md）
+/backend/upgrade/packages/*.zip
+/backend/upgrade/packages/*/frontend/
+
+# 插件包发布产物：真源在插件目录（含 upgrades/ 迁移脚本），zip 出包时现生成不入库（见 .crmeb/rules/插件开发规范.md 第七节）
+/tests/plugin-packages/
+
+# Docker 数据卷与日志；不忽略同目录下的源码配置
+/docker/mysql/data/
+/docker/mysql/log/
+/docker/nginx/log/
+
+
+/crmeb/runtime/
+/backend/tests/
 /crmeb/public/install.lock
-crmeb/public/uploads/*
 
+# 帮助文档
+/docv8/
+backend/vendor/workerman/
 
-# Docker数据
-/docker-compose/mysql/data/
-/docker-compose/mysql/log/
-/docker-compose/nginx/log/
-/docker-compose-universal/*/mysql/
-/docker-compose-universal/*/data/
+# 推广类交付文档（AI 生成，非工程代码；独立于仓库代码管理）
+推广文档/
+/frontend/uni-app/src/unpackage/dist/dev/
 
-# 构建产物
-/template/admin/dist/
-/template/admin/node_modules/
-/template/uni-app/node_modules/
-/template/uni-app/unpackage/
-/template/uni-app/.hbuilderx/
-/crmeb/.idea/
-
-# 备份文件
-*_backup/
-
-# Docker Compose
-/docker-compose-dev/
-/help/docker/mysql/data/
-
-# 配置文件(敏感信息)
-crmeb/.env
-crmeb/.constant
-crmeb/supervisord.log
-crmeb/supervisord.pid
-
-crmeb/start.sh
-crmeb/supervisord.conf
-crmeb/my.cnf
-crmeb/redis.conf
-crmeb/vhost.conf
-crmeb/php-ini-overrides.ini
-crmeb/php-fpm.conf
-
-# 代码助手规则文件
-.codebuddy/rules/dockerfile-buid.mdc
-.codebuddy/rules/docker-compose-buid.mdc
-
-.trae/rules/docker.md
-.trae/rules/dockerinone.md
-
-
-.trae/skills/dockercompose/ALLINONE_SKILL.md
-.gitignore
-crmeb/Dockerfile
-crmeb/nginx.conf
-crmeb/.env.example
-crmeb/.dockerignore
-
-crmeb/backup/readme.md
-crmeb/runtime/readme.md
-crmeb/runtime/cache/readme.md
-crmeb/runtime/log/readme.md
-crmeb/runtime/session/readme.md
-crmeb/runtime/temp/readme.md
-
-
-.codebuddy/rules/git-commit-standard.mdc
-.codebuddy/rules/readme.mdc
-Dockerfile
-.codebuddy/models.json
-.codebuddy/rules/project-intro.mdc

@@ -1,1 +1,0 @@
-.navbar{position:relative;color:#333}.navbar .content{position:fixed;top:0;right:0;left:0;z-index:998;background-color:var(--view-theme);font-weight:500;font-size:34rpx;color:#fff}

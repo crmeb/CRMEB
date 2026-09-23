@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "common-wrapper": "/subpackage/diyComponents/commonWrapper"
-  }
-}

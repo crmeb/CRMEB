@@ -1,0 +1,65 @@
+{
+    "key": "yihaotong",
+    "name": "一号通电子面单",
+    "description": "一号通电子面单驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/express/Yihaotong",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "一号通电子面单",
+        "driver_key": "yihaotong",
+        "class_name": "Driver",
+        "icon": "icon-yihaotong",
+        "is_builtin": true,
+        "sort": 100,
+        "config_fields": [
+            {
+                "field": "type",
+                "label": "电子面单类型",
+                "type": "radio",
+                "group": "接口配置",
+                "value": "1",
+                "options": [
+                    {
+                        "value": "1",
+                        "label": "一号通电子面单"
+                    }
+                ],
+                "readonly": true
+            },
+            {
+                "field": "yihaotong_appid",
+                "label": "一号通appid",
+                "type": "text",
+                "readonly": true,
+                "group": "账号配置",
+                "tip": "从一号通平台配置自动读取"
+            },
+            {
+                "field": "yihaotong_appsecret",
+                "label": "一号通appsecret",
+                "type": "password",
+                "readonly": true,
+                "group": "账号配置",
+                "tip": "从一号通平台配置自动读取"
+            }
+        ],
+        "help_doc": {
+            "title": "一号通电子面单使用说明",
+            "steps": [
+                "注册并登录一号通平台（https://api.crmeb.com）",
+                "在平台开通「电子面单」服务",
+                "获取平台分配的 AppId 和 AppSecret",
+                "将以上信息填入系统后台一号通账户配置中",
+                "返回本页面，开启「电子面单」开关即可使用"
+            ],
+            "link": "https://api.crmeb.com"
+        }
+    }
+}

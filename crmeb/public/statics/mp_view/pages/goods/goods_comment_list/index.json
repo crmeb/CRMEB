@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "商品评分",
-  "usingComponents": {
-    "user-evaluation": "/components/userEvaluation/index"
-  }
-}

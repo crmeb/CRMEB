@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "领取优惠券",
-  "usingComponents": {
-    "authorize": "/components/Authorize",
-    "home": "/components/home/index"
-  }
-}

@@ -1,0 +1,34 @@
+{
+  "name": "alibabacloud/darabonba-openapi",
+  "description": "Alibaba Cloud OpenApi Client",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "require": {
+    "php": ">5.5",
+    "alibabacloud/tea-utils": "^0.2.21",
+    "alibabacloud/credentials": "^1.2.2",
+    "alibabacloud/openapi-util": "^0.1.10|^0.2.1",
+    "alibabacloud/gateway-spi": "^1",
+    "alibabacloud/tea-xml": "^0.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Darabonba\\OpenApi\\": "src"
+    }
+  },
+  "scripts": {
+    "fixer": "php-cs-fixer fix ./"
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true
+  },
+  "prefer-stable": true
+}

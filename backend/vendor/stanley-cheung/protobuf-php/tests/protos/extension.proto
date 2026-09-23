@@ -1,0 +1,12 @@
+package tests;
+
+message ExtA {
+  optional string first = 1;
+  extensions 2 to 3;
+}
+
+message ExtB {
+  extend ExtA {
+    optional string second = 2;
+  }
+}

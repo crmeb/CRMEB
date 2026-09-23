@@ -1,1 +1,0 @@
-<view hidden="{{!(!isSortType)}}"><common-wrapper vue-id="aeb63eec-1" config="{{configData}}" bind:__l="__l" vue-slots="{{['default']}}"><view class="lines"><view class="item" style="{{$root.s0}}"></view></view></common-wrapper></view>

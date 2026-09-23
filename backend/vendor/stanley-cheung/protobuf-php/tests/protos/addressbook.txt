@@ -1,0 +1,22 @@
+person {
+  name: "John Doe"
+  id: 2051
+  email: "john.doe@gmail.com"
+  phone {
+    number: "1231231212"
+    type: HOME
+  }
+  phone {
+    number: "55512321312"
+    type: MOBILE
+  }
+}
+person {
+  name: "Iván Montes"
+  id: 23
+  email: "drslump@pollinimini.net"
+  phone {
+    number: "3493123123"
+    type: WORK
+  }
+}

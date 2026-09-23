@@ -1,0 +1,25 @@
+{
+    "name": "google/gax",
+    "type": "library",
+    "description": "Google API Extensions for PHP",
+    "keywords": ["google"],
+    "homepage": "https://github.com/googleapis/gax-php",
+    "license": "BSD-3-Clause",
+    "require": {
+        "php": ">=5.5",
+        "google/auth": "^1.0",
+        "grpc/grpc": "v1.0.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.8.*",
+        "squizlabs/php_codesniffer": "2.*",
+        "phpdocumentor/phpdocumentor": "*"
+    },
+    "autoload": {
+        "psr-4": {
+          "Google\\GAX\\":"src/",
+          "Google\\GAX\\UnitTests\\":"tests/"
+        },
+        "classmap": ["src/generated", "src/generated/well-known-types"]
+    }
+}

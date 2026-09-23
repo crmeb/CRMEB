@@ -1,0 +1,205 @@
+services:
+  # mysql 容器
+  mysql:
+    container_name: crmeb_mysql
+    image: ccr.ccs.tencentyun.com/crmebky_php/mysql:v8.0.45
+    restart: always
+    ports:
+      - "33061:3306"
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_USER: crmeb
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: crmeb
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/log:/var/log/mysql
+    networks:
+      app_net:
+        ipv4_address: 192.168.10.11
+
+  # redis 容器
+  redis:
+    container_name: crmeb_redis
+    image: ccr.ccs.tencentyun.com/crmebky_php/redis:v8.6.1
+    restart: always
+    ports:
+      - "63791:6379"
+    environment:
+      TZ: Asia/Shanghai
+      REDIS_PASSWORD: 123456
+    networks:
+      app_net:
+        ipv4_address: 192.168.10.10
+
+  # php 容器
+  phpfpm:
+    container_name: crmeb_php
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+      # 默认构建支持范围下限 8.2；验证其它版本：PHP_VERSION=8.4 docker compose up -d --build
+      args:
+        PHP_VERSION: "${PHP_VERSION:-8.2}"
+    image: crmeb_php:${PHP_VERSION:-8.2}
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_HOST_IP: crmeb_mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: crmeb
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: crmeb
+      REDIS_HOST_IP: crmeb_redis
+      REDIS_PORT: "6379"
+      REDIS_DATABASE: "0"
+      REDIS_PASSWORD: 123456
+      APP_DEBUG: true
+      DEFAULT_TIMEZONE: Asia/Shanghai
+      PHP_WORKERMAN_CHANNEL_IP: workerman
+      # MCP 开发文档工具（crmeb_dev_docs_search）定位仓库根：只读挂载 help 与 .crmeb
+      CRMEB_REPO_ROOT: /repo
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+      - ./backend/runtime:/var/www/runtime
+      - ./help:/repo/help:ro
+      - ./.crmeb:/repo/.crmeb:ro
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      app_net:
+        ipv4_address: 192.168.10.90
+
+  # 定时任务进程：以前台模式运行，由 Docker 负责开机启动和异常重启
+  timer:
+    container_name: crmeb_timer
+    image: crmeb_php:${PHP_VERSION:-8.2}
+    restart: always
+    command: ["php", "think", "timer", "start"]
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_HOST_IP: crmeb_mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: crmeb
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: crmeb
+      REDIS_HOST_IP: crmeb_redis
+      REDIS_PORT: "6379"
+      REDIS_DATABASE: "0"
+      REDIS_PASSWORD: 123456
+      APP_DEBUG: true
+      DEFAULT_TIMEZONE: Asia/Shanghai
+      PHP_WORKERMAN_CHANNEL_IP: workerman
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+      - ./backend/runtime:/var/www/runtime
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app_net
+
+  # Redis 队列消费者：以前台模式运行，由 Docker 负责异常重启
+  queue:
+    container_name: crmeb_queue
+    image: crmeb_php:${PHP_VERSION:-8.2}
+    restart: always
+    # queue:listen 自身不写心跳文件，由包装脚本负责优雅停机与 runtime/.queue_heartbeat
+    command: ["sh", "/repo/docker/queue-worker.sh"]
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_HOST_IP: crmeb_mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: crmeb
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: crmeb
+      REDIS_HOST_IP: crmeb_redis
+      REDIS_PORT: "6379"
+      REDIS_DATABASE: "0"
+      REDIS_PASSWORD: "123456"
+      APP_DEBUG: true
+      DEFAULT_TIMEZONE: Asia/Shanghai
+      PHP_WORKERMAN_CHANNEL_IP: workerman
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+      - ./backend/runtime:/var/www/runtime
+      - ./docker/queue-worker.sh:/repo/docker/queue-worker.sh:ro
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app_net
+
+  # 统一 WebSocket 网关及内部 Channel 服务
+  workerman:
+    container_name: crmeb_workerman
+    image: crmeb_php:${PHP_VERSION:-8.2}
+    restart: always
+    command: ["php", "think", "workerman", "start"]
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_HOST_IP: crmeb_mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: crmeb
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: crmeb
+      REDIS_HOST_IP: crmeb_redis
+      REDIS_PORT: "6379"
+      REDIS_DATABASE: "0"
+      REDIS_PASSWORD: "123456"
+      APP_DEBUG: true
+      DEFAULT_TIMEZONE: Asia/Shanghai
+      PHP_WORKERMAN_CHANNEL_IP: 127.0.0.1
+      PHP_WORKERMAN_CHANNEL_LISTEN_IP: 0.0.0.0
+      # MCP 开发文档工具（crmeb_dev_docs_search）定位仓库根：只读挂载 help 与 .crmeb
+      CRMEB_REPO_ROOT: /repo
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+      - ./backend/runtime:/var/www/runtime
+      - ./help:/repo/help:ro
+      - ./.crmeb:/repo/.crmeb:ro
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "40001:40001"
+    networks:
+      - app_net
+
+  # nginx 容器
+  nginx:
+    container_name: crmeb_nginx
+    image: ccr.ccs.tencentyun.com/crmebky_php/nginx:v1.29.6
+    restart: always
+    ports:
+      - "8011:80"
+    depends_on:
+      - phpfpm
+      - workerman
+    environment:
+      TZ: Asia/Shanghai
+    working_dir: /var/www
+    volumes_from:
+      - phpfpm
+    volumes:
+      - ./docker/nginx/vhost.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/log:/etc/nginx/log
+    networks:
+      app_net:
+        ipv4_address: 192.168.10.80
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/24

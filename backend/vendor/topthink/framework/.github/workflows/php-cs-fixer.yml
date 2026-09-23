@@ -1,0 +1,36 @@
+name: PHP CS Fixer
+
+on:
+  push:
+    branches:
+      - "8.x"
+    paths:
+      - '**.php'
+  pull_request:
+    branches:
+      - "8.x"
+    paths:
+      - '**.php'
+
+jobs:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 10
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: cs2pr,php-cs-fixer
+
+      - name: Run PHP CS Fixer
+        run: |
+          changed_files=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- '*.php')
+          for file in $changed_files; do
+            php-cs-fixer fix "$file" --dry-run --diff --format=checkstyle | cs2pr
+          done

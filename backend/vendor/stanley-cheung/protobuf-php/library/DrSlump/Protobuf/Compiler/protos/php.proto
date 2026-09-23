@@ -1,0 +1,40 @@
+import "descriptor.proto";
+
+package php;
+
+extend google.protobuf.FileOptions {
+
+    // Set the namespace (overrides package)
+    optional string namespace   = 50002;
+    // Suffix for file names
+    optional string suffix      = 50003 [default = ".php"];
+    // Generate a file for each structure in the proto
+    optional bool multifile     = 50004 [default = false];
+    // Generate interfaces for service definitions
+    optional bool generic_services = 50005 [default = false];
+
+}
+
+//extend google.protobuf.MessageOptions {
+//
+//}
+//
+//extend google.protobuf.FieldOptions {
+//
+//}
+//
+//extend google.protobuf.EnumOptions {
+//
+//}
+//
+//extend google.protobuf.EnumValueOptions {
+//
+//}
+//
+//extend google.protobuf.ServiceOptions {
+//
+//}
+//
+//extend google.protobuf.MethodOptions {
+//
+//}

@@ -1,0 +1,53 @@
+<?php
+namespace Aws\Evs;
+
+use Aws\AwsClient;
+
+/**
+ * This client is used to interact with the **Amazon Elastic VMware Service** service.
+ * @method \Aws\Result associateEipToVlan(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise associateEipToVlanAsync(array $args = [])
+ * @method \Aws\Result createEntitlement(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createEntitlementAsync(array $args = [])
+ * @method \Aws\Result createEnvironment(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createEnvironmentAsync(array $args = [])
+ * @method \Aws\Result createEnvironmentConnector(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createEnvironmentConnectorAsync(array $args = [])
+ * @method \Aws\Result createEnvironmentHost(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createEnvironmentHostAsync(array $args = [])
+ * @method \Aws\Result deleteEntitlement(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteEntitlementAsync(array $args = [])
+ * @method \Aws\Result deleteEnvironment(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteEnvironmentAsync(array $args = [])
+ * @method \Aws\Result deleteEnvironmentConnector(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteEnvironmentConnectorAsync(array $args = [])
+ * @method \Aws\Result deleteEnvironmentHost(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteEnvironmentHostAsync(array $args = [])
+ * @method \Aws\Result disassociateEipFromVlan(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise disassociateEipFromVlanAsync(array $args = [])
+ * @method \Aws\Result getDepotUrl(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getDepotUrlAsync(array $args = [])
+ * @method \Aws\Result getEnvironment(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getEnvironmentAsync(array $args = [])
+ * @method \Aws\Result getVersions(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getVersionsAsync(array $args = [])
+ * @method \Aws\Result listEnvironmentConnectors(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listEnvironmentConnectorsAsync(array $args = [])
+ * @method \Aws\Result listEnvironmentHosts(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listEnvironmentHostsAsync(array $args = [])
+ * @method \Aws\Result listEnvironmentVlans(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listEnvironmentVlansAsync(array $args = [])
+ * @method \Aws\Result listEnvironments(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listEnvironmentsAsync(array $args = [])
+ * @method \Aws\Result listTagsForResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listTagsForResourceAsync(array $args = [])
+ * @method \Aws\Result listVmEntitlements(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listVmEntitlementsAsync(array $args = [])
+ * @method \Aws\Result tagResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise tagResourceAsync(array $args = [])
+ * @method \Aws\Result untagResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise untagResourceAsync(array $args = [])
+ * @method \Aws\Result updateEnvironmentConnector(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateEnvironmentConnectorAsync(array $args = [])
+ */
+class EvsClient extends AwsClient {}

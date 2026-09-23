@@ -1,0 +1,53 @@
+<?php
+namespace Aws\MPA;
+
+use Aws\AwsClient;
+
+/**
+ * This client is used to interact with the **AWS Multi-party Approval** service.
+ * @method \Aws\Result cancelSession(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise cancelSessionAsync(array $args = [])
+ * @method \Aws\Result createApprovalTeam(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createApprovalTeamAsync(array $args = [])
+ * @method \Aws\Result createIdentitySource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createIdentitySourceAsync(array $args = [])
+ * @method \Aws\Result deleteIdentitySource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteIdentitySourceAsync(array $args = [])
+ * @method \Aws\Result deleteInactiveApprovalTeamVersion(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteInactiveApprovalTeamVersionAsync(array $args = [])
+ * @method \Aws\Result getApprovalTeam(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getApprovalTeamAsync(array $args = [])
+ * @method \Aws\Result getIdentitySource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getIdentitySourceAsync(array $args = [])
+ * @method \Aws\Result getPolicyVersion(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getPolicyVersionAsync(array $args = [])
+ * @method \Aws\Result getResourcePolicy(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getResourcePolicyAsync(array $args = [])
+ * @method \Aws\Result getSession(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getSessionAsync(array $args = [])
+ * @method \Aws\Result listApprovalTeams(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listApprovalTeamsAsync(array $args = [])
+ * @method \Aws\Result listIdentitySources(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listIdentitySourcesAsync(array $args = [])
+ * @method \Aws\Result listPolicies(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listPoliciesAsync(array $args = [])
+ * @method \Aws\Result listPolicyVersions(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listPolicyVersionsAsync(array $args = [])
+ * @method \Aws\Result listResourcePolicies(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listResourcePoliciesAsync(array $args = [])
+ * @method \Aws\Result listSessions(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listSessionsAsync(array $args = [])
+ * @method \Aws\Result listTagsForResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listTagsForResourceAsync(array $args = [])
+ * @method \Aws\Result startActiveApprovalTeamDeletion(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise startActiveApprovalTeamDeletionAsync(array $args = [])
+ * @method \Aws\Result startApprovalTeamBaseline(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise startApprovalTeamBaselineAsync(array $args = [])
+ * @method \Aws\Result tagResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise tagResourceAsync(array $args = [])
+ * @method \Aws\Result untagResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise untagResourceAsync(array $args = [])
+ * @method \Aws\Result updateApprovalTeam(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateApprovalTeamAsync(array $args = [])
+ */
+class MPAClient extends AwsClient {}

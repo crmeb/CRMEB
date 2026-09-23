@@ -1,0 +1,99 @@
+{
+    "name": "topthink/think",
+    "description": "the new thinkphp framework",
+    "type": "project",
+    "keywords": [
+        "framework",
+        "thinkphp",
+        "ORM"
+    ],
+    "homepage": "http://thinkphp.cn/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liu21st",
+            "email": "liu21st@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2 <8.5",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "ext-bcmath": "*",
+        "ext-mbstring": "*",
+        "topthink/framework": "^8.0",
+        "topthink/think-view": "^2.0",
+        "symfony/var-dumper":"^6.0",
+        "symfony/filesystem": "^7.4",
+        "symfony/process": "^6.4.45",
+        "symfony/http-client": "^6.4",
+        "symfony/http-foundation": "^6.4",
+        "symfony/mime": "^7.4",
+        "topthink/think-captcha": "^3.0",
+        "topthink/think-image": "^1.0",
+        "xaboy/form-builder": "^2.0",
+        "firebase/php-jwt": "^5.0",
+        "aliyuncs/oss-sdk-php": "^2.4",
+        "qiniu/php-sdk": "^7.4",
+        "workerman/workerman": "^4.0",
+        "workerman/channel": "^1.0",
+        "topthink/think-queue": "^3.0",
+        "spatie/macroable": "^1.0",
+        "dh2y/think-qrcode": "^2.0",
+        "topthink/think-multi-app": "^1.0",
+        "topthink/think-template": "^3.0",
+        "phpoffice/phpspreadsheet": "^1.29",
+        "godruoyi/php-snowflake": "^3.2",
+        "guzzlehttp/psr7": "^2.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "alipaysdk/easysdk": "^2.2",
+        "alibabacloud/dysmsapi-20170525": "^2.0",
+        "fastknife/ajcaptcha": "^2.1",
+        "volcengine/volc-sdk-php": "^1.0",
+        "workerman/crontab": "^1.0",
+        "topthink/think-migration": "^3.0",
+        "topthink/think-filesystem": "^3.0",
+        "aws/aws-sdk-php": "^3.173",
+        "ext-zip": "*",
+        "ext-simplexml": "*",
+        "cweagans/composer-patches": "^2.0",
+        "w7corp/easywechat": "^6.20"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app",
+            "crmeb\\": "crmeb",
+            "modules\\": "modules",
+            "Plugins\\": "Plugins",
+            "driver\\": "driver/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "platform-check": true,
+        "allow-plugins": {
+            "cweagans/composer-patches": true
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php think service:discover",
+            "@php think vendor:publish"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.cloud.tencent.com/composer/"
+        }
+    },
+    "extra": {
+        "patches": {
+            "qiniu/php-sdk": {
+                "Fix PHP 8.4 implicit nullable parameter deprecation": "crmeb/patches/qiniu-php-sdk-php84-nullable.patch"
+            }
+        }
+    }
+}

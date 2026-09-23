@@ -1,0 +1,300 @@
+.em {
+	display: inline-block;
+	height: 1em;
+	width: 1em;
+	overflow: hidden;
+	line-height: 18px;
+	font-size: 22px;
+	vertical-align: middle;
+	margin-top: -4px;
+	color: transparent !important;
+	background-size: 4100%;
+}
+/* 陀螺酱 */
+.em.em-tlj-1 {
+  background-position: 0% 0%;
+}
+.em.em-tlj-2 {
+  background-position: 0% 2.5%;
+}
+.em.em-tlj-3 {
+  background-position: 0% 5%;
+}
+.em.em-tlj-4 {
+  background-position: 0% 7.5%;
+}
+.em.em-tlj-5 {
+  background-position: 0% 10%;
+}
+.em.em-tlj-6 {
+  background-position: 0% 12.5%;
+}
+.em.em-tlj-7 {
+  background-position: 0% 15%;
+}
+.em.em-tlj-8 {
+  background-position: 0% 17.5%;
+}
+.em.em-tlj-9 {
+  background-position: 0% 20%;
+}
+.em.em-tlj-10 {
+  background-position: 0% 22.5%;
+}
+.em.em-tlj-11 {
+  background-position: 0% 25%;
+}
+.em.em-tlj-12 {
+  background-position: 0% 27.5%;
+}
+.em.em-tlj-13 {
+  background-position: 0% 30%;
+}
+.em.em-tlj-14 {
+  background-position: 0% 32.5%;
+}
+.em.em-tlj-15 {
+  background-position: 0% 35%;
+}
+.em.em-tlj-16 {
+  background-position: 0% 37.5%;
+}
+.em.em-tlj-17 {
+  background-position: 0% 40%;
+}
+.em.em-tlj-18 {
+  background-position: 0% 42.5%;
+}
+.em.em-tlj-19 {
+  background-position: 0% 45%;
+}
+.em.em-tlj-20 {
+  background-position: 0% 47.5%;
+}
+.em.em-tlj-21 {
+  background-position: 0% 50%;
+}
+.em.em-tlj-22 {
+  background-position: 0% 52.5%;
+}
+.em.em-tlj-23 {
+  background-position: 0% 55%;
+}
+.em.em-tlj-24 {
+  background-position: 0% 57.5%;
+}
+.em.em-tlj-25 {
+  background-position: 0% 60%;
+}
+.em.em-tlj-26 {
+  background-position: 0% 62.5%;
+}
+.em.em-tlj-27 {
+  background-position: 0% 65%;
+}
+.em.em-tlj-28 {
+  background-position: 0% 67.5%;
+}
+.em.em-tlj-29 {
+  background-position: 0% 70%;
+}
+.em.em-tlj-30 {
+  background-position: 0% 72.5%;
+}
+.em.em-tlj-31 {
+  background-position: 0% 75%;
+}
+.em.em-tlj-32 {
+  background-position: 0% 77.5%;
+}
+.em.em-tlj-33 {
+  background-position: 0% 80%;
+}
+.em.em-tlj-34 {
+  background-position: 0% 82.5%;
+}
+.em.em-tlj-35 {
+  background-position: 0% 85%;
+}
+.em.em-tlj-36 {
+  background-position: 0% 87.5%;
+}
+.em.em-tlj-37 {
+  background-position: 0% 90%;
+}
+.em.em-tlj-38 {
+  background-position: 0% 92.5%;
+}
+.em.em-tlj-39 {
+  background-position: 0% 95%;
+}
+.em.em-tlj-40 {
+  background-position: 0% 97.5%;
+}
+.em.em-tlj-41 {
+  background-position: 0% 100%;
+}.em.em-tlj-42 {
+  background-position: 2.5% 0%;
+}
+.em.em-tlj-43 {
+  background-position: 2.5% 2.5%;
+}
+.em.em-tlj-44 {
+  background-position: 2.5% 5%;
+}
+.em.em-tlj-45 {
+  background-position: 2.5% 7.5%;
+}
+.em.em-tlj-46 {
+  background-position: 2.5% 10%;
+}
+.em.em-tlj-47 {
+  background-position: 2.5% 12.5%;
+}
+.em.em-tlj-48 {
+  background-position: 2.5% 15%;
+}
+.em.em-tlj-49 {
+  background-position: 2.5% 17.5%;
+}
+.em.em-tlj-50 {
+  background-position: 2.5% 20%;
+}
+.em.em-tlj-51 {
+  background-position: 2.5% 22.5%;
+}
+.em.em-tlj-52 {
+  background-position: 2.5% 25%;
+}
+.em.em-tlj-53 {
+  background-position: 2.5% 27.5%;
+}
+.em.em-tlj-54 {
+  background-position: 2.5% 30%;
+}
+.em.em-tlj-55 {
+  background-position: 2.5% 32.5%;
+}
+.em.em-tlj-56 {
+  background-position: 2.5% 35%;
+}
+.em.em-tlj-57 {
+  background-position: 2.5% 37.5%;
+}
+.em.em-tlj-58 {
+  background-position: 2.5% 40%;
+}
+.em.em-tlj-59 {
+  background-position: 2.5% 42.5%;
+}
+.em.em-tlj-60 {
+  background-position: 2.5% 45%;
+}
+.em.em-tlj-61 {
+  background-position: 2.5% 47.5%;
+}
+.em.em-tlj-62 {
+  background-position: 2.5% 50%;
+}
+.em.em-tlj-63 {
+  background-position: 2.5% 52.5%;
+}
+.em.em-tlj-64 {
+  background-position: 2.5% 55%;
+}
+.em.em-tlj-65 {
+  background-position: 2.5% 57.5%;
+}
+.em.em-tlj-66 {
+  background-position: 2.5% 60%;
+}
+.em.em-tlj-67 {
+  background-position: 2.5% 62.5%;
+}
+.em.em-tlj-68 {
+  background-position: 2.5% 65%;
+}
+.em.em-tlj-69 {
+  background-position: 2.5% 67.5%;
+}
+.em.em-tlj-70 {
+  background-position: 2.5% 70%;
+}
+.em.em-tlj-71 {
+  background-position: 2.5% 72.5%;
+}
+.em.em-tlj-72 {
+  background-position: 2.5% 75%;
+}
+.em.em-tlj-73 {
+  background-position: 2.5% 77.5%;
+}
+.em.em-tlj-74 {
+  background-position: 2.5% 80%;
+}
+.em.em-tlj-75 {
+  background-position: 2.5% 82.5%;
+}
+.em.em-tlj-76 {
+  background-position: 2.5% 85%;
+}
+.em.em-tlj-77 {
+  background-position: 2.5% 87.5%;
+}
+.em.em-tlj-78 {
+  background-position: 2.5% 90%;
+}
+.em.em-tlj-79 {
+  background-position: 2.5% 92.5%;
+}
+.em.em-tlj-80 {
+  background-position: 2.5% 95%;
+}
+.em.em-tlj-81 {
+  background-position: 2.5% 97.5%;
+}
+.em.em-tlj-82 {
+  background-position: 2.5% 100%;
+}
+.em.em-tlj-83 {
+	background-position: 5% 0%
+}
+.em.em-tlj-84 {
+	background-position: 5% 2.5%
+}
+.em.em-tlj-85 {
+	background-position: 5% 5%
+}
+.em.em-tlj-86 {
+	background-position: 5% 7.5%
+}
+.em.em-tlj-87 {
+	background-position: 5% 10%
+}
+.em.em-tlj-88 {
+	background-position: 5% 12.5%
+}
+.em.em-tlj-89 {
+	background-position: 5% 15%
+}
+.em.em-tlj-90 {
+	background-position: 5% 17.5%
+}
+.em.em-tlj-91 {
+	background-position: 5% 20%
+}
+.em.em-tlj-92 {
+	background-position: 5% 22.5%
+}
+.em.em-tlj-93 {
+	background-position: 5% 25%
+}
+.em.em-tlj-94 {
+	background-position: 5% 27.5%
+}
+.em.em-tlj-95 {
+	background-position: 5% 30%
+}
+.em.em-tlj-96 {
+	background-position: 5% 32.5%
+}

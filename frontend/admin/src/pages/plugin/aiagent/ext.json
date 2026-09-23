@@ -1,0 +1,9 @@
+{
+  "key": "aiagent",
+  "title": "AI Agent",
+  "version": "1.0.0",
+  "description": "AI 对话、MCP 连接器、Skill 与自动化任务",
+  "pages": [
+    { "path": "index", "title": "AI 对话" }
+  ]
+}

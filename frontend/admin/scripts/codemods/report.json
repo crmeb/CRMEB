@@ -1,0 +1,319 @@
+{
+  "files": 896,
+  "changed": 9,
+  "counts": {
+    "tpl-template-vfor": 32,
+    "tpl-require": 8,
+    "style-deep-leftover": 6,
+    "tpl-vfor-vif": 13,
+    "import-vue-default": 1,
+    "tpl-filter-unknown": 1
+  },
+  "issues": [
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/components/CustomDesign/Editor.vue",
+      "detail": "<template v-for=\"(item, index) in componentData\">"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/components/CustomDesign/Editor.vue",
+      "detail": "1 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "style-deep-leftover",
+      "file": "src/components/customerInfo/index.vue",
+      "detail": "1 处"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/components/freightTemplate/city.vue",
+      "detail": "<el-col\n          :xl=\"6\"\n          :lg=\"6\"\n          :md=\"6\"\n          :sm=\"8\"\n          :xs=\"6\"\n          class=\"item\"\n          v-for=\"(item, index) in cityList\"\n          :key=\"index\"\n          v-if=\"item.isShow\"\n        >"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/components/mobileConfigRight/c_goods.vue",
+      "detail": "<div\n            class=\"item\"\n            v-for=\"(goods, index) in defaults.goodsList.list\"\n            :key=\"index\"\n            v-if=\"defaults.goodsList.list.length\"\n          >"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/components/mobileConfigRight/c_pictrue.vue",
+      "detail": "<div\n          class=\"advertItem07\"\n          :class=\"currentIndex === index ? 'on' : ''\"\n          @click=\"currentTab(index, configData)\"\n          v-if=\"style === 0\"\n          v-for=\"(item, index) in configData.picList\"\n          :key=\"index\"\n        >"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/components/mobileConfigRight/c_pictrue.vue",
+      "detail": "<div class=\"advertItem01 acea-row\" v-if=\"style === 10\" v-for=\"(item, index) in configData.picList\" :key=\"index\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/components/mobileConfigRight/c_promotion.vue",
+      "detail": "<div class=\"con-item\" v-for=\"(list, key) in item.chiild\" :key=\"key\" v-if=\"key < (tabIndex == 0 ? 2 : 1)\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/components/mobileConfigRight/c_promotion.vue",
+      "detail": "<div\n                      class=\"items\"\n                      v-for=\"(goods, gIndex) in item.goodsList.list\"\n                      :key=\"gIndex\"\n                      v-if=\"item.goodsList.list.length\"\n                    >"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/components/mobilePage/home_coupon.vue",
+      "detail": "<template v-for=\"(item, index) in numberConfig\">"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/components/mobilePage/home_custom_component.vue",
+      "detail": "1 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/diy/pages/theme/components/themeSelect/index.vue",
+      "detail": "3 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/diy/pages/theme/editTheme/components/StyleConfig.vue",
+      "detail": "1 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/diy/pages/theme/myTheme/index.vue",
+      "detail": "1 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/layout/navMenu/horizontal.vue",
+      "detail": "<template v-for=\"val in menuList\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/layout/navMenu/subItem.vue",
+      "detail": "<template v-for=\"val in chil\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/layout/navMenu/vertical.vue",
+      "detail": "<template v-for=\"val in menuList\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/crud/index.vue",
+      "detail": "<template v-for=\"(item, index) in search\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/ai/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/ai/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/bot/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/bot/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/copyDriver/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/copyDriver/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/emailDriver/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/emailDriver/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/expressDriver/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/expressDriver/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/invoiceDriver/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/invoiceDriver/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/logisticsDriver/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/logisticsDriver/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/pay/index.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/pay/index.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/smsDriver/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/smsDriver/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/uploadDriver/edit.vue",
+      "detail": "<template v-for=\"(group, groupIndex) in configGroups\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/uploadDriver/edit.vue",
+      "detail": "<template v-for=\"(field, fieldIndex) in group.fields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/uploadDriver/storage.vue",
+      "detail": "<template v-for=\"(field, index) in configFields\">"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/driver/uploadDriver/storage.vue",
+      "detail": "<template v-for=\"(field, index) in bucketFields\">"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/pages/finance/financialRecords/recharge/index.vue",
+      "detail": "1 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "style-deep-leftover",
+      "file": "src/pages/finance/financialRecords/recharge/index.vue",
+      "detail": "1 处"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/pages/plugin/agent/agentManage.vue",
+      "detail": "1 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "style-deep-leftover",
+      "file": "src/pages/plugin/agent/agentManage.vue",
+      "detail": "1 处"
+    },
+    {
+      "type": "tpl-require",
+      "file": "src/pages/plugin/agent/handle/promotersList.vue",
+      "detail": "1 处（转 script setup 时改为顶部 import）"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/plugin/cardkey/order/Detail.vue",
+      "detail": "<template v-for=\"(item, idx) in detailData.custom_form\">"
+    },
+    {
+      "type": "style-deep-leftover",
+      "file": "src/pages/plugin/channel_code/pages/channelCodeIndex.vue",
+      "detail": "1 处"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/plugin/kefu/appChat/index.vue",
+      "detail": "<template v-for=\"item in records\">"
+    },
+    {
+      "type": "import-vue-default",
+      "file": "src/pages/plugin/kefu/libs/socket.js",
+      "detail": ""
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/pages/plugin/kefu/pc/components/emoji.vue",
+      "detail": "<li v-for=\"(emojiGroup, index) in emojis\" style=\"padding: 0\" :key=\"index\" v-if=\"index === activeIndex\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/pages/plugin/kefu/pc/components/msgWindow.vue",
+      "detail": "<div class=\"msg-item\" v-for=\"(item, index) in list\" :key=\"index\" v-if=\"item.id\">"
+    },
+    {
+      "type": "style-deep-leftover",
+      "file": "src/pages/plugin/kefu/storeService/index.vue",
+      "detail": "1 处"
+    },
+    {
+      "type": "style-deep-leftover",
+      "file": "src/pages/plugin/kefu/storeService/speechcraft.vue",
+      "detail": "1 处"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/plugin/normal/order/Detail.vue",
+      "detail": "<template v-for=\"(item, idx) in detailData.custom_form\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/pages/plugin/system_file_manage/opendir.vue",
+      "detail": "<el-tab-pane\n                v-for=\"value in editorIndex\"\n                :key=\"value.index\"\n                :name=\"value.index.toString()\"\n                :label=\"value.title\"\n                :icon=\"value.icon\"\n                v-if=\"value.tab\"\n              >"
+    },
+    {
+      "type": "tpl-template-vfor",
+      "file": "src/pages/plugin/virtual/order/Detail.vue",
+      "detail": "<template v-for=\"(item, idx) in orderInfo.custom_form\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/pages/setting/devise/users.vue",
+      "detail": "<div class=\"item\" v-for=\"(item, index) in MyMenus\" :key=\"index\" v-if=\"item.pic\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/pages/setting/devise/users.vue",
+      "detail": "<div class=\"acea-row row-middle item\" v-for=\"(item, index) in MyMenus\" :key=\"index\" v-if=\"item.pic\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/pages/setting/devise/users.vue",
+      "detail": "<div class=\"item\" v-for=\"(item, index) in storeMenu\" :key=\"index\" v-if=\"item.pic\">"
+    },
+    {
+      "type": "tpl-vfor-vif",
+      "file": "src/pages/setting/devise/users.vue",
+      "detail": "<div class=\"acea-row row-middle item\" v-for=\"(item, index) in storeMenu\" :key=\"index\" v-if=\"item.pic\">"
+    },
+    {
+      "type": "tpl-filter-unknown",
+      "file": "src/pages/user/list/handle/userInfo.vue",
+      "detail": "{{ psInfo.birthday | timeFormat('birthday') }}"
+    }
+  ]
+}

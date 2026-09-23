@@ -1,0 +1,17 @@
+<?php
+declare(strict_types=1);
+$namespaceDefinition
+use $useClassName;
+
+final class $className extends $baseClassName
+{
+    public function up(): void
+    {
+
+    }
+
+    public function down(): void
+    {
+
+    }
+}

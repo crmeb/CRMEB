@@ -1,0 +1,531 @@
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2026 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
+import request from '@/libs/request';
+
+/**
+ * @description 小程序模板消息 -- 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function routineListApi(data) {
+  return request({
+    url: 'app/routine',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description  同步订阅消息
+ */
+export function routineSyncTemplate() {
+  return request({
+    url: `app/routine/syncSubscribe`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  同步微信模版消息
+ */
+export function wechatSyncTemplate() {
+  return request({
+    url: `app/wechat/syncSubscribe`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description 小程序模板消息 -- 新增表单
+ * @param {Object} param data {Object} 传值参数
+ */
+export function routineCreateApi() {
+  return request({
+    url: 'app/routine/create',
+    method: 'get',
+  });
+}
+
+/**
+ * @description 小程序模板消息 -- 编辑表单
+ * @param {Object} param data {Object} 传值参数
+ */
+export function routineEditApi(id) {
+  return request({
+    url: `app/routine/${id}/edit`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 小程序模板消息 -- 修改状态
+ * @param {Object} param data {Object} 传值参数
+ */
+export function routineSetStatusApi(data) {
+  return request({
+    url: `app/routine/set_status/${data.id}/${data.status}`,
+    method: 'PUT',
+  });
+}
+
+/**
+ * @description 公众号 --公众号配置-- 微信菜单
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatMenuApi(data) {
+  return request({
+    url: `app/wechat/menu`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 公众号 --公众号配置-- 微信菜单提交
+ * @param {Object} param data {Object} 传值参数
+ */
+export function MenuApi(data) {
+  return request({
+    url: `app/wechat/menu`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 微信模板消息 -- 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatListApi(data) {
+  return request({
+    url: 'app/wechat/template',
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * @description 微信模板消息 -- 新增表单
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatCreateApi() {
+  return request({
+    url: 'app/wechat/template/create',
+    method: 'get',
+  });
+}
+
+/**
+ * @description 微信模板消息 -- 编辑表单
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatEditApi(id) {
+  return request({
+    url: `app/wechat/template/${id}/edit`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 微信模板消息 -- 修改状态
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatSetStatusApi(data) {
+  return request({
+    url: `app/wechat/template/set_status/${data.id}/${data.status}`,
+    method: 'PUT',
+  });
+}
+
+/**
+ * @description  自动回复 -- 关注回复 关键字回复 保存
+ * @param {Object} param data {Object} 传值参数
+ */
+export function replyApi(data) {
+  return request({
+    url: data.url,
+    method: 'post',
+    data: data.key,
+  });
+}
+/**
+ * @description  小程序包下载
+ * @param {Object} param data {Object} 传值参数
+ */
+export function routineDownload(data) {
+  return request({
+    url: 'app/routine/download',
+    method: 'post',
+    data,
+  });
+}
+/**
+ * @description  小程序下载页面数据
+ */
+export function routineInfo() {
+  return request({
+    url: 'app/routine/info',
+    method: 'get',
+  });
+}
+
+// ==================== 小程序 CI 自动化上传 ====================
+
+/**
+ * @description 获取小程序CI运行环境状态
+ */
+export function routineCIEnvironment() {
+  return request({
+    url: 'app/routine/ci/environment',
+    method: 'get',
+  });
+}
+
+/**
+ * @description 获取环境安装指南
+ */
+export function routineCIGuide() {
+  return request({
+    url: 'app/routine/ci/guide',
+    method: 'get',
+  });
+}
+
+/**
+ * @description 获取小程序上传配置
+ */
+export function routineCIConfig() {
+  return request({
+    url: 'app/routine/ci/config',
+    method: 'get',
+  });
+}
+
+/**
+ * @description 保存小程序上传密钥
+ * @param {Object} data { key_content: 密钥内容 }
+ */
+export function routineCISaveKey(data) {
+  return request({
+    url: 'app/routine/ci/private_key',
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 上传小程序代码
+ * @param {Object} data { version: 版本号, desc: 描述, is_live: 是否开启直播 }
+ */
+export function routineCIUpload(data) {
+  return request({
+    url: 'app/routine/ci/upload',
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 获取小程序预览二维码
+ * @param {Object} data { page_path: 预览页面路径 }
+ */
+export function routineCIPreview(data) {
+  return request({
+    url: 'app/routine/ci/preview',
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description  自动回复 -- 关键字 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function keywordListApi(params) {
+  return request({
+    url: `app/wechat/keyword`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description  自动回复 -- 关键字 修改状态
+ * @param {Object} param data {Object} 传值参数
+ */
+export function keywordsetStatusApi(data) {
+  return request({
+    url: `app/wechat/keyword/set_status/${data.id}/${data.status}`,
+    method: 'PUT',
+  });
+}
+
+/**
+ * @description  自动回复 -- 详情
+ * @param {Object} param data {Object} 传值参数
+ */
+export function keywordsinfoApi(url, data) {
+  return request({
+    url: url,
+    method: 'get',
+    params: data.key,
+  });
+}
+
+/**
+ * @description  图文管理 -- 新增
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatNewsAddApi(data) {
+  return request({
+    url: `/app/wechat/news`,
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @description  图文管理 -- 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatNewsListApi(params) {
+  return request({
+    url: `app/wechat/news`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description  图文管理 -- 详情
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatNewsInfotApi(id) {
+  return request({
+    url: `app/wechat/news/${id}`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  图文管理 -- 发送图文
+ * @param {Object} param data {Object} 传值参数
+ */
+export function wechatPushApi(data) {
+  return request({
+    url: `app/wechat/push`,
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @description  微信用户 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function wechatUserListtApi(params) {
+  return request({
+    url: `app/wechat/user`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description  微信用户 -- 用户分组和标签
+ */
+export function tagListtApi() {
+  return request({
+    url: `app/wechat/user/tag_group`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  微信用户 -- 用户分组和标签编辑
+ * @param {String} param url {String} 请求地址
+ */
+export function groupsEditApi(url) {
+  return request({
+    url: url,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  用户标签 -- 列表
+ */
+export function wechatTagListApi() {
+  return request({
+    url: `app/wechat/tag`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  用户标签 -- 添加表单
+ */
+export function wechatTagCreateApi() {
+  return request({
+    url: `app/wechat/tag/create`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  用户标签 -- 编辑表单
+ *  @param {Number} param id {Number} 标签id
+ */
+export function wechatTagEditApi(id) {
+  return request({
+    url: `app/wechat/tag/${id}/edit`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  用户分组 -- 列表
+ */
+export function wechatGroupListApi() {
+  return request({
+    url: `app/wechat/group`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  用户分组 -- 添加表单
+ */
+export function wechatGroupCreateApi() {
+  return request({
+    url: `app/wechat/group/create`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  用户分组 -- 编辑表单
+ *  @param {Number} param id {Number} 标签id
+ */
+export function wechatGroupEditApi(id) {
+  return request({
+    url: `app/wechat/group/${id}/edit`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  用户行为 -- 列表
+ */
+export function wechatActionListApi(params) {
+  return request({
+    url: `app/wechat/action`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * 下载二维码
+ * @param id
+ */
+export function downloadReplyCode(id) {
+  return request({
+    url: `app/wechat/code_reply/${id}`,
+    method: 'GET',
+  });
+}
+
+/**
+ * 城市列表
+ */
+export function cityList() {
+  return request({
+    url: `setting/city/full_list`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description  客服自动回复 -- 关键字 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function kefuAutoReplyListApi(params) {
+  return request({
+    url: `app/kefu/auto_reply/list`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description  客服自动回复添加编辑表单
+ * @param {Object} param data {Object} 传值参数
+ */
+export function kefuAutoReplyForm(id) {
+  return request({
+    url: `app/kefu/auto_reply/form/` + id,
+    method: 'get',
+  });
+}
+
+/**
+ * @description  客服配置 -- 获取（离线自动回复/首次自动打招呼/聊天窗右侧说明）
+ */
+export function kefuConfigGetApi() {
+  return request({
+    url: `app/kefu/config`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description  客服配置 -- 保存
+ * @param {Object} data {offline_reply, first_greeting, kf_adv}
+ */
+export function kefuConfigSaveApi(data) {
+  return request({
+    url: `app/kefu/config/save`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 小程序链接 -- 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function routineSchemeList(data) {
+  return request({
+    url: 'app/routine/scheme_list',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 小程序链接 -- 创建修改表单
+ * @param {Number} param id {Number} 标签id
+ */
+export function routineSchemeForm(id) {
+  return request({
+    url: `app/routine/scheme_form/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 小程序链接 -- 删除
+ * @param {Number} param id {Number} 标签id
+ */
+export function routineSchemeDel(id) {
+  return request({
+    url: `app/routine/scheme_del/${id}`,
+    method: 'delete',
+  });
+}

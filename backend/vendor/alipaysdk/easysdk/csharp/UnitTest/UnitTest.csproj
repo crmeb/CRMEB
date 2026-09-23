@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1"><IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+<PrivateAssets>all</PrivateAssets>
+</PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Fixture\" />
+    <Folder Include="Base\" />
+    <Folder Include="Base\OAuth\" />
+    <Folder Include="Marketing\" />
+    <Folder Include="Marketing\Pass\" />
+    <Folder Include="Payment\" />
+    <Folder Include="Base\Qrcode\" />
+    <Folder Include="Marketing\OpenLife\" />
+    <Folder Include="Marketing\TemplateMessage\" />
+    <Folder Include="Member\" />
+    <Folder Include="Security\" />
+    <Folder Include="Security\TextRisk\" />
+    <Folder Include="Base\Image\" />
+    <Folder Include="Base\Video\" />
+    <Folder Include="Member\Identification\" />
+    <Folder Include="Payment\Common\" />
+    <Folder Include="Payment\FaceToFace\" />
+    <Folder Include="Util\" />
+    <Folder Include="Util\Generic\" />
+    <Folder Include="Payment\Wap\" />
+    <Folder Include="Payment\Page\" />
+    <Folder Include="Payment\App\" />
+    <Folder Include="Util\AES\" />
+    <Folder Include="Factory\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Payment\FaceToFace\ClientTest %28副本%29.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AlipayEasySDK\AlipayEasySDK.csproj" />
+  </ItemGroup>
+</Project>

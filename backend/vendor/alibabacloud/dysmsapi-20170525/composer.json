@@ -1,0 +1,33 @@
+{
+  "name": "alibabacloud/dysmsapi-20170525",
+  "description": "Alibaba Cloud Dysmsapi (20170525) SDK Library for PHP",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "require": {
+    "php": ">5.5",
+    "alibabacloud/tea-utils": "^0.2.19",
+    "alibabacloud/darabonba-openapi": "^0.2.8",
+    "alibabacloud/openapi-util": "^0.1.10|^0.2.1",
+    "alibabacloud/endpoint-util": "^0.1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "AlibabaCloud\\SDK\\Dysmsapi\\V20170525\\": "src"
+    }
+  },
+  "scripts": {
+    "fixer": "php-cs-fixer fix ./"
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true
+  },
+  "prefer-stable": true
+}

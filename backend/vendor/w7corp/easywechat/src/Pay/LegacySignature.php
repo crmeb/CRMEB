@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace EasyWeChat\Pay;
+
+use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
+use EasyWeChat\Kernel\Support\Str;
+use EasyWeChat\Pay\Contracts\Merchant as MerchantInterface;
+
+use function hash_hmac;
+use function http_build_query;
+use function md5;
+use function strtoupper;
+use function urldecode;
+
+class LegacySignature
+{
+    public function __construct(protected MerchantInterface $merchant)
+    {
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     *
+     * @throws InvalidConfigException
+     */
+    public function sign(array $params): array
+    {
+        $nonce = Str::random();
+
+        $params = $attributes = array_filter(
+            \array_merge(
+                [
+                    'nonce_str' => $nonce,
+                    'sub_mch_id' => $params['sub_mch_id'] ?? null,
+                    'sub_appid' => $params['sub_appid'] ?? null,
+                ],
+                $params
+            ),
+            static fn ($value, $key) => ! ($key === 'sign' || $value === '' || is_null($value)),
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        ksort($attributes);
+
+        $attributes['key'] = $this->merchant->getV2SecretKey();
+
+        if (empty($attributes['key'])) {
+            throw new InvalidConfigException('Missing V2 API key.');
+        }
+
+        $message = urldecode(http_build_query($attributes));
+
+        if (! empty($params['sign_type']) && $params['sign_type'] === 'HMAC-SHA256') {
+            $sign = hash_hmac('sha256', $message, $attributes['key']);
+        } else {
+            $sign = md5($message);
+        }
+
+        $params['sign'] = strtoupper($sign);
+
+        return $params;
+    }
+}

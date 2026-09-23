@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "物流信息",
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "nav-bar": "/components/NavBar",
-    "empty-page": "/components/emptyPage"
-  }
-}

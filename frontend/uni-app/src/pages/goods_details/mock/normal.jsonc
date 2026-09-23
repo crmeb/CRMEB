@@ -1,0 +1,315 @@
+{
+  // ===== 顶层响应字段 =====
+  "code": 200,                  // 业务状态码 200成功/其它失败
+  "msg": "ok",                  // 提示消息
+  "data": {
+    // ===== 顶层 data 字段（用户态/上下文） =====
+    "uid": 27,                  // 当前用户ID（0表示游客未登录）
+    "is_money_level": 0,        // 是否付费会员 0否/1是（影响会员价展示）
+    "spec_unique": "NORMAL_BLK_M_002", // 默认选中SKU的unique标识（单规格时为空字符串）
+
+    "storeInfo": {
+      // ===== 产品类型（扩展点标识） =====
+      "product_type": "normal",  // 产品类型标识（normal实物/virtual网盘/cardkey卡密/coupon优惠券）
+      "product_type_name": "实物商品", // 产品类型中文名（展示用）
+
+      // ===== 图片资源 =====
+      "id": 1001,               // 商品ID
+      "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg", // 主图URL（含CDN前缀）
+      "image_base": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg", // 主图基础路径（不含CDN前缀，本例与image相同）
+      "slider_image": [          // 轮播图数组（详情页顶部banner）
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg",   // 第1张：主图
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-detail1.jpg", // 第2张：细节图1
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-detail2.jpg", // 第3张：细节图2
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-size.jpg"    // 第4张：尺码表
+      ],
+      "recommend_image": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg", // 推荐位展示图（用于商品列表/推荐位）
+      "small_image": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg", // 缩略图（购物车/订单列表用）
+
+      // ===== 基本信息 =====
+      "store_name": "纯棉短袖T恤 男款 2026夏季新款", // 商品标题（详情页主标题）
+      "store_info": "亲肤透气 多色可选 多尺码适配", // 商品副标题/简介
+      "keyword": "T恤,纯棉,男装,夏季", // 搜索关键词（逗号分隔，影响搜索权重）
+      "bar_code": "6901234500001", // 商品条形码（默认SKU的条码）
+      "cate_id": "12",           // 商品分类ID（字符串）
+      "unit_name": "件",         // 销售单位（件/个/盒/箱等）
+      "spu": "TSHIRT2026M",     // SPU编码（同一SPU下多SKU共享商品属性）
+      "label_id": "1,2,3",       // 关联标签ID（逗号分隔，对应label_list）
+      "video_link": "",          // 主图视频URL（空表示无视频）
+      "command_word": "",        // 口令文案（用于分享口令、复制打开商品）
+      "recommend_list": "1002,1003,1004", // 推荐商品ID列表（逗号分隔）
+
+      // ===== 价格信息 =====
+      "price": "99.00",          // 销售价（当前展示价，字符串保留2位）
+      "vip_price": "89.00",      // 会员价（付费会员专享价）
+      "ot_price": "159.00",      // 划线价/原价（用于展示折扣力度）
+      "postage": "0.00",         // 固定运费（is_postage=0时生效，0.00表示运费按模板计算）
+      "cost": "45.00",           // 成本价（仅后台可见，不展示给用户）
+      "give_integral": "0.00",    // 购买赠送积分数量（0表示不赠送）
+      "svip_economize_price": "10.00", // 付费会员预计节省金额（会员价与售价的差额）
+      "gift_price": "0.00",      // 礼品价格（is_gift=1时的礼品价值）
+
+      // ===== 库存与销量 =====
+      "stock": 86,               // 总库存（所有规格库存汇总）
+      "sales": 326,              // 真实+虚拟销量（用于详情页展示）
+      "fsales": "326",            // 格式化销量字符串（如"1万+"，本例为原始数字字符串）
+      "ficti": 50,               // 虚拟销量基数（真实销量=实际销量，展示销量=实际销量+ficti）
+      "browse": 8541,            // 浏览量（详情页访问次数）
+
+      // ===== 状态标识（0否/1是） =====
+      "sort": 0,                 // 排序值（数值越小越靠前）
+      "is_show": 1,              // 是否上架 0下架/1上架（影响详情页是否可访问）
+      "is_hot": 1,               // 是否热卖 0否/1是（列表"热卖"标签）
+      "is_benefit": 0,           // 是否促销 0否/1是（列表"促销"标签）
+      "is_best": 0,              // 是否精品 0否/1是（列表"精品"标签）
+      "is_new": 1,               // 是否新品 0否/1是（列表"新品"标签）
+      "is_virtual": 0,           // 是否虚拟商品 0实物/1虚拟（实物需物流配送）
+      "virtual_type": 0,         // 虚拟商品子类型 0非虚拟/1网盘/2卡密（is_virtual=0时无意义）
+      "is_postage": 1,           // 是否包邮 0否/1是（1时忽略postage字段）
+      "is_del": 0,               // 是否删除 0否/1是（软删除标记）
+      "is_seckill": 0,           // 是否参与秒杀 0否/1是
+      "is_bargain": null,        // 是否参与砍价 null未参与/数字为砍价活动ID
+      "is_good": 0,              // 是否优品推荐 0否/1是（首页推荐位）
+      "is_sub": 0,               // 是否订阅制商品 0否/1是
+      "is_vip": 0,               // 是否会员专属商品 0否/1是（1时仅会员可购买）
+      "is_gift": 0,              // 是否可作礼品 0否/1是
+      "vip_product": 0,          // 会员商品可见性 0不限制/1仅会员可见可买/2所有人可见仅会员可买
+      "vip_exclusive": false,   // 会员专享标识 vip_product=2且当前用户非会员时为true 前端渲染"开通会员后可购买"引导按钮
+
+      // ===== 限购规则 =====
+      "is_limit": 1,             // 是否限购 0否/1是
+      "limit_type": 1,           // 限购维度 1单次限购/2周期限购（按limit_num限制单笔数量）
+      "limit_num": 5,            // 限购数量（limit_type=1时单笔最多购买5件）
+      "min_qty": 1,              // 起售数量（最少购买件数，加入购物车数量下限）
+      "spec_type": 1,            // 规格类型 0单规格/1多规格（影响是否展示规格选择器）
+      "activity": "",            // 当前活动标识（空字符串表示无活动，活动时为活动类型）
+
+      // ===== 预售信息（presale=0时以下字段均无效） =====
+      "presale": 0,              // 是否预售 0否/1是
+      "presale_start_time": "1970-01-01 08:00", // 预售开始时间（时间戳0表示无预售）
+      "presale_end_time": "1970-01-01 08:00",   // 预售结束时间
+      "presale_day": 0,          // 预售发货天数（下单后N天内发货）
+      "presale_pay_status": 0,   // 预售支付状态 0未开始/1定金中/2尾款中/3已完成
+
+      // ===== 物流与配送 =====
+      "logistics": "express",    // 配送方式 express快递发货/pickup到店自提/none无需物流
+      "freight": 1,              // 运费计算方式 1按运费模板/2固定运费
+      "temp_id": 0,              // 运费模板ID（freight=1时生效，0表示使用默认模板）
+      "mer_id": 0,               // 商户ID（0表示平台自营，多商户模式时为商户ID）
+      "mer_use": 0,              // 是否多商户商品 0否/1是
+      "default_sku": "NORMAL_BLK_M_002", // 默认SKU的unique标识（进入详情页默认选中该规格）
+
+      // ===== 商品详情（时间与富文本） =====
+      "add_time": 1722422400,     // 商品添加时间（Unix时间戳）
+      "code_path": "",           // 二维码图片路径（用于扫码购买）
+      "soure_link": "",          // 采集来源链接（商品采集时记录原链接）
+      "description": "<p>纯棉短袖T恤，采用 21S 精梳棉，柔软亲肤透气，适合夏季日常穿着。</p><p>尺码建议：S(155-165cm) / M(165-170cm) / L(170-175cm) / XL(175-180cm)。</p><p><img src='https://demo.crmeb.com/static/images/products/normal-tshirt-detail1.jpg'/></p><p><img src='https://demo.crmeb.com/static/images/products/normal-tshirt-size.jpg'/></p>", // 商品详情富文本（HTML，详情页"图文详情"区块）
+      "wechat_code": "",         // 客服微信二维码图片（用于添加客服）
+
+      // ===== 用户态（依赖当前登录用户） =====
+      "userCollect": false,      // 当前用户是否已收藏 true已收藏/false未收藏
+      "userLike": false,         // 当前用户是否已点赞 true已点赞/false未点赞
+
+      // ===== 扩展数据（数组结构） =====
+      "attrPics": [              // 规格图片数组（按颜色顺序对应，用于规格选择时切换主图）
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", // 黑色规格图
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", // 白色规格图
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg"   // 藏青规格图
+      ],
+      "custom_form": [],         // 自定义表单配置（用户下单时需填写的额外字段，空数组表示无自定义表单）
+      "params_list": [            // 商品参数列表（详情页"规格参数"区块展示）
+        { "name": "材质", "value": "100% 棉" },          // 参数项：键值对
+        { "name": "款式", "value": "短袖T恤" },
+        { "name": "季节", "value": "夏季" },
+        { "name": "洗涤建议", "value": "30℃以下机洗，不可漂白" }
+      ],
+      "protection_list": [        // 保障服务列表（详情页"保障"区块展示，如假一赔十）
+        { "id": 1, "name": "假一赔十" },   // 保障项：ID + 名称
+        { "id": 2, "name": "极速退款" }
+      ],
+      "label_list": [             // 商品标签列表（详情页标题下方展示）
+        { "id": 1, "name": "包邮" },       // 标签项：ID + 名称
+        { "id": 2, "name": "7天无理由" },
+        { "id": 3, "name": "正品保障" }
+      ],
+
+      // ===== 前端契约（产品类型Handler输出的UI交互约定） =====
+      "selection_spec": {          // 规格选择契约（控制详情页规格选择器交互行为）
+        "selection_model": "matrix",      // 规格选择模式 matrix矩阵选择/single单选/none无规格
+        "confirm_window": "editable",     // 确认弹窗类型 editable可编辑数量/readonly只读/none无弹窗
+        "required_selections": ["sku"],   // 必选项数组（sku表示必须选择完整规格才能下单）
+        "cart_unit": "item"               // 购物车单位 item按单品合并/line按规格行独立
+      },
+      "cart_strategy": {           // 购物车策略契约（控制加购行为）
+        "cart_mode": "cart",             // 购物车模式 cart加入购物车/buy_now立即购买/both两者皆可
+        "multi_item": true,              // 是否允许多规格合并到同一购物车 true允许/false按规格拆分
+        "button_text": ""                // 自定义按钮文案（空表示使用默认"加入购物车"）
+      },
+      "cart_button": 1            // 购物车按钮显隐 0隐藏/1显示（详情页底部操作栏开关）
+    },
+
+    // ===== 规格属性 productAttr（多规格商品规格定义） =====
+    // 结构：每个对象代表一个规格维度（如颜色、尺码），attr_value数组为该维度下的可选项
+    "productAttr": [
+      {
+        "attr_name": "颜色",       // 规格维度名称
+        "attr_values": ["黑色", "白色", "藏青"], // 该维度所有可选值（字符串数组，逗号拼接用）
+        "attr_value": [            // 规格值明细数组
+          { "attr": "黑色", "check": false, "pic": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" }, // attr规格值/check是否默认选中/pic规格对应图片
+          { "attr": "白色", "check": false, "pic": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg" },
+          { "attr": "藏青", "check": false, "pic": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg" }
+        ]
+      },
+      {
+        "attr_name": "尺码",       // 第二个规格维度
+        "attr_values": ["S", "M", "L", "XL"],
+        "attr_value": [
+          { "attr": "S", "check": false, "pic": "" },  // pic为空表示该规格无独立图片
+          { "attr": "M", "check": false, "pic": "" },
+          { "attr": "L", "check": false, "pic": "" },
+          { "attr": "XL", "check": false, "pic": "" }
+        ]
+      }
+    ],
+
+    // ===== SKU规格值表 productValue（以"规格1,规格2"为key的SKU明细映射） =====
+    // 每个key对应一个具体SKU，包含价格/库存/图片/唯一标识等信息
+    "productValue": {
+      "黑色,S": { "suk": "黑色,S", "price": "99.00", "stock": 20, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_S_001", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500001", "is_show": 1 }, // suk规格组合/price售价/stock库存/image规格图/uniqueSKU唯一标识/cost成本/ot_price划线价/bar_code条码/is_show是否上架0下架1上架
+      "黑色,M": { "suk": "黑色,M", "price": "99.00", "stock": 15, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_M_002", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500002", "is_show": 1 }, // 默认选中SKU（与storeInfo.default_sku对应）
+      "黑色,L": { "suk": "黑色,L", "price": "109.00", "stock": 8, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_L_003", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500003", "is_show": 1 }, // 大码加价10元
+      "黑色,XL": { "suk": "黑色,XL", "price": "109.00", "stock": 5, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_XL_004", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500004", "is_show": 1 },
+      "白色,S": { "suk": "白色,S", "price": "99.00", "stock": 12, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_S_005", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500005", "is_show": 1 },
+      "白色,M": { "suk": "白色,M", "price": "99.00", "stock": 10, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_M_006", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500006", "is_show": 1 },
+      "白色,L": { "suk": "白色,L", "price": "109.00", "stock": 6, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_L_007", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500007", "is_show": 1 },
+      "白色,XL": { "suk": "白色,XL", "price": "109.00", "stock": 0, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_XL_008", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500008", "is_show": 1 }, // stock=0表示该SKU售罄
+      "藏青,S": { "suk": "藏青,S", "price": "105.00", "stock": 4, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_S_009", "cost": "48.00", "ot_price": "165.00", "bar_code": "6901234500009", "is_show": 1 }, // 藏青色基础价较黑白色高6元
+      "藏青,M": { "suk": "藏青,M", "price": "105.00", "stock": 6, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_M_010", "cost": "48.00", "ot_price": "165.00", "bar_code": "6901234500010", "is_show": 1 },
+      "藏青,L": { "suk": "藏青,L", "price": "115.00", "stock": 0, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_L_011", "cost": "52.00", "ot_price": "175.00", "bar_code": "6901234500011", "is_show": 1 }, // 售罄
+      "藏青,XL": { "suk": "藏青,XL", "price": "115.00", "stock": 0, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_XL_012", "cost": "52.00", "ot_price": "175.00", "bar_code": "6901234500012", "is_show": 1 }  // 售罄
+    },
+
+    // ===== 会员体系配置 =====
+    "svip_open": true,            // 是否开启付费会员体系 true开启/false关闭
+    "svip_price_open": 1,         // 是否展示会员价 0不展示/1展示
+    "priceName": 0,               // 价格名称类型 0默认/1会员价/2活动价（影响详情页价格区域标签）
+
+    // ===== 评价数据 reply（用户评论列表） =====
+    // 结构：评论对象数组，每项包含用户信息/评论内容/图片/评分/时间
+    "reply": [
+      {
+        "id": 8001,              // 评论ID
+        "product_id": 1001,       // 关联商品ID
+        "nickname": "山间清泉",    // 评论用户昵称
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u1.jpg", // 用户头像URL
+        "comment": "面料柔软，颜色与图片一致，尺码正，洗了几次没有变形。", // 评论内容
+        "pics": ["https://demo.crmeb.com/static/images/reply/normal-reply1.jpg"], // 评论图片数组（空数组表示无图）
+        "star": 5,                // 评分星级 1-5星
+        "add_time": "2026-07-15 10:32:18" // 评论时间（格式化字符串）
+      },
+      {
+        "id": 8002,
+        "product_id": 1001,
+        "nickname": "风的叹息",
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u2.jpg",
+        "comment": "性价比高，做工不错，物流快，包装完整。",
+        "pics": [],               // 空数组表示该评论无图片
+        "star": 5,
+        "add_time": "2026-07-18 16:05:42"
+      }
+    ],
+    "replyChance": 96,            // 好评率（百分比，96表示96%好评）
+    "replyCount": 326,             // 评论总数（与sales一致仅为mock示例）
+
+    // ===== 商户信息 =====
+    "mer_id": 0,                  // 商户ID（0表示平台自营商品，与storeInfo.mer_id一致）
+
+    // ===== 推荐商品 good_list（相关推荐） =====
+    // 结构：商品简要信息数组，用于详情页"相关推荐"区块
+    "good_list": [
+      { "id": 1002, "image": "https://demo.crmeb.com/static/images/products/normal-related1.jpg", "store_name": "纯棉长袖T恤 男款", "price": "129.00", "sales": 156 }, // id商品ID/image主图/store_name标题/price售价/sales销量
+      { "id": 1003, "image": "https://demo.crmeb.com/static/images/products/normal-related2.jpg", "store_name": "纯棉短裤 男款 夏季", "price": "79.00", "sales": 248 }
+    ],
+
+    // ===== 地图与门店 =====
+    "mapKey": "TXABCD-1234-EFGH-5678-IJKL", // 腾讯地图API密钥（用于门店自提定位展示）
+    "store_self_mention": 1,      // 是否支持门店自提 0否/1是
+
+    // ===== 营销活动 activity（商品参与的营销活动列表） =====
+    // 结构：活动对象数组，每项包含活动类型/标题/活动价/状态
+    "activity": [
+      { "id": 1, "type": "seckill", "title": "限时秒杀", "price": "79.00", "status": 1 }, // type活动类型seckill秒杀/bargain砍价/combination拼团/integral积分；status状态0未开始/1进行中/2已结束
+      { "id": 2, "type": "bargain", "title": "砍价抢购", "price": "89.00", "status": 1 }
+    ],
+
+    // ===== 优惠券 coupons（可领取的优惠券列表） =====
+    // 结构：优惠券对象数组，每项包含券名/面额/使用门槛/剩余量
+    "coupons": [
+      { "id": 501, "title": "满99减10", "coupon_price": "10.00", "use_min_price": "99.00", "surplus": 100 }, // id券ID/title名称/coupon_price面额/use_min_price满减门槛/surplus剩余领取数量
+      { "id": 502, "title": "满199减30", "coupon_price": "30.00", "use_min_price": "199.00", "surplus": 50 }
+    ],
+
+    "routine_contact_type": 0,    // 客服联系类型 0无客服/1小程序客服/2H5客服/3外部链接
+
+    // ===== 详情页区块配置 display_sections（前端动态渲染区块契约） =====
+    // 结构：区块对象数组，每个section定义一个详情页展示区块，按order排序渲染
+    "display_sections": [
+      {
+        "key": "spec",            // 区块标识 spec规格预览/fulfillment配送服务/after_sale售后保障
+        "component": "spec_preview", // 渲染组件名 spec_preview规格预览组件/info_card信息卡片组件
+        "visible": true,          // 是否可见 true可见/false隐藏
+        "order": 10,              // 渲染顺序（数值越小越靠前）
+        "data": {                 // 区块数据
+          "blocks": [             // 区块内子块数组
+            {
+              "type": "matrix",   // 子块类型 matrix矩阵表格/list列表/card卡片
+              "title": "规格预览", // 子块标题
+              "attrs": [          // 规格属性数组
+                { "name": "颜色", "values": ["黑色", "白色", "藏青"] }, // name属性名/values可选值数组
+                { "name": "尺码", "values": ["S", "M", "L", "XL"] }
+              ],
+              "skus": [           // SKU预览数组（用于矩阵展示部分SKU的库存与价格）
+                { "suk": "黑色,S", "price": 99, "stock": 20, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" }, // suk规格组合/price价格(number)/stock库存/image图片
+                { "suk": "黑色,M", "price": 99, "stock": 15, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" },
+                { "suk": "黑色,L", "price": 109, "stock": 8, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" },
+                { "suk": "白色,S", "price": 99, "stock": 12, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg" },
+                { "suk": "白色,M", "price": 99, "stock": 10, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg" },
+                { "suk": "藏青,S", "price": 105, "stock": 4, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg" },
+                { "suk": "藏青,M", "price": 105, "stock": 6, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "key": "fulfillment",     // 区块标识：配送服务
+        "component": "info_card", // 渲染组件：信息卡片
+        "title": "配送服务",       // 区块标题
+        "visible": true,
+        "order": 20,
+        "data": {                 // 区块数据（info_card组件用items数组）
+          "items": [              // 信息项数组
+            { "label": "物流", "value": "快递发货", "icon": "express" },   // label标签/value值/icon图标名
+            { "label": "运费", "value": "包邮", "icon": "free" },
+            { "label": "自提", "value": "支持到店自提", "icon": "pickup" },
+            { "label": "发货地", "value": "浙江 杭州", "icon": "location" }
+          ]
+        }
+      },
+      {
+        "key": "after_sale",      // 区块标识：售后保障
+        "component": "info_card", // 渲染组件：信息卡片
+        "title": "售后保障",       // 区块标题
+        "visible": true,
+        "order": 30,
+        "data": {
+          "items": [
+            { "label": "售后类型", "value": "退款 / 退货退款 / 换货 / 维修", "icon": "after_sale" }, // 实物商品支持完整售后流程
+            { "label": "售后期限", "value": "7天无理由", "icon": "deadline" },                       // normal产品类型售后期限7天
+            { "label": "退款方式", "value": "原路退回", "icon": "refund" }
+          ]
+        }
+      }
+    ]
+  }
+}

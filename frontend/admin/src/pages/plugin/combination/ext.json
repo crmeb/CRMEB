@@ -1,0 +1,11 @@
+{
+  "key": "combination",
+  "title": "拼团活动",
+  "version": "1.0.0",
+  "pages": [
+    { "path": "product", "title": "拼团商品管理" },
+    { "path": "pink", "title": "拼团列表" },
+    { "path": "create/:id?/:copy?", "title": "添加/编辑拼团商品" },
+    { "path": "statistics/:id", "title": "拼团统计" }
+  ]
+}

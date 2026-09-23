@@ -1,0 +1,259 @@
+{
+  "code": 200,
+  "msg": "ok",
+  "data": {
+    "uid": 27,
+    "is_money_level": 0,
+    "spec_unique": "NORMAL_BLK_M_002",
+    "storeInfo": {
+      "id": 1001,
+      "product_type": "normal",
+      "product_type_name": "实物商品",
+      "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg",
+      "image_base": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg",
+      "slider_image": [
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg",
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-detail1.jpg",
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-detail2.jpg",
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-size.jpg"
+      ],
+      "recommend_image": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg",
+      "small_image": "https://demo.crmeb.com/static/images/products/normal-tshirt-main.jpg",
+      "store_name": "纯棉短袖T恤 男款 2026夏季新款",
+      "store_info": "亲肤透气 多色可选 多尺码适配",
+      "keyword": "T恤,纯棉,男装,夏季",
+      "bar_code": "6901234500001",
+      "cate_id": "12",
+      "unit_name": "件",
+      "price": "99.00",
+      "vip_price": "89.00",
+      "ot_price": "159.00",
+      "postage": "0.00",
+      "cost": "45.00",
+      "give_integral": "0.00",
+      "svip_economize_price": "10.00",
+      "stock": 86,
+      "sales": 326,
+      "fsales": "326",
+      "ficti": 50,
+      "browse": 8541,
+      "sort": 0,
+      "is_show": 1,
+      "is_hot": 1,
+      "is_benefit": 0,
+      "is_best": 0,
+      "is_new": 1,
+      "is_virtual": 0,
+      "virtual_type": 0,
+      "is_postage": 1,
+      "is_del": 0,
+      "is_seckill": 0,
+      "is_bargain": null,
+      "is_good": 0,
+      "is_sub": 0,
+      "is_vip": 0,
+      "is_gift": 0,
+      "gift_price": "0.00",
+      "is_limit": 1,
+      "limit_type": 1,
+      "limit_num": 5,
+      "min_qty": 1,
+      "spec_type": 1,
+      "activity": "",
+      "spu": "TSHIRT2026M",
+      "label_id": "1,2,3",
+      "video_link": "",
+      "command_word": "",
+      "recommend_list": "1002,1003,1004",
+      "vip_product": 0,
+      "vip_exclusive": false,
+      "presale": 0,
+      "presale_start_time": "1970-01-01 08:00",
+      "presale_end_time": "1970-01-01 08:00",
+      "presale_day": 0,
+      "presale_pay_status": 0,
+      "logistics": "express",
+      "freight": 1,
+      "temp_id": 0,
+      "mer_id": 0,
+      "mer_use": 0,
+      "default_sku": "NORMAL_BLK_M_002",
+      "add_time": 1722422400,
+      "code_path": "",
+      "soure_link": "",
+      "description": "<p>纯棉短袖T恤，采用 21S 精梳棉，柔软亲肤透气，适合夏季日常穿着。</p><p>尺码建议：S(155-165cm) / M(165-170cm) / L(170-175cm) / XL(175-180cm)。</p><p><img src='https://demo.crmeb.com/static/images/products/normal-tshirt-detail1.jpg'/></p><p><img src='https://demo.crmeb.com/static/images/products/normal-tshirt-size.jpg'/></p>",
+      "wechat_code": "",
+      "userCollect": false,
+      "userLike": false,
+      "attrPics": [
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg",
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg",
+        "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg"
+      ],
+      "custom_form": [],
+      "params_list": [
+        { "name": "材质", "value": "100% 棉" },
+        { "name": "款式", "value": "短袖T恤" },
+        { "name": "季节", "value": "夏季" },
+        { "name": "洗涤建议", "value": "30℃以下机洗，不可漂白" }
+      ],
+      "protection_list": [
+        { "id": 1, "name": "假一赔十" },
+        { "id": 2, "name": "极速退款" }
+      ],
+      "label_list": [
+        { "id": 1, "name": "包邮" },
+        { "id": 2, "name": "7天无理由" },
+        { "id": 3, "name": "正品保障" }
+      ],
+      "selection_spec": {
+        "selection_model": "matrix",
+        "confirm_window": "editable",
+        "required_selections": ["sku"],
+        "cart_unit": "item"
+      },
+      "cart_strategy": {
+        "cart_mode": "cart",
+        "multi_item": true,
+        "button_text": ""
+      },
+      "cart_button": 1
+    },
+    "productAttr": [
+      {
+        "attr_name": "颜色",
+        "attr_values": ["黑色", "白色", "藏青"],
+        "attr_value": [
+          { "attr": "黑色", "check": false, "pic": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" },
+          { "attr": "白色", "check": false, "pic": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg" },
+          { "attr": "藏青", "check": false, "pic": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg" }
+        ]
+      },
+      {
+        "attr_name": "尺码",
+        "attr_values": ["S", "M", "L", "XL"],
+        "attr_value": [
+          { "attr": "S", "check": false, "pic": "" },
+          { "attr": "M", "check": false, "pic": "" },
+          { "attr": "L", "check": false, "pic": "" },
+          { "attr": "XL", "check": false, "pic": "" }
+        ]
+      }
+    ],
+    "productValue": {
+      "黑色,S": { "suk": "黑色,S", "price": "99.00", "stock": 20, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_S_001", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500001", "is_show": 1 },
+      "黑色,M": { "suk": "黑色,M", "price": "99.00", "stock": 15, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_M_002", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500002", "is_show": 1 },
+      "黑色,L": { "suk": "黑色,L", "price": "109.00", "stock": 8, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_L_003", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500003", "is_show": 1 },
+      "黑色,XL": { "suk": "黑色,XL", "price": "109.00", "stock": 5, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg", "unique": "NORMAL_BLK_XL_004", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500004", "is_show": 1 },
+      "白色,S": { "suk": "白色,S", "price": "99.00", "stock": 12, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_S_005", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500005", "is_show": 1 },
+      "白色,M": { "suk": "白色,M", "price": "99.00", "stock": 10, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_M_006", "cost": "45.00", "ot_price": "159.00", "bar_code": "6901234500006", "is_show": 1 },
+      "白色,L": { "suk": "白色,L", "price": "109.00", "stock": 6, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_L_007", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500007", "is_show": 1 },
+      "白色,XL": { "suk": "白色,XL", "price": "109.00", "stock": 0, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg", "unique": "NORMAL_WHT_XL_008", "cost": "50.00", "ot_price": "169.00", "bar_code": "6901234500008", "is_show": 1 },
+      "藏青,S": { "suk": "藏青,S", "price": "105.00", "stock": 4, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_S_009", "cost": "48.00", "ot_price": "165.00", "bar_code": "6901234500009", "is_show": 1 },
+      "藏青,M": { "suk": "藏青,M", "price": "105.00", "stock": 6, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_M_010", "cost": "48.00", "ot_price": "165.00", "bar_code": "6901234500010", "is_show": 1 },
+      "藏青,L": { "suk": "藏青,L", "price": "115.00", "stock": 0, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_L_011", "cost": "52.00", "ot_price": "175.00", "bar_code": "6901234500011", "is_show": 1 },
+      "藏青,XL": { "suk": "藏青,XL", "price": "115.00", "stock": 0, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg", "unique": "NORMAL_NVY_XL_012", "cost": "52.00", "ot_price": "175.00", "bar_code": "6901234500012", "is_show": 1 }
+    },
+    "svip_open": true,
+    "svip_price_open": 1,
+    "priceName": 0,
+    "reply": [
+      {
+        "id": 8001,
+        "product_id": 1001,
+        "nickname": "山间清泉",
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u1.jpg",
+        "comment": "面料柔软，颜色与图片一致，尺码正，洗了几次没有变形。",
+        "pics": ["https://demo.crmeb.com/static/images/reply/normal-reply1.jpg"],
+        "star": 5,
+        "add_time": "2026-07-15 10:32:18"
+      },
+      {
+        "id": 8002,
+        "product_id": 1001,
+        "nickname": "风的叹息",
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u2.jpg",
+        "comment": "性价比高，做工不错，物流快，包装完整。",
+        "pics": [],
+        "star": 5,
+        "add_time": "2026-07-18 16:05:42"
+      }
+    ],
+    "replyChance": 96,
+    "replyCount": 326,
+    "mer_id": 0,
+    "good_list": [
+      { "id": 1002, "image": "https://demo.crmeb.com/static/images/products/normal-related1.jpg", "store_name": "纯棉长袖T恤 男款", "price": "129.00", "sales": 156 },
+      { "id": 1003, "image": "https://demo.crmeb.com/static/images/products/normal-related2.jpg", "store_name": "纯棉短裤 男款 夏季", "price": "79.00", "sales": 248 }
+    ],
+    "mapKey": "TXABCD-1234-EFGH-5678-IJKL",
+    "store_self_mention": 1,
+    "activity": [
+      { "id": 1, "type": "seckill", "title": "限时秒杀", "price": "79.00", "status": 1 },
+      { "id": 2, "type": "bargain", "title": "砍价抢购", "price": "89.00", "status": 1 }
+    ],
+    "coupons": [
+      { "id": 501, "title": "满99减10", "coupon_price": "10.00", "use_min_price": "99.00", "surplus": 100 },
+      { "id": 502, "title": "满199减30", "coupon_price": "30.00", "use_min_price": "199.00", "surplus": 50 }
+    ],
+    "routine_contact_type": 0,
+    "display_sections": [
+      {
+        "key": "spec",
+        "component": "spec_preview",
+        "visible": true,
+        "order": 10,
+        "data": {
+          "blocks": [
+            {
+              "type": "matrix",
+              "title": "规格预览",
+              "attrs": [
+                { "name": "颜色", "values": ["黑色", "白色", "藏青"] },
+                { "name": "尺码", "values": ["S", "M", "L", "XL"] }
+              ],
+              "skus": [
+                { "suk": "黑色,S", "price": 99, "stock": 20, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" },
+                { "suk": "黑色,M", "price": 99, "stock": 15, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" },
+                { "suk": "黑色,L", "price": 109, "stock": 8, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-black.jpg" },
+                { "suk": "白色,S", "price": 99, "stock": 12, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg" },
+                { "suk": "白色,M", "price": 99, "stock": 10, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-white.jpg" },
+                { "suk": "藏青,S", "price": 105, "stock": 4, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg" },
+                { "suk": "藏青,M", "price": 105, "stock": 6, "image": "https://demo.crmeb.com/static/images/products/normal-tshirt-navy.jpg" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "key": "fulfillment",
+        "component": "info_card",
+        "title": "配送服务",
+        "visible": true,
+        "order": 20,
+        "data": {
+          "items": [
+            { "label": "物流", "value": "快递发货", "icon": "express" },
+            { "label": "运费", "value": "包邮", "icon": "free" },
+            { "label": "自提", "value": "支持到店自提", "icon": "pickup" },
+            { "label": "发货地", "value": "浙江 杭州", "icon": "location" }
+          ]
+        }
+      },
+      {
+        "key": "after_sale",
+        "component": "info_card",
+        "title": "售后保障",
+        "visible": true,
+        "order": 30,
+        "data": {
+          "items": [
+            { "label": "售后类型", "value": "退款 / 退货退款 / 换货 / 维修", "icon": "after_sale" },
+            { "label": "售后期限", "value": "7天无理由", "icon": "deadline" },
+            { "label": "退款方式", "value": "原路退回", "icon": "refund" }
+          ]
+        }
+      }
+    ]
+  }
+}

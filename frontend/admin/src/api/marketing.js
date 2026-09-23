@@ -1,0 +1,753 @@
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2026 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
+import request from '@/libs/request';
+
+/**
+ * @description 已发布管理--列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function releasedListApi(params) {
+  return request({
+    url: 'marketing/coupon/released',
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description 已发布管理--领取记录
+ * @param {Number} param id {Number} 已发布优惠券id
+ */
+export function releasedissueLogApi(id, params) {
+  return request({
+    url: `marketing/coupon/released/issue_log/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description 已发布管理--修改状态表单
+ * @param {Number} param id {Number} 已发布优惠券id
+ */
+export function releaseStatusApi(id) {
+  return request({
+    url: `marketing/coupon/released/${id}/status`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 优惠券列表--是否开启
+ * @param {*} data
+ */
+export function couponStatusApi(data) {
+  return request({
+    url: `marketing/coupon/status/${data.id}/${data.status}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 优惠券制作--保存
+ */
+export function couponSaveApi(data) {
+  return request({
+    url: `marketing/coupon/save_coupon`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 优惠券
+ * @param {*} id
+ */
+export function couponDetailApi(id) {
+  return request({
+    url: `marketing/coupon/copy/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 会员领取记录 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function userListApi(params) {
+  return request({
+    url: `/marketing/coupon/user`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description 砍价商品 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function bargainListApi(params) {
+  return request({
+    url: `marketing/bargain`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description 砍价商品 -- 详情
+ * @param {Number} param id {Number} 砍价商品id
+ */
+export function bargainInfoApi(id) {
+  return request({
+    url: `marketing/bargain/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 砍价商品 -- 保存编辑
+ * @param {Object} param data {Object} 传值参数
+ */
+export function bargainCreatApi(data) {
+  return request({
+    url: `marketing/bargain/${data.id}`,
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @description 砍价商品 -- 修改状态
+ * @param {Object} param data {Object} 传值参数
+ */
+export function bargainSetStatusApi(data) {
+  return request({
+    url: `marketing/bargain/set_status/${data.id}/${data.status}`,
+    method: 'PUT',
+  });
+}
+/**
+ * @description 拼团商品 -- 列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function combinationListApi(params) {
+  return request({
+    url: `marketing/combination`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description 拼团商品 -- 修改状态
+ * @param {Object} param data {Object} 传值参数
+ */
+export function combinationSetStatusApi(data) {
+  return request({
+    url: `marketing/combination/set_status/${data.id}/${data.status}`,
+    method: 'PUT',
+  });
+}
+
+/**
+ * @description 拼团商品 -- 拼团统计
+ * @param {Object} param data {Object} 传值参数
+ */
+export function statisticsApi() {
+  return request({
+    url: `marketing/combination/statistics`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description 拼团商品 -- 详情
+ * @param {Number} param id {Number} 拼团商品id
+ */
+export function combinationInfoApi(id) {
+  return request({
+    url: `marketing/combination/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 拼团商品 -- 保存编辑
+ * @param {Object} param data {Object} 传值参数
+ */
+export function combinationCreatApi(data) {
+  return request({
+    url: `marketing/combination/${data.id}`,
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @description 拼团商品 -- 拼团列表
+ */
+export function combineListApi(params) {
+  return request({
+    url: `marketing/combination/combine/list`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 拼团商品 -- 拼团人列表
+ * @param {Number} param id {Number} 拼团商品id
+ */
+export function orderPinkListApi(id) {
+  return request({
+    url: `marketing/combination/order_pink/${id}`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description 秒杀商品 -- 列表
+ */
+export function seckillListApi(params) {
+  return request({
+    url: `marketing/seckill`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 秒杀商品 -- 详情
+ */
+export function seckillInfoApi(id) {
+  return request({
+    url: `marketing/seckill/${id}`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description 秒杀商品 -- 保存编辑
+ */
+export function seckillAddApi(data) {
+  return request({
+    url: `marketing/seckill/${data.id}`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 秒杀商品 -- 修改状态
+ */
+export function seckillStatusApi(data) {
+  return request({
+    url: `marketing/seckill/set_status/${data.id}/${data.status}`,
+    method: 'put',
+  });
+}
+
+/**
+ * @description 秒杀活动 -- 列表
+ */
+export function seckillActivityListApi(params) {
+  return request({
+    url: `marketing/seckill_activity/list`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 秒杀商品 -- 批量保存编辑
+ */
+export function seckillActivityAddApi(data) {
+  return request({
+    url: `marketing/seckill_activity/save/${data.id}`,
+    method: 'post',
+    data,
+  });
+}
+/**
+ * @description 批量秒杀活动 -- 详情
+ */
+export function seckillActivityInfoApi(id) {
+  return request({
+    url: `marketing/seckill_activity/info/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 秒杀活动 -- 修改状态
+ */
+export function seckillActivityStatusApi(data) {
+  return request({
+    url: `marketing/seckill_activity/status/${data.id}/${data.status}`,
+    method: 'put',
+  });
+}
+
+/**
+ * @description 积分日志 -- 列表
+ */
+export function integralListApi(params) {
+  return request({
+    url: `marketing/integral`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 积分日志 -- 头部
+ */
+export function integralStatisticsApi(params) {
+  return request({
+    url: `marketing/integral/statistics`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 积分日志 -- 头部
+ */
+export function seckillTimeListApi() {
+  return request({
+    url: `marketing/seckill/time_list`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description 商品列表 -- 头部
+ */
+export function productAttrsApi(id, type) {
+  return request({
+    url: `product/product/attrs/${id}/${type}`,
+    method: 'GET',
+  });
+}
+
+/**
+ * @description 砍价商品 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function bargainUserListApi(params) {
+  return request({
+    url: `marketing/bargain_list`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * @description 砍价商品 -- 列表
+ * @param {Object} param params {Object} 传值参数
+ */
+export function bargainUserInfoApi(id) {
+  return request({
+    url: `marketing/bargain_list_info/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 已发布管理 -- 删除
+ */
+export function delCouponReleased(id) {
+  return request({
+    url: `marketing/coupon/released/${id}`,
+    method: 'DELETE',
+  });
+}
+
+/**
+ * @description 积分日志 -- 导出
+ */
+export function userPointApi(data) {
+  return request({
+    url: `export/userPoint`,
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 积分商品 -- 列表
+ */
+export function integralProductListApi(params) {
+  return request({
+    url: `marketing/integral_product`,
+    method: 'GET',
+    params,
+  });
+}
+
+/**
+ * @description 积分商品 -- 保存编辑
+ */
+export function integralAddApi(data) {
+  return request({
+    url: `marketing/integral/${data.id}`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 积分商品 -- 详情
+ */
+export function integralInfoApi(id) {
+  return request({
+    url: `marketing/integral/${id}`,
+    method: 'GET',
+  });
+}
+/**
+ * @description 积分商品 -- 修改状态
+ */
+export function integralIsShowApi(data) {
+  return request({
+    url: `marketing/integral/set_show/${data.id}/${data.is_show}`,
+    method: 'put',
+  });
+}
+/**
+ * @description 积分订单管理--列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function integralOrderList(data) {
+  return request({
+    url: 'marketing/integral/order/list',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 积分订单数据--列表
+ * @param {Object} param data {Object} 传值参数
+ */
+export function integralGetOrdes(data) {
+  return request({
+    url: 'marketing/integral/order/chart',
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * @description 订单物流信息
+ * @param {Number} param id {Number} 订单id
+ */
+export function getExpress(id) {
+  return request({
+    url: `marketing/integral/order/express/${id}`,
+    method: 'get',
+  });
+}
+/**
+ * @description 订单表单详情数据
+ * @param {Number} param id {Number} 订单id
+ */
+export function getIntegralOrderDataInfo(id) {
+  return request({
+    url: `marketing/integral/order/info/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 配送信息表单
+ * @param {Number} param id {Number} 订单id
+ */
+export function getIntegralOrderDistribution(id) {
+  return request({
+    url: `marketing/integral/order/distribution/${id}`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 获取订单记录
+ * @param {Number} param data.id {Number} 订单id
+ * @param {String} param data.datas {String} 分页参数
+ */
+export function getIntegralOrderRecord(data) {
+  return request({
+    url: `marketing/integral/order/status/${data.id}`,
+    method: 'get',
+    params: data.datas,
+  });
+}
+
+/**
+ * @description 发送货提交表单
+ * @param {Number} param data.id {Number} 订单id
+ * @param {Object} param data.datas {Object} 表单信息
+ */
+export function integralOrderPutDelivery(data) {
+  return request({
+    url: `marketing/integral/order/delivery/${data.id}`,
+    method: 'put',
+    data: data.datas,
+  });
+}
+
+/**
+ * @description 修改备注信息
+ * @param {Number} param data.id {Number} 订单id
+ * @param {String} param data.remark {String} 备注信息
+ */
+export function integralOrderPutRemarkData(data) {
+  return request({
+    url: `marketing/integral/order/remark/${data.id}`,
+    method: 'put',
+    data: data.remark,
+  });
+}
+/**
+ * @description 积分备注
+ * @param {Number} param data.id {Number} 订单id
+ * @param {String} param data.remark {String} 备注信息
+ */
+export function setPointRecordMark(id, data) {
+  return request({
+    url: `marketing/point_record/remark/${id}`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 订单时获取所有配送员列表
+ */
+export function orderDeliveryList() {
+  return request({
+    url: 'marketing/integral/order/delivery/list',
+    method: 'get',
+  });
+}
+
+/**
+ * 电子面单模板
+ * @param {com} data 快递公司编号
+ */
+export function orderExpressTemp(data) {
+  return request({
+    url: 'marketing/integral/order/express/temp',
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * 积分统计列表
+ * @param {com} data
+ */
+export function pointRecordList(data) {
+  return request({
+    url: 'marketing/point_record',
+    method: 'get',
+    params: data,
+  });
+}
+/**
+ * 积分统计列表 备注
+ * @param {com} data
+ */
+export function pointRecordRemark(id, data) {
+  return request({
+    url: `marketing/point_record/remark/${id}`,
+    method: 'post',
+    data,
+  });
+}
+
+export function orderSheetInfo() {
+  return request({
+    url: 'marketing/integral/order/sheet_info',
+    method: 'get',
+  });
+}
+/**
+ * 积分统计顶部
+ * @param {com} data
+ */
+export function getPointBasic(data) {
+  return request({
+    url: 'marketing/point/get_basic',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * 积分统计 折线图
+ * @param {com} data
+ */
+export function getPointTrend(data) {
+  return request({
+    url: 'marketing/point/get_trend',
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * @description 积分来源分析
+ * @param {Object} param data {Object} 传值参数
+ */
+export function getChannel(params) {
+  return request({
+    url: '/marketing/point/get_channel',
+    method: 'get',
+    params,
+  });
+}
+/**
+ * @description 积分消耗分析
+ * @param {Object} param data {Object} 传值参数
+ */
+export function getType(params) {
+  return request({
+    url: '/marketing/point/get_type',
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 秒杀统计
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getseckillStatistics(id, params) {
+  return request({
+    url: `marketing/seckill/statistics/head/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 秒杀参与人
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getseckillStatisticsPeople(id, params) {
+  return request({
+    url: `marketing/seckill/statistics/people/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 秒杀订单
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getseckillStatisticsOrder(id, params) {
+  return request({
+    url: `marketing/seckill/statistics/order/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 拼团统计
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getcombinationStatistics(id, params) {
+  return request({
+    url: `marketing/combination/statistics/head/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 拼团列表
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getcombinationStatisticsPeople(id, params) {
+  return request({
+    url: `marketing/combination/statistics/list/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 拼团订单
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getcombinationStatisticsOrder(id, params) {
+  return request({
+    url: `marketing/combination/statistics/order/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 砍价统计
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getbargainStatistics(id, params) {
+  return request({
+    url: `marketing/bargain/statistics/head/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 砍价列表
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getbargainStatisticsPeople(id, params) {
+  return request({
+    url: `marketing/bargain/statistics/list/${id}`,
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 砍价订单
+ * @param {*} id
+ * @param {*} params
+ * @returns
+ */
+export function getbargainStatisticsOrder(id, params) {
+  return request({
+    url: `marketing/bargain/statistics/order/${id}`,
+    method: 'get',
+    params,
+  });
+}

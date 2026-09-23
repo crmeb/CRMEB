@@ -1,0 +1,6008 @@
+{
+  "id": "5121724",
+  "name": "CRMEB 后台图标",
+  "font_family": "iconfont",
+  "css_prefix_text": "",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "48587124",
+      "name": "CRMEB-951-AI会话-线性",
+      "font_class": "CRMEB-951-AIhuihua-xianxing",
+      "unicode": "ecd9",
+      "unicode_decimal": 60633
+    },
+    {
+      "icon_id": "48587125",
+      "name": "CRMEB-952-AI会话-面性",
+      "font_class": "CRMEB-952-AIhuihua-mianxing",
+      "unicode": "ecd8",
+      "unicode_decimal": 60632
+    },
+    {
+      "icon_id": "48586759",
+      "name": "CRMEB-956-MCP-面性",
+      "font_class": "CRMEB-956-MCP-mianxing",
+      "unicode": "ecd5",
+      "unicode_decimal": 60629
+    },
+    {
+      "icon_id": "48586757",
+      "name": "CRMEB-954-知识库-面性",
+      "font_class": "CRMEB-954-zhishiku-mianxing",
+      "unicode": "ecd6",
+      "unicode_decimal": 60630
+    },
+    {
+      "icon_id": "48586758",
+      "name": "CRMEB-953-知识库-线性",
+      "font_class": "CRMEB-953-zhishiku-xianxing",
+      "unicode": "ecd7",
+      "unicode_decimal": 60631
+    },
+    {
+      "icon_id": "48586760",
+      "name": "CRMEB-955-MCP-线性",
+      "font_class": "CRMEB-955-MCP-xianxing",
+      "unicode": "ecd4",
+      "unicode_decimal": 60628
+    },
+    {
+      "icon_id": "48430210",
+      "name": "CRMEB-950-箭头-线性",
+      "font_class": "CRMEB-950-jiantou-xianxing",
+      "unicode": "ecd3",
+      "unicode_decimal": 60627
+    },
+    {
+      "icon_id": "48398709",
+      "name": "CRMEB-923-gemini-面性",
+      "font_class": "CRMEB-923-gemini-mianxing",
+      "unicode": "ecd0",
+      "unicode_decimal": 60624
+    },
+    {
+      "icon_id": "48398708",
+      "name": "CRMEB-938-海螺AI-面性",
+      "font_class": "CRMEB-938-hailuoAI-mianxing",
+      "unicode": "ecd1",
+      "unicode_decimal": 60625
+    },
+    {
+      "icon_id": "48398702",
+      "name": "CRMEB-941-日日新-面性",
+      "font_class": "CRMEB-941-ririxin-mianxing",
+      "unicode": "ecd2",
+      "unicode_decimal": 60626
+    },
+    {
+      "icon_id": "48398486",
+      "name": "CRMEB-919-不可链接-线性",
+      "font_class": "CRMEB-919-bukelianjie-xianxing",
+      "unicode": "ecb4",
+      "unicode_decimal": 60596
+    },
+    {
+      "icon_id": "48398487",
+      "name": "CRMEB-920-智谱清言-面性",
+      "font_class": "CRMEB-920-zhipuqingyan-mianxing",
+      "unicode": "ecb5",
+      "unicode_decimal": 60597
+    },
+    {
+      "icon_id": "48398488",
+      "name": "CRMEB-921-chat gpt-面性",
+      "font_class": "CRMEB-921-chatgpt-mianxing",
+      "unicode": "ecb6",
+      "unicode_decimal": 60598
+    },
+    {
+      "icon_id": "48398489",
+      "name": "CRMEB-922-Cloud code-面性",
+      "font_class": "CRMEB-922-Cloudcode-mianxing",
+      "unicode": "ecb7",
+      "unicode_decimal": 60599
+    },
+    {
+      "icon_id": "48398490",
+      "name": "CRMEB-927-百度千帆-面性",
+      "font_class": "CRMEB-927-baiduqianfan-mianxing",
+      "unicode": "ecb8",
+      "unicode_decimal": 60600
+    },
+    {
+      "icon_id": "48398491",
+      "name": "CRMEB-932-智谱AI-面性",
+      "font_class": "CRMEB-932-zhipuAI-mianxing",
+      "unicode": "ecb9",
+      "unicode_decimal": 60601
+    },
+    {
+      "icon_id": "48398492",
+      "name": "CRMEB-930-腾讯元宝-面性",
+      "font_class": "CRMEB-930-tengxunyuanbao-mianxing",
+      "unicode": "ecba",
+      "unicode_decimal": 60602
+    },
+    {
+      "icon_id": "48398493",
+      "name": "CRMEB-924-openclaw-面性",
+      "font_class": "CRMEB-924-openclaw-mianxing",
+      "unicode": "ecbb",
+      "unicode_decimal": 60603
+    },
+    {
+      "icon_id": "48398494",
+      "name": "CRMEB-929-腾讯混元-面性",
+      "font_class": "CRMEB-929-tengxunhunyuan-mianxing",
+      "unicode": "ecbc",
+      "unicode_decimal": 60604
+    },
+    {
+      "icon_id": "48398495",
+      "name": "CRMEB-936-堆友-面性",
+      "font_class": "CRMEB-936-duiyou-mianxing",
+      "unicode": "ecbd",
+      "unicode_decimal": 60605
+    },
+    {
+      "icon_id": "48398496",
+      "name": "CRMEB-935-讯飞星火-面性",
+      "font_class": "CRMEB-935-xunfeixinghuo-mianxing",
+      "unicode": "ecbe",
+      "unicode_decimal": 60606
+    },
+    {
+      "icon_id": "48398497",
+      "name": "CRMEB-937-kimi-面性",
+      "font_class": "CRMEB-937-kimi-mianxing",
+      "unicode": "ecbf",
+      "unicode_decimal": 60607
+    },
+    {
+      "icon_id": "48398498",
+      "name": "CRMEB-939-minimax-面性",
+      "font_class": "CRMEB-939-minimax-mianxing",
+      "unicode": "ecc0",
+      "unicode_decimal": 60608
+    },
+    {
+      "icon_id": "48398499",
+      "name": "CRMEB-931-Workbuddy-面性",
+      "font_class": "CRMEB-931-Workbuddy-mianxing",
+      "unicode": "ecc1",
+      "unicode_decimal": 60609
+    },
+    {
+      "icon_id": "48398500",
+      "name": "CRMEB-934-deepseek-面性",
+      "font_class": "CRMEB-934-deepseek-mianxing",
+      "unicode": "ecc2",
+      "unicode_decimal": 60610
+    },
+    {
+      "icon_id": "48398501",
+      "name": "CRMEB-942-mistral-面性",
+      "font_class": "CRMEB-942-mistral-mianxing",
+      "unicode": "ecc3",
+      "unicode_decimal": 60611
+    },
+    {
+      "icon_id": "48398502",
+      "name": "CRMEB-933-月之暗面-面性",
+      "font_class": "CRMEB-933-yuezhianmian-mianxing",
+      "unicode": "ecc4",
+      "unicode_decimal": 60612
+    },
+    {
+      "icon_id": "48398503",
+      "name": "CRMEB-946-可灵-面性",
+      "font_class": "CRMEB-946-keling-mianxing",
+      "unicode": "ecc5",
+      "unicode_decimal": 60613
+    },
+    {
+      "icon_id": "48398504",
+      "name": "CRMEB-940-百川智能-面性",
+      "font_class": "CRMEB-940-baichuanzhineng-mianxing",
+      "unicode": "ecc6",
+      "unicode_decimal": 60614
+    },
+    {
+      "icon_id": "48398505",
+      "name": "CRMEB-943-liblib-面性",
+      "font_class": "CRMEB-943-liblib-mianxing",
+      "unicode": "ecc7",
+      "unicode_decimal": 60615
+    },
+    {
+      "icon_id": "48398506",
+      "name": "CRMEB-926-文心一言-面性",
+      "font_class": "CRMEB-926-wenxinyiyan-mianxing",
+      "unicode": "ecc8",
+      "unicode_decimal": 60616
+    },
+    {
+      "icon_id": "48398507",
+      "name": "CRMEB-944-佐糖-面性",
+      "font_class": "CRMEB-944-zuotang-mianxing",
+      "unicode": "ecc9",
+      "unicode_decimal": 60617
+    },
+    {
+      "icon_id": "48398508",
+      "name": "CRMEB-945-midjourney-面性",
+      "font_class": "CRMEB-945-midjourney-mianxing",
+      "unicode": "ecca",
+      "unicode_decimal": 60618
+    },
+    {
+      "icon_id": "48398509",
+      "name": "CRMEB-928-通义千问-面性",
+      "font_class": "CRMEB-928-tongyiqianwen-mianxing",
+      "unicode": "eccb",
+      "unicode_decimal": 60619
+    },
+    {
+      "icon_id": "48398510",
+      "name": "CRMEB-949-vidu-面性",
+      "font_class": "CRMEB-949-vidu-mianxing",
+      "unicode": "eccc",
+      "unicode_decimal": 60620
+    },
+    {
+      "icon_id": "48398511",
+      "name": "CRMEB-948-即梦-面性",
+      "font_class": "CRMEB-948-jimeng-mianxing",
+      "unicode": "eccd",
+      "unicode_decimal": 60621
+    },
+    {
+      "icon_id": "48398512",
+      "name": "CRMEB-947-manus-面性",
+      "font_class": "CRMEB-947-manus-mianxing",
+      "unicode": "ecce",
+      "unicode_decimal": 60622
+    },
+    {
+      "icon_id": "48398513",
+      "name": "CRMEB-925-豆包-面性",
+      "font_class": "CRMEB-925-doubao-mianxing",
+      "unicode": "eccf",
+      "unicode_decimal": 60623
+    },
+    {
+      "icon_id": "48168113",
+      "name": "CRMEB-916-分类-线性",
+      "font_class": "CRMEB-916-fenlei-xianxing",
+      "unicode": "ecb3",
+      "unicode_decimal": 60595
+    },
+    {
+      "icon_id": "48168114",
+      "name": "CRMEB-917-分类-面性",
+      "font_class": "CRMEB-917-fenlei-mianxing",
+      "unicode": "ecb2",
+      "unicode_decimal": 60594
+    },
+    {
+      "icon_id": "48168105",
+      "name": "CRMEB-918-复制-线性",
+      "font_class": "CRMEB-918-fuzhi-xianxing",
+      "unicode": "ecb1",
+      "unicode_decimal": 60593
+    },
+    {
+      "icon_id": "47946490",
+      "name": "CRMED-915-网络-线性",
+      "font_class": "CRMED-915-wangluo-xianxing",
+      "unicode": "ecb0",
+      "unicode_decimal": 60592
+    },
+    {
+      "icon_id": "47794015",
+      "name": "CRMED-914-自定义-线性",
+      "font_class": "CRMED-914-zidingyi-xianxing",
+      "unicode": "ecaf",
+      "unicode_decimal": 60591
+    },
+    {
+      "icon_id": "47625942",
+      "name": "CRMEB-913-菜单-线性",
+      "font_class": "CRMEB-913-caidan-xianxing",
+      "unicode": "ecae",
+      "unicode_decimal": 60590
+    },
+    {
+      "icon_id": "47597009",
+      "name": "CRMEB-899-右-线性",
+      "font_class": "CRMEB-899-you-xianxing",
+      "unicode": "ecad",
+      "unicode_decimal": 60589
+    },
+    {
+      "icon_id": "47596336",
+      "name": "CRMEB-507-退货入库-面性",
+      "font_class": "CRMEB-507-tuihuoruku-mianxing",
+      "unicode": "eca5",
+      "unicode_decimal": 60581
+    },
+    {
+      "icon_id": "47596340",
+      "name": "CRMEB-509-总入库数-面性",
+      "font_class": "CRMEB-509-zongrukushu-mianxing",
+      "unicode": "eca6",
+      "unicode_decimal": 60582
+    },
+    {
+      "icon_id": "47596338",
+      "name": "CRMEB-508-总入库数-线性",
+      "font_class": "CRMEB-508-zongrukushu-xianxing",
+      "unicode": "eca7",
+      "unicode_decimal": 60583
+    },
+    {
+      "icon_id": "47596335",
+      "name": "CRMEB-502-采购入库-线性",
+      "font_class": "CRMEB-502-caigouruku-xianxing",
+      "unicode": "eca8",
+      "unicode_decimal": 60584
+    },
+    {
+      "icon_id": "47596337",
+      "name": "CRMEB-506-退货入库-线性",
+      "font_class": "CRMEB-506-tuihuoruku-xianxing",
+      "unicode": "eca9",
+      "unicode_decimal": 60585
+    },
+    {
+      "icon_id": "47596334",
+      "name": "CRMEB-503-采购入库-面性",
+      "font_class": "CRMEB-503-caigouruku-mianxing",
+      "unicode": "ecaa",
+      "unicode_decimal": 60586
+    },
+    {
+      "icon_id": "47596333",
+      "name": "CRMEB-501-盘盈入库-面性",
+      "font_class": "CRMEB-501-panyingruku-mianxing",
+      "unicode": "ecab",
+      "unicode_decimal": 60587
+    },
+    {
+      "icon_id": "47596332",
+      "name": "CRMEB-500-盘盈入库-线性",
+      "font_class": "CRMEB-500-panyingruku-xianxing",
+      "unicode": "ecac",
+      "unicode_decimal": 60588
+    },
+    {
+      "icon_id": "47596351",
+      "name": "CRMEB-516-用券数量-线性",
+      "font_class": "CRMEB-516-yongquanshuliang-xianxing",
+      "unicode": "ec9c",
+      "unicode_decimal": 60572
+    },
+    {
+      "icon_id": "47596349",
+      "name": "CRMEB-517-用券数量-面性",
+      "font_class": "CRMEB-517-yongquanshuliang-mianxing",
+      "unicode": "ec9d",
+      "unicode_decimal": 60573
+    },
+    {
+      "icon_id": "47596352",
+      "name": "CRMEB-515-用券金额-面性",
+      "font_class": "CRMEB-515-yongquanjine-mianxing",
+      "unicode": "ec9e",
+      "unicode_decimal": 60574
+    },
+    {
+      "icon_id": "47596346",
+      "name": "CRMEB-519-储值总金额-面性",
+      "font_class": "CRMEB-519-chuzhizongjine-mianxing",
+      "unicode": "ec9f",
+      "unicode_decimal": 60575
+    },
+    {
+      "icon_id": "47596343",
+      "name": "CRMEB-510-订单金额-线性",
+      "font_class": "CRMEB-510-dingdanjine-xianxing",
+      "unicode": "eca0",
+      "unicode_decimal": 60576
+    },
+    {
+      "icon_id": "47596344",
+      "name": "CRMEB-512-加购件数-线性",
+      "font_class": "CRMEB-512-jiagoujianshu-xianxing",
+      "unicode": "eca1",
+      "unicode_decimal": 60577
+    },
+    {
+      "icon_id": "47596342",
+      "name": "CRMEB-511-订单金额-面性",
+      "font_class": "CRMEB-511-dingdanjine-mianxing",
+      "unicode": "eca2",
+      "unicode_decimal": 60578
+    },
+    {
+      "icon_id": "47596341",
+      "name": "CRMEB-505-其他入库-面性",
+      "font_class": "CRMEB-505-qitaruku-mianxing",
+      "unicode": "eca3",
+      "unicode_decimal": 60579
+    },
+    {
+      "icon_id": "47596339",
+      "name": "CRMEB-504-其他入库-线性",
+      "font_class": "CRMEB-504-qitaruku-xianxing",
+      "unicode": "eca4",
+      "unicode_decimal": 60580
+    },
+    {
+      "icon_id": "47596358",
+      "name": "CRMEB-528-商品支付金额-线性",
+      "font_class": "CRMEB-528-shangpinzhifujine-xianxing",
+      "unicode": "ec92",
+      "unicode_decimal": 60562
+    },
+    {
+      "icon_id": "47596360",
+      "name": "CRMEB-529-商品支付金额-面性",
+      "font_class": "CRMEB-529-shangpinzhifujine-mianxing",
+      "unicode": "ec93",
+      "unicode_decimal": 60563
+    },
+    {
+      "icon_id": "47596359",
+      "name": "CRMEB-531-下单件数-面性",
+      "font_class": "CRMEB-531-xiadanjianshu-mianxing",
+      "unicode": "ec94",
+      "unicode_decimal": 60564
+    },
+    {
+      "icon_id": "47596356",
+      "name": "CRMEB-522-储值退款金额-线性",
+      "font_class": "CRMEB-522-chuzhituikuanjine-xianxing",
+      "unicode": "ec95",
+      "unicode_decimal": 60565
+    },
+    {
+      "icon_id": "47596355",
+      "name": "CRMEB-527-平台手续费-面性",
+      "font_class": "CRMEB-527-pingtaishouxufei-mianxing",
+      "unicode": "ec96",
+      "unicode_decimal": 60566
+    },
+    {
+      "icon_id": "47596347",
+      "name": "CRMEB-513-加购件数-面性",
+      "font_class": "CRMEB-513-jiagoujianshu-mianxing",
+      "unicode": "ec97",
+      "unicode_decimal": 60567
+    },
+    {
+      "icon_id": "47596348",
+      "name": "CRMEB-520-累计储值金额-线性",
+      "font_class": "CRMEB-520-leijichuzhijine-xianxing",
+      "unicode": "ec98",
+      "unicode_decimal": 60568
+    },
+    {
+      "icon_id": "47596345",
+      "name": "CRMEB-521-累计储值金额-面性",
+      "font_class": "CRMEB-521-leijichuzhijine-mianxing",
+      "unicode": "ec99",
+      "unicode_decimal": 60569
+    },
+    {
+      "icon_id": "47596353",
+      "name": "CRMEB-514-用券金额-线性",
+      "font_class": "CRMEB-514-yongquanjine-xianxing",
+      "unicode": "ec9a",
+      "unicode_decimal": 60570
+    },
+    {
+      "icon_id": "47596354",
+      "name": "CRMEB-523-储值退款金额-面性",
+      "font_class": "CRMEB-523-chuzhituikuanjine-mianxing",
+      "unicode": "ec9b",
+      "unicode_decimal": 60571
+    },
+    {
+      "icon_id": "47596366",
+      "name": "CRMEB-532-宫图视图-线性",
+      "font_class": "CRMEB-532-gongtushitu-xianxing",
+      "unicode": "ec89",
+      "unicode_decimal": 60553
+    },
+    {
+      "icon_id": "47596367",
+      "name": "CRMEB-539-积分抵扣金额-面性",
+      "font_class": "CRMEB-539-jifendikoujine-mianxing",
+      "unicode": "ec8a",
+      "unicode_decimal": 60554
+    },
+    {
+      "icon_id": "47596361",
+      "name": "CRMEB-526-平台手续费-线性",
+      "font_class": "CRMEB-526-pingtaishouxufei-xianxing",
+      "unicode": "ec8b",
+      "unicode_decimal": 60555
+    },
+    {
+      "icon_id": "47596365",
+      "name": "CRMEB-536-推广订单数-线性",
+      "font_class": "CRMEB-536-tuiguangdingdanshu-xianxing",
+      "unicode": "ec8c",
+      "unicode_decimal": 60556
+    },
+    {
+      "icon_id": "47596350",
+      "name": "CRMEB-518-储值总金额-线性",
+      "font_class": "CRMEB-518-chuzhizongjine-xianxing",
+      "unicode": "ec8d",
+      "unicode_decimal": 60557
+    },
+    {
+      "icon_id": "47596364",
+      "name": "CRMEB-537-推广订单数-面性",
+      "font_class": "CRMEB-537-tuiguangdingdanshu-mianxing",
+      "unicode": "ec8e",
+      "unicode_decimal": 60558
+    },
+    {
+      "icon_id": "47596363",
+      "name": "CRMEB-530-下单件数-线性",
+      "font_class": "CRMEB-530-xiadanjianshu-xianxing",
+      "unicode": "ec8f",
+      "unicode_decimal": 60559
+    },
+    {
+      "icon_id": "47596362",
+      "name": "CRMEB-535-商户入驻-面性",
+      "font_class": "CRMEB-535-shanghuruzhu-mianxing",
+      "unicode": "ec90",
+      "unicode_decimal": 60560
+    },
+    {
+      "icon_id": "47596357",
+      "name": "CRMEB-524-待开发票-线性",
+      "font_class": "CRMEB-524-daikaifapiao-xianxing",
+      "unicode": "ec91",
+      "unicode_decimal": 60561
+    },
+    {
+      "icon_id": "47596378",
+      "name": "CRMEB-545-待处理用户反馈-面性",
+      "font_class": "CRMEB-545-daichuliyonghufankui-mianxing",
+      "unicode": "ec7f",
+      "unicode_decimal": 60543
+    },
+    {
+      "icon_id": "47596377",
+      "name": "CRMEB-546-交易成功数-线性",
+      "font_class": "CRMEB-546-jiaoyichenggongshu-xianxing",
+      "unicode": "ec80",
+      "unicode_decimal": 60544
+    },
+    {
+      "icon_id": "47596374",
+      "name": "CRMEB-541-支付转化率-面性",
+      "font_class": "CRMEB-541-zhifuzhuanhuashuai-mianxing",
+      "unicode": "ec81",
+      "unicode_decimal": 60545
+    },
+    {
+      "icon_id": "47596375",
+      "name": "CRMEB-543-审核未通过商品-面性",
+      "font_class": "CRMEB-543-shenheweitongguoshangpin-mianxing",
+      "unicode": "ec82",
+      "unicode_decimal": 60546
+    },
+    {
+      "icon_id": "47596373",
+      "name": "CRMEB-542-审核未通过商品-线性",
+      "font_class": "CRMEB-542-shenheweitongguoshangpin-xianxing",
+      "unicode": "ec83",
+      "unicode_decimal": 60547
+    },
+    {
+      "icon_id": "47596371",
+      "name": "CRMEB-538-积分抵扣金额-线性",
+      "font_class": "CRMEB-538-jifendikoujine-xianxing",
+      "unicode": "ec84",
+      "unicode_decimal": 60548
+    },
+    {
+      "icon_id": "47596370",
+      "name": "CRMEB-533-宫图视图-线性",
+      "font_class": "CRMEB-533-gongtushitu-xianxing",
+      "unicode": "ec85",
+      "unicode_decimal": 60549
+    },
+    {
+      "icon_id": "47596372",
+      "name": "CRMEB-540-支付转化率-线性",
+      "font_class": "CRMEB-540-zhifuzhuanhuashuai-xianxing",
+      "unicode": "ec86",
+      "unicode_decimal": 60550
+    },
+    {
+      "icon_id": "47596368",
+      "name": "CRMEB-525-待开发票-面性",
+      "font_class": "CRMEB-525-daikaifapiao-mianxing",
+      "unicode": "ec87",
+      "unicode_decimal": 60551
+    },
+    {
+      "icon_id": "47596369",
+      "name": "CRMEB-534-商户入驻-线性",
+      "font_class": "CRMEB-534-shanghuruzhu-xianxing",
+      "unicode": "ec88",
+      "unicode_decimal": 60552
+    },
+    {
+      "icon_id": "47596389",
+      "name": "CRMEB-561-西餐-面性",
+      "font_class": "CRMEB-561-xican-mianxing",
+      "unicode": "ec75",
+      "unicode_decimal": 60533
+    },
+    {
+      "icon_id": "47596384",
+      "name": "CRMEB-560-西餐-线性",
+      "font_class": "CRMEB-560-xican-xianxing",
+      "unicode": "ec76",
+      "unicode_decimal": 60534
+    },
+    {
+      "icon_id": "47596386",
+      "name": "CRMEB-554-商户交易-线性",
+      "font_class": "CRMEB-554-shanghujiaoyi-xianxing",
+      "unicode": "ec77",
+      "unicode_decimal": 60535
+    },
+    {
+      "icon_id": "47596382",
+      "name": "CRMEB-553-第n件n折-面性",
+      "font_class": "CRMEB-553-dinjiannzhe-mianxing",
+      "unicode": "ec78",
+      "unicode_decimal": 60536
+    },
+    {
+      "icon_id": "47596383",
+      "name": "CRMEB-549-满送活动-面性",
+      "font_class": "CRMEB-549-mansonghuodong-mianxing",
+      "unicode": "ec79",
+      "unicode_decimal": 60537
+    },
+    {
+      "icon_id": "47596385",
+      "name": "CRMEB-559-待使用-面性",
+      "font_class": "CRMEB-559-daishiyong-mianxing",
+      "unicode": "ec7a",
+      "unicode_decimal": 60538
+    },
+    {
+      "icon_id": "47596381",
+      "name": "CRMEB-550-满减满折-线性",
+      "font_class": "CRMEB-550-manjianmanzhe-xianxing",
+      "unicode": "ec7b",
+      "unicode_decimal": 60539
+    },
+    {
+      "icon_id": "47596380",
+      "name": "CRMEB-548-满送活动-线性",
+      "font_class": "CRMEB-548-mansonghuodong-xianxing",
+      "unicode": "ec7c",
+      "unicode_decimal": 60540
+    },
+    {
+      "icon_id": "47596376",
+      "name": "CRMEB-544-待处理用户反馈-线性",
+      "font_class": "CRMEB-544-daichuliyonghufankui-xianxing",
+      "unicode": "ec7d",
+      "unicode_decimal": 60541
+    },
+    {
+      "icon_id": "47596379",
+      "name": "CRMEB-551-满减满折-面性",
+      "font_class": "CRMEB-551-manjianmanzhe-mianxing",
+      "unicode": "ec7e",
+      "unicode_decimal": 60542
+    },
+    {
+      "icon_id": "47596397",
+      "name": "CRMEB-566-食物-线性",
+      "font_class": "CRMEB-566-shiwu-xianxing",
+      "unicode": "ec6b",
+      "unicode_decimal": 60523
+    },
+    {
+      "icon_id": "47596396",
+      "name": "CRMEB-562-餐具-线性",
+      "font_class": "CRMEB-562-canju-xianxing",
+      "unicode": "ec6c",
+      "unicode_decimal": 60524
+    },
+    {
+      "icon_id": "47596395",
+      "name": "CRMEB-567-食物-面性",
+      "font_class": "CRMEB-567-shiwu-mianxing",
+      "unicode": "ec6d",
+      "unicode_decimal": 60525
+    },
+    {
+      "icon_id": "47596394",
+      "name": "CRMEB-564-面条-线性",
+      "font_class": "CRMEB-564-miantiao-xianxing",
+      "unicode": "ec6e",
+      "unicode_decimal": 60526
+    },
+    {
+      "icon_id": "47596393",
+      "name": "CRMEB-558-待使用-线性",
+      "font_class": "CRMEB-558-daishiyong-xianxing",
+      "unicode": "ec6f",
+      "unicode_decimal": 60527
+    },
+    {
+      "icon_id": "47596390",
+      "name": "CRMEB-555-商户交易-面性",
+      "font_class": "CRMEB-555-shanghujiaoyi-mianxing",
+      "unicode": "ec70",
+      "unicode_decimal": 60528
+    },
+    {
+      "icon_id": "47596392",
+      "name": "CRMEB-565-面条-面性",
+      "font_class": "CRMEB-565-miantiao-mianxing",
+      "unicode": "ec71",
+      "unicode_decimal": 60529
+    },
+    {
+      "icon_id": "47596387",
+      "name": "CRMEB-557-交易金额-面性",
+      "font_class": "CRMEB-557-jiaoyijine-mianxing",
+      "unicode": "ec72",
+      "unicode_decimal": 60530
+    },
+    {
+      "icon_id": "47596391",
+      "name": "CRMEB-552-第n件n折-线性",
+      "font_class": "CRMEB-552-dinjiannzhe-xianxing",
+      "unicode": "ec73",
+      "unicode_decimal": 60531
+    },
+    {
+      "icon_id": "47596388",
+      "name": "CRMEB-556-交易金额-线性",
+      "font_class": "CRMEB-556-jiaoyijine-xianxing",
+      "unicode": "ec74",
+      "unicode_decimal": 60532
+    },
+    {
+      "icon_id": "47596409",
+      "name": "CRMEB-577-甜点-面性",
+      "font_class": "CRMEB-577-tiandian-mianxing",
+      "unicode": "ec60",
+      "unicode_decimal": 60512
+    },
+    {
+      "icon_id": "47596406",
+      "name": "CRMEB-581-咖啡-面性",
+      "font_class": "CRMEB-581-kafei-mianxing",
+      "unicode": "ec61",
+      "unicode_decimal": 60513
+    },
+    {
+      "icon_id": "47596407",
+      "name": "CRMEB-580-咖啡-线性",
+      "font_class": "CRMEB-580-kafei-xianxing",
+      "unicode": "ec62",
+      "unicode_decimal": 60514
+    },
+    {
+      "icon_id": "47596405",
+      "name": "CRMEB-571-茶-面性",
+      "font_class": "CRMEB-571-cha-mianxing",
+      "unicode": "ec63",
+      "unicode_decimal": 60515
+    },
+    {
+      "icon_id": "47596403",
+      "name": "CRMEB-573-果汁-面性",
+      "font_class": "CRMEB-573-guozhi-mianxing",
+      "unicode": "ec64",
+      "unicode_decimal": 60516
+    },
+    {
+      "icon_id": "47596404",
+      "name": "CRMEB-572-果汁-线性",
+      "font_class": "CRMEB-572-guozhi-xianxing",
+      "unicode": "ec65",
+      "unicode_decimal": 60517
+    },
+    {
+      "icon_id": "47596402",
+      "name": "CRMEB-574-甜筒-线性",
+      "font_class": "CRMEB-574-tiantong-xianxing",
+      "unicode": "ec66",
+      "unicode_decimal": 60518
+    },
+    {
+      "icon_id": "47596401",
+      "name": "CRMEB-568-红酒-线性",
+      "font_class": "CRMEB-568-hongjiu-xianxing",
+      "unicode": "ec67",
+      "unicode_decimal": 60519
+    },
+    {
+      "icon_id": "47596399",
+      "name": "CRMEB-547-交易成功数-面性",
+      "font_class": "CRMEB-547-jiaoyichenggongshu-mianxing",
+      "unicode": "ec68",
+      "unicode_decimal": 60520
+    },
+    {
+      "icon_id": "47596400",
+      "name": "CRMEB-569-红酒-面性",
+      "font_class": "CRMEB-569-hongjiu-mianxing",
+      "unicode": "ec69",
+      "unicode_decimal": 60521
+    },
+    {
+      "icon_id": "47596398",
+      "name": "CRMEB-563-餐具-面性",
+      "font_class": "CRMEB-563-canju-mianxing",
+      "unicode": "ec6a",
+      "unicode_decimal": 60522
+    },
+    {
+      "icon_id": "47596418",
+      "name": "CRMEB-589-牛排-面性",
+      "font_class": "CRMEB-589-niupai-mianxing",
+      "unicode": "ec56",
+      "unicode_decimal": 60502
+    },
+    {
+      "icon_id": "47596417",
+      "name": "CRMEB-586-鸡肉-线性",
+      "font_class": "CRMEB-586-jirou-xianxing",
+      "unicode": "ec57",
+      "unicode_decimal": 60503
+    },
+    {
+      "icon_id": "47596416",
+      "name": "CRMEB-582-可乐-线性",
+      "font_class": "CRMEB-582-kele-xianxing",
+      "unicode": "ec58",
+      "unicode_decimal": 60504
+    },
+    {
+      "icon_id": "47596413",
+      "name": "CRMEB-576-甜点-线性",
+      "font_class": "CRMEB-576-tiandian-xianxing",
+      "unicode": "ec59",
+      "unicode_decimal": 60505
+    },
+    {
+      "icon_id": "47596415",
+      "name": "CRMEB-583-可乐-面性",
+      "font_class": "CRMEB-583-kele-mianxing",
+      "unicode": "ec5a",
+      "unicode_decimal": 60506
+    },
+    {
+      "icon_id": "47596410",
+      "name": "CRMEB-575-甜筒-面性",
+      "font_class": "CRMEB-575-tiantong-mianxing",
+      "unicode": "ec5b",
+      "unicode_decimal": 60507
+    },
+    {
+      "icon_id": "47596414",
+      "name": "CRMEB-584-薯条-线性",
+      "font_class": "CRMEB-584-shutiao-xianxing",
+      "unicode": "ec5c",
+      "unicode_decimal": 60508
+    },
+    {
+      "icon_id": "47596411",
+      "name": "CRMEB-579-雪糕-面性",
+      "font_class": "CRMEB-579-xuegao-mianxing",
+      "unicode": "ec5d",
+      "unicode_decimal": 60509
+    },
+    {
+      "icon_id": "47596412",
+      "name": "CRMEB-578-雪糕-线性",
+      "font_class": "CRMEB-578-xuegao-xianxing",
+      "unicode": "ec5e",
+      "unicode_decimal": 60510
+    },
+    {
+      "icon_id": "47596408",
+      "name": "CRMEB-570-茶-线性",
+      "font_class": "CRMEB-570-cha-xianxing",
+      "unicode": "ec5f",
+      "unicode_decimal": 60511
+    },
+    {
+      "icon_id": "47596428",
+      "name": "CRMEB-597-冰箱-面性",
+      "font_class": "CRMEB-597-bingxiang-mianxing",
+      "unicode": "ec4d",
+      "unicode_decimal": 60493
+    },
+    {
+      "icon_id": "47596425",
+      "name": "CRMEB-594-类型筛选-线性",
+      "font_class": "CRMEB-594-leixingshaixuan-xianxing",
+      "unicode": "ec4e",
+      "unicode_decimal": 60494
+    },
+    {
+      "icon_id": "47596427",
+      "name": "CRMEB-598-杯子-线性",
+      "font_class": "CRMEB-598-beizi-xianxing",
+      "unicode": "ec4f",
+      "unicode_decimal": 60495
+    },
+    {
+      "icon_id": "47596422",
+      "name": "CRMEB-590-汉堡-线性",
+      "font_class": "CRMEB-590-hanbao-xianxing",
+      "unicode": "ec50",
+      "unicode_decimal": 60496
+    },
+    {
+      "icon_id": "47596424",
+      "name": "CRMEB-593-糖果-面性",
+      "font_class": "CRMEB-593-tangguo-mianxing",
+      "unicode": "ec51",
+      "unicode_decimal": 60497
+    },
+    {
+      "icon_id": "47596419",
+      "name": "CRMEB-585-薯条-面性",
+      "font_class": "CRMEB-585-shutiao-mianxing",
+      "unicode": "ec52",
+      "unicode_decimal": 60498
+    },
+    {
+      "icon_id": "47596423",
+      "name": "CRMEB-591-汉堡-面性",
+      "font_class": "CRMEB-591-hanbao-mianxing",
+      "unicode": "ec53",
+      "unicode_decimal": 60499
+    },
+    {
+      "icon_id": "47596420",
+      "name": "CRMEB-592-糖果-线性",
+      "font_class": "CRMEB-592-tangguo-xianxing",
+      "unicode": "ec54",
+      "unicode_decimal": 60500
+    },
+    {
+      "icon_id": "47596421",
+      "name": "CRMEB-588-牛排-线性",
+      "font_class": "CRMEB-588-niupai-xianxing",
+      "unicode": "ec55",
+      "unicode_decimal": 60501
+    },
+    {
+      "icon_id": "47596434",
+      "name": "CRMEB-587-鸡肉-面性",
+      "font_class": "CRMEB-587-jirou-mianxing",
+      "unicode": "ec42",
+      "unicode_decimal": 60482
+    },
+    {
+      "icon_id": "47596432",
+      "name": "CRMEB-600-樱桃-线性",
+      "font_class": "CRMEB-600-yingtao-xianxing",
+      "unicode": "ec43",
+      "unicode_decimal": 60483
+    },
+    {
+      "icon_id": "47596438",
+      "name": "CRMEB-607-芒果-面性",
+      "font_class": "CRMEB-607-mangguo-mianxing",
+      "unicode": "ec44",
+      "unicode_decimal": 60484
+    },
+    {
+      "icon_id": "47596439",
+      "name": "CRMEB-609-西瓜-面性",
+      "font_class": "CRMEB-609-xigua-mianxing",
+      "unicode": "ec45",
+      "unicode_decimal": 60485
+    },
+    {
+      "icon_id": "47596437",
+      "name": "CRMEB-608-西瓜-线性",
+      "font_class": "CRMEB-608-xigua-xianxing",
+      "unicode": "ec46",
+      "unicode_decimal": 60486
+    },
+    {
+      "icon_id": "47596431",
+      "name": "CRMEB-604-葡萄-线性",
+      "font_class": "CRMEB-604-putao-xianxing",
+      "unicode": "ec47",
+      "unicode_decimal": 60487
+    },
+    {
+      "icon_id": "47596436",
+      "name": "CRMEB-603-苹果-面性",
+      "font_class": "CRMEB-603-pingguo-mianxing",
+      "unicode": "ec48",
+      "unicode_decimal": 60488
+    },
+    {
+      "icon_id": "47596426",
+      "name": "CRMEB-596-冰箱-线性",
+      "font_class": "CRMEB-596-bingxiang-xianxing",
+      "unicode": "ec49",
+      "unicode_decimal": 60489
+    },
+    {
+      "icon_id": "47596433",
+      "name": "CRMEB-602-苹果-线性",
+      "font_class": "CRMEB-602-pingguo-xianxing",
+      "unicode": "ec4a",
+      "unicode_decimal": 60490
+    },
+    {
+      "icon_id": "47596430",
+      "name": "CRMEB-595-类型筛选-面性",
+      "font_class": "CRMEB-595-leixingshaixuan-mianxing",
+      "unicode": "ec4b",
+      "unicode_decimal": 60491
+    },
+    {
+      "icon_id": "47596429",
+      "name": "CRMEB-599-杯子-面性",
+      "font_class": "CRMEB-599-beizi-mianxing",
+      "unicode": "ec4c",
+      "unicode_decimal": 60492
+    },
+    {
+      "icon_id": "47596450",
+      "name": "CRMEB-617-橄榄球-面性",
+      "font_class": "CRMEB-617-ganlanqiu-mianxing",
+      "unicode": "ec37",
+      "unicode_decimal": 60471
+    },
+    {
+      "icon_id": "47596447",
+      "name": "CRMEB-615-梨-面性",
+      "font_class": "CRMEB-615-li-mianxing",
+      "unicode": "ec38",
+      "unicode_decimal": 60472
+    },
+    {
+      "icon_id": "47596448",
+      "name": "CRMEB-620-篮球-线性",
+      "font_class": "CRMEB-620-lanqiu-xianxing",
+      "unicode": "ec39",
+      "unicode_decimal": 60473
+    },
+    {
+      "icon_id": "47596445",
+      "name": "CRMEB-612-桃子-线性",
+      "font_class": "CRMEB-612-taozi-xianxing",
+      "unicode": "ec3a",
+      "unicode_decimal": 60474
+    },
+    {
+      "icon_id": "47596446",
+      "name": "CRMEB-610-橘子-线性",
+      "font_class": "CRMEB-610-juzi-xianxing",
+      "unicode": "ec3b",
+      "unicode_decimal": 60475
+    },
+    {
+      "icon_id": "47596444",
+      "name": "CRMEB-614-梨-线性",
+      "font_class": "CRMEB-614-li-xianxing",
+      "unicode": "ec3c",
+      "unicode_decimal": 60476
+    },
+    {
+      "icon_id": "47596442",
+      "name": "CRMEB-613-桃子-面性",
+      "font_class": "CRMEB-613-taozi-mianxing",
+      "unicode": "ec3d",
+      "unicode_decimal": 60477
+    },
+    {
+      "icon_id": "47596443",
+      "name": "CRMEB-605-葡萄-面性",
+      "font_class": "CRMEB-605-putao-mianxing",
+      "unicode": "ec3e",
+      "unicode_decimal": 60478
+    },
+    {
+      "icon_id": "47596440",
+      "name": "CRMEB-611-橘子-面性",
+      "font_class": "CRMEB-611-juzi-mianxing",
+      "unicode": "ec3f",
+      "unicode_decimal": 60479
+    },
+    {
+      "icon_id": "47596441",
+      "name": "CRMEB-606-芒果-线性",
+      "font_class": "CRMEB-606-mangguo-xianxing",
+      "unicode": "ec40",
+      "unicode_decimal": 60480
+    },
+    {
+      "icon_id": "47596435",
+      "name": "CRMEB-601-樱桃-面性",
+      "font_class": "CRMEB-601-yingtao-mianxing",
+      "unicode": "ec41",
+      "unicode_decimal": 60481
+    },
+    {
+      "icon_id": "47596460",
+      "name": "CRMEB-626-足球-线性",
+      "font_class": "CRMEB-626-zuqiu-xianxing",
+      "unicode": "ec2c",
+      "unicode_decimal": 60460
+    },
+    {
+      "icon_id": "47596454",
+      "name": "CRMEB-624-排球-线性",
+      "font_class": "CRMEB-624-paiqiu-xianxing",
+      "unicode": "ec2d",
+      "unicode_decimal": 60461
+    },
+    {
+      "icon_id": "47596459",
+      "name": "CRMEB-622-网球-线性",
+      "font_class": "CRMEB-622-wangqiu-xianxing",
+      "unicode": "ec2e",
+      "unicode_decimal": 60462
+    },
+    {
+      "icon_id": "47596458",
+      "name": "CRMEB-627-足球-面性",
+      "font_class": "CRMEB-627-zuqiu-mianxing",
+      "unicode": "ec2f",
+      "unicode_decimal": 60463
+    },
+    {
+      "icon_id": "47596457",
+      "name": "CRMEB-628-乒乓球-线性",
+      "font_class": "CRMEB-628-pingpangqiu-xianxing",
+      "unicode": "ec30",
+      "unicode_decimal": 60464
+    },
+    {
+      "icon_id": "47596456",
+      "name": "CRMEB-629-乒乓球-面性",
+      "font_class": "CRMEB-629-pingpangqiu-mianxing",
+      "unicode": "ec31",
+      "unicode_decimal": 60465
+    },
+    {
+      "icon_id": "47596455",
+      "name": "CRMEB-621-篮球-面性",
+      "font_class": "CRMEB-621-lanqiu-mianxing",
+      "unicode": "ec32",
+      "unicode_decimal": 60466
+    },
+    {
+      "icon_id": "47596449",
+      "name": "CRMEB-618-棒球-线性",
+      "font_class": "CRMEB-618-bangqiu-xianxing",
+      "unicode": "ec33",
+      "unicode_decimal": 60467
+    },
+    {
+      "icon_id": "47596453",
+      "name": "CRMEB-619-棒球-面性",
+      "font_class": "CRMEB-619-bangqiu-mianxing",
+      "unicode": "ec34",
+      "unicode_decimal": 60468
+    },
+    {
+      "icon_id": "47596451",
+      "name": "CRMEB-616-橄榄球-线性",
+      "font_class": "CRMEB-616-ganlanqiu-xianxing",
+      "unicode": "ec35",
+      "unicode_decimal": 60469
+    },
+    {
+      "icon_id": "47596452",
+      "name": "CRMEB-625-排球-面性",
+      "font_class": "CRMEB-625-paiqiu-mianxing",
+      "unicode": "ec36",
+      "unicode_decimal": 60470
+    },
+    {
+      "icon_id": "47596470",
+      "name": "CRMEB-641-阴天-面性",
+      "font_class": "CRMEB-641-yintian-mianxing",
+      "unicode": "ec21",
+      "unicode_decimal": 60449
+    },
+    {
+      "icon_id": "47596471",
+      "name": "CRMEB-637-晴天-面性",
+      "font_class": "CRMEB-637-qingtian-mianxing",
+      "unicode": "ec22",
+      "unicode_decimal": 60450
+    },
+    {
+      "icon_id": "47596469",
+      "name": "CRMEB-638-日出-线性",
+      "font_class": "CRMEB-638-richu-xianxing",
+      "unicode": "ec23",
+      "unicode_decimal": 60451
+    },
+    {
+      "icon_id": "47596468",
+      "name": "CRMEB-631-羽毛球-面性",
+      "font_class": "CRMEB-631-yumaoqiu-mianxing",
+      "unicode": "ec24",
+      "unicode_decimal": 60452
+    },
+    {
+      "icon_id": "47596467",
+      "name": "CRMEB-632-夜晚-线性",
+      "font_class": "CRMEB-632-yewan-xianxing",
+      "unicode": "ec25",
+      "unicode_decimal": 60453
+    },
+    {
+      "icon_id": "47596462",
+      "name": "CRMEB-623-网球-面性",
+      "font_class": "CRMEB-623-wangqiu-mianxing",
+      "unicode": "ec26",
+      "unicode_decimal": 60454
+    },
+    {
+      "icon_id": "47596466",
+      "name": "CRMEB-636-晴天-线性",
+      "font_class": "CRMEB-636-qingtian-xianxing",
+      "unicode": "ec27",
+      "unicode_decimal": 60455
+    },
+    {
+      "icon_id": "47596465",
+      "name": "CRMEB-635-月色-面性",
+      "font_class": "CRMEB-635-yuese-mianxing",
+      "unicode": "ec28",
+      "unicode_decimal": 60456
+    },
+    {
+      "icon_id": "47596464",
+      "name": "CRMEB-633-夜晚-面性",
+      "font_class": "CRMEB-633-yewan-mianxing",
+      "unicode": "ec29",
+      "unicode_decimal": 60457
+    },
+    {
+      "icon_id": "47596461",
+      "name": "CRMEB-630-羽毛球-线性",
+      "font_class": "CRMEB-630-yumaoqiu-xianxing",
+      "unicode": "ec2a",
+      "unicode_decimal": 60458
+    },
+    {
+      "icon_id": "47596463",
+      "name": "CRMEB-634-月色-线性",
+      "font_class": "CRMEB-634-yuese-xianxing",
+      "unicode": "ec2b",
+      "unicode_decimal": 60459
+    },
+    {
+      "icon_id": "47596478",
+      "name": "CRMEB-642-晴转多云-线性",
+      "font_class": "CRMEB-642-qingzhuanduoyun-xianxing",
+      "unicode": "ec16",
+      "unicode_decimal": 60438
+    },
+    {
+      "icon_id": "47596482",
+      "name": "CRMEB-648-雨-线性",
+      "font_class": "CRMEB-648-yu-xianxing",
+      "unicode": "ec17",
+      "unicode_decimal": 60439
+    },
+    {
+      "icon_id": "47596481",
+      "name": "CRMEB-649-雨-面性",
+      "font_class": "CRMEB-649-yu-mianxing",
+      "unicode": "ec18",
+      "unicode_decimal": 60440
+    },
+    {
+      "icon_id": "47596480",
+      "name": "CRMEB-650-雪-线性",
+      "font_class": "CRMEB-650-xue-xianxing",
+      "unicode": "ec19",
+      "unicode_decimal": 60441
+    },
+    {
+      "icon_id": "47596479",
+      "name": "CRMEB-644-多云转晴-线性",
+      "font_class": "CRMEB-644-duoyunzhuanqing-xianxing",
+      "unicode": "ec1a",
+      "unicode_decimal": 60442
+    },
+    {
+      "icon_id": "47596477",
+      "name": "CRMEB-645-多云转晴-面性",
+      "font_class": "CRMEB-645-duoyunzhuanqing-mianxing",
+      "unicode": "ec1b",
+      "unicode_decimal": 60443
+    },
+    {
+      "icon_id": "47596476",
+      "name": "CRMEB-640-阴天-线性",
+      "font_class": "CRMEB-640-yintian-xianxing",
+      "unicode": "ec1c",
+      "unicode_decimal": 60444
+    },
+    {
+      "icon_id": "47596472",
+      "name": "CRMEB-643-晴转多云-面性",
+      "font_class": "CRMEB-643-qingzhuanduoyun-mianxing",
+      "unicode": "ec1d",
+      "unicode_decimal": 60445
+    },
+    {
+      "icon_id": "47596475",
+      "name": "CRMEB-647-雷电-面性",
+      "font_class": "CRMEB-647-leidian-mianxing",
+      "unicode": "ec1e",
+      "unicode_decimal": 60446
+    },
+    {
+      "icon_id": "47596474",
+      "name": "CRMEB-646-雷电-线性",
+      "font_class": "CRMEB-646-leidian-xianxing",
+      "unicode": "ec1f",
+      "unicode_decimal": 60447
+    },
+    {
+      "icon_id": "47596473",
+      "name": "CRMEB-639-日出-面性",
+      "font_class": "CRMEB-639-richu-mianxing",
+      "unicode": "ec20",
+      "unicode_decimal": 60448
+    },
+    {
+      "icon_id": "47596496",
+      "name": "CRMEB-664-项目-线性",
+      "font_class": "CRMEB-664-xiangmu-xianxing",
+      "unicode": "ec0c",
+      "unicode_decimal": 60428
+    },
+    {
+      "icon_id": "47596494",
+      "name": "CRMEB-663-AI-面性",
+      "font_class": "CRMEB-663-AI-mianxing",
+      "unicode": "ec0d",
+      "unicode_decimal": 60429
+    },
+    {
+      "icon_id": "47596492",
+      "name": "CRMEB-662-AI-线性",
+      "font_class": "CRMEB-662-AI-xianxing",
+      "unicode": "ec0e",
+      "unicode_decimal": 60430
+    },
+    {
+      "icon_id": "47596488",
+      "name": "CRMEB-656-清理-线性",
+      "font_class": "CRMEB-656-qingli-xianxing",
+      "unicode": "ec0f",
+      "unicode_decimal": 60431
+    },
+    {
+      "icon_id": "47596486",
+      "name": "CRMEB-657-清理-面性",
+      "font_class": "CRMEB-657-qingli-mianxing",
+      "unicode": "ec10",
+      "unicode_decimal": 60432
+    },
+    {
+      "icon_id": "47596489",
+      "name": "CRMEB-654-车辆管理-线性",
+      "font_class": "CRMEB-654-cheliangguanli-xianxing",
+      "unicode": "ec11",
+      "unicode_decimal": 60433
+    },
+    {
+      "icon_id": "47596490",
+      "name": "CRMEB-667-财务管理-面性",
+      "font_class": "CRMEB-667-caiwuguanli-mianxing",
+      "unicode": "ec12",
+      "unicode_decimal": 60434
+    },
+    {
+      "icon_id": "47596483",
+      "name": "CRMEB-652-请假申请-线性",
+      "font_class": "CRMEB-652-qingjiashenqing-xianxing",
+      "unicode": "ec13",
+      "unicode_decimal": 60435
+    },
+    {
+      "icon_id": "47596487",
+      "name": "CRMEB-659-办公-面性",
+      "font_class": "CRMEB-659-bangong-mianxing",
+      "unicode": "ec14",
+      "unicode_decimal": 60436
+    },
+    {
+      "icon_id": "47596484",
+      "name": "CRMEB-655-车辆管理-面性",
+      "font_class": "CRMEB-655-cheliangguanli-mianxing",
+      "unicode": "ec15",
+      "unicode_decimal": 60437
+    },
+    {
+      "icon_id": "47596504",
+      "name": "CRMEB-665-项目-面性",
+      "font_class": "CRMEB-665-xiangmu-mianxing",
+      "unicode": "ec01",
+      "unicode_decimal": 60417
+    },
+    {
+      "icon_id": "47596502",
+      "name": "CRMEB-668-人事-线性",
+      "font_class": "CRMEB-668-renshi-xianxing",
+      "unicode": "ec02",
+      "unicode_decimal": 60418
+    },
+    {
+      "icon_id": "47596491",
+      "name": "CRMEB-661-客户-面性",
+      "font_class": "CRMEB-661-kehu-mianxing",
+      "unicode": "ec03",
+      "unicode_decimal": 60419
+    },
+    {
+      "icon_id": "47596501",
+      "name": "CRMEB-671-行政-面性",
+      "font_class": "CRMEB-671-hangzheng-mianxing",
+      "unicode": "ec04",
+      "unicode_decimal": 60420
+    },
+    {
+      "icon_id": "47596495",
+      "name": "CRMEB-660-客户-线性",
+      "font_class": "CRMEB-660-kehu-xianxing",
+      "unicode": "ec05",
+      "unicode_decimal": 60421
+    },
+    {
+      "icon_id": "47596497",
+      "name": "CRMEB-658-办公-线性",
+      "font_class": "CRMEB-658-bangong-xianxing",
+      "unicode": "ec06",
+      "unicode_decimal": 60422
+    },
+    {
+      "icon_id": "47596498",
+      "name": "CRMEB-666-财务管理-线性",
+      "font_class": "CRMEB-666-caiwuguanli-xianxing",
+      "unicode": "ec07",
+      "unicode_decimal": 60423
+    },
+    {
+      "icon_id": "47596500",
+      "name": "CRMEB-673-云盘-面性",
+      "font_class": "CRMEB-673-yunpan-mianxing",
+      "unicode": "ec08",
+      "unicode_decimal": 60424
+    },
+    {
+      "icon_id": "47596499",
+      "name": "CRMEB-669-人事-面性",
+      "font_class": "CRMEB-669-renshi-mianxing",
+      "unicode": "ec09",
+      "unicode_decimal": 60425
+    },
+    {
+      "icon_id": "47596485",
+      "name": "CRMEB-651-雪-面性",
+      "font_class": "CRMEB-651-xue-mianxing",
+      "unicode": "ec0a",
+      "unicode_decimal": 60426
+    },
+    {
+      "icon_id": "47596493",
+      "name": "CRMEB-653-请假申请-面性",
+      "font_class": "CRMEB-653-qingjiashenqing-mianxing",
+      "unicode": "ec0b",
+      "unicode_decimal": 60427
+    },
+    {
+      "icon_id": "47596516",
+      "name": "CRMEB-683-职位说明-面性",
+      "font_class": "CRMEB-683-zhiweishuoming-mianxing",
+      "unicode": "ebf6",
+      "unicode_decimal": 60406
+    },
+    {
+      "icon_id": "47596513",
+      "name": "CRMEB-687-员工培训-面性",
+      "font_class": "CRMEB-687-yuangongpeixun-mianxing",
+      "unicode": "ebf7",
+      "unicode_decimal": 60407
+    },
+    {
+      "icon_id": "47596511",
+      "name": "CRMEB-682-职位说明-线性",
+      "font_class": "CRMEB-682-zhiweishuoming-xianxing",
+      "unicode": "ebf8",
+      "unicode_decimal": 60408
+    },
+    {
+      "icon_id": "47596514",
+      "name": "CRMEB-679-我的日程-面性",
+      "font_class": "CRMEB-679-wodericheng-mianxing",
+      "unicode": "ebf9",
+      "unicode_decimal": 60409
+    },
+    {
+      "icon_id": "47596510",
+      "name": "CRMEB-685-绩效考核-面性",
+      "font_class": "CRMEB-685-jixiaokaohe-mianxing",
+      "unicode": "ebfa",
+      "unicode_decimal": 60410
+    },
+    {
+      "icon_id": "47596506",
+      "name": "CRMEB-670-行政-线性",
+      "font_class": "CRMEB-670-hangzheng-xianxing",
+      "unicode": "ebfb",
+      "unicode_decimal": 60411
+    },
+    {
+      "icon_id": "47596508",
+      "name": "CRMEB-675-系统-面性",
+      "font_class": "CRMEB-675-xitong-mianxing",
+      "unicode": "ebfc",
+      "unicode_decimal": 60412
+    },
+    {
+      "icon_id": "47596509",
+      "name": "CRMEB-678-我的日程-线性",
+      "font_class": "CRMEB-678-wodericheng-xianxing",
+      "unicode": "ebfd",
+      "unicode_decimal": 60413
+    },
+    {
+      "icon_id": "47596505",
+      "name": "CRMEB-677-工作台-面性",
+      "font_class": "CRMEB-677-gongzuotai-mianxing",
+      "unicode": "ebfe",
+      "unicode_decimal": 60414
+    },
+    {
+      "icon_id": "47596507",
+      "name": "CRMEB-676-工作台-线性",
+      "font_class": "CRMEB-676-gongzuotai-xianxing",
+      "unicode": "ebff",
+      "unicode_decimal": 60415
+    },
+    {
+      "icon_id": "47596503",
+      "name": "CRMEB-672-云盘-线性",
+      "font_class": "CRMEB-672-yunpan-xianxing",
+      "unicode": "ec00",
+      "unicode_decimal": 60416
+    },
+    {
+      "icon_id": "47596515",
+      "name": "CRMEB-681-工作汇报-面性",
+      "font_class": "CRMEB-681-gongzuohuibao-mianxing",
+      "unicode": "ebf5",
+      "unicode_decimal": 60405
+    },
+    {
+      "icon_id": "47596525",
+      "name": "CRMEB-694-客户管理-线性",
+      "font_class": "CRMEB-694-kehuguanli-xianxing",
+      "unicode": "ebec",
+      "unicode_decimal": 60396
+    },
+    {
+      "icon_id": "47596519",
+      "name": "CRMEB-680-工作汇报-线性",
+      "font_class": "CRMEB-680-gongzuohuibao-xianxing",
+      "unicode": "ebed",
+      "unicode_decimal": 60397
+    },
+    {
+      "icon_id": "47596523",
+      "name": "CRMEB-688-考勤统计-线性",
+      "font_class": "CRMEB-688-kaoqintongji-xianxing",
+      "unicode": "ebee",
+      "unicode_decimal": 60398
+    },
+    {
+      "icon_id": "47596521",
+      "name": "CRMEB-686-员工培训-线性",
+      "font_class": "CRMEB-686-yuangongpeixun-xianxing",
+      "unicode": "ebef",
+      "unicode_decimal": 60399
+    },
+    {
+      "icon_id": "47596522",
+      "name": "CRMEB-691-企业通讯录-面性",
+      "font_class": "CRMEB-691-qiyetongxunlu-mianxing",
+      "unicode": "ebf0",
+      "unicode_decimal": 60400
+    },
+    {
+      "icon_id": "47596512",
+      "name": "CRMEB-674-系统-线性",
+      "font_class": "CRMEB-674-xitong-xianxing",
+      "unicode": "ebf1",
+      "unicode_decimal": 60401
+    },
+    {
+      "icon_id": "47596520",
+      "name": "CRMEB-692-线索管理-线性",
+      "font_class": "CRMEB-692-xiansuoguanli-xianxing",
+      "unicode": "ebf2",
+      "unicode_decimal": 60402
+    },
+    {
+      "icon_id": "47596517",
+      "name": "CRMEB-684-绩效考核-线性",
+      "font_class": "CRMEB-684-jixiaokaohe-xianxing",
+      "unicode": "ebf3",
+      "unicode_decimal": 60403
+    },
+    {
+      "icon_id": "47596518",
+      "name": "CRMEB-689-考勤统计-面性",
+      "font_class": "CRMEB-689-kaoqintongji-mianxing",
+      "unicode": "ebf4",
+      "unicode_decimal": 60404
+    },
+    {
+      "icon_id": "47596528",
+      "name": "CRMEB-699-合同订单-面性",
+      "font_class": "CRMEB-699-hetongdingdan-mianxing",
+      "unicode": "ebe7",
+      "unicode_decimal": 60391
+    },
+    {
+      "icon_id": "47596527",
+      "name": "CRMEB-697-商机管理-面性",
+      "font_class": "CRMEB-697-shangjiguanli-mianxing",
+      "unicode": "ebe8",
+      "unicode_decimal": 60392
+    },
+    {
+      "icon_id": "47596529",
+      "name": "CRMEB-696-商机管理-线性",
+      "font_class": "CRMEB-696-shangjiguanli-xianxing",
+      "unicode": "ebe9",
+      "unicode_decimal": 60393
+    },
+    {
+      "icon_id": "47596526",
+      "name": "CRMEB-698-合同订单-线性",
+      "font_class": "CRMEB-698-hetongdingdan-xianxing",
+      "unicode": "ebea",
+      "unicode_decimal": 60394
+    },
+    {
+      "icon_id": "47596524",
+      "name": "CRMEB-690-企业通讯录-线性",
+      "font_class": "CRMEB-690-qiyetongxunlu-xianxing",
+      "unicode": "ebeb",
+      "unicode_decimal": 60395
+    },
+    {
+      "icon_id": "47596543",
+      "name": "CRMEB-712-客户设置-线性",
+      "font_class": "CRMEB-712-kehushezhi-xianxing",
+      "unicode": "ebdb",
+      "unicode_decimal": 60379
+    },
+    {
+      "icon_id": "47596540",
+      "name": "CRMEB-713-客户设置-面性",
+      "font_class": "CRMEB-713-kehushezhi-mianxing",
+      "unicode": "ebdc",
+      "unicode_decimal": 60380
+    },
+    {
+      "icon_id": "47596539",
+      "name": "CRMEB-707-跟进记录-面性",
+      "font_class": "CRMEB-707-genjinjilu-mianxing",
+      "unicode": "ebdd",
+      "unicode_decimal": 60381
+    },
+    {
+      "icon_id": "47596538",
+      "name": "CRMEB-703-发票管理-面性",
+      "font_class": "CRMEB-703-fapiaoguanli-mianxing",
+      "unicode": "ebde",
+      "unicode_decimal": 60382
+    },
+    {
+      "icon_id": "47596536",
+      "name": "CRMEB-704-联系人-线性",
+      "font_class": "CRMEB-704-lianxiren-xianxing",
+      "unicode": "ebdf",
+      "unicode_decimal": 60383
+    },
+    {
+      "icon_id": "47596537",
+      "name": "CRMEB-706-跟进记录-线性",
+      "font_class": "CRMEB-706-genjinjilu-xianxing",
+      "unicode": "ebe0",
+      "unicode_decimal": 60384
+    },
+    {
+      "icon_id": "47596535",
+      "name": "CRMEB-705-联系人-面性",
+      "font_class": "CRMEB-705-lianxiren-mianxing",
+      "unicode": "ebe1",
+      "unicode_decimal": 60385
+    },
+    {
+      "icon_id": "47596534",
+      "name": "CRMEB-700-合同签约-线性",
+      "font_class": "CRMEB-700-hetongqianyue-xianxing",
+      "unicode": "ebe2",
+      "unicode_decimal": 60386
+    },
+    {
+      "icon_id": "47596530",
+      "name": "CRMEB-693-线索管理-面性",
+      "font_class": "CRMEB-693-xiansuoguanli-mianxing",
+      "unicode": "ebe3",
+      "unicode_decimal": 60387
+    },
+    {
+      "icon_id": "47596533",
+      "name": "CRMEB-695-客户管理-面性",
+      "font_class": "CRMEB-695-kehuguanli-mianxing",
+      "unicode": "ebe4",
+      "unicode_decimal": 60388
+    },
+    {
+      "icon_id": "47596532",
+      "name": "CRMEB-701-合同签约-面性",
+      "font_class": "CRMEB-701-hetongqianyue-mianxing",
+      "unicode": "ebe5",
+      "unicode_decimal": 60389
+    },
+    {
+      "icon_id": "47596531",
+      "name": "CRMEB-702-发票管理-线性",
+      "font_class": "CRMEB-702-fapiaoguanli-xianxing",
+      "unicode": "ebe6",
+      "unicode_decimal": 60390
+    },
+    {
+      "icon_id": "47596554",
+      "name": "CRMEB-719-回收站-面性",
+      "font_class": "CRMEB-719-huishouzhan-mianxing",
+      "unicode": "ebcf",
+      "unicode_decimal": 60367
+    },
+    {
+      "icon_id": "47596552",
+      "name": "CRMEB-721-模型设置-面性",
+      "font_class": "CRMEB-721-moxingshezhi-mianxing",
+      "unicode": "ebd0",
+      "unicode_decimal": 60368
+    },
+    {
+      "icon_id": "47596553",
+      "name": "CRMEB-723-我的项目-面性",
+      "font_class": "CRMEB-723-wodexiangmu-mianxing",
+      "unicode": "ebd1",
+      "unicode_decimal": 60369
+    },
+    {
+      "icon_id": "47596550",
+      "name": "CRMEB-718-回收站-线性",
+      "font_class": "CRMEB-718-huishouzhan-xianxing",
+      "unicode": "ebd2",
+      "unicode_decimal": 60370
+    },
+    {
+      "icon_id": "47596549",
+      "name": "CRMEB-716-应用列表-线性",
+      "font_class": "CRMEB-716-yingyongliebiao-xianxing",
+      "unicode": "ebd3",
+      "unicode_decimal": 60371
+    },
+    {
+      "icon_id": "47596548",
+      "name": "CRMEB-717-应用列表-面性",
+      "font_class": "CRMEB-717-yingyongliebiao-mianxing",
+      "unicode": "ebd4",
+      "unicode_decimal": 60372
+    },
+    {
+      "icon_id": "47596547",
+      "name": "CRMEB-714-邮件-线性",
+      "font_class": "CRMEB-714-qunfagongju-xianxing",
+      "unicode": "ebd5",
+      "unicode_decimal": 60373
+    },
+    {
+      "icon_id": "47596546",
+      "name": "CRMEB-714-邮件-面性",
+      "font_class": "CRMEB-715-qunfagongju-mianxing",
+      "unicode": "ebd6",
+      "unicode_decimal": 60374
+    },
+    {
+      "icon_id": "47596544",
+      "name": "CRMEB-711-产品管理-面性",
+      "font_class": "CRMEB-711-chanpinguanli-mianxing",
+      "unicode": "ebd7",
+      "unicode_decimal": 60375
+    },
+    {
+      "icon_id": "47596541",
+      "name": "CRMEB-708-业绩目标-线性",
+      "font_class": "CRMEB-708-yejimubiao-xianxing",
+      "unicode": "ebd8",
+      "unicode_decimal": 60376
+    },
+    {
+      "icon_id": "47596542",
+      "name": "CRMEB-709-业绩目标-面性",
+      "font_class": "CRMEB-709-yejimubiao-mianxing",
+      "unicode": "ebd9",
+      "unicode_decimal": 60377
+    },
+    {
+      "icon_id": "47596545",
+      "name": "CRMEB-710-产品管理-线性",
+      "font_class": "CRMEB-710-chanpinguanli-xianxing",
+      "unicode": "ebda",
+      "unicode_decimal": 60378
+    },
+    {
+      "icon_id": "47596566",
+      "name": "CRMEB-733-企业动态-面性",
+      "font_class": "CRMEB-733-qiyedongtai-mianxing",
+      "unicode": "ebc3",
+      "unicode_decimal": 60355
+    },
+    {
+      "icon_id": "47596563",
+      "name": "CRMEB-735-固定物资-面性",
+      "font_class": "CRMEB-735-gudingwuzi-mianxing",
+      "unicode": "ebc4",
+      "unicode_decimal": 60356
+    },
+    {
+      "icon_id": "47596564",
+      "name": "CRMEB-732-企业动态-线性",
+      "font_class": "CRMEB-732-qiyedongtai-xianxing",
+      "unicode": "ebc5",
+      "unicode_decimal": 60357
+    },
+    {
+      "icon_id": "47596562",
+      "name": "CRMEB-731-财务设置-面性",
+      "font_class": "CRMEB-731-caiwushezhi-mianxing",
+      "unicode": "ebc6",
+      "unicode_decimal": 60358
+    },
+    {
+      "icon_id": "47596560",
+      "name": "CRMEB-729-开票管理-面性",
+      "font_class": "CRMEB-729-kaipiaoguanli-mianxing",
+      "unicode": "ebc7",
+      "unicode_decimal": 60359
+    },
+    {
+      "icon_id": "47596561",
+      "name": "CRMEB-724-我的任务-线性",
+      "font_class": "CRMEB-724-woderenwu-xianxing",
+      "unicode": "ebc8",
+      "unicode_decimal": 60360
+    },
+    {
+      "icon_id": "47596559",
+      "name": "CRMEB-727-账目记录-面性",
+      "font_class": "CRMEB-727-zhangmujilu-mianxing",
+      "unicode": "ebc9",
+      "unicode_decimal": 60361
+    },
+    {
+      "icon_id": "47596557",
+      "name": "CRMEB-728-开票管理-线性",
+      "font_class": "CRMEB-728-kaipiaoguanli-xianxing",
+      "unicode": "ebca",
+      "unicode_decimal": 60362
+    },
+    {
+      "icon_id": "47596558",
+      "name": "CRMEB-726-账目记录-线性",
+      "font_class": "CRMEB-726-zhangmujilu-xianxing",
+      "unicode": "ebcb",
+      "unicode_decimal": 60363
+    },
+    {
+      "icon_id": "47596556",
+      "name": "CRMEB-725-我的任务-面性",
+      "font_class": "CRMEB-725-woderenwu-mianxing",
+      "unicode": "ebcc",
+      "unicode_decimal": 60364
+    },
+    {
+      "icon_id": "47596555",
+      "name": "CRMEB-720-模型设置-线性",
+      "font_class": "CRMEB-720-moxingshezhi-xianxing",
+      "unicode": "ebcd",
+      "unicode_decimal": 60365
+    },
+    {
+      "icon_id": "47596551",
+      "name": "CRMEB-722-我的项目-线性",
+      "font_class": "CRMEB-722-wodexiangmu-xianxing",
+      "unicode": "ebce",
+      "unicode_decimal": 60366
+    },
+    {
+      "icon_id": "47596577",
+      "name": "CRMEB-747-系统设置-面性",
+      "font_class": "CRMEB-747-xitongshezhi-mianxing",
+      "unicode": "ebb8",
+      "unicode_decimal": 60344
+    },
+    {
+      "icon_id": "47596574",
+      "name": "CRMEB-743-应用搭建-面性",
+      "font_class": "CRMEB-743-yingyongdajian-mianxing",
+      "unicode": "ebb9",
+      "unicode_decimal": 60345
+    },
+    {
+      "icon_id": "47596573",
+      "name": "CRMEB-744-锁定-线性",
+      "font_class": "CRMEB-744-suoding-xianxing",
+      "unicode": "ebba",
+      "unicode_decimal": 60346
+    },
+    {
+      "icon_id": "47596575",
+      "name": "CRMEB-740-企业信息-线性",
+      "font_class": "CRMEB-740-qiyexinxi-xianxing",
+      "unicode": "ebbb",
+      "unicode_decimal": 60347
+    },
+    {
+      "icon_id": "47596572",
+      "name": "CRMEB-741-企业信息-面性",
+      "font_class": "CRMEB-741-qiyexinxi-mianxing",
+      "unicode": "ebbc",
+      "unicode_decimal": 60348
+    },
+    {
+      "icon_id": "47596571",
+      "name": "CRMEB-738-物资概览-线性",
+      "font_class": "CRMEB-738-wuzigailan-xianxing",
+      "unicode": "ebbd",
+      "unicode_decimal": 60349
+    },
+    {
+      "icon_id": "47596569",
+      "name": "CRMEB-736-消耗物资-线性",
+      "font_class": "CRMEB-736-xiaohaowuzi-xianxing",
+      "unicode": "ebbe",
+      "unicode_decimal": 60350
+    },
+    {
+      "icon_id": "47596570",
+      "name": "CRMEB-739-物资概览-面性",
+      "font_class": "CRMEB-739-wuzigailan-mianxing",
+      "unicode": "ebbf",
+      "unicode_decimal": 60351
+    },
+    {
+      "icon_id": "47596568",
+      "name": "CRMEB-737-消耗物资-面性",
+      "font_class": "CRMEB-737-xiaohaowuzi-mianxing",
+      "unicode": "ebc0",
+      "unicode_decimal": 60352
+    },
+    {
+      "icon_id": "47596565",
+      "name": "CRMEB-734-固定物资-线性",
+      "font_class": "CRMEB-734-gudingwuzi-xianxing",
+      "unicode": "ebc1",
+      "unicode_decimal": 60353
+    },
+    {
+      "icon_id": "47596567",
+      "name": "CRMEB-730-财务设置-线性",
+      "font_class": "CRMEB-730-caiwushezhi-xianxing",
+      "unicode": "ebc2",
+      "unicode_decimal": 60354
+    },
+    {
+      "icon_id": "47596588",
+      "name": "CRMEB-756-职位管理-线性",
+      "font_class": "CRMEB-756-zhiweiguanli-xianxing",
+      "unicode": "ebac",
+      "unicode_decimal": 60332
+    },
+    {
+      "icon_id": "47596587",
+      "name": "CRMEB-754-考勤管理-线性",
+      "font_class": "CRMEB-754-kaoqinguanli-xianxing",
+      "unicode": "ebad",
+      "unicode_decimal": 60333
+    },
+    {
+      "icon_id": "47596586",
+      "name": "CRMEB-753-员工档案-面性",
+      "font_class": "CRMEB-753-yuangongdangan-mianxing",
+      "unicode": "ebae",
+      "unicode_decimal": 60334
+    },
+    {
+      "icon_id": "47596584",
+      "name": "CRMEB-748-消息中心-线性",
+      "font_class": "CRMEB-748-xiaoxizhongxin-xianxing",
+      "unicode": "ebaf",
+      "unicode_decimal": 60335
+    },
+    {
+      "icon_id": "47596585",
+      "name": "CRMEB-755-考勤管理-面性",
+      "font_class": "CRMEB-755-kaoqinguanli-mianxing",
+      "unicode": "ebb0",
+      "unicode_decimal": 60336
+    },
+    {
+      "icon_id": "47596581",
+      "name": "CRMEB-752-员工档案-线性",
+      "font_class": "CRMEB-752-yuangongdangan-xianxing",
+      "unicode": "ebb1",
+      "unicode_decimal": 60337
+    },
+    {
+      "icon_id": "47596583",
+      "name": "CRMEB-749-消息中心-面性",
+      "font_class": "CRMEB-749-xiaoxizhongxin-mianxing",
+      "unicode": "ebb2",
+      "unicode_decimal": 60338
+    },
+    {
+      "icon_id": "47596582",
+      "name": "CRMEB-750-组织架构-线性",
+      "font_class": "CRMEB-750-zuzhijiagou-xianxing",
+      "unicode": "ebb3",
+      "unicode_decimal": 60339
+    },
+    {
+      "icon_id": "47596580",
+      "name": "CRMEB-751-组织架构-面性",
+      "font_class": "CRMEB-751-zuzhijiagou-mianxing",
+      "unicode": "ebb4",
+      "unicode_decimal": 60340
+    },
+    {
+      "icon_id": "47596579",
+      "name": "CRMEB-746-系统设置-线性",
+      "font_class": "CRMEB-746-xitongshezhi-xianxing",
+      "unicode": "ebb5",
+      "unicode_decimal": 60341
+    },
+    {
+      "icon_id": "47596578",
+      "name": "CRMEB-745-锁定-面性",
+      "font_class": "CRMEB-745-suoding-mianxing",
+      "unicode": "ebb6",
+      "unicode_decimal": 60342
+    },
+    {
+      "icon_id": "47596576",
+      "name": "CRMEB-742-应用搭建-线性",
+      "font_class": "CRMEB-742-yingyongdajian-xianxing",
+      "unicode": "ebb7",
+      "unicode_decimal": 60343
+    },
+    {
+      "icon_id": "47596600",
+      "name": "CRMEB-766-出差报销-线性",
+      "font_class": "CRMEB-766-chuchabaoxiao-xianxing",
+      "unicode": "eba0",
+      "unicode_decimal": 60320
+    },
+    {
+      "icon_id": "47596597",
+      "name": "CRMEB-767-出差报销-面性",
+      "font_class": "CRMEB-767-chuchabaoxiao-mianxing",
+      "unicode": "eba1",
+      "unicode_decimal": 60321
+    },
+    {
+      "icon_id": "47596599",
+      "name": "CRMEB-768-补卡-线性",
+      "font_class": "CRMEB-768-buka-xianxing",
+      "unicode": "eba2",
+      "unicode_decimal": 60322
+    },
+    {
+      "icon_id": "47596598",
+      "name": "CRMEB-765-申请发票-面性",
+      "font_class": "CRMEB-765-shenqingfapiao-mianxing",
+      "unicode": "eba3",
+      "unicode_decimal": 60323
+    },
+    {
+      "icon_id": "47596596",
+      "name": "CRMEB-764-申请发票-线性",
+      "font_class": "CRMEB-764-shenqingfapiao-xianxing",
+      "unicode": "eba4",
+      "unicode_decimal": 60324
+    },
+    {
+      "icon_id": "47596595",
+      "name": "CRMEB-763-汇报管理-面性",
+      "font_class": "CRMEB-763-huibaoguanli-mianxing",
+      "unicode": "eba5",
+      "unicode_decimal": 60325
+    },
+    {
+      "icon_id": "47596594",
+      "name": "CRMEB-762-汇报管理-线性",
+      "font_class": "CRMEB-762-huibaoguanli-xianxing",
+      "unicode": "eba6",
+      "unicode_decimal": 60326
+    },
+    {
+      "icon_id": "47596593",
+      "name": "CRMEB-758-办公审批-线性",
+      "font_class": "CRMEB-758-bangongshenpi-xianxing",
+      "unicode": "eba7",
+      "unicode_decimal": 60327
+    },
+    {
+      "icon_id": "47596592",
+      "name": "CRMEB-760-辅助工具-线性",
+      "font_class": "CRMEB-760-fuzhugongju-xianxing",
+      "unicode": "eba8",
+      "unicode_decimal": 60328
+    },
+    {
+      "icon_id": "47596591",
+      "name": "CRMEB-757-职位管理-面性",
+      "font_class": "CRMEB-757-zhiweiguanli-mianxing",
+      "unicode": "eba9",
+      "unicode_decimal": 60329
+    },
+    {
+      "icon_id": "47596590",
+      "name": "CRMEB-759-办公审批-面性",
+      "font_class": "CRMEB-759-bangongshenpi-mianxing",
+      "unicode": "ebaa",
+      "unicode_decimal": 60330
+    },
+    {
+      "icon_id": "47596589",
+      "name": "CRMEB-761-辅助工具-面性",
+      "font_class": "CRMEB-761-fuzhugongju-mianxing",
+      "unicode": "ebab",
+      "unicode_decimal": 60331
+    },
+    {
+      "icon_id": "47596609",
+      "name": "CRMEB-781-物品-面性",
+      "font_class": "CRMEB-781-wupin-mianxing",
+      "unicode": "eb97",
+      "unicode_decimal": 60311
+    },
+    {
+      "icon_id": "47596608",
+      "name": "CRMEB-776-用章-线性",
+      "font_class": "CRMEB-776-yongzhang-xianxing",
+      "unicode": "eb98",
+      "unicode_decimal": 60312
+    },
+    {
+      "icon_id": "47596607",
+      "name": "CRMEB-774-采购-线性",
+      "font_class": "CRMEB-774-caigou-xianxing",
+      "unicode": "eb99",
+      "unicode_decimal": 60313
+    },
+    {
+      "icon_id": "47596606",
+      "name": "CRMEB-777-用章-面性",
+      "font_class": "CRMEB-777-yongzhang-mianxing",
+      "unicode": "eb9a",
+      "unicode_decimal": 60314
+    },
+    {
+      "icon_id": "47596605",
+      "name": "CRMEB-772-外出-线性",
+      "font_class": "CRMEB-772-waichu-xianxing",
+      "unicode": "eb9b",
+      "unicode_decimal": 60315
+    },
+    {
+      "icon_id": "47596604",
+      "name": "CRMEB-771-加班-面性",
+      "font_class": "CRMEB-771-jiaban-mianxing",
+      "unicode": "eb9c",
+      "unicode_decimal": 60316
+    },
+    {
+      "icon_id": "47596601",
+      "name": "CRMEB-769-补卡-面性",
+      "font_class": "CRMEB-769-buka-mianxing",
+      "unicode": "eb9d",
+      "unicode_decimal": 60317
+    },
+    {
+      "icon_id": "47596602",
+      "name": "CRMEB-773-外出-面性",
+      "font_class": "CRMEB-773-waichu-mianxing",
+      "unicode": "eb9e",
+      "unicode_decimal": 60318
+    },
+    {
+      "icon_id": "47596603",
+      "name": "CRMEB-770-加班-线性",
+      "font_class": "CRMEB-770-jiaban-xianxing",
+      "unicode": "eb9f",
+      "unicode_decimal": 60319
+    },
+    {
+      "icon_id": "47596621",
+      "name": "CRMEB-782-转正申请-线性",
+      "font_class": "CRMEB-782-zhuanzhengshenqing-xianxing",
+      "unicode": "eb8b",
+      "unicode_decimal": 60299
+    },
+    {
+      "icon_id": "47596620",
+      "name": "CRMEB-789-加添支出-面性",
+      "font_class": "CRMEB-789-jiatianzhichu-mianxing",
+      "unicode": "eb8c",
+      "unicode_decimal": 60300
+    },
+    {
+      "icon_id": "47596619",
+      "name": "CRMEB-788-加添支出-线性",
+      "font_class": "CRMEB-788-jiatianzhichu-xianxing",
+      "unicode": "eb8d",
+      "unicode_decimal": 60301
+    },
+    {
+      "icon_id": "47596618",
+      "name": "CRMEB-787-调岗申请-面性",
+      "font_class": "CRMEB-787-tiaogangshenqing-mianxing",
+      "unicode": "eb8e",
+      "unicode_decimal": 60302
+    },
+    {
+      "icon_id": "47596615",
+      "name": "CRMEB-775-采购-面性",
+      "font_class": "CRMEB-775-caigou-mianxing",
+      "unicode": "eb8f",
+      "unicode_decimal": 60303
+    },
+    {
+      "icon_id": "47596617",
+      "name": "CRMEB-785-离职申请-面性",
+      "font_class": "CRMEB-785-lizhishenqing-mianxing",
+      "unicode": "eb90",
+      "unicode_decimal": 60304
+    },
+    {
+      "icon_id": "47596616",
+      "name": "CRMEB-783-转正申请-面性",
+      "font_class": "CRMEB-783-zhuanzhengshenqing-mianxing",
+      "unicode": "eb91",
+      "unicode_decimal": 60305
+    },
+    {
+      "icon_id": "47596613",
+      "name": "CRMEB-786-调岗申请-线性",
+      "font_class": "CRMEB-786-tiaogangshenqing-xianxing",
+      "unicode": "eb92",
+      "unicode_decimal": 60306
+    },
+    {
+      "icon_id": "47596614",
+      "name": "CRMEB-784-离职申请-线性",
+      "font_class": "CRMEB-784-lizhishenqing-xianxing",
+      "unicode": "eb93",
+      "unicode_decimal": 60307
+    },
+    {
+      "icon_id": "47596611",
+      "name": "CRMEB-778-入职申请-线性",
+      "font_class": "CRMEB-778-ruzhishenqing-xianxing",
+      "unicode": "eb94",
+      "unicode_decimal": 60308
+    },
+    {
+      "icon_id": "47596612",
+      "name": "CRMEB-779-入职申请-面性",
+      "font_class": "CRMEB-779-ruzhishenqing-mianxing",
+      "unicode": "eb95",
+      "unicode_decimal": 60309
+    },
+    {
+      "icon_id": "47596610",
+      "name": "CRMEB-780-物品-线性",
+      "font_class": "CRMEB-780-wupin-xianxing",
+      "unicode": "eb96",
+      "unicode_decimal": 60310
+    },
+    {
+      "icon_id": "47596635",
+      "name": "CRMEB-796-居家办公申请-线性",
+      "font_class": "CRMEB-796-jujiabangongshenqing-xianxing",
+      "unicode": "eb82",
+      "unicode_decimal": 60290
+    },
+    {
+      "icon_id": "47596634",
+      "name": "CRMEB-802-周-线性",
+      "font_class": "CRMEB-802-zhou-xianxing",
+      "unicode": "eb83",
+      "unicode_decimal": 60291
+    },
+    {
+      "icon_id": "47596632",
+      "name": "CRMEB-806-参加培训-线性",
+      "font_class": "CRMEB-806-canjiapeixun-xianxing",
+      "unicode": "eb84",
+      "unicode_decimal": 60292
+    },
+    {
+      "icon_id": "47596631",
+      "name": "CRMEB-807-参加培训-面性",
+      "font_class": "CRMEB-807-canjiapeixun-mianxing",
+      "unicode": "eb85",
+      "unicode_decimal": 60293
+    },
+    {
+      "icon_id": "47596630",
+      "name": "CRMEB-798-日-线性",
+      "font_class": "CRMEB-798-ri-xianxing",
+      "unicode": "eb86",
+      "unicode_decimal": 60294
+    },
+    {
+      "icon_id": "47596629",
+      "name": "CRMEB-792-添加回款-线性",
+      "font_class": "CRMEB-792-tianjiahuikuan-xianxing",
+      "unicode": "eb87",
+      "unicode_decimal": 60295
+    },
+    {
+      "icon_id": "47596625",
+      "name": "CRMEB-793-添加回款-面性",
+      "font_class": "CRMEB-793-tianjiahuikuan-mianxing",
+      "unicode": "eb88",
+      "unicode_decimal": 60296
+    },
+    {
+      "icon_id": "47596624",
+      "name": "CRMEB-791-添加续费-面性",
+      "font_class": "CRMEB-791-tianjiaxufei-mianxing",
+      "unicode": "eb89",
+      "unicode_decimal": 60297
+    },
+    {
+      "icon_id": "47596623",
+      "name": "CRMEB-790-添加续费-线性",
+      "font_class": "CRMEB-790-tianjiaxufei-xianxing",
+      "unicode": "eb8a",
+      "unicode_decimal": 60298
+    },
+    {
+      "icon_id": "47596645",
+      "name": "CRMEB-811-其他通用-面性",
+      "font_class": "CRMEB-811-qitatongyong-mianxing",
+      "unicode": "eb78",
+      "unicode_decimal": 60280
+    },
+    {
+      "icon_id": "47596644",
+      "name": "CRMEB-809-发起会议-面性",
+      "font_class": "CRMEB-809-faqihuiyi-mianxing",
+      "unicode": "eb79",
+      "unicode_decimal": 60281
+    },
+    {
+      "icon_id": "47596642",
+      "name": "CRMEB-803-周-面性",
+      "font_class": "CRMEB-803-zhou-mianxing",
+      "unicode": "eb7a",
+      "unicode_decimal": 60282
+    },
+    {
+      "icon_id": "47596640",
+      "name": "CRMEB-805-物品领用-面性",
+      "font_class": "CRMEB-805-wupinlingyong-mianxing",
+      "unicode": "eb7b",
+      "unicode_decimal": 60283
+    },
+    {
+      "icon_id": "47596639",
+      "name": "CRMEB-804-物品领用-线性",
+      "font_class": "CRMEB-804-wupinlingyong-xianxing",
+      "unicode": "eb7c",
+      "unicode_decimal": 60284
+    },
+    {
+      "icon_id": "47596641",
+      "name": "CRMEB-801-月-面性",
+      "font_class": "CRMEB-801-yue-mianxing",
+      "unicode": "eb7d",
+      "unicode_decimal": 60285
+    },
+    {
+      "icon_id": "47596638",
+      "name": "CRMEB-799-日-面性",
+      "font_class": "CRMEB-799-ri-mianxing",
+      "unicode": "eb7e",
+      "unicode_decimal": 60286
+    },
+    {
+      "icon_id": "47596633",
+      "name": "CRMEB-797-居家办公申请-面性",
+      "font_class": "CRMEB-797-jujiabangongshenqing-mianxing",
+      "unicode": "eb7f",
+      "unicode_decimal": 60287
+    },
+    {
+      "icon_id": "47596637",
+      "name": "CRMEB-794-车辆申请-线性",
+      "font_class": "CRMEB-794-cheliangshenqing-xianxing",
+      "unicode": "eb80",
+      "unicode_decimal": 60288
+    },
+    {
+      "icon_id": "47596636",
+      "name": "CRMEB-800-月-线性",
+      "font_class": "CRMEB-800-yue-xianxing",
+      "unicode": "eb81",
+      "unicode_decimal": 60289
+    },
+    {
+      "icon_id": "47596656",
+      "name": "CRMEB-820-收音机-线性",
+      "font_class": "CRMEB-820-shouyinji-xianxing",
+      "unicode": "eb6c",
+      "unicode_decimal": 60268
+    },
+    {
+      "icon_id": "47596655",
+      "name": "CRMEB-816-奖励单-线性",
+      "font_class": "CRMEB-816-jianglidan-xianxing",
+      "unicode": "eb6d",
+      "unicode_decimal": 60269
+    },
+    {
+      "icon_id": "47596653",
+      "name": "CRMEB-819-产品发布-面性",
+      "font_class": "CRMEB-819-chanpinfabu-mianxing",
+      "unicode": "eb6e",
+      "unicode_decimal": 60270
+    },
+    {
+      "icon_id": "47596654",
+      "name": "CRMEB-818-产品发布-线性",
+      "font_class": "CRMEB-818-chanpinfabu-xianxing",
+      "unicode": "eb6f",
+      "unicode_decimal": 60271
+    },
+    {
+      "icon_id": "47596652",
+      "name": "CRMEB-817-奖励单-面性",
+      "font_class": "CRMEB-817-jianglidan-mianxing",
+      "unicode": "eb70",
+      "unicode_decimal": 60272
+    },
+    {
+      "icon_id": "47596651",
+      "name": "CRMEB-812-借款申请-线性",
+      "font_class": "CRMEB-812-jiekuanshenqing-xianxing",
+      "unicode": "eb71",
+      "unicode_decimal": 60273
+    },
+    {
+      "icon_id": "47596650",
+      "name": "CRMEB-808-发起会议-线性",
+      "font_class": "CRMEB-808-faqihuiyi-xianxing",
+      "unicode": "eb72",
+      "unicode_decimal": 60274
+    },
+    {
+      "icon_id": "47596648",
+      "name": "CRMEB-815-处罚单-面性",
+      "font_class": "CRMEB-815-chufadan-mianxing",
+      "unicode": "eb73",
+      "unicode_decimal": 60275
+    },
+    {
+      "icon_id": "47596649",
+      "name": "CRMEB-813-借款申请-面性",
+      "font_class": "CRMEB-813-jiekuanshenqing-mianxing",
+      "unicode": "eb74",
+      "unicode_decimal": 60276
+    },
+    {
+      "icon_id": "47596646",
+      "name": "CRMEB-810-其他通用-线性",
+      "font_class": "CRMEB-810-qitatongyong-xianxing",
+      "unicode": "eb75",
+      "unicode_decimal": 60277
+    },
+    {
+      "icon_id": "47596647",
+      "name": "CRMEB-814-处罚单-线性",
+      "font_class": "CRMEB-814-chufadan-xianxing",
+      "unicode": "eb76",
+      "unicode_decimal": 60278
+    },
+    {
+      "icon_id": "47596643",
+      "name": "CRMEB-795-车辆申请-面性",
+      "font_class": "CRMEB-795-cheliangshenqing-mianxing",
+      "unicode": "eb77",
+      "unicode_decimal": 60279
+    },
+    {
+      "icon_id": "47596668",
+      "name": "CRMEB-821-收音机-面性",
+      "font_class": "CRMEB-821-shouyinji-mianxing",
+      "unicode": "eb60",
+      "unicode_decimal": 60256
+    },
+    {
+      "icon_id": "47596666",
+      "name": "CRMEB-833-wav-面性",
+      "font_class": "CRMEB-833-wav-mianxing",
+      "unicode": "eb61",
+      "unicode_decimal": 60257
+    },
+    {
+      "icon_id": "47596667",
+      "name": "CRMEB-828-svg-面性",
+      "font_class": "CRMEB-828-svg-mianxing",
+      "unicode": "eb62",
+      "unicode_decimal": 60258
+    },
+    {
+      "icon_id": "47596663",
+      "name": "CRMEB-826-gif-面性",
+      "font_class": "CRMEB-826-gif-mianxing",
+      "unicode": "eb63",
+      "unicode_decimal": 60259
+    },
+    {
+      "icon_id": "47596665",
+      "name": "CRMEB-829-css-面性",
+      "font_class": "CRMEB-829-css-mianxing",
+      "unicode": "eb64",
+      "unicode_decimal": 60260
+    },
+    {
+      "icon_id": "47596664",
+      "name": "CRMEB-824-md-面性",
+      "font_class": "CRMEB-824-md-mianxing",
+      "unicode": "eb65",
+      "unicode_decimal": 60261
+    },
+    {
+      "icon_id": "47596662",
+      "name": "CRMEB-832-xd-面性",
+      "font_class": "CRMEB-832-xd-mianxing",
+      "unicode": "eb66",
+      "unicode_decimal": 60262
+    },
+    {
+      "icon_id": "47596659",
+      "name": "CRMEB-830-mp4-面性",
+      "font_class": "CRMEB-830-mp4-mianxing",
+      "unicode": "eb67",
+      "unicode_decimal": 60263
+    },
+    {
+      "icon_id": "47596661",
+      "name": "CRMEB-827-ps-面性",
+      "font_class": "CRMEB-827-ps-mianxing",
+      "unicode": "eb68",
+      "unicode_decimal": 60264
+    },
+    {
+      "icon_id": "47596660",
+      "name": "CRMEB-823-Xmind-面性",
+      "font_class": "CRMEB-823-Xmind-mianxing",
+      "unicode": "eb69",
+      "unicode_decimal": 60265
+    },
+    {
+      "icon_id": "47596658",
+      "name": "CRMEB-831-avi-面性",
+      "font_class": "CRMEB-831-avi-mianxing",
+      "unicode": "eb6a",
+      "unicode_decimal": 60266
+    },
+    {
+      "icon_id": "47596657",
+      "name": "CRMEB-825-tiff-面性",
+      "font_class": "CRMEB-825-tiff-mianxing",
+      "unicode": "eb6b",
+      "unicode_decimal": 60267
+    },
+    {
+      "icon_id": "47596682",
+      "name": "CRMEB-848-sketch-面性",
+      "font_class": "CRMEB-848-sketch-mianxing",
+      "unicode": "eb53",
+      "unicode_decimal": 60243
+    },
+    {
+      "icon_id": "47596680",
+      "name": "CRMEB-846-pdf-面性",
+      "font_class": "CRMEB-846-pdf-mianxing",
+      "unicode": "eb54",
+      "unicode_decimal": 60244
+    },
+    {
+      "icon_id": "47596677",
+      "name": "CRMEB-841-bmp-面性",
+      "font_class": "CRMEB-841-bmp-mianxing",
+      "unicode": "eb55",
+      "unicode_decimal": 60245
+    },
+    {
+      "icon_id": "47596678",
+      "name": "CRMEB-838-ppt-面性",
+      "font_class": "CRMEB-838-ppt-mianxing",
+      "unicode": "eb56",
+      "unicode_decimal": 60246
+    },
+    {
+      "icon_id": "47596679",
+      "name": "CRMEB-843-raw-面性",
+      "font_class": "CRMEB-843-raw-mianxing",
+      "unicode": "eb57",
+      "unicode_decimal": 60247
+    },
+    {
+      "icon_id": "47596675",
+      "name": "CRMEB-842-excel-面性",
+      "font_class": "CRMEB-842-excel-mianxing",
+      "unicode": "eb58",
+      "unicode_decimal": 60248
+    },
+    {
+      "icon_id": "47596676",
+      "name": "CRMEB-840-axure-面性",
+      "font_class": "CRMEB-840-axure-mianxing",
+      "unicode": "eb59",
+      "unicode_decimal": 60249
+    },
+    {
+      "icon_id": "47596673",
+      "name": "CRMEB-837-mov-面性",
+      "font_class": "CRMEB-837-mov-mianxing",
+      "unicode": "eb5a",
+      "unicode_decimal": 60250
+    },
+    {
+      "icon_id": "47596672",
+      "name": "CRMEB-839-apk-面性",
+      "font_class": "CRMEB-839-apk-mianxing",
+      "unicode": "eb5b",
+      "unicode_decimal": 60251
+    },
+    {
+      "icon_id": "47596674",
+      "name": "CRMEB-836-word-面性",
+      "font_class": "CRMEB-836-word-mianxing",
+      "unicode": "eb5c",
+      "unicode_decimal": 60252
+    },
+    {
+      "icon_id": "47596671",
+      "name": "CRMEB-834-jpg-面性",
+      "font_class": "CRMEB-834-jpg-mianxing",
+      "unicode": "eb5d",
+      "unicode_decimal": 60253
+    },
+    {
+      "icon_id": "47596670",
+      "name": "CRMEB-835-flv-面性",
+      "font_class": "CRMEB-835-flv-mianxing",
+      "unicode": "eb5e",
+      "unicode_decimal": 60254
+    },
+    {
+      "icon_id": "47596669",
+      "name": "CRMEB-822-ai-面性",
+      "font_class": "CRMEB-822-ai-mianxing",
+      "unicode": "eb5f",
+      "unicode_decimal": 60255
+    },
+    {
+      "icon_id": "47596692",
+      "name": "CRMEB-856-上外边距-线性",
+      "font_class": "CRMEB-856-shangwaibianju-xianxing",
+      "unicode": "eb48",
+      "unicode_decimal": 60232
+    },
+    {
+      "icon_id": "47596690",
+      "name": "CRMEB-847-csv-面性",
+      "font_class": "CRMEB-847-csv-mianxing",
+      "unicode": "eb49",
+      "unicode_decimal": 60233
+    },
+    {
+      "icon_id": "47596691",
+      "name": "CRMEB-854-导出-线性",
+      "font_class": "CRMEB-854-daochu-xianxing",
+      "unicode": "eb4a",
+      "unicode_decimal": 60234
+    },
+    {
+      "icon_id": "47596689",
+      "name": "CRMEB-853-后退-线性",
+      "font_class": "CRMEB-853-houtui-xianxing",
+      "unicode": "eb4b",
+      "unicode_decimal": 60235
+    },
+    {
+      "icon_id": "47596688",
+      "name": "CRMEB-850-mp3-面性",
+      "font_class": "CRMEB-850-mp3-mianxing",
+      "unicode": "eb4c",
+      "unicode_decimal": 60236
+    },
+    {
+      "icon_id": "47596687",
+      "name": "CRMEB-852-前进-线性",
+      "font_class": "CRMEB-852-qianjin-xianxing",
+      "unicode": "eb4d",
+      "unicode_decimal": 60237
+    },
+    {
+      "icon_id": "47596686",
+      "name": "CRMEB-855-下载-线性",
+      "font_class": "CRMEB-855-xiazai-xianxing",
+      "unicode": "eb4e",
+      "unicode_decimal": 60238
+    },
+    {
+      "icon_id": "47596684",
+      "name": "CRMEB-844-png-面性",
+      "font_class": "CRMEB-844-png-mianxing",
+      "unicode": "eb4f",
+      "unicode_decimal": 60239
+    },
+    {
+      "icon_id": "47596685",
+      "name": "CRMEB-849-html-面性",
+      "font_class": "CRMEB-849-html-mianxing",
+      "unicode": "eb50",
+      "unicode_decimal": 60240
+    },
+    {
+      "icon_id": "47596683",
+      "name": "CRMEB-851-zip-面性",
+      "font_class": "CRMEB-851-zip-mianxing",
+      "unicode": "eb51",
+      "unicode_decimal": 60241
+    },
+    {
+      "icon_id": "47596681",
+      "name": "CRMEB-845-eps-面性",
+      "font_class": "CRMEB-845-eps-mianxing",
+      "unicode": "eb52",
+      "unicode_decimal": 60242
+    },
+    {
+      "icon_id": "47596705",
+      "name": "CRMEB-870-用户4-线性",
+      "font_class": "CRMEB-870-yonghu4-xianxing",
+      "unicode": "eb3b",
+      "unicode_decimal": 60219
+    },
+    {
+      "icon_id": "47596704",
+      "name": "CRMEB-867-附件-线性",
+      "font_class": "CRMEB-867-fujian-xianxing",
+      "unicode": "eb3c",
+      "unicode_decimal": 60220
+    },
+    {
+      "icon_id": "47596699",
+      "name": "CRMEB-860-上内边距-线性",
+      "font_class": "CRMEB-860-shangneibianju-xianxing",
+      "unicode": "eb3d",
+      "unicode_decimal": 60221
+    },
+    {
+      "icon_id": "47596703",
+      "name": "CRMEB-865-排序3-线性",
+      "font_class": "CRMEB-865-paixu3-xianxing",
+      "unicode": "eb3e",
+      "unicode_decimal": 60222
+    },
+    {
+      "icon_id": "47596702",
+      "name": "CRMEB-868-附件-线性",
+      "font_class": "CRMEB-868-fujian-xianxing",
+      "unicode": "eb3f",
+      "unicode_decimal": 60223
+    },
+    {
+      "icon_id": "47596701",
+      "name": "CRMEB-864-切换-线性",
+      "font_class": "CRMEB-864-qiehuan-xianxing",
+      "unicode": "eb40",
+      "unicode_decimal": 60224
+    },
+    {
+      "icon_id": "47596700",
+      "name": "CRMEB-866-链接-线性",
+      "font_class": "CRMEB-866-lianjie-xianxing",
+      "unicode": "eb41",
+      "unicode_decimal": 60225
+    },
+    {
+      "icon_id": "47596698",
+      "name": "CRMEB-859-右外边距-线性",
+      "font_class": "CRMEB-859-youwaibianju-xianxing",
+      "unicode": "eb42",
+      "unicode_decimal": 60226
+    },
+    {
+      "icon_id": "47596695",
+      "name": "CRMEB-857-下外边距-线性",
+      "font_class": "CRMEB-857-xiawaibianju-xianxing",
+      "unicode": "eb43",
+      "unicode_decimal": 60227
+    },
+    {
+      "icon_id": "47596697",
+      "name": "CRMEB-858-左外边距-线性",
+      "font_class": "CRMEB-858-zuowaibianju-xianxing",
+      "unicode": "eb44",
+      "unicode_decimal": 60228
+    },
+    {
+      "icon_id": "47596694",
+      "name": "CRMEB-862-左边距-线性",
+      "font_class": "CRMEB-862-zuobianju-xianxing",
+      "unicode": "eb45",
+      "unicode_decimal": 60229
+    },
+    {
+      "icon_id": "47596696",
+      "name": "CRMEB-861-下内边距-线性",
+      "font_class": "CRMEB-861-xianeibianju-xianxing",
+      "unicode": "eb46",
+      "unicode_decimal": 60230
+    },
+    {
+      "icon_id": "47596693",
+      "name": "CRMEB-863-右内边距-线性",
+      "font_class": "CRMEB-863-youneibianju-xianxing",
+      "unicode": "eb47",
+      "unicode_decimal": 60231
+    },
+    {
+      "icon_id": "47596718",
+      "name": "CRMEB-880-深色-线性",
+      "font_class": "CRMEB-880-shense-xianxing",
+      "unicode": "eb2e",
+      "unicode_decimal": 60206
+    },
+    {
+      "icon_id": "47596717",
+      "name": "CRMEB-882-系统色-线性",
+      "font_class": "CRMEB-882-xitongse-xianxing",
+      "unicode": "eb2f",
+      "unicode_decimal": 60207
+    },
+    {
+      "icon_id": "47596716",
+      "name": "CRMEB-881-亮色-线性",
+      "font_class": "CRMEB-881-liangse-xianxing",
+      "unicode": "eb30",
+      "unicode_decimal": 60208
+    },
+    {
+      "icon_id": "47596714",
+      "name": "CRMEB-871-用户5-线性",
+      "font_class": "CRMEB-871-yonghu5-xianxing",
+      "unicode": "eb31",
+      "unicode_decimal": 60209
+    },
+    {
+      "icon_id": "47596715",
+      "name": "CRMEB-873-主题-线性",
+      "font_class": "CRMEB-873-zhuti-xianxing",
+      "unicode": "eb32",
+      "unicode_decimal": 60210
+    },
+    {
+      "icon_id": "47596713",
+      "name": "CRMEB-878-圆角-线性",
+      "font_class": "CRMEB-878-yuanjiao-xianxing",
+      "unicode": "eb33",
+      "unicode_decimal": 60211
+    },
+    {
+      "icon_id": "47596712",
+      "name": "CRMEB-874-左上角-线性",
+      "font_class": "CRMEB-874-zuoshangjiao-xianxing",
+      "unicode": "eb34",
+      "unicode_decimal": 60212
+    },
+    {
+      "icon_id": "47596710",
+      "name": "CRMEB-875-右上角-线性",
+      "font_class": "CRMEB-875-youshangjiao-xianxing",
+      "unicode": "eb35",
+      "unicode_decimal": 60213
+    },
+    {
+      "icon_id": "47596711",
+      "name": "CRMEB-877-右下角-线性",
+      "font_class": "CRMEB-877-youxiajiao-xianxing",
+      "unicode": "eb36",
+      "unicode_decimal": 60214
+    },
+    {
+      "icon_id": "47596709",
+      "name": "CRMEB-876-左下角-线性",
+      "font_class": "CRMEB-876-zuoxiajiao-xianxing",
+      "unicode": "eb37",
+      "unicode_decimal": 60215
+    },
+    {
+      "icon_id": "47596708",
+      "name": "CRMEB-879-边距-线性",
+      "font_class": "CRMEB-879-bianju-xianxing",
+      "unicode": "eb38",
+      "unicode_decimal": 60216
+    },
+    {
+      "icon_id": "47596707",
+      "name": "CRMEB-869-小屏-线性",
+      "font_class": "CRMEB-869-xiaoping-xianxing",
+      "unicode": "eb39",
+      "unicode_decimal": 60217
+    },
+    {
+      "icon_id": "47596706",
+      "name": "CRMEB-872-全屏-线性",
+      "font_class": "CRMEB-872-quanping-xianxing",
+      "unicode": "eb3a",
+      "unicode_decimal": 60218
+    },
+    {
+      "icon_id": "47596730",
+      "name": "CRMEB-891-退出-线性",
+      "font_class": "CRMEB-891-tuichu-xianxing",
+      "unicode": "eb22",
+      "unicode_decimal": 60194
+    },
+    {
+      "icon_id": "47596729",
+      "name": "CRMEB-895-收起-线性",
+      "font_class": "CRMEB-895-shouqi-xianxing",
+      "unicode": "eb23",
+      "unicode_decimal": 60195
+    },
+    {
+      "icon_id": "47596728",
+      "name": "CRMEB-892-刷新-线性",
+      "font_class": "CRMEB-892-shuaxin-xianxing",
+      "unicode": "eb24",
+      "unicode_decimal": 60196
+    },
+    {
+      "icon_id": "47596726",
+      "name": "CRMEB-888-拖拽-线性",
+      "font_class": "CRMEB-888-tuozhuai-xianxing",
+      "unicode": "eb25",
+      "unicode_decimal": 60197
+    },
+    {
+      "icon_id": "47596727",
+      "name": "CRMEB-893-退出登录-线性",
+      "font_class": "CRMEB-893-tuichudenglu-xianxing",
+      "unicode": "eb26",
+      "unicode_decimal": 60198
+    },
+    {
+      "icon_id": "47596724",
+      "name": "CRMEB-890-分享-线性",
+      "font_class": "CRMEB-890-fenxiang-xianxing",
+      "unicode": "eb27",
+      "unicode_decimal": 60199
+    },
+    {
+      "icon_id": "47596725",
+      "name": "CRMEB-889-配置-线性",
+      "font_class": "CRMEB-889-peizhi-xianxing",
+      "unicode": "eb28",
+      "unicode_decimal": 60200
+    },
+    {
+      "icon_id": "47596723",
+      "name": "CRMEB-887-刷新-线性",
+      "font_class": "CRMEB-887-shuaxin-xianxing",
+      "unicode": "eb29",
+      "unicode_decimal": 60201
+    },
+    {
+      "icon_id": "47596722",
+      "name": "CRMEB-883-编辑3-线性",
+      "font_class": "CRMEB-883-bianji3-xianxing",
+      "unicode": "eb2a",
+      "unicode_decimal": 60202
+    },
+    {
+      "icon_id": "47596721",
+      "name": "CRMEB-886-刷子-线性",
+      "font_class": "CRMEB-886-shuazi-xianxing",
+      "unicode": "eb2b",
+      "unicode_decimal": 60203
+    },
+    {
+      "icon_id": "47596720",
+      "name": "CRMEB-885-编辑4-线性",
+      "font_class": "CRMEB-885-bianji4-xianxing",
+      "unicode": "eb2c",
+      "unicode_decimal": 60204
+    },
+    {
+      "icon_id": "47596719",
+      "name": "CRMEB-884-编辑2-线性",
+      "font_class": "CRMEB-884-bianji2-xianxing",
+      "unicode": "eb2d",
+      "unicode_decimal": 60205
+    },
+    {
+      "icon_id": "47596744",
+      "name": "CRMEB-907-减-线性",
+      "font_class": "CRMEB-907-jian-xianxing",
+      "unicode": "eb15",
+      "unicode_decimal": 60181
+    },
+    {
+      "icon_id": "47596743",
+      "name": "CRMEB-909-下降-线性",
+      "font_class": "CRMEB-909-xiajiang-xianxing",
+      "unicode": "eb16",
+      "unicode_decimal": 60182
+    },
+    {
+      "icon_id": "47596742",
+      "name": "CRMEB-908-上升-线性",
+      "font_class": "CRMEB-908-shangsheng-xianxing",
+      "unicode": "eb17",
+      "unicode_decimal": 60183
+    },
+    {
+      "icon_id": "47596741",
+      "name": "CRMEB-911-展开-线性",
+      "font_class": "CRMEB-911-zhankai-xianxing",
+      "unicode": "eb18",
+      "unicode_decimal": 60184
+    },
+    {
+      "icon_id": "47596740",
+      "name": "CRMEB-905-下-线性",
+      "font_class": "CRMEB-905-xia-xianxing",
+      "unicode": "eb19",
+      "unicode_decimal": 60185
+    },
+    {
+      "icon_id": "47596737",
+      "name": "CRMEB-898-左-线性",
+      "font_class": "CRMEB-898-zuo-xianxing",
+      "unicode": "eb1a",
+      "unicode_decimal": 60186
+    },
+    {
+      "icon_id": "47596736",
+      "name": "CRMEB-902-左滑-线性",
+      "font_class": "CRMEB-902-zuohua-xianxing",
+      "unicode": "eb1b",
+      "unicode_decimal": 60187
+    },
+    {
+      "icon_id": "47596733",
+      "name": "CRMEB-900-错-线性",
+      "font_class": "CRMEB-900-cuo-xianxing",
+      "unicode": "eb1c",
+      "unicode_decimal": 60188
+    },
+    {
+      "icon_id": "47596738",
+      "name": "CRMEB-901-对-线性",
+      "font_class": "CRMEB-901-dui-xianxing",
+      "unicode": "eb1d",
+      "unicode_decimal": 60189
+    },
+    {
+      "icon_id": "47596735",
+      "name": "CRMEB-896-排序1-线性",
+      "font_class": "CRMEB-896-paixu1-xianxing",
+      "unicode": "eb1e",
+      "unicode_decimal": 60190
+    },
+    {
+      "icon_id": "47596734",
+      "name": "CRMEB-903-右滑-线性",
+      "font_class": "CRMEB-903-youhua-xianxing",
+      "unicode": "eb1f",
+      "unicode_decimal": 60191
+    },
+    {
+      "icon_id": "47596732",
+      "name": "CRMEB-897-更多-线性",
+      "font_class": "CRMEB-897-gengduo-xianxing",
+      "unicode": "eb20",
+      "unicode_decimal": 60192
+    },
+    {
+      "icon_id": "47596731",
+      "name": "CRMEB-894-删除-线性",
+      "font_class": "CRMEB-894-shanchu-xianxing",
+      "unicode": "eb21",
+      "unicode_decimal": 60193
+    },
+    {
+      "icon_id": "47596747",
+      "name": "CRMEB-912-列表视图-线性",
+      "font_class": "CRMEB-912-liebiaoshitu-xianxing",
+      "unicode": "eb11",
+      "unicode_decimal": 60177
+    },
+    {
+      "icon_id": "47596746",
+      "name": "CRMEB-910-排序2-线性",
+      "font_class": "CRMEB-910-paixu2-xianxing",
+      "unicode": "eb12",
+      "unicode_decimal": 60178
+    },
+    {
+      "icon_id": "47596739",
+      "name": "CRMEB-904-上-线性",
+      "font_class": "CRMEB-904-shang-xianxing",
+      "unicode": "eb13",
+      "unicode_decimal": 60179
+    },
+    {
+      "icon_id": "47596745",
+      "name": "CRMEB-906-加-线性",
+      "font_class": "CRMEB-906-jia-xianxing",
+      "unicode": "eb14",
+      "unicode_decimal": 60180
+    },
+    {
+      "icon_id": "47595917",
+      "name": "CRMEB-103-订单-面性",
+      "font_class": "CRMEB-103-dingdan-mianxing",
+      "unicode": "eb0d",
+      "unicode_decimal": 60173
+    },
+    {
+      "icon_id": "47595924",
+      "name": "CRMEB-110-用户1-线性",
+      "font_class": "CRMEB-110-yonghu1-xianxing",
+      "unicode": "eb0e",
+      "unicode_decimal": 60174
+    },
+    {
+      "icon_id": "47595923",
+      "name": "CRMEB-115-财务-面性",
+      "font_class": "CRMEB-115-caiwu-mianxing",
+      "unicode": "eb0f",
+      "unicode_decimal": 60175
+    },
+    {
+      "icon_id": "47595916",
+      "name": "CRMEB-100-首页-线性",
+      "font_class": "CRMEB-100-shouye-xianxing",
+      "unicode": "eb10",
+      "unicode_decimal": 60176
+    },
+    {
+      "icon_id": "47595933",
+      "name": "CRMEB-118-运营-线性",
+      "font_class": "CRMEB-118-yunying-xianxing",
+      "unicode": "eb00",
+      "unicode_decimal": 60160
+    },
+    {
+      "icon_id": "47595920",
+      "name": "CRMEB-114-财务-线性",
+      "font_class": "CRMEB-114-caiwu-xianxing",
+      "unicode": "eb01",
+      "unicode_decimal": 60161
+    },
+    {
+      "icon_id": "47595922",
+      "name": "CRMEB-101-首页-面性",
+      "font_class": "CRMEB-101-shouye-mianxing",
+      "unicode": "eb02",
+      "unicode_decimal": 60162
+    },
+    {
+      "icon_id": "47595937",
+      "name": "CRMEB-125-用户2-面性",
+      "font_class": "CRMEB-125-yonghu2-mianxing",
+      "unicode": "eb03",
+      "unicode_decimal": 60163
+    },
+    {
+      "icon_id": "47595930",
+      "name": "CRMEB-117-装修-面性",
+      "font_class": "CRMEB-117-zhuangxiu-mianxing",
+      "unicode": "eb04",
+      "unicode_decimal": 60164
+    },
+    {
+      "icon_id": "47595932",
+      "name": "CRMEB-119-运营-面性",
+      "font_class": "CRMEB-119-yunying-mianxing",
+      "unicode": "eb05",
+      "unicode_decimal": 60165
+    },
+    {
+      "icon_id": "47595918",
+      "name": "CRMEB-102-订单-线性",
+      "font_class": "CRMEB-102-dingdan-xianxing",
+      "unicode": "eb06",
+      "unicode_decimal": 60166
+    },
+    {
+      "icon_id": "47595931",
+      "name": "CRMEB-120-内容-线性",
+      "font_class": "CRMEB-120-neirong-xianxing",
+      "unicode": "eb07",
+      "unicode_decimal": 60167
+    },
+    {
+      "icon_id": "47595919",
+      "name": "CRMEB-111-用户1-面性",
+      "font_class": "CRMEB-111-yonghu1-mianxing",
+      "unicode": "eb08",
+      "unicode_decimal": 60168
+    },
+    {
+      "icon_id": "47595926",
+      "name": "CRMEB-105-应用-面性",
+      "font_class": "CRMEB-105-yingyong-mianxing",
+      "unicode": "eb09",
+      "unicode_decimal": 60169
+    },
+    {
+      "icon_id": "47595929",
+      "name": "CRMEB-107-商户-面性",
+      "font_class": "CRMEB-107-shanghu-mianxing",
+      "unicode": "eb0a",
+      "unicode_decimal": 60170
+    },
+    {
+      "icon_id": "47595927",
+      "name": "CRMEB-113-圈层-面性",
+      "font_class": "CRMEB-113-quanceng-mianxing",
+      "unicode": "eb0b",
+      "unicode_decimal": 60171
+    },
+    {
+      "icon_id": "47595921",
+      "name": "CRMEB-108-气球-线性",
+      "font_class": "CRMEB-108-qiqiu-xianxing",
+      "unicode": "eb0c",
+      "unicode_decimal": 60172
+    },
+    {
+      "icon_id": "47595925",
+      "name": "CRMEB-109-气球-面性",
+      "font_class": "CRMEB-109-qiqiu-mianxing",
+      "unicode": "eaf1",
+      "unicode_decimal": 60145
+    },
+    {
+      "icon_id": "47595943",
+      "name": "CRMEB-139-文件夹-面性",
+      "font_class": "CRMEB-139-wenjianjia-mianxing",
+      "unicode": "eaf2",
+      "unicode_decimal": 60146
+    },
+    {
+      "icon_id": "47595948",
+      "name": "CRMEB-145-选择文件-面性",
+      "font_class": "CRMEB-145-xuanzewenjian-mianxing",
+      "unicode": "eaf3",
+      "unicode_decimal": 60147
+    },
+    {
+      "icon_id": "47595946",
+      "name": "CRMEB-130-商品-线性",
+      "font_class": "CRMEB-130-shangpin-xianxing",
+      "unicode": "eaf4",
+      "unicode_decimal": 60148
+    },
+    {
+      "icon_id": "47595942",
+      "name": "CRMEB-116-装修-线性",
+      "font_class": "CRMEB-116-zhuangxiu-xianxing",
+      "unicode": "eaf5",
+      "unicode_decimal": 60149
+    },
+    {
+      "icon_id": "47595947",
+      "name": "CRMEB-135-设置2-面性",
+      "font_class": "CRMEB-135-shezhi2-mianxing",
+      "unicode": "eaf6",
+      "unicode_decimal": 60150
+    },
+    {
+      "icon_id": "47595949",
+      "name": "CRMEB-131-商品-面性",
+      "font_class": "CRMEB-131-shangpin-mianxing",
+      "unicode": "eaf7",
+      "unicode_decimal": 60151
+    },
+    {
+      "icon_id": "47595940",
+      "name": "CRMEB-123-营销-面性",
+      "font_class": "CRMEB-123-yingxiao-mianxing",
+      "unicode": "eaf8",
+      "unicode_decimal": 60152
+    },
+    {
+      "icon_id": "47595945",
+      "name": "CRMEB-138-文件夹-线性",
+      "font_class": "CRMEB-138-wenjianjia-xianxing",
+      "unicode": "eaf9",
+      "unicode_decimal": 60153
+    },
+    {
+      "icon_id": "47595944",
+      "name": "CRMEB-129-设置1-面性",
+      "font_class": "CRMEB-129-shezhi1-mianxing",
+      "unicode": "eafa",
+      "unicode_decimal": 60154
+    },
+    {
+      "icon_id": "47595941",
+      "name": "CRMEB-126-分销-线性",
+      "font_class": "CRMEB-126-fenxiao-xianxing",
+      "unicode": "eafb",
+      "unicode_decimal": 60155
+    },
+    {
+      "icon_id": "47595934",
+      "name": "CRMEB-124-用户2-线性",
+      "font_class": "CRMEB-124-yonghu2-xianxing",
+      "unicode": "eafc",
+      "unicode_decimal": 60156
+    },
+    {
+      "icon_id": "47595938",
+      "name": "CRMEB-106-商户-线性",
+      "font_class": "CRMEB-106-shanghu-xianxing",
+      "unicode": "eafd",
+      "unicode_decimal": 60157
+    },
+    {
+      "icon_id": "47595939",
+      "name": "CRMEB-121-内容-面性",
+      "font_class": "CRMEB-121-neirong-mianxing",
+      "unicode": "eafe",
+      "unicode_decimal": 60158
+    },
+    {
+      "icon_id": "47595928",
+      "name": "CRMEB-104-应用-线性",
+      "font_class": "CRMEB-104-yingyong-xianxing",
+      "unicode": "eaff",
+      "unicode_decimal": 60159
+    },
+    {
+      "icon_id": "47595956",
+      "name": "CRMEB-136-文件-线性",
+      "font_class": "CRMEB-136-wenjian-xianxing",
+      "unicode": "eaeb",
+      "unicode_decimal": 60139
+    },
+    {
+      "icon_id": "47595955",
+      "name": "CRMEB-155-选择文档-面性",
+      "font_class": "CRMEB-155-xuanzewendang-mianxing",
+      "unicode": "eaec",
+      "unicode_decimal": 60140
+    },
+    {
+      "icon_id": "47595954",
+      "name": "CRMEB-128-设置1-线性",
+      "font_class": "CRMEB-128-shezhi1-xianxing",
+      "unicode": "eaed",
+      "unicode_decimal": 60141
+    },
+    {
+      "icon_id": "47595952",
+      "name": "CRMEB-127-分销-面性",
+      "font_class": "CRMEB-127-fenxiao-mianxing",
+      "unicode": "eaee",
+      "unicode_decimal": 60142
+    },
+    {
+      "icon_id": "47595958",
+      "name": "CRMEB-133-客服-面性",
+      "font_class": "CRMEB-133-kefu-mianxing",
+      "unicode": "eaef",
+      "unicode_decimal": 60143
+    },
+    {
+      "icon_id": "47595936",
+      "name": "CRMEB-112-圈层-线性",
+      "font_class": "CRMEB-112-quanceng-xianxing",
+      "unicode": "e981",
+      "unicode_decimal": 59777
+    },
+    {
+      "icon_id": "47595950",
+      "name": "CRMEB-132-客服-线性",
+      "font_class": "CRMEB-132-kefu-xianxing",
+      "unicode": "eaf0",
+      "unicode_decimal": 60144
+    },
+    {
+      "icon_id": "47595962",
+      "name": "CRMEB-158-关-线性",
+      "font_class": "CRMEB-158-guan-xianxing",
+      "unicode": "eae4",
+      "unicode_decimal": 60132
+    },
+    {
+      "icon_id": "47595963",
+      "name": "CRMEB-153-删除文档-面性",
+      "font_class": "CRMEB-153-shanchuwendang-mianxing",
+      "unicode": "eae5",
+      "unicode_decimal": 60133
+    },
+    {
+      "icon_id": "47595961",
+      "name": "CRMEB-149-放大-面性",
+      "font_class": "CRMEB-149-fangda-mianxing",
+      "unicode": "eae6",
+      "unicode_decimal": 60134
+    },
+    {
+      "icon_id": "47595959",
+      "name": "CRMEB-142-删除文件-线性",
+      "font_class": "CRMEB-142-shanchuwenjian-xianxing",
+      "unicode": "eae7",
+      "unicode_decimal": 60135
+    },
+    {
+      "icon_id": "47595951",
+      "name": "CRMEB-146-缩小-线性",
+      "font_class": "CRMEB-146-suoxiao-xianxing",
+      "unicode": "eae8",
+      "unicode_decimal": 60136
+    },
+    {
+      "icon_id": "47595957",
+      "name": "CRMEB-150-文档-线性",
+      "font_class": "CRMEB-150-wendang-xianxing",
+      "unicode": "eae9",
+      "unicode_decimal": 60137
+    },
+    {
+      "icon_id": "47595953",
+      "name": "CRMEB-137-文件-面性",
+      "font_class": "CRMEB-137-wenjian-mianxing",
+      "unicode": "eaea",
+      "unicode_decimal": 60138
+    },
+    {
+      "icon_id": "47595982",
+      "name": "CRMEB-172-PC端-线性",
+      "font_class": "CRMEB-172-PCduan-xianxing",
+      "unicode": "ead4",
+      "unicode_decimal": 60116
+    },
+    {
+      "icon_id": "47595969",
+      "name": "CRMEB-147-缩小-面性",
+      "font_class": "CRMEB-147-suoxiao-mianxing",
+      "unicode": "ead5",
+      "unicode_decimal": 60117
+    },
+    {
+      "icon_id": "47595980",
+      "name": "CRMEB-180-银行卡-线性",
+      "font_class": "CRMEB-180-yinhangka-xianxing",
+      "unicode": "ead6",
+      "unicode_decimal": 60118
+    },
+    {
+      "icon_id": "47595970",
+      "name": "CRMEB-157-开-面性",
+      "font_class": "CRMEB-157-kai-mianxing",
+      "unicode": "ead7",
+      "unicode_decimal": 60119
+    },
+    {
+      "icon_id": "47595979",
+      "name": "CRMEB-161-订阅信息-面性",
+      "font_class": "CRMEB-161-dingyuexinxi-mianxing",
+      "unicode": "ead8",
+      "unicode_decimal": 60120
+    },
+    {
+      "icon_id": "47595972",
+      "name": "CRMEB-159-关-面性",
+      "font_class": "CRMEB-159-guan-mianxing",
+      "unicode": "ead9",
+      "unicode_decimal": 60121
+    },
+    {
+      "icon_id": "47595974",
+      "name": "CRMEB-165-公告-面性",
+      "font_class": "CRMEB-165-gonggao-mianxing",
+      "unicode": "eada",
+      "unicode_decimal": 60122
+    },
+    {
+      "icon_id": "47595971",
+      "name": "CRMEB-169-权限锁定-面性",
+      "font_class": "CRMEB-169-quanxiansuoding-mianxing",
+      "unicode": "eadb",
+      "unicode_decimal": 60123
+    },
+    {
+      "icon_id": "47595978",
+      "name": "CRMEB-166-统计-线性",
+      "font_class": "CRMEB-166-tongji-xianxing",
+      "unicode": "eadc",
+      "unicode_decimal": 60124
+    },
+    {
+      "icon_id": "47595977",
+      "name": "CRMEB-163-日历-面性",
+      "font_class": "CRMEB-163-rili-mianxing",
+      "unicode": "eadd",
+      "unicode_decimal": 60125
+    },
+    {
+      "icon_id": "47595967",
+      "name": "CRMEB-148-放大-线性",
+      "font_class": "CRMEB-148-fangda-xianxing",
+      "unicode": "eade",
+      "unicode_decimal": 60126
+    },
+    {
+      "icon_id": "47595975",
+      "name": "CRMEB-175-优惠券-面性",
+      "font_class": "CRMEB-175-youhuiquan-mianxing",
+      "unicode": "eadf",
+      "unicode_decimal": 60127
+    },
+    {
+      "icon_id": "47595964",
+      "name": "CRMEB-144-选择文件-线性",
+      "font_class": "CRMEB-144-xuanzewenjian-xianxing",
+      "unicode": "eae0",
+      "unicode_decimal": 60128
+    },
+    {
+      "icon_id": "47595965",
+      "name": "CRMEB-151-文档-面性",
+      "font_class": "CRMEB-151-wendang-mianxing",
+      "unicode": "eae1",
+      "unicode_decimal": 60129
+    },
+    {
+      "icon_id": "47595966",
+      "name": "CRMEB-143-删除文件-面性",
+      "font_class": "CRMEB-143-shanchuwenjian-mianxing",
+      "unicode": "eae2",
+      "unicode_decimal": 60130
+    },
+    {
+      "icon_id": "47595960",
+      "name": "CRMEB-141-添加文件-面性",
+      "font_class": "CRMEB-141-tianjiawenjian-mianxing",
+      "unicode": "eae3",
+      "unicode_decimal": 60131
+    },
+    {
+      "icon_id": "47595996",
+      "name": "CRMEB-170-安全维护-线性",
+      "font_class": "CRMEB-170-anquanweihu-xianxing",
+      "unicode": "eac6",
+      "unicode_decimal": 60102
+    },
+    {
+      "icon_id": "47595991",
+      "name": "CRMEB-185-运营统计-面性",
+      "font_class": "CRMEB-185-yunyingtongji-mianxing",
+      "unicode": "eac7",
+      "unicode_decimal": 60103
+    },
+    {
+      "icon_id": "47595993",
+      "name": "CRMEB-162-日历-线性",
+      "font_class": "CRMEB-162-rili-xianxing",
+      "unicode": "eac8",
+      "unicode_decimal": 60104
+    },
+    {
+      "icon_id": "47595973",
+      "name": "CRMEB-156-开-线性",
+      "font_class": "CRMEB-156-kai-xianxing",
+      "unicode": "eac9",
+      "unicode_decimal": 60105
+    },
+    {
+      "icon_id": "47595994",
+      "name": "CRMEB-182-资产统计-线性",
+      "font_class": "CRMEB-182-zichantongji-xianxing",
+      "unicode": "eaca",
+      "unicode_decimal": 60106
+    },
+    {
+      "icon_id": "47595986",
+      "name": "CRMEB-171-安全维护-面性",
+      "font_class": "CRMEB-171-anquanweihu-mianxing",
+      "unicode": "eacb",
+      "unicode_decimal": 60107
+    },
+    {
+      "icon_id": "47595985",
+      "name": "CRMEB-183-资产统计-面性",
+      "font_class": "CRMEB-183-zichantongji-mianxing",
+      "unicode": "eacc",
+      "unicode_decimal": 60108
+    },
+    {
+      "icon_id": "47595988",
+      "name": "CRMEB-184-运营统计-线性",
+      "font_class": "CRMEB-184-yunyingtongji-xianxing",
+      "unicode": "eacd",
+      "unicode_decimal": 60109
+    },
+    {
+      "icon_id": "47595989",
+      "name": "CRMEB-174-优惠券-线性",
+      "font_class": "CRMEB-174-youhuiquan-xianxing",
+      "unicode": "eace",
+      "unicode_decimal": 60110
+    },
+    {
+      "icon_id": "47595984",
+      "name": "CRMEB-181-银行卡-面性",
+      "font_class": "CRMEB-181-yinhangka-mianxing",
+      "unicode": "eacf",
+      "unicode_decimal": 60111
+    },
+    {
+      "icon_id": "47595983",
+      "name": "CRMEB-154-选择文档-线性",
+      "font_class": "CRMEB-154-xuanzewendang-xianxing",
+      "unicode": "ead0",
+      "unicode_decimal": 60112
+    },
+    {
+      "icon_id": "47595981",
+      "name": "CRMEB-177-结构框架-面性",
+      "font_class": "CRMEB-177-jiegoukuangjia-mianxing",
+      "unicode": "ead1",
+      "unicode_decimal": 60113
+    },
+    {
+      "icon_id": "47595968",
+      "name": "CRMEB-160-订阅信息-线性",
+      "font_class": "CRMEB-160-dingyuexinxi-xianxing",
+      "unicode": "ead2",
+      "unicode_decimal": 60114
+    },
+    {
+      "icon_id": "47595976",
+      "name": "CRMEB-134-设置2-线性",
+      "font_class": "CRMEB-134-shezhi2-xianxing",
+      "unicode": "ead3",
+      "unicode_decimal": 60115
+    },
+    {
+      "icon_id": "47596000",
+      "name": "CRMEB-186-收银-线性",
+      "font_class": "CRMEB-186-shouyin-xianxing",
+      "unicode": "eab8",
+      "unicode_decimal": 60088
+    },
+    {
+      "icon_id": "47596008",
+      "name": "CRMEB-199-礼品卡-面性",
+      "font_class": "CRMEB-199-lipinka-mianxing",
+      "unicode": "eab9",
+      "unicode_decimal": 60089
+    },
+    {
+      "icon_id": "47596009",
+      "name": "CRMEB-192-退货-线性",
+      "font_class": "CRMEB-192-tuihuo-xianxing",
+      "unicode": "eaba",
+      "unicode_decimal": 60090
+    },
+    {
+      "icon_id": "47596006",
+      "name": "CRMEB-187-收银-面性",
+      "font_class": "CRMEB-187-shouyin-mianxing",
+      "unicode": "eabb",
+      "unicode_decimal": 60091
+    },
+    {
+      "icon_id": "47596007",
+      "name": "CRMEB-189-企业微信-面性",
+      "font_class": "CRMEB-189-qiyeweixin-mianxing",
+      "unicode": "eabc",
+      "unicode_decimal": 60092
+    },
+    {
+      "icon_id": "47596005",
+      "name": "CRMEB-197-商品管理-面性",
+      "font_class": "CRMEB-197-shangpinguanli-mianxing",
+      "unicode": "eabd",
+      "unicode_decimal": 60093
+    },
+    {
+      "icon_id": "47595998",
+      "name": "CRMEB-168-权限锁定-线性",
+      "font_class": "CRMEB-168-quanxiansuoding-xianxing",
+      "unicode": "eabe",
+      "unicode_decimal": 60094
+    },
+    {
+      "icon_id": "47596002",
+      "name": "CRMEB-196-商品管理-线性",
+      "font_class": "CRMEB-196-shangpinguanli-xianxing",
+      "unicode": "eabf",
+      "unicode_decimal": 60095
+    },
+    {
+      "icon_id": "47596003",
+      "name": "CRMEB-190-挂单-线性",
+      "font_class": "CRMEB-190-guadan-xianxing",
+      "unicode": "eac0",
+      "unicode_decimal": 60096
+    },
+    {
+      "icon_id": "47596001",
+      "name": "CRMEB-194-预约-线性",
+      "font_class": "CRMEB-194-yuyue-xianxing",
+      "unicode": "eac1",
+      "unicode_decimal": 60097
+    },
+    {
+      "icon_id": "47595995",
+      "name": "CRMEB-179-库存管理-面性",
+      "font_class": "CRMEB-179-kucunguanli-mianxing",
+      "unicode": "e984",
+      "unicode_decimal": 59780
+    },
+    {
+      "icon_id": "47595997",
+      "name": "CRMEB-173-PC端-面性",
+      "font_class": "CRMEB-173-PCduan-mianxing",
+      "unicode": "eac2",
+      "unicode_decimal": 60098
+    },
+    {
+      "icon_id": "47595992",
+      "name": "CRMEB-176-结构框架-线性",
+      "font_class": "CRMEB-176-jiegoukuangjia-xianxing",
+      "unicode": "eac3",
+      "unicode_decimal": 60099
+    },
+    {
+      "icon_id": "47595990",
+      "name": "CRMEB-152-删除文档-线性",
+      "font_class": "CRMEB-152-shanchuwendang-xianxing",
+      "unicode": "eac4",
+      "unicode_decimal": 60100
+    },
+    {
+      "icon_id": "47595987",
+      "name": "CRMEB-167-统计-面性",
+      "font_class": "CRMEB-167-tongji-mianxing",
+      "unicode": "eac5",
+      "unicode_decimal": 60101
+    },
+    {
+      "icon_id": "47596020",
+      "name": "CRMEB-206-社区-线性",
+      "font_class": "CRMEB-206-shequ-xianxing",
+      "unicode": "eaab",
+      "unicode_decimal": 60075
+    },
+    {
+      "icon_id": "47596022",
+      "name": "CRMEB-203-小程序-面性",
+      "font_class": "CRMEB-203-xiaochengxu-mianxing",
+      "unicode": "eaac",
+      "unicode_decimal": 60076
+    },
+    {
+      "icon_id": "47596019",
+      "name": "CRMEB-202-小程序-线性",
+      "font_class": "CRMEB-202-xiaochengxu-xianxing",
+      "unicode": "eaad",
+      "unicode_decimal": 60077
+    },
+    {
+      "icon_id": "47596021",
+      "name": "CRMEB-209-文章管理-面性",
+      "font_class": "CRMEB-209-wenzhangguanli-mianxing",
+      "unicode": "eaae",
+      "unicode_decimal": 60078
+    },
+    {
+      "icon_id": "47596018",
+      "name": "CRMEB-204-套餐搭配-线性",
+      "font_class": "CRMEB-204-taocandapei-xianxing",
+      "unicode": "eaaf",
+      "unicode_decimal": 60079
+    },
+    {
+      "icon_id": "47596015",
+      "name": "CRMEB-208-文章管理-线性",
+      "font_class": "CRMEB-208-wenzhangguanli-xianxing",
+      "unicode": "eab0",
+      "unicode_decimal": 60080
+    },
+    {
+      "icon_id": "47596017",
+      "name": "CRMEB-207-社区-面性",
+      "font_class": "CRMEB-207-shequ-mianxing",
+      "unicode": "eab1",
+      "unicode_decimal": 60081
+    },
+    {
+      "icon_id": "47596016",
+      "name": "CRMEB-205-套餐搭配-面性",
+      "font_class": "CRMEB-205-taocandapei-mianxing",
+      "unicode": "eab2",
+      "unicode_decimal": 60082
+    },
+    {
+      "icon_id": "47595935",
+      "name": "CRMEB-122-营销-线性",
+      "font_class": "CRMEB-122-yingxiao-xianxing",
+      "unicode": "e982",
+      "unicode_decimal": 59778
+    },
+    {
+      "icon_id": "47596014",
+      "name": "CRMEB-191-挂单-面性",
+      "font_class": "CRMEB-191-guadan-mianxing",
+      "unicode": "e986",
+      "unicode_decimal": 59782
+    },
+    {
+      "icon_id": "47596013",
+      "name": "CRMEB-198-礼品卡-线性",
+      "font_class": "CRMEB-198-lipinka-xianxing",
+      "unicode": "eab3",
+      "unicode_decimal": 60083
+    },
+    {
+      "icon_id": "47596012",
+      "name": "CRMEB-188-企业微信-线性",
+      "font_class": "CRMEB-188-qiyeweixin-xianxing",
+      "unicode": "eab4",
+      "unicode_decimal": 60084
+    },
+    {
+      "icon_id": "47596011",
+      "name": "CRMEB-193-退货-面性",
+      "font_class": "CRMEB-193-tuihuo-mianxing",
+      "unicode": "eab5",
+      "unicode_decimal": 60085
+    },
+    {
+      "icon_id": "47596010",
+      "name": "CRMEB-200-折扣-线性",
+      "font_class": "CRMEB-200-zhekou-xianxing",
+      "unicode": "eab6",
+      "unicode_decimal": 60086
+    },
+    {
+      "icon_id": "47595999",
+      "name": "CRMEB-178-库存管理-线性",
+      "font_class": "CRMEB-178-kucunguanli-xianxing",
+      "unicode": "e985",
+      "unicode_decimal": 59781
+    },
+    {
+      "icon_id": "47596004",
+      "name": "CRMEB-195-预约-面性",
+      "font_class": "CRMEB-195-yuyue-mianxing",
+      "unicode": "eab7",
+      "unicode_decimal": 60087
+    },
+    {
+      "icon_id": "47596030",
+      "name": "CRMEB-214-供应商订单-线性",
+      "font_class": "CRMEB-214-gongyingshangdingdan-xianxing",
+      "unicode": "eaa2",
+      "unicode_decimal": 60066
+    },
+    {
+      "icon_id": "47596032",
+      "name": "CRMEB-211-购物车-面性",
+      "font_class": "CRMEB-211-gouwuche-mianxing",
+      "unicode": "eaa3",
+      "unicode_decimal": 60067
+    },
+    {
+      "icon_id": "47596033",
+      "name": "CRMEB-218-推广中心-线性",
+      "font_class": "CRMEB-218-tuiguangzhongxin-xianxing",
+      "unicode": "eaa4",
+      "unicode_decimal": 60068
+    },
+    {
+      "icon_id": "47596031",
+      "name": "CRMEB-223-个人简历-面性",
+      "font_class": "CRMEB-223-gerenjianli-mianxing",
+      "unicode": "eaa5",
+      "unicode_decimal": 60069
+    },
+    {
+      "icon_id": "47596029",
+      "name": "CRMEB-217-收藏夹-面性",
+      "font_class": "CRMEB-217-shoucangjia-mianxing",
+      "unicode": "eaa6",
+      "unicode_decimal": 60070
+    },
+    {
+      "icon_id": "47596028",
+      "name": "CRMEB-213-门店订单-面性",
+      "font_class": "CRMEB-213-mendiandingdan-mianxing",
+      "unicode": "eaa7",
+      "unicode_decimal": 60071
+    },
+    {
+      "icon_id": "47596023",
+      "name": "CRMEB-201-折扣-面性",
+      "font_class": "CRMEB-201-zhekou-mianxing",
+      "unicode": "e987",
+      "unicode_decimal": 59783
+    },
+    {
+      "icon_id": "47596027",
+      "name": "CRMEB-215-供应商订单-面性",
+      "font_class": "CRMEB-215-gongyingshangdingdan-mianxing",
+      "unicode": "eaa8",
+      "unicode_decimal": 60072
+    },
+    {
+      "icon_id": "47596026",
+      "name": "CRMEB-140-添加文件-线性",
+      "font_class": "CRMEB-140-tianjiawenjian-xianxing",
+      "unicode": "e983",
+      "unicode_decimal": 59779
+    },
+    {
+      "icon_id": "47596025",
+      "name": "CRMEB-210-购物车-线性",
+      "font_class": "CRMEB-210-gouwuche-xianxing",
+      "unicode": "eaa9",
+      "unicode_decimal": 60073
+    },
+    {
+      "icon_id": "47596024",
+      "name": "CRMEB-212-门店订单-线性",
+      "font_class": "CRMEB-212-mendiandingdan-xianxing",
+      "unicode": "eaaa",
+      "unicode_decimal": 60074
+    },
+    {
+      "icon_id": "47596043",
+      "name": "CRMEB-224-商业授权-线性",
+      "font_class": "CRMEB-224-shangyeshouquan-xianxing",
+      "unicode": "ea93",
+      "unicode_decimal": 60051
+    },
+    {
+      "icon_id": "47596050",
+      "name": "CRMEB-240-内容资讯-线性",
+      "font_class": "CRMEB-240-neirongzixun-xianxing",
+      "unicode": "ea94",
+      "unicode_decimal": 60052
+    },
+    {
+      "icon_id": "47596049",
+      "name": "CRMEB-233-商城统计-面性",
+      "font_class": "CRMEB-233-shangchengtongji-mianxing",
+      "unicode": "ea95",
+      "unicode_decimal": 60053
+    },
+    {
+      "icon_id": "47596048",
+      "name": "CRMEB-231-消息设置-面性",
+      "font_class": "CRMEB-231-xiaoxishezhi-mianxing",
+      "unicode": "ea96",
+      "unicode_decimal": 60054
+    },
+    {
+      "icon_id": "47596047",
+      "name": "CRMEB-234-系统表单-线性",
+      "font_class": "CRMEB-234-xitongbiaodan-xianxing",
+      "unicode": "ea97",
+      "unicode_decimal": 60055
+    },
+    {
+      "icon_id": "47596046",
+      "name": "CRMEB-226-直播-线性",
+      "font_class": "CRMEB-226-zhibo-xianxing",
+      "unicode": "ea98",
+      "unicode_decimal": 60056
+    },
+    {
+      "icon_id": "47596044",
+      "name": "CRMEB-227-直播-面性",
+      "font_class": "CRMEB-227-zhibo-mianxing",
+      "unicode": "ea99",
+      "unicode_decimal": 60057
+    },
+    {
+      "icon_id": "47596039",
+      "name": "CRMEB-219-推广中心-面性",
+      "font_class": "CRMEB-219-tuiguangzhongxin-mianxing",
+      "unicode": "ea9a",
+      "unicode_decimal": 60058
+    },
+    {
+      "icon_id": "47596045",
+      "name": "CRMEB-232-商城统计-线性",
+      "font_class": "CRMEB-232-shangchengtongji-xianxing",
+      "unicode": "ea9b",
+      "unicode_decimal": 60059
+    },
+    {
+      "icon_id": "47596040",
+      "name": "CRMEB-220-开发设置-线性",
+      "font_class": "CRMEB-220-kaifashezhi-xianxing",
+      "unicode": "ea9c",
+      "unicode_decimal": 60060
+    },
+    {
+      "icon_id": "47596041",
+      "name": "CRMEB-228-核销-线性",
+      "font_class": "CRMEB-228-hexiao-xianxing",
+      "unicode": "ea9d",
+      "unicode_decimal": 60061
+    },
+    {
+      "icon_id": "47596038",
+      "name": "CRMEB-221-开发设置-面性",
+      "font_class": "CRMEB-221-kaifashezhi-mianxing",
+      "unicode": "ea9e",
+      "unicode_decimal": 60062
+    },
+    {
+      "icon_id": "47596037",
+      "name": "CRMEB-225-商业授权-面性",
+      "font_class": "CRMEB-225-shangyeshouquan-mianxing",
+      "unicode": "ea9f",
+      "unicode_decimal": 60063
+    },
+    {
+      "icon_id": "47596034",
+      "name": "CRMEB-216-收藏夹-线性",
+      "font_class": "CRMEB-216-shoucangjia-xianxing",
+      "unicode": "e988",
+      "unicode_decimal": 59784
+    },
+    {
+      "icon_id": "47596036",
+      "name": "CRMEB-164-公告-线性",
+      "font_class": "CRMEB-164-gonggao-xianxing",
+      "unicode": "eaa0",
+      "unicode_decimal": 60064
+    },
+    {
+      "icon_id": "47596035",
+      "name": "CRMEB-222-个人简历-线性",
+      "font_class": "CRMEB-222-gerenjianli-xianxing",
+      "unicode": "eaa1",
+      "unicode_decimal": 60065
+    },
+    {
+      "icon_id": "47596064",
+      "name": "CRMEB-245-消息-面性",
+      "font_class": "CRMEB-245-xiaoxi-mianxing",
+      "unicode": "ea86",
+      "unicode_decimal": 60038
+    },
+    {
+      "icon_id": "47596065",
+      "name": "CRMEB-255-自动化运营-面性",
+      "font_class": "CRMEB-255-zidonghuayunying-mianxing",
+      "unicode": "ea87",
+      "unicode_decimal": 60039
+    },
+    {
+      "icon_id": "47596063",
+      "name": "CRMEB-251-概况-面性",
+      "font_class": "CRMEB-251-gaikuang-mianxing",
+      "unicode": "ea88",
+      "unicode_decimal": 60040
+    },
+    {
+      "icon_id": "47596061",
+      "name": "CRMEB-242-发货-线性",
+      "font_class": "CRMEB-242-fahuo-xianxing",
+      "unicode": "e98b",
+      "unicode_decimal": 59787
+    },
+    {
+      "icon_id": "47596059",
+      "name": "CRMEB-248-下载中心-线性",
+      "font_class": "CRMEB-248-xiazaizhongxin-xianxing",
+      "unicode": "ea89",
+      "unicode_decimal": 60041
+    },
+    {
+      "icon_id": "47596054",
+      "name": "CRMEB-236-砍价活动-线性",
+      "font_class": "CRMEB-236-kanjiahuodong-xianxing",
+      "unicode": "ea8a",
+      "unicode_decimal": 60042
+    },
+    {
+      "icon_id": "47596062",
+      "name": "CRMEB-250-概况-线性",
+      "font_class": "CRMEB-250-gaikuang-xianxing",
+      "unicode": "ea8b",
+      "unicode_decimal": 60043
+    },
+    {
+      "icon_id": "47596060",
+      "name": "CRMEB-247-卡券中心-面性",
+      "font_class": "CRMEB-247-kaquanzhongxin-mianxing",
+      "unicode": "ea8c",
+      "unicode_decimal": 60044
+    },
+    {
+      "icon_id": "47596058",
+      "name": "CRMEB-244-消息-线性",
+      "font_class": "CRMEB-244-xiaoxi-xianxing",
+      "unicode": "ea8d",
+      "unicode_decimal": 60045
+    },
+    {
+      "icon_id": "47596057",
+      "name": "CRMEB-239-分销员申请-面性",
+      "font_class": "CRMEB-239-fenxiaoyuanshenqing-mianxing",
+      "unicode": "ea8e",
+      "unicode_decimal": 60046
+    },
+    {
+      "icon_id": "47596055",
+      "name": "CRMEB-230-消息设置-线性",
+      "font_class": "CRMEB-230-xiaoxishezhi-xianxing",
+      "unicode": "e98a",
+      "unicode_decimal": 59786
+    },
+    {
+      "icon_id": "47596056",
+      "name": "CRMEB-241-内容资讯-面性",
+      "font_class": "CRMEB-241-neirongzixun-mianxing",
+      "unicode": "ea8f",
+      "unicode_decimal": 60047
+    },
+    {
+      "icon_id": "47596053",
+      "name": "CRMEB-237-砍价活动-面性",
+      "font_class": "CRMEB-237-kanjiahuodong-mianxing",
+      "unicode": "ea90",
+      "unicode_decimal": 60048
+    },
+    {
+      "icon_id": "47596052",
+      "name": "CRMEB-235-系统表单- 面性",
+      "font_class": "CRMEB-235-xitongbiaodan-mianxing",
+      "unicode": "ea91",
+      "unicode_decimal": 60049
+    },
+    {
+      "icon_id": "47596042",
+      "name": "CRMEB-229-核销-面性",
+      "font_class": "CRMEB-229-hexiao-mianxing",
+      "unicode": "e989",
+      "unicode_decimal": 59785
+    },
+    {
+      "icon_id": "47596051",
+      "name": "CRMEB-238-分销员申请-线性",
+      "font_class": "CRMEB-238-fenxiaoyuanshenqing-xianxing",
+      "unicode": "ea92",
+      "unicode_decimal": 60050
+    },
+    {
+      "icon_id": "47596084",
+      "name": "CRMEB-268-客户运营-线性",
+      "font_class": "CRMEB-268-kehuyunying-xianxing",
+      "unicode": "ea76",
+      "unicode_decimal": 60022
+    },
+    {
+      "icon_id": "47596082",
+      "name": "CRMEB-265-团队分销-面性",
+      "font_class": "CRMEB-265-tuanduifenxiao-mianxing",
+      "unicode": "ea77",
+      "unicode_decimal": 60023
+    },
+    {
+      "icon_id": "47596083",
+      "name": "CRMEB-266-分销财务-线性",
+      "font_class": "CRMEB-266-fenxiaocaiwu-xianxing",
+      "unicode": "ea78",
+      "unicode_decimal": 60024
+    },
+    {
+      "icon_id": "47596081",
+      "name": "CRMEB-263-分销配置-面性",
+      "font_class": "CRMEB-263-fenxiaopeizhi-mianxing",
+      "unicode": "ea79",
+      "unicode_decimal": 60025
+    },
+    {
+      "icon_id": "47596079",
+      "name": "CRMEB-264-团队分销-线性",
+      "font_class": "CRMEB-264-tuanduifenxiao-xianxing",
+      "unicode": "ea7a",
+      "unicode_decimal": 60026
+    },
+    {
+      "icon_id": "47596078",
+      "name": "CRMEB-261-分销管理-面性",
+      "font_class": "CRMEB-261-fenxiaoguanli-mianxing",
+      "unicode": "ea7b",
+      "unicode_decimal": 60027
+    },
+    {
+      "icon_id": "47596077",
+      "name": "CRMEB-262-分销配置-线性",
+      "font_class": "CRMEB-262-fenxiaopeizhi-xianxing",
+      "unicode": "ea7c",
+      "unicode_decimal": 60028
+    },
+    {
+      "icon_id": "47596076",
+      "name": "CRMEB-259-供应商-面性",
+      "font_class": "CRMEB-259-gongyingshang-mianxing",
+      "unicode": "ea7d",
+      "unicode_decimal": 60029
+    },
+    {
+      "icon_id": "47596075",
+      "name": "CRMEB-258-供应商-线性",
+      "font_class": "CRMEB-258-gongyingshang-xianxing",
+      "unicode": "ea7e",
+      "unicode_decimal": 60030
+    },
+    {
+      "icon_id": "47596072",
+      "name": "CRMEB-254-自动化运营-线性",
+      "font_class": "CRMEB-254-zidonghuayunying-xianxing",
+      "unicode": "ea7f",
+      "unicode_decimal": 60031
+    },
+    {
+      "icon_id": "47596068",
+      "name": "CRMEB-252-拼团活动-线性",
+      "font_class": "CRMEB-252-pintuanhuodong-xianxing",
+      "unicode": "e98c",
+      "unicode_decimal": 59788
+    },
+    {
+      "icon_id": "47596074",
+      "name": "CRMEB-257-采购商-面性",
+      "font_class": "CRMEB-257-caigoushang-mianxing",
+      "unicode": "ea80",
+      "unicode_decimal": 60032
+    },
+    {
+      "icon_id": "47596073",
+      "name": "CRMEB-260-分销管理-线性",
+      "font_class": "CRMEB-260-fenxiaoguanli-xianxing",
+      "unicode": "ea81",
+      "unicode_decimal": 60033
+    },
+    {
+      "icon_id": "47596071",
+      "name": "CRMEB-246-卡券中心-线性",
+      "font_class": "CRMEB-246-kaquanzhongxin-xianxing",
+      "unicode": "ea82",
+      "unicode_decimal": 60034
+    },
+    {
+      "icon_id": "47596066",
+      "name": "CRMEB-249-下载中心-面性",
+      "font_class": "CRMEB-249-xiazaizhongxin-mianxing",
+      "unicode": "ea83",
+      "unicode_decimal": 60035
+    },
+    {
+      "icon_id": "47596069",
+      "name": "CRMEB-253-拼团活动-面性",
+      "font_class": "CRMEB-253-pintuanhuodong-mianxing",
+      "unicode": "ea84",
+      "unicode_decimal": 60036
+    },
+    {
+      "icon_id": "47596067",
+      "name": "CRMEB-243-发货-面性",
+      "font_class": "CRMEB-243-fahuo-mianxing",
+      "unicode": "ea85",
+      "unicode_decimal": 60037
+    },
+    {
+      "icon_id": "47596101",
+      "name": "CRMEB-280-二维码-线性",
+      "font_class": "CRMEB-280-erweima-xianxing",
+      "unicode": "ea68",
+      "unicode_decimal": 60008
+    },
+    {
+      "icon_id": "47596100",
+      "name": "CRMEB-285-通用组件-面性",
+      "font_class": "CRMEB-285-tongyongzujian-mianxing",
+      "unicode": "ea69",
+      "unicode_decimal": 60009
+    },
+    {
+      "icon_id": "47596098",
+      "name": "CRMEB-281-二维码-面性",
+      "font_class": "CRMEB-281-erweima-mianxing",
+      "unicode": "ea6a",
+      "unicode_decimal": 60010
+    },
+    {
+      "icon_id": "47596097",
+      "name": "CRMEB-282-会员体系-线性",
+      "font_class": "CRMEB-282-huiyuantixi-xianxing",
+      "unicode": "ea6b",
+      "unicode_decimal": 60011
+    },
+    {
+      "icon_id": "47596096",
+      "name": "CRMEB-283-会员体系-面性",
+      "font_class": "CRMEB-283-huiyuantixi-mianxing",
+      "unicode": "ea6c",
+      "unicode_decimal": 60012
+    },
+    {
+      "icon_id": "47596095",
+      "name": "CRMEB-278-抽奖活动-线性",
+      "font_class": "CRMEB-278-choujianghuodong-xianxing",
+      "unicode": "e990",
+      "unicode_decimal": 59792
+    },
+    {
+      "icon_id": "47596094",
+      "name": "CRMEB-276-积分-线性",
+      "font_class": "CRMEB-276-jifen-xianxing",
+      "unicode": "ea6d",
+      "unicode_decimal": 60013
+    },
+    {
+      "icon_id": "47596093",
+      "name": "CRMEB-277-积分-面性",
+      "font_class": "CRMEB-277-jifen-mianxing",
+      "unicode": "ea6e",
+      "unicode_decimal": 60014
+    },
+    {
+      "icon_id": "47596092",
+      "name": "CRMEB-279-抽奖活动-面性",
+      "font_class": "CRMEB-279-choujianghuodong-mianxing",
+      "unicode": "ea6f",
+      "unicode_decimal": 60015
+    },
+    {
+      "icon_id": "47596091",
+      "name": "CRMEB-274-公众号-线性",
+      "font_class": "CRMEB-274-gongzhonghao-xianxing",
+      "unicode": "e98f",
+      "unicode_decimal": 59791
+    },
+    {
+      "icon_id": "47596080",
+      "name": "CRMEB-267-分销财务-面性",
+      "font_class": "CRMEB-267-fenxiaocaiwu-mianxing",
+      "unicode": "e98e",
+      "unicode_decimal": 59790
+    },
+    {
+      "icon_id": "47596090",
+      "name": "CRMEB-275-公众号-面性",
+      "font_class": "CRMEB-275-gongzhonghao-mianxing",
+      "unicode": "ea70",
+      "unicode_decimal": 60016
+    },
+    {
+      "icon_id": "47596086",
+      "name": "CRMEB-270-用户运营-线性",
+      "font_class": "CRMEB-270-yonghuyunying-xianxing",
+      "unicode": "ea71",
+      "unicode_decimal": 60017
+    },
+    {
+      "icon_id": "47596089",
+      "name": "CRMEB-272-店员管理-线性",
+      "font_class": "CRMEB-272-dianyuanguanli-xianxing",
+      "unicode": "ea72",
+      "unicode_decimal": 60018
+    },
+    {
+      "icon_id": "47596088",
+      "name": "CRMEB-271-用户运营-面性",
+      "font_class": "CRMEB-271-yonghuyunying-mianxing",
+      "unicode": "ea73",
+      "unicode_decimal": 60019
+    },
+    {
+      "icon_id": "47596087",
+      "name": "CRMEB-273-店员管理-面性",
+      "font_class": "CRMEB-273-dianyuanguanli-mianxing",
+      "unicode": "ea74",
+      "unicode_decimal": 60020
+    },
+    {
+      "icon_id": "47596070",
+      "name": "CRMEB-256-采购商-线性",
+      "font_class": "CRMEB-256-caigoushang-xianxing",
+      "unicode": "e98d",
+      "unicode_decimal": 59789
+    },
+    {
+      "icon_id": "47596085",
+      "name": "CRMEB-269-客户运营-面性",
+      "font_class": "CRMEB-269-kehuyunying-mianxing",
+      "unicode": "ea75",
+      "unicode_decimal": 60021
+    },
+    {
+      "icon_id": "47596116",
+      "name": "CRMEB-304-鼠标-线性",
+      "font_class": "CRMEB-304-shubiao-xianxing",
+      "unicode": "ea5b",
+      "unicode_decimal": 59995
+    },
+    {
+      "icon_id": "47596117",
+      "name": "CRMEB-303-财务操作-面性",
+      "font_class": "CRMEB-303-caiwucaozuo-mianxing",
+      "unicode": "ea5c",
+      "unicode_decimal": 59996
+    },
+    {
+      "icon_id": "47596115",
+      "name": "CRMEB-286-配送-线性",
+      "font_class": "CRMEB-286-peisong-xianxing",
+      "unicode": "e994",
+      "unicode_decimal": 59796
+    },
+    {
+      "icon_id": "47596113",
+      "name": "CRMEB-299-活动背景-面性",
+      "font_class": "CRMEB-299-huodongbeijing-mianxing",
+      "unicode": "e993",
+      "unicode_decimal": 59795
+    },
+    {
+      "icon_id": "47596114",
+      "name": "CRMEB-298-活动背景-线性",
+      "font_class": "CRMEB-298-huodongbeijing-xianxing",
+      "unicode": "ea5d",
+      "unicode_decimal": 59997
+    },
+    {
+      "icon_id": "47596112",
+      "name": "CRMEB-297-活动边框-面性",
+      "font_class": "CRMEB-297-huodongbiankuang-mianxing",
+      "unicode": "ea5e",
+      "unicode_decimal": 59998
+    },
+    {
+      "icon_id": "47596111",
+      "name": "CRMEB-296-活动边框-线性",
+      "font_class": "CRMEB-296-huodongbiankuang-xianxing",
+      "unicode": "ea5f",
+      "unicode_decimal": 59999
+    },
+    {
+      "icon_id": "47596109",
+      "name": "CRMEB-294-优惠活动-线性",
+      "font_class": "CRMEB-294-youhuihuodong-xianxing",
+      "unicode": "e992",
+      "unicode_decimal": 59794
+    },
+    {
+      "icon_id": "47596110",
+      "name": "CRMEB-295-优惠活动-面性",
+      "font_class": "CRMEB-295-youhuihuodong-mianxing",
+      "unicode": "ea60",
+      "unicode_decimal": 60000
+    },
+    {
+      "icon_id": "47596108",
+      "name": "CRMEB-287-配送-面性",
+      "font_class": "CRMEB-287-peisong-mianxing",
+      "unicode": "e991",
+      "unicode_decimal": 59793
+    },
+    {
+      "icon_id": "47596107",
+      "name": "CRMEB-291-客服管理-面性",
+      "font_class": "CRMEB-291-kefuguanli-mianxing",
+      "unicode": "ea61",
+      "unicode_decimal": 60001
+    },
+    {
+      "icon_id": "47596106",
+      "name": "CRMEB-289-服务设置-面性",
+      "font_class": "CRMEB-289-fuwushezhi-mianxing",
+      "unicode": "ea62",
+      "unicode_decimal": 60002
+    },
+    {
+      "icon_id": "47596099",
+      "name": "CRMEB-284-通用组件-线性",
+      "font_class": "CRMEB-284-tongyongzujian-xianxing",
+      "unicode": "ea63",
+      "unicode_decimal": 60003
+    },
+    {
+      "icon_id": "47596105",
+      "name": "CRMEB-290-客服管理-线性",
+      "font_class": "CRMEB-290-kefuguanli-xianxing",
+      "unicode": "ea64",
+      "unicode_decimal": 60004
+    },
+    {
+      "icon_id": "47596104",
+      "name": "CRMEB-292-商城设置-线性",
+      "font_class": "CRMEB-292-shangchengshezhi-xianxing",
+      "unicode": "ea65",
+      "unicode_decimal": 60005
+    },
+    {
+      "icon_id": "47596103",
+      "name": "CRMEB-293-商城设置-面性",
+      "font_class": "CRMEB-293-shangchengshezhi-mianxing",
+      "unicode": "ea66",
+      "unicode_decimal": 60006
+    },
+    {
+      "icon_id": "47596102",
+      "name": "CRMEB-288-服务设置-线性",
+      "font_class": "CRMEB-288-fuwushezhi-xianxing",
+      "unicode": "ea67",
+      "unicode_decimal": 60007
+    },
+    {
+      "icon_id": "47596134",
+      "name": "CRMEB-318-播放-线性",
+      "font_class": "CRMEB-318-bofang-xianxing",
+      "unicode": "ea4b",
+      "unicode_decimal": 59979
+    },
+    {
+      "icon_id": "47596136",
+      "name": "CRMEB-316-静音-线性",
+      "font_class": "CRMEB-316-jingyin-xianxing",
+      "unicode": "ea4c",
+      "unicode_decimal": 59980
+    },
+    {
+      "icon_id": "47596135",
+      "name": "CRMEB-319-播放-面性",
+      "font_class": "CRMEB-319-bofang-mianxing",
+      "unicode": "ea4d",
+      "unicode_decimal": 59981
+    },
+    {
+      "icon_id": "47596131",
+      "name": "CRMEB-317-静音-面性",
+      "font_class": "CRMEB-317-jingyin-mianxing",
+      "unicode": "ea4e",
+      "unicode_decimal": 59982
+    },
+    {
+      "icon_id": "47596130",
+      "name": "CRMEB-315-语音-面性",
+      "font_class": "CRMEB-315-yuyin-mianxing",
+      "unicode": "ea4f",
+      "unicode_decimal": 59983
+    },
+    {
+      "icon_id": "47596132",
+      "name": "CRMEB-313-添加地址-面性",
+      "font_class": "CRMEB-313-tianjiadizhi-mianxing",
+      "unicode": "ea50",
+      "unicode_decimal": 59984
+    },
+    {
+      "icon_id": "47596129",
+      "name": "CRMEB-320-暂停-线性",
+      "font_class": "CRMEB-320-zanting-xianxing",
+      "unicode": "ea51",
+      "unicode_decimal": 59985
+    },
+    {
+      "icon_id": "47596128",
+      "name": "CRMEB-312-添加地址-线性",
+      "font_class": "CRMEB-312-tianjiadizhi-xianxing",
+      "unicode": "ea52",
+      "unicode_decimal": 59986
+    },
+    {
+      "icon_id": "47596127",
+      "name": "CRMEB-310-定位-线性",
+      "font_class": "CRMEB-310-dingwei-xianxing",
+      "unicode": "e996",
+      "unicode_decimal": 59798
+    },
+    {
+      "icon_id": "47596124",
+      "name": "CRMEB-306-圆盘手表-线性",
+      "font_class": "CRMEB-306-yuanpanshoubiao-xianxing",
+      "unicode": "ea53",
+      "unicode_decimal": 59987
+    },
+    {
+      "icon_id": "47596126",
+      "name": "CRMEB-307-圆盘手表-面性",
+      "font_class": "CRMEB-307-yuanpanshoubiao-mianxing",
+      "unicode": "ea54",
+      "unicode_decimal": 59988
+    },
+    {
+      "icon_id": "47596125",
+      "name": "CRMEB-308-方盘手表-线性",
+      "font_class": "CRMEB-308-fangpanshoubiao-xianxing",
+      "unicode": "ea55",
+      "unicode_decimal": 59989
+    },
+    {
+      "icon_id": "47596123",
+      "name": "CRMEB-311-定位-面性",
+      "font_class": "CRMEB-311-dingwei-mianxing",
+      "unicode": "ea56",
+      "unicode_decimal": 59990
+    },
+    {
+      "icon_id": "47596122",
+      "name": "CRMEB-309-方盘手表-面性",
+      "font_class": "CRMEB-309-fangpanshoubiao-mianxing",
+      "unicode": "ea57",
+      "unicode_decimal": 59991
+    },
+    {
+      "icon_id": "47596121",
+      "name": "CRMEB-300-财务记录-线性",
+      "font_class": "CRMEB-300-caiwujilu-xianxing",
+      "unicode": "e995",
+      "unicode_decimal": 59797
+    },
+    {
+      "icon_id": "47596119",
+      "name": "CRMEB-301-财务记录-面性",
+      "font_class": "CRMEB-301-caiwujilu-mianxing",
+      "unicode": "ea58",
+      "unicode_decimal": 59992
+    },
+    {
+      "icon_id": "47596120",
+      "name": "CRMEB-302-财务操作-线性",
+      "font_class": "CRMEB-302-caiwucaozuo-xianxing",
+      "unicode": "ea59",
+      "unicode_decimal": 59993
+    },
+    {
+      "icon_id": "47596118",
+      "name": "CRMEB-305-鼠标-面性",
+      "font_class": "CRMEB-305-shubiao-mianxing",
+      "unicode": "ea5a",
+      "unicode_decimal": 59994
+    },
+    {
+      "icon_id": "47596153",
+      "name": "CRMEB-338-APP-线性",
+      "font_class": "CRMEB-338-APP-xianxing",
+      "unicode": "ea3c",
+      "unicode_decimal": 59964
+    },
+    {
+      "icon_id": "47596152",
+      "name": "CRMEB-334-付费会员-线性",
+      "font_class": "CRMEB-334-fufeihuiyuan-xianxing",
+      "unicode": "e999",
+      "unicode_decimal": 59801
+    },
+    {
+      "icon_id": "47596151",
+      "name": "CRMEB-329-奖杯-面性",
+      "font_class": "CRMEB-329-jiangbei-mianxing",
+      "unicode": "ea3d",
+      "unicode_decimal": 59965
+    },
+    {
+      "icon_id": "47596147",
+      "name": "CRMEB-335-付费会员-面性",
+      "font_class": "CRMEB-335-fufeihuiyuan-mianxing",
+      "unicode": "ea3e",
+      "unicode_decimal": 59966
+    },
+    {
+      "icon_id": "47596149",
+      "name": "CRMEB-332-标识-线性",
+      "font_class": "CRMEB-332-biaoshi-xianxing",
+      "unicode": "ea3f",
+      "unicode_decimal": 59967
+    },
+    {
+      "icon_id": "47596146",
+      "name": "CRMEB-333-标识-面性",
+      "font_class": "CRMEB-333-biaoshi-mianxing",
+      "unicode": "ea40",
+      "unicode_decimal": 59968
+    },
+    {
+      "icon_id": "47596145",
+      "name": "CRMEB-330-打印机-线性",
+      "font_class": "CRMEB-330-dayinji-xianxing",
+      "unicode": "ea41",
+      "unicode_decimal": 59969
+    },
+    {
+      "icon_id": "47596150",
+      "name": "CRMEB-336-氛围-线性",
+      "font_class": "CRMEB-336-fenwei-xianxing",
+      "unicode": "ea42",
+      "unicode_decimal": 59970
+    },
+    {
+      "icon_id": "47596148",
+      "name": "CRMEB-328-奖杯-线性",
+      "font_class": "CRMEB-328-jiangbei-xianxing",
+      "unicode": "ea43",
+      "unicode_decimal": 59971
+    },
+    {
+      "icon_id": "47596144",
+      "name": "CRMEB-331-打印机-面性",
+      "font_class": "CRMEB-331-dayinji-mianxing",
+      "unicode": "ea44",
+      "unicode_decimal": 59972
+    },
+    {
+      "icon_id": "47596143",
+      "name": "CRMEB-325-伞-面性",
+      "font_class": "CRMEB-325-san-mianxing",
+      "unicode": "e998",
+      "unicode_decimal": 59800
+    },
+    {
+      "icon_id": "47596142",
+      "name": "CRMEB-322-操作-线性",
+      "font_class": "CRMEB-322-caozuo-xianxing",
+      "unicode": "ea45",
+      "unicode_decimal": 59973
+    },
+    {
+      "icon_id": "47596141",
+      "name": "CRMEB-327-台灯-面性",
+      "font_class": "CRMEB-327-taideng-mianxing",
+      "unicode": "ea46",
+      "unicode_decimal": 59974
+    },
+    {
+      "icon_id": "47596139",
+      "name": "CRMEB-323-操作-面性",
+      "font_class": "CRMEB-323-caozuo-mianxing",
+      "unicode": "ea47",
+      "unicode_decimal": 59975
+    },
+    {
+      "icon_id": "47596140",
+      "name": "CRMEB-324-伞-线性",
+      "font_class": "CRMEB-324-san-xianxing",
+      "unicode": "ea48",
+      "unicode_decimal": 59976
+    },
+    {
+      "icon_id": "47596138",
+      "name": "CRMEB-326-台灯-线性",
+      "font_class": "CRMEB-326-taideng-xianxing",
+      "unicode": "ea49",
+      "unicode_decimal": 59977
+    },
+    {
+      "icon_id": "47596133",
+      "name": "CRMEB-314-语音-线性",
+      "font_class": "CRMEB-314-yuyin-xianxing",
+      "unicode": "e997",
+      "unicode_decimal": 59799
+    },
+    {
+      "icon_id": "47596137",
+      "name": "CRMEB-321-暂停-面性",
+      "font_class": "CRMEB-321-zanting-mianxing",
+      "unicode": "ea4a",
+      "unicode_decimal": 59978
+    },
+    {
+      "icon_id": "47596172",
+      "name": "CRMEB-356-关闭-线性",
+      "font_class": "CRMEB-356-guanbi-xianxing",
+      "unicode": "ea2b",
+      "unicode_decimal": 59947
+    },
+    {
+      "icon_id": "47596171",
+      "name": "CRMEB-357-关闭-面性",
+      "font_class": "CRMEB-357-guanbi-mianxing",
+      "unicode": "ea2c",
+      "unicode_decimal": 59948
+    },
+    {
+      "icon_id": "47596170",
+      "name": "CRMEB-355-减少-面性",
+      "font_class": "CRMEB-355-jianshao-mianxing",
+      "unicode": "ea2d",
+      "unicode_decimal": 59949
+    },
+    {
+      "icon_id": "47596168",
+      "name": "CRMEB-351-门店财务-面性",
+      "font_class": "CRMEB-351-mendiancaiwu-mianxing",
+      "unicode": "ea2e",
+      "unicode_decimal": 59950
+    },
+    {
+      "icon_id": "47596169",
+      "name": "CRMEB-352-添加-线性",
+      "font_class": "CRMEB-352-tianjia-xianxing",
+      "unicode": "ea2f",
+      "unicode_decimal": 59951
+    },
+    {
+      "icon_id": "47596166",
+      "name": "CRMEB-354-减少-线性",
+      "font_class": "CRMEB-354-jianshao-xianxing",
+      "unicode": "ea30",
+      "unicode_decimal": 59952
+    },
+    {
+      "icon_id": "47596167",
+      "name": "CRMEB-353-添加-面性",
+      "font_class": "CRMEB-353-tianjia-mianxing",
+      "unicode": "ea31",
+      "unicode_decimal": 59953
+    },
+    {
+      "icon_id": "47596165",
+      "name": "CRMEB-346-关注-线性",
+      "font_class": "CRMEB-346-guanzhu-xianxing",
+      "unicode": "e99b",
+      "unicode_decimal": 59803
+    },
+    {
+      "icon_id": "47596161",
+      "name": "CRMEB-344-分销员-线性",
+      "font_class": "CRMEB-344-fenxiaoyuan-xianxing",
+      "unicode": "ea32",
+      "unicode_decimal": 59954
+    },
+    {
+      "icon_id": "47596164",
+      "name": "CRMEB-347-关注-面性",
+      "font_class": "CRMEB-347-guanzhu-mianxing",
+      "unicode": "ea33",
+      "unicode_decimal": 59955
+    },
+    {
+      "icon_id": "47596163",
+      "name": "CRMEB-343-礼品申请-面性",
+      "font_class": "CRMEB-343-lipinshenqing-mianxing",
+      "unicode": "ea34",
+      "unicode_decimal": 59956
+    },
+    {
+      "icon_id": "47596162",
+      "name": "CRMEB-345-分销员-面性",
+      "font_class": "CRMEB-345-fenxiaoyuan-mianxing",
+      "unicode": "ea35",
+      "unicode_decimal": 59957
+    },
+    {
+      "icon_id": "47596159",
+      "name": "CRMEB-349-时间-面性",
+      "font_class": "CRMEB-349-shijian-mianxing",
+      "unicode": "ea36",
+      "unicode_decimal": 59958
+    },
+    {
+      "icon_id": "47596160",
+      "name": "CRMEB-348-时间-线性",
+      "font_class": "CRMEB-348-shijian-xianxing",
+      "unicode": "ea37",
+      "unicode_decimal": 59959
+    },
+    {
+      "icon_id": "47596158",
+      "name": "CRMEB-342-礼品申请-线性",
+      "font_class": "CRMEB-342-lipinshenqing-xianxing",
+      "unicode": "e99a",
+      "unicode_decimal": 59802
+    },
+    {
+      "icon_id": "47596157",
+      "name": "CRMEB-337-氛围-面性",
+      "font_class": "CRMEB-337-fenwei-mianxing",
+      "unicode": "ea38",
+      "unicode_decimal": 59960
+    },
+    {
+      "icon_id": "47596155",
+      "name": "CRMEB-340-资产管理-线性",
+      "font_class": "CRMEB-340-zichanguanli-xianxing",
+      "unicode": "ea39",
+      "unicode_decimal": 59961
+    },
+    {
+      "icon_id": "47596156",
+      "name": "CRMEB-341-资产管理-面性",
+      "font_class": "CRMEB-341-zichanguanli-mianxing",
+      "unicode": "ea3a",
+      "unicode_decimal": 59962
+    },
+    {
+      "icon_id": "47596154",
+      "name": "CRMEB-339-APP-面性",
+      "font_class": "CRMEB-339-APP-mianxing",
+      "unicode": "ea3b",
+      "unicode_decimal": 59963
+    },
+    {
+      "icon_id": "47596190",
+      "name": "CRMEB-375-宫格-面性",
+      "font_class": "CRMEB-375-gongge-mianxing",
+      "unicode": "ea1d",
+      "unicode_decimal": 59933
+    },
+    {
+      "icon_id": "47596189",
+      "name": "CRMEB-369-搜索-面性",
+      "font_class": "CRMEB-369-sousuo-mianxing",
+      "unicode": "e99f",
+      "unicode_decimal": 59807
+    },
+    {
+      "icon_id": "47596188",
+      "name": "CRMEB-370-展开侧边栏-线性",
+      "font_class": "CRMEB-370-zhankaicebianlan-xianxing",
+      "unicode": "ea1e",
+      "unicode_decimal": 59934
+    },
+    {
+      "icon_id": "47596187",
+      "name": "CRMEB-372-收起侧边栏-线性",
+      "font_class": "CRMEB-372-shouqicebianlan-xianxing",
+      "unicode": "ea1f",
+      "unicode_decimal": 59935
+    },
+    {
+      "icon_id": "47596185",
+      "name": "CRMEB-371-展开侧边栏-面性",
+      "font_class": "CRMEB-371-zhankaicebianlan-mianxing",
+      "unicode": "ea20",
+      "unicode_decimal": 59936
+    },
+    {
+      "icon_id": "47596186",
+      "name": "CRMEB-373-收起侧边栏-面性",
+      "font_class": "CRMEB-373-shouqicebianlan-mianxing",
+      "unicode": "ea21",
+      "unicode_decimal": 59937
+    },
+    {
+      "icon_id": "47596184",
+      "name": "CRMEB-368-搜索-线性",
+      "font_class": "CRMEB-368-sousuo-xianxing",
+      "unicode": "e99e",
+      "unicode_decimal": 59806
+    },
+    {
+      "icon_id": "47596183",
+      "name": "CRMEB-363-关闭其他-面性",
+      "font_class": "CRMEB-363-guanbiqita-mianxing",
+      "unicode": "ea22",
+      "unicode_decimal": 59938
+    },
+    {
+      "icon_id": "47596181",
+      "name": "CRMEB-367-通知1-面性",
+      "font_class": "CRMEB-367-tongzhi1-mianxing",
+      "unicode": "ea23",
+      "unicode_decimal": 59939
+    },
+    {
+      "icon_id": "47596182",
+      "name": "CRMEB-366-通知1-线性",
+      "font_class": "CRMEB-366-tongzhi1-xianxing",
+      "unicode": "ea24",
+      "unicode_decimal": 59940
+    },
+    {
+      "icon_id": "47596180",
+      "name": "CRMEB-364-说明-线性",
+      "font_class": "CRMEB-364-shuoming-xianxing",
+      "unicode": "ea25",
+      "unicode_decimal": 59941
+    },
+    {
+      "icon_id": "47596179",
+      "name": "CRMEB-365-说明-面性",
+      "font_class": "CRMEB-365-shuoming-mianxing",
+      "unicode": "ea26",
+      "unicode_decimal": 59942
+    },
+    {
+      "icon_id": "47596178",
+      "name": "CRMEB-360-更多-线性",
+      "font_class": "CRMEB-360-gengduo-xianxing",
+      "unicode": "e99d",
+      "unicode_decimal": 59805
+    },
+    {
+      "icon_id": "47596177",
+      "name": "CRMEB-362-关闭其他-线性",
+      "font_class": "CRMEB-362-guanbiqita-xianxing",
+      "unicode": "ea27",
+      "unicode_decimal": 59943
+    },
+    {
+      "icon_id": "47596176",
+      "name": "CRMEB-358-勾选-线性",
+      "font_class": "CRMEB-358-gouxuan-xianxing",
+      "unicode": "ea28",
+      "unicode_decimal": 59944
+    },
+    {
+      "icon_id": "47596175",
+      "name": "CRMEB-359-勾选-面性",
+      "font_class": "CRMEB-359-gouxuan-mianxing",
+      "unicode": "ea29",
+      "unicode_decimal": 59945
+    },
+    {
+      "icon_id": "47596174",
+      "name": "CRMEB-361-更多-面性",
+      "font_class": "CRMEB-361-gengduo-mianxing",
+      "unicode": "ea2a",
+      "unicode_decimal": 59946
+    },
+    {
+      "icon_id": "47596173",
+      "name": "CRMEB-350-门店财务-线性",
+      "font_class": "CRMEB-350-mendiancaiwu-xianxing",
+      "unicode": "e99c",
+      "unicode_decimal": 59804
+    },
+    {
+      "icon_id": "47596209",
+      "name": "CRMEB-391-图片-面性",
+      "font_class": "CRMEB-391-tupian-mianxing",
+      "unicode": "ea0c",
+      "unicode_decimal": 59916
+    },
+    {
+      "icon_id": "47596208",
+      "name": "CRMEB-397-复制-面性",
+      "font_class": "CRMEB-397-fuzhi-mianxing",
+      "unicode": "ea0d",
+      "unicode_decimal": 59917
+    },
+    {
+      "icon_id": "47596207",
+      "name": "CRMEB-393-显示-面性",
+      "font_class": "CRMEB-393-xianshi-mianxing",
+      "unicode": "ea0e",
+      "unicode_decimal": 59918
+    },
+    {
+      "icon_id": "47596206",
+      "name": "CRMEB-390-图片-线性",
+      "font_class": "CRMEB-390-tupian-xianxing",
+      "unicode": "e9a1",
+      "unicode_decimal": 59809
+    },
+    {
+      "icon_id": "47596205",
+      "name": "CRMEB-388-筛选-线性",
+      "font_class": "CRMEB-388-shaixuan-xianxing",
+      "unicode": "ea0f",
+      "unicode_decimal": 59919
+    },
+    {
+      "icon_id": "47596204",
+      "name": "CRMEB-382-喇叭-线性",
+      "font_class": "CRMEB-382-laba-xianxing",
+      "unicode": "ea10",
+      "unicode_decimal": 59920
+    },
+    {
+      "icon_id": "47596203",
+      "name": "CRMEB-387-视频-面性",
+      "font_class": "CRMEB-387-shipin-mianxing",
+      "unicode": "ea11",
+      "unicode_decimal": 59921
+    },
+    {
+      "icon_id": "47596202",
+      "name": "CRMEB-386-视频-线性",
+      "font_class": "CRMEB-386-shipin-xianxing",
+      "unicode": "ea12",
+      "unicode_decimal": 59922
+    },
+    {
+      "icon_id": "47596201",
+      "name": "CRMEB-383-喇叭-面性",
+      "font_class": "CRMEB-383-laba-mianxing",
+      "unicode": "ea13",
+      "unicode_decimal": 59923
+    },
+    {
+      "icon_id": "47596200",
+      "name": "CRMEB-389-筛选-面性",
+      "font_class": "CRMEB-389-shaixuan-mianxing",
+      "unicode": "ea14",
+      "unicode_decimal": 59924
+    },
+    {
+      "icon_id": "47596199",
+      "name": "CRMEB-385-相机-面性",
+      "font_class": "CRMEB-385-xiangji-mianxing",
+      "unicode": "ea15",
+      "unicode_decimal": 59925
+    },
+    {
+      "icon_id": "47596198",
+      "name": "CRMEB-384-相机-线性",
+      "font_class": "CRMEB-384-xiangji-xianxing",
+      "unicode": "ea16",
+      "unicode_decimal": 59926
+    },
+    {
+      "icon_id": "47596197",
+      "name": "CRMEB-378-编辑1-线性",
+      "font_class": "CRMEB-378-bianji1-xianxing",
+      "unicode": "e9a0",
+      "unicode_decimal": 59808
+    },
+    {
+      "icon_id": "47596195",
+      "name": "CRMEB-381-移动端-面性",
+      "font_class": "CRMEB-381-yidongduan-mianxing",
+      "unicode": "ea17",
+      "unicode_decimal": 59927
+    },
+    {
+      "icon_id": "47596196",
+      "name": "CRMEB-377-列表-面性",
+      "font_class": "CRMEB-377-liebiao-mianxing",
+      "unicode": "ea18",
+      "unicode_decimal": 59928
+    },
+    {
+      "icon_id": "47596193",
+      "name": "CRMEB-380-移动端-线性",
+      "font_class": "CRMEB-380-yidongduan-xianxing",
+      "unicode": "ea19",
+      "unicode_decimal": 59929
+    },
+    {
+      "icon_id": "47596194",
+      "name": "CRMEB-379-编辑1-面性",
+      "font_class": "CRMEB-379-bianji1-mianxing",
+      "unicode": "ea1a",
+      "unicode_decimal": 59930
+    },
+    {
+      "icon_id": "47596192",
+      "name": "CRMEB-376-列表-线性",
+      "font_class": "CRMEB-376-liebiao-xianxing",
+      "unicode": "ea1b",
+      "unicode_decimal": 59931
+    },
+    {
+      "icon_id": "47596191",
+      "name": "CRMEB-374-宫格-线性",
+      "font_class": "CRMEB-374-gongge-xianxing",
+      "unicode": "ea1c",
+      "unicode_decimal": 59932
+    },
+    {
+      "icon_id": "47596210",
+      "name": "CRMEB-398-短信配置-线性",
+      "font_class": "CRMEB-398-duanxinpeizhi-xianxing",
+      "unicode": "ea0b",
+      "unicode_decimal": 59915
+    },
+    {
+      "icon_id": "47596223",
+      "name": "CRMEB-404-提现金额-线性",
+      "font_class": "CRMEB-404-tixianjine-xianxing",
+      "unicode": "e9fb",
+      "unicode_decimal": 59899
+    },
+    {
+      "icon_id": "47596227",
+      "name": "CRMEB-410-营业额-线性",
+      "font_class": "CRMEB-410-yingyee-xianxing",
+      "unicode": "e9fc",
+      "unicode_decimal": 59900
+    },
+    {
+      "icon_id": "47596226",
+      "name": "CRMEB-411-营业额-面性",
+      "font_class": "CRMEB-411-yingyee-mianxing",
+      "unicode": "e9fd",
+      "unicode_decimal": 59901
+    },
+    {
+      "icon_id": "47596225",
+      "name": "CRMEB-412-当前余额-线性",
+      "font_class": "CRMEB-412-dangqianyue-xianxing",
+      "unicode": "e9fe",
+      "unicode_decimal": 59902
+    },
+    {
+      "icon_id": "47596224",
+      "name": "CRMEB-413-当前余额-面性",
+      "font_class": "CRMEB-413-dangqianyue-mianxing",
+      "unicode": "e9ff",
+      "unicode_decimal": 59903
+    },
+    {
+      "icon_id": "47596222",
+      "name": "CRMEB-406-充值金额-线性",
+      "font_class": "CRMEB-406-chongzhijine-xianxing",
+      "unicode": "ea00",
+      "unicode_decimal": 59904
+    },
+    {
+      "icon_id": "47596221",
+      "name": "CRMEB-405-提现金额-面性",
+      "font_class": "CRMEB-405-tixianjine-mianxing",
+      "unicode": "ea01",
+      "unicode_decimal": 59905
+    },
+    {
+      "icon_id": "47596220",
+      "name": "CRMEB-407-充值金额-面性",
+      "font_class": "CRMEB-407-chongzhijine-mianxing",
+      "unicode": "ea02",
+      "unicode_decimal": 59906
+    },
+    {
+      "icon_id": "47596218",
+      "name": "CRMEB-403-支出金额-面性",
+      "font_class": "CRMEB-403-zhichujine-mianxing",
+      "unicode": "ea03",
+      "unicode_decimal": 59907
+    },
+    {
+      "icon_id": "47596217",
+      "name": "CRMEB-402-支出金额-线性",
+      "font_class": "CRMEB-402-zhichujine-xianxing",
+      "unicode": "ea04",
+      "unicode_decimal": 59908
+    },
+    {
+      "icon_id": "47596219",
+      "name": "CRMEB-401-退款金额-面性",
+      "font_class": "CRMEB-401-tuikuanjine-mianxing",
+      "unicode": "ea05",
+      "unicode_decimal": 59909
+    },
+    {
+      "icon_id": "47596215",
+      "name": "CRMEB-394-隐藏-线性",
+      "font_class": "CRMEB-394-yincang-xianxing",
+      "unicode": "e9a2",
+      "unicode_decimal": 59810
+    },
+    {
+      "icon_id": "47596216",
+      "name": "CRMEB-395-隐藏-面性",
+      "font_class": "CRMEB-395-yincang-mianxing",
+      "unicode": "ea06",
+      "unicode_decimal": 59910
+    },
+    {
+      "icon_id": "47596213",
+      "name": "CRMEB-396-复制-线性",
+      "font_class": "CRMEB-396-fuzhi-xianxing",
+      "unicode": "ea07",
+      "unicode_decimal": 59911
+    },
+    {
+      "icon_id": "47596214",
+      "name": "CRMEB-392-显示-线性",
+      "font_class": "CRMEB-392-xianshi-xianxing",
+      "unicode": "ea08",
+      "unicode_decimal": 59912
+    },
+    {
+      "icon_id": "47596212",
+      "name": "CRMEB-400-退款金额-线性",
+      "font_class": "CRMEB-400-tuikuanjine-xianxing",
+      "unicode": "ea09",
+      "unicode_decimal": 59913
+    },
+    {
+      "icon_id": "47596211",
+      "name": "CRMEB-399-短信配置-面性",
+      "font_class": "CRMEB-399-duanxinpeizhi-mianxing",
+      "unicode": "ea0a",
+      "unicode_decimal": 59914
+    },
+    {
+      "icon_id": "47596248",
+      "name": "CRMEB-432-会员卡激活-线性",
+      "font_class": "CRMEB-432-huiyuankajihuo-xianxing",
+      "unicode": "e9ed",
+      "unicode_decimal": 59885
+    },
+    {
+      "icon_id": "47596246",
+      "name": "CRMEB-431-实付金额-面性",
+      "font_class": "CRMEB-431-shifujine-mianxing",
+      "unicode": "e9ee",
+      "unicode_decimal": 59886
+    },
+    {
+      "icon_id": "47596245",
+      "name": "CRMEB-430-实付金额-线性",
+      "font_class": "CRMEB-430-shifujine-xianxing",
+      "unicode": "e9ef",
+      "unicode_decimal": 59887
+    },
+    {
+      "icon_id": "47596244",
+      "name": "CRMEB-424-微信充值金额-线性",
+      "font_class": "CRMEB-424-weixinchongzhijine-xianxing",
+      "unicode": "e9a8",
+      "unicode_decimal": 59816
+    },
+    {
+      "icon_id": "47596243",
+      "name": "CRMEB-428-成本金额-线性",
+      "font_class": "CRMEB-428-chengbenjine-xianxing",
+      "unicode": "e9f0",
+      "unicode_decimal": 59888
+    },
+    {
+      "icon_id": "47596242",
+      "name": "CRMEB-427-支付宝金额-面性",
+      "font_class": "CRMEB-427-zhifubaojine-mianxing",
+      "unicode": "e9f1",
+      "unicode_decimal": 59889
+    },
+    {
+      "icon_id": "47596241",
+      "name": "CRMEB-425-微信充值金额-面性",
+      "font_class": "CRMEB-425-weixinchongzhijine-mianxing",
+      "unicode": "e9f2",
+      "unicode_decimal": 59890
+    },
+    {
+      "icon_id": "47596240",
+      "name": "CRMEB-426-支付宝金额-线性",
+      "font_class": "CRMEB-426-zhifubaojine-xianxing",
+      "unicode": "e9f3",
+      "unicode_decimal": 59891
+    },
+    {
+      "icon_id": "47596239",
+      "name": "CRMEB-421-退款订单数-面性",
+      "font_class": "CRMEB-421-tuikuandingdanshu-mianxing",
+      "unicode": "e9f4",
+      "unicode_decimal": 59892
+    },
+    {
+      "icon_id": "47596238",
+      "name": "CRMEB-423-冻结中金额-面性",
+      "font_class": "CRMEB-423-dongjiezhongjine-mianxing",
+      "unicode": "e9f5",
+      "unicode_decimal": 59893
+    },
+    {
+      "icon_id": "47596237",
+      "name": "CRMEB-422-冻结中金额-线性",
+      "font_class": "CRMEB-422-dongjiezhongjine-xianxing",
+      "unicode": "e9f6",
+      "unicode_decimal": 59894
+    },
+    {
+      "icon_id": "47596236",
+      "name": "CRMEB-420-退款订单数-线性",
+      "font_class": "CRMEB-420-tuikuandingdanshu-xianxing",
+      "unicode": "e9a7",
+      "unicode_decimal": 59815
+    },
+    {
+      "icon_id": "47596235",
+      "name": "CRMEB-417-商品退款金额-面性",
+      "font_class": "CRMEB-417-shangpintuikuanjine-mianxing",
+      "unicode": "e9a6",
+      "unicode_decimal": 59814
+    },
+    {
+      "icon_id": "47596234",
+      "name": "CRMEB-418-佣金总金额-线性",
+      "font_class": "CRMEB-418-yongjinzongjine-xianxing",
+      "unicode": "e9f7",
+      "unicode_decimal": 59895
+    },
+    {
+      "icon_id": "47596233",
+      "name": "CRMEB-419-佣金总金额-面性",
+      "font_class": "CRMEB-419-yongjinzongjine-mianxing",
+      "unicode": "e9f8",
+      "unicode_decimal": 59896
+    },
+    {
+      "icon_id": "47596232",
+      "name": "CRMEB-416-商品退款金额-线性",
+      "font_class": "CRMEB-416-shangpintuikuanjine-xianxing",
+      "unicode": "e9a5",
+      "unicode_decimal": 59813
+    },
+    {
+      "icon_id": "47596230",
+      "name": "CRMEB-414-累计余额-线性",
+      "font_class": "CRMEB-414-leijiyue-xianxing",
+      "unicode": "e9f9",
+      "unicode_decimal": 59897
+    },
+    {
+      "icon_id": "47596231",
+      "name": "CRMEB-415-累计余额-面性",
+      "font_class": "CRMEB-415-leijiyue-mianxing",
+      "unicode": "e9fa",
+      "unicode_decimal": 59898
+    },
+    {
+      "icon_id": "47596229",
+      "name": "CRMEB-409-通知2-面性",
+      "font_class": "CRMEB-409-tongzhi2-mianxing",
+      "unicode": "e9a4",
+      "unicode_decimal": 59812
+    },
+    {
+      "icon_id": "47596228",
+      "name": "CRMEB-408-通知2-线性",
+      "font_class": "CRMEB-408-tongzhi2-xianxing",
+      "unicode": "e9a3",
+      "unicode_decimal": 59811
+    },
+    {
+      "icon_id": "47596267",
+      "name": "CRMEB-452-使用积分-线性",
+      "font_class": "CRMEB-452-shiyongjifen-xianxing",
+      "unicode": "e9dd",
+      "unicode_decimal": 59869
+    },
+    {
+      "icon_id": "47596266",
+      "name": "CRMEB-453-使用积分-面性",
+      "font_class": "CRMEB-453-shiyongjifen-mianxing",
+      "unicode": "e9de",
+      "unicode_decimal": 59870
+    },
+    {
+      "icon_id": "47596264",
+      "name": "CRMEB-448-当前积分-线性",
+      "font_class": "CRMEB-448-dangqianjifen-xianxing",
+      "unicode": "e9ac",
+      "unicode_decimal": 59820
+    },
+    {
+      "icon_id": "47596265",
+      "name": "CRMEB-447-售罄商品-面性",
+      "font_class": "CRMEB-447-shouqingshangpin-mianxing",
+      "unicode": "e9df",
+      "unicode_decimal": 59871
+    },
+    {
+      "icon_id": "47596263",
+      "name": "CRMEB-449-当前积分-面性",
+      "font_class": "CRMEB-449-dangqianjifen-mianxing",
+      "unicode": "e9e0",
+      "unicode_decimal": 59872
+    },
+    {
+      "icon_id": "47596262",
+      "name": "CRMEB-445-出售商品-面性",
+      "font_class": "CRMEB-445-chushoushangpin-mianxing",
+      "unicode": "e9e1",
+      "unicode_decimal": 59873
+    },
+    {
+      "icon_id": "47596261",
+      "name": "CRMEB-446-售罄商品-线性",
+      "font_class": "CRMEB-446-shouqingshangpin-xianxing",
+      "unicode": "e9e2",
+      "unicode_decimal": 59874
+    },
+    {
+      "icon_id": "47596260",
+      "name": "CRMEB-444-出售商品-线性",
+      "font_class": "CRMEB-444-chushoushangpin-xianxing",
+      "unicode": "e9ab",
+      "unicode_decimal": 59819
+    },
+    {
+      "icon_id": "47596259",
+      "name": "CRMEB-440-待审核-线性",
+      "font_class": "CRMEB-440-daishenhe-xianxing",
+      "unicode": "e9e3",
+      "unicode_decimal": 59875
+    },
+    {
+      "icon_id": "47596258",
+      "name": "CRMEB-443-待提现金额-面性",
+      "font_class": "CRMEB-443-daitixianjine-mianxing",
+      "unicode": "e9e4",
+      "unicode_decimal": 59876
+    },
+    {
+      "icon_id": "47596257",
+      "name": "CRMEB-438-购买会员金额-线性",
+      "font_class": "CRMEB-438-goumaihuiyuanjine-xianxing",
+      "unicode": "e9e5",
+      "unicode_decimal": 59877
+    },
+    {
+      "icon_id": "47596255",
+      "name": "CRMEB-441-待审核-面性",
+      "font_class": "CRMEB-441-daishenhe-mianxing",
+      "unicode": "e9e6",
+      "unicode_decimal": 59878
+    },
+    {
+      "icon_id": "47596256",
+      "name": "CRMEB-439-购买会员金额-面性",
+      "font_class": "CRMEB-439-goumaihuiyuanjine-mianxing",
+      "unicode": "e9e7",
+      "unicode_decimal": 59879
+    },
+    {
+      "icon_id": "47596254",
+      "name": "CRMEB-442-待提现金额-线性",
+      "font_class": "CRMEB-442-daitixianjine-xianxing",
+      "unicode": "e9e8",
+      "unicode_decimal": 59880
+    },
+    {
+      "icon_id": "47596249",
+      "name": "CRMEB-437-配送距离-面性",
+      "font_class": "CRMEB-437-peisongjuli-mianxing",
+      "unicode": "e9aa",
+      "unicode_decimal": 59818
+    },
+    {
+      "icon_id": "47596252",
+      "name": "CRMEB-434-配送费收入-线性",
+      "font_class": "CRMEB-434-peisongfeishouru-xianxing",
+      "unicode": "e9e9",
+      "unicode_decimal": 59881
+    },
+    {
+      "icon_id": "47596253",
+      "name": "CRMEB-436-配送距离-线性",
+      "font_class": "CRMEB-436-peisongjuli-xianxing",
+      "unicode": "e9ea",
+      "unicode_decimal": 59882
+    },
+    {
+      "icon_id": "47596251",
+      "name": "CRMEB-433-会员卡激活-面性",
+      "font_class": "CRMEB-433-huiyuankajihuo-mianxing",
+      "unicode": "e9eb",
+      "unicode_decimal": 59883
+    },
+    {
+      "icon_id": "47596250",
+      "name": "CRMEB-435-配送费收入-面性",
+      "font_class": "CRMEB-435-peisongfeishouru-mianxing",
+      "unicode": "e9ec",
+      "unicode_decimal": 59884
+    },
+    {
+      "icon_id": "47596247",
+      "name": "CRMEB-429-成本金额-面性",
+      "font_class": "CRMEB-429-chengbenjine-mianxing",
+      "unicode": "e9a9",
+      "unicode_decimal": 59817
+    },
+    {
+      "icon_id": "47596288",
+      "name": "CRMEB-471-记事本-面性",
+      "font_class": "CRMEB-471-jishiben-mianxing",
+      "unicode": "e9ce",
+      "unicode_decimal": 59854
+    },
+    {
+      "icon_id": "47596285",
+      "name": "CRMEB-469-待回复评论-面性",
+      "font_class": "CRMEB-469-daihuifupinglun-mianxing",
+      "unicode": "e9cf",
+      "unicode_decimal": 59855
+    },
+    {
+      "icon_id": "47596284",
+      "name": "CRMEB-470-记事本-线性",
+      "font_class": "CRMEB-470-jishiben-xianxing",
+      "unicode": "e9d0",
+      "unicode_decimal": 59856
+    },
+    {
+      "icon_id": "47596283",
+      "name": "CRMEB-463-总订单金额-面性",
+      "font_class": "CRMEB-463-zongdingdanjine-mianxing",
+      "unicode": "e9b0",
+      "unicode_decimal": 59824
+    },
+    {
+      "icon_id": "47596282",
+      "name": "CRMEB-462-总订单金额-线性",
+      "font_class": "CRMEB-462-zongdingdanjine-xianxing",
+      "unicode": "e9d1",
+      "unicode_decimal": 59857
+    },
+    {
+      "icon_id": "47596281",
+      "name": "CRMEB-466-警戒库存-线性",
+      "font_class": "CRMEB-466-jingjiekucun-xianxing",
+      "unicode": "e9d2",
+      "unicode_decimal": 59858
+    },
+    {
+      "icon_id": "47596280",
+      "name": "CRMEB-464-配送单数-线性",
+      "font_class": "CRMEB-464-peisongdanshu-xianxing",
+      "unicode": "e9d3",
+      "unicode_decimal": 59859
+    },
+    {
+      "icon_id": "47596279",
+      "name": "CRMEB-465-配送单数-面性",
+      "font_class": "CRMEB-465-peisongdanshu-mianxing",
+      "unicode": "e9d4",
+      "unicode_decimal": 59860
+    },
+    {
+      "icon_id": "47596278",
+      "name": "CRMEB-467-警戒库存-面性",
+      "font_class": "CRMEB-467-jingjiekucun-mianxing",
+      "unicode": "e9d5",
+      "unicode_decimal": 59861
+    },
+    {
+      "icon_id": "47596277",
+      "name": "CRMEB-458-待发货订单-线性",
+      "font_class": "CRMEB-458-daifahuodingdan-xianxing",
+      "unicode": "e9ae",
+      "unicode_decimal": 59822
+    },
+    {
+      "icon_id": "47596276",
+      "name": "CRMEB-461-待转账金额-面性",
+      "font_class": "CRMEB-461-daizhuanzhangjine-mianxing",
+      "unicode": "e9af",
+      "unicode_decimal": 59823
+    },
+    {
+      "icon_id": "47596275",
+      "name": "CRMEB-460-待转账金额-线性",
+      "font_class": "CRMEB-460-daizhuanzhangjine-xianxing",
+      "unicode": "e9d6",
+      "unicode_decimal": 59862
+    },
+    {
+      "icon_id": "47596274",
+      "name": "CRMEB-459-待发货订单-面性",
+      "font_class": "CRMEB-459-daifahuodingdan-mianxing",
+      "unicode": "e9d7",
+      "unicode_decimal": 59863
+    },
+    {
+      "icon_id": "47596273",
+      "name": "CRMEB-456-待退款订单-线性",
+      "font_class": "CRMEB-456-daituikuandingdan-xianxing",
+      "unicode": "e9d8",
+      "unicode_decimal": 59864
+    },
+    {
+      "icon_id": "47596272",
+      "name": "CRMEB-457-待退款订单-面性",
+      "font_class": "CRMEB-457-daituikuandingdan-mianxing",
+      "unicode": "e9d9",
+      "unicode_decimal": 59865
+    },
+    {
+      "icon_id": "47596271",
+      "name": "CRMEB-450-累计积分-线性",
+      "font_class": "CRMEB-450-leijijifen-xianxing",
+      "unicode": "e9ad",
+      "unicode_decimal": 59821
+    },
+    {
+      "icon_id": "47596270",
+      "name": "CRMEB-454-冻结积分-线性",
+      "font_class": "CRMEB-454-dongjiejifen-xianxing",
+      "unicode": "e9da",
+      "unicode_decimal": 59866
+    },
+    {
+      "icon_id": "47596269",
+      "name": "CRMEB-455-冻结积分-面性",
+      "font_class": "CRMEB-455-dongjiejifen-mianxing",
+      "unicode": "e9db",
+      "unicode_decimal": 59867
+    },
+    {
+      "icon_id": "47596268",
+      "name": "CRMEB-451-累计积分-面性",
+      "font_class": "CRMEB-451-leijijifen-mianxing",
+      "unicode": "e9dc",
+      "unicode_decimal": 59868
+    },
+    {
+      "icon_id": "47596306",
+      "name": "CRMEB-486-残次品转良-线性",
+      "font_class": "CRMEB-486-cancipinzhuanliang-xianxing",
+      "unicode": "e9c0",
+      "unicode_decimal": 59840
+    },
+    {
+      "icon_id": "47596305",
+      "name": "CRMEB-488-残次品库存-线性",
+      "font_class": "CRMEB-488-cancipinkucun-xianxing",
+      "unicode": "e9c1",
+      "unicode_decimal": 59841
+    },
+    {
+      "icon_id": "47596303",
+      "name": "CRMEB-491-残次品入库数量-面性",
+      "font_class": "CRMEB-491-cancipinrukushuliang-mianxing",
+      "unicode": "e9c2",
+      "unicode_decimal": 59842
+    },
+    {
+      "icon_id": "47596301",
+      "name": "CRMEB-485-付费会员数-面性",
+      "font_class": "CRMEB-485-fufeihuiyuanshu-mianxing",
+      "unicode": "e9b4",
+      "unicode_decimal": 59828
+    },
+    {
+      "icon_id": "47596300",
+      "name": "CRMEB-484-付费会员数-线性",
+      "font_class": "CRMEB-484-fufeihuiyuanshu-xianxing",
+      "unicode": "e9c3",
+      "unicode_decimal": 59843
+    },
+    {
+      "icon_id": "47596299",
+      "name": "CRMEB-483-充值用户数-面性",
+      "font_class": "CRMEB-483-chongzhiyonghushu-mianxing",
+      "unicode": "e9c4",
+      "unicode_decimal": 59844
+    },
+    {
+      "icon_id": "47596298",
+      "name": "CRMEB-482-充值用户数-线性",
+      "font_class": "CRMEB-482-chongzhiyonghushu-xianxing",
+      "unicode": "e9c5",
+      "unicode_decimal": 59845
+    },
+    {
+      "icon_id": "47596297",
+      "name": "CRMEB-481-成交用户数-面性",
+      "font_class": "CRMEB-481-chengjiaoyonghushu-mianxing",
+      "unicode": "e9b3",
+      "unicode_decimal": 59827
+    },
+    {
+      "icon_id": "47596296",
+      "name": "CRMEB-480-成交用户数-线性",
+      "font_class": "CRMEB-480-chengjiaoyonghushu-xianxing",
+      "unicode": "e9c6",
+      "unicode_decimal": 59846
+    },
+    {
+      "icon_id": "47596295",
+      "name": "CRMEB-479-累计过期人数-面性",
+      "font_class": "CRMEB-479-leijiguoqirenshu-mianxing",
+      "unicode": "e9c7",
+      "unicode_decimal": 59847
+    },
+    {
+      "icon_id": "47596294",
+      "name": "CRMEB-478-累计过期人数-线性",
+      "font_class": "CRMEB-478-leijiguoqirenshu-xianxing",
+      "unicode": "e9c8",
+      "unicode_decimal": 59848
+    },
+    {
+      "icon_id": "47596293",
+      "name": "CRMEB-477-新增用户数-面性",
+      "font_class": "CRMEB-477-xinzengyonghushu-mianxing",
+      "unicode": "e9b2",
+      "unicode_decimal": 59826
+    },
+    {
+      "icon_id": "47596292",
+      "name": "CRMEB-475-用户3-面性",
+      "font_class": "CRMEB-475-yonghu3-mianxing",
+      "unicode": "e9c9",
+      "unicode_decimal": 59849
+    },
+    {
+      "icon_id": "47596291",
+      "name": "CRMEB-476-新增用户数-线性",
+      "font_class": "CRMEB-476-xinzengyonghushu-xianxing",
+      "unicode": "e9ca",
+      "unicode_decimal": 59850
+    },
+    {
+      "icon_id": "47596289",
+      "name": "CRMEB-474-用户3-面性",
+      "font_class": "CRMEB-474-yonghu3-mianxing",
+      "unicode": "e9cb",
+      "unicode_decimal": 59851
+    },
+    {
+      "icon_id": "47596290",
+      "name": "CRMEB-473-电话簿-面性",
+      "font_class": "CRMEB-473-dianhuabu-mianxing",
+      "unicode": "e9cc",
+      "unicode_decimal": 59852
+    },
+    {
+      "icon_id": "47596286",
+      "name": "CRMEB-472-电话簿-线性",
+      "font_class": "CRMEB-472-dianhuabu-xianxing",
+      "unicode": "e9b1",
+      "unicode_decimal": 59825
+    },
+    {
+      "icon_id": "47596287",
+      "name": "CRMEB-468-待回复评论-线性",
+      "font_class": "CRMEB-468-daihuifupinglun-xianxing",
+      "unicode": "e9cd",
+      "unicode_decimal": 59853
+    },
+    {
+      "icon_id": "47596316",
+      "name": "CRMEB-499-良品出库数量-面性",
+      "font_class": "CRMEB-499-liangpinchukushuliang-mianxing",
+      "unicode": "e9b6",
+      "unicode_decimal": 59830
+    },
+    {
+      "icon_id": "47596314",
+      "name": "CRMEB-495-良品库存-面性",
+      "font_class": "CRMEB-495-liangpinkucun-mianxing",
+      "unicode": "e9b5",
+      "unicode_decimal": 59829
+    },
+    {
+      "icon_id": "47596315",
+      "name": "CRMEB-498-良品出库数量-线性",
+      "font_class": "CRMEB-498-liangpinchukushuliang-xianxing",
+      "unicode": "e9b7",
+      "unicode_decimal": 59831
+    },
+    {
+      "icon_id": "47596312",
+      "name": "CRMEB-496-良品入库数量-线性",
+      "font_class": "CRMEB-496-liangpinrukushuliang-xianxing",
+      "unicode": "e9b8",
+      "unicode_decimal": 59832
+    },
+    {
+      "icon_id": "47596313",
+      "name": "CRMEB-497-良品入库数量-面性",
+      "font_class": "CRMEB-497-liangpinrukushuliang-mianxing",
+      "unicode": "e9b9",
+      "unicode_decimal": 59833
+    },
+    {
+      "icon_id": "47596311",
+      "name": "CRMEB-494-良品库存-线性",
+      "font_class": "CRMEB-494-liangpinkucun-xianxing",
+      "unicode": "e9ba",
+      "unicode_decimal": 59834
+    },
+    {
+      "icon_id": "47596310",
+      "name": "CRMEB-492-残次品出库数量-线性",
+      "font_class": "CRMEB-492-cancipinchukushuliang-xianxing",
+      "unicode": "e9bb",
+      "unicode_decimal": 59835
+    },
+    {
+      "icon_id": "47596304",
+      "name": "CRMEB-490-残次品入库数量-线性",
+      "font_class": "CRMEB-490-cancipinrukushuliang-xianxing",
+      "unicode": "e9bc",
+      "unicode_decimal": 59836
+    },
+    {
+      "icon_id": "47596309",
+      "name": "CRMEB-489-残次品库存-面性",
+      "font_class": "CRMEB-489-cancipinkucun-mianxing",
+      "unicode": "e9bd",
+      "unicode_decimal": 59837
+    },
+    {
+      "icon_id": "47596307",
+      "name": "CRMEB-487-残次品转良-面性",
+      "font_class": "CRMEB-487-cancipinzhuanliang-mianxing",
+      "unicode": "e9be",
+      "unicode_decimal": 59838
+    },
+    {
+      "icon_id": "47596308",
+      "name": "CRMEB-493-残次品出库数量-面性",
+      "font_class": "CRMEB-493-cancipinchukushuliang-mianxing",
+      "unicode": "e9bf",
+      "unicode_decimal": 59839
+    }
+  ]
+}

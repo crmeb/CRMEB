@@ -1,0 +1,15 @@
+grumphp:
+    tasks:
+        phplint: ~
+        yamllint: ~
+        composer: ~
+        phpcpd:
+            directory: [ './src' ]
+        jsonlint:
+            ignore_patterns:
+                - tests/_data/dummyPatchesInvalid.json
+        phpcs:
+            standard: PSR12
+            ignore_patterns:
+                - ./tests/_support/*.php
+                - ./tests/_support/_generated/*.php

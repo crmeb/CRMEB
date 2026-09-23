@@ -1,0 +1,10 @@
+{
+  "key": "seckill",
+  "title": "秒杀活动",
+  "version": "1.0.0",
+  "pages": [
+    { "path": "activity", "title": "秒杀活动管理" },
+    { "path": "product", "title": "秒杀商品管理" },
+    { "path": "statistics/:id", "title": "秒杀统计" }
+  ]
+}

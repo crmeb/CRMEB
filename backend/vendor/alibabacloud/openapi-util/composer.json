@@ -1,0 +1,45 @@
+{
+  "name": "alibabacloud/openapi-util",
+  "description": "Alibaba Cloud OpenApi Util",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Alibaba Cloud SDK",
+      "email": "sdk-team@alibabacloud.com"
+    }
+  ],
+  "require": {
+    "php": ">5.5",
+    "alibabacloud/tea": "^3.1",
+    "alibabacloud/tea-utils": "^0.2",
+    "lizhichao/one-sm": "^1.5"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "AlibabaCloud\\OpenApiUtil\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AlibabaCloud\\OpenApiUtil\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "fixer": "php-cs-fixer fix ./",
+    "test": [
+      "@clearCache",
+      "./vendor/bin/phpunit --colors=always"
+    ],
+    "clearCache": "rm -rf cache/*"
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "optimize-autoloader": true
+  },
+  "prefer-stable": true
+}

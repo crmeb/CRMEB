@@ -1,0 +1,52 @@
+{
+	"name": "crmeb-uni-app",
+	"version": "8.0.0",
+	"private": true,
+	"description": "CRMEB 标准版（BZ）移动端 - uni-app CLI 工程（H5 / 微信小程序 / 支付宝小程序 / APP）",
+	"scripts": {
+		"dev:h5": "uni",
+		"build:h5": "uni build",
+		"dev:mp-weixin": "uni -p mp-weixin",
+		"build:mp-weixin": "uni build -p mp-weixin",
+		"dev:mp-alipay": "uni -p mp-alipay",
+		"build:mp-alipay": "uni build -p mp-alipay",
+		"dev:app": "uni -p app",
+		"build:app": "uni build -p app",
+		"lint:naming": "node scripts/check-naming.mjs",
+		"lint:naming:update": "node scripts/check-naming.mjs --update-baseline",
+		"test:signin": "node scripts/test-signin.mjs"
+	},
+	"dependencies": {
+		"@dcloudio/uni-app": "3.0.0-5020420260813003",
+		"@dcloudio/uni-app-plus": "3.0.0-5020420260813003",
+		"@dcloudio/uni-components": "3.0.0-5020420260813003",
+		"@dcloudio/uni-h5": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-alipay": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-baidu": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-jd": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-kuaishou": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-lark": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-qq": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-toutiao": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-weixin": "3.0.0-5020420260813003",
+		"@dcloudio/uni-mp-xhs": "3.0.0-5020420260813003",
+		"@dcloudio/uni-quickapp-webview": "3.0.0-5020420260813003",
+		"pinia": "2.1.7",
+		"vue": "^3.4.21",
+		"vue-i18n": "^9.1.9"
+	},
+	"devDependencies": {
+		"@dcloudio/types": "^3.4.8",
+		"@dcloudio/uni-automator": "3.0.0-5020420260813003",
+		"@dcloudio/uni-cli-shared": "3.0.0-5020420260813003",
+		"@dcloudio/uni-stacktracey": "3.0.0-5020420260813003",
+		"@dcloudio/vite-plugin-uni": "3.0.0-5020420260813003",
+		"@vue/runtime-core": "^3.4.21",
+		"sass": "~1.78.0",
+		"stylus": "^0.64.0",
+		"vite": "5.2.8"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}

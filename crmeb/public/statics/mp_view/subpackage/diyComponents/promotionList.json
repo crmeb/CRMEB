@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "good-list": "/subpackage/diyComponents/goodList",
-    "common-wrapper": "/subpackage/diyComponents/commonWrapper"
-  }
-}

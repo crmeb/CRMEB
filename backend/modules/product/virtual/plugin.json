@@ -1,0 +1,14 @@
+{
+    "key": "product_virtual",
+    "name": "网盘产品",
+    "description": "网盘产品类型，支付后自动发放网盘链接与提取码，支持网盘资源售卖等场景",
+    "version": "1.0.0",
+    "author": "CRMEB Team",
+    "type": "product_type",
+    "path": "modules/product/virtual",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    }
+}

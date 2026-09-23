@@ -1,7 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "custom-form": "/pages/admin/components/customForm/index",
-    "nav-bar": "/components/NavBar"
-  }
-}

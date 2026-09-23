@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "修改价格/库存",
-  "navigationBarBackgroundColor": "#F5F5F5",
-  "usingComponents": {
-    "edit-price": "/pages/admin/goods/components/editPrice/index"
-  }
-}

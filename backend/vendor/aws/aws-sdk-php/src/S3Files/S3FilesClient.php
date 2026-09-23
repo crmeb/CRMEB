@@ -1,0 +1,51 @@
+<?php
+namespace Aws\S3Files;
+
+use Aws\AwsClient;
+
+/**
+ * This client is used to interact with the **Amazon S3 Files** service.
+ * @method \Aws\Result createAccessPoint(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createAccessPointAsync(array $args = [])
+ * @method \Aws\Result createFileSystem(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createFileSystemAsync(array $args = [])
+ * @method \Aws\Result createMountTarget(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise createMountTargetAsync(array $args = [])
+ * @method \Aws\Result deleteAccessPoint(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteAccessPointAsync(array $args = [])
+ * @method \Aws\Result deleteFileSystem(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteFileSystemAsync(array $args = [])
+ * @method \Aws\Result deleteFileSystemPolicy(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteFileSystemPolicyAsync(array $args = [])
+ * @method \Aws\Result deleteMountTarget(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise deleteMountTargetAsync(array $args = [])
+ * @method \Aws\Result getAccessPoint(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getAccessPointAsync(array $args = [])
+ * @method \Aws\Result getFileSystem(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getFileSystemAsync(array $args = [])
+ * @method \Aws\Result getFileSystemPolicy(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getFileSystemPolicyAsync(array $args = [])
+ * @method \Aws\Result getMountTarget(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getMountTargetAsync(array $args = [])
+ * @method \Aws\Result getSynchronizationConfiguration(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise getSynchronizationConfigurationAsync(array $args = [])
+ * @method \Aws\Result listAccessPoints(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listAccessPointsAsync(array $args = [])
+ * @method \Aws\Result listFileSystems(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listFileSystemsAsync(array $args = [])
+ * @method \Aws\Result listMountTargets(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listMountTargetsAsync(array $args = [])
+ * @method \Aws\Result listTagsForResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise listTagsForResourceAsync(array $args = [])
+ * @method \Aws\Result putFileSystemPolicy(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise putFileSystemPolicyAsync(array $args = [])
+ * @method \Aws\Result putSynchronizationConfiguration(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise putSynchronizationConfigurationAsync(array $args = [])
+ * @method \Aws\Result tagResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise tagResourceAsync(array $args = [])
+ * @method \Aws\Result untagResource(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise untagResourceAsync(array $args = [])
+ * @method \Aws\Result updateMountTarget(array $args = [])
+ * @method \GuzzleHttp\Promise\Promise updateMountTargetAsync(array $args = [])
+ */
+class S3FilesClient extends AwsClient {}

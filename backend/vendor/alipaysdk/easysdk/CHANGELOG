@@ -1,0 +1,182 @@
+最新变更
+java删除Factory.getClient方法
+php删除php中多余的composer包
+
+Java版本
+2022-05-06 Version: 2.2.2
+1. 删除Factory.getClient方法
+
+2021-09-04 Version: 2.2.1
+1. 修复Okhttp Response没有主动关闭的问题。
+
+2021-01-18 Version: 2.2.0
+1. 增加sdkExecute功能。
+2. 增加fileExecute功能。
+3. 增加MultipleFactory多实例调用。
+
+2020-12-11 Version: 2.1.2
+1. 增加可设置ignoreSSL忽略SSL校验功能。
+
+2020-09-23 Version: 2.1.0
+1. 升级Tea版本，降低对OkHttp的特性依赖，提升环境兼容性。
+2. 提供Factory.getClient方法，用于调用SDK扩展包中的方法。
+
+2020-08-18 Version: 2.0.2
+1. 取消shade打包，便于排除冲突依赖。
+
+2020-07-06 Version: 2.0.1
+1. 私钥支持阿里云KMS。
+
+2020-06-09 Version: 2.0.0
+1. 支持可选业务参数的装配。
+2. 支持ISV代调用。
+3. 提供ResponseChecker辅助工具类，帮助校验响应是否成功。
+
+2020-05-06 Version: 1.2.1
+1. 手机网站支付、电脑网站支付接口支持设置return_url同步跳转地址。
+
+2020-04-15 Version: 1.2.0
+1. 扩展支持的支付类OpenAPI接口
+Factory.Payment.Common().queryRefund 查询退款信息
+Factory.Payment.Common().downloadBill 下载对账单
+Factory.Payment.FaceToFace().preCreate 交易预创建，生成正扫二维码
+Factory.Payment.Wap().pay 手机网站支付
+Factory.Payment.Page().pay 电脑网站支付
+Factory.Payment.App().pay 手机APP支付
+2. 支持支付的异步通知及其验签
+初始化Alipay Easy SDK的Config参数中新增notifyUrl参数，用户可以统一配置自己的回调地址。
+提供如下接口，完成支付类异步通知的验签。
+Factory.Payment.Common().verifyNotify
+3. AES加解密功能
+Factory.Util.AES().decrypt 支持会员手机号AES解密
+Factory.Util.AES().encrypt AES加密
+
+2020-03-31 Version: 1.1.3
+1. 去除SDK内置的logback.xml日志配置文件，以免意外覆盖开发者项目主体工程的日志配置。
+
+2020-03-27 Version: 1.1.2
+1. 修复返回的响应中存在数组类型字段时，反序列化成Response对象可能抛异常的问题。
+
+2020-03-16 Version: 1.1.1
+1. 修复证书路径不支持从CLASS_PATH中加载的问题。
+
+2020-03-10 Version: 1.1.0
+1. 添加兜底通用接口，支持通过自行拼接请求参数完成几乎所有OpenAPI的调用。
+
+2020-02-26 Version: 1.0.0
+1. 首次发布。
+
+
+
+C#版本
+2020-12-11 Version: 2.1.3
+1. 修复OpenAPI响应对象特殊情况下可能反序列化失败的异常。 
+
+2020-12-11 Version: 2.1.2
+1. 增加可设置ignoreSSL忽略SSL校验功能。
+
+2020-12-09 Version: 2.1.1
+1. 增加httpProxy功能。
+
+2020-09-23 Version: 2.1.0
+1. 升级Tea版本。
+2. 提供Factory.getClient方法，用于调用SDK扩展包中的方法。
+
+2020-08-18 Version: 2.0.1
+1. 修复证书模式下异步验签异常的问题。
+
+2020-06-09 Version: 2.0.0
+1. 支持可选业务参数的装配。
+2. 支持ISV代调用。
+3. 提供ResponseChecker辅助工具类，帮助校验响应是否成功。
+
+2020-05-06 Version: 1.2.1
+1. 手机网站支付、电脑网站支付接口支持设置return_url同步跳转地址。
+
+2020-04-15 Version: 1.2.0
+1. 扩展支持的支付类OpenAPI接口
+Factory.Payment.Common().QueryRefund 查询退款信息
+Factory.Payment.Common().DownloadBill 下载对账单
+Factory.Payment.FaceToFace().PreCreate 交易预创建，生成正扫二维码
+Factory.Payment.Wap().Pay 手机网站支付
+Factory.Payment.Page().Pay 电脑网站支付
+Factory.Payment.App().Pay 手机APP支付
+2. 支持支付的异步通知及其验签
+初始化Alipay Easy SDK的Config参数中新增notifyUrl参数，用户可以统一配置自己的回调地址。
+提供如下接口，完成支付类异步通知的验签。
+Factory.Payment.Common().verifyNotify
+3. AES加解密功能
+Factory.Util.AES().Decrypt 支持会员手机号AES解密
+Factory.Util.AES().Encrypt AES加密
+
+2020-03-10 Version: 1.1.0
+1. 添加兜底通用接口，支持通过自行拼接请求参数完成几乎所有OpenAPI的调用。
+
+2020-02-26 Version: 1.0.0
+1. 首次发布。
+
+
+
+PHP版本
+2022-11-28 Version: 2.2.3
+1、去掉多余引号
+2、toMultipartRequestBody方法中，PHP8时 0 != $readLength 永远为true导致while产生死循环
+
+2022-05-06 Version: 2.2.2
+1. php删除php中多余的composer包
+
+2021-09-24 Version: 2.2.1
+1. 修复PHP7.4及其以上环境下，根证书解析报错的问题。
+
+2021-01-18 Version: 2.2.0
+1. 增加sdkExecute功能。
+2. 增加fileExecute功能。
+3. 增加MultipleFactory多实例调用。
+
+
+2020-12-11 Version: 2.0.3
+1. 增加可设置ignoreSSL忽略SSL校验功能。
+
+2020-12-09 Version: 2.0.2
+1. 增加httpProxy功能。
+2. 修复agent不生效问题。
+
+2020-07-06 Version: 2.0.0
+1. 支持可选业务参数的装配。
+2. 支持ISV代调用。
+3. 提供ResponseChecker辅助工具类，帮助校验响应是否成功。
+
+2020-05-06 Version: 1.2.1
+1. 手机网站支付、电脑网站支付接口支持设置return_url同步跳转地址。
+
+2020-04-15 Version: 1.2.0
+1. 扩展支持的支付类OpenAPI接口
+Factory::payment()->common()->queryRefund 查询退款信息
+Factory::payment()->common()->downloadBill 下载对账单
+Factory::payment()->faceToFace()->preCreate 交易预创建，生成正扫二维码
+Factory::payment()->wap()->pay 手机网站支付
+Factory::payment()->page()->pay 电脑网站支付
+Factory::payment()->app()->pay 手机APP支付
+2. 支持支付的异步通知及其验签
+初始化Alipay Easy SDK的Config参数中新增notifyUrl参数，用户可以统一配置自己的回调地址。
+提供如下接口，完成支付类异步通知的验签。
+Factory::payment()->common()->verifyNotify
+3. AES加解密功能
+Factory::util()->aes()->decrypt 支持会员手机号AES解密
+Factory::util()->aes()->encrypt AES加密
+4. 重构api的respone模型，返回格式与Java、Net保持一致
+
+2020-03-27 Version: 1.1.0
+1. 修复大小写路径敏感问题。
+
+2020-03-20 Version: 1.0.0
+1. 首次发布。
+
+
+PHP版本
+2021-09-24 Version: 2.0.1
+1.修复PHP7.4及其以上环境下，根证书解析报错的问题。
+
+2021-01-18 Version: 1.0.0
+1. 首次发布。
+

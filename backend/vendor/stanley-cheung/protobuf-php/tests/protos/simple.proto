@@ -1,0 +1,19 @@
+package tests;
+
+message Simple {
+  optional double   double   = 1;
+  optional float    float    = 2;
+  optional int64    int64    = 3;
+  optional uint64   uint64   = 4;
+  optional int32    int32    = 5;
+  optional fixed64  fixed64  = 6;
+  optional fixed32  fixed32  = 7;
+  optional bool     bool     = 8;
+  optional string   string   = 9;
+  optional bytes    bytes    = 12;
+  optional uint32   uint32   = 13;
+  optional sfixed32 sfixed32 = 15;
+  optional sfixed64 sfixed64 = 16;
+  optional sint32   sint32   = 17;
+  optional sint64   sint64   = 18;
+}

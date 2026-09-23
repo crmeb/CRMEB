@@ -1,0 +1,27 @@
+-- eb_system_config_tab default data
+
+INSERT INTO `eb_system_config_tab` (`id`, `pid`, `title`, `eng_title`, `status`, `info`, `icon`, `type`, `sort`, `menus_id`) VALUES
+(1, 129, '基础配置', 'basics', 1, 0, 'ios-settings', 0, 0, 23),
+(11, 100, '用户积分配置', 'point', 0, 0, 'logo-euro', 3, 0, 3423),
+(45, 100, '用户等级设置', 'user_level', 1, 0, 'logo-usd', 3, 1, 3423),
+(67, 100, '付费会员配置', 'member_card', 0, 0, '', 3, 2, 3423),
+(69, 0, '客服配置', 'kefu_config', 1, 0, '', 3, 0, 3421),
+(71, 113, '售后退款配置', 'refund_config', 1, 0, '', 3, 0, 3424),
+(78, 0, '应用配置', 'sys_app', 1, 0, '', 3, 0, 135),
+(100, 0, '用户配置', 'system_user_config', 1, 0, 'md-contact', 3, 0, 3423),
+(105, 100, '用户注册设置', 'user_reg_setting', 1, 0, '', 3, 0, 3423),
+(106, 129, '翻译配置', 'online_translation', 0, 0, '', 3, 0, 23),
+(113, 0, '订单配置', 'order_config', 1, 0, '', 3, 0, 3424),
+(114, 113, '包邮设置', 'free_shipping_config', 1, 0, '', 3, 10, 3424),
+(115, 113, '订单取消配置', 'order_cancel_config', 1, 0, '', 3, 0, 3424),
+(116, 113, '自动收货配置', 'auto_take_config', 1, 0, '', 3, 0, 3424),
+(117, 113, '商品评价配置', 'auto_reviews_config', 1, 0, '', 3, 0, 3424),
+(119, 113, '到店自提配置', 'self_mention_config', 1, 0, '', 3, 0, 3424),
+(120, 113, '警戒库存配置', 'store_stock_config', 1, 0, '', 3, 0, 3424),
+(122, 129, 'LOGO配置', 'site_logo_config', 1, 0, '', 0, 0, 23),
+(123, 129, '自定义JS', 'statistics_config', 1, 0, '', 0, 0, 23),
+(124, 129, '地图配置', 'map_config', 1, 0, '', 0, 0, 23),
+(125, 129, '备案配置', 'beian_config', 1, 0, '', 0, 0, 23),
+(129, 0, '系统配置', 'system_config', 1, 0, 'el-icon-Service', 0, 1, 23),
+(135, 129, '远程登录配置', 'remote_login', 1, 0, '', 0, 0, 23),
+(137, 129, 'WAF配置', 'param_filter_config', 1, 0, '', 0, 0, 23);

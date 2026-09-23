@@ -1,0 +1,117 @@
+protobuf-php(3) -- The framework
+================================
+
+## SYNOPSIS
+
+    <?php
+    require_once 'DrSlump\Protobuf.php';
+
+    use DrSlump\Protobuf;
+
+    $data = file_get_contents('data.pb');
+    $person = new Tutorial\Person($data);
+    echo $person->getName();
+
+
+## DESCRIPTION
+
+Protobuf-PHP is a library to generate, parse and serialize data structures
+compatible with Google's Protocol Buffers using the PHP language.
+
+## CODECS
+
+The library is designed to work with a pluggable mechanism for encoding and decoding
+messages, allowing it to be used not only to communicate using the standard binary
+format but also with Json or XML based formats.
+
+You can create your own codecs by either extending a provided one or implementing the
+`Protobuf\CodecInterface`. Creating custom codecs offers the possibility to use
+Protobuf-PHP code generation tool to work with legacy formats or even as a simple
+way to interact with database adapters.
+
+### Standard Binary
+
+This is the standard binary format supported by the official libraries distributed
+by Google. It's pretty much compatible with the official implementations although
+there are some known issues, mostly regarding big integer numbers, which are documented
+in the readme file that comes with the library.
+
+### Standard TextFormat
+
+The official libraries also support a text based format for debugging purposes. The
+current implementation of this codec only supports encoding or serialization.
+
+### PhpArray
+
+This is more of an internal codec to ease the implementation of some others. It is
+able to serializa message objects to PHP's associative arrays and intantiate message
+objects from them.
+
+Since most serialization libraries in PHP will natively support associative arrays, this
+codec can be used as an easy way to incorporate those formats for their use
+with Protobuf messages. The Json and XML codecs are examples of this use case.
+
+### JSON
+
+It allows to generate or consume JSON formatted strings, which is a very popular
+format for REST based web services for example. This codec can be used to communicate
+with JavaScript in the browser or with third party REST web services.
+
+### ProtoJson
+
+[ProtoJson](https://github.com/drslump/ProtoJson) allows to apply some payload
+minification strategies when working with JSON formatted messages. Taking advantatge
+of Protobuf's property names mapping to a integer number, it offers two encoding
+variants (_TagMap_ and _Indexed_) that use that number instead of the field name
+as key in the messages to reduce the total size of the payload.
+
+### XML
+
+A very simple codec to work with XML based messages. It has no knowledge of namespaces
+and other advanced XML features but should be enough to integrate with third parties
+that are restricted to simple XML payloads. It can also serve as a base for more
+customized integrations, by extendind this codec to consume and generate XML messages
+specific to your service.
+
+
+
+## ANNOTATED MESSAGES
+
+While the most common use case is to use the protoc-gen-php(1) `protoc` plugin to
+generate source code representing the messages defined in .proto files, it's also
+possible to define messages at runtime without the code generation step.
+
+An easy way to define messages directly in your code is to use the `Protobuf\AnnotatedMessage`
+abstract class, which allows to annotate your classes so that the _codecs_ know how
+to parse and serialize those messages.
+
+    class Person extends \DrSlump\Protobuf\AnnotatedMessage {
+        /** @protobuf(tag=1, type=string, required) */
+        public $name;
+        /** @protobuf(tag=2, type=int32, required) */
+        public $id;
+        /** @protobuf(tag=3, type=string, optional) */
+        public $email;
+        /** @protobuf(tag=4, repeated, type=message, reference=Person) */
+        public $friends = array();
+    }
+
+
+## EXAMPLES
+
+
+
+## BUGS
+
+Please report bugs using GitHub's issue tracker at http://github.com/drslump/protobuf-php/issues
+
+
+## COPYRIGHT
+
+Protobuf for PHP is Copyright (C) 2011 Ivan -DrSlump- Montes <http://pollinimini.net>
+
+
+## SEE ALSO
+
+protoc-gen-php(1), protobuf-php(5),
+<http://github.com/drslump/protobuf-php>

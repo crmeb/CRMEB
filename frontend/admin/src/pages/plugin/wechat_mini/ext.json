@@ -1,0 +1,15 @@
+{
+  "key": "wechat_mini",
+  "title": "微信小程序",
+  "version": "1.0.0",
+  "pages": [
+    { "path": "routine/download", "title": "小程序下载" },
+    { "path": "routine/ci_upload", "title": "小程序上传" },
+    { "path": "routine/link", "title": "小程序链接" },
+    { "path": "live/room/list", "title": "直播间管理" },
+    { "path": "live/room/create", "title": "添加直播间" },
+    { "path": "live/goods/list", "title": "直播商品" },
+    { "path": "live/goods/add", "title": "添加直播商品" },
+    { "path": "live/anchor/list", "title": "主播管理" }
+  ]
+}

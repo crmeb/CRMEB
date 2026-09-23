@@ -1,0 +1,12 @@
+.DS_Store
+phpunit.xml
+composer.phar
+composer.lock
+composer-test.lock
+vendor/
+build/artifacts/
+artifacts/
+.idea
+.metadata
+coverage.xml
+src/Jison/Parser.js

@@ -1,0 +1,4 @@
+interface:
+  display_name: "CRMEB Uni-App 开发"
+  short_description: "CRMEB uni-app 多端页面与动态引擎开发"
+  default_prompt: "使用 $crmeb-uniapp-dev 完成这个 CRMEB uni-app 多端需求。"

@@ -1,0 +1,27 @@
+{
+    "name": "stanley-cheung/protobuf-php",
+    "description": "PHP implementation of Google's Protocol Buffers",
+    "keywords": ["protobuf", "protocol buffer", "serializing"],
+    "homepage": "https://github.com/stanley-cheung/Protobuf-PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Iván -DrSlump- Montes",
+            "email": "drslump@pollinimini.net",
+            "homepage": "https://github.com/drslump/Protobuf-PHP"
+        }
+    ],
+    "bin": ["protoc-gen-php.bat", "protoc-gen-php.php"],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {"DrSlump": "library/"}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

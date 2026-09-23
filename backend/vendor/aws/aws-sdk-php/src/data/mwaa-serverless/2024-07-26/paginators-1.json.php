@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/mwaa-serverless/2024-07-26/paginators-1.json
+return [ 'pagination' => [ 'ListTaskInstances' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'TaskInstances', ], 'ListWorkflowRuns' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'WorkflowRuns', ], 'ListWorkflowVersions' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'WorkflowVersions', ], 'ListWorkflows' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'Workflows', ], ],];

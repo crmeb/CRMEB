@@ -1,0 +1,242 @@
+<?php
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2026 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
+declare(strict_types=1);
+
+namespace app\services\driver\email;
+
+use app\dao\driver\email\EmailDriverDao;
+use crmeb\basic\BaseService;
+use crmeb\exceptions\AdminException;
+use crmeb\services\driver\DriverRegistry;
+
+/**
+ * 邮件驱动管理服务
+ *
+ * 邮件驱动为互斥模式：同一时间只允许一个驱动启用
+ * 配置值存储在 config_fields JSON 的 value 属性中
+ *
+ * Class EmailDriverServices
+ * @package app\services\driver\email
+ * @method array|object|null get($id, ?array $field = []) 获取一条数据
+ * @method update($id, array $data, ?string $key = null) 修改数据
+ */
+class EmailDriverServices extends BaseService
+{
+    public function __construct(EmailDriverDao $dao)
+    {
+        $this->dao = $dao;
+    }
+
+    public function getList(array $where = []): array
+    {
+        $list = $this->dao->selectList($where, '*', 0, 0, 'sort desc,id asc')->toArray();
+        $scannedDrivers = $this->scanDrivers();
+
+        foreach ($list as &$item) {
+            $driverKey = $item['driver_key'] ?? '';
+            $item['driver_exists'] = isset($scannedDrivers[$driverKey]);
+            $item['driver_info'] = $scannedDrivers[$driverKey] ?? null;
+        }
+
+        $existingKeys = array_column($list, 'driver_key');
+        foreach ($scannedDrivers as $key => $driver) {
+            if (!in_array($key, $existingKeys)) {
+                $list[] = [
+                    'id'            => 0,
+                    'driver_key'    => $key,
+                    'driver_name'   => $driver['name'],
+                    'icon'          => $driver['icon'],
+                    'is_builtin'    => $driver['is_builtin'],
+                    'config_fields' => $driver['config_fields'],
+                    'sort'          => $driver['sort'],
+                    'status'        => 0,
+                    'driver_exists' => true,
+                    'driver_info'   => $driver,
+                    'not_synced'    => true,
+                ];
+            }
+        }
+
+        return $list;
+    }
+
+    public function getDetail(int $id): array
+    {
+        $driver = $this->dao->get($id);
+        if (!$driver) {
+            throw new AdminException('邮件驱动不存在');
+        }
+
+        $data = $driver->toArray();
+
+        if (empty($data['config_fields']) && $data['driver_key']) {
+            $scannedDrivers = $this->scanDrivers();
+            if (isset($scannedDrivers[$data['driver_key']])) {
+                $data['config_fields'] = $scannedDrivers[$data['driver_key']]['config_fields'];
+            }
+        }
+
+        $scannedDrivers = $this->scanDrivers();
+        $data['driver_info'] = $scannedDrivers[$data['driver_key']] ?? null;
+
+        return $data;
+    }
+
+    public function syncDrivers(): array
+    {
+        $scannedDrivers = $this->scanDrivers();
+        $added = 0;
+        $updated = 0;
+        $deleted = 0;
+
+        foreach ($scannedDrivers as $driverKey => $info) {
+            $existing = $this->dao->getByDriverKey($driverKey);
+
+            if ($existing) {
+                $configFields = is_array($existing->config_fields) ? $existing->config_fields : [];
+
+                $newConfigFields = $info['config_fields'];
+                foreach ($newConfigFields as &$newField) {
+                    $fieldName = $newField['field'];
+                    foreach ($configFields as $oldField) {
+                        if (($oldField['field'] ?? '') === $fieldName && isset($oldField['value'])) {
+                            $newField['value'] = $oldField['value'];
+                            break;
+                        }
+                    }
+                }
+
+                $this->dao->update($existing->id, [
+                    'driver_name'   => $info['name'],
+                    'icon'          => $info['icon'],
+                    'is_builtin'    => $info['is_builtin'] ? 1 : 0,
+                    'sort'          => $info['sort'],
+                    'config_fields' => $newConfigFields,
+                ]);
+                $updated++;
+            } else {
+                $this->dao->save([
+                    'driver_key'    => $driverKey,
+                    'driver_name'   => $info['name'],
+                    'icon'          => $info['icon'],
+                    'is_builtin'    => $info['is_builtin'] ? 1 : 0,
+                    'sort'          => $info['sort'],
+                    'config_fields' => $info['config_fields'],
+                    // 与驱动插件安装路径（installDriverRecord）同规则：内置驱动注册后默认开启
+                    'status'        => !empty($info['is_builtin']) ? 1 : 0,
+                ]);
+                $added++;
+            }
+        }
+
+        // 删除已不存在的驱动（目录已被移除）
+        $dbKeys = $this->dao->getColumn([], 'driver_key');
+        foreach ($dbKeys as $key) {
+            if (!isset($scannedDrivers[$key])) {
+                $this->dao->delete(['driver_key' => $key]);
+                $deleted++;
+            }
+        }
+
+        return ['added' => $added, 'updated' => $updated, 'deleted' => $deleted];
+    }
+
+    public function updateStatus(int $id, int $status): bool
+    {
+        $driver = $this->dao->get($id);
+        if (!$driver) {
+            throw new AdminException('邮件驱动不存在');
+        }
+
+        if ($status === 1) {
+            $this->dao->disableAllExcept($id);
+        }
+
+        $this->dao->update($id, ['status' => $status]);
+        return true;
+    }
+
+    public function saveConfig(int $id, array $data): bool
+    {
+        $driver = $this->dao->get($id);
+        if (!$driver) {
+            throw new AdminException('邮件驱动不存在');
+        }
+
+        $configFields = is_array($driver->config_fields) ? $driver->config_fields : [];
+        if (empty($configFields)) {
+            $scannedDrivers = $this->scanDrivers();
+            $configFields = $scannedDrivers[$driver->driver_key]['config_fields'] ?? [];
+        }
+
+        foreach ($configFields as &$field) {
+            $fieldName = $field['field'];
+            if (isset($data[$fieldName])) {
+                $field['value'] = $data[$fieldName];
+            }
+        }
+
+        $this->dao->update($id, [
+            'config_fields' => $configFields,
+        ]);
+
+        return true;
+    }
+
+    public function setSort(array $sortData): bool
+    {
+        foreach ($sortData as $item) {
+            if (isset($item['id']) && isset($item['sort'])) {
+                $this->dao->update((int)$item['id'], ['sort' => (int)$item['sort']]);
+            }
+        }
+        return true;
+    }
+
+    public function getDrivers(): array
+    {
+        return array_values($this->scanDrivers());
+    }
+
+    public function getConfigFields(string $driverKey): array
+    {
+        $scannedDrivers = $this->scanDrivers();
+        return $scannedDrivers[$driverKey]['config_fields'] ?? [];
+    }
+
+    public function getEnabledDriver(): ?array
+    {
+        $driver = $this->dao->getActiveDriver();
+        return $driver ? $driver->toArray() : null;
+    }
+
+    public function getAvailableDrivers(): array
+    {
+        $list = $this->dao->getAllEnabled();
+        $result = [];
+        foreach ($list as $driver) {
+            $data = $driver->toArray();
+            $result[] = [
+                'driver_key' => $data['driver_key'],
+                'name'       => $data['driver_name'],
+                'icon'       => $data['icon'],
+            ];
+        }
+        return $result;
+    }
+
+    protected function scanDrivers(): array
+    {
+        // 统一走驱动注册中心（读取 plugin.json 元数据，带缓存与标准键归一化）
+        return DriverRegistry::scan('email');
+    }
+}

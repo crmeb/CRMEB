@@ -1,0 +1,40 @@
+{
+    "key": "local",
+    "name": "本地存储",
+    "description": "本地存储驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/upload/Local",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "本地存储",
+        "driver_key": "local",
+        "class_name": "Driver",
+        "icon": "icon-local",
+        "is_builtin": true,
+        "sort": 100,
+        "domain_template": "",
+        "capabilities": [
+            "upload",
+            "delete",
+            "stream",
+            "thumb",
+            "water"
+        ],
+        "config_fields": [],
+        "bucket_fields": [],
+        "help_doc": {
+            "title": "本地存储使用说明",
+            "steps": [
+                "本地存储无需额外配置，开箱即用",
+                "文件将保存在服务器本地目录中",
+                "注意：本地存储不适用于多服务器负载均衡场景"
+            ]
+        }
+    }
+}

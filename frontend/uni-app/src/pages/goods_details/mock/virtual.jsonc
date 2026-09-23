@@ -1,0 +1,309 @@
+{
+  // ===== 顶层响应结构 =====
+  "code": 200,                                  // 业务状态码 200成功
+  "msg": "ok",                                  // 提示信息
+  "data": {
+    // ===== 顶层 result 字段 =====
+    "uid": 27,                                  // 当前用户ID（0表示游客）
+    "is_money_level": 0,                        // 是否参与会员价 0否/1是
+    "spec_unique": "1",                         // 当前选中SKU的unique标识（默认SKU）
+
+    "storeInfo": {
+      // ===== 产品类型 =====
+      "product_type": "virtual",                // 产品类型：网盘产品（modules/product/virtual）
+      "product_type_name": "网盘产品",          // 产品类型中文名
+      "is_virtual": 1,                          // 是否虚拟商品 0否/1是
+      "virtual_type": 1,                        // 虚拟商品子类型 0实物/1网盘/2卡密
+      "spec_type": 1,                           // 规格类型 0单规格/1多规格
+
+      // ===== 图片资源 =====
+      "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-cover.jpg",       // 主图URL
+      "image_base": "https://demo.crmeb.com/static/images/products/virtual-photoshop-cover.jpg",  // 主图基础URL（不带参数）
+      "slider_image": [                         // 轮播图列表
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-cover.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-preview1.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-preview2.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-preview3.jpg"
+      ],
+      "recommend_image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-recommend.jpg", // 推荐图URL
+      "small_image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-small.jpg",         // 缩略图URL
+      "attrPics": [                             // 规格对应图片列表（与attr_value顺序对应）
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg",
+        "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg"
+      ],
+      "video_link": "",                         // 商品视频链接（空表示无视频）
+
+      // ===== 基本信息 =====
+      "id": 1002,                               // 商品ID
+      "store_name": "Adobe Photoshop 2026 设计素材大合集 200GB 网盘资源", // 商品名称
+      "store_info": "支付后自动发货 即买即用 永久更新",                   // 商品副标题/简介
+      "keyword": "PS,设计素材,网盘,Photoshop",  // 搜索关键词（逗号分隔）
+      "bar_code": "",                           // 商品条码
+      "cate_id": "8",                           // 商品分类ID
+      "unit_name": "份",                        // 销售单位
+      "spu": "PS2026DESIGN",                    // SPU编码
+      "label_id": "4,5",                        // 关联标签ID（逗号分隔）
+      "code_path": "",                          // 二维码图片路径
+      "soure_link": "",                         // 来源链接
+      "wechat_code": "",                        // 客服微信二维码
+      "command_word": "",                       // 口令（用于复制推广）
+      "recommend_list": "",                     // 推荐位ID列表
+      "mer_id": 0,                              // 商户ID（0为平台自营）
+      "mer_use": 0,                             // 是否多商户商品 0否/1是
+      "add_time": 1722422400,                   // 商品添加时间（Unix时间戳）
+      "sort": 0,                                // 排序值（越大越靠前）
+      "description": "<p>包含 200GB 设计素材：笔刷、动作、模板、字体、矢量图、PSD 源文件等，涵盖海报、UI、插画、修图、合成等全场景应用。</p><p>支付后系统自动发送网盘链接与提取码到您的订单，永久有效，每月持续更新，无需重复购买。</p>", // 商品详情HTML富文本
+
+      // ===== 价格信息 =====
+      "price": "29.90",                         // 销售价（当前默认SKU价格）
+      "vip_price": "26.90",                     // 会员价
+      "ot_price": "99.00",                      // 划线价/原价
+      "postage": "0.00",                        // 单件运费
+      "cost": "0.00",                           // 成本价
+      "give_integral": "0.00",                  // 购买赠送积分数量
+      "svip_economize_price": "3.00",           // SVIP会员可节省金额
+      "gift_price": "0.00",                     // 赠品价格
+
+      // ===== 库存销量 =====
+      "stock": 9999,                            // 库存数量
+      "sales": 5841,                            // 真实销量
+      "fsales": "5841",                         // 格式化销量（字符串，带"万"等）
+      "ficti": 2000,                            // 虚拟销量（初始展示销量）
+      "browse": 28540,                          // 浏览量
+      "default_sku": "1",                       // 默认选中的SKU unique
+
+      // ===== 状态标识 =====
+      "is_show": 1,                             // 是否上架 0下架/1上架
+      "is_del": 0,                              // 是否删除 0否/1是
+      "is_hot": 1,                              // 是否热销 0否/1是
+      "is_benefit": 1,                          // 是否促销 0否/1是
+      "is_best": 0,                             // 是否精品 0否/1是
+      "is_new": 0,                              // 是否新品 0否/1是
+      "is_good": 0,                             // 是否优品推荐 0否/1是
+      "is_postage": 1,                          // 是否包邮 0否/1是
+      "is_seckill": 0,                          // 是否秒杀活动 0否/1是
+      "is_bargain": null,                       // 是否砍价活动 null否/活动ID
+      "is_sub": 0,                              // 是否分销商品 0否/1是
+      "is_vip": 0,                              // 是否会员专享商品 0否/1是
+      "is_gift": 0,                             // 是否为赠品 0否/1是
+      "vip_product": 0,                         // 会员商品可见性 0不限制/1仅会员可见可买/2所有人可见仅会员可买
+      "vip_exclusive": false,   // 会员专享标识 vip_product=2且当前用户非会员时为true 前端渲染"开通会员后可购买"引导按钮
+      "activity": "",                           // 参与活动标识（空表示无活动）
+
+      // ===== 限购配置 =====
+      "is_limit": 0,                            // 是否限购 0否/1是
+      "limit_type": 0,                          // 限购类型 1单次限购/2长期限购（is_limit=1时生效）
+      "limit_num": 0,                           // 限购数量（is_limit=1时生效）
+      "min_qty": 1,                             // 最小购买数量
+
+      // ===== 规格选择 =====
+      // selection_spec: 规格选择配置（网盘产品使用matrix套餐版本选择模式）
+      "selection_spec": {
+        "selection_model": "matrix",            // 选择模式 matrix矩阵选择（多规格组合）/single单选
+        "confirm_window": "editable",           // 确认窗口类型 editable可编辑/readonly只读
+        "required_selections": ["sku"],         // 必选层级（必须选到SKU才可加购）
+        "cart_unit": "item"                     // 购物车单位 item按件/qty按数量
+      },
+
+      // ===== 加购策略 =====
+      // cart_strategy: 加购按钮策略（网盘产品使用cart双按钮加购模式）
+      "cart_strategy": {
+        "cart_mode": "cart",                    // 加购模式 cart双按钮（加购+立即购买）/buy单按钮（立即购买）
+        "multi_item": true,                     // 是否支持购物车多商品合并
+        "button_text": "立即购买"                       // 自定义按钮文字（空使用默认）
+      },
+      "cart_button": 1,                         // 加购按钮显示 0隐藏/1显示
+
+      // ===== 预售配置 =====
+      "presale": 0,                             // 是否预售 0否/1是
+      "presale_start_time": "1970-01-01 08:00", // 预售开始时间（presale=1时生效）
+      "presale_end_time": "1970-01-01 08:00",   // 预售结束时间（presale=1时生效）
+      "presale_day": 0,                         // 预售发货延迟天数（presale=1时生效）
+      "presale_pay_status": 0,                  // 预售支付状态 0未付尾款/1已付尾款
+
+      // ===== 物流配置（网盘产品无需物流）=====
+      "logistics": "",                          // 物流模板配置JSON
+      "freight": 0,                             // 运费 0免运费/1按模板计算
+      "temp_id": 0,                             // 运费模板ID（0表示无模板）
+
+      // ===== 用户态 =====
+      "userCollect": false,                     // 当前用户是否已收藏
+      "userLike": false,                        // 当前用户是否已点赞
+
+      // ===== 扩展信息 =====
+      // custom_form: 自定义表单（网盘产品为空，下单无需用户填写额外信息）
+      "custom_form": [],                        // 自定义表单字段配置数组
+
+      // params_list: 商品参数列表（详情页参数展示）
+      "params_list": [
+        { "name": "资源容量", "value": "200GB" },
+        { "name": "网盘类型", "value": "百度网盘" },
+        { "name": "发货方式", "value": "自动发货" },
+        { "name": "更新频率", "value": "每月持续更新" },
+        { "name": "适用版本", "value": "PS CC 2018-2026 通用" }
+      ],
+
+      // protection_list: 保障服务列表（详情页展示的服务承诺）
+      "protection_list": [
+        { "id": 3, "name": "发货前可退款" }
+      ],
+
+      // label_list: 商品标签列表（详情页展示的营销标签）
+      "label_list": [
+        { "id": 4, "name": "自动发货" },
+        { "id": 5, "name": "永久更新" }
+      ]
+    },
+
+    // ===== 规格属性列表 productAttr =====
+    // 多规格商品的规格维度定义（网盘产品仅有"套餐版本"一个规格维度）
+    "productAttr": [
+      {
+        "attr_name": "套餐版本",                 // 规格名称
+        "attr_values": ["基础版", "完整版", "设计师专享版"], // 规格值列表
+        "attr_value": [                         // 规格值详情列表
+          { "attr": "基础版", "check": false, "pic": "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg" }, // check是否默认选中
+          { "attr": "完整版", "check": false, "pic": "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg" },
+          { "attr": "设计师专享版", "check": false, "pic": "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg" }
+        ]
+      }
+    ],
+
+    // ===== SKU 列表 productValue =====
+    // key为规格组合字符串（如"基础版"），value为SKU详情
+    // 网盘产品特有：每个SKU包含 download_url（网盘链接）和 download_password（提取码）
+    "productValue": {
+      "基础版": {
+        "suk": "基础版",                        // 规格组合字符串（与key一致）
+        "price": "29.90",                       // SKU销售价
+        "stock": 9999,                          // SKU库存
+        "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg", // SKU图片
+        "unique": "1",                          // SKU唯一标识
+        "cost": "0.00",                         // SKU成本价
+        "ot_price": "99.00",                    // SKU划线价
+        "bar_code": "",                         // SKU条码
+        "download_url": "https://pan.baidu.com/s/1abcDEF123",    // 网盘下载链接（virtual_type=1特有，支付后下发）
+        "download_password": "p2k3",            // 网盘提取码（virtual_type=1特有，支付后下发）
+        "is_show": 1                            // SKU是否启用 0否/1是
+      },
+      "完整版": {
+        "suk": "完整版",
+        "price": "49.90",
+        "stock": 9999,
+        "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg",
+        "unique": "2",
+        "cost": "0.00",
+        "ot_price": "159.00",
+        "bar_code": "",
+        "download_url": "https://pan.baidu.com/s/2ghiJKL456",    // 网盘下载链接（virtual_type=1特有，支付后下发）
+        "download_password": "f8h9",            // 网盘提取码（virtual_type=1特有，支付后下发）
+        "is_show": 1
+      },
+      "设计师专享版": {
+        "suk": "设计师专享版",
+        "price": "99.00",
+        "stock": 9999,
+        "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg",
+        "unique": "3",
+        "cost": "0.00",
+        "ot_price": "299.00",
+        "bar_code": "",
+        "download_url": "https://pan.baidu.com/s/3mnoPQR789",    // 网盘下载链接（virtual_type=1特有，支付后下发）
+        "download_password": "d5g6",            // 网盘提取码（virtual_type=1特有，支付后下发）
+        "is_show": 1
+      }
+    },
+
+    // ===== 会员价相关 =====
+    "svip_open": true,                          // 是否开启SVIP会员价
+    "svip_price_open": 1,                       // SVIP价是否展示 0隐藏/1展示
+    "priceName": 0,                             // 会员等级名称标识（0无/等级ID）
+
+    // ===== 评价信息 reply =====
+    "reply": [                                  // 商品评价列表
+      { "id": 8101, "product_id": 1002, "nickname": "设计小怪兽", "avatar": "https://demo.crmeb.com/static/images/avatar/avatar-01.jpg", "comment": "素材质量很高，链接秒发，值得购买。", "pics": [], "star": 5, "add_time": "2026-07-20 14:25:08" },
+      { "id": 8102, "product_id": 1002, "nickname": "AI设计师", "avatar": "https://demo.crmeb.com/static/images/avatar/avatar-02.jpg", "comment": "网盘速度很快，已收藏。", "pics": [], "star": 5, "add_time": "2026-07-22 09:18:33" }
+    ],
+    "replyChance": 94,                          // 好评率（百分比）
+    "replyCount": 5841,                         // 评价总数
+
+    // ===== 商户与推荐 =====
+    "mer_id": 0,                                // 商户ID（顶层冗余字段，与storeInfo.mer_id一致）
+    "good_list": [                              // 相关推荐商品列表
+      { "id": 1005, "image": "https://demo.crmeb.com/static/images/products/virtual-related1.jpg", "store_name": "Adobe Illustrator 矢量素材包", "price": "39.90", "sales": 1240 },
+      { "id": 1006, "image": "https://demo.crmeb.com/static/images/products/virtual-related2.jpg", "store_name": "字体合集 5000款商用字体", "price": "19.90", "sales": 3520 }
+    ],
+
+    // ===== 其他配置 =====
+    "mapKey": "TXABCD-1234-EFGH-5678-IJKL",     // 地图API密钥（地址定位用，网盘产品一般不用）
+    "store_self_mention": 0,                    // 是否开启门店自提 0否/1是
+    "activity": [],                             // 参与的活动列表（空数组表示无活动）
+    "routine_contact_type": 0,                  // 客服联系类型 0无/1小程序客服/2外链
+
+    // ===== 优惠券 coupons =====
+    "coupons": [                                // 可领取的优惠券列表
+      { "id": 511, "title": "满29减3", "coupon_price": "3.00", "use_min_price": "29.00", "surplus": 100 } // surplus剩余可领数量
+    ],
+
+    // ===== 展示区块 display_sections =====
+    // 详情页动态展示区块配置，前端按 order 排序渲染
+    // 每个区块由 component 组件类型决定渲染方式
+    "display_sections": [
+      {
+        // spec 区块：规格预览（网盘产品使用 matrix 矩阵展示套餐版本）
+        "key": "spec",                          // 区块标识
+        "component": "spec_preview",            // 组件类型 spec_preview规格预览
+        "visible": true,                        // 是否可见
+        "order": 10,                            // 排序值（越小越靠前）
+        "data": {
+          "blocks": [                           // 区块内容列表
+            {
+              "type": "matrix",                 // 区块类型 matrix矩阵
+              "title": "套餐版本",              // 区块标题
+              "attrs": [                        // 规格维度列表
+                { "name": "套餐版本", "values": ["基础版", "完整版", "设计师专享版"] }
+              ],
+              "skus": [                         // SKU预览列表
+                { "suk": "基础版", "price": 29.9, "stock": 9999, "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-basic.jpg" },
+                { "suk": "完整版", "price": 49.9, "stock": 9999, "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-full.jpg" },
+                { "suk": "设计师专享版", "price": 99, "stock": 9999, "image": "https://demo.crmeb.com/static/images/products/virtual-photoshop-pro.jpg" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        // fulfillment 区块：发货说明（网盘产品自动发货，无需物流）
+        "key": "fulfillment",                   // 区块标识
+        "component": "info_card",               // 组件类型 info_card信息卡片
+        "title": "发货说明",                    // 区块标题
+        "visible": true,                        // 是否可见
+        "order": 20,                            // 排序值
+        "data": {
+          "items": [                            // 信息项列表
+            { "label": "发货方式", "value": "支付后自动发货", "icon": "auto" },
+            { "label": "物流", "value": "无需物流", "icon": "none" },
+            { "label": "使用方式", "value": "网盘链接 + 提取码下载", "icon": "link" },
+            { "label": "有效期", "value": "永久有效", "icon": "permanent" }
+          ]
+        }
+      },
+      {
+        // after_sale 区块：售后政策（网盘产品仅支持未发放前退款）
+        "key": "after_sale",                    // 区块标识
+        "component": "info_card",               // 组件类型 info_card信息卡片
+        "title": "售后政策",                    // 区块标题
+        "visible": true,                        // 是否可见
+        "order": 30,                            // 排序值
+        "data": {
+          "items": [                            // 信息项列表
+            { "label": "售后类型", "value": "仅退款", "icon": "refund" },
+            { "label": "售后期限", "value": "24小时内（未发放前）", "icon": "deadline" },
+            { "label": "特别说明", "value": "网盘链接已发放不支持售后", "icon": "warning" }
+          ]
+        }
+      }
+    ]
+  }
+}

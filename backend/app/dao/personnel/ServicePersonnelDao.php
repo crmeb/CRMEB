@@ -1,0 +1,67 @@
+<?php
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2026 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
+namespace app\dao\personnel;
+
+use crmeb\basic\BaseDao;
+use app\model\personnel\ServicePersonnel;
+
+/**
+ * 服务人员DAO
+ */
+class ServicePersonnelDao extends BaseDao
+{
+    /**
+     * 设置模型
+     * @return string
+     */
+    protected function setModel(): string
+    {
+        return ServicePersonnel::class;
+    }
+
+    /**
+     * 获取服务人员列表
+     * @param array $where
+     * @param int $page
+     * @param int $limit
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getServiceList(array $where, int $page, int $limit)
+    {
+        return $this->search($where, false)->when($page && $limit, function ($query) use ($page, $limit) {
+            $query->page($page, $limit);
+        })->when(isset($where['noId']), function ($query) use ($where) {
+            $query->where('id', '<>', $where['noId']);
+        })->order('id DESC')->select()->toArray();
+    }
+
+    /**获取所有服务人员列表
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getList(int $page, int $limit)
+    {
+        $list = $this->getModel()->where(['status' => 1])->order('id DESC')->limit($page, $limit)->select()->toArray();
+        foreach ($list as &$item) {
+            $item['wx_name'] = $item['nickname'];
+        }
+        $count = $this->getModel()->where(['status' => 1])->count();
+        return [$list, $count];
+    }
+
+
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="Google-Cloud-PHP-PSR2">
+  <rule ref="PSR2" />
+  <exclude-pattern>src/generated</exclude-pattern>
+  <exclude-pattern>src/Jison</exclude-pattern>
+  <exclude-pattern>src/LongRunning</exclude-pattern>
+  <file>src</file>
+  <file>tests</file>
+</ruleset>

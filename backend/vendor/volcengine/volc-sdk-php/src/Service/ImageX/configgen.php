@@ -1,0 +1,92 @@
+<?php
+
+use Volc\Service\ImageX\ImageXConfig;
+
+foreach (["DescribeImageXDomainTrafficData",
+             "DescribeImageXDomainBandwidthData",
+             "DescribeImageXBucketUsage",
+             "DescribeImageXRequestCntUsage",
+             "DescribeImageXBaseOpUsage",
+             "DescribeImageXCompressUsage",
+             "DescribeImageXEdgeRequest",
+             "DescribeImageXHitRateTrafficData",
+             "DescribeImageXHitRateRequestData",
+             "DescribeImageXCDNTopRequestData",
+             "DescribeImageXSummary",
+             "DescribeImageXEdgeRequestBandwidth",
+             "DescribeImageXEdgeRequestTraffic",
+             "DescribeImageXEdgeRequestRegions",
+             "DescribeImageXServiceQuality",
+             "GetImageXQueryApps",
+             "GetImageXQueryRegions",
+             "GetImageXQueryDims",
+             "GetImageXQueryVals",
+         ] as $v) {
+    ImageXConfig::$apiList[$v] = [
+        'method' => 'get',
+        'url' => '/',
+        'config' => [
+            'query' => [
+                'Action' => $v,
+                'Version' => '2018-08-01',
+            ],
+        ],
+    ];
+}
+
+foreach (["DescribeImageXMirrorRequestTraffic",
+             "DescribeImageXMirrorRequestBandwidth",
+             "DescribeImageXMirrorRequestHttpCodeByTime",
+             "DescribeImageXMirrorRequestHttpCodeOverview",
+             "DescribeImageXUploadSuccessRateByTime",
+             "DescribeImageXUploadErrorCodeAll",
+             "DescribeImageXUploadErrorCodeByTime",
+             "DescribeImageXUploadCountByTime",
+             "DescribeImageXUploadFileSize",
+             "DescribeImageXUploadSpeed",
+             "DescribeImageXUploadDuration",
+             "DescribeImageXUploadSegmentSpeedByTime",
+             "DescribeImageXCdnSuccessRateByTime",
+             "DescribeImageXCdnSuccessRateAll",
+             "DescribeImageXCdnErrorCodeByTime",
+             "DescribeImageXCdnErrorCodeAll",
+             "DescribeImageXCdnDurationDetailByTime",
+             "DescribeImageXCdnDurationAll",
+             "DescribeImageXCdnReuseRateByTime",
+             "DescribeImageXCdnReuseRateAll",
+             "DescribeImageXCdnProtocolRateByTime",
+             "DescribeImageXClientErrorCodeAll",
+             "DescribeImageXClientErrorCodeByTime",
+             "DescribeImageXClientDecodeSuccessRateByTime",
+             "DescribeImageXClientDecodeDurationByTime",
+             "DescribeImageXClientQueueDurationByTime",
+             "DescribeImageXClientLoadDurationAll",
+             "DescribeImageXClientLoadDuration",
+             "DescribeImageXClientFailureRate",
+             "DescribeImageXClientSdkVerByTime",
+             "DescribeImageXClientFileSize",
+             "DescribeImageXClientTopFileSize",
+             "DescribeImageXClientCountByTime",
+             "DescribeImageXClientScoreByTime",
+             "DescribeImageXClientDemotionRateByTime",
+             "DescribeImageXClientTopDemotionURL",
+             "DescribeImageXClientQualityRateByTime",
+             "DescribeImageXClientTopQualityURL",
+             "DescribeImageXSensibleCountByTime",
+             "DescribeImageXSensibleCacheHitRateByTime",
+             "DescribeImageXSensibleTopSizeURL",
+             "DescribeImageXSensibleTopRamURL",
+             "DescribeImageXSensibleTopResolutionURL",
+             "DescribeImageXSensibleTopUnknownURL",
+         ] as $v) {
+    ImageXConfig::$apiList[$v] = [
+        'method' => 'post',
+        'url' => '/',
+        'config' => [
+            'query' => [
+                'Action' => $v,
+                'Version' => '2018-08-01',
+            ],
+        ],
+    ];
+}

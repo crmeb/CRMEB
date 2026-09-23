@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "page-footer": "/components/pageFooter/index"
-  }
-}

@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/partnercentral-benefits/2018-05-10/paginators-1.json
+return [ 'pagination' => [ 'ListBenefitAllocations' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'BenefitAllocationSummaries', ], 'ListBenefitApplications' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'BenefitApplicationSummaries', ], 'ListBenefits' => [ 'input_token' => 'NextToken', 'output_token' => 'NextToken', 'limit_key' => 'MaxResults', 'result_key' => 'BenefitSummaries', ], ],];

@@ -1,348 +1,279 @@
-<div align="center" >
-    <img src="https://www.crmeb.com/static/images/dark_logo.png" />
-</div>
+# CRMEB v8 电商系统
 
-<div align="center" style="font-size: 15px;">
+> 基于 ThinkPHP 8.0 的三端一体电商 CRM 系统：后端 + 管理端（Vue 3）+ 移动端（uni-app），支持 PC / H5 / 小程序 / APP。
 
-CRMEB High-quality Open Source E-commerce System (PHP Version)
+**后端运行环境**：PHP 8.2-8.4 + MySQL 8.0 + Redis ｜ **前端构建**：Node >= 18.20
+**主开发分支**：`v8.0.dev`，正式发布以 Release / Tag 为准
 
-</div>
-
-<div align="center" >
-    <a href='https://gitee.com/ZhongBangKeJi/CRMEB/stargazers'>
-       <img src='https://gitee.com/ZhongBangKeJi/CRMEB/badge/star.svg?theme=gvp' alt='star'></img>
-    </a>
-    <a href="http://www.crmeb.com/?from=giteephp">
-        <img src="https://img.shields.io/badge/Licence-apache2.0-green.svg?style=flat" />
-    </a>
-    <a href="http://www.crmeb.com">
-        <img src="https://img.shields.io/badge/Edition-6.0.0-blue.svg" />
-    </a>
-     <a href="https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/master.zip">
-        <img src="https://img.shields.io/badge/Download-240m-red.svg" />
-    </a>
-
-</div>
-
-<div align="center" style="font-size: 15px;">
-  We are committed to open source, and your encouragement is also very important to us! Top right corner Star🌟, waiting for you to light it up
-</div>
-
-####
-
-<div align="center">
-
-[简体中文](./README_ZH.md)  |  English
-
-</div>
-
-
-####
-
-<div align="center">
-
-[![zread](https://img.shields.io/badge/Ask_Zread-_.svg?style=flat&color=00b0aa&labelColor=000000&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQuOTYxNTYgMS42MDAxSDIuMjQxNTZDMS44ODgxIDEuNjAwMSAxLjYwMTU2IDEuODg2NjQgMS42MDE1NiAyLjI0MDFWNC45NjAxQzEuNjAxNTYgNS4zMTM1NiAxLjg4ODEgNS42MDAxIDIuMjQxNTYgNS42MDAxSDQuOTYxNTZDNS4zMTUwMiA1LjYwMDEgNS42MDE1NiA1LjMxMzU2IDUuNjAxNTYgNC45NjAxVjIuMjQwMUM1LjYwMTU2IDEuODg2NjQgNS4zMTUwMiAxLjYwMDEgNC45NjE1NiAxLjYwMDFaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00Ljk2MTU2IDEwLjM5OTlIMi4yNDE1NkMxLjg4ODEgMTAuMzk5OSAxLjYwMTU2IDEwLjY4NjQgMS42MDE1NiAxMS4wMzk5VjEzLjc1OTlDMS42MDE1NiAxNC4xMTM0IDEuODg4MSAxNC4zOTk5IDIuMjQxNTYgMTQuMzk5OUg0Ljk2MTU2QzUuMzE1MDIgMTQuMzk5OSA1LjYwMTU2IDE0LjExMzQgNS42MDE1NiAxMy43NTk5VjExLjAzOTlDNS42MDE1NiAxMC42ODY0IDUuMzE1MDIgMTAuMzk5OSA0Ljk2MTU2IDEwLjM5OTlaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik0xMy43NTg0IDEuNjAwMUgxMS4wMzg0QzEwLjY4NSAxLjYwMDEgMTAuMzk4NCAxLjg4NjY0IDEwLjM5ODQgMi4yNDAxVjQuOTYwMUMxMC4zOTg0IDUuMzEzNTYgMTAuNjg1IDUuNjAwMSAxMS4wMzg0IDUuNjAwMUgxMy43NTg0QzE0LjExMTkgNS42MDAxIDE0LjM5ODQgNS4zMTM1NiAxNC4zOTg0IDQuOTYwMVYyLjI0MDFDMTQuMzk4NCAxLjg4NjY0IDE0LjExMTkgMS42MDAxIDEzLjc1ODQgMS42MDAxWiIgZmlsbD0iI2ZmZiIvPgo8cGF0aCBkPSJNNCAxMkwxMiA0TDQgMTJaIiBmaWxsPSIjZmZmIi8%2BCjxwYXRoIGQ9Ik00IDEyTDEyIDQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K&logoColor=ffffff)](https://zread.ai/crmeb/CRMEB)
-![star](https://gitcode.com/xazbkj/CRMEB/star/badge.svg)
-![star](https://img.shields.io/github/stars/crmeb/crmeb)
-
-</div>
-
-<div align="center">
-
-[Official Website](https://www.crmeb.com/?from=giteephp) |
-[Online Demo](http://v6.crmeb.net/admin/) |
-[Help Documentation](https://doc.crmeb.com/single_open) |
-[Plugin Marketplace](https://www.crmeb.com/market?from=giteephp) |
-[Technical Forum](https://www.crmeb.com/ask/thread/list/147) |
-[Theme Market](https://www.crmeb.com/theme)
-
-
-</div>
-
-
+> 本仓库提供统一的 AI 开发入口（AGENTS.md 标准）。使用 Claude Code、Cursor、Codex、Copilot 等 AI 工具开发本项目前，请让 AI 先读取 [AGENTS.md](AGENTS.md) → [.crmeb/AGENTS.md](.crmeb/AGENTS.md)。详见下文[用 AI 开发本项目](#用-ai-开发本项目)。
 
 ---
 
-### 📝 **Project Introduction**
+## 快速开始（宿主机，默认）
 
-**Open-source freedom**
+```bash
+cd backend
+composer install
 
-CRMEB open-source mall system features 100% open-source code, is licensed under the **Apache-2.0** license, and can be used commercially at no cost—without any hidden fees or functional restrictions—truly enabling zero-cost deployment and unrestricted secondary development!
-
-**Technical Architecture**
-
-Adopt **ThinkPHP 6 + ElementUI + UniApp** Technology stack, front-end and back-end separation design, supports modular development and efficient maintenance. The front-end is compatible with WeChat Mini Programs, H5, APP, PC, and other platforms, while the back-end centrally manages data across all platforms, ensuring smooth user experience and high-concurrency performance.
-
-**Full scene coverage**
-
-Seamlessly integrate with official accounts, mini programs, H5, APP, and PC ends, enabling real-time data interoperability to help merchants operate multi-channel businesses in an all-in-one manner, meeting all-scenario e-commerce needs.
-
-**Native Marketing Engine**
-
-Built-in **20+ Core Marketing Modules** (Group buying, price slashing, flash sales, coupons, points system, live streaming sales, paid memberships, tiered memberships, user recharge, distribution and viral marketing, channel codes, new user gifts, etc.), supports custom activity rules without plugins. through **Home DIY Features** Merchants can design the homepage of the mall with drag-and-drop functionality, allowing them to quickly build high-conversion scenarios without any technical background, achieving operational efficiency of "what you see is what you get."
-
-**Community Technical Forum**
-
-We are committed to building a developer-friendly ecosystem, open-sourcing our code, continuously updating functional modules, and adding a theme plaza. This allows merchants to quickly customize their stores by applying beautiful e-commerce themes with one click. Developers and designers can upload original themes for users to download and use, enabling creative sharing and monetization. At the same time, we welcome developers to submit optimization suggestions or contribute code. By sharing technical achievements, we can reduce the cost of redundant development in the industry and promote the sustainable development of open-source e-commerce systems.
-
----
-
-### 📝 **Theme Market**
-
-**Free Download**
-
-Come to the CRMEB Theme Plaza to enjoy a vast selection of premium templates and create a personalized mall with zero cost. No professional design skills are required. A vast number of free templates are available for direct download and use. A variety of theme styles can accurately match the needs of different industries, quickly enhancing the store's image and user experience, allowing your mall to start strong visually from the beginning.
-
-**One-click import**
-
-Simplify the complex, quickly refresh the mall interface. Say goodbye to the cumbersome manual DIY configuration process of the past. With just one click to import a theme package, you can seamlessly integrate the entire theme (including page layout and global color scheme) into your system. The system automatically completes component matching and data mounting, no code needs to be written, and the preview takes effect immediately. Making the mall's renovation and upgrade as easy as changing a mobile phone wallpaper, greatly saving the time and cost of operations and development.
-
-**Theme Square Listing**
-
-Not only use it freely, but also earn money easily. You can leverage the system's powerful DIY capabilities to freely combine color schemes, layouts, and components based on existing modules, creating a unique custom theme and directly publishing it to the Theme Plaza. You will receive the corresponding revenue share when other users pay to download your work. This not only provides a direct way to monetize your design capabilities and technical expertise, but also helps build a thriving open-source marketplace ecosystem, achieving a win-win situation for creativity and value.
-
-Theme Market：<a href="https://www.crmeb.com/theme" target="_blank">Theme Market</a>
-
-
-![输入图片说明](help/resource/pic/主题广场.png)
-
-
-
-🔗 <a href="https://doc.crmeb.com/single_open/open_v60/39233" target="_blank">List of Features </a> | 📩 <a href="https://gitee.com/ZhongBangKeJi/CRMEB/issues" target="_blank"> Submit Feedback</a> | 📩 <a href="https://gitee.com/ZhongBangKeJi/CRMEB/pulls" target="_blank">Submit code</a> | 🔗 <a href="https://www.crmeb.com/theme" target="_blank">Theme Market</a>
-
-
-
----
-
-### docker one-click experience
-```
-# Pull and run the CRMEB Docker image
-docker run -d --name crmeb -p 8080:80 ccr.ccs.tencentyun.com/crmebky_php/crmebky:latest
+# 配置 backend/.env 并确保 MySQL 8、Redis 已在宿主机运行后启动
+php think run --host 127.0.0.1 --port 8011
 ```
 
-#### Access service
-- **Website**: http://localhost:8080 
-- **Backend**: http://localhost:8080/admin （Account: admin，Password: crmeb.com）
-- **MySQL**: localhost:3306（Account: root，Password: 123456）
-- **Redis**: localhost:6379
-> Click here for detailed information [Help Documentation](/help/docker/docker.md)。
----
+数据库和 Redis 连接以 `backend/.env` 为准，宿主机常见端口为 MySQL `3306`、Redis `6379`。首次启动后访问 **http://localhost:8011** 进入安装向导。
 
-![输入图片说明](help/resource/pic/开源banner-PHP.jpg)
+## 可选 Docker Compose
 
-### 🫧 Technical Features
+只有明确选择容器环境时使用：
 
-~~~
-About secondary development：
-1. Code specification: follow PSR-2 naming specification, Restful standard interface, strictly layered code, complete notes, and unified error code;
-2. Permission management: built-in powerful and flexible permission management, which can control every menu;
-3. Development configuration: low code added configuration, system combination data module;
-4. Code generation: quickly generate background menus and pages, and quickly add, delete, modify, and query;
-5. Scheduled tasks: the system has 10 built-in scheduled tasks, as well as user-defined tasks. You can set the execution cycle and code by yourself, which are perfectly compatible;
-6. System events: Embed 30+system event anchors, and add events on the background page;
-7. Online editing: You can edit and modify the system code in the background, without logging in to the server to modify the code file, which is convenient and fast;
-8. Interface management: all interface data in the system can be seen on the background page, and the interface can be debugged online;
-9. Second development efficiency: form builder PHP can quickly generate forms;
-10. Quick start: background interface management, background database dictionary, system file management notes, code comments, one click installation;
-~~~
-~~~
-Performance and expansion:
-1. System security: system operation log, system production log, file verification, data backup;
-2. High performance: support Redis cache, queue, long connection, multiple cloud storage, and cluster deployment;
-3. Multilingual: support automatic identification of browser multilingual display;
-4. Drive extension: support multiple payment methods, multiple SMS messages, multiple cloud storage, etc;
-5. Cloud storage: cloud storage supports remote cloud storage of pictures and videos, Alibaba Cloud, Tencent Cloud, Qiniu Cloud, JD Cloud, Tianyi Cloud, Huawei Cloud
-6. One number pass: general third-party extension, supporting SMS, logistics query, electronic face bill, electronic invoice, commodity collection, and business mailing
-~~~
+```bash
+# 首次且允许清空本地数据时才执行
+./run.sh install
+
+# 日常启停和检查
+./run.sh start
+./run.sh stop
+./run.sh restart
+
+./run.sh ps
+./run.sh logs
+```
+
+### 容器说明
+
+| 服务 | 端口 |
+|------|------|
+| Nginx（Web 入口） | `8011` |
+| MySQL 8.0 | `33061` |
+| Redis | `63791` |
+| Workerman（WebSocket） | `40001` |
+
+另有 `phpfpm`、`timer`（定时任务）、`queue`（队列消费）为内部服务，无需对外访问。
+
+Dev Containers 配置（`.devcontainer/`）不在仓库内，已在 `.gitignore` 中忽略。需要容器化开发环境者可在仓库根自建，编辑器即可「Reopen in Container」，无需入库。
 
 ---
 
-### 📖 System Features
+## 首次安装配置
 
-![输入图片说明](help/resource/pic/核心功能.jpg)
+1. 创建数据库，依次导入 `backend/public/install/crmeb_table.sql`（表结构）与 `crmeb_data.sql`（基础数据）
+2. 复制 `backend/.env.example` 为 `backend/.env`，按实际环境修改（文件内有逐项注释）
+3. 设置 `backend/runtime`、`backend/public` 目录权限为 777
+4. 访问 `http://域名/admin`，默认账号 `admin` / 密码 `crmeb.com`
 
----
+### .env 配置参考
 
-### 📖 UI Interface Display
+```ini
+APP_DEBUG = true
 
-![输入图片说明](help/resource/pic/PHP_06.jpg)
+[APP]
+DEFAULT_TIMEZONE = Asia/Shanghai
+APP_KEY = your_app_key
 
+[DATABASE]
+TYPE = mysql
+HOSTNAME = 127.0.0.1
+HOSTPORT = 3306
+DATABASE = crmeb
+USERNAME = root
+PASSWORD = root
+PREFIX = eb_
+CHARSET = utf8mb4
 
+[LANG]
+default_lang = zh-cn
 
----
+[CACHE]
+DRIVER = redis
+CACHE_PREFIX = cache_xxx:
+CACHE_TAG_PREFIX = cache_tag_xxx:
 
-### 📖 Backend Interface Display
+[REDIS]
+REDIS_HOSTNAME = 127.0.0.1
+PORT = 6379
+REDIS_PASSWORD =
+SELECT = 0
 
-![输入图片说明](help/resource/pic/PHP_05.jpg)
+[QUEUE]
+QUEUE_NAME = your_queue_prefix
+```
 
-
----
-
-
-### 📱 System Demo
-![输入图片说明](help/resource/pic/contact2.jpg)
-
-Admin Panel: http://v6.crmeb.net/admin
-
-Account: admin，Password: crmeb.com
-
-H5：http://v6.crmeb.net/ （Open on mobile）
-
-PC：http://v6.crmeb.net/ （Open on computer）
-
-APP：http://app.crmeb.cn/bzv （Iphone can earch for CRMEB in the AppStore to download）
-
-Theme：https://www.crmeb.com/theme （Open on computer）
-
-> I heard you want to take a look at the complete framework of the CRMEB open source project? <a href="https://doc.crmeb.com/single_open/open_v60/39235" target="_blank"> Click here for access!</a>
-
-
----
-
-
-
-### 🔐 **Operating environment**
-
-
-| **Operating environment**         | **Requirements**                                                                 |
-|------------------|------------------------------------------------------------------------|
-| **Operating System**     | Linux / Windows                                                        |
-| **WEB Service**   | Nginx / Apache / IIS                                                      |
-| **PPHP version**     | PHP 7.1 ~ 7.4                                                          |
-| **Mysql**       | MySQL 5.7 ~ 8.0（Engine:InnoDB）                                         |
-| **Redis**         | Redis（optional, file caching is used if not installed）                                      |
-| **Manager**       | Supervisor（for managing message queues）                                          |
-| **Recommended Tools**     | BT Panel (User-Friendly)                                                   |
-| **Cloud Server**     | Aliyun ECS / Tencent Cloud CVM / JD Cloud ECS                                              |
-| **Open port**     | 80, 21, 8888, 888, 443, 3306, 6379（authorized object：`0.0.0.0/0`）              |
-| **PHP extension**     | fileinfo（optional）、redis（optional）                               |
-| **Disabled functions**     | `proc_open`, `pcntl_signal`, `pcntl_signal_dispatch`, `pcntl_fork`, `pcntl_wait`, `pcntl_alarm` |
-| **Message queue**     | Run command：`php think queue:listen --queue`    （Using Supervisor）                          |
-| **Long connection**       | Run command：`sudo -u www php think workerman start --d`     （Command line execution）              |
-| **Scheduled Task**     | Run command：`php think timer start --d`            （ommand line execution）                       |
-> Warm reminder: Virtual space is not supported. It is recommended to use the bt panel, and the server is recommended to use JD Cloud server: <a href="https://partner.jdcloud.com/partner/notice/b06c3232b6394fdfa496923b8e00b286" target="_blank">Register now to enjoy an exclusive 65% discount, click here to claim it!</a>
-
----
-### 📺 **Development Environment and Technologies Used**
-
-### **Development environment：**
-| tool          | Version               | Download link                                                                 |
-|--------------|--------------------|-------------------------------------------------------------------------|
-| **PHP**      | 7.1-7.4            | [PHP Download](https://www.php.net/downloads.php)                           |
-| **MySQL**    | 5.7                | [MySQL Website](https://www.mysql.com/)                                       |
-| **Redis**    | 7.0                | [Redis Website](https://redis.io/download)                                     |
-| **Nginx**    | 1.22               | [Nginx Website](http://nginx.org/en/download.html)                             |
-| **Apache**   | 2.4                | [Apache HTTP Server](https://httpd.apache.org/download.cgi)              |
-| **Node.js**  | 14/18              | [Node.js LTS version](https://nodejs.org/en/download/releases/)                |
-
-### Back-end technology stack
-| **Technology**            | **Name**                                                                 | **URL**                                                                 |
-|---------------------|-----------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| PHP extension library          | Basic PHP runtime environment, JSON data processing, high-precision mathematical calculations, etc                                | https://www.php.net/                                                   |
-| topthink          | ThinkPHP view template engine, CAPTCHA generation component, queue task support, database migration tool                 | https://www.thinkphp.cn/                     |
-| overtrue          | WeChat ecosystem development (official account/Mini Program/Payment)                                               | https://github.com/w7corp/easywechat                                     |
-| php-jwt           | JWT Token Generation and Verification                                                           | https://github.com/firebase/php-jwt                                    |
-| var-dumper        | Debug Output Tool (Formatted Variables)                                                    | https://symfony.com/doc/current/components/var_dumper.html            |
-| phpoffice         | File processing                                                                    | https://github.com/PHPOffice/PhpSpreadsheet                           |
-| guzzlehttp｜psr7  | HTTP client library, PSR-7 HTTP Message Interface Implementation                                        | https://guzzle-cn.readthedocs.io/zh-cn/latest                        |
-| form-builder      | UI tool for quickly building forms                                                     | https://form-create.com                                  |
-| workerman         | High-performance Socket server framework, scheduled timer tasks                                       | https://www.workerman.net                                   |
-
-### Mobile technology stack
-| **Technology** | **Name** | **Official website** |
-| --- | --- | --- |
-| uniapp | Cross-end framework | https://uniapp.dcloud.net.cn/ |
-| vuex | State management library | https://vuex.vuejs.org/ |
-| socket | WebSocket communication | https://socket.io/ |
-| dayjs | Time processing library | https://day.js.org/ |
-| animate | CSS Animation Library | https://animate.style/ |
-| easy-loadimage | Image lazy loading | https://github.com/TSjianjiao/easy-loadimage |
-
-### Admin End Technology Stack
-
-| **Technology** | **Name** | **Official website** |
-| --- | --- | --- |
-| vue2 | Vue framework | https://v2.vuejs.org/ |
-| vuex | State management library | https://vuex.vuejs.org/ |
-| element-ui | UI framework | https://element.eleme.io/ |
-| axios | HTTP client | https://axios-http.com/ |
-| vxe-table | Advanced Table Component | https://vxetable.cn/ |
-| wangeditor | Text editor | https://www.wangeditor.com/ |
-| qs | Query string parsing | https://github.com/ljharb/qs |
-| xlsx | Excel processing library | https://sheetjs.com/ |
-| sass | CSS Preprocessor | https://sass-lang.com/ |
-| prettier | Code formatting | https://prettier.io/ |
-| v-viewer | Image Viewer | https://github.com/mirari/v-viewer |
-
-### PC End Technology Stack
-
-| **Technology** | **Name** | **Official website** |
-| --- | --- | --- |
-| nuxt | Vue framework | https://nuxtjs.org/ |
-| element | UI framework | https://element.eleme.io/ |
-| axios | HTTP client | https://axios-http.com/ |
-| sass | CSS Preprocessor | https://sass-lang.com/ |
-| cookie-universal-nuxt | Nuxt Cookie Handling | https://github.com/microcipcip/cookie-universal |
-| postcss | CSS Transformation Tool | https://postcss.org/ |
-| qs | Query string parsing | https://github.com/ljharb/qs |
-
-
-
-### Want a quick installation? The tutorial is here to help!
-
-Quick one-click installation：https://doc.crmeb.com/single_open/open_v54/20366
-
-Manual installation configuration：https://doc.crmeb.com/single_open/open_v54/20389
-
-Docker-compose one-click deployment：https://doc.crmeb.com/single_open/open_v54/20145
-
-Quick Installation for BT Panel：https://doc.crmeb.com/single_open/open_v54/19892
-
-### Development Documents：
-Use Document：https://doc.crmeb.com/single_open/open_v54/19849
-
-API Documentation：https://doc.crmeb.com/single_open/open_v54/21040
-
-Data Dictionary：https://doc.crmeb.com/single_open/open_v54/20136
-
-Code generation：https://doc.crmeb.com/single_open/open_v54/20135
-
-Development Documents：https://doc.crmeb.com/single_open/open_v54/19851
-
-Video tutorial：https://www.bilibili.com/video/BV1kh4y1872K/
-
-Technical Community：https://www.crmeb.com/ask/thread/list/147
+> 完整配置模板与逐项注释见 [backend/.env.example](backend/.env.example)。
 
 ---
 
-###  📞 CRMEB Interaction
-#### CRMEB Open Source Technology Exchange Group (Scan the code to join the group and get the open source version interface document, product function list, and mind map!) )
-![输入图片说明](help/resource/pic/开源PHP1.jpg)
-#### Technical community! Find methods, report bugs, check official news, and win active rewards!All are <a href="https://www.crmeb.com/ask/?from=giteephp" target="_blank">CRMEB Technology Community</a> Everything you need is available
+## 管理端（frontend/admin）
 
+```bash
+cd frontend/admin
+npm install
+npm run dev        # 开发模式，自动打开浏览器
+```
 
+- 开发地址 **http://localhost:1619**；Vite 已把 `/adminapi` 代理到 `http://localhost:8011`（见 [vite.config.js](frontend/admin/vite.config.js)），需先启动后端
+- 生产构建：`npm run build`，产物部署到后端 `public/admin/`
+- 接口地址由 `VITE_APP_API_URL` 控制，留空 = 同源 `/adminapi`
 
+## 移动端（frontend/uni-app）
 
----
+```bash
+cd frontend/uni-app
+npm install
+npm run dev:h5     # H5 开发模式
+```
 
-❤️ In the name of business, safeguard the open source heart
-
-### 📕 Go online in 2 hours in your WeChat mall
-
-[![CRMEB saas](help/resource/pic/java-saas.jpg)](https://shop.crmeb.com)
-
-
-### 📕 Professional Private Domain Membership E-commerce System
-
-[![CRMEB pro](help/resource/pic/PRO版2.jpg)](https://www.crmeb.com/index/pro?from=giteephp)
-
-
-### 📕 Create a platform that recommends high cost-effective multi-merchant system
-
-[![CRMEB多商户](help/resource/pic/duoshanghu2.jpg)](https://www.crmeb.com/index/merchant?from=giteephp)
+- H5 开发地址默认 **http://localhost:5173**；接口地址 `UNI_APP_API_URL` 已在 `.env.development` 默认指向 `http://localhost:8011`
+- 微信小程序：`npm run dev:mp-weixin`，再用微信开发者工具导入 `dist/dev/mp-weixin`；支付宝小程序用 `dev:mp-alipay`；APP 用 `dev:app`
+- 生产构建：`npm run build:h5` / `build:mp-weixin` / `build:app`
 
 ---
 
+## 后台服务
 
-[Back to Top :fa-arrow-circle-up: ](https://gitee.com/ZhongBangKeJi/CRMEB#%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D)
+### 消息队列
+```bash
+cd backend
+php think queue:listen --queue
+```
 
+### 定时任务
+（自动收货、库存预警等）
+```bash
+php think timer start --d    # 启动
+php think timer stop         # 停止
+php think timer restart      # 重启
+```
+
+### 长连接服务（WebSocket）
+（H5 聊天、管理员消息通知）
+```bash
+php think workerman start --d
+php think workerman stop
+php think workerman restart
+```
+
+---
+
+## 项目文档
+
+| 文档 | 说明 |
+|------|------|
+| [文档索引](help/docs/文档索引.md) | 项目、功能、开发、部署与运维阅读导航 |
+| [架构设计](help/docs/项目架构.md) | 系统架构、技术栈、目录结构 |
+| [模块与驱动](help/docs/模块与驱动.md) | 默认安装清单与各业务模块功能说明 |
+| [管理端 API](help/docs/api/管理端接口.md) | AdminAPI 接口文档 |
+| [用户端 API](help/docs/api/用户端接口.md) | 用户端 API 接口文档 |
+| [对外接口](help/docs/api/对外接口.md) | OutAPI REST 接口文档（第三方接入） |
+| [MCP 接口](help/docs/api/MCP接口.md) | 独立 MCP 服务的接入、认证、工具与排障说明 |
+| [数据库设计](help/docs/数据库设计.md) | 数据库表结构设计 |
+| [开发指南](help/docs/开发指南.md) | 开发环境、规范、流程 |
+
+外部资源：
+- [CRMEB 使用手册](https://doc.crmeb.com)
+- [ThinkPHP 8.0 开发手册](https://doc.thinkphp.cn/v8_0/)
+
+---
+
+## 多应用结构
+
+URL 前缀自动路由到对应应用：
+
+| 前缀 | 应用 | 说明 |
+|------|------|------|
+| `/admin` | 管理端静态页面 | Vue 管理后台入口，不是 API 前缀 |
+| `/adminapi` | `app/adminapi/` + 模块 `route/admin.php` | 管理后台 API；客服工作台位于 `/adminapi/kefu/*` |
+| `/api` | `app/api/` + 模块 `route/user.php` | 商城用户 API、模块用户端接口及 `/api/outapi` 开放平台 |
+
+---
+
+## 开发规范
+
+### 命名规范（PSR-2 + PSR-4）
+
+| 元素 | 规范 | 示例 |
+|------|------|------|
+| 类名 / 接口 / Trait | 大驼峰 | `User`, `UserType` |
+| 方法（控制器除外） | 小驼峰 | `getUserName()` |
+| 属性 / 变量 | 小驼峰 | `tableName` |
+| 控制器方法 | 小写+下划线 | `get_client_ip` |
+| 目录 | 小写+下划线 | `store_product/` |
+| 常量 / 环境变量 | 大写+下划线 | `APP_DEBUG` |
+| 数据表 / 字段 | 小写+下划线，`eb_` 前缀 | `eb_user`, `user_name` |
+
+### CRMEB 核心规范
+
+- **验证**：数据验证放在模块的 `validates/` 目录下
+- **JSON 响应**：统一使用 `app('json')->success()` / `app('json')->fail()`
+- **错误处理**：抛异常统一控制输出 —— `throw new AuthException('错误信息', 400)`
+- **数据库**：统一使用模型操作，**禁止 `Db::table()`**
+- **请求参数**：使用 `$request->getMore([...])` 获取表单数据
+- **分层职责**：
+  - Model 层 —— 仅写搜索条件和关联关系
+  - Services 层 —— 数据组合查询、业务逻辑（创建命令：`php make:services api@user/User`）
+- **代码风格**：使用 PHP 8 新语法，严格类型声明
+
+---
+
+## 用 AI 开发本项目
+
+本仓库为所有 AI 编码工具提供统一约定：规则、技能、子智能体唯一真源在 [.crmeb/](.crmeb/AGENTS.md)，各工具入口只做指引、不承载正文。
+
+| 工具 | 使用方式 |
+|------|------|
+| Codex / Cursor / Gemini CLI 等支持 AGENTS.md 标准的工具 | 自动读取根 [AGENTS.md](AGENTS.md)，无需配置 |
+| Claude Code | 自动读取 [CLAUDE.md](CLAUDE.md) |
+| 支持 llms.txt 的工具 / 网页抓取类 AI | 读取 [llms.txt](llms.txt) |
+
+所有入口最终指向 [.crmeb/AGENTS.md](.crmeb/AGENTS.md)：其中定义了项目硬约束（依赖方向、分层、插件零侵入红线）、13 条开发规则、7 个开发技能与 3 个专项子智能体，AI 按索引按需加载即可获得与内部开发者一致的约定。
+
+### 连接本项目的 MCP 开发工具
+
+内置 MCP 服务（`service_mcp` 模块，默认安装）向任意支持 MCP 的 AI 工具开放实时项目知识：
+
+完整的安装启用、认证、业务工具、写入授权和排障说明见 [MCP 接口文档](help/docs/api/MCP接口.md)。
+
+| 工具 | 用途 |
+|------|------|
+| `crmeb_dev_docs_search` | 检索开发规则 / 技能手册 / 项目文档（架构铁律、插件规范、事件规范等） |
+| `crmeb_dev_route_search` | 按关键词 / 应用检索接口路由定义（定位「接口在哪、控制器是谁」） |
+| `crmeb_dev_table_schema` | 查询运行库真实表结构：字段、注释、索引（含已安装插件表） |
+
+接入步骤：
+
+1. 启动后端后，登录管理后台「设置 → MCP 服务」，开启开关并复制访问密钥（appkey）；
+2. 在 AI 工具的 MCP 配置中添加（Claude Code 写入 `.mcp.json`，Cursor / Trae 等在各自 MCP 设置中填写）：
+
+```json
+{
+  "mcpServers": {
+    "crmeb": {
+      "type": "http",
+      "name": "CRMEB 商城",
+      "url": "http://localhost:8011/api/mcp",
+      "headers": { "X-Mcp-Key": "你的appkey" },
+      "timeout": 15,
+      "description": "CRMEB 商城管理工具集：查询/管理商城数据（商品、订单、售后、配置等，以账号已授权工具为准）。",
+      "disabled": false
+    }
+  }
+}
+```
+
+3. Docker 部署无需额外配置（`docker-compose.yml` 已为容器只读挂载文档目录）；文档检索工具定位仓库根依赖 `CRMEB_REPO_ROOT` 环境变量，默认取 `backend/` 的父目录。
+
+工具的返回为检索摘要，正文以仓库文件为准；工具实现位于 `backend/modules/service/mcp/tools/`，按约定新增 `*Tool.php` 即自动注册。
+
+---
+
+## 参与开发
+
+提交流程、检查清单与规范入口见 [CONTRIBUTING.md](CONTRIBUTING.md)；上游项目参阅 [CRMEB](https://github.com/crmeb/CRMEB)。
+
+---
+
+## 版权信息
+
+版权所有 Copyright © 2016~2026 by CRMEB (http://www.crmeb.com)
+
+All rights reserved.
+
+CRMEB® 商标和著作权所有者为西安众邦网络科技有限公司。

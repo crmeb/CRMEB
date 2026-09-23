@@ -1,0 +1,71 @@
+{
+    "key": "qq",
+    "name": "QQ邮箱",
+    "description": "QQ邮箱驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/email/Qq",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "QQ邮箱",
+        "driver_key": "qq",
+        "icon": "icon-qq",
+        "is_builtin": true,
+        "sort": 90,
+        "capabilities": [
+            "send"
+        ],
+        "config_fields": [
+            {
+                "field": "qq_host",
+                "label": "SMTP服务器",
+                "type": "text",
+                "group": "服务器",
+                "default": "smtp.qq.com",
+                "placeholder": "请输入SMTP服务器"
+            },
+            {
+                "field": "qq_port",
+                "label": "SMTP端口",
+                "type": "text",
+                "group": "服务器",
+                "default": "465"
+            },
+            {
+                "field": "qq_username",
+                "label": "QQ邮箱地址",
+                "type": "text",
+                "group": "账号",
+                "placeholder": "example@qq.com"
+            },
+            {
+                "field": "qq_auth_code",
+                "label": "授权码",
+                "type": "password",
+                "group": "账号"
+            },
+            {
+                "field": "from_name",
+                "label": "发件人名称",
+                "type": "text",
+                "group": "账号",
+                "default": "CRMEB"
+            }
+        ],
+        "help_doc": {
+            "title": "QQ邮箱使用说明",
+            "steps": [
+                "登录 QQ邮箱，进入「设置」→「账户」",
+                "开启「POP3/SMTP服务」",
+                "生成并复制「授权码」（非QQ密码）",
+                "将授权码填入上方配置中的「授权码」字段"
+            ],
+            "link": "https://service.mail.qq.com/detail/0/75"
+        }
+    }
+}

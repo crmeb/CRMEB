@@ -1,0 +1,536 @@
+Change log
+
+2025-11-20 Bumped to version v1.0.163
+- Updated apis for Vod
+
+2025-11-06 Bumped to version v1.0.162
+- Updated apis for Vms/Vod
+
+2025-10-23 Bumped to version v1.0.161
+- Updated apis for Vod
+
+2025-10-16 Bumped to version v1.0.160
+- Updated apis for ImageX/Vod
+
+2025-09-25 Bumped to version v1.0.159
+- Updated apis for Vod
+
+2025-09-18 Bumped to version v1.0.158
+- Updated apis for Vod
+
+2025-08-28 Bumped to version v1.0.157
+- Updated apis for Vod
+
+2025-08-21 Bumped to version v1.0.156
+- Updated apis for ImageX
+
+2025-08-14 Bumped to version v1.0.155
+- Updated apis for sdk
+
+2025-08-07 Bumped to version v1.0.154
+- Updated apis for ImageX
+
+2025-07-10 Bumped to version v1.0.153
+- Updated apis for ImageX
+
+2025-07-03 Bumped to version v1.0.152
+- Updated apis for ImageX
+
+2025-06-26 Bumped to version v1.0.151
+- Updated apis for Live
+
+2025-06-19 Bumped to version v1.0.150
+- Updated apis for sdk
+
+2025-06-17 Bumped to version v1.0.148
+- Updated apis for Vod
+
+2025-05-29 Bumped to version v1.0.147
+- Updated apis for ImageX/Vod
+
+2025-05-22 Bumped to version v1.0.146
+- Updated apis for ImageX
+
+2025-05-15 Bumped to version v1.0.145
+- Updated apis for Vod
+
+2025-05-08 Bumped to version v1.0.144
+- Updated apis for ImageX
+
+2025-04-25 Bumped to version v1.0.143
+- Updated apis for Live
+
+2025-04-24 Bumped to version v1.0.142
+- Updated apis for ImageX/Vod
+
+2025-04-17 Bumped to version v1.0.141
+- Updated apis for Vms/Vod
+
+2025-04-10 Bumped to version v1.0.140
+- Updated SignatureV4
+
+2025-03-31 Bumped to version v1.0.139
+- Updated apis for ImageX
+
+2025-03-27 Bumped to version v1.0.138
+- Updated apis for ImageX
+
+2025-03-20 Bumped to version v1.0.137
+- Updated apis for Vod
+
+2025-02-27 Bumped to version v1.0.136
+- Updated apis for ImageX/Vod
+
+2025-02-13 Bumped to version v1.0.135
+- Updated apis for imp
+
+2025-01-02 Bumped to version v1.0.134
+- Updated apis for cdn
+
+2024-12-26 Bumped to version v1.0.133
+- Updated apis for vod
+
+2024-12-16 Bumped to version v1.0.132
+- Updated apis for live
+
+2024-12-05 Bumped to version v1.0.131
+- Updated apis for cdn
+
+2024-11-28 Bumped to version v1.0.130
+- Updated apis for visual
+
+2024-11-14 Bumped to version v1.0.129
+- Updated apis for imagex/vod
+
+2024-11-07 Bumped to version v1.0.128
+- Updated apis for imagex
+
+2024-10-24 Bumped to version v1.0.127
+- Updated apis for vod
+
+2024-10-17 Bumped to version v1.0.126
+- Updated apis for vod
+
+2024-10-10 Bumped to version v1.0.125
+- Updated apis for imp/vod
+
+2024-09-26 Bumped to version v1.0.124
+- Updated apis for imp/live
+
+2024-09-19 Bumped to version v1.0.123
+- Updated apis for vod
+
+2024-09-12 Bumped to version v1.0.122
+- Updated apis for visual/vod
+
+2024-08-29 Bumped to version v1.0.121
+- Updated apis for live
+
+2024-08-15 Bumped to version v1.0.120
+- Updated apis for vod
+
+2024-08-08 Bumped to version v1.0.119
+- Updated apis for vod/visual/imagex/cdn
+
+2024-07-25 Bumped to version v1.0.118
+- fix some problem
+
+2024-07-18 Bumped to version v1.0.117
+- Updated apis for cdn/vod
+
+2024-07-11 Bumped to version v1.0.116
+- Updated apis for sms
+
+2024-07-04 Bumped to version v1.0.115
+- Updated apis for vod
+
+2024-06-27 Bumped to version v1.0.114
+- Updated apis for live
+
+2024-06-24 Bumped to version v1.0.113
+- Updated apis for security/live
+
+2024-06-06 Bumped to version v1.0.112
+- Updated apis for vod/imagex
+
+2024-05-23 Bumped to version v1.0.111
+- Updated apis for vod
+
+2024-05-09 Bumped to version v1.0.110
+- Updated apis for vod/imp/imagex
+
+2024-04-25 Bumped to version v1.0.109
+- Updated apis for vod
+
+2024-04-18 Bumped to version v1.0.108
+- Updated apis for vod
+
+2024-04-11 Bumped to version v1.0.107
+- Updated apis for vod/live
+
+2024-04-01 Bumped to version v1.0.106
+- Updated apis for vod/imagex
+
+2024-03-21 Bumped to version v1.0.105
+- Updated apis for live/visual
+
+2024-03-06 Bumped to version v1.0.104
+- Updated apis for vod
+
+2024-02-22 Bumped to version v1.0.103
+- Updated apis for live
+
+2024-02-05 Bumped to version v1.0.102
+- Updated apis for visual
+
+2024-02-01 Bumped to version v1.0.101
+- Updated apis for vod/live
+
+2024-01-11 Bumped to version v1.0.100
+- Updated apis for vod
+
+2024-01-05 Bumped to version v1.0.99
+- Updated apis for vod
+
+2023-12-14 Bumped to version v1.0.98
+- Updated apis for live/visual
+
+2023-11-30 Bumped to version v1.0.97
+- Updated apis for live
+
+2023-11-23 Bumped to version v1.0.96
+- Updated apis for live
+
+2023-11-16 Bumped to version v1.0.95
+- Updated apis for vod
+
+2023-10-26 Bumped to version v1.0.94
+- Updated apis for Visual
+
+2023-10-19 Bumped to version v1.0.93
+- Updated apis for live/vod/imagex
+
+2023-10-12 Bumped to version v1.0.92
+- Updated apis for security/vod
+
+2023-09-12 Bumped to version v1.0.91
+- Updated apis for vod
+
+2023-09-07 Bumped to version v1.0.90
+- Updated apis for visual
+
+2023-09-01 Bumped to version v1.0.89
+- Updated apis for security
+
+2023-08-31 Bumped to version v1.0.88
+- Updated apis for vod
+
+2023-08-10 Bumped to version v1.0.87
+- Updated apis for vod/security
+
+2023-08-03 Bumped to version v1.0.86
+- Updated apis for vod
+
+2023-07-27 Bumped to version v1.0.85
+- Updated apis for vod
+
+2023-07-20 Bumped to version v1.0.84
+- Updated apis for vod
+
+2023-06-29 Bumped to version v1.0.83
+- Updated apis for cdn/vod
+
+2023-06-16 Bumped to version v1.0.82
+- Updated apis for security/vod/imagex
+
+2023-06-01 Bumped to version v1.0.81
+- Updated apis for imagex
+
+2023-05-25 Bumped to version v1.0.80
+- Updated apis for vms
+
+2023-05-18 Bumped to version v1.0.79
+- Updated apis for vod/security
+
+2023-05-11 Bumped to version v1.0.78
+- Updated apis for imagex
+
+2023-05-05 Bumped to version v1.0.77
+- Updated apis for vod
+
+2023-04-28 Bumped to version v1.0.76
+- Updated apis for imagex
+
+2023-04-13 Bumped to version v1.0.75
+- Updated apis for visual/cdn
+
+2023-04-06 Bumped to version v1.0.74
+- Updated apis for vod/imagex
+
+2023-03-30 Bumped to version v1.0.73
+- Updated apis for vod/imagex
+
+2023-03-23 Bumped to version v1.0.72
+- Updated apis for sms
+
+2023-03-16 Bumped to version v1.0.71
+- Updated apis for imagex/live
+
+2023-03-09 Bumped to version v1.0.70
+- Updated apis for vod
+
+2023-03-02 Bumped to version v1.0.69
+- Updated apis for imagex
+
+2023-02-24 Bumped to version v1.0.68
+- Updated apis for sms/vod/imagex
+
+2023-02-16 Bumped to version v1.0.67
+- Updated apis for sms
+
+2023-02-09 Bumped to version v1.0.66
+- Updated apis for security
+
+2023-01-20 Bumped to version v1.0.65
+- Updated apis for imagex/live/security/vms
+
+2023-01-19 Bumped to version v1.0.64
+- Updated apis for imagex
+
+2023-01-16 Bumped to version v1.0.63
+- Updated apis for imagex
+
+2023-01-13 Bumped to version v1.0.62
+- Updated apis for vod/secertNumber
+
+2023-01-05 Bumped to version v1.0.61
+- Updated apis for imagex/visual
+
+2022-12-29 Bumped to version v1.0.60
+- Updated apis for imagex/visual
+
+2022-12-22 Bumped to version v1.0.59
+- Updated apis for imagex
+
+2022-12-15 Bumped to version v1.0.58
+- Updated apis for cdn
+
+2022-12-14 Bumped to version v1.0.57
+- Updated apis for imagex
+
+2022-12-08 Bumped to version v1.0.56
+- Updated apis for imagex
+- Updated config for imp
+
+2022-11-18 Bumped to version v1.0.55
+- Updated apis for cdn
+
+2022-11-10 Bumped to version v1.0.54
+- Added live service
+- Updated apis for security
+
+2022-10-27 Bumped to version v1.0.53
+- Updated apis for vod
+
+2022-10-13 Bumped to version v1.0.52
+- Updated apis for vod
+
+2022-09-15 Bumped to version v1.0.51
+- Updated apis for vod
+
+2022-09-09 Bumped to version v1.0.50
+- Added apis for billing
+
+2022-09-06 Bumped to version v1.0.49
+- Updated apis for security
+
+2022-08-25 Bumped to version v1.0.48
+- Added apis for live
+- Fixed apis for imagex
+
+2022-08-11 Bumped to version v1.0.47
+- Updated apis for vod
+
+2022-08-04 Bumped to version v1.0.46
+- Added apis for sts
+- Updated demo for rtc
+
+2022-07-28 Bumped to version v1.0.45
+- Upgraded apis for vod\rtc
+
+2022-07-25 Bumped to version v1.0.44
+- Added apis for security
+
+2022-07-07 Bumped to version v1.0.43
+- Added apis for live\rtc
+
+2022-06-23 Bumped to version v1.0.42
+- Added apis for vod
+
+2022-06-17 Bumped to version v1.0.41
+- Updated apis for vod
+- Updated demo for rtc
+
+2022-06-09 Bumped to version v1.0.40
+- Added service secertNumber
+- Fixed apis for cdn
+
+2022-05-26 Bumped to version v1.0.39
+- Added rtc service
+- Added apis for ocr
+
+2022-05-20 Bumped to version v1.0.38
+- Added notify service
+
+2022-05-12 Bumped to version v1.0.37
+- Added apis for vod\live\FaceSwap
+
+2022-04-14 Bumped to version v1.0.36 
+- Added apis for vod\cdn\imagex\security
+
+2022-04-07 Bumped to version v1.0.35
+- Added imp service
+
+2022-03-31 Bumped to version v1.0.34
+- Upgraded api for vod
+
+2022-03-18 Bumped to version v1.0.33
+- Add some apis of space\callback\cdn for vod
+
+2022-03-03 Bumped to version v1.0.32
+- BREAKING CHANGE: only accept json body as the in parameter.
+- Implement related example for apis
+- Add new apis
+- Add Video-Classification For VOD
+
+2022-02-15 Bumped to version v1.0.31
+- Fixed protobuf dependency
+
+2022-02-15 Bumped to version v1.0.30
+- Fixed sign only method 
+- Fixed guzzle version to *
+- Added mobile_status api
+
+2022-02-10 Bumped to version v1.0.29
+- 号码验证2期需求
+
+2022-01-21 Bumped to version v1.0.28
+- 点播火山引擎转码处理新增 EnableLowPriority 字段
+
+2022-01-19 Bumped to version v1.0.27
+- Fixed signing url method
+- Removed multi catch for 7.0
+
+2022-01-14 Bumped to version v1.0.26
+- Downgrade PHP to 7.0
+
+2021-12-30 Bumped to version v1.0.25
+- Refactored signing method
+
+2021-12-28 Bumped to version v1.0.24
+- Added live php sdk
+
+2021-12-16 Bumped to version v1.0.23
+- element verify
+- DescribeCdnUpperIp and describeCdnDataDetail apis
+- Fix foreach warning
+
+
+2021-11-15 Bumped to version v1.0.22
+- Updated example and remove unused formal param
+- Increased default timeouts
+
+2021-10-27 Bumped to version v1.0.21
+- Fixed Vod large file
+- Fixed HDR support for vod api
+
+2021-09-29 Bumped to version v1.0.20
+- Minor refactor
+
+2021-09-28 Bumped to version v1.0.19
+- SubmitRefreshTask
+- SubmitPreloadTask
+- DescribeContentTasks
+- DescribeContentQuota
+- DescribeCdnData
+- DescribeCdnOriginData
+- DescribeCdnRegionAndIsp
+- DescribeCdnDomainTopData
+- DescribeCdnAccountingData
+- DescribeCdnAccessLog
+- StartCdnDomain
+- StopCdnDomain
+- DeleteCdnDomain
+- ListCdnDomains
+
+2021-09-16 Bumped to version v1.0.18
+- Added sms v2 sdk
+- Added private drm for vod
+
+2021-08-05 Bumped to version v1.0.17
+- Added sms sdk
+- Added ocr sdk
+
+2021-07-22 Bumped to version v1.0.16
+- Fixed cr32
+
+2021-07-15 Bumped to version v1.0.15
+- Upgraded signer method to latest
+
+2021-07-01 Bumped to version v1.0.14
+- Added subtitle sdk
+
+2021-06-02 Bumped to version v1.0.13
+- Added async risk result
+- Updated media list
+- Added product game protect
+- Added Vod support material ext
+
+2021-05-20 Bumped to version v1.0.12
+- Add hls drm utils for vod
+- Support material upload
+- Add retry after http error
+- Add imagex image fetch API
+
+2021-04-20 Bumped to version v1.0.11
+- Added pcdn and barrageMask support.
+- Added store key res.
+
+2021-03-24 Bumped to version v1.0.10
+- Added sms sdk.
+
+2021-03-24 Bumped to version v1.0.9
+- Added async and risk result.
+- Added delete media support.
+
+2021-03-02 Bumped to version v1.0.8
+- Visual: add new apis: FaceSwap, HumanSegment, GeneralSegment, EnhancePhoto, ConvertPhoto
+
+2021-02-22 Bumped to version v1.0.7
+- Visual:add JPCartoon api.
+
+2021-02-18 Bumped to version v1.0.6
+- Upgrade adblock sdk.
+- Vod: bug fix.
+
+2021-02-04 Bumped to version v1.0.5
+- VEdit: support more cloud-edit sdk.
+
+2021-01-28 Bumped to version v1.0.4
+- Fixed sts2_ak.
+- Fixed visual null pointer.
+- more vod sdk support.
+
+2021-01-19 Bumped to version v1.0.3
+- Add adblock sdk.
+- Vod:enable large-file slice upload function.
+
+2020-12-30 Bumped to version v1.0.2
+- ImageX:add delete api.
+
+2020-12-22 Bumped to version v1.0.1
+- Add vod sdk.
+- Add ImageX sdk.
+
+2020-12-11 Bumped to version v1.0.0
+- Add iam sdk.

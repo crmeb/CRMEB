@@ -1,0 +1,34 @@
+{
+    "name": "symfony/var-exporter",
+    "type": "library",
+    "description": "Allows exporting any serializable PHP data structure to plain PHP code",
+    "keywords": ["export", "serialize", "instantiate", "hydrate", "construct", "clone", "lazy-loading", "proxy"],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Grekas",
+            "email": "p@tchwork.com"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "symfony/deprecation-contracts": "^2.5|^3"
+    },
+    "require-dev": {
+        "symfony/property-access": "^6.4|^7.0|^8.0",
+        "symfony/serializer": "^6.4|^7.0|^8.0",
+        "symfony/var-dumper": "^6.4|^7.0|^8.0"
+    },
+    "autoload": {
+        "psr-4": { "Symfony\\Component\\VarExporter\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "minimum-stability": "dev"
+}

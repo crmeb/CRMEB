@@ -1,0 +1,33 @@
+language: php
+sudo: false
+dist: trusty
+
+# PHP 5.4 and 5.5 are supported on a best-effort basis and are intentionally
+# not included in the tested versions here, as the dependencies for the testing
+# tools require newer versions of PHP.
+php:
+  - '5.6'
+  - '7.0'
+  - '7.1'
+  - hhvm
+  - nightly
+
+matrix:
+    fast_finish: true
+    allow_failures:
+        - php: nightly
+
+cache:
+    directories:
+        - ./vendor
+
+install:
+    - composer self-update --no-interaction
+    - composer install --dev --no-interaction
+
+script:
+    - if [ "${TRAVIS_PHP_VERSION}" != "7.0" ]; then ./vendor/bin/phpunit; fi;
+    - if [ "${TRAVIS_PHP_VERSION}" == "7.0" ]; then ./vendor/bin/phpunit --coverage-clover=coverage.xml; fi;
+
+after_success:
+    - if [ -f ./coverage.xml ]; then travis_retry ./vendor/bin/coveralls -v; fi;

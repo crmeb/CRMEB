@@ -1,0 +1,4 @@
+interface:
+  display_name: "CRMEB 项目框架开发"
+  short_description: "CRMEB 项目后端分层、接口契约、运行与全栈联调开发"
+  default_prompt: "使用 $crmeb-project-dev 完成这个 CRMEB 项目的基础框架功能开发。"

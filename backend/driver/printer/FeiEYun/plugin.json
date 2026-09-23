@@ -1,0 +1,55 @@
+{
+    "key": "FeiEYun",
+    "name": "飞鹅云",
+    "description": "飞鹅云驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/printer/FeiEYun",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "is_builtin": true,
+        "name": "飞鹅云",
+        "driver_key": "FeiEYun",
+        "driver": "FeiEYun",
+        "icon": "",
+        "description": "飞鹅云打印机驱动",
+        "config_fields": [
+            {
+                "field": "fey_user",
+                "label": "飞鹅云USER",
+                "type": "text",
+                "group": "基础配置",
+                "tip": "飞鹅云后台注册账号"
+            },
+            {
+                "field": "fey_ukey",
+                "label": "飞鹅云UKEY",
+                "type": "password",
+                "group": "基础配置",
+                "tip": "飞鹅云后台注册账号后生成的UKEY 【备注：这不是填打印机的KEY】"
+            }
+        ],
+        "capabilities": {
+            "device_id": {
+                "label": "打印机SN",
+                "tip": "打印机标签上的编号"
+            }
+        },
+        "help_doc": {
+            "title": "飞鹅云打印机使用说明",
+            "steps": [
+                "注册飞鹅云账号（https://www.feieyun.com）",
+                "登录后台获取 USER 和 UKEY",
+                "在打印机上获取设备编号（SN）",
+                "在飞鹅云后台添加打印机（输入SN）",
+                "在驱动管理中填写 USER 和 UKEY，在打印设置中填写设备 SN"
+            ],
+            "link": "https://www.feieyun.com"
+        }
+    }
+}

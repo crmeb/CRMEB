@@ -1,0 +1,95 @@
+{
+    "key": "yihaotong",
+    "name": "一号通采集",
+    "description": "一号通采集驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/copyproduct/Yihaotong",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "is_builtin": true,
+        "name": "一号通采集",
+        "driver_key": "yihaotong",
+        "class_name": "Driver",
+        "icon": "icon-crmeb",
+        "sort": 100,
+        "description": "使用CRMEB官方一号通服务采集商品",
+        "capabilities": {
+            "open": true,
+            "multi_platform": false,
+            "cache": true
+        },
+        "platforms": [
+            {
+                "name": "淘宝",
+                "key": "taobao",
+                "domain": "taobao.com",
+                "icon": "icon-taobao"
+            },
+            {
+                "name": "天猫",
+                "key": "tmall",
+                "domain": "tmall.com",
+                "icon": "icon-tmall"
+            },
+            {
+                "name": "京东",
+                "key": "jd",
+                "domain": "jd.com",
+                "icon": "icon-jd"
+            },
+            {
+                "name": "苏宁",
+                "key": "suning",
+                "domain": "suning.com",
+                "icon": "icon-suning"
+            },
+            {
+                "name": "1688",
+                "key": "1688",
+                "domain": "1688.com",
+                "icon": "icon-1688"
+            }
+        ],
+        "config_fields": [
+            {
+                "field": "yihaotong_appid",
+                "label": "一号通appid",
+                "type": "text",
+                "required": false,
+                "readonly": true,
+                "group": "账号配置",
+                "description": "CRMEB一号通服务账号",
+                "default": "",
+                "tip": "从一号通平台配置自动读取"
+            },
+            {
+                "field": "yihaotong_appsecret",
+                "label": "一号通appsecret",
+                "type": "password",
+                "required": false,
+                "readonly": true,
+                "group": "账号配置",
+                "description": "CRMEB一号通服务令牌",
+                "default": "",
+                "tip": "从一号通平台配置自动读取"
+            }
+        ],
+        "help_doc": {
+            "title": "一号通采集使用说明",
+            "steps": [
+                "注册并登录一号通平台（https://api.crmeb.com）",
+                "在平台开通「商品采集」服务",
+                "获取平台分配的 AppId 和 AppSecret",
+                "将以上信息填入系统后台一号通短信配置中（自动读取）",
+                "返回本页面，即可使用商品采集功能"
+            ],
+            "link": "https://api.crmeb.com"
+        }
+    }
+}

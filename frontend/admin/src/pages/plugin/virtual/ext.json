@@ -1,0 +1,12 @@
+{
+  "key": "virtual",
+  "title": "网盘商品",
+  "version": "1.0.0",
+  "pages": [
+    { "path": "list", "title": "商品列表" },
+    { "path": "add", "title": "添加商品" },
+    { "path": "add/:id", "title": "编辑商品" },
+    { "path": "order/list", "title": "网盘订单" },
+    { "path": "order/detail/:orderNo", "title": "订单详情" }
+  ]
+}

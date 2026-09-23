@@ -1,0 +1,12 @@
+package tests;
+
+message Repeated {
+
+  message Nested {
+    optional int32 id = 1;
+  }
+
+  repeated string string = 1;
+  repeated int32 int = 2;
+  repeated Nested nested = 3;
+}

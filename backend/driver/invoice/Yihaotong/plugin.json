@@ -1,0 +1,57 @@
+{
+    "key": "yihaotong",
+    "name": "一号通电子发票",
+    "description": "一号通电子发票驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/invoice/Yihaotong",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "一号通电子发票",
+        "driver_key": "yihaotong",
+        "class_name": "Driver",
+        "icon": "icon-yihaotong",
+        "is_builtin": true,
+        "sort": 100,
+        "config_fields": [
+            {
+                "field": "invoice_yihaotong_status",
+                "label": "发票服务开关",
+                "type": "switch",
+                "group": "基础"
+            },
+            {
+                "field": "yihaotong_appid",
+                "label": "一号通appid",
+                "type": "text",
+                "readonly": true,
+                "group": "账号",
+                "tip": "从一号通平台配置自动读取"
+            },
+            {
+                "field": "yihaotong_appsecret",
+                "label": "一号通appsecret",
+                "type": "text",
+                "readonly": true,
+                "group": "账号",
+                "tip": "从一号通平台配置自动读取"
+            }
+        ],
+        "help_doc": {
+            "title": "一号通电子发票使用说明",
+            "steps": [
+                "注册并登录一号通平台（https://api.crmeb.com）",
+                "在平台开通「电子发票」服务",
+                "获取平台分配的 AppId 和 AppSecret",
+                "将以上信息填入系统后台一号通账户配置中（自动读取）",
+                "返回本页面，开启「电子发票服务开关」即可使用"
+            ],
+            "link": "https://api.crmeb.com"
+        }
+    }
+}

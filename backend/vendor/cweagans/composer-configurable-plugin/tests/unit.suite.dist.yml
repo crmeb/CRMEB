@@ -1,0 +1,6 @@
+actor: UnitTester
+modules:
+    enabled:
+        - Asserts
+        - \cweagans\Composer\Tests\Helper\Unit
+    step_decorators: ~

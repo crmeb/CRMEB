@@ -1,0 +1,21 @@
+namespace: cweagans\Composer\Tests
+
+actor: Tester
+paths:
+    tests: tests
+    data: tests/_data
+    log: tests/_output
+    support: tests/_support
+settings:
+    colors: true
+    memory_limit: 1024M
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+coverage:
+    enabled: true
+    whitelist:
+        include:
+            - src/*
+        exclude:
+            - tests/*

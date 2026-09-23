@@ -1,8 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "loading": "/components/Loading/index",
-    "empty-page": "/components/emptyPage",
-    "nav-bar": "/components/NavBar"
-  }
-}

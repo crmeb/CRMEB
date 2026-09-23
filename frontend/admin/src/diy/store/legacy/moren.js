@@ -1,0 +1,2643 @@
+// +----------------------------------------------------------------------
+// | CRMEB [ CRMEB赋能开发者，助力企业发展 ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2026 https://www.crmeb.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed CRMEB并不是自由软件，未经许可不能去掉CRMEB相关版权
+// +----------------------------------------------------------------------
+// | Author: CRMEB Team <admin@crmeb.com>
+// +----------------------------------------------------------------------
+
+import __asset_foo3_01_0 from '@/assets/images/foo3-01.png';
+import __asset_foo3_02_1 from '@/assets/images/foo3-02.png';
+
+/**
+ * diy配置
+ * */
+
+import toolCom from '@diy/components/legacy/diyComponents/index.js';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+
+export const useMorenStore = defineStore('moren', () => {
+  const activeName = ref({});
+  const defaultConfig = ref({
+    customComponent: {
+      defaultVal: {
+        customComponent: {
+          setUp: {
+            tabVal: 0,
+          },
+          selectType: {
+            title: '选择信息',
+            activeValue: 'user',
+            list: [
+              { activeValue: 'user', title: '用户' },
+              { activeValue: 'article', title: '文章' },
+              { activeValue: 'coupon', title: '优惠券' },
+              { activeValue: 'goods', title: '商品' },
+            ],
+          },
+          // Article Config
+          articleDisplayMode: {
+            title: '展示方式',
+            tabVal: 0,
+            tabList: [{ name: '纵向平铺' }, { name: '横向滑动' }],
+          },
+          articleColumnStyle: {
+            title: '排列方式',
+            tabVal: 0,
+            tabList: [{ name: '1列' }, { name: '2列' }, { name: '3列' }, { name: '4列' }],
+          },
+          articleDataSource: {
+            title: '数据选择',
+            tabVal: 0,
+            tabList: [{ name: '指定数据' }, { name: '筛选数据' }],
+          },
+          articleList: {
+            list: [],
+          },
+          articleClass: {
+            title: '文章分类',
+            activeValue: '',
+            list: [],
+          },
+          articleNum: {
+            title: '显示数量',
+            val: 1,
+            min: 1,
+          },
+          articleSort: {
+            title: '排序类型',
+            tabVal: 0,
+            tabList: [{ name: '综合' }, { name: '浏览量' }, { name: '发布时间' }],
+          },
+          articleSortRule: {
+            title: '排序规则',
+            tabVal: 0,
+            tabList: [{ name: '升序' }, { name: '降序' }],
+          },
+
+          // Coupon Config
+          couponDisplayMode: {
+            title: '展示方式',
+            tabVal: 0,
+            tabList: [{ name: '纵向平铺' }, { name: '横向滑动' }],
+          },
+          couponColumnStyle: {
+            title: '排列方式',
+            tabVal: 0,
+            tabList: [{ name: '1列' }, { name: '2列' }, { name: '3列' }, { name: '4列' }],
+          },
+          couponDataSource: {
+            title: '数据选择',
+            tabVal: 0,
+            tabList: [{ name: '指定数据' }, { name: '筛选数据' }],
+          },
+          couponList: {
+            list: [],
+          },
+          couponType: {
+            title: '优惠券类型',
+            activeValue: '',
+            list: [
+              { activeValue: '', title: '全部' },
+              { activeValue: '0', title: '通用券' },
+              { activeValue: '1', title: '品类券' },
+              { activeValue: '2', title: '商品券' },
+            ],
+          },
+          couponSendType: {
+            title: '发送方式',
+            activeValue: '',
+            list: [
+              { activeValue: '', title: '全部' },
+              { activeValue: '1', title: '手动领取' },
+              { activeValue: '3', title: '赠送券' },
+            ],
+          },
+          couponUserType: {
+            title: '用户类型',
+            activeValue: '',
+            list: [
+              { activeValue: '', title: '全部' },
+              { activeValue: '1', title: '普通用户' },
+              { activeValue: '2', title: '会员用户' },
+            ],
+          },
+          couponThreshold: {
+            title: '使用门槛',
+            tabVal: 0,
+            tabList: [{ name: '无门槛' }, { name: '有门槛' }],
+          },
+          couponThresholdValue: {
+            title: '门槛金额',
+            val: 0,
+            min: 0,
+            max: 100000,
+          },
+          couponTime: {
+            title: '领取时间',
+            val: [],
+          },
+          couponSort: {
+            title: '排序类型',
+            tabVal: 0,
+            tabList: [{ name: '面值大小' }, { name: '发布时间' }],
+          },
+          couponSortRule: {
+            title: '排序规则',
+            tabVal: 0,
+            tabList: [{ name: '升序' }, { name: '降序' }],
+          },
+          couponNum: {
+            title: '显示数量',
+            val: 1,
+            min: 1,
+          },
+
+          // Goods Config
+          goodsDisplayMode: {
+            title: '展示方式',
+            tabVal: 0,
+            tabList: [{ name: '纵向平铺' }, { name: '横向滑动' }],
+          },
+          goodsColumnStyle: {
+            title: '排列方式',
+            tabVal: 0,
+            tabList: [{ name: '1列' }, { name: '2列' }, { name: '3列' }, { name: '4列' }],
+          },
+          goodsDataSource: {
+            title: '数据选择',
+            tabVal: 0,
+            tabList: [{ name: '指定数据' }, { name: '指定分类' }],
+          },
+          goodsList: {
+            title: '商品列表',
+            max: 20,
+            list: [],
+          },
+          goodsClass: {
+            title: '商品分类',
+            activeValue: '',
+            list: [],
+          },
+          goodsNum: {
+            title: '显示数量',
+            val: 6,
+            min: 1,
+          },
+          goodsSort: {
+            title: '商品排序',
+            name: 'goodsSort',
+            type: 0,
+            list: [
+              {
+                val: '综合',
+                icon: 'iconComm_whole',
+              },
+              {
+                val: '销量',
+                icon: 'iconComm_number',
+              },
+              {
+                val: '价格',
+                icon: 'iconjiage',
+              },
+            ],
+          },
+
+          // Common Styles
+          paddingConfig: {
+            isAll: false,
+            title: '内边距',
+            val: 0,
+            min: 0,
+            max: 100,
+            valList: [{ val: 10 }, { val: 10 }, { val: 10 }, { val: 10 }],
+          },
+          marginConfig: {
+            isAll: false,
+            title: '外边距',
+            val: 0,
+            min: 0,
+            max: 100,
+            valList: [{ val: 0 }, { val: 0 }, { val: 0 }, { val: 0 }],
+          },
+          c_common_style: {
+            color: 'rgba(255,255,255,1)',
+            color2: 'rgba(255,255,255,1)',
+            lr: 0,
+            type: 0,
+          },
+        },
+      },
+      default: {
+        customComponent: {
+          setUp: {
+            tabVal: 0,
+          },
+          selectType: {
+            title: '选择信息',
+            activeValue: 'user',
+            list: [
+              { activeValue: 'user', title: '用户' },
+              { activeValue: 'article', title: '文章' },
+              { activeValue: 'coupon', title: '优惠券' },
+              { activeValue: 'goods', title: '商品' },
+            ],
+          },
+          // Article Config
+          articleDisplayMode: {
+            title: '展示方式',
+            tabVal: 0,
+            tabList: [{ name: '纵向平铺' }, { name: '横向滑动' }],
+          },
+          articleColumnStyle: {
+            title: '排列方式',
+            tabVal: 0,
+            tabList: [{ name: '1列' }, { name: '2列' }, { name: '3列' }, { name: '4列' }],
+          },
+          articleDataSource: {
+            title: '数据选择',
+            tabVal: 0,
+            tabList: [{ name: '指定数据' }, { name: '动态数据' }],
+          },
+          articleNum: {
+            title: '显示数量',
+            val: 1,
+            min: 1,
+          },
+
+          // Coupon Config
+          couponDisplayMode: {
+            title: '展示方式',
+            tabVal: 0,
+            tabList: [{ name: '纵向平铺' }, { name: '横向滑动' }],
+          },
+          couponColumnStyle: {
+            title: '排列方式',
+            tabVal: 0,
+            tabList: [{ name: '1列' }, { name: '2列' }, { name: '3列' }, { name: '4列' }],
+          },
+          couponDataSource: {
+            title: '数据选择',
+            tabVal: 0,
+            tabList: [{ name: '指定数据' }, { name: '筛选数据' }],
+          },
+          couponList: {
+            list: [],
+          },
+          couponType: {
+            title: '优惠券类型',
+            activeValue: '',
+            list: [
+              { activeValue: '', title: '全部' },
+              { activeValue: '0', title: '通用券' },
+              { activeValue: '1', title: '品类券' },
+              { activeValue: '2', title: '商品券' },
+            ],
+          },
+          couponSendType: {
+            title: '发送方式',
+            activeValue: '',
+            list: [
+              { activeValue: '', title: '全部' },
+              { activeValue: '1', title: '手动领取' },
+              { activeValue: '3', title: '赠送券' },
+            ],
+          },
+          couponUserType: {
+            title: '用户类型',
+            activeValue: '',
+            list: [
+              { activeValue: '', title: '全部' },
+              { activeValue: '1', title: '普通用户' },
+              { activeValue: '2', title: '会员用户' },
+            ],
+          },
+          couponThreshold: {
+            title: '使用门槛',
+            tabVal: 0,
+            tabList: [{ name: '无门槛' }, { name: '有门槛' }],
+          },
+          couponThresholdValue: {
+            title: '门槛金额',
+            val: 0,
+            min: 0,
+            max: 100000,
+          },
+          couponTime: {
+            title: '领取时间',
+            val: [],
+          },
+          couponSort: {
+            title: '排序类型',
+            tabVal: 0,
+            tabList: [{ name: '面值大小' }, { name: '发布时间' }],
+          },
+          couponSortRule: {
+            title: '排序规则',
+            tabVal: 0,
+            tabList: [{ name: '升序' }, { name: '降序' }],
+          },
+          couponNum: {
+            title: '显示数量',
+            val: 1,
+            min: 1,
+          },
+
+          // Goods Config
+          goodsDisplayMode: {
+            title: '展示方式',
+            tabVal: 0,
+            tabList: [{ name: '纵向平铺' }, { name: '横向滑动' }],
+          },
+          goodsColumnStyle: {
+            title: '排列方式',
+            tabVal: 0,
+            tabList: [{ name: '1列' }, { name: '2列' }, { name: '3列' }, { name: '4列' }],
+          },
+          goodsDataSource: {
+            title: '数据选择',
+            tabVal: 0,
+            tabList: [{ name: '指定数据' }, { name: '指定分类' }],
+          },
+          goodsList: {
+            title: '商品列表',
+            max: 20,
+            list: [],
+          },
+          goodsClass: {
+            title: '商品分类',
+            activeValue: '',
+            list: [],
+          },
+          goodsNum: {
+            title: '显示数量',
+            val: 6,
+            min: 1,
+          },
+          goodsSort: {
+            title: '商品排序',
+            tabVal: 0,
+            tabList: [{ name: '综合' }, { name: '销量' }, { name: '价格' }],
+          },
+          goodsSortRule: {
+            title: '排序规则',
+            tabVal: 0,
+            tabList: [{ name: '降序' }, { name: '升序' }],
+          },
+
+          // Common Styles
+          paddingConfig: {
+            isAll: false,
+            title: '内边距',
+            val: 0,
+            min: 0,
+            max: 100,
+            valList: [{ val: 10 }, { val: 10 }, { val: 10 }, { val: 10 }],
+          },
+          marginConfig: {
+            isAll: false,
+            title: '外边距',
+            val: 0,
+            min: 0,
+            max: 100,
+            valList: [{ val: 0 }, { val: 0 }, { val: 0 }, { val: 0 }],
+          },
+          c_common_style: {
+            color: 'rgba(255,255,255,1)',
+            color2: 'rgba(255,255,255,1)',
+            lr: 0,
+            type: 0,
+          },
+        },
+      },
+    },
+    headerSerch: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        imgUrl: {
+          title: '最多可添加1张图片，图片建议宽度128 * 45px',
+          url: '',
+        },
+        titleInfo: {
+          title: '',
+          type: 8,
+          list: [
+            {
+              title: '商城简介',
+              val: '好物尽享 任你选择',
+              max: 20,
+              pla: '选填，不超过10个字',
+            },
+          ],
+        },
+        hotList: {
+          title: '热词最多20个字，鼠标拖拽左侧圆点可调整热词顺序',
+          max: 99,
+          list: [
+            {
+              val: '',
+              maxlength: 20,
+            },
+          ],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        imgUrl: {
+          title: '最多可添加1张图片，图片建议宽度128 * 45px',
+          url: '',
+        },
+        titleInfo: {
+          title: '',
+          type: 8,
+          list: [
+            {
+              title: '商城简介',
+              val: '好物尽享 任你选择',
+              max: 20,
+              pla: '选填，不超过10个字',
+            },
+          ],
+        },
+        hotList: {
+          title: '热词最多20个字，鼠标拖拽左侧圆点可调整热词顺序',
+          max: 99,
+          list: [
+            {
+              val: '',
+              maxlength: 20,
+            },
+          ],
+        },
+      },
+    },
+    swiperBg: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          title: '最多可添加10张图片，建议宽度750px',
+          max: 10,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '',
+                  maxlength: 10,
+                  tips: '选填，不超过十个字',
+                },
+                {
+                  title: '链接',
+                  value: '',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '',
+                  maxlength: 10,
+                  tips: '选填，不超过十个字',
+                },
+                {
+                  title: '链接',
+                  value: '',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+          ],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          title: '最多可添加10张图片，建议宽度750px',
+          max: 10,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '',
+                  maxlength: 10,
+                  tips: '选填，不超过十个字',
+                },
+                {
+                  title: '链接',
+                  value: '',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '',
+                  maxlength: 10,
+                  tips: '选填，不超过十个字',
+                },
+                {
+                  title: '链接',
+                  value: '',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    menus: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          title: '最多可添加20个，图片建议宽度96*96px；鼠标拖拽左侧圆点可调整图标顺序',
+          max: 20,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '商品分类',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/goods_cate/goods_cate',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '领优惠券',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/users/user_get_coupon/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '行业资讯',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/extension/news_list/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '我的收藏',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/users/user_goods_collection/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '拼团活动',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_combination/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '秒杀活动',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_seckill/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '砍价活动',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_bargain/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '地址管理',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_bargain/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+          ],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          title: '最多可添加20个，图片建议宽度96*96px；鼠标拖拽左侧圆点可调整图标顺序',
+          max: 20,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '商品分类',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/goods_cate/goods_cate',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '领优惠券',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/users/user_get_coupon/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '行业资讯',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/extension/news_list/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '我的收藏',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/users/user_goods_collection/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '拼团活动',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_combination/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '秒杀活动',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_seckill/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '砍价活动',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_bargain/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '地址管理',
+                  maxlength: 5,
+                  tips: '请填写标题',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_bargain/index',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
+
+    tabNav: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+      },
+    },
+    news: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        imgUrl: {
+          title: '最多可添加10个模板，图片建议宽度124 * 28px',
+          url: '',
+        },
+        newList: {
+          max: 10,
+          list: [
+            {
+              chiild: [
+                {
+                  title: '标题',
+                  val: 'CRMEB_PRO 1.1正式公测啦',
+                  max: 20,
+                  pla: '选填，不超过四个字',
+                },
+                {
+                  title: '链接',
+                  val: '链接',
+                  max: 99,
+                  pla: '选填',
+                },
+              ],
+            },
+          ],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        imgUrl: {
+          title: '最多可添加10个模板，图片建议宽度124 * 28px',
+          url: '',
+        },
+        newList: {
+          max: 10,
+          list: [
+            {
+              chiild: [
+                {
+                  title: '标题',
+                  val: 'CRMEB_PRO 1.1正式公测啦',
+                  max: 20,
+                  pla: '选填，不超过四个字',
+                },
+                {
+                  title: '链接',
+                  val: '链接',
+                  max: 99,
+                  pla: '选填',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    activity: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          isDelete: true,
+          title: '最多可添加3组模块，第一张336*298px,后两张416*124px',
+          max: 3,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '一起来拼团',
+                  maxlength: 20,
+                  tips: '标题',
+                },
+                {
+                  title: '描述',
+                  value: '优惠多多',
+                  maxlength: 20,
+                  tips: '描述',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_combination/index',
+                  maxlength: 999,
+                  tips: '链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '秒杀专区',
+                  maxlength: 20,
+                  tips: '标题',
+                },
+                {
+                  title: '描述',
+                  value: '新能源汽车优惠多多',
+                  maxlength: 20,
+                  tips: '描述',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_seckill/index',
+                  maxlength: 999,
+                  tips: '链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '砍价活动',
+                  maxlength: 20,
+                  tips: '标题',
+                },
+                {
+                  title: '描述',
+                  value: '呼朋唤友来砍价~~',
+                  maxlength: 20,
+                  tips: '描述',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_bargain/index',
+                  maxlength: 999,
+                  tips: '链接',
+                },
+              ],
+            },
+          ],
+        },
+        max: 3,
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          isDelete: true,
+          title: '最多可添加3组模块，第一张336*298px,后两张416*124px',
+          max: 3,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '一起来拼团',
+                  maxlength: 20,
+                  tips: '标题',
+                },
+                {
+                  title: '描述',
+                  value: '优惠多多',
+                  maxlength: 20,
+                  tips: '描述',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_combination/index',
+                  maxlength: 999,
+                  tips: '链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '秒杀专区',
+                  maxlength: 20,
+                  tips: '标题',
+                },
+                {
+                  title: '描述',
+                  value: '新能源汽车优惠多多',
+                  maxlength: 20,
+                  tips: '描述',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_seckill/index',
+                  maxlength: 999,
+                  tips: '链接',
+                },
+              ],
+            },
+            {
+              img: '',
+              info: [
+                {
+                  title: '标题',
+                  value: '砍价活动',
+                  maxlength: 20,
+                  tips: '标题',
+                },
+                {
+                  title: '描述',
+                  value: '呼朋唤友来砍价~~',
+                  maxlength: 20,
+                  tips: '描述',
+                },
+                {
+                  title: '链接',
+                  value: '/pages/activity/goods_bargain/index',
+                  maxlength: 999,
+                  tips: '链接',
+                },
+              ],
+            },
+          ],
+        },
+        max: 3,
+      },
+    },
+    alive: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '直播间',
+              max: 20,
+              pla: '选填，不超过六个字',
+            },
+            {
+              title: '介绍',
+              val: '精彩直播',
+              max: 8,
+              pla: '选填，不超过8个字',
+            },
+            {
+              title: '链接',
+              val: '/pages/columnGoods/live_list/index',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+        numConfig: {
+          title: '显示数量',
+          val: 3,
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '直播间',
+              max: 20,
+              pla: '选填，不超过六个字',
+            },
+            {
+              title: '介绍',
+              val: '精彩直播',
+              max: 8,
+              pla: '选填，不超过8个字',
+            },
+            {
+              title: '链接',
+              val: '/pages/columnGoods/live_list/index',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+        numConfig: {
+          title: '显示数量',
+          val: 3,
+        },
+      },
+    },
+    scrollBox: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '快速选择',
+              max: 4,
+              pla: '选填，不超过4个字',
+            },
+            {
+              title: '介绍',
+              val: '诚意推荐品质商品',
+              max: 8,
+              pla: '选填，不超过8个字',
+            },
+            {
+              title: '链接',
+              val: '/pages/goods_cate/goods_cate',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+        // tabConfig: {
+        //     tabVal: 0,
+        //     type: 1,
+        //     tabList: [
+        //         {
+        //             name: '自动选择',
+        //             icon: 'iconzidongxuanze'
+        //         },
+        //         {
+        //             name: '手动选择',
+        //             icon: 'iconshoudongxuanze'
+        //         }
+        //     ]
+        // },
+        // selectConfig: {
+        //     title: '商品分类',
+        //     type: 1,//type=1时只是传二级分类
+        //     activeValue: '',
+        //     list: [
+        //         {
+        //             activeValue: '',
+        //             title: ''
+        //         },
+        //         {
+        //             activeValue: '',
+        //             title: ''
+        //         }
+        //     ]
+        // },
+        // numConfig: {
+        //     title:'显示数量',
+        //     val: 6
+        // },
+        // goodsList: {
+        //     max: 20,
+        //     list: []
+        // }
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '快速选择',
+              max: 4,
+              pla: '选填，不超过4个字',
+            },
+            {
+              title: '介绍',
+              val: '诚意推荐品质商品',
+              max: 8,
+              pla: '选填，不超过8个字',
+            },
+            {
+              title: '链接',
+              val: '/pages/goods_cate/goods_cate',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+        // tabConfig: {
+        //     tabVal: 0,
+        //     type: 1,
+        //     tabList: [
+        //         {
+        //             name: '自动选择',
+        //             icon: 'iconzidongxuanze'
+        //         },
+        //         {
+        //             name: '手动选择',
+        //             icon: 'iconshoudongxuanze'
+        //         }
+        //     ]
+        // },
+        // selectConfig: {
+        //     title: '商品分类',
+        //     type: 1,//type=1时只是传二级分类
+        //     activeValue: '',
+        //     list: [
+        //         {
+        //             activeValue: '',
+        //             title: ''
+        //         },
+        //         {
+        //             activeValue: '',
+        //             title: ''
+        //         }
+        //     ]
+        // },
+        // numConfig: {
+        //     title:'显示数量',
+        //     val: 6
+        // },
+        // goodsList: {
+        //     max: 20,
+        //     list: []
+        // }
+      },
+    },
+    adsRecommend: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          title: '图片建议尺寸338 * 206px；鼠标拖拽左侧圆点可调整版块顺序',
+          max: 10,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '链接',
+                  value: '',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+          ],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        imgList: {
+          title: '图片建议尺寸338 * 206px；鼠标拖拽左侧圆点可调整版块顺序',
+          max: 10,
+          list: [
+            {
+              img: '',
+              info: [
+                {
+                  title: '链接',
+                  value: '',
+                  maxlength: 999,
+                  tips: '请填写链接',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    coupon: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        numConfig: {
+          val: 10,
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        numConfig: {
+          val: 10,
+        },
+      },
+    },
+    seckill: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        titleInfo: {
+          title: '',
+          type: 2,
+          list: [
+            {
+              title: '商品类型',
+              val: '限时秒杀',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        titleInfo: {
+          title: '',
+          type: 2,
+          list: [
+            {
+              title: '商品类型',
+              val: '限时秒杀',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+    },
+    combination: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        titleInfo: {
+          title: '',
+          type: 3,
+          list: [
+            {
+              title: '商品类型',
+              val: '拼团列表',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        titleInfo: {
+          title: '',
+          type: 3,
+          list: [
+            {
+              title: '商品类型',
+              val: '拼团列表',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+    },
+    bargain: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        titleInfo: {
+          title: '',
+          type: 8,
+          list: [
+            {
+              title: '商品类型',
+              val: '砍价列表',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        titleInfo: {
+          title: '',
+          type: 8,
+          list: [
+            {
+              title: '商品类型',
+              val: '砍价列表',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+    },
+    goodList: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '快速选择',
+              max: 4,
+              pla: '选填，不超过4个字',
+            },
+            {
+              title: '介绍',
+              val: '诚意推荐品质商品',
+              max: 8,
+              pla: '选填，不超过8个字',
+            },
+            {
+              title: '链接',
+              val: '',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        selectSortConfig: {
+          title: '商品类型',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '0',
+              title: '商品列表',
+            },
+            {
+              activeValue: '7',
+              title: '优品推荐',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '快速选择',
+              max: 4,
+              pla: '选填，不超过4个字',
+            },
+            {
+              title: '介绍',
+              val: '诚意推荐品质商品',
+              max: 8,
+              pla: '选填，不超过8个字',
+            },
+            {
+              title: '链接',
+              val: '',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+        tabConfig: {
+          tabVal: 0,
+          type: 1,
+          tabList: [
+            {
+              name: '自动选择',
+              icon: 'iconzidongxuanze',
+            },
+            {
+              name: '手动选择',
+              icon: 'iconshoudongxuanze',
+            },
+          ],
+        },
+        selectSortConfig: {
+          title: '商品类型',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '0',
+              title: '商品列表',
+            },
+            {
+              activeValue: '7',
+              title: '优品推荐',
+            },
+          ],
+        },
+        selectConfig: {
+          title: '商品分类',
+          activeValue: '',
+          list: [
+            {
+              activeValue: '',
+              title: '',
+            },
+            {
+              activeValue: '',
+              title: '',
+            },
+          ],
+        },
+        numConfig: {
+          val: 6,
+        },
+        goodsSort: {
+          title: '商品排序',
+          name: 'goodsSort',
+          type: 0,
+          list: [
+            {
+              val: '系统排序',
+              icon: 'iconComm_whole',
+            },
+            {
+              val: '销量最高',
+              icon: 'iconComm_number',
+            },
+            {
+              val: '最新上架',
+              icon: 'iconzuixin',
+            },
+          ],
+        },
+        goodsList: {
+          max: 20,
+          list: [],
+        },
+      },
+    },
+    picTxt: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        richText: {
+          val: '',
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        richText: {
+          val: '',
+        },
+      },
+    },
+    titles: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '商品推荐',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+            {
+              title: '标题',
+              val: '商品推荐',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+            {
+              title: '链接',
+              val: '',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        titleInfo: {
+          title: '',
+          list: [
+            {
+              title: '标题',
+              val: '商品推荐',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+            {
+              title: '标题',
+              val: '商品推荐',
+              max: 20,
+              pla: '选填，不超过四个字',
+            },
+            {
+              title: '链接',
+              val: '',
+              max: 999,
+              pla: '选填',
+            },
+          ],
+        },
+      },
+    },
+    customerService: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        imgUrl: {
+          title: '最多可添加1张图片，图片建议宽度128 * 45px',
+          url: '',
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        imgUrl: {
+          title: '最多可添加1张图片，图片建议宽度128 * 45px',
+          url: '',
+        },
+      },
+    },
+    tabBar: {
+      defaultVal: {
+        isShow: {
+          val: true,
+        },
+        tabBarList: {
+          title: '图片建议宽度81*81px',
+          list: [
+            {
+              name: '首页',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/9ebdf202104251644215768.png',
+                'https://qiniu.crmeb.net/attach/2021/04/44bc420210425164421586.png',
+              ],
+              link: '/pages/index/index',
+            },
+            {
+              name: '分类',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/b62c8202104251644218412.png',
+                'https://qiniu.crmeb.net/attach/2021/04/9509c202104251644214836.png',
+              ],
+              link: '/pages/goods_cate/goods_cate',
+            },
+            // {
+            //     name:'周边',
+            //     imgList:[__asset_foo3_01_0,__asset_foo3_02_1],
+            //     pagePath: ''
+            // },
+            {
+              name: '购物车',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/2e682202104251644216849.png',
+                'https://qiniu.crmeb.net/attach/2021/04/6b3cb202104251644218211.png',
+              ],
+              link: '/pages/order_addcart/order_addcart',
+            },
+            {
+              name: '我的',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/3329c20210425164421428.png',
+                'https://qiniu.crmeb.net/attach/2021/04/031ce202104251644215432.png',
+              ],
+              link: '/pages/user/index',
+            },
+          ],
+        },
+      },
+      default: {
+        isShow: {
+          val: true,
+        },
+        tabBarList: {
+          title: '图片建议宽度81*81px',
+          list: [
+            {
+              name: '首页',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/9ebdf202104251644215768.png',
+                'https://qiniu.crmeb.net/attach/2021/04/44bc420210425164421586.png',
+              ],
+              link: '/pages/index/index',
+            },
+            {
+              name: '分类',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/b62c8202104251644218412.png',
+                'https://qiniu.crmeb.net/attach/2021/04/9509c202104251644214836.png',
+              ],
+              link: '/pages/goods_cate/goods_cate',
+            },
+            // {
+            //     name:'周边',
+            //     imgList:[__asset_foo3_01_0,__asset_foo3_02_1],
+            //     pagePath: ''
+            // },
+            {
+              name: '购物车',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/2e682202104251644216849.png',
+                'https://qiniu.crmeb.net/attach/2021/04/6b3cb202104251644218211.png',
+              ],
+              link: '/pages/order_addcart/order_addcart',
+            },
+            {
+              name: '我的',
+              imgList: [
+                'https://qiniu.crmeb.net/attach/2021/04/3329c20210425164421428.png',
+                'https://qiniu.crmeb.net/attach/2021/04/031ce202104251644215432.png',
+              ],
+              link: '/pages/user/index',
+            },
+          ],
+        },
+      },
+    },
+  });
+  const component = ref({
+    customComponent: {
+      list: [
+        {
+          components: toolCom.c_custom_component,
+          configNme: 'customComponent',
+        },
+      ],
+    },
+    headerSerch: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_upload_img,
+          configNme: 'imgUrl',
+        },
+        {
+          components: toolCom.c_hot_word,
+          configNme: 'hotList',
+        },
+      ],
+    },
+    swiperBg: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_upload_list,
+          configNme: 'imgList',
+        },
+      ],
+    },
+    menus: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_upload_list,
+          configNme: 'imgList',
+        },
+      ],
+    },
+    news: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_upload_img,
+          configNme: 'imgUrl',
+        },
+        {
+          components: toolCom.c_txt_list,
+          configNme: 'newList',
+        },
+      ],
+    },
+    tabNav: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+      ],
+    },
+    activity: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_upload_list,
+          configNme: 'imgList',
+        },
+      ],
+    },
+    alive: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_input_number,
+          configNme: 'numConfig',
+        },
+      ],
+    },
+    scrollBox: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        // {
+        //     components: toolCom.c_tab,
+        //     configNme: 'tabConfig'
+        // },
+        // {
+        //     components: toolCom.c_select,
+        //     configNme: 'selectConfig'
+        // },
+        // {
+        //     components: toolCom.c_input_number,
+        //     configNme: 'numConfig'
+        // }
+      ],
+    },
+    adsRecommend: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_upload_list,
+          configNme: 'imgList',
+        },
+      ],
+    },
+    coupon: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_number,
+          configNme: 'numConfig',
+        },
+      ],
+    },
+    seckill: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_tab,
+          configNme: 'tabConfig',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_select,
+          configNme: 'selectConfig',
+        },
+        {
+          components: toolCom.c_input_number,
+          configNme: 'numConfig',
+        },
+        {
+          components: toolCom.c_txt_tab,
+          configNme: 'goodsSort',
+        },
+      ],
+    },
+    combination: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_tab,
+          configNme: 'tabConfig',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_select,
+          configNme: 'selectConfig',
+        },
+        {
+          components: toolCom.c_input_number,
+          configNme: 'numConfig',
+        },
+        {
+          components: toolCom.c_txt_tab,
+          configNme: 'goodsSort',
+        },
+      ],
+    },
+    bargain: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_tab,
+          configNme: 'tabConfig',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_select,
+          configNme: 'selectConfig',
+        },
+        {
+          components: toolCom.c_input_number,
+          configNme: 'numConfig',
+        },
+        {
+          components: toolCom.c_txt_tab,
+          configNme: 'goodsSort',
+        },
+      ],
+    },
+    goodList: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_tab,
+          configNme: 'tabConfig',
+        },
+        {
+          components: toolCom.c_select,
+          configNme: 'selectSortConfig',
+        },
+        {
+          components: toolCom.c_select,
+          configNme: 'selectConfig',
+        },
+        {
+          components: toolCom.c_input_number,
+          configNme: 'numConfig',
+        },
+        {
+          components: toolCom.c_txt_tab,
+          configNme: 'goodsSort',
+        },
+      ],
+    },
+    picTxt: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_page_ueditor,
+          configNme: 'richText',
+        },
+      ],
+    },
+    titles: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+      ],
+    },
+    customerService: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_upload_img,
+          configNme: 'imgUrl',
+        },
+      ],
+    },
+    tabBar: {
+      list: [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_tab_bar,
+          configNme: 'tabBarList',
+        },
+      ],
+    },
+  });
+
+  /**
+   * @description 设置选中name
+   * @param {String} name
+   */
+  function setConfig(name) {
+    activeName.value = name;
+  }
+
+  function upDataName(data) {
+    defaultConfig.value[activeName.value] = data;
+  }
+
+  function upDataGoodList(data) {
+    let list = [];
+    if (data.type) {
+      list = [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_tab,
+          configNme: 'tabConfig',
+        },
+        {
+          components: toolCom.c_goods,
+          configNme: 'goodsList',
+        },
+      ];
+    } else {
+      list = [
+        {
+          components: toolCom.c_is_show,
+          configNme: 'isShow',
+        },
+        {
+          components: toolCom.c_input_list,
+          configNme: 'titleInfo',
+        },
+        {
+          components: toolCom.c_tab,
+          configNme: 'tabConfig',
+        },
+        {
+          components: toolCom.c_select,
+          configNme: 'selectConfig',
+        },
+        {
+          components: toolCom.c_input_number,
+          configNme: 'numConfig',
+        },
+      ];
+      let sort = {
+        components: toolCom.c_txt_tab,
+        configNme: 'goodsSort',
+      };
+      let type = {
+        components: toolCom.c_select,
+        configNme: 'selectSortConfig',
+      };
+      let fixed = {
+        components: toolCom.c_input_list,
+        configNme: 'titleInfo',
+      };
+      if (data.name === 'seckill' || data.name === 'combination' || data.name === 'bargain') {
+        list.splice(2, 0, fixed);
+        list.push(sort);
+      }
+      if (data.name === 'goodList') {
+        list.splice(3, 0, type);
+        list.push(sort);
+      }
+    }
+    let recommend = {
+      components: toolCom.c_upload_list,
+      configNme: 'imgList',
+    };
+    if (data.name === 'recommend') {
+      list.splice(1, 0, recommend);
+    }
+    switch (data.name) {
+      case 'scrollBox':
+        component.value.scrollBox.list = list;
+        break;
+      case 'popular':
+        component.value.popular.list = list;
+        break;
+      case 'recommend':
+        component.value.recommend.list = list;
+        break;
+      case 'seckill':
+        component.value.seckill.list = list;
+        break;
+      case 'combination':
+        component.value.combination.list = list;
+        break;
+      case 'bargain':
+        component.value.bargain.list = list;
+        break;
+      case 'newGoods':
+        component.value.newGoods.list = list;
+        break;
+      case 'promotion':
+        component.value.promotion.list = list;
+        break;
+      case 'goodList':
+        component.value.goodList.list = list;
+        break;
+      default:
+    }
+  }
+  /**
+   * @description 更新默认数据
+   * @param {Object} data
+   */
+  function updataConfig(data) {
+    let value = defaultConfig.value;
+    for (let i in data) {
+      for (let j in value) {
+        if (i === j) {
+          value[j] = data[i];
+        }
+      }
+    }
+    defaultConfig.value = value;
+  }
+
+  return { activeName, defaultConfig, component, setConfig, upDataName, upDataGoodList, updataConfig };
+});

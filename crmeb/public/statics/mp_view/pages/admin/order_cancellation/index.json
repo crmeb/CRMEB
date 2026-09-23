@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "订单核销",
-  "usingComponents": {
-    "home": "/components/home/index"
-  }
-}

@@ -1,0 +1,38 @@
+{
+    "key": "ent_wechat",
+    "name": "企业微信机器人",
+    "description": "企业微信机器人驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/bot/EntWechat",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "企业微信机器人",
+        "driver_key": "ent_wechat",
+        "icon": "icon-wechat",
+        "is_builtin": true,
+        "sort": 200,
+        "capabilities": ["send_text", "send_markdown", "send_card"],
+        "config_fields": [
+            {
+                "field": "webhook",
+                "label": "Webhook地址",
+                "type": "text",
+                "required": true,
+                "group": "配置",
+                "tip": "企业微信机器人的Webhook地址"
+            }
+        ],
+        "help_doc": [
+            {
+                "title": "企业微信机器人配置",
+                "url": "https://work.weixin.qq.com/api/doc/90000/90136/91770"
+            }
+        ]
+    }
+}

@@ -1,0 +1,17 @@
+package tests;
+
+message Complex {
+
+  enum Enum {
+      FOO = 1;
+      BAR = 2;
+      BAZ = 10;
+  }
+
+  message Nested {
+      optional string foo = 1;
+  }
+
+  optional Enum   enum = 1;
+  optional Nested nested = 2;
+}

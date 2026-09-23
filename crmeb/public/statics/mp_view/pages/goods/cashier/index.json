@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "收银台",
-  "usingComponents": {
-    "count-down": "/components/countDown/index",
-    "number-scroll": "/components/numberScroll"
-  }
-}

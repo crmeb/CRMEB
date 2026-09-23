@@ -1,0 +1,319 @@
+// ============================================================
+// CRMEB v8 卡密商品（cardkey）详情页接口 Mock 数据
+// 卡密类型特征：
+//   - virtual_type=2  卡密类型（虚拟商品子类型）
+//   - is_virtual=1    虚拟商品
+//   - spec_type=0     无多规格，productAttr 仅一个"默认"规格
+//   - selection_model=none        无需选规格
+//   - confirm_window=readonly     只读弹窗（规格不可点击）
+//   - cart_mode=cart & multi_item=false  走购物车但不支持多品
+//   - is_limit=1, limit_num=5     单次限购 5 张
+//   - stock=50         未使用卡密数量
+//   - 自动发卡，卡密在订单详情展示
+// ============================================================
+{
+  "code": 200,                                                                    // 业务状态码：200 成功
+  "msg": "ok",                                                                    // 业务提示信息
+  "data": {                                                                       // 业务数据载荷
+    "uid": 27,                                                                    // 当前访问用户 ID
+    "is_money_level": 0,                                                          // 是否金钱购买等级商品 0否/1是
+    "spec_unique": "default",                                                     // 当前规格唯一标识，卡密默认为 default
+
+    // ===================== storeInfo 商品主信息 =====================
+    "storeInfo": {                                                                // 商品基本信息
+      // -------- 基础标识 --------
+      "id": 1003,                                                                 // 商品 ID
+      "product_type": "cardkey",                                                  // 产品类型：卡密商品
+      "product_type_name": "卡密商品",                                            // 产品类型中文名
+
+      // -------- 图片资源 --------
+      "image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",       // 主图
+      "image_base": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",  // 主图基础路径（无 CDN 处理）
+      "slider_image": [                                                           // 轮播图列表
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc1.jpg",
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc2.jpg"
+      ],
+      "recommend_image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",  // 推荐位展示图
+      "small_image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",      // 列表小图
+
+      // -------- 文案与分类 --------
+      "store_name": "腾讯视频VIP会员年卡 官方直充 24小时到账",                     // 商品标题
+      "store_info": "官方授权 即充即用 全国通用",                                   // 商品副标题/简介
+      "keyword": "腾讯视频,VIP,会员,年卡",                                         // 搜索关键词（逗号分隔）
+      "bar_code": "",                                                              // 商品条形码
+      "cate_id": "5",                                                             // 商品分类 ID
+      "unit_name": "张",                                                          // 销售单位（卡密以"张"计）
+
+      // -------- 价格信息 --------
+      "price": "138.00",                                                          // 销售价（实付价）
+      "vip_price": "128.00",                                                      // 会员价
+      "ot_price": "253.00",                                                       // 原价/划线价
+      "postage": "0.00",                                                          // 邮费（卡密无需物流，固定 0）
+      "cost": "120.00",                                                           // 成本价
+      "give_integral": "0.00",                                                    // 购买赠送积分
+      "svip_economize_price": "10.00",                                            // SVIP 较会员价再省金额
+
+      // -------- 库存与销量 --------
+      "stock": 50,                                                                // 可用库存：未使用的卡密数量
+      "sales": 1842,                                                              // 真实销量
+      "fsales": "1842",                                                           // 展示销量（含真实+虚拟，字符串）
+      "ficti": 800,                                                               // 虚拟销量基数
+      "browse": 12850,                                                            // 浏览量
+      "sort": 0,                                                                  // 排序值（越小越靠前）
+
+      // -------- 营销标签位 --------
+      "is_show": 1,                                                               // 是否上架 0下架/1上架
+      "is_hot": 1,                                                                // 是否热卖 0否/1是
+      "is_benefit": 1,                                                            // 是否促销 0否/1是
+      "is_best": 0,                                                               // 是否精品 0否/1是
+      "is_new": 0,                                                                // 是否新品 0否/1是
+
+      // -------- 虚拟商品属性（卡密核心特征） --------
+      "is_virtual": 1,                                                            // 是否虚拟商品 0否/1是
+      "virtual_type": 2,                                                         // 虚拟商品子类型 0实物/1网盘/2卡密
+      "is_postage": 1,                                                           // 是否包邮 0否/1是（卡密恒为 1）
+
+      // -------- 状态标记 --------
+      "is_del": 0,                                                               // 是否删除 0否/1是
+      "is_seckill": 0,                                                           // 是否秒杀活动商品 0否/1是
+      "is_bargain": null,                                                        // 砍价活动 ID，null 表示无
+      "is_good": 0,                                                              // 是否优品推荐 0否/1是
+      "is_sub": 0,                                                               // 是否分销商品 0否/1是
+      "is_vip": 0,                                                               // 是否会员商品 0否/1是
+      "is_gift": 0,                                                              // 是否赠品 0否/1是
+      "gift_price": "0.00",                                                      // 赠品金额
+
+      // -------- 限购策略（卡密单次限购5张） --------
+      "is_limit": 1,                                                             // 是否限购 0否/1是
+      "limit_type": 1,                                                           // 限购类型 1单次限购/2周期限购/3永久限购
+      "limit_num": 5,                                                            // 单次限购数量：5张
+      "min_qty": 1,                                                              // 最少起购数量
+
+      // -------- 规格与活动（卡密为单规格，无活动） --------
+      "spec_type": 0,                                                            // 规格类型 0单规格/1多规格（卡密恒为 0）
+      "activity": "",                                                            // 活动标识（卡密不参与活动）
+      "spu": "QQVIDEO2026Y",                                                     // SPU 编码
+
+      // -------- 标签与关联 --------
+      "label_id": "4,6,7",                                                       // 商品标签 ID 集合（逗号分隔）
+      "video_link": "",                                                          // 详情视频链接
+      "command_word": "",                                                        // 口令（用于复制推广）
+      "recommend_list": "1002,1004",                                             // 推荐商品 ID 列表
+
+      // -------- 会员商品相关（卡密非会员商品） --------
+      "vip_product": 0,                                                          // 会员商品可见性 0不限制/1仅会员可见可买/2所有人可见仅会员可买
+      "vip_exclusive": false,   // 会员专享标识 vip_product=2且当前用户非会员时为true 前端渲染"开通会员后可购买"引导按钮
+
+      // -------- 预售（卡密非预售） --------
+      "presale": 0,                                                              // 是否预售 0否/1是
+      "presale_start_time": "1970-01-01 08:00",                                  // 预售开始时间
+      "presale_end_time": "1970-01-01 08:00",                                    // 预售结束时间
+      "presale_day": 0,                                                          // 预售发货天数
+      "presale_pay_status": 0,                                                   // 预售支付状态 0未开始/1已开始/2已结束
+
+      // -------- 物流与运费（卡密无需物流） --------
+      "logistics": "",                                                           // 物流模板内容
+      "freight": 0,                                                              // 运费（卡密为 0）
+      "temp_id": 0,                                                              // 运费模板 ID（卡密无模板）
+
+      // -------- 商户信息 --------
+      "mer_id": 0,                                                               // 商户 ID（0 表示平台自营）
+      "mer_use": 0,                                                              // 是否商户商品 0否/1是
+
+      // -------- 时间与默认 SKU --------
+      "default_sku": "default",                                                  // 默认 SKU 唯一标识（卡密为 default）
+      "add_time": 1722422400,                                                     // 商品添加时间戳
+      "code_path": "",                                                            // 二维码路径
+      "soure_link": "",                                                           // 采集来源链接
+
+      // -------- 富文本详情 --------
+      "description": "<p>腾讯视频VIP会员年卡，官方授权直充，下单后自动发货到订单中心。</p><p>支持所有腾讯视频客户端，电视端、手机端、电脑端通用，365天超长有效期。</p><p><img src='https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc1.jpg'/></p><p><img src='https://demo.crmeb.com/static/images/products/cardkey-qqvideo-desc2.jpg'/></p>",
+
+      "wechat_code": "",                                                         // 客服微信号
+
+      // -------- 用户互动状态 --------
+      "userCollect": false,                                                      // 当前用户是否收藏
+      "userLike": false,                                                         // 当前用户是否点赞
+      "attrPics": [                                                              // 规格图集
+        "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg"
+      ],
+
+      // -------- 自定义表单（卡密无表单） --------
+      "custom_form": [],                                                         // 自定义表单字段配置（卡密商品为空）
+
+      // -------- 参数列表（卡密核心属性展示） --------
+      "params_list": [                                                           // 商品参数列表
+        { "name": "会员时长", "value": "12个月（365天）" },                       // 参数名/参数值
+        { "name": "充值方式", "value": "账号直充" },
+        { "name": "到账时间", "value": "1-24小时内自动到账" },
+        { "name": "适用设备", "value": "电视/手机/电脑全端通用" },
+        { "name": "授权来源", "value": "官方正规授权" }
+      ],
+
+      // -------- 保障列表 --------
+      "protection_list": [                                                       // 商品保障列表
+        { "id": 4, "name": "未使用可退" }                                         // 保障ID/保障名称
+      ],
+
+      // -------- 标签列表 --------
+      "label_list": [                                                             // 商品标签列表
+        { "id": 4, "name": "自动发货" },                                          // 标签ID/标签名
+        { "id": 6, "name": "官方授权" },
+        { "id": 7, "name": "全国通用" }
+      ],
+
+      // -------- 规格选择策略（卡密无需选规格 + 只读弹窗） --------
+      "selection_spec": {                                                         // 规格选择策略对象
+        "selection_model": "none",                                                // 选择模型 none无需选规格/matrix矩阵/temporal时间
+        "confirm_window": "readonly",                                             // 弹窗类型 editable可编辑/readonly只读/none无弹窗
+        "required_selections": [],                                                // 必选规格项列表（卡密为空）
+        "cart_unit": "item"                                                       // 购物车单位 item按件/quantity按数量
+      },
+
+      // -------- 购物车策略（走购物车但不支持多品） --------
+      "cart_strategy": {                                                          // 购物车策略对象
+        "cart_mode": "cart",                                                      // 购物车模式 cart购物车/buy_now立即购买
+        "multi_item": false,                                                      // 是否支持购物车多品（卡密不支持 false）
+        "button_text": ""                                                        // 自定义按钮文案（空=使用默认）
+      },
+
+      "cart_button": 1                                                            // 加入购物车按钮显隐 0隐藏/1显示
+    },
+
+    // ===================== productAttr 规格属性 =====================
+    // 卡密为单规格，仅一个"默认"规格，不可点击
+    "productAttr": [                                                              // 规格属性列表
+      {
+        "attr_name": "规格",                                                      // 规格名
+        "attr_values": ["默认"],                                                  // 规格值集合
+        "attr_value": [                                                           // 规格值详情列表
+          { "attr": "默认", "check": false, "pic": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg" }   // 规格值/是否选中/规格图
+        ]
+      }
+    ],
+
+    // ===================== productValue SKU 列表 =====================
+    // 卡密仅有"默认"一个 SKU
+    "productValue": {                                                             // SKU 详情字典，key 为规格组合
+      "默认": {                                                                  // SKU 键名（与 spec_unique 对应）
+        "suk": "默认",                                                           // 规格值字符串
+        "price": "138.00",                                                        // SKU 销售价
+        "stock": 50,                                                              // SKU 库存（未使用卡密数）
+        "image": "https://demo.crmeb.com/static/images/products/cardkey-qqvideo-cover.jpg",     // SKU 主图
+        "unique": "default",                                                      // SKU 唯一标识
+        "cost": "120.00",                                                         // SKU 成本价
+        "ot_price": "253.00",                                                     // SKU 原价
+        "bar_code": "",                                                           // SKU 条形码
+        "is_show": 1                                                              // SKU 是否上架 0否/1是
+      }
+    },
+
+    // ===================== SVIP 与价格展示 =====================
+    "svip_open": true,                                                            // 是否开启 SVIP 功能
+    "svip_price_open": 1,                                                         // SVIP 价是否展示 0否/1是
+    "priceName": 0,                                                               // 价格展示策略 0默认/1隐藏/2登录可见
+
+    // ===================== reply 评价列表 =====================
+    "reply": [                                                                    // 商品评价列表
+      {
+        "id": 9001,                                                              // 评价 ID
+        "product_id": 1003,                                                       // 关联商品 ID
+        "nickname": "云端漫步",                                                   // 评价用户昵称
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u3.jpg",          // 评价用户头像
+        "comment": "下单后5分钟就收到卡密了，激活后立即生效，电视端手机端都能用，非常方便。",  // 评价内容
+        "pics": ["https://demo.crmeb.com/static/images/reply/cardkey-reply1.jpg"],  // 评价图集
+        "star": 5,                                                                // 评分星级 1-5
+        "add_time": "2026-07-20 09:18:33"                                         // 评价时间
+      },
+      {
+        "id": 9002,
+        "product_id": 1003,
+        "nickname": "夜色温柔",
+        "avatar": "https://demo.crmeb.com/static/images/avatar/u4.jpg",
+        "comment": "比官方便宜不少，自动发货省心，年卡性价比超高，已经用了半年没问题。",
+        "pics": [],
+        "star": 5,
+        "add_time": "2026-07-25 14:42:07"
+      }
+    ],
+    "replyChance": 92,                                                            // 好评率（百分比）
+    "replyCount": 1842,                                                           // 评价总数
+
+    // ===================== 商户与关联推荐 =====================
+    "mer_id": 0,                                                                  // 商户 ID（0 平台自营）
+    "good_list": [                                                                // 推荐商品列表
+      { "id": 1002, "image": "https://demo.crmeb.com/static/images/products/cardkey-related-iqiyi.jpg", "store_name": "爱奇艺VIP会员年卡 官方直充", "price": "128.00", "sales": 2156 },  // 商品ID/图/标题/价/销量
+      { "id": 1004, "image": "https://demo.crmeb.com/static/images/products/cardkey-related-youku.jpg", "store_name": "优酷VIP会员年卡 官方直充", "price": "118.00", "sales": 1632 }
+    ],
+    "mapKey": "TXABCD-1234-EFGH-5678-IJKL",                                       // 地图 key（卡密场景仅占位）
+
+    // ===================== 店铺与活动配置 =====================
+    "store_self_mention": 0,                                                      // 是否开启到店自提 0否/1是
+    "activity": [],                                                              // 活动列表（卡密不参与活动，空数组）
+
+    // ===================== coupons 优惠券列表 =====================
+    "coupons": [                                                                 // 可领取优惠券列表
+      { "id": 503, "title": "满128减8", "coupon_price": "8.00", "use_min_price": "128.00", "surplus": 80 }  // 优惠券ID/标题/面额/使用门槛/剩余张数
+    ],
+
+    "routine_contact_type": 0,                                                    // 客服联系类型 0无/1客服/2企微
+
+    // ===================== display_sections 详情区块配置 =====================
+    // 卡密详情页分为：规格预览 / 卡密发货 / 售后政策 三大区块
+    "display_sections": [                                                         // 详情展示区块列表
+      // -------- 区块1：规格预览（卡密属性 chips） --------
+      {
+        "key": "spec",                                                            // 区块键名：规格预览
+        "component": "spec_preview",                                              // 渲染组件名
+        "visible": true,                                                         // 是否可见
+        "order": 10,                                                             // 排序权重（越小越靠前）
+        "data": {                                                                 // 区块数据
+          "blocks": [                                                            // 区块内子模块列表
+            {
+              "type": "chips",                                                   // 子模块类型 chips 标签组
+              "title": "卡密属性",                                                // 子模块标题
+              "items": [                                                         // 属性项列表
+                { "label": "面值", "value": "¥253" },                            // 属性标签/属性值
+                { "label": "有效期", "value": "365天" },
+                { "label": "发放方式", "value": "自动发放" },
+                { "label": "可用库存", "value": "50张" }
+              ]
+            }
+          ]
+        }
+      },
+      // -------- 区块2：卡密发货说明 --------
+      {
+        "key": "fulfillment",                                                     // 区块键名：履约发货
+        "component": "info_card",                                                // 渲染组件名：信息卡片
+        "title": "卡密发货",                                                      // 区块标题
+        "visible": true,
+        "order": 20,
+        "data": {                                                                 // 区块数据
+          "items": [                                                             // 信息项列表
+            { "label": "发货方式", "value": "支付后自动发卡", "icon": "auto" },   // 标签/值/图标
+            { "label": "物流", "value": "无需物流", "icon": "none" },
+            { "label": "使用方式", "value": "订单详情查看卡密", "icon": "card" },
+            { "label": "到账时间", "value": "1-24小时内", "icon": "time" }
+          ]
+        }
+      },
+      // -------- 区块3：售后政策 --------
+      {
+        "key": "after_sale",                                                      // 区块键名：售后政策
+        "component": "info_card",
+        "title": "售后政策",
+        "visible": true,
+        "order": 30,
+        "data": {
+          "items": [
+            { "label": "售后类型", "value": "仅退款", "icon": "refund" },         // 卡密仅支持退款
+            { "label": "售后期限", "value": "1小时内（未发卡前）", "icon": "deadline" },
+            { "label": "特别说明", "value": "卡密已发放不支持售后", "icon": "warning" }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+{
+    "name": "alibabacloud/tea",
+    "homepage": "https://www.alibabacloud.com/",
+    "description": "Client of Tea for PHP",
+    "keywords": [
+        "tea",
+        "client",
+        "alibabacloud",
+        "cloud"
+    ],
+    "type": "library",
+    "license": "Apache-2.0",
+    "support": {
+        "source": "https://github.com/aliyun/tea-php",
+        "issues": "https://github.com/aliyun/tea-php/issues"
+    },
+    "authors": [
+        {
+            "name": "Alibaba Cloud SDK",
+            "email": "sdk-team@alibabacloud.com",
+            "homepage": "http://www.alibabacloud.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-libxml": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-simplexml": "*",
+        "ext-xmlwriter": "*",
+        "guzzlehttp/guzzle": "^6.3|^7.0",
+        "adbario/php-dot-notation": "^2.4"
+    },
+    "require-dev": {
+        "symfony/dotenv": "^3.4",
+        "phpunit/phpunit": "*",
+        "symfony/var-dumper": "^3.4"
+    },
+    "suggest": {
+        "ext-sockets": "To use client-side monitoring"
+    },
+    "autoload": {
+        "psr-4": {
+            "AlibabaCloud\\Tea\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AlibabaCloud\\Tea\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "optimize-autoloader": true
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "scripts": {
+        "cs": "phpcs --standard=PSR2 -n ./",
+        "cbf": "phpcbf --standard=PSR2 -n ./",
+        "fixer": "php-cs-fixer fix ./",
+        "test": [
+            "@clearCache",
+            "phpunit --colors=always"
+        ],
+        "unit": [
+            "@clearCache",
+            "phpunit --testsuite=Unit --colors=always"
+        ],
+        "feature": [
+            "@clearCache",
+            "phpunit --testsuite=Feature --colors=always"
+        ],
+        "clearCache": "rm -rf cache/*",
+        "coverage": "open cache/coverage/index.html"
+    }
+}

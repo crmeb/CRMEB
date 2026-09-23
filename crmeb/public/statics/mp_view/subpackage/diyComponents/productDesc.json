@@ -1,7 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "parser": "/components/jyf-parser/jyf-parser",
-    "common-wrapper": "/subpackage/diyComponents/commonWrapper"
-  }
-}

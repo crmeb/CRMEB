@@ -1,0 +1,15 @@
+{
+  "key": "wechat_mp",
+  "title": "微信公众号",
+  "version": "1.0.0",
+  "pages": [
+    { "path": "menus/index", "title": "微信菜单" },
+    { "path": "newsCategory/index", "title": "图文管理" },
+    { "path": "newsCategory/save", "title": "图文添加" },
+    { "path": "reply/follow", "title": "关注回复" },
+    { "path": "reply/keyword", "title": "关键字回复" },
+    { "path": "reply/index", "title": "无效词回复" },
+    { "path": "user/tag", "title": "用户标签" },
+    { "path": "user/message", "title": "用户行为记录" }
+  ]
+}

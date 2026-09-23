@@ -1,0 +1,14 @@
+# 忽略目录
+build/
+tests/
+node_modules/
+public/
+# node 覆盖率文件
+coverage/
+
+# 忽略文件
+**/*-min.js
+**/*.min.js
+
+# iconfont.cn 生成的单行 vendor 文件，不做 prettier 重排
+src/styles/font/iconfont.js

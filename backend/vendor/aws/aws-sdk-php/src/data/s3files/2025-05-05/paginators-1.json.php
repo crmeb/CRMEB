@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/s3files/2025-05-05/paginators-1.json
+return [ 'pagination' => [ 'ListAccessPoints' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'accessPoints', ], 'ListFileSystems' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'fileSystems', ], 'ListMountTargets' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'mountTargets', ], 'ListTagsForResource' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'tags', ], ],];

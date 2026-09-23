@@ -1,0 +1,44 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "0 2 * * *"
+  release:
+    types: [ published ]
+jobs:
+  test:
+    runs-on: "ubuntu-22.04"
+    strategy:
+      matrix:
+        php: [ "8.0", "8.1", "8.2" ]
+        coverage: [ "none" ]
+        include:
+          - php: "8.2"
+            coverage: "xdebug"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: shivammathur/setup-php@v2
+        with:
+          ini-file: development
+          php-version: ${{ matrix.php }}
+          coverage: ${{ matrix.coverage }}
+          # Tests don't run in PHP 8.0 due to pcntl_signal_dispatch being disabled ¯\_(ツ)_/¯
+          ini-values: disable_functions=""
+      - name: Composer install
+        uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "--optimize-autoloader"
+      - name: Run tests
+        if: matrix.coverage == 'none'
+        run: composer test
+      - name: Run coverage
+        if: matrix.coverage == 'xdebug'
+        run: composer coverage
+      - name: Upload coverage results to Coveralls
+        if: matrix.coverage == 'xdebug'
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: composer coveralls

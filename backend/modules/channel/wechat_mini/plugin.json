@@ -1,0 +1,22 @@
+{
+    "key": "channel/wechat_mini",
+    "name": "微信小程序",
+    "description": "微信小程序用户渠道，支持code2Session登录、订阅消息通知、URL Scheme",
+    "version": "1.0.0",
+    "author": "CRMEB Team",
+    "type": "channel",
+    "path": "modules/channel/wechat_mini",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "diy": {
+        "components": [
+            {
+                "name": "liveBroadcast",
+                "title": "小程序直播"
+            }
+        ]
+    }
+}

@@ -1,0 +1,43 @@
+import "php.proto";
+
+package tests;
+
+//option (php.namespace) = "Example";
+//option (php.multifile) = true;
+
+/**
+ * Defines a Person in the addressbook
+ */
+message Person {
+  /* The full name of the person */
+  required string name = 1;
+  /* The person Id in the database */
+  required int32 id = 2;
+  /* The person email */
+  optional string email = 3;
+
+  /* Different types of phones */
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  /*
+   A phone number record
+  */
+  message PhoneNumber {
+    required string number = 1;
+    optional PhoneType type = 2 [default = HOME];
+  }
+
+  /* The different phone numbers associated to a person */
+  repeated PhoneNumber phone = 4;
+}
+
+/* A collection of persons contact details */
+message AddressBook {
+  repeated Person person = 1;
+
+  extensions 1000 to max;
+}

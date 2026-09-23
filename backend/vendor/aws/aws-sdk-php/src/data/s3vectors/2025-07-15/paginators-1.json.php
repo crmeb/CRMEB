@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/s3vectors/2025-07-15/paginators-1.json
+return [ 'pagination' => [ 'ListIndexes' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'indexes', ], 'ListVectorBuckets' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'vectorBuckets', ], 'ListVectors' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'vectors', ], 'QueryVectors' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'result_key' => 'vectors', ], ],];

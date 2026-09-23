@@ -1,0 +1,3 @@
+<?php
+// This file was auto-generated from sdk-root/src/data/nova-act/2025-08-22/paginators-1.json
+return [ 'pagination' => [ 'ListActs' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'actSummaries', ], 'ListSessions' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'sessionSummaries', ], 'ListWorkflowDefinitions' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'workflowDefinitionSummaries', ], 'ListWorkflowRuns' => [ 'input_token' => 'nextToken', 'output_token' => 'nextToken', 'limit_key' => 'maxResults', 'result_key' => 'workflowRunSummaries', ], ],];

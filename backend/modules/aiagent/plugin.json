@@ -1,0 +1,14 @@
+{
+    "key": "aiagent",
+    "name": "AI Agent",
+    "description": "可配置 AI 模型驱动、MCP 工具和 Skill 文件的后台智能体与对话功能",
+    "version": "1.0.1",
+    "author": "CRMEB Team",
+    "type": "service",
+    "path": "modules/aiagent",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "xaboy/form-builder",
+  "description": "好用的PHP表单生成器，快速生成现代化的form表单,支持前后端分离。内置17种常用表单组件。目前在政务系统、OA系统、ERP系统、电商系统、流程管理等系统中已稳定应用。",
+  "license": "MIT",
+  "keywords": [
+    "form",
+    "form-create",
+    "form-generator",
+    "dynamic-form",
+    "form-builder",
+    "element-ui",
+    "iview"
+  ],
+  "homepage": "https://github.com/xaboy/form-builder",
+  "authors": [
+    {
+      "name": "xaboy",
+      "email": "xaboy2005@qq.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "FormBuilder\\": "./src/"
+    }
+  },
+  "support": {
+    "issues": "https://github.com/xaboy/form-builder/issues",
+    "source": "https://github.com/xaboy/form-builder"
+  },
+  "require": {
+    "php": ">=7.1",
+    "ext-json": "*",
+    "symfony/http-foundation": ">=2.6"
+  },
+  "minimum-stability": "stable"
+}

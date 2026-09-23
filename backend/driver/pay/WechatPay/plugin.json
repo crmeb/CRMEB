@@ -1,0 +1,195 @@
+{
+    "key": "wechat_pay",
+    "name": "微信支付",
+    "description": "微信支付驱动",
+    "version": "1.0.0",
+    "author": "CRMEB",
+    "type": "driver",
+    "path": "driver/pay/WechatPay",
+    "default_install": true,
+    "require": {
+        "crmeb": "^8.0",
+        "php": "^8.0"
+    },
+    "driver": {
+        "name": "微信支付",
+        "channel_key": "weixin",
+        "driver_key": "wechat_pay",
+        "platform": "wechat",
+        "icon": "icon-weixinzhifu",
+        "capabilities": [
+            "pay",
+            "refund",
+            "notify",
+            "merchant_pay"
+        ],
+        "required_credentials": {
+            "wechat_mini": [
+                "openid"
+            ],
+            "wechat_mp": [
+                "openid"
+            ]
+        },
+        "pay_type_map": {
+            "wechat_mini": "JSAPI",
+            "wechat_mp": "JSAPI",
+            "h5": "h5",
+            "app": "APP",
+            "pc": "NATIVE"
+        },
+        "pay_status_type": {
+            "default": "wechat_pay",
+            "h5": "wechat_h5_pay",
+            "pc": "wechat_pc_pay"
+        },
+        "default_options": [
+            "pay_new_weixin_open"
+        ],
+        "supported_platforms": {
+            "wechat_mini": "微信小程序",
+            "wechat_mp": "微信公众号",
+            "h5": "H5浏览器",
+            "app": "APP",
+            "pc": "PC端"
+        },
+        "config_fields": [
+            {
+                "field": "mer_type",
+                "label": "商户类型",
+                "type": "radio",
+                "group": "商户类型",
+                "default": "0",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "微信支付商户模式"
+                    },
+                    {
+                        "value": "1",
+                        "label": "微信支付服务商模式"
+                    }
+                ],
+                "tip": "商户类型，目前支持普通微信商户模式和普通微信服务商模式"
+            },
+            {
+                "field": "sp_appid",
+                "label": "主商户APPID",
+                "type": "text",
+                "group": "商户类型",
+                "tip": "开启服务商支付，需要配置主商户申请时开通的公众号服务号的APPID",
+                "show_if": {
+                    "field": "mer_type",
+                    "value": "1"
+                }
+            },
+            {
+                "field": "pay_sub_merchant_id",
+                "label": "子商户商户号",
+                "type": "text",
+                "group": "商户类型",
+                "tip": "微信支付服务商子商户商户号",
+                "show_if": {
+                    "field": "mer_type",
+                    "value": "1"
+                }
+            },
+            {
+                "field": "pay_weixin_key",
+                "label": "API密钥",
+                "type": "text",
+                "group": "商户",
+                "tip": "商户支付密钥Key。审核通过后，在微信发送的邮件中查看"
+            },
+            {
+                "field": "pay_weixin_mchid",
+                "label": "商户号",
+                "type": "text",
+                "group": "商户",
+                "tip": "微信商户商户号"
+            },
+            {
+                "field": "pay_weixin_client_cert",
+                "label": "微信支付证书",
+                "type": "upload",
+                "group": "证书",
+                "tip": "微信支付证书，在微信商家平台中可以下载！文件名一般为apiclient_cert.pem"
+            },
+            {
+                "field": "pay_weixin_client_key",
+                "label": "微信支付证书密钥",
+                "type": "upload",
+                "group": "证书",
+                "tip": "微信支付证书密钥，在微信商家平台中可以下载！文件名一般为apiclient_key.pem"
+            },
+            {
+                "field": "pay_new_weixin_open",
+                "label": "小程序商户号选择",
+                "type": "radio",
+                "group": "小程序",
+                "default": "0",
+                "options": [
+                    {
+                        "value": "0",
+                        "label": "商户号绑定"
+                    },
+                    {
+                        "value": "1",
+                        "label": "非商户号绑定"
+                    }
+                ],
+                "tip": "小程序开发后后台有支付管理的请选择非商户号绑定"
+            },
+            {
+                "field": "pay_new_weixin_mchid",
+                "label": "小程序支付商户号",
+                "type": "text",
+                "group": "小程序",
+                "tip": "小程序开通支付管理生成的商户号",
+                "show_if": {
+                    "field": "pay_new_weixin_open",
+                    "value": "1"
+                }
+            },
+            {
+                "field": "routine_appId",
+                "label": "小程序AppID",
+                "type": "text",
+                "group": "小程序渠道",
+                "tip": "微信小程序 AppID"
+            },
+            {
+                "field": "routine_appsecret",
+                "label": "小程序AppSecret",
+                "type": "password",
+                "group": "小程序渠道",
+                "tip": "微信小程序 AppSecret"
+            },
+            {
+                "field": "wechat_appid",
+                "label": "公众号AppID",
+                "type": "text",
+                "group": "公众号渠道",
+                "tip": "微信公众号 AppID"
+            },
+            {
+                "field": "wechat_app_appid",
+                "label": "APP应用AppID",
+                "type": "text",
+                "group": "APP渠道",
+                "tip": "微信开放平台移动应用 AppID"
+            }
+        ],
+        "help_doc": {
+            "title": "微信支付（V2）使用说明",
+            "steps": [
+                "注册微信商户平台账号（https://pay.weixin.qq.com）",
+                "提交商户资料，完成审核后获取商户号",
+                "在商户平台设置 API 密钥，下载证书文件",
+                "按实际支付端填写本渠道的 AppID（小程序同时填写 AppSecret）",
+                "将商户号、API密钥、证书信息填入本渠道配置字段中"
+            ],
+            "link": "https://pay.weixin.qq.com/index.php/core/home/login"
+        }
+    }
+}

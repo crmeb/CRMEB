@@ -1,0 +1,18 @@
+{
+    "key": "user_signin",
+    "name": "签到活动",
+    "description": "签到活动用户运营模块，支持连续签到、累计签到、积分奖励等功能",
+    "version": "1.0.0",
+    "author": "CRMEB Team",
+    "type": "marketing",
+    "path": "modules/marketing/signin",
+    "default_install": true,
+    "diy": {
+        "components": [
+            {
+                "name": "signIn",
+                "title": "签到"
+            }
+        ]
+    }
+}

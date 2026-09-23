@@ -1,0 +1,46 @@
+on:
+  issues:
+    types: [ opened ]
+
+permissions:
+  issues: write
+
+jobs:
+  common-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            let commonIssues = [
+              {"pattern": "cannot apply patch", "link": "[placeholder please ignore sorry for the noise]"}
+            ];
+
+            let body = context.payload.issue.body.toLowerCase();
+
+            commonIssues.forEach(function (value) {
+              if (body.includes(value.pattern) && body.includes("reproducible bug")) {
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: '👋 Thanks for reporting! This issue looks similar to a common problem - can you please take a look at ' + value.link + ' and close this issue if your problem is addressed there?'
+                });
+              }
+            });
+
+  feature-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            let body = context.payload.issue.body.toLowerCase();
+            if (body.includes("feature request")) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '👋 Thanks for the idea! Please remember that this is an open source project - feature requests may or may not be implemented, and if they are, the timeline is unknown. If you need a guaranteed implementation or timeline, [sponsorships](https://github.com/sponsors/cweagans) are welcome!'
+              });
+            }

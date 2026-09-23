@@ -1,0 +1,22 @@
+# CRMEB v8 电商系统
+
+> 三端一体的电商 CRM 系统：PHP 8.2-8.4 + ThinkPHP 8 后端、Vue 3 管理端、uni-app 移动端。
+> AI 开发约定的唯一真源是仓库根目录的 `AGENTS.md` → `.crmeb/AGENTS.md`，先读它，再按其索引加载规则与技能。
+
+本仓库为任何 AI 编码工具提供统一入口：根 `AGENTS.md` 只做指引；规则、技能、子智能体各只有一份，维护在 `.crmeb/`。
+
+## 入口
+
+- [AGENTS.md](AGENTS.md)：AI 开发入口，指向 `.crmeb/AGENTS.md`
+- [.crmeb/AGENTS.md](.crmeb/AGENTS.md)：项目约定唯一真源（项目是什么、硬约束、规则/技能/子智能体索引、各工具读取方式）
+- [README.md](README.md)：运行说明（Docker 一键启动、手动安装、前端启动）
+
+## 项目文档（help/docs）
+
+- [文档索引](help/docs/文档索引.md)：全部文档的导航
+- [项目说明](help/docs/项目说明.md)：项目定位、角色、术语、快速开始
+- [项目架构](help/docs/项目架构.md)：分层结构、请求链路、订单中台、插件机制
+- [开发指南](help/docs/开发指南.md)：本地环境、启动调试、模块开发
+- [模块与驱动](help/docs/模块与驱动.md)：模块清单、安装生命周期、扩展规则
+- [数据库设计](help/docs/数据库设计.md)：表域划分、迁移与一致性原则
+- [部署指南](help/docs/部署指南.md)：Docker、手动部署、后台进程

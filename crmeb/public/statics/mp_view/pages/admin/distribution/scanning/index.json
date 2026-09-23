@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "订单核销",
-  "usingComponents": {
-    "write-off-list": "/pages/admin/components/writeOffList/index"
-  }
-}
