@@ -7,8 +7,8 @@
 </div>
 
 <div align="center">
-    <a href='https://gitee.com/xazbkj/crmebbz/stargazers'>
-       <img src='https://gitee.com/xazbkj/crmebbz/badge/star.svg?theme=gvp' alt='star'></img>
+    <a href='https://gitee.com/ZhongBangKeJi/CRMEB/stargazers'>
+       <img src='https://gitee.com/ZhongBangKeJi/CRMEB/badge/star.svg?theme=gvp' alt='star'></img>
     </a>
     <img src="https://img.shields.io/badge/Licence-apache2.0-green.svg?style=flat" />
     <img src="https://img.shields.io/badge/Edition-8.0.0-blue.svg" />
@@ -17,16 +17,6 @@
 <div align="center" style="font-size: 15px;">
   用心做开源，我们也很需要你的鼓励！右上角Star🌟，等你点亮
 </div>
-
-####
-
-<div align="center">
-
-简体中文 | [English](./README.md)
-
-</div>
-
-####
 
 ---
 
