@@ -271,4 +271,11 @@ function brokerageSetUp() {
 </script>
 <style lang="scss" scoped>
 @use '../productAdd.scss' as *;
+
+.tip {
+  width: 100%;
+  color: #999;
+  font-size: 12px;
+  line-height: 20px;
+}
 </style>

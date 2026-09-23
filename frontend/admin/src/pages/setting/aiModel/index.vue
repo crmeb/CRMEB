@@ -91,7 +91,7 @@
       <el-form ref="modelForm" :model="form" :rules="rules" label-position="top">
         <el-form-item prop="base_url">
           <div class="base-url-head">
-            <span class="base-url-label">自定义请求地址<i class="required-star">*</i></span>
+            <span class="base-url-label"><i class="required-star">*</i>自定义请求地址</span>
             <span class="base-url-switch">
               <i class="el-icon-link" />
               <span>完整 URL</span>
@@ -463,14 +463,16 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 4px;
+  /* 标签(0) + 提示(6px) 合计 8px，对齐 EP top 标签与内容的默认间距 */
+  margin-bottom: 2px;
 }
 .base-url-label {
-  color: var(--prev-color-text-primary);
-  font-size: 14px;
-  font-weight: 600;
+  /* 与全局 .el-form-item__label（12px / text-regular）对齐，避免比其他标签大一圈 */
+  color: var(--prev-color-text-regular);
+  font-size: 12px;
+  font-weight: 400;
   .required-star {
-    margin-left: 4px;
+    margin-right: 4px;
     color: var(--prev-color-danger);
     font-style: normal;
   }
@@ -480,7 +482,7 @@ onMounted(() => {
   align-items: center;
   gap: 6px;
   color: var(--prev-color-text-primary);
-  font-size: 13px;
+  font-size: 12px;
   i {
     color: var(--prev-color-text-secondary);
   }
