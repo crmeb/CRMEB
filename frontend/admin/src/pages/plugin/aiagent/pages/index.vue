@@ -29,19 +29,10 @@
           </div>
         </div>
 
-        <div ref="messageBox" class="message-list">
+        <div ref="messageBox" class="message-list" @click="onMessageBoxClick">
           <div v-if="!messages.length" class="empty-chat">
-            <template v-if="modelMissing">
-              <div class="empty-title">AI 模型尚未配置</div>
-              <div class="empty-tip">还没有可用的 AI 模型，请先完成模型配置再开始对话</div>
-              <el-button type="primary" class="empty-guide-btn" v-db-click @click="openManage('model')"
-                >去配置模型</el-button
-              >
-            </template>
-            <template v-else>
-              <div class="empty-title">今天帮你做些什么？</div>
-              <div class="empty-tip">点击输入框右下角模型名称可切换 AI 模型</div>
-            </template>
+            <div class="empty-title">今天帮你做些什么？</div>
+            <div class="empty-tip">点击输入框右下角模型名称可切换 AI 模型</div>
           </div>
 
           <template v-for="(message, index) in messages">
@@ -77,15 +68,6 @@
               :chatting="chatting"
               @resolve="resolveConfirm"
             />
-
-            <!-- 模型配置引导卡片：模型未配置/停用时在对话区直接提示去向，替代一闪而过的 toast -->
-            <div v-else-if="message.modelGuide" :key="'g' + index" class="model-guide">
-              <div class="model-guide-title">AI 模型不可用</div>
-              <div class="model-guide-text">{{ message.text || '当前没有可用的 AI 模型，请先完成模型配置后再开始对话' }}</div>
-              <el-button type="primary" size="small" v-db-click @click="openModelGuide(message)">{{
-                message.target === 'yihaotong' ? '去配置一号通' : '去配置模型'
-              }}</el-button>
-            </div>
 
             <!-- AI 回复：通栏排版 -->
             <div v-else :key="'a' + index" class="assistant-row">
@@ -218,15 +200,6 @@ const modelId = ref(0);
 const serverIds = ref([]);
 const skillKeys = ref([]);
 const options = ref({ models: [] });
-/** options 是否已加载完成（未加载完不判定模型缺失，避免空态引导闪现） */
-const optionsLoaded = ref(false);
-/** 完全没有可用模型：无启用的登记模型，且内置一号通未配置凭证 */
-const modelMissing = computed(() => {
-  if (!optionsLoaded.value) return false;
-  const models = options.value.models || [];
-  const hasCustom = models.some((model) => model.id > 0);
-  return !hasCustom && !options.value.yihaotong_configured;
-});
 
 /** 快捷场景标签：点击仅回填输入框（icon 为全局注册的 @element-plus/icons-vue 组件名） */
 const topics = [
@@ -260,7 +233,6 @@ onMounted(() => {
 function loadOptions(applyDefault = false) {
   aiAgentOptionsApi().then((res) => {
     options.value = { ...options.value, ...(res.data || {}) };
-    optionsLoaded.value = true;
     // 首次加载时选中"默认模型"（is_default 全局唯一：登记默认或一号通）
     if (applyDefault) {
       const def = (options.value.models || []).find((model) => model.is_default === 1);
@@ -300,9 +272,9 @@ function newConversation() {
 function selectConversation(item, force = false) {
   // 从管理遮盖层点击会话记录时，关闭遮盖层展示对话内容
   activeManage.value = '';
-  if (!force && conversationId.value === item.id) return Promise.resolve();
+  if (!force && conversationId.value === item.id) return;
   conversationId.value = item.id;
-  return aiAgentMessagesApi(item.id).then((res) => {
+  aiAgentMessagesApi(item.id).then((res) => {
     if (conversationId.value !== item.id) return;
     // 过滤中间过程消息（tool 角色与带 tool_name 的 assistant 工具调用记录），仅展示问答内容与交互卡片
     messages.value = (res.data || [])
@@ -379,11 +351,6 @@ function sendMessage(question) {
   const fromInput = typeof question !== 'string';
   const content = (fromInput ? chatInput.value : question).trim();
   if (!content || chatting.value) return;
-  // 模型未配置：不发起请求，直接在对话区给出配置引导（输入内容保留）
-  if (modelMissing.value) {
-    pushModelGuide();
-    return;
-  }
   messages.value.push({ role: 'user', content });
   if (fromInput) {
     chatInput.value = '';
@@ -418,11 +385,6 @@ function startStream(content) {
       streamController = null;
       if (e?.name === 'AbortError') {
         finishAborted(reply);
-      } else if (isModelConfigError(e?.message)) {
-        // 模型未配置/停用：移除空占位，在对话区插入配置引导卡片（用户消息已落库，无需回读）
-        removeReply(reply);
-        pushModelGuide(e?.message || '');
-        loadConversations();
       } else {
         ElMessage.error(e.message || '对话失败');
         finishReply(reply);
@@ -446,39 +408,6 @@ function finishAborted(reply) {
     reply.content = '已手动终止本次输出。';
   }
   finishReply(reply);
-}
-
-/** 是否为模型配置类错误：后端固定文案均指向「模型管理」或一号通凭证缺失 */
-function isModelConfigError(msg) {
-  return typeof msg === 'string' && (msg.includes('模型管理') || msg.includes('一号通凭证'));
-}
-
-/** 在对话区插入模型配置引导卡片（已有引导卡不重复插入），text 为后端错误说明 */
-function pushModelGuide(text = '') {
-  const list = messages.value;
-  if (!list.some((message) => message.modelGuide)) {
-    list.push({
-      role: 'assistant',
-      modelGuide: true,
-      text,
-      // 一号通凭证缺失引导去「一号通账户」页，其余模型问题统一去「模型管理」页
-      target: text.includes('一号通凭证') ? 'yihaotong' : 'model',
-    });
-  }
-  scrollToBottom();
-}
-
-/** 移除流式回复占位消息并复位对话状态（引导卡场景占位无内容，不适用 finishReply 的移除条件） */
-function removeReply(reply) {
-  const list = messages.value;
-  const index = list.indexOf(reply);
-  if (index > -1) list.splice(index, 1);
-  chatting.value = false;
-}
-
-/** 引导卡跳转：模型管理 / 一号通账户（均为系统设置内置页面） */
-function openModelGuide(message) {
-  router.push(setting.routePre + (message.target === 'yihaotong' ? '/setting/yihaotong/index' : '/setting/ai_model/index'));
 }
 
 /** 是否为最后一条 AI 回复（重新生成仅对最后一条回复开放） */
@@ -538,14 +467,6 @@ function resolveConfirm(message, action, extra = {}) {
       if (e?.name === 'AbortError') {
         // 手动终止：卡片决定已提交，保持当前状态防止重复执行，仅停止后续输出
         finishAborted(reply);
-      } else if (isModelConfigError(e?.message)) {
-        // 模型未配置/停用：移除空占位，回读服务端记录（工具执行可能已落库）后插入配置引导卡片
-        removeReply(reply);
-        const targetId = conversationId.value;
-        Promise.resolve(targetId ? selectConversation({ id: targetId }, true) : null).then(() => {
-          if (conversationId.value === targetId) pushModelGuide(e?.message || '');
-        });
-        loadConversations();
       } else {
         ElMessage.error(e.message || '操作失败');
         finishReply(reply);
@@ -649,6 +570,19 @@ function scrollToBottom() {
     if (box) box.scrollTop = box.scrollHeight;
   });
 }
+
+/**
+ * 消息内链接点击委托：AI 回复 Markdown 渲染的站内链接（/admin 开头）转路由跳转，
+ * 避免原生 <a> 导航整页刷新；外链与无 href 的锚点保持默认行为
+ */
+function onMessageBoxClick(e) {
+  const anchor = e.target.closest('a');
+  if (!anchor) return;
+  const href = anchor.getAttribute('href') || '';
+  if (!href.startsWith('/admin')) return;
+  e.preventDefault();
+  router.push(href);
+}
 </script>
 
 <style scoped lang="scss">
@@ -737,29 +671,6 @@ function scrollToBottom() {
   margin-top: 10px;
   color: #a8abb2;
   font-size: 13px;
-}
-.empty-guide-btn {
-  margin-top: 20px;
-}
-/* 模型配置引导卡片：对话区内的居中提示条 */
-.model-guide {
-  margin-bottom: 30px;
-  padding: 16px 20px;
-  text-align: center;
-  background: var(--prev-bg-color);
-  border: 1px solid var(--prev-border-color-lighter);
-  border-radius: 6px;
-}
-.model-guide-title {
-  color: var(--prev-color-text-regular);
-  font-size: 14px;
-  font-weight: 600;
-}
-.model-guide-text {
-  margin: 6px 0 12px;
-  color: var(--prev-color-text-secondary);
-  font-size: 13px;
-  line-height: 1.6;
 }
 /* 用户消息：右侧浅灰气泡 */
 .user-row {

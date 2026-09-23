@@ -47,8 +47,7 @@ class AgentChatService
      */
     public function options(): array
     {
-        $modelService = app()->make(AiModelServices::class);
-        $models = $modelService->getAvailableModels();
+        $models = app()->make(AiModelServices::class)->getAvailableModels();
         // 系统默认唯一：存在登记的默认模型时，一号通项退化为普通选项，不再标记默认
         $hasRegisteredDefault = (bool) array_filter($models, fn(array $model) => (int)$model['is_default'] === 1);
         array_unshift($models, [
@@ -63,8 +62,6 @@ class AgentChatService
         ]);
         return [
             'models'        => $models,
-            // 内置一号通凭证状态：前端据此识别「仅剩一号通且未配置」场景，在对话框直接引导去配置模型
-            'yihaotong_configured' => $modelService->isYihaotongConfigured(),
             'mcp_available' => $this->mcp->available(),
             'mcp_servers'   => $this->mcp->serverOptions(),
             'skills'        => array_values(array_filter(
@@ -426,12 +423,63 @@ class AgentChatService
         $this->agents->expirePendingConfirms($conversationId);
 
         $send(['event' => 'start', 'conversation_id' => $conversationId]);
-        $context = $this->prepareContext($conversationId, $serverIds, $skillKeys, $modelId, [], [], $adminId);
-        $this->streamLoop($conversationId, $context, $send, [
-            'model_id' => $modelId,
-            'server_ids' => $serverIds,
-            'skill_keys' => $skillKeys,
-        ]);
+        try {
+            $context = $this->prepareContext($conversationId, $serverIds, $skillKeys, $modelId, [], [], $adminId);
+            $this->streamLoop($conversationId, $context, $send, [
+                'model_id' => $modelId,
+                'server_ids' => $serverIds,
+                'skill_keys' => $skillKeys,
+            ]);
+        } catch (\Throwable $e) {
+            // 模型解析/调用失败（未配置、停用、一号通凭证缺失、上游密钥无效等）：
+            // 以普通对话消息输出配置指引并落库，前端按正常回复渲染，不再依赖错误弹窗
+            $this->sendModelGuide($conversationId, $send, $e);
+        }
+    }
+
+    /**
+     * 模型不可用兜底：以普通 assistant 消息输出配置指引（先落库再流式推送），前端按正常回复渲染。
+     *
+     * 覆盖模型未配置/停用、一号通凭证缺失、上游接口报错（如密钥无效）等场景；
+     * 消息落库后在历史会话中同样可见，替代原先一闪而过的错误弹窗。
+     * @param int $conversationId 会话 ID
+     * @param callable $send SSE 事件推送回调
+     * @param \Throwable $e 失败异常
+     */
+    private function sendModelGuide(int $conversationId, callable $send, \Throwable $e): void
+    {
+        // 与流式错误白名单同一口径：仅 RuntimeException 的消息可直出，其余异常统一脱敏文案
+        $error = $e instanceof \RuntimeException ? $e->getMessage() : '服务异常，请稍后重试';
+        $content = $this->buildModelGuide($error);
+        $this->agents->addMessage($conversationId, 'assistant', $content);
+        $send(['event' => 'delta', 'text' => $content]);
+        $send(['event' => 'done', 'tool_calls' => [], 'skills' => []]);
+    }
+
+    /**
+     * 按错误内容归类生成配置指引文案（含后台配置页地址），以 Markdown 随对话下发
+     * @param string $error 脱敏后的错误消息
+     * @return string
+     */
+    private function buildModelGuide(string $error): string
+    {
+        // 一号通凭证缺失或一号通接口报错：引导完成一号通配置，或改用第三方模型
+        if (str_contains($error, '一号通')) {
+            return "AI 模型暂不可用：{$error}\n\n"
+                . "可选择以下任一方式配置后再试：\n"
+                . "- 使用一号通 AI：前往[系统设置 → 一号通账户](/admin/setting/yihaotong/index)完成一号通登录；\n"
+                . '- 使用第三方模型：前往[第三方模型配置](/admin/plugin/mcp/config)完成配置。';
+        }
+        // 第三方模型上游报错（如 Invalid API Key）：引导检查登记模型的密钥与地址配置
+        if (str_contains($error, 'AI接口错误')) {
+            return "AI 模型调用失败：{$error}\n\n"
+                . '请前往[系统设置 → 模型管理](/admin/setting/ai_model/index)检查所选模型的接口地址与密钥配置，或更换其他可用模型后重试。';
+        }
+        // 模型不存在/停用等（错误文案本身已指向模型管理）：补充具体配置页地址
+        if (str_contains($error, '模型管理')) {
+            return "{$error}\n\n模型管理入口：[系统设置 → 模型管理](/admin/setting/ai_model/index)。";
+        }
+        return $error;
     }
 
     /**
@@ -886,15 +934,20 @@ class AgentChatService
         $this->agents->updateConfirmStatus($messageId, $action === 'approve' ? 'approved' : 'rejected');
         // 以确认时快照重建上下文（连接器/Skill/模型），执行参数以快照为准，不重新让模型生成；
         // 确认前已加载的 Skill 一并预载，模型无需重复调用加载工具
-        $context = $this->prepareContext(
-            $conversationId,
-            array_map('intval', (array)($payload['server_ids'] ?? [])),
-            array_map('strval', (array)($payload['skill_keys'] ?? [])),
-            (int)($payload['model_id'] ?? 0),
-            array_map('strval', (array)($payload['skill_loaded'] ?? [])),
-            [],
-            $adminId
-        );
+        try {
+            $context = $this->prepareContext(
+                $conversationId,
+                array_map('intval', (array)($payload['server_ids'] ?? [])),
+                array_map('strval', (array)($payload['skill_keys'] ?? [])),
+                (int)($payload['model_id'] ?? 0),
+                array_map('strval', (array)($payload['skill_loaded'] ?? [])),
+                [],
+                $adminId
+            );
+        } catch (\Throwable $e) {
+            $this->sendModelGuide($conversationId, $send, $e);
+            return;
+        }
 
         if ($interaction === 'ask_user') {
             $toolResult = $action === 'approve'
@@ -909,15 +962,19 @@ class AgentChatService
             );
             $send(['event' => 'tool', 'name' => $toolName, 'arguments' => $arguments, 'result' => $toolResult]);
             $context['workingMessage'] .= $this->buildToolResultContext($toolName, $toolResult);
-            $this->streamLoop($conversationId, $context, $send, [
-                'model_id' => (int)($payload['model_id'] ?? 0),
-                'server_ids' => (array)($payload['server_ids'] ?? []),
-                'skill_keys' => (array)($payload['skill_keys'] ?? []),
-            ], $action === 'approve' ? '用户已作答，正在继续处理' : '用户已跳过该问题，正在继续处理', [[
-                'name' => $toolName,
-                'arguments' => $arguments,
-                'result' => $toolResult,
-            ]]);
+            try {
+                $this->streamLoop($conversationId, $context, $send, [
+                    'model_id' => (int)($payload['model_id'] ?? 0),
+                    'server_ids' => (array)($payload['server_ids'] ?? []),
+                    'skill_keys' => (array)($payload['skill_keys'] ?? []),
+                ], $action === 'approve' ? '用户已作答，正在继续处理' : '用户已跳过该问题，正在继续处理', [[
+                    'name' => $toolName,
+                    'arguments' => $arguments,
+                    'result' => $toolResult,
+                ]]);
+            } catch (\Throwable $e) {
+                $this->sendModelGuide($conversationId, $send, $e);
+            }
             return;
         }
 
@@ -943,15 +1000,19 @@ class AgentChatService
         );
         $send(['event' => 'tool', 'name' => $toolName, 'arguments' => $arguments, 'result' => $toolResult]);
         $context['workingMessage'] .= $this->buildToolResultContext($toolName, $toolResult);
-        $this->streamLoop($conversationId, $context, $send, [
-            'model_id' => (int)($payload['model_id'] ?? 0),
-            'server_ids' => (array)($payload['server_ids'] ?? []),
-            'skill_keys' => (array)($payload['skill_keys'] ?? []),
-        ], '用户已确认，正在执行操作', [[
-            'name' => $toolName,
-            'arguments' => $arguments,
-            'result' => $toolResult,
-        ]]);
+        try {
+            $this->streamLoop($conversationId, $context, $send, [
+                'model_id' => (int)($payload['model_id'] ?? 0),
+                'server_ids' => (array)($payload['server_ids'] ?? []),
+                'skill_keys' => (array)($payload['skill_keys'] ?? []),
+            ], '用户已确认，正在执行操作', [[
+                'name' => $toolName,
+                'arguments' => $arguments,
+                'result' => $toolResult,
+            ]]);
+        } catch (\Throwable $e) {
+            $this->sendModelGuide($conversationId, $send, $e);
+        }
     }
 
     /**
