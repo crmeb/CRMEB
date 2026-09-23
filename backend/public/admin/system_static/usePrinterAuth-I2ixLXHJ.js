@@ -1,0 +1,1 @@
+import{u,aU as o}from"./index-DHL7RTL2.js";function c(){const r=u();function n(t){var s;const e=(s=r.userInfo)==null?void 0:s.level;return e===0||e==="0"?!0:Array.isArray(r.access)&&o([t],r.access)}return{hasPermission:n}}export{c as u};
