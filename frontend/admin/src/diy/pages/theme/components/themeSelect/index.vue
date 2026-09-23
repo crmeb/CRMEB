@@ -3,7 +3,7 @@
     v-model="dialogVisible"
     width="1188px"
     top="5vh"
-    custom-class="theme-dialog"
+    class="theme-dialog"
     :show-close="false"
     append-to-body
     :modal="true"
@@ -44,19 +44,24 @@
                 v-model="searchKeyword"
                 placeholder="请输入主题名称"
                 suffix-icon="Search"
+                clearable
+                @clear="searchTheme"
                 @change="searchTheme"
               ></el-input>
             </div>
           </div>
 
-          <div class="theme-grid">
+          <div class="theme-grid" v-loading="loading">
             <!-- 新建空白主题 -->
-            <div class="theme-item create-new" v-if="activeTab === 'my'" @click="createNewTheme">
+            <div class="theme-item create-new" v-if="activeTab === 'my'" v-db-click @click="createNewTheme">
               <div class="create-icon">
                 <div class="iconfont iconic_brush"></div>
               </div>
               <div class="create-text">新建空白主题</div>
             </div>
+
+            <!-- 空状态 -->
+            <div class="theme-empty" v-if="!loading && themes.length === 0">未找到相关主题，换个关键词试试</div>
 
             <!-- 主题列表 -->
             <div class="theme-item" v-for="(theme, index) in themes" :key="index">
@@ -85,8 +90,8 @@
                 <div class="theme-time">修改时间：{{ theme.up_time }}</div>
 
                 <div class="theme-hover-actions">
-                  <div class="button default" @click="viewThemeDetail(theme)">查看详情</div>
-                  <div class="button primary" @click="selectTheme(theme)">使用主题</div>
+                  <div class="button default" v-db-click @click="viewThemeDetail(theme)">查看详情</div>
+                  <div class="button primary" v-db-click @click="selectTheme(theme)">使用主题</div>
                 </div>
               </div>
             </div>
@@ -134,7 +139,7 @@
               </div>
             </div>
             <div class="info-btn">
-              <el-button type="primary" @click="selectTheme(currentTheme)">使用主题</el-button>
+              <el-button type="primary" v-db-click @click="selectTheme(currentTheme)">使用主题</el-button>
             </div>
           </div>
         </div>
@@ -143,6 +148,7 @@
           <div class="section-title">主题图片</div>
           <div class="images-list">
             <div class="image-item" v-for="(opt, index) in filterOptions" :key="index">
+              <div class="image-label">{{ opt.label }}</div>
               <div class="phone-mockup">
                 <img
                   v-if="currentTheme[opt.value]"
@@ -228,6 +234,7 @@ const filterOptions = [
   { label: '个人中心', value: 'user_image' },
 ];
 const themes = ref([]);
+const loading = ref(false);
 const page = ref(1);
 const limit = ref(9);
 const total = ref(0);
@@ -261,10 +268,15 @@ function getList() {
   if (props.type == 'mall' && props.currentType == 'home') {
     reqData.page_type = 'all';
   }
-  getThemeList(reqData).then((res) => {
-    themes.value = res.data.list;
-    total.value = res.data.count;
-  });
+  loading.value = true;
+  getThemeList(reqData)
+    .then((res) => {
+      themes.value = res.data.list;
+      total.value = res.data.count;
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 }
 
 function handlePageChange(val) {
@@ -352,23 +364,8 @@ function searchTheme() {
 </script>
 
 <style lang="scss" scoped>
-// 弹窗样式
-:deep(.theme-dialog) {
-  border-radius: 8px;
-  overflow: hidden;
-
-  .el-dialog__header {
-    border-bottom: 1px solid #f0f0f0;
-    padding: 0px !important;
-  }
-
-  .el-dialog__body {
-    padding: 0 !important;
-  }
-  .el-dialog__body::-webkit-scrollbar {
-    width: 0%;
-  }
-}
+// 弹窗壳层（header/body/圆角）覆盖在本文件末尾的非 scoped 块中：
+// append-to-body 弹窗 teleport 到 body 后脱离组件样式作用域，scoped :deep 无法命中
 
 .dialog-header {
   display: flex;
@@ -377,7 +374,7 @@ function searchTheme() {
   width: 100%;
   padding: 15px 24px;
   .dialog-header-tabs {
-    background: #fff;
+    background: var(--prev-bg-white);
 
     .tabs {
       display: flex;
@@ -387,7 +384,7 @@ function searchTheme() {
         font-size: 14px;
         line-height: 22px;
         font-weight: 500;
-        color: #333;
+        color: var(--prev-color-text-regular);
         cursor: pointer;
         position: relative;
       }
@@ -395,21 +392,30 @@ function searchTheme() {
         height: 12px;
         margin-left: 20px;
         cursor: pointer;
+        transition: opacity 0.3s;
+
+        &:hover {
+          opacity: 0.75;
+        }
       }
     }
   }
 }
 .el-icon-close {
   font-size: 16px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   cursor: pointer;
+  transition: color 0.3s;
+
+  &:hover {
+    color: var(--prev-color-primary);
+  }
 }
 
 .dialog-content {
   display: flex;
   flex-direction: column;
-  height: calc(100% - 100px);
-  padding: 1px 24px 1px 24px !important;
+  padding: 0 24px 24px !important;
 
   .content-wrapper {
     flex: 1;
@@ -417,12 +423,11 @@ function searchTheme() {
     overflow: hidden;
     .main-content {
       flex: 1;
-      min-height: 756px;
       padding: 20px 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      background: #fff;
+      background: var(--prev-bg-white);
       .filters-header {
         display: flex;
         align-items: center;
@@ -441,42 +446,57 @@ function searchTheme() {
         gap: 30px;
         overflow-y: auto;
         flex: 1;
+        max-height: calc(100vh - 300px);
+
+        .theme-empty {
+          width: 100%;
+          text-align: center;
+          padding: 60px 0;
+          font-size: 13px;
+          color: var(--prev-color-text-secondary);
+        }
 
         .theme-item {
           width: 204px;
           height: 295px;
-          background: #fff;
-          border-radius: 8px;
+          background: var(--prev-bg-white);
+          border-radius: 6px;
           overflow: hidden;
-          border: 1px solid #f0f0f0;
+          border: 1px solid var(--prev-border-color-lighter);
           display: flex;
           flex-direction: column;
+          transition: box-shadow 0.3s, border-color 0.3s;
+
+          &:hover {
+            border-color: var(--prev-color-primary-light-5);
+            box-shadow: 0 6px 16px rgba(0, 21, 41, 0.08);
+          }
 
           &.create-new {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #fff;
             cursor: pointer;
-            border: 1px solid #eee;
-            background: #fafafa;
+            border: 1px dashed var(--prev-border-color-base);
+            background: var(--prev-bg-color);
             height: 295px; // Fixed height to match theme items
             transition: all 0.3s;
 
             .iconic_brush {
               font-size: 40px;
-              color: #ccc;
+              color: var(--prev-color-text-placeholder);
               padding-bottom: 15px;
             }
 
             .create-text {
-              color: #333;
+              color: var(--prev-color-text-regular);
               font-size: 14px;
             }
 
             &:hover {
               border-color: var(--prev-color-primary);
+              background: var(--prev-color-primary-light-9);
               .iconic_brush,
               .create-text {
                 color: var(--prev-color-primary);
@@ -488,7 +508,7 @@ function searchTheme() {
             position: relative;
             height: 215px;
             overflow: hidden;
-            background: #f0f2f5;
+            background: var(--prev-bg-main-color);
             transition: height 0.3s;
 
             .blur-bg {
@@ -508,10 +528,10 @@ function searchTheme() {
               z-index: 2;
               height: 95%;
               margin: 25px 24px 0 24px;
-              background: #fff;
+              background: var(--prev-bg-white);
               border-radius: 10px 10px 0 0;
               overflow: hidden;
-              border: 2px solid #fff;
+              border: 2px solid var(--prev-bg-white);
 
               img {
                 width: 100%;
@@ -523,13 +543,13 @@ function searchTheme() {
                 align-items: center;
                 height: 100%;
                 font-size: 12px;
-                color: #999;
+                color: var(--prev-color-text-secondary);
               }
             }
           }
 
           .theme-info {
-            background: #fff;
+            background: var(--prev-bg-white);
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -539,7 +559,7 @@ function searchTheme() {
             .theme-title {
               padding: 12px 0px 0 12px;
               font-size: 14px;
-              color: #333;
+              color: var(--prev-color-text-regular);
               margin-bottom: 12px;
               font-weight: 500;
               white-space: nowrap;
@@ -550,9 +570,9 @@ function searchTheme() {
               justify-content: space-between;
               .tag {
                 font-weight: 400;
-                color: rgba(2, 86, 255, 1);
+                color: var(--prev-color-primary);
                 font-size: 12px;
-                background: rgba(2, 86, 255, 0.06);
+                background: var(--prev-color-primary-light-9);
                 padding: 4px 6px 4px 8px;
                 border-radius: 10px 0 0 10px;
               }
@@ -562,7 +582,7 @@ function searchTheme() {
               padding: 0 12px 0 12px;
 
               font-size: 12px;
-              color: #999;
+              color: var(--prev-color-text-secondary);
               margin-bottom: 10px;
             }
 
@@ -586,7 +606,6 @@ function searchTheme() {
                 font-size: 12px;
                 cursor: pointer;
                 transition: all 0.3s;
-                cursor: pointer;
               }
               .primary {
                 background: var(--prev-color-primary);
@@ -596,10 +615,10 @@ function searchTheme() {
                 }
               }
               .default {
-                background: #f5f5f5;
-                color: #606266;
+                background: var(--prev-bg-color);
+                color: var(--prev-color-text-primary);
                 &:hover {
-                  background: #e4e7ed;
+                  background: var(--prev-border-color-base);
                 }
               }
             }
@@ -624,33 +643,31 @@ function searchTheme() {
     }
   }
 }
-:deep(.el-dialog__body) {
-  max-height: calc(100vh - 100px) !important;
-}
 .detail-content {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 100px);
-  background: #f5f7fa;
+  background: var(--prev-bg-color);
 
   .detail-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 15px 20px 16px;
-    background: #fff;
-    border-bottom: 1px solid #eee;
+    background: var(--prev-bg-white);
+    border-bottom: 1px solid var(--prev-border-color-lighter);
 
     .back-btn {
       cursor: pointer;
-      color: #666;
+      color: var(--prev-color-text-primary);
       font-size: 14px;
       margin-right: 10px;
       display: flex;
       align-items: center;
+      transition: color 0.3s;
 
       &:hover {
-        color: var(--prev-color-primary-light-1);
+        color: var(--prev-color-primary);
       }
 
       i {
@@ -661,32 +678,33 @@ function searchTheme() {
     .detail-title {
       font-size: 14px;
       font-weight: 500;
-      color: #333;
-      border-left: 1px solid #eee;
+      color: var(--prev-color-text-regular);
+      border-left: 1px solid var(--prev-border-color-lighter);
       padding-left: 10px;
     }
   }
 
   .detail-body {
-    height: calc(100vh - 100px);
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    background: #fff;
-    padding: 0 20px 0 24px !important;
+    background: var(--prev-bg-white);
+    padding: 0 20px 24px 24px;
 
     .detail-top {
       display: flex;
-      background: #fff;
+      background: var(--prev-bg-white);
       padding: 24px 0 20px 0;
       margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--prev-border-color-lighter);
 
       .detail-preview-main {
         width: 180px;
         height: 210px;
-        border-radius: 8px;
+        border-radius: 6px;
         overflow: hidden;
         margin-right: 24px;
-        border: 1px solid #eeeeee;
+        border: 1px solid var(--prev-border-color-lighter);
         img {
           width: 100%;
           object-fit: cover;
@@ -702,16 +720,15 @@ function searchTheme() {
         .info-title {
           font-size: 16px;
           font-weight: 500;
-          color: #333;
+          color: var(--prev-color-text-regular);
           margin-bottom: 20px;
         }
 
         .info-desc {
           font-size: 14px;
-          color: #666;
           line-height: 1.6;
           margin-bottom: 30px;
-          color: #888;
+          color: var(--prev-color-text-secondary);
         }
       }
     }
@@ -720,7 +737,7 @@ function searchTheme() {
       .section-title {
         font-size: 16px;
         font-weight: 500;
-        color: #333;
+        color: var(--prev-color-text-regular);
         margin-bottom: 15px;
       }
 
@@ -733,14 +750,21 @@ function searchTheme() {
           margin-right: 29px;
           flex-shrink: 0;
 
+          .image-label {
+            font-size: 12px;
+            color: var(--prev-color-text-secondary);
+            text-align: center;
+            margin-bottom: 10px;
+          }
+
           .phone-mockup {
             width: 214px;
             height: 380px;
-            background: #fff;
-            border-radius: 8px;
+            background: var(--prev-bg-white);
+            border-radius: 6px;
             overflow: hidden;
             position: relative;
-            border: 1px solid #eeeeee;
+            border: 1px solid var(--prev-border-color-lighter);
             .preview-image {
               width: 100%;
               object-fit: cover;
@@ -752,7 +776,7 @@ function searchTheme() {
               align-items: center;
               padding: 10px;
               margin-top: 70px;
-              color: rgba(153, 153, 153, 1);
+              color: var(--prev-color-text-secondary);
               font-size: 13px;
             }
           }
@@ -762,8 +786,8 @@ function searchTheme() {
         width: max-content;
         height: max-content;
         text-align: center;
-        background: #f9f9f9;
-        border-radius: 8px 8px 8px 8px;
+        background: var(--prev-bg-color);
+        border-radius: 6px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -783,9 +807,35 @@ function searchTheme() {
 
         .qrcode-text {
           font-size: 12px;
-          color: #999;
+          color: var(--prev-color-text-secondary);
         }
       }
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+/* 弹窗壳层覆盖（非 scoped）：append-to-body 弹窗 teleport 到 body 后
+   脱离组件样式作用域，scoped :deep 无法命中，必须用业务前缀全局类 */
+.theme-dialog {
+  border-radius: 6px;
+  overflow: hidden;
+
+  /* header 内边距归零，留白由内部 .dialog-header（15px 24px）提供，
+     避免与全局 .el-dialog__header 的 15px 叠加成 30px 双重边距 */
+  .el-dialog__header {
+    padding: 0 !important;
+    border-bottom: 1px solid var(--prev-border-color-lighter);
+  }
+
+  .el-dialog__body {
+    padding: 0 !important;
+    /* 放开全局 720px 上限，与 top:5vh 匹配，滚动交给内部网格/详情区 */
+    max-height: calc(100vh - 100px);
+
+    &::-webkit-scrollbar {
+      width: 0;
     }
   }
 }
