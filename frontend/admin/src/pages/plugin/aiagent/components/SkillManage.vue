@@ -8,7 +8,7 @@
             Skill 以 Markdown 文件存储，Agent 对话时按选择注入上下文（Markdown 指南、流程说明等）。
           </div>
         </div>
-        <el-button type="primary" v-db-click @click="openEditor()">新建 Skill</el-button>
+        <el-button type="primary" icon="Plus" v-db-click @click="openEditor()">新建 Skill</el-button>
       </div>
 
       <el-table :data="list" v-loading="loading" row-key="key">
@@ -41,6 +41,7 @@
             <span class="table-link danger" @click="removeSkill(scope.row)">删除</span>
           </template>
         </el-table-column>
+        <template #empty>暂无 Skill，点击右上角「新建 Skill」创建</template>
       </el-table>
     </el-card>
 
@@ -51,6 +52,7 @@
       direction="rtl"
       size="60%"
       append-to-body
+      class="ai-skill-drawer"
       :close-on-click-modal="false"
     >
       <div class="drawer-body">
@@ -122,17 +124,17 @@
       direction="rtl"
       size="60%"
       append-to-body
+      class="ai-skill-drawer"
       :close-on-click-modal="false"
     >
       <div class="drawer-body">
-        <div class="toolbar">
-          <div class="toolbar-tip" style="margin-top: 0">
-            附属资料不随对话注入，Agent 判断需要更完整资料时按需加载；文件为 .md 格式（SKILL.md 与 EXAMPLES.md
-            为保留名）。
-          </div>
-          <el-button type="primary" size="small" icon="Plus" v-db-click @click="openAttachmentEditor()"
-            >新建附件</el-button
-          >
+        <div class="attach-tip">
+          附属资料不随对话注入，Agent 判断需要更完整资料时按需加载；文件为 .md 格式（SKILL.md 与 EXAMPLES.md
+          为保留名）。
+        </div>
+        <div class="attach-toolbar">
+          <span class="attach-count">共 {{ attachmentList.length }} 个文件</span>
+          <el-button type="primary" icon="Plus" v-db-click @click="openAttachmentEditor()">新建附件</el-button>
         </div>
         <el-table :data="attachmentList" v-loading="attachmentLoading" row-key="file">
           <el-table-column label="文件名" min-width="200">
@@ -155,6 +157,7 @@
               <span class="table-link danger" @click="removeAttachment(scope.row)">删除</span>
             </template>
           </el-table-column>
+          <template #empty>暂无附属资料，点击右上角「新建附件」添加</template>
         </el-table>
       </div>
       <template #footer>
@@ -171,6 +174,7 @@
       direction="rtl"
       size="60%"
       append-to-body
+      class="ai-skill-drawer"
       :close-on-click-modal="false"
     >
       <div class="drawer-body">
@@ -567,18 +571,18 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 .toolbar-title {
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 18px;
   font-weight: 600;
 }
 .toolbar-tip,
 .muted {
   margin-top: 6px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 13px;
 }
 .skill-name {
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-weight: 600;
 }
 .mono {
@@ -599,11 +603,11 @@ onMounted(() => {
     opacity: 0.8;
   }
   &.danger {
-    color: #f56c6c;
+    color: var(--prev-color-danger);
   }
 }
 .danger {
-  color: #f56c6c;
+  color: var(--prev-color-danger);
 }
 .content-editor :deep(.el-textarea__inner) {
   height: max(calc(100vh - 310px), 520px);
@@ -613,11 +617,37 @@ onMounted(() => {
   line-height: 1.7;
 }
 .drawer-body {
-  padding: 0 24px 10px;
+  /* 左右留白由 .ai-skill-drawer 全局规则（16px）提供，此处只补底部间距，避免双重内边距 */
+  padding: 0 0 10px;
 }
 .ai-inline-tip {
   margin-left: 10px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
+}
+/* 附属资料抽屉：说明独立成行，操作行（计数 + 新建按钮）右对齐，与卡片页工具栏同构 */
+.attach-tip {
+  margin-bottom: 14px;
+  color: var(--prev-color-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+.attach-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.attach-count {
+  color: var(--prev-color-text-secondary);
+  font-size: 12px;
+}
+</style>
+
+<style lang="scss">
+/* 三个抽屉均 append-to-body 挂载在 body 下，scoped 样式无法命中，
+   用业务前缀类收窄 body 水平内边距（全局 35px 对 60% 宽抽屉偏大） */
+.ai-skill-drawer .el-drawer__body {
+  padding: 16px;
 }
 </style>
