@@ -527,6 +527,12 @@ function del(row, tit, num) {
 
 ### 13.2 巡检整改记录（2026-09-09）
 
+**已修复**（2026-09-23，全站页面标题头补充描述）：
+
+- 全站带标题头页面统一补充 `description` 说明文字：`<pages-header>` 用法直接加 `description` 属性（44 处，含存量模型管理、小程序一键上传共 46 处），直写 `.i-layout-page-header.header-title` 的 16 处改为「`.header-main` 包裹标题 + `.header-description`（前置 `<el-icon>` + `InfoFilled`）」结构，与组件渲染结果一致。仅 setApp 占位页（空壳）与 SchemaPage DetailTemplate（标题由后端 config 下发）未加。
+- `.header-main` / `.header-description` / `.header-description-icon` 三类样式真源由 `pagesHeader/index.vue` scoped 迁移至 `styles/style.scss` 全局（组件内定义已删），直写页面直接复用全局类与全局注册的 `InfoFilled` 图标，页面无需自带样式。
+- 注意 `header-title` 是 flex space-between，直写时描述必须与标题同包在 `.header-main` 内，否则会被推到容器最右侧。
+
 **已修复**（2026-09-23，表单数字输入框宽度与对齐）：
 
 - 「添加优惠券」数字框（面值/天数/领取数量等）挂了为文本框设计的 `content_width`（414px），且 EP 数字默认居中显示。同类问题全站共 6 文件 17 处（优惠券 ×5、拼团 ×7、砍价 ×3、秒杀 ×1、渠道码 ×1）。
