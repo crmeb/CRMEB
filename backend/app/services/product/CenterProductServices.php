@@ -3467,7 +3467,7 @@ class CenterProductServices extends BaseService
                     }
                     $one_data = [
                         'id' => intval($product_id),
-                        'store_name' => $productInfo['store_name'],
+                        'store_name' => $productInfo['name'],
                         'product_type' => $productInfo['product_type'] ?? 'normal',
                         'type_name' => $this->getProductTypeName($productInfo['product_type'] ?? 'normal'),
                         'cate_name_one' => reset($cateName)['one'] ?? '',
@@ -3493,9 +3493,9 @@ class CenterProductServices extends BaseService
                         'weight' => intval($value['weight'] ?? 0),
                         'bar_code' => $value['bar_code'] ?? '',
                         'bar_code_number' => $value['bar_code_number'] ?? '',
-                        'store_info' => $productInfo['store_info'],
+                        'store_info' => $productInfo['intro'],
                         'keyword' => $productInfo['keyword'],
-                        'command_word' => $productInfo['command_word'],
+                        'command_word' => '',
                         'give_integral' => $productInfo['give_integral'],
                     ];
                     $export[] = $one_data;

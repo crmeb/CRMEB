@@ -298,7 +298,7 @@ class ExportServices extends BaseService
                     }
                     $one_data = [
                         'id' => intval($product_id),
-                        'store_name' => $productInfo['store_name'],
+                        'store_name' => $productInfo['name'],
                         'product_type' => $productTypeNameMap[$productInfo['product_type']] ?? '',
                         'cate_name_one' => $cate_name_one,
                         'cate_name_two' => $cate_name_two,
@@ -315,9 +315,9 @@ class ExportServices extends BaseService
                         'volume' => floatval($value['volume'] ?? 0),
                         'bar_code' => $value['bar_code'] ?? '',
                         'bar_code_number' => $value['bar_code_number'] ?? '',
-                        'store_info' => $productInfo['store_info'] ?? '',
+                        'store_info' => $productInfo['intro'],
                         'keyword' => $productInfo['keyword'] ?? '',
-                        'command_word' => $productInfo['command_word'] ?? '',
+                        'command_word' => '',
                         'give_integral' => $productInfo['give_integral'] ?? 0,
                     ];
                     $export[] = $one_data;
