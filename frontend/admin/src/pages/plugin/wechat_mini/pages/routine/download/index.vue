@@ -1,15 +1,19 @@
 <template>
   <div>
-    <!-- <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
-    </div> -->
     <pages-header ref="pageHeader" :title="$route.meta.title"></pages-header>
-    <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
+    <el-card shadow="never" class="ivu-mt mt16">
       <div class="flex-wrapper">
-        <!-- :src="iframeUrl" -->
-        <div>
-          <iframe class="iframe-box" :src="iframeUrl" frameborder="0" ref="iframe"></iframe>
+        <div v-if="iframeUrl" class="preview-box">
+          <iframe class="iframe-box" :src="iframeUrl" frameborder="0"></iframe>
           <div class="mask"></div>
+        </div>
+        <div v-else class="preview-box preview-empty">
+          <el-empty description="未获取到 H5 商城地址，无法预览">
+            <div class="empty-tips">
+              请在 系统设置 → 系统配置 中正确配置站点网址（site_url）； 如需指向独立 H5 调试地址，可在
+              frontend/admin/.env.dev 中配置 VITE_APP_H5_URL
+            </div>
+          </el-empty>
         </div>
 
         <div class="right">
@@ -66,27 +70,18 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { routineDownload, routineInfo } from '../../../api';
 import Setting from '@/setting';
-import { useMediaStore } from '@/store/module/media';
 
 defineOptions({ name: 'routineTemplate' });
 
-const { isMobile } = storeToRefs(useMediaStore());
-const labelWidth = computed(() => (isMobile.value ? undefined : '80px'));
-const labelPosition = computed(() => (isMobile.value ? 'top' : 'right'));
-
-const grid = ref({
-  xl: 7,
-  lg: 7,
-  md: 12,
-  sm: 24,
-  xs: 24,
-});
-const iframeUrl = ref(`${Setting.h5BaseURL || location.origin}/pages/index/index?mdType=iframeWindow`);
+// H5 预览地址：接口返回站点配置后按优先级组装
+// 1. 前端环境变量 VITE_APP_H5_URL（显式指定，如独立 uni-app dev server）
+// 2. 后端系统配置站点网址 site_url（默认形态，H5 部署在 backend/public）
+// 3. 当前域名（兜底）
+const iframeUrl = ref('');
 const is_live = ref(1);
 const pageData = ref({
   code: '',
@@ -98,6 +93,9 @@ const pageData = ref({
 
 routineInfo().then((res) => {
   pageData.value = res.data;
+  iframeUrl.value = `${
+    Setting.h5BaseURL || res.data.site_url || location.origin
+  }/pages/index/index?mdType=iframeWindow`;
 });
 
 function downLoad() {
@@ -126,7 +124,7 @@ function downLoadCode(url) {
     var url = canvas.toDataURL(); //得到图片的base64编码数据
     var a = document.createElement('a'); // 生成一个a元素
     var event = new MouseEvent('click'); // 创建一个单击事件
-    a.download = name || 'photo'; // 设置图片名称
+    a.download = '小程序码'; // 设置图片名称
     a.href = url; // 将生成的URL设置为a.href属性
     a.dispatchEvent(event); // 触发a的单击事件
   };
@@ -146,6 +144,23 @@ function downLoadCode(url) {
 .flex-wrapper {
   display: flex;
   border-radius: 10px;
+}
+.preview-box {
+  position: relative;
+  width: 312px;
+}
+.preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.empty-tips {
+  max-width: 260px;
+  font-size: 12px;
+  color: var(--prev-color-text-secondary);
+  line-height: 1.8;
+  text-align: center;
 }
 .iframe-box {
   width: 312px;
