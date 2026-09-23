@@ -53,8 +53,6 @@ Desktop.ini
 !/backend/public/install/.env
 !/frontend/admin/.env.production
 !/frontend/uni-app/.env.production
-!/backend/.constant
-!/backend/.env
 /backend/pem/
 
 # 前端依赖与构建产物
