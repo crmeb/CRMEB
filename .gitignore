@@ -98,7 +98,7 @@ node_modules/
 /docker/mysql/log/
 /docker/nginx/log/
 
-
+/backend/public/*
 /crmeb/runtime/
 /backend/tests/
 /crmeb/public/install.lock
@@ -107,7 +107,5 @@ node_modules/
 /docv8/
 backend/vendor/workerman/
 
-# 推广类交付文档（AI 生成，非工程代码；独立于仓库代码管理）
-推广文档/
-/frontend/uni-app/src/unpackage/dist/dev/
-
+backend/.constant
+backend/.env
