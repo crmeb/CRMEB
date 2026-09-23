@@ -60,13 +60,13 @@
         </router-link>
       </el-card>
     </el-col>
-    <el-col v-bind="grid" class="ivu-mb" v-auth="['agent-agent-manage']">
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['aiagent-manage']">
       <el-card shadow="never">
-        <router-link :to="{ path: $routeProStr + '/distribution/agent_manage/index' }">
+        <router-link :to="{ path: $routeProStr + '/aiagent/index' }">
           <div class="icon">
-            <i class="iconfont iconfenxiaoguanli" style="color: #ff7d00"></i>
+            <i class="crmeb-icon CRMEB-663-AI-mianxing" style="color: #722ed1"></i>
           </div>
-          <p>分销管理</p>
+          <p>AI 对话</p>
         </router-link>
       </el-card>
     </el-col>
