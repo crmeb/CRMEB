@@ -7,11 +7,12 @@
           <div class="mcp-hero-title">MCP 服务管理</div>
           <div class="mcp-hero-sub">安装 MCP 服务，为 AI Agent 扩展更多工具能力</div>
         </div>
-        <el-button type="primary" icon="el-icon-setting" v-db-click @click="openEditor()">配置 MCP</el-button>
+        <!-- icon prop 需传全局注册的 EP 图标名（PascalCase）；el-icon-* 字符串不会解析成组件 -->
+        <el-button type="primary" icon="Setting" v-db-click @click="openEditor()">配置 MCP</el-button>
       </div>
 
       <div class="mcp-toolbar">
-        <el-input v-model="keyword" placeholder="搜索 MCP" prefix-icon="el-icon-search" clearable class="mcp-search" />
+        <el-input v-model="keyword" placeholder="搜索 MCP" prefix-icon="Search" clearable class="mcp-search" />
       </div>
 
       <div class="mcp-section">
@@ -75,7 +76,13 @@
               尚未同步工具，点击 <i class="el-icon-refresh" /> 拉取远端工具清单。
             </div>
             <div v-else class="mcp-tools">
-              <el-tooltip v-for="tool in row.tools" :key="tool.name" :content="toolTip(tool)" placement="top">
+              <el-tooltip
+                v-for="tool in row.tools"
+                :key="tool.name"
+                :content="toolTip(tool)"
+                placement="top"
+                popper-class="ai-mcp-tool-tip"
+              >
                 <span class="tool-chip mono">{{ tool.label || tool.name }}</span>
               </el-tooltip>
             </div>
@@ -607,5 +614,13 @@ function removeServer(row) {
     font-size: 12px;
     line-height: 1.7;
   }
+}
+</style>
+
+<style lang="scss">
+/* 工具提示 popper 挂载在 body 下，scoped 样式无法命中，用专用类全局限定宽度 */
+.ai-mcp-tool-tip {
+  max-width: 420px;
+  line-height: 1.6;
 }
 </style>

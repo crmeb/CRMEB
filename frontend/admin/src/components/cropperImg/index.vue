@@ -40,8 +40,8 @@
             accept="image/png, image/jpeg, image/gif, image/jpg"
             @change="selectImg($event)"
           />
-          <el-button type="danger" plain icon="el-icon-zoom-in" v-db-click @click="changeScale(1)">放大</el-button>
-          <el-button type="danger" plain icon="el-icon-zoom-out" v-db-click @click="changeScale(-1)">缩小</el-button>
+          <el-button type="danger" plain icon="ZoomIn" v-db-click @click="changeScale(1)">放大</el-button>
+          <el-button type="danger" plain icon="ZoomOut" v-db-click @click="changeScale(-1)">缩小</el-button>
           <el-button type="danger" plain v-db-click @click="rotateLeft">↺ 左旋转</el-button>
           <el-button type="danger" plain v-db-click @click="rotateRight">↻ 右旋转</el-button>
         </div>

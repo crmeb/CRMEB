@@ -130,7 +130,7 @@
             附属资料不随对话注入，Agent 判断需要更完整资料时按需加载；文件为 .md 格式（SKILL.md 与 EXAMPLES.md
             为保留名）。
           </div>
-          <el-button type="primary" size="small" icon="el-icon-plus" v-db-click @click="openAttachmentEditor()"
+          <el-button type="primary" size="small" icon="Plus" v-db-click @click="openAttachmentEditor()"
             >新建附件</el-button
           >
         </div>

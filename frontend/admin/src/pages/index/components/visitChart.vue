@@ -7,7 +7,7 @@
             <el-row justify="center" align="middle">
               <el-col :span="8" class="card-title">
                 <el-avatar
-                  icon="el-icon-s-marketing"
+                  icon="DataAnalysis"
                   style="color: var(--prev-color-primary); background-color: #e6f7ff"
                 ></el-avatar>
                 <h4 class="ivu-pl-8">订单</h4>

@@ -43,7 +43,7 @@
               <el-input
                 v-model="searchKeyword"
                 placeholder="请输入主题名称"
-                suffix-icon="el-icon-search"
+                suffix-icon="Search"
                 @change="searchTheme"
               ></el-input>
             </div>

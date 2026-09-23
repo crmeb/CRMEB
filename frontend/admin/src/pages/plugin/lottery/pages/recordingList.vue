@@ -2,9 +2,7 @@
   <div>
     <div class="i-layout-page-header header-title">
       <div class="fl_header">
-        <el-button class="btn-back" icon="el-icon-arrow-left" type="text" v-db-click @click="$router.go(-1)"
-          >返回</el-button
-        >
+        <el-button class="btn-back" icon="ArrowLeft" type="text" v-db-click @click="$router.go(-1)">返回</el-button>
         <el-divider direction="vertical"></el-divider>
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
       </div>

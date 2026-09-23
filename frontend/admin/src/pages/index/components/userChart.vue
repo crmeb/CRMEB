@@ -5,7 +5,7 @@
         <el-card :bordered="false" shadow="never">
           <div class="card-title">
             <el-avatar
-              icon="el-icon-user-solid"
+              icon="UserFilled"
               style="color: var(--prev-color-primary); background-color: #e6f7ff"
             ></el-avatar>
             <h4 class="ivu-pl-8">用户</h4>
@@ -23,7 +23,7 @@
         <el-card :bordered="false" shadow="never" class="dashboard-console-visit">
           <div class="card-title">
             <el-avatar
-              icon="el-icon-s-marketing"
+              icon="DataAnalysis"
               style="color: var(--prev-color-primary); background-color: #e6f7ff"
             ></el-avatar>
             <h4 class="ivu-pl-8">购买用户统计</h4>

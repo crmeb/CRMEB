@@ -185,13 +185,7 @@
                     </div>
                   </div>
                 </div>
-                <el-button
-                  v-else
-                  class="upload-select"
-                  type="dashed"
-                  icon="el-icon-plus"
-                  @click="modalPicTap(1)"
-                ></el-button>
+                <el-button v-else class="upload-select" type="dashed" icon="Plus" @click="modalPicTap(1)"></el-button>
                 <p class="tip">建议尺寸：80px*30px，若未上传则为空白</p>
               </el-form-item>
               <el-form-item label="排序：">

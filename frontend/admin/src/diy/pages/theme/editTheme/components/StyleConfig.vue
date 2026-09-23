@@ -106,11 +106,7 @@
             <div class="main-content">
               <div class="filters-header">
                 <div class="search-box">
-                  <el-input
-                    v-model="searchKeyword"
-                    placeholder="请输入主题名称"
-                    prefix-icon="el-icon-search"
-                  ></el-input>
+                  <el-input v-model="searchKeyword" placeholder="请输入主题名称" prefix-icon="Search"></el-input>
                 </div>
               </div>
 

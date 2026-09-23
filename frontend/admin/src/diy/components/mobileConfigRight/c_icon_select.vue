@@ -2,7 +2,7 @@
   <el-dialog v-model="visible" width="800px" title="选择图标" append-to-body>
     <div class="icon-selector">
       <div class="search-box">
-        <el-input v-model="searchText" placeholder="搜索图标名称" prefix-icon="el-icon-search" clearable></el-input>
+        <el-input v-model="searchText" placeholder="搜索图标名称" prefix-icon="Search" clearable></el-input>
       </div>
       <div class="icon-list">
         <div class="icon-item" v-for="(item, index) in filteredIcons" :key="index" @click="selectIcon(item)">

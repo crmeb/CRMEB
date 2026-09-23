@@ -27,61 +27,66 @@
             </el-form-item>
           </el-col>
           <el-col :span="24" v-for="(item, index) in formValidate.typelist" :key="index">
-            <el-col v-bind="grid">
-              <el-form-item
-                :label="'字段' + (index + 1) + '：'"
-                label-width="90px"
-                :prop="'typelist.' + index + '.name.value'"
-                :rules="{ required: true, message: '请输入字段名称：姓名', trigger: 'blur' }"
+            <el-row :gutter="20">
+              <el-col v-bind="grid">
+                <el-form-item
+                  :label="'字段' + (index + 1) + '：'"
+                  label-width="90px"
+                  :prop="'typelist.' + index + '.name.value'"
+                  :rules="{ required: true, message: '请输入字段名称：姓名', trigger: 'blur' }"
+                >
+                  <el-input v-model="item.name.value" placeholder="字段名称：姓名"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col v-bind="grid">
+                <el-form-item
+                  label-width="0"
+                  :prop="'typelist.' + index + '.title.value'"
+                  :rules="{ required: true, message: '请输入字段配置名', trigger: 'blur' }"
+                >
+                  <el-input v-model="item.title.value" placeholder="字段配置名：name"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col v-bind="grid">
+                <el-form-item
+                  label-width="0"
+                  :prop="'typelist.' + index + '.type.value'"
+                  :rules="{ required: true, message: '请选择字段类型', trigger: 'change' }"
+                >
+                  <el-select placeholder="字段类型" v-model="item.type.value">
+                    <el-option value="input">文本框</el-option>
+                    <el-option value="textarea">多行文本框</el-option>
+                    <el-option value="radio">单选框</el-option>
+                    <el-option value="checkbox">多选框</el-option>
+                    <el-option value="select">下拉选择</el-option>
+                    <el-option value="upload">单图</el-option>
+                    <el-option value="uploads">多图</el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col v-bind="gridBtn">
+                <el-form-item label-width="0">
+                  <el-button icon="Delete" v-db-click @click="delGroup(index)"></el-button>
+                </el-form-item>
+              </el-col>
+              <el-col
+                v-if="item.type.value === 'radio' || item.type.value === 'checkbox' || item.type.value === 'select'"
+                :span="24"
               >
-                <el-input v-model="item.name.value" placeholder="字段名称：姓名"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col v-bind="grid" class="goupBox">
-              <el-form-item
-                label-width="0"
-                :prop="'typelist.' + index + '.title.value'"
-                :rules="{ required: true, message: '请输入字段配置名', trigger: 'blur' }"
-              >
-                <el-input v-model="item.title.value" placeholder="字段配置名：name"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col v-bind="grid" prop="type" class="goupBox">
-              <el-form-item
-                :prop="'typelist.' + index + '.type.value'"
-                :rules="{ required: true, message: '请选择字段类型', trigger: 'change' }"
-                label-width="0"
-              >
-                <el-select placeholder="字段类型" v-model="item.type.value">
-                  <el-option value="input">文本框</el-option>
-                  <el-option value="textarea">多行文本框</el-option>
-                  <el-option value="radio">单选框</el-option>
-                  <el-option value="checkbox">多选框</el-option>
-                  <el-option value="select">下拉选择</el-option>
-                  <el-option value="upload">单图</el-option>
-                  <el-option value="uploads">多图</el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-button icon="el-icon-delete" v-db-click @click="delGroup(index)"></el-button>
-            <!-- <el-col span="1"> </el-col> -->
-            <el-col
-              :span="24"
-              v-if="item.type.value === 'radio' || item.type.value === 'checkbox' || item.type.value === 'select'"
-            >
-              <el-form-item
-                :prop="'typelist.' + index + '.param.value'"
-                :rules="{ required: true, message: '请输入参数方式', trigger: 'blur' }"
-              >
-                <el-input
-                  type="textarea"
-                  :rows="4"
-                  :placeholder="item.param.placeholder"
-                  v-model="item.param.value"
-                  style="width: 90%"
-                ></el-input>
-              </el-form-item>
-            </el-col>
+                <el-form-item
+                  :prop="'typelist.' + index + '.param.value'"
+                  :rules="{ required: true, message: '请输入参数方式', trigger: 'blur' }"
+                >
+                  <el-input
+                    type="textarea"
+                    :rows="4"
+                    :placeholder="item.param.placeholder"
+                    v-model="item.param.value"
+                    style="width: 90%"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-col>
           <el-col>
             <el-form-item>
@@ -130,6 +135,13 @@ const iconVal = ref('');
 const grid = {
   xl: 7,
   lg: 7,
+  md: 12,
+  sm: 24,
+  xs: 24,
+};
+const gridBtn = {
+  xl: 3,
+  lg: 3,
   md: 12,
   sm: 24,
   xs: 24,
@@ -234,8 +246,5 @@ defineExpose({ modals, fromData });
 <style lang="scss" scoped>
 .cur {
   cursor: pointer;
-}
-.goupBox :deep(.ivu-form-item-content) {
-  margin-left: 43px !important;
 }
 </style>
