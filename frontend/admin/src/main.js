@@ -24,7 +24,7 @@ import * as tools from '@/libs/tools';
 import timeOptions from '@/libs/timeOptions';
 
 // UI 框架
-import ElementPlus from 'element-plus';
+import ElementPlus, { ElMessage } from 'element-plus';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import 'element-plus/dist/index.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
@@ -74,6 +74,20 @@ const app = createApp(App);
 // 注册全局变量，供 UMD 扩展模块运行时使用（externals: vue -> window.Vue, element-plus -> window.ElementPlus）
 window.Vue = Vue;
 window.ElementPlus = ElementPlus;
+
+// ---- ElMessage 防刷屏：登录过期等场景下多个并发请求同时失败，各页面 catch 各弹一条相同提示。
+// 为类型方法统一注入 grouping，由 Element Plus 把相同内容合并为一条并显示重复计数；
+// 内容为 VNode 时不支持合并，原样透传。 ----
+['success', 'warning', 'info', 'error'].forEach((type) => {
+  const original = ElMessage[type].bind(ElMessage);
+  ElMessage[type] = (options) => {
+    const message = typeof options === 'string' ? options : options?.message;
+    if (typeof message === 'string' && message) {
+      return original(typeof options === 'string' ? { message, grouping: true } : { ...options, grouping: true });
+    }
+    return original(options);
+  };
+});
 
 // ---- 过渡兼容层：Vue2 时代的 this.bus（$on/$off/$emit 转发到 mitt 总线） ----
 app.config.globalProperties.bus = {

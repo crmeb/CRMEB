@@ -11,7 +11,7 @@
         ></WangEditor>
       </el-form-item>
     </el-col>
-    <el-col :span="6" style="width: 33%">
+    <el-col :span="8">
       <div class="ifam">
         <div class="content" v-html="content"></div>
       </div>
@@ -57,4 +57,16 @@ function getEditorContent(val) {
 </script>
 <style lang="scss" scoped>
 @use '../productAdd.scss' as *;
+
+/* 编辑器整体与右侧手机预览（644px）等高：工具栏自适应行数，编辑区占满剩余高度，底部对齐 */
+:deep(.wang-editor) {
+  display: flex;
+  flex-direction: column;
+  height: 644px;
+}
+
+:deep(.editor-content) {
+  flex: 1;
+  height: auto !important;
+}
 </style>

@@ -394,6 +394,14 @@
   text-decoration: none;
 }
 
+// 二级菜单展开抖动修复：EP 的 ElCollapseTransition 动画在 overflow visible/hidden 间切换，
+// .columns-round 给菜单项加的 margin 在 visible 时向外塌陷、hidden 时被包含，导致 scrollHeight
+// 测量值与实际内容高度不一致，动画起止瞬间高度突变（肉眼可见的上跳）。
+// flow-root 让内联子菜单始终成为 BFC，margin 全程被包含，三者高度一致；间隙视觉不变。
+.layout-aside .el-menu .el-menu--inline {
+  display: flow-root;
+}
+
 // 菜单收起时鼠标经过背景颜色/字体颜色
 .el-menu--vertical {
   background: var(--prev-bg-menuBar) !important;

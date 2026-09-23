@@ -8,7 +8,7 @@
     </div>
 
     <div class="header-right">
-      <el-button icon="el-icon-view" @click="$emit('preview')">预览</el-button>
+      <el-button icon="View" @click="$emit('preview')">预览</el-button>
       <el-button v-if="!isMicroPage" @click="$emit('save-template')">另存主题</el-button>
       <el-button @click="$emit('save')">保存</el-button>
       <el-button type="primary" @click="$emit('save-close')">保存并关闭</el-button>

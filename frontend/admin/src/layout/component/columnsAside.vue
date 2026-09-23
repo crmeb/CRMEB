@@ -185,8 +185,11 @@ function setColumnsMenuHighlight(path) {
 watch(
   () => themeConfigStore.themeConfig.columnsAsideStyle,
   (val) => {
-    val === 'columnsRound' ? (difference.value = 3) : (difference.value = 0);
+    // 圆角滑块高 44px（项高 50px），top 下移 3px 使滑块在项内垂直居中；卡片滑块顶满 50px 项高，无需偏移。
+    // 设置面板 radio 下发 kebab-case（columns-round/columns-card），原驼峰比较 columnsRound 永不匹配，一并修正
+    val === 'columns-round' ? (difference.value = 3) : (difference.value = 0);
   },
+  { immediate: true },
 );
 
 // 监听路由的变化
@@ -222,6 +225,8 @@ watch(
       color: var(--prev-bg-columnsMenuBarColor);
       width: 100%;
       height: 50px;
+      /* 一级菜单图标统一 16px：iconfont 菜单图标组件默认 16px，EP 图标无 .el-menu 上下文会回落 14px */
+      font-size: 16px;
       text-align: center;
       display: flex;
       cursor: pointer;
@@ -260,11 +265,11 @@ watch(
         text-decoration: none;
         color: var(--prev-bg-columnsMenuBarColor);
       }
+      /* 悬停反馈：以菜单文字色衍生 8% 半透明底，深/浅主题自动适配；不占用选中态主题蓝 */
+      &:hover {
+        background: color-mix(in srgb, var(--prev-bg-columnsMenuBarColor) 8%, transparent);
+      }
     }
-    // li:hover {
-    //   background: var(--prev-color-primary);
-    //   color: var(--prev-bg-columnsMenuBarColor);
-    // }
     .layout-columns {
       transition: 0.3s ease-in-out;
     }
@@ -274,18 +279,19 @@ watch(
       transition: 0.3s ease-in-out;
     }
 
+    /* 圆角选中滑块：项高 50px 内上下各留 3px、左右各留 5px，圆角 6px 与全站控件圆角一致；卡片风格由 .columns-card 覆盖回全宽直角 */
     .columns-round {
       background: var(--prev-color-primary);
       // color: var(--prev-color-text-white);
       position: absolute;
       left: 50%;
-      top: 2px;
-      height: 50px;
-      width: 65px;
+      top: 3px;
+      height: 44px;
+      width: calc(100% - 10px);
       transform: translateX(-50%);
       z-index: 0;
       transition: 0.3s ease-in-out;
-      border-radius: 5px;
+      border-radius: 6px;
     }
     .columns-card {
       @extend .columns-round;

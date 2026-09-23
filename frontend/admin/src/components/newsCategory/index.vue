@@ -46,14 +46,14 @@
                     >
                       <el-button
                         type="success"
-                        icon="el-icon-edit"
+                        icon="Edit"
                         v-show="item.new[i].isDel && isShow"
                         v-db-click
                         @click="clkk(item)"
                       ></el-button>
                       <el-button
                         type="error"
-                        icon="el-icon-delete"
+                        icon="Delete"
                         v-show="item.new[i].isDel && isShow"
                         v-db-click
                         @click="del(item, '删除图文', i)"
@@ -61,7 +61,7 @@
                       ></el-button>
                       <el-button
                         type="primary"
-                        icon="el-icon-s-promotion"
+                        icon="Promotion"
                         v-show="item.new[i].isDel && isShowSend"
                         v-db-click
                         @click="send(item, '发送', i)"

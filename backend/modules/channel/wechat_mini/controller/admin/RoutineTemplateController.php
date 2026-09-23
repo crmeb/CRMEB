@@ -206,6 +206,8 @@ class RoutineTemplateController extends AuthController
         }
         $data['appId'] = sys_config('routine_appId');
         $data['help'] = 'https://doc.crmeb.com/web/single/crmeb_v4/978';
+        // 站点网址：前端 iframe H5 预览地址回退使用（H5 产物部署在 backend/public）
+        $data['site_url'] = sys_config('site_url');
         return app('json')->success($data);
     }
 }

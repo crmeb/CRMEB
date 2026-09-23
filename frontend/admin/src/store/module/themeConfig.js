@@ -80,7 +80,7 @@ export const useThemeConfigStore = defineStore(
       // 主页面切换动画：可选值"<slide-right|slide-left|opacitys>"，默认 slide-right
       animation: 'opacitys',
       // 分栏高亮风格：可选值"<columns-round|columns-card>"，默认 columns-round
-      columnsAsideStyle: 'columns-card',
+      columnsAsideStyle: 'columns-round',
       // 分栏布局风格：可ƒ选值"<columns-horizontal|columns-vertical>"，默认 columns-horizontal
       columnsAsideLayout: 'columns-vertical',
 

@@ -9,7 +9,7 @@
           <div class="task-hero-title">自动化任务</div>
           <div class="task-hero-sub">让 AI 按计划无人值守执行指令并推送结果（如每日经营日报）</div>
         </div>
-        <el-button type="primary" icon="el-icon-plus" v-db-click @click="openEditor()">新建任务</el-button>
+        <el-button type="primary" icon="Plus" v-db-click @click="openEditor()">新建任务</el-button>
       </div>
 
       <div class="task-section">

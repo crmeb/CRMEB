@@ -526,7 +526,7 @@ function onSetLayout(layout) {
   }
   themeConfigStore.themeConfig.layout = layout;
   themeConfigStore.themeConfig.isDrawer = false;
-  themeConfigStore.themeConfig.columnsAsideStyle = 'columns-card';
+  // 高亮风格（columnsAsideStyle）不随布局切换重置，保留用户选择；默认值唯一真源在 store/module/themeConfig.js
   setLocalTheme(themeConfigStore.themeConfig.themeStyle);
 }
 

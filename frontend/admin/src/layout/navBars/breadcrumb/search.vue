@@ -12,7 +12,7 @@
         v-model="menuQuery"
         :fetch-suggestions="menuSearch"
         :placeholder="$t('message.user.searchPlaceholder')"
-        prefix-icon="el-icon-search"
+        prefix-icon="Search"
         ref="layoutMenuAutocompleteRef"
         @select="onHandleSelect"
         @blur="onSearchBlur"

@@ -25,7 +25,7 @@
                   backgroundSize: '100% 100%',
                 }"
               >
-                <el-button type="error" icon="el-icon-delete" v-db-click @click="del(i)" v-show="isDel"></el-button>
+                <el-button type="error" icon="Delete" v-db-click @click="del(i)" v-show="isDel"></el-button>
               </div>
               <span class="news_sp">{{ item.title }}</span>
             </div>
@@ -34,7 +34,7 @@
               <div class="news_cent_img ivu-mr-8">
                 <img :src="item.image_input ? item.image_input : baseImg" />
               </div>
-              <el-button type="error" icon="el-icon-delete" v-db-click @click="del(i)"></el-button>
+              <el-button type="error" icon="Delete" v-db-click @click="del(i)"></el-button>
             </div>
           </div>
           <!-- <div class="acea-row row-center-wrapper">
