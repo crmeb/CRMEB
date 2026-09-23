@@ -47,7 +47,8 @@ class AgentChatService
      */
     public function options(): array
     {
-        $models = app()->make(AiModelServices::class)->getAvailableModels();
+        $modelService = app()->make(AiModelServices::class);
+        $models = $modelService->getAvailableModels();
         // 系统默认唯一：存在登记的默认模型时，一号通项退化为普通选项，不再标记默认
         $hasRegisteredDefault = (bool) array_filter($models, fn(array $model) => (int)$model['is_default'] === 1);
         array_unshift($models, [
@@ -62,6 +63,8 @@ class AgentChatService
         ]);
         return [
             'models'        => $models,
+            // 内置一号通凭证状态：前端据此识别「仅剩一号通且未配置」场景，在对话框直接引导去配置模型
+            'yihaotong_configured' => $modelService->isYihaotongConfigured(),
             'mcp_available' => $this->mcp->available(),
             'mcp_servers'   => $this->mcp->serverOptions(),
             'skills'        => array_values(array_filter(
