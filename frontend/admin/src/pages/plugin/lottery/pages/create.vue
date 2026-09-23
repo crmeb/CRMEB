@@ -4,7 +4,13 @@
       <div class="fl_header">
         <el-button class="btn-back" icon="ArrowLeft" type="text" v-db-click @click="$router.go(-1)">返回</el-button>
         <el-divider direction="vertical"></el-divider>
-        <span class="ivu-page-header-title">{{ $route.query.lottery_id ? '编辑' : '新增' }}抽奖活动</span>
+        <div class="header-main">
+          <span class="ivu-page-header-title">{{ $route.query.lottery_id ? '编辑' : '新增' }}抽奖活动</span>
+          <span class="header-description">
+            <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+            选择活动类型与起止时间，设置参与用户并添加奖品完成配置。
+          </span>
+        </div>
       </div>
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '0 20px 20px' }">

@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/app/wechat/reply/keyword'"
+      description="配置公众号自动回复，支持文字、图片、图文与声音四类消息。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt-16">
       <!-- 公众号设置 -->

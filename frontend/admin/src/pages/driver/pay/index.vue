@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="查看各支付方式的支持端与驱动状态并启停，支付参数在各驱动的配置中维护。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-table :data="list" ref="table" v-loading="loading" highlight-current-row row-key="id">
         <el-table-column label="排序" width="80" prop="sort">

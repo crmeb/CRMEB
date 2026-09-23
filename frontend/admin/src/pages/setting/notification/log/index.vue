@@ -1,6 +1,10 @@
 <template>
   <div class="notice-log">
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="查看各渠道消息发送结果与成功率，按渠道、状态筛选排查发送失败原因。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '20px 20px 20px' }">
       <el-row class="mb14">
         <el-col :span="6">

@@ -2,8 +2,12 @@
   <div class="my-theme-page">
     <!-- 顶部标题栏 -->
     <div class="i-layout-page-header header-title">
-      <div class="fl_header">
+      <div class="header-main">
         <span class="ivu-page-header-title">我的主题</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          新建或导入商城主题，支持导出备份、扫码预览与一键启用。
+        </span>
       </div>
     </div>
 

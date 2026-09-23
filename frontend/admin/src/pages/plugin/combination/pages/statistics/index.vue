@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/marketing/combination/product'"
+      description="查看拼团参与人与成团订单数据，评估各活动效果。"
     ></pages-header>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0" class="ivu-mt-16"></cards-data>
     <el-card :bordered="false" shadow="never">

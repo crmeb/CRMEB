@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/app/wechat/news_category/index'"
+      description="编辑公众号图文素材，支持多图文与富文本排版，可作回复与推送素材。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="save_from mt16">
       <el-row :gutter="24">

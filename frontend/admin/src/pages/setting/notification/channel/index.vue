@@ -1,6 +1,10 @@
 <template>
   <div class="notice-channel">
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="管理站内信、短信、公众号等通知渠道的启停与适用端，可发送测试消息验证配置。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '0 20px 20px' }">
       <el-table
         :data="channelList"

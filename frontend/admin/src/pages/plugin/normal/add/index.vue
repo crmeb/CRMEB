@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="route.params.id ? '编辑实物商品' : '添加实物商品'"
       :backUrl="routeProStr + '/product/normal/list'"
+      description="分步完成基础信息、规格库存与详情设置，保存后可上架销售。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0px 20px' }">
       <el-tabs v-model="currentTab">

@@ -3,6 +3,7 @@
     <pages-header
       :title="$route.params.id ? '编辑砍价商品' : '添加砍价商品'"
       :backUrl="routePre + '/marketing/bargain/product'"
+      description="选择商品并设置砍价人数、底价与有效期，保存后参与砍价活动。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-row class="mt30 acea-row row-middle row-center">

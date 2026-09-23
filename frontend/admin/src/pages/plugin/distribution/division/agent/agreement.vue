@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          维护分销代理商协议内容，支持 AI 辅助写作，代理商入驻申请时展示。
+        </span>
+      </div>
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-form label-width="85px" @submit.prevent v-loading="spinShow">

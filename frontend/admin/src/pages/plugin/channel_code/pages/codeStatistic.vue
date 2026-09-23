@@ -12,6 +12,7 @@
     <pages-header
       :title="$route.meta.title"
       :backUrl="routePre + '/marketing/channel_code/channelCodeIndex'"
+      description="统计各渠道码关注数据与趋势，评估推广渠道的引流效果。"
     ></pages-header>
     <cards-data class="mt16" :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
     <el-card :bordered="false" shadow="never" class="ivu-mt">

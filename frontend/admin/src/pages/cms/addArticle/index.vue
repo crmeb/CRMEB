@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="route.params.id ? '编辑文章' : '添加文章'"
       :backUrl="Setting.routePre + '/cms/article/index'"
+      description="填写文章标题、分类、封面与正文，保存后在前台文章模块展示。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form

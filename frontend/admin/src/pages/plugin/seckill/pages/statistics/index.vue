@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/marketing/store_seckill/index'"
+      description="查看秒杀活动的参与人与订单数据，评估活动效果。"
     ></pages-header>
     <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0" class="ivu-mt-16"></cards-data>
     <el-card :bordered="false" shadow="never">

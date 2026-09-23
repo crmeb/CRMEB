@@ -1,7 +1,13 @@
 <template>
   <div class="article-manager">
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">电子发票</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title">电子发票</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          开启发票功能并配置税率与发票分类，用户下单后可在线申请开票。
+        </span>
+      </div>
     </div>
     <el-card shadow="never" class="ivu-mt">
       <el-form

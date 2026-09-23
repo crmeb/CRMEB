@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.params.id && !$route.params.copy ? '编辑拼团商品' : '添加拼团商品'"
       :backUrl="$routeProStr + '/marketing/combination/product'"
+      description="选择商品并设置拼团人数、成团有效期与拼团价，保存后参与拼团活动。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-row class="mt30 acea-row row-middle row-center">

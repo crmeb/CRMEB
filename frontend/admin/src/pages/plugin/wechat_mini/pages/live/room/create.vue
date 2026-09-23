@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/marketing/live/room'"
+      description="填写直播间名称、主播与背景图等信息，提交微信审核通过后开播。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form

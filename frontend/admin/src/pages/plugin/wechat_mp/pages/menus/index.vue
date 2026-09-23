@@ -3,7 +3,11 @@
     <!-- <div class="i-layout-page-header header-title">
       <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
     </div> -->
-    <pages-header ref="pageHeader" :title="$route.meta.title"></pages-header>
+    <pages-header
+      ref="pageHeader"
+      :title="$route.meta.title"
+      description="可视化编辑公众号自定义菜单，手机模拟器实时预览，发布后生效。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <!-- 公众号设置 -->
       <el-row :gutter="24">

@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="配置邮件服务器参数并启停驱动，邮箱验证与通知邮件经此发送。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-table :data="list" ref="table" v-loading="loading" highlight-current-row row-key="id">
         <el-table-column label="排序" width="80" prop="sort">

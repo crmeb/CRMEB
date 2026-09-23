@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="对接电子发票服务商并启停驱动，开票请求由启用驱动统一处理。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-table :data="list" ref="table" v-loading="loading" highlight-current-row row-key="id">
         <el-table-column label="排序" width="80" prop="sort">

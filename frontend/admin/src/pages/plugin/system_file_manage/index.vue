@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          校验系统文件完整性与变更时间，排查文件是否被篡改。
+        </span>
+      </div>
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-table :data="tabList" v-loading="loading" empty-text="暂无数据" highlight-current-row>

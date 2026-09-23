@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="添加并维护打印机设备，绑定驱动、设置打印时机与打印联数。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-row class="action-row mb14">
         <el-col :span="24">

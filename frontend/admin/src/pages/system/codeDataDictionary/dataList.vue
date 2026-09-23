@@ -1,10 +1,14 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <div class="fl_header">
+      <div class="header-main">
         <el-button class="btn-back" icon="ArrowLeft" type="text" v-db-click @click="$router.go(-1)">返回</el-button>
         <el-divider direction="vertical"></el-divider>
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          维护数据字典明细项，支持多级添加、编辑与删除，供表单下拉等场景调用。
+        </span>
       </div>
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">

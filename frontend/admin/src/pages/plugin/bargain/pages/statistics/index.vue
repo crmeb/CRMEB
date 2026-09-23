@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header :title="$route.meta.title" :backUrl="routePre + '/marketing/bargain/product'"></pages-header>
+    <pages-header
+      :title="$route.meta.title"
+      :backUrl="routePre + '/marketing/bargain/product'"
+      description="查看砍价活动参与人、订单与砍价进度明细。"
+    ></pages-header>
     <cards-data :cardLists="cardLists" v-if="cardLists.length" class="ivu-mt-16"></cards-data>
     <el-card :bordered="false" shadow="never">
       <el-form :model="pagination" :label-width="labelWidth" label-position="right" @submit.prevent inline>

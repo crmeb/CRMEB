@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="管理秒杀时段列表，配置各时段开启时间、持续时长与轮播图。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form :model="formValidate" :label-width="labelWidth" :label-position="labelPosition" @submit.prevent inline>

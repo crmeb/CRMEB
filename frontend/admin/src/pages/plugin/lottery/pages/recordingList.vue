@@ -4,7 +4,13 @@
       <div class="fl_header">
         <el-button class="btn-back" icon="ArrowLeft" type="text" v-db-click @click="$router.go(-1)">返回</el-button>
         <el-divider direction="vertical"></el-divider>
-        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+        <div class="header-main">
+          <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+          <span class="header-description">
+            <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+            中奖记录查询与发货，实物奖品可直接录入物流发货。
+          </span>
+        </div>
       </div>
     </div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">

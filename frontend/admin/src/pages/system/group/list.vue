@@ -9,7 +9,12 @@
     <!--        <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>-->
     <!--      </div>-->
     <!--    </div>-->
-    <pages-header class="mb16" ref="pageHeader" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      ref="pageHeader"
+      :title="$route.meta.title"
+      description="维护当前数据组的子项数据，支持增删改与显示开关，常用于幻灯片、热搜词等配置。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form

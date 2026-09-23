@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="routePre + '/system/code_generation_list'"
+      description="按基础信息、字段配置、存放位置三步生成标准 CRUD 代码，减少重复开发。"
     ></pages-header>
     <div class="message mt10">
       <el-card :bordered="false" shadow="never" class="">

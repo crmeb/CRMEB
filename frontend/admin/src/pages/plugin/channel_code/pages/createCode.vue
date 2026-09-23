@@ -3,6 +3,7 @@
     <pages-header
       :title="$route.meta.title"
       :backUrl="routePre + '/marketing/channel_code/channelCodeIndex'"
+      description="生成带参数二维码，扫码自动打标签分组并回复欢迎语，数据单独统计。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form :model="formData" label-width="100px" :rules="ruleValidate">

@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.params.id ? '编辑秒杀活动' : '添加秒杀活动'"
       :backUrl="$routeProStr + '/marketing/seckill/activity'"
+      description="设置活动日期、开启时段与限购规则，秒杀商品按时段参与对应场次。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-row class="mt30 acea-row row-middle row-center">

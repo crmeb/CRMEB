@@ -3,6 +3,7 @@
     <pages-header
       :title="$route.params.id ? '编辑积分商品' : '添加积分商品'"
       :backUrl="$routeProStr + '/marketing/integral/product'"
+      description="选择商品并设置积分兑换价与库存，保存后在积分商城展示兑换。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-row class="mt30 acea-row row-middle row-center" v-loading="spinShow">

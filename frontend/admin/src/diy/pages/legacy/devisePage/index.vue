@@ -1,6 +1,11 @@
 <template>
   <div>
-    <pages-header ref="pageHeader" title="页面设计" :backUrl="routePre + '/setting/pages/devise/0'"></pages-header>
+    <pages-header
+      ref="pageHeader"
+      title="页面设计"
+      :backUrl="routePre + '/setting/pages/devise/0'"
+      description="配置页面组件与属性，实时预览移动端效果，保存后同步到前台。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt15">
       <div class="flex-wrapper">
         <!-- :src="iframeUrl" -->

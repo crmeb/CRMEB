@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="editId ? '编辑卡密商品' : '添加卡密商品'"
       :backUrl="routePre + '/product/cardkey/list'"
+      description="设置商品信息、卡密与库存，支持下单后自动发货。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16" :body-style="{ padding: '0px 20px' }">
       <el-tabs v-model="currentTab">

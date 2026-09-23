@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header ref="pageHeader" :title="$route.meta.title"></pages-header>
+    <pages-header
+      ref="pageHeader"
+      :title="$route.meta.title"
+      description="配置积分、支付、评价三种抽奖方式的选项参数，供抽奖活动使用。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form :model="formData" label-width="100px">
         <el-form-item label="积分抽奖：">

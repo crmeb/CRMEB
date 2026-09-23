@@ -1,6 +1,11 @@
 <template>
   <div class="printer-content-page">
-    <pages-header ref="pageHeader" title="小票配置" :backUrl="$routeProStr + '/setting/printer'"></pages-header>
+    <pages-header
+      ref="pageHeader"
+      title="小票配置"
+      :backUrl="$routeProStr + '/setting/printer'"
+      description="勾选小票需打印的商家、商品、支付等信息项，保存后打印即时生效。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <div class="flex justify-between warpper" v-loading="loading">
         <el-form
