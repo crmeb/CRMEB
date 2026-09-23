@@ -2,7 +2,7 @@
 
 本文件是 uni-app 端约定真源。代码路径相对 `frontend/uni-app/`；先读取仓库根 `.crmeb/AGENTS.md` 及其指定规则与技能。
 
-CRMEB 标准版（BZ）移动端，基于 **uni-app（Vue 3 + `<script setup>`）+ Pinia + Sass**，一套代码发布 H5 / 微信小程序 / 支付宝小程序 / APP。
+CRMEB 开源版（KY）移动端，基于 **uni-app（Vue 3 + `<script setup>`）+ Pinia + Sass**，一套代码发布 H5 / 微信小程序 / 支付宝小程序 / APP。
 与后端 `backend/`（ThinkPHP 6 订单中台/产品中台）、管理端 `frontend/admin/` 配套。
 
 > **Vue3 迁移说明**：本目录已从 Vue 2（Vuex + vue-i18n v8 + jyf-parser）整体迁移至 Vue 3（分支 `feat/vue3-migration`）。

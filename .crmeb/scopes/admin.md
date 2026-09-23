@@ -2,7 +2,7 @@
 
 本文件是 admin 端约定真源。代码路径相对 `frontend/admin/`；先读取仓库根 `.crmeb/AGENTS.md` 及其指定规则与技能。
 
-CRMEB 标准版（BZ）管理后台，基于 **Vue 3.5 + element-plus 2.9 + Pinia 2 + vue-router 4**（**Vite 5** 构建，纯 JS 不用 TS）。
+CRMEB 开源版（KY）管理后台，基于 **Vue 3.5 + element-plus 2.9 + Pinia 2 + vue-router 4**（**Vite 5** 构建，纯 JS 不用 TS）。
 与后端 `backend/`（ThinkPHP 8，本地默认通过宿主机端口 8011 提供 `/adminapi`）、移动端 `frontend/uni-app/`（Vue 3）配套。Docker Compose 仅是可选运行方式。
 
 > 2026-09 已从 Vue 2.7 / vue-cli / Vuex / element-ui 整体迁移至 Vue3 + Vite；迁移规则沉淀在 `docs/vue3-migration/`（page-conversion-guide.md、store-mapping.md）。

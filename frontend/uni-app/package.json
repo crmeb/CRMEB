@@ -2,7 +2,7 @@
 	"name": "crmeb-uni-app",
 	"version": "8.0.0",
 	"private": true,
-	"description": "CRMEB 标准版（BZ）移动端 - uni-app CLI 工程（H5 / 微信小程序 / 支付宝小程序 / APP）",
+	"description": "CRMEB 开源版（KY）移动端 - uni-app CLI 工程（H5 / 微信小程序 / 支付宝小程序 / APP）",
 	"scripts": {
 		"dev:h5": "uni",
 		"build:h5": "uni build",

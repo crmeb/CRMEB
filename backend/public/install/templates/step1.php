@@ -14,7 +14,7 @@
 <!--  --><?php //require './templates/header.php';?>
   <div class="title">
       <img class="logo" src="./images/install/logo-step1.png" alt="">
-      <h1>欢迎使用 CRMEB标准版</h1>
+      <h1>欢迎使用CRMEB开源商城系统</h1>
       <div class="df agreement cp">
           <div class="radio-box" :class="{'is-shock': isShock}" @click="radio = !radio">
               <img v-if="radio" src="./images/install/success.png" alt="">

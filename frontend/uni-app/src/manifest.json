@@ -1,7 +1,7 @@
 {
-    "name" : "CRMEB标准版",
+    "name" : "CRMEB开源版",
     "appid" : "__UNI__920897C",
-    "description" : "CRMEB标准版",
+    "description" : "CRMEB开源版",
     "versionName" : "8.0.0",
     "versionCode" : 600,
     "transformPx" : false,

@@ -1,8 +1,8 @@
-# CRMEB 标准版 — Uni-App 前端
+# CRMEB 开源版 — Uni-App 前端
 
 ## 项目简介
 
-CRMEB 标准版 v8 的 Uni-App 前端项目，基于 **uni-app（Vue 3 + `<script setup>`）** + **Pinia** + **Vue-i18n v9** 构建，支持一套代码发布到 **H5、微信小程序、支付宝小程序、APP (iOS/Android)** 等多端。
+CRMEB 开源版 v8 的 Uni-App 前端项目，基于 **uni-app（Vue 3 + `<script setup>`）** + **Pinia** + **Vue-i18n v9** 构建，支持一套代码发布到 **H5、微信小程序、支付宝小程序、APP (iOS/Android)** 等多端。
 
 工程为 **uni-app 官方 CLI（Vite）结构**，全部开发、调试、打包均可通过 npm 命令行完成，不依赖 HBuilderX。
 
@@ -93,5 +93,5 @@ npm run dev:h5         # H5 开发（浏览器访问 http://localhost:5173）
 
 ## 相关项目
 
-- **后端 API**：CRMEB 标准版 PHP 后端（ThinkPHP 8，多应用 `/adminapi` / `/api` / `/outapi`），见仓库 `backend/`
-- **管理后台**：CRMEB 标准版 Admin 前端（Vue 3 + Element Plus），见仓库 `frontend/admin/`
+- **后端 API**：CRMEB 开源版 PHP 后端（ThinkPHP 8，多应用 `/adminapi` / `/api` / `/outapi`），见仓库 `backend/`
+- **管理后台**：CRMEB 开源版 Admin 前端（Vue 3 + Element Plus），见仓库 `frontend/admin/`
