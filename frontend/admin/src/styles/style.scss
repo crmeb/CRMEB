@@ -669,6 +669,28 @@ body {
   color: #303133;
 }
 
+/* 页面标题头「标题行」：返回钮 + 标题 + 描述，基线对齐（描述字号小于标题，用 baseline 不用 flex-end） */
+.header-main {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  gap: 16px;
+}
+
+/* 页面标题头说明文字：与标题同一行、紧跟标题之后，前置主色 info 图标 */
+.header-description {
+  color: var(--prev-color-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.header-description-icon {
+  font-size: 14px;
+  color: var(--prev-color-primary);
+  vertical-align: -2px;
+  margin-right: 2px;
+}
+
 .statics-header-title {
   font-size: 14px;
   color: #303133;

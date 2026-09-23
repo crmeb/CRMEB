@@ -51,24 +51,7 @@ function goBack() {
 .header-title {
   justify-content: space-between;
 }
-/* 标题行：返回钮 + 标题 + 描述，基线对齐（描述字号小于标题，用 baseline 不用 flex-end） */
-.header-main {
-  display: flex;
-  align-items: baseline;
-  min-width: 0;
-  gap: 16px;
-}
-.header-description {
-  color: var(--prev-color-text-secondary);
-  font-size: 12px;
-  line-height: 18px;
-}
-.header-description-icon {
-  font-size: 14px;
-  color: var(--prev-color-primary);
-  vertical-align: -2px;
-  margin-right: 2px;
-}
+/* .header-main / .header-description / .header-description-icon 全局定义见 styles/style.scss */
 .after-line {
   display: inline-block;
   position: relative;
