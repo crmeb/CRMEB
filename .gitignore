@@ -53,7 +53,8 @@ Desktop.ini
 !/backend/public/install/.env
 !/frontend/admin/.env.production
 !/frontend/uni-app/.env.production
-/backend/.constant
+!/backend/.constant
+!/backend/.env
 /backend/pem/
 
 # 前端依赖与构建产物
@@ -83,7 +84,7 @@ node_modules/
 /backend/vendor/dh2y/think-qrcode/src/phpqrcode/*-errors.txt
 
 # 发布到后端的前端构建资源
-/backend/public/admin/
+
 /backend/public/theme/
 
 # 升级程序包二进制产物：目录内脚本/清单/增量文本入库，zip 与前端构建产物出包时现生成（见 .crmeb/rules/升级包规范.md）
