@@ -1,0 +1,7 @@
+---
+description: 项目统一工程规范入口；处理任何代码、文档、测试或发布任务时使用
+alwaysApply: true
+---
+
+项目规则唯一正文是 @../../.crmeb/AGENTS.md 。先读取该入口及其为当前任务指定的规则，不在 Cursor 目录维护第二份规则。修改后执行 `.crmeb/project.json` 声明的最小验证命令，并准确报告未验证项。
+

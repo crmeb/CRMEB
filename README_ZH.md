@@ -264,6 +264,15 @@ php think workerman start --d       # WebSocket 长连接网关
 ./run.sh logs     # 查看日志
 ```
 
+**前端一键命令（run.sh）**
+
+```bash
+./run.sh admin:dev    # 管理端开发测试启动（端口 1619）
+./run.sh admin:build  # 管理端编译打包并发布到 backend/public/admin
+./run.sh uni:dev      # 移动端 H5 开发测试启动
+./run.sh uni:build    # 移动端 H5 编译打包并发布到 backend/public
+```
+
 > 默认访问地址：`http://localhost:8011`，管理后台 `http://localhost:8011/admin`。
 > 数据库连接等配置以 `backend/.env` 为准；详细部署说明见 [部署指南](help/docs/部署指南.md)。
 

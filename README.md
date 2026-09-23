@@ -21,6 +21,17 @@ php think run --host 127.0.0.1 --port 8011
 
 数据库和 Redis 连接以 `backend/.env` 为准，宿主机常见端口为 MySQL `3306`、Redis `6379`。首次启动后访问 **http://localhost:8011** 进入安装向导。
 
+## 前端一键命令
+
+```bash
+./run.sh admin:dev    # 管理端开发测试启动（端口 1619）
+./run.sh admin:build  # 管理端编译打包并发布到 backend/public/admin
+./run.sh uni:dev      # 移动端 H5 开发测试启动
+./run.sh uni:build    # 移动端 H5 编译打包并发布到 backend/public
+```
+
+也可直接执行 `./run.sh` 打开交互式菜单（前端命令对应编号 11/12/21/22）。
+
 ## 可选 Docker Compose
 
 只有明确选择容器环境时使用：

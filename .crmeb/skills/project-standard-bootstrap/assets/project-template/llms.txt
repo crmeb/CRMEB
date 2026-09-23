@@ -1,0 +1,8 @@
+# Project AI entrypoints
+
+Project rules: .crmeb/AGENTS.md
+Machine-readable project contract: .crmeb/project.json
+Human project documentation: help/docs/README.md
+
+Always read the project rules before changing code. Tool-specific files are discovery adapters only; `.crmeb/` is the single source of truth.
+

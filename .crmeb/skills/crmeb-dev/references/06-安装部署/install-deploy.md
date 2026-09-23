@@ -32,7 +32,11 @@
 ./run.sh delete     # 停止并清理所有数据（危险）
 ./run.sh logs       # 查看日志
 ./run.sh ps         # 查看容器状态
-./run.sh            # 交互式菜单
+./run.sh admin:dev    # 管理端前端开发测试启动（Vite 1619，/adminapi 代理 8011）
+./run.sh admin:build  # 管理端 build:all（主包+扩展 UMD）并发布到 backend/public/admin
+./run.sh uni:dev      # uniapp H5 开发测试启动（默认端口 5173）
+./run.sh uni:build    # uniapp H5 构建并发布到 backend/public（index.html、assets、pages、static）
+./run.sh            # 交互式菜单（含 11/12 管理端、21/22 uniapp 前端命令）
 ```
 
 `install` 会删除 `backend/public/install.lock`、清空 `backend/runtime`、`docker/mysql/data` 等数据目录，完成后访问 **http://localhost:8011** 进入安装向导。
@@ -129,6 +133,15 @@ location /ws {
 |------|--------|------|
 | `frontend/admin` | Vue 3 + Element Plus + Vite | 管理后台，构建产物部署到 `/admin`；二开用 `scripts/build-extensions.js` 构建插件 UMD 扩展 |
 | `frontend/uni-app` | uni-app CLI（Vue 3） | 用户端（H5/小程序/APP），用 `npm run dev:h5` 等 CLI 命令运行 |
+
+前端也可用仓库根 `run.sh` 一键执行（自动补装 `node_modules`，等价于进入对应目录执行 npm 命令）：
+
+| 菜单 | 命令 | 作用 | 产物 / 地址 |
+|------|------|------|------------|
+| 11 | `./run.sh admin:dev` | 管理端开发测试启动 | http://localhost:1619 |
+| 12 | `./run.sh admin:build` | `npm run build:all`（主包 + 扩展 UMD）后发布 | `backend/public/admin/` |
+| 21 | `./run.sh uni:dev` | uniapp H5 开发测试启动 | http://localhost:5173 |
+| 22 | `./run.sh uni:build` | `npm run build:h5` 后发布 | `backend/public/`（index.html + assets/pages/static，PHP 侧文件不受影响） |
 
 **注意**：前端 dev server 热更新可能失效，修改文件后页面若未更新，需手动重启服务。
 
