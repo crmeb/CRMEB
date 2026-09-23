@@ -2,6 +2,7 @@
 
 # CRMEB Docker 开发环境管理脚本
 # 用法: ./run.sh [install|start|restart|stop|delete|logs|ps]
+#       ./run.sh [admin:dev|admin:build|uni:dev|uni:build]
 
 # 确保从项目根目录执行
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -17,8 +18,9 @@ print_info()  { echo -e "${GREEN}[INFO]${NC}  $1"; }
 print_warn()  { echo -e "${YELLOW}[WARN]${NC}  $1"; }
 print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# OSC 8 hyperlink：在 VS Code / Trae / iTerm2 / macOS Terminal 等终端里渲染为可点击链接
-hyperlink() { printf '\e]8;;%s\a%s\e]8;;\a' "$1" "${2:-$1}"; }
+# OSC 8 hyperlink + ANSI 青色下划线（对齐 Vite 的 URL 样式）：
+# 支持 OSC 8 的终端（VS Code / Trae / iTerm2 等）可点击，不支持的也会渲染为青色文本
+hyperlink() { printf '\e]8;;%s\a\e[36;4m%s\e[0m\e]8;;\a' "$1" "${2:-$1}"; }
 
 # 帮助信息
 show_help() {
@@ -34,6 +36,10 @@ show_help() {
     echo "  delete    停止并清理所有数据"
     echo "  logs      查看日志"
     echo "  ps        查看容器状态"
+    echo "  admin:dev    管理后台前端 - 开发测试启动"
+    echo "  admin:build  管理后台前端 - 编译打包到程序 public 目录"
+    echo "  uni:dev      uniapp 移动端 - 开发测试启动 (H5)"
+    echo "  uni:build    uniapp 移动端 - 编译打包到程序 public 对应目录"
     echo "  -h        显示帮助"
 }
 
@@ -173,6 +179,68 @@ do_status() {
     docker-compose ps
 }
 
+# ========== 前端命令（管理后台 / uniapp 移动端） ==========
+
+# 检查 node/npm 是否可用
+check_node() {
+    if ! command -v npm &> /dev/null; then
+        print_error "未检测到 npm，请先安装 Node.js (>=18)"
+        exit 1
+    fi
+}
+
+# 依赖缺失时自动安装
+ensure_deps() {
+    local dir="$1"
+    if [ ! -d "$dir/node_modules" ]; then
+        print_warn "$dir 缺少 node_modules，先执行 npm install..."
+        ( cd "$dir" && npm install )
+    fi
+}
+
+# 管理后台前端：开发测试启动
+do_admin_dev() {
+    check_node
+    ensure_deps "./frontend/admin"
+    print_info "启动管理后台前端开发服务器: $(hyperlink 'http://localhost:1619')"
+    print_info "/adminapi 代理到 http://localhost:8011，请确保后端服务已启动"
+    ( cd ./frontend/admin && npm run dev )
+}
+
+# 管理后台前端：编译打包并发布到 backend/public/admin
+do_admin_build() {
+    check_node
+    ensure_deps "./frontend/admin"
+    print_info "编译管理后台前端（build:all = 主包 + 扩展 UMD）..."
+    ( cd ./frontend/admin && npm run build:all ) || { print_error "编译失败"; exit 1; }
+    print_info "发布到 backend/public/admin ..."
+    rm -rf ./backend/public/admin
+    mkdir -p ./backend/public/admin
+    cp -R ./frontend/admin/dist/. ./backend/public/admin/
+    print_info "完成！访问地址: $(hyperlink 'http://localhost:8011/admin')"
+}
+
+# uniapp 移动端：开发测试启动（H5）
+do_uni_dev() {
+    check_node
+    ensure_deps "./frontend/uni-app"
+    print_info "启动 uniapp H5 开发服务器（默认 http://localhost:5173，以终端实际输出为准）"
+    ( cd ./frontend/uni-app && npm run dev:h5 )
+}
+
+# uniapp 移动端：编译打包（H5）并发布到 backend/public/ 对应目录
+do_uni_build() {
+    check_node
+    ensure_deps "./frontend/uni-app"
+    print_info "编译 uniapp H5..."
+    ( cd ./frontend/uni-app && npm run build:h5 ) || { print_error "编译失败"; exit 1; }
+    print_info "发布到 backend/public ..."
+    # index.html / assets / pages / static 均为 H5 构建产物（uni 会把 src/pages/**/static 拷入产物 pages/）
+    rm -rf ./backend/public/assets ./backend/public/pages ./backend/public/static
+    cp -R ./frontend/uni-app/dist/build/h5/. ./backend/public/
+    print_info "完成！访问地址: $(hyperlink 'http://localhost:8011')"
+}
+
 # 交互式菜单
 show_menu() {
     echo ""
@@ -185,9 +253,18 @@ show_menu() {
     echo "  6) 查看日志"
     echo "  7) 查看容器状态"
     echo "  8) 显示帮助"
+    echo ""
+    echo -e "${GREEN}----- 管理后台前端 (frontend/admin) -----${NC}"
+    echo "  11) 开发测试启动"
+    echo "  12) 编译打包到程序 public 目录"
+    echo ""
+    echo -e "${GREEN}----- uniapp 移动端 (frontend/uni-app) -----${NC}"
+    echo "  21) 开发测试启动 (H5)"
+    echo "  22) 编译打包到程序 public 对应目录"
+    echo ""
     echo "  0) 退出"
     echo ""
-    read -p "请选择操作 (0-8): " choice
+    read -p "请选择操作 (0-8, 11, 12, 21, 22): " choice
     echo ""
     case $choice in
         1) do_install ;;
@@ -198,6 +275,10 @@ show_menu() {
         6) do_logs ;;
         7) do_status ;;
         8) show_help; show_menu ;;
+        11) do_admin_dev ;;
+        12) do_admin_build ;;
+        21) do_uni_dev ;;
+        22) do_uni_build ;;
         0) echo "已退出"; exit 0 ;;
         *) print_error "无效选项，请重试"; show_menu ;;
     esac
@@ -215,6 +296,10 @@ else
         delete)   do_delete ;;
         logs)     do_logs ;;
         ps|status) do_status ;;
+        admin:dev)   do_admin_dev ;;
+        admin:build) do_admin_build ;;
+        uni:dev)     do_uni_dev ;;
+        uni:build)   do_uni_build ;;
         -h|--help) show_help ;;
         *)
             print_error "未知命令: $1"

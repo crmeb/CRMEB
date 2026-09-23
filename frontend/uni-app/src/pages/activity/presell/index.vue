@@ -341,7 +341,7 @@
 		font-size: 22rpx;
 		line-height: 50rpx;
 		position: relative;
-		background-image: url(/pages/activity/static/couponBg.png);
+		background-image: url('@/pages/activity/static/couponBg.png');
 		background-size: 100%;
 		background-repeat: no-repeat;
 	}
@@ -434,7 +434,7 @@
 			text-align: center;
 			line-height: 15px;
 			padding: 8rpx 0;
-			background-image: url(/pages/activity/static/preBtnLeft.png);
+			background-image: url('@/pages/activity/static/preBtnLeft.png');
 			background-size: 100%;
 			z-index: 99;
 			height: 80rpx;

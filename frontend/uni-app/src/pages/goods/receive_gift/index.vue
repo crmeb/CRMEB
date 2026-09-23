@@ -152,7 +152,7 @@ function getOrderInfo() {
 		justify-content: center;
 		width: 396rpx;
 		height: 419rpx;
-		background-image: url('/pages/goods/static/gift-border.png');
+		background-image: url('@/pages/goods/static/gift-border.png');
 		background-size: 100% 100%;
 		margin-bottom: 40rpx;
 		.goods-img {
