@@ -368,7 +368,7 @@
       width="800px"
       destroy-on-close
       :close-on-click-modal="false"
-      custom-class="agreement-dialog"
+      class="agreement-dialog"
     >
       <div class="agreement-content" v-loading="agreementLoading">
         <div v-html="agreementContent"></div>
@@ -389,7 +389,7 @@
       width="400px"
       :show-close="false"
       :close-on-click-modal="false"
-      custom-class="upload-success-dialog"
+      class="upload-success-dialog"
     >
       <div class="upload-success-content">
         <i class="el-icon-circle-check" style="font-size: 48px; color: #67c23a; margin-bottom: 16px"></i>

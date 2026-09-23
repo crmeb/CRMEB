@@ -61,7 +61,7 @@
     </el-card>
     <el-drawer
       v-model="modals"
-      :custom-class="className"
+      :class="className"
       title="Create"
       size="80%"
       :wrapperClosable="false"

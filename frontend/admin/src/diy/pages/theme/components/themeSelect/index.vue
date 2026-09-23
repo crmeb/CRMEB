@@ -7,7 +7,6 @@
     :show-close="false"
     append-to-body
     :modal="true"
-    :modal-append-to-body="true"
     :lock-scroll="true"
     @close="handleClose"
   >

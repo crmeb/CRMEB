@@ -5,7 +5,7 @@
     direction="rtl"
     size="720"
     :wrapper-closable="false"
-    custom-class="schema-drawer"
+    class="schema-drawer"
     @closed="emit('closed')"
   >
     <div class="schema-drawer__content">

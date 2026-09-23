@@ -15,7 +15,7 @@
 
     <!-- <rightBtn :activeIndex="activeIndex" :configObj="configObj"></rightBtn> -->
     <el-dialog
-      custom-class="custom-design-dialog"
+      class="custom-design-dialog"
       v-model="modals"
       width="100%"
       fullscreen

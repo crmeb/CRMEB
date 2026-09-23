@@ -68,11 +68,10 @@
       v-model="styleDialogVisible"
       width="1188px"
       top="9vh"
-      custom-class="theme-dialog"
+      class="theme-dialog"
       :show-close="false"
       append-to-body
       :modal="true"
-      :modal-append-to-body="true"
       :lock-scroll="true"
       @close="handleClose"
     >
@@ -576,34 +575,13 @@ function saveAndClose() {
       }
     }
   }
-
-  // 弹窗样式
-  :deep(.theme-dialog) {
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 50px !important;
-    margin-bottom: 50px !important;
-    width: calc(100vw - 140px) !important;
-    height: calc(100vh - 100px) !important;
-    margin-left: 70px !important;
-    margin-right: 70px !important;
-
-    .el-dialog__header {
-      border-bottom: 1px solid #f0f0f0;
-      padding: 0px 20px !important;
-    }
-  }
-}
-:deep(.el-dialog__body) {
-  max-height: max-content;
-  padding: 0px !important;
-  overflow-y: auto;
 }
 .dialog-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  padding: 15px 24px;
   .dialog-header-tabs {
     background: #fff;
 
@@ -634,7 +612,6 @@ function saveAndClose() {
 .dialog-content {
   display: flex;
   flex-direction: column;
-  height: calc(100% - 20px);
   background-color: #f5f7fa;
 
   .content-wrapper {
@@ -666,6 +643,7 @@ function saveAndClose() {
         overflow-y: auto;
         padding-right: 5px;
         flex: 1;
+        max-height: calc(100vh - 340px);
 
         .theme-item {
           background: #fff;
@@ -1030,6 +1008,27 @@ function saveAndClose() {
         }
       }
     }
+  }
+}
+</style>
+
+<style lang="scss">
+/* 弹窗壳层覆盖（非 scoped）：append-to-body 弹窗 teleport 到 body 后
+   脱离组件样式作用域，scoped :deep 无法命中，必须用业务前缀全局类。
+   高度随内容自适应，滚动交给内部网格/详情区，避免内容少时大片空白 */
+.theme-dialog {
+  border-radius: 6px;
+  overflow: hidden;
+
+  /* header 内边距归零，留白由内部 .dialog-header（15px 24px）提供 */
+  .el-dialog__header {
+    padding: 0 !important;
+    border-bottom: 1px solid var(--prev-border-color-lighter);
+  }
+
+  .el-dialog__body {
+    padding: 0 !important;
+    max-height: calc(100vh - 100px);
   }
 }
 </style>

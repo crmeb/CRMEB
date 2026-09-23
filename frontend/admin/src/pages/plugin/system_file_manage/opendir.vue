@@ -55,7 +55,8 @@
     </el-card>
     <el-dialog
       v-model="modals"
-      :custom-class="className"
+      class="file-manage-dialog"
+      :class="className"
       :close-on-click-modal="false"
       width="80%"
       top="5vh"
@@ -975,11 +976,6 @@ function editModalChange() {
     height: 100%;
   }
 }
-:deep(.el-dialog__body) {
-  padding: 0 !important;
-  height: 80vh;
-  max-height: 80vh;
-}
 .diy-button {
   height: 35px;
   padding: 0 15px;
@@ -1127,37 +1123,6 @@ body :deep(.ivu-select-dropdown) {
     opacity: 0.8;
   }
 }
-:deep(.diy-fullscreen) {
-  overflow: hidden;
-  .ivu-modal {
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    height: 100%;
-    width: 100% !important;
-    .ivu-modal-content {
-      height: 100%;
-      .ivu-modal-body {
-        height: 100%;
-      }
-    }
-    .ivu-tabs {
-      .ivu-tabs-content-animated {
-        height: 92%;
-        background-color: #2f2f2f !important;
-      }
-    }
-    .ivu-tabs-content {
-      height: 100%;
-    }
-    .ivu-tabs {
-      .ivu-tabs-tabpane {
-        height: 92%;
-      }
-    }
-  }
-}
 :deep(.ivu-modal) {
   top: 70px;
 }
@@ -1191,5 +1156,51 @@ body :deep(.ivu-select-dropdown) {
 }
 :deep(.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container) {
   background-color: #333;
+}
+</style>
+
+<style lang="scss">
+/* 弹窗壳层覆盖（非 scoped）：append-to-body 弹窗 teleport 到 body 后
+   脱离组件样式作用域，scoped :deep 无法命中，必须用业务前缀全局类 */
+.file-manage-dialog {
+  .el-dialog__body {
+    padding: 0 !important;
+    height: 80vh;
+    max-height: 80vh;
+  }
+}
+
+/* 全屏类由 :class 动态挂到弹窗根；内层 .ivu-modal 为 iView 遗留死选择器，
+   EP 下不生效（全屏功能实际失效），此处原样归位维持现状，待后续按 EP 重写 */
+.file-manage-dialog.diy-fullscreen {
+  overflow: hidden;
+  .ivu-modal {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    height: 100%;
+    width: 100% !important;
+    .ivu-modal-content {
+      height: 100%;
+      .ivu-modal-body {
+        height: 100%;
+      }
+    }
+    .ivu-tabs {
+      .ivu-tabs-content-animated {
+        height: 92%;
+        background-color: #2f2f2f !important;
+      }
+    }
+    .ivu-tabs-content {
+      height: 100%;
+    }
+    .ivu-tabs {
+      .ivu-tabs-tabpane {
+        height: 92%;
+      }
+    }
+  }
 }
 </style>

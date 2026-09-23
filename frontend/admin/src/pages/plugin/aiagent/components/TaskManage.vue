@@ -954,11 +954,6 @@ function formatFullTime(timestamp) {
 }
 
 /* 运行详情回放 */
-.run-detail-dialog {
-  :deep(.el-dialog__body) {
-    padding-top: 10px;
-  }
-}
 .run-detail-head {
   display: flex;
   align-items: center;
@@ -1037,5 +1032,13 @@ function formatFullTime(timestamp) {
 }
 .cell-error {
   color: #f56c6c;
+}
+</style>
+
+<style lang="scss">
+/* 运行详情弹窗壳层（非 scoped）：append-to-body 弹窗 teleport 到 body 后
+   脱离组件样式作用域，scoped :deep 无法命中，必须用全局类 */
+.run-detail-dialog .el-dialog__body {
+  padding-top: 10px;
 }
 </style>

@@ -62,13 +62,7 @@
       </div>
     </div>
     <!-- 添加分组  -->
-    <el-dialog
-      v-model="cateData.isCate"
-      width="470px"
-      :show-close="true"
-      custom-class="vertical-center-modal"
-      class="words-box"
-    >
+    <el-dialog v-model="cateData.isCate" width="470px" :show-close="true" align-center class="words-box">
       <div class="mask-title">
         {{ cateData.status ? '编辑分组' : '新增分组' }}
         <span class="iconfont iconcha" v-db-click @click.stop="closeCate"></span>
@@ -84,13 +78,7 @@
       >
     </el-dialog>
     <!-- 添加话术  -->
-    <el-dialog
-      v-model="msgData.isCateMeg"
-      width="470px"
-      :show-close="true"
-      custom-class="vertical-center-modal"
-      class="words-box"
-    >
+    <el-dialog v-model="msgData.isCateMeg" width="470px" :show-close="true" align-center class="words-box">
       <div class="mask-title">
         {{ msgData.status ? '修改话术' : '添加话术' }}
         <span class="iconfont iconcha" v-db-click @click.stop="closeMsgBox"></span>
@@ -156,13 +144,7 @@
       </div>
     </div>
     <!-- 编辑分组列表 -->
-    <el-dialog
-      v-model="editList.status"
-      width="470px"
-      :show-close="true"
-      custom-class="vertical-center-modal"
-      class="words-box cate-list"
-    >
+    <el-dialog v-model="editList.status" width="470px" :show-close="true" align-center class="words-box cate-list">
       <div class="mask-title">
         编辑分组
         <span class="iconfont iconcha" v-db-click @click.stop="editList.status = false"></span>
@@ -840,19 +822,6 @@ function delCate(row, tit, num) {
 }
 </style>
 <style>
-.kf_mobile .ivu-modal-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.vertical-center-modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.ivu-modal {
-  top: 0;
-}
 .noinput input,
 .noinput textarea {
   border-color: transparent !important;

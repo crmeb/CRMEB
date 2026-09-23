@@ -5,7 +5,6 @@
     @close="$emit('update:visible', false)"
     title="物流查询"
     size="420px"
-    :modal-append-to-body="true"
     :wrapper-closable="true"
     class="order_box2"
   >
@@ -76,19 +75,6 @@ function copyNum() {
 </script>
 
 <style lang="scss" scoped>
-.order_box2 {
-  :deep(.el-drawer__wrapper) {
-    z-index: 3000 !important;
-  }
-
-  :deep(.el-drawer__body) {
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-}
-
 /* 快递单号信息区域 */
 .express-header {
   display: flex;
@@ -199,5 +185,17 @@ function copyNum() {
   color: #909399;
   padding: 60px 0;
   font-size: 14px;
+}
+</style>
+
+<style lang="scss">
+/* 抽屉壳层覆盖（非 scoped）：抽屉根类自锚的 scoped :deep 在组件作用域外无法命中；
+   body 满高 flex 布局供底部滚动区使用。原 .el-drawer__wrapper z-index 覆盖为
+   iView 遗留死规则（选择器结构写反且 EP 层级由弹层管理），不再保留 */
+.order_box2 .el-drawer__body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 </style>
