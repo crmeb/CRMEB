@@ -17,6 +17,9 @@ print_info()  { echo -e "${GREEN}[INFO]${NC}  $1"; }
 print_warn()  { echo -e "${YELLOW}[WARN]${NC}  $1"; }
 print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+# OSC 8 hyperlink：在 VS Code / Trae / iTerm2 / macOS Terminal 等终端里渲染为可点击链接
+hyperlink() { printf '\e]8;;%s\a%s\e]8;;\a' "$1" "${2:-$1}"; }
+
 # 帮助信息
 show_help() {
     echo -e "${GREEN}CRMEB Docker 管理脚本${NC}"
@@ -114,7 +117,7 @@ do_start() {
     echo ""
     docker-compose ps
     echo ""
-    print_info "访问地址: http://localhost:8011"
+    print_info "访问地址: $(hyperlink 'http://localhost:8011')"
 }
 
 # 安装（清理数据并启动）
@@ -135,7 +138,7 @@ do_install() {
     echo ""
     docker-compose ps
     echo ""
-    print_info "安装完成！请访问 http://localhost:8011 进行安装向导"
+    print_info "安装完成！请访问 $(hyperlink 'http://localhost:8011') 进行安装向导"
 }
 
 # 重启容器

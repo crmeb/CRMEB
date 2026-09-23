@@ -35,7 +35,7 @@ $host = $_SERVER['HTTP_HOST'];
             <a href="<?php echo 'http://'.$host;?>" class="btn mid">进入前台</a>
         </div>
         <div class="admin btn">
-            <a href="<?php echo 'http://'.$host;?>/admin" class="btn btn_submit J_install_btn mid">进入后台</a>
+            <a href="<?php echo 'http://'.$host;?>/admin/" class="btn btn_submit J_install_btn mid">进入后台</a>
         </div>
       </div>
     </div>
