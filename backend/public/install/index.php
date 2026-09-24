@@ -15,6 +15,14 @@ if (function_exists('saeAutoLoader') || isset($_SERVER['HTTP_BAE_ENV_APPID'])) {
 define('APP_DIR', _dir_path(substr(dirname(__FILE__), 0, -15)));//项目目录
 define('SITE_DIR', _dir_path(substr(dirname(__FILE__), 0, -8)));//入口文件目录
 
+// 首次打开安装入口时，确保配置文件存在，便于后续安装流程检测文件权限。
+foreach (['.env', '.constant'] as $filename) {
+    $configPath = APP_DIR . $filename;
+    if (!is_file($configPath)) {
+        @touch($configPath);
+    }
+}
+
 if (file_exists('../install.lock')) {
     showHtml('你已经安装过该系统，如果想重新安装，请先删除public目录下的 install.lock 文件，然后再安装。');
 }
