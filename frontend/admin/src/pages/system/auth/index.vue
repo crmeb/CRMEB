@@ -36,8 +36,13 @@ import { copyrightList as copyrightListApi } from '@/api/system';
 defineOptions({ name: 'system_auth' });
 
 const tableList = ref([]);
-// 与后端 process 数组顺序一一对应（长链接已移除）：0=定时任务 1=消息队列
+// 与后端 process 数组顺序一一对应：0=长链接 1=定时任务 2=消息队列
 const trips = [
+  {
+    title: '温馨提示',
+    message:
+      '您的【长连接】未开启，没有开启会导致系统默认客服无法使用,后台订单通知无法收到。请尽快执行命令开启！！<a href="https://doc.crmeb.com/single/v54/13667" target="_blank">点击查看开启方法</a>',
+  },
   {
     title: '温馨提示',
     message:

@@ -155,6 +155,7 @@ class PublicController
         };
         $runtime = root_path('runtime');
         $info['process'] = [
+            ['name' => '长链接', 'require' => '开启', 'value' => $isHeartbeatFresh($runtime . '.workerman') || $checkLegacyPid('workerman')],
             ['name' => '定时任务', 'require' => '开启', 'value' => $isHeartbeatFresh($runtime . '.timer') || $checkLegacyPid('timer')],
             ['name' => '消息队列', 'require' => '开启', 'value' => sys_config('queue_open', 0) == 1 && $isHeartbeatFresh($runtime . '.queue_heartbeat')],
         ];
