@@ -205,7 +205,7 @@ class DiyProController extends AuthController
         ];
 
         $product = [
-            ['label' => '商品名称', 'value' => 'store_name'],
+            ['label' => '商品名称', 'value' => 'name'],
             ['label' => '商品id', 'value' => 'id'],
             ['label' => '商品图片', 'value' => 'image'],
             ['label' => '商品简介', 'value' => 'store_info'],
