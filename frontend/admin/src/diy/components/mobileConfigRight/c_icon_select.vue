@@ -1,15 +1,18 @@
 <template>
-  <el-dialog v-model="visible" width="800px" title="选择图标" append-to-body>
+  <el-dialog v-model="visible" width="640px" title="选择图标" append-to-body>
     <div class="icon-selector">
       <div class="search-box">
         <el-input v-model="searchText" placeholder="搜索图标名称" prefix-icon="Search" clearable></el-input>
       </div>
       <div class="icon-list">
-        <div class="icon-item" v-for="(item, index) in filteredIcons" :key="index" @click="selectIcon(item)">
-          <div class="icon-box">
-            <span :class="['mb-iconfont', cssPrefix + item.font_class]"></span>
-          </div>
-          <div class="icon-name">{{ item.name }}</div>
+        <div
+          class="icon-item"
+          v-for="(item, index) in filteredIcons"
+          :key="index"
+          :title="item.name"
+          @click="selectIcon(item)"
+        >
+          <span :class="['mb-iconfont', cssPrefix + item.font_class]"></span>
         </div>
       </div>
     </div>
@@ -56,49 +59,35 @@ defineExpose({ show });
 <style scoped lang="scss">
 .icon-selector {
   .search-box {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
   .icon-list {
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 500px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 4px;
+    max-height: 420px;
     overflow-y: auto;
-    border: 1px solid #eee;
-    padding: 10px;
+    border: 1px solid var(--el-border-color-lighter);
+    padding: 8px;
     border-radius: 4px;
 
     .icon-item {
-      width: 100px;
-      height: 100px;
+      aspect-ratio: 1;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       border-radius: 4px;
-      transition: all 0.3s;
-      margin: 5px;
+      transition: all 0.2s;
+
+      // .mb-iconfont 全局默认 font-size:16px，直接命中图标，必须在图标上覆盖
+      .mb-iconfont {
+        font-size: 30px;
+      }
 
       &:hover {
-        background-color: #f5f7fa;
-        color: #409eff;
-      }
-
-      .icon-box {
-        margin-bottom: 10px;
-        .mb-iconfont {
-          font-size: 32px;
-        }
-      }
-
-      .icon-name {
-        font-size: 12px;
-        text-align: center;
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        padding: 0 5px;
+        background-color: var(--prev-color-primary-light-9);
+        color: var(--prev-color-primary);
       }
     }
   }
