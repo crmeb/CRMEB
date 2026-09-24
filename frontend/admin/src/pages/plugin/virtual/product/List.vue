@@ -55,7 +55,7 @@
       </div>
     </el-card>
 
-    <el-card :bordered="false" shadow="never" class="ivu-mt mt16" :body-style="{ padding: '20px 20px 20px' }">
+    <el-card :bordered="false" shadow="never" class="ivu-mt mt16" :body-style="{ padding: '0 20px 20px' }">
       <el-tabs v-model="search.type" @tab-change="onTabClick">
         <el-tab-pane label="全部" name="all" />
         <el-tab-pane label="上架中" name="1" />
