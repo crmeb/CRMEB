@@ -263,7 +263,7 @@ function handleStyleSelect(item) {
 }
 
 function toTheme() {
-  window.open('https://www.crmeb.com/theme?from=crmebkytheme', '_blank');
+  window.open('https://www.crmeb.com/theme?from=crmebkyv8theme', '_blank');
 }
 
 function viewStyleDetail(item) {
