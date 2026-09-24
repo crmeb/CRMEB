@@ -923,9 +923,10 @@ class Installer extends BaseModuleInstaller
             $count++;
         }
         $rows = [
+            // type 存控件类型（createForm 按 type 分发：text/radio/textarea...），info 才是表单标签
             [
                 'menu_name'     => 'aiagent_qywechat_webhook',
-                'type'          => '企业微信机器人 Webhook',
+                'type'          => 'text',
                 'input_type'    => 'input',
                 'config_tab_id' => $tabId,
                 'value'         => '',
@@ -936,7 +937,7 @@ class Installer extends BaseModuleInstaller
             ],
             [
                 'menu_name'     => 'ai_allow_private_endpoint',
-                'type'          => '允许内网 AI 服务地址',
+                'type'          => 'radio',
                 'input_type'    => 'radio',
                 'parameter'     => "0=>关闭\n1=>开启",
                 'config_tab_id' => $tabId,
@@ -948,7 +949,7 @@ class Installer extends BaseModuleInstaller
             ],
             [
                 'menu_name'     => 'aiagent_email_recipients',
-                'type'          => '邮件收件白名单',
+                'type'          => 'textarea',
                 'input_type'    => 'textarea',
                 'config_tab_id' => $tabId,
                 'value'         => '',
