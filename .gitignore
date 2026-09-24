@@ -6,6 +6,7 @@
 !/.crmeb/**
 
 # backend 本地文件与目录
+/backend/tests/
 /backend/public/uploads/
 /backend/public/install.lock
 /backend/public/install/install.log
