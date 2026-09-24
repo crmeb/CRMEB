@@ -192,6 +192,17 @@ canonical ID 自动生成，也可以在声明中通过 `key` 指定插件内局
 - 可见菜单（`auth_type=1`）的 `menu_path` 必须有对应前端路由（`routes.js` 中 `routePre + menu_path`），否则侧边栏点击后 404；编辑/创建页（如 `/product/create/:id?`）通过代码内 `router.push()` 进入，不需要菜单项。
 - 带 `api_url` 的权限项必须声明 `auth_type=2` 并提供 `methods`，否则后端 `verifyAuth` 不识别、接口不会被鉴权；操作按钮用 `auth_type=3` + `unique_auth`。禁止用 `auth_type=3` 声明接口权限项，也禁止声明缺少 `unique_auth` 的按钮项。
 
+## 系统配置项种子（system_config）
+
+模块需要全局开关/参数（后台「系统配置 → 某页签」）时，由 Installer 自建 `system_config_tab` 分类并写入 `system_config` 行（正确范例：`modules/service/mcp/Installer.php` 的 `mcp_enabled`；反面案例：`modules/aiagent/Installer.php` 的 `seedTaskConfig()` 曾写错已修复）。字段语义：
+
+- `type` 是**控件类型**，`SystemConfigServices::createForm()` 按它 `switch` 分发渲染，合法值：`text` / `radio` / `textarea` / `checkbox` / `select` / `switch` / `upload`；`text` 控件再按 `input_type`（`input` / `number`）区分输入框形态。
+- `info` 是表单标签，`desc` 是说明文案；`parameter` 是选项映射，每行 `值=>标签`（如 `"0=>关闭\n1=>开启"`），radio/checkbox/select 必填。
+- `value` 存 JSON 可解析串：radio 存 `0`/`1`、文本存 JSON 字符串；`json_decode` 后供表单回显与 `sys_config()` 运行时判定。
+- 运行时读取走 `sys_config()`，带缓存键 `system_config_<menu_name>`；直接改数据库后必须清缓存（后台保存任意配置会触发 `CacheService::clear()`）。
+
+> 高频踩坑：把 `type` 写成中文说明（如「允许内网 AI 服务地址」）而非控件类型时，`createForm` 的 `switch` 无匹配分支，该页签渲染**空白表单且无任何报错**——配置项在界面上不可见、保存自然无效，极易误判为「写入有问题」。新增配置种子后，必须实际打开对应配置页签确认字段渲染与回显，再联调业务判定逻辑（如 `sys_config('xxx') === 1`）。
+
 ## 与默认安装 SQL 去重
 
 Installer 中凡涉及写库操作（建表、种子、菜单、配置项），必须确保系统默认安装 SQL 中没有重复数据：系统功能模块转为插件后，其默认数据应从 `backend/public/install/` 的 `crmeb_table.sql`（表结构）与 `crmeb_data.sql`（初始数据、菜单、配置）中删除，以 Installer 为唯一来源，保证安装幂等、卸载干净。
