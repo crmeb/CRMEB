@@ -1,0 +1,1 @@
+import{u as t,ao as u}from"./index-DCC_vuBY.js";function c(){const r=t();function n(o){var s;const e=(s=r.userInfo)==null?void 0:s.level;return e===0||e==="0"?!0:Array.isArray(r.access)&&u([o],r.access)}return{hasPermission:n}}export{c as u};

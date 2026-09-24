@@ -97,7 +97,6 @@ node_modules/
 /docker/mysql/log/
 /docker/nginx/log/
 
-/backend/public/*
 /crmeb/runtime/
 /backend/tests/
 /crmeb/public/install.lock

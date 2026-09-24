@@ -1,0 +1,1 @@
+import{s as m}from"./index-DCC_vuBY.js";import"./element-plus-CfPgm5_G.js";import"./monaco-editor-Rk3NqNDP.js";import"./form-create-Dd2rLrbU.js";import"./vxe-Dx9vzgWy.js";const a="/normal";function p(t,r={}){const e=(r.method||"get").toLowerCase(),o={url:a+t,method:e};return r.body&&(o.data=typeof r.body=="string"?JSON.parse(r.body):r.body),m(o)}export{p as normalApi};
