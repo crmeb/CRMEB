@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev:h5": "uni",
 		"build:h5": "uni build",
+		"postbuild:h5": "node scripts/publishH5.mjs",
 		"dev:mp-weixin": "uni -p mp-weixin",
 		"build:mp-weixin": "uni build -p mp-weixin",
 		"dev:mp-alipay": "uni -p mp-alipay",
