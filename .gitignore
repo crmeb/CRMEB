@@ -24,3 +24,7 @@
 /frontend/uni-app/node_modules/
 /frontend/uni-app/.env
 /frontend/uni-app/.env.development
+
+#docker
+/docker/mysql/data/*
+/docker/mysql/log/*

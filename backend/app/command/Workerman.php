@@ -106,6 +106,7 @@ class Workerman extends Command
         $server = $this->init($input, $output);
         Worker::$pidFile = app()->getRootPath() . 'runtime/workerman.pid';
         Worker::$logFile = app()->getRootPath() . 'runtime/workerman.log';
+        Worker::$statusFile = app()->getRootPath() . 'runtime/workerman.status';
 
         if (!$server || $server == 'gateway') {
             //创建统一长连接网关服务（所有长链接业务共用此端口）
