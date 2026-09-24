@@ -93,6 +93,9 @@
         "patches": {
             "qiniu/php-sdk": {
                 "Fix PHP 8.4 implicit nullable parameter deprecation": "crmeb/patches/qiniu-php-sdk-php84-nullable.patch"
+            },
+            "dh2y/think-qrcode": {
+                "Redirect phpqrcode error logs to runtime (QR_LOG_DIR)": "crmeb/patches/dh2y-think-qrcode-log-dir.patch"
             }
         }
     }

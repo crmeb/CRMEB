@@ -1,5 +1,5 @@
 {
-    "_hash": "99eefa35c262e3c5b43046ef33c9f8d7c4cd9ca50d396f487e5bd18d55667204",
+    "_hash": "73760818318cfd4805eac23b9beb911779c0521b8072c6e4058dd7307b71cba9",
     "patches": {
         "qiniu/php-sdk": [
             {
@@ -7,6 +7,18 @@
                 "description": "Fix PHP 8.4 implicit nullable parameter deprecation",
                 "url": "crmeb/patches/qiniu-php-sdk-php84-nullable.patch",
                 "sha256": "9361c863c56d1693a082f6fa94d738e2eeb6d21e46c64a0080f5ee30be56f23a",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "dh2y/think-qrcode": [
+            {
+                "package": "dh2y/think-qrcode",
+                "description": "Redirect phpqrcode error logs to runtime (QR_LOG_DIR)",
+                "url": "crmeb/patches/dh2y-think-qrcode-log-dir.patch",
+                "sha256": "b5b8261628f4f918dc7c9c1eebfc1fd0bacaedcaa575d8324390a80db831855c",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
