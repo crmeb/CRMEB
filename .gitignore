@@ -32,3 +32,4 @@
 #docker
 /docker/mysql/data/*
 /docker/mysql/log/*
+.DS_Store
