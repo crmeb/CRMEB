@@ -1,1 +1,0 @@
-import{s as i}from"./index-DCC_vuBY.js";import"./element-plus-CfPgm5_G.js";import"./monaco-editor-Rk3NqNDP.js";import"./form-create-Dd2rLrbU.js";import"./vxe-Dx9vzgWy.js";const m="/virtual";function s(o,r={}){const e=(r.method||"get").toLowerCase(),t={url:m+o,method:e};return r.body&&(t.data=typeof r.body=="string"?JSON.parse(r.body):r.body),i(t)}export{s as virtualApi};

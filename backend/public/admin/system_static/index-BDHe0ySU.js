@@ -1,1 +1,0 @@
-import{y as r,B as o}from"./element-plus-CfPgm5_G.js";import t from"./index-DqiDwCYr.js";import"./index-DCC_vuBY.js";import"./monaco-editor-Rk3NqNDP.js";import"./form-create-Dd2rLrbU.js";import"./vxe-Dx9vzgWy.js";const f=Object.assign({name:"storageConfig"},{__name:"index",setup(e){return(a,i)=>(r(),o(t))}});export{f as default};

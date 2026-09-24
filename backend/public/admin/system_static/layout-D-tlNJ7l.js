@@ -1,1 +1,0 @@
-import{M as r}from"./index-DCC_vuBY.js";import{l as s}from"./element-plus-CfPgm5_G.js";const n=r("layout",()=>{const e=s(!1);function o(t){e.value=t}return{menuCollapse:e,changeCol:o}},{persist:!0});export{n as u};

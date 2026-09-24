@@ -1,1 +1,0 @@
-import{M as i}from"./index-DCC_vuBY.js";import{l as o}from"./element-plus-CfPgm5_G.js";const p=i("keepAliveNames",()=>{const t=o([]);function s(e){t.value=e}async function r(e){s(e)}return{keepAliveNames:t,getCacheKeepAlive:s,setCacheKeepAlive:r}},{persist:!0});export{p as u};

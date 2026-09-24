@@ -1,1 +1,0 @@
-import{aq as i,k as e}from"./element-plus-CfPgm5_G.js";function o(t){return new Promise((a,r)=>{i.warning({title:t.title,duration:3e3,message:e("div",[e("a",{href:"http://www.crmeb.com",target:"_blank"},t.info)])}),a()})}export{o as a};
