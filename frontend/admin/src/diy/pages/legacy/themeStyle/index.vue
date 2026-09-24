@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          切换移动端商城主题色系，保存后前台立即生效。
+        </span>
+      </div>
       <div>
         <div style="float: right">
           <el-button class="bnt" type="primary" v-db-click @click="submit">保存</el-button>

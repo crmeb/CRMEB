@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          用户资金流水明细，按类型与时间筛选，支持导出对账。
+        </span>
+      </div>
     </div>
     <el-card :bordered="false" shadow="never">
       <el-form

@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="`配置列表${$route.query.config_name ? ` - ` + $route.query.config_name : ''}`"
       :backUrl="$routeProStr + '/system/config/system_config_tab/index'"
+      description="查看并维护当前配置分类下的配置项，支持自定义字段类型与显示隐藏。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-row v-if="!$route.query.config_name" class="action-row">

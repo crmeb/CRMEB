@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="配置打印服务商账号并启停驱动，具体打印机设备在打印设置中维护。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-alert
         title="在这里配置打印服务商账号和密钥；具体设备只在“设置 > 打印设置”中填写打印机 ID。"

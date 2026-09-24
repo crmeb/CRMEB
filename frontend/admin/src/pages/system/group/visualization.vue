@@ -1,7 +1,13 @@
 <template>
   <div :style="bgcolors">
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          维护移动端可视化数据（开屏广告、充值引导等），右侧可实时预览效果。
+        </span>
+      </div>
       <div>
         <div style="float: right">
           <el-button class="bnt" type="primary" v-db-click @click="save">保存</el-button>

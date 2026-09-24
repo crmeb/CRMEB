@@ -1,6 +1,10 @@
 <template>
   <div class="message">
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="按场景配置会员端消息通知的渠道开关与模板，支持一键同步微信订阅消息/模板消息。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '20px 20px 20px' }">
       <el-row class="action-row mb14">
         <el-col>

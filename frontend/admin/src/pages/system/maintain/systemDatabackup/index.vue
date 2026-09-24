@@ -72,10 +72,11 @@
           <el-drawer
             v-model="modals"
             :wrapperClosable="false"
-            :size="740"
+            :size="1000"
             :title="'[ ' + rows.name + ' ]' + rows.comment"
           >
-            <el-table ref="selection" :data="tabList3" v-loading="loading2" empty-text="暂无数据" max-height="600">
+            <!-- 详情为纯表格，内边距收窄对齐 header 的 15px；滚动交给抽屉 body（全局 overflow:auto），滚动条贴边 -->
+            <el-table ref="selection" :data="tabList3" v-loading="loading2" empty-text="暂无数据">
               <el-table-column label="字段名" min-width="100">
                 <template #default="scope">
                   <span>{{ scope.row.COLUMN_NAME }}</span>
@@ -433,6 +434,10 @@ getfileList();
 </script>
 
 <style lang="scss" scoped>
+/* 数据库详情抽屉为纯表格展示，覆盖全局 20px 35px 的大内边距 */
+:deep(.el-drawer__body) {
+  padding: 15px;
+}
 :deep(.el-tabs__item) {
   height: 54px !important;
   line-height: 54px !important;

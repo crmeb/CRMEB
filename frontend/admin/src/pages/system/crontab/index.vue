@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '10px 20px 0' }">
+    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div>
         <el-tabs v-model="currentTab" @tab-change="getList">
           <el-tab-pane
@@ -177,7 +177,9 @@ getList();
 </script>
 
 <style lang="scss" scoped>
+/* 页签条通栏贴卡片顶边（与实物订单/文件管理页同一模式）：左右留白由 header 自身控制，灰线横贯整卡 */
 :deep(.el-tabs__header) {
   margin-bottom: 0;
+  padding: 0 20px;
 }
 </style>

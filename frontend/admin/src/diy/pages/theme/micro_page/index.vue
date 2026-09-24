@@ -1,8 +1,12 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <div class="fl_header">
+      <div class="header-main">
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          自定义移动端页面，添加后可通过链接在菜单、广告位等场景跳转使用。
+        </span>
       </div>
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">

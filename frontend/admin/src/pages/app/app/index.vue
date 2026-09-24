@@ -1,7 +1,13 @@
 <template>
   <div :style="bgcolors">
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          维护 APP 服务协议与隐私政策内容，右侧实时预览移动端弹窗效果。
+        </span>
+      </div>
       <div style="float: right">
         <el-button class="bnt" type="primary" v-db-click @click="onsubmit('formValidate')">保存</el-button>
       </div>

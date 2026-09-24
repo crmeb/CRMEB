@@ -1,7 +1,13 @@
 <template>
   <div v-loading="spinShow">
     <div class="i-layout-page-header header-title" v-if="!headerList.length">
-      <span class="ivu-page-header-title">{{ title || $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title">{{ title || $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          按分类维护系统全局参数，切换页签逐项配置，保存后立即生效。
+        </span>
+      </div>
     </div>
     <div class="article-manager">
       <el-card :bordered="false" shadow="never" class="ivu-mt fromBox" :body-style="{ padding: '0 20px 20px' }">

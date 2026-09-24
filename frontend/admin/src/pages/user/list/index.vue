@@ -425,7 +425,7 @@
         @onceGetList="onceGetList"
       ></userLabel>
     </el-dialog>
-    <el-drawer custom-class="demo-drawer" v-model="modals" :wrapperClosable="false" size="720" title="用户信息填写">
+    <el-drawer class="demo-drawer" v-model="modals" :wrapperClosable="false" size="720" title="用户信息填写">
       <div class="demo-drawer__content">
         <UserEdit ref="userEditRef" v-if="modals" :userData="userData"></UserEdit>
         <div class="fix_footer acea-row row-center">

@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/marketing/live/goods'"
+      description="从商品库选择商品生成直播商品，提交微信审核通过后可在直播间上架。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form

@@ -1,6 +1,10 @@
 <template>
   <div>
-    <pages-header class="mb16" :title="$route.meta.title"></pages-header>
+    <pages-header
+      class="mb16"
+      :title="$route.meta.title"
+      description="配置电子面单服务商账号并启停驱动，面单模板与寄件信息在电子面单设置中维护。"
+    ></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-alert
         title="这里仅管理电子面单服务商驱动；物流公司、打印机编号和寄件信息请到“设置 > 电子面单设置”配置。"

@@ -4,6 +4,7 @@
       ref="pageHeader"
       :title="route.params.id && isEdit ? '编辑优惠券' : '添加优惠券'"
       :backUrl="Setting.routePre + '/marketing/store_coupon_issue/index'"
+      description="设置优惠券名称、面值、领取与有效期等规则，保存后可发放给用户。"
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form :model="formData" label-width="160px">

@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title mr20">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          装修页面与模板列表，支持新增页面、导入模板、编辑设计与设为默认。
+        </span>
+      </div>
       <div>
         <div style="float: right" v-if="cardShow == 1 || cardShow == 2">
           <el-button class="bnt" type="primary" v-db-click @click="submit" :loading="loadingExist">保存</el-button>

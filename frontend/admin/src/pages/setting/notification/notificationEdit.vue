@@ -5,6 +5,7 @@
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="backUrl"
+      description="按渠道填写模板内容与模板 ID，保存后即可针对该渠道启用此通知。"
     ></pages-header>
     <div class="tabs mt16">
       <el-row :gutter="32">

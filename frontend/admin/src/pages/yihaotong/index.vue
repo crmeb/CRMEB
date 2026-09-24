@@ -1,7 +1,13 @@
 <template>
   <div class="article-manager">
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">一号通账户</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title">一号通账户</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          配置一号通平台凭证，短信、物流查询等增值服务依赖该账户，可一键登录自动回填。
+        </span>
+      </div>
     </div>
     <el-card shadow="never" class="ivu-mt">
       <el-form :model="form" :label-width="labelWidth" :label-position="labelPosition" v-loading="loading">

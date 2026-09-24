@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="i-layout-page-header header-title">
-      <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+      <div class="header-main">
+        <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
+        <span class="header-description">
+          <el-icon class="header-description-icon"><InfoFilled /></el-icon>
+          危险操作集中区：清理回收站、测试订单等数据，删除后不可恢复，请先备份。
+        </span>
+      </div>
       <span class="clear_tit">
         <i class="el-icon-info" style="color: #ed4014" />
         <span>清除数据请谨慎，清除就无法恢复哦！</span>

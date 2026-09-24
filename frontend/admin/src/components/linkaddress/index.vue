@@ -822,9 +822,6 @@ defineExpose({ modals, handleCheckChange });
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-dialog__body) {
-}
-
 :deep(.el-tree-node__content) {
   height: 30px;
 }
