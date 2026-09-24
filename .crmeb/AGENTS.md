@@ -14,7 +14,7 @@ CRMEB v8 电商系统，三端一体：
 
 | 区域 | 目录 | 技术栈 |
 | --- | --- | --- |
-| 后端 | `backend/` | PHP 8.2-8.4 + ThinkPHP 8 + MySQL 8 + Redis，多应用入口 `adminapi` / `api` / `outapi` |
+| 后端 | `backend/` | PHP 8.2-8.4 + ThinkPHP 8 + MySQL 8 + Redis，多应用入口 `adminapi` / `api` |
 | 管理后台 | `frontend/admin/` | Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4 + Vite 5（纯 JS） |
 | 移动端 | `frontend/uni-app/` | uni-app 官方 CLI（Vite 5）+ Vue 3 + Pinia + Sass |
 
@@ -79,8 +79,8 @@ CRMEB v8 电商系统，三端一体：
 | `crmeb-admin-dev` | 管理后台页面/组件/接口/路由/插件页面开发 |
 | `crmeb-admin-ui` | 管理端 UI 规范：设计令牌、布局、页面骨架、组件与交互、深色模式、评审清单 |
 | `crmeb-uniapp-dev` | 移动端 `frontend/uni-app` 页面、API 封装、条件编译、分包、动态渲染 |
-| `crmeb-order-dev` | 订单中台全生命周期开发手册：交易模式、产品类型订单链路、订单事件、状态流转、售后退款 |
 | `crmeb-dev` | 二开总览与流程导航（含 `references/` 分类子文档，如创建插件/驱动/产品类型/用户端页面） |
+| `project-standard-bootstrap` | 项目统一工程规范引导：审计/初始化/修复 `.crmeb` 规则骨架、工具入口、目录契约与文档体系（模板类技能，仅按需用于规范化治理） | 「项目规范化」「工程规范审计」「新项目初始化」 |
 
 ## 子智能体索引（`.crmeb/agents/`）
 

@@ -93,7 +93,7 @@ public function bcDec($key, string $incField, string $inc, string $keyField = nu
 | 管理员增加积分 | setUserInfo() | [UserServices.php](../../../../../backend/app/services/user/UserServices.php) | system_add |
 | 后台调整积分 | setUserInfo() | [UserServices.php](../../../../../backend/app/services/user/UserServices.php) | system_add |
 | 下单赠送积分 | paySuccess() | [OrderSuccessServices.php](../../../../../backend/app/services/order/OrderSuccessServices.php)（约 L106 触发 `OrderPaySuccess` 事件） | gain/product_gain |
-| 抽奖中奖 | sendPrize() | [LuckLotteryRecordServices.php](../../../../../backend/modules/marketing/lottery/service/LuckLotteryRecordServices.php)（抽奖模块已迁移至 modules/marketing/lottery/，`app/services/activity/` 下无 lottery/） | lottery_add |
+| 抽奖中奖 | sendPrize() | `modules/marketing/lottery/service/LuckLotteryRecordServices.php`（抽奖模块未随当前版本提供，`app/services/activity/` 下无 lottery/） | lottery_add |
 | 订单退款返还 | execute() | [RefundExecutorServices.php](../../../../../backend/app/services/order/RefundExecutorServices.php) | pay_product_integral_back |
 
 ### 4.2 积分减少场景

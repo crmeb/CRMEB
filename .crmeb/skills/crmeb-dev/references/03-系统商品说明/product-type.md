@@ -13,9 +13,8 @@
 已有实现参考：
 - [backend/modules/product/normal](../../../../../backend/modules/product/normal) — 实物商品
 - [backend/modules/product/virtual](../../../../../backend/modules/product/virtual) — 虚拟商品
-- [backend/modules/product/cardkey](../../../../../backend/modules/product/cardkey) — 卡密商品
 
-> `coupon`（卡券）产品类型尚未实现，目录不存在。
+> `cardkey`（卡密）与 `coupon`（卡券）产品类型尚未实现，目录不存在。
 
 ## 二、前置约束（必须遵守）
 

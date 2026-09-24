@@ -53,5 +53,5 @@ php think make:module demo --label=演示模块 --type=service
 - [ ] `php think event:check` 无新增孤儿事件
 - [ ] 涉及插件清单变更时 `php think plugin:manifest-check` 通过
 - [ ] 接口契约变更已同步两端 `api` 目录、菜单权限与安装 SQL（核对清单见 [.crmeb/rules/前端规范.md](.crmeb/rules/前端规范.md)）
-- [ ] 数据表变更已同步 `backend/public/install/crmeb_table.sql` / `crmeb_data.sql`
+- [ ] 数据表变更已同步 `backend/public/install/crmeb_table.sql`（基础数据见 `backend/public/install/data/`）
 - [ ] 提交信息符合上述格式、按主题分批

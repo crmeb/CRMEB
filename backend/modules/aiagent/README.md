@@ -57,7 +57,7 @@ aiagent/
 | `eb_ai_agent_task_run` | 任务运行记录（状态、触发方式、摘要、错误、工具次数、用量、起止时间） |
 | `eb_ai_mcp_server` | MCP Server 注册表（url、api_key、headers、timeout、tools 同步缓存、server_key 唯一） |
 
-依赖核心表 `eb_ai_model`（模型管理，**非本模块自有表**）：本模块升级时幂等补充 `full_url` 列，卸载不删除该列。
+依赖核心表 `eb_ai_model`（模型管理，**非本模块自有表**）：模型管理为系统级能力，`full_url` 等字段由核心维护，本模块安装/卸载不改动该表结构。
 
 ## 内置资产（.crmeb/）
 
@@ -68,13 +68,13 @@ aiagent/
 | `skills/{key}/*.md` | 附属资料，由模型经 `crmeb_skill_load` 按需加载 | 同上 |
 | `skills/{key}/EXAMPLES.md` | 维护者回归用例，**不进入模型上下文** | 同上（保留名） |
 
-内置 Skill：`crmeb-assistant`（业务助手）、`systemsetting`（系统设置）、`doc`（功能说明）、`emailformat`（邮件格式）、`crontab`（系统定时任务）。
+内置 Skill：`crmeb-assistant`（业务助手）、`user`（用户管理）、`coupon`（优惠券管理）、`systemsetting`（系统设置）、`doc`（功能说明）、`emailformat`（邮件格式）、`crontab`（系统定时任务）。编写要求见 [help/docs/AI Agent 模块.md](../../../help/docs/AI%20Agent%20模块.md)「Skill 体系」。
 
 ## 与 service_mcp 的关系
 
 本模块**不直接引用** `service_mcp` 模块的类（避免跨模块互引），一律经 `RemoteMcpClient` 以 HTTP 调用其 `/api/mcp` 端点。因此：
 
-- 业务工具（商品/订单/售后/优惠券/用户/配置等 33 个）由 `service_mcp` 提供，本模块只负责发现、授权与转发。
+- 业务工具（商品/订单/售后/优惠券/用户/配置等，当前清单见 [help/docs/api/MCP接口.md](../../../../help/docs/api/MCP接口.md)）由 `service_mcp` 提供，本模块只负责发现、授权与转发。
 - 内置 MCP 可用性要求 `service_mcp` 已启用 + `mcp_enabled=1`（安装默认开启）+ `mcp_appkey` 非空（`McpToolService::available()`）。
 - 内置服务工具缓存为空时读取会自动补同步一次（失败 10 分钟冷却），新装站点开箱即用；也可在 MCP 管理页手动「同步工具」。
 - 工具的确认交互声明（`interaction`）随「同步工具」写入缓存，`service_mcp` 侧声明变更后需重新同步内置 MCP 才生效。
@@ -85,19 +85,15 @@ aiagent/
 - Skill 路由已显式声明 `Route::pattern(['key' => '[A-Za-z0-9_-]+'])`，因全局路由变量规则不含连字符。
 - Skill 附属资料的文件名经查询参数 `file` 传递（文件名可能含中文与点号），不走路由变量。
 - Web 运行用户需对 `modules/aiagent/.crmeb/skills/` 具备**写权限**。
-- 任务指令与 Skill 正文都会进入模型上下文；改动涉及安全边界的提示词时，同步检查 `tests/aiagent/` 的回归断言。
+- 任务指令与 Skill 正文都会进入模型上下文；改动涉及安全边界的提示词时，人工回归对话工具循环、确认卡与无人值守邮件白名单流程。
 
 ## 定向回归
 
-不依赖数据库，从 `backend/` 目录执行（仓库无全局 PHPUnit 配置）：
+模块无随仓库分发的自动化测试脚本（`backend/tests/` 为本地可选目录，缺失属正常）。涉及提示词、工具白名单或任务调度的改动，建议在本地环境人工回归：
 
-```bash
-php tests/aiagent/AgentChatFlowTest.php
-php tests/aiagent/BuiltinSkillInstructionsTest.php
-php tests/mcp/McpContractTest.php
-```
-
-aiagent 的两个脚本**成功时无输出、退出码 0**，失败抛异常并打印原因。
+1. 对话页流式对话一次含工具调用的问答，确认 `tool` 事件与最终答复正常；
+2. 触发一个写工具（如系统配置更新），确认确认卡弹出、拒绝与批准两条路径均正确；
+3. 建一个每分钟任务跑一次，确认运行记录、摘要与通知投递符合预期。
 
 ## 注意事项
 

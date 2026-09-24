@@ -46,6 +46,12 @@ class ProductRankingTool implements McpToolInterface
         return '商品排行';
     }
 
+    /** @return string 工具分类（管理后台分组展示） */
+    public function category(): string
+    {
+        return '商品';
+    }
+
     /** @return array MCP 入参 JSON Schema */
     public function inputSchema(): array
     {

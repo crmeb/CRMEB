@@ -174,8 +174,8 @@ class AccountListPage extends BaseSchemaPageProvider
         // 多列勾选组：两列展示 + 全选联动 + 英文名/描述悬停提示（option.title）
         $field[] = Form::checkboxGroup('tools', '授权工具', $checked, $this->toolOptions())
             ->info($isSystem
-                ? '系统账号供 AI Agent 内置工具源调用，收紧白名单即收紧 AI Agent 可见范围（调整后需在 AI Agent 的 MCP 管理页重新「同步工具」）；标注（写）的为写入/发送类工具'
-                : '账号仅能调用勾选的工具；标注（写）的为写入/发送类工具')
+                ? '系统账号供 AI Agent 内置工具源调用，收紧白名单即收紧 AI Agent 可见范围（调整后需在 AI Agent 的 MCP 管理页重新「同步工具」）；标注（写）的为写入/发送类工具，标注（删）的为删除类工具'
+                : '账号仅能调用勾选的工具；标注（写）的为写入/发送类工具，标注（删）的为删除类工具')
             ->validate([
                 ['required' => true, 'message' => '请至少勾选一个工具', 'type' => 'array', 'trigger' => 'change'],
             ]);
@@ -289,7 +289,8 @@ class AccountListPage extends BaseSchemaPageProvider
      * 工具名 → 展示文案映射（当前已注册的全部工具：内置 + 插件经事件追加）
      *
      * 文案优先取工具中文名（label()），未提供时回退功能描述，最后回退
-     * 工具名；写工具在文案后标注（写），便于管理员识别写入/发送类工具。
+     * 工具名；写工具在文案后标注（写）、删除类工具标注（删），便于管理员
+     * 识别写入/发送与删除类工具。
      *
      * @return array 工具名 => 展示文案
      */
@@ -304,7 +305,9 @@ class AccountListPage extends BaseSchemaPageProvider
             if ($label === '') {
                 $label = (string)$definition['name'];
             }
-            if ((string)($definition['interaction'] ?? '') === 'execute') {
+            if ((string)($definition['interaction'] ?? '') === 'delete') {
+                $label .= '（删）';
+            } elseif ((string)($definition['interaction'] ?? '') === 'execute') {
                 $label .= '（写）';
             }
             $map[(string)$definition['name']] = $label;
@@ -313,18 +316,24 @@ class AccountListPage extends BaseSchemaPageProvider
     }
 
     /**
-     * 工具勾选选项（文案取自 toolLabelMap()）
+     * 工具勾选选项（文案取自 toolLabelMap()，按分类分组排序）
      *
+     * 选项按注册中心约定分类顺序排列（插件自定义分类按出现顺序追加，
+     * 未声明分类的归入「其他」），group 字段供前端渲染分组标题与分组全选；
      * title 携带英文名 + 描述作为悬停提示：form-create 渲染 checkbox 时会把
      * 选项的额外字段透传给 el-checkbox 根节点，原生 title 随之生效。
      *
-     * @return array {label, value, title} 选项列表（按工具名排序）
+     * @return array {label, value, group, title} 选项列表
      */
     private function toolOptions(): array
     {
         $labelMap = $this->toolLabelMap();
         $definitions = McpToolRegistry::booted()->allDefinitions();
-        usort($definitions, fn(array $a, array $b) => strcmp((string)$a['name'], (string)$b['name']));
+        // 分组排序：约定分类在前，插件自定义分类次之，「其他」兜底；组内按工具名排序
+        $order = array_merge(McpToolRegistry::orderedCategories($definitions), ['其他']);
+        usort($definitions, fn(array $a, array $b) => array_search($this->categoryOf($a), $order, true)
+            <=> array_search($this->categoryOf($b), $order, true)
+            ?: strcmp((string)$a['name'], (string)$b['name']));
         $options = [];
         foreach ($definitions as $definition) {
             $name = (string)$definition['name'];
@@ -333,9 +342,26 @@ class AccountListPage extends BaseSchemaPageProvider
             if ($description !== '') {
                 $title .= "\n" . $description;
             }
-            $options[] = ['label' => $labelMap[$name], 'value' => $name, 'title' => $title];
+            $options[] = [
+                'label' => $labelMap[$name],
+                'value' => $name,
+                'group' => $this->categoryOf($definition),
+                'title' => $title,
+            ];
         }
         return $options;
+    }
+
+    /**
+     * 工具所属分类（未声明分类的工具归入「其他」）
+     *
+     * @param array $definition 工具定义（allDefinitions() 返回结构）
+     * @return string 分类名
+     */
+    private function categoryOf(array $definition): string
+    {
+        $category = trim((string)($definition['category'] ?? ''));
+        return $category !== '' ? $category : '其他';
     }
 
     /**

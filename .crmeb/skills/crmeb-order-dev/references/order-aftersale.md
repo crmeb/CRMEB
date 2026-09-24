@@ -34,7 +34,7 @@ AfterSaleRuleResolver::resolve()（合并，app/services/order/rule/）
 | 退款方案 | `buildRefundPlan / beforeRefundSubmit / applyRefundEffects` | 定制退款金额构成与资金副作用；**副作用必须经 `RefundEffectContextInterface::once()` 登记**保证幂等 |
 | 表单与动作 | `getFormConfig / getUserActions` | 申请表单、用户侧可用动作 |
 
-参考实现：实物 [NormalAfterSaleHandler](../../../../backend/modules/product/normal/handler/NormalAfterSaleHandler.php)（标准 7 天）、卡密 [CardkeyAfterSaleHandler](../../../../backend/modules/product/cardkey/handler/CardkeyAfterSaleHandler.php)（1 小时 + 退款回收卡密）。
+参考实现：实物 [NormalAfterSaleHandler](../../../../backend/modules/product/normal/handler/NormalAfterSaleHandler.php)（标准 7 天）；卡密 `modules/product/cardkey/handler/CardkeyAfterSaleHandler.php`（1 小时 + 退款回收卡密，卡密模块未随当前版本提供）。
 
 ## 三、售后单流程
 

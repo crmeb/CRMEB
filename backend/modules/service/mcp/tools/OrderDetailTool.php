@@ -67,6 +67,15 @@ class OrderDetailTool implements McpToolInterface
     }
 
     /**
+     * 工具分类（管理后台分组展示）
+     * @return string
+     */
+    public function category(): string
+    {
+        return '订单';
+    }
+
+    /**
      * 入参 Schema
      * @return array
      */

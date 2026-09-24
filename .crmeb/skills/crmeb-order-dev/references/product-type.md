@@ -33,7 +33,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 实物 normal | [modules/product/normal](../../../../backend/modules/product/normal/) | `normal_order` | `eb_pt_normal_order` | 手动发货 → 物流 → 收货（可选安装） | 是 |
 | 虚拟 virtual | [modules/product/virtual](../../../../backend/modules/product/virtual/) | `virtual_order` | `eb_pt_virtual_order` | 支付后自动发放网盘链接+提取码 | 否 |
-| 卡密 cardkey | [modules/product/cardkey](../../../../backend/modules/product/cardkey/) | `cardkey_order` | `eb_pt_cardkey_order` | 支付后自动发卡，退款自动回收卡密 | 否 |
+| 卡密 cardkey | `modules/product/cardkey/`（未随当前版本提供） | `cardkey_order` | `eb_pt_cardkey_order` | 支付后自动发卡，退款自动回收卡密 | 否 |
 
 > `coupon`（卡券）类型规划中未实现。活动订单（秒杀/拼团/砍价）不建独立 source_type，复用底层产品类型的订单链路，活动维度经 `activity_type` 关联，见 [交易模式](trade-mode.md#3-3-交易模式与订单表的关系)。
 
@@ -77,7 +77,7 @@
 | `OrderCenterListExtend` 事件 | 向订单列表注入扩展字段（listener 直接改 `$event['list']` 引用） |
 | `OrderCenterDetailExtend` 事件 | 向详情注入扩展数据 + 自声明渲染 section（`extend` + `extend_sections`，中台不硬编码插件 section） |
 
-监听器示例：[modules/product/normal/listener/OrderCenterDetailExtendListener.php](../../../../backend/modules/product/normal/listener/OrderCenterDetailExtendListener.php)、卡密详情注入发卡数据 [modules/product/cardkey/listener/OrderCenterDetailExtendListener.php](../../../../backend/modules/product/cardkey/listener/OrderCenterDetailExtendListener.php)。
+监听器示例：[modules/product/normal/listener/OrderCenterDetailExtendListener.php](../../../../backend/modules/product/normal/listener/OrderCenterDetailExtendListener.php)；卡密详情注入发卡数据见 `modules/product/cardkey/listener/OrderCenterDetailExtendListener.php`（卡密模块未随当前版本提供，路径为规划参考）。
 
 ## 四、新产品类型接入订单链路最小清单
 
@@ -98,5 +98,5 @@
 
 - Handler 契约：[crmeb/trade/product/ProductTypeHandlerInterface.php](../../../../backend/crmeb/trade/product/ProductTypeHandlerInterface.php)、基类 [BaseProductTypeHandler.php](../../../../backend/crmeb/trade/product/BaseProductTypeHandler.php)
 - OrderAdapter 契约：[crmeb/trade/order/type/OrderTypeAdapterInterface.php](../../../../backend/crmeb/trade/order/type/OrderTypeAdapterInterface.php)、基类 [BaseOrderTypeAdapter.php](../../../../backend/crmeb/trade/order/type/BaseOrderTypeAdapter.php)
-- 标准实现：实物 [modules/product/normal/](../../../../backend/modules/product/normal/)（全流程最全）、卡密 [modules/product/cardkey/](../../../../backend/modules/product/cardkey/)（自动履约 + 退款回收）
+- 标准实现：实物 [modules/product/normal/](../../../../backend/modules/product/normal/)（全流程最全）；卡密 `modules/product/cardkey/`（自动履约 + 退款回收，未随当前版本提供）
 - 完整创建教程：[crmeb-dev/03-系统商品说明](../../crmeb-dev/references/03-系统商品说明/product-type.md)

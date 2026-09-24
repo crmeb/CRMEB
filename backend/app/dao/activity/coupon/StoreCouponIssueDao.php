@@ -270,6 +270,22 @@ class StoreCouponIssueDao extends BaseDao
     }
 
     /**
+     * 按增量原子调整剩余可领取数量
+     * @param int $id
+     * @param int $incCount 总量增量（负数表示缩减发布数量）
+     * @return int 影响行数
+     */
+    public function incRemainCount(int $id, int $incCount): int
+    {
+        $query = $this->getModel()->where('id', $id);
+        if ($incCount < 0) {
+            // 并发兜底：校验后有新领取导致剩余量不足以缩减时拒绝
+            $query->where('remain_count', '>=', -$incCount);
+        }
+        return $query->inc('remain_count', $incCount)->update();
+    }
+
+    /**
      * 获取一条优惠券信息
      * @param int $id
      * @return mixed

@@ -42,10 +42,11 @@ class DocsCheck extends Command
         'backend/runtime', 'backend/public/uploads', 'backend/public/install.lock',
         'docker/mysql/data', 'docker/mysql/log', 'docker/nginx/log',
         'frontend/admin/dist', 'frontend/uni-app/dist',
+        'tests/', 'backend/tests/',
     ];
 
     /** 行内路径豁免的目录前缀：过程文档与可分发模板描述的是计划/待办路径，存在性随实施变化 */
-    protected array $inlinePathExemptDirs = ['tests/plans/', 'tests/reports/', 'tests/skills/'];
+    protected array $inlinePathExemptDirs = ['tests/plans/', 'tests/reports/', 'tests/skills/', '.crmeb/skills/project-standard-bootstrap/'];
 
     /** @var string 仓库根目录（运行时定位） */
     protected string $repoRoot = '';

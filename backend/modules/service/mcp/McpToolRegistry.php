@@ -39,6 +39,14 @@ class McpToolRegistry
     private const TOOL_NAMESPACE = 'modules\\service\\mcp\\tools\\';
 
     /**
+     * 内置工具分类展示顺序（与各工具 category() 返回值对应）
+     *
+     * 仅约束展示顺序：未知分类（第三方插件工具自定义）按出现顺序追加在后，
+     * 未声明分类的工具由后台归入「其他」分组排在最后。
+     */
+    public const CATEGORY_ORDER = ['用户', '商品', '订单', '售后退款', '财务', '营销', '系统设置', '消息通知', '开发支持'];
+
+    /**
      * 自动发现内置工具（扫描 tools/ 目录）
      *
      * 发现约定：文件名以 Tool.php 结尾 + 类实现 McpToolInterface，
@@ -181,9 +189,41 @@ class McpToolRegistry
                     $definition['label'] = $label;
                 }
             }
+            // 可选中文分类：仅实现了 category() 且非空的工具携带该字段，供后台分组展示
+            if (method_exists($tool, 'category')) {
+                $category = trim((string)$tool->category());
+                if ($category !== '') {
+                    $definition['category'] = $category;
+                }
+            }
             $definitions[] = $definition;
         }
         return $definitions;
+    }
+
+    /**
+     * 按约定顺序整理分类清单（去重）
+     *
+     * CATEGORY_ORDER 中的已知分类按约定顺序在前，其余分类（第三方插件
+     * 自定义）按出现顺序追加在后；未声明分类（空串）不返回，由调用方
+     * 归入「其他」分组。
+     *
+     * @param array $definitions 工具定义列表（allDefinitions() 返回结构）
+     * @return array 分类名列表
+     */
+    public static function orderedCategories(array $definitions): array
+    {
+        $seen = [];
+        foreach ($definitions as $definition) {
+            $category = trim((string)($definition['category'] ?? ''));
+            if ($category !== '' && !in_array($category, $seen, true)) {
+                $seen[] = $category;
+            }
+        }
+        return array_merge(
+            array_values(array_intersect(self::CATEGORY_ORDER, $seen)),
+            array_values(array_diff($seen, self::CATEGORY_ORDER))
+        );
     }
 
     /**

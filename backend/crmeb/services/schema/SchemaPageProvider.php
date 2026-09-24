@@ -52,6 +52,8 @@ interface SchemaPageProvider
      * @param int $limit 每页条数
      * @param array $order 排序（如 ['add_time' => 'desc']），空时使用插件默认排序
      * @return array ['list' => array 行数据, 'count' => int 总条数]
+     *               行数据必须携带唯一 id：前端行动作（详情/表单/动作）固定取 row.id 回查，
+     *               数据库记录用主键，内存拼装的列表用稳定唯一标识（排序/筛选不得改变 id 语义）
      */
     public function list(array $where, int $page, int $limit, array $order = []): array;
 

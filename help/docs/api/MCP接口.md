@@ -99,7 +99,8 @@ curl 'https://example.com/api/mcp' \
 - `description`：用途与业务口径；
 - `inputSchema`：参数 JSON Schema；
 - `interaction`：可选，值为 `execute` 时表示写操作，客户端应在执行前取得用户确认；
-- `label`：可选，简短中文名称，供管理后台工具列表与账号权限勾选展示，未实现 `label()` 方法的工具不返回该字段。
+- `label`：可选，简短中文名称，供管理后台工具列表与账号权限勾选展示，未实现 `label()` 方法的工具不返回该字段；
+- `category`：可选，业务分类名（内置工具为 用户/商品/订单/售后退款/营销/系统设置/消息通知/开发支持 之一），管理后台按该字段分组展示工具列表与权限勾选项；插件工具可返回自定义分类名（按出现顺序追加为新分组），未实现 `category()` 方法的工具不返回该字段，后台归入「其他」分组。
 
 ### 4.3 调用只读工具
 
@@ -141,14 +142,14 @@ curl 'https://example.com/api/mcp' \
 
 ## 5. 内置工具
 
-当前自动发现 36 个内置工具，其中 33 个业务工具、3 个开发知识工具。标记“写”的工具还会返回 `interaction: "execute"`。
+当前自动发现 47 个内置工具，其中 44 个业务工具、3 个开发知识工具。标记“写”的工具还会返回 `interaction: "execute"`。业务工具均声明 `category` 分类（用户、商品、订单、售后退款、营销、系统设置、消息通知、开发支持），后台「MCP 工具」列表与账号权限勾选按分类分组展示。
 
 | 业务域 | 工具 |
 |---|---|
 | 商品与分类 | `crmeb_product_list`、`crmeb_product_detail`、`crmeb_product_statistics`、`crmeb_product_ranking`、`crmeb_inventory_alert`、`crmeb_category_list`、`crmeb_category_detail` |
 | 订单与物流 | `crmeb_order_list`、`crmeb_order_detail`、`crmeb_order_statistics`、`crmeb_order_logistics`、`crmeb_order_express_list` |
 | 售后与退款 | `crmeb_after_sale_list`、`crmeb_after_sale_statistics`、`crmeb_refund_list`、`crmeb_refund_detail` |
-| 优惠券 | `crmeb_coupon_list`、`crmeb_coupon_claim_list`、`crmeb_coupon_claim_statistics`、`crmeb_coupon_holding_statistics`、`crmeb_coupon_usage_statistics` |
+| 优惠券 | `crmeb_coupon_list`、`crmeb_coupon_create`（写）、`crmeb_coupon_claim_list`、`crmeb_coupon_claim_statistics`、`crmeb_coupon_holding_statistics`、`crmeb_coupon_usage_statistics` |
 | 用户 | `crmeb_user_list`、`crmeb_user_detail`、`crmeb_user_statistics` |
 | 系统配置 | `crmeb_config_list`、`crmeb_config_tab_list`、`crmeb_config_update`（写） |
 | 菜单与模块 | `crmeb_menu_list`、`crmeb_module_list` |

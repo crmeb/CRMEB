@@ -52,11 +52,12 @@ class StoreProductLog extends BaseModel
     public function storeName()
     {
         return $this->hasOne(\app\model\product\CenterProductModel::class, 'id', 'product_id')->bind([
-            'store_name',
+            // 中台商品表 eb_product_center 无 store_name 列，名称存于 name，按别名绑定
+            'store_name' => 'name',
             'image',
-            'product_price'=>'price',
+            'product_price' => 'price',
             'stock',
-            'is_show'
+            'is_show',
         ]);
     }
 

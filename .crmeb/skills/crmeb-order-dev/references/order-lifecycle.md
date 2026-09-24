@@ -85,7 +85,7 @@ public function advance(string $orderNo, string $extStatus, array $extra = []): 
 | `OrderCenterListExtendListener` | 按需 | 列表注入扩展字段 |
 | `OrderTakeListener / OrderDeliveryListener / OrderCommentListener` | 实物类必须 | 收货/发货/评价推进（纯虚拟类通常无这些节点） |
 
-监听器内的通用防御写法：先查中台记录校验 `product_type`/`source_type` 防误触发，再用扩展表当前状态做幂等短路，最后 `advance()`。示例见 [modules/product/cardkey/listener/OrderPaidListener](../../../../backend/modules/product/cardkey/listener/OrderPaidListener.php)。
+监听器内的通用防御写法：先查中台记录校验 `product_type`/`source_type` 防误触发，再用扩展表当前状态做幂等短路，最后 `advance()`。示例参考 `modules/product/cardkey/listener/OrderPaidListener.php`（卡密模块未随当前版本提供，路径为规划参考）。
 
 ## 六、状态异常排查指引
 

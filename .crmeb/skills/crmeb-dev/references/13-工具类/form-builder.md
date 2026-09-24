@@ -82,7 +82,7 @@ Form::checkbox($field, $title, array $value = [])->options([...]);
 ```
 
 - `options()` 传二维数组也可：`[['value' => 1, 'label' => '开启'], ...]`
-- **条件联动**（真实示例 `backend/modules/service/kefu/service/service/StoreServiceAutoReplyServices.php:104`）：
+- **条件联动**：
 
 ```php
 Form::radio('type', '回复类型', $data['type'] ?? 'text')

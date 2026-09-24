@@ -39,6 +39,12 @@ class CouponClaimListTool implements McpToolInterface
     {
         return '用户券记录';
     }
+
+    /** @return string 工具分类（管理后台分组展示） */
+    public function category(): string
+    {
+        return '营销';
+    }
     /** @return array 入参 JSON Schema */
     public function inputSchema(): array
     {

@@ -31,6 +31,12 @@ class AfterSaleListTool implements McpToolInterface
     {
         return '售后记录查询';
     }
+
+    /** @return string 工具分类（管理后台分组展示） */
+    public function category(): string
+    {
+        return '售后退款';
+    }
     /** @return array 入参 JSON Schema */
     public function inputSchema(): array
     {

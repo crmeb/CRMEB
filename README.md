@@ -66,7 +66,7 @@ Dev Containers 配置（`.devcontainer/`）不在仓库内，已在 `.gitignore`
 
 ## 首次安装配置
 
-1. 创建数据库，依次导入 `backend/public/install/crmeb_table.sql`（表结构）与 `crmeb_data.sql`（基础数据）
+1. 创建数据库，导入 `backend/public/install/crmeb_table.sql`（表结构）与 `backend/public/install/data/` 下的基础数据（推荐直接访问安装向导自动完成）
 2. 复制 `backend/.env.example` 为 `backend/.env`，按实际环境修改（文件内有逐项注释）
 3. 设置 `backend/runtime`、`backend/public` 目录权限为 777
 4. 访问 `http://域名/admin`，默认账号 `admin` / 密码 `crmeb.com`
@@ -173,7 +173,6 @@ php think workerman restart
 | [模块与驱动](help/docs/模块与驱动.md) | 默认安装清单与各业务模块功能说明 |
 | [管理端 API](help/docs/api/管理端接口.md) | AdminAPI 接口文档 |
 | [用户端 API](help/docs/api/用户端接口.md) | 用户端 API 接口文档 |
-| [对外接口](help/docs/api/对外接口.md) | OutAPI REST 接口文档（第三方接入） |
 | [MCP 接口](help/docs/api/MCP接口.md) | 独立 MCP 服务的接入、认证、工具与排障说明 |
 | [数据库设计](help/docs/数据库设计.md) | 数据库表结构设计 |
 | [开发指南](help/docs/开发指南.md) | 开发环境、规范、流程 |
@@ -191,8 +190,8 @@ URL 前缀自动路由到对应应用：
 | 前缀 | 应用 | 说明 |
 |------|------|------|
 | `/admin` | 管理端静态页面 | Vue 管理后台入口，不是 API 前缀 |
-| `/adminapi` | `app/adminapi/` + 模块 `route/admin.php` | 管理后台 API；客服工作台位于 `/adminapi/kefu/*` |
-| `/api` | `app/api/` + 模块 `route/user.php` | 商城用户 API、模块用户端接口及 `/api/outapi` 开放平台 |
+| `/adminapi` | `app/adminapi/` + 模块 `route/admin.php` | 管理后台 API |
+| `/api` | `app/api/` + 模块 `route/user.php` | 商城用户 API、模块用户端接口 |
 
 ---
 
@@ -234,7 +233,7 @@ URL 前缀自动路由到对应应用：
 | Claude Code | 自动读取 [CLAUDE.md](CLAUDE.md) |
 | 支持 llms.txt 的工具 / 网页抓取类 AI | 读取 [llms.txt](llms.txt) |
 
-所有入口最终指向 [.crmeb/AGENTS.md](.crmeb/AGENTS.md)：其中定义了项目硬约束（依赖方向、分层、插件零侵入红线）、13 条开发规则、7 个开发技能与 3 个专项子智能体，AI 按索引按需加载即可获得与内部开发者一致的约定。
+所有入口最终指向 [.crmeb/AGENTS.md](.crmeb/AGENTS.md)：其中定义了项目硬约束（依赖方向、分层、插件零侵入红线）、16 条开发规则、8 个开发技能与 3 个专项子智能体，AI 按索引按需加载即可获得与内部开发者一致的约定。
 
 ### 连接本项目的 MCP 开发工具
 

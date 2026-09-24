@@ -1,6 +1,6 @@
 ---
 name: mcp-tools
-description: 插件向 MCP 服务贡献工具的完整流程：实现 crmeb\interfaces\McpToolInterface 契约、监听 McpToolsRegister 事件注册工具、工具命名规范、description 与参数 Schema 编写规范、写工具确认声明、异常通道现状与 curl 自测。插件需要让 AI 客户端通过 /api/mcp 调用本插件能力时阅读。
+description: 插件向 MCP 服务贡献工具的完整流程：实现 crmeb\interfaces\McpToolInterface 契约、监听 McpToolsRegister 事件注册工具、工具命名规范、description 与参数 Schema 编写规范、写工具确认声明、label/category 后台展示可选方法、异常通道现状与 curl 自测。插件需要让 AI 客户端通过 /api/mcp 调用本插件能力时阅读。
 ---
 
 # 插件扩展 MCP 工具
@@ -60,6 +60,11 @@ class CardKeyOrderListTool implements McpToolInterface
         return '卡密订单';
     }
 
+    public function category(): string
+    {
+        return '订单';
+    }
+
     public function inputSchema(): array
     {
         return [
@@ -81,8 +86,9 @@ class CardKeyOrderListTool implements McpToolInterface
 要点：
 
 - 构造器注入 `app/` 层 DAO/Service（容器解析，依赖方向 `modules → app` 合法）。
-- 写工具额外实现可选方法 `public function interaction(): string`，返回 `'execute'` 声明"修改系统数据、需客户端确认"；不实现或返回空串视为只读。采用可选方法而非接口成员，保证已注册工具无需随核心改动。
+- 写工具额外实现可选方法 `public function interaction(): string`，返回 `'execute'` 声明"修改系统数据、需客户端确认"；删除类写操作（不可逆移除数据）返回 `'delete'`，后台按「（删）」标注展示、AI 客户端同样需确认；不实现或返回空串视为只读。采用可选方法而非接口成员，保证已注册工具无需随核心改动。
 - 建议实现可选方法 `public function label(): string` 返回简短中文名称（2~6 字，如「卡密订单」）：后台工具列表与账号权限勾选优先展示中文名，`description()` 面向 AI 模型、常为长段说明，不适合做勾选文案；不实现或返回空串时回退展示 `description()`。
+- 建议实现可选方法 `public function category(): string` 返回分类名（2~6 字中文）：后台工具列表与账号权限勾选按分类分组展示。内置分类名与展示顺序由 `McpToolRegistry::CATEGORY_ORDER` 约定（用户、商品、订单、售后退款、营销、系统设置、消息通知、开发支持），按业务领域选最贴近的一个；插件也可返回自定义分类名，后台按出现顺序追加为新分组。不实现或返回空串时归入「其他」分组排在最后。
 - 同类工具集中放插件 `mcp/` 目录，文件名随意（自动发现约定只对模块内置 `tools/` 目录生效，插件工具一律走事件注册）。
 
 ### 2. 创建监听器
@@ -144,9 +150,9 @@ return [
 
 补充要点：
 
-- `label()` 与 `description()` 分工：`label()` 是给人看的短中文名（2~6 字，后台工具列表与账号权限勾选展示），`description()` 是给模型看的说明书，两者不要互相替代。
+- `label()` 与 `description()` 分工：`label()` 是给人看的短中文名（2~6 字，后台工具列表与账号权限勾选展示），`description()` 是给模型看的说明书，两者不要互相替代；`category()` 只承担后台分组，不写入 `description()`。
 - `description()` 用中文撰写即可，模型理解无障碍；工具名 `name()` 保持 `crmeb_` 前缀 ASCII 标识，这是调用契约，不允许中文。
-- 管理端展示链路：`label`/`description` 随 `tools/list` 下发，AI Agent「同步工具」后写入工具缓存，在 MCP 管理页与对话工具清单中展示；**修改描述后需在内置 MCP 上重新同步工具才对 AI Agent 生效**（服务端 `/api/mcp` 即时生效，无缓存）。
+- 管理端展示链路：`label`/`category`/`description` 随 `tools/list` 下发，AI Agent「同步工具」后写入工具缓存，在 MCP 管理页与对话工具清单中展示；**修改描述后需在内置 MCP 上重新同步工具才对 AI Agent 生效**（服务端 `/api/mcp` 即时生效，无缓存）。
 
 ## 强制约定
 
@@ -154,7 +160,7 @@ return [
 | --- | --- |
 | 工具命名 | `crmeb_{插件标识}_{动作}`（如 `crmeb_cardkey_order_list`）。同名注册会覆盖既有工具，命名必须带插件标识 |
 | 参数 Schema | 字段 `description` 必须与 `execute()` 实现严格一致：声明的筛选能力、格式、枚举值实现里必须真的存在（如实现在就匹配订单号/商品标题，不得写"匹配收件人"）；通配符转义等校验在实现内兜底 |
-| 写工具 | 必须声明 `interaction(): 'execute'`，客户端据该声明在执行前取得用户确认。写操作的业务校验与授权不得因 AI 调用而豁免（见 [安全红线.md](../../../rules/安全红线.md)） |
+| 写工具 | 必须声明 `interaction(): 'execute'`（删除类不可逆操作返回 `'delete'`，后台按「删」标注），客户端据该声明在执行前取得用户确认。写操作的业务校验与授权不得因 AI 调用而豁免（见 [安全红线.md](../../../rules/安全红线.md)） |
 | 数据访问 | 读系统表走自有 DAO 只读；写数据只能调用对应核心 Service 公开方法，禁止直写系统表（红线见 [插件开发规范.md](../../../rules/插件开发规范.md) 第三节） |
 | 生命周期 | 插件禁用/卸载后 `event.php` 不再加载，工具自动失效，Installer 无需任何清理逻辑 |
 

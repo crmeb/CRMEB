@@ -42,6 +42,12 @@ class InventoryAlertTool implements McpToolInterface
         return '库存预警';
     }
 
+    /** @return string 工具分类（管理后台分组展示） */
+    public function category(): string
+    {
+        return '商品';
+    }
+
     /** @return array 入参 JSON Schema */
     public function inputSchema(): array
     {

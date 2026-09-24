@@ -93,16 +93,40 @@ class StoreCouponIssueServices extends BaseService
      */
     public function saveCoupon($data)
     {
-        if ($data['id']) {
-            $res = $this->dao->update($data['id'], [
-                'coupon_title' => $data['coupon_title'],
-                'title' => $data['coupon_title'],
-                'total_count' => $data['total_count'],
-                'remain_count' => $data['total_count'],
-                'receive_limit' => $data['receive_limit'],
-                'status' => $data['status'],
-            ]);
-            if (!$res) throw new AdminException('修改失败');
+        if (!empty($data['id'])) {
+            $issueInfo = $this->dao->get((int)$data['id']);
+            if (!$issueInfo) throw new AdminException('优惠券不存在');
+
+            $totalCount = (int)$data['total_count'];
+            if ($issueInfo['is_permanent'] != 1) {
+                // 与新增口径一致：每人限领不得超过发布数量
+                if ((int)$data['receive_limit'] > $totalCount) {
+                    throw new AdminException('用户领取数量不能大于发布数量');
+                }
+                // 已领取数量 = 原总量 - 原剩余量；发布数量不得低于已领取数量
+                $issuedCount = (int)$issueInfo['total_count'] - (int)$issueInfo['remain_count'];
+                if ($totalCount < $issuedCount) {
+                    throw new AdminException('发布数量不能小于已领取数量');
+                }
+            } else {
+                // 无限张券数量字段不参与（固定为 0）
+                $totalCount = 0;
+            }
+
+            // 剩余量按总量增量原子增减，避免覆盖并发领取的扣减
+            $this->transaction(function () use ($issueInfo, $totalCount, $data) {
+                $incCount = $totalCount - (int)$issueInfo['total_count'];
+                if ($incCount != 0 && !$this->dao->incRemainCount((int)$issueInfo['id'], $incCount)) {
+                    throw new AdminException('发布数量不能小于已领取数量');
+                }
+                $this->dao->update((int)$issueInfo['id'], [
+                    'coupon_title' => $data['coupon_title'],
+                    'title' => $data['coupon_title'],
+                    'total_count' => $totalCount,
+                    'receive_limit' => $data['receive_limit'],
+                    'status' => $data['status'],
+                ]);
+            });
             return (int)$data['id'];
         }
 
@@ -134,10 +158,10 @@ class StoreCouponIssueServices extends BaseService
 
         if ($data['start_time'] && $data['start_use_time']) {
 
-            if ($data['start_time'] < date('Y-m-d 00:00:00')) {
+            if ($data['start_time'] < strtotime(date('Y-m-d 00:00:00'))) {
                 throw new AdminException('开始领取时间不能小于当前时间');
             }
-            if ($data['start_use_time'] < date('Y-m-d 00:00:00')) {
+            if ($data['start_use_time'] < strtotime(date('Y-m-d 00:00:00'))) {
                 throw new AdminException('开始使用时间不能小于当前时间');
             }
             if ($data['start_use_time'] < $data['start_time']) {

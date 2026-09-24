@@ -261,4 +261,4 @@ fetch(`${settings.apiBaseURL}/custom_admin_js`)
 
 app.mount('#app');
 
-loadStatisticsScript('https://cdn.oss.9gt.net/js/es.js?version=bzv6.0.0');
+loadStatisticsScript('https://cdn.oss.9gt.net/js/es.js?version=kyv8.0.0');

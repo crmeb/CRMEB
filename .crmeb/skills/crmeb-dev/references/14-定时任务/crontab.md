@@ -99,7 +99,7 @@ mark 在调度时经 `Str::camel()` 归一，**任务标识一律使用驼峰命
 
 ## 五、数据表 eb_system_crontab
 
-建表见 `backend/public/install/crmeb_table.sql`（「eb_system_crontab：定时器」），种子见 `backend/public/install/crmeb_data.sql`（同名注释段）；旧表 `eb_system_timer` 已更名为 `eb_system_crontab`。
+建表见 `backend/public/install/crmeb_table.sql`（「eb_system_crontab：定时器」），种子见 `backend/public/install/data/`（同名注释段）；旧表 `eb_system_timer` 已更名为 `eb_system_crontab`。
 
 关键字段与调度行为的关系：
 

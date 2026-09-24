@@ -546,7 +546,7 @@ event('ProductDetailExtend', $eventData);
 |---------|-----------|-----------------|---------------------|
 | normal | [normal/.../ProductDetailExtendListener.php](../../../../../backend/modules/product/normal/listener/ProductDetailExtendListener.php) | custom_form/params_list/label_list/protection_list/type_info/fulfillment_preview | spec(matrix) + fulfillment + store + presale |
 | virtual | [virtual/.../ProductDetailExtendListener.php](../../../../../backend/modules/product/virtual/listener/ProductDetailExtendListener.php) | custom_form/params_list/label_list/protection_list/type_info/fulfillment_preview | spec(matrix) + fulfillment |
-| cardkey | [cardkey/.../ProductDetailExtendListener.php](../../../../../backend/modules/product/cardkey/listener/ProductDetailExtendListener.php) | custom_form/params_list/label_list/protection_list/type_info/fulfillment_preview | spec(chips) + fulfillment（自动发放说明） |
+| cardkey | `modules/product/cardkey/listener/ProductDetailExtendListener.php`（未随当前版本提供） | custom_form/params_list/label_list/protection_list/type_info/fulfillment_preview | spec(chips) + fulfillment（自动发放说明） |
 
 ### 7.3 监听器实现规范
 

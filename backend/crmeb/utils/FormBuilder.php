@@ -90,17 +90,22 @@ class FormBuilder extends Form
     }
 
     /**
-     * 多列勾选组（form-create 自定义组件）
+     * 多列勾选组（form-create 自定义组件 · 契约组件）
      *
-     * 前端 SchemaForm 已注册 type=SchemaCheckboxGroup 的自定义组件：
-     * 网格布局多列展示勾选项，支持全选联动与选项悬停提示（option.title，
-     * 支持多行文本）。
+     * 前端 SchemaForm 已注册 type=SchemaCheckboxGroup 的自定义组件。
+     * ⚠️ 契约组件：前端实现被 schema 驱动页面与已编译插件 UMD 多方引用，
+     * 改前端组件只能向后兼容扩展（新增可选 props、默认行为不变，红线见
+     * .crmeb/rules/前端规范.md 第一节），并同步本方法注释。已支持能力：
+     * - 网格布局多列展示（columns），支持全选联动与半选态；
+     * - 选项 title 悬停多行提示；选项 group 归并分组渲染（分组标题全选/清空 + 已选计数）；
+     * - 选项 disabled=true 单项禁用；props 传 disabled=true 整组禁用；
+     * - props 传 max=N 限制最多勾选 N 项（默认 0 不限）。
      *
      * @param string $field 字段名
      * @param string $title 字段标题
      * @param array $value 已勾选值数组
-     * @param array $options 选项列表 [{label, value[, title]}]
-     * @param array $props 组件 props 覆盖：columns 每行列数（默认 2）、selectAll 是否显示全选（默认 true）
+     * @param array $options 选项列表 [{label, value[, group][, title][, disabled]}]
+     * @param array $props 组件 props 覆盖：columns 每行列数（默认 2）、selectAll 是否显示全选（默认 true）、disabled 整组禁用、max 最多可勾选数（默认 0 不限）
      * @return \FormBuilder\Driver\CustomComponent
      */
     public static function checkboxGroup($field, $title, array $value = [], array $options = [], array $props = [])

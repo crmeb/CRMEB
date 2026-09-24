@@ -92,7 +92,7 @@ foreach ($goodsList as &$goods) {
 
 源码：`backend/crmeb/utils/Canvas.php`。基于 GD 库把多张图片 + 多段文字合成一张图（邀请海报、线下收款码），保存到 uploads 并返回相对路径。`__call` 魔法提供全部 `set*` 配置方法。
 
-### 3.1 使用流程（真实调用 `backend/modules/channel/wechat_mp/service/WechatServices.php:201`）
+### 3.1 使用流程
 
 ```php
 use crmeb\utils\Canvas;

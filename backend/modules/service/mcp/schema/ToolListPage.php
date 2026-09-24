@@ -46,16 +46,29 @@ class ToolListPage extends BaseSchemaPageProvider
             'title' => 'MCP 工具列表',
             'search' => [
                 ['field' => 'keyword', 'label' => '关键词', 'type' => 'input', 'placeholder' => '中文名/工具名称/功能描述'],
+                ['field' => 'category', 'label' => '分类', 'type' => 'select', 'placeholder' => '全部分类', 'options' => $this->categoryOptions()],
             ],
             'columns' => [
                 ['prop' => 'index',  'label' => '序号', 'type' => 'text', 'width' => 70],
                 ['prop' => 'name',   'label' => '工具名称', 'type' => 'text', 'width' => 220, 'sortable' => true],
                 ['prop' => 'label',  'label' => '中文名称', 'type' => 'text', 'width' => 130],
+                ['prop' => 'category', 'label' => '分类', 'type' => 'tag', 'width' => 100,
+                 'map' => [
+                     '用户' => ['theme' => 'primary'],
+                     '商品' => ['theme' => 'success'],
+                     '订单' => ['theme' => 'warning'],
+                     '售后退款' => ['theme' => 'danger'],
+                     '营销' => ['theme' => 'warning'],
+                     '系统设置' => ['theme' => 'info'],
+                     '消息通知' => ['theme' => 'primary'],
+                     '开发支持' => ['theme' => 'success'],
+                 ]],
                 ['prop' => 'description', 'label' => '功能描述', 'type' => 'ellipsis'],
                 ['prop' => 'params_count', 'label' => '参数数', 'type' => 'number', 'width' => 90],
                 ['prop' => 'interaction', 'label' => '执行方式', 'type' => 'tag', 'width' => 110,
                  'map' => [
-                     'execute' => ['label' => '需写入授权', 'theme' => 'warning'],
+                     'execute' => ['label' => '写入需确认', 'theme' => 'warning'],
+                     'delete'  => ['label' => '删除需确认', 'theme' => 'danger'],
                      ''        => ['label' => '直接执行', 'theme' => 'success'],
                  ]],
             ],
@@ -85,6 +98,11 @@ class ToolListPage extends BaseSchemaPageProvider
                     || str_contains($item['label'], $keyword)
                     || str_contains($item['description'], $keyword);
             }));
+        }
+        // 分类筛选：选项与行数据的 category 同源（未声明分类归入「其他」）
+        $category = trim((string)($where['category'] ?? ''));
+        if ($category !== '') {
+            $all = array_values(array_filter($all, fn(array $item) => (string)$item['category'] === $category));
         }
 
         // 列排序（当前支持 name 列升/降序，保持分页结果稳定；默认注册顺序）
@@ -116,10 +134,12 @@ class ToolListPage extends BaseSchemaPageProvider
         $fields = [
             ['label' => '工具名称', 'value' => $tool['name']],
             ['label' => '中文名称', 'value' => $tool['label']],
+            ['label' => '分类', 'value' => $tool['category']],
             ['label' => '功能描述', 'value' => $tool['description']],
             ['label' => '执行方式', 'value' => $tool['interaction'], 'type' => 'tag',
              'map' => [
-                 'execute' => ['label' => '需写入授权', 'theme' => 'warning'],
+                 'execute' => ['label' => '写入需确认', 'theme' => 'warning'],
+                 'delete'  => ['label' => '删除需确认', 'theme' => 'danger'],
                  ''        => ['label' => '直接执行', 'theme' => 'success'],
              ]],
         ];
@@ -132,7 +152,7 @@ class ToolListPage extends BaseSchemaPageProvider
     /**
      * 加载全部工具定义（内置工具注册到注册中心后取全量定义，幂等）
      *
-     * @return array 行数据列表（index/name/label/description/params_count/interaction/inputSchema）
+     * @return array 行数据列表（id=注册顺序下标/index/name/label/category/description/params_count/interaction/inputSchema）
      */
     protected function loadDefinitions(): array
     {
@@ -140,10 +160,16 @@ class ToolListPage extends BaseSchemaPageProvider
 
         $rows = [];
         foreach ($registry->allDefinitions() as $index => $definition) {
+            // 未声明分类（含第三方插件工具）归入「其他」，与筛选选项、权限勾选分组口径一致
+            $category = trim((string)($definition['category'] ?? ''));
             $rows[] = [
+                // 行 id = 注册顺序下标（同一部署内注册顺序确定，详情按下标回查；
+                // 前端行动作固定取 row.id，漏传会导致详情恒落在第 0 条）
+                'id'          => $index,
                 'index'       => $index,
                 'name'        => (string)($definition['name'] ?? ''),
                 'label'       => (string)($definition['label'] ?? ''),
+                'category'    => $category !== '' ? $category : '其他',
                 'description' => (string)($definition['description'] ?? ''),
                 'params_count' => count((array)($definition['inputSchema']['properties'] ?? [])),
                 'interaction' => (string)($definition['interaction'] ?? ''),
@@ -151,5 +177,19 @@ class ToolListPage extends BaseSchemaPageProvider
             ];
         }
         return $rows;
+    }
+
+    /**
+     * 分类筛选选项（注册中心约定顺序 + 「其他」兜底）
+     *
+     * @return array {label, value} 选项列表
+     */
+    private function categoryOptions(): array
+    {
+        $categories = array_merge(
+            McpToolRegistry::orderedCategories(McpToolRegistry::booted()->allDefinitions()),
+            ['其他']
+        );
+        return array_map(fn(string $category) => ['label' => $category, 'value' => $category], $categories);
     }
 }

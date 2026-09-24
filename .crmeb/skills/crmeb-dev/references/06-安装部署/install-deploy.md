@@ -73,7 +73,7 @@ SELECT = 0
 
 `backend/public/install.lock` 存在时跳过安装向导（删除后重新进入安装页）。
 
-> 全新安装由安装向导导入 `backend/public/install/crmeb_table.sql` 和 `backend/public/install/crmeb_data.sql`，再逐项执行必需模块、默认模块和默认驱动 Installer；不需要手动补跑历史升级 SQL。
+> 全新安装由安装向导导入 `backend/public/install/crmeb_table.sql` 和 `backend/public/install/data/` 基础数据，再逐项执行必需模块、默认模块和默认驱动 Installer；不需要手动补跑历史升级 SQL。
 
 ## 四、数据库 / Redis 连接信息速查
 
@@ -84,7 +84,7 @@ SELECT = 0
 
 ## 五、首版数据库变更规范（二开必备）
 
-- 核心表结构直接同步到 `backend/public/install/crmeb_table.sql`，核心初始数据同步到 `backend/public/install/crmeb_data.sql`；模块自有结构和数据由对应 `Installer.php` 管理
+- 核心表结构直接同步到 `backend/public/install/crmeb_table.sql`，核心初始数据同步到 `backend/public/install/data/`；模块自有结构和数据由对应 `Installer.php` 管理
 - 当前首版不新增版本升级脚本；未来明确进入发布后维护阶段时，再建立增量升级链
 - SQL 文件必须保存为 **UTF-8 无 BOM**；导入时连接必须指定 `utf8mb4`，否则中文注释（表/列注释）会存成乱码 `?`
 - 手动验证 SQL 时的导入命令：

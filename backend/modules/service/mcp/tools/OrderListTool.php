@@ -68,6 +68,15 @@ class OrderListTool implements McpToolInterface
     }
 
     /**
+     * 工具分类（管理后台分组展示）
+     * @return string
+     */
+    public function category(): string
+    {
+        return '订单';
+    }
+
+    /**
      * 入参 Schema
      * @return array
      */
@@ -99,20 +108,36 @@ class OrderListTool implements McpToolInterface
         if (isset($args['status']) && $args['status'] !== '') {
             $where[] = ['status_code', '=', $args['status']];
         }
-        // 关键词搜索：转义通配符防止注入（中台表无收件人字段，匹配订单号/商品标题）
+
+        // 关键词搜索（订单号/商品标题）：管道字段写法（order_no|title）会被
+        // BaseDao::filterWhere 当作不存在列静默丢弃，必须用闭包显式 OR，不进 search 条件数组
+        // 转义通配符防止注入；中台表无收件人字段
+        $keyword = '';
         if (!empty($args['keyword'])) {
             $keyword = addcslashes($args['keyword'], '%_');
-            $where[] = ['order_no|title', 'like', '%' . $keyword . '%'];
+        }
+        $applyKeyword = static function (\think\db\Query $query) use ($keyword): void {
+            $query->where(function (\think\db\Query $q) use ($keyword) {
+                $q->whereLike('order_no', '%' . $keyword . '%')
+                    ->whereOr('title', 'like', '%' . $keyword . '%');
+            });
+        };
+
+        $listQuery = $this->dao->search($where);
+        $countQuery = $this->dao->search($where);
+        if ($keyword !== '') {
+            $applyKeyword($listQuery);
+            $applyKeyword($countQuery);
         }
 
-        $list = $this->dao->search($where)
+        $list = $listQuery
             ->field('id,order_no,uid,source_type,total_price,pay_price,pay_status,status_code,refund_status,shipping_type,add_time')
             ->order('id desc')
             ->page($page, $limit)
             ->select()
             ->toArray();
 
-        $count = $this->dao->search($where)->count();
+        $count = $countQuery->count();
         return ['list' => $list, 'count' => $count];
     }
 }

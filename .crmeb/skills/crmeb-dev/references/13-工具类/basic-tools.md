@@ -113,7 +113,7 @@ $token   = $jwtAuth->getToken($uid, 'user');                     // 仅签发（
 $jwtAuth->verifyToken();                                          // 验签（leeway 60 秒）
 ```
 
-真实先例：登录签发 `backend/app/services/user/LoginServices.php:58`；校验基础 `backend/crmeb/auth/AuthTokenVerifier.php:57`；开放接口鉴权 `backend/modules/service/outapi/service/OutAccountServices.php:95`。
+真实先例：登录签发 `backend/app/services/user/LoginServices.php:58`；校验基础 `backend/crmeb/auth/AuthTokenVerifier.php:57`。
 
 ---
 

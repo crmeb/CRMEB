@@ -35,6 +35,12 @@ class OrderStatisticsTool implements McpToolInterface
         return '订单统计';
     }
 
+    /** @return string 工具分类（管理后台分组展示） */
+    public function category(): string
+    {
+        return '订单';
+    }
+
     /** @return array 入参 JSON Schema */
     public function inputSchema(): array
     {

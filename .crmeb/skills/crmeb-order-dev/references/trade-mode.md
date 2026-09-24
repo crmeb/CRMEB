@@ -99,10 +99,12 @@
 | --- | --- | --- | --- | --- | --- |
 | `normal` | 普通购买 | `DefaultTradeModeHandler` | [app/AppService.php](../../../../backend/app/AppService.php)（boot 中注册） | 0 | 否 |
 | `member` | 会员购买 | `MemberTradeModeHandler` | [app/AppService.php](../../../../backend/app/AppService.php)（boot 中注册） | 0 | 否 |
-| `seckill` | 秒杀 | `SeckillActivityHandler` | [modules/trade/seckill/App.php](../../../../backend/modules/trade/seckill/App.php) | 1 | 是 |
-| `bargain` | 砍价 | `BargainActivityHandler` | [modules/trade/bargain/App.php](../../../../backend/modules/trade/bargain/App.php) | 2 | 是 |
-| `combination` | 拼团 | `CombinationActivityHandler` | [modules/trade/combination/App.php](../../../../backend/modules/trade/combination/App.php) | 3 | 是 |
-| `integral` | 积分兑换 | `IntegralActivityHandler` | [modules/trade/integral/App.php](../../../../backend/modules/trade/integral/App.php) | — | 是 |
+| `seckill` | 秒杀 | `SeckillActivityHandler` | `modules/trade/seckill/App.php`（未随当前版本提供） | 1 | 是 |
+| `bargain` | 砍价 | `BargainActivityHandler` | `modules/trade/bargain/App.php`（未随当前版本提供） | 2 | 是 |
+| `combination` | 拼团 | `CombinationActivityHandler` | `modules/trade/combination/App.php`（未随当前版本提供） | 3 | 是 |
+| `integral` | 积分兑换 | `IntegralActivityHandler` | `modules/trade/integral/App.php`（未随当前版本提供） | — | 是 |
+
+> 上表营销类模式（秒杀/砍价/拼团/积分兑换）为规划扩展，模块目录未随当前版本提供；接入方式按本节注册写法实现。
 
 注册写法（模块 `App.php::register()`）：
 
@@ -155,6 +157,6 @@ $app->make(TradeModeRegistry::class)->register('seckill', SeckillActivityHandler
 
 - 注册器：[backend/crmeb/trade/mode/TradeModeRegistry.php](../../../../backend/crmeb/trade/mode/TradeModeRegistry.php)
 - 契约：[TradeModeHandlerInterface.php](../../../../backend/crmeb/trade/mode/TradeModeHandlerInterface.php)、基类 [BaseTradeModeHandler.php](../../../../backend/crmeb/trade/mode/BaseTradeModeHandler.php)、兜底 [DefaultTradeModeHandler.php](../../../../backend/crmeb/trade/mode/DefaultTradeModeHandler.php)
-- 完整示例：拼团 [modules/trade/combination/](../../../../backend/modules/trade/combination/)（钩子覆盖最全）、积分 [modules/trade/integral/](../../../../backend/modules/trade/integral/)（免支付 + 独立订单表）
+- 完整示例：拼团 `modules/trade/combination/`（钩子覆盖最全）、积分 `modules/trade/integral/`（免支付 + 独立订单表）——两者均未随当前版本提供，路径为规划参考
 - 调用方参考：下单 [CenterOrderController.php](../../../../backend/app/api/controller/v1/order/CenterOrderController.php)、购物车校验 [StoreCartServices.php](../../../../backend/app/services/order/StoreCartServices.php)
 - 注册中心体检命令：[app/command/RegistryCheck.php](../../../../backend/app/command/RegistryCheck.php)
