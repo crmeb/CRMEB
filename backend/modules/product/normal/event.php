@@ -126,5 +126,14 @@ return [
         'ProductTypeDataProxy' => [
             \modules\product\normal\listener\ProductTypeDataProxyListener::class,
         ],
+
+        // ================================================================
+        // MCP 工具注册事件（触发方：service_mcp 注册中心，每次 tools/list 与 tools/call 重建）
+        // ================================================================
+
+        /** 向 MCP 服务贡献实物商品读取/新增/编辑工具 */
+        'McpToolsRegister' => [
+            \modules\product\normal\listener\McpToolsRegisterListener::class,
+        ],
     ],
 ];

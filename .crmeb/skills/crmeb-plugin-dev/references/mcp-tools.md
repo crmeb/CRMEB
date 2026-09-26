@@ -108,18 +108,20 @@ class McpToolsRegisterListener implements ListenerInterface
     /**
      * 向注册中心注册插件工具（传类名，容器延迟实例化并注入依赖）
      *
-     * @param mixed $event McpToolRegistry 实例
+     * @param array $event 事件参数按项目规范打包为 [McpToolRegistry 实例]，解构后使用
      */
     public function handle($event): void
     {
-        $event->register(CardKeyOrderListTool::class);
+        [$registry] = $event;
+        $registry->register(CardKeyOrderListTool::class);
     }
 }
 ```
 
 要点：
 
-- 监听器内只做工具注册，**不写业务逻辑**：`McpToolsRegister` 属注册中心类事件（关键级），监听器抛异常会导致整个 MCP 接口 500。
+- 监听器内只做工具注册，**不写业务逻辑**：`McpToolsRegister` 已纳入安全事件清单（`SafeEvent::$safeEvents`），监听器抛异常会被框架隔离并记日志，仅本插件工具不生效，不影响 MCP 服务与其他插件工具。
+- 事件参数与所有 CRMEB 事件一致按数组打包，**必须先解构** `[$registry] = $event;` 再调用 `register()`，直接把 `$event` 当对象调用会报 `Call to a member function register() on array`。
 - 参数类型不写 `McpToolRegistry` 类型标注（该类在 modules 层，避免产生 use 依赖）；需要文档说明时用 docblock 全限定名。
 - `register()` 同名覆盖既有工具——用于定制内置工具行为，也是命名冲突风险来源。
 
@@ -173,6 +175,12 @@ return [
 | `McpToolRegistry` 类型标注来自 modules 层 | 监听器 `handle($event)` 不写模块类类型标注，用 docblock 说明 |
 
 上述类的下沉是既定方向；下沉完成后本节应同步删除并更新示例。
+
+## 工具需要接收 AI 生成的图片
+
+AI 客户端生成的图片通常是 base64 data URI 或外部临时 URL，直接入库会失效。不要在插件工具里各自实现上传转存：引导 AI 先调用内置工具 `crmeb_upload_image`（上传到系统当前配置的存储方式并登记素材库，返回站点资产地址与 att_id），插件的图片字段只接受站点地址；对直接传入的 `data:` 前缀值应拒绝并提示先调用 `crmeb_upload_image`（参照 `modules/product/normal/mcp/NormalProductCreateTool.php`）。
+
+跨机场景（AI 客户端与服务器不同机，生产常态）推荐「票据直传」链路，避免 base64 撑爆对话上下文：AI 先调 `crmeb_upload_ticket` 获取票据与可直接执行的本机 curl 命令 → 客户端本机直传 `POST /api/mcp/upload`（multipart，字段 ticket + files[]）拿到暂存引用 `ref` → 把 `ref` 作为 `source` 调 `crmeb_upload_image` 完成正式入库（时序与边界见 [MCP 接口](../../../../help/docs/api/MCP接口.md) 第 7 节）。插件工具描述里也应保持同样的引导口径；`crmeb_upload_image` 其余来源按上下文成本由低到高为 http(s) URL（上限 10MB）、站点相对路径、本地白名单路径（默认 `runtime/upload`，可配置 `mcp_upload_local_dirs`，仅同机部署可用）、base64 内联（仅作最后应急，解码后超过 512KB 拒绝）。
 
 ## 自测
 

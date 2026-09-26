@@ -18,3 +18,7 @@ use think\facade\Route;
  */
 Route::post('mcp', [\modules\service\mcp\controller\McpController::class, 'index'])
     ->option(['real_name' => 'MCP服务接口']);
+
+// 图片直传端点：跨机场景把客户端本机图片字节带外写入暂存区（票据鉴权，见 crmeb_upload_ticket 工具）
+Route::post('mcp/upload', [\modules\service\mcp\controller\McpUploadController::class, 'index'])
+    ->option(['real_name' => 'MCP图片直传接口']);

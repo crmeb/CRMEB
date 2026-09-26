@@ -38,7 +38,7 @@ class SafeEvent extends Event
 {
     /**
      * 安全事件清单（旁路型事件：其下所有监听器异常仅记日志，不中断主流程）
-     * 关键事件（订单/资金/库存/注册中心/服务代理与查询类）不在此列，保持异常上抛
+     * 关键事件（订单/资金/库存等数据一致性事件、服务代理与查询类）不在此列，保持异常上抛
      * @var array|string[]
      */
     protected array $safeEvents = [
@@ -70,6 +70,8 @@ class SafeEvent extends Event
         'HttpEnd',
         // 渠道同步类
         'WechatFanSync',
+        // 插件扩展点：MCP 工具注册，单个插件监听器异常只影响其工具可用性，降级不中断服务
+        'McpToolsRegister',
         // 定时任务收尾钩子（CrontabBeforeRun 为执行前置校验，保持关键级）
         'CrontabAfterRun',
         'CrontabSuccess',

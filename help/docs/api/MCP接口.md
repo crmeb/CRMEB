@@ -11,6 +11,7 @@ MCP 服务通过 JSON-RPC 2.0 over HTTP 向 AI 客户端开放 CRMEB 查询、�
 | 插件 key | `service_mcp` |
 | 插件目录 | `backend/modules/service/mcp/` |
 | 请求地址 | `POST /api/mcp` |
+| 图片直传端点 | `POST /api/mcp/upload`（multipart 表单，票据鉴权；跨机客户端回传图片字节用，见第 7 节） |
 | 传输方式 | HTTP 单端点、JSON 请求/响应 |
 | 访问认证 | `X-Mcp-Key` 或 `Authorization: Bearer`（账号体系是唯一认证权威） |
 | 服务开关 | `mcp_enabled`（安装默认开启，在「系统配置 → MCP服务」中切换） |
@@ -142,7 +143,7 @@ curl 'https://example.com/api/mcp' \
 
 ## 5. 内置工具
 
-当前自动发现 55 个内置工具，其中 52 个业务工具、3 个开发知识工具。标记“写”的工具还会返回 `interaction: "execute"`。业务工具均声明 `category` 分类（用户、商品、订单、售后退款、营销、系统设置、消息通知、开发支持），后台「MCP 工具」列表与账号权限勾选按分类分组展示。
+当前自动发现 57 个内置工具，其中 54 个业务工具、3 个开发知识工具。标记“写”的工具还会返回 `interaction: "execute"`。业务工具均声明 `category` 分类（用户、商品、订单、售后退款、营销、系统设置、消息通知、开发支持），后台「MCP 工具」列表与账号权限勾选按分类分组展示。
 
 | 业务域 | 工具 |
 |---|---|
@@ -151,7 +152,7 @@ curl 'https://example.com/api/mcp' \
 | 售后与退款 | `crmeb_after_sale_list`、`crmeb_after_sale_statistics`、`crmeb_refund_list`、`crmeb_refund_detail` |
 | 优惠券 | `crmeb_coupon_list`、`crmeb_coupon_create`（写）、`crmeb_coupon_claim_list`、`crmeb_coupon_claim_statistics`、`crmeb_coupon_holding_statistics`、`crmeb_coupon_usage_statistics` |
 | 用户 | `crmeb_user_list`、`crmeb_user_detail`、`crmeb_user_statistics` |
-| 系统配置 | `crmeb_config_list`、`crmeb_config_tab_list`、`crmeb_config_update`（写） |
+| 系统配置 | `crmeb_config_list`、`crmeb_config_tab_list`、`crmeb_config_update`（写）、`crmeb_upload_image`（写）、`crmeb_upload_ticket` |
 | 菜单与模块 | `crmeb_menu_list`、`crmeb_module_list` |
 | 第三方驱动 | `crmeb_driver_list`、`crmeb_driver_config_update`（写） |
 | 消息发送 | `crmeb_email_send`（写）、`crmeb_qywechat_send`（写） |
@@ -163,9 +164,40 @@ curl 'https://example.com/api/mcp' \
 
 `service_mcp` 先自动发现自身 `tools/*Tool.php`，再触发字符串事件 `McpToolsRegister`。其他已启用插件可以监听该事件，注册实现 `crmeb\interfaces\McpToolInterface` 的工具；同名工具以后注册者为准。
 
+官方插件当前贡献的工具：
+
+| 插件 | 工具 |
+|---|---|
+| 实物商品（product_normal） | `crmeb_product_normal_read`（读）、`crmeb_product_normal_create`（写，新增单规格实物商品）、`crmeb_product_normal_update`（写，按字段合并更新，仅单规格可改价） |
+
+`crmeb_product_normal_read/create/update` 组合支持“一张照片建品/改品”流程：调用方 AI 客户端自行完成图片识别与文案生成，读取商品现状后按字段写回，服务端不内置任何 AI 调用。AI 生成的图片需先入库为站点资产（写入系统当前配置的存储方式并登记后台素材库）：跨机部署（AI 客户端与商城服务器不同机）走「票据直传」链路——先调 `crmeb_upload_ticket` 获取票据与本机可执行的 curl 命令，客户端直传 `POST /api/mcp/upload` 拿到暂存引用 `ref`，再把 `ref` 作为 `source` 调 `crmeb_upload_image` 完成正式入库（详见第 7 节）。`crmeb_upload_image` 的来源按上下文成本从低到高：直传暂存引用 → 生图接口 http(s) URL（服务端下载落站，上限 10MB）→ 站点已有图片相对路径（校验存在后原样返回并补全元数据）→ 本地白名单路径（本机 Agent 先把生图文件放入 `runtime/upload`，可用系统配置 `mcp_upload_local_dirs` 追加白名单，仅 AI 与服务器同机部署时可用）→ base64 data URI 内联（仅作无法发起本机 HTTP 上传时的最后应急，以纯文本经过对话上下文，解码后超过 512KB 拒绝并提示改用直传）。仅支持 jpg/jpeg/png/gif/webp；同内容按 md5 去重；单次最多 20 张、单密钥每分钟最多 60 张；批量中个别失败不影响其他图片，结果按 uploaded/failed 逐条返回，成功项含 url/att_id/宽高/大小/md5/dedupe_hit。商品工具的 `slider_image`（数组，整组写入）与 `description` 内 `<img>` 只接受换取到的站点图片地址。
+
 插件停用或卸载后，其事件监听器不再加载，对应工具会自动从 `tools/list` 消失。开发流程和约束见 [插件扩展 MCP 工具](../../../.crmeb/skills/crmeb-plugin-dev/references/mcp-tools.md)。
 
-## 7. 错误响应
+## 7. 图片直传端点
+
+`POST /api/mcp/upload` 是跨机场景的图片字节带外入口：AI 客户端（WorkBuddy 等）在自己机器上生成图片后，由客户端本机直接发出 multipart 请求把字节交给服务器暂存——不占用对话上下文（不塞 base64），也不要求服务器能读到客户端磁盘（不走本地路径），是「生成图片 → 写入商城」零人工闭环的推荐链路。
+
+三步时序（全部由 AI 客户端自主完成）：
+
+1. 调 MCP 工具 `crmeb_upload_ticket`（无参数）获取票据：返回 `ticket`（10 分钟有效）、`upload_url`，以及 `command` 字段——可直接在本机执行的一条 curl 命令；
+2. 客户端本机执行上传命令（或同构的 multipart 请求），把生成好的图片传上去：
+
+   ```bash
+   curl -s -F "ticket=<票据>" -F "files[]=@/本机图片路径.png" https://example.com/api/mcp/upload
+   ```
+
+   响应 `data.received[].ref` 为暂存引用（形如 `runtime/upload/mcp_recv/up_xxx.png`）；单次最多 20 张、单张不超过 10MB，仅支持 jpg/jpeg/png/gif/webp；
+3. 把 `ref` 作为 `source` 调 `crmeb_upload_image` 完成正式入库（去重、素材库登记、限流、审计均收敛在该工具内），再用返回的站点地址调用商品工具写库。入库失败只需重试工具调用，不必重传文件。
+
+鉴权与边界：
+
+- 直传端点只认票据、不要求 `X-Mcp-Key`：避免长期密钥进入 AI 客户端的命令、对话上下文与命令历史；票据服务端只存 sha256 摘要，10 分钟过期后重新调用工具获取即可（不做单次消费，重试友好）。票据只能由有权调用 `crmeb_upload_ticket` 的账号获取，端点同样受服务总开关 `mcp_enabled` 约束。
+- 端点只做「收字节 + 暂存」：暂存文件 1 小时未被入库会被机会式清理，正式入库必须经 `crmeb_upload_image`。
+- 失败口径：票据缺失或无效返回 401；非图片、超 10MB 等逐条进 `data.failed[]`，不影响同批其他图片；单账号每分钟最多 60 张，超限返回 429；单批超过 20 张返回 400（超过服务端 `max_file_uploads` 上限时同样明确报错，不会静默丢弃）。
+- 生产环境请经 HTTPS 调用并限制可信来源（见第 9 节）。
+
+## 8. 错误响应
 
 除 notification 返回 HTTP 204 外，当前接口通常以 HTTP 200 返回 JSON-RPC 成功或错误对象，调用方必须检查 `error`，不能只判断 HTTP 状态码。
 
@@ -178,7 +210,7 @@ curl 'https://example.com/api/mcp' \
 
 系统异常只在服务端日志中保留文件、行号和堆栈，响应不会暴露内部细节。
 
-## 8. 安全与上线检查
+## 9. 安全与上线检查
 
 - 只通过 HTTPS 对外提供服务，限制可信来源、请求大小、频率和并发。
 - 按客户端最小授权：为不同客户端创建独立账号并只勾选需要的工具。
@@ -189,7 +221,7 @@ curl 'https://example.com/api/mcp' \
 - 不要把商城用户 token、管理员 token 或开放平台凭据当作 MCP 密钥使用。
 - 生产环境仅开放确实需要的网络入口；无需外部访问时保持内网可达。
 
-## 9. 常见问题
+## 10. 常见问题
 
 | 现象 | 排查方向 |
 |---|---|
@@ -203,13 +235,18 @@ curl 'https://example.com/api/mcp' \
 | 工具不存在 | 重新执行 `tools/list`；确认提供该工具的插件已启用 |
 | 客户端只能使用本地 command 类型 | 选择支持远程 HTTP MCP 的客户端或版本，本服务不提供 stdio 启动命令 |
 | AI Agent 看不到新工具 | 系统账号白名单已勾选的前提下，在 AI Agent 的 MCP 服务管理中重新执行「同步工具」 |
+| 直传端点返回 `401` | 票据缺失或已过期（有效期 10 分钟）：重新调用 `crmeb_upload_ticket` 获取新票据与新命令，不要复用旧命令 |
+| 直传端点返回 `400` 提示超过服务端限制 | 单批文件数超过 PHP `max_file_uploads`（默认 20，与工具单次上限一致），拆分为每批不超过 20 张后重试 |
+| 直传端点返回 `429` | 单账号每分钟最多 60 张，稍后重试或分批上传 |
 
-## 10. 实现位置
+## 11. 实现位置
 
 | 内容 | 路径 |
 |---|---|
 | 路由 | `backend/modules/service/mcp/route/user.php` |
 | 协议与认证 | `backend/modules/service/mcp/controller/McpController.php` |
+| 图片直传端点（multipart 收字节 + 暂存 GC） | `backend/modules/service/mcp/controller/McpUploadController.php` |
+| 直传票据签发/校验 | `backend/modules/service/mcp/service/McpUploadTicketServices.php` |
 | 工具注册中心 | `backend/modules/service/mcp/McpToolRegistry.php` |
 | 内置工具 | `backend/modules/service/mcp/tools/` |
 | 账号列表页（MCP配置） | `backend/modules/service/mcp/schema/AccountListPage.php` |
