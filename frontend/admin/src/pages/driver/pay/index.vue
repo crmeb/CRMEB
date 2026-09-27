@@ -85,7 +85,7 @@
 
     <!-- 设置抽屉 -->
     <el-drawer v-model="drawerVisible" title="设置支付方式" size="50%" direction="rtl">
-      <el-form ref="editFormRef" :model="editForm" :rules="editRules" label-width="100px" v-loading="editLoading">
+      <el-form ref="editFormRef" :model="editForm" :rules="editRules" label-width="140px" v-loading="editLoading">
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
         <el-form-item label="状态" prop="status">
@@ -534,8 +534,10 @@ function showField(field) {
   margin-right: 5px;
 }
 .form-tip {
+  width: 100%;
+  flex-basis: 100%;
   font-size: 12px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   line-height: 1.5;
   margin-top: 5px;
 }
