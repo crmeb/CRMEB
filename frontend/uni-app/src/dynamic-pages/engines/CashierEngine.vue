@@ -735,6 +735,10 @@
 			color: #305fd8;
 		}
 
+		.payment .item .left .iconfont.icon-xianxiazhifu {
+			color: #999999;
+		}
+
 		.payment .item .iconfont {
 			font-size: 40rpx;
 			color: #ccc;

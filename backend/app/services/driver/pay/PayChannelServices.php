@@ -32,6 +32,20 @@ class PayChannelServices extends BaseService
     protected const DEFAULT_ICON = 'icon-yuezhifu';
 
     /**
+     * 按 channel_key 区分的默认字体图标（前端 iconfont 已内置对应字形，
+     * 后台未上传图片时按支付方式展示差异化图标）
+     */
+    protected const DEFAULT_ICONS = [
+        'weixin'    => 'icon-weixinzhifu',
+        'weixin_v3' => 'icon-weixinzhifu',
+        'alipay'    => 'icon-zhifubao',
+        'yue'       => 'icon-yuezhifu',
+        'offline'   => 'icon-xianxiazhifu',
+        'friend'    => 'icon-haoyoudaizhifu',
+        'allinpay'  => 'icon-tonglianzhifu1',
+    ];
+
+    /**
      * @var PayChannelDao
      */
     protected $dao;
@@ -372,8 +386,8 @@ class PayChannelServices extends BaseService
             $payStatus = $this->checkChannelStatus($data);
 
             $result[] = [
-                // 优先使用支付管理中配置的图片，未配置时使用统一的默认字体图标。
-                'icon'      => $this->getDisplayIcon($data['icon'] ?? ''),
+                // 优先使用支付管理中配置的图片，未配置时按 channel_key 使用差异化的默认字体图标。
+                'icon'      => $this->getDisplayIcon($data['icon'] ?? '', (string)($data['channel_key'] ?? '')),
                 'name'      => $data['channel_name'],
                 'value'     => $data['channel_key'],
                 'title'     => $this->getChannelTitle($data),
@@ -407,14 +421,16 @@ class PayChannelServices extends BaseService
     }
 
     /**
-     * 获取展示图标。后台未配置图片时统一使用默认字体图标，不写回数据库。
+     * 获取展示图标。后台未配置图片时按 channel_key 使用对应的默认字体图标，不写回数据库。
      *
      * @param mixed $icon
+     * @param string $channelKey 支付方式标识，用于匹配差异化默认图标
      * @return string
      */
-    protected function getDisplayIcon($icon): string
+    protected function getDisplayIcon($icon, string $channelKey = ''): string
     {
-        return $this->normalizeIcon($icon) ?: self::DEFAULT_ICON;
+        return $this->normalizeIcon($icon)
+            ?: self::DEFAULT_ICONS[$channelKey] ?? self::DEFAULT_ICON;
     }
 
     /**
