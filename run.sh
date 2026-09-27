@@ -2,7 +2,7 @@
 
 # CRMEB Docker 开发环境管理脚本
 # 用法: ./run.sh [install|start|restart|stop|delete|logs|ps]
-#       ./run.sh [admin:dev|admin:build|uni:dev|uni:build]
+#       ./run.sh [dev|admin:dev|admin:build|uni:dev|uni:build]
 
 # 确保从项目根目录执行
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -36,6 +36,7 @@ show_help() {
     echo "  delete    停止并清理所有数据"
     echo "  logs      查看日志"
     echo "  ps        查看容器状态"
+    echo "  dev       同时启动管理后台前端与 uniapp 移动端开发服务器 (H5)"
     echo "  admin:dev    管理后台前端 - 开发测试启动"
     echo "  admin:build  管理后台前端 - 编译打包到程序 public 目录"
     echo "  uni:dev      uniapp 移动端 - 开发测试启动 (H5)"
@@ -241,6 +242,21 @@ do_uni_build() {
     print_info "完成！访问地址: $(hyperlink 'http://localhost:8011')"
 }
 
+# 同时启动管理后台前端与 uniapp H5 开发服务器
+do_dev_all() {
+    check_node
+    ensure_deps "./frontend/admin"
+    ensure_deps "./frontend/uni-app"
+    print_info "管理后台前端: $(hyperlink 'http://localhost:1619')（/adminapi 代理到 http://localhost:8011，请确保后端服务已启动）"
+    print_info "uniapp H5: 默认 http://localhost:5173（以终端实际输出为准）"
+    print_warn "日志按 [admin] / [uni] 前缀区分来源；按 Ctrl+C 可同时停止两个服务"
+    # 收到 Ctrl+C 时先解除 trap，再向整个进程组发信号，确保 npm/vite 一并退出
+    trap 'trap - INT TERM; kill 0' INT TERM
+    ( cd ./frontend/admin && FORCE_COLOR=1 npm run dev 2>&1 | sed 's/^/[admin] /' ) &
+    ( cd ./frontend/uni-app && FORCE_COLOR=1 npm run dev:h5 2>&1 | sed 's/^/[uni]   /' ) &
+    wait
+}
+
 # 交互式菜单
 show_menu() {
     echo ""
@@ -254,6 +270,9 @@ show_menu() {
     echo "  7) 查看容器状态"
     echo "  8) 显示帮助"
     echo ""
+    echo -e "${GREEN}----- 开发调试（同时启动多端） -----${NC}"
+    echo "  31) 同时启动 管理后台 + 移动端 开发服务器"
+    echo ""
     echo -e "${GREEN}----- 管理后台前端 (frontend/admin) -----${NC}"
     echo "  11) 开发测试启动"
     echo "  12) 编译打包到程序 public 目录"
@@ -264,7 +283,7 @@ show_menu() {
     echo ""
     echo "  0) 退出"
     echo ""
-    read -p "请选择操作 (0-8, 11, 12, 21, 22): " choice
+    read -p "请选择操作 (0-8, 11, 12, 21, 22, 31): " choice
     echo ""
     case $choice in
         1) do_install ;;
@@ -279,6 +298,7 @@ show_menu() {
         12) do_admin_build ;;
         21) do_uni_dev ;;
         22) do_uni_build ;;
+        31) do_dev_all ;;
         0) echo "已退出"; exit 0 ;;
         *) print_error "无效选项，请重试"; show_menu ;;
     esac
@@ -300,6 +320,7 @@ else
         admin:build) do_admin_build ;;
         uni:dev)     do_uni_dev ;;
         uni:build)   do_uni_build ;;
+        dev|dev:all) do_dev_all ;;
         -h|--help) show_help ;;
         *)
             print_error "未知命令: $1"
