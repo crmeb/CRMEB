@@ -276,7 +276,7 @@ throw new ApiStatusException(400, '业务错误', ['order_id' => 123]);
 
 系统通过全局异常处理器统一捕获这些异常，并根据异常类型返回不同的HTTP响应。
 
-**异常处理配置位置**（v8.1.xu 现状）：
+**异常处理配置位置**（当前现状）：
 - 三端 API 公共基类：`app/http/BaseApiExceptionHandle.php`（`abstract class BaseApiExceptionHandle extends Handle`，收口统一的异常日志格式与 JSON 渲染流程）
 - 各端子类：`app/api/ApiExceptionHandle.php`、`app/adminapi/AdminApiExceptionHandle.php`（继承 `BaseApiExceptionHandle`，各端仅覆写 `operatorId()`/`renderCustom()` 等差异扩展点）
 - 全局默认兜底：`app/ExceptionHandle.php`

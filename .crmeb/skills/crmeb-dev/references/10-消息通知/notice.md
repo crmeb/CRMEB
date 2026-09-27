@@ -763,7 +763,7 @@ protected function getNoticeChannelDefinitions(): array
 
 ---
 
-**版本**：v8.1.xu  
+**版本**：CRMEB v8  
 **最后更新**：2026-08-27  
 **适用范围**：CRMEB v8 分支  
 **相关规则**：[.crmeb/rules/架构规范详解.md](../../../../rules/架构规范详解.md)（消息通知架构章节）
