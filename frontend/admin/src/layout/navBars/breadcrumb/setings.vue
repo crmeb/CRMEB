@@ -176,12 +176,12 @@
           </div>
         </div>
         <!-- 暗黑模式 -->
-        <!-- <div class="layout-breadcrumb-seting-bar-flex mt15">
+        <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fourIsDark') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
             <el-switch v-model="getThemeConfig.isIsDark" :width="35" @change="onAddDarkChange"> </el-switch>
           </div>
-        </div> -->
+        </div>
         <!-- 其它设置 -->
         <el-divider :content-position="contentPosotion">{{ $t('message.layout.fiveTitle') }}</el-divider>
         <div class="layout-breadcrumb-seting-bar-flex mt15">
@@ -243,7 +243,7 @@ import { ref, computed, nextTick, onMounted } from 'vue';
 import ClipboardJS from 'clipboard';
 import { ElMessage } from 'element-plus';
 import { Local } from '@/utils/storage.js';
-import { useChangeColor } from '@/utils/theme.js';
+import { filterThemeCssText } from '@/utils/theme.js';
 import config from '../../../../package.json';
 import { themeList } from './theme';
 import bus from '@/utils/bus';
@@ -279,16 +279,9 @@ function onLayoutMobileResize(res) {
 
 // 全局主题
 function onColorPickerChange() {
-  // if (!getThemeConfig.value.primary) return;
-  // 颜色加深
-  // document.documentElement.style.setProperty('--prev-color-primary', getThemeConfig.value.primary);
-  // 颜色变浅
-  for (let i = 1; i <= 9; i++) {
-    document.documentElement.style.setProperty(
-      `--prev-color-primary-light-${i}`,
-      `${useChangeColor().getLightColor(getThemeConfig.value.primary, i / 10)}`,
-    );
-  }
+  // 主色浅色阶不再写行内样式：app.scss 的 color-mix 表达式引用 --prev-color-primary，
+  // 换肤只改主色即可全档自动重算；此前行内写死向白混色，会压过 dark.scss 的深色档，
+  // 导致深色模式下表头/选中行/标签浅底仍是刺眼浅蓝
   setLocalThemeConfig();
 }
 
@@ -455,8 +448,14 @@ function onMenuBgColorChange() {
 // 深色模式
 function onAddDarkChange() {
   const body = document.documentElement;
-  if (getThemeConfig.value.isIsDark) body.setAttribute('data-theme', 'dark');
+  const isDark = getThemeConfig.value.isIsDark;
+  if (isDark) body.setAttribute('data-theme', 'dark');
   else body.setAttribute('data-theme', '');
+  // Element Plus 官方深色变量表挂在 html.dark 上（main.js 引入的 dark/css-vars.css），同步切换
+  body.classList.toggle('dark', isDark);
+  // vxe-table / vxe-pc-ui 自带深色主题挂 data-vxe-ui-theme 属性（树形表格等 vxe 组件），同步切换
+  if (isDark) body.setAttribute('data-vxe-ui-theme', 'dark');
+  else body.removeAttribute('data-vxe-ui-theme');
   setLocalThemeConfig();
 }
 
@@ -485,7 +484,8 @@ function setLocalThemeConfig() {
 
 // 存储布局配置全局主题样式（html根标签）
 function setLocalThemeConfigStyle() {
-  Local.set('themeConfigStyle', document.documentElement.style.cssText);
+  // 过滤主色浅/深阶：由样式表 color-mix 动态计算，行内持久化会压过深色暗色档
+  Local.set('themeConfigStyle', filterThemeCssText(document.documentElement.style.cssText));
 }
 
 // 布局配置弹窗打开

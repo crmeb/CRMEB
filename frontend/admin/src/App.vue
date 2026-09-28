@@ -22,6 +22,7 @@ import config from '../package.json';
 import bus from '@/utils/bus';
 import { useMediaStore } from '@/store/module/media';
 import { useThemeConfigStore } from '@/store/module/themeConfig';
+import { filterThemeCssText } from '@/utils/theme.js';
 
 defineOptions({ name: 'app' });
 
@@ -69,7 +70,9 @@ function onOpenSetingsDrawer() {
 function getLayoutThemeConfig() {
   if (Local.get('themeConfigPrev')) {
     themeConfigStore.setThemeConfig(Local.get('themeConfigPrev'));
-    document.documentElement.style.cssText = Local.get('themeConfigStyle');
+    // 恢复时过滤主色浅/深阶（历史脏数据清洗）：这些变量由样式表 color-mix 动态计算，
+    // 行内持久化会压过 dark.scss 暗色档，导致深色模式表头/浅底仍为浅色
+    document.documentElement.style.cssText = filterThemeCssText(Local.get('themeConfigStyle'));
   } else {
     Local.set('themeConfigPrev', themeConfigStore.themeConfig);
   }

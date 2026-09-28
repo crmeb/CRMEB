@@ -1,6 +1,28 @@
 import { ElMessage } from 'element-plus';
 
 /**
+ * 过滤主题行内样式中的主色浅/深阶变量
+ *
+ * 主色浅色阶/深色阶由样式表 color-mix 表达式动态计算（亮色档在 theme/app.scss，
+ * 暗色档在 theme/dark.scss），引用 --prev-color-primary，换肤时自动重算。
+ * 这类变量不允许持久化为行内样式：行内样式优先级最高，会压过深色模式的暗色档，
+ * 导致深色下表头/选中行/标签浅底仍是刺眼浅色（2026-09 深色模式适配遗留问题）。
+ * @param {string} cssText document.documentElement.style.cssText
+ * @returns {string} 过滤后的 cssText
+ */
+export function filterThemeCssText(cssText) {
+  if (!cssText) return '';
+  const dynamicVarRe = /^--(prev|el)-color-primary-(light|dark)-\d+$/;
+  return cssText
+    .split(';')
+    .filter((item) => {
+      const name = (item.split(':')[0] || '').trim();
+      return name && !dynamicVarRe.test(name);
+    })
+    .join(';');
+}
+
+/**
  * 颜色转换函数
  * @method hexToRgb hex 颜色转 rgb 颜色
  * @method rgbToHex rgb 颜色转 Hex 颜色

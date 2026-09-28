@@ -7,6 +7,8 @@
   --prev-bg-topBarColor: #dadada !important;
   --prev-bg-columnsMenuBar: #191919 !important;
   --prev-bg-columnsMenuBarColor: #dadada !important;
+  /* 换肤（setLocalTheme）会按主题行内写入浅色 hover 底（#e5eeff/#ecf8f3 等），深色下需压制 */
+  --prev-bg-menu-hover-ba-color: rgba(255, 255, 255, 0.1) !important;
   --prev-bg-main-color: #1f1f1f !important;
   --prev-bg-color: rgba(0, 0, 0, 0.3) !important;
   --prev-bg-white: #191919 !important;
@@ -23,6 +25,20 @@
   --prev-border-color-light: #333333 !important;
   --prev-border-color-lighter: #333333 !important;
   --prev-border-color-extra-light: #333333 !important;
+
+  /* 主色浅色阶暗色档：与 app.scss 浅色档同算法（color-mix），混色底由白色换成暗底
+     #141414（Element Plus 官方深色变量同款底色）。表头（app.scss 的
+     --el-table-header-bg-color）、选中行、标签浅底等引用方自动跟随；
+     行内主色换肤时 color-mix 同样自动重算，无需 JS 参与 */
+  --prev-color-primary-light-1: color-mix(in srgb, var(--prev-color-primary) 90%, #141414);
+  --prev-color-primary-light-2: color-mix(in srgb, var(--prev-color-primary) 80%, #141414);
+  --prev-color-primary-light-3: color-mix(in srgb, var(--prev-color-primary) 70%, #141414);
+  --prev-color-primary-light-4: color-mix(in srgb, var(--prev-color-primary) 60%, #141414);
+  --prev-color-primary-light-5: color-mix(in srgb, var(--prev-color-primary) 50%, #141414);
+  --prev-color-primary-light-6: color-mix(in srgb, var(--prev-color-primary) 40%, #141414);
+  --prev-color-primary-light-7: color-mix(in srgb, var(--prev-color-primary) 30%, #141414);
+  --prev-color-primary-light-8: color-mix(in srgb, var(--prev-color-primary) 20%, #141414);
+  --prev-color-primary-light-9: color-mix(in srgb, var(--prev-color-primary) 10%, #141414);
 
   // menu
   .layout-aside {
@@ -112,4 +128,63 @@
   .el-calendar {
     border: 1px solid var(--prev-border-color-lighter);
   }
+
+  // 底部固定提交卡：浅色为白色毛玻璃，深色换黑色毛玻璃（style.scss 同规则带 !important，
+  // 此处块内选择器特异性更高，可覆盖）
+  .fixed-card {
+    background-color: rgba(25, 25, 25, 0.6) !important;
+  }
+
+  // AI 对话工作台：会话面板底改不透明层次色。
+  // 浅色档 --prev-bg-color 是实色，深色档是 rgba(0,0,0,0.3) 半透明，
+  // 面板用半透明底会随下垫内容/页面底色变化产生观感分层
+  .conversation-panel {
+    background-color: #202020;
+  }
+
+  // form-create 上传占位框（elm-frame/elm-upload 组件默认 #fff 底 + #c0ccda 边）
+  ._fc-frame ._fc-upload-btn,
+  ._fc-frame ._fc-files,
+  ._fc-upload ._fc-upload-btn,
+  ._fc-upload ._fc-files {
+    background-color: var(--prev-bg-white) !important;
+    border-color: var(--prev-border-color-base) !important;
+  }
+}
+
+/* Element Plus 官方深色变量重桥接
+------------------------------- */
+/* main.js 引入的官方 dark/css-vars.css 挂在 html.dark（特异性 0,1,1）上，会：
+   1. 把主色系接管为 EP 默认蓝 #409eff，与项目主色（默认 #0256FF）漂移；
+   2. 把 --el-bg-color 系接管为 #141414 体系，与本项目 #191919 深色体系并存两种黑。
+   此处以同特异性 html[data-theme='dark'] 重桥接回 --prev-* 体系（本文件后于官方
+   文件加载，同特异性按源顺序胜出）；未列出的官方深色值（语义色 light 阶、遮罩、
+   阴影、fill-color/-lighter 等）保持官方值兜底 */
+html[data-theme='dark'] {
+  /* 背景体系：统一回 #191919（卡片/弹层/表格行底/输入框内底） */
+  --el-bg-color: var(--prev-bg-white);
+  --el-bg-color-overlay: var(--prev-bg-white);
+  --el-fill-color-blank: var(--prev-bg-white);
+  --el-fill-color-light: var(--prev-color-hover);
+
+  /* 文本体系 */
+  --el-text-color-primary: var(--prev-color-text-primary);
+  --el-text-color-regular: var(--prev-color-text-regular);
+  --el-text-color-secondary: var(--prev-color-text-secondary);
+  --el-text-color-placeholder: var(--prev-color-text-placeholder);
+
+  /* 边框体系 */
+  --el-border-color: var(--prev-border-color-base);
+  --el-border-color-light: var(--prev-border-color-light);
+  --el-border-color-lighter: var(--prev-border-color-lighter);
+  --el-border-color-extra-light: var(--prev-border-color-extra-light);
+
+  /* 主色系：浅色阶向暗底 #141414 混色（同 EP 官方深色算法），保持项目主色不漂移 */
+  --el-color-primary: var(--prev-color-primary);
+  --el-color-primary-light-3: color-mix(in srgb, var(--prev-color-primary) 70%, #141414);
+  --el-color-primary-light-5: color-mix(in srgb, var(--prev-color-primary) 50%, #141414);
+  --el-color-primary-light-7: color-mix(in srgb, var(--prev-color-primary) 30%, #141414);
+  --el-color-primary-light-8: color-mix(in srgb, var(--prev-color-primary) 20%, #141414);
+  --el-color-primary-light-9: color-mix(in srgb, var(--prev-color-primary) 10%, #141414);
+  --el-color-primary-dark-2: color-mix(in srgb, var(--prev-color-primary) 80%, #000000);
 }

@@ -11,7 +11,6 @@ export const themeList = {
     '--prev-bg-columnsMenuBarColor': '#fff',
     '--prev-MenuActiveColor': '#0256FF',
     '--prev-tag-active-color': '#0256FF',
-    '--prev-color-primary-light-9': '#e5eeff',
     '--prev-bg-columnsMenuActiveColor': '#fff',
   },
   'theme-2': {
@@ -28,7 +27,6 @@ export const themeList = {
     '--prev-MenuActiveColor': '#0256FF',
     '--prev-bg-columnsMenuActiveBgColor': '#0256FF',
     '--prev-tag-active-color': '#0256FF',
-    '--prev-color-primary-light-9': '#e5eeff',
   },
   'theme-3': {
     '--prev-bg-menuBar': '#282c34',
@@ -42,9 +40,7 @@ export const themeList = {
     '--prev-bg-columnsMenuBarColor': '#fff',
     '--prev-bg-columnsMenuActiveColor': '#fff',
     '--prev-MenuActiveColor': '#41b584',
-    '--prev-color-primary-light-9': '#ecf8f3',
     '--prev-tag-active-color': '#41b584',
-    '--prev-color-primary-light-9': '#ecf8f3',
   },
   'theme-4': {
     '--prev-bg-menuBar': '#ffffff',
@@ -60,7 +56,6 @@ export const themeList = {
     '--prev-MenuActiveColor': '#41b584',
 
     '--prev-tag-active-color': '#41b584',
-    '--prev-color-primary-light-9': '#ecf8f3',
   },
   'theme-5': {
     '--prev-bg-menuBar': '#282c34',
@@ -74,7 +69,6 @@ export const themeList = {
     '--prev-bg-columnsMenuBarColor': '#fff',
     '--prev-bg-columnsMenuActiveColor': '#fff',
     '--prev-MenuActiveColor': '#6954f0',
-    '--prev-color-primary-light-9': '#f0eefe',
     '--prev-tag-active-color': '#6954f0',
   },
   'theme-6': {
@@ -89,7 +83,6 @@ export const themeList = {
     '--prev-bg-columnsMenuBarColor': '#515a6e',
     '--prev-bg-columnsMenuActiveColor': '#fff',
     '--prev-MenuActiveColor': '#6954f0',
-    '--prev-color-primary-light-9': '#f0eefe',
     '--prev-tag-active-color': '#6954f0',
   },
   'theme-7': {
@@ -117,7 +110,6 @@ export const themeList = {
     '--prev-bg-columnsMenuBar': '#fff',
     '--prev-bg-columnsMenuBarColor': '#515a6e',
     '--prev-bg-columnsMenuActiveColor': '#fff',
-    '--prev-color-primary-light-9': '#feedeb',
     '--prev-MenuActiveColor': '#f34d37',
     '--prev-tag-active-color': '#f34d37',
   },
@@ -134,6 +126,5 @@ export const themeList = {
     '--prev-bg-columnsMenuActiveColor': '#fff',
     '--prev-tag-active-color': '#0256FF',
     '--prev-MenuActiveColor': '#0256FF',
-    '--prev-color-primary-light-9': '#e5eeff',
   },
 };

@@ -27,6 +27,9 @@ import timeOptions from '@/libs/timeOptions';
 import ElementPlus, { ElMessage } from 'element-plus';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import 'element-plus/dist/index.css';
+// Element Plus 官方深色变量表（挂 html.dark，由 setings.vue 的 onAddDarkChange 切换）；
+// 须在 @/theme/index.scss 之前引入，保证同特异性时项目主题层（dark.scss 重桥接）后加载胜出
+import 'element-plus/theme-chalk/dark/css-vars.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 // element-ui 字体图标类名兼容层（CSS mask 方案，自动生成）
 import './styles/el-icon-compat.css';
