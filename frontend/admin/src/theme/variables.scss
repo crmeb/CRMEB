@@ -299,7 +299,7 @@ body {
   }
 
   .el-input .el-input__count .el-input__count-inner {
-    background-color: #fff !important;
+    background-color: var(--prev-bg-white) !important;
   }
 
   // autocomplete
@@ -344,7 +344,7 @@ body {
   .el-input-group__prepend .el-select .el-input--suffix .el-input__inner::placeholder,
   .el-cascader .el-input .el-icon-arrow-down,
   .el-select .el-input .el-select__caret {
-    color: #606266;
+    color: var(--prev-color-text-primary);
   }
 
   .el-select-dropdown__item.selected {
@@ -678,7 +678,8 @@ body {
   .el-table th.el-table__cell.is-leaf,
   .el-table--border,
   .el-table--group {
-    border-color: #f5f5f5 !important;
+    /* 行分隔线用令牌：深色下跟随 --prev-border-color-lighter 变暗（原 #f5f5f5 深色下刺眼） */
+    border-color: var(--prev-border-color-lighter) !important;
   }
 
   .el-table th.el-table__cell,
@@ -711,7 +712,7 @@ body {
 
   .vxe-header--column {
     font-weight: 500;
-    color: #303133;
+    color: var(--prev-color-text-primary);
   }
 
   .el-table .el-table__header-wrapper {
@@ -723,7 +724,7 @@ body {
   // 仅默认主色 tag 使用主题蓝；success/danger/warning/info 语义色恢复 Element Plus 默认配色
   .el-tag:not(.el-tag--success):not(.el-tag--warning):not(.el-tag--danger):not(.el-tag--info) {
     color: var(--prev-color-primary);
-    background-color: #fff;
+    background-color: var(--prev-bg-white);
     border-color: var(--prev-color-primary);
   }
 
@@ -992,7 +993,7 @@ body {
 
   .el-dropdown-menu {
     background-color: var(--prev-bg-white);
-    border-color: #ebeef5;
+    border-color: var(--prev-border-color-lighter);
   }
 
   .el-dropdown-menu__item {
@@ -1223,7 +1224,7 @@ body {
 .el-drawer__header > :first-child {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 14px;
 }
 

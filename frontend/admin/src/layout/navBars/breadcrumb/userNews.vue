@@ -214,7 +214,7 @@ function icon(type) {
     .head-box-title {
       font-size: 13px;
       font-weight: 500;
-      color: #333333;
+      color: var(--prev-color-text-regular);
       line-height: 13px;
     }
     .head-box-btn {
@@ -249,14 +249,14 @@ function icon(type) {
       .content-box-type {
         font-size: 13px;
         font-weight: 500;
-        color: #333333;
+        color: var(--prev-color-text-regular);
         line-height: 13px;
       }
       .content-box-msg {
         margin-top: 6px;
         font-size: 13px;
         font-weight: 400;
-        color: #666666;
+        color: var(--prev-color-text-primary);
         line-height: 13px;
       }
       .content-box-time {
@@ -272,7 +272,7 @@ function icon(type) {
       .content-box-empty-margin {
         text-align: center;
         font-size: 13px;
-        color: #999999;
+        color: var(--prev-color-text-secondary);
         i {
           color: var(--prev-color-primary);
           font-size: 60px;

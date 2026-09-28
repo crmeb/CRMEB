@@ -91,7 +91,7 @@
 }
 
 .el-dialog__header {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--prev-border-color-lighter);
   padding: 15px !important;
   display: flex;
   align-items: center;
@@ -101,8 +101,7 @@
 .el-dialog__title {
   font-size: 14px !important;
   font-weight: 500;
-  font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 14px !important;
 }
 
@@ -163,7 +162,7 @@
 ------------------------------- */
 .el-table__body tr.current-row > td.el-table__cell,
 .vxe-table--render-default .vxe-body--row.row--current {
-  background-color: #f5f7fa !important;
+  background-color: var(--prev-bg-color) !important;
 }
 
 .hover-row .el-select-dropdown .el-scrollbar__wrap,
@@ -448,18 +447,18 @@
   word-break: break-all;
 }
 
-// tooltip
+// tooltip（边框/箭头同色，用令牌：深色下自动变暗）
 .el-popper.is-light {
-  border-color: #f2f2f2 !important;
+  border-color: var(--prev-border-color-light) !important;
 }
 
 .el-popper .el-popper__arrow,
 .el-popper .el-popper__arrow::after {
-  color: #f2f2f2 !important;
+  color: var(--prev-border-color-light) !important;
 }
 
 .el-popper .el-popper__arrow {
-  border-bottom-color: #f2f2f2 !important;
+  border-bottom-color: var(--prev-border-color-light) !important;
 }
 
 // 下拉菜单

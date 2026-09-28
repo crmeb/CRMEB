@@ -20,7 +20,7 @@
 
 .c_label span {
   margin-left: 10px;
-  color: #333;
+  color: var(--prev-color-text-regular);
 }
 
 .c_row-item {
@@ -313,7 +313,7 @@ body {
 
 .modal-form .el-message-box__header {
   padding: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--prev-border-color-lighter);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -323,7 +323,7 @@ body {
   font-size: 14px;
   line-height: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
 }
 
 .modal-form .el-message-box__content {
@@ -548,7 +548,7 @@ body {
 
 .btn-back {
   padding: 0 !important;
-  color: #333 !important;
+  color: var(--prev-color-text-regular) !important;
   font-size: 13px;
 }
 
@@ -647,7 +647,7 @@ body {
 .i-layout-page-header {
   margin: 0;
   /* display: none; */
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   padding: 7px 32px 0 32px;
 }
 
@@ -666,7 +666,7 @@ body {
   -ms-flex-pack: justify;
   justify-content: space-between;
   font-size: 14px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
 }
 
 /* 页面标题头「标题行」：返回钮 + 标题 + 描述，基线对齐（描述字号小于标题，用 baseline 不用 flex-end） */
@@ -693,7 +693,7 @@ body {
 
 .statics-header-title {
   font-size: 14px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -707,7 +707,7 @@ body {
 
 .ivu-page-header-title {
   display: inline-block;
-  color: #17233d;
+  color: var(--prev-color-text-regular);
   font-weight: 500;
   font-size: 18px;
   line-height: 32px;
@@ -717,13 +717,13 @@ body {
   padding: 16px;
   height: calc(100% - 80px);
   overflow: auto;
-  background-color: #f5f7f9;
+  background-color: var(--prev-bg-color);
 }
 
 .left-wrapper {
   height: calc(100vh - 120px);
-  background: #fff;
-  border-right: 1px solid #f2f2f2;
+  background: var(--prev-bg-white);
+  border-right: 1px solid var(--prev-border-color-lighter);
 }
 
 .ivu-tabs-bar {
@@ -1017,7 +1017,7 @@ body {
       word-break: break-word;
       height: 47px;
       background: var(--prev-color-primary-light-9);
-      color: #515a6e;
+      color: var(--prev-color-text-primary);
       font-size: 12px;
       font-weight: 500;
     }
@@ -1050,7 +1050,7 @@ a {
 
 .tree_tit {
   font-size: 14px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
   font-weight: 500;
   padding: 23px 0 23px 20px;
   display: flex;
@@ -1086,7 +1086,7 @@ a {
   .file-name {
     display: flex;
     align-items: center;
-    color: #303133;
+    color: var(--prev-color-text-regular);
     font-size: 14px;
 
     .text {

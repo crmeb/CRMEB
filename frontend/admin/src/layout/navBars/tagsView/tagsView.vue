@@ -418,7 +418,7 @@ watch(
 }
 .direction:hover {
   line-height: 34px;
-  background-color: #f7f2f2;
+  background-color: var(--prev-color-hover);
   cursor: pointer;
   transition: all 0.3s;
 }
