@@ -4,49 +4,29 @@
       <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/user/list' }">
           <div class="icon">
-            <i class="iconfont iconyonghuguanli" style="color: #0256ff"></i>
+            <i class="crmeb-icon CRMEB-110-yonghu1-xianxing" style="color: #0256ff"></i>
           </div>
-          <p>用户管理</p>
+          <p>用户</p>
         </router-link>
       </el-card>
     </el-col>
-    <el-col v-bind="grid" class="ivu-mb" v-auth="['setting-system-config']">
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['admin-statistic']">
       <el-card shadow="never">
-        <router-link :to="{ path: $routeProStr + '/setting/system_config' }">
+        <router-link :to="{ path: $routeProStr + '/statistic/order' }">
           <div class="icon">
-            <i class="iconfont iconxitongshezhi" style="color: #9fdb1d"></i>
+            <i class="crmeb-icon CRMEB-166-tongji-xianxing" style="color: #b37feb"></i>
           </div>
-          <p>系统设置</p>
+          <p>订单</p>
         </router-link>
       </el-card>
     </el-col>
-    <el-col v-bind="grid" class="ivu-mb" v-auth="['admin-normal-product-list']">
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['admin-center-product-index']">
       <el-card shadow="never">
-        <router-link :to="{ path: $routeProStr + '/product/normal/list' }">
+        <router-link :to="{ path: $routeProStr + '/product/center/list' }">
           <div class="icon">
-            <i class="iconfont iconshangpin" style="color: #0fc6c2"></i>
+            <i class="crmeb-icon CRMEB-196-shangpinguanli-xianxing" style="color: #0fc6c2"></i>
           </div>
           <p>商品</p>
-        </router-link>
-      </el-card>
-    </el-col>
-    <el-col v-bind="grid" class="ivu-mb" v-auth="['admin-order-orderCenter-index']">
-      <el-card shadow="never">
-        <router-link :to="{ path: $routeProStr + '/order/center' }">
-          <div class="icon">
-            <i class="iconfont icondingdanguanli" style="color: #b37feb"></i>
-          </div>
-          <p>订单中台</p>
-        </router-link>
-      </el-card>
-    </el-col>
-    <el-col v-bind="grid" class="ivu-mb" v-auth="['setting-yihaotong']">
-      <el-card shadow="never">
-        <router-link :to="{ path: $routeProStr + '/setting/yihaotong/index' }">
-          <div class="icon">
-            <i class="iconfont iconduanxinpeizhi" style="color: #f7ba1e"></i>
-          </div>
-          <p>短信配置</p>
         </router-link>
       </el-card>
     </el-col>
@@ -54,9 +34,19 @@
       <el-card shadow="never">
         <router-link :to="{ path: $routeProStr + '/cms/article/index' }">
           <div class="icon">
-            <i class="iconfont iconwenzhangguanli" style="color: #7da2ff"></i>
+            <i class="crmeb-icon CRMEB-208-wenzhangguanli-xianxing" style="color: #7da2ff"></i>
           </div>
-          <p>文章管理</p>
+          <p>内容</p>
+        </router-link>
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb">
+      <el-card shadow="never">
+        <router-link :to="{ path: $routeProStr + '/setting/mall_theme' }">
+          <div class="icon">
+            <i class="crmeb-icon CRMEB-873-zhuti-xianxing" style="color: #f7ba1e"></i>
+          </div>
+          <p>装修</p>
         </router-link>
       </el-card>
     </el-col>
@@ -70,13 +60,23 @@
         </router-link>
       </el-card>
     </el-col>
-    <el-col v-bind="grid" class="ivu-mb" v-auth="['marketing-store_coupon-index']">
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['setting-system-config']">
       <el-card shadow="never">
-        <router-link :to="{ path: $routeProStr + '/marketing/store_coupon_issue/index' }">
+        <router-link :to="{ path: $routeProStr + '/setting/system_config/129' }">
           <div class="icon">
-            <i class="iconfont iconyouhuiquan4" style="color: #0fc6c2"></i>
+            <i class="crmeb-icon CRMEB-746-xitongshezhi-xianxing" style="color: #9fdb1d"></i>
           </div>
-          <p>优惠券</p>
+          <p>设置</p>
+        </router-link>
+      </el-card>
+    </el-col>
+    <el-col v-bind="grid" class="ivu-mb" v-auth="['plugin-list']">
+      <el-card shadow="never">
+        <router-link :to="{ path: $routeProStr + '/plugin/list' }">
+          <div class="icon">
+            <i class="crmeb-icon CRMEB-717-yingyongliebiao-mianxing" style="color: #0fc6c2"></i>
+          </div>
+          <p>插件</p>
         </router-link>
       </el-card>
     </el-col>
