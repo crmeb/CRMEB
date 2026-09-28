@@ -812,19 +812,19 @@ onBeforeUnmount(() => {
   .success-title {
     font-size: 18px;
     font-weight: 500;
-    color: #303133;
+    color: var(--prev-color-text-regular);
     margin-bottom: 8px;
   }
 
   .success-desc {
     font-size: 14px;
-    color: #606266;
+    color: var(--prev-color-text-primary);
   }
 }
 .cross-version-upgrade {
   .new-version-summary {
     padding: 24px 0;
-    background: #fff;
+    background: var(--prev-bg-white);
     border-radius: 8px;
     margin-top: 16px;
     margin-bottom: 16px;
@@ -895,7 +895,7 @@ onBeforeUnmount(() => {
     .content-title {
       font-weight: 500;
       font-size: 14px;
-      color: #333;
+      color: var(--prev-color-text-regular);
       padding-bottom: 8px;
       border-bottom: 1px solid #eaeaea;
       margin-bottom: 12px;
@@ -911,7 +911,7 @@ onBeforeUnmount(() => {
       white-space: pre-wrap;
       font-size: 12px;
       line-height: 18px;
-      color: #333;
+      color: var(--prev-color-text-regular);
     }
   }
 
@@ -921,7 +921,7 @@ onBeforeUnmount(() => {
     font-size: 12px;
     font-weight: 400;
     line-height: 20px;
-    color: #333333;
+    color: var(--prev-color-text-regular);
   }
 
   :deep(.agreement-dialog) {
@@ -933,7 +933,7 @@ onBeforeUnmount(() => {
       font-size: 16px !important;
       line-height: 16px !important;
       font-weight: 500;
-      color: #333333;
+      color: var(--prev-color-text-regular);
     }
   }
 
@@ -1160,7 +1160,7 @@ onBeforeUnmount(() => {
       margin-bottom: 10px;
       font-weight: 500;
       padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--prev-border-color-lighter);
     }
 
     .logs-content {
@@ -1202,7 +1202,7 @@ onBeforeUnmount(() => {
         }
 
         .log-table {
-          color: #606266;
+          color: var(--prev-color-text-primary);
           min-width: 100px;
         }
 
@@ -1212,7 +1212,7 @@ onBeforeUnmount(() => {
         }
 
         .log-message {
-          color: #909399;
+          color: var(--prev-color-text-secondary);
           font-size: 11px;
           margin-left: auto;
         }

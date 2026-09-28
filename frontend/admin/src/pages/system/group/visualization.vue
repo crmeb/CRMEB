@@ -1078,10 +1078,10 @@ onMounted(() => {
   width: 100%;
   margin: 0 auto;
   text-align: center;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   bottom: 0;
   padding: 16px;
-  border-top: 3px solid #f5f7f9;
+  border-top: 3px solid var(--prev-border-color-lighter);
 }
 
 .form {
@@ -1096,7 +1096,7 @@ onMounted(() => {
   .goodsTitle .title {
     border-bottom: 2px solid var(--prev-color-primary);
     padding: 0 8px 12px 5px;
-    color: #000;
+    color: var(--prev-color-text-regular);
     font-size: 14px;
   }
 
@@ -1302,9 +1302,9 @@ onMounted(() => {
 
 .table {
   width: 700px;
-  color: #515a6e;
+  color: var(--prev-color-text-primary);
   font-size: 14px;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   margin-left: 20px;
 }
 
@@ -1449,7 +1449,7 @@ onMounted(() => {
 }
 
 .box {
-  border-top: 3px solid #f5f7f9;
+  border-top: 3px solid var(--prev-border-color-lighter);
   padding: 10px;
   padding-top: 25px;
   width: 100%;
@@ -1529,8 +1529,6 @@ onMounted(() => {
 
 .left-wrapper {
   min-width: 213px;
-  background: #fff;
-  border-right: 1px solid #f2f2f2;
 }
 
 .menu-item {
@@ -1777,7 +1775,7 @@ onMounted(() => {
 
         .tips {
           font-size: 14px;
-          color: #333333;
+          color: var(--prev-color-text-regular);
           font-weight: 800;
           margin-bottom: 7px;
           margin-top: 10px;
@@ -1785,7 +1783,7 @@ onMounted(() => {
 
         .tips-samll {
           font-size: 12px;
-          color: #333333;
+          color: var(--prev-color-text-regular);
           margin-bottom: 7px;
 
           p {
@@ -1830,7 +1828,7 @@ onMounted(() => {
   display: flex;
   flex-wrap: nowrap;
   padding: 20px;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   border-radius: 5px;
 }
 

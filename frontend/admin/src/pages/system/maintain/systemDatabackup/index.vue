@@ -453,7 +453,7 @@ getfileList();
   padding: 3px 5px;
 }
 .mark :deep(.ivu-input) {
-  background: #fff;
+  background: var(--prev-bg-white);
   border-radius: 0.39rem;
 }
 .mark :deep(.ivu-input),

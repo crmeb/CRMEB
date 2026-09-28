@@ -182,7 +182,7 @@ body .v-modal {
     justify-content: space-between;
     align-items: center;
     padding: 20px 16px;
-    background: #fff;
+    background: var(--prev-bg-white);
     margin-bottom: 20px;
     border-radius: 4px;
 
@@ -193,7 +193,7 @@ body .v-modal {
       .page-title {
         font-size: 18px;
         font-weight: bold;
-        color: #333;
+        color: var(--prev-color-text-regular);
         margin-right: 15px;
       }
 
@@ -223,12 +223,12 @@ body .v-modal {
       .status-tag {
         display: flex;
         align-items: center;
-        background: rgba(51, 51, 51, 0.04);
+        background: var(--prev-color-hover);
         padding: 2px 10px;
         border-radius: 4px;
         .text {
           font-size: 12px;
-          color: #333;
+          color: var(--prev-color-text-regular);
         }
       }
     }
@@ -236,7 +236,7 @@ body .v-modal {
       display: flex;
       align-items: center;
       font-size: 14px;
-      color: #333;
+      color: var(--prev-color-text-regular);
       cursor: pointer;
       .icon {
         margin-right: 5px;
@@ -249,7 +249,7 @@ body .v-modal {
   .theme-list {
     padding: 16px;
     border-radius: 5px;
-    background-color: #fff;
+    background-color: var(--prev-bg-white);
 
     .list-wrapper {
       display: flex;
@@ -266,15 +266,15 @@ body .v-modal {
   }
   .theme-card {
     width: 100%;
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--prev-bg-white);
+    border: 1px solid var(--prev-border-color-lighter);
     border-radius: 8px;
     padding: 17px;
     transition: all 0.3s;
     margin-bottom: 20px;
 
     &:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--el-box-shadow-light);
       transform: translateY(-2px);
     }
 
@@ -286,11 +286,11 @@ body .v-modal {
 
       .card-title {
         font-size: 12px;
-        color: #333;
+        color: var(--prev-color-text-regular);
         border-radius: 0px 20px 20px 0px;
         padding: 7px 12px;
         margin-left: -17px;
-        background: rgba(51, 51, 51, 0.05);
+        background: var(--prev-color-hover);
       }
 
       .card-actions {
@@ -312,20 +312,20 @@ body .v-modal {
       .theme-name {
         font-size: 14px;
         font-weight: 500;
-        color: rgba(48, 49, 51, 1);
+        color: var(--prev-color-text-regular);
         margin-bottom: 5px;
       }
 
       .last-modified {
         font-size: 12px;
-        color: rgba(144, 147, 153, 1);
+        color: var(--prev-color-text-secondary);
       }
     }
 
     .card-preview {
       display: flex;
       justify-content: center;
-      background: #f5f7fa;
+      background: var(--prev-bg-color);
       padding: 0;
       border-radius: 12px;
 

@@ -285,11 +285,11 @@ function excel() {
 .header {
   &-title {
     font-size: 16px;
-    color: rgba(0, 0, 0, 0.85);
+    color: var(--prev-color-text-regular);
   }
   &-time {
     font-size: 12px;
-    color: #000000;
+    color: var(--prev-color-text-secondary);
     opacity: 0.45;
   }
 }
@@ -331,20 +331,20 @@ function excel() {
 
 .info {
   .sp1 {
-    color: #666;
+    color: var(--prev-color-text-primary);
     font-size: 14px;
     display: block;
   }
   .sp2 {
     font-weight: 400;
     font-size: 30px;
-    color: rgba(0, 0, 0, 0.85);
+    color: var(--prev-color-text-regular);
     display: block;
   }
   .sp3 {
     font-size: 12px;
     font-weight: 400;
-    color: rgba(0, 0, 0, 0.45);
+    color: var(--prev-color-text-secondary);
     display: block;
   }
 }

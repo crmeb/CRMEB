@@ -372,7 +372,7 @@ function getDetails() {
 }
 
 .form .goodsTitle {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+  border-bottom: 1px solid var(--prev-border-color-lighter);
   margin-bottom: 25px;
 }
 
@@ -383,7 +383,7 @@ function getDetails() {
 .form .goodsTitle .title {
   border-bottom: 2px solid var(--prev-color-primary);
   padding: 0 8px 12px 5px;
-  color: #000;
+  color: var(--prev-color-text-regular);
   font-size: 14px;
 }
 

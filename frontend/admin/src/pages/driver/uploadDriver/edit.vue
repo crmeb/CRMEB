@@ -567,7 +567,7 @@ function handleSubmit() {
   .help-doc-steps {
     .help-doc-step {
       font-size: 13px;
-      color: #606266;
+      color: var(--prev-color-text-primary);
       line-height: 2;
       padding-left: 10px;
     }

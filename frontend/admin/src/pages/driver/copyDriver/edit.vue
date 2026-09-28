@@ -190,7 +190,7 @@ function handleSubmit() {
 
 <style scoped>
 .form-tip {
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
   line-height: 1.5;
   margin-top: 5px;
@@ -201,7 +201,7 @@ function handleSubmit() {
   gap: 8px;
 }
 .text-gray {
-  color: #909399;
+  color: var(--prev-color-text-secondary);
 }
 .form-actions {
   margin-top: 24px;

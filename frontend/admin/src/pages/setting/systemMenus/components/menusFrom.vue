@@ -419,7 +419,7 @@ defineExpose({ modals, valids, getAddFrom });
   margin: 5px;
   border-radius: 3px;
   padding: 10px;
-  color: #333;
+  color: var(--prev-color-text-regular);
   cursor: pointer;
   transition: all 0.1s;
 }

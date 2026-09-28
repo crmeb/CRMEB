@@ -499,7 +499,7 @@ function onClickTab() {
 <style lang="scss" scoped>
 .order_box .list {
   font-size: 12px;
-  color: #17233d;
+  color: var(--prev-color-text-regular);
   border-bottom: 1px solid #e7eaec;
   margin: 0 10px;
   padding-bottom: 22px;

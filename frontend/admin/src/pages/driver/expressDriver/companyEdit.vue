@@ -319,7 +319,7 @@ function handleSubmit() {
   left: 0;
   right: 0;
   padding: 16px 24px;
-  background: #fff;
+  background: var(--prev-bg-white);
   border-top: 1px solid #e8e8e8;
   text-align: right;
   z-index: 10;

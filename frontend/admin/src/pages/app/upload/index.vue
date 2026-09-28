@@ -178,7 +178,7 @@ function loadData(item, callback) {
   box-sizing: border-box;
   overflow-y: auto;
   height: calc(100vh - 50px);
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
 }
 :deep(.el-upload-list--picture-card) {
   display: grid;
@@ -265,7 +265,7 @@ function loadData(item, callback) {
     height: 30px;
     box-sizing: border-box;
     border-radius: 15px;
-    color: #000;
+    color: var(--prev-color-text-regular);
     font-size: 14px;
     font-family: PingFang SC-Regular, PingFang SC;
     font-weight: 400;
@@ -334,7 +334,7 @@ function loadData(item, callback) {
     line-height: 41px;
     font-size: 15px;
     font-weight: 400;
-    color: #333333;
+    color: var(--prev-color-text-regular);
     border: 1px solid #cccccc;
   }
 }

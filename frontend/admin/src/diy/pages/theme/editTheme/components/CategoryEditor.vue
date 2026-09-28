@@ -114,10 +114,10 @@ function saveAndClose() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   .title {
     font-size: 14px;
-    color: rgba(0, 0, 0, 0.85);
+    color: var(--prev-color-text-regular);
     position: relative;
     padding-left: 11px;
     font-weight: bold;
@@ -139,7 +139,7 @@ function saveAndClose() {
       .pictrue {
         width: 100%;
         height: 496px;
-        border: 1px solid #eeeeee;
+        border: 1px solid var(--prev-border-color-lighter);
         border-radius: 10px;
         img {
           width: 100%;
@@ -148,7 +148,7 @@ function saveAndClose() {
       }
       .name {
         font-size: 13px;
-        color: rgba(0, 0, 0, 0.85);
+        color: var(--prev-color-text-regular);
         margin-top: 16px;
         text-align: center;
       }

@@ -212,7 +212,7 @@ function handleSubmit() {
 
 <style scoped>
 .form-tip {
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
   line-height: 1.5;
   margin-top: 5px;
@@ -236,7 +236,7 @@ function handleSubmit() {
 .help-doc-title {
   font-weight: 700;
   font-size: 14px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   margin-bottom: 10px;
 }
 .form-actions {

@@ -191,7 +191,7 @@ getCategories();
   .category-title {
     font-size: 16px;
     font-weight: bold;
-    color: #303133;
+    color: var(--prev-color-text-regular);
     margin-bottom: 8px;
   }
 
@@ -207,7 +207,7 @@ getCategories();
   align-items: center;
   font-size: 16px;
   font-weight: bold;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   margin-top: 20px;
   margin-bottom: 10px;
   padding-left: 10px;
@@ -222,7 +222,7 @@ getCategories();
     margin-left: auto;
     font-size: 12px;
     font-weight: normal;
-    color: #909399;
+    color: var(--prev-color-text-secondary);
   }
 }
 
@@ -232,11 +232,11 @@ getCategories();
 
 .event-name {
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
 }
 
 .event-desc {
-  color: #606266;
+  color: var(--prev-color-text-primary);
 }
 
 .listener-tag {

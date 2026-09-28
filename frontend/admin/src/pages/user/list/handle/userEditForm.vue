@@ -366,7 +366,7 @@ defineExpose({ setUser: setUserFn });
       font-weight: 500;
       font-size: 14px;
       line-height: 16px;
-      color: #303133;
+      color: var(--prev-color-text-regular);
     }
 
     &-bd {

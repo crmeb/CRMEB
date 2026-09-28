@@ -80,8 +80,8 @@ function copyNum() {
   display: flex;
   align-items: center;
   padding: 20px 24px;
-  background: #f5f7fa;
-  border-bottom: 1px solid #ebeef5;
+  background: var(--prev-bg-color);
+  border-bottom: 1px solid var(--prev-border-color-lighter);
 
   .express-icon {
     width: 48px;
@@ -99,7 +99,7 @@ function copyNum() {
   .express-company {
     font-size: 15px;
     font-weight: 600;
-    color: #303133;
+    color: var(--prev-color-text-regular);
     margin-bottom: 6px;
   }
 
@@ -109,18 +109,18 @@ function copyNum() {
     font-size: 13px;
 
     .label {
-      color: #909399;
+      color: var(--prev-color-text-secondary);
       margin-right: 8px;
       flex-shrink: 0;
     }
 
     .value {
-      color: #606266;
+      color: var(--prev-color-text-primary);
       word-break: break-all;
     }
 
     .copy-btn {
-      color: #909399;
+      color: var(--prev-color-text-secondary);
       cursor: pointer;
       margin-left: 8px;
       font-size: 14px;
@@ -164,7 +164,7 @@ function copyNum() {
 .track-item {
   .track-status {
     font-size: 14px;
-    color: #606266;
+    color: var(--prev-color-text-primary);
     line-height: 1.6;
     margin-bottom: 4px;
 
@@ -182,7 +182,7 @@ function copyNum() {
 
 .empty-logistics {
   text-align: center;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   padding: 60px 0;
   font-size: 14px;
 }

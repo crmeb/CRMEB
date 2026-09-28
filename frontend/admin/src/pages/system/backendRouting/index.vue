@@ -1197,7 +1197,7 @@ getInterfaceList('one');
   border-right: 1px solid #f2f2f2;
 }
 .card-tree {
-  background: #fff;
+  background: var(--prev-bg-white);
   height: 72px;
   box-sizing: border-box;
   overflow-x: scroll; /* 设置溢出滚动 */
@@ -1212,7 +1212,7 @@ getInterfaceList('one');
   display: none; /* Chrome Safari */
 }
 .tabs {
-  background: #fff;
+  background: var(--prev-bg-white);
   padding-left: 20px;
   border-radius: 5px 5px 0 0;
 }
@@ -1220,16 +1220,15 @@ getInterfaceList('one');
   width: 100%;
   display: flex;
   padding-bottom: 16px;
-  background: #fff;
+  background: var(--prev-bg-white);
   border-radius: 6px;
   .main-btn {
     display: flex;
     position: sticky;
     padding: 0px 5px 0 15px;
     width: 100%;
-    background: #fff;
     top: 0px;
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: color-mix(in srgb, var(--prev-bg-white) 60%, transparent);
     backdrop-filter: blur(4px);
     z-index: 99;
   }
@@ -1269,7 +1268,7 @@ getInterfaceList('one');
     }
     .open {
       font-weight: 500;
-      color: #333;
+      color: var(--prev-color-text-regular);
     }
   }
   :deep(.vtl-node-main .vtl-operation) {
@@ -1296,7 +1295,7 @@ getInterfaceList('one');
     height: 18px;
   }
   :deep(.vtl-node-content:hover .add:hover) {
-    background-color: #fff;
+    background-color: var(--prev-bg-white);
     .pop-menu {
       font-size: 16px;
     }

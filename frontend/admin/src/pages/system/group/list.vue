@@ -345,8 +345,6 @@ onMounted(() => {
 }
 .left-wrapper {
   height: 904px;
-  background: #fff;
-  border-right: 1px solid #dcdee2;
 }
 .menu-item {
   z-index: 50;

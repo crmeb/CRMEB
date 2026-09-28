@@ -375,7 +375,7 @@ function handleUpload() {
 /* 分段胶囊切换器 */
 .segment-tabs {
   display: inline-flex;
-  background: #f2f3f5;
+  background: var(--prev-bg-color);
   border-radius: 8px;
   padding: 4px;
   gap: 4px;
@@ -387,16 +387,16 @@ function handleUpload() {
   padding: 7px 22px;
   border-radius: 6px;
   font-size: 14px;
-  color: #4e5969;
+  color: var(--prev-color-text-primary);
   cursor: pointer;
   user-select: none;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .segment-item:hover {
-  color: #1d2129;
+  color: var(--prev-color-text-regular);
 }
 .segment-item.active {
-  background: #fff;
+  background: var(--prev-bg-white);
   color: var(--el-color-primary);
   font-weight: 600;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.1);
@@ -408,8 +408,8 @@ function handleUpload() {
   line-height: 18px;
   border-radius: 9px;
   padding: 0 5px;
-  background: #e5e6eb;
-  color: #86909c;
+  background: var(--prev-bg-color);
+  color: var(--prev-color-text-secondary);
 }
 .segment-item.active .segment-count {
   background: var(--el-color-primary-light-9, #ecf5ff);
@@ -424,12 +424,12 @@ function handleUpload() {
 .group-title {
   font-size: 15px;
   font-weight: 600;
-  color: #17233d;
+  color: var(--prev-color-text-regular);
 }
 /* 驱动类别 tab 数量 */
 .tab-count {
   font-size: 12px;
-  color: #999;
+  color: var(--prev-color-text-secondary);
 }
 /* 驱动 tab 面板顶部留白 */
 .driver-pane {

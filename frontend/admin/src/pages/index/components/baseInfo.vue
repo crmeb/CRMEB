@@ -78,7 +78,7 @@ onMounted(() => {
   margin-bottom: 10px;
   font-size: 32px;
   font-weight: 400;
-  color: #333333;
+  color: var(--prev-color-text-regular);
   line-height: 40px;
 }
 

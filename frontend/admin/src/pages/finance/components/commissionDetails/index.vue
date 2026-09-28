@@ -247,7 +247,7 @@ function cancel() {
   font-size: 13px;
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--prev-color-text-regular);
   cursor: pointer;
 }
 .table {
@@ -280,7 +280,7 @@ function cancel() {
       &-desc {
         &-sp {
           width: 33.33%;
-          color: #17233d;
+          color: var(--prev-color-text-regular);
           font-size: 12px;
           display: inline-block;
         }

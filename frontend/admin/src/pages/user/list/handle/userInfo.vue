@@ -134,7 +134,7 @@ function timeFormat(value, birthday) {
 .user-info {
   .section {
     padding: 25px 0;
-    border-bottom: 1px dashed #eeeeee;
+    border-bottom: 1px dashed var(--prev-border-color-lighter);
 
     &-hd {
       padding-left: 10px;
@@ -142,7 +142,7 @@ function timeFormat(value, birthday) {
       font-weight: 500;
       font-size: 14px;
       line-height: 16px;
-      color: #303133;
+      color: var(--prev-color-text-regular);
     }
 
     &-bd {
@@ -155,7 +155,7 @@ function timeFormat(value, birthday) {
       display: flex;
       margin: 16px 30px 0 0;
       font-size: 13px;
-      color: #666;
+      color: var(--prev-color-text-primary);
 
       &:nth-child(3n + 3) {
         margin: 16px 0 0;

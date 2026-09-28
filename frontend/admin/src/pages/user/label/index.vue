@@ -280,8 +280,6 @@ function bindMenuItem(name, index) {
   display: none;
 }
 .left-wrapper {
-  background: #fff;
-  border-right: 1px solid #f2f2f2;
   .tree {
     // height: 100%;
     height: calc(-220px + 100vh);

@@ -217,7 +217,7 @@ getConfig();
   width: 500px;
 }
 .form-tip {
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
   line-height: 1.5;
   margin-top: 5px;

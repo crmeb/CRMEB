@@ -607,17 +607,17 @@ onBeforeUnmount(() => {
 
 // 选项卡头部
 :deep(.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container) {
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
 }
 .demo-drawer-footer {
   width: 100%;
   position: absolute;
   bottom: 0;
   left: 0;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid var(--prev-border-color-lighter);
   padding: 10px 16px;
   text-align: right;
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 .file {
   position: relative;

@@ -597,7 +597,6 @@ function recovery(row) {
 }
 .left-wrapper {
   padding: 20px 0 0 20px;
-  background: #fff;
   border-right: unset;
 }
 .tree_tit {

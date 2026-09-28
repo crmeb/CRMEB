@@ -358,7 +358,7 @@ defineExpose({ timerInfo });
     width: 28px;
     height: 100%;
     font-size: 12px;
-    color: #333333;
+    color: var(--prev-color-text-regular);
     pointer-events: none;
   }
 }
@@ -379,7 +379,7 @@ defineExpose({ timerInfo });
   right: 0;
   z-index: 1;
   padding: 10px 20px;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   border-top: 1px solid #e8e8e8;
   display: flex;
   justify-content: center;

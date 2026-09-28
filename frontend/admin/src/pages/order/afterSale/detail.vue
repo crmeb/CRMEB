@@ -925,13 +925,13 @@ onMounted(() => {
       .title {
         font-size: 16px;
         font-weight: 500;
-        color: rgba(0, 0, 0, 0.85);
+        color: var(--prev-color-text-regular);
         margin-bottom: 6px;
       }
 
       .sub {
         font-size: 13px;
-        color: #606266;
+        color: var(--prev-color-text-primary);
       }
     }
   }
@@ -971,7 +971,7 @@ onMounted(() => {
   margin: 24px 0 12px;
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   padding-left: 10px;
   border-left: 3px solid var(--prev-color-primary, #409eff);
 }
@@ -986,7 +986,7 @@ onMounted(() => {
   width: 80px;
   height: 80px;
   border-radius: 4px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--prev-border-color-lighter);
 }
 
 .product-img {
@@ -1009,7 +1009,7 @@ onMounted(() => {
   background: #f5f7fa;
   border-radius: 4px;
   font-size: 13px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -1026,7 +1026,7 @@ onMounted(() => {
 
     .action-tip {
       font-size: 14px;
-      color: #606266;
+      color: var(--prev-color-text-primary);
 
       i {
         margin-right: 6px;

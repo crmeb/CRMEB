@@ -134,7 +134,7 @@ onMounted(() => {
       padding-top: 20px;
       font-size: 15px;
       font-weight: 500;
-      color: #303133;
+      color: var(--prev-color-text-regular);
       line-height: 15px;
     }
 
@@ -148,12 +148,12 @@ onMounted(() => {
         .item {
           flex: 1;
           margin-bottom: 15px;
-          color: #606266;
+          color: var(--prev-color-text-primary);
           font-size: 13px;
           span {
             font-size: 13px;
             font-weight: 400;
-            color: #909399;
+            color: var(--prev-color-text-secondary);
           }
         }
       }

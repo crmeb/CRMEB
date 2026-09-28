@@ -37,12 +37,12 @@ defineProps({
       .tl-title {
         font-size: 13px;
         font-weight: 500;
-        color: #303133;
+        color: var(--prev-color-text-regular);
       }
       .tl-desc {
         margin-left: 8px;
         font-size: 12px;
-        color: #909399;
+        color: var(--prev-color-text-secondary);
       }
     }
   }

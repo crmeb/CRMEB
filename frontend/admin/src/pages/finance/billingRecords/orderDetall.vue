@@ -133,7 +133,7 @@ function getOrderInfo() {
     .box-title {
       padding-top: 20px;
       font-size: 16px;
-      color: #333;
+      color: var(--prev-color-text-regular);
     }
 
     .msg-wrapper {
@@ -146,12 +146,12 @@ function getOrderInfo() {
         .item {
           flex: 1;
           margin-bottom: 15px;
-          color: #606266;
+          color: var(--prev-color-text-primary);
           font-size: 13px;
           span {
             font-size: 13px;
             font-weight: 400;
-            color: #909399;
+            color: var(--prev-color-text-secondary);
           }
         }
       }

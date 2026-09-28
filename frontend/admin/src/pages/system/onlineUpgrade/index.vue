@@ -609,7 +609,7 @@ onUnmounted(() => {
 
 .upgrade .header {
   font-size: 12px;
-  color: #000;
+  color: var(--prev-color-text-regular);
   // border-bottom:1px dotted rgba(221,221,221,1);
   // padding-bottom: 25px;
 }
@@ -682,7 +682,7 @@ onUnmounted(() => {
   line-height: 20px !important;
   border: 0 !important;
   font-size: 16px !important;
-  color: #333333;
+  color: var(--prev-color-text-regular);
   font-weight: 600;
   // background: #eee;
 }
@@ -826,7 +826,7 @@ onUnmounted(() => {
 
   .success {
     font-size: 20px;
-    color: #333333;
+    color: var(--prev-color-text-regular);
     margin-top: 10px;
   }
 }
@@ -935,7 +935,7 @@ onUnmounted(() => {
 .describe h2 {
   font-size: 22px;
   font-weight: 400;
-  color: #333333;
+  color: var(--prev-color-text-regular);
   margin-bottom: 12px;
 }
 

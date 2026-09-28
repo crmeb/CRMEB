@@ -559,8 +559,6 @@ onMounted(() => {
 }
 .left-wrapper {
   height: 904px;
-  background: #fff;
-  border-right: 1px solid #f2f2f2;
 }
 .menu-item {
   position: relative;
@@ -619,7 +617,7 @@ onMounted(() => {
   border: 1px solid #dcdee2 !important;
 }
 .headers {
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   margin-bottom: 20px;
 }
 :deep(.ivu-modal-mask) {

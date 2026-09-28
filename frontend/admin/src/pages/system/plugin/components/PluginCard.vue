@@ -149,8 +149,8 @@ function compareVersion(a, b) {
   display: flex;
   flex-direction: column;
   padding: 14px 16px;
-  background: #fff;
-  border: 1px solid #e7e7eb;
+  background: var(--prev-bg-white);
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 6px;
   transition: box-shadow 0.2s;
 }
@@ -167,7 +167,7 @@ function compareVersion(a, b) {
   min-width: 0;
   font-weight: 600;
   font-size: 15px;
-  color: #17233d;
+  color: var(--prev-color-text-regular);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -180,8 +180,8 @@ function compareVersion(a, b) {
   max-width: 100%;
   font-family: Menlo, Consolas, monospace;
   font-size: 12px;
-  color: #666;
-  background: #f5f7f9;
+  color: var(--prev-color-text-primary);
+  background: var(--prev-bg-color);
   padding: 2px 6px;
   border-radius: 3px;
   overflow: hidden;
@@ -191,7 +191,7 @@ function compareVersion(a, b) {
 .plugin-card__desc {
   margin-top: 8px;
   min-height: 40px;
-  color: #808695;
+  color: var(--prev-color-text-secondary);
   font-size: 13px;
   line-height: 20px;
   display: -webkit-box;
@@ -208,7 +208,7 @@ function compareVersion(a, b) {
 .plugin-card__footer {
   margin-top: auto;
   padding-top: 10px;
-  border-top: 1px solid #f2f3f5;
+  border-top: 1px solid var(--prev-border-color-lighter);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -216,7 +216,7 @@ function compareVersion(a, b) {
 .plugin-card__version {
   flex: 1;
   min-width: 0;
-  color: #999;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;

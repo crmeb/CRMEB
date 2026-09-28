@@ -94,7 +94,7 @@ function clearlog() {
   margin-top: 150px;
 }
 .clear_box {
-  border: 1px solid #dadfe6;
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 3px;
   display: flex;
   flex-direction: column;
@@ -105,12 +105,12 @@ function clearlog() {
   box-sizing: border-box;
   .clear_box_sp1 {
     font-size: 16px;
-    color: #000000;
+    color: var(--prev-color-text-regular);
     display: block;
   }
   .clear_box_sp2 {
     font-size: 14px;
-    color: #808695;
+    color: var(--prev-color-text-secondary);
     display block {
       margin: 12px 0;
     }

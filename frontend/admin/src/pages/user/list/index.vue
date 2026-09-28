@@ -1211,7 +1211,7 @@ function setChecked() {
   position: fixed;
   bottom: 0;
   width: -webkit-fill-available;
-  background: #fff;
+  background: var(--prev-bg-white);
   padding: 20px 0px;
   box-sizing: border-box;
   z-index: 100;
@@ -1297,10 +1297,10 @@ img {
   position: absolute;
   bottom: 0;
   left: 0;
-  border-top: 1px solid #e8e8e8;
+  border-top: 1px solid var(--prev-border-color-lighter);
   padding: 10px 16px;
   text-align: right;
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 
 .search-form {

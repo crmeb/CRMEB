@@ -165,14 +165,14 @@ onMounted(() => {
       min-width: 0;
       padding-left: 12px;
       font-size: 13px;
-      color: #606266;
+      color: var(--prev-color-text-primary);
 
       .title {
         margin-bottom: 10px;
         font-weight: 500;
         font-size: 16px;
         line-height: 16px;
-        color: rgba(0, 0, 0, 0.85);
+        color: var(--prev-color-text-regular);
       }
     }
   }
@@ -189,7 +189,7 @@ onMounted(() => {
       width: 200px;
       font-size: 14px;
       line-height: 14px;
-      color: rgba(0, 0, 0, 0.85);
+      color: var(--prev-color-text-regular);
 
       .title {
         margin-bottom: 12px;
@@ -206,12 +206,9 @@ onMounted(() => {
   }
 }
 
-:deep(.el-drawer__body) {
-  padding: 20px 0;
-}
-
 :deep(.el-tabs--border-card > .el-tabs__content) {
-  padding: 0 35px;
+  /* 独立路由详情页：与 .head 的 30px 左右缩进对齐 */
+  padding: 0 30px;
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header),
@@ -225,7 +222,7 @@ onMounted(() => {
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 16px;
 }
 
@@ -241,7 +238,7 @@ onMounted(() => {
   width: 92px !important;
   font-size: 13px;
   font-weight: 400;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 16px;
 }
 

@@ -300,7 +300,7 @@ function buildAddress(addr) {
     border-left: 3px solid var(--prev-color-primary);
     font-size: 15px;
     line-height: 15px;
-    color: #303133;
+    color: var(--prev-color-text-regular);
   }
 
   .list {
@@ -358,7 +358,7 @@ function buildAddress(addr) {
 
 .goods-table {
   margin-top: 16px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 4px;
 
   .goods-header,
@@ -371,14 +371,14 @@ function buildAddress(addr) {
   }
 
   .goods-header {
-    background: #fafafa;
-    color: #909399;
+    background: var(--prev-bg-color);
+    color: var(--prev-color-text-secondary);
     font-weight: 500;
-    border-bottom: 1px solid #ebeef5;
+    border-bottom: 1px solid var(--prev-border-color-lighter);
   }
 
   .goods-row + .goods-row {
-    border-top: 1px solid #ebeef5;
+    border-top: 1px solid var(--prev-border-color-lighter);
   }
 
   .col-goods {
@@ -399,7 +399,7 @@ function buildAddress(addr) {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      color: #303133;
+      color: var(--prev-color-text-regular);
     }
   }
 
@@ -412,7 +412,7 @@ function buildAddress(addr) {
   }
 
   .col-subtotal {
-    color: #303133;
+    color: var(--prev-color-text-regular);
     font-weight: 500;
   }
 }

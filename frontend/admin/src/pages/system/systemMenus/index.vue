@@ -555,7 +555,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .vxeTable {
   > .vxe-table--header-wrapper {
-    background: #fff !important;
+    background: var(--prev-bg-white) !important;
   }
   .icon {
     font-size: 20px;
@@ -600,7 +600,7 @@ onMounted(() => {
   margin: 5px;
   border-radius: 3px;
   padding: 10px;
-  color: #333;
+  color: var(--prev-color-text-regular);
   cursor: pointer;
   transition: all 0.1s;
 }

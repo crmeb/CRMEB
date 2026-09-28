@@ -374,7 +374,7 @@ defineExpose({ modals, getDetails });
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 16px;
 }
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
@@ -388,7 +388,7 @@ defineExpose({ modals, getDetails });
   width: 92px !important;
   font-size: 13px;
   font-weight: 400;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 16px;
 }
 :deep(.el-tabs--border-card) {
@@ -423,14 +423,14 @@ defineExpose({ modals, getDetails });
 
       &-title {
         font-size: 13px;
-        color: #000000;
+        color: var(--prev-color-text-regular);
         margin-bottom: 12px;
       }
 
       &-desc {
         &-sp {
           width: 33.33%;
-          color: #17233d;
+          color: var(--prev-color-text-regular);
           font-size: 13px;
           display: inline-block;
         }
@@ -449,7 +449,7 @@ defineExpose({ modals, getDetails });
           }
 
           span:last-child {
-            color: #808695;
+            color: var(--prev-color-text-secondary);
           }
         }
 

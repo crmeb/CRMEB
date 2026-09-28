@@ -327,7 +327,7 @@ function handleImportSuccess() {
     cursor: pointer;
   }
   .page-header {
-    background: #fff;
+    background: var(--prev-bg-white);
     padding: 20px;
     border-radius: 4px;
     margin-bottom: 20px;
@@ -336,12 +336,12 @@ function handleImportSuccess() {
     .header-title {
       font-size: 18px;
       font-weight: bold;
-      color: #333;
+      color: var(--prev-color-text-regular);
     }
   }
 
   .content-area {
-    background: #fff;
+    background: var(--prev-bg-white);
     padding: 20px;
     border-radius: 4px;
     min-height: calc(100vh - 140px);
@@ -368,10 +368,10 @@ function handleImportSuccess() {
       .theme-card {
         width: 208px;
         height: 360px;
-        border: 1px solid #eee;
+        border: 1px solid var(--prev-border-color-lighter);
         border-radius: 8px;
         overflow: hidden;
-        background: #fff;
+        background: var(--prev-bg-white);
         display: flex;
         flex-direction: column;
         transition: all 0.3s;
@@ -551,7 +551,7 @@ function handleImportSuccess() {
           }
         }
         .card-info {
-          border-top: 1px solid #eee;
+          border-top: 1px solid var(--prev-border-color-lighter);
 
           .info-top {
             display: flex;
@@ -560,8 +560,8 @@ function handleImportSuccess() {
             padding: 12px 0 0 12px;
 
             .tag {
-              background: #f7f7f7;
-              color: #333;
+              background: var(--prev-bg-color);
+              color: var(--prev-color-text-regular);
               font-size: 12px;
               padding: 2px 6px;
               height: max-content;
@@ -569,13 +569,13 @@ function handleImportSuccess() {
             }
 
             .status {
-              color: #1890ff;
+              color: var(--prev-color-primary);
               font-size: 12px;
             }
             .using-tag {
-              color: rgba(2, 86, 255, 1);
+              color: var(--prev-color-primary);
               font-size: 12px;
-              background: rgba(2, 86, 255, 0.06);
+              background: var(--prev-color-primary-light-9);
               padding: 4px 10px;
               border-radius: 10px 0 0 10px;
               z-index: 5;
@@ -586,7 +586,7 @@ function handleImportSuccess() {
             padding: 12px;
 
             font-size: 14px;
-            color: #333;
+            color: var(--prev-color-text-regular);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

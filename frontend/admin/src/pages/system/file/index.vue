@@ -34,7 +34,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   padding-top: 15px;
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 :deep(.el-card__body) {
   min-height: 700px;

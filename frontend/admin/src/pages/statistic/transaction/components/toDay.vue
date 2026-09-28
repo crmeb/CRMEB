@@ -468,7 +468,7 @@ function getOrderUser() {}
 }
 
 .br {
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid var(--prev-border-color-lighter);
 }
 
 .toDay {
@@ -485,14 +485,14 @@ function getOrderUser() {}
 
   &-time {
     font-size: 12px;
-    color: #8c8c8c;
+    color: var(--prev-color-text-secondary);
     margin-bottom: 5px;
   }
 }
 
 .title {
   font-size: 16px;
-  color: #000000;
+  color: var(--prev-color-text-regular);
   font-weight: 500;
 }
 
@@ -500,7 +500,7 @@ function getOrderUser() {}
   i {
     font-style: normal;
     font-size: 21px;
-    color: #000;
+    color: var(--prev-color-text-regular);
   }
 }
 </style>

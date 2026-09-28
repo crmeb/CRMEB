@@ -121,7 +121,7 @@ const grid = {
     margin-top: 8px;
     font-size: 14px;
     font-weight: 400;
-    color: #333333;
+    color: var(--prev-color-text-regular);
     line-height: 22px;
     white-space: nowrap;
   }

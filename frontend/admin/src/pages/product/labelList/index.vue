@@ -497,8 +497,6 @@ function bindMenuItem(name, index) {
 
 .left-wrapper {
   height: 920px;
-  background: #fff;
-  border-right: 1px solid #f2f2f2;
 }
 .w-420 {
   width: 420px;

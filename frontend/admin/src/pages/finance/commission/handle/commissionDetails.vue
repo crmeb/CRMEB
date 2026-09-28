@@ -196,7 +196,7 @@ defineExpose({ modals, getDetails, getList });
       &-desc {
         &-sp {
           width: 33.33%;
-          color: #17233d;
+          color: var(--prev-color-text-regular);
           font-size: 12px;
           display: inline-block;
           padding-bottom: 10px;

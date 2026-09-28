@@ -118,7 +118,7 @@ function handleSubmit() {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 1px solid #f2f2f2;
+    border: 1px solid var(--prev-border-color-lighter);
   }
 }
 </style>

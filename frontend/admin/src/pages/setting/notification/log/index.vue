@@ -321,7 +321,7 @@ getStatistics();
   .stat-value {
     font-size: 28px;
     font-weight: bold;
-    color: #303133;
+    color: var(--prev-color-text-regular);
   }
   &.success .stat-value {
     color: #67c23a;
@@ -334,7 +334,7 @@ getStatistics();
   }
   .stat-label {
     font-size: 14px;
-    color: #909399;
+    color: var(--prev-color-text-secondary);
     margin-top: 5px;
   }
 }

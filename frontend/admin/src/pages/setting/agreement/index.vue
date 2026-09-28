@@ -198,7 +198,7 @@ fetchList();
   line-height: 54px !important;
 }
 .agreemant {
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
 }
 .content {
   padding: 10px 16px;
@@ -211,6 +211,14 @@ fetchList();
   padding: 40px 20px;
   padding-top: 50px;
   margin: 0 auto 0 20px;
+
+  /* 深色模式：白色手机壳图改为深色面板，与富文本编辑区同观感 */
+  html[data-theme='dark'] & {
+    background: var(--prev-bg-white);
+    border: 1px solid var(--prev-border-color-light);
+    border-radius: 24px;
+  }
+
   .content {
     height: 560px;
     overflow: hidden;

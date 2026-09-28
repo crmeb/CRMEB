@@ -583,7 +583,7 @@ if (!id.value) {
 }
 
 .demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content > .ivu-tabs-tabpane {
-  background: #fff;
+  background: var(--prev-bg-white);
   padding: 16px;
 }
 
@@ -597,7 +597,7 @@ if (!id.value) {
 
 .tabs {
   padding: 0 30px;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
 }
 
 .trip {

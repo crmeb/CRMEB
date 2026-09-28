@@ -230,7 +230,7 @@ function getAgreementData() {
   width: 100%;
   margin: 0 auto;
   text-align: center;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   bottom: 0;
   padding: 16px;
   border-top: 3px solid #f5f7f9;
@@ -245,7 +245,7 @@ function getAgreementData() {
   .goodsTitle .title {
     border-bottom: 2px solid var(--prev-color-primary);
     padding: 0 8px 12px 5px;
-    color: #000;
+    color: var(--prev-color-text-regular);
     font-size: 14px;
   }
   .goodsTitle .icons {
@@ -420,7 +420,7 @@ function getAgreementData() {
   display: flex;
   flex-wrap: nowrap;
   padding: 20px;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
   border-radius: 5px;
   margin: 20px;
 }

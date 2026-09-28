@@ -345,7 +345,7 @@ onMounted(() => {
 .box {
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 :deep(.el-card__body) {
   min-height: 700px;
@@ -358,11 +358,11 @@ onMounted(() => {
   position: absolute;
   white-space: nowrap;
   z-index: 9;
-  background: #eee;
+  background: var(--prev-bg-color);
   height: 20px;
   line-height: 20px;
-  color: #555;
-  border: 1px solid #ebebeb;
+  color: var(--prev-color-text-primary);
+  border: 1px solid var(--prev-border-color-light);
   padding: 0 5px;
   left: 56px;
   bottom: -18px;
@@ -379,12 +379,12 @@ onMounted(() => {
 }
 .Nav {
   width: 100%;
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--prev-border-color-lighter);
   min-width: 220px;
   max-width: max-content;
 }
 :deep(.tree .is-current) {
-  background-color: #fff !important;
+  background-color: var(--prev-bg-white) !important;
 }
 .trees-coadd {
   width: 100%;
@@ -431,11 +431,11 @@ onMounted(() => {
         padding-right: 20px;
         font-size: 13px;
         font-weight: 400;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--prev-color-text-primary);
         line-height: 13px;
       }
       :deep(.is-current) {
-        background: #f1f9ff !important;
+        background: var(--prev-color-primary-light-9) !important;
         color: var(--prev-color-primary) !important;
       }
       :deep(.is-current .custom-tree-node) {
@@ -471,7 +471,7 @@ onMounted(() => {
 .Modal {
   width: 100%;
   height: 100%;
-  background: #fff !important;
+  background: var(--prev-bg-white) !important;
 }
 .fill-window {
   height: 100vh;
@@ -519,7 +519,7 @@ onMounted(() => {
 }
 
 .card-tree {
-  background: #fff;
+  background: var(--prev-bg-white);
   height: 72px;
   box-sizing: border-box;
   overflow-x: scroll; /* 设置溢出滚动 */
