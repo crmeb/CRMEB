@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <div class="acea-row row-between-wrapper mb20">
+      <div class="acea-row row-between-wrapper">
         <el-row>
           <el-col v-bind="grid">
             <div class="button acea-row row-middle">
@@ -12,6 +12,7 @@
         </el-row>
       </div>
       <el-table
+        class="mt14"
         row-key="id"
         :load="handleLoadData"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
