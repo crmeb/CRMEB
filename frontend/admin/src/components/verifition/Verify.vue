@@ -197,8 +197,8 @@ defineExpose({ clickShow, closeBox, show, refresh });
   position: relative;
   box-sizing: border-box;
   border-radius: 2px;
-  border: 1px solid #e4e7eb;
-  background-color: #fff;
+  border: 1px solid var(--prev-border-color-light);
+  background-color: var(--prev-bg-white);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   left: 50%;
   top: 50%;
@@ -210,8 +210,8 @@ defineExpose({ clickShow, closeBox, show, refresh });
   line-height: 50px;
   text-align: left;
   font-size: 16px;
-  color: #45494c;
-  border-bottom: 1px solid #e4e7eb;
+  color: var(--prev-color-text-regular);
+  border-bottom: 1px solid var(--prev-border-color-light);
   box-sizing: border-box;
 }
 .verifybox-bottom {
@@ -316,12 +316,12 @@ defineExpose({ clickShow, closeBox, show, refresh });
 /*滑动验证码*/
 .verify-bar-area {
   position: relative;
-  background: #ffffff;
+  background: var(--prev-bg-white);
   text-align: center;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
-  border: 1px solid #ddd;
+  border: 1px solid var(--prev-border-color-base);
   -webkit-border-radius: 4px;
 }
 
@@ -329,7 +329,7 @@ defineExpose({ clickShow, closeBox, show, refresh });
   position: absolute;
   top: 0px;
   left: 0;
-  background: #fff;
+  background: var(--prev-bg-white);
   cursor: pointer;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;

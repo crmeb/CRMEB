@@ -115,8 +115,8 @@ function close(label) {
     align-items: center;
     padding: 0px 8px;
 
-    background: #eeeeee;
-    color: #333333;
+    background: var(--prev-bg-color);
+    color: var(--prev-color-text-regular);
     border-radius: 2px;
     cursor: pointer;
     font-size: 12px;
@@ -126,7 +126,7 @@ function close(label) {
     top: 0;
     right: 0;
     font-size: 14px;
-    color: #333333;
+    color: var(--prev-color-text-regular);
     cursor: pointer;
   }
 

@@ -133,7 +133,7 @@ defineExpose({ modals, getList });
 <style lang="scss" scoped>
 .sp {
   font-size: 12px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
   line-height: 32px;
 }
 </style>

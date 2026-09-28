@@ -56,7 +56,7 @@ function iconChange(n) {
   font-size: 24px;
 }
 .iconBox {
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 .icons-item {
   float: left;

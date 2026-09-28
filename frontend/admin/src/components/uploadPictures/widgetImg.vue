@@ -65,6 +65,6 @@ function getPic(pc) {
 <style lang="scss" scoped>
 .box {
   width: 100%;
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 </style>

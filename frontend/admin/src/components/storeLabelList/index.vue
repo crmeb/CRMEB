@@ -123,8 +123,8 @@ defineExpose({ storeLabel });
     }
     .label-item {
       padding: 3px 8px;
-      background: #eeeeee;
-      color: #333333;
+      background: var(--prev-bg-color);
+      color: var(--prev-color-text-regular);
       border-radius: 2px;
       cursor: pointer;
       font-size: 12px;

@@ -75,7 +75,7 @@ function stepActive(index) {
     .title {
       font-size: 16px;
       font-weight: 400;
-      color: #909399;
+      color: var(--prev-color-text-secondary);
       line-height: 16px;
       white-space: nowrap;
     }
@@ -98,7 +98,7 @@ function stepActive(index) {
     .title {
       font-size: 16px;
       font-weight: 500;
-      color: #303133;
+      color: var(--prev-color-text-regular);
       line-height: 16px;
     }
     .dot {

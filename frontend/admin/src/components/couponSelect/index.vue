@@ -231,7 +231,7 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .coupon-select {
   padding: 15px 15px 0;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
 }
 .footer {
   padding: 15px 0;

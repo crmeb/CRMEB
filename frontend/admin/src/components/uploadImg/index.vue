@@ -567,7 +567,7 @@ defineExpose({ uploadModal });
       margin-bottom: 14px;
     }
     .trip {
-      color: #333333;
+      color: var(--prev-color-text-regular);
       text-align: center;
       line-height: 18px;
     }

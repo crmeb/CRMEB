@@ -404,7 +404,7 @@ function getData() {
   height: 24px !important;
   background: #ff5d5f !important;
   color: #fff !important;
-  border: 1px solid #eee !important;
+  border: 1px solid var(--prev-border-color-lighter) !important;
 }
 .news_pic :deep(.el-button--error:hover) {
   background: #ff5d5f !important;
@@ -414,6 +414,6 @@ function getData() {
 .news_pic :deep(.el-button--success) {
   width: 24px !important;
   height: 24px !important;
-  border: 1px solid #eee !important;
+  border: 1px solid var(--prev-border-color-lighter) !important;
 }
 </style>

@@ -100,7 +100,7 @@ defineExpose({ verifySpreadInfo });
   border-radius: 50%;
 }
 .Modals .header .name {
-  color: #333;
+  color: var(--prev-color-text-regular);
   margin-left: 15px;
 }
 .Modals .list .item .name.money {

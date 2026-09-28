@@ -1006,7 +1006,7 @@ function bindTxt(item) {
 }
 .Nav {
   width: 100%;
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--prev-border-color-lighter);
   min-width: 220px;
   max-width: max-content;
 }
@@ -1055,7 +1055,7 @@ function bindTxt(item) {
         padding-right: 20px;
         font-size: 13px;
         font-weight: 400;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--prev-color-text-secondary);
         line-height: 13px;
       }
       :deep(.is-current) {
@@ -1095,7 +1095,7 @@ function bindTxt(item) {
 .Modal {
   width: 100%;
   height: 100%;
-  background: #fff !important;
+  background: var(--prev-bg-white) !important;
 }
 .fill-window {
   height: 100vh;
@@ -1172,7 +1172,7 @@ function bindTxt(item) {
 }
 
 .card-tree {
-  background: #fff;
+  background: var(--prev-bg-white);
   height: 72px;
   box-sizing: border-box;
   overflow-x: scroll; /* 设置溢出滚动 */
@@ -1187,7 +1187,7 @@ function bindTxt(item) {
   display: none; /* Chrome Safari */
 }
 .tabs {
-  background: #fff;
+  background: var(--prev-bg-white);
   padding-top: 10px;
   border-radius: 5px 5px 0 0;
 }

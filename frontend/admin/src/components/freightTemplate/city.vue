@@ -248,8 +248,8 @@ defineExpose({ getCityList, addressModal });
 .modal .item .city .checkBox {
   width: 97%;
   padding: 10px;
-  border: 1px solid #eee;
-  background-color: #fff;
+  border: 1px solid var(--prev-border-color-lighter);
+  background-color: var(--prev-bg-white);
   max-height: 100px;
   overflow-x: hidden;
   overflow-y: auto;

@@ -926,7 +926,7 @@ defineExpose({ modals, handleCheckChange });
   .left_box {
     width: 171px;
     height: 470px;
-    border-right: 1px solid #eeeeee;
+    border-right: 1px solid var(--prev-border-color-lighter);
     overflow-x: hidden;
     overflow-y: auto;
 
@@ -958,7 +958,7 @@ defineExpose({ modals, handleCheckChange });
 
       .cont_box {
         font-weight: 400;
-        color: rgba(0, 0, 0, 0.85);
+        color: var(--prev-color-text-regular);
         background: #fafafa;
         border-radius: 3px;
         text-align: center;
@@ -969,7 +969,7 @@ defineExpose({ modals, handleCheckChange });
 
         &:hover {
           background-color: var(--prev-bg-menu-hover-ba-color);
-          color: #333;
+          color: var(--prev-color-text-regular);
         }
       }
 
@@ -992,7 +992,7 @@ defineExpose({ modals, handleCheckChange });
         right: 9px;
         top: -8px;
         font-size: 18px;
-        color: #333;
+        color: var(--prev-color-text-regular);
       }
     }
   }
@@ -1011,7 +1011,7 @@ defineExpose({ modals, handleCheckChange });
     .cancel {
       width: 70px;
       height: 32px;
-      background: #ffffff;
+      background: var(--prev-bg-white);
       border: 1px solid rgba(0, 0, 0, 0.14901960784313725);
       border-radius: 2px;
       font-size: 14px;

@@ -301,14 +301,31 @@ function insertAiContent(html) {
 }
 :deep(.w-e-toolbar) {
   z-index: 2 !important;
+  background-color: var(--prev-bg-white) !important;
+  border-bottom: 1px solid var(--prev-border-color-light) !important;
 }
+/* wangEditor 跟随主题：变量挂在公共父级——工具栏与编辑区是兄弟节点，挂在工具栏上编辑区取不到 */
 .wang-editor {
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--prev-border-color-base);
   border-radius: 4px;
   overflow: hidden;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
+  /* 工具栏 */
+  --w-e-toolbar-bg-color: var(--prev-bg-white);
+  --w-e-toolbar-color: var(--prev-color-text-regular);
+  --w-e-toolbar-active-bg-color: var(--prev-bg-color);
+  --w-e-toolbar-active-color: var(--prev-color-primary);
+  --w-e-toolbar-disabled-color: var(--prev-color-text-placeholder);
+  --w-e-toolbar-border-color: var(--prev-border-color-light);
+  /* 编辑区（2026-09-28 用户裁定：不用"白纸语义"，深浅模式保持一致观感） */
+  --w-e-textarea-bg-color: var(--prev-bg-white);
+  --w-e-textarea-color: var(--prev-color-text-regular);
+  --w-e-textarea-border-color: var(--prev-border-color-light);
+  --w-e-textarea-slight-color: var(--prev-color-text-secondary);
+  --w-e-textarea-slight-border-color: var(--prev-border-color-lighter);
+  --w-e-textarea-selected-border-color: var(--prev-color-primary);
 }
 .editor-toolbar {
-  border-bottom: 1px solid #dcdfe6;
+  border-bottom: 1px solid var(--prev-border-color-light);
 }
 </style>

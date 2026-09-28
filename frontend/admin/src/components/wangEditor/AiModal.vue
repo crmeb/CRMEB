@@ -335,10 +335,10 @@ defineExpose({ open });
     color: var(--prev-color-primary);
   }
   .ai-status-error {
-    color: #f56c6c;
+    color: var(--prev-color-danger);
   }
   .ai-status-tip {
-    color: #999;
+    color: var(--prev-color-text-secondary);
   }
 }
 .ai-prompt-head {
@@ -348,7 +348,7 @@ defineExpose({ open });
   margin-top: 12px;
   .ai-prompt-label {
     font-size: 12px;
-    color: #999;
+    color: var(--prev-color-text-secondary);
   }
   .ai-reset-btn {
     padding: 0;
@@ -361,9 +361,9 @@ defineExpose({ open });
   max-height: 400px;
   overflow-y: auto;
   padding: 12px 16px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--prev-border-color-base);
   border-radius: 4px;
-  background: #fafafa;
+  background: var(--prev-bg-color);
   font-size: 14px;
   line-height: 1.7;
   :deep() {
@@ -385,12 +385,12 @@ defineExpose({ open });
     blockquote {
       margin: 6px 0;
       padding: 4px 10px;
-      border-left: 3px solid #ccc;
-      color: #666;
+      border-left: 3px solid var(--prev-border-color-base);
+      color: var(--prev-color-text-primary);
     }
     hr {
       border: none;
-      border-top: 1px solid #ddd;
+      border-top: 1px solid var(--prev-border-color-light);
     }
   }
 }

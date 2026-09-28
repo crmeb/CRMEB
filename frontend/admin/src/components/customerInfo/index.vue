@@ -184,7 +184,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .customer {
   height: 100%;
-  background-color: #fff;
+  background-color: var(--prev-bg-white);
 }
 .tabBox_img {
   width: 36px;

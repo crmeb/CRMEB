@@ -816,7 +816,7 @@ function bindTxt(item) {
     justify-content: center;
     width: 100px;
     height: 100px;
-    background-color: rgb(248, 248, 248);
+    background-color: var(--prev-bg-white);
     padding: 2px;
     img {
       max-width: 96px;
@@ -839,7 +839,7 @@ function bindTxt(item) {
     justify-content: center;
     width: 146px;
     height: 146px;
-    background-color: rgb(248, 248, 248);
+    background-color: var(--prev-bg-white);
     padding: 3px;
     img {
       max-width: 140px;
@@ -854,7 +854,7 @@ function bindTxt(item) {
     white-space: nowrap;
     height: 20px;
     font-size: 12px;
-    color: #515a6d;
+    color: var(--prev-color-text-primary);
     text-align: center;
   }
 
@@ -874,7 +874,7 @@ function bindTxt(item) {
 }
 .Nav {
   width: 100%;
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--prev-border-color-lighter);
   min-width: 220px;
   max-width: max-content;
 }
@@ -923,7 +923,7 @@ function bindTxt(item) {
         padding-right: 20px;
         font-size: 13px;
         font-weight: 400;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--prev-color-text-secondary);
         line-height: 13px;
       }
       :deep(.is-current) {
@@ -963,7 +963,7 @@ function bindTxt(item) {
 .Modal {
   width: 100%;
   height: 100%;
-  background: #fff !important;
+  background: var(--prev-bg-white) !important;
 }
 .fill-window {
   height: 100vh;
@@ -1036,7 +1036,7 @@ function bindTxt(item) {
 }
 
 .card-tree {
-  background: #fff;
+  background: var(--prev-bg-white);
   height: 72px;
   box-sizing: border-box;
   overflow-x: scroll; /* 设置溢出滚动 */
@@ -1051,7 +1051,7 @@ function bindTxt(item) {
   display: none; /* Chrome Safari */
 }
 .tabs {
-  background: #fff;
+  background: var(--prev-bg-white);
   padding-top: 10px;
   border-radius: 5px 5px 0 0;
 }

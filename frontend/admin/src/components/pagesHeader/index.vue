@@ -56,7 +56,7 @@ function goBack() {
   display: inline-block;
   position: relative;
   margin-right: 16px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--prev-color-text-regular);
   cursor: pointer;
   align-self: center;
 }
@@ -67,7 +67,7 @@ function goBack() {
   right: -16px;
   width: 1px;
   height: 16px;
-  background: #eee;
+  background: var(--prev-border-color-lighter);
 }
 .font-sm {
   font-size: 14px;

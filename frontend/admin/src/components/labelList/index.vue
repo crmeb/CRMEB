@@ -103,8 +103,8 @@ setLabel();
     .label-item {
       margin: 10px 8px 10px 0;
       padding: 3px 8px;
-      background: #eeeeee;
-      color: #333333;
+      background: var(--prev-bg-color);
+      color: var(--prev-color-text-regular);
       border-radius: 2px;
       cursor: pointer;
       font-size: 12px;
