@@ -51,8 +51,9 @@ class OrderPaidListener
             return;
         }
 
-        // 加载中台订单（含商品快照），供履约与销量累加使用
+        // 加载中台订单（含商品快照），供履约与销量累加使用；get() 返回模型，统一转数组
         $center = $centerDao->get(['order_no' => $orderNo], ['uid', 'extra_info']);
+        $center = $center ? $center->toArray() : [];
 
         // 中台表已经标记为已支付时，避免重复写入 pay_time
         $isCenterPaid = (int)($meta['pay_status'] ?? 0) === 1;
@@ -80,7 +81,7 @@ class OrderPaidListener
             $handler->afterPay($orderNo, $cartInfoList);
 
             // 4. 累加商品销量（中台主表冗余字段；位于幂等闸与事务内，不会重复累计）
-            $this->incProductSales(is_array($center) ? $center : []);
+            $this->incProductSales($center);
         });
     }
 
