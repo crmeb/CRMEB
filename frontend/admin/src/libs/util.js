@@ -30,6 +30,18 @@ export const removeCookies = (key) => {
   return Cookies.remove(`${packageConfig.name}:${key}`);
 };
 
+/**
+ * 预览 iframe 地址协议自愈：https 页面下把 http 地址升级为 https，避免被 Mixed Content 拦截
+ * @param {String} url 预览地址（域名或完整地址）
+ * @returns {String}
+ */
+export const toHttpsUrl = (url) => {
+  if (typeof url === 'string' && location.protocol === 'https:' && /^http:\/\//i.test(url)) {
+    return url.replace(/^http:\/\//i, 'https://');
+  }
+  return url;
+};
+
 export const hasChild = (item) => {
   return item.children && item.children.length !== 0;
 };

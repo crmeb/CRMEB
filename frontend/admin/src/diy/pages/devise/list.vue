@@ -199,7 +199,7 @@ import {
 import QRCode from '@/vendor/qrcodejs2';
 import goodClass from './goodClass';
 import users from './users';
-import { getCookies, setCookies } from '@/libs/util';
+import { getCookies, setCookies, toHttpsUrl } from '@/libs/util';
 import { modalSure } from '@/utils/public';
 import { useMobildConfigStore } from '@diy/store/mobildConfig';
 
@@ -266,7 +266,7 @@ watch(
 // created
 cardShow.value = route.params.type;
 diyProList();
-iframeUrl.value = `${Setting.h5BaseURL || location.origin}/pages/index/index?mdType=iframeWindow`;
+iframeUrl.value = `${toHttpsUrl(Setting.h5BaseURL) || location.origin}/pages/index/index?mdType=iframeWindow`;
 getToken();
 
 onMounted(() => {
@@ -327,7 +327,7 @@ function cancel() {
 function refreshFrame() {
   iframeUrl.value = '';
   setTimeout((e) => {
-    iframeUrl.value = `${Setting.h5BaseURL || location.origin}/pages/index/index?mdType=iframeWindow`;
+    iframeUrl.value = `${toHttpsUrl(Setting.h5BaseURL) || location.origin}/pages/index/index?mdType=iframeWindow`;
   }, 200);
 }
 function getChildData(e) {

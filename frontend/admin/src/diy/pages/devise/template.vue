@@ -26,6 +26,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { diyGetInfo } from '@diy/api';
 import Setting from '@/setting';
+import { toHttpsUrl } from '@/libs/util';
 import rightConfig from '@diy/components/legacy/rightConfig/index';
 import links from './links';
 import { useMorenStore } from '@diy/store/legacy/moren';
@@ -59,7 +60,7 @@ function handleMessage(event) {
 {
   let pageIdQuery = route.query.id;
   pageId.value = parseInt(pageIdQuery);
-  iframeUrl.value = `${Setting.h5BaseURL || location.origin}/pages/index/index?mdType=iframeWindow`;
+  iframeUrl.value = `${toHttpsUrl(Setting.h5BaseURL) || location.origin}/pages/index/index?mdType=iframeWindow`;
   diyGetInfo(parseInt(pageIdQuery)).then((datas) => {
     let data = datas.data.info.value;
     upData(data);

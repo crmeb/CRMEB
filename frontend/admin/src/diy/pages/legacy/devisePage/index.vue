@@ -26,7 +26,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { diyGetInfo, diySave } from '@diy/api';
 import rightConfig from '@diy/components/legacy/rightConfig/index';
-import { getCookies, setCookies } from '@/libs/util';
+import { getCookies, setCookies, toHttpsUrl } from '@/libs/util';
 import { useMorenStore } from '@diy/store/legacy/moren';
 import Setting from '@/setting';
 
@@ -72,9 +72,9 @@ let show = true;
   pageId.value = parseInt(routePageId);
   let moveLink = getCookies('moveLink');
   if (Number(route.query.type) === 1) {
-    iframeUrl.value = `${moveLink}/pages/index/index?mdType=iframeWindow`;
+    iframeUrl.value = `${toHttpsUrl(moveLink)}/pages/index/index?mdType=iframeWindow`;
   } else {
-    iframeUrl.value = `${Setting.h5BaseURL || location.origin}/pages/index/index?mdType=iframeWindow`;
+    iframeUrl.value = `${toHttpsUrl(Setting.h5BaseURL) || location.origin}/pages/index/index?mdType=iframeWindow`;
   }
   diyGetInfo(parseInt(routePageId)).then((datas) => {
     let data = datas.data.info.value;
