@@ -61,7 +61,7 @@ class OrderPaidListener
         ]);
 
         // 3. 累加商品销量（中台主表冗余字段，前后端列表读取；位于幂等闸之后不会重复累计）
-        $this->incProductSales($centerOrder);
+        $this->incProductSales($centerOrder->toArray());
     }
 
     /**
