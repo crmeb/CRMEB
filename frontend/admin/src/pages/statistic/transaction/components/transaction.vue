@@ -109,7 +109,6 @@ const dataTime = ref('');
 const list = ref({});
 const optionData = ref({});
 const style = { height: '400px' };
-const getExcel = ref('');
 const spinShow = ref(false);
 
 // created
@@ -154,7 +153,6 @@ function getStatistics() {
         cardLists.series[i]['icon'] = incons[i];
       }
       list.value = cardLists.series;
-      getExcel.value = cardLists.export;
       get(cardLists);
       spinShow.value = false;
     })
@@ -249,8 +247,22 @@ function get(extract) {
     series: seriesData,
   };
 }
+// 导出：携带 export 参数请求后端生成 Excel，拿到地址后触发下载
 function excel() {
-  window.location.href = getExcel.value;
+  spinShow.value = true;
+  statisticBottomTradeApi({ data: dataTime.value, export: 1 })
+    .then((res) => {
+      spinShow.value = false;
+      if (res.data.export) {
+        window.location.href = res.data.export;
+      } else {
+        ElMessage.error('导出文件生成失败');
+      }
+    })
+    .catch((res) => {
+      ElMessage.error(res.msg);
+      spinShow.value = false;
+    });
 }
 </script>
 

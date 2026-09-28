@@ -246,8 +246,8 @@ class TradeStatisticServices extends BaseService
             $where['time'] = ['start_time' => date('Y-m-d 00:00:00', strtotime($time[0])), "end_time" => date('Y-m-d 23:59:59', strtotime($time[1]))];
         }
         unset($where['data']);
-        /** @var ExportServices $exportService */
-        $exportService = app()->make(ExportServices::class);
+        $isExport = !empty($where['export']);
+        unset($where['export']);
         $chainTime = $this->chainTime($where['time']);
         $isNum = false;
         if ($chainTime == "other") $isNum = true;
@@ -428,8 +428,13 @@ class TradeStatisticServices extends BaseService
             $data['series'][$k]['rate'] = $v['rate'];
             $data['series'][$k]['value'] = array_values($v['value']);
         }
-        $export = $exportService->tradeData($data, '交易统计', 2);
-        $data['export'] = $export[0];
+        // 仅导出请求时才生成 Excel 文件，普通查询不落盘
+        if ($isExport) {
+            /** @var ExportServices $exportService */
+            $exportService = app()->make(ExportServices::class);
+            $export = $exportService->tradeData($data, '交易统计', 2);
+            $data['export'] = $export[0];
+        }
         return $data;
     }
 

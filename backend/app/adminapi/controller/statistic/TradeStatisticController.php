@@ -72,6 +72,7 @@ class TradeStatisticController extends AuthController
     {
         $day = $this->request->getMore([
             ['data', ""],
+            ['export', 0],
         ]);
         $bottom = $this->services->getBottomTrade($day);
         return app('json')->success($bottom);
