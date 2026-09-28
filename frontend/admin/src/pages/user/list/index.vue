@@ -3,221 +3,167 @@
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form :model="userFrom" label-width="80px" label-position="right" @submit.prevent inline>
-          <div class="acea-row search-form" v-if="!collapse">
-            <div>
-              <el-form-item label="用户搜索：" label-for="nickname">
-                <el-input v-model="userFrom.nickname" placeholder="请输入用户" clearable class="form_content_width">
-                  <template #prepend
-                    ><el-select v-model="field_key" style="width: 100px">
-                      <el-option value="all" label="全部"></el-option>
-                      <el-option value="uid" label="UID"></el-option>
-                      <el-option value="phone" label="手机号"></el-option>
-                      <el-option value="nickname" label="用户昵称"></el-option> </el-select
-                  ></template>
-                </el-input>
-              </el-form-item>
-              <el-form-item label="用户等级：" label-for="level">
-                <el-select v-model="level" placeholder="请选择用户等级" clearable class="form_content_width">
-                  <el-option value="all" label="全部">全部</el-option>
-                  <el-option
-                    :value="item.id"
-                    v-for="(item, index) in levelList"
-                    :key="index"
-                    :label="item.name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="用户分组：">
-                <el-select v-model="group_id" placeholder="请选择用户分组" clearable class="form_content_width">
+          <el-form-item label="用户搜索：" label-for="nickname">
+            <el-input v-model="userFrom.nickname" placeholder="请输入用户" clearable class="form_content_width">
+              <template #prepend
+                ><el-select v-model="field_key" style="width: 100px">
                   <el-option value="all" label="全部"></el-option>
-                  <el-option
-                    :value="item.id"
-                    v-for="(item, index) in groupList"
-                    :key="index"
-                    :label="item.group_name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </div>
-            <el-form-item class="search-form-sub">
-              <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
-              <el-button class="ResetSearch" v-db-click @click="reset('userFrom')">重置</el-button>
-              <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
-                <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
-                <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
-              </a>
+                  <el-option value="uid" label="UID"></el-option>
+                  <el-option value="phone" label="手机号"></el-option>
+                  <el-option value="nickname" label="用户昵称"></el-option> </el-select
+              ></template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="用户等级：" label-for="level">
+            <el-select v-model="level" placeholder="请选择用户等级" clearable class="form_content_width">
+              <el-option value="all" label="全部">全部</el-option>
+              <el-option
+                :value="item.id"
+                v-for="(item, index) in levelList"
+                :key="index"
+                :label="item.name"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="用户分组：">
+            <el-select v-model="group_id" placeholder="请选择用户分组" clearable class="form_content_width">
+              <el-option value="all" label="全部"></el-option>
+              <el-option
+                :value="item.id"
+                v-for="(item, index) in groupList"
+                :key="index"
+                :label="item.group_name"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <template v-if="collapse">
+            <el-form-item v-if="distributionEnabled" label="分销等级：">
+              <el-select v-model="agent_level" placeholder="请选择分销等级" clearable class="form_content_width">
+                <el-option value="all" label="全部"></el-option>
+                <el-option
+                  :value="item.grade"
+                  v-for="(item, index) in membershipList"
+                  :key="index"
+                  :label="item.name"
+                ></el-option>
+              </el-select>
             </el-form-item>
-          </div>
-          <div v-if="collapse" class="acea-row search-form">
-            <div class="search-form-box">
-              <el-form-item label="用户搜索：" label-for="nickname">
-                <el-input v-model="userFrom.nickname" placeholder="请输入用户" clearable class="form_content_width">
-                  <template #prepend
-                    ><el-select v-model="field_key" style="width: 100px">
-                      <el-option value="all" label="全部"></el-option>
-                      <el-option value="uid" label="UID"></el-option>
-                      <el-option value="phone" label="手机号"></el-option>
-                      <el-option value="nickname" label="用户昵称"></el-option> </el-select
-                  ></template>
-                </el-input>
-              </el-form-item>
-              <el-form-item label="用户等级：" label-for="level">
-                <el-select v-model="level" placeholder="请选择用户等级" clearable class="form_content_width">
-                  <el-option value="all" label="全部">全部</el-option>
-                  <el-option
-                    :value="item.id"
-                    v-for="(item, index) in levelList"
-                    :key="index"
-                    :label="item.name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="用户分组：">
-                <el-select v-model="group_id" placeholder="请选择用户分组" clearable class="form_content_width">
-                  <el-option value="all" label="全部"></el-option>
-                  <el-option
-                    :value="item.id"
-                    v-for="(item, index) in groupList"
-                    :key="index"
-                    :label="item.group_name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item v-if="distributionEnabled" label="分销等级：">
-                <el-select v-model="agent_level" placeholder="请选择分销等级" clearable class="form_content_width">
-                  <el-option value="all" label="全部"></el-option>
-                  <el-option
-                    :value="item.grade"
-                    v-for="(item, index) in membershipList"
-                    :key="index"
-                    :label="item.name"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="用户标签：" label-for="label_id">
-                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
-                  <div style="width: 222px">
-                    <div v-if="selectDataLabel.length">
-                      <el-tag :closable="false" v-for="(item, index) in selectDataLabel" :key="index" class="mr10">{{
-                        item.label_name
-                      }}</el-tag>
-                    </div>
-                    <span class="span" v-else>选择用户关联标签</span>
+            <el-form-item label="用户标签：" label-for="label_id">
+              <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
+                <div style="width: 222px">
+                  <div v-if="selectDataLabel.length">
+                    <el-tag :closable="false" v-for="(item, index) in selectDataLabel" :key="index" class="mr10">{{
+                      item.label_name
+                    }}</el-tag>
                   </div>
-                  <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
+                  <span class="span" v-else>选择用户关联标签</span>
                 </div>
-              </el-form-item>
-              <el-form-item label="付费会员：" label-for="isMember">
-                <el-select v-model="userFrom.isMember" placeholder="请选择" clearable class="form_content_width">
-                  <el-option value="" label="全部"></el-option>
-                  <el-option value="1" label="是"></el-option>
-                  <el-option value="0" label="否"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="储值余额：" label-for="balance">
-                <el-input
-                  clearable
-                  placeholder="最小值"
-                  v-model="userFrom.balance[0]"
-                  class="form_range_content_width"
-                />
-                ~
-                <el-input
-                  clearable
-                  placeholder="最大值"
-                  v-model="userFrom.balance[1]"
-                  class="form_range_content_width"
-                />
-              </el-form-item>
-              <el-form-item label="积分剩余：" label-for="integral">
-                <el-input
-                  clearable
-                  placeholder="最小值"
-                  v-model="userFrom.integral[0]"
-                  class="form_range_content_width"
-                />
-                ~
-                <el-input
-                  clearable
-                  placeholder="最大值"
-                  v-model="userFrom.integral[1]"
-                  class="form_range_content_width"
-                />
-              </el-form-item>
-              <el-form-item label="上次消费：" label-for="before_pay_time">
-                <date-range-picker
-                  clearable
-                  v-model="before_pay_time"
-                  :editable="false"
-                  @change="(e) => onchangeTime(e, 'before_pay_time')"
-                  format="YYYY/MM/DD"
-                  value-format="YYYY/MM/DD"
-                ></date-range-picker>
-              </el-form-item>
-              <el-form-item label="下单次数：" label-for="pay_count">
-                <el-input
-                  clearable
-                  placeholder="最小值"
-                  v-model="userFrom.pay_count_num[0]"
-                  class="form_range_content_width"
-                />
-                ~
-                <el-input
-                  clearable
-                  placeholder="最大值"
-                  v-model="userFrom.pay_count_num[1]"
-                  class="form_range_content_width"
-                />
-              </el-form-item>
-              <el-form-item label="消费金额：" label-for="store_name">
-                <el-input
-                  clearable
-                  placeholder="最小值"
-                  v-model="userFrom.pay_count_money[0]"
-                  class="form_range_content_width"
-                />
-                ~
-                <el-input
-                  clearable
-                  placeholder="最大值"
-                  v-model="userFrom.pay_count_money[1]"
-                  class="form_range_content_width"
-                />
-              </el-form-item>
-              <el-form-item label="充值次数：" label-for="store_name">
-                <el-input
-                  clearable
-                  placeholder="最小值"
-                  v-model="userFrom.recharge_count[0]"
-                  class="form_range_content_width"
-                />
-                ~
-                <el-input
-                  clearable
-                  placeholder="最大值"
-                  v-model="userFrom.recharge_count[1]"
-                  class="form_range_content_width"
-                />
-              </el-form-item>
-              <el-form-item label="访问情况：" label-for="user_time_type">
-                <el-select v-model="user_time_type" placeholder="请选择访问情况" clearable class="form_content_width">
-                  <el-option value="" label="全部"></el-option>
-                  <el-option value="visitno" label="时间段未访问"></el-option>
-                  <el-option value="visit" label="时间段访问过"></el-option>
-                  <el-option value="add_time" label="首次访问"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="访问时间：" label-for="user_time" v-if="user_time_type">
-                <date-range-picker
-                  clearable
-                  v-model="timeVal"
-                  :editable="false"
-                  @change="(e) => onchangeTime(e, 'user_time')"
-                  format="YYYY/MM/DD"
-                  value-format="YYYY/MM/DD"
-                ></date-range-picker>
-              </el-form-item>
-              <!-- <el-form-item label="地区：" label-for="country">
+                <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
+              </div>
+            </el-form-item>
+            <el-form-item label="付费会员：" label-for="isMember">
+              <el-select v-model="userFrom.isMember" placeholder="请选择" clearable class="form_content_width">
+                <el-option value="" label="全部"></el-option>
+                <el-option value="1" label="是"></el-option>
+                <el-option value="0" label="否"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="储值余额：" label-for="balance">
+              <el-input clearable placeholder="最小值" v-model="userFrom.balance[0]" class="form_range_content_width" />
+              <span class="ml5 mr5">~</span>
+              <el-input clearable placeholder="最大值" v-model="userFrom.balance[1]" class="form_range_content_width" />
+            </el-form-item>
+            <el-form-item label="积分剩余：" label-for="integral">
+              <el-input
+                clearable
+                placeholder="最小值"
+                v-model="userFrom.integral[0]"
+                class="form_range_content_width"
+              />
+              <span class="ml5 mr5">~</span>
+              <el-input
+                clearable
+                placeholder="最大值"
+                v-model="userFrom.integral[1]"
+                class="form_range_content_width"
+              />
+            </el-form-item>
+            <el-form-item label="上次消费：" label-for="before_pay_time">
+              <date-range-picker
+                clearable
+                width="250px"
+                v-model="before_pay_time"
+                :editable="false"
+                @change="(e) => onchangeTime(e, 'before_pay_time')"
+                format="YYYY/MM/DD"
+                value-format="YYYY/MM/DD"
+              ></date-range-picker>
+            </el-form-item>
+            <el-form-item label="下单次数：" label-for="pay_count">
+              <el-input
+                clearable
+                placeholder="最小值"
+                v-model="userFrom.pay_count_num[0]"
+                class="form_range_content_width"
+              />
+              <span class="ml5 mr5">~</span>
+              <el-input
+                clearable
+                placeholder="最大值"
+                v-model="userFrom.pay_count_num[1]"
+                class="form_range_content_width"
+              />
+            </el-form-item>
+            <el-form-item label="消费金额：" label-for="store_name">
+              <el-input
+                clearable
+                placeholder="最小值"
+                v-model="userFrom.pay_count_money[0]"
+                class="form_range_content_width"
+              />
+              <span class="ml5 mr5">~</span>
+              <el-input
+                clearable
+                placeholder="最大值"
+                v-model="userFrom.pay_count_money[1]"
+                class="form_range_content_width"
+              />
+            </el-form-item>
+            <el-form-item label="充值次数：" label-for="store_name">
+              <el-input
+                clearable
+                placeholder="最小值"
+                v-model="userFrom.recharge_count[0]"
+                class="form_range_content_width"
+              />
+              <span class="ml5 mr5">~</span>
+              <el-input
+                clearable
+                placeholder="最大值"
+                v-model="userFrom.recharge_count[1]"
+                class="form_range_content_width"
+              />
+            </el-form-item>
+            <el-form-item label="访问情况：" label-for="user_time_type">
+              <el-select v-model="user_time_type" placeholder="请选择访问情况" clearable class="form_content_width">
+                <el-option value="" label="全部"></el-option>
+                <el-option value="visitno" label="时间段未访问"></el-option>
+                <el-option value="visit" label="时间段访问过"></el-option>
+                <el-option value="add_time" label="首次访问"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="访问时间：" label-for="user_time" v-if="user_time_type">
+              <date-range-picker
+                clearable
+                width="250px"
+                v-model="timeVal"
+                :editable="false"
+                @change="(e) => onchangeTime(e, 'user_time')"
+                format="YYYY/MM/DD"
+                value-format="YYYY/MM/DD"
+              ></date-range-picker>
+            </el-form-item>
+            <!-- <el-form-item label="地区：" label-for="country">
                 <el-select
                   v-model="userFrom.country"
                   placeholder="请选择国家"
@@ -239,17 +185,16 @@
                   style="width: 250px"
                 ></el-cascader>
               </el-form-item> -->
-            </div>
+          </template>
 
-            <el-form-item class="search-form-sub">
-              <el-button type="primary" label="default" v-db-click @click="userSearchs">查询</el-button>
-              <el-button class="ResetSearch" v-db-click @click="reset('userFrom')">重置</el-button>
-              <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
-                <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
-                <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
-              </a>
-            </el-form-item>
-          </div>
+          <el-form-item class="search-form-sub">
+            <el-button type="primary" label="default" v-db-click @click="userSearchs">查询</el-button>
+            <el-button class="ResetSearch" v-db-click @click="reset('userFrom')">重置</el-button>
+            <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
+              <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
+              <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
+            </a>
+          </el-form-item>
         </el-form>
       </div>
     </el-card>
@@ -1301,20 +1246,5 @@ img {
   padding: 10px 16px;
   text-align: right;
   background: var(--prev-bg-white);
-}
-
-.search-form {
-  display: flex;
-  justify-content: space-between;
-
-  .search-form-box {
-    display: flex;
-    flex-wrap: wrap;
-    flex: 1;
-  }
-}
-
-.search-form-sub {
-  display: flex;
 }
 </style>

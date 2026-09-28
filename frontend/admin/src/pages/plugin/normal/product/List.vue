@@ -3,115 +3,81 @@
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form ref="artFromRef" :model="artFrom" label-width="80px" label-position="right" inline @submit.prevent>
-          <div class="acea-row search-form">
-            <div class="search-form-box">
-              <el-form-item label="商品搜索：" label-for="store_name">
-                <el-input
-                  clearable
-                  placeholder="请输入商品名称/关键字/ID"
-                  v-model="artFrom.store_name"
-                  class="form_content_width"
-                />
-              </el-form-item>
-              <el-form-item label="商品分类：" label-for="pid">
-                <el-cascader
-                  v-model="artFrom.cate_id"
-                  :options="treeSelect"
-                  :props="{ multiple: false, emitPath: false, checkStrictly: true }"
-                  clearable
-                  class="form_content_width"
-                ></el-cascader>
-              </el-form-item>
-              <template v-if="collapse">
-                <el-form-item label="商品规格：">
-                  <el-select v-model="artFrom.spec_type" clearable placeholder="全部" class="form_content_width">
-                    <el-option label="全部" value="" />
-                    <el-option label="单规格" value="0" />
-                    <el-option label="多规格" value="1" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="会员专属：">
-                  <el-select v-model="artFrom.vip_product" clearable placeholder="全部" class="form_content_width">
-                    <el-option label="全部" value="" />
-                    <el-option label="不限制" value="0" />
-                    <el-option label="仅会员可见可买" value="1" />
-                    <el-option label="所有人可见仅会员可买" value="2" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="是否礼物：">
-                  <el-select v-model="artFrom.is_gift" clearable placeholder="全部" class="form_content_width">
-                    <el-option label="全部" value="" />
-                    <el-option label="否" value="0" />
-                    <el-option label="是" value="1" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="添加时间：">
-                  <date-range-picker
-                    class="form_range_content_width"
-                    clearable
-                    v-model="timeVal"
-                    :editable="false"
-                    @change="onchangeTime"
-                    format="YYYY/MM/DD"
-                    value-format="YYYY/MM/DD"
-                  ></date-range-picker>
-                </el-form-item>
-                <el-form-item label="库存：" label-for="store_name">
-                  <el-input
-                    clearable
-                    placeholder="最小值"
-                    v-model="artFrom.stock_s[0]"
-                    class="form_range_content_width"
-                  />
-                  ~
-                  <el-input
-                    clearable
-                    placeholder="最大值"
-                    v-model="artFrom.stock_s[1]"
-                    class="form_range_content_width"
-                  />
-                </el-form-item>
-                <el-form-item label="价格：" label-for="store_name">
-                  <el-input
-                    clearable
-                    placeholder="最小值"
-                    v-model="artFrom.price_s[0]"
-                    class="form_range_content_width"
-                  />
-                  ~
-                  <el-input
-                    clearable
-                    placeholder="最大值"
-                    v-model="artFrom.price_s[1]"
-                    class="form_range_content_width"
-                  />
-                </el-form-item>
-                <el-form-item label="销量：" label-for="store_name">
-                  <el-input
-                    clearable
-                    placeholder="最小值"
-                    v-model="artFrom.sales_s[0]"
-                    class="form_range_content_width"
-                  />
-                  ~
-                  <el-input
-                    clearable
-                    placeholder="最大值"
-                    v-model="artFrom.sales_s[1]"
-                    class="form_range_content_width"
-                  />
-                </el-form-item>
-              </template>
-            </div>
-            <div class="search-form-sub">
-              <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
-              <el-button class="ResetSearch" v-db-click @click="reset">重置</el-button>
-              <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
-                <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
-                <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
-              </a>
-            </div>
-          </div>
+          <el-form-item label="商品搜索：" label-for="store_name">
+            <el-input
+              clearable
+              placeholder="请输入商品名称/关键字/ID"
+              v-model="artFrom.store_name"
+              class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item label="商品分类：" label-for="pid">
+            <el-cascader
+              v-model="artFrom.cate_id"
+              :options="treeSelect"
+              :props="{ multiple: false, emitPath: false, checkStrictly: true }"
+              clearable
+              class="form_content_width"
+            ></el-cascader>
+          </el-form-item>
+          <template v-if="collapse">
+            <el-form-item label="商品规格：">
+              <el-select v-model="artFrom.spec_type" clearable placeholder="全部" class="form_content_width">
+                <el-option label="全部" value="" />
+                <el-option label="单规格" value="0" />
+                <el-option label="多规格" value="1" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="会员专属：">
+              <el-select v-model="artFrom.vip_product" clearable placeholder="全部" class="form_content_width">
+                <el-option label="全部" value="" />
+                <el-option label="不限制" value="0" />
+                <el-option label="仅会员可见可买" value="1" />
+                <el-option label="所有人可见仅会员可买" value="2" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="是否礼物：">
+              <el-select v-model="artFrom.is_gift" clearable placeholder="全部" class="form_content_width">
+                <el-option label="全部" value="" />
+                <el-option label="否" value="0" />
+                <el-option label="是" value="1" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="添加时间：">
+              <date-range-picker
+                width="250px"
+                clearable
+                v-model="timeVal"
+                :editable="false"
+                @change="onchangeTime"
+                format="YYYY/MM/DD"
+                value-format="YYYY/MM/DD"
+              ></date-range-picker>
+            </el-form-item>
+            <el-form-item label="库存：" label-for="store_name">
+              <el-input clearable placeholder="最小值" v-model="artFrom.stock_s[0]" class="form_range_content_width" />
+              ~
+              <el-input clearable placeholder="最大值" v-model="artFrom.stock_s[1]" class="form_range_content_width" />
+            </el-form-item>
+            <el-form-item label="价格：" label-for="store_name">
+              <el-input clearable placeholder="最小值" v-model="artFrom.price_s[0]" class="form_range_content_width" />
+              ~
+              <el-input clearable placeholder="最大值" v-model="artFrom.price_s[1]" class="form_range_content_width" />
+            </el-form-item>
+            <el-form-item label="销量：" label-for="store_name">
+              <el-input clearable placeholder="最小值" v-model="artFrom.sales_s[0]" class="form_range_content_width" />
+              ~
+              <el-input clearable placeholder="最大值" v-model="artFrom.sales_s[1]" class="form_range_content_width" />
+            </el-form-item>
+          </template>
+          <el-form-item class="search-form-sub">
+            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button class="ResetSearch" v-db-click @click="reset">重置</el-button>
+            <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
+              <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
+              <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
+            </a>
+          </el-form-item>
         </el-form>
       </div>
     </el-card>
@@ -1032,19 +998,6 @@ onActivated(() => {
 }
 .label_width {
   width: 400px;
-}
-.search-form {
-  display: flex;
-  justify-content: space-between;
-  .search-form-box {
-    display: flex;
-    flex-wrap: wrap;
-    flex: 1;
-  }
-  .search-form-sub {
-    display: flex;
-    align-items: baseline;
-  }
 }
 .batch-box {
   :deep(.ivu-modal-body) {
