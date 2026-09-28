@@ -70,9 +70,9 @@ class PayChannelServices extends BaseService
         $list = $this->dao->selectList($where, '*', 0, 0, 'sort desc,id asc')->toArray();
         $drivers = $this->getDrivers();
 
-        // 为每条记录附加驱动状态
+        // 为每条记录附加驱动状态；管理端不做默认图标兜底，未配置即为空串，由前端显示占位符
         foreach ($list as &$item) {
-            $item['icon'] = $this->getDisplayIcon($item['icon'] ?? '');
+            $item['icon'] = $this->normalizeIcon($item['icon'] ?? '');
             $item['driver_status'] = false;
             $item['driver_info'] = null;
             $driverName = $item['driver'] ?? '';
@@ -103,7 +103,7 @@ class PayChannelServices extends BaseService
         }
 
         $data = $channel->toArray();
-        $data['icon'] = $this->getDisplayIcon($data['icon'] ?? '');
+        $data['icon'] = $this->normalizeIcon($data['icon'] ?? '');
 
         // 字段结构以已安装驱动的最新清单为准，数据库仅负责保存用户填写的 value。
         // 这样插件升级 show_if、options、tip 等定义后无需手工迁移 pay_channel 旧 JSON。
@@ -421,7 +421,8 @@ class PayChannelServices extends BaseService
     }
 
     /**
-     * 获取展示图标。后台未配置图片时按 channel_key 使用对应的默认字体图标，不写回数据库。
+     * 获取用户端展示图标。未配置图片时按 channel_key 使用对应的默认字体图标，不写回数据库。
+     * 仅限用户端可用支付方式列表使用；管理端列表/详情不做兜底（normalizeIcon 后为空即返回空串）。
      *
      * @param mixed $icon
      * @param string $channelKey 支付方式标识，用于匹配差异化默认图标

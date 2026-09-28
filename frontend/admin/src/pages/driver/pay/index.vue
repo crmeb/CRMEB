@@ -17,6 +17,7 @@
           <template #default="scope">
             <img v-if="isImageUrl(scope.row.icon)" :src="scope.row.icon" style="width: 24px; height: 24px" />
             <span v-else-if="scope.row.icon" class="iconfont" :class="scope.row.icon"></span>
+            <span v-else>--</span>
           </template>
         </el-table-column>
 
