@@ -75,6 +75,14 @@ for (const f of files) {
     const stem = name.slice(0, name.length - ext.length);
     if (!IMG_RE.test(stem) || !/[a-z]/.test(stem)) addViolation(relPath, '图片须 kebab-case 全小写且含字母（禁下划线/大写/拼音/纯数字）');
   }
+  // pages-modules 页面入口唯一形态：snake_case 目录 + index.vue（PascalCase 文件会被误注册为路由）
+  if (ext === '.vue' && name !== 'index.vue' && relPath.startsWith('src/pages-modules/')) {
+    const segs = relPath.split('/');
+    const inner = segs.slice(2, -1); // ['pages-modules', 模块名, ...页面目录祖先]
+    if (!inner.some((s) => ROLE_DIRS.has(s) || s.startsWith('_'))) {
+      addViolation(relPath, 'pages-modules/ 页面必须为 snake_case 目录 + index.vue（局部组件放 components/，细则见 docs/命名规范.md §2.1）');
+    }
+  }
 }
 
 for (const d of dirs) {
@@ -83,10 +91,14 @@ for (const d of dirs) {
   const name = segs[segs.length - 1];
   if (segs.length === 2) {
     if (!TOP_DIR_RE.test(name)) addViolation(relPath, 'src 顶层目录须全小写或 kebab-case');
-  } else if (segs[1] === 'pages') {
+  } else if (segs[1] === 'pages' || segs[1] === 'pages-modules') {
     const inner = segs.slice(2, -1); // 该目录的所有祖先段
-    if (!inner.some((s) => ROLE_DIRS.has(s)) && !PAGE_DIR_RE.test(name)) {
-      addViolation(relPath, 'pages/ 页面目录须 snake_case 或全小写单词');
+    // pages-modules 下 `_` 前缀目录为扫描器排除区（_template 模板等），不按页面目录规则校验
+    const exempt =
+      inner.some((s) => ROLE_DIRS.has(s)) ||
+      (segs[1] === 'pages-modules' && (name.startsWith('_') || inner.some((s) => s.startsWith('_'))));
+    if (!exempt && !PAGE_DIR_RE.test(name)) {
+      addViolation(relPath, 'pages/（及 pages-modules/）页面目录须 snake_case 或全小写单词');
     }
   } else if (segs[1] === 'components' && segs.length === 3 && !PASCAL_DIR_RE.test(name)) {
     addViolation(relPath, 'components/ 组件目录须 PascalCase');
