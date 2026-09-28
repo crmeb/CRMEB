@@ -43,6 +43,8 @@
 		"@dcloudio/uni-stacktracey": "3.0.0-5020420260813003",
 		"@dcloudio/vite-plugin-uni": "3.0.0-5020420260813003",
 		"@vue/runtime-core": "^3.4.21",
+		"chokidar": "3.6.0",
+		"jsonc-parser": "3.3.1",
 		"sass": "~1.78.0",
 		"stylus": "^0.64.0",
 		"vite": "5.2.8"
