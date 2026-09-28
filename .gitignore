@@ -11,6 +11,7 @@
 /backend/public/install.lock
 /backend/public/install/install.log
 /backend/runtime/
+/backend/public/phpExcel/
 /backend/.constant
 /backend/.env
 
