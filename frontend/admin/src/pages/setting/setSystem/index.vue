@@ -288,4 +288,15 @@ body :deep(.el-dialog .el-dialog__header) {
   line-height: 14px;
   // margin-top: 10px;
 }
+// 图片上传控件统一 100x100：frame 单/多图（默认 58px）与 picture-card 上传框（默认 148px）
+:deep(._fc-frame ._fc-upload-btn),
+:deep(._fc-frame ._fc-files) {
+  width: 80px;
+  height: 80px;
+  line-height: 78px;
+}
+:deep(.el-upload--picture-card),
+:deep(.el-upload-list--picture-card .el-upload-list__item) {
+  --el-upload-picture-card-size: 80px;
+}
 </style>
