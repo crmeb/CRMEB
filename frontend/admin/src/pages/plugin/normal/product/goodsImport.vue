@@ -175,7 +175,7 @@ function downloadFailData() {
   background-color: var(--prev-color-primary-light-9);
   padding: 12px;
   border-radius: 4px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 12px;
   img {
     width: 19px;
@@ -246,12 +246,12 @@ function downloadFailData() {
   .rule-title {
     font-weight: 500;
     font-size: 14px;
-    color: #303133;
+    color: var(--prev-color-text-regular);
     margin-bottom: 6px;
   }
   .rule-text {
     font-size: 12px;
-    color: #303133;
+    color: var(--prev-color-text-regular);
   }
 }
 </style>

@@ -232,11 +232,11 @@ defineExpose({ focus });
   align-items: center;
   gap: 6px;
   padding: 7px 16px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
   font-size: 13px;
   cursor: pointer;
-  background: #fff;
-  border: 1px solid #e4e7ed;
+  background: var(--prev-bg-white);
+  border: 1px solid var(--prev-border-color-light);
   border-radius: 999px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: color 0.15s, border-color 0.15s, background 0.15s;
@@ -245,14 +245,14 @@ defineExpose({ focus });
   }
   &:hover {
     color: var(--prev-color-primary);
-    background: #f0f7ff;
+    background: var(--prev-color-primary-light-9);
     border-color: var(--prev-color-primary);
   }
 }
 /* 输入卡片 */
 .input-card {
   margin: 0 0 24px;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--prev-border-color-light);
   border-radius: 20px;
   transition: border-color 0.2s;
   &:focus-within {
@@ -261,7 +261,7 @@ defineExpose({ focus });
 }
 .input-card :deep(.el-textarea__inner) {
   padding: 16px 18px 0;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 14px;
   background: transparent;
   border: none;
@@ -288,7 +288,7 @@ defineExpose({ focus });
 }
 .panel-tip {
   padding: 2px 10px 8px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
 }
 .model-trigger {
@@ -297,7 +297,7 @@ defineExpose({ focus });
   gap: 6px;
   max-width: 220px;
   padding: 6px 10px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 13px;
   cursor: pointer;
   background: transparent;
@@ -305,7 +305,7 @@ defineExpose({ focus });
   border-radius: 8px;
   &:hover {
     color: var(--prev-color-primary);
-    background: #f2f3f5;
+    background: var(--prev-bg-color);
   }
   span {
     overflow: hidden;
@@ -330,9 +330,9 @@ defineExpose({ focus });
     opacity: 0.85;
   }
   &:disabled {
-    color: #a8abb2;
+    color: var(--prev-color-text-secondary);
     cursor: not-allowed;
-    background: #e9e9eb;
+    background: var(--prev-bg-color);
   }
   /* 停止态：流式输出进行中，点击终止输出 */
   &.stop {
@@ -356,11 +356,11 @@ defineExpose({ focus });
   cursor: pointer;
   border-radius: 6px;
   &:hover {
-    background: #f5f7fa;
+    background: var(--prev-bg-color);
   }
   &.active {
     color: var(--prev-color-primary);
-    background: #f0f7ff;
+    background: var(--prev-color-primary-light-9);
     i {
       color: var(--prev-color-primary);
     }
@@ -376,8 +376,8 @@ defineExpose({ focus });
   white-space: nowrap;
 }
 .model-manage {
-  color: #606266;
-  border-top: 1px solid #ebeef5;
+  color: var(--prev-color-text-primary);
+  border-top: 1px solid var(--prev-border-color-lighter);
   border-radius: 0;
   &:hover {
     color: var(--prev-color-primary);

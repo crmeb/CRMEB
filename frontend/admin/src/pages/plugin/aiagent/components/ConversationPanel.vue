@@ -103,12 +103,12 @@ function formatTime(time) {
   flex-direction: column;
   padding: 16px 12px;
   overflow-y: auto;
-  background: #f7f8fa;
-  border-right: 1px solid #ebeef5;
+  background: var(--prev-bg-color);
+  border-right: 1px solid var(--prev-border-color-lighter);
 }
 .panel-brand {
   margin: 0 8px 16px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 17px;
   font-weight: 700;
 }
@@ -121,21 +121,21 @@ function formatTime(time) {
   gap: 10px;
   margin-bottom: 2px;
   padding: 9px 10px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 14px;
   cursor: pointer;
   border-radius: 8px;
   i {
-    color: #606266;
+    color: var(--prev-color-text-primary);
     font-size: 16px;
   }
   &:hover {
-    background: #ececec;
+    background: var(--prev-color-hover);
   }
 }
 .panel-section {
   margin: 12px 8px 6px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
 }
 .conversation-list {
@@ -154,7 +154,7 @@ function formatTime(time) {
 .conversation-item:hover,
 .conversation-item.active {
   color: var(--prev-color-primary);
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 .conversation-info {
   display: flex;
@@ -171,7 +171,7 @@ function formatTime(time) {
 }
 .conversation-time {
   margin-top: 4px;
-  color: #a8abb2;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
 }
 .conversation-actions {
@@ -186,7 +186,7 @@ function formatTime(time) {
   }
 }
 .action-icon {
-  color: #a8abb2;
+  color: var(--prev-color-text-secondary);
   font-size: 16px;
   cursor: pointer;
   &:hover {
@@ -205,7 +205,7 @@ function formatTime(time) {
   opacity: 1;
 }
 .conversation-empty {
-  color: #a8abb2;
+  color: var(--prev-color-text-secondary);
   font-size: 13px;
   text-align: center;
 }

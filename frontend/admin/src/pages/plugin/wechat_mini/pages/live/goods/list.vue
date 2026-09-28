@@ -253,7 +253,7 @@ function del(row, tit, num) {
   }
   .txt {
     margin-left: 10px;
-    color: #000;
+    color: var(--prev-color-text-regular);
     font-size: 12px;
   }
 }

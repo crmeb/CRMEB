@@ -466,12 +466,12 @@ async function loadDetail() {
 .head .text .title {
   font-size: 16px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   margin-bottom: 6px;
 }
 .head .text div {
   font-size: 13px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
 }
 .head-list {
   display: flex;
@@ -484,11 +484,11 @@ async function loadDetail() {
   flex: 0 0 160px;
   margin-top: 12px;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.85);
+  color: var(--prev-color-text-regular);
 }
 .head-list .item .label {
   font-size: 13px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   margin-bottom: 8px;
 }
 .head-list .item .price {
@@ -509,7 +509,7 @@ async function loadDetail() {
   border-left: 3px solid var(--prev-color-primary, #1890ff);
   font-size: 15px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   margin-bottom: 16px;
 }
 .detail-grid {
@@ -523,7 +523,7 @@ async function loadDetail() {
 }
 .detail-item .label {
   flex-shrink: 0;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   margin-right: 4px;
 }
 .detail-item .value {
@@ -540,7 +540,7 @@ async function loadDetail() {
 
 /* 商品表格 */
 .goods-table {
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 4px;
 }
 .goods-cell {
@@ -560,7 +560,7 @@ async function loadDetail() {
 .goods-name {
   margin: 0;
   font-size: 13px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -568,7 +568,7 @@ async function loadDetail() {
 .goods-sku {
   margin: 2px 0 0;
   font-size: 12px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
 }
 
 /* 表单图片 */
@@ -587,12 +587,12 @@ async function loadDetail() {
 :deep(.el-timeline-item__content .tl-title) {
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
 }
 :deep(.el-timeline-item__content .tl-desc) {
   margin-left: 8px;
   font-size: 12px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
 }
 
 .empty-tip {
@@ -600,7 +600,8 @@ async function loadDetail() {
 }
 
 :deep(.el-tabs--border-card > .el-tabs__content) {
-  padding: 0 24px;
+  /* 独立路由详情页：.head 无缩进，tabs 内容对齐 */
+  padding: 0;
 }
 :deep(.el-tabs--border-card) {
   border: none;

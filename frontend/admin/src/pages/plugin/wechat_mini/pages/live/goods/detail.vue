@@ -58,7 +58,7 @@ defineProps({
   display: inline-block;
   width: 150px;
   text-align: right;
-  color: #606266;
+  color: var(--prev-color-text-primary);
 }
 .box-container .list img {
   width: 80px;

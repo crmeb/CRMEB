@@ -246,7 +246,7 @@ defineExpose({ open });
   font-size: 13px;
 }
 .value {
-  color: #333;
+  color: var(--prev-color-text-regular);
   font-size: 13px;
 }
 .form-section {
@@ -255,7 +255,7 @@ defineExpose({ open });
 .section-title {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--prev-color-text-regular);
   margin-bottom: 12px;
 }
 </style>

@@ -146,7 +146,7 @@ function submit() {
 .confirm-card {
   width: 380px;
   padding: 14px 16px;
-  background: #f0f7ff;
+  background: var(--prev-color-primary-light-9);
   border: 1px solid #d9ecff;
   border-radius: 12px;
   .confirm-head {
@@ -157,20 +157,20 @@ function submit() {
   }
   &.rejected .confirm-head,
   &.expired .confirm-head {
-    color: #909399;
+    color: var(--prev-color-text-secondary);
   }
   &.rejected,
   &.expired {
-    color: #909399;
-    background: #f4f4f5;
-    border-color: #e9e9eb;
+    color: var(--prev-color-text-secondary);
+    background: var(--prev-bg-color);
+    border-color: var(--prev-border-color-base);
     .ask-question,
     .ask-label {
-      color: #909399;
+      color: var(--prev-color-text-secondary);
     }
     .ask-option {
       cursor: default;
-      border-color: #e9e9eb;
+      border-color: var(--prev-border-color-base);
     }
   }
 }
@@ -182,7 +182,7 @@ function submit() {
   font-weight: 600;
   .confirm-state {
     margin-left: auto;
-    color: #909399;
+    color: var(--prev-color-text-secondary);
     font-size: 12px;
     font-weight: 400;
     &.ok {
@@ -192,7 +192,7 @@ function submit() {
 }
 .ask-question {
   margin-top: 10px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.6;
@@ -212,8 +212,8 @@ function submit() {
   font-size: 13px;
   cursor: pointer;
   user-select: none;
-  background: #fff;
-  border: 1px solid #e4e7ed;
+  background: var(--prev-bg-white);
+  border: 1px solid var(--prev-border-color-light);
   border-radius: 8px;
   transition: border-color 0.15s, background 0.15s;
   &:hover {
@@ -221,7 +221,7 @@ function submit() {
   }
   &.selected {
     color: var(--prev-color-primary);
-    background: #f0f7ff;
+    background: var(--prev-color-primary-light-9);
     border-color: var(--prev-color-primary);
   }
 }
@@ -235,8 +235,8 @@ function submit() {
   margin-top: 1px;
   color: #fff;
   font-size: 11px;
-  background: #fff;
-  border: 1px solid #c0c4cc;
+  background: var(--prev-bg-white);
+  border: 1px solid var(--prev-border-color-hover);
   &.single {
     border-radius: 50%;
   }
@@ -250,7 +250,7 @@ function submit() {
   }
 }
 .ask-label {
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 1.5;
   word-break: break-word;
 }
@@ -270,11 +270,11 @@ function submit() {
   border-radius: 14px;
   border: 1px solid transparent;
   &.cancel {
-    color: #606266;
-    background: #fff;
-    border-color: #dcdfe6;
+    color: var(--prev-color-text-primary);
+    background: var(--prev-bg-white);
+    border-color: var(--prev-border-color-base);
     &:hover {
-      color: #909399;
+      color: var(--prev-color-text-secondary);
       border-color: #c0c4cc;
     }
   }

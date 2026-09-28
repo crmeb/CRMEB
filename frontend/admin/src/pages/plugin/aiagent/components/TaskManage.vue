@@ -724,7 +724,7 @@ function formatFullTime(timestamp) {
   font-size: 12px;
 }
 .muted {
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 12px;
 }
 .danger {
@@ -745,8 +745,8 @@ function formatFullTime(timestamp) {
   height: 44px;
   margin-right: 14px;
   border-radius: 10px;
-  background: #f2f3f5;
-  color: #303133;
+  background: var(--prev-bg-color);
+  color: var(--prev-color-text-regular);
   font-size: 22px;
 }
 .task-hero-main {
@@ -778,7 +778,7 @@ function formatFullTime(timestamp) {
   margin-left: 8px;
   padding: 1px 9px;
   border-radius: 10px;
-  background: #f2f3f5;
+  background: var(--prev-bg-color);
   color: #4e5969;
   font-size: 12px;
 }
@@ -794,9 +794,9 @@ function formatFullTime(timestamp) {
 }
 .task-card {
   margin-bottom: 12px;
-  border: 1px solid #f0f1f3;
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 12px;
-  background: #fff;
+  background: var(--prev-bg-white);
   transition: box-shadow 0.2s;
   &:hover {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -985,7 +985,7 @@ function formatFullTime(timestamp) {
   max-width: 78%;
   padding: 10px 14px;
   border-radius: 10px 2px 10px 10px;
-  background: #f2f3f5;
+  background: var(--prev-bg-color);
   color: #1d2129;
   font-size: 13px;
   line-height: 1.7;
@@ -995,9 +995,9 @@ function formatFullTime(timestamp) {
 .msg-content {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #f0f1f3;
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 2px 10px 10px 10px;
-  background: #fafbfc;
+  background: var(--prev-bg-color);
   font-size: 13px;
   line-height: 1.7;
   word-break: break-word;
@@ -1006,7 +1006,7 @@ function formatFullTime(timestamp) {
   margin-bottom: 14px;
   padding: 8px 12px;
   border-radius: 8px;
-  background: #f7f8fa;
+  background: var(--prev-bg-color);
   .tool-line {
     display: flex;
     align-items: center;

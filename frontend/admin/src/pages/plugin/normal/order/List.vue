@@ -140,7 +140,9 @@
               <template>SF1234567890</template>
             </el-table-column>
           </el-table>
-          <p class="mb10" style="color: #909399; font-size: 12px">第一行为表头，从第二行开始为数据</p>
+          <p class="mb10" style="color: var(--prev-color-text-secondary); font-size: 12px">
+            第一行为表头，从第二行开始为数据
+          </p>
           <el-upload
             ref="upload"
             :action="adminApi + 'normal/order/batch_shipment'"
@@ -172,7 +174,13 @@
     <OrderEdit ref="editRef" @saved="onEditSuccess" />
 
     <!-- 订单详情抽屉 -->
-    <el-drawer v-model="detailDrawerVisible" title="订单详情" size="720px" @opened="onDetailDrawerOpened">
+    <el-drawer
+      v-model="detailDrawerVisible"
+      title="订单详情"
+      size="720px"
+      class="order-detail-drawer"
+      @opened="onDetailDrawerOpened"
+    >
       <OrderDetail :orderNo="detailOrderNo" ref="detailRef" />
     </el-drawer>
   </div>
@@ -497,7 +505,8 @@ function openPrintWindow(data, type) {
   }
   var html =
     '<html><head><meta charset="utf-8"><title>' + (type === 'receipt' ? '小票打印' : '配货单打印') + '</title><style>';
-  html += 'body{font-family:"Microsoft YaHei",sans-serif;padding:0;margin:20px;font-size:14px;color:#333}';
+  html +=
+    'body{font-family:"Microsoft YaHei",sans-serif;padding:0;margin:20px;font-size:14px;color: var(--prev-color-text-regular)}';
   html += 'h2{text-align:center;margin-bottom:15px}';
   html += 'table{width:100%;border-collapse:collapse;margin-bottom:15px}';
   html += 'table,th,td{border:1px solid #ddd}';
@@ -776,6 +785,11 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+/* 详情抽屉 body 左右归零（全局 variables.scss 为 20px 35px）：
+   内容组件 tabs 已不再叠加 padding，对齐用户详情抽屉的 20px 紧凑边距 */
+:deep(.order-detail-drawer .el-drawer__body) {
+  padding: 20px 0 !important;
+}
 .normal-order-list {
   .mt16 {
     margin-top: 16px;
@@ -801,7 +815,7 @@ onMounted(() => {
       display: flex;
       align-items: center;
       padding: 10px 0 20px;
-      border-bottom: 1px solid #ebeef5;
+      border-bottom: 1px solid var(--prev-border-color-lighter);
       margin-bottom: 20px;
 
       .logistics-icon {
@@ -815,14 +829,14 @@ onMounted(() => {
           margin: 0;
           line-height: 1.8;
           font-size: 13px;
-          color: #303133;
+          color: var(--prev-color-text-regular);
         }
       }
     }
 
     .logistics-status {
       font-size: 13px;
-      color: #606266;
+      color: var(--prev-color-text-primary);
     }
   }
 }

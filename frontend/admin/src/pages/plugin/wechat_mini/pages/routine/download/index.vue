@@ -180,7 +180,7 @@ function downLoadCode(url) {
   display: flex;
   align-items: center;
   margin: 20px 20px 0 20px;
-  color: #333;
+  color: var(--prev-color-text-regular);
 }
 .content-box.last {
   margin-top: 0;

@@ -556,7 +556,7 @@ function handleCopyUserInfo() {
   .product-name {
     margin: 0;
     font-size: 13px;
-    color: #303133;
+    color: var(--prev-color-text-regular);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -564,7 +564,7 @@ function handleCopyUserInfo() {
   .product-sku {
     margin: 2px 0 0;
     font-size: 12px;
-    color: #909399;
+    color: var(--prev-color-text-secondary);
   }
 }
 </style>

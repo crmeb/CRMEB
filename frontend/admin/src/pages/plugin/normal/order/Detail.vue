@@ -646,14 +646,14 @@ defineExpose({ loadDetail });
       min-width: 0;
       padding-left: 12px;
       font-size: 13px;
-      color: #606266;
+      color: var(--prev-color-text-primary);
 
       .title {
         margin-bottom: 10px;
         font-weight: 500;
         font-size: 16px;
         line-height: 16px;
-        color: rgba(0, 0, 0, 0.85);
+        color: var(--prev-color-text-regular);
       }
     }
   }
@@ -670,13 +670,13 @@ defineExpose({ loadDetail });
       width: 200px;
       font-size: 14px;
       line-height: 14px;
-      color: rgba(0, 0, 0, 0.85);
+      color: var(--prev-color-text-regular);
 
       .title {
         margin-bottom: 12px;
         font-size: 13px;
         line-height: 13px;
-        color: #666666;
+        color: var(--prev-color-text-primary);
       }
 
       .value1 {
@@ -687,12 +687,9 @@ defineExpose({ loadDetail });
   }
 }
 
-:deep(.el-drawer__body) {
-  padding: 20px 0;
-}
-
 :deep(.el-tabs--border-card > .el-tabs__content) {
-  padding: 0 35px;
+  /* 与 .head 的 30px 左右缩进对齐（body 左右已由列表页归零） */
+  padding: 0 30px;
 }
 
 :deep(.el-tabs--border-card > .el-tabs__header),
@@ -706,7 +703,7 @@ defineExpose({ loadDetail });
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 16px;
 }
 
@@ -722,7 +719,7 @@ defineExpose({ loadDetail });
   width: 92px !important;
   font-size: 13px;
   font-weight: 400;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 16px;
 }
 
@@ -734,7 +731,7 @@ defineExpose({ loadDetail });
 /* section 通用 */
 .section {
   padding: 20px 0;
-  border-bottom: 1px dashed #eee;
+  border-bottom: 1px dashed var(--prev-border-color-lighter);
 }
 .section:last-child {
   border-bottom: none;
@@ -744,7 +741,7 @@ defineExpose({ loadDetail });
   border-left: 3px solid var(--prev-color-primary, #1890ff);
   font-size: 15px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   margin-bottom: 16px;
 }
 
@@ -755,11 +752,11 @@ defineExpose({ loadDetail });
   display: flex;
   padding: 8px 0;
   font-size: 13px;
-  color: #666;
+  color: var(--prev-color-text-primary);
 }
 .detail-item .label {
   flex-shrink: 0;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   margin-right: 4px;
 }
 .detail-item .value {
@@ -786,7 +783,7 @@ defineExpose({ loadDetail });
 
 /* 商品表格 */
 .goods-table {
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 4px;
 }
 .goods-cell {
@@ -806,7 +803,7 @@ defineExpose({ loadDetail });
 .goods-name {
   margin: 0;
   font-size: 13px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -814,7 +811,7 @@ defineExpose({ loadDetail });
 .goods-sku {
   margin: 2px 0 0;
   font-size: 12px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
 }
 
 /* 表单图片 */
@@ -829,16 +826,21 @@ defineExpose({ loadDetail });
 /* 时间线 */
 .tl-section {
   padding: 16px 0;
+
+  /* EP 时间线默认 padding-left 40px，叠加 tabs 缩进后过深，收齐到内容左缘 */
+  :deep(.el-timeline) {
+    padding-left: 4px;
+  }
 }
 :deep(.el-timeline-item__content .tl-title) {
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--prev-color-text-regular);
 }
 :deep(.el-timeline-item__content .tl-desc) {
   margin-left: 8px;
   font-size: 12px;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
 }
 /* 售后来源标签 */
 .source-tag {
@@ -851,7 +853,7 @@ defineExpose({ loadDetail });
 }
 .empty-tips {
   padding: 20px 0;
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   font-size: 13px;
 }
 
@@ -859,14 +861,14 @@ defineExpose({ loadDetail });
 .logistics-panel {
   margin-top: 16px;
   padding: 16px;
-  background: #fafafa;
+  background: var(--prev-bg-color);
   border-radius: 8px;
 
   .logistics-header {
     display: flex;
     align-items: center;
     padding-bottom: 12px;
-    border-bottom: 1px solid #ebeef5;
+    border-bottom: 1px solid var(--prev-border-color-lighter);
     margin-bottom: 16px;
 
     .logistics-icon {
@@ -885,7 +887,7 @@ defineExpose({ loadDetail });
     .logistics-company {
       font-size: 14px;
       font-weight: 600;
-      color: #303133;
+      color: var(--prev-color-text-regular);
       margin-bottom: 4px;
     }
 
@@ -895,18 +897,18 @@ defineExpose({ loadDetail });
       font-size: 12px;
 
       .label {
-        color: #909399;
+        color: var(--prev-color-text-secondary);
         margin-right: 6px;
         flex-shrink: 0;
       }
 
       .value {
-        color: #606266;
+        color: var(--prev-color-text-primary);
         word-break: break-all;
       }
 
       .copy-btn {
-        color: #909399;
+        color: var(--prev-color-text-secondary);
         cursor: pointer;
         margin-left: 6px;
         font-size: 13px;
@@ -945,7 +947,7 @@ defineExpose({ loadDetail });
   .track-item {
     .track-status {
       font-size: 13px;
-      color: #606266;
+      color: var(--prev-color-text-primary);
       line-height: 1.5;
       margin-bottom: 2px;
 
@@ -963,7 +965,7 @@ defineExpose({ loadDetail });
 
   .empty-logistics {
     text-align: center;
-    color: #909399;
+    color: var(--prev-color-text-secondary);
     padding: 30px 0;
     font-size: 13px;
   }

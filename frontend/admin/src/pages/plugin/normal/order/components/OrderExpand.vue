@@ -65,16 +65,16 @@ function formatTime(ts) {
 <style scoped>
 .expand {
   font-size: 13px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
 }
 .expand-row {
   margin-bottom: 16px;
 }
 .expand-key {
-  color: #909399;
+  color: var(--prev-color-text-secondary);
   margin-right: 4px;
 }
 .expand-value {
-  color: #303133;
+  color: var(--prev-color-text-regular);
 }
 </style>

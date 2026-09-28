@@ -122,7 +122,7 @@ const statusCounts = computed(() => props.data.status_counts || {});
     .stat-value {
       font-size: 24px;
       font-weight: bold;
-      color: #333;
+      color: var(--prev-color-text-regular);
     }
 
     .stat-label {

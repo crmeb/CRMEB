@@ -27,7 +27,9 @@
           :step="0.01"
           style="width: 200px"
         ></el-input-number>
-        <span style="margin-left: 8px; color: #909399; font-size: 12px">输入0~{{ formData.max_refund }}</span>
+        <span style="margin-left: 8px; color: var(--prev-color-text-secondary); font-size: 12px"
+          >输入0~{{ formData.max_refund }}</span
+        >
       </el-form-item>
     </el-form>
     <template #footer

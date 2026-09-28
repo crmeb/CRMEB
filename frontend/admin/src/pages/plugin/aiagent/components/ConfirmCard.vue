@@ -129,7 +129,7 @@ function formatValue(value) {
 .confirm-card {
   width: 380px;
   padding: 14px 16px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   background: #fdf6ec;
   border: 1px solid #faecd8;
   border-radius: 12px;
@@ -145,15 +145,15 @@ function formatValue(value) {
   }
   &.rejected,
   &.expired {
-    color: #909399;
+    color: var(--prev-color-text-secondary);
     background: #f4f4f5;
     border-color: #e9e9eb;
     .confirm-head {
-      color: #909399;
+      color: var(--prev-color-text-secondary);
     }
     .confirm-tool,
     .confirm-args {
-      color: #909399;
+      color: var(--prev-color-text-secondary);
     }
     .confirm-preview {
       opacity: 0.6;
@@ -168,7 +168,7 @@ function formatValue(value) {
   font-weight: 600;
   .confirm-state {
     margin-left: auto;
-    color: #909399;
+    color: var(--prev-color-text-secondary);
     font-size: 12px;
     font-weight: 400;
     &.ok {
@@ -178,7 +178,7 @@ function formatValue(value) {
 }
 .confirm-tool {
   margin-top: 10px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 13px;
   font-weight: 600;
   word-break: break-all;
@@ -192,7 +192,7 @@ function formatValue(value) {
     word-break: break-all;
   }
   .arg-key {
-    color: #909399;
+    color: var(--prev-color-text-secondary);
   }
   .arg-toggle {
     margin-left: 4px;
@@ -207,12 +207,12 @@ function formatValue(value) {
     display: flex;
     align-items: center;
     gap: 4px;
-    color: #909399;
+    color: var(--prev-color-text-secondary);
     font-size: 12px;
     cursor: pointer;
     user-select: none;
     &:hover {
-      color: #606266;
+      color: var(--prev-color-text-primary);
     }
   }
   .preview-frame {
@@ -237,11 +237,11 @@ function formatValue(value) {
   border-radius: 14px;
   border: 1px solid transparent;
   &.cancel {
-    color: #606266;
-    background: #fff;
-    border-color: #dcdfe6;
+    color: var(--prev-color-text-primary);
+    background: var(--prev-bg-white);
+    border-color: var(--prev-border-color-base);
     &:hover {
-      color: #909399;
+      color: var(--prev-color-text-secondary);
       border-color: #c0c4cc;
     }
   }

@@ -406,6 +406,25 @@
   padding-top: 50px;
   margin: 0 auto;
 
+  /* 深色模式：白色手机壳图（"详情预览"标题烧在图里）改为深色面板 + CSS 标题，
+     编辑区已跟随主题，预览保持同观感（2026-09-28 用户裁定） */
+  html[data-theme='dark'] & {
+    background: var(--prev-bg-white);
+    border: 1px solid var(--prev-border-color-light);
+    border-radius: 24px;
+
+    &::before {
+      content: '详情预览';
+      display: block;
+      height: 40px;
+      margin: -50px -20px 10px;
+      line-height: 40px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--prev-color-text-regular);
+    }
+  }
+
   .content {
     height: 560px;
     overflow: hidden;

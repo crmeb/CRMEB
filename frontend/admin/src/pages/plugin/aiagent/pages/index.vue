@@ -595,7 +595,7 @@ function onMessageBoxClick(e) {
   min-height: 480px;
   margin-top: 0;
   overflow: hidden;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 12px;
 }
 .chat-main {
@@ -604,7 +604,7 @@ function onMessageBoxClick(e) {
   flex: 1;
   min-width: 0;
   flex-direction: column;
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 /* 管理页遮盖层：覆盖右侧对话区，左侧导航仍可切换 */
 .manage-overlay {
@@ -614,33 +614,33 @@ function onMessageBoxClick(e) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #fff;
+  background: var(--prev-bg-white);
 }
 .manage-header {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 12px 20px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--prev-border-color-lighter);
 }
 .manage-back {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 6px 12px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
   font-size: 13px;
   cursor: pointer;
-  background: #f4f4f5;
+  background: var(--prev-bg-color);
   border: none;
   border-radius: 16px;
   &:hover {
     color: var(--prev-color-primary);
-    background: #e9e9eb;
+    background: var(--prev-color-hover);
   }
 }
 .manage-title {
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 15px;
   font-weight: 600;
 }
@@ -663,13 +663,13 @@ function onMessageBoxClick(e) {
   text-align: center;
 }
 .empty-title {
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 22px;
   font-weight: 600;
 }
 .empty-tip {
   margin-top: 10px;
-  color: #a8abb2;
+  color: var(--prev-color-text-secondary);
   font-size: 13px;
 }
 /* 用户消息：右侧浅灰气泡 */
@@ -686,11 +686,11 @@ function onMessageBoxClick(e) {
 }
 .user-bubble {
   padding: 12px 18px;
-  color: #303133;
+  color: var(--prev-color-text-regular);
   line-height: 1.65;
   white-space: pre-wrap;
   word-break: break-word;
-  background: #f2f3f5;
+  background: var(--prev-bg-color);
   border-radius: 18px;
 }
 /* 气泡下方操作图标：hover 时浮现 */
@@ -699,7 +699,7 @@ function onMessageBoxClick(e) {
   gap: 14px;
   margin-top: 6px;
   padding-right: 6px;
-  color: #a8abb2;
+  color: var(--prev-color-text-secondary);
   font-size: 14px;
   opacity: 0;
   transition: opacity 0.15s;
@@ -733,7 +733,7 @@ function onMessageBoxClick(e) {
     font-size: 12px;
   }
   &:hover {
-    color: #606266;
+    color: var(--prev-color-text-primary);
   }
 }
 .reasoning-content {
@@ -760,15 +760,15 @@ function onMessageBoxClick(e) {
   line-height: 18px;
   padding: 0 6px;
   font-size: 12px;
-  color: #909399;
-  background: #f7f8fa;
-  border: 1px solid #e9e9eb;
+  color: var(--prev-color-text-secondary);
+  background: var(--prev-bg-color);
+  border: 1px solid var(--prev-border-color-lighter);
   border-radius: 4px;
   cursor: default;
   user-select: none;
 }
 .assistant-content {
-  color: #303133;
+  color: var(--prev-color-text-regular);
   font-size: 14px;
   line-height: 1.75;
   word-break: break-word;
@@ -786,14 +786,14 @@ function onMessageBoxClick(e) {
   :deep(h5),
   :deep(h6) {
     margin: 20px 0 10px;
-    color: #1f2937;
+    color: var(--prev-color-text-regular);
     line-height: 1.4;
   }
   :deep(hr) {
     height: 0;
     margin: 16px 0;
     border: 0;
-    border-top: 1px solid #e4e7ed;
+    border-top: 1px solid var(--prev-border-color-light);
   }
   :deep(ul),
   :deep(ol) {
@@ -803,23 +803,23 @@ function onMessageBoxClick(e) {
   :deep(blockquote) {
     margin: 12px 0;
     padding: 4px 12px;
-    color: #606266;
-    border-left: 3px solid #dcdfe6;
+    color: var(--prev-color-text-primary);
+    border-left: 3px solid var(--prev-border-color-base);
   }
   :deep(pre) {
     margin: 12px 0;
     padding: 12px;
     overflow-x: auto;
-    color: #303133;
+    color: var(--prev-color-text-regular);
     white-space: pre-wrap;
-    background: #f5f7fa;
+    background: var(--prev-bg-color);
     border-radius: 6px;
   }
   :deep(code) {
     padding: 2px 4px;
     font-family: Consolas, Monaco, monospace;
     font-size: 0.9em;
-    background: #f5f7fa;
+    background: var(--prev-bg-color);
     border-radius: 3px;
   }
   :deep(pre code) {
@@ -835,17 +835,17 @@ function onMessageBoxClick(e) {
   :deep(td) {
     padding: 8px 10px;
     text-align: left;
-    border: 1px solid #ebeef5;
+    border: 1px solid var(--prev-border-color-lighter);
   }
   :deep(th) {
-    background: #f5f7fa;
+    background: var(--prev-bg-color);
   }
   :deep(a) {
     color: var(--prev-color-primary);
   }
 }
 .assistant-content.typing {
-  color: #909399;
+  color: var(--prev-color-text-secondary);
 }
 /* 推荐追问：回答完成后展示的胶囊标签，点击直接发送 */
 .followups {
@@ -856,19 +856,19 @@ function onMessageBoxClick(e) {
 }
 .followup-tag {
   padding: 6px 14px;
-  color: #606266;
+  color: var(--prev-color-text-primary);
   font-size: 13px;
   line-height: 1.5;
   text-align: left;
   cursor: pointer;
   word-break: break-all;
-  background: #f7f8fa;
-  border: 1px solid #e4e7ed;
+  background: var(--prev-bg-color);
+  border: 1px solid var(--prev-border-color-light);
   border-radius: 999px;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
   &:hover:not(:disabled) {
     color: var(--prev-color-primary);
-    background: #f0f7ff;
+    background: var(--prev-color-primary-light-9);
     border-color: var(--prev-color-primary);
   }
   &:disabled {
@@ -882,7 +882,7 @@ function onMessageBoxClick(e) {
   align-items: center;
   gap: 14px;
   margin-top: 12px;
-  color: #a8abb2;
+  color: var(--prev-color-text-secondary);
   font-size: 14px;
 }
 .action-icon {

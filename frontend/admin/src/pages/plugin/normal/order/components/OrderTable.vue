@@ -129,7 +129,9 @@
         <template #default="scope">
           <template v-if="scope.row.delivery_name">
             <div>{{ scope.row.delivery_name || '--' }}</div>
-            <div style="font-size: 12px; color: #909399">{{ scope.row.delivery_id || '--' }}</div>
+            <div style="font-size: 12px; color: var(--prev-color-text-secondary)">
+              {{ scope.row.delivery_id || '--' }}
+            </div>
             <a
               v-if="scope.row.delivery_type === 'express' && scope.row.delivery_id"
               v-db-click
@@ -138,7 +140,7 @@
               >物流查询</a
             >
           </template>
-          <span v-else style="color: #909399">未发货</span>
+          <span v-else style="color: var(--prev-color-text-secondary)">未发货</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="160">
@@ -594,7 +596,7 @@ defineExpose({ selectedIds, page });
 
 .toolbar {
   padding: 10px 20px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--prev-border-color-lighter);
 }
 
 .orderData {

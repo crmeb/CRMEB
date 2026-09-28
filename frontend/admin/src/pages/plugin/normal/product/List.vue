@@ -1027,7 +1027,7 @@ onActivated(() => {
 }
 .el-dropdown-menu__item {
   a {
-    color: #606266;
+    color: var(--prev-color-text-primary);
   }
 }
 .label_width {

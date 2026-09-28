@@ -338,9 +338,9 @@ onBeforeUnmount(stopGenerate);
   max-height: 400px;
   overflow-y: auto;
   padding: 12px 16px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--prev-border-color-base);
   border-radius: 4px;
-  background: #fafafa;
+  background: var(--prev-bg-color);
   font-size: 14px;
   line-height: 1.7;
   :deep() {
@@ -366,7 +366,7 @@ onBeforeUnmount(stopGenerate);
       color: #666;
     }
     code {
-      background: #f1f1f1;
+      background: var(--prev-bg-color);
       padding: 1px 4px;
       border-radius: 3px;
     }
