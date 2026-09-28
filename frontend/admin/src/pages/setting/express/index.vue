@@ -5,7 +5,7 @@
         <el-tab-pane label="基础设置" name="config">
           <el-form :model="configForm" label-width="140px" v-loading="configLoading" class="tab-content">
             <el-divider content-position="left">打印设置</el-divider>
-            <el-form-item label="电子面单打印">
+            <el-form-item label="电子面单打印：">
               <el-switch
                 v-model="configForm.open"
                 :active-value="1"
@@ -15,30 +15,30 @@
                 class="defineSwitch"
               />
             </el-form-item>
-            <el-form-item label="云打印机编号">
+            <el-form-item label="云打印机编号：">
               <el-input v-model="configForm.siid" placeholder="请输入云打印机编号" class="field-md" />
               <div class="form-tip">不填写时返回面单图片，由管理员手动打印。</div>
             </el-form-item>
 
             <el-divider content-position="left">默认快递公司</el-divider>
-            <el-form-item label="快递公司编码">
+            <el-form-item label="快递公司编码：">
               <el-input v-model="configForm.com" placeholder="如：ZTO" class="field-md" />
             </el-form-item>
-            <el-form-item label="快递公司ID">
+            <el-form-item label="快递公司ID：">
               <el-input v-model="configForm.id" placeholder="请输入快递公司ID" class="field-md" />
             </el-form-item>
-            <el-form-item label="默认模板ID">
+            <el-form-item label="默认模板ID：">
               <el-input v-model="configForm.temp_id" placeholder="请输入面单模板ID" class="field-md" />
             </el-form-item>
 
             <el-divider content-position="left">默认寄件人</el-divider>
-            <el-form-item label="发货人姓名">
+            <el-form-item label="发货人姓名：">
               <el-input v-model="configForm.to_name" placeholder="请输入发货人姓名" class="field-md" />
             </el-form-item>
-            <el-form-item label="发货人电话">
+            <el-form-item label="发货人电话：">
               <el-input v-model="configForm.to_tel" placeholder="请输入发货人电话" class="field-md" />
             </el-form-item>
-            <el-form-item label="发货人地址">
+            <el-form-item label="发货人地址：">
               <el-input v-model="configForm.to_address" placeholder="请输入发货人详细地址" class="field-lg" />
             </el-form-item>
             <el-form-item>
