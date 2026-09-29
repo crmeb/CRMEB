@@ -29,6 +29,13 @@ class ProductController extends AuthController
         $where = $this->request->getMore([
             ['store_name', ''],
             ['cate_id', ''],
+            ['spec_type', ''],
+            ['is_gift', ''],
+            ['vip_product', ''],
+            ['price_s', []],
+            ['stock_s', []],
+            ['sales_s', []],
+            ['time', ''],
             ['page', 1],
             ['limit', 20],
             ['type', '1'],
