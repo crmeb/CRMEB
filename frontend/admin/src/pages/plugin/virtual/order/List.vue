@@ -1,28 +1,30 @@
 <template>
   <div class="virtual-order-list">
-    <el-card shadow="never" :body-style="{ padding: '16px 20px' }">
-      <el-form :inline="true" @submit.prevent="onSearch">
-        <el-form-item label="订单号">
-          <el-input
-            v-model="search.order_no"
-            placeholder="订单号"
-            clearable
-            @keyup.enter="onSearch"
-            style="width: 220px"
-          />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="search.status" clearable placeholder="全部" style="width: 120px">
-            <el-option label="待付款" value="pending_payment" />
-            <el-option label="已完成" value="completed" />
-            <el-option label="已关闭" value="closed" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button @click="onReset">重置</el-button>
-        </el-form-item>
-      </el-form>
+    <el-card shadow="never" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form label-width="80px" label-position="right" inline @submit.prevent="onSearch">
+          <el-form-item label="订单号：">
+            <el-input
+              v-model="search.order_no"
+              placeholder="订单号"
+              clearable
+              @keyup.enter="onSearch"
+              class="form_content_width"
+            />
+          </el-form-item>
+          <el-form-item label="状态：">
+            <el-select v-model="search.status" clearable placeholder="全部" class="form_content_width">
+              <el-option label="待付款" value="pending_payment" />
+              <el-option label="已完成" value="completed" />
+              <el-option label="已关闭" value="closed" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-db-click @click="onSearch">查询</el-button>
+            <el-button v-db-click @click="onReset">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
     </el-card>
 
     <el-card shadow="never" :body-style="{ padding: '12px 20px' }" class="mt16">

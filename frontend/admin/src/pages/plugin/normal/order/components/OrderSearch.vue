@@ -1,6 +1,6 @@
 <template>
   <el-card shadow="never" :body-style="{ padding: 0 }">
-    <div class="table_box">
+    <div class="padding-add">
       <el-form ref="searchFormRef" :model="formData" label-width="80px" label-position="right" inline @submit.prevent>
         <el-form-item label="订单号：">
           <el-input
@@ -8,11 +8,17 @@
             placeholder="订单号"
             clearable
             @keyup.enter="handleSearch"
-            style="width: 180px"
+            class="form_content_width"
           />
         </el-form-item>
         <el-form-item label="订单类型：">
-          <el-select v-model="formData.type" clearable @change="handleSearch" placeholder="全部" style="width: 120px">
+          <el-select
+            v-model="formData.type"
+            clearable
+            @change="handleSearch"
+            placeholder="全部"
+            class="form_content_width"
+          >
             <el-option label="全部订单" value="" />
             <el-option label="普通订单" value="1" />
             <el-option label="拼团订单" value="2" />
@@ -27,7 +33,7 @@
             clearable
             @change="handleSearch"
             placeholder="全部"
-            style="width: 120px"
+            class="form_content_width"
           >
             <el-option label="全部" value="" />
             <el-option v-for="item in payTypeOptions" :key="item.key" :value="item.key" :label="item.label" />
@@ -35,6 +41,7 @@
         </el-form-item>
         <el-form-item label="创建时间：">
           <date-range-picker
+            width="250px"
             clearable
             v-model="timeVal"
             @change="onchangeTime"
@@ -47,7 +54,7 @@
             clearable
             v-model="formData.keyword"
             placeholder="订单号/联系人/UID"
-            style="width: 220px"
+            class="form_content_width"
             @keyup.enter="handleSearch"
           >
             <template #prepend
@@ -147,9 +154,3 @@ function onchangeTime(e) {
   handleSearch();
 }
 </script>
-
-<style lang="scss" scoped>
-.table_box {
-  padding: 20px;
-}
-</style>
