@@ -37,18 +37,16 @@
         @page-change="onPageChange"
       />
 
-      <!-- 发货弹窗组件 -->
+      <!-- 发货弹窗组件（不可加 v-if：挂载时 visible 已为 true 会因 EP 弹窗非立即监听而无法打开） -->
       <OrderSend
-        v-if="sendVisible"
         :visible="sendVisible"
         :order-no="currentOrderNo"
         @success="onShipmentSuccess"
         @close="sendVisible = false"
       />
 
-      <!-- 备注弹窗组件 -->
+      <!-- 备注弹窗组件（同上，禁用 v-if 挂载式写法） -->
       <OrderRemark
-        v-if="remarkVisible"
         :visible="remarkVisible"
         :order-id="remarkOrderId"
         :remark="remarkContent"
@@ -56,9 +54,8 @@
         @close="remarkVisible = false"
       />
 
-      <!-- 修改地址弹窗组件 -->
+      <!-- 修改地址弹窗组件（同上，禁用 v-if 挂载式写法） -->
       <OrderAddress
-        v-if="addressVisible"
         :visible="addressVisible"
         :order-no="addressOrderNo"
         :contact-name="addressName"
@@ -68,9 +65,8 @@
         @close="addressVisible = false"
       />
 
-      <!-- 退款弹窗组件 -->
+      <!-- 退款弹窗组件（同上，禁用 v-if 挂载式写法） -->
       <OrderRefund
-        v-if="refundVisible"
         :visible="refundVisible"
         :order-no="refundOrderNo"
         @success="onRefundSuccess"
