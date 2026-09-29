@@ -30,22 +30,24 @@
     <el-card shadow="never" :body-style="{ padding: '12px 20px' }" class="mt16">
       <el-table :data="list" v-loading="loading" stripe empty-text="暂无数据">
         <el-table-column label="订单号" min-width="200" prop="order_no" />
-        <el-table-column label="商品ID" min-width="90" prop="product_id" />
+        <el-table-column label="商品名称" min-width="180">
+          <template #default="{ row }">{{ row.title || '--' }}</template>
+        </el-table-column>
+        <el-table-column label="规格" min-width="90">
+          <template #default="{ row }">{{ row.extra_info?.items?.[0]?.sku || '--' }}</template>
+        </el-table-column>
+        <el-table-column label="金额" min-width="100">
+          <template #default="{ row }">
+            <span style="color: #ed4014; font-weight: bold">¥{{ row.pay_price || '0.00' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" min-width="120">
           <template #default="{ row }">
             <el-tag :type="statusType(row.status)">{{ statusLabel(row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="发货时间" min-width="160">
-          <template #default="{ row }">{{ dateFormat(row.send_time) }}</template>
-        </el-table-column>
         <el-table-column label="完成时间" min-width="160">
           <template #default="{ row }">{{ dateFormat(row.complete_time) }}</template>
-        </el-table-column>
-        <el-table-column label="退款状态" min-width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.refund_status ? 'danger' : 'info'">{{ row.refund_status ? '退款中' : '正常' }}</el-tag>
-          </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="160">
           <template #default="{ row }">{{ dateFormat(row.add_time) }}</template>

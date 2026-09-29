@@ -42,5 +42,10 @@ return [
         'OrderCenterDetailExtend' => [
             \modules\product\virtual\listener\OrderCenterDetailExtendListener::class,
         ],
+
+        /** 订单中台列表扩展：合并网盘订单扩展字段（product_id/status/send_time/complete_time） */
+        'OrderCenterListExtend' => [
+            \modules\product\virtual\listener\OrderCenterListExtendListener::class,
+        ],
     ],
 ];

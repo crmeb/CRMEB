@@ -25,14 +25,21 @@ class OrderController extends AuthController
     /**
      * 订单列表
      * 从中台表查询 product_type=virtual 的订单
+     * 页面搜索契约：order_no 前缀搜索（走中台 keyword）、status 对应中台 status_code
      * @param OrderCenterServices $centerServices
      * @return \think\Response
      */
     public function list(OrderCenterServices $centerServices)
     {
-        $where = array_merge($this->request->param(), [
-            'product_type' => 'virtual',
-        ]);
+        $where = ['product_type' => 'virtual'];
+        $orderNo = trim((string) $this->request->param('order_no', ''));
+        if ($orderNo !== '') {
+            $where['keyword'] = $orderNo;
+        }
+        $status = (string) $this->request->param('status', '');
+        if ($status !== '') {
+            $where['status_code'] = $status;
+        }
         $page = (int) $this->request->param('page', 1);
         $limit = (int) $this->request->param('limit', 20);
         $list = $centerServices->getAdminList($where, $page, $limit);
