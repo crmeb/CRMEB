@@ -187,10 +187,14 @@ body {
 }
 
 /* 表单提示文字：各页面散落的 .tip/.tips-info 统一收敛；
+   上下结构——独占一行显示在控件下方，无左边距（width:100% 而非 flex-basis，
+   兼容 flex-column 容器中 basis 作用于高度轴的场景）；
    tips-info 同时是后端 form-create schema 下发的类名，保持同形态 */
 .tip,
 .tips-info {
-  margin-left: 12px;
+  display: block;
+  width: 100%;
+  margin-left: 0;
   margin-top: 3px;
   font-size: 12px;
   line-height: 18px;
