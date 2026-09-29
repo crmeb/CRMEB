@@ -39,6 +39,9 @@
       <el-table-column label="订单号" width="180">
         <template #default="scope">
           <div>{{ scope.row.order_no }}</div>
+          <div style="font-size: 11px; color: var(--prev-color-text-secondary)">
+            [{{ getShippingTypeLabel(scope.row) }}]
+          </div>
           <span v-if="scope.row.is_del === 1" style="color: #ed4014; font-size: 12px">用户已删除</span>
           <span v-if="scope.row.is_cancel === 1 && scope.row.is_del === 0" style="color: #ed4014; font-size: 12px"
             >用户已取消</span
@@ -140,7 +143,9 @@
               >物流查询</a
             >
           </template>
-          <span v-else style="color: var(--prev-color-text-secondary)">未发货</span>
+          <span v-else style="color: var(--prev-color-text-secondary)">{{
+            isPickupOrder(scope.row) ? '--' : '未发货'
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="160">
@@ -368,8 +373,23 @@ function canConfirm(row) {
   return statusCode === 'pending_receive' || statusCode === 'pending_pickup';
 }
 
+/**
+ * 判断是否到店自提订单
+ */
+function isPickupOrder(row) {
+  return row?.extra_info?.delivery_type === 'pickup' || row?.shipping_type === 2;
+}
+
+/**
+ * 配送方式文案（shipping_type：1快递 2自提 3上门）
+ */
+function getShippingTypeLabel(row) {
+  const type = Number(row?.shipping_type ?? 1);
+  return type === 2 ? '到店自提' : type === 3 ? '上门服务' : '快递配送';
+}
+
 function getConfirmLabel(row) {
-  return row?.extra_info?.delivery_type === 'pickup' || row?.shipping_type === 2 ? '到店核销' : '确认收货';
+  return isPickupOrder(row) ? '到店核销' : '确认收货';
 }
 
 /**

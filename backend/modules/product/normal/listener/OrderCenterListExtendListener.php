@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace modules\product\normal\listener;
 
 use modules\product\normal\dao\NormalOrderDao;
+use think\facade\Log;
 
 /**
  * 订单中心列表扩展监听器
@@ -53,36 +54,37 @@ class OrderCenterListExtendListener
             }
         }
         $missingOrderNos = array_filter(array_unique($missingOrderNos));
-        if (empty($missingOrderNos)) {
-            return;
-        }
 
-        // 批量查询扩展表获取配送信息
-        try {
-            /** @var NormalOrderDao $orderDao */
-            $orderDao = app(NormalOrderDao::class);
-            $extDeliveryMap = $orderDao->getModel()
-                ->whereIn('order_no', $missingOrderNos)
-                ->field('order_no, delivery_name, delivery_id, delivery_type')
-                ->select()
-                ->toArray();
-            $mappedExtDeliveries = [];
-            foreach ($extDeliveryMap as $row) {
-                $orderNo = (string)($row['order_no'] ?? '');
-                if ($orderNo === '') {
-                    continue;
+        // 批量查询扩展表获取配送信息（仅存在缺失时查询；查询失败不阻断归一化，仍用 extra_info/中台数据兜底）
+        $mappedExtDeliveries = [];
+        if (!empty($missingOrderNos)) {
+            try {
+                /** @var NormalOrderDao $orderDao */
+                $orderDao = app(NormalOrderDao::class);
+                $extDeliveryMap = $orderDao->getDb()
+                    ->whereIn('order_no', $missingOrderNos)
+                    ->field('order_no, delivery_name, delivery_id, delivery_type')
+                    ->select()
+                    ->toArray();
+                foreach ($extDeliveryMap as $row) {
+                    $orderNo = (string)($row['order_no'] ?? '');
+                    if ($orderNo === '') {
+                        continue;
+                    }
+                    $mappedExtDeliveries[$orderNo] = [
+                        'delivery_name' => (string)($row['delivery_name'] ?? ''),
+                        'delivery_id'   => (string)($row['delivery_id'] ?? ''),
+                        'delivery_type' => (string)($row['delivery_type'] ?? ''),
+                    ];
                 }
-                $mappedExtDeliveries[$orderNo] = [
-                    'delivery_name' => (string)($row['delivery_name'] ?? ''),
-                    'delivery_id'   => (string)($row['delivery_id'] ?? ''),
-                    'delivery_type' => (string)($row['delivery_type'] ?? ''),
-                ];
+            } catch (\Throwable $e) {
+                Log::error('[Normal] OrderCenterListExtend 读取扩展表配送信息失败: ' . $e->getMessage());
             }
-        } catch (\Throwable $e) {
-            return;
         }
 
-        // 回填到列表数据（统一顶层 + nested 格式）
+        // 回填到列表数据（统一顶层 + nested 格式），对所有 normal 订单执行，
+        // 保证顶层始终存在 delivery_type/delivery_name/delivery_id，前端列表按顶层字段渲染；
+        // 即使本页全部订单配送信息完整，也不能跳过本循环，否则前端会把已发货订单误判为未发货
         foreach ($list as &$item) {
             if (($item['source_type'] ?? '') !== 'normal_order') {
                 continue;
