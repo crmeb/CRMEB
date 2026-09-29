@@ -95,10 +95,17 @@
             <span>{{ scope.row.stock || 0 }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" min-width="100">
+        <el-table-column label="上架状态" min-width="100">
           <template #default="scope">
             <el-tag :type="scope.row.is_show ? 'success' : 'info'">
               {{ scope.row.is_show ? '上架' : '下架' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="数据状态" min-width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.is_del ? 'danger' : 'success'">
+              {{ scope.row.is_del ? '回收站' : '正常' }}
             </el-tag>
           </template>
         </el-table-column>
