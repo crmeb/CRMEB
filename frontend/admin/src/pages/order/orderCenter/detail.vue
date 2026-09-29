@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import __asset_order_icon_0 from '@/assets/images/order_icon.png';
@@ -69,6 +69,9 @@ import DetailLogistics from './components/DetailLogistics';
 
 defineOptions({ name: 'orderCenterDetail' });
 
+// 传入 id 时作为抽屉内嵌组件使用；不传时为路由整页（取 route.params.id）
+const props = defineProps({ id: { type: [String, Number], default: '' } });
+
 const route = useRoute();
 
 const detailData = ref(null);
@@ -79,7 +82,7 @@ const logisticsVisible = ref(false);
 const logisticsData = ref([]);
 
 function loadDetail() {
-  const id = route.params.id;
+  const id = props.id || route.params.id;
   if (!id) return;
   detailLoading.value = true;
   orderCenterDetail(id)
@@ -135,6 +138,15 @@ function formatDate(date) {
 onMounted(() => {
   loadDetail();
 });
+
+watch(
+  () => props.id,
+  (val) => {
+    if (val) loadDetail();
+  }
+);
+
+defineExpose({ loadDetail });
 </script>
 
 <style lang="scss" scoped>
@@ -179,6 +191,8 @@ onMounted(() => {
 
   .list {
     display: flex;
+    flex-wrap: wrap;
+    row-gap: 12px;
     margin-top: 20px;
     overflow: hidden;
     list-style: none;

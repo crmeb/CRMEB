@@ -73,8 +73,8 @@
       </el-table-column>
       <el-table-column label="用户信息" min-width="150">
         <template #default="scope">
-          <div>{{ scope.row.contact_name || scope.row.real_name || '--' }}</div>
-          <div>{{ scope.row.contact_phone || scope.row.user_phone || '--' }}</div>
+          <div>{{ scope.row.nickname || '--' }}</div>
+          <div>{{ scope.row.user_phone || '--' }}</div>
         </template>
       </el-table-column>
       <el-table-column label="订单金额" min-width="130">

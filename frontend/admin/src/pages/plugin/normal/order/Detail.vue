@@ -74,13 +74,13 @@
                 <el-col :span="8"
                   ><div class="detail-item">
                     <span class="label">用户名称：</span
-                    ><span class="value">{{ detailData.real_name || detailData.contact?.name || '--' }}</span>
+                    ><span class="value">{{ detailData.nickname || '--' }}</span>
                   </div></el-col
                 >
                 <el-col :span="8"
                   ><div class="detail-item">
                     <span class="label">联系电话：</span
-                    ><span class="value">{{ detailData.user_phone || detailData.contact?.phone || '--' }}</span>
+                    ><span class="value">{{ detailData.user_phone || '--' }}</span>
                   </div></el-col
                 >
               </el-row>
@@ -180,7 +180,7 @@
                 <el-col :span="8"
                   ><div class="detail-item">
                     <span class="label">收货电话：</span
-                    ><span class="value">{{ detailData.contact?.phone || detailData.user_phone || '--' }}</span>
+                    ><span class="value">{{ detailData.contact?.phone || '--' }}</span>
                   </div></el-col
                 >
                 <el-col :span="8"

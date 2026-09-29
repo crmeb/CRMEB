@@ -198,8 +198,8 @@
         </el-table-column>
         <el-table-column label="用户信息" min-width="150">
           <template #default="scope">
-            <div>{{ scope.row.contact_name || '--' }}</div>
-            <div>{{ scope.row.contact_phone || '--' }}</div>
+            <div>{{ scope.row.nickname || '--' }}</div>
+            <div>{{ scope.row.user_phone || '--' }}</div>
           </template>
         </el-table-column>
         <el-table-column label="订单金额" min-width="120">
@@ -267,12 +267,14 @@
         </div></template
       >
     </el-dialog>
+    <el-drawer v-model="detailDrawerVisible" title="订单详情" size="720px" @opened="onDetailDrawerOpened">
+      <OrderCenterDetail :id="detailOrderId" ref="orderDetailRef" />
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   orderCenterList,
@@ -282,12 +284,9 @@ import {
   orderCenterCategories,
   orderCenterFilterOptions,
 } from '@/api/orderCenter';
-import setting from '@/setting';
+import OrderCenterDetail from './detail.vue';
 
 defineOptions({ name: 'orderCenter' });
-
-const router = useRouter();
-const routePre = setting.routePre;
 
 const searchForm = ref({
   order_category: '',
@@ -308,6 +307,9 @@ const loading = ref(false);
 const statData = ref({});
 const remarkModal = ref(false);
 const remarkForm = ref({ id: 0, remark: '' });
+const detailDrawerVisible = ref(false);
+const detailOrderId = ref(0);
+const orderDetailRef = ref(null);
 const statusTab = ref('');
 const categoryOptions = ref([]);
 const productTypeOptions = ref([]);
@@ -408,16 +410,14 @@ function handleReset() {
 }
 
 function viewDetail(row) {
-  const routeMap = {
-    normal: routePre + '/product/normal/order/detail/',
-    virtual: routePre + '/product/virtual/order/detail/',
-    cardkey: routePre + '/product/cardkey/order/detail/',
-  };
-  const path = routeMap[row.product_type];
-  if (path) {
-    router.push({ path: path + row.order_no });
-  } else {
-    router.push({ path: routePre + '/order/center/detail/' + row.id });
+  detailOrderId.value = row.id;
+  detailDrawerVisible.value = true;
+}
+
+function onDetailDrawerOpened() {
+  // 抽屉打开后触发详情组件重新加载，保证同一订单重复打开时数据最新
+  if (orderDetailRef.value) {
+    orderDetailRef.value.loadDetail();
   }
 }
 

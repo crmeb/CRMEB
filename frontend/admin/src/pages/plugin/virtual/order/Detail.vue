@@ -96,13 +96,13 @@
                 <el-col :span="8"
                   ><div class="detail-item">
                     <span class="label">用户名称：</span
-                    ><span class="value">{{ orderInfo.real_name || orderInfo.contact?.name || '--' }}</span>
+                    ><span class="value">{{ orderInfo.nickname || '--' }}</span>
                   </div></el-col
                 >
                 <el-col :span="8"
                   ><div class="detail-item">
                     <span class="label">联系电话：</span
-                    ><span class="value">{{ orderInfo.user_phone || orderInfo.contact?.phone || '--' }}</span>
+                    ><span class="value">{{ orderInfo.user_phone || '--' }}</span>
                   </div></el-col
                 >
               </el-row>

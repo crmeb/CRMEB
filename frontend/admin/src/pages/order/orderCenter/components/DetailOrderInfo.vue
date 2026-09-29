@@ -28,11 +28,11 @@
       <ul class="list">
         <li class="item">
           <div>用户名称：</div>
-          <div class="value">{{ data.real_name || data.contact?.name || '--' }}</div>
+          <div class="value">{{ data.nickname || '--' }}</div>
         </li>
         <li class="item">
           <div>绑定电话：</div>
-          <div class="value">{{ data.user_phone || data.contact?.phone || '--' }}</div>
+          <div class="value">{{ data.user_phone || '--' }}</div>
         </li>
       </ul>
     </div>
@@ -60,7 +60,7 @@
         </li>
         <li class="item">
           <div>收货电话：</div>
-          <div class="value">{{ data.contact?.phone || data.user_phone || '--' }}</div>
+          <div class="value">{{ data.contact?.phone || '--' }}</div>
         </li>
         <li class="item">
           <div>收货地址：</div>

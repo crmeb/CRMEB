@@ -423,6 +423,10 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         }
         $detail = $detail->toArray();
         $detail['extra_info'] = $this->parseExtraInfo($detail['extra_info']);
+        // 下单用户昵称/绑定电话（eb_user），供详情"用户信息"区展示
+        $detailUser = User::where('uid', (int)$detail['uid'])->field('nickname,phone')->find();
+        $detail['nickname'] = $detailUser['nickname'] ?? '';
+        $detail['user_phone'] = $detailUser['phone'] ?? '';
         // 解析 JSON 字段
         if (!empty($detail['custom_form'])) {
             $detail['custom_form'] = $this->parseExtraInfo($detail['custom_form']);
@@ -2408,6 +2412,18 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 ]))
                 : ($addr ?: '');
             unset($item['extra_info']['business_status']);
+        }
+
+        // 批量注入下单用户昵称/电话，供列表页"用户信息"列展示
+        $uids = array_values(array_unique(array_filter(array_column($list, 'uid'))));
+        if (!empty($uids)) {
+            $userMap = User::where('uid', 'in', $uids)->column('nickname,phone', 'uid');
+            foreach ($list as &$item) {
+                $user = $userMap[$item['uid']] ?? [];
+                $item['nickname'] = $user['nickname'] ?? '';
+                $item['user_phone'] = $user['phone'] ?? '';
+            }
+            unset($item);
         }
 
         // 批量查询并合并售后状态到列表

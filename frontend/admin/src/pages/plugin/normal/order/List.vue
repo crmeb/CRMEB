@@ -448,7 +448,7 @@ function onRemarkSuccess() {
 function openEditAddress(row) {
   addressOrderNo.value = row.order_no;
   addressName.value = row.contact_name || row.real_name || '';
-  addressPhone.value = row.contact_phone || row.user_phone || '';
+  addressPhone.value = row.contact_phone || '';
   addressDetail.value = row.user_address || '';
   addressVisible.value = true;
 }
