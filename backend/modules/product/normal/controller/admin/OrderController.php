@@ -26,6 +26,7 @@ use modules\product\normal\service\OrderServices;
 use think\facade\Log;
 use app\services\pay\PayServices;
 use crmeb\trade\order\type\OrderTypeAdapterInterface;
+use crmeb\exceptions\ApiException;
 
 /**
  * 实物商品后台订单控制器
@@ -782,6 +783,9 @@ class OrderController extends AuthController
 
             $orderServices->confirmReceipt($orderNo);
             return app('json')->success('确认收货成功');
+        } catch (ApiException $e) {
+            // 业务校验类异常返回具体原因（如"该订单已被核销"），不吞成通用文案
+            return app('json')->fail($e->getMessage());
         } catch (\Throwable $e) {
             Log::error('[NormalOrder] confirmReceipt failed: ' . $e->getMessage());
             return app('json')->fail('确认收货失败');

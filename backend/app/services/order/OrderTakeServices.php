@@ -150,6 +150,10 @@ class OrderTakeServices extends BaseService
      */
     public function storeProductOrderUserTakeDelivery($order, bool $isTran = true, ?string $takeStatus = null)
     {
+        // DAO get() 返回 Model（如核销链路直接传入），事务内 array_replace 要求 array
+        if (is_object($order)) {
+            $order = $order->toArray();
+        }
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->get((int)$order['uid']);
