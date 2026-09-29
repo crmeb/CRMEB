@@ -17,6 +17,7 @@ use crmeb\basic\BaseService;
 use crmeb\trade\order\type\OrderTypeRegistry;
 use crmeb\trade\order\type\OrderTypeAdapterInterface;
 use crmeb\trade\order\type\OrderCenterSyncInterface;
+use crmeb\trade\mode\TradeModeRegistry;
 use crmeb\trade\product\ProductTypeRegistry;
 use crmeb\utils\SnowflakeIdGenerator;
 use app\dao\driver\pay\PayChannelDao;
@@ -2377,6 +2378,19 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             $item['refund_status_text'] = OrderCenter::$refundStatusMap[$item['refund_status']] ?? '未知';
             // 支付方式
             $item['pay_type_name'] = $this->getPayTypeName($item['pay_type']);
+            // 活动类型含义文案：normal 非活动显示空，其他从交易模式注册中心取标签，未注册的兜底原始值
+            $activityType = (string)($item['activity_type'] ?? '');
+            $item['activity_type_text'] = '';
+            if ($activityType && $activityType !== 'normal') {
+                try {
+                    $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+                    $item['activity_type_text'] = $tradeModeRegistry->has($activityType)
+                        ? $tradeModeRegistry->get($activityType)->getLabel()
+                        : $activityType;
+                } catch (\Throwable $e) {
+                    $item['activity_type_text'] = $activityType;
+                }
+            }
             // 订单扩展信息
             $item['extra_info'] = $this->parseExtraInfo($item['extra_info']);
             $item['business_status'] = $item['extra_info']['business_status'] ?? null;

@@ -170,7 +170,7 @@
         </el-table-column>
         <el-table-column label="活动类型" width="120">
           <template #default="scope">
-            <span>{{ scope.row.activity_type || '--' }}</span>
+            <span>{{ scope.row.activity_type_text || '--' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="商品信息" min-width="250">
