@@ -409,9 +409,10 @@ class ProductServices
             ->select()
             ->toArray();
 
-        // 字段映射：eb_product_center.name → store_name
+        // 字段映射：eb_product_center列名 → 前端期望字段名
         foreach ($list as &$item) {
             $item['store_name'] = $item['name'] ?? '';
+            $item['sort'] = $item['sort_order'] ?? 0;
         }
         unset($item);
 
