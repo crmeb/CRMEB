@@ -577,9 +577,6 @@ function removePicture(att_id) {
 }
 </script>
 <style lang="scss" scoped>
-.content_font {
-  color: #2b85e4;
-}
 .search {
   :deep(.ivu-form-item-content) {
     margin-left: 0 !important;
