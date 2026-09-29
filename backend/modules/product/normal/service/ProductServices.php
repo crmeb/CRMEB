@@ -352,7 +352,7 @@ class ProductServices
 
     /**
      * 获取实物商品列表（分页 + 状态Tab筛选）
-     * @param array $where [store_name, page, limit, type]
+     * @param array $where [store_name, cate_id, page, limit, type]
      * @return array ['list' => [], 'count' => int]
      */
     public function getList(array $where): array
@@ -360,7 +360,20 @@ class ProductServices
         $page  = (int)($where['page'] ?? 1);
         $limit = (int)($where['limit'] ?? 20);
 
-        $query = $this->centerDao->search()->where('product_type', 'normal');
+        // 通用筛选交给中台模型搜索器（store_name/spec_type/is_gift/vip_product/price_s/stock_s/sales_s/time）
+        // cate_id 与 type 不能传入搜索器：cate_id 需按实物口径双向展开（通用搜索器单值走 FIND_IN_SET、数组走旧透视表），
+        // type 的通用搜索器 tab 口径与实物模块不同（如搜索器 case4=售罄、case5=有库存）
+        $searchWhere = [
+            'store_name'  => $where['store_name'] ?? '',
+            'spec_type'   => $where['spec_type'] ?? '',
+            'is_gift'     => $where['is_gift'] ?? '',
+            'vip_product' => $where['vip_product'] ?? '',
+            'price_s'     => $where['price_s'] ?? [],
+            'stock_s'     => $where['stock_s'] ?? [],
+            'sales_s'     => $where['sales_s'] ?? [],
+            'time'        => $where['time'] ?? '',
+        ];
+        $query = $this->centerDao->search($searchWhere, false)->where('product_type', 'normal');
 
         // 状态筛选
         switch ($where['type'] ?? '1') {
@@ -384,9 +397,10 @@ class ProductServices
                 break;
         }
 
-        // 关键词搜索
-        if (!empty($where['store_name'])) {
-            $query->where('name|id', 'like', '%' . $where['store_name'] . '%');
+        // 分类筛选：商品允许存任意层级分类且仅存单个 cate_id，需双向匹配
+        // （选中分类自身 + 全部子孙分类 + 全部祖先分类）
+        if (!empty($where['cate_id'])) {
+            $query->where('cate_id', 'in', $this->getCateMatchIds((int)$where['cate_id']));
         }
 
         $count = (clone $query)->count();
@@ -402,6 +416,44 @@ class ProductServices
         unset($item);
 
         return compact('list', 'count');
+    }
+
+    /**
+     * 获取与指定分类匹配的全部分类 ID（自身 + 全部子分类 + 全部祖先分类）
+     * 商品保存允许选任意层级且仅存单个 cate_id，搜索需双向展开：
+     * 选父级要命中存子级的商品，选子级也要命中存父级的商品
+     * 分类数量少（eb_store_category），一次取回在内存展开
+     * @param int $cateId
+     * @return array
+     */
+    protected function getCateMatchIds(int $cateId): array
+    {
+        $ids    = [$cateId];
+        $pidMap = Db::name('store_category')->column('pid', 'id');
+
+        // 向下展开全部子分类
+        $queue = [$cateId];
+        while ($queue) {
+            $pid = array_pop($queue);
+            foreach ($pidMap as $id => $parentPid) {
+                if ((int)$parentPid === $pid && !in_array($id, $ids, true)) {
+                    $ids[]   = (int)$id;
+                    $queue[] = (int)$id;
+                }
+            }
+        }
+
+        // 向上回溯祖先分类
+        $node = $cateId;
+        while (isset($pidMap[$node]) && (int)$pidMap[$node] > 0) {
+            $node = (int)$pidMap[$node];
+            if (in_array($node, $ids, true)) {
+                break;
+            }
+            $ids[] = $node;
+        }
+
+        return $ids;
     }
 
     /**
