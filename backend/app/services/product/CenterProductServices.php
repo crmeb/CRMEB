@@ -110,6 +110,24 @@ class CenterProductServices extends BaseService
      */
     public function getList(array $where, int $page = 0, int $limit = 0)
     {
+        // 中台统一列表契约：keyword 等价 store_name；is_show/is_del 为页面显式状态筛选，
+        // 与通用 type tab 口径互斥（type 会强制 is_show=1/is_del=0）；'' 表示全部不过滤，
+        // 空值必须移除，避免搜索器对空值做松散比较（如 is_show='' 在 MySQL 中等值 0）
+        if (($where['store_name'] ?? '') === '' && ($where['keyword'] ?? '') !== '') {
+            $where['store_name'] = $where['keyword'];
+        }
+        unset($where['keyword']);
+        $hasStatusFilter = false;
+        foreach (['is_show', 'is_del'] as $statusKey) {
+            if (($where[$statusKey] ?? '') === '') {
+                unset($where[$statusKey]);
+            } else {
+                $hasStatusFilter = true;
+            }
+        }
+        if ($hasStatusFilter || (string)($where['type'] ?? '') === '') {
+            unset($where['type']);
+        }
         $where['store_stock'] = sys_config('store_stock') > 0 ? sys_config('store_stock') : 2;
         if ($page <= 0 || $limit <= 0) {
             [$page, $limit] = $this->getPageValue();

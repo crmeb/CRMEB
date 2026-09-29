@@ -539,14 +539,18 @@ class CenterProductController extends AuthController
 
     /**
      * 统一商品列表（中台路由）
+     * 页面契约：keyword 搜索、product_type、is_show 上架状态、is_del 数据状态（'' 均表示全部）
      * @return \think\Response
      */
     public function list()
     {
         $where = $this->request->getMore([
             ['store_name', ''],
+            ['keyword', ''],
             ['cate_id', ''],
-            ['type', 1],
+            ['is_show', ''],
+            ['is_del', ''],
+            ['type', ''],
             ['sales', 'normal'],
             ['spec_type', ''],
             ['is_gift', ''],
