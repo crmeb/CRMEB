@@ -143,7 +143,7 @@ watch(
   () => props.id,
   (val) => {
     if (val) loadDetail();
-  }
+  },
 );
 
 defineExpose({ loadDetail });

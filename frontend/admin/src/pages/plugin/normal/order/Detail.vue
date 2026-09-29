@@ -73,14 +73,12 @@
               <el-row :gutter="24" class="detail-grid">
                 <el-col :span="8"
                   ><div class="detail-item">
-                    <span class="label">用户名称：</span
-                    ><span class="value">{{ detailData.nickname || '--' }}</span>
+                    <span class="label">用户名称：</span><span class="value">{{ detailData.nickname || '--' }}</span>
                   </div></el-col
                 >
                 <el-col :span="8"
                   ><div class="detail-item">
-                    <span class="label">联系电话：</span
-                    ><span class="value">{{ detailData.user_phone || '--' }}</span>
+                    <span class="label">联系电话：</span><span class="value">{{ detailData.user_phone || '--' }}</span>
                   </div></el-col
                 >
               </el-row>

@@ -95,14 +95,12 @@
               <el-row :gutter="24" class="detail-grid">
                 <el-col :span="8"
                   ><div class="detail-item">
-                    <span class="label">用户名称：</span
-                    ><span class="value">{{ orderInfo.nickname || '--' }}</span>
+                    <span class="label">用户名称：</span><span class="value">{{ orderInfo.nickname || '--' }}</span>
                   </div></el-col
                 >
                 <el-col :span="8"
                   ><div class="detail-item">
-                    <span class="label">联系电话：</span
-                    ><span class="value">{{ orderInfo.user_phone || '--' }}</span>
+                    <span class="label">联系电话：</span><span class="value">{{ orderInfo.user_phone || '--' }}</span>
                   </div></el-col
                 >
               </el-row>
