@@ -207,7 +207,7 @@
         </el-table-column>
         <el-table-column label="排序" min-width="100">
           <template #default="scope">
-            <span>{{ scope.row.sort }}</span>
+            <span>{{ scope.row.sort_order }}</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="100">
