@@ -289,7 +289,7 @@ class UserMoneyServices extends BaseService
         foreach ($list as &$item) {
             $item['nickname'] = $nicknameArr[$item['uid']];
             if ($item['type'] == 'pay_product' || $item['type'] == 'pay_product_refund') {
-                $item['relation'] = $orderServices->value(['id' => $item['link_id']], 'order_id');
+                $item['relation'] = $orderServices->value(['id' => $item['link_id']], 'order_no');
             } elseif ($item['type'] == 'recharge' || $item['type'] == 'recharge_refund') {
                 /** @var UserRechargeServices $userRechargeServices */
                 $userRechargeServices = app()->make(UserRechargeServices::class);
