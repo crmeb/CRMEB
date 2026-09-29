@@ -3,7 +3,7 @@
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form
-          ref="formValidate"
+          ref="formRef"
           :model="formValidate"
           :label-width="labelWidth"
           label-position="right"

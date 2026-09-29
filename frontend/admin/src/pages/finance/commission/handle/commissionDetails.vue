@@ -15,7 +15,7 @@
         </div>
       </div>
       <el-divider direction="vertical" dashed />
-      <el-form ref="formValidate" label-width="75px" :label-position="labelPosition" class="tabform" @submit.prevent>
+      <el-form ref="formRef" label-width="75px" :label-position="labelPosition" class="tabform" @submit.prevent>
         <el-row :gutter="24">
           <!--                    <el-col :span="8">-->
           <!--                        <el-form-item label="订单号/昵称：">-->

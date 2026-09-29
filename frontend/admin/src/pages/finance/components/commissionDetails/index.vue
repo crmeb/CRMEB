@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form
-      ref="formValidate"
+      ref="formRef"
       :label-width="labelWidth"
       :label-position="labelPosition"
       class="tabform"

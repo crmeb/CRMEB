@@ -1,7 +1,7 @@
 <template>
   <div v-loading="spinShow">
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-form ref="formValidate" :model="formValidate" class="tabform" @submit.prevent>
+      <el-form ref="formRef" :model="formValidate" class="tabform" @submit.prevent>
         <el-row :gutter="24">
           <el-col :span="24">
             <el-form-item label="订单时间：">

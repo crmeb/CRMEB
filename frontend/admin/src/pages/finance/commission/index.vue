@@ -2,7 +2,7 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form ref="formValidate" :label-width="labelWidth" label-position="right" inline @submit.prevent>
+        <el-form ref="formRef" :label-width="labelWidth" label-position="right" inline @submit.prevent>
           <el-form-item label="昵称/ID：">
             <el-input placeholder="请输入" v-model="formValidate.nickname" clearable class="form_content_width" />
           </el-form-item>

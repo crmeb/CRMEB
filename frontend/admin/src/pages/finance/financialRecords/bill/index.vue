@@ -11,7 +11,7 @@
     </div>
     <el-card :bordered="false" shadow="never">
       <el-form
-        ref="formValidate"
+        ref="formRef"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"

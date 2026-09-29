@@ -8,7 +8,7 @@
     ></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form
-        ref="formValidate"
+        ref="formRef"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
