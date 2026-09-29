@@ -4,6 +4,7 @@
       <div class="acea-row row-middle">
         <span class="label_text">时间选择：</span>
         <date-range-picker
+          width="250px"
           clearable
           v-model="timeVal"
           :editable="false"

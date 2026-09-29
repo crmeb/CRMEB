@@ -50,7 +50,7 @@
       </el-form-item>
       <!-- 日期范围（提交时拆分为 {field}_start / {field}_end；统一走全局 dateRangePicker，内置快捷项） -->
       <el-form-item v-else-if="field.type === 'daterange'" :label="field.label">
-        <date-range-picker v-model="rangeModel[field.field]" value-format="YYYY-MM-DD" />
+        <date-range-picker v-model="rangeModel[field.field]" width="200px" value-format="YYYY-MM-DD" />
       </el-form-item>
       <!-- 未知类型按文本输入降级渲染 -->
       <el-form-item v-else :label="field.label">

@@ -41,6 +41,7 @@
       </div>
       <div class="acea-row">
         <date-range-picker
+          width="250px"
           clearable
           v-model="timeVal"
           :editable="false"

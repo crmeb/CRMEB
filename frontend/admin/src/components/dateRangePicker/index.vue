@@ -19,7 +19,8 @@
 /**
  * 日期范围选择器（全局封装）
  * @description 时间搜索统一入口：内置系统快捷项（今天/昨天/本月/上月/最近N天/本年/去年，来自 libs/timeOptions），
- * 默认宽度 320px（范围日期实际观感略宽于 280px 基准）并强制 flex-grow:0——EP 的 .el-input__wrapper 自带 flex-grow:1，
+ * 默认宽度 220px（弹窗等非筛选场景）；筛选行消费方一律显式传 width 对齐同行控件（250px 基准），
+ * 并强制 flex-grow:0——EP 的 .el-input__wrapper 自带 flex-grow:1，
  * 不压制会在 flex 搜索行内被拉伸占满。
  * 弹层定位：placement 默认 bottom-start（左对齐），并开启 preventOverflow 的 altAxis——
  * 视口右侧放不下时弹层被推回、右缘贴齐视口（等效右对齐），左侧溢出同理兜底；
@@ -33,8 +34,8 @@ defineOptions({ name: 'DateRangePicker', inheritAttrs: false });
 
 defineProps({
   modelValue: { type: Array, default: () => [] },
-  /** 选择器宽度，传空串则不设置（由外部样式控制）；默认对齐筛选控件基准宽 */
-  width: { type: String, default: '320px' },
+  /** 选择器宽度，传空串则不设置（由外部样式控制）；筛选行请显式传 width 对齐同行控件 */
+  width: { type: String, default: '220px' },
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);

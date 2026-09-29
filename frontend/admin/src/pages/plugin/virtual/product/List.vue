@@ -36,6 +36,7 @@
             <el-form-item label="添加时间">
               <date-range-picker
                 v-model="timeRange"
+                width="220px"
                 format="YYYY-MM-DD"
                 value-format="YYYY-MM-DD"
                 range-separator="~"

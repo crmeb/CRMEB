@@ -53,6 +53,7 @@
           </el-form-item>
           <el-form-item label="创建时间：">
             <date-range-picker
+              width="250px"
               clearable
               v-model="timeVal"
               @change="onchangeTime"
@@ -535,7 +536,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .form_content_width {
-  width: 200px;
+  width: 250px;
 }
 
 .tab {

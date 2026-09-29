@@ -12,6 +12,7 @@
         >
           <el-form-item label="评论时间：">
             <date-range-picker
+              width="250px"
               clearable
               v-model="timeVal"
               @change="onchangeTime"

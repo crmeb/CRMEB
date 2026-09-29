@@ -2,7 +2,13 @@
   <div class="normal-statistic" v-loading="loading">
     <el-card shadow="never" :bordered="false" class="filter-card">
       <div class="filter-row">
-        <date-range-picker v-model="timeValue" format="YYYY/MM/DD" value-format="YYYY/MM/DD" @change="changeTime" />
+        <date-range-picker
+          width="250px"
+          v-model="timeValue"
+          format="YYYY/MM/DD"
+          value-format="YYYY/MM/DD"
+          @change="changeTime"
+        />
         <el-button v-auth="['admin-normal-statistics-basic']" type="primary" v-db-click @click="loadData"
           >查询</el-button
         >

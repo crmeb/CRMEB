@@ -16,6 +16,7 @@
                 }}</el-radio-button>
               </el-radio-group>
               <date-range-picker
+                width="250px"
                 :editable="false"
                 clearable
                 @change="onchangeTime"

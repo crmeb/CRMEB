@@ -19,6 +19,7 @@
               class="form_content_width"
             />
             <date-range-picker
+              width="250px"
               v-else-if="item.type === 'date-picker'"
               :editable="false"
               clearabl

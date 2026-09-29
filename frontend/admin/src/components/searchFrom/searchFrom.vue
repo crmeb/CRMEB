@@ -32,6 +32,7 @@
           <el-col v-bind="grid">
             <el-form-item class="tab_data">
               <date-range-picker
+                width="250px"
                 :editable="false"
                 v-model="value2"
                 value-format="YYYY/MM/DD"

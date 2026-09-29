@@ -12,6 +12,7 @@
         >
           <el-form-item :label="fromList.title + '：'">
             <date-range-picker
+              width="250px"
               clearable
               :editable="false"
               @change="onchangeTime"

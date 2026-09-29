@@ -5,6 +5,7 @@
         <el-form :model="pagination" :label-width="labelWidth" :label-position="labelPosition" @submit.prevent inline>
           <el-form-item label="创建时间：">
             <date-range-picker
+              width="250px"
               clearable
               v-model="timeVal"
               :editable="false"

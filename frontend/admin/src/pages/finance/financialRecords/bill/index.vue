@@ -26,6 +26,7 @@
           <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
             <el-form-item label="时间范围：" class="tab_data">
               <date-range-picker
+                width="250px"
                 clearable
                 :editable="false"
                 @change="onchangeTime"

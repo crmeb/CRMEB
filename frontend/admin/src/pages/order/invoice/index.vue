@@ -5,6 +5,7 @@
         <el-form :model="orderData" label-width="80px" label-position="right" inline @submit.prevent>
           <el-form-item label="创建时间：">
             <date-range-picker
+              width="250px"
               clearable
               v-model="timeVal"
               :editable="false"

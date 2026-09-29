@@ -17,7 +17,12 @@
         </el-col>
         <el-col v-if="item.custom">
           <el-form-item class="tab_data">
-            <date-range-picker :editable="false" value-format="YYYY/MM/DD" range-separator="-"></date-range-picker>
+            <date-range-picker
+              width="250px"
+              :editable="false"
+              value-format="YYYY/MM/DD"
+              range-separator="-"
+            ></date-range-picker>
           </el-form-item>
         </el-col>
       </el-row>

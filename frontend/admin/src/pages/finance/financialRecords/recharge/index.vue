@@ -12,6 +12,7 @@
         >
           <el-form-item label="时间选择：">
             <date-range-picker
+              width="250px"
               clearable
               v-model="timeVal"
               :editable="false"

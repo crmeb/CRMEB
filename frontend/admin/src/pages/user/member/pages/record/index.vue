@@ -22,6 +22,7 @@
           </el-form-item>
           <el-form-item label="购买时间：">
             <date-range-picker
+              width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
