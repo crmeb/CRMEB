@@ -463,9 +463,6 @@ defineExpose({ loadList });
     margin-top: -6px;
     margin-bottom: 14px;
   }
-  &__tabs {
-    margin-bottom: 8px;
-  }
   &__tabs + &__actions {
     margin-top: 0;
   }
