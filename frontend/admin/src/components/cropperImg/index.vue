@@ -64,6 +64,7 @@
 import { reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { VueCropper } from 'vue-cropper';
+import 'vue-cropper/dist/index.css';
 // import { updateAvatar } from ''; //这里为文件上传的接口换成自己的文件
 import { fileUpload } from '@/api/setting';
 
