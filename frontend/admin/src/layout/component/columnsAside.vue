@@ -235,7 +235,8 @@ watch(
       .columns-vertical {
         margin: auto;
 
-        // 垂直一级菜单中图标单独占一行，不能继承行内菜单的右间距，否则视觉中心会向左偏移
+        /* 垂直一级菜单中图标单独占一行，不能继承行内菜单的右间距，否则视觉中心会向左偏移
+           （SFC 样式块内不用 // 行注释：sass 之前的 postcss 解析会报错） */
         :deep(.menu-icon) {
           margin-right: 0;
         }
@@ -282,7 +283,6 @@ watch(
     /* 圆角选中滑块：项高 50px 内上下各留 3px、左右各留 5px，圆角 6px 与全站控件圆角一致；卡片风格由 .columns-card 覆盖回全宽直角 */
     .columns-round {
       background: var(--prev-color-primary);
-      // color: var(--prev-color-text-white);
       position: absolute;
       left: 50%;
       top: 3px;
