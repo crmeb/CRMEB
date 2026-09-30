@@ -407,6 +407,20 @@
   justify-content: center;
 }
 
+// 收起态选中二/三级页面（路由落在分组内）时，所属一级分组与叶子项一样高亮：
+// EP 会把 is-active 向上传播到 rail 的一级 sub-menu，但原生只有文字变色（无底色），
+// 窄条上辨识不出当前所在模块。叶子项高亮同样式（背景/文字变量一致，深色模式随变量自动适配）；
+// 展开态父级维持原设计不做选中标识，故限定收起态。
+.layout-aside .el-menu--collapse > .el-sub-menu.is-active > .el-sub-menu__title {
+  color: var(--prev-MenuActiveColor) !important;
+  background-color: var(--prev-bg-menu-hover-ba-color) !important;
+}
+
+// 圆角风格下补内缩圆角：叶子项的圆角由 .columns-round 自带，分组标题只有 margin
+.layout-aside .el-menu--collapse.columns-round > .el-sub-menu.is-active > .el-sub-menu__title {
+  border-radius: 5px;
+}
+
 // 小屏侧栏抽屉（layout/aside.vue）：清零全局抽屉 body 的 20px 35px 内边距——
 // 该内边距面向详情/编辑抽屉内容；侧栏菜单需占满抽屉宽度，
 // 否则 180px 抽屉被左右各吃 35px 后仅剩 110px，二级菜单（缩进 40 + 图标 + 文字）被截断
