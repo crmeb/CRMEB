@@ -373,6 +373,40 @@
   padding-left: 66px !important;
 }
 
+// 菜单收起（默认/经典布局 64px 窄条）：一级图标水平居中。
+// EP 原生收起态居中只命中 class 以 el-icon 开头的图标（.el-menu--collapse>… [class^=el-icon]，
+// 给 24px 图标位 + margin 清零），项目 iconfont 图标（.crmeb-icon.menu-icon）与旧版 .ivu-icon
+// 前缀类匹配不上，沿用展开态 width:1em + margin-right:5px，图标偏左约 4px；此处补齐同样式。
+// 同上限定在 .layout-aside 内，不影响收起悬停弹层（EP 原生展开态对齐）。
+.layout-aside .el-menu--collapse > .el-menu-item .menu-icon,
+.layout-aside .el-menu--collapse > .el-menu-item .ivu-icon,
+.layout-aside .el-menu--collapse > .el-sub-menu > .el-sub-menu__title .menu-icon,
+.layout-aside .el-menu--collapse > .el-sub-menu > .el-sub-menu__title .ivu-icon {
+  width: var(--el-menu-icon-width, 24px);
+  margin: 0;
+  text-align: center;
+}
+
+// 收起 + 分栏圆角/卡片风格（columns-round/columns-card 给菜单项左右各 5px 外边距，项宽 64→54px）：
+// 图标位仍按 64px 项的 padding-left 20px 排布，24px 图标整体右偏 5px（实测 iconCenterX=+5）。
+// 收起态文字已隐藏（EP visibility:hidden + width:0）、箭头 display:none；两侧内边距一并清零后
+// 内容居中即可自适应项宽。叶子项图标外还有一层 tooltip trigger 包装 div（块级、占满内容盒），
+// 需让其内部也居中，否则图标贴在 padding 起点。
+.layout-aside .el-menu--collapse.columns-round > .el-menu-item,
+.layout-aside .el-menu--collapse.columns-round > .el-sub-menu > .el-sub-menu__title,
+.layout-aside .el-menu--collapse.columns-card > .el-menu-item,
+.layout-aside .el-menu--collapse.columns-card > .el-sub-menu > .el-sub-menu__title {
+  justify-content: center;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.layout-aside .el-menu--collapse.columns-round > .el-menu-item > div,
+.layout-aside .el-menu--collapse.columns-card > .el-menu-item > div {
+  display: flex;
+  justify-content: center;
+}
+
 // 小屏侧栏抽屉（layout/aside.vue）：清零全局抽屉 body 的 20px 35px 内边距——
 // 该内边距面向详情/编辑抽屉内容；侧栏菜单需占满抽屉宽度，
 // 否则 180px 抽屉被左右各吃 35px 后仅剩 110px，二级菜单（缩进 40 + 图标 + 文字）被截断
