@@ -14,6 +14,8 @@
 /backend/public/phpExcel/
 /backend/.constant
 /backend/.env
+# vendor 内第三方库运行期日志（如 workerman）
+/backend/vendor/**/*.log
 
 # frontend/admin 本地文件与构建产物
 /frontend/admin/dist/
