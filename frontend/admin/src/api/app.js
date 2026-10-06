@@ -452,30 +452,7 @@ export function cityList() {
 }
 
 /**
- * @description  客服自动回复 -- 关键字 列表
- * @param {Object} param data {Object} 传值参数
- */
-export function kefuAutoReplyListApi(params) {
-  return request({
-    url: `app/kefu/auto_reply/list`,
-    method: 'get',
-    params,
-  });
-}
-
-/**
- * @description  客服自动回复添加编辑表单
- * @param {Object} param data {Object} 传值参数
- */
-export function kefuAutoReplyForm(id) {
-  return request({
-    url: `app/kefu/auto_reply/form/` + id,
-    method: 'get',
-  });
-}
-
-/**
- * @description  客服配置 -- 获取（离线自动回复/首次自动打招呼/聊天窗右侧说明）
+ * @description  客服配置 -- 获取（欢迎语/离线自动回复/聊天窗右侧说明）
  */
 export function kefuConfigGetApi() {
   return request({
