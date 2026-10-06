@@ -115,12 +115,18 @@ class Http
         //需安装系统 ca-certificates 或在 php.ini 配置 openssl.capath）
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-        self::$curlError = curl_error($curl);
-
-        list($content, $status) = [curl_exec($curl), curl_getinfo($curl), curl_close($curl)];
+        //请求后获取 curl 错误与状态：curl_error 必须在 curl_exec 之后调用才有意义
+        $content = curl_exec($curl);
+        self::$curlError = (string) curl_error($curl);
+        $status = curl_getinfo($curl);
+        curl_close($curl);
         self::$status = $status;
-        self::$headerStr = trim(substr($content, 0, $status['header_size']));
-        $content = trim(substr($content, $status['header_size']));
+        self::$headerStr = trim(substr((string) $content, 0, (int) $status['header_size']));
+        $content = trim(substr((string) $content, (int) $status['header_size']));
+        // 非 200 时把 HTTP 状态码并入错误信息（响应体大小不定，仅透出状态码供定位）
+        if ((int) ($status['http_code'] ?? 0) !== 200) {
+            self::$curlError = trim(self::$curlError ?: ('HTTP ' . ($status['http_code'] ?? 0)));
+        }
         return (intval($status["http_code"]) === 200) ? $content : false;
     }
 
