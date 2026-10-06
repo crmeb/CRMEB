@@ -95,6 +95,30 @@ body {
     border-color: var(--prev-color-primary) !important;
   }
 
+  // 文字按钮恢复 EP 透明底与主题色文字：上方 .el-button--primary 的实心 !important 会误伤 is-link
+  .el-button--primary.is-link {
+    color: var(--prev-color-primary) !important;
+    background: transparent !important;
+    border-color: transparent !important;
+
+    &:hover,
+    &:focus,
+    &:active {
+      color: var(--prev-color-primary-light-3) !important;
+      background: transparent !important;
+      border-color: transparent !important;
+    }
+
+    &.is-disabled,
+    &.is-disabled:hover,
+    &.is-disabled:focus,
+    &.is-disabled:active {
+      color: var(--prev-color-primary-light-5) !important;
+      background: transparent !important;
+      border-color: transparent !important;
+    }
+  }
+
   .el-button.is-disabled.is-plain,
   .el-button.is-disabled.is-plain:focus,
   .el-button.is-disabled.is-plain:hover {
