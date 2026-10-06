@@ -739,4 +739,5 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (6655, 6647, '', '修改AI模型状态', 'admin', '', '', 'ai/model/set_status/<id>', 'PUT', '[]', 1, 1, 0, 1, '', '12/6647', 2, '', 0, 'setting-ai-model-status', 'core:setting-ai-model-status', 0, '修改AI模型状态接口权限'),
 (6656, 6647, '', '设置默认AI模型', 'admin', '', '', 'ai/model/set_default/<id>', 'PUT', '[]', 1, 1, 0, 1, '', '12/6647', 2, '', 0, 'setting-ai-model-default', 'core:setting-ai-model-default', 0, '设置默认AI模型接口权限'),
 (6657, 6647, '', 'AI模型排序', 'admin', '', '', 'ai/model/sort', 'PUT', '[]', 1, 1, 0, 1, '', '12/6647', 2, '', 0, 'setting-ai-model-sort', 'core:setting-ai-model-sort', 0, 'AI模型排序接口权限'),
-(6658, 6647, '', 'AI模型连通性测试', 'admin', '', '', 'ai/model/test', 'POST', '[]', 1, 1, 0, 1, '', '12/6647', 2, '', 0, 'setting-ai-model-test', 'core:setting-ai-model-test', 0, 'AI模型连通性测试接口权限');
+(6658, 6647, '', 'AI模型连通性测试', 'admin', '', '', 'ai/model/test', 'POST', '[]', 1, 1, 0, 1, '', '12/6647', 2, '', 0, 'setting-ai-model-test', 'core:setting-ai-model-test', 0, 'AI模型连通性测试接口权限'),
+(6659, 6647, '', '拉取厂商可用模型列表', 'admin', '', '', 'ai/model/remote_models', 'POST', '[]', 1, 1, 0, 1, '', '12/6647', 2, '', 0, 'setting-ai-model-remote-list', 'core:setting-ai-model-remote-list', 0, '拉取厂商可用模型列表接口权限');

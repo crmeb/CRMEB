@@ -17,8 +17,9 @@ use crmeb\basic\BaseService;
 use crmeb\exceptions\AdminException;
 use crmeb\services\ai\AiInterface;
 use crmeb\services\ai\AiProtocol;
+use crmeb\services\ai\EmbeddingAiInterface;
+use crmeb\utils\Http;
 use crmeb\utils\SsrfGuard;
-
 /**
  * AI 模型管理服务（系统内置 AI 能力）
  *
@@ -192,7 +193,10 @@ class AiModelServices extends BaseService
     }
 
     /**
-     * 模型连通性测试：按表单配置构造协议适配器发起一次真实对话请求（不落库）
+     * 模型连通性测试：按表单配置构造协议适配器发起一次真实请求（不落库）
+     *
+     * 按模型能力分流：仅勾选「支持文本向量化」的纯向量模型没有对话端点，
+     * 改用 /embeddings 端点真实测试，其余模型走对话接口。
      * @param array $data 表单数据（与保存表单一致，编辑时需携带 id 以继承原密钥）
      * @return array [ok=>1|0, cost_ms=>int, message=>string]
      */
@@ -212,17 +216,42 @@ class AiModelServices extends BaseService
         $payload = $this->buildData($data, $id);
 
         $driver = AiProtocol::make($payload['protocol'], $this->buildConfig($payload));
+        // 纯向量模型：仅勾选向量化、未勾选工具调用/视觉（向量模型调 /chat/completions 会被厂商直接拒绝）
+        $embeddingOnly = (int) ($payload['supports_embedding'] ?? 0) === 1
+            && (int) ($payload['supports_tools'] ?? 0) !== 1
+            && (int) ($payload['supports_vision'] ?? 0) !== 1;
         $start = microtime(true);
         try {
-            $result = $driver->chat('连通性测试，请直接回复：ok', ['stream' => 0]);
+            if ($embeddingOnly) {
+                if (!$driver instanceof EmbeddingAiInterface) {
+                    throw new \RuntimeException('该模型协议不支持文本向量化，请检查模型能力配置');
+                }
+                $driver->embeddings(['连通性测试']);
+            } else {
+                $result = $driver->chat('连通性测试，请直接回复：ok', ['stream' => 0]);
+            }
         } catch (\Throwable $e) {
+            $message = $e->getMessage();
+            // 向量模型因未勾选向量化能力走了对话端点被厂商拒绝时，给出可操作的勾选建议
+            if (!$embeddingOnly
+                && (int) ($payload['supports_embedding'] ?? 0) !== 1
+                && str_contains(strtolower((string) ($payload['model'] ?? '')), 'embedding')) {
+                $message .= '；检测到模型 ID 含有「embedding」，请先在高级配置勾选「支持文本向量化」再测试';
+            }
             return [
                 'ok'      => 0,
                 'cost_ms' => (int) round((microtime(true) - $start) * 1000),
-                'message' => '连通性测试失败：' . $e->getMessage(),
+                'message' => '连通性测试失败：' . $message,
             ];
         }
         $costMs = (int) round((microtime(true) - $start) * 1000);
+        if ($embeddingOnly) {
+            return [
+                'ok'      => 1,
+                'cost_ms' => $costMs,
+                'message' => '连通性测试成功，向量接口正常响应（耗时 ' . $costMs . 'ms）',
+            ];
+        }
         $content = trim((string) ($result['content'] ?? ''));
         return [
             'ok'      => 1,
@@ -231,6 +260,107 @@ class AiModelServices extends BaseService
                 ? '连通性测试成功，模型已正常响应（耗时 ' . $costMs . 'ms）'
                 : '连通性测试通过，但模型未返回内容，请检查模型配置',
         ];
+    }
+
+    /**
+     * 拉取厂商可用模型列表（OpenAI 兼容 /models 端点，不落库）
+     *
+     * 供新增/编辑弹窗「获取模型」按钮调用：按表单填写的接口地址与密钥请求 /models，
+     * 返回模型标识列表，前端拿到后把「模型 ID」切换为下拉选择。
+     * @param array $data 表单数据（base_url/api_key/full_url，编辑时需携带 id 以继承原密钥）
+     * @return array 模型标识一维数组（去重升序）
+     */
+    public function fetchRemoteModels(array $data): array
+    {
+        $id = (int) ($data['id'] ?? 0);
+        $old = $id > 0 ? $this->dao->findById($id) : null;
+        if ($old) {
+            $data = array_merge($old, $data);
+            // 编辑场景密钥回传占位符或留空时，使用原密钥真实拉取
+            if (in_array(trim((string) ($data['api_key'] ?? '')), ['', self::SECRET_KEEP], true)) {
+                $data['api_key'] = (string) $old['api_key'];
+            }
+        }
+
+        $baseUrl = trim((string) ($data['base_url'] ?? ''));
+        if (!preg_match('#^https?://#i', $baseUrl)) {
+            throw new AdminException('请先填写以 http:// 或 https:// 开头的接口地址');
+        }
+        // 完整 URL 模式没有「网关根地址」概念，无法推导 /models 端点
+        if ((int) ($data['full_url'] ?? 0) === 1) {
+            throw new AdminException('完整 URL 模式无法自动获取模型列表，请手动输入模型 ID');
+        }
+        $apiKey = trim((string) ($data['api_key'] ?? ''));
+        if ($apiKey === '') {
+            throw new AdminException('请先填写 API 密钥');
+        }
+        // 出站 SSRF 防护：与模型保存同口径（「允许内网 AI 服务」开关打开时放行内网自建模型）
+        try {
+            SsrfGuard::assertSafeUrl($baseUrl, $this->privateEndpointAllowed() ? SsrfGuard::MODE_SELFCALL : SsrfGuard::MODE_STRICT);
+        } catch (\InvalidArgumentException $e) {
+            throw new AdminException('接口地址不安全：' . $e->getMessage());
+        }
+
+        // 地址可能被填成对话端点（…/chat/completions），先剥掉再拼 /models
+        if (str_ends_with($baseUrl, '/chat/completions')) {
+            $baseUrl = substr($baseUrl, 0, -strlen('/chat/completions'));
+        }
+        $url = rtrim($baseUrl, '/') . '/models';
+
+        // 原生 curl 而非 Http::getRequest：4xx（密钥错误等）响应体里有厂商的明确错误信息，需要取出来提示
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $apiKey, 'Accept: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+        ]);
+        $body = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($body === false) {
+            throw new AdminException('获取模型列表失败：' . ($curlError ?: '网络异常，请稍后重试'));
+        }
+        $result = json_decode((string) $body, true);
+        if (!is_array($result)) {
+            throw new AdminException($httpCode > 0 ? '获取模型列表失败：HTTP ' . $httpCode : '获取模型列表失败：响应解析失败');
+        }
+        if ($httpCode >= 400 || isset($result['error'])) {
+            throw new AdminException('获取模型列表失败：' . $this->remoteModelsErrorMessage($result, $httpCode));
+        }
+        $models = [];
+        foreach ((array) ($result['data'] ?? []) as $item) {
+            $modelId = trim((string) ($item['id'] ?? ''));
+            if ($modelId !== '') {
+                $models[] = $modelId;
+            }
+        }
+        $models = array_values(array_unique($models));
+        sort($models);
+        return $models;
+    }
+
+    /**
+     * 从拉取模型列表的错误响应中提取可读消息
+     * @param array $result 已解析的 JSON 响应
+     * @param int $httpCode HTTP 状态码
+     * @return string
+     */
+    protected function remoteModelsErrorMessage(array $result, int $httpCode): string
+    {
+        $error = $result['error'] ?? null;
+        $message = is_array($error) ? (string) ($error['message'] ?? '') : (string) $error;
+        if ($message === '') {
+            $message = (string) ($result['message'] ?? ($result['msg'] ?? ''));
+        }
+        if ($message === '') {
+            $message = 'HTTP ' . ($httpCode > 0 ? $httpCode : '请求异常');
+        }
+        return mb_substr(trim($message), 0, 300);
     }
 
     /**
@@ -251,6 +381,8 @@ class AiModelServices extends BaseService
                 'provider'      => (string) $item['provider'],
                 'model'         => (string) $item['model'],
                 'supports_tools' => (int) $item['supports_tools'],
+                'supports_vision' => (int) $item['supports_vision'],
+                'supports_embedding' => (int) ($item['supports_embedding'] ?? 0),
                 'is_default'    => (int) $item['is_default'],
                 'status'        => (int) $item['status'],
             ];
@@ -297,6 +429,29 @@ class AiModelServices extends BaseService
     public function getChatHandler(int $modelId = 0): AiInterface
     {
         return $modelId > 0 ? $this->getHandler($modelId) : $this->getYihaotongHandler();
+    }
+
+    /**
+     * 向量模型适配器解析：显式指定模型走登记模型（须勾选向量化能力），缺省走一号通全局凭证
+     *
+     * 与 getChatHandler 同口径：model_id 为 0 时不依赖登记记录，
+     * 直接使用一号通全局凭证 + 平台默认向量模型，保证向量化能力开箱可用。
+     * @param int $modelId 向量模型ID，传 0 使用内置一号通向量模型
+     * @return EmbeddingAiInterface
+     */
+    public function getEmbeddingHandler(int $modelId = 0): EmbeddingAiInterface
+    {
+        $handler = $modelId > 0 ? $this->getHandler($modelId) : $this->getYihaotongHandler();
+        if (!$handler instanceof EmbeddingAiInterface) {
+            throw new AdminException('该模型协议不支持文本向量化，请更换向量模型或在模型管理中勾选「支持文本向量化」');
+        }
+        if ($modelId > 0) {
+            $model = $this->dao->findById($modelId);
+            if ((int) ($model['supports_embedding'] ?? 0) !== 1) {
+                throw new AdminException('模型[' . ($model['name'] ?? '') . ']未勾选「支持文本向量化」，请先在「AI Agent → 模型管理」中勾选');
+            }
+        }
+        return $handler;
     }
 
     /**
@@ -408,6 +563,7 @@ class AiModelServices extends BaseService
             'full_url'       => (int) ($data['full_url'] ?? 0) === 1 ? 1 : 0,
             'supports_tools' => (int) ($data['supports_tools'] ?? 0) === 1 ? 1 : 0,
             'supports_vision' => (int) ($data['supports_vision'] ?? 0) === 1 ? 1 : 0,
+            'supports_embedding' => (int) ($data['supports_embedding'] ?? 0) === 1 ? 1 : 0,
             'context_window' => max(0, (int) ($data['context_window'] ?? 0)),
             'max_tokens'     => max(0, (int) ($data['max_tokens'] ?? 2048)),
             'temperature'    => $temperature,
@@ -449,6 +605,7 @@ class AiModelServices extends BaseService
         $item['full_url'] = (int) ($item['full_url'] ?? 0);
         $item['supports_tools'] = (int) $item['supports_tools'];
         $item['supports_vision'] = (int) $item['supports_vision'];
+        $item['supports_embedding'] = (int) ($item['supports_embedding'] ?? 0);
         $item['is_default'] = (int) $item['is_default'];
         $item['status'] = (int) $item['status'];
         $item['sort'] = (int) $item['sort'];

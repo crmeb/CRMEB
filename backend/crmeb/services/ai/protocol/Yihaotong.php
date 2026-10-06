@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace crmeb\services\ai\protocol;
 
 use crmeb\services\ai\BaseProtocol;
+use crmeb\services\ai\EmbeddingAiInterface;
 use crmeb\services\ai\StreamAiInterface;
 use crmeb\services\yihaotong\AccessTokenServeService;
 use crmeb\utils\Http;
@@ -11,16 +12,21 @@ use crmeb\utils\Http;
 /**
  * 一号通 AI 协议适配器
  *
- * 对接一号通平台对话接口（POST v2/chat/conversation）。
+ * 对接一号通平台对话接口（POST v2/chat/conversation）与向量接口（POST v2/chat/embeddings）。
  * 与 OpenAI 兼容协议的差异在于凭证：一号通 appid / appsecret 由「一号通登录」页
  * 一次性写入 eb_system_config，全站（短信/物流/AI）共享，因此模型记录中无需再填 api_key。
  */
-class Yihaotong extends BaseProtocol implements StreamAiInterface
+class Yihaotong extends BaseProtocol implements StreamAiInterface, EmbeddingAiInterface
 {
     /**
      * 一号通对话接口（相对网关地址）
      */
     const API_CHAT = 'v2/chat/conversation';
+
+    /**
+     * 一号通向量接口（相对网关地址，见一号通文档「AI 模型 → 向量转换」）
+     */
+    const API_EMBEDDINGS = 'v2/chat/embeddings';
 
     /**
      * @var AccessTokenServeService|null 一号通API服务（延迟初始化，token 自动缓存）
@@ -83,6 +89,78 @@ class Yihaotong extends BaseProtocol implements StreamAiInterface
         }
 
         return $this->parseChatResult($this->unwrapChoices($result), $this->model());
+    }
+
+    /**
+     * 文本向量化
+     *
+     * 调用一号通向量转换接口（POST v2/chat/embeddings，见一号通文档「AI 模型 → 向量转换」）：
+     * 请求体为 {inputs: [文本数组]}，平台按套餐自动选择默认向量模型，无需（也不支持）下发 model。
+     * 响应为三层结构 {status:200, data:{code:200, data:{data:[{index, embedding}]}}}，
+     * 按 index 排序后提取 embedding，保证与输入顺序一一对应。
+     *
+     * @param array $inputs 待向量化的文本列表
+     * @return array 向量列表，与输入顺序一一对应，每项为 float 数组
+     * @throws \RuntimeException 凭证缺失、请求失败或平台返回错误时抛出
+     */
+    public function embeddings(array $inputs): array
+    {
+        $inputs = array_values(array_filter(array_map('strval', $inputs), fn ($item) => $item !== ''));
+        if ($inputs === []) {
+            throw new \RuntimeException('向量化内容不能为空');
+        }
+
+        $service = $this->getAccessToken();
+        $data = ['inputs' => $inputs];
+
+        $response = Http::postRequest(
+            $service->get(self::API_EMBEDDINGS),
+            $this->encodeRequestBody($data),
+            ['Authorization:Bearer-' . $service->getToken(), 'Content-Type: application/json'],
+            $this->timeout()
+        );
+        if ($response === false) {
+            // 瞬时网络抖动透明重试一次，仍失败才按请求失败处理
+            $response = Http::postRequest(
+                $service->get(self::API_EMBEDDINGS),
+                $this->encodeRequestBody($data),
+                ['Authorization:Bearer-' . $service->getToken(), 'Content-Type: application/json'],
+                $this->timeout()
+            );
+        }
+        if ($response === false) {
+            throw new \RuntimeException('一号通向量接口请求失败：' . (Http::getCurlError() ?: '网络异常，请稍后重试'));
+        }
+
+        $result = json_decode($response, true);
+        if (!is_array($result)) {
+            throw new \RuntimeException('一号通向量接口响应解析失败');
+        }
+        // 兼容平台 code / status 两种成功标识（最外层）
+        $code = (int) ($result['code'] ?? $result['status'] ?? 0);
+        if ($code !== 200) {
+            throw new \RuntimeException('一号通向量接口错误：' . ($result['msg'] ?? '未知错误'));
+        }
+        // 一号通 data 层为 {code, msg, data} 包装，向量数组位于 data.data.data；兼容省略中间层的结构
+        $payload = $result['data']['data'] ?? [];
+        if (is_array($payload) && isset($payload['data']) && is_array($payload['data'])) {
+            $rows = isset($payload['data'][0]) ? $payload['data'] : $payload['data']['data'] ?? [];
+        } else {
+            $rows = is_array($payload) ? $payload : [];
+        }
+        if ($rows === []) {
+            throw new \RuntimeException('一号通向量接口未返回向量数据');
+        }
+        usort($rows, fn ($a, $b) => ((int) ($a['index'] ?? 0)) <=> ((int) ($b['index'] ?? 0)));
+        $vectors = [];
+        foreach ($rows as $row) {
+            $vector = $row['embedding'] ?? null;
+            if (!is_array($vector) || $vector === []) {
+                throw new \RuntimeException('一号通向量接口返回的向量结构异常');
+            }
+            $vectors[] = array_map('floatval', $vector);
+        }
+        return $vectors;
     }
 
     /**

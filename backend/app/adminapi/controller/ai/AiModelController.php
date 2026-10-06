@@ -81,6 +81,7 @@ class AiModelController extends AuthController
             ['full_url', 0],
             ['supports_tools', 0],
             ['supports_vision', 0],
+            ['supports_embedding', 0],
             ['context_window', 0],
             ['max_tokens', 2048],
             ['temperature', 0.7],
@@ -108,6 +109,7 @@ class AiModelController extends AuthController
             ['full_url', 0],
             ['supports_tools', 0],
             ['supports_vision', 0],
+            ['supports_embedding', 0],
             ['context_window', 0],
             ['max_tokens', 2048],
             ['temperature', 0.7],
@@ -198,6 +200,7 @@ class AiModelController extends AuthController
             ['full_url', 0],
             ['supports_tools', 0],
             ['supports_vision', 0],
+            ['supports_embedding', 0],
             ['context_window', 0],
             ['max_tokens', 2048],
             ['temperature', 0.7],
@@ -206,5 +209,20 @@ class AiModelController extends AuthController
             ['status', 1],
         ]);
         return app('json')->success($this->services->testModel($data));
+    }
+
+    /**
+     * 拉取厂商可用模型列表（按表单配置请求 /models 端点，不落库）
+     * @return mixed
+     */
+    public function remoteModels()
+    {
+        $data = $this->request->postMore([
+            ['id', 0],
+            ['base_url', ''],
+            ['api_key', ''],
+            ['full_url', 0],
+        ]);
+        return app('json')->success($this->services->fetchRemoteModels($data));
     }
 }

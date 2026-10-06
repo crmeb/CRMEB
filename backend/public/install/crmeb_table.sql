@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `eb_ai_model` (
   `api_key` varchar(255) NOT NULL DEFAULT '' COMMENT '接口密钥',
   `supports_tools` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否支持工具调用',
   `supports_vision` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否支持视觉输入',
+  `supports_embedding` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否支持文本向量化',
   `context_window` int unsigned NOT NULL DEFAULT '0' COMMENT '上下文窗口大小',
   `max_tokens` int unsigned NOT NULL DEFAULT '2048' COMMENT '单次最大输出token',
   `temperature` decimal(3,2) NOT NULL DEFAULT '0.70' COMMENT '默认采样温度',

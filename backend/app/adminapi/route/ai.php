@@ -37,6 +37,7 @@ Route::group('ai', function () {
         Route::put('model/set_default/:id', [\app\adminapi\controller\ai\AiModelController::class, 'setDefault'])->option(['real_name' => '设置默认AI模型']);
         Route::put('model/sort', [\app\adminapi\controller\ai\AiModelController::class, 'sort'])->option(['real_name' => 'AI模型排序']);
         Route::post('model/test', [\app\adminapi\controller\ai\AiModelController::class, 'test'])->option(['real_name' => 'AI模型连通性测试']);
+        Route::post('model/remote_models', [\app\adminapi\controller\ai\AiModelController::class, 'remoteModels'])->option(['real_name' => '拉取厂商可用模型列表']);
     })->option(['parent' => 'ai', 'cate_name' => 'AI模型管理']);
 
 })->middleware([

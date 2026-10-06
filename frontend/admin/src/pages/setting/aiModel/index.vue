@@ -34,11 +34,18 @@
             <span v-else class="mono">{{ scope.row.has_api_key ? scope.row.api_key : '未配置' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="能力" min-width="120">
+        <el-table-column label="能力" min-width="160">
           <template #default="scope">
             <el-tag v-if="scope.row.supports_tools === 1" size="small" type="success">工具调用</el-tag>
             <el-tag v-if="scope.row.supports_vision === 1" size="small" type="info">视觉</el-tag>
-            <span v-if="scope.row.supports_tools !== 1 && scope.row.supports_vision !== 1" class="muted">-</span>
+            <el-tag v-if="scope.row.supports_embedding === 1" size="small" type="warning">向量化</el-tag>
+            <span
+              v-if="
+                scope.row.supports_tools !== 1 && scope.row.supports_vision !== 1 && scope.row.supports_embedding !== 1
+              "
+              class="muted"
+              >-</span
+            >
           </template>
         </el-table-column>
         <el-table-column label="状态" width="120">
@@ -113,12 +120,42 @@
             "
           />
         </el-form-item>
-        <el-form-item label="模型 ID" prop="model">
+        <el-form-item label="API 密钥">
           <el-input
-            v-model.trim="form.model"
-            maxlength="100"
-            placeholder="输入模型 ID，例如 deepseek-chat、qwen-plus"
+            v-model.trim="form.api_key"
+            maxlength="255"
+            show-password
+            :placeholder="form.id ? '留空保持原密钥不变' : '厂商控制台签发的 API Key'"
           />
+        </el-form-item>
+        <el-form-item label="模型 ID" prop="model">
+          <div class="model-id-row">
+            <!-- 拉取到厂商模型列表后切换为可搜索下拉，仍允许手动输入其他模型 ID -->
+            <el-select
+              v-if="remoteOptions.length"
+              v-model="form.model"
+              filterable
+              allow-create
+              default-first-option
+              placeholder="下拉选择或输入模型 ID"
+              class="model-id-main"
+            >
+              <el-option v-for="item in remoteOptions" :key="item" :label="item" :value="item" />
+            </el-select>
+            <el-input
+              v-else
+              v-model.trim="form.model"
+              maxlength="100"
+              placeholder="输入模型 ID，例如 deepseek-chat、qwen-plus"
+              class="model-id-main"
+            />
+            <el-tooltip content="获取模型" placement="top">
+              <el-button class="fetch-model-btn" :loading="remoteLoading" v-db-click @click="fetchRemoteModels">
+                <i v-if="!remoteLoading" class="el-icon-refresh" />
+              </el-button>
+            </el-tooltip>
+          </div>
+          <div class="field-tip">填写接口地址与 API 密钥后，点击右侧按钮获取厂商可用模型，成功后可直接下拉选择。</div>
         </el-form-item>
         <el-form-item label="模型名称" prop="name">
           <el-input
@@ -130,19 +167,15 @@
           />
           <div class="field-tip">在模型列表中展示的名称，未设置时默认显示模型 ID。</div>
         </el-form-item>
-        <el-form-item label="API 密钥">
-          <el-input
-            v-model.trim="form.api_key"
-            maxlength="255"
-            show-password
-            :placeholder="form.id ? '留空保持原密钥不变' : '厂商控制台签发的 API Key'"
-          />
-        </el-form-item>
+        
         <el-collapse v-model="advancedOpen" class="advanced-collapse">
           <el-collapse-item title="高级配置" name="advanced">
             <el-form-item label="模型能力">
               <el-checkbox v-model="form.supports_tools" :true-value="1" :false-value="0">支持工具调用</el-checkbox>
               <el-checkbox v-model="form.supports_vision" :true-value="1" :false-value="0">支持视觉输入</el-checkbox>
+              <el-checkbox v-model="form.supports_embedding" :true-value="1" :false-value="0"
+                >支持文本向量化</el-checkbox
+              >
             </el-form-item>
             <el-form-item label="采样温度">
               <el-slider
@@ -205,6 +238,7 @@ import {
   aiModelDeleteApi,
   aiModelDetailApi,
   aiModelListApi,
+  aiModelRemoteListApi,
   aiModelSaveApi,
   aiModelSetDefaultApi,
   aiModelStatusApi,
@@ -227,6 +261,7 @@ const emptyForm = () => ({
   full_url: 0,
   supports_tools: 0,
   supports_vision: 0,
+  supports_embedding: 0,
   context_window: 0,
   max_tokens: 2048,
   temperature: 0.7,
@@ -252,6 +287,9 @@ const form = ref(emptyForm());
 const advancedOpen = ref([]);
 const nameTouched = ref(false);
 const modelForm = ref(null);
+// 厂商可用模型列表（点击「获取模型」拉取），非空时模型 ID 切换为下拉选择
+const remoteOptions = ref([]);
+const remoteLoading = ref(false);
 
 const rules = {
   model: [{ required: true, message: '请填写模型 ID', trigger: 'blur' }],
@@ -289,6 +327,51 @@ watch(
     }
   },
 );
+
+/** 接口地址或密钥变化后，已拉取的模型列表不再适用，清空回退为手动输入 */
+watch(
+  () => [form.value.base_url, form.value.api_key],
+  () => {
+    remoteOptions.value = [];
+  },
+);
+
+/** 拉取厂商可用模型列表：成功后模型 ID 切换为下拉选择，失败提示原因 */
+const fetchRemoteModels = () => {
+  if (!/^https?:\/\//i.test(form.value.base_url || '')) {
+    ElMessage.error('请先填写以 http:// 或 https:// 开头的接口地址');
+    return;
+  }
+  if (form.value.full_url === 1) {
+    ElMessage.warning('完整 URL 模式无法自动获取模型列表，请手动输入模型 ID');
+    return;
+  }
+  // 编辑时密钥可为空（后端继承原密钥），新增时必须已填写
+  if (!form.value.id && !form.value.api_key) {
+    ElMessage.error('请先填写 API 密钥');
+    return;
+  }
+  remoteLoading.value = true;
+  aiModelRemoteListApi({
+    id: form.value.id,
+    base_url: form.value.base_url,
+    api_key: form.value.api_key,
+    full_url: form.value.full_url,
+  })
+    .then((res) => {
+      const list = res.data || [];
+      if (!list.length) {
+        ElMessage.warning('厂商未返回可用模型，请手动输入模型 ID');
+        return;
+      }
+      remoteOptions.value = list;
+      ElMessage.success(`获取成功，共 ${list.length} 个模型，可直接下拉选择`);
+    })
+    .catch(() => {})
+    .finally(() => {
+      remoteLoading.value = false;
+    });
+};
 
 /** 内置一号通 AI 配置状态（未配置时提示「一键配置」并跳转一号通账户页） */
 const yihaotongConfigured = ref(true);
@@ -337,6 +420,7 @@ const openEditor = (row) => {
     form.value = emptyForm();
     nameTouched.value = false;
     advancedOpen.value = [];
+    remoteOptions.value = [];
     editorVisible.value = true;
     nextTick(() => modelForm.value && modelForm.value.clearValidate());
     return;
@@ -345,6 +429,7 @@ const openEditor = (row) => {
     form.value = { ...emptyForm(), ...(res.data || {}) };
     nameTouched.value = !!form.value.name;
     advancedOpen.value = [];
+    remoteOptions.value = [];
     editorVisible.value = true;
     nextTick(() => modelForm.value && modelForm.value.clearValidate());
   });
@@ -356,11 +441,13 @@ const resetForm = () => {
     aiModelDetailApi(form.value.id).then((res) => {
       form.value = { ...emptyForm(), ...(res.data || {}) };
       nameTouched.value = !!form.value.name;
+      remoteOptions.value = [];
       nextTick(() => modelForm.value && modelForm.value.clearValidate());
     });
   } else {
     form.value = emptyForm();
     nameTouched.value = false;
+    remoteOptions.value = [];
     nextTick(() => modelForm.value && modelForm.value.clearValidate());
   }
 };
@@ -453,6 +540,24 @@ onMounted(() => {
   color: var(--prev-color-text-secondary);
   font-size: 12px;
   line-height: 1.5;
+}
+/* 模型 ID 行：输入框/下拉占满剩余宽度 + 右侧「获取模型」图标按钮 */
+.model-id-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  .model-id-main {
+    flex: 1;
+  }
+}
+.fetch-model-btn {
+  flex-shrink: 0;
+  width: 32px;
+  padding: 0;
+  :deep(i) {
+    font-size: 14px;
+  }
 }
 .inline-tip {
   margin-left: 12px;

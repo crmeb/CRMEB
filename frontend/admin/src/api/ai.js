@@ -47,6 +47,15 @@ export function aiModelTestApi(data) {
 }
 
 /**
+ * 拉取厂商可用模型列表（按表单接口地址与密钥请求 /models 端点，不落库）
+ * @param {Object} data 表单数据（id/base_url/api_key/full_url，编辑时携带 id 以继承原密钥）
+ * @returns {Promise} 模型标识字符串数组
+ */
+export function aiModelRemoteListApi(data) {
+  return request({ url: 'ai/model/remote_models', method: 'post', data });
+}
+
+/**
  * 修改 AI 模型
  * @param {Number} id 模型 ID
  * @param {Object} data 模型表单数据

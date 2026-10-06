@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace crmeb\services\ai\protocol;
 
 use crmeb\services\ai\BaseProtocol;
+use crmeb\services\ai\EmbeddingAiInterface;
 use crmeb\services\ai\StreamAiInterface;
 use crmeb\utils\Http;
 
@@ -17,7 +18,7 @@ use crmeb\utils\Http;
  * 配置项：base_url（接口地址）、api_key（密钥）、model（模型标识）、
  * temperature、max_tokens、timeout。
  */
-class OpenAiCompatible extends BaseProtocol implements StreamAiInterface
+class OpenAiCompatible extends BaseProtocol implements StreamAiInterface, EmbeddingAiInterface
 {
     /**
      * AI 模型对话（非流式）
@@ -47,7 +48,8 @@ class OpenAiCompatible extends BaseProtocol implements StreamAiInterface
 
         $response = Http::postRequest($url, $this->encodeRequestBody($data), $headers, $this->timeout());
         if ($response === false) {
-            throw new \RuntimeException('AI接口请求失败：' . (Http::getCurlError() ?: '网络异常，请稍后重试'));
+            // 按 HTTP 状态码区分网络错误与端点错误（非 200 同样返回 false），提示更可定位
+            throw new \RuntimeException('AI接口请求失败：' . $this->requestFailReason());
         }
 
         $result = json_decode($response, true);
@@ -165,6 +167,59 @@ class OpenAiCompatible extends BaseProtocol implements StreamAiInterface
     }
 
     /**
+     * 文本向量化
+     *
+     * 调用 OpenAI 兼容 /embeddings 端点（通义 text-embedding-v4、智谱 embedding-3、
+     * 硅基流动 BAAI/bge-m3 及 vLLM/Ollama 自建网关均兼容该端点），
+     * 响应 data 按 index 排序后提取 embedding，保证与输入顺序一一对应。
+     *
+     * @param array $inputs 待向量化的文本列表
+     * @return array 向量列表，与输入顺序一一对应，每项为 float 数组
+     * @throws \RuntimeException 配置缺失、请求失败或平台返回错误时抛出
+     */
+    public function embeddings(array $inputs): array
+    {
+        $inputs = array_values(array_filter(array_map('strval', $inputs), fn ($item) => $item !== ''));
+        if ($inputs === []) {
+            throw new \RuntimeException('向量化内容不能为空');
+        }
+
+        [$url, $headers, $model] = $this->prepareRequest();
+
+        $response = Http::postRequest($this->embeddingsUrl($url), $this->encodeRequestBody([
+            'model' => $model,
+            'input' => $inputs,
+        ]), $headers, $this->timeout());
+        if ($response === false) {
+            // 按 HTTP 状态码区分网络错误与端点错误（非 200 同样返回 false），提示更可定位
+            throw new \RuntimeException('AI向量接口请求失败：' . $this->requestFailReason());
+        }
+
+        $result = json_decode($response, true);
+        if (!is_array($result)) {
+            throw new \RuntimeException('AI向量接口响应解析失败');
+        }
+        if (isset($result['error'])) {
+            throw new \RuntimeException('AI向量接口错误：' . $this->errorMessage($result['error']));
+        }
+        $data = $result['data'] ?? [];
+        if (!is_array($data) || $data === []) {
+            throw new \RuntimeException('AI向量接口未返回向量数据');
+        }
+        // 按 index 归位，保证输出顺序与输入一致（部分网关乱序返回）
+        usort($data, fn ($a, $b) => ((int) ($a['index'] ?? 0)) <=> ((int) ($b['index'] ?? 0)));
+        $vectors = [];
+        foreach ($data as $item) {
+            $vector = $item['embedding'] ?? null;
+            if (!is_array($vector) || $vector === []) {
+                throw new \RuntimeException('AI向量接口返回的向量结构异常');
+            }
+            $vectors[] = array_map('floatval', $vector);
+        }
+        return $vectors;
+    }
+
+    /**
      * 校验并整理请求三要素
      * @return array [接口地址, 请求头数组, 模型标识]
      * @throws \RuntimeException 配置缺失时抛出
@@ -212,6 +267,41 @@ class OpenAiCompatible extends BaseProtocol implements StreamAiInterface
             return $baseUrl;
         }
         return $baseUrl . '/chat/completions';
+    }
+
+    /**
+     * 请求失败原因：按是否拿到 HTTP 响应区分端点错误与网络错误
+     * @return string
+     */
+    protected function requestFailReason(): string
+    {
+        $httpCode = (int) (Http::getStatus()['http_code'] ?? 0);
+        if ($httpCode > 0) {
+            return 'HTTP ' . $httpCode . '，请检查模型 ID 与请求端点是否匹配';
+        }
+        return Http::getCurlError() ?: '网络异常，请稍后重试';
+    }
+
+    /**
+     * 归一化向量接口地址
+     *
+     * prepareRequest() 返回的是对话地址，这里在完整 URL 模式下直接使用，
+     * 其余场景按 chatUrl 同规则把地址补全为 /embeddings 端点。
+     * @param string $chatUrl prepareRequest() 归一化后的对话接口地址
+     * @return string 完整向量接口地址
+     */
+    protected function embeddingsUrl(string $chatUrl): string
+    {
+        // 完整 URL 模式：地址即最终请求路径
+        if ((int) $this->getConfigField('full_url') === 1) {
+            return $chatUrl;
+        }
+        // 网关根地址（不带 chat/completions 后缀）直接补 /embeddings
+        $baseUrl = rtrim((string) $this->getConfigField('base_url'), '/');
+        if ($baseUrl !== '' && !str_ends_with($baseUrl, '/chat/completions')) {
+            return $baseUrl . '/embeddings';
+        }
+        return substr($chatUrl, 0, -strlen('/chat/completions')) . '/embeddings';
     }
 
     /**
