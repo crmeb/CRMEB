@@ -40,19 +40,23 @@
                   @tap="previewImage(item.msn)"
                 ></image>
               </view>
-              <!-- 商品卡片 -->
-              <view class="product-box" v-if="item.msn_type == 5 && item.productInfo">
+              <!-- 商品卡片：点击跳转商品详情 -->
+              <view class="product-box" v-if="item.msn_type == 5 && item.productInfo" @click="goGoods(item.productInfo.id)">
                 <image :src="item.productInfo.image" mode="widthFix"></image>
                 <view class="info">
                   <view class="name line1">{{ item.productInfo.store_name }}</view>
                   <view class="price"><text>￥</text>{{ item.productInfo.price }}</view>
                 </view>
               </view>
-              <!-- 订单卡片 -->
-              <view class="order-box" v-if="item.msn_type == 6 && item.orderInfo">
+              <!-- 订单卡片：点击跳转订单详情（中台按 order_no） -->
+              <view class="order-box" v-if="item.msn_type == 6 && item.orderInfo" @click="goOrder(item.orderInfo.order_no)">
                 <view class="title">订单</view>
                 <view class="info">
-                  <image v-if="item.orderInfo.image" :src="item.orderInfo.image"></image>
+                  <image
+                    class="order-img"
+                    :src="item.orderInfo.image"
+                    mode="aspectFill"
+                  ></image>
                   <view class="product-info">
                     <view class="name line1">{{ item.orderInfo.title }}</view>
                     <view class="price">￥{{ item.orderInfo.pay_price }}</view>
@@ -525,6 +529,16 @@ function setPageScrollTo(selector) {
     .exec();
 }
 
+// 商品卡片跳转商品详情
+function goGoods(id) {
+	if (!id) return;
+	uni.navigateTo({ url: `/pages/goods_details/index?id=${id}` });
+}
+// 订单卡片跳转订单详情（订单中台按 order_no 查询）
+function goOrder(orderNo) {
+	if (!orderNo) return;
+	uni.navigateTo({ url: `/pages/center/order/detail/index?order_no=${orderNo}` });
+}
 // 发送消息
 function sendText() {
   if (!isSend.value) {
@@ -903,7 +917,6 @@ body {
       image {
         width: 452rpx;
       }
-
       .info {
         padding: 16rpx 26rpx;
 
@@ -923,6 +936,7 @@ body {
       margin-left: 22rpx;
       background-color: #fff;
       border-radius: 14rpx;
+      overflow: hidden;
 
       .title {
         padding: 15rpx 20rpx;
@@ -935,14 +949,19 @@ body {
         display: flex;
         padding: 20rpx;
 
-        image {
+        /* 商品图：始终渲染保证布局稳定，无图/加载失败时由底色占位 */
+        .order-img {
+          flex: none;
           width: 124rpx;
           height: 124rpx;
+          background: #f5f6f7;
           border-radius: 6rpx;
         }
 
         .product-info {
           flex: 1;
+          /* 允许 flex 收缩：否则 min-width:auto 使长商品名撑破卡片，line1 省略号失效 */
+          min-width: 0;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
