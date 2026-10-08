@@ -111,12 +111,19 @@ export function editRouterFun(to, from) {
       'marketing_storeCouponCreate',
     ].includes(to.name)
   ) {
-    let route = to.matched[1].path.split(':')[0];
-    menusStore.oneLvRoutes.map((e) => {
-      if (route.indexOf(e.path) != -1) {
-        to.meta.title = `${to.params.id ? e.title + 'ID: ' + to.params.id : '添加' + e.title}`;
-      }
-    });
+    // 创建态（无 id）保留路由定义的 meta.title；编辑态用最具体菜单名 + ID 便于多标签区分。
+    // 空匹配保护：目录菜单 path 为空时 indexOf 恒成立，曾把标题污染成任意"添加+目录名"
+    if (to.params.id) {
+      // 用 activeMenu（列表页路径）匹配菜单树，比 create 路径能命中更具体的菜单名
+      const route = (to.meta.activeMenu || to.matched[1].path.split(':')[0]).replace(/\/$/, '');
+      let best = null;
+      menusStore.oneLvRoutes.map((e) => {
+        const p = (e.path || '').replace(/\/$/, '');
+        if (!p || route.indexOf(p) === -1) return;
+        if (!best || p.length > best.p.length) best = { p, title: e.title };
+      });
+      if (best) to.meta.title = `${best.title}ID: ${to.params.id}`;
+    }
   }
   // 产品类型扩展路由：从系统菜单树查找菜单名称作为标签页标题
   if (to.name === 'product_extPage') {
