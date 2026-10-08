@@ -90,7 +90,7 @@
         <el-table-column label="售价" width="100" prop="price" />
         <el-table-column label="库存" width="80" prop="stock" />
         <el-table-column label="销量" width="80" prop="sales" />
-        <el-table-column label="排序" width="70" prop="sort" />
+        <el-table-column label="排序" width="70" prop="sort_order" />
         <el-table-column label="状态" width="110">
           <template #default="{ row }">
             <el-switch
