@@ -2763,7 +2763,10 @@ class CenterOrderController
         // ==================== 3. 获取用户信息 ====================
         $uid = (int)request()->uid();
         $user_info = request()->user();
-        // 用户信息在 Service 中处理
+        // StoreProductReplyServices::comment() 要求数组（取 nickname/avatar）
+        if (is_object($user_info)) {
+            $user_info = $user_info->toArray();
+        }
 
         // ==================== 4. 从中台订单快照定位商品（unique 为 SKU 唯一码，限定本人订单防越权） ====================
         $item = $this->findOrderItemBySkuUnique((string)$unique, $uid);

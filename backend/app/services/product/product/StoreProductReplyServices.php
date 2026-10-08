@@ -158,6 +158,7 @@ class StoreProductReplyServices extends BaseService
         if (!$res) {
             throw new AdminException('评价失败');
         }
+        $replyId = (int)($res->id ?? 0);
 
         // ==================== 触发评价事件 ====================
         // 订单评价事件（通知管理员、缓存抽奖次数等）
@@ -168,7 +169,7 @@ class StoreProductReplyServices extends BaseService
             'uid'       => $uid,
             'product_id'=> $productId,
             'order_id'  => $cartInfo['oid'],
-            'reply_id'  => $res,
+            'reply_id'  => $replyId,
             'star'      => $data['star'] ?? 5,
             'content'   => $data['comment'] ?? '',
         ]]);
@@ -176,7 +177,8 @@ class StoreProductReplyServices extends BaseService
         // 检查订单是否全部评价完成，若是则更新订单状态为已完成
         $this->checkOrderOverAfterComment($cartInfo['oid']);
 
-        return $res;
+        // save() 返回模型实例，签名声明返回 int（评价ID）
+        return $replyId;
     }
 
     /**
