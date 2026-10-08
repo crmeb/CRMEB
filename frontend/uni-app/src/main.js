@@ -96,6 +96,20 @@ function loadStatisticsScript(src) {
 export function createApp() {
 	const app = createSSRApp(App)
 
+	// uni 框架内置组件（showModal 确认/取消按钮等）语言跟随浏览器系统，
+	// 与项目 vue-i18n 的 locale 不一致时会出现中英文混排（如按钮显示 Cancel/OK），
+	// 这里将 uni 框架语言与项目 locale 对齐（legacy 模式下 global.locale 是 ref）
+	try {
+		var uniLocale = i18n.global.locale
+		if (uniLocale && typeof uniLocale.value === 'string') uniLocale = uniLocale.value
+		// uni 框架使用 BCP 47 风格（zh-Hans/zh-Hant/en），项目用 zh-CN 需映射
+		if (uniLocale === 'zh-CN') uniLocale = 'zh-Hans'
+		else if (uniLocale === 'zh-TW' || uniLocale === 'zh-HK') uniLocale = 'zh-Hant'
+		if (typeof uniLocale === 'string' && uniLocale) uni.setLocale(uniLocale)
+	} catch (e) {
+		// 部分 uni 版本/平台无此 API，忽略
+	}
+
 	// Pinia（实例已在 store/index.js 模块加载时创建并 setActivePinia）
 	app.use(pinia)
 	app.use(i18n)
