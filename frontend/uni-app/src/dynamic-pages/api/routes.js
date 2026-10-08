@@ -18,10 +18,10 @@ export default {
   aftersaleList: '/pages/users/user_return_list/index',
   /** 查看物流页（使用旧版页面） */
   logistics: '/pages/goods/goods_logistics/index',
-  /** 核销码页 */
-  verify: '/pages/center/order/verify',
-  /** 评价页 */
-  comment: '/pages/goods/comment/index',
+  /** 核销码页（核销码展示区块暂未迁移到新订单详情页，先落详情页，核销类商品接入时补独立页面） */
+  verify: '/pages/center/order/detail/index',
+  /** 评价页（pages.json 实际注册路径为 goods_comment_con） */
+  comment: '/pages/goods/goods_comment_con/index',
   /** 支付结果页（支付失败/取消场景） */
   payStatus: '/pages/center/pay/status/index',
   // 用户
@@ -47,7 +47,7 @@ export default {
   /** 商品详情页 */
   goodsDetail: '/pages/goods_details/index',
   /** 资讯详情页（H5 外链通过 iframe 嵌入） */
-  newsDetail: '/pages/extension/news_list/news_details',
+  newsDetail: '/pages/extension/news_details/index',
   /** 客服聊天页 */
   customerChat: '/pages/extension/customer_list/chat',
 };

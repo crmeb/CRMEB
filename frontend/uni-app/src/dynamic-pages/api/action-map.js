@@ -150,6 +150,22 @@ export default {
   commentOrder(order, params) {
     uni.navigateTo({ url: routes.comment + '?order_no=' + order.order_no });
   },
+  /** 去评价（后端 NormalOrderAdapter 等模块下发的 action 名；评价页按 SKU unique 提交） */
+  goComment(order, params) {
+    var orderNo = order.order_no || (params && params.order_no) || '';
+    // 取第一个商品条目的 SKU unique；section 以 key='product' 注册，props.product.items 为商品条目
+    var items = (order.product && order.product.product && order.product.product.items) || [];
+    var skuUnique = items.length && items[0].attr_info && items[0].attr_info.unique;
+    if (!orderNo || !skuUnique) {
+      uni.showToast({ title: i18n.t(`订单信息异常`), icon: 'none' });
+      return;
+    }
+    uni.navigateTo({ url: routes.comment + '?unique=' + skuUnique + '&uni=' + orderNo });
+  },
+  /** 查看卡密（卡密商品已发卡状态；独立卡密页未开发前先落订单详情） */
+  viewCardKey(order, params) {
+    uni.navigateTo({ url: routes.orderDetail + '?order_no=' + (order.order_no || (params && params.order_no) || '') });
+  },
   /** 退款中（查看订单详情） */
   refunding(order, params) {
     uni.navigateTo({ url: routes.orderDetail + '?order_no=' + order.order_no });
