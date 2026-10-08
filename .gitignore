@@ -32,11 +32,3 @@
 #docker
 /docker/mysql/data/*
 /docker/mysql/log/*
-<<<<<<< HEAD
-.DS_Store
-=======
->>>>>>> 445c2b9e8 (fix(workerman): 统一 workerman/timer 运行时文件到 runtime 目录)
-
-#docker
-/docker/mysql/data/*
-/docker/mysql/log/*
