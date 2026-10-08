@@ -58,7 +58,9 @@ import { HTTP_REQUEST_URL } from '@/config/app.js';
 import i18n from '@/utils/lang.js';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 
-const { colorStyle, colorStatus } = useColorTheme();
+const { colorStyle } = useColorTheme();
+// useColorTheme 不提供 colorStatus（主题档位），读缓存并在 colorChange 成功后更新
+const colorStatus = ref(uni.getStorageSync('color_status') || 0);
 
 const appStore = useAppStore();
 const { isLogin } = storeToRefs(appStore);
@@ -196,6 +198,12 @@ function getBargainList() {
 		})
 		.catch((res) => {
 			loading.value = false;
+			// 砍价插件未安装/未启用等场景给出提示，避免页面空白无反馈
+			uni.showToast({
+				title: typeof res === 'string' ? res : (res && res.msg) || i18n.t(`请求失败`),
+				icon: 'none',
+				duration: 2500
+			});
 		});
 }
 
@@ -203,8 +211,16 @@ function getBargainList() {
 onLoad((options) => {
 	if (!colorStatus.value) {
 		colorChange('color_change').then((res) => {
+			uni.setStorageSync('color_status', res.data.status);
+			colorStatus.value = res.data.status;
 			colorShow(res.data.status);
+		}).catch(() => {
+			// 主题档位接口失败时兜底默认背景，不阻断列表加载
+			colorShow(1);
 		});
+	} else {
+		// 已有缓存档位时直接套用背景图（初始值不触发 watch）
+		colorShow(colorStatus.value);
 	}
 	var pages = getCurrentPages();
 	returnShow.value = pages.length === 1 ? false : true;

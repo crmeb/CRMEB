@@ -295,7 +295,9 @@ import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { onLoad, onHide, onUnload, onShareAppMessage } from '@dcloudio/uni-app';
 
-const { colorStyle, colorStatus } = useColorTheme();
+const { colorStyle } = useColorTheme();
+// useColorTheme 不提供 colorStatus（主题档位），读缓存并在 colorChange 成功后更新
+const colorStatus = ref(uni.getStorageSync('color_status') || 0);
 
 const appStore = useAppStore();
 const { isLogin } = storeToRefs(appStore);
@@ -801,8 +803,15 @@ onLoad((options) => {
 	// #endif
 	if (!colorStatus.value) {
 		colorChange('color_change').then((res) => {
+			uni.setStorageSync('color_status', res.data.status);
+			colorStatus.value = res.data.status;
 			colorShow(res.data.status);
+		}).catch(() => {
+			colorShow(1);
 		});
+	} else {
+		// 已有缓存档位时直接套用背景图（初始值不触发 watch）
+		colorShow(colorStatus.value);
 	}
 	// #ifdef MP
 	uni.getSystemInfo({

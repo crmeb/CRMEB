@@ -70,6 +70,7 @@
 
 <script setup>
 import { getSeckillIndexTime, getSeckillList as getSeckillListApi } from '../../../api/activity.js';
+import i18n from '@/utils/lang.js';
 import home from '@/components/home/index.vue';
 import { useColorTheme } from '@/composables/useColorTheme';
 import { HTTP_REQUEST_URL } from '@/config/app';
@@ -117,6 +118,14 @@ function getSeckillConfig() {
 			status.value = timeList.value[active.value].status;
 			getSeckillList();
 		}
+	}).catch((err) => {
+		// 秒杀插件未安装/未启用时接口报错，给出提示并结束 loading，避免页面空白
+		uni.showToast({
+			title: typeof err === 'string' ? err : (err && err.msg) || i18n.t(`请求失败`),
+			icon: 'none',
+			duration: 2500
+		});
+		loading.value = true;
 	});
 }
 function getSeckillList() {
