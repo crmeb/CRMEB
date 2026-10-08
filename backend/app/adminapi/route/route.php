@@ -39,8 +39,6 @@ Route::group(function () {
     Route::post('ajcheck', [\app\adminapi\controller\LoginController::class, 'ajcheck'])->name('ajcheck')->option(['real_name' => '一次验证']);
     //获取客服数据
     Route::get('get_workerman_url', [\app\adminapi\controller\PublicController::class, 'getWorkerManUrl'])->option(['real_name' => '获取客服数据']);
-    //测试
-    Route::get('index', [\app\adminapi\controller\TestController::class, 'index'])->option(['real_name' => '测试地址']);
     //扫码上传图片
     Route::post('image/scan_upload', [\app\adminapi\controller\PublicController::class, 'scanUpload'])->option(['real_name' => '扫码上传图片']);
     Route::get('custom_admin_js', [\app\adminapi\controller\PublicController::class, 'customAdminJs'])->option(['real_name' => '测试地址']);
