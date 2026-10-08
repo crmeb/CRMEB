@@ -648,48 +648,38 @@ class OrderTakeServices extends BaseService
 
     /**
      * 自动收货
+     * 发货超过配置天数（system_delivery_time，0 为关闭）的已支付进行中订单自动确认收货；
+     * 逐单复用用户手动收货链路 takeOrder()，共享其发货校验、售后拦截与收货奖励幂等守卫
      * @return bool
      */
     public function autoTakeOrder()
     {
-        //7天前时间戳
         $systemDeliveryTime = sys_config('system_delivery_time', 0);
         //0为取消自动收货功能
         if ($systemDeliveryTime == 0) {
             return true;
         }
-        $sevenDay = bcsub((string)time(), bcmul((string)$systemDeliveryTime, '86400'));
-        // @deprecated eb_store_order_status 表已删除，直接查询已发货订单
-        $orderList = $this->dao->getList([
-            'add_time' => $sevenDay,
-            'is_del' => 0,
-            'paid' => 1,
-            'status' => 1,
-        ]);
+        $deadline = bcsub((string)time(), bcmul((string)$systemDeliveryTime, '86400'));
+        // 已发货（delivery_time 有值）且超过自动收货期限的进行中订单；待发货/未支付订单不带 delivery_time，天然排除
+        $orderList = $this->dao->getDb()
+            ->where('status_code', OrderCenter::STATUS_PROCESSING)
+            ->where('pay_status', 'in', [OrderCenter::PAY_PAID, OrderCenter::PAY_PARTIAL_REFUND])
+            ->where('is_del', 0)
+            ->where('delivery_time', '>', 0)
+            ->where('delivery_time', '<=', $deadline)
+            ->field('id,order_no,uid')
+            ->select()->toArray();
         foreach ($orderList as $order) {
-            if ($order['status'] == 2) {
-                continue;
-            }
-            if ($order['paid'] == 1 && $order['status'] == 1) {
-                $data['status'] = 2;
-            } else if ($order['pay_type'] == 'offline') {
-                $data['status'] = 2;
-            } else {
-                continue;
-            }
             try {
-                $this->transaction(function () use ($order, $data) {
-                    $res = $this->dao->update($order['id'], $data);
-                    $res = $res && $this->storeProductOrderUserTakeDelivery($order, false);
-                    if (!$res) {
-                        Log::error('订单号' . $order['order_id'] . '自动收货失败');
-                    }
-                });
+                $this->takeOrder((string)$order['order_no'], (int)$order['uid']);
+            } catch (ApiException $e) {
+                // 业务守卫拦截（未发货/退款中/已收货等）属正常跳过，记 warning 供运营核对
+                Log::warning('[autoTakeOrder] 跳过订单 order_no=' . $order['order_no'] . '，原因：' . $e->getMessage());
             } catch (\Throwable $e) {
-                Log::error('自动收货失败,失败原因：' . $e->getMessage() . '|' . $e->getFile() . '|' . $e->getLine());
+                Log::error('自动收货失败,订单号:' . $order['order_no'] . ',失败原因：' . $e->getMessage() . '|' . $e->getFile() . '|' . $e->getLine());
             }
-
         }
+        return true;
     }
 
     /**
