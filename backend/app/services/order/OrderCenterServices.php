@@ -20,6 +20,7 @@ use crmeb\trade\order\type\OrderCenterSyncInterface;
 use crmeb\trade\mode\TradeModeRegistry;
 use crmeb\trade\product\ProductTypeRegistry;
 use crmeb\utils\SnowflakeIdGenerator;
+use crmeb\exceptions\ApiException;
 use app\dao\driver\pay\PayChannelDao;
 use app\dao\user\UserBillDao;
 use think\facade\Log;
@@ -2610,12 +2611,21 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     }
 
     /**
-     * 软删除订单
+     * 软删除订单（管理端）
+     * 仅允许删除用户端已删除的订单，用户未删除的订单不能直接删除
      * @param int $id 订单中台记录ID
      * @return bool 返回是否删除成功
+     * @throws ApiException 订单不存在或用户未删除时抛出
      */
     public function delete(int $id): bool
     {
+        $orderInfo = $this->dao->get(['id' => $id]);
+        if (!$orderInfo) {
+            throw new ApiException('订单不存在');
+        }
+        if (!(int)($orderInfo['is_del'] ?? 0)) {
+            throw new ApiException('订单未被用户删除，不能删除');
+        }
         return $this->dao->update(['id' => $id], ['is_del' => 1]) !== false;
     }
 
