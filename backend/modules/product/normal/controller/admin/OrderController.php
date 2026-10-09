@@ -85,6 +85,7 @@ class OrderController extends AuthController
                 $candidateQuery = $centerDao->getDb()
                     ->where($baseWhere)
                     ->where('is_del', '=', 0)
+                    ->where('is_system_del', '=', 0)
                     ->where('status_code', '<>', 'canceled');
                 $this->applyCommonFilter($candidateQuery, $commonFilter);
                 $candidateOrderNos = $candidateQuery->column('order_no');
@@ -99,7 +100,8 @@ class OrderController extends AuthController
                 $query = $centerDao->getDb()
                     ->where($baseWhere)
                     ->where('status_code', '=', $statusCode)
-                    ->where('is_del', '=', 0)->where('status_code', '<>', 'canceled');
+                    ->where('is_del', '=', 0)->where('is_system_del', '=', 0)
+                    ->where('status_code', '<>', 'canceled');
                 $this->applyCommonFilter($query, $commonFilter);
                 $businessStats[$statusCode] = $query->count();
             } else {
@@ -107,7 +109,8 @@ class OrderController extends AuthController
                 foreach ($node['children'] as $childKey => $child) {
                     $query = $centerDao->getDb()
                         ->where($baseWhere)
-                        ->where('is_del', '=', 0)->where('status_code', '<>', 'canceled');
+                        ->where('is_del', '=', 0)->where('is_system_del', '=', 0)
+                        ->where('status_code', '<>', 'canceled');
                     $this->applyCommonFilter($query, $commonFilter);
                     // 应用子状态特有的筛选条件
                     if (!empty($child['filter'])) {
@@ -127,9 +130,9 @@ class OrderController extends AuthController
             }
         }
 
-        // 已删除
+        // 已删除（用户删除且后台未删，与「已删除」页签列表口径一致）
         $delQuery = $centerDao->getDb()
-            ->where($baseWhere)->where('is_del', '=', 1);
+            ->where($baseWhere)->where('is_del', '=', 1)->where('is_system_del', '=', 0);
         $this->applyCommonFilter($delQuery, $commonFilter);
         $businessStats['deleted'] = $delQuery->count();
 
@@ -956,19 +959,12 @@ class OrderController extends AuthController
             return app('json')->fail('参数错误');
         }
 
-        // 校验订单状态，已支付/已发货订单不能删除
-        $order = $centerServices->get($id, 'status_code, pay_status, delivery_time');
-        if (!$order) {
-            return app('json')->fail('订单不存在');
-        }
-        $statusCode = $order['status_code'];
-        if (!in_array($statusCode, ['pending_payment', 'canceled'])) {
-            return app('json')->fail('已支付/已发货的订单不能删除，如需清理请先取消订单');
-        }
-
         try {
+            // softDelete → 中台 delete：仅允许删除用户已删的订单，写 is_system_del 隐藏后台
             $orderServices->softDelete($id);
             return app('json')->success('删除成功');
+        } catch (ApiException $e) {
+            return app('json')->fail($e->getMessage());
         } catch (\Throwable $e) {
             Log::error('[NormalOrder] delete failed: ' . $e->getMessage());
             return app('json')->fail('删除失败');
@@ -1037,7 +1033,7 @@ class OrderController extends AuthController
         try {
             // 如果没有订单号，通过 ID 查询
             if (empty($orderNo) && $id > 0) {
-                $order = $centerServices->get($id, 'order_no');
+                $order = $centerServices->get($id, ['order_no']);
                 if ($order) {
                     $orderNo = $order['order_no'];
                 }
@@ -1237,18 +1233,7 @@ class OrderController extends AuthController
 
         foreach ($ids as $id) {
             try {
-                $order = $centerServices->get((int)$id, 'status_code, pay_status');
-                if (!$order) {
-                    $fail++;
-                    $errors[] = "订单ID {$id} 不存在";
-                    continue;
-                }
-                $statusCode = $order['status_code'];
-                if (!in_array($statusCode, ['pending_payment', 'canceled'])) {
-                    $fail++;
-                    $errors[] = "订单ID {$id} 状态不允许删除";
-                    continue;
-                }
+                // 与单笔删除一致：由中台守卫校验「用户已删」，写 is_system_del
                 $orderServices->softDelete((int)$id);
                 $success++;
             } catch (\Throwable $e) {
@@ -1277,6 +1262,7 @@ class OrderController extends AuthController
             ['date_range', ''],
             ['pay_type', ''],
             ['type', ''],
+            ['is_deleted', ''],
         ]);
         $where['order_category'] = 'goods';
         $where['product_type'] = 'normal';

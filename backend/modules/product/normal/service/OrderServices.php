@@ -522,17 +522,14 @@ class OrderServices extends BaseService
     // ===== 软删除 =====
 
     /**
-     * 软删除订单（中台表 is_del = 1 + 扩展表同步）
+     * 软删除订单（中台 is_system_del = 1）
+     * 中台 delete 守卫要求用户已删，仅用于后台清理用户删除过的订单；
+     * 扩展表 eb_pt_normal_order 无删除列，删除标记以中台为唯一真源
      * @param int $id 中台表 id
      * @return void
      */
     public function softDelete(int $id): void
     {
-        // 获取 order_no 用于同步扩展表
-        $order = $this->centerServices->get($id, 'order_no');
-        if ($order && !empty($order['order_no'])) {
-            $this->dao->update(['order_no' => $order['order_no']], ['is_del' => 1]);
-        }
         $this->centerServices->delete($id);
     }
 

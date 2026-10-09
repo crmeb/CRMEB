@@ -14,8 +14,10 @@
 
     <!-- 工具栏 -->
     <div class="toolbar">
-      <el-button v-db-click type="primary" @click="emit('batch-shipment')">批量发货</el-button>
-      <el-button v-db-click @click="emit('batch-delete')">批量删除</el-button>
+      <el-button v-db-click type="primary" v-if="currentTab !== 'deleted'" @click="emit('batch-shipment')"
+        >批量发货</el-button
+      >
+      <el-button v-db-click v-if="currentTab === 'deleted'" @click="emit('batch-delete')">批量删除</el-button>
       <el-button v-db-click @click="exportList">订单导出</el-button>
     </div>
 
@@ -186,7 +188,7 @@
                   >配送信息</el-dropdown-item
                 >
                 <!-- 删除订单 -->
-                <el-dropdown-item command="delete" v-if="canDelete(scope.row)">删除订单</el-dropdown-item>
+                <el-dropdown-item command="delete" v-if="canDelete()">删除订单</el-dropdown-item>
               </el-dropdown-menu></template
             >
           </el-dropdown>
@@ -400,11 +402,10 @@ function canShowDeliveryInfo(row) {
 }
 
 /**
- * 判断是否可删除（仅未支付/已取消可删除）
+ * 判断是否可删除：删除入口只在「已删除」页签展示（后台删除须以用户已删为前提）
  */
-function canDelete(row) {
-  const statusCode = getBusinessStatus(row).code;
-  return statusCode === 'pending_payment' || statusCode === 'canceled';
+function canDelete() {
+  return currentTab.value === 'deleted';
 }
 
 /**

@@ -578,7 +578,7 @@ function openPrintWindow(data, type) {
 function handleDelete(row) {
   ElMessageBox({
     title: '提示',
-    message: '确定要删除该订单吗？',
+    message: '确定删除该订单吗？删除后后台列表将不再显示。',
     showCancelButton: true,
     cancelButtonText: '取消',
     confirmButtonText: '确定',
@@ -709,7 +709,7 @@ function handleBatchDelete() {
   }
   ElMessageBox({
     title: '提示',
-    message: '确定要批量删除选中的订单吗？',
+    message: '确定批量删除选中的订单吗？删除后后台列表将不再显示。',
     showCancelButton: true,
     cancelButtonText: '取消',
     confirmButtonText: '确定',
@@ -745,7 +745,8 @@ function handleExport() {
         page: 1,
         limit: 200,
         ...searchParams.value,
-        status_code: statusTab.value,
+        status_code: statusTab.value === 'deleted' ? '' : statusTab.value,
+        is_deleted: statusTab.value === 'deleted' ? 1 : '',
       };
       doExport(params);
     })
