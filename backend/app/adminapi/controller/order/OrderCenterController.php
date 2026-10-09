@@ -43,6 +43,7 @@ class OrderCenterController extends AuthController
             'date_range'     => $this->request->param('date_range', ''),
             'uid'            => (int) $this->request->param('uid', 0),
             'after_sale'     => $this->request->param('after_sale', ''),
+            'is_deleted'     => (string) $this->request->param('is_deleted', ''),
         ];
         $page = (int) $this->request->param('page', 1);
         $limit = (int) $this->request->param('limit', 20);

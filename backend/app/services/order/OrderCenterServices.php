@@ -220,8 +220,29 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         ];
 
         $result = $this->dao->saveOrUpdate(['order_no' => $data['order_no']], $insert);
-        app()->cache->delete('order_center:stat:*');
+        $this->clearStatCache();
         return (bool) $result;
+    }
+
+    /**
+     * 订单中台统计缓存 key（带版本号：失效走版本递增，旧 key 靠自身 TTL 自然过期）
+     * cache 的 delete 不支持通配，此前 delete('order_center:stat:*') 为静默无效调用
+     * @param array $where 统计查询条件
+     * @return string 缓存 key
+     */
+    protected function statCacheKey(array $where): string
+    {
+        $ver = (int) app()->cache->get('order_center:stat:ver');
+
+        return 'order_center:stat:v' . ($ver ?: 1) . ':' . md5(json_encode($where));
+    }
+
+    /**
+     * 清除订单中台统计缓存
+     */
+    protected function clearStatCache(): void
+    {
+        app()->cache->set('order_center:stat:ver', (int) app()->cache->get('order_center:stat:ver') + 1, 86400);
     }
 
     /**
@@ -280,7 +301,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         $this->dao->update(['order_no' => $orderNo], [
             'extra_info' => $this->encodeExtraInfo($extraArray),
         ]);
-        app()->cache->delete('order_center:stat:*');
+        $this->clearStatCache();
         return true;
     }
 
@@ -294,7 +315,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     public function updateRecord(string $orderNo, array $data): bool
     {
         $result = $this->dao->update(['order_no' => $orderNo], $data) !== false;
-        app()->cache->delete('order_center:stat:*');
+        $this->clearStatCache();
         return $result;
     }
 
@@ -2248,9 +2269,15 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     {
         $searchWhere = [];
 
-        // 通用：是否后台删除筛选，默认不查已删除；用户删除（is_del）不影响后台可见性
-        $isDeleted = $where['is_deleted'] ?? false;
-        $searchWhere[] = ['is_system_del', '=', $isDeleted ? 1 : 0];
+        // 通用：is_deleted=1 时为「已删除」tab，只查用户已删且后台未删的订单；
+        // 常规 tab 用户删除与后台删除均不显示
+        if (!empty($where['is_deleted'])) {
+            $searchWhere[] = ['is_del', '=', 1];
+            $searchWhere[] = ['is_system_del', '=', 0];
+        } else {
+            $searchWhere[] = ['is_del', '=', 0];
+            $searchWhere[] = ['is_system_del', '=', 0];
+        }
 
         // 订单大类筛选
         if (!empty($where['order_category'])) {
@@ -2503,11 +2530,11 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
      */
     public function getStatistics(array $where): array
     {
-        $cacheKey = 'order_center:stat:' . md5(json_encode($where));
+        $cacheKey = $this->statCacheKey($where);
         $ttl = empty($where['date_range']) ? 300 : 60;
 
         return app()->cache->remember($cacheKey, function () use ($where) {
-            $baseWhere = [['is_system_del', '=', 0]];
+            $baseWhere = [['is_del', '=', 0], ['is_system_del', '=', 0]];
             // 按订单大类筛选
             if (!empty($where['order_category'])) {
                 $baseWhere[] = ['order_category', '=', $where['order_category']];
@@ -2563,6 +2590,18 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 ->field('COUNT(*) as count, SUM(pay_price) as amount')
                 ->find();
 
+            // 「已删除」tab 计数：用户删除（is_del=1）且后台未删（is_system_del=0），与列表体口径一致，
+            // 随大类/日期筛选联动
+            $deletedWhere = [['is_del', '=', 1], ['is_system_del', '=', 0]];
+            if (!empty($where['order_category'])) {
+                $deletedWhere[] = ['order_category', '=', $where['order_category']];
+            }
+            if (!empty($where['date_range'])) {
+                [$start, $end] = $this->parseDateRange($where['date_range']);
+                $deletedWhere[] = ['add_time', 'BETWEEN', [$start, $end]];
+            }
+            $deletedCount = $this->dao->getDb()->where($deletedWhere)->count();
+
             // 补全所有状态码，缺值填0
             $statusCounts = [];
             foreach (OrderCenter::$statusMap as $code => $label) {
@@ -2595,6 +2634,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 ],
                 'status_counts' => $statusCounts,
                 'by_category'   => $categoryResult,
+                'deleted_count' => $deletedCount,
             ];
         }, $ttl);
     }
@@ -2627,7 +2667,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             throw new ApiException('订单未被用户删除，不能删除');
         }
         $res = $this->dao->update(['id' => $id], ['is_system_del' => 1]) !== false;
-        app()->cache->delete('order_center:stat:*');
+        $this->clearStatCache();
         return $res;
     }
 

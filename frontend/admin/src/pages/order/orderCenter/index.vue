@@ -149,6 +149,7 @@
         <el-tab-pane :label="getTabLabel('已完成', 'completed')" name="completed"></el-tab-pane>
         <el-tab-pane :label="getTabLabel('已取消', 'canceled')" name="canceled"></el-tab-pane>
         <el-tab-pane :label="getTabLabel('售后中', 'after_sale')" name="after_sale"></el-tab-pane>
+        <el-tab-pane :label="getTabLabel('已删除', 'deleted')" name="deleted"></el-tab-pane>
       </el-tabs>
       <el-table :data="orderList" ref="table" v-loading="loading" empty-text="暂无数据" class="orderData">
         <el-table-column type="selection" width="55"> </el-table-column>
@@ -240,8 +241,10 @@
             <a v-db-click @click="viewDetail(scope.row)">详情</a>
             <el-divider direction="vertical" />
             <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-orderCenter-remark']">备注</a>
-            <el-divider direction="vertical" />
-            <a v-db-click @click="deleteOrder(scope.row)" v-auth="['admin-order-orderCenter-delete']">删除</a>
+            <template v-if="statusTab === 'deleted'">
+              <el-divider direction="vertical" />
+              <a v-db-click @click="deleteOrder(scope.row)" v-auth="['admin-order-orderCenter-delete']">删除</a>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -331,7 +334,9 @@ function getList(res) {
   loading.value = true;
   orderCenterList({
     ...searchForm.value,
-    status_code: statusTab.value,
+    // 「已删除」tab 只查用户删除（is_del=1）的订单，不按状态过滤
+    status_code: statusTab.value === 'deleted' ? '' : statusTab.value,
+    is_deleted: statusTab.value === 'deleted' ? 1 : '',
     page: page.value.page,
     limit: page.value.limit,
   })
@@ -359,6 +364,7 @@ function getStat() {
         pending_count: d.status_counts?.pending_payment?.count || 0,
         completed_count: d.status_counts?.completed?.count || 0,
         status_counts: d.status_counts || {},
+        deleted_count: d.deleted_count || 0,
       };
     })
     .catch((res) => {
@@ -446,7 +452,7 @@ function saveRemark() {
 function deleteOrder(row) {
   ElMessageBox({
     title: '提示',
-    message: '确定要删除该订单吗？',
+    message: '确定删除该订单吗？删除后后台列表将不再显示。',
     showCancelButton: true,
     cancelButtonText: '取消',
     confirmButtonText: '确定',
@@ -511,7 +517,7 @@ function getPayStatusClass(status) {
 }
 
 function getTabLabel(text, statusCode) {
-  const count = statData.value.status_counts?.[statusCode]?.count;
+  const count = statusCode === 'deleted' ? statData.value.deleted_count : statData.value.status_counts?.[statusCode]?.count;
   return count ? `${text}(${count})` : text;
 }
 
