@@ -435,8 +435,9 @@ class OrderCenterUserServices extends OrderCenterServices
             $order = $this->dao->getByIdForUpdate((int)$order['id']);
             if ((int)$order['pay_status'] !== 0) throw new ApiException('订单已经支付无法取消');
             if ($order['status_code'] === OrderCenter::STATUS_CANCELED) return;
-            // 修改订单状态为已取消
+            // 修改订单状态为已取消，同时记录取消时间（与超时自动取消的 cancel_time 口径一致）
             $order->status_code = OrderCenter::STATUS_CANCELED;
+            $order->cancel_time = time();
             if (!$order->save()) {
                 throw new ApiException('取消失败');
             }
