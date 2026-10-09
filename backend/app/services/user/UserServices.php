@@ -2034,9 +2034,9 @@ class UserServices extends BaseService
             $is_ever_level = 1;
         } else {
             if ($user_info['is_money_level'] == 0) {
-                $overdue_time = bcadd(bcmul($vip_day, 86400, 0), time(), 0);
+                $overdue_time = bcadd(bcmul((string)$vip_day, '86400', 0), (string)time(), 0);
             } else {
-                $overdue_time = bcadd(bcmul($vip_day, 86400, 0), $user_info['overdue_time'], 0);
+                $overdue_time = bcadd(bcmul((string)$vip_day, '86400', 0), (string)$user_info['overdue_time'], 0);
             }
             $is_ever_level = 0;
         }

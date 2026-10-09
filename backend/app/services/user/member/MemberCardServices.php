@@ -190,11 +190,11 @@ class MemberCardServices extends BaseService
                     case 1:
                     case 2:
                     case 3:
-                        $overdue_time = bcadd(bcmul($batch_info->use_day, 86400, 0), $user_info->overdue_time, 0);
+                        $overdue_time = bcadd(bcmul((string)$batch_info->use_day, '86400', 0), (string)$user_info->overdue_time, 0);
                         $overdue_time = mktime(date('H'), date('i'), date('s'), date('m', $overdue_time), date('d', $overdue_time), date('Y', $overdue_time));
                         break;
                     case 0:
-                        $overdue_time = bcadd(bcmul($batch_info->use_day, 86400, 0), time(), 0);
+                        $overdue_time = bcadd(bcmul((string)$batch_info->use_day, '86400', 0), (string)time(), 0);
                         break;
                 }
                 $channel_type = $data['from'];

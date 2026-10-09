@@ -403,7 +403,7 @@ class MemberOrderServices extends BaseService
                 $memberPrice = 0.00;
                 $isFree = 1;
                 $isPermanent = 0;
-                $overdueTime = bcadd(bcmul(abs($newMemberRight[$mcId]['vip_day']), "86400", 0), time(), 0);
+                $overdueTime = bcadd(bcmul((string)abs($newMemberRight[$mcId]['vip_day']), '86400', 0), (string)time(), 0);
                 break;
             case "month":
             case "year":
@@ -412,7 +412,7 @@ class MemberOrderServices extends BaseService
                 $memberPrice = $price;
                 $isFree = 0;
                 $isPermanent = 0;
-                $overdueTime = bcadd(bcmul(abs($newMemberRight[$mcId]['vip_day']), '86400', 0), time(), 0);
+                $overdueTime = bcadd(bcmul((string)abs($newMemberRight[$mcId]['vip_day']), '86400', 0), (string)time(), 0);
                 break;
             case "ever":
                 $memberPrice = $price;
