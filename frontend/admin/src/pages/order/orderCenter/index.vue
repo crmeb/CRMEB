@@ -153,7 +153,7 @@
       </el-tabs>
       <el-table :data="orderList" ref="table" v-loading="loading" empty-text="暂无数据" class="orderData">
         <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column label="订单号" width="160">
+        <el-table-column label="订单号" width="170">
           <template #default="scope">
             <span>{{ scope.row.order_no }}</span>
           </template>
@@ -220,10 +220,8 @@
         </el-table-column>
         <el-table-column label="订单状态" min-width="120">
           <template #default="scope">
-            <div>
-              <el-tag :type="getStatusClass(scope.row.status_code)">{{ getStatusLabel(scope.row.status_code) }}</el-tag>
-            </div>
-            <div v-if="scope.row.business_status" class="mt5">
+            <el-tag :type="getStatusClass(scope.row.status_code)">{{ getStatusLabel(scope.row.status_code) }}</el-tag>
+            <div v-if="scope.row.business_status">
               <span class="business-status">{{ scope.row.business_status.label }}</span>
             </div>
           </template>
