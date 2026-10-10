@@ -22,6 +22,9 @@ use app\services\user\UserServices;
 use crmeb\exceptions\ApiException;
 use app\services\user\UserAddressServices;
 use app\services\activity\coupon\StoreCouponUserServices;
+use app\services\activity\coupon\StoreCouponIssueServices;
+use app\dao\activity\coupon\StoreCouponUserDao;
+use think\facade\Log;
 
 /**
  * 订单计算金额
@@ -267,6 +270,157 @@ class OrderComputedServices extends BaseService
             throw new ApiException('使用优惠劵失败');
         }
         return [$payPrice, $couponPrice];
+    }
+
+    /**
+     * 未显式选券时自动匹配整单最优优惠券
+     * 候选 = 已持有未使用 + 可领取（与手动领取同口径：领取窗口/库存/限领次数/付费会员身份）；
+     * 折扣相同优先用已持有（无领取副作用）；整单门槛按购物车适用子集价格计算（与显式用券同口径）
+     * @param int $uid
+     * @param array $cartInfo 购物车条目（须含 truePrice/cart_num/product_id/productInfo.cate_id）
+     * @param bool $claim true=真实下单（可领取券先领取并返回用户券id）；false=预下单试算（可领取券返回伪券信息，不产生副作用）
+     * @return array 已持有/已领取：['coupon_user_id' => int]；可领取试算：['pseudo_coupon' => 发券行+applicable_type+discount]；无可用券：[]
+     */
+    public function autoMatchCoupon(int $uid, array $cartInfo, bool $claim = false): array
+    {
+        try {
+            if (!$uid || empty($cartInfo)) {
+                return [];
+            }
+            $now = time();
+            $items = [];
+            foreach ($cartInfo as $cart) {
+                if (is_object($cart)) $cart = $cart->toArray();
+                $items[] = [
+                    'product_id' => (int)($cart['product_id'] ?? 0),
+                    'cate_ids'   => array_map('intval', explode(',', (string)($cart['productInfo']['cate_id'] ?? ''))),
+                    'price'      => bcmul((string)($cart['truePrice'] ?? '0'), (string)($cart['cart_num'] ?? '0'), 2),
+                ];
+            }
+
+            $isMember = (int)(app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') ?? 0) > 0;
+            /** @var StoreCouponUserDao $couponUserDao */
+            $couponUserDao = app()->make(StoreCouponUserDao::class);
+
+            // 候选1：已持有未使用（有效性条件与显式用券一致；start_time 用 <= 兼容当秒领取后立即下单）
+            $heldBest = null;
+            $heldList = $couponUserDao->selectList(
+                [['uid', '=', $uid], ['status', '=', 0], ['is_fail', '=', 0], ['start_time', '<=', $now], ['end_time', '>', $now]],
+                '*', 0, 0, '', ['issue']
+            );
+            foreach ($heldList as $coupon) {
+                if (is_object($coupon)) $coupon = $coupon->toArray();
+                [$subset, $count] = $this->couponMatchedSubset($coupon, $items);
+                if (!$count || bccomp((string)($coupon['use_min_price'] ?? '0'), $subset, 2) > 0) {
+                    continue;
+                }
+                $discount = bccomp((string)$coupon['coupon_price'], $subset, 2) > 0 ? $subset : (string)$coupon['coupon_price'];
+                if (!$heldBest || bccomp($discount, $heldBest['discount'], 2) > 0
+                    || (bccomp($discount, $heldBest['discount'], 2) === 0 && (int)$coupon['end_time'] < (int)$heldBest['end_time'])) {
+                    $heldBest = ['coupon_user_id' => (int)$coupon['id'], 'discount' => $discount, 'end_time' => (int)$coupon['end_time']];
+                }
+            }
+
+            // 候选2：可领取（receive_type 1/4、领取窗口内、有库存；使用窗口与限领次数逐张过滤）
+            $issueBest = null;
+            $issueList = app()->make(StoreCouponIssueServices::class)->getPcIssueCouponList($uid, [], 0);
+            foreach ($issueList as $issue) {
+                if (($issue['receive_type'] ?? 0) == 4 && !$isMember) {
+                    continue;
+                }
+                if (!empty($issue['start_use_time']) && ((int)$issue['start_use_time'] > $now || (int)$issue['end_use_time'] < $now)) {
+                    continue;
+                }
+                if (!$couponUserDao->getUserCouponCanUse($uid, (int)$issue['id'], (int)($issue['receive_limit'] ?? 0))) {
+                    continue;
+                }
+                $candidate = array_merge($issue, ['applicable_type' => $issue['type'] ?? 0]);
+                [$subset, $count] = $this->couponMatchedSubset($candidate, $items);
+                if (!$count || bccomp((string)($issue['use_min_price'] ?? '0'), $subset, 2) > 0) {
+                    continue;
+                }
+                $discount = bccomp((string)$issue['coupon_price'], $subset, 2) > 0 ? $subset : (string)$issue['coupon_price'];
+                if (!$issueBest || bccomp($discount, $issueBest['discount'], 2) > 0
+                    || (bccomp($discount, $issueBest['discount'], 2) === 0 && (int)($issue['end_use_time'] ?? 0) < (int)$issueBest['end_time'])) {
+                    $issueBest = ['cid' => (int)$issue['id'], 'discount' => $discount, 'end_time' => (int)($issue['end_use_time'] ?? 0), 'row' => $candidate];
+                }
+            }
+
+            // 择优：折扣相同优先用已持有（无领取副作用）
+            if ($heldBest && (!$issueBest || bccomp($heldBest['discount'], $issueBest['discount'], 2) >= 0)) {
+                return ['coupon_user_id' => $heldBest['coupon_user_id']];
+            }
+            if ($issueBest) {
+                if (!$claim) {
+                    return ['pseudo_coupon' => array_merge($issueBest['row'], ['discount' => $issueBest['discount']])];
+                }
+                // 真实下单：复用手动领取服务（库存/限领/会员身份校验内聚其中），领取后返回用户券id，由调用方走既有核销链路
+                $user = app()->make(UserServices::class)->getUserInfo($uid);
+                app()->make(StoreCouponIssueServices::class)->issueUserCoupon($issueBest['cid'], $user, true);
+                $ids = $couponUserDao->getColumn(['uid' => $uid, 'cid' => $issueBest['cid'], 'status' => 0], 'id');
+                if (empty($ids)) {
+                    return [];
+                }
+                return ['coupon_user_id' => (int)max($ids)];
+            }
+            return [];
+        } catch (\Throwable $e) {
+            // 自动匹配/领取失败降级为无券，不阻断下单
+            Log::error('[OrderComputed] 自动匹配优惠券失败: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * 计算优惠券对购物车条目的适用子集金额与命中条数
+     * 口径与显式用券一致：applicable_type 0/3 全部、1 品类（含子分类展开）、2 商品
+     * @param array $coupon 含 applicable_type/category_id/product_id 的券信息（用户券或发券行）
+     * @param array $items 商品条目（product_id/cate_ids/price）
+     * @return array [subsetPrice, matchedCount]
+     */
+    protected function couponMatchedSubset(array $coupon, array $items): array
+    {
+        $subset = '0';
+        $count = 0;
+        $type = (int)($coupon['applicable_type'] ?? 0);
+        if (in_array($type, [0, 3], true)) {
+            foreach ($items as $item) {
+                $subset = bcadd($subset, $item['price'], 2);
+                $count++;
+            }
+            return [$subset, $count];
+        }
+        if ($type === 1) {
+            $couponCategory = array_values(array_filter(explode(',', (string)($coupon['category_id'] ?? ''))));
+            $cateIds = [];
+            if ($couponCategory) {
+                $categoryIds = app()->make(\app\dao\product\product\StoreCategoryDao::class)->getAllById($couponCategory);
+                $cateIds = $categoryIds ? array_map('intval', array_column($categoryIds, 'id')) : [];
+            }
+            if (!$cateIds) {
+                return [$subset, 0];
+            }
+            foreach ($items as $item) {
+                if ($item['cate_ids'] && array_intersect($item['cate_ids'], $cateIds)) {
+                    $subset = bcadd($subset, $item['price'], 2);
+                    $count++;
+                }
+            }
+            return [$subset, $count];
+        }
+        if ($type === 2) {
+            $productIds = array_map('intval', array_filter(explode(',', (string)($coupon['product_id'] ?? ''))));
+            if (!$productIds) {
+                return [$subset, 0];
+            }
+            foreach ($items as $item) {
+                if (in_array($item['product_id'], $productIds, true)) {
+                    $subset = bcadd($subset, $item['price'], 2);
+                    $count++;
+                }
+            }
+        }
+        return [$subset, $count];
     }
 
     /**

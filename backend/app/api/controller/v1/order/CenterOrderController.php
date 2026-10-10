@@ -97,8 +97,8 @@ class CenterOrderController
             // 待发货/待收货/待使用：均为进行中状态，产品类型与发货状态过滤交由 list 方法处理
             'pending_delivery' => OrderCenter::STATUS_PROCESSING,
             'pending_use'      => OrderCenter::STATUS_PROCESSING,
-            // 待评价：按已完成状态筛选（与前端原 getStatusMap 逻辑一致）
-            'pending_comment'  => OrderCenter::STATUS_COMPLETED,
+            // 待评价：履约完成待评价（评价后流转 completed；与统计接口 grouped.pending_comment 口径一致）
+            'pending_comment'  => OrderCenter::STATUS_PENDING_REVIEW,
             // 售后：退款中 + 已退款
             'after_sale'       => OrderCenter::STATUS_REFUNDING . ',' . OrderCenter::STATUS_REFUNDED,
         ];
@@ -227,6 +227,9 @@ class CenterOrderController
             $integralRatio = sys_config('integral_ratio', 0);
             $integralOpen = (float) $integralRatio > 0 || $usableIntegral > 0;
 
+            // 活动订单不走优惠券自动匹配，标记前置（优惠券列表构建时使用）
+            $isActivityOrder = $activityType !== 'normal' && $activityId > 0;
+
             // 5. 获取用户可用优惠券
             $couponList = [];
             try {
@@ -236,6 +239,30 @@ class CenterOrderController
                 $couponList = $couponServices->getUsableCouponList($uid, $cartGroup);
             } catch (\Throwable $e) {
                 // 优惠券列表获取失败不影响主流程
+            }
+            // 5.1 用户尚无可用券时，自动领取整单最优优惠券并入列表（预览即真实领取，与 computed/create 自动用券同口径）
+            if (!$isActivityOrder && empty($couponList)) {
+                try {
+                    $autoCoupon = app()->make(OrderComputedServices::class)->autoMatchCoupon($uid, $cartInfo, true);
+                    if (!empty($autoCoupon['coupon_user_id'])) {
+                        $autoRow = $couponServices->get((int)$autoCoupon['coupon_user_id'], ['*'], ['issue']);
+                        if ($autoRow) {
+                            $autoRow = $autoRow->toArray();
+                            // 行结构与 getUsableCouponList 对齐（前端优惠券选择器字段）
+                            $autoRow['title'] = $autoRow['coupon_title'];
+                            $autoRow['type'] = $autoRow['applicable_type'] ?? 0;
+                            $autoRow['use_min_price'] = floatval($autoRow['use_min_price'] ?? 0);
+                            $autoRow['coupon_price'] = floatval($autoRow['coupon_price'] ?? 0);
+                            $autoRow['start_time'] = $autoRow['start_time'] ? date('Y/m/d', $autoRow['start_time']) : date('Y/m/d', $autoRow['add_time']);
+                            $autoRow['add_time'] = date('Y/m/d', (int)$autoRow['add_time']);
+                            $autoRow['end_time'] = date('Y/m/d', (int)$autoRow['end_time']);
+                            $autoRow['is_use'] = 0;
+                            $couponList[] = $autoRow;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // 自动领券失败不影响确认页主流程
+                }
             }
 
             // 6. 获取商品详情扩展数据（自定义表单、商品参数）
@@ -259,7 +286,6 @@ class CenterOrderController
             $activityExtraInfo = [];
             $freePayType = '';
             $payRedirectUrl = '';
-            $isActivityOrder = $activityType !== 'normal' && $activityId > 0;
             // 活动订单信息
             if ($isActivityOrder) {
                 $activityAllowedPayTypes = $tradeModeHandler->getAllowedPayTypes($activityId);
@@ -743,8 +769,19 @@ class CenterOrderController
                 ];
             }
 
+            // 用户未选券时自动领取并使用整单最优优惠券（折扣对应真实领取的券，与商品详情到手价口径一致；失败降级为无券）
+            if (!$couponId && !$isActivityOrder && ($pricingPolicy['coupon'] ?? true)) {
+                /** @var OrderComputedServices $computedServices */
+                $computedServices = app()->make(OrderComputedServices::class);
+                $autoCoupon = $computedServices->autoMatchCoupon($uid, $cartInfo, true);
+                if (!empty($autoCoupon['coupon_user_id'])) {
+                    $couponId = (int)$autoCoupon['coupon_user_id'];
+                }
+            }
+
             // 手动校验并计算优惠券金额（不依赖 useCouponId 的 getOne 查询）
             $couponPrice = 0;
+            $couponTitle = '';
             if ($couponId) {
                 /** @var \app\services\activity\coupon\StoreCouponUserServices $couponServices */
                 $couponServices = app()->make(\app\services\activity\coupon\StoreCouponUserServices::class);
@@ -753,6 +790,7 @@ class CenterOrderController
                 if (!$couponInfo) {
                     return app('json')->fail('选择的优惠劵无效');
                 }
+                $couponTitle = (string)$couponInfo['coupon_title'];
                 // 使用 getData 获取原始值，避免 Model 访问器转换（status→"未使用"、type→"后台发放"等）
                 $rawStatus = $couponInfo->getData('status');
                 $rawIsFail = $couponInfo->getData('is_fail');
@@ -782,12 +820,11 @@ class CenterOrderController
                         }
                         break;
                     case 1:
-                        /** @var \app\services\activity\coupon\StoreCategoryServices $storeCategoryServices */
-                        $storeCategoryServices = app()->make(\app\services\activity\coupon\StoreCategoryServices::class);
-                        $couponCategory = explode(',', (string)$couponInfo['category_id']);
-                        $categoryIds = $storeCategoryServices->getAllById($couponCategory);
-                        if ($categoryIds) {
-                            $cateIds = array_column($categoryIds, 'id');
+                        $storeCategoryServices = app()->make(\app\dao\product\product\StoreCategoryDao::class);
+                        $coupon_category = explode(',', (string)$couponInfo['category_id']);
+                        $category_ids = $storeCategoryServices->getAllById($coupon_category);
+                        if ($category_ids) {
+                            $cateIds = array_column($category_ids, 'id');
                             foreach ($cartInfo as $cart) {
                                 if (isset($cart['productInfo']['cate_id']) && array_intersect(explode(',', $cart['productInfo']['cate_id']), $cateIds)) {
                                     $price = bcadd($price, bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2), 2);
@@ -841,6 +878,9 @@ class CenterOrderController
             // 修正返回字段：total_price 用原始总价，coupon_price 用计算值
             $result['total_price'] = $originalTotalPrice;
             $result['coupon_price'] = $couponPrice;
+            // 自动用券回显：前端据此展示已选中的优惠券
+            $result['coupon_id'] = $couponId;
+            $result['coupon_title'] = $couponTitle;
 
             // 自动领取发生在确认接口返回之后时，重新查询可用券并返回给前端。
             // 否则金额和标题已经更新，但优惠券选择弹窗仍使用确认阶段的旧列表。
@@ -1137,6 +1177,21 @@ class CenterOrderController
             // 记录实时原始总价（优惠券抵扣不影响 total_price 记录）
             $originalTotalPrice = $priceData['totalPrice'] ?? 0;
 
+            // 用户未选券时自动匹配整单最优优惠券（可领取的先领取，失败降级为无券；活动订单与关闭券能力的商品类型不参与）
+            if (!$couponId && !$isActivityOrder) {
+                $couponPolicyEnabled = true;
+                $autoHandler = $registry->get($productType);
+                if (method_exists($autoHandler, 'getPricingPolicy')) {
+                    $couponPolicyEnabled = ($autoHandler->getPricingPolicy()['coupon'] ?? true) === true;
+                }
+                if ($couponPolicyEnabled) {
+                    $autoCoupon = app()->make(OrderComputedServices::class)->autoMatchCoupon($uid, $cartInfo, true);
+                    if (!empty($autoCoupon['coupon_user_id'])) {
+                        $couponId = (int)$autoCoupon['coupon_user_id'];
+                    }
+                }
+            }
+
             // 1.5 手动校验并计算优惠券金额
             // 活动订单默认不支持优惠券
             if ($couponId && !$isActivityOrder) {
@@ -1160,8 +1215,7 @@ class CenterOrderController
                         }
                         break;
                     case 1:
-                        /** @var \app\services\activity\coupon\StoreCategoryServices $storeCategoryServices */
-                        $storeCategoryServices = app()->make(\app\services\activity\coupon\StoreCategoryServices::class);
+                        $storeCategoryServices = app()->make(\app\dao\product\product\StoreCategoryDao::class);
                         $couponCategory = explode(',', (string)$couponInfo['category_id']);
                         $categoryIds = $storeCategoryServices->getAllById($couponCategory);
                         if ($categoryIds) {
