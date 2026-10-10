@@ -154,8 +154,6 @@ class PublicController
         if ($uid && $userInfo) {
             //是否客服
             $userService = (bool)(event('KefuConfigQuery', ['uid' => $uid, 'customer' => 0])[0] ?? false);
-            //是否订单管理
-            $userOrder = (bool)(event('KefuConfigQuery', ['uid' => $uid, 'customer' => 1])[0] ?? false);
             //是否核销员
             $userVerifyStatus = app()->make(SystemStoreStaffServices::class)->verifyStatus($uid);
             //是否配送员
@@ -937,26 +935,31 @@ class PublicController
                 //是否分销员
                 $userIsPromoter = (bool)app()->make(UserServices::class)->checkUserPromoter($uid, $userInfo);
 
-                // 统计各状态订单数量，用于菜单角标显示（基于 eb_order_center 表）
+                // 统计各状态订单数量，用于菜单角标显示（基于 eb_order_center 表，口径与订单列表 tab 一致）
                 $orderAuth = [];
                 $countWhere = ['is_del' => 0, 'uid' => $uid];
-                // 全部订单（不含退款中和已退款）
-                $orderAuth['/pages/goods/order_list/index'] = (int)$orderCenterDao->count($countWhere + ['status_code' => ['pending_payment', 'processing', 'completed']]);
+                // 全部订单（不含取消和退款）
+                $orderAuth['/pages/goods/order_list/index'] = (int)$orderCenterDao->count($countWhere + ['status_code' => [
+                    \app\model\order\OrderCenter::STATUS_PENDING_PAYMENT,
+                    \app\model\order\OrderCenter::STATUS_PROCESSING,
+                    \app\model\order\OrderCenter::STATUS_PENDING_REVIEW,
+                    \app\model\order\OrderCenter::STATUS_COMPLETED,
+                ]]);
                 // 待付款
-                $orderAuth['/pages/goods/order_list/index?status=0'] = (int)$orderCenterDao->count($countWhere + ['status_code' => 'pending_payment']);
-                // 待发货：processing + delivery_time 为空
-                $orderAuth['/pages/goods/order_list/index?status=1'] = (int)$orderCenterDao->count($countWhere + ['status_code' => 'processing', ['delivery_time', 'null', '']]);
-                // 待收货：processing + delivery_time 不为空 + take_time 为空
-                $orderAuth['/pages/goods/order_list/index?status=2'] = (int)$orderCenterDao->count($countWhere + ['status_code' => 'processing', ['delivery_time', 'not null', ''], ['take_time', 'null', '']]);
-                // 待评价：completed（需 JOIN 扩展表精确区分，此处近似取值）
-                $orderAuth['/pages/goods/order_list/index?status=3'] = (int)$orderCenterDao->count($countWhere + ['status_code' => 'completed']);
-                // 已完成：completed
-                $orderAuth['/pages/goods/order_list/index?status=4'] = (int)$orderCenterDao->count($countWhere + ['status_code' => 'completed']);
-                $orderAuth['/pages/users/user_return_list/index'] = (int)$orderCenterDao->getDb()->where([
-                    'uid' => $uid,
-                    'is_del' => 0,
-                    'refund_status' => \app\model\order\OrderCenter::REFUND_APPLYING,
-                ])->count();
+                $orderAuth['/pages/goods/order_list/index?status=0'] = (int)$orderCenterDao->count($countWhere + ['status_code' => \app\model\order\OrderCenter::STATUS_PENDING_PAYMENT]);
+                // 待发货：进行中的实物、未发货（delivery_time NOT NULL DEFAULT 0，0=未发货）
+                $orderAuth['/pages/goods/order_list/index?status=1'] = (int)$orderCenterDao->count($countWhere + ['status_code' => \app\model\order\OrderCenter::STATUS_PROCESSING, 'product_type' => 'normal', ['delivery_time', '=', 0]]);
+                // 待收货：进行中的实物、已发货未收货
+                $orderAuth['/pages/goods/order_list/index?status=2'] = (int)$orderCenterDao->count($countWhere + ['status_code' => \app\model\order\OrderCenter::STATUS_PROCESSING, 'product_type' => 'normal', ['delivery_time', '<>', 0], ['take_time', '=', 0]]);
+                // 待评价：收货后未评价的订单，评价完成才流转 completed
+                $orderAuth['/pages/goods/order_list/index?status=3'] = (int)$orderCenterDao->count($countWhere + ['status_code' => \app\model\order\OrderCenter::STATUS_PENDING_REVIEW]);
+                // 已完成
+                $orderAuth['/pages/goods/order_list/index?status=4'] = (int)$orderCenterDao->count($countWhere + ['status_code' => \app\model\order\OrderCenter::STATUS_COMPLETED]);
+                // 售后：与订单列表售后 tab 同口径（退款中 + 已退款）
+                $orderAuth['/pages/users/user_return_list/index'] = (int)$orderCenterDao->count($countWhere + ['status_code' => [
+                    \app\model\order\OrderCenter::STATUS_REFUNDING,
+                    \app\model\order\OrderCenter::STATUS_REFUNDED,
+                ]]);
             }
 
             // 配置各页面的访问权限
