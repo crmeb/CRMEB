@@ -149,9 +149,10 @@ class OrderServices extends BaseService
      * @param string $deliveryName 快递公司/配送员
      * @param string $deliveryId 快递单号/电话
      * @param string $deliveryType 配送方式（express/send/fictitious）
+     * @param int $deliveryUid 送货人uid（仅送货方式有值，随 extra_info.delivery 存中台表 JSON）
      * @return void
      */
-    public function updateDeliveryInfo(string $orderNo, string $deliveryName, string $deliveryId, string $deliveryType = 'express'): void
+    public function updateDeliveryInfo(string $orderNo, string $deliveryName, string $deliveryId, string $deliveryType = 'express', int $deliveryUid = 0): void
     {
         // 更新扩展表配送信息 + 状态
         $this->dao->update(['order_no' => $orderNo], [
@@ -171,6 +172,7 @@ class OrderServices extends BaseService
             'delivery_type' => $deliveryType,
             'delivery_name' => $deliveryName,
             'delivery_id'   => $deliveryId,
+            'delivery_uid'  => $deliveryUid,
         ];
         $this->centerServices->updateRecord($orderNo, [
             'extra_info'    => json_encode($extraInfo, JSON_UNESCAPED_UNICODE),

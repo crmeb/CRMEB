@@ -80,6 +80,9 @@ class OrderCenterDetailExtendListener implements ListenerInterface
                 if (empty($detail['delivery_code'])) {
                     $detail['delivery_code'] = $delivery['delivery_code'] ?? '';
                 }
+                if (empty($detail['delivery_uid'])) {
+                    $detail['delivery_uid'] = (int)($delivery['delivery_uid'] ?? 0);
+                }
             }
 
             $deliveryType = (string)($extraInfo['delivery_type'] ?? ($extraInfo['delivery']['delivery_type'] ?? ''));

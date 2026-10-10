@@ -470,15 +470,13 @@ class OrderController extends AuthController
                     // 配送/送货
                     $deliveryName = $this->request->param('sh_delivery_name', '');
                     $deliveryId = $this->request->param('sh_delivery_id', '');
-                    $shDeliveryUid = $this->request->param('sh_delivery_uid', 0);
+                    $shDeliveryUid = (int)$this->request->param('sh_delivery_uid', 0);
                     if (empty($deliveryName)) {
                         return app('json')->fail('请选择送货人');
                     }
                     if (empty($deliveryId)) {
                         return app('json')->fail('请输入送货人电话');
                     }
-                    // 配送员信息存入扩展表
-                    $orderServices->syncCenter($orderNo, ['delivery_uid' => $shDeliveryUid]);
                     break;
                 case 'fictitious':
                     // 虚拟发货（无需配送）
@@ -517,7 +515,7 @@ class OrderController extends AuthController
                 $deliveryId = (string)($dumpResult['kuaidinum'] ?? $deliveryId);
             } else {
                 // 通过 OrderServices 统一更新扩展表配送信息 + 状态 + 中台表同步
-                $orderServices->updateDeliveryInfo($orderNo, $deliveryName, $deliveryId, $deliveryType);
+                $orderServices->updateDeliveryInfo($orderNo, $deliveryName, $deliveryId, $deliveryType, $shDeliveryUid ?? 0);
             }
 
             // 写入订单记录
