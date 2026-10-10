@@ -73,6 +73,16 @@ class OrderCenterUserServices extends OrderCenterServices
         if (!empty($where['product_type_ne'])) {
             $searchWhere[] = ['product_type', '<>', $where['product_type_ne']];
         }
+        // 发货状态筛选（delivery_time int 默认 0，0=未发货）：待发货=未发货，待收货=已发货未收货
+        if (isset($where['delivery_time'])) {
+            $searchWhere[] = ['delivery_time', '=', (int)$where['delivery_time']];
+        }
+        if (array_key_exists('delivery_time_ne', $where)) {
+            $searchWhere[] = ['delivery_time', '<>', (int)$where['delivery_time_ne']];
+        }
+        if (isset($where['take_time'])) {
+            $searchWhere[] = ['take_time', '=', (int)$where['take_time']];
+        }
 
         $list = $this->dao->selectList(
             $searchWhere,
@@ -309,8 +319,10 @@ class OrderCenterUserServices extends OrderCenterServices
      */
     public function getUserStatistics(int $uid): array
     {
-        // 缓存 key 带 v2 版本，统计结构变更后强制失效旧缓存
-        $cacheKey = 'order_center:user_stat:v2:' . $uid;
+        // 缓存 key 带结构版本 v3 + 失效版本号：订单状态流转经 syncStatus/updateRecord 递增
+        // order_center:stat:ver 强制换 key 刷新（结构变更升级 v3），旧 key 靠自身 TTL 自然过期
+        $ver = (int) app()->cache->get('order_center:stat:ver');
+        $cacheKey = 'order_center:user_stat:v3:' . $uid . ':' . $ver;
 
         return app()->cache->remember($cacheKey, function () use ($uid) {
             $baseWhere = [
@@ -339,7 +351,8 @@ class OrderCenterUserServices extends OrderCenterServices
                 ];
             }
 
-            // STATUS_PROCESSING 按产品类型拆分：normal=待收货(实物)，其他=待使用(虚拟/卡密/酒店/门票等)
+            // STATUS_PROCESSING 按产品类型拆分：非实物业态=待使用(虚拟/卡密/酒店/门票等)
+            // 实物(normal)进行中再按发货状态细分为待发货/待收货，与订单列表 tab 及角标口径一致
             $processingByType = $this->dao->getDb()
                 ->where($baseWhere)
                 ->where('status_code', OrderCenter::STATUS_PROCESSING)
@@ -347,8 +360,6 @@ class OrderCenterUserServices extends OrderCenterServices
                 ->group('product_type')
                 ->select()
                 ->toArray();
-            $deliveryCount = 0;
-            $deliveryAmount = '0.00';
             $useCount = 0;
             $useAmount = '0.00';
             foreach ($processingByType as $row) {
@@ -360,14 +371,28 @@ class OrderCenterUserServices extends OrderCenterServices
                 } catch (\Throwable $e) {
                     $isDelivery = false;
                 }
-                if ($isDelivery) {
-                    $deliveryCount += (int) ($row['count'] ?? 0);
-                    $deliveryAmount = bcadd($deliveryAmount, (string) ($row['amount'] ?? '0.00'), 2);
-                } else {
+                if (!$isDelivery) {
                     $useCount += (int) ($row['count'] ?? 0);
                     $useAmount = bcadd($useAmount, (string) ($row['amount'] ?? '0.00'), 2);
                 }
             }
+
+            // 实物进行中按发货状态拆分：待发货=未发货（delivery_time=0），待收货=已发货未收货
+            $pendingShip = $this->dao->getDb()
+                ->where($baseWhere)
+                ->where('status_code', OrderCenter::STATUS_PROCESSING)
+                ->where('product_type', 'normal')
+                ->where('delivery_time', 0)
+                ->field('COUNT(*) as count, SUM(pay_price) as amount')
+                ->find();
+            $pendingReceipt = $this->dao->getDb()
+                ->where($baseWhere)
+                ->where('status_code', OrderCenter::STATUS_PROCESSING)
+                ->where('product_type', 'normal')
+                ->where('delivery_time', '<>', 0)
+                ->where('take_time', 0)
+                ->field('COUNT(*) as count, SUM(pay_price) as amount')
+                ->find();
 
             $grouped = [
                 'pending_payment' => [
@@ -375,8 +400,12 @@ class OrderCenterUserServices extends OrderCenterServices
                     'amount' => $statusCounts[OrderCenter::STATUS_PENDING_PAYMENT]['amount'] ?? '0.00',
                 ],
                 'pending_delivery' => [
-                    'count'  => $deliveryCount,
-                    'amount' => $deliveryAmount,
+                    'count'  => (int) ($pendingShip['count'] ?? 0),
+                    'amount' => (string) ($pendingShip['amount'] ?? '0.00'),
+                ],
+                'pending_receipt' => [
+                    'count'  => (int) ($pendingReceipt['count'] ?? 0),
+                    'amount' => (string) ($pendingReceipt['amount'] ?? '0.00'),
                 ],
                 'pending_use' => [
                     'count'  => $useCount,

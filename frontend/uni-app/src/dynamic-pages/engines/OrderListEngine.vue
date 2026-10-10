@@ -26,12 +26,12 @@
             <view class="num">{{ orderData.grouped && orderData.grouped.pending_payment && orderData.grouped.pending_payment.count || 0 }}</view>
           </view>
           <view class="item" :class="orderStatus == 'pending_delivery' ? 'on' : ''" @click="statusClick('pending_delivery')">
-            <view>{{ $t(`待收货`) }}</view>
+            <view>{{ $t(`待发货`) }}</view>
             <view class="num">{{ orderData.grouped && orderData.grouped.pending_delivery && orderData.grouped.pending_delivery.count || 0 }}</view>
           </view>
-          <view class="item" :class="orderStatus == 'pending_use' ? 'on' : ''" @click="statusClick('pending_use')">
-            <view>{{ $t(`待使用`) }}</view>
-            <view class="num">{{ orderData.grouped && orderData.grouped.pending_use && orderData.grouped.pending_use.count || 0 }}</view>
+          <view class="item" :class="orderStatus == 'pending_receipt' ? 'on' : ''" @click="statusClick('pending_receipt')">
+            <view>{{ $t(`待收货`) }}</view>
+            <view class="num">{{ orderData.grouped && orderData.grouped.pending_receipt && orderData.grouped.pending_receipt.count || 0 }}</view>
           </view>
           <view class="item" :class="orderStatus == 'pending_comment' ? 'on' : ''" @click="statusClick('pending_comment')">
             <view>{{ $t(`待评价`) }}</view>

@@ -180,6 +180,8 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     public function createRecord(array $data): bool
     {
         $extraInfo = $data['extra_info'] ?? [];
+        // 新订单进入统计（全部/待支付计数），清除统计缓存
+        $this->clearStatCache();
 
         $insert = [
             'order_no'       => $data['order_no'], // 

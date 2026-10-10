@@ -64,10 +64,15 @@ class CenterOrderController
             'status_code'    => $this->mapSemanticStatus($semanticStatus),
             'product_type'   => request()->param('product_type', ''),
         ];
-        // 待收货/待使用：均为 STATUS_PROCESSING，需按产品类型细分
-        // 待收货=实物业态(normal)，待使用=非实物业态(virtual/cardkey/hotel/ticket 等)
+        // 待发货/待收货/待使用：均为 STATUS_PROCESSING，需按产品类型与发货状态细分
+        // 待发货=实物业态(normal)未发货；待收货=实物业态已发货未收货；待使用=非实物业态(virtual/cardkey/hotel/ticket 等)
         if ($semanticStatus === 'pending_delivery') {
             $where['product_type'] = 'normal';
+            $where['delivery_time'] = 0;
+        } elseif ($semanticStatus === 'pending_receipt') {
+            $where['product_type'] = 'normal';
+            $where['delivery_time_ne'] = 0;
+            $where['take_time'] = 0;
         } elseif ($semanticStatus === 'pending_use') {
             $where['product_type_ne'] = 'normal';
         }
@@ -79,8 +84,8 @@ class CenterOrderController
     /**
      * 语义化状态映射到实际 status_code
      * 前端传入语义化状态标识，后端映射到中台 status_code，支持逗号分隔多状态（如售后=refunding,refunded）
-     * 待收货(pending_delivery)/待使用(pending_use) 均映射到 STATUS_PROCESSING，
-     * 由 list 方法追加 product_type 条件细分，此处不承担产品类型过滤
+     * 待发货(pending_delivery)/待收货(pending_receipt)/待使用(pending_use) 均映射到 STATUS_PROCESSING，
+     * 发货状态与产品类型过滤由 list 方法处理，此处不承担
      * @param string $status 语义化状态标识
      * @return string 返回 status_code，空表示不筛选（全部）
      */
@@ -89,7 +94,7 @@ class CenterOrderController
         $map = [
             'pending_payment'  => OrderCenter::STATUS_PENDING_PAYMENT,
             'pending_receipt'  => OrderCenter::STATUS_PROCESSING,
-            // 待收货/待使用：均为进行中状态，产品类型过滤交由 list 方法处理
+            // 待发货/待收货/待使用：均为进行中状态，产品类型与发货状态过滤交由 list 方法处理
             'pending_delivery' => OrderCenter::STATUS_PROCESSING,
             'pending_use'      => OrderCenter::STATUS_PROCESSING,
             // 待评价：按已完成状态筛选（与前端原 getStatusMap 逻辑一致）
