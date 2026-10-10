@@ -317,7 +317,7 @@ class CenterProductServices extends BaseService
                 'stock'          => intval($attr['stock'] ?? 0),
                 'quota'          => intval($attr['quota'] ?? $attr['stock'] ?? 0),
                 'quota_show'     => intval($attr['quota_show'] ?? $attr['quota'] ?? $attr['stock'] ?? 0),
-                'image'          => $attr['pic'] ?? '',
+                'image'          => set_file_url($attr['pic'] ?? ''),
                 'unique'         => $attr['unique'] ?? '',
                 'bar_code'       => $attr['bar_code'] ?? '',
                 'weight'         => floatval($attr['weight'] ?? 0),
@@ -746,6 +746,23 @@ class CenterProductServices extends BaseService
         $specs = $handler->getDetailSpecs($id);
         $productAttr = $specs['productAttr'] ?? [];
         $productValue = $specs['productValue'] ?? [];
+        // 规格图拼站点域名（Handler 返回库内相对路径；仅展示侧拼接，编辑/存储链路保持相对路径）
+        foreach ($productValue as &$value) {
+            $value['image'] = set_file_url($value['image'] ?? '', $siteUrl);
+        }
+        unset($value);
+        foreach ($productAttr as &$attrItem) {
+            if (empty($attrItem['attr_value'])) {
+                continue;
+            }
+            foreach ($attrItem['attr_value'] as &$attrValue) {
+                if (is_array($attrValue) && !empty($attrValue['pic'])) {
+                    $attrValue['pic'] = set_file_url($attrValue['pic'], $siteUrl);
+                }
+            }
+            unset($attrValue);
+        }
+        unset($attrItem);
         $specUnique = '';
         if (count($productValue) === 1) {
             $firstValue = reset($productValue);
