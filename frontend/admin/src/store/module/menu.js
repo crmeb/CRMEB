@@ -22,14 +22,13 @@ function filterMenu(menuList, access, lastList) {
     let menuAccess = menu.auth;
 
     if (!menuAccess || includeArray(menuAccess, access)) {
-      let newMenu = {};
-      for (let i in menu) {
-        if (i !== 'children') newMenu[i] = cloneDeep(menu[i]);
-      }
-      if (menu.children && menu.children.length) newMenu.children = [];
+      // 整节点剔除 children 后一次 cloneDeep，替代逐属性深克隆
+      const { children, ...rest } = menu;
+      const newMenu = cloneDeep(rest);
+      if (children && children.length) newMenu.children = [];
 
       lastList.push(newMenu);
-      menu.children && filterMenu(menu.children, access, newMenu.children);
+      children && filterMenu(children, access, newMenu.children);
     }
   });
   return lastList;

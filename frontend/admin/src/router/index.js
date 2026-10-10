@@ -70,18 +70,19 @@ function findMenuTitleByPath(path, menuList) {
  */
 function findBestMenuPath(currentPath, menuList) {
   if (!menuList || !menuList.length) return null;
-  const flatPaths = [];
+  // Set 查找 O(1)：该函数在每次路由导航都会执行，菜单树全量收集后反复 includes 会放大整体开销
+  const flatPaths = new Set();
   (function collect(list) {
     for (const item of list) {
-      if (item.path) flatPaths.push(item.path);
+      if (item.path) flatPaths.add(item.path);
       if (item.children && item.children.length) collect(item.children);
     }
   })(menuList);
-  if (flatPaths.includes(currentPath)) return currentPath;
+  if (flatPaths.has(currentPath)) return currentPath;
   const parts = currentPath.split('/').filter(Boolean);
   for (let i = parts.length - 1; i > 0; i--) {
     const parentPath = '/' + parts.slice(0, i).join('/');
-    if (flatPaths.includes(parentPath)) return parentPath;
+    if (flatPaths.has(parentPath)) return parentPath;
   }
   return null;
 }

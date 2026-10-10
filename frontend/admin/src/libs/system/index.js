@@ -13,12 +13,11 @@ function getHeaderName(to, menuList) {
   const allMenus = [];
   menuList.forEach((menu) => {
     const headerName = menu.path || '';
-    const menus = transferMenu(menu, headerName);
     allMenus.push({
       path: menu.path,
       header: headerName,
     });
-    menus.forEach((item) => allMenus.push(item));
+    transferMenu(menu, headerName, allMenus);
   });
   const currentMenu = allMenus.find((item) => {
     let path = to.meta && to.meta.activeMenu ? to.meta.activeMenu : to.path;
@@ -43,19 +42,19 @@ function getPath(to, path) {
   return path + (params.length ? '/' + params.join('/') : '') + (query.length ? '?' + query.join('&') : '');
 }
 
-function transferMenu(menu, headerName) {
+function transferMenu(menu, headerName, out) {
   if (menu.children && menu.children.length) {
-    return menu.children.reduce((all, item) => {
-      all.push({
+    for (const item of menu.children) {
+      out.push({
         path: item.path,
         header: headerName,
       });
-      const foundChildren = transferMenu(item, headerName);
-      return all.concat(foundChildren);
-    }, []);
+      transferMenu(item, headerName, out);
+    }
   } else {
-    return [menu];
+    out.push(menu);
   }
+  return out;
 }
 
 export { getHeaderName };
@@ -166,8 +165,7 @@ function getAllSiderMenu(menuList) {
 
   menuList.forEach((menu) => {
     if (menu.children && menu.children.length) {
-      const menus = getMenuChildren(menu);
-      menus.forEach((item) => allMenus.push(item));
+      getMenuChildren(menu, allMenus);
     } else {
       allMenus.push(menu);
     }
@@ -176,15 +174,13 @@ function getAllSiderMenu(menuList) {
   return allMenus;
 }
 
-function getMenuChildren(menu) {
+function getMenuChildren(menu, out) {
   if (menu.children && menu.children.length) {
-    return menu.children.reduce((all, item) => {
-      const foundChildren = getMenuChildren(item);
-      return all.concat(foundChildren);
-    }, []);
+    menu.children.forEach((item) => getMenuChildren(item, out));
   } else {
-    return [menu];
+    out.push(menu);
   }
+  return out;
 }
 
 export { getAllSiderMenu };
@@ -243,15 +239,18 @@ export const findFirstNonNullChildrenKeys = (obj, lastArr) => {
   return ids;
 };
 
-// 多级嵌套数组处理成一维数组
+// 多级嵌套数组处理成一维数组（先序遍历，单趟收集，避免逐个 slice+concat 的 O(n²) 拷贝）
 export const formatFlatteningRoutes = (arr) => {
   if (arr.length <= 0) return false;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].children) {
-      arr = arr.slice(0, i + 1).concat(arr[i].children, arr.slice(i + 1));
+  const flat = [];
+  const walk = (list) => {
+    for (const item of list) {
+      flat.push(item);
+      if (item.children) walk(item.children);
     }
-  }
-  return arr;
+  };
+  walk(arr);
+  return flat;
 };
 
 /**
@@ -259,17 +258,13 @@ export const formatFlatteningRoutes = (arr) => {
  * 因为用户权限 access 为数组，includes 方法无法直接得出结论
  * */
 function includeArray(list1, list2) {
-  let status = false;
   if (list1 === true) {
     return true;
-  } else {
-    if (typeof list2 !== 'object') {
-      return false;
-    }
-    list2.forEach((item) => {
-      if (list1.includes(item)) status = true;
-    });
-    return status;
   }
+  if (typeof list2 !== 'object') {
+    return false;
+  }
+  // some 命中即短路；权限过滤对每个菜单节点都会调用
+  return list2.some((item) => list1.includes(item));
 }
 export { includeArray };

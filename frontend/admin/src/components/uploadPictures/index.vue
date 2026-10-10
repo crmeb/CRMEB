@@ -636,31 +636,23 @@ function showSelectData() {
 function getRowKey(row) {
   return row.att_id;
 }
-//对象数组去重；
+//对象数组去重（按 att_id）：Set 单趟完成，替代 reduce 内 find+concat 的双重 O(n²)
 function unique(arr) {
-  let result = arr.reduce((acc, curr) => {
-    const x = acc.find((item) => item.att_id === curr.att_id);
-    if (!x) {
-      return acc.concat([curr]);
-    } else {
-      return acc;
+  const seen = new Set();
+  const result = [];
+  for (const item of arr) {
+    if (!seen.has(item.att_id)) {
+      seen.add(item.att_id);
+      result.push(item);
     }
-  }, []);
+  }
   return result;
 }
 //  选中某一行
 function handleSelectRow(selection) {
-  let arr = unique(selection);
-  const uniqueArr = [];
-  const idsArr = [];
-  for (let i = 0; i < arr.length; i++) {
-    const item = arr[i];
-    if (!idsArr.includes(item.att_id)) {
-      uniqueArr.push(item);
-      idsArr.push(item.att_id);
-    }
-  }
-  ids.value = idsArr;
+  // unique 已保证 att_id 唯一，无需再做一遍 includes 去重
+  const uniqueArr = unique(selection);
+  ids.value = uniqueArr.map((item) => item.att_id);
   multipleSelection.value = uniqueArr;
 }
 function pageChange(index) {
@@ -727,13 +719,14 @@ function changImage(item, index, row) {
   checkPicList.value.map((item, i) => {
     ids.value.push(item.att_id);
   });
+  // 已选列表先建 att_id → 序号 映射，再给整页图片编号；
+  // 原实现对每个选中图片都全量扫描 checkPicList，点选一张是 整页×已选 的嵌套遍历
+  const numMap = new Map(checkPicList.value.map((el, i) => [el.att_id, i + 1]));
   pictrueList.value.map((el, i) => {
     if (el.isSelect) {
-      checkPicList.value.filter((el2, j) => {
-        if (el.att_id == el2.att_id) {
-          el.num = j + 1;
-        }
-      });
+      if (numMap.has(el.att_id)) {
+        el.num = numMap.get(el.att_id);
+      }
     } else {
       el.num = 0;
     }

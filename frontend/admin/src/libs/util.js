@@ -432,12 +432,10 @@ export const setTitle = (routeItem, vm) => {
 
 export const R = (menuList, newOpenMenus) => {
   menuList.forEach((item) => {
-    let newMenu = {};
-    for (let i in item) {
-      if (i !== 'children') newMenu[i] = cloneDeep(item[i]);
-    }
+    const { children, ...rest } = item;
+    const newMenu = cloneDeep(rest);
     newOpenMenus.push(newMenu);
-    item.children && R(item.children, newOpenMenus);
+    children && R(children, newOpenMenus);
   });
   return newOpenMenus;
 };

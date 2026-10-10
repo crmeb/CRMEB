@@ -35,7 +35,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Local } from '@/utils/storage.js';
-import { R } from '@/libs/util';
 import { useMenusStore } from '@/store/module/menus';
 import { useRoutesListStore } from '@/store/module/routesList';
 import { useThemeConfigStore } from '@/store/module/themeConfig';
@@ -77,16 +76,16 @@ const breadCrumbList = computed(() => {
 });
 
 const crumbPast = computed(() => {
-  let menuList = menusStore.menusName;
-  let allMenuList = R(menuList, []);
-  let selectMenu = [];
-  if (allMenuList.length > 0) {
-    allMenuList.forEach((a) => {
-      if (route.path === a.path) {
-        selectMenu.push(a);
-      }
-    });
-  }
+  // 只收集 path 命中的菜单节点引用：原先整树扁平化 + 逐属性深克隆后过滤，
+  // 每次面包屑重算都白付整棵树的克隆成本，而模板只读 path/icon/title/redirect
+  const selectMenu = [];
+  const walk = (menus) => {
+    for (const menu of menus) {
+      if (route.path === menu.path) selectMenu.push(menu);
+      if (menu.children && menu.children.length) walk(menu.children);
+    }
+  };
+  walk(menusStore.menusName);
   return selectMenu;
 });
 
