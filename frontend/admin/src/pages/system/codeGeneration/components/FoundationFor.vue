@@ -4,7 +4,7 @@
       <template v-slot:title>crud生成说明</template>
       <template> 不能生成系统自带的表；已经生成过的表还能继续生成 </template>
     </el-alert>
-    <el-form ref="foundation" :model="foundation" :rules="foundationRules" label-width="100px">
+    <el-form :model="foundation" :rules="foundationRules" label-width="100px">
       <el-form-item label="菜单：">
         <el-cascader
           class="form-width"

@@ -143,7 +143,7 @@
             currenType == 'lottery_list'
           "
         >
-          <el-form ref="formValidate" :model="formValidate" class="tabform" v-if="currenType == 'product'">
+          <el-form :model="formValidate" class="tabform" v-if="currenType == 'product'">
             <el-row :gutter="24">
               <el-col :span="8">
                 <el-form-item label="" label-for="pid">
@@ -281,7 +281,7 @@
           <!--<div v-if="!tableList.length || customNum==2">-->
           <!--<el-button type="primary" v-db-click @click="customList" v-if="tableList.length">自定义列表</el-button>-->
           <div style="width: 340px; margin: 150px 100px 0 120px">
-            <el-form ref="customdate" :model="customdate" :rules="ruleValidate" :label-width="100">
+            <el-form ref="customdateRef" :model="customdate" :rules="ruleValidate" :label-width="100">
               <!--<el-form-item label="链接名称：" prop="name">-->
               <!--<el-input v-model="customdate.name" placeholder="会员中心"></el-input>-->
               <!--</el-form-item>-->

@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="modals" title="备注" class="order_box" width="470px" :show-close="true">
-    <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="85px" @submit.prevent>
+    <el-form ref="formValidateRef" :model="formValidate" :rules="ruleValidate" label-width="85px" @submit.prevent>
       <el-form-item label="备注：" prop="remark">
         <el-input
           v-model="formValidate.remark"

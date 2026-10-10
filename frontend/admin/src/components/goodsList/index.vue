@@ -1,6 +1,6 @@
 <template>
   <div class="goodList">
-    <el-form ref="formValidate" :model="formValidate" label-width="80px" label-position="right" inline class="tabform">
+    <el-form :model="formValidate" label-width="80px" label-position="right" inline class="tabform">
       <el-form-item label="商品分类：" v-if="!liveStatus">
         <el-cascader
           v-model="formValidate.cate_id"

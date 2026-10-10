@@ -1,6 +1,6 @@
 <template>
   <div class="goodList">
-    <el-form ref="formValidate" :model="formValidate" label-width="120px" label-position="right" class="tabform">
+    <el-form :model="formValidate" label-width="120px" label-position="right" class="tabform">
       <el-row :gutter="24">
         <el-col v-bind="grid">
           <el-form-item label="商品分类：" label-for="pid">

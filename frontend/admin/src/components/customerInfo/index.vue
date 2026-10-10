@@ -1,6 +1,6 @@
 <template>
   <div class="customer">
-    <el-form ref="formValidate" :model="formValidate" label-width="80px" inline @submit.prevent>
+    <el-form :model="formValidate" label-width="80px" inline @submit.prevent>
       <el-form-item label="搜索用户：">
         <el-input
           clearable
