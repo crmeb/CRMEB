@@ -35,7 +35,8 @@ export function getCenterOrderDetail(orderNo) {
  * @param {Object} params { product_id, sku_unique, product_type, num }
  */
 export function getCenterOrderConfirm(params) {
-  return request.get('center/order/confirm', params);
+  // 携带时间戳避免浏览器缓存旧的确认数据（缓存会导致优惠券模块显隐/券列表陈旧）
+  return request.get('center/order/confirm', { ...params, _t: Date.now() });
 }
 
 /**

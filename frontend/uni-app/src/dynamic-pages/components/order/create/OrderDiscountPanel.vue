@@ -4,8 +4,8 @@
 -->
 <template>
   <view class="wrapper">
-    <!-- 优惠券 -->
-    <view class="item acea-row row-between-wrapper" @tap="onCouponTap" v-if="features.coupon">
+    <!-- 优惠券（features.coupon 为后端开关；couponTitle 非空表示后端已自动选券，开关数据陈旧时也必须展示） -->
+    <view class="item acea-row row-between-wrapper" @tap="onCouponTap" v-if="features.coupon || couponTitle">
       <view>{{ $t('优惠券') }}</view>
       <view class="discount">
         {{ couponTitle || $t('请选择') }}

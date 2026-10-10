@@ -603,6 +603,11 @@ async function computedPrice() {
     memberPrice.value = data.member_price ?? data.priceGroup?.memberPrice ?? memberPrice.value;
     postageDiscount.value = data.storePostageDiscount ?? data.postage_discount ?? data.priceGroup?.postageDiscount ?? postageDiscount.value;
     couponPrice.value = data.coupon_price ?? 0;
+    // 后端自动选券回显：未手动选券时展示后端自动领取并使用的优惠券
+    if (!couponId.value && data.coupon_id > 0) {
+      couponId.value = data.coupon_id;
+      couponTitle.value = data.coupon_title || i18n.global.t('请选择');
+    }
     integralPrice.value = data.deduction_price ?? 0;
     surplusIntegral.value = data.SurplusIntegral ?? usableIntegral.value;
     priceReady.value = true;
