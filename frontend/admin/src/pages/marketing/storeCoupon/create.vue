@@ -151,7 +151,7 @@
             clearable
             v-model="datetime2"
             type="datetimerange"
-            value-format="YYYY/MM/DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
             style="width: 380px"
             range-separator="-"
             start-placeholder="开始日期"
@@ -314,7 +314,7 @@ function getCouponDetail() {
       }
       if (data.start_time) {
         isReceiveTime.value = 1;
-        datetime2.value = [data.start_time * 1000, data.end_time * 1000];
+        datetime2.value = [makeDate(data.start_time * 1000), makeDate(data.end_time * 1000)];
         formData.start_time = makeDate(data.start_time * 1000);
         formData.end_time = makeDate(data.end_time * 1000);
       }
