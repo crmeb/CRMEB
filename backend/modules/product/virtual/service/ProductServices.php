@@ -73,6 +73,11 @@ class ProductServices
             $limit,
             ['id', 'name as store_name', 'image', 'price', 'stock', 'sales', 'is_show', 'sort_order', 'add_time']
         );
+        // 图片拼站点域名（对齐 CenterProductServices::getList 口径；编辑详情接口保持原始路径）
+        foreach ($list as &$item) {
+            $item['image'] = set_file_url($item['image'] ?? '');
+        }
+        unset($item);
         return compact('total', 'list');
     }
 

@@ -157,7 +157,11 @@ class ProductServices
         $product['is_virtual'] = (int)($product['is_virtual'] ?? 0);
 
         // ============ slider_image（由 Model 获取器自动解码为数组）============
-        $product['slider_image'] = $product['slider_image'] ?? [];
+        // 图片拼站点域名（对齐列表口径）；保存链路 ProductSaveServices 会去域名还原为相对路径入库
+        $siteUrl = sys_config('site_url');
+        $product['slider_image'] = set_file_url($product['slider_image'] ?? [], $siteUrl);
+        $product['recommend_image'] = set_file_url($product['recommend_image'] ?? '', $siteUrl);
+        $product['image'] = set_file_url($product['image'] ?? '', $siteUrl);
         if (!empty($product['slider_image'])) {
             $product['image'] = $product['slider_image'][0] ?? '';
         }
@@ -177,6 +181,7 @@ class ProductServices
         foreach ($product['attrs'] as &$attr) {
             $attr['is_vip_price'] = $attr['vip_price'] ?? 0;
             $attr['is_sub_price'] = $attr['brokerage'] ?? 0;
+            $attr['pic'] = set_file_url($attr['pic'] ?? '', $siteUrl);
         }
         unset($attr);
         $product['attr'] = $product['attrs'][0] ?? [];
@@ -204,6 +209,7 @@ class ProductServices
                 $map = array_column($list, null, 'product_id');
                 foreach ($recommendIds as $rid) {
                     if (isset($map[$rid])) {
+                        $map[$rid]['image'] = set_file_url($map[$rid]['image'] ?? '', $siteUrl);
                         $recommend_list[] = $map[$rid];
                     }
                 }
@@ -411,9 +417,12 @@ class ProductServices
             ->toArray();
 
         // 字段映射：eb_product_center列名 → 前端期望字段名
+        // 图片拼站点域名（对齐 CenterProductServices::getList 口径；编辑详情接口保持原始路径，避免回存绝对地址污染库）
         foreach ($list as &$item) {
             $item['store_name'] = $item['name'] ?? '';
             $item['sort'] = $item['sort_order'] ?? 0;
+            $item['image'] = set_file_url($item['image'] ?? '');
+            $item['slider_image'] = set_file_url($item['slider_image'] ?? []);
         }
         unset($item);
 

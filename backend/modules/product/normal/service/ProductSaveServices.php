@@ -43,6 +43,7 @@ class ProductSaveServices extends BaseService
     {
         $data = $this->fillDefaults($data);
         $this->validate($data);
+        $data = $this->stripImageUrl($data);
         $data = $this->prepareData($data);
 
         if ($id > 0) {
@@ -164,6 +165,39 @@ class ProductSaveServices extends BaseService
             }
         }
 
+        return $data;
+    }
+
+    /**
+     * 图片路径去站点域名前缀
+     * 编辑详情接口回传的 slider_image/推荐图/SKU 规格图可能带 site_url 前缀，入库统一还原为相对路径
+     * @param array $data
+     * @return array
+     */
+    protected function stripImageUrl(array $data): array
+    {
+        $siteUrl = rtrim((string) sys_config('site_url'), '/');
+        if ($siteUrl === '') {
+            return $data;
+        }
+        $strip = static function ($path) use ($siteUrl): string {
+            $path = str_replace('\\', '/', (string) $path);
+            return str_starts_with($path, $siteUrl . '/') ? substr($path, strlen($siteUrl)) : $path;
+        };
+        if (!empty($data['slider_image']) && is_array($data['slider_image'])) {
+            $data['slider_image'] = array_map($strip, $data['slider_image']);
+        }
+        if (!empty($data['recommend_image']) && is_string($data['recommend_image'])) {
+            $data['recommend_image'] = $strip($data['recommend_image']);
+        }
+        if (!empty($data['attrs'])) {
+            foreach ($data['attrs'] as &$attr) {
+                if (is_array($attr) && !empty($attr['pic']) && is_string($attr['pic'])) {
+                    $attr['pic'] = $strip($attr['pic']);
+                }
+            }
+            unset($attr);
+        }
         return $data;
     }
 
