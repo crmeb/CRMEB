@@ -16,7 +16,9 @@
 
     <!-- 修改主题信息弹窗 -->
     <el-dialog :title="`修改${isMicroPage ? '专题' : '主题'}信息`" v-model="dialogVisible" width="500px">
-      <el-form :model="form" ref="form" label-width="80px">
+      <!-- 不能给 el-form 挂与数据 form 同名的模板 ref：script setup 下挂载后会覆盖 form，
+           预填与 v-model 全部写到组件实例上，输入框无法键入（受控值不更新） -->
+      <el-form :model="form" label-width="80px">
         <el-form-item :label="`${isMicroPage ? '专题' : '主题'}名称：`">
           <el-input
             v-model="form.title"
@@ -47,7 +49,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
+import { ElMessageBox } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 
 defineOptions({ name: 'PageHeader' });
@@ -96,9 +99,26 @@ function handleConfirm() {
 }
 
 function backToMicroPage() {
-  router.push({
-    path: `/admin/setting/theme/micro_page`,
-  });
+  ElMessageBox.confirm('确定离开此页面？系统可能不会保存您所做的更改。', '提示', {
+    confirmButtonText: '保存',
+    cancelButtonText: '退出',
+    type: 'warning',
+    distinguishCancelAndClose: true,
+    showClose: false,
+  })
+    .then(() => {
+      emit('save');
+      nextTick(() => {
+        router.push({
+          path: `/admin/setting/theme/micro_page`,
+        });
+      });
+    })
+    .catch(() => {
+      router.push({
+        path: `/admin/setting/theme/micro_page`,
+      });
+    });
 }
 </script>
 
