@@ -68,9 +68,22 @@ const nodes = computed(() => p.value.nodes || []);
 .navCon { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20rpx; }
 .navCon > view { font-size: 24rpx; color: #999; text-align: center; flex: 1; }
 .navCon > view.on { color: var(--view-theme, #e93323); font-weight: 500; }
-.progress { display: flex; justify-content: space-between; align-items: center; }
+.progress { display: flex; justify-content: space-between; align-items: center; position: relative; }
+.progress > .iconfont { flex: 1; text-align: center; position: relative; z-index: 2; }
 .iconfont { font-size: 32rpx; color: #ddd; }
 .iconfont.font-num { color: var(--view-theme, #e93323); }
-.line { flex: 1; height: 4rpx; background: #ddd; margin: 0 8rpx; }
+/* 连线为覆盖段：从上一个点中心连到下一个点中心（两端各留约 2% 间隙）。
+   点与文字同用 flex:1 均分格，5 节点时点中心在 10/30/50/70/90%，与 navCon 文字对齐 */
+.line { position: absolute; top: 50%; margin: -2rpx 0 0 0; height: 4rpx; background: #ddd; }
 .line.bg-color { background: var(--view-theme, #e93323); }
+.line:nth-child(2) { left: 12%; width: 16%; }
+.line:nth-child(4) { left: 32%; width: 16%; }
+.line:nth-child(6) { left: 52%; width: 16%; }
+.line:nth-child(8) { left: 72%; width: 16%; }
+/* #ifdef H5 */
+/* 到店自提为 4 节点：点中心在 12.5/37.5/62.5/87.5% */
+.progress:not(:has(.line:nth-child(8))) .line:nth-child(2) { left: 14.5%; width: 21%; }
+.progress:not(:has(.line:nth-child(8))) .line:nth-child(4) { left: 39.5%; width: 21%; }
+.progress:not(:has(.line:nth-child(8))) .line:nth-child(6) { left: 64.5%; width: 21%; }
+/* #endif */
 </style>
