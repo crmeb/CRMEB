@@ -70,7 +70,7 @@
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
                   class-unit="元"
-                  @input="changeVipPrice(0, 'oneFormValidate')"
+                  @change="changeVipPrice(0, 'oneFormValidate')"
                 ></el-input-number>
               </template>
               <template v-else-if="item.slot === 'vip_proportion'">
@@ -81,7 +81,7 @@
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
                   class-unit="%"
-                  @input="changeDiscount(0, 'oneFormValidate')"
+                  @change="changeDiscount(0, 'oneFormValidate')"
                 ></el-input-number>
               </template>
             </template>
@@ -177,9 +177,9 @@
                       const newData = [...manyFormValidate];
                       newData[scope.$index + 1].vip_price = val;
                       emit('update:manyFormValidate', newData);
-                      changeVipPrice(scope.$index + 1);
                     }
                   "
+                  @change="changeVipPrice(scope.$index + 1)"
                 ></el-input-number>
               </template>
               <template v-else-if="item.slot === 'vip_proportion'">
@@ -195,9 +195,9 @@
                       const newData = [...manyFormValidate];
                       newData[scope.$index + 1].vip_proportion = val;
                       emit('update:manyFormValidate', newData);
-                      changeDiscount(scope.$index + 1);
                     }
                   "
+                  @change="changeDiscount(scope.$index + 1)"
                 ></el-input-number>
               </template>
             </template>

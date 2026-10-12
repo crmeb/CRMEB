@@ -889,19 +889,16 @@ function see(data, name, index) {
 }
 // 修改分佣比例
 function changeDiscount(index, type = 'manyFormValidate') {
-  // 根据分佣比例 vip_proportion 修改会员价 保留2位小数
-  formTable(type)[index].vip_price = (
-    formTable(type)[index].price *
-    (formTable(type)[index].vip_proportion / 100)
-  ).toFixed(2);
+  // 根据分佣比例 vip_proportion 修改会员价,写回数字(字符串会破坏 el-input-number 输入)
+  formTable(type)[index].vip_price = Number(
+    (formTable(type)[index].price * (formTable(type)[index].vip_proportion / 100)).toFixed(2),
+  );
 }
 // 修改会员价
 function changeVipPrice(index, type = 'manyFormValidate') {
-  // 根据会员价计算出分佣比例
-  formTable(type)[index].vip_proportion = (
-    (formTable(type)[index].vip_price / formTable(type)[index].price) *
-    100
-  ).toFixed(2);
+  // 售价为 0 时无法反推折扣,置 0 防止 Infinity 被钳制成极大值写回
+  const row = formTable(type)[index];
+  row.vip_proportion = row.price > 0 ? Number(((row.vip_price / row.price) * 100).toFixed(2)) : 0;
 }
 // 添加优惠券
 function addGoodsCoupon(index, name) {
@@ -1029,10 +1026,11 @@ function brokerageSetUp() {
   for (let val of manyFormValidate.value) {
     if (manyVipPrice.value != undefined) {
       val['vip_price'] = manyVipPrice.value;
-      val['vip_proportion'] = ((val.vip_price / val.price) * 100).toFixed(2);
+      // 售价为 0 时无法反推折扣,置 0 防止 Infinity
+      val['vip_proportion'] = val.price > 0 ? Number(((val.vip_price / val.price) * 100).toFixed(2)) : 0;
     } else {
       val['vip_proportion'] = manyVipDiscount.value;
-      val['vip_price'] = (val.price * (manyVipDiscount.value / 100)).toFixed(2);
+      val['vip_price'] = Number((val.price * (manyVipDiscount.value / 100)).toFixed(2));
     }
   }
 }
