@@ -59,6 +59,22 @@ class ExpressDriverServices extends BaseService
     }
 
     /**
+     * 获取电子面单类型驱动的中文名称映射（driver_key => driver_name）
+     * @return array
+     */
+    public function getExpressDriverNames(): array
+    {
+        $names = [];
+        $list = $this->getList([])['list'] ?? [];
+        foreach ($list as $driver) {
+            if (($driver['driver_type'] ?? '') === 'express') {
+                $names[$driver['driver_key']] = $driver['driver_name'] ?? '';
+            }
+        }
+        return $names;
+    }
+
+    /**
      * 根据 driver_key 获取驱动信息
      * @param string $driverKey
      * @return array|\think\Model|null

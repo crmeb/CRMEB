@@ -38,6 +38,12 @@ class ExpressCompanyServices extends BaseService
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, ['*'], $page, $limit);
         $count = $this->dao->count($where);
+        // 绑定驱动补充中文名称
+        $driverNames = app()->make(ExpressDriverServices::class)->getExpressDriverNames();
+        foreach ($list as &$item) {
+            $item['driver_name'] = $driverNames[$item['driver_key']] ?? $item['driver_key'];
+        }
+        unset($item);
         return compact('list', 'count');
     }
 

@@ -33,9 +33,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="绑定驱动" width="120" prop="driver_key">
+      <el-table-column label="绑定驱动" width="120" prop="driver_name">
         <template #default="scope">
-          <el-tag type="info">{{ scope.row.driver_key || '-' }}</el-tag>
+          <el-tag type="info">{{ scope.row.driver_name || scope.row.driver_key || '-' }}</el-tag>
         </template>
       </el-table-column>
 
@@ -80,7 +80,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" fixed="right" width="140" align="center">
+      <el-table-column label="操作" fixed="right" width="160" align="center">
         <template #default="scope">
           <el-button type="text" v-db-click @click="openEditDialog(scope.row)"> 编辑 </el-button>
           <el-popconfirm title="确认删除该物流公司？" @confirm="handleDelete(scope.row)">
