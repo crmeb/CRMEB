@@ -43,7 +43,7 @@
             <view @click="goDetail(order)">
               <view class="title acea-row row-between-wrapper">
                 <view class="acea-row row-middle">
-                  <text v-if="order.type_label" class="sign cart-color acea-row row-center-wrapper">{{ order.type_label }}</text>
+                  <text v-if="order.type_label" class="type-tag">{{ order.type_label }}</text>
                   <view>{{ formatTime(order.add_time) }}</view>
                 </view>
                 <StatusBadge :status-code="order.status_code" :status-text="order.status_text" />
@@ -415,11 +415,15 @@ defineExpose({ refresh: refreshList });
   color: #282828;
 }
 
-.my-order .list .item .title .sign {
-  font-size: 24rpx;
-  padding: 0 7rpx;
-  height: 36rpx;
-  margin-right: 15rpx;
+.my-order .list .item .title .type-tag {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  line-height: 1.2;
+  padding: 4rpx 12rpx;
+  margin-right: 12rpx;
+  color: var(--view-theme, #e93323);
+  background: var(--view-op-ten, rgba(233, 51, 35, 0.1));
+  border-radius: 6rpx;
 }
 
 .my-order .list .item .item-info {
