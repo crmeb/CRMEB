@@ -33,7 +33,7 @@
               <el-option value="2" label="商品券"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="是否有效：" label-for="status">
+          <el-form-item label="是否开启：" label-for="status">
             <el-select
               v-model="tableFrom.status"
               placeholder="请选择"
