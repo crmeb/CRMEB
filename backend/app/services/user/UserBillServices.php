@@ -97,6 +97,22 @@ class UserBillServices extends BaseService
             'status' => 1,
             'pm' => 1
         ],
+        'order_gain_refund' => [
+            'title' => '退款返还下单赠送积分',
+            'category' => self::TYPE_INTEGRAL,
+            'type' => 'order_gain_refund',
+            'mark' => '订单退款,返还下单赠送积分{%num%}',
+            'status' => 1,
+            'pm' => 0
+        ],
+        'product_gain_refund' => [
+            'title' => '退款返还购买商品赠送积分',
+            'category' => self::TYPE_INTEGRAL,
+            'type' => 'product_gain_refund',
+            'mark' => '订单退款,返还购买商品赠送积分{%num%}',
+            'status' => 1,
+            'pm' => 0
+        ],
         'pay_product_integral_back' => [
             'title' => '商品退积分',
             'category' => self::TYPE_INTEGRAL,

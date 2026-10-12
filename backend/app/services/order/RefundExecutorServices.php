@@ -137,8 +137,14 @@ class RefundExecutorServices extends BaseService
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);
 
-        // 操作1：收回订单赠送积分（下单赠送 gain + 商品赠送 product_gain，integral_refund 已回退过则幂等跳过）
+        // 操作1：分族收回订单赠送积分（下单赠送族 gain/order_give_integral、购买赠送族 product_gain/pay_give_integral）
+        // 发放链路经 billIntegralIncome 落库类型为 order_give_integral / pay_give_integral，须按实际落库类型统计
         $orderGain = (int)$userBillServices->sum([
+            'category' => 'integral',
+            'type'     => 'order_give_integral',
+            'link_id'  => $orderId,
+            'uid'      => $uid,
+        ], 'number') + (int)$userBillServices->sum([
             'category' => 'integral',
             'type'     => 'gain',
             'link_id'  => $orderId,
@@ -146,26 +152,46 @@ class RefundExecutorServices extends BaseService
         ], 'number');
         $productGain = (int)$userBillServices->sum([
             'category' => 'integral',
+            'type'     => 'pay_give_integral',
+            'link_id'  => $orderId,
+            'uid'      => $uid,
+        ], 'number') + (int)$userBillServices->sum([
+            'category' => 'integral',
             'type'     => 'product_gain',
             'link_id'  => $orderId,
             'uid'      => $uid,
         ], 'number');
-        $giveIntegral = $orderGain + $productGain;
-        if ($giveIntegral > 0) {
-            // 幂等标记查实际落库 type：模板 'integral_refund' 落库 type 为 order_deduction
-            // （type=integral_refund 是模板 'order_integral_refund' 返还使用积分的流水，语义不同）
-            $count = (int)$userBillServices->count([
+        if ($orderGain > 0 || $productGain > 0) {
+            // 幂等标记按分族落库类型分别查重
+            $orderRefunded = (int)$userBillServices->count([
                 'category' => 'integral',
-                'type'     => 'order_deduction',
+                'type'     => 'order_gain_refund',
                 'link_id'  => $orderId,
             ]);
-            if (!$count) {
-                // 当前积分不足时扣减全部，差额不追回
-                $deductAmount = min($currentIntegral, $giveIntegral);
+            $productRefunded = (int)$userBillServices->count([
+                'category' => 'integral',
+                'type'     => 'product_gain_refund',
+                'link_id'  => $orderId,
+            ]);
+            $hasRefund = false;
+            // 顺序扣减：当前积分不足时扣减全部，差额不追回（总量与原合并扣减口径一致）
+            if (!$orderRefunded && $orderGain > 0) {
+                $deductAmount = min($currentIntegral, $orderGain);
                 if ($deductAmount > 0) {
-                    $userBillServices->billIntegralIncome('integral_refund', $uid, $deductAmount, $orderId);
-                    $currentIntegral = bcsub((string)$currentIntegral, (string)$deductAmount, 2);
+                    $userBillServices->billIntegralIncome('order_gain_refund', $uid, $deductAmount, $orderId);
+                    $currentIntegral = (int)bcsub((string)$currentIntegral, (string)$deductAmount, 0);
+                    $hasRefund = true;
                 }
+            }
+            if (!$productRefunded && $productGain > 0) {
+                $deductAmount = min($currentIntegral, $productGain);
+                if ($deductAmount > 0) {
+                    $userBillServices->billIntegralIncome('product_gain_refund', $uid, $deductAmount, $orderId);
+                    $currentIntegral = (int)bcsub((string)$currentIntegral, (string)$deductAmount, 0);
+                    $hasRefund = true;
+                }
+            }
+            if ($hasRefund) {
                 // 清除积分冻结
                 $userBillServices->update(['link_id' => $orderId], ['frozen_time' => 0]);
             }

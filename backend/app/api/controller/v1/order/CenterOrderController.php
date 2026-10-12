@@ -2101,6 +2101,8 @@ class CenterOrderController
                 'store_name'    => $item['productInfo']['store_name'] ?? '',
                 'price'         => $item['productInfo']['price'] ?? '0.00',
                 'true_price'    => $item['truePrice'] ?? '0.00',
+                // 商品级购买送积分快照（eb_product_center.give_integral），收货时按数量聚合发放
+                'give_integral' => (float)($item['productInfo']['give_integral'] ?? 0),
                 'cart_num'      => $item['cart_num'] ?? 1,
                 'product_type'  => $item['productInfo']['product_type'] ?? '',
                 'attr_info'     => $item['productInfo']['attrInfo'] ?? [],

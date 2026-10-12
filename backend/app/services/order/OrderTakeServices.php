@@ -13,6 +13,7 @@ namespace app\services\order;
 
 
 use app\dao\order\OrderCenterDao;
+use app\dao\product\CenterProductDao;
 use crmeb\basic\BaseService;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserBillServices;
@@ -266,10 +267,39 @@ class OrderTakeServices extends BaseService
         }
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);
-        // 检查是否有赠送积分可送（中台订单无 gain_integral 实体列，缺省 0——商品级赠送快照聚合待后续补全）
-        if ((int)($order['gain_integral'] ?? 0) > 0) {
+        // 购买商品送积分：中台订单无 gain_integral 实体列，从 extra_info.items 的商品级
+        // give_integral 快照按数量聚合（下单时由 buildOrderItemsForExtra 写入）
+        $extraInfo = $order['extra_info'] ?? [];
+        if (is_string($extraInfo)) {
+            $extraInfo = json_decode($extraInfo, true) ?: [];
+        }
+        $items = $extraInfo['items'] ?? [];
+        // 修复前下的旧订单快照无 give_integral 字段，回查中台商品当前配置兜底
+        $missingIds = [];
+        foreach ($items as $item) {
+            if (!array_key_exists('give_integral', $item) && (int)($item['product_id'] ?? 0) > 0) {
+                $missingIds[$item['product_id']] = true;
+            }
+        }
+        $productGiveMap = [];
+        if ($missingIds) {
+            /** @var CenterProductDao $centerProductDao */
+            $centerProductDao = app()->make(CenterProductDao::class);
+            $productGiveMap = $centerProductDao->getColumn([['id', 'in', array_keys($missingIds)]], 'give_integral', 'id') ?: [];
+        }
+        $gainIntegral = '0';
+        foreach ($items as $item) {
+            $give = array_key_exists('give_integral', $item)
+                ? (float)($item['give_integral'] ?? 0)
+                : (float)($productGiveMap[$item['product_id'] ?? 0] ?? 0);
+            if ($give > 0) {
+                $num = max(1, (int)($item['cart_num'] ?? 1));
+                $gainIntegral = bcadd($gainIntegral, bcmul((string)$give, (string)$num, 0), 0);
+            }
+        }
+        if ((float)$gainIntegral > 0) {
             // 购买商品送积分
-            $res2 = $userBillServices->billIntegralIncome('pay_give_integral', $order['uid'], $order['gain_integral'], $order['id']);
+            $res2 = $userBillServices->billIntegralIncome('pay_give_integral', $order['uid'], $gainIntegral, $order['id']);
         } else {
             $res2 = true;
         }
@@ -293,7 +323,7 @@ class OrderTakeServices extends BaseService
         } else {
             $res3 = true;
         }
-        $give_integral = $order_integral + (int)($order['gain_integral'] ?? 0);
+        $give_integral = (int)$order_integral + (int)$gainIntegral;
         if ($give_integral > 0 && $res2 && $res3) {
             //触发积分变动事件（消息发送已移至 UserIntegralChangeListener；中台无 gain_integral 列，累计值以 bill 流水为准不再回写）
             event('UserIntegralChange', [(int)$order['uid'], $order, $storeTitle, $give_integral, $order_integral]);

@@ -32,7 +32,7 @@ class UserBillDao extends BaseDao
     {
         return $this->getModel()->where('link_id', $orderId)->where('uid', $uid)
             ->where('category', 'integral')->where('status', 1)
-            ->whereIn('type', ['gain', 'product_gain', 'order_give_integral', 'pay_give_integral', 'order_deduction', 'integral_refund'])
+            ->whereIn('type', ['gain', 'product_gain', 'order_give_integral', 'pay_give_integral', 'order_deduction', 'integral_refund', 'order_gain_refund', 'product_gain_refund'])
             ->field('type, pm, SUM(number) AS number')->group('type, pm')->select()->toArray();
     }
 

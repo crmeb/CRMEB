@@ -68,10 +68,16 @@ class OrderRefundRewardServices extends BaseService
             if (!$user) {
                 throw new \RuntimeException('退款权益关联用户不存在');
             }
-            $earned = $returned = '0';
+            $earned = $returned = $earnedOrder = $earnedProduct = '0';
             foreach ($this->billDao->getOrderIntegralRewards((int)$order['id'], $uid) as $bill) {
                 if ((int)$bill['pm'] === 1) {
                     $earned = bcadd($earned, (string)$bill['number'], 0);
+                    // 下单赠送族 gain/order_give_integral，购买赠送族 product_gain/pay_give_integral
+                    if (in_array($bill['type'], ['gain', 'order_give_integral'], true)) {
+                        $earnedOrder = bcadd($earnedOrder, (string)$bill['number'], 0);
+                    } else {
+                        $earnedProduct = bcadd($earnedProduct, (string)$bill['number'], 0);
+                    }
                 } else {
                     $returned = bcadd($returned, (string)$bill['number'], 0);
                 }
@@ -79,9 +85,22 @@ class OrderRefundRewardServices extends BaseService
             $integralTarget = $this->target($earned, $total, $paid, 0);
             $processed = max((int)$returned, (int)($accounted['integral'] ?? 0));
             $due = max(0, (int)bcsub($integralTarget, (string)$processed, 0));
-            $deduct = min($due, max(0, (int)$user['integral']));
-            if ($deduct > 0 && !$this->app->make(UserBillServices::class)->billIntegralIncome(
-                'integral_refund', $uid, $deduct, (int)$order['id'], '订单退款回收赠积分：' . $order['order_no']
+            // 按两族赠送占比拆分本次冲正额，分族落库（order_gain_refund / product_gain_refund）
+            $dueOrder = $earned > 0 ? (int)bcdiv(bcmul((string)$due, $earnedOrder, 2), $earned, 0) : 0;
+            $dueProduct = max(0, $due - $dueOrder);
+            $balance = max(0, (int)$user['integral']);
+            $deductOrder = min($dueOrder, $balance);
+            $balance -= $deductOrder;
+            $deductProduct = min($dueProduct, $balance);
+            $deduct = $deductOrder + $deductProduct;
+            $userBillServices = $this->app->make(UserBillServices::class);
+            if ($deductOrder > 0 && !$userBillServices->billIntegralIncome(
+                'order_gain_refund', $uid, $deductOrder, (int)$order['id'], '订单退款回收下单赠送积分：' . $order['order_no']
+            )) {
+                throw new \RuntimeException('退款赠积分冲正失败');
+            }
+            if ($deductProduct > 0 && !$userBillServices->billIntegralIncome(
+                'product_gain_refund', $uid, $deductProduct, (int)$order['id'], '订单退款回收购买商品赠送积分：' . $order['order_no']
             )) {
                 throw new \RuntimeException('退款赠积分冲正失败');
             }
