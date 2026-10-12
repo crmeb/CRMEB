@@ -109,8 +109,12 @@ class ArticleServices extends BaseService
      */
     public function read(int $id)
     {
-        $info = $this->dao->read($id);
+        // 模型属性赋值会按表字段类型回写（cid 为 varchar），(int) 强转必须放在 toArray 之后才生效，
+        // 否则详情返回字符串 cid，与分类树的数字 value 不一致导致编辑页级联选择器无法回显
+        $info = $this->dao->read($id)->toArray();
         $info['cid'] = (int)$info['cid'];
+        // 封面在表单内是单值字符串，模型获取器已将其拆为数组，此处归一回字符串避免提交时数组写 varchar 报错
+        $info['image_input'] = is_array($info['image_input']) ? ($info['image_input'][0] ?? '') : $info['image_input'];
         $info['content'] = htmlspecialchars_decode($info['content']);
         return compact('info');
     }
