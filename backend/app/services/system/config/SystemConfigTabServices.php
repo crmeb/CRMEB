@@ -138,7 +138,6 @@ class SystemConfigTabServices extends BaseService
         $form[] = $this->builder->cascader('pid', '父级分类', $data1)->options($configTabList)->filterable(true)->props(['props' => ['multiple' => false, 'checkStrictly' => true, 'emitPath' => false]])->style(['width'=>'100%']);
         $form[] = $this->builder->input('title', '分类名称', $formData['title'] ?? '');
         $form[] = $this->builder->input('eng_title', '分类字段英文', $formData['eng_title'] ?? '');
-        $form[] = $this->builder->frameInput('icon', '图标', $this->url(config('app.admin_prefix', 'admin') . '/widget.widgets/icon', ['fodder' => 'icon'], true), $formData['icon'] ?? '')->icon('el-icon-picture-outline')->height('560px')->props(['footer' => false]);
         $form[] = $this->builder->radio('type', '类型', $formData['type'] ?? 0)->options([
             ['value' => 0, 'label' => '系统'],
             ['value' => 3, 'label' => '其它']
