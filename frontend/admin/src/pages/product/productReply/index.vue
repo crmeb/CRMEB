@@ -145,9 +145,9 @@
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
             <template v-if="scope.row.status == 0">
-              <a class="item" v-db-click @click="adopt(scope.row, '审核通过', 1)">通过</a>
+              <a v-db-click @click="adopt(scope.row, '审核通过', 1)">通过</a>
               <el-divider direction="vertical"></el-divider>
-              <a class="item" v-db-click @click="adopt(scope.row, '拒绝', 2)">驳回</a>
+              <a v-db-click @click="adopt(scope.row, '拒绝', 2)">驳回</a>
               <el-divider direction="vertical"></el-divider>
             </template>
             <a v-if="scope.row.status != 2" v-db-click @click="reply(scope.row)">回复</a>

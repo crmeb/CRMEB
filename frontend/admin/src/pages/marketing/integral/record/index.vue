@@ -75,7 +75,7 @@
         </el-table-column>
         <el-table-column label="操作" width="100">
           <template #default="scope">
-            <a class="item" v-db-click @click="setMark(scope.row)">修改备注</a>
+            <a v-db-click @click="setMark(scope.row)">修改备注</a>
           </template>
         </el-table-column>
       </el-table>

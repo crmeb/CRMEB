@@ -130,9 +130,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="scope">
-            <a class="setting btn" v-db-click @click="detail(scope.row)">详情</a>
+            <a v-db-click @click="detail(scope.row)">详情</a>
             <el-divider direction="vertical" v-if="scope.row.status === 2" />
-            <a class="setting btn" v-db-click v-if="scope.row.status === 2" @click="retry(scope.row)">重试</a>
+            <a v-db-click v-if="scope.row.status === 2" @click="retry(scope.row)">重试</a>
           </template>
         </el-table-column>
       </el-table>
@@ -318,12 +318,6 @@ getStatistics();
 </script>
 
 <style lang="scss" scoped>
-.btn {
-  padding: 6px 12px;
-  cursor: pointer;
-  font-size: 12px;
-  border-radius: 3px;
-}
 .stat-item {
   text-align: center;
   .stat-value {

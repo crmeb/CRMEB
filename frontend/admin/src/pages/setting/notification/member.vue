@@ -88,7 +88,7 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" :width="70">
           <template #default="scope">
-            <a class="setting btn" v-db-click @click="setting(scope.row)">设置</a>
+            <a v-db-click @click="setting(scope.row)">设置</a>
           </template>
         </el-table-column>
       </el-table>
@@ -212,13 +212,6 @@ getList();
 .table-box {
   padding: 20px;
 }
-.btn {
-  padding: 6px 0px;
-  cursor: pointer;
-  font-size: 12px;
-  border-radius: 3px;
-}
-
 :deep(.el-modal-drawer) .notification-edit-drawer .el-drawer__body {
   padding: 10px 20px;
 

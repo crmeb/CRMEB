@@ -57,9 +57,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <a class="setting btn" v-db-click @click="edit(scope.row)">配置</a>
+            <a v-db-click @click="edit(scope.row)">配置</a>
             <el-divider direction="vertical"></el-divider>
-            <a class="setting btn" v-db-click @click="test(scope.row)">测试</a>
+            <a v-db-click @click="test(scope.row)">测试</a>
           </template>
         </el-table-column>
       </el-table>
@@ -198,11 +198,4 @@ function test(row) {
 getList();
 </script>
 
-<style lang="scss" scoped>
-.btn {
-  padding: 6px 12px;
-  cursor: pointer;
-  font-size: 12px;
-  border-radius: 3px;
-}
-</style>
+<style lang="scss" scoped></style>

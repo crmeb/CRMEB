@@ -90,7 +90,7 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="80">
               <template #default="scope">
-                <a class="submission mr15" v-db-click @click="deleteRow(scope.$index)">删除</a>
+                <a v-db-click @click="deleteRow(scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>

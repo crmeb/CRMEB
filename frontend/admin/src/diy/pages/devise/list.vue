@@ -84,7 +84,6 @@
                 >
                   <a
                     v-if="scope.row.is_diy === 1"
-                    class="target"
                     ref="target"
                     :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${scope.row.id}&name=${
                       scope.row.template_name || 'moren'
@@ -92,7 +91,7 @@
                   >
                     编辑</a
                   >
-                  <a v-else class="target">编辑</a>
+                  <a v-else>编辑</a>
                 </div>
                 <el-divider
                   direction="vertical"
