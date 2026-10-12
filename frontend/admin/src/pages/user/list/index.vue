@@ -500,7 +500,7 @@ const userFrom = ref({
   agent_level: '',
   field_key: '',
 });
-const before_pay_time = ref('');
+const before_pay_time = ref([]);
 const field_key = ref('');
 const level = ref('');
 const group_id = ref('');
@@ -1011,8 +1011,6 @@ function reset(name) {
     group_id: '',
     agent_level: '',
     field_key: '',
-    page: 1, // 当前页
-    limit: 15, // 每页显示条数
   };
   field_key.value = '';
   level.value = '';
@@ -1023,6 +1021,7 @@ function reset(name) {
   user_time_type.value = '';
   pay_count.value = '';
   timeVal.value = [];
+  before_pay_time.value = [];
   selectedIds.value = new Set();
   getList();
 }
