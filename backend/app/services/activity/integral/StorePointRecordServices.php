@@ -40,21 +40,40 @@ class StorePointRecordServices extends BaseService
     public function pointRecord($where)
     {
         $where['category'] = 'integral';
+        // 主程序积分流水仅七类，搜索下拉即此七项（新族别名 gain/product_gain 等历史类型不在下拉，仅做列表显示兜底）
         $status = [
-            'invite_user' => '邀新奖励',
             'system_add' => '系统增加积分',
             'system_sub' => '系统减少积分',
+            'sign' => '签到获得积分',
+            'order_give_integral' => '下单赠送积分',
+            'pay_give_integral' => '购买商品赠送积分',
+            'order_gain_refund' => '退款返还下单赠送积分',
+            'product_gain_refund' => '退款返还购买商品赠送积分',
+        ];
+        // 列表 type_name 显示映射：含旧链路落库类型
+        $typeNames = $status + [
             'gain' => '下单赠送积分',
             'product_gain' => '购买商品赠送积分',
-            'deduction' => '下单积分抵扣',
-            'lottery_use' => '参与抽奖使用积分',
-            'lottery_add' => '抽奖中奖赠送积分',
-            'lottery_give_integral' => '抽奖中奖赠送积分',
-            'order_deduction' => '扣除订单下单赠送积分',
-            'storeIntegral_use' => '积分兑换商品',
+            'order_deduction' => '退款返还下单赠送积分',
+            'integral_refund' => '退款返还下单赠送积分',
             'pay_product_integral_back' => '返还下单使用积分',
-            'sign' => '签到获得积分',
         ];
+        // link_id 存中台订单主键、可回查订单号的类型
+        $orderLinkTypes = [
+            'gain',
+            'product_gain',
+            'order_give_integral',
+            'pay_give_integral',
+            'order_gain_refund',
+            'product_gain_refund',
+            'deduction',
+            'product_deduction',
+            'order_deduction',
+            'integral_refund',
+            'pay_product_integral_back',
+        ];
+        // link_id 存积分商城订单主键的类型
+        $integralOrderTypes = ['storeIntegral_use', 'storeIntegral_use_integral'];
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, '*', $page, $limit);
         //关联用户
@@ -69,14 +88,14 @@ class StorePointRecordServices extends BaseService
         $integralOrderServices = app()->make(StoreIntegralOrderServices::class);
         foreach ($list as &$item) {
             $item['nickname'] = $nicknameArr[$item['uid']] ?? '未知用户';
-            if ($item['type'] == 'gain' || $item['type'] == 'deduction' || $item['type'] == 'product_deduction' || $item['type'] == 'pay_product_integral_back') {
+            if (in_array($item['type'], $orderLinkTypes)) {
                 $item['relation'] = $orderServices->value(['id' => $item['link_id']], 'order_no');
-            } elseif ($item['type'] == 'storeIntegral_use') {
+            } elseif (in_array($item['type'], $integralOrderTypes)) {
                 $item['relation'] = $integralOrderServices->value(['id' => $item['link_id']], 'order_id');
             } else {
-                $item['relation'] = $status[$item['type']] ?? '';
+                $item['relation'] = $typeNames[$item['type']] ?? '';
             }
-            $item['type_name'] = $status[$item['type']] ?? $item['type'];
+            $item['type_name'] = $typeNames[$item['type']] ?? $item['type'];
         }
         $count = $this->dao->count($where);
         return compact('list', 'count', 'status');
