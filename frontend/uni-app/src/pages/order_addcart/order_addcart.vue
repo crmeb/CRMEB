@@ -22,6 +22,7 @@
         <view
           v-if="cartList.valid.length || cartList.invalid.length"
           class="nav-right"
+          :class="{ managing: !footerswitch }"
           @click="manage"
           >{{ footerswitch ? $t(`管理`) : $t(`取消`) }}</view
         >
@@ -982,11 +983,16 @@ function unsetCart() {
   }
   .nav-right {
     font-size: 26rpx;
-    padding: 0 20rpx;
-    height: 46rpx;
-    line-height: 46rpx;
-    border: 1rpx solid #a4a4a4;
-    border-radius: 6rpx;
+    padding: 0 26rpx;
+    height: 52rpx;
+    line-height: 52rpx;
+    border-radius: 26rpx;
+    background: #f5f5f7;
+    color: #666;
+    &.managing {
+      background: var(--view-op-ten, rgba(233, 51, 35, 0.1));
+      color: var(--view-theme, #e93323);
+    }
   }
 }
 .goods-wrapper {
@@ -1070,44 +1076,34 @@ function unsetCart() {
       right: 0;
       display: flex;
       align-items: center;
-      height: 47rpx;
+      background: #f5f5f7;
+      border-radius: 24rpx;
+      overflow: hidden;
+
       .qty-btn {
-        width: 66rpx;
-        height: 47rpx;
-        line-height: 47rpx;
+        width: 56rpx;
+        height: 48rpx;
+        line-height: 48rpx;
         text-align: center;
-        border: 1rpx solid #a4a4a4;
-        font-size: 28rpx;
-        color: #a4a4a4;
-        &.reduce {
-          border-right: 0;
-          border-radius: 3rpx 0 0 3rpx;
-          &.off {
-            border-color: #e3e3e3;
-            color: #dedede;
-          }
-        }
-        &.plus {
-          border-left: 0;
-          border-radius: 0 3rpx 3rpx 0;
-          &.off {
-            border-color: #e3e3e3;
-            color: #dedede;
-          }
+        font-size: 32rpx;
+        color: #282828;
+        &.off {
+          color: #d0d0d0;
         }
       }
+
       .qty-num {
-        width: 66rpx;
-        height: 47rpx;
-        line-height: 47rpx;
+        width: 64rpx;
+        height: 48rpx;
+        line-height: 48rpx;
         text-align: center;
-        border: 1rpx solid #a4a4a4;
         color: #282828;
         font-size: 28rpx;
         input {
           width: 100%;
           height: 100%;
           text-align: center;
+          font-size: 28rpx;
         }
       }
     }
