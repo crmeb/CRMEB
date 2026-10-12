@@ -2,57 +2,45 @@
   <div>
     <el-row class="mb14">
       <el-col :span="24">
-        <el-button type="primary" v-db-click @click="openAddDialog">
-          <i class="el-icon-plus"></i> 新增物流公司
-        </el-button>
+        <el-button type="primary" v-db-click @click="openAddDialog"> 新增物流公司 </el-button>
       </el-col>
     </el-row>
 
     <el-table :data="list" v-loading="loading" highlight-current-row row-key="id">
-      <el-table-column label="排序" width="120" prop="sort" align="center">
-        <template #default="scope">
-          <el-input
-            v-model="scope.row.sort"
-            type="number"
-            style="width: 70px"
-            class="sort-input-center"
-            @change="handleSortChange(scope.row)"
-          />
-        </template>
-      </el-table-column>
+      <el-table-column label="排序" width="80" prop="sort" align="center" />
 
-      <el-table-column label="快递公司" min-width="140">
+      <el-table-column label="快递公司" min-width="120">
         <template #default="scope">
           <span class="font-weight-bold">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="编码" width="120" prop="code">
+      <el-table-column label="编码" width="100" prop="code">
         <template #default="scope">
           <el-tag>{{ scope.row.code }}</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="绑定驱动" width="120" prop="driver_name">
+      <el-table-column label="绑定驱动" min-width="120" prop="driver_name">
         <template #default="scope">
           <el-tag type="info">{{ scope.row.driver_name || scope.row.driver_key || '-' }}</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="月结账号" width="140" prop="account">
+      <el-table-column label="月结账号" width="110" prop="account">
         <template #default="scope">
           <span>{{ scope.row.account || '-' }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="打印机" width="120">
+      <el-table-column label="打印机" width="90">
         <template #default="scope">
           <el-tag v-if="scope.row.print_open" type="success">已配置</el-tag>
           <span v-else class="text-muted">未开启</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="展示" width="120">
+      <el-table-column label="展示" width="90">
         <template #default="scope">
           <el-switch
             :active-value="1"
@@ -66,7 +54,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="状态" width="120">
+      <el-table-column label="状态" width="90">
         <template #default="scope">
           <el-switch
             :active-value="1"
@@ -80,12 +68,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" fixed="right" width="160" align="center">
+      <el-table-column label="操作" fixed="right" width="120" align="center">
         <template #default="scope">
-          <el-button type="text" v-db-click @click="openEditDialog(scope.row)"> 编辑 </el-button>
-          <el-popconfirm title="确认删除该物流公司？" @confirm="handleDelete(scope.row)">
-            <template #reference><el-button type="text" class="text-danger" v-db-click> 删除 </el-button></template>
-          </el-popconfirm>
+          <a v-db-click @click="openEditDialog(scope.row)"> 编辑 </a>
+          <el-divider direction="vertical" />
+          <a v-db-click class="text-danger" @click="handleDelete(scope.row)"> 删除 </a>
         </template>
       </el-table-column>
     </el-table>
@@ -103,13 +90,8 @@
 import { onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import companyEdit from './companyEdit.vue';
-import {
-  companyListApi,
-  companySetStatusApi,
-  companySetIsShowApi,
-  companySortApi,
-  companyDeleteApi,
-} from '@/api/driver/expressCompany';
+import { modalSure } from '@/utils/public';
+import { companyListApi, companySetStatusApi, companySetIsShowApi } from '@/api/driver/expressCompany';
 
 defineOptions({ name: 'expressCompany' });
 
@@ -169,18 +151,14 @@ function handleIsShowChange(row) {
     });
 }
 
-function handleSortChange(row) {
-  companySortApi({ id: row.id, sort: row.sort })
-    .then((res) => {
-      ElMessage.success(res.msg || '排序成功');
-    })
-    .catch(() => {
-      getList();
-    });
-}
-
 function handleDelete(row) {
-  companyDeleteApi(row.id)
+  modalSure({
+    title: `删除物流公司「${row.name}」`,
+    info: '删除后不可恢复，请谨慎操作。',
+    url: `/driver/express_company/delete/${row.id}`,
+    method: 'DELETE',
+    ids: '',
+  })
     .then((res) => {
       ElMessage.success(res.msg || '删除成功');
       getList();
@@ -204,7 +182,8 @@ defineExpose({ getList });
 .text-danger {
   color: #e74c3c;
 }
-:deep(.sort-input-center input) {
-  text-align: center;
+/* 开关未选中态：白字压在浅灰轨道上对比度过低，改用次要文本色 */
+:deep(.defineSwitch .el-switch__label--left.is-active) {
+  color: var(--prev-color-text-secondary) !important;
 }
 </style>

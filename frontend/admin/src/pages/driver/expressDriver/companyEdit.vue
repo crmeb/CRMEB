@@ -324,4 +324,12 @@ function handleSubmit() {
   text-align: right;
   z-index: 10;
 }
+/* 排序数字居中显示（全局数字输入框默认左对齐，加 .el-form 提高特异性压过 style.scss 的左对齐规则） */
+:deep(.el-form .el-input-number .el-input__inner) {
+  text-align: center;
+}
+/* 开关未选中态：白字压在浅灰轨道上对比度过低，改用次要文本色 */
+:deep(.defineSwitch .el-switch__label--left.is-active) {
+  color: var(--prev-color-text-secondary) !important;
+}
 </style>
