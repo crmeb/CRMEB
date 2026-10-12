@@ -55,7 +55,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column label="操作" width="100" fixed="right">
           <template #default="scope">
             <a v-db-click @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical" v-if="currentTab === '1'"></el-divider>

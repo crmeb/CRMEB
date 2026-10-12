@@ -25,19 +25,12 @@
         <SchemaTableCell :column="column" :row="row" @switch-change="onSwitchChange" />
       </template>
     </el-table-column>
-    <!-- 操作列：行操作按钮（删除类动作用危险色；visible 声明行级显示条件） -->
+    <!-- 操作列：行操作文字链接（与用户列表等常规列表页一致：主色 <a> + 竖分隔线；visible 声明行级显示条件） -->
     <el-table-column v-if="rowActions.length" label="操作" :width="actionColumnWidth" fixed="right">
       <template #default="{ row }">
-        <template v-for="actionItem in rowActions" :key="actionItem.action">
-          <el-button
-            v-if="isActionVisible(actionItem, row)"
-            :type="actionItem.theme || (actionItem.action === 'delete' ? 'danger' : 'primary')"
-            link
-            v-db-click
-            @click="emit('row-action', { actionItem, row })"
-          >
-            {{ actionItem.label }}
-          </el-button>
+        <template v-for="(actionItem, index) in visibleRowActions(row)" :key="actionItem.action">
+          <el-divider v-if="index > 0" direction="vertical"></el-divider>
+          <a v-db-click @click="emit('row-action', { actionItem, row })">{{ actionItem.label }}</a>
         </template>
       </template>
     </el-table-column>
@@ -51,7 +44,7 @@
 /**
  * 通用页面表格（独立组件）
  *
- * 基于 el-table 封装：按列定义分发渲染（SchemaTableCell），操作列按行操作配置输出链接按钮。
+ * 基于 el-table 封装：按列定义分发渲染（SchemaTableCell），操作列按行操作配置输出文字链接。
  */
 import { computed } from 'vue';
 import SchemaTableCell from './SchemaTableCell.vue';
@@ -88,10 +81,10 @@ const props = defineProps({
 
 const emit = defineEmits(['row-action', 'switch-change', 'sort-change', 'selection-change']);
 
-/** 操作列宽度：按按钮数量与文案长度估算 */
+/** 操作列宽度：按链接文案长度与分隔线数量估算 */
 const actionColumnWidth = computed(() => {
   const totalChars = props.rowActions.reduce((sum, item) => sum + (item.label || '').length, 0);
-  return Math.max(100, totalChars * 15 + 60);
+  return Math.max(100, totalChars * 13 + 20 * props.rowActions.length + 40);
 });
 
 /** 超长文本列的气泡配置：通过 popperClass 限定最大宽度（样式见文件底部全局样式块） */
@@ -132,6 +125,15 @@ function isActionVisible(actionItem, row) {
   });
 }
 
+/**
+ * 当前行可见的行操作列表（模板按序渲染链接，分隔线插在相邻可见动作之间）
+ * @param {object} row 行数据
+ * @returns {Array}
+ */
+function visibleRowActions(row) {
+  return props.rowActions.filter((item) => isActionVisible(item, row));
+}
+
 /** 开关列切换透传 */
 function onSwitchChange(payload) {
   emit('switch-change', payload);
@@ -153,28 +155,6 @@ function onSortChange({ prop, order }) {
   });
 }
 </script>
-
-<style lang="scss" scoped>
-/* 操作列文字按钮：强制无背景无边框（项目主题改写了按钮变量体系，link 态被实心样式覆盖） */
-:deep(.el-button.is-link) {
-  background: transparent !important;
-  border: none !important;
-  height: auto;
-  padding: 0 2px !important;
-}
-:deep(.el-button.is-link.el-button--primary) {
-  color: var(--el-color-primary) !important;
-}
-:deep(.el-button.is-link.el-button--danger) {
-  color: var(--el-color-danger) !important;
-}
-:deep(.el-button.is-link.el-button--success) {
-  color: var(--el-color-success) !important;
-}
-:deep(.el-button.is-link.el-button--warning) {
-  color: var(--el-color-warning) !important;
-}
-</style>
 
 <style lang="scss">
 /* 表格超长文本气泡（append-to-body 渲染在 body 下，scoped 样式不生效）：

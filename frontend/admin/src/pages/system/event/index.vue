@@ -61,7 +61,7 @@
                 <span v-else class="empty-text">暂无监听器</span>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="100">
+            <el-table-column label="操作" width="100" fixed="right">
               <template #default="scope">
                 <a v-db-click @click="showDetail(scope.row)">详情</a>
               </template>
