@@ -69,7 +69,7 @@
                 </el-table>
                 <el-row class="addTop">
                   <el-col>
-                    <el-button type="primary" icon="md-add" v-db-click @click="addCity(1)">添加配送区域</el-button>
+                    <el-button type="primary" v-db-click @click="addCity(1)">添加配送区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -124,7 +124,7 @@
                 </div>
                 <el-row class="addTop mt5" v-if="formData.appoint_check === 1">
                   <el-col>
-                    <el-button type="primary" icon="md-add" v-db-click @click="addCity(2)">添加包邮区域</el-button>
+                    <el-button type="primary" v-db-click @click="addCity(2)">添加包邮区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -163,7 +163,7 @@
                 </el-table>
                 <el-row class="addTop" v-if="formData.no_delivery_check === 1">
                   <el-col>
-                    <el-button type="primary" icon="md-add" v-db-click @click="addCity(3)">添加不送达区域</el-button>
+                    <el-button type="primary" v-db-click @click="addCity(3)">添加不送达区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -469,13 +469,12 @@ defineExpose({ editFrom, isTemplate, id });
 .addTop {
   margin-top: 15px;
 }
-.radio {
-  padding: 5px 0;
-}
 .ivu-input-number {
   width: 100%;
 }
 .free_tips {
+  /* el-form-item 内容区是 flex 布局，提示文字须占满整行，添加包邮区域按钮才会换行到其下方 */
+  width: 100%;
   font-size: 12px;
   color: #ccc;
 }
