@@ -83,36 +83,41 @@
 
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <el-button
+            <a
               v-if="hasPermission('admin-printer-content-read')"
               v-auth="['admin-printer-content-read']"
-              link
-              type="primary"
               v-db-click
               @click="handleDesign(scope.row)"
             >
               设计
-            </el-button>
-            <el-button
+            </a>
+            <el-divider
+              v-if="hasPermission('admin-printer-content-read') && hasPermission('admin-printer-detail')"
+              direction="vertical"
+            ></el-divider>
+            <a
               v-if="hasPermission('admin-printer-detail')"
               v-auth="['admin-printer-detail']"
-              link
-              type="primary"
               v-db-click
               @click="handleEdit(scope.row)"
             >
               设置
-            </el-button>
-            <el-button
+            </a>
+            <el-divider
+              v-if="
+                hasPermission('admin-printer-delete') &&
+                (hasPermission('admin-printer-detail') || hasPermission('admin-printer-content-read'))
+              "
+              direction="vertical"
+            ></el-divider>
+            <a
               v-if="hasPermission('admin-printer-delete')"
               v-auth="['admin-printer-delete']"
-              link
-              type="danger"
               v-db-click
               @click="handleDelete(scope.row, scope.$index)"
             >
               删除
-            </el-button>
+            </a>
           </template>
         </el-table-column>
       </el-table>

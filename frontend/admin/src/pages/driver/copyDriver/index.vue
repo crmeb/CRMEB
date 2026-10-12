@@ -45,9 +45,9 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" fixed="right" width="150" align="center">
+        <el-table-column label="操作" fixed="right" width="150">
           <template #default="scope">
-            <el-button type="text" v-db-click @click="openEditDrawer(scope.row)"> 设置 </el-button>
+            <a v-db-click @click="openEditDrawer(scope.row)">设置</a>
           </template>
         </el-table-column>
       </el-table>

@@ -101,19 +101,14 @@
         <el-table-column label="操作" fixed="right" width="220">
           <template #default="scope">
             <template v-if="canConfigureCname(scope.row)">
-              <span class="btn" v-db-click @click="config(scope.row)">CNAME配置</span>
+              <a v-db-click @click="config(scope.row)">CNAME配置</a>
               <el-divider direction="vertical"></el-divider>
             </template>
-            <span v-auth="['driver-storage-domain']" class="btn" v-db-click @click="edit(scope.row)">修改空间域名</span>
+            <a v-auth="['driver-storage-domain']" v-db-click @click="edit(scope.row)">修改空间域名</a>
             <el-divider direction="vertical"></el-divider>
-            <span
-              v-auth="['driver-storage-delete']"
-              class="btn"
-              v-db-click
-              @click="del(scope.row, '删除该数据', scope.$index)"
-            >
+            <a v-auth="['driver-storage-delete']" v-db-click @click="del(scope.row, '删除该数据', scope.$index)">
               删除
-            </span>
+            </a>
           </template>
         </el-table-column>
       </el-table>
@@ -528,11 +523,6 @@ function submitAddStorageForm() {
 <style scoped>
 :deep(.el-card__body) {
   padding: 0;
-}
-.btn {
-  cursor: pointer;
-  color: var(--prev-color-primary);
-  font-size: 12px;
 }
 .confignv {
   margin: 10px 0px;

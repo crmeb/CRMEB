@@ -36,9 +36,11 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="190">
           <template #default="scope">
-            <span class="table-link" @click="openEditor(scope.row)">编辑</span>
-            <span class="table-link" @click="openAttachments(scope.row)">附件</span>
-            <span class="table-link danger" @click="removeSkill(scope.row)">删除</span>
+            <a v-db-click @click="openEditor(scope.row)">编辑</a>
+            <el-divider direction="vertical"></el-divider>
+            <a v-db-click @click="openAttachments(scope.row)">附件</a>
+            <el-divider direction="vertical"></el-divider>
+            <a v-db-click @click="removeSkill(scope.row)">删除</a>
           </template>
         </el-table-column>
         <template #empty>暂无 Skill，点击右上角「新建 Skill」创建</template>
@@ -153,8 +155,9 @@
           </el-table-column>
           <el-table-column label="操作" width="110" fixed="right">
             <template #default="scope">
-              <span class="table-link" @click="openAttachmentEditor(scope.row)">编辑</span>
-              <span class="table-link danger" @click="removeAttachment(scope.row)">删除</span>
+              <a v-db-click @click="openAttachmentEditor(scope.row)">编辑</a>
+              <el-divider direction="vertical"></el-divider>
+              <a v-db-click @click="removeAttachment(scope.row)">删除</a>
             </template>
           </el-table-column>
           <template #empty>暂无附属资料，点击右上角「新建附件」添加</template>
@@ -588,26 +591,6 @@ onMounted(() => {
 .mono {
   font-family: Menlo, Consolas, monospace;
   font-size: 12px;
-}
-/* 表格操作链接（替代 el-button，避免全局样式导致的过大间距与换行） */
-.table-link {
-  display: inline-block;
-  margin-right: 14px;
-  color: var(--prev-color-primary);
-  font-size: 13px;
-  cursor: pointer;
-  &:last-child {
-    margin-right: 0;
-  }
-  &:hover {
-    opacity: 0.8;
-  }
-  &.danger {
-    color: var(--prev-color-danger);
-  }
-}
-.danger {
-  color: var(--prev-color-danger);
 }
 .content-editor :deep(.el-textarea__inner) {
   height: max(calc(100vh - 310px), 520px);

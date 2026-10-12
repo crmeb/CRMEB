@@ -85,9 +85,9 @@
                 </template>
               </el-table-column>
               <el-table-column label="打印时间" min-width="160" prop="add_time" />
-              <el-table-column label="操作" fixed="right" width="100" align="center">
+              <el-table-column label="操作" fixed="right" width="100">
                 <template #default="scope">
-                  <el-button type="text" v-db-click @click="viewLogDetail(scope.row)">详情</el-button>
+                  <a v-db-click @click="viewLogDetail(scope.row)">详情</a>
                 </template>
               </el-table-column>
             </el-table>

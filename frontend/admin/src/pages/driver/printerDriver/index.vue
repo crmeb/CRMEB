@@ -64,18 +64,18 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" fixed="right" width="100" align="center">
+        <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <el-button
+            <a
               v-if="hasPermission('admin-printer-driver-detail')"
               v-auth="['admin-printer-driver-detail']"
-              type="text"
               v-db-click
               :disabled="!scope.row.id"
+              :style="scope.row.id ? '' : 'color: var(--prev-color-text-placeholder); cursor: not-allowed;'"
               @click="showDetail(scope.row)"
             >
               配置
-            </el-button>
+            </a>
           </template>
         </el-table-column>
       </el-table>

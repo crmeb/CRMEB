@@ -65,11 +65,12 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="scope">
+            <a v-db-click @click="changeMenu(scope.row, '1')">编辑</a>
+            <el-divider direction="vertical"></el-divider>
             <el-dropdown @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
               <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i></span>
               <template #dropdown
                 ><el-dropdown-menu>
-                  <el-dropdown-item command="1">编辑批次名</el-dropdown-item>
                   <el-dropdown-item command="2">查看卡列表</el-dropdown-item>
                   <el-dropdown-item command="3">导出</el-dropdown-item>
                 </el-dropdown-menu></template
