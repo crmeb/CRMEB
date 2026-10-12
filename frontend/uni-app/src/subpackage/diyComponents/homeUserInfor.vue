@@ -15,9 +15,21 @@
                 </view>
               </view>
               <view class="text">
-                <view class="name line1" :style="[nameTextStyle]">{{
-                  userName
-                }}</view>
+                <view class="name-row acea-row row-middle">
+                  <view class="name line1" :style="[nameTextStyle]">{{
+                    userName
+                  }}</view>
+                  <view class="vip-badge" v-if="vipBadge.visible">
+                    <image
+                      class="badge-icon"
+                      :src="vipBadge.icon"
+                      mode="aspectFill"
+                    />
+                    <text class="badge-text" v-if="vipBadge.text">{{
+                      vipBadge.text
+                    }}</text>
+                  </view>
+                </view>
                 <view class="level line1" :style="[numTextStyle]">{{
                   userSubText
                 }}</view>
@@ -58,9 +70,21 @@
           >
             <view class="user-info style-2 acea-row row-between-wrapper">
               <view class="text">
-                <view class="name line1" :style="[nameTextStyle]">{{
-                  userName
-                }}</view>
+                <view class="name-row acea-row row-middle">
+                  <view class="name line1" :style="[nameTextStyle]">{{
+                    userName
+                  }}</view>
+                  <view class="vip-badge" v-if="vipBadge.visible">
+                    <image
+                      class="badge-icon"
+                      :src="vipBadge.icon"
+                      mode="aspectFill"
+                    />
+                    <text class="badge-text" v-if="vipBadge.text">{{
+                      vipBadge.text
+                    }}</text>
+                  </view>
+                </view>
                 <view class="level line1" :style="[numTextStyle]">{{
                   userSubTextPlain
                 }}</view>
@@ -88,9 +112,21 @@
                 </view>
               </view>
               <view class="text">
-                <view class="name line1" :style="[nameTextStyle]">{{
-                  userName
-                }}</view>
+                <view class="name-row acea-row row-middle">
+                  <view class="name line1" :style="[nameTextStyle]">{{
+                    userName
+                  }}</view>
+                  <view class="vip-badge" v-if="vipBadge.visible">
+                    <image
+                      class="badge-icon"
+                      :src="vipBadge.icon"
+                      mode="aspectFill"
+                    />
+                    <text class="badge-text" v-if="vipBadge.text">{{
+                      vipBadge.text
+                    }}</text>
+                  </view>
+                </view>
                 <view class="level line1" :style="[numTextStyle]">{{
                   userSubText
                 }}</view>
@@ -135,9 +171,21 @@
                   </view>
                 </view>
                 <view class="text">
-                  <view class="name line1" :style="[nameTextStyle]">{{
-                    userName
-                  }}</view>
+                  <view class="name-row acea-row row-middle">
+                    <view class="name line1" :style="[nameTextStyle]">{{
+                      userName
+                    }}</view>
+                    <view class="vip-badge" v-if="vipBadge.visible">
+                      <image
+                        class="badge-icon"
+                        :src="vipBadge.icon"
+                        mode="aspectFill"
+                      />
+                      <text class="badge-text" v-if="vipBadge.text">{{
+                        vipBadge.text
+                      }}</text>
+                    </view>
+                  </view>
                   <view class="level line1" :style="[numTextStyle]">{{
                     userSubTextPlain
                   }}</view>
@@ -267,9 +315,21 @@
                   </view>
                 </view>
                 <view class="text">
-                  <view class="name line1" :style="[nameTextStyle]">{{
-                    userName
-                  }}</view>
+                  <view class="name-row acea-row row-middle">
+                    <view class="name line1" :style="[nameTextStyle]">{{
+                      userName
+                    }}</view>
+                    <view class="vip-badge" v-if="vipBadge.visible">
+                      <image
+                        class="badge-icon"
+                        :src="vipBadge.icon"
+                        mode="aspectFill"
+                      />
+                      <text class="badge-text" v-if="vipBadge.text">{{
+                        vipBadge.text
+                      }}</text>
+                    </view>
+                  </view>
                   <view class="level line1" :style="[numTextStyle]">{{
                     userSubTextPlain
                   }}</view>
@@ -936,6 +996,14 @@ const userName = computed(() => {
   if (!isLogin.value) return "请点击登录";
   return (userInfo.value && userInfo.value.nickname) || "";
 });
+// 付费会员标识：等级图标+等级名优先，纯付费会员展示皇冠+「付费会员」
+const vipBadge = computed(() => {
+  const info = userInfo.value || {};
+  const visible = Boolean(isLogin.value && (info.pay_vip_status || info.vip));
+  const icon = info.vip_icon || "";
+  const text = info.vip_name || (info.pay_vip_status ? "付费会员" : "");
+  return { visible: visible && Boolean(icon || text), icon, text };
+});
 const userSubText = computed(() => {
   if (!isLogin.value) return "";
   if (userInfoConfig.value == 0)
@@ -1212,6 +1280,29 @@ function goLink(url) {
       margin-top: 0;
     }
   }
+  /* 付费会员标识：全部头部样式通用 */
+  .vip-badge {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 30rpx;
+    padding: 0 10rpx;
+    margin-left: 10rpx;
+    border-radius: 16rpx;
+    background: linear-gradient(90deg, #f7ddad 0%, #eec27c 100%);
+    .badge-icon {
+      width: 24rpx;
+      height: 24rpx;
+      margin-right: 4rpx;
+      border-radius: 50%;
+    }
+    .badge-text {
+      font-size: 20rpx;
+      line-height: 30rpx;
+      font-weight: 500;
+      color: #6b4413;
+    }
+  }
 }
 .card-header {
   position: relative;
@@ -1248,6 +1339,12 @@ function goLink(url) {
     flex: 1;
     .name {
       font-weight: 600;
+    }
+    .name-row {
+      min-width: 0;
+      .name {
+        max-width: 300rpx;
+      }
     }
     .level {
       margin-top: 8rpx;
