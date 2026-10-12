@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, watch, getCurrentInstance } from 'vue';
+import { ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import formCreateFactory from '@form-create/element-ui';
 import request from '@/libs/request';
@@ -35,8 +35,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['submitFail']);
-
-const { proxy } = getCurrentInstance();
 
 const modals = ref(false);
 const loading = ref(false);
@@ -86,7 +84,8 @@ function onSubmit(formData) {
     data: datas,
   })
     .then((res) => {
-      if (props.update) proxy.$parent.getList();
+      // 列表刷新走 submitFail 事件（各页面已绑定）；Vue3 下 <script setup> 的绑定不经实例代理暴露，
+      // 旧版 proxy.$parent.getList() 必然 TypeError，会把成功的保存误报为错误且弹窗无法关闭
       ElMessage.success(res.msg);
       modals.value = false;
       setTimeout(() => {
