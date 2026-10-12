@@ -16,27 +16,30 @@
               />
             </el-form-item>
             <el-form-item label="云打印机编号：">
-              <el-input v-model="configForm.siid" placeholder="请输入云打印机编号" class="field-md" />
-              <div class="form-tip">不填写时返回面单图片，由管理员手动打印。</div>
+              <el-input
+                v-model="configForm.siid"
+                placeholder="不填写时返回面单图片，由管理员手动打印。"
+                class="field-lg"
+              />
             </el-form-item>
 
             <el-divider content-position="left">默认快递公司</el-divider>
             <el-form-item label="快递公司编码：">
-              <el-input v-model="configForm.com" placeholder="如：ZTO" class="field-md" />
+              <el-input v-model="configForm.com" placeholder="如：ZTO" class="field-lg" />
             </el-form-item>
             <el-form-item label="快递公司ID：">
-              <el-input v-model="configForm.id" placeholder="请输入快递公司ID" class="field-md" />
+              <el-input v-model="configForm.id" placeholder="请输入快递公司ID" class="field-lg" />
             </el-form-item>
             <el-form-item label="默认模板ID：">
-              <el-input v-model="configForm.temp_id" placeholder="请输入面单模板ID" class="field-md" />
+              <el-input v-model="configForm.temp_id" placeholder="请输入面单模板ID" class="field-lg" />
             </el-form-item>
 
             <el-divider content-position="left">默认寄件人</el-divider>
             <el-form-item label="发货人姓名：">
-              <el-input v-model="configForm.to_name" placeholder="请输入发货人姓名" class="field-md" />
+              <el-input v-model="configForm.to_name" placeholder="请输入发货人姓名" class="field-lg" />
             </el-form-item>
             <el-form-item label="发货人电话：">
-              <el-input v-model="configForm.to_tel" placeholder="请输入发货人电话" class="field-md" />
+              <el-input v-model="configForm.to_tel" placeholder="请输入发货人电话" class="field-lg" />
             </el-form-item>
             <el-form-item label="发货人地址：">
               <el-input v-model="configForm.to_address" placeholder="请输入发货人详细地址" class="field-lg" />
@@ -210,17 +213,8 @@ getConfig();
 .tab-content {
   padding-top: 20px;
 }
-.field-md {
-  width: 300px;
-}
 .field-lg {
   width: 500px;
-}
-.form-tip {
-  color: var(--prev-color-text-secondary);
-  font-size: 12px;
-  line-height: 1.5;
-  margin-top: 5px;
 }
 .mb20 {
   margin-bottom: 20px;
