@@ -596,7 +596,7 @@ const guide = ref(0);
 const bgimg = ref(0);
 const columns1 = ref([]);
 const bgCol = ref('');
-const name = ref('routine_home_banner');
+const name = ref('admin_login_slide');
 const grid = {
   xl: 7,
   lg: 7,
@@ -1000,6 +1000,7 @@ function getGroupAll() {
       groupAll.value = res.data;
       sortName.value = res.data[0].config_name;
       pageId.value = res.data[0].id;
+      name.value = res.data[0].config_name;
     })
     .catch((res) => {
       ElMessage.error(res.msg);
