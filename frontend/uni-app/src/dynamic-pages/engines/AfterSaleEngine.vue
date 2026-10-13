@@ -123,6 +123,24 @@
               :placeholder="$t(field.placeholder || '')"
             />
           </view>
+          <!-- 下拉选择（选项由后端 options 下发） -->
+          <view class="item acea-row row-between-wrapper" v-else-if="field.type === 'select'">
+            <view>{{ $t(field.label) }}</view>
+            <picker
+              class="num"
+              mode="selector"
+              :range="field.options || []"
+              :value="(field.options || []).indexOf(formValues[field.key])"
+              @change="onSelectFieldChange(field, $event)"
+            >
+              <view class="picker acea-row row-between-wrapper">
+                <view class="reason" :class="{ 'picker-placeholder': !formValues[field.key] }">
+                  {{ formValues[field.key] || $t(field.placeholder || '请选择') }}
+                </view>
+                <text class="iconfont icon-jiantou"></text>
+              </view>
+            </picker>
+          </view>
           <!-- 数字 -->
           <view class="item acea-row row-between-wrapper" v-else-if="field.type === 'number'">
             <view>{{ $t(field.label) }}</view>
@@ -205,6 +223,10 @@
         <view class="info-row" v-if="detail.reason">
           <text class="label">{{ $t('申请原因') }}</text>
           <text class="value reason-text">{{ detail.reason }}</text>
+        </view>
+        <view class="info-row" v-if="detail.remark">
+          <text class="label">{{ $t('备注') }}</text>
+          <text class="value reason-text">{{ detail.remark }}</text>
         </view>
         <view class="info-row" v-if="detail.reject_reason">
           <text class="label">{{ $t('拒绝原因') }}</text>
@@ -633,6 +655,9 @@ async function loadFormConfig(type) {
         formValues.value[field.key] = [];
       } else if (field.type === 'price') {
         formValues.value[field.key] = (orderDetail.value.pay_price || '0.00').toString();
+      } else if (field.type === 'select') {
+        // 下拉字段默认选中第一个选项（无 options 时留空走必填校验）
+        formValues.value[field.key] = field.default || (field.options && field.options[0]) || '';
       } else {
         formValues.value[field.key] = field.default || '';
       }
@@ -649,6 +674,17 @@ async function onTypeChange(e) {
   const type = availableTypes.value[typeIndex.value];
   if (type) {
     await loadFormConfig(type);
+    // 类型切换会重置表单值，与首次加载一致地回填退款金额/退还积分默认值
+    syncRefundPriceField();
+  }
+}
+
+/** 动态表单下拉字段变更（选项文本直接作为字段值提交） */
+function onSelectFieldChange(field, e) {
+  const options = field.options || [];
+  const idx = Number(e.detail.value);
+  if (options[idx] !== undefined) {
+    formValues.value[field.key] = options[idx];
   }
 }
 
@@ -741,7 +777,8 @@ async function submitApply() {
       const val = formValues.value[field.key];
       const empty = Array.isArray(val) ? val.length === 0 : !String(val || '').trim();
       if (empty) {
-        return util.Tips({ title: i18n.global.t('请填写') + i18n.global.t(field.label) });
+        const prefix = field.type === 'select' ? i18n.global.t('请选择') : i18n.global.t('请填写');
+        return util.Tips({ title: prefix + i18n.global.t(field.label) });
       }
     }
   }
@@ -1232,6 +1269,10 @@ defineExpose({
   white-space: normal;
   word-break: break-word;
   padding: 20rpx 12rpx 20rpx 0;
+
+  &.picker-placeholder {
+    color: #bbb;
+  }
 }
 
 .list .item .picker {

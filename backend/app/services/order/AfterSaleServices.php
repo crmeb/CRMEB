@@ -736,6 +736,7 @@ class AfterSaleServices extends BaseService
             'refund_target'       => $afterSale['refund_target'] ?? 'cash',
             'refund_integral'     => (int)($afterSale['refund_integral'] ?? 0),
             'reason'              => $afterSale['reason'] ?? '',
+            'remark'              => $afterSale['remark'] ?? '',
             'reject_reason'       => $afterSale['reject_reason'] ?? '',
             'evidence_images'     => $afterSale['evidence_images'] ?? [],
             'product_snapshot'    => $afterSale['product_snapshot'] ?? [],
@@ -1131,6 +1132,7 @@ class AfterSaleServices extends BaseService
                 ? 'both'
                 : ($refundIntegral > 0 ? 'integral' : 'cash'),
             'reason'          => $data['reason'] ?? '',
+            'remark'          => trim((string)($data['remark'] ?? '')),
             'evidence_images' => !empty($data['evidence_images']) && is_array($data['evidence_images'])
                 ? json_encode($data['evidence_images']) : '',
             'product_snapshot'=> !empty($snapshot) && is_array($snapshot)

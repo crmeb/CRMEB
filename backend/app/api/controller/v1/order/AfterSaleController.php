@@ -87,6 +87,7 @@ class AfterSaleController
             ['refund_price', 0.00],
             ['refund_integral', 0], // 积分退款标的：退还积分数
             ['reason', ''],
+            ['remark', ''], // 备注（补充说明，选填）
             ['evidence_images', []],
             ['product_snapshot', []],
             ['items', []], // v8.1.1 新增：商品级售后范围 [{cart_id, refund_num}]

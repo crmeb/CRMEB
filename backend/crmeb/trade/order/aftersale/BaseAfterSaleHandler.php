@@ -136,7 +136,7 @@ abstract class BaseAfterSaleHandler implements AfterSaleHandlerInterface
     /**
      * 默认售后申请表单配置
      * 资金类售后（refund_only/return_refund）展示退款金额；其余类型不展示
-     * 所有类型统一展示"售后原因 + 凭证图片"
+     * 所有类型统一展示"售后理由（配置选择）+ 备注 + 凭证图片"
      * @param string $type 售后类型
      * @return array
      */
@@ -153,14 +153,23 @@ abstract class BaseAfterSaleHandler implements AfterSaleHandlerInterface
                 'placeholder' => '请输入退款金额',
             ];
         }
-        // 售后原因（所有类型必填）
+        // 售后理由（选项来自系统配置 stor_reason，所有类型必填）
         $fields[] = [
             'key'         => 'reason',
-            'label'       => '售后原因',
-            'type'        => 'textarea',
+            'label'       => '售后理由',
+            'type'        => 'select',
             'required'    => true,
-            'maxlength'   => 100,
-            'placeholder' => '请描述售后原因，100字以内',
+            'options'     => $this->getReasonOptions(),
+            'placeholder' => '请选择售后理由',
+        ];
+        // 备注（补充说明，选填）
+        $fields[] = [
+            'key'         => 'remark',
+            'label'       => '备注',
+            'type'        => 'textarea',
+            'required'    => false,
+            'maxlength'   => 200,
+            'placeholder' => '选填，补充描述您的问题（200字以内）',
         ];
         // 凭证图片（所有类型可选）
         $fields[] = [
@@ -171,6 +180,17 @@ abstract class BaseAfterSaleHandler implements AfterSaleHandlerInterface
             'max'      => 6,
         ];
         return ['fields' => $fields];
+    }
+
+    /**
+     * 售后理由选项（系统配置 stor_reason，换行分隔；配置为空时兜底"其它原因"保证表单可用）
+     * @return array
+     */
+    protected function getReasonOptions(): array
+    {
+        $reason = str_replace("\r\n", "\n", (string)sys_config('stor_reason'));
+        $options = array_values(array_filter(array_map('trim', explode("\n", $reason)), fn ($v) => $v !== ''));
+        return $options ?: ['其它原因'];
     }
 
     /**
