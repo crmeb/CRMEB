@@ -837,6 +837,19 @@ class CenterOrderController
             $result['total_price'] = $originalTotalPrice;
             $result['coupon_price'] = $couponPrice;
 
+            // 自动领取发生在确认接口返回之后时，重新查询可用券并返回给前端。
+            // 否则金额和标题已经更新，但优惠券选择弹窗仍使用确认阶段的旧列表。
+            $result['coupon_list'] = [];
+            if (!$isActivityOrder && ($pricingPolicy['coupon'] ?? true)) {
+                try {
+                    /** @var StoreCouponUserServices $couponServices */
+                    $couponServices = app()->make(StoreCouponUserServices::class);
+                    $result['coupon_list'] = $couponServices->getUsableCouponList($uid, ['valid' => $cartInfo]);
+                } catch (\Throwable $e) {
+                    // 优惠券列表刷新失败不影响金额计算和下单流程
+                }
+            }
+
             // 自提模式强制运费为 0；上门服务模式运费替换为商品上门费用（computedPayPostage 内部仍会检查
             // store_self_mention 系统配置，但产品级 store_pickup/door_service 开关已由 confirm 接口控制，
             // 前端发送 delivery_type='pickup'/'door' 即表示该商品支持到店自提/上门服务）
