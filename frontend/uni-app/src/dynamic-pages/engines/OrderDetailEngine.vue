@@ -140,6 +140,9 @@ async function loadDetail() {
   }
 }
 
+// 包装页 onShow 返回时调用（评价完成/售后进度变化等场景，返回详情需看到最新状态）
+defineExpose({ refresh: loadDetail });
+
 // ========== 全局状态注入 ==========
 
 /**

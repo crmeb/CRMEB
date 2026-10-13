@@ -327,6 +327,9 @@ onBeforeUnmount(() => {
   uni.$off('order:confirm', onConfirmOrder);
   uni.$off('order:delete', onDeleteOrder);
 });
+
+// 包装页 onShow 返回时调用（详情页评价/收货等操作后返回列表需看到最新状态）
+defineExpose({ refresh: refreshList });
 </script>
 
 <style scoped>

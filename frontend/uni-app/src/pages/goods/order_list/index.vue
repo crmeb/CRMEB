@@ -1,10 +1,10 @@
 <template>
-  <OrderListEngine :status-filter="statusFilter" />
+  <OrderListEngine ref="engine" :status-filter="statusFilter" />
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 import OrderListEngine from '@/dynamic-pages/engines/OrderListEngine.vue';
 
 // 旧版数字 status → 新版语义化 status 映射表
@@ -23,9 +23,20 @@ const STATUS_MAP = {
 const SEMANTIC_STATUS = ['all', 'pending_payment', 'pending_delivery', 'pending_use', 'pending_comment', 'after_sale'];
 
 const statusFilter = ref('all');
+const engine = ref(null);
 
 onLoad((options) => {
   statusFilter.value = normalizeStatus(options.status);
+});
+
+// 首次 onShow 与引擎首次加载重复，跳过；此后每次返回本页（详情页评价/收货后返回）刷新列表数据
+let showed = false;
+onShow(() => {
+  if (!showed) {
+    showed = true;
+    return;
+  }
+  engine.value?.refresh();
 });
 
 /**
