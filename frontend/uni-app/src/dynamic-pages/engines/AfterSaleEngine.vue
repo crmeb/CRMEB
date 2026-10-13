@@ -477,24 +477,47 @@ const statusClass = computed(() => {
 });
 /** 选中的商品明细列表（用于展示和构建快照） */
 const selectedItems = computed(() => refundableItems.value.filter(item => selectedCartIds.value.includes(item.cart_id)));
-/** 选中商品的退款金额上限（商品金额 + 按商品金额比例分摊的实付运费） */
+/** 行实付金额按数量累计取整（与后端 paidAmountForQuantity 同算法，单位：元） */
+function paidAmountForQuantity(rowTotal, quantity, refunded, selected) {
+  const totalCents = Math.round(Number(rowTotal || 0) * 100);
+  if (quantity <= 0 || totalCents <= 0) return 0;
+  const before = Math.min(quantity, Math.max(0, Number(refunded) || 0));
+  const after = Math.min(quantity, before + Math.max(0, Number(selected) || 0));
+  if (after <= before) return 0;
+  const centAt = num => Math.floor(totalCents * num / quantity);
+  return (centAt(after) - centAt(before)) / 100;
+}
+
+/** 行实付现金：优先用后端分摊的实付金额，缺失时回退商品原价（旧数据兜底） */
+function rowPaidTotal(item) {
+  return item.paid_amount_total !== undefined && item.paid_amount_total !== null
+    ? Number(item.paid_amount_total)
+    : Number(item.true_price || 0) * Number(item.cart_num || 0);
+}
+
+/** 选中商品的退款金额上限（行实付金额 + 按实付占比分摊的实付运费；优惠券/积分抵扣不再折现退还） */
 const maxRefundPrice = computed(() => {
-  let selectedProductAmount = 0;
-  let totalProductAmount = 0;
-  selectedItems.value.forEach(item => {
-    const num = refundNumMap.value[item.cart_id] || 0;
-    selectedProductAmount += Number(item.true_price) * num;
-  });
+  let selectedPaidAmount = 0;
+  let totalPaidAmount = 0;
   refundableItems.value.forEach(item => {
-    totalProductAmount += Number(item.true_price) * Number(item.cart_num || 0);
+    totalPaidAmount += rowPaidTotal(item);
+    if (selectedCartIds.value.includes(item.cart_id)) {
+      const num = refundNumMap.value[item.cart_id] || 0;
+      selectedPaidAmount += paidAmountForQuantity(
+        rowPaidTotal(item),
+        Number(item.cart_num || 0),
+        Number(item.refunded_num || 0),
+        num
+      );
+    }
   });
   const payPostage = Number(orderDetail.value.pay_postage || 0);
-  const postageRefund = selectedProductAmount > 0 && payPostage > 0
-    ? (totalProductAmount > 0
-      ? payPostage * Math.min(1, selectedProductAmount / totalProductAmount)
+  const postageRefund = selectedPaidAmount > 0 && payPostage > 0
+    ? (totalPaidAmount > 0
+      ? payPostage * Math.min(1, selectedPaidAmount / totalPaidAmount)
       : payPostage)
     : 0;
-  return (selectedProductAmount + postageRefund).toFixed(2);
+  return (selectedPaidAmount + postageRefund).toFixed(2);
 });
 /** 选中商品的退还积分合计，普通抵扣积分按数量累计取整。 */
 const maxRefundIntegral = computed(() => {

@@ -106,7 +106,8 @@ class AfterSaleServices extends BaseService
         $hasIntegral = false;
         foreach ($items as $item) {
             $totalRefundable += (int)($item['refundable_num'] ?? 0);
-            if ((float)($item['true_price'] ?? 0) > 0) {
+            // 现金维度看分摊后的实付金额（全额券/纯积分抵扣单实付为 0 时不可退现金）
+            if ((float)($item['paid_amount_total'] ?? $item['true_price'] ?? 0) > 0) {
                 $hasCash = true;
             }
             if ((int)($item['refundable_integral'] ?? 0) > 0) {
@@ -234,6 +235,7 @@ class AfterSaleServices extends BaseService
 
         // 组装返回
         $deductionIntegral = $integralUnitPrice > 0 ? [] : $this->allocateDeductionIntegral($center, $orderItems);
+        $paidAmounts = $this->allocatePaidAmounts($center, $orderItems);
         $result = [];
         foreach ($orderItems as $item) {
             $cartId = (int)($item['cart_id'] ?? 0);
@@ -262,6 +264,8 @@ class AfterSaleServices extends BaseService
                 'refunded_num'   => $refundedNum,
                 'refundable_num' => $refundableNum,
                 'true_price'     => (string)($item['true_price'] ?? $item['price'] ?? '0.00'),
+                // 分摊后的整行实付现金（商品原价 - 优惠券/积分抵扣/促销等优惠），退款现金上限按此累计
+                'paid_amount_total' => $paidAmounts[$cartId] ?? '0.00',
                 // 积分参考价：非积分订单为 0，仅积分活动订单有值
                 'integral_unit_price' => $integralUnitPrice,
                 'deduction_integral_total' => $deductionIntegral[$cartId] ?? 0,
@@ -332,8 +336,93 @@ class AfterSaleServices extends BaseService
     }
 
     /**
+     * 将订单商品实付现金按原价占比分摊到行，累计取整保证合计等于实付总额。
+     * 商品实付现金 = 实付金额 - 实付运费，优惠券/积分抵扣/促销等优惠已在该口径中扣除，
+     * 避免退款上限按商品原价累计而超过用户实际支付的现金（积分抵扣部分以退还积分维度返还）。
+     * @param array $center 中台订单
+     * @param array $items 商品快照
+     * @return array cart_id => 整行实付现金（字符串，2 位）
+     */
+    protected function allocatePaidAmounts(array $center, array $items): array
+    {
+        $paidGoods = bcsub((string)($center['pay_price'] ?? '0'), (string)($center['pay_postage'] ?? '0'), 2);
+        if (bccomp($paidGoods, '0', 2) < 0) {
+            $paidGoods = '0.00';
+        }
+        $weights = [];
+        foreach ($items as $item) {
+            $cid = (int)($item['cart_id'] ?? 0);
+            $weights[$cid] = bcmul((string)($item['true_price'] ?? $item['price'] ?? '0'), (string)($item['cart_num'] ?? 1), 4);
+        }
+        $total = array_reduce($weights, fn ($sum, $weight) => bcadd($sum, $weight, 4), '0');
+        if (bccomp($total, '0', 4) <= 0) {
+            return array_fill_keys(array_map('intval', array_keys($weights)), '0.00');
+        }
+        // 实付现金异常大于商品原价合计时按原价封顶
+        if (bccomp($paidGoods, $total, 4) > 0) {
+            $paidGoods = $total;
+        }
+        $allocated = '0';
+        $cumulative = '0';
+        $result = [];
+        foreach ($weights as $cid => $weight) {
+            $cumulative = bcadd($cumulative, $weight, 4);
+            $target = bcdiv(bcmul($paidGoods, $cumulative, 4), $total, 2);
+            $result[$cid] = bcsub($target, $allocated, 2);
+            $allocated = $target;
+        }
+        return $result;
+    }
+
+    /**
+     * 计算选中数量应退的实付现金，逐次退款累计取整（与 deductionIntegralForQuantity 同模式）。
+     * @param string $rowTotal 整行实付现金
+     * @param int $quantity 整行数量
+     * @param int $refunded 已占用数量
+     * @param int $selected 本次数量
+     * @return string
+     */
+    protected function paidAmountForQuantity(string $rowTotal, int $quantity, int $refunded, int $selected): string
+    {
+        if ($quantity <= 0 || bccomp($rowTotal, '0', 2) <= 0) {
+            return '0.00';
+        }
+        $before = min($quantity, max(0, $refunded));
+        $after = min($quantity, $before + max(0, $selected));
+        if ($after <= $before) {
+            return '0.00';
+        }
+        // 全程整数分运算，避免中途小数截断造成少退；差值除回 100 转元
+        $totalCents = (int)bcmul($rowTotal, '100', 0);
+        $centsAt = fn (int $num): int => intdiv($totalCents * $num, $quantity);
+        return bcdiv((string)($centsAt($after) - $centsAt($before)), '100', 2);
+    }
+
+    /**
+     * 按行取退款现金：有分摊实付数据时按数量累计取额，否则回退商品原价（外部直传原始明细的场景）。
+     * @param array $item 商品行（loadRefundableItems 结构或原始明细）
+     * @param int $quantity 本次数量
+     * @return string
+     */
+    protected function rowPaidAmountForQuantity(array $item, int $quantity): string
+    {
+        $quantity = max(0, $quantity);
+        $cartNum = max(1, (int)($item['cart_num'] ?? 0));
+        if (isset($item['paid_amount_total'])) {
+            return $this->paidAmountForQuantity(
+                (string)$item['paid_amount_total'],
+                $cartNum,
+                (int)($item['refunded_num'] ?? 0),
+                min($quantity, $cartNum)
+            );
+        }
+        return bcmul((string)($item['true_price'] ?? $item['price'] ?? '0'), (string)min($quantity, $cartNum), 2);
+    }
+
+    /**
      * 获取订单当前可退现金上限
      * 按可退明细逐项累加，避免直接用订单实付金额减已退金额导致和实际 SKU 可退数量不一致。
+     * 商品部分按分摊后的实付金额（原价扣减优惠券/积分抵扣/促销）累计，现金上限不会超过实付总额。
      */
     public function getMaxRefundAmount(string $orderNo): string
     {
@@ -354,7 +443,7 @@ class AfterSaleServices extends BaseService
             }
             $maxRefundPrice = bcadd(
                 $maxRefundPrice,
-                bcmul((string)($item['true_price'] ?? '0.00'), (string)$refundNum, 4),
+                $this->rowPaidAmountForQuantity($item, $refundNum),
                 2
             );
         }
@@ -364,9 +453,10 @@ class AfterSaleServices extends BaseService
     }
 
     /**
-     * 按商品金额占比分摊订单已支付运费。
+     * 按商品实付金额占比分摊订单已支付运费。
      *
      * 商品级售后允许部分商品/部分数量退款，不能每次都直接加整笔运费，否则多次售后会重复退款。
+     * 权重与现金退款口径一致：优先用分摊后的实付金额，无分摊数据时回退商品原价。
      * @param array $center 中台订单
      * @param array $allItems 订单全部商品明细，需含 cart_num/true_price
      * @param array $selectedItems 本次售后商品明细，含 refund_num；省略时使用各商品 refundable_num
@@ -383,12 +473,14 @@ class AfterSaleServices extends BaseService
         $totalProductAmount = 0.0;
         foreach ($allItems as $item) {
             $cartId = (int)($item['cart_id'] ?? 0);
-            $unitPrice = (float)($item['true_price'] ?? $item['price'] ?? 0);
             $cartNum = max(0, (int)($item['cart_num'] ?? 0));
             if ($cartId > 0) {
                 $itemMap[$cartId] = $item;
             }
-            $totalProductAmount += $unitPrice * $cartNum;
+            // 分母用整行实付金额（未被已退数量扣减），保证比例基准是整单
+            $totalProductAmount += isset($item['paid_amount_total'])
+                ? (float)$item['paid_amount_total']
+                : (float)($item['true_price'] ?? $item['price'] ?? 0) * $cartNum;
         }
 
         if (empty($selectedItems)) {
@@ -399,11 +491,10 @@ class AfterSaleServices extends BaseService
         foreach ($selectedItems as $item) {
             $cartId = (int)($item['cart_id'] ?? 0);
             $detail = $itemMap[$cartId] ?? $item;
-            $unitPrice = (float)($detail['true_price'] ?? $detail['price'] ?? 0);
             $quantity = array_key_exists('refund_num', $item)
                 ? (int)$item['refund_num']
                 : (int)($item['refundable_num'] ?? $item['cart_num'] ?? 0);
-            $selectedProductAmount += $unitPrice * max(0, $quantity);
+            $selectedProductAmount += (float)$this->rowPaidAmountForQuantity($detail, $quantity);
         }
 
         if ($selectedProductAmount <= 0) {
@@ -439,7 +530,13 @@ class AfterSaleServices extends BaseService
                 continue;
             }
             $num = (int)($item['refund_num'] ?? 0);
-            $weight = max(0, (int)round((float)$detail['true_price'] * 100) * $num);
+            if (isset($detail['paid_amount_total'])) {
+                // 实付口径权重：按本次数量占整行数量的比例取整行实付金额
+                $cartNum = max(1, (int)($detail['cart_num'] ?? 1));
+                $weight = max(0, (int)round((float)$detail['paid_amount_total'] * 100 * $num / $cartNum));
+            } else {
+                $weight = max(0, (int)round((float)$detail['true_price'] * 100) * $num);
+            }
             $integralWeight = (int)($detail['selected_integral'] ?? 0);
             $selected[] = compact('cartId', 'detail', 'num', 'weight', 'integralWeight');
             $totalWeight += $weight;
@@ -649,7 +746,8 @@ class AfterSaleServices extends BaseService
             if ((int)($item['refundable_num'] ?? 0) <= 0) {
                 continue;
             }
-            if ((float)($item['true_price'] ?? 0) > 0) {
+            // 现金维度看分摊后的实付金额（原价扣减优惠券/积分抵扣/促销）
+            if ((float)($item['paid_amount_total'] ?? $item['true_price'] ?? 0) > 0) {
                 $hasCash = true;
             }
             if ((int)($item['refundable_integral'] ?? 0) > 0) {
@@ -1009,7 +1107,9 @@ class AfterSaleServices extends BaseService
 
             $cartIds[] = $cartId;
             $totalRefundNum += $refundNum;
-            $maxRefundPrice = bcadd($maxRefundPrice, bcmul((string)$ri['true_price'], (string)$refundNum, 4), 2);
+            // 现金上限按分摊后的实付金额累计，避免优惠券/积分抵扣/促销等优惠被重复以现金退还
+            $lineCash = $this->rowPaidAmountForQuantity($ri, $refundNum);
+            $maxRefundPrice = bcadd($maxRefundPrice, $lineCash, 2);
             $selectedItemsForPostage[] = [
                 'cart_id'    => $cartId,
                 'refund_num' => $refundNum,
