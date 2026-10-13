@@ -574,7 +574,9 @@
   width: 253px;
 }
 // 多规格设置
+// el-form-item__content 在 Element Plus 下是 flex 容器，占满一行才能与前置控件纵向堆叠
 .specifications {
+  width: 100%;
   .specifications-item:hover {
     background-color: var(--prev-color-primary-light-9);
   }
