@@ -14,8 +14,8 @@
             <li class="item">
               <div class="title">订单状态</div>
               <div>
-                {{ detailData.status_text || '--' }}
-                <span v-if="detailData.refund_status == 1" style="color: #ed4014">
+                <el-tag :type="businessStatus.type">{{ businessStatus.text }}</el-tag>
+                <span v-if="detailData.refund_status == 1" style="color: #ed4014; margin-left: 4px">
                   {{ detailData.is_all_refund ? '退款中' : '部分退款中' }}
                 </span>
               </div>
@@ -449,7 +449,7 @@ import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import orderIcon from '@/assets/images/order_icon.png';
 import request from '@/libs/request';
-import { getOrderExpress } from '../normalOrder';
+import { getOrderExpress, getOrderBusinessStatus } from '../normalOrder';
 
 defineOptions({ name: 'normalOrderDetail' });
 
@@ -470,6 +470,9 @@ const orderItems = computed(() => {
   if (!detailData.value) return [];
   return detailData.value.order_items || detailData.value.cartInfo || [];
 });
+
+/** 订单状态与列表同口径（待发货/待收货/待到店等业务状态） */
+const businessStatus = computed(() => getOrderBusinessStatus(detailData.value || {}));
 
 /** 售后进度数据（后端注入到 detail.extend.after_sale） */
 const afterSaleInfo = computed(() => {
@@ -658,14 +661,17 @@ defineExpose({ loadDetail });
 
   .list {
     display: flex;
+    flex-wrap: wrap;
+    row-gap: 16px;
     margin-top: 20px;
     overflow: hidden;
     list-style: none;
     padding: 0;
 
     .item {
-      flex: none;
-      width: 200px;
+      flex: 1 1 auto;
+      min-width: 0;
+      padding-right: 16px;
       font-size: 14px;
       line-height: 14px;
       color: var(--prev-color-text-regular);

@@ -268,7 +268,13 @@
         </div></template
       >
     </el-dialog>
-    <el-drawer v-model="detailDrawerVisible" title="订单详情" size="720px" @opened="onDetailDrawerOpened">
+    <el-drawer
+      v-model="detailDrawerVisible"
+      title="订单详情"
+      size="720px"
+      class="order-detail-drawer"
+      @opened="onDetailDrawerOpened"
+    >
       <OrderCenterDetail :id="detailOrderId" ref="orderDetailRef" />
     </el-drawer>
   </div>
@@ -637,5 +643,10 @@ onMounted(() => {
 :deep(.el-tabs__header) {
   margin: 0;
   padding: 0 20px;
+}
+
+/* 详情抽屉 body 左右归零（全局 variables.scss 为 20px 35px），与实物/网盘订单详情抽屉一致 */
+:deep(.order-detail-drawer .el-drawer__body) {
+  padding: 20px 0 !important;
 }
 </style>

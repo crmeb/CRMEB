@@ -14,8 +14,10 @@
             <li class="item">
               <div class="title">订单状态</div>
               <div>
-                {{ getStatusLabel(detailData.status_code) }}
-                <span v-if="detailData.refund_status == 1" style="color: #ed4014">
+                <el-tag :type="getStatusClass(detailData.status_code)">{{
+                  getStatusLabel(detailData.status_code)
+                }}</el-tag>
+                <span v-if="detailData.refund_status == 1" style="color: #ed4014; margin-left: 4px">
                   {{ detailData.is_all_refund ? '退款中' : '部分退款中' }}
                 </span>
               </div>
@@ -116,12 +118,29 @@ function getStatusLabel(code) {
   const map = {
     pending_payment: '待支付',
     processing: '待处理',
+    pending_review: '待评价',
     completed: '已完成',
     canceled: '已取消',
+    after_sale: '售后中',
     refunding: '退款中',
     refunded: '已退款',
   };
   return map[code] || code || '--';
+}
+
+/* 与列表 getStatusClass 同口径 */
+function getStatusClass(code) {
+  const map = {
+    pending_payment: 'warning',
+    processing: 'primary',
+    pending_review: 'success',
+    completed: 'success',
+    canceled: 'danger',
+    after_sale: 'warning',
+    refunding: 'warning',
+    refunded: 'info',
+  };
+  return map[code] || 'info';
 }
 
 function formatDate(date) {
@@ -199,8 +218,9 @@ defineExpose({ loadDetail });
     padding: 0;
 
     .item {
-      flex: none;
-      width: 200px;
+      flex: 1 1 auto;
+      min-width: 0;
+      padding-right: 16px;
       font-size: 14px;
       line-height: 14px;
       color: var(--prev-color-text-regular);
@@ -209,7 +229,7 @@ defineExpose({ loadDetail });
         margin-bottom: 12px;
         font-size: 13px;
         line-height: 13px;
-        color: #666666;
+        color: var(--prev-color-text-primary);
       }
 
       .value1 {

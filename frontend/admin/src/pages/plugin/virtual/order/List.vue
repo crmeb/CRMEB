@@ -69,7 +69,7 @@
       </div>
     </el-card>
 
-    <el-drawer v-model="detailVisible" title="订单详情" size="720px" destroy-on-close>
+    <el-drawer v-model="detailVisible" title="订单详情" size="720px" class="order-detail-drawer" destroy-on-close>
       <OrderDetail :order-no="detailOrderNo" :show-back="false" />
     </el-drawer>
   </div>
@@ -103,11 +103,29 @@ function dateFormat(ts) {
 }
 
 function statusType(status) {
-  const map = { pending_payment: 'warning', completed: 'success', closed: 'info' };
+  const map = {
+    pending_payment: 'warning',
+    processing: 'primary',
+    pending_review: 'success',
+    completed: 'success',
+    canceled: 'info',
+    refunding: 'danger',
+    refunded: 'info',
+    closed: 'info',
+  };
   return map[status] || 'info';
 }
 function statusLabel(status) {
-  const map = { pending_payment: '待付款', completed: '已完成', closed: '已关闭' };
+  const map = {
+    pending_payment: '待付款',
+    processing: '处理中',
+    pending_review: '待评价',
+    completed: '已完成',
+    canceled: '已取消',
+    refunding: '退款中',
+    refunded: '已退款',
+    closed: '已关闭',
+  };
   return map[status] || status;
 }
 async function loadList() {
@@ -143,8 +161,13 @@ function openDetail(orderNo) {
 loadList();
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .mt16 {
   margin-top: 16px;
+}
+
+/* 详情抽屉 body 左右归零（全局 variables.scss 为 20px 35px），与实物订单详情抽屉一致 */
+:deep(.order-detail-drawer .el-drawer__body) {
+  padding: 20px 0 !important;
 }
 </style>

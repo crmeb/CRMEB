@@ -183,3 +183,42 @@ export function saveOrderIntegral(data) {
 export function getOrderExpress(orderNo) {
   return request.get('normal/order/express/' + orderNo);
 }
+
+/**
+ * 订单业务状态：与订单列表 OrderTable 的 getBusinessStatus 同口径，
+ * 供详情弹窗等场景复用（列表/详情状态展示保持一致）
+ */
+export function getOrderBusinessStatus(row = {}) {
+  if (row.is_del === 1) {
+    return { code: 'deleted', text: '已删除', type: 'danger' };
+  }
+  if (row.status_code === 'pending_payment') {
+    return { code: 'pending_payment', text: '待支付', type: 'warning' };
+  }
+  if (row.status_code === 'canceled') {
+    return { code: 'canceled', text: '已取消', type: 'danger' };
+  }
+  if (row.status_code === 'after_sale' || row.status_code === 'refunding') {
+    return { code: 'after_sale', text: '退换/售后', type: 'info' };
+  }
+  if (row.status_code === 'refunded') {
+    return { code: 'refunded', text: '已退款', type: 'info' };
+  }
+  if (row.status_code === 'processing') {
+    // 到店自提订单显示待到店；其余按发货进度拆分待发货/待收货
+    if (row.extra_info?.delivery_type === 'pickup') {
+      return { code: 'pending_pickup', text: '待到店', type: 'warning' };
+    }
+    if (!row.delivery_time || row.delivery_time === 0) {
+      return { code: 'pending_shipped', text: '待发货', type: 'danger' };
+    }
+    return { code: 'pending_receive', text: '待收货', type: 'primary' };
+  }
+  if (row.status_code === 'pending_review') {
+    return { code: 'pending_review', text: '待评价', type: 'success' };
+  }
+  if (row.status_code === 'completed') {
+    return { code: 'completed', text: '已完成', type: 'success' };
+  }
+  return { code: row.status_code, text: row.status_code || '未知', type: 'info' };
+}

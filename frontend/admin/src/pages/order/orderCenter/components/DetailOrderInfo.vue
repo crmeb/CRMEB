@@ -315,7 +315,7 @@ function buildAddress(addr) {
     display: flex;
     margin-top: 16px;
     font-size: 13px;
-    color: #666666;
+    color: var(--prev-color-text-primary);
 
     &:nth-child(3n + 1) {
       padding-right: 20px;

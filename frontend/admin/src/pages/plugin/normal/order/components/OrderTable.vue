@@ -106,7 +106,6 @@
           <el-tag :type="getBusinessStatus(scope.row).type">
             {{ getRowStatusLabel(scope.row) }}
           </el-tag>
-          <div v-if="!scope.row.is_all_refund && scope.row.refund_status === 1" class="trip">部分退款中</div>
         </template>
       </el-table-column>
       <el-table-column label="售后" width="100">
@@ -641,12 +640,6 @@ defineExpose({ selectedIds, page });
 .price {
   color: #ed4014;
   font-weight: bold;
-}
-
-.trip {
-  color: #ed4014;
-  font-size: 12px;
-  margin-top: 2px;
 }
 
 :deep(.el-dropdown-link) {
