@@ -19,19 +19,6 @@
         </el-dropdown>
       </el-form-item>
     </el-col>
-    <!-- 自动发货（网盘商品全局开关，所有 SKU 统一生效） -->
-    <el-col :span="24" v-if="formValidate.virtual_type == 3">
-      <el-form-item label="自动发货：">
-        <el-switch
-          v-model="formValidate.is_auto_send"
-          :active-value="1"
-          :inactive-value="0"
-          active-text="开启"
-          inactive-text="关闭"
-        ></el-switch>
-        <span class="ml10 autosend-tips">开启后支付成功自动发放网盘链接与提取码</span>
-      </el-form-item>
-    </el-col>
     <!-- 规格设置 -->
     <el-col :span="24" v-if="formValidate.spec_type === 1" class="noForm">
       <el-form-item label="商品规格：" prop="">
@@ -834,9 +821,5 @@ function objectSpanMethod({ row, column, rowIndex, columnIndex }) {
     width: 120px;
     flex: none;
   }
-}
-.autosend-tips {
-  font-size: 12px;
-  color: #999;
 }
 </style>

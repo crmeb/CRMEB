@@ -175,9 +175,6 @@ class ProductSaveServices extends BaseService
         if (empty($data['slider_image']) || count($data['slider_image']) < 1) {
             throw new \RuntimeException('请选择商品轮播图');
         }
-        if ((int)($data['is_auto_send'] ?? 1) !== 1) {
-            throw new \RuntimeException('网盘商品必须开启支付后自动发货');
-        }
         $attrs = $data['attrs'] ?? [];
         if (!is_array($attrs) || empty($attrs)) {
             throw new \RuntimeException('请配置网盘商品 SKU');
