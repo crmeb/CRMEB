@@ -157,9 +157,19 @@ export default {
   /** 去评价（后端 NormalOrderAdapter 等模块下发的 action 名；评价页按 SKU unique 提交） */
   goComment(order, params) {
     var orderNo = order.order_no || (params && params.order_no) || '';
-    // 取第一个商品条目的 SKU unique；section 以 key='product' 注册，props.product.items 为商品条目
+    // 详情页：section 以 key='product' 注册，props.product.items 为商品条目；
+    // 列表行：extra_info.items 为商品条目（用户端列表接口已解码 extra_info）
     var items = (order.product && order.product.product && order.product.product.items) || [];
-    var skuUnique = items.length && items[0].attr_info && items[0].attr_info.unique;
+    if (!items.length && order.extra_info && Array.isArray(order.extra_info.items)) {
+      items = order.extra_info.items;
+    }
+    var skuUnique = '';
+    for (var i = 0; i < items.length; i++) {
+      if (items[i] && items[i].attr_info && items[i].attr_info.unique) {
+        skuUnique = items[i].attr_info.unique;
+        break;
+      }
+    }
     if (!orderNo || !skuUnique) {
       uni.showToast({ title: i18n.t(`订单信息异常`), icon: 'none' });
       return;

@@ -2750,6 +2750,38 @@ class CenterOrderController
     }
 
     /**
+     * 按订单号+SKU unique 定位中台订单内的评价商品条目
+     * 评价必须落到用户指定的那笔订单：同商品重复购买时各订单 unique 相同，仅凭 unique 反查会命中旧订单
+     * @param string $orderNo 中台订单号
+     * @param string $unique SKU 唯一码
+     * @param int|null $uid 限定归属用户
+     * @return array|null
+     */
+    protected function findOrderItemByOrderNo(string $orderNo, string $unique, ?int $uid = null): ?array
+    {
+        if ($orderNo === '' || $unique === '') {
+            return null;
+        }
+        $order = app()->make(OrderCenterDao::class)->get(['order_no' => $orderNo]);
+        if (!$order) {
+            return null;
+        }
+        $order = is_object($order) ? $order->toArray() : (array)$order;
+        if ($uid !== null && (int)($order['uid'] ?? 0) !== $uid) {
+            return null;
+        }
+        $extra = is_string($order['extra_info'] ?? null) ? json_decode($order['extra_info'], true) : ($order['extra_info'] ?? []);
+        foreach ($extra['items'] ?? [] as $item) {
+            if (($item['attr_info']['unique'] ?? '') === $unique) {
+                $item['_order_no'] = (string)$order['order_no'];
+                $item['_center_id'] = (int)$order['id'];
+                return $item;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 订单评价（中台化）
      * @param StoreProductReplyServices $replyServices
      * @return \think\Response|void
@@ -2780,7 +2812,11 @@ class CenterOrderController
         }
 
         // ==================== 4. 从中台订单快照定位商品（unique 为 SKU 唯一码，限定本人订单防越权） ====================
-        $item = $this->findOrderItemBySkuUnique((string)$unique, $uid);
+        // 页面带订单号（uni）时按订单精确定位；同商品重复购买时 unique 跨订单重复，仅凭 unique 会命中旧订单
+        $uni = (string)request()->param('uni', '');
+        $item = $uni !== ''
+            ? $this->findOrderItemByOrderNo($uni, (string)$unique, $uid)
+            : $this->findOrderItemBySkuUnique((string)$unique, $uid);
         if (!$item) {
             return app('json')->fail('商品不存在');
         }

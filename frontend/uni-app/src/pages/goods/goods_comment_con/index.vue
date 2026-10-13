@@ -180,6 +180,8 @@
 		value.service_score = service_score;
 		value.pics = pics.value;
 		value.unique = unique.value;
+		// 评价必须落到用户点进来的这笔订单：同商品重复购买时 unique 不唯一，后端需按订单号定位
+		value.uni = orderId.value;
 		uni.showLoading({
 			title: i18n.t(`正在发布评论`)
 		});
