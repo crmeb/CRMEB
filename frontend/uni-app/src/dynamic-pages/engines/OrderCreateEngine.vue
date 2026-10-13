@@ -641,6 +641,15 @@ async function computedPrice() {
       couponId.value = data.coupon_id;
       couponTitle.value = data.coupon_title || i18n.global.t('请选择');
     }
+    // 自动领券发生在确认接口之后，计算接口返回的列表才是最新可用券列表。
+    // 同步列表和选中状态，避免入口显示优惠券但弹窗仍显示为空。
+    if (Array.isArray(data.coupon_list)) {
+      coupon.value.list = data.coupon_list;
+      features.value.coupon = data.coupon_list.length > 0;
+      for (var couponIndex = 0; couponIndex < coupon.value.list.length; couponIndex++) {
+        coupon.value.list[couponIndex].is_use = coupon.value.list[couponIndex].id == couponId.value ? 1 : 0;
+      }
+    }
     integralPrice.value = data.deduction_price ?? 0;
     surplusIntegral.value = data.SurplusIntegral ?? usableIntegral.value;
     priceReady.value = true;
