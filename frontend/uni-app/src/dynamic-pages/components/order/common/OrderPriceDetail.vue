@@ -28,6 +28,21 @@
       <view class="money" v-else-if="!integralTotal">{{ $t(`免费上门`) }}</view>
       <view class="money" v-else>{{ $t(`免费上门`) }}</view>
     </view>
+    <!-- 会员等级折扣（确认接口 priceGroup.levelPrice / 重算接口 level_price） -->
+    <view class="item acea-row row-between-wrapper" v-if="parseFloat(levelPrice) > 0">
+      <view>{{ $t(`用户等级优惠`) }}</view>
+      <view class="money money-minus">-￥{{ parseFloat(levelPrice).toFixed(2) }}</view>
+    </view>
+    <!-- 付费会员折扣 -->
+    <view class="item acea-row row-between-wrapper" v-if="parseFloat(memberPrice) > 0">
+      <view>{{ $t(`付费会员优惠`) }}</view>
+      <view class="money money-minus">-￥{{ parseFloat(memberPrice).toFixed(2) }}</view>
+    </view>
+    <!-- 会员运费折扣 -->
+    <view class="item acea-row row-between-wrapper" v-if="parseFloat(postageDiscount) > 0">
+      <view>{{ $t(`会员运费优惠`) }}</view>
+      <view class="money money-minus">-￥{{ parseFloat(postageDiscount).toFixed(2) }}</view>
+    </view>
     <!-- 优惠券抵扣 -->
     <view class="item acea-row row-between-wrapper" v-if="couponPrice > 0">
       <view>{{ $t(`优惠券抵扣`) }}</view>
@@ -36,7 +51,7 @@
     <!-- 积分抵扣 -->
     <view class="item acea-row row-between-wrapper" v-if="integralPrice > 0">
       <view>{{ $t(`积分抵扣`) }}</view>
-      <view class="money money-minus">-￥{{ integralPrice }}</view>
+      <view class="money money-minus">-￥{{ parseFloat(integralPrice).toFixed(2) }}</view>
     </view>
   </view>
 </template>
@@ -51,6 +66,12 @@ const props = defineProps({
   totalPrice: { type: [Number, String], default: '0.00' },
   /** 运费 */
   payPostage: { type: [Number, String], default: 0 },
+  /** 用户等级优惠金额 */
+  levelPrice: { type: [Number, String], default: 0 },
+  /** 付费会员优惠金额 */
+  memberPrice: { type: [Number, String], default: 0 },
+  /** 会员运费优惠金额 */
+  postageDiscount: { type: [Number, String], default: 0 },
   /** 优惠券抵扣金额 */
   couponPrice: { type: [Number, String], default: 0 },
   /** 积分抵扣金额 */

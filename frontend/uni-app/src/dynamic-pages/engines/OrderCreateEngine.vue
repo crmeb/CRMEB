@@ -105,6 +105,9 @@
       <OrderPriceDetail
         :total-price="totalPriceText"
         :pay-postage="payPostage"
+        :level-price="levelPrice"
+        :member-price="memberPrice"
+        :postage-discount="postageDiscount"
         :coupon-price="couponPrice"
         :integral-price="integralPrice"
         :integral-total="integralTotal"
@@ -207,6 +210,10 @@ const orderKey = ref('');
 const totalPrice = ref(0);
 const payPrice = ref(0);
 const payPostage = ref(0);
+// 价格明细中的会员优惠，确认接口使用 camelCase，重算接口使用 snake_case。
+const levelPrice = ref(0);
+const memberPrice = ref(0);
+const postageDiscount = ref(0);
 const priceComputing = ref(false);
 const priceReady = ref(false);
 const priceError = ref('');
@@ -420,6 +427,11 @@ async function loadConfirmData() {
     totalPrice.value = data.total_price || 0;
     payPrice.value = data.pay_price || 0;
     payPostage.value = data.pay_postage || 0;
+    // 确认接口返回 priceGroup，不能只使用顶层金额字段，否则等级/会员折扣会丢失。
+    var confirmPriceGroup = data.priceGroup || {};
+    levelPrice.value = confirmPriceGroup.levelPrice ?? data.level_price ?? 0;
+    memberPrice.value = confirmPriceGroup.memberPrice ?? data.member_price ?? 0;
+    postageDiscount.value = confirmPriceGroup.postageDiscount ?? data.postage_discount ?? 0;
     features.value = { ...features.value, ...(data.features || {}) };
     // 保存活动订单信息（含免费支付方式标识与跳转地址，由交易模式 Handler 下发）
     activityInfo.value = data.activity_info || {};
@@ -586,6 +598,10 @@ async function computedPrice() {
     var data = res.data || {};
     payPrice.value = data.pay_price ?? 0;
     payPostage.value = data.pay_postage ?? 0;
+    // computed 接口返回 snake_case 价格字段，和确认接口的 priceGroup 保持同一展示口径。
+    levelPrice.value = data.level_price ?? data.priceGroup?.levelPrice ?? levelPrice.value;
+    memberPrice.value = data.member_price ?? data.priceGroup?.memberPrice ?? memberPrice.value;
+    postageDiscount.value = data.storePostageDiscount ?? data.postage_discount ?? data.priceGroup?.postageDiscount ?? postageDiscount.value;
     couponPrice.value = data.coupon_price ?? 0;
     integralPrice.value = data.deduction_price ?? 0;
     surplusIntegral.value = data.SurplusIntegral ?? usableIntegral.value;
