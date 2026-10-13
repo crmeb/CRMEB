@@ -176,6 +176,8 @@ class Handler extends BaseProductTypeHandler
     {
         $dao = app(VirtualProductDao::class);
         $dao->delete(['product_id' => $productId]);
+        // SKU 数据（含网盘链接/提取码）随商品彻底删除一并清理
+        app(VirtualProductSkuDao::class)->delete(['product_id' => $productId]);
     }
 
     /**

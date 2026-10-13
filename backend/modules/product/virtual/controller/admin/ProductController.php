@@ -75,12 +75,36 @@ class ProductController extends AuthController
     }
 
     /**
-     * 删除商品
+     * 删除商品（移入回收站，标准链路同时自动下架）
      */
     public function delete(int $id)
     {
         $service = app(\app\services\product\CenterProductServices::class);
-        $service->update($id, ['is_del' => 1]);
+        // 移入回收站前检测是否参与营销活动
+        $service->checkActivity($id);
+        $msg = $service->del($id);
+        // 同步失效购物车中该商品
+        app(\app\services\order\StoreCartServices::class)->changeStatus($id, 0);
+        return app('json')->success($msg);
+    }
+
+    /**
+     * 从回收站恢复商品
+     */
+    public function restore(int $id)
+    {
+        $service = app(\app\services\product\CenterProductServices::class);
+        $service->batchRecover([$id]);
+        return app('json')->success('恢复成功');
+    }
+
+    /**
+     * 回收站商品彻底删除
+     */
+    public function forceDelete(int $id)
+    {
+        $service = app(\app\services\product\CenterProductServices::class);
+        $service->recycleProduct($id);
         return app('json')->success('删除成功');
     }
 

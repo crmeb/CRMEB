@@ -208,6 +208,32 @@ class Installer extends BaseModuleInstaller
                 'access'        => 1,
                 'auth_type'     => 3,
             ],
+            // 恢复网盘商品（隐藏，仅权限认证用）
+            [
+                'pid'           => '@网盘产品',
+                'menu_name'     => '恢复网盘商品',
+                'controller'    => 'virtualProduct',
+                'action'        => 'restore',
+                'module'        => 'admin',
+                'api_url'       => 'virtual/product/restore/:id',
+                'methods'       => 'PUT',
+                'is_show' => 1,
+                'access'        => 1,
+                'auth_type'     => 3,
+            ],
+            // 彻底删除网盘商品（隐藏，仅权限认证用）
+            [
+                'pid'           => '@网盘产品',
+                'menu_name'     => '彻底删除网盘商品',
+                'controller'    => 'virtualProduct',
+                'action'        => 'forceDelete',
+                'module'        => 'admin',
+                'api_url'       => 'virtual/product/force/:id',
+                'methods'       => 'DELETE',
+                'is_show' => 1,
+                'access'        => 1,
+                'auth_type'     => 3,
+            ],
             // 网盘商品订单详情（隐藏，仅权限认证用）
             [
                 'key'           => 'virtual-order-detail',

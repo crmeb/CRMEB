@@ -28,6 +28,8 @@ Route::group('virtual', function () {
         Route::delete('product/:id', [ProductController::class, 'delete'])->option(['real_name' => '删除网盘商品']);
         Route::get('product/:id', [ProductController::class, 'read'])->option(['real_name' => '网盘商品详情']);
         Route::put('product/status/:id/:status', [ProductController::class, 'setStatus'])->option(['real_name' => '上下架网盘商品']);
+        Route::put('product/restore/:id', [ProductController::class, 'restore'])->option(['real_name' => '恢复网盘商品']);
+        Route::delete('product/force/:id', [ProductController::class, 'forceDelete'])->option(['real_name' => '彻底删除网盘商品']);
     })->option(['parent' => 'virtual', 'cate_name' => '网盘商品管理']);
 
     /** 网盘订单 */
