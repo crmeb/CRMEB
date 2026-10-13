@@ -58,12 +58,12 @@
             <view class="images acea-row" v-if="item.pics && item.pics.length">
               <view
                 class="img-box"
-                v-for="(img, imgIndex) in item.pics.slice(0, 3)"
+                v-for="(img, imgIndex) in item.pics.slice(0, 4)"
                 :key="imgIndex"
               >
                 <image :src="img" class="img" mode="aspectFill"></image>
-                <view class="more" v-if="imgIndex === 2 && item.pics.length > 3"
-                  >+{{ item.pics.length - 3 }}</view
+                <view class="more" v-if="imgIndex === 3 && item.pics.length > 4"
+                  >+{{ item.pics.length - 4 }}</view
                 >
               </view>
             </view>
@@ -99,12 +99,12 @@
             <view class="images acea-row" v-if="item.pics && item.pics.length">
               <view
                 class="img-box"
-                v-for="(img, imgIndex) in item.pics.slice(0, 3)"
+                v-for="(img, imgIndex) in item.pics.slice(0, 4)"
                 :key="imgIndex"
               >
                 <image :src="img" class="img" mode="aspectFill"></image>
-                <view class="more" v-if="imgIndex === 2 && item.pics.length > 3"
-                  >+{{ item.pics.length - 3 }}</view
+                <view class="more" v-if="imgIndex === 3 && item.pics.length > 4"
+                  >+{{ item.pics.length - 4 }}</view
                 >
               </view>
             </view>
