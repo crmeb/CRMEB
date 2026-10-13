@@ -25,7 +25,7 @@ use modules\product\virtual\dao\VirtualOrderDao;
 /**
  * 网盘产品处理器
  * 网盘产品无需物流，支付后自动发放网盘链接与提取码
- * 状态流程：待付款 → 待发货(自动) → 已完成
+ * 状态流程：待付款 → 自动发放 → 待评价 → 已完成
  */
 class Handler extends BaseProductTypeHandler
 {
@@ -292,7 +292,7 @@ class Handler extends BaseProductTypeHandler
 
     /**
      * 支付成功履约
-     * 网盘商品：自动发货，更新状态为已完成，并同步中台状态
+     * 网盘商品：自动发货，更新状态为待评价，并同步中台状态
      */
     public function afterPay(string $orderNo, array $cartInfoList): void
     {
@@ -307,23 +307,32 @@ class Handler extends BaseProductTypeHandler
             if (!$order || in_array($order['status'], [VirtualOrderAdapter::EXT_STATUS_CANCELED, VirtualOrderAdapter::EXT_STATUS_REFUNDED], true)) {
                 throw new \RuntimeException('订单当前状态不可发放网盘资源');
             }
-            if ($order['status'] === VirtualOrderAdapter::EXT_STATUS_COMPLETED) {
+            // 支付回调可能重复到达；资源已发放的订单保持当前状态不重复处理。
+            if (in_array($order['status'], [
+                VirtualOrderAdapter::EXT_STATUS_PENDING_REVIEW,
+                VirtualOrderAdapter::EXT_STATUS_COMPLETED,
+            ], true)) {
                 return;
             }
             if (empty($cartInfoList)) {
-                throw new \RuntimeException('订单网盘资源快照缺失，暂不能完成订单');
+                throw new \RuntimeException('订单网盘资源快照缺失，暂不能发放资源');
             }
             foreach ($cartInfoList as $item) {
                 $attrInfo = $item['attr_info'] ?? [];
                 if (empty($attrInfo['download_url'])) {
-                    throw new \RuntimeException('网盘商品未配置下载链接，暂不能完成订单');
+                    throw new \RuntimeException('网盘商品未配置下载链接，暂不能发放资源');
                 }
             }
+            $fulfilledAt = time();
             $orderDao->update(['order_no' => $orderNo], [
-                'status'        => VirtualOrderAdapter::EXT_STATUS_COMPLETED,
-                'complete_time' => time(),
+                'status'    => VirtualOrderAdapter::EXT_STATUS_PENDING_REVIEW,
+                'send_time' => (int)($order['send_time'] ?? 0) ?: $fulfilledAt,
             ]);
-            $centerServices->syncStatus($orderNo, 'completed');
+            // 虚拟商品自动发放等同于发货和收货，写入时间后自动评价任务才能识别待评价订单。
+            $centerServices->syncStatus($orderNo, VirtualOrderAdapter::STATUS_PENDING_REVIEW, [
+                'delivery_time' => (int)($center['delivery_time'] ?? 0) ?: $fulfilledAt,
+                'take_time'     => (int)($center['take_time'] ?? 0) ?: $fulfilledAt,
+            ]);
         });
     }
 
@@ -578,7 +587,7 @@ class Handler extends BaseProductTypeHandler
 
     /**
      * 订单履约
-     * 网盘商品：更新状态为已完成，并同步中台状态
+     * 网盘商品：更新状态为待评价，并同步中台状态
      * @param string $orderNo 订单号
      * @param array $orderInfo 订单完整信息
      * @return bool
@@ -587,14 +596,18 @@ class Handler extends BaseProductTypeHandler
     {
         try {
             $orderDao = app(VirtualOrderDao::class);
+            $fulfilledAt = time();
             $orderDao->update(['order_no' => $orderNo], [
-                'status'        => VirtualOrderAdapter::EXT_STATUS_COMPLETED,
-                'complete_time' => time(),
+                'status'    => VirtualOrderAdapter::EXT_STATUS_PENDING_REVIEW,
+                'send_time' => $fulfilledAt,
             ]);
 
-            // 网盘商品履约即完成，同步中台订单状态
+            // 网盘商品履约后进入待评价，同步中台订单状态。
             $centerServices = app(\app\services\order\OrderCenterServices::class);
-            $centerServices->syncStatus($orderNo, 'completed');
+            $centerServices->syncStatus($orderNo, VirtualOrderAdapter::STATUS_PENDING_REVIEW, [
+                'delivery_time' => $fulfilledAt,
+                'take_time'     => $fulfilledAt,
+            ]);
 
             return true;
         } catch (\Throwable $e) {

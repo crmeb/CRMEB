@@ -11,14 +11,17 @@ use modules\product\virtual\model\VirtualOrderModel;
 /**
  * 网盘商品订单流转定义
  *
- * 网盘商品：无需物流，支付后自动发货即完成
- * 状态流程：pending_payment → completed（直达终态，无中间环节）
+ * 网盘商品：无需物流，支付后自动发货，进入待评价
+ * 状态流程：pending_payment → pending_review → completed
  * 任意节点可触发：canceled（取消）/ refunded（退款）
  *
  * ═══════════════ 完整状态流转图 ═══════════════
  *
  *   pending_payment  待支付 ──────→ 中台 pending_payment
- *     │ 支付成功 → Event → Listener → Flow::advance('completed')
+ *     │ 支付成功 → Event → Listener → Flow::advance('pending_review')
+ *     ▼
+ *   pending_review  待评价   ──────→ 中台 pending_review
+ *     │ 评价完成 → OrderCenterServices::checkOrderOver()
  *     ▼
  *   completed       已完成   ──────→ 中台 completed
  *
@@ -33,7 +36,9 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
 
     /** 待支付 — 订单刚创建 */
     public const EXT_STATUS_PENDING_PAYMENT = 'pending_payment';
-    /** 已完成 — 支付后即完成（网盘商品无物流环节） */
+    /** 待评价 — 资源已自动发放，等待用户评价 */
+    public const EXT_STATUS_PENDING_REVIEW = 'pending_review';
+    /** 已完成 — 用户完成评价 */
     public const EXT_STATUS_COMPLETED = 'completed';
     /** 已取消 — 订单已取消 */
     public const EXT_STATUS_CANCELED = 'canceled';
@@ -79,10 +84,20 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
                     Button::primary('去支付', 'payOrder'),
                 ]),
 
+            // ───── 待评价 ─────
+            OrderFlowNode::make(self::EXT_STATUS_PENDING_REVIEW)
+                ->centerStatus(self::STATUS_PENDING_REVIEW)
+                ->label('待评价')
+                ->adminButtons([])
+                ->userButtons([
+                    Button::primary('去评价', 'goComment'),
+                ]),
+
             // ───── 已完成（终态） ─────
             OrderFlowNode::make(self::EXT_STATUS_COMPLETED)
                 ->centerStatus(self::STATUS_COMPLETED)
                 ->label('已完成')
+                ->onEnter('onCompleted')
                 ->adminButtons([])
                 ->userButtons([
                     Button::make('申请售后', 'applyAfterSale'),
@@ -125,7 +140,7 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
 
     /**
      * 推导统一状态码
-     * 优先级：取消 > 退款完成 > 售后中 > 未支付 > 已支付→已完成
+     * 优先级：取消 > 退款完成 > 售后中 > 未支付 > 扩展状态映射
      */
     public function resolveStatusCode(array $sourceOrder): string
     {
@@ -139,13 +154,16 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
         if ($refundStatus === 1) {
             return self::STATUS_AFTER_SALE;
         }
-        // 扩展表不一定携带 paid 字段，网盘商品 status=completed 即视为已支付
+        $status = (string)($sourceOrder['status'] ?? '');
+        // 扩展表不一定携带 paid 字段，资源已发放的状态均视为已支付
         $isPaid = (bool)($sourceOrder['paid'] ?? 0)
-            || ($sourceOrder['status'] ?? '') === self::EXT_STATUS_COMPLETED;
+            || in_array($status, [self::EXT_STATUS_PENDING_REVIEW, self::EXT_STATUS_COMPLETED], true);
         if (!$isPaid) {
             return self::STATUS_PENDING_PAYMENT;
         }
-        return self::STATUS_COMPLETED;
+        return $status === self::EXT_STATUS_PENDING_REVIEW
+            ? self::STATUS_PENDING_REVIEW
+            : self::STATUS_COMPLETED;
     }
 
     /**
@@ -159,8 +177,9 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
             $payPrice    = (float)($sourceOrder['pay_price'] ?? 0);
             return $refundPrice >= $payPrice ? self::PAY_FULL_REFUND : self::PAY_PARTIAL_REFUND;
         }
+        $status = (string)($sourceOrder['status'] ?? '');
         $isPaid = (bool)($sourceOrder['paid'] ?? 0)
-            || ($sourceOrder['status'] ?? '') === self::EXT_STATUS_COMPLETED;
+            || in_array($status, [self::EXT_STATUS_PENDING_REVIEW, self::EXT_STATUS_COMPLETED], true);
         return $isPaid ? self::PAY_PAID : self::PAY_UNPAID;
     }
 
@@ -174,7 +193,7 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
 
     /**
      * 推导业务状态
-     * 网盘商品无中间业务状态，已支付即已完成
+     * 网盘商品通过统一状态码表达待评价/已完成，不额外注入业务 Badge
      */
     public function resolveBusinessStatus(array $sourceOrder): ?array
     {
@@ -191,7 +210,7 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
 
     /**
      * 网盘商品订单生命周期进度条
-     * 节点：提交订单 → 支付成功 → 订单完成（网盘商品无物流）
+     * 节点：提交订单 → 支付成功 → 待评价 → 订单完成
      */
     public function getProgress(array $detail): array
     {
@@ -199,12 +218,14 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
         $isCancel         = $statusCode === self::STATUS_CANCELED;
         $isRefunded       = $statusCode === self::STATUS_REFUNDED;
         $isAfterSale      = $statusCode === self::STATUS_AFTER_SALE;
+        $isPendingReview  = $statusCode === self::STATUS_PENDING_REVIEW;
         $isCompleted      = $statusCode === self::STATUS_COMPLETED;
         $isPendingPayment = $statusCode === self::STATUS_PENDING_PAYMENT;
 
         $nodes = [
             ['title' => '提交订单', 'key' => 'submit', 'time_field' => 'add_time'],
             ['title' => '支付成功', 'key' => 'pay', 'time_field' => 'pay_time'],
+            ['title' => '待评价', 'key' => 'review', 'time_field' => 'take_time'],
             ['title' => '订单完成', 'key' => 'complete', 'time_field' => ''],
         ];
 
@@ -217,9 +238,16 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
         unset($node);
 
         // 已完成节点由状态码决定，不能仅凭 pay_time 判断
+        // 待评价节点时间取自动发放时间；兼容历史订单没有 take_time 的情况，使用发货时间/支付时间兜底
+        $reviewTime = (int)($detail['take_time'] ?? 0)
+            ?: (int)($detail['delivery_time'] ?? 0)
+            ?: (int)($detail['send_time'] ?? 0)
+            ?: (int)($detail['pay_time'] ?? 0);
+        $nodes[2]['time'] = $reviewTime ? date('Y-m-d H:i:s', $reviewTime) : '';
         $nodes[2]['completed'] = $isCompleted;
+        $nodes[3]['completed'] = $isCompleted;
         if ($isCompleted) {
-            $nodes[2]['time'] = $detail['pay_time'] ? date('Y-m-d H:i:s', (int)$detail['pay_time']) : '';
+            $nodes[3]['time'] = $reviewTime ? date('Y-m-d H:i:s', $reviewTime) : '';
         }
 
         // 待支付状态：支付/完成节点不应显示已完成，避免脏数据误导
@@ -228,6 +256,8 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
             $nodes[1]['time']      = '';
             $nodes[2]['completed'] = false;
             $nodes[2]['time']      = '';
+            $nodes[3]['completed'] = false;
+            $nodes[3]['time']      = '';
         }
 
         $current = -1;
@@ -236,6 +266,8 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
         } elseif ($isRefunded || $isAfterSale) {
             $current = 1;
         } elseif ($isCompleted) {
+            $current = 3;
+        } elseif ($isPendingReview) {
             $current = 2;
         } elseif ($isPendingPayment) {
             // 待支付状态以状态码为准，不依赖时间字段
@@ -271,10 +303,10 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
 
     public function getStatusButtons(string $statusCode, array $detail = []): array
     {
-        // 网盘商品理论上不存在 processing 状态，但过渡期内部分旧数据/脏数据可能残留
-        // 将 processing 状态按 completed 处理，保证用户端能看到操作按钮
+        // 网盘商品理论上不存在 processing 状态，但过渡期内部分旧数据/脏数据可能残留。
+        // 已支付的旧 processing 订单按待评价处理，避免跳过评价。
         if ($statusCode === self::STATUS_PROCESSING) {
-            $statusCode = self::STATUS_COMPLETED;
+            $statusCode = self::STATUS_PENDING_REVIEW;
         }
 
         $node = $this->centerStatusMap[$statusCode][0] ?? null;
@@ -282,5 +314,17 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
             return $node['user_buttons'] ?? [];
         }
         return $this->extStatusMap[$statusCode]['user_buttons'] ?? [];
+    }
+
+    /**
+     * 评价完成后记录扩展表完成时间。
+     * 状态推进由订单中台统一触发，这里只维护网盘扩展表自己的时间字段。
+     */
+    protected function onCompleted(string $orderNo, array $extra = []): void
+    {
+        app()->make(VirtualOrderModel::class)->db()
+            ->where('order_no', $orderNo)
+            ->where('complete_time', 0)
+            ->update(['complete_time' => time()]);
     }
 }

@@ -15,7 +15,7 @@ use modules\product\virtual\dao\VirtualOrderDao;
 /**
  * 网盘商品退款服务
  * 退款处理业务逻辑
- * 网盘商品退款规则：已完成不可退
+ * 网盘商品退款规则：资源发放后不可退
  */
 class RefundServices
 {
@@ -32,7 +32,7 @@ class RefundServices
     /**
      * 退款校验
      * 网盘商品退款规则：
-     * - 已完成不可退（网盘商品支付后自动发货完成）
+     * - 待评价、已完成不可退（网盘商品支付后自动发放资源）
      * - 已取消、已退款不可退
      * @param string $orderNo
      * @return bool
@@ -44,7 +44,7 @@ class RefundServices
             return false;
         }
         $status = $order['status'] ?? '';
-        return !in_array($status, ['canceled', 'refunded', 'completed']);
+        return !in_array($status, ['canceled', 'refunded', 'pending_review', 'completed'], true);
     }
 
     /**

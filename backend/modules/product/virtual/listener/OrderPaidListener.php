@@ -41,8 +41,8 @@ class OrderPaidListener
         }
 
         $statusCode = $meta['status_code'] ?? '';
-        // 幂等：已经是终态的订单不再重复处理
-        if (in_array($statusCode, ['completed', 'refunded', 'canceled'], true)) {
+        // 幂等：资源已发放或订单已结束时不再重复处理
+        if (in_array($statusCode, ['pending_review', 'completed', 'refunded', 'canceled'], true)) {
             return;
         }
 
@@ -75,7 +75,7 @@ class OrderPaidListener
             $lifecycleServices = app(\app\services\order\OrderLifecycleServices::class);
             $lifecycleServices->handlePaySuccess($orderInfo);
 
-            // 3. 构建购物车信息并调用类型 Handler 完成履约（扩展表更新为 completed，并同步中台为 completed）
+            // 3. 构建购物车信息并调用类型 Handler 完成履约（扩展表更新为 pending_review，并同步中台）
             $cartInfoList = $this->buildCartInfoList($center, $orderInfo);
             $handler = app(Handler::class);
             $handler->afterPay($orderNo, $cartInfoList);

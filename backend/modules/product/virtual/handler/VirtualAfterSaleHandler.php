@@ -18,7 +18,7 @@ use modules\product\virtual\dao\VirtualOrderDao;
  * 网盘商品售后处理器
  * 提供售后规则定义与生命周期回调
  *
- * 规则：仅支持退款（refund_only），支付后 24 小时内可申请，已发放（完成）后不支持
+ * 规则：仅支持退款（refund_only），支付后 24 小时内可申请，资源已发放（待评价/已完成）后不支持
  */
 class VirtualAfterSaleHandler extends BaseAfterSaleHandler
 {
@@ -39,7 +39,7 @@ class VirtualAfterSaleHandler extends BaseAfterSaleHandler
 
     /**
      * 获取售后规则
-     * 网盘商品仅支持退款：未发放前可退，已发放（completed）不可退
+     * 网盘商品仅支持退款：未发放前可退，已发放（pending_review/completed）不可退
      * @param array $orderCenter 中台订单数据
      * @param array $sourceOrder 源表订单数据
      * @return array

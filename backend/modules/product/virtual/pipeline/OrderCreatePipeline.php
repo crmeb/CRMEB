@@ -49,6 +49,6 @@ class OrderCreatePipeline extends AbstractOrderCreatePipeline
         // TODO: 迁移网盘商品自动发货逻辑
         // 1. 获取商品下载链接
         // 2. 发送给用户（站内信/模板消息）
-        // 3. 更新订单状态为已完成
+        // 3. 更新订单状态为待评价，评价完成后再进入已完成
     }
 }
