@@ -88,17 +88,17 @@ class DiyProServices extends BaseService
                         switch ($typeConfig) {
                             case 1://指定商品
                                 $where['ids'] = $item['goodsList']['ids'] ?? [];
-                                $item['goodsList']['list'] = $productServices->getSearchList($where, 0, 0, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,activity,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
+                                $item['goodsList']['list'] = $productServices->getSearchList($where, 0, 0, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
                                 break;
                             case 3://指定分类
                                 $cateIds = $item['classList']['classVal'] ?? [];
                                 if ($cateIds) $where['cate_id'] = $cateIds;
-                                $item['productList']['list'] = $productServices->getSearchList($where, 0, $num, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,activity,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
+                                $item['productList']['list'] = $productServices->getSearchList($where, 0, $num, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
                                 break;
                             case 4://商品标签
                                 $storeLabelIds = $item['goodsLabel']['activeValue'] ?? [];
                                 if ($storeLabelIds) $where['store_label_id'] = $storeLabelIds;
-                                $item['productList']['list'] = $productServices->getSearchList($where, 0, $num, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,activity,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
+                                $item['productList']['list'] = $productServices->getSearchList($where, 0, $num, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
                                 break;
                         }
                         break;
@@ -126,7 +126,7 @@ class DiyProServices extends BaseService
                                     }
                                     if ($selectValue == 1 && isset($tabValue['goodsList']['ids']) && count($tabValue['goodsList']['ids'])) {//手动选商品
                                         $where['ids'] = $tabValue['goodsList']['ids'];
-                                        $tabValue['goodsList']['list'] = $productServices->getSearchList($where, 0, 0, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,activity,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
+                                        $tabValue['goodsList']['list'] = $productServices->getSearchList($where, 0, 0, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
                                     } elseif ((isset($tabValue['selectConfig']['activeValue']) && $tabValue['selectConfig']['activeValue']) || (isset($tabValue['goodsLabel']['activeValue']) && $tabValue['goodsLabel']['activeValue'])) {//选分类 、标签
                                         $where['cate_id'] = $tabValue['selectConfig']['activeValue'] ?? 0;
                                         $storeLabelIds = $tabValue['goodsLabel']['activeValue'] ?? [];
@@ -135,7 +135,7 @@ class DiyProServices extends BaseService
                                         }
                                         $where['is_show'] = 1;
                                         $where['is_del'] = 0;
-                                        $tabValue['goodsList']['list'] = $productServices->getSearchList($where, 0, $num, ['id,store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,activity,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
+                                        $tabValue['goodsList']['list'] = $productServices->getSearchList($where, 0, $num, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price']);
                                     }
                                 }
                                 $item['tabConfig']['list'] = $list;

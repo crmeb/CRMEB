@@ -3140,7 +3140,11 @@ class CenterProductServices extends BaseService
         } elseif ($field === 'is_vip') {
             $where['is_vip'] = 1;
         }
-        return $this->dao->getRecommendProduct($where, is_string($field) ? $field : '', $num, 0, 0);
+        $list = $this->dao->getRecommendProduct($where, is_string($field) ? $field : '', $num, 0, 0);
+        foreach ($list as &$item) {
+            $item['image'] = set_file_url($item['image']);
+        }
+        return $list;
     }
 
     /**

@@ -338,7 +338,7 @@ class CenterProductDao extends BaseDao implements ProductQueryInterface
         $where['is_show'] = 1;
         $where['is_del'] = 0;
         return $this->search($where)->with(['couponId', 'star'])
-            ->field(['id', 'image', 'store_name', 'store_info', 'cate_id', 'price', 'original_price as ot_price', 'IFNULL(sales,0) + IFNULL(virtual_sales,0) as sales', 'unit_name', 'sort_order as sort', 'activity', 'stock'])
+            ->field(['id', 'image', 'name as store_name', 'intro as store_info', 'cate_id', 'price', 'vip_price', 'original_price as ot_price', 'IFNULL(sales,0) + IFNULL(virtual_sales,0) as sales', 'unit_name', 'sort_order as sort', 'stock'])
             ->when($num, function ($query) use ($num) {
                 $query->limit($num);
             })
@@ -385,7 +385,7 @@ class CenterProductDao extends BaseDao implements ProductQueryInterface
         $where['is_show'] = 1;
         $where['is_del'] = 0;
         // is_hot 字段已删除，热销榜单直接按销量排序
-        return $this->search($where)->field(['IFNULL(sales,0) + IFNULL(virtual_sales,0) as sales', 'store_name', 'image', 'id', 'price', 'original_price as ot_price', 'stock'])
+        return $this->search($where)->field(['IFNULL(sales,0) + IFNULL(virtual_sales,0) as sales', 'name as store_name', 'image', 'id', 'price', 'original_price as ot_price', 'stock'])
             ->when($page && $limit, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })
