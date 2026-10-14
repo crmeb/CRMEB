@@ -313,7 +313,11 @@ class UserSignServices extends BaseService
         $list = [];
         if ($data) {
             $ids = array_unique(array_column($data, 'ids'));
-            $dataIdsList = $this->dao->getList(['id' => $ids], 'FROM_UNIXTIME(add_time,"%Y-%m-%d") as add_time,title,number,id,uid', 0, 0);
+            $dataIdsList = $this->dao->getList(['id' => $ids], 'add_time,title,number,id,uid', 0, 0);
+            foreach ($dataIdsList as &$val) {
+                // add_time 与表字段同名会被模型按 int 转换截断，需取原始时间戳在 PHP 侧格式化
+                $val['add_time'] = date('Y-m-d H:i:s', $val['add_time']);
+            }
             foreach ($data as $item) {
                 $value['month'] = $item['time'];
                 $value['list'] = array_merge(array_filter($dataIdsList, function ($val) use ($item) {
