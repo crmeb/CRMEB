@@ -151,6 +151,13 @@ export function getCommissionInfo(q, types) {
 }
 
 /*
+ * 资金明细（types|0=全部,1=消费,2=充值）
+ * */
+export function getMoneyList(q, types) {
+	return request.get("user/money/list/" + types, q);
+}
+
+/*
  * 积分记录
  * */
 export function getIntegralList(q) {

@@ -181,6 +181,7 @@ Route::group(function () {
         Route::get('spread/count/:type', [\app\api\controller\v1\user\UserBillController::class, 'spreadCount'])->name('spreadCount')->option(['real_name' => '推广佣金']);//推广 佣金 3/提现 4 总和
         Route::get('spread/banner', [\app\api\controller\v1\user\UserBillController::class, 'spreadBanner'])->name('spreadBanner')->option(['real_name' => '推广分销二维码海报生成']);//推广分销二维码海报生成
         Route::get('integral/list', [\app\api\controller\v1\user\UserBillController::class, 'integralList'])->name('integralList')->option(['real_name' => '积分记录']);//积分记录
+        Route::get('user/money/list/:type', [\app\api\controller\v1\user\UserBillController::class, 'moneyList'])->name('userMoneyList')->option(['real_name' => '资金明细']);//资金明细
         Route::get('user/routine_code', [\app\api\controller\v1\user\UserBillController::class, 'getRoutineCode'])->name('getRoutineCode')->option(['real_name' => '小程序二维码']);//小程序二维码
         Route::get('user/spread_info', [\app\api\controller\v1\user\UserBillController::class, 'getSpreadInfo'])->name('getSpreadInfo')->option(['real_name' => '获取分销背景等信息']);//获取分销背景等信息
         Route::post('division/order', [\app\api\controller\v1\user\UserBillController::class, 'divisionOrder'])->name('divisionOrder')->option(['real_name' => '事业部推广订单']);//事业部推广订单

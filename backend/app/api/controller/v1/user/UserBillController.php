@@ -471,4 +471,18 @@ class UserBillController
         $uid = (int)$request->uid();
         return app('json')->success($this->services->divisionOrder($uid));
     }
+
+    /**
+     * 资金明细（0=全部, 1=消费, 2=充值）
+     * @param Request $request
+     * @param int $type
+     * @return mixed
+     */
+    public function moneyList(Request $request, $type)
+    {
+        /** @var UserMoneyServices $moneyServices */
+        $moneyServices = app()->make(UserMoneyServices::class);
+        return app('json')->success($moneyServices->getMoneyList((int)$request->uid(), (int)$type));
+    }
+
 }

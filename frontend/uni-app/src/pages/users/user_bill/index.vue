@@ -42,7 +42,7 @@ import { ref } from 'vue';
 import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { storeToRefs } from 'pinia';
 import {
-	getCommissionInfo
+	getMoneyList
 } from '@/api/user.js';
 import {
 	toLogin
@@ -112,7 +112,7 @@ function getUserBillList() {
 	if (loadend.value) return;
 	loading.value = true;
 	loadTitle.value = '';
-	getCommissionInfo({
+	getMoneyList({
 		page: page.value,
 		limit: limit.value
 	}, type.value).then(res => {
