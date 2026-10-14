@@ -52,7 +52,7 @@
             <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="模版名称" min-width="130">
+        <el-table-column label="模板名称" min-width="130">
           <template #default="scope">
             <span>{{ scope.row.rule_name }}</span>
           </template>

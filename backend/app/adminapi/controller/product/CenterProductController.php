@@ -234,7 +234,7 @@ class CenterProductController extends AuthController
             ['logistics', []],//物流方式
             ['freight', 1],//运费设置
             ['postage', 0],//邮费
-            ['temp_id', 0],//运费模版id
+            ['temp_id', 0],//运费模板id
             ['give_integral', 0],//赠送积分
             ['presale', 0],//预售商品开关
             ['presale_time', 0],//预售时间

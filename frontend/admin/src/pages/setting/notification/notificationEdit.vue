@@ -52,8 +52,8 @@
                   </el-form-item>
                 </div>
                 <div v-if="item.slot === 'is_sms' && !loading">
-                  <el-form-item label="短信模版ID：">
-                    <el-input v-model="formData.sms_id" placeholder="短信模版ID" style="width: 500px"></el-input>
+                  <el-form-item label="短信模板ID：">
+                    <el-input v-model="formData.sms_id" placeholder="短信模板ID" style="width: 500px"></el-input>
                   </el-form-item>
                   <el-form-item label="通知内容：">
                     <div class="content">
@@ -115,7 +115,7 @@
                     <div class="content">
                       <el-input
                         v-model="formData.wechat_link"
-                        placeholder="请输入模版跳转链接，可携带参数"
+                        placeholder="请输入模板跳转链接，可携带参数"
                         style="width: 500px"
                       ></el-input>
                       <el-button class="ml10" v-db-click @click="openLinkPicker('wechat_link')">选择链接</el-button>
@@ -126,7 +126,7 @@
                       <el-radio :label="1" :value="1">开启</el-radio>
                       <el-radio :label="0" :value="0">关闭</el-radio>
                     </el-radio-group>
-                    <div class="tip">开启之后，点击模版消息，跳转小程序对应的页面，需要小程序已经审核上线才可使用</div>
+                    <div class="tip">开启之后，点击模板消息，跳转小程序对应的页面，需要小程序已经审核上线才可使用</div>
                   </el-form-item>
                   <el-form-item label="状态：" prop="is_wechat">
                     <el-radio-group v-model="formData.is_wechat">
@@ -173,7 +173,7 @@
                     <div class="content">
                       <el-input
                         v-model="formData.routine_link"
-                        placeholder="请输入模版跳转链接，可携带参数"
+                        placeholder="请输入模板跳转链接，可携带参数"
                         style="width: 500px"
                       ></el-input>
                       <el-button class="ml10" v-db-click @click="openLinkPicker('routine_link')">选择链接</el-button>

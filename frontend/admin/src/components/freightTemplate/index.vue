@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog v-model="isTemplate" title="运费模版" width="1000px" if="isTemplate" @on-cancel="cancel" @closed="close">
+    <el-dialog v-model="isTemplate" title="运费模板" width="1000px" if="isTemplate" @on-cancel="cancel" @closed="close">
       <div class="Modals">
         <el-form class="form" ref="formDataRef" label-width="120px" label-position="right">
           <el-row :gutter="24">

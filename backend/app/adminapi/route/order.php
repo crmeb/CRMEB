@@ -50,7 +50,7 @@ Route::group('order', function () {
     // Route::get('refund/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'refund']);
     //订单退款 → modules/product/normal/OrderController::processRefund
     // Route::put('refund/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'updateRefund']);
-    //获取电子面单模版 → modules/product/normal/OrderController::getExpressTemp
+    //获取电子面单模板 → modules/product/normal/OrderController::getExpressTemp
     // Route::get('express/temp', [\app\adminapi\controller\order\OrderCenterController::class, 'expressTemp']);
     //获取物流信息 → modules/product/normal/OrderController::getExpress
     // Route::get('express/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'getExpress']);

@@ -14,7 +14,7 @@
         <el-col :span="24">
           <el-col :span="8">
             <el-form-item label="规格模板名称：" prop="rule_name">
-              <el-input placeholder="请输入规格模版名称" :maxlength="20" v-model.trim="formDynamic.rule_name" />
+              <el-input placeholder="请输入规格模板名称" :maxlength="20" v-model.trim="formDynamic.rule_name" />
             </el-form-item>
           </el-col>
         </el-col>
@@ -116,7 +116,7 @@ const grid = {
 const modal = ref(false);
 const index = ref(1);
 const rules = {
-  rule_name: [{ required: true, message: '请输入规格名称', trigger: 'blur' }],
+  rule_name: [{ required: true, message: '请输入规格模板名称', trigger: 'blur' }],
 };
 const formDynamic = ref({
   rule_name: '',

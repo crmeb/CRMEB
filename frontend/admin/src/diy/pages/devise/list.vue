@@ -114,7 +114,7 @@
                 </div>
                 <el-divider direction="vertical" />
                 <div style="display: inline-block">
-                  <a v-db-click @click="exportView(scope.row.id)">导出模版</a>
+                  <a v-db-click @click="exportView(scope.row.id)">导出模板</a>
                 </div>
               </template>
             </el-table-column>

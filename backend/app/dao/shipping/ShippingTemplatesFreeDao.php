@@ -73,7 +73,7 @@ class ShippingTemplatesFreeDao extends BaseDao
     }
 
     /**
-     * 是否包邮模版数据列表
+     * 是否包邮模板数据列表
      * @param $tempId
      * @param $cityid
      * @param int $price

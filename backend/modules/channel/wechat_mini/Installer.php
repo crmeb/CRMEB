@@ -625,7 +625,7 @@ class Installer extends BaseModuleInstaller
      *     ├── 小程序配置 (auth=1, menu_path=/setting/system_config/{routine_tab_id}, 系统配置页)
      *     ├── 小程序下载 (auth=1, menu_path=/app/routine/download, 默认页)
      *     │   ├── 查看小程序信息 (auth=3, GET app/routine/info)
-     *     │   ├── 下载小程序模版 (auth=3, POST app/routine/download)
+     *     │   ├── 下载小程序模板 (auth=3, POST app/routine/download)
      *     │   └── 一键同步订阅消息 (auth=3, GET app/routine/syncSubscribe)
      *     ├── 小程序上传 (auth=1, menu_path=/app/routine/ci_upload, CI自动化上传)
      *     │   ├── 获取运行环境 (auth=3, GET app/routine/ci/environment)
@@ -697,7 +697,7 @@ class Installer extends BaseModuleInstaller
             ],
             [
                 'pid'         => '@小程序下载',
-                'menu_name'   => '下载小程序模版',
+                'menu_name'   => '下载小程序模板',
                 'api_url'     => 'app/routine/download',
                 'methods'     => 'POST',
                 'sort'        => 0,
@@ -705,7 +705,7 @@ class Installer extends BaseModuleInstaller
                 'access'      => 1,
                 'auth_type'   => 3,
                 'unique_auth' => 'app-routine-download',
-                'mark'        => '下载小程序模版',
+                'mark'        => '下载小程序模板',
             ],
             [
                 'pid'         => '@小程序下载',

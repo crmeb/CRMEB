@@ -149,7 +149,7 @@ class ProgramOpen3rd
     }
 
     /**
-     * 获取代码模版列表
+     * 获取代码模板列表
      * @return array
      */
     public function getTemplateList(): array
@@ -158,7 +158,7 @@ class ProgramOpen3rd
     }
 
     /**
-     * 删除指定代码模版
+     * 删除指定代码模板
      * @param int $template_id
      * @return array
      */

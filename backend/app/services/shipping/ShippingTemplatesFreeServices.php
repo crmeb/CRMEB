@@ -23,7 +23,7 @@ use crmeb\exceptions\AdminException;
  * @package app\services\shipping
  * @method  delete($id, ?string $key = null) 删除数据
  * @method isFree($tempId, $cityid, $number, $price) 是否可以满足包邮
- * @method isFreeList($tempId, $cityid, $price = 0, string $field = '*', string $key = '') 是否包邮模版数据列表
+ * @method isFreeList($tempId, $cityid, $price = 0, string $field = '*', string $key = '') 是否包邮模板数据列表
  */
 class ShippingTemplatesFreeServices extends BaseService
 {

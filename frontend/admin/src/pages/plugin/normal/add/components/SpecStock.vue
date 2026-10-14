@@ -8,7 +8,7 @@
           <el-radio :label="1" :value="1">多规格</el-radio>
         </el-radio-group>
         <el-dropdown v-if="formValidate.spec_type == 1" class="ml20" @command="confirm" trigger="hover">
-          <span class="el-dropdown-link"> 选择规格模版<i class="el-icon-arrow-down el-icon--right"></i> </span>
+          <span class="el-dropdown-link"> 选择规格模板<i class="el-icon-arrow-down el-icon--right"></i> </span>
           <template #dropdown
             ><el-dropdown-menu>
               <el-dropdown-item v-for="(item, index) in ruleList" :key="index" :command="item.rule_name">{{

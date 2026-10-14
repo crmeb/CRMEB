@@ -273,7 +273,7 @@ class MiniProgramService
     }
 
     /**
-     * 添加订阅消息模版
+     * 添加订阅消息模板
      * @param string $tid
      * @param array $kidList
      * @param string $sceneDesc
@@ -286,16 +286,16 @@ class MiniProgramService
             if (isset($res['priTmplId'])) {
                 return $res['priTmplId'];
             } else {
-                Log::error('添加订阅消息模版失败：' . json_encode($res, JSON_UNESCAPED_UNICODE));
+                Log::error('添加订阅消息模板失败：' . json_encode($res, JSON_UNESCAPED_UNICODE));
             }
         } catch (\Throwable $e) {
-            Log::error('添加订阅消息模版失败：' . $e->getMessage());
+            Log::error('添加订阅消息模板失败：' . $e->getMessage());
         }
         return false;
     }
 
     /**
-     * 删除订阅消息模版
+     * 删除订阅消息模板
      * @param string $priTmplId
      * @return mixed
      */
@@ -306,17 +306,17 @@ class MiniProgramService
             if (isset($res['errcode']) && $res['errcode'] == 0) {
                 return true;
             } else {
-                Log::error('删除订阅消息模版失败：' . $res['errmsg']);
+                Log::error('删除订阅消息模板失败：' . $res['errmsg']);
             }
         } catch (\Throwable $e) {
-            Log::error('删除订阅消息模版失败：' . $e->getMessage());
+            Log::error('删除订阅消息模板失败：' . $e->getMessage());
         }
         return true;
     }
 
 
     /**
-     * 获取模版标题的关键词列表
+     * 获取模板标题的关键词列表
      * @param string $tid
      * @return mixed
      */

@@ -50,7 +50,7 @@ class Driver extends BaseExpress
     }
 
     /**
-     * 获取电子面单模版
+     * 获取电子面单模板
      * @param string $com 快递公司编号
      * @return bool|mixed
      */

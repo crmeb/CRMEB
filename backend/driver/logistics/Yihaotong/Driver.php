@@ -128,7 +128,7 @@ class Driver extends BaseExpress
             $item['value'] = $item['label'];
             $num = 1;
             foreach ($item['list'] as &$value) {
-                $value['title'] = $item['label'] . '模版' . $num;
+                $value['title'] = $item['label'] . '模板' . $num;
                 $num++;
             }
         }
@@ -232,7 +232,7 @@ class Driver extends BaseExpress
     }
 
     /**
-     * 获取电子面单模版
+     * 获取电子面单模板
      * @param $com 快递公司编号
      * @param int $page
      * @param int $limit

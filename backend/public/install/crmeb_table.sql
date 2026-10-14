@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS `eb_diy` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `version` varchar(255) NOT NULL DEFAULT '' COMMENT '版本号',
   `name` varchar(255) NOT NULL DEFAULT '' COMMENT '页面名称',
-  `template_name` varchar(255) NOT NULL DEFAULT '' COMMENT '模版名称',
+  `template_name` varchar(255) NOT NULL DEFAULT '' COMMENT '模板名称',
   `value` longtext COMMENT '页面数据',
   `default_value` longtext COMMENT '默认页面数据',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
@@ -1994,8 +1994,8 @@ CREATE TABLE IF NOT EXISTS `eb_theme` (
 -- eb_theme_download：主题下载记录表
 CREATE TABLE IF NOT EXISTS `eb_theme_download` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '模版名称',
-  `tid` int NOT NULL DEFAULT '0' COMMENT '模版ID',
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '模板名称',
+  `tid` int NOT NULL DEFAULT '0' COMMENT '模板ID',
   `download_time` int NOT NULL DEFAULT '0' COMMENT '下载时间',
   `download_url` varchar(500) NOT NULL DEFAULT '' COMMENT '下载地址',
   PRIMARY KEY (`id`)

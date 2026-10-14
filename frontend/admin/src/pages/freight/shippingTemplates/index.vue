@@ -57,7 +57,7 @@
           <template #default="scope">
             <a v-db-click @click="edit(scope.row.id)">修改</a>
             <el-divider direction="vertical" v-if="scope.row.id !== 1" />
-            <a v-db-click @click="del(scope.row, '删除模版', index)" v-if="scope.row.id !== 1">删除</a>
+            <a v-db-click @click="del(scope.row, '删除模板', index)" v-if="scope.row.id !== 1">删除</a>
           </template>
         </el-table-column>
       </el-table>

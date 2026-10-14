@@ -190,7 +190,7 @@
                 <!-- <div class="data" @click="setmoren">设置默认</div>
                 <div class="data" @click="getmoren">恢复默认</div> -->
                 <el-button class="data" @click="showTitle">页面设置</el-button>
-                <el-button class="data" @click="nameModal = true">另存模版</el-button>
+                <el-button class="data" @click="nameModal = true">另存模板</el-button>
                 <el-button class="data" @click="reast">重置</el-button>
                 <el-button v-if="!isMicroPage" class="data" @click="saveCover">保存为封面</el-button>
               </div>
@@ -230,8 +230,8 @@
         </div>
       </div>
     </el-dialog>
-    <el-dialog v-model="nameModal" width="470px" title="设置模版名称" :show-close="true">
-      <el-input v-model="saveName" placeholder="请输入模版名称"></el-input>
+    <el-dialog v-model="nameModal" width="470px" title="设置模板名称" :show-close="true">
+      <el-input v-model="saveName" placeholder="请输入模板名称"></el-input>
       <template #footer
         ><span class="dialog-footer">
           <el-button v-db-click @click="nameModal = false">取 消</el-button>

@@ -19,7 +19,7 @@ Route::group('app', function () {
     Route::group(function () {
         Route::get('routine/syncSubscribe', [\modules\channel\wechat_mini\controller\admin\RoutineTemplateController::class, 'syncSubscribe'])->name('syncSubscribe')->option(['real_name' => '一键同步订阅消息']);
         Route::get('routine/info', [\modules\channel\wechat_mini\controller\admin\RoutineTemplateController::class, 'getDownloadInfo'])->option(['real_name' => '下载小程序页面数据']);
-        Route::post('routine/download', [\modules\channel\wechat_mini\controller\admin\RoutineTemplateController::class, 'downloadTemp'])->option(['real_name' => '下载小程序模版']);
+        Route::post('routine/download', [\modules\channel\wechat_mini\controller\admin\RoutineTemplateController::class, 'downloadTemp'])->option(['real_name' => '下载小程序模板']);
 
         Route::get('routine/ci/environment', [\modules\channel\wechat_mini\controller\admin\RoutineCIController::class, 'environment'])->option(['real_name' => '获取小程序CI运行环境']);
         Route::get('routine/ci/guide', [\modules\channel\wechat_mini\controller\admin\RoutineCIController::class, 'installGuide'])->option(['real_name' => '获取环境安装指南']);

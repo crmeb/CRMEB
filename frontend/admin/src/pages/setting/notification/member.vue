@@ -22,7 +22,7 @@
             type="primary"
             v-db-click
             @click="wechatTemplate"
-            >同步微信模版消息</el-button
+            >同步微信模板消息</el-button
           >
         </el-col>
       </el-row>

@@ -161,7 +161,7 @@ class Driver extends BaseSms
     }
 
     /**
-     * 申请模版
+     * 申请模板
      * @param $title
      * @param $content
      * @param $type
@@ -212,7 +212,7 @@ class Driver extends BaseSms
         ];
         $param['temp_id'] = $templateId;
         if (is_null($param['temp_id'])) {
-            throw new AdminException('模版ID不存在');
+            throw new AdminException('模板ID不存在');
         }
         $param['param'] = json_encode($data);
         return $this->accessToken->httpRequest(self::SMS_SEND, $param, 'post');

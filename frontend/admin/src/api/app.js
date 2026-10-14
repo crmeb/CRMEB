@@ -33,7 +33,7 @@ export function routineSyncTemplate() {
 }
 
 /**
- * @description  同步微信模版消息
+ * @description  同步微信模板消息
  */
 export function wechatSyncTemplate() {
   return request({
