@@ -17,6 +17,7 @@ use app\services\order\OrderCenterServices;
 use app\services\order\OrderLifecycleServices;
 use crmeb\trade\order\type\OrderTypeAdapterInterface;
 use crmeb\trade\order\type\OrderTypeRegistry;
+use modules\product\normal\dao\NormalOrderDao;
 use modules\product\normal\handler\NormalOrderAdapter;
 
 /**
@@ -33,13 +34,14 @@ class OrderCancelListener
             return;
         }
 
-        // 确认 normal 类型 + 幂等
-        $centerDao = app(OrderCenterDao::class);
-        $meta = $centerDao->get(['order_no' => $orderNo], ['source_type', 'status_code']);
+        // 确认 normal 类型
+        $meta = app(OrderCenterDao::class)->get(['order_no' => $orderNo], ['source_type']);
         if (!$meta || ($meta['source_type'] ?? '') !== NormalOrderAdapter::getSourceType()) {
             return;
         }
-        if ($meta['status_code'] === 'canceled') {
+        // 中台在事件触发前已标记 canceled，幂等必须检查扩展表（同卡密口径）
+        $source = app(NormalOrderDao::class)->search([], false)->where('order_no', $orderNo)->find();
+        if (!$source || $source['status'] === NormalOrderAdapter::EXT_STATUS_CANCELED) {
             return;
         }
 
