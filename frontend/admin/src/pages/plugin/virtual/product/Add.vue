@@ -249,6 +249,9 @@ import userLabel from '@/components/labelList';
 import goodsLabel from '@/components/goodsLabel';
 import modalForm from '@/utils/modalForm';
 
+// 模板 :rules 绑定的是小驼峰 ruleValidate，需从导入的 RuleValidate 取一份（与实物商品页一致）
+const ruleValidate = RuleValidate;
+
 defineOptions({ name: 'virtualProductAdd' });
 
 const { proxy } = getCurrentInstance();
