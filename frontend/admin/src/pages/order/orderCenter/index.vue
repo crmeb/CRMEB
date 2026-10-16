@@ -186,9 +186,6 @@
                       <span>商品名称：</span><span>{{ scope.row.title }}</span>
                     </div>
                     <div>
-                      <span>副标题：</span><span>{{ scope.row.subtitle || '--' }}</span>
-                    </div>
-                    <div>
                       <span>购买数量：</span><span>{{ scope.row.total_num }}</span>
                     </div>
                   </div></template
