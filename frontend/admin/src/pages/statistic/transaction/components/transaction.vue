@@ -138,16 +138,16 @@ function getStatistics() {
   statisticBottomTradeApi({ data: dataTime.value })
     .then(async (res) => {
       const cardLists = res.data;
+      // 图标顺序与后端 series 卡片顺序（营业额/商品支付/购买会员/充值/线下收银/支出/余额支付/商品退款）一致，
+      // 支付佣金卡片已随佣金体系移除
       const incons = [
         'iconyingyee',
-        'iconjiaoyijine',
         'iconshangpinzhifujine',
         'icongoumaihuiyuanjine',
         'iconchongzhijianshu',
         'iconxianxiashouyinjine',
         'iconzhichujine',
         'iconyuezhifujine',
-        'iconzhifuyongjinjine',
         'iconshangpintuikuanjine',
       ];
       for (var i = 0; i < cardLists.series.length; i++) {
@@ -158,7 +158,7 @@ function getStatistics() {
       spinShow.value = false;
     })
     .catch((res) => {
-      ElMessage.error(res.msg);
+      ElMessage.error(res?.msg || '数据加载失败');
       spinShow.value = false;
     });
 }

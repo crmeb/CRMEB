@@ -360,7 +360,9 @@ class UserBillDao extends BaseDao
             if ($time[0] == $time[1]) {
                 $query->whereDay($field, $time[0]);
             } else {
-                $query->whereTime($field, 'between', $time);
+                // whereTime between 对日期字符串的结束边界停在结束日 00:00:00，会漏掉结束日当天数据；
+                // 与统计口径 searchTimeAttr 的结束日 +86399 对齐，按全天统计
+                $query->whereBetween($field, [strtotime($time[0]), strtotime($time[1]) + 86399]);
             }
         })->field("FROM_UNIXTIME($field,'$timeType') as days,$str as num")->group('days')->select()->toArray();
     }

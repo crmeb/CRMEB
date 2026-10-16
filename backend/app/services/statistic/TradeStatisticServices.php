@@ -428,6 +428,9 @@ class TradeStatisticServices extends BaseService
             $data['series'][$k]['rate'] = $v['rate'];
             $data['series'][$k]['value'] = array_values($v['value']);
         }
+        // topData 键位不连续（历史支付佣金卡片已移除，键 7 空缺），必须重排为连续索引，
+        // 否则 JSON 序列化输出对象而非数组，前端 series.filter 直接报错
+        $data['series'] = array_values($data['series']);
         // 仅导出请求时才生成 Excel 文件，普通查询不落盘
         if ($isExport) {
             /** @var ExportServices $exportService */

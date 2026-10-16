@@ -438,7 +438,7 @@ function getList() {
     })
     .catch((res) => {
       listLoading.value = false;
-      ElMessage.error(res.msg);
+      ElMessage.error(res?.msg || '数据加载失败');
     });
 }
 function getOrder() {}
