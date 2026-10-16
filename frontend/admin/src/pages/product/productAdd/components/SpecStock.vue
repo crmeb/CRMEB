@@ -105,25 +105,18 @@
                         </div>
                       </template>
                       <template #footer>
-                        <el-popover
-                          :ref="'popoverRef_' + index"
-                          placement="bottom"
-                          width="210"
-                          trigger="click"
-                          @after-enter="handleShowPop(index)"
-                        >
+                        <div class="mr10 spec" v-if="addingIndex === index">
                           <el-input
-                            :ref="'inputRef_' + index"
-                            placeholder="请输入规格值"
+                            ref="attrInputRef"
+                            style="width: 120px"
+                            placeholder="规格值"
                             v-model="formDynamic.attrsVal"
-                            @keyup.enter="createAttr(formDynamic.attrsVal, index)"
-                            @blur="createAttr(formDynamic.attrsVal, index)"
+                            @keyup.enter="onAttrEnter(index)"
+                            @blur="onAttrBlur(index)"
                             maxlength="30"
-                            show-word-limit
-                          >
-                          </el-input>
-                          <template #reference><div class="addfont" type="text" v-db-click>添加规格值</div></template>
-                        </el-popover>
+                          ></el-input>
+                        </div>
+                        <div class="addfont" type="text" v-db-click v-else @click="clickAddAttr(index)">添加规格值</div>
                       </template>
                     </draggable>
                   </div>
@@ -140,15 +133,8 @@
     </el-col>
     <el-col :span="24" v-if="formValidate.spec_type === 1">
       <el-form-item label="商品属性：" class="labeltop" v-if="manyFormValidate.length">
-        <VirtualScroll
-          class="spec-table-scroll"
-          :data="manyFormValidate"
-          :buffer="50"
-          :height="62"
-          key-prop="index"
-          @change="(renderData) => (virtualList = renderData)"
-        >
-          <!-- <el-table row-key="id" :data="virtualList" height="500px"> </el-table> -->
+        <!-- 表格使用完整数据和原生滚动，避免隐藏页签中的虚拟滚动高度缓存裁切 SKU 行。 -->
+        <div class="spec-table-scroll">
           <el-table
             row-key="index"
             max-height="700px"
@@ -419,7 +405,7 @@
               </template>
             </el-table-column>
           </el-table>
-        </VirtualScroll>
+        </div>
       </el-form-item>
     </el-col>
     <!-- ------------------------------------------------- -->
@@ -592,9 +578,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import draggable from 'vuedraggable';
-import VirtualScroll from './virtualTabel.vue';
 
 defineOptions({ name: 'SpecStock' });
 
@@ -652,7 +637,6 @@ const emit = defineEmits([
   'attrDetailChangeValue',
   'handleBlur',
   'attrChangeValue',
-  'handleShowPop',
   'handleSelImg',
   'handleSaveAsTemplate',
   'addGoodsCoupon',
@@ -663,8 +647,6 @@ const emit = defineEmits([
   'see',
   'createAttr',
 ]);
-
-const virtualList = ref([]);
 
 // vuedraggable4 item-key（数据无唯一 id，用索引）
 const attrItemKey = (element) => props.attrs.indexOf(element);
@@ -718,8 +700,23 @@ function handleBlur(e) {
 function attrChangeValue(val, index) {
   emit('attrChangeValue', val, index);
 }
-function handleShowPop(e) {
-  emit('handleShowPop', e);
+// 行内添加规格值：点击后原位出现输入框，回车提交并继续输入，失焦收起
+const addingIndex = ref(-1);
+const attrInputRef = ref();
+function clickAddAttr(index) {
+  addingIndex.value = index;
+  nextTick(() => {
+    // 输入框在外层 v-for 内，ref 为数组；同一时刻只有一个输入框存在
+    const inst = Array.isArray(attrInputRef.value) ? attrInputRef.value[0] : attrInputRef.value;
+    inst?.focus?.();
+  });
+}
+function onAttrEnter(index) {
+  emit('createAttr', props.formDynamic.attrsVal, index);
+}
+function onAttrBlur(index) {
+  emit('createAttr', props.formDynamic.attrsVal, index);
+  addingIndex.value = -1;
 }
 function handleSelImg(e) {
   emit('handleSelImg', e);

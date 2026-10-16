@@ -69,7 +69,6 @@
           @handleBlur="handleBlur"
           @handleSelImg="handleSelImg"
           @handleRemoveImg="handleRemoveImg"
-          @handleShowPop="handleShowPop"
           @createAttr="createAttr"
           @handleAddRole="handleAddRole"
           @handleSaveAsTemplate="handleSaveAsTemplate"
@@ -747,9 +746,6 @@ function handleSelImg(item) {
 function handleRemoveImg(item) {
   item.pic = '';
 }
-function handleShowPop(index) {
-  specStock.value.$refs['inputRef_' + index][0].focus();
-}
 function handleAddRole() {
   attrs.value.push({
     value: formDynamic.value.attrsName,
@@ -775,6 +771,7 @@ function handleSaveAsTemplate() {
     })
     .catch(() => {});
 }
+// 添加属性（行内输入框回车/失焦触发，num 为空时忽略）
 function createAttr(num, idx) {
   if (num) {
     const isExist = attrs.value[idx].detail.some((item) => item.value === num);
@@ -788,10 +785,7 @@ function createAttr(num, idx) {
     } else {
       generateAttr(attrs.value);
     }
-    specStock.value.$refs['popoverRef_' + idx][0].doClose();
     clearAttr();
-  } else {
-    specStock.value.$refs['popoverRef_' + idx][0].doClose();
   }
 }
 function addOneAttr(val, val2) {
