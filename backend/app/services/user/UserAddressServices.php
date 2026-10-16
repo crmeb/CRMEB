@@ -96,6 +96,16 @@ class UserAddressServices extends BaseService
     }
 
     /**
+     * 批量获取多个用户的默认地址，按 uid 索引
+     * @param array $uids
+     * @return array
+     */
+    public function getDefaultAddressMapByUids(array $uids): array
+    {
+        return $this->dao->getDefaultAddressMapByUids($uids);
+    }
+
+    /**
      * 获取条数
      * @param array $where
      * @return int

@@ -46,4 +46,17 @@ class UserAddressDao extends BaseDao
     {
         return $this->search($where)->field($field)->page($page, $limit)->order('is_default DESC,id DESC')->select()->toArray();
     }
+
+    /**
+     * 批量获取多个用户的默认地址，按 uid 索引
+     * @param array $uids
+     * @return array
+     */
+    public function getDefaultAddressMapByUids(array $uids): array
+    {
+        if (!$uids) {
+            return [];
+        }
+        return $this->getColumn([['uid', 'in', array_unique($uids)], ['is_default', '=', 1], ['is_del', '=', 0]], 'province,city,district,detail', 'uid');
+    }
 }

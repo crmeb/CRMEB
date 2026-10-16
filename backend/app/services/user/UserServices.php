@@ -571,9 +571,14 @@ class UserServices extends BaseService
             $levelName = app()->make(SystemUserLevelServices::class)->getUsersLevel(array_unique(array_column($list, 'level')));
             $userLevel = app()->make(UserLevelServices::class)->getUsersLevelInfo($uids);
             $spread_names = $this->dao->getColumn([['uid', 'in', array_unique(array_column($list, 'spread_uid'))]], 'nickname', 'uid');
+            $defaultAddressMap = app()->make(UserAddressServices::class)->getDefaultAddressMapByUids($uids);
             foreach ($list as &$item) {
                 if (empty($item['addres'])) {
-                    if (!empty($item['country']) || !empty($item['province']) || !empty($item['city'])) {
+                    // 优先展示用户默认收货地址，无默认地址时回退微信用户省市
+                    $defaultAddress = $defaultAddressMap[$item['uid']] ?? null;
+                    if ($defaultAddress) {
+                        $item['addres'] = $defaultAddress['province'] . $defaultAddress['city'] . $defaultAddress['district'] . $defaultAddress['detail'];
+                    } elseif (!empty($item['country']) || !empty($item['province']) || !empty($item['city'])) {
                         $item['addres'] = $item['country'] . $item['province'] . $item['city'];
                     }
                 }
