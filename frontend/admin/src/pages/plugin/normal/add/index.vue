@@ -755,11 +755,12 @@ function getUploadType() {
 function infoData(data, isCopy) {
   let cate_id = data.cate_id.map(Number);
   let label_id = data.label_id.map(Number);
-  // 兼容两种 items 来源：编辑回填 detail 为字符串数组；采集回填 detail 为 [{value, pic}] 对象数组，规格名统一在 value 键
+  // 兼容两种 items 来源：中台编辑回填为 {name, values}（规格名在 name、规格值为字符串数组）；
+  // 采集回填为 {value, detail}（detail 为字符串数组或 [{value, pic}] 对象数组），规格名统一归一到 value 键
   attrs.value = Array.isArray(data.items)
     ? data.items.map((item) => ({
-        value: item.value,
-        detail: (item.detail ?? []).map((v) =>
+        value: item.value ?? item.name,
+        detail: (item.detail ?? item.values ?? []).map((v) =>
           typeof v === 'string' ? { value: v, pic: '' } : { value: v.value ?? '', pic: v.pic ?? '' },
         ),
         add_pic: item.add_pic ?? 0,

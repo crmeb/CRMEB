@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-import { computed, getCurrentInstance, nextTick, onMounted, ref } from 'vue';
+import { computed, getCurrentInstance, nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { virtualApi } from '../api';
@@ -534,8 +534,8 @@ async function loadProduct() {
       oneFormValidate.value[0].stock = data.stock || 0;
       oneFormValidate.value[0].pic = formValidate.value.image;
     }
-    // 多规格回显：重建规格组与表格数据（含各 SKU 网盘信息）
-    if (data.spec_type === 1 && Array.isArray(data.attrs) && data.attrs.length > 1) {
+    // 多规格回显：重建规格组与表格数据（含各 SKU 网盘信息）；单规格值也会只有一条 SKU，不设下限会漏回显
+    if (data.spec_type === 1 && Array.isArray(data.attrs) && data.attrs.length >= 1) {
       restoreManySku(data.attrs);
     }
     // 商品详情回显
@@ -977,9 +977,10 @@ function generateAttrBatch(data, combinations, val) {
   return rows;
 }
 // 多规格编辑回显：根据后端返回的 SKU 列表（含规格映射 detail 与网盘信息）重建规格组与表格
-function restoreManySku(attrs) {
+function restoreManySku(skuRows) {
+  // 注意：形参不能叫 attrs，否则遮蔽外层同名 ref，规格编辑区拿不到数据、保存时 items 也会提交空数组
   const specMap = {};
-  attrs.forEach((a) => {
+  skuRows.forEach((a) => {
     const detail = a.detail || {};
     Object.keys(detail).forEach((name) => {
       if (!specMap[name]) specMap[name] = [];
@@ -1000,7 +1001,7 @@ function restoreManySku(attrs) {
   // 回填各 SKU 的价格/库存/网盘信息
   rows.forEach((row) => {
     const values = row.attr_arr || [];
-    const match = attrs.find((a) => {
+    const match = skuRows.find((a) => {
       const detailValues = a.detail ? Object.values(a.detail) : [];
       return arraysEqual(detailValues, values);
     });
@@ -1393,6 +1394,71 @@ onMounted(() => {
   getproductLabelUseListApi();
   if (props.editId) loadProduct();
 });
+
+// add/:id? 是同一路由记录，「新增」与「编辑」共用组件实例，路由参数变化不会重新走 onMounted；
+// 不监听 editId 的话，长会话里编辑页会显示上一个页面（新增表单/另一单）残留的规格与表格数据
+watch(
+  () => props.editId,
+  (val) => {
+    if (val) {
+      loadProduct();
+    } else {
+      resetAddForm();
+    }
+  },
+);
+
+// 恢复新增态：清掉编辑残留的商品与规格数据
+function resetAddForm() {
+  Object.assign(formValidate.value, {
+    store_name: '',
+    store_info: '',
+    price: 0,
+    ot_price: 0,
+    cost: 0,
+    stock: 0,
+    ficti: 0,
+    unit_name: '件',
+    sort: 0,
+    is_show: 1,
+    keyword: '',
+    give_integral: 0,
+    is_sub: 0,
+    spec_type: 0,
+    cate_id: [],
+    label_list: [],
+    recommend_list: [],
+    slider_image: [],
+    image: '',
+    custom_form: [],
+    params_list: [],
+    protection_list: [],
+    attrs: [],
+    items: [],
+    header: [],
+  });
+  attrs.value = [];
+  manyFormValidate.value = [];
+  oneFormValidate.value = [
+    {
+      pic: '',
+      price: 0,
+      cost: 0,
+      ot_price: 0,
+      stock: 0,
+      bar_code: '',
+      bar_code_number: '',
+      weight: 0,
+      volume: 0,
+      brokerage: 0,
+      brokerage_two: 0,
+      vip_price: 0,
+      download_url: '',
+      download_password: '',
+    },
+  ];
+  contents.value = '';
+}
 </script>
 
 <style scoped></style>
