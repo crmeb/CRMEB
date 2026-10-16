@@ -154,6 +154,7 @@
     <el-col :span="24" v-if="formValidate.spec_type === 1">
       <el-form-item label="商品属性：" class="labeltop" v-if="manyFormValidate.length">
         <VirtualScroll
+          class="spec-table-scroll"
           :data="manyFormValidate"
           :buffer="50"
           :height="62"
@@ -163,7 +164,7 @@
           <!-- <el-table row-key="id" :data="virtualList" height="500px"> </el-table> -->
           <el-table
             row-key="index"
-            height="700px"
+            max-height="700px"
             :data="manyFormValidate"
             style="width: 100%"
             :cell-class-name="tableCellClassName"
@@ -814,6 +815,11 @@ function objectSpanMethod({ row, column, rowIndex, columnIndex }) {
 </script>
 <style lang="scss" scoped>
 @use '../productAdd.scss' as *;
+// 规格表列合计宽超出表单容器时允许 flex 收缩（网盘多规格列多，撑破容器会把固定右列一起推出视口），
+// 收缩后 el-table 在容器内横向滚动，fixed right 列正常钉住
+.spec-table-scroll {
+  min-width: 0;
+}
 // 网盘信息输入组（多规格表格/单规格区共用）
 .fictitious-netdisk {
   display: flex;

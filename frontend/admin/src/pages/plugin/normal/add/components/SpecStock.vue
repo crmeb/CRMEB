@@ -135,7 +135,7 @@
       <el-form-item label="商品属性：" class="labeltop" v-if="manyFormValidate.length">
         <el-table
           row-key="index"
-          height="700px"
+          max-height="700px"
           :data="manyFormValidate"
           style="width: 100%"
           :cell-class-name="tableCellClassName"
@@ -669,4 +669,10 @@ function objectSpanMethod({ row, column, rowIndex, columnIndex }) {
 </script>
 <style lang="scss" scoped>
 @use '../productAdd.scss' as *;
+// 规格表列合计宽超出表单容器时允许 flex 收缩，让 el-table 在容器内横向滚动、fixed right 列正常钉住
+.labeltop {
+  :deep(.el-table) {
+    min-width: 0;
+  }
+}
 </style>
