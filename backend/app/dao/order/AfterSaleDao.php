@@ -156,6 +156,35 @@ class AfterSaleDao extends BaseDao
     }
 
     /**
+     * 批量查询多个订单的最新售后单号
+     * 与 getLatestNoByOrderNo 同口径（每单取 id 最大一条），一次查询避免逐单点查
+     * @param array $orderNos 订单号数组
+     * @return array 返回以 order_no 为键的最新售后单号映射，无售后记录的订单不在结果中
+     */
+    public function getLatestNoMapByOrderNos(array $orderNos): array
+    {
+        if (empty($orderNos)) {
+            return [];
+        }
+        $rows = $this->getModel()
+            ->whereIn('order_no', $orderNos)
+            ->where('is_del', 0)
+            ->order('id DESC')
+            ->field('order_no, after_sale_no')
+            ->select()
+            ->toArray();
+        $map = [];
+        foreach ($rows as $row) {
+            $orderNo = (string)($row['order_no'] ?? '');
+            // 按 id 倒序遍历，每个订单号首次命中即其最新一条售后单
+            if ($orderNo !== '' && !isset($map[$orderNo])) {
+                $map[$orderNo] = (string)($row['after_sale_no'] ?? '');
+            }
+        }
+        return $map;
+    }
+
+    /**
      * 统计指定订单的售后数量
      * @param string $orderNo
      * @return int

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\services\order;
 
+use app\dao\order\AfterSaleDao;
 use app\model\order\OrderCenter;
 use app\services\pay\PayRecordServices;
 use app\services\order\StoreCartServices;
@@ -105,12 +106,60 @@ class OrderCenterUserServices extends OrderCenterServices
             $item['type_label'] = $this->resolveTypeLabel($item);
         }
 
+        // 为 viewAfterSale 按钮批量注入 after_sale_no（与详情接口 getOrderButtonsFromHandler 同口径）
+        // 前端 viewAfterSale action 依赖 params.after_sale_no 才能跳转到售后详情页
+        $this->injectAfterSaleNoForList($list);
+
         $eventData = ['list' => &$list];
         // 触发事件，允许第三方扩展订单列表
         event('OrderCenterListExtend', $eventData);
         $list = $eventData['list'];
 
         return compact('total', 'list');
+    }
+
+    /**
+     * 为列表项 viewAfterSale 按钮批量注入 after_sale_no
+     * 取订单最新一条售后单（不限状态），与详情接口 getOrderButtonsFromHandler 同口径；
+     * 仅含该按钮的订单才参与查询，按订单号一次批量取回，避免逐行点查
+     * @param array $list 订单列表（引用传递，原地补齐按钮参数）
+     */
+    protected function injectAfterSaleNoForList(array &$list): void
+    {
+        $orderNos = [];
+        foreach ($list as $item) {
+            foreach ($item['order_buttons'] ?? [] as $button) {
+                if (($button['action'] ?? '') === 'viewAfterSale') {
+                    $orderNos[(string)($item['order_no'] ?? '')] = true;
+                    break;
+                }
+            }
+        }
+        $orderNos = array_filter(array_keys($orderNos));
+        if (empty($orderNos)) {
+            return;
+        }
+
+        try {
+            $map = $this->app->make(AfterSaleDao::class)->getLatestNoMapByOrderNos($orderNos);
+        } catch (\Throwable $e) {
+            Log::warning('[OrderCenter] injectAfterSaleNoForList failed: ' . $e->getMessage());
+            return;
+        }
+
+        foreach ($list as &$item) {
+            $afterSaleNo = $map[(string)($item['order_no'] ?? '')] ?? '';
+            if ($afterSaleNo === '') {
+                continue;
+            }
+            foreach ($item['order_buttons'] as &$button) {
+                if (($button['action'] ?? '') === 'viewAfterSale') {
+                    $button['params'] = array_merge($button['params'] ?? [], ['after_sale_no' => $afterSaleNo]);
+                }
+            }
+            unset($button);
+        }
+        unset($item);
     }
 
     /**
