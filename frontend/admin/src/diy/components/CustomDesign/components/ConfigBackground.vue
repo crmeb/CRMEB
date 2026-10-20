@@ -8,7 +8,7 @@
         <el-radio label="right-diagonal" value="right-diagonal">右斜</el-radio>
       </el-radio-group>
     </div>
-    <div class="row">
+    <div class="row-space-between">
       <div class="iconfont iconlianjie"></div>
       <el-color-picker v-model="curComponent.propValue.backgroundColor" @change="onChange" show-alpha></el-color-picker>
       <el-input
@@ -26,7 +26,7 @@
         >重置</span
       >
     </div>
-    <div class="row" style="margin-top: 10px">
+    <div class="row-space-between" style="margin-top: 10px">
       <el-color-picker v-model="curComponent.propValue.bgColor2" @change="onChange" show-alpha></el-color-picker>
       <el-input
         v-model="curComponent.propValue.bgColor2"
@@ -64,7 +64,7 @@ function onChange() {
 </script>
 
 <style scoped lang="scss">
-.row {
+.row-space-between {
   display: flex;
   align-items: center;
   position: relative;

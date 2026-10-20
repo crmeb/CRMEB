@@ -2,7 +2,14 @@
   <el-form-item label="内边距" class="margin-style-config">
     <div class="c_content">
       <div class="main-setting">
-        <el-slider v-model="paddingMainVal" :max="100" show-input @input="handlePaddingMainChange"></el-slider>
+        <el-slider
+          v-model="paddingMainVal"
+          :max="100"
+          show-input
+          :show-input-controls="false"
+          input-size="small"
+          @input="handlePaddingMainChange"
+        ></el-slider>
         <div class="expand-icon" @click="isPaddingExpanded = !isPaddingExpanded">
           <span class="iconfont iconbianju" :class="isPaddingExpanded ? 'selected' : ''"></span>
         </div>
@@ -103,7 +110,8 @@ function handlePaddingMainChange(val) {
 .margin-style-config {
   margin-bottom: 20px;
   .c_content {
-    flex: 1;
+    flex: 1 1 100%;
+    min-width: 0;
   }
   .main-setting {
     display: flex;
@@ -134,12 +142,14 @@ function handlePaddingMainChange(val) {
     :deep(.el-slider) {
       flex: 1;
       margin-right: 0;
-      .el-slider__input {
-        width: 60px;
-        padding-right: 0px;
+      min-width: 0;
+      /* 表单内容区仅约 220px：收窄 EP 默认的滑轨-输入框间距(30px)、输入框取 90px 并去掉 +/- 控件，
+         保证滑轨有足够可拖动宽度，且数值不被控件或裁切挤没 */
+      .el-slider__runway.show-input {
+        margin-right: 8px;
       }
-      .el-slider__runway {
-        margin-right: 75px;
+      .el-slider__input {
+        width: 90px;
       }
     }
   }
@@ -174,7 +184,6 @@ function handlePaddingMainChange(val) {
             border: none;
             padding-left: 5px;
             text-align: left;
-            padding-right: 30px;
           }
         }
         :deep(.el-input__wrapper) {

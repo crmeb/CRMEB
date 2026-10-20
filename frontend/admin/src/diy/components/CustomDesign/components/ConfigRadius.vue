@@ -1,6 +1,6 @@
 <template>
   <el-form-item :label="`${labelPrefix}圆角`" class="margin-style-config">
-    <div class="c_row">
+    <div class="c_rows">
       <div class="c_content">
         <div class="main-setting">
           <el-slider
@@ -125,9 +125,12 @@ function handleRadiusChange(val) {
 .margin-style-config {
   // padding: 0px 15px 0 15px;
   margin-bottom: 18px;
-  .c_row {
+  .c_rows {
     display: flex;
     justify-content: space-between;
+    /* 直接子级撑满 EP 表单内容行，避免整体被压缩（滑块随之被压扁） */
+    flex: 1 1 100%;
+    min-width: 0;
   }
   .c_label {
     font-size: 12px;
@@ -138,6 +141,7 @@ function handleRadiusChange(val) {
   }
   .c_content {
     flex: 1;
+    min-width: 0;
   }
   .main-setting {
     display: flex;
@@ -168,11 +172,14 @@ function handleRadiusChange(val) {
     :deep(.el-slider) {
       flex: 1;
       margin-right: 0;
-      .el-slider__input {
-        width: 60px;
+      min-width: 0;
+      /* 表单内容区仅约 220px：收窄 EP 默认的滑轨-输入框间距(30px)、输入框取 90px，
+         保证滑轨有足够可拖动宽度，且数值不被 +/- 控件或裁切挤没 */
+      .el-slider__runway.show-input {
+        margin-right: 8px;
       }
-      .el-slider__runway {
-        margin-right: 75px;
+      .el-slider__input {
+        width: 90px;
       }
     }
   }
@@ -205,7 +212,6 @@ function handleRadiusChange(val) {
             border: none;
             padding-left: 5px;
             text-align: left;
-            padding-right: 40px;
           }
         }
         :deep(.el-input__wrapper) {

@@ -416,6 +416,15 @@ function linkUrl(e) {
   :deep(.el-form-item__content) {
     margin-left: 80px !important;
     line-height: 36px !important;
+    /* EP 表单内容区是 flex 容器，行容器默认不撑满会被压缩，
+       其内部的 el-slider（flex: 1）随之被压成 0 宽，表现为滑块不可见/样式异常；
+       basis 取 100% 保证每行独占一行（如背景色的两行取色不会挤到同一行）。
+       圆角/内边距的 .c_rows/.c_content 由各自组件自行撑满 */
+    > .row,
+    > .row-space-between {
+      flex: 1 1 100%;
+      min-width: 0;
+    }
   }
   :deep(.el-form-item--small .el-form-item__label) {
     line-height: 38px !important;
