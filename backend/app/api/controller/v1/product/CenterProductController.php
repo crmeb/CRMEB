@@ -36,10 +36,24 @@ class CenterProductController
             ['salesOrder', ''],
             ['cate_id', ''],
             ['limit', 30],
+            ['ids', ''],
+            ['store_label_id', ''],
         ]);
         [$page, $limit] = $services->getPageValue();
         if (!empty($where['limit'])) {
             $limit = (int)$where['limit'];
+        }
+        // DIY 商品列表/商品选项卡「指定商品」「商品标签」：ids/store_label_id 逗号串转数组（DAO 按数组 whereIn/FIND_IN_SET 处理，ids 需按顺序排序）
+        foreach (['ids', 'store_label_id'] as $idKey) {
+            $idValue = is_array($where[$idKey]) ? $where[$idKey] : explode(',', (string)$where[$idKey]);
+            $where[$idKey] = array_values(array_filter(array_map('intval', $idValue)));
+            if (empty($where[$idKey])) {
+                unset($where[$idKey]);
+            }
+        }
+        if (!empty($where['ids'])) {
+            // 指定商品按已选数量返回，不受默认分页条数限制
+            $limit = max($limit, count($where['ids']));
         }
         if ($where['cate_id'] !== '') {
             $where['cate_id'] = explode(',', $where['cate_id']);

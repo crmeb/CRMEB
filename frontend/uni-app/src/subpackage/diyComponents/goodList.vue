@@ -1243,9 +1243,12 @@ function productslist() {
   let limit = LIMIT;
   let data = {};
   if (typeConfig.value == 1) {
-    const goodsList = props.dataConfig.goodsList.list || [];
-    const ids = goodsList
-      .map((item) => item.id)
+    // 指定商品：保存后的配置只保留 goodsList.ids（ID 数组），goodsList.list 仅预览/旧数据存在，两者兼容
+    const selectGoods = props.dataConfig.goodsList || {};
+    const ids = (selectGoods.ids && selectGoods.ids.length
+      ? selectGoods.ids
+      : (selectGoods.list || []).map((item) => item.id)
+    )
       .filter(Boolean)
       .join(",");
     if (ids) {
