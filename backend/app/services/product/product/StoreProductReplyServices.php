@@ -51,6 +51,8 @@ class StoreProductReplyServices extends BaseService
         $storeProductReplyCenterProductServices = app()->make(StoreProductReplyCenterProductServices::class);
         $data = $storeProductReplyCenterProductServices->getProductReplyList($where);
         foreach ($data['list'] as &$item) {
+            $item['avatar'] = set_file_url($item['avatar'] ?? '');
+            $item['image'] = set_file_url($item['image'] ?? '');
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
             $item['time'] = time_tran(strtotime($item['add_time']));
             $item['create_time'] = $item['add_time'];
