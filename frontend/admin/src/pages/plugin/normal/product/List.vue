@@ -700,6 +700,7 @@ function batchGoodsSetting(tit, type) {
     .then((res) => {
       ElMessage.success(res.msg);
       getDataList();
+      goodHeade();
     })
     .catch((res) => {
       ElMessage.error(res.msg);
@@ -800,6 +801,7 @@ function onShelves() {
       .then((res) => {
         ElMessage.success(res.msg);
         getDataList();
+        goodHeade();
       })
       .catch((res) => {
         ElMessage.error(res.msg);
@@ -819,6 +821,7 @@ function onDismount() {
         ElMessage.success(res.msg);
         artFrom.value.page = 1;
         getDataList();
+        goodHeade();
       })
       .catch((res) => {
         ElMessage.error(res.msg);
@@ -885,6 +888,7 @@ function changeSwitch(row) {
     .then((res) => {
       ElMessage.success(res.msg);
       getDataList();
+      goodHeade();
     })
     .catch((res) => {
       row.is_show = !row.is_show ? 1 : 0;
@@ -908,6 +912,7 @@ function del(row, tit, num) {
       ElMessage.success(res.msg);
       tableList.value.splice(num, 1);
       getDataList();
+      goodHeade();
     })
     .catch((res) => {
       ElMessage.error(res.msg);
@@ -925,6 +930,7 @@ function fullDel(row, tit, num) {
       ElMessage.success(res.msg);
       tableList.value.splice(num, 1);
       getDataList();
+      goodHeade();
     })
     .catch((res) => {
       ElMessage.error(res.msg);
