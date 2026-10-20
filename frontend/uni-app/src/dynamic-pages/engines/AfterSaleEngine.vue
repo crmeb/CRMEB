@@ -1669,6 +1669,7 @@ defineExpose({
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 10;
   display: flex;
   padding: 16rpx 20rpx calc(16rpx + env(safe-area-inset-bottom));
   background: #fff;
