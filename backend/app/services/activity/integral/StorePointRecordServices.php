@@ -54,9 +54,20 @@ class StorePointRecordServices extends BaseService
         $typeNames = $status + [
             'gain' => '下单赠送积分',
             'product_gain' => '购买商品赠送积分',
+            'deduction' => '积分抵扣',
+            'product_deduction' => '积分抵扣',
+            'lottery_use' => '参与抽奖使用积分',
+            'lottery_add' => '抽奖中奖赠送积分',
+            'register_system_add' => '注册送积分',
+            'storeIntegral_use' => '积分兑换商品',
             'order_deduction' => '退款返还下单赠送积分',
             'integral_refund' => '退款返还下单赠送积分',
             'pay_product_integral_back' => '返还下单使用积分',
+        ];
+        // link_id 存中台订单号、需要按订单号回查的类型
+        $orderNoLinkTypes = [
+            'deduction',
+            'product_deduction',
         ];
         // link_id 存中台订单主键、可回查订单号的类型
         $orderLinkTypes = [
@@ -66,8 +77,6 @@ class StorePointRecordServices extends BaseService
             'pay_give_integral',
             'order_gain_refund',
             'product_gain_refund',
-            'deduction',
-            'product_deduction',
             'order_deduction',
             'integral_refund',
             'pay_product_integral_back',
@@ -88,7 +97,9 @@ class StorePointRecordServices extends BaseService
         $integralOrderServices = app()->make(StoreIntegralOrderServices::class);
         foreach ($list as &$item) {
             $item['nickname'] = $nicknameArr[$item['uid']] ?? '未知用户';
-            if (in_array($item['type'], $orderLinkTypes)) {
+            if (in_array($item['type'], $orderNoLinkTypes)) {
+                $item['relation'] = $orderServices->value(['order_no' => (string)$item['link_id']], 'order_no');
+            } elseif (in_array($item['type'], $orderLinkTypes)) {
                 $item['relation'] = $orderServices->value(['id' => $item['link_id']], 'order_no');
             } elseif (in_array($item['type'], $integralOrderTypes)) {
                 $item['relation'] = $integralOrderServices->value(['id' => $item['link_id']], 'order_id');
