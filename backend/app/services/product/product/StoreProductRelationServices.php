@@ -84,12 +84,14 @@ class StoreProductRelationServices extends BaseService
         $list = $this->dao->getList($where, 'product_id,category', $page, $limit);
         foreach ($list as $k => $product) {
             if ($product['product'] && isset($product['product']['id'])) {
+                // 中台商品表 eb_product_center 无 store_name/ot_price 列，名称/划线价字段为 name/original_price，
+                // 此处映射为移动端收藏列表的旧字段契约（CenterProductServices 同款映射）
                 $list[$k]['pid'] = $product['product']['id'] ?? 0;
-                $list[$k]['store_name'] = $product['product']['store_name'] ?? 0;
+                $list[$k]['store_name'] = $product['product']['name'] ?? '';
                 $list[$k]['price'] = $product['product']['price'] ?? 0;
-                $list[$k]['ot_price'] = $product['product']['ot_price'] ?? 0;
+                $list[$k]['ot_price'] = $product['product']['original_price'] ?? 0;
                 $list[$k]['sales'] = $product['product']['sales'] ?? 0;
-                $list[$k]['image'] = get_thumb_water($product['product']['image'] ?? 0);
+                $list[$k]['image'] = get_thumb_water($product['product']['image'] ?? '');
                 $list[$k]['is_del'] = $product['product']['is_del'] ?? 0;
                 $list[$k]['is_show'] = $product['product']['is_show'] ?? 0;
                 $list[$k]['is_fail'] = $product['product']['is_del'] && $product['product']['is_show'];
