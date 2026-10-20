@@ -244,7 +244,7 @@ export const getDefaultConfig = (num) => ({
   titleLeft: '展示设置',
   titleRight: '列表样式',
   titleArticle: '文章设置',
-  titleList: '列表设置',
+  titleList: '商品列表',
   titleCurrency: '通用样式',
   zIndexConfig: {
     title: '组件上浮',
