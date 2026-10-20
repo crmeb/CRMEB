@@ -98,8 +98,8 @@
             :max="9999999999"
             class="columnsBox input_width input-number-unit-class"
             class-unit="元"
-            :value="manyVipPrice"
-            @input="(val) => emit('update:manyVipPrice', val)"
+            :model-value="manyVipPrice"
+            @update:model-value="(val) => emit('update:manyVipPrice', val)"
             @focus="emit('update:manyVipDiscount', undefined)"
           ></el-input-number>
         </span>
@@ -111,8 +111,8 @@
             :max="9999999999"
             class="columnsBox input_width input-number-unit-class"
             class-unit="%"
-            :value="manyVipDiscount"
-            @input="(val) => emit('update:manyVipDiscount', val)"
+            :model-value="manyVipDiscount"
+            @update:model-value="(val) => emit('update:manyVipDiscount', val)"
             @focus="emit('update:manyVipPrice', undefined)"
           ></el-input-number>
         </span>
@@ -167,16 +167,14 @@
               <template v-else-if="item.slot === 'vip_price'">
                 <el-input-number
                   :controls="false"
-                  :value="manyFormValidate[scope.$index + 1].vip_price"
+                  :model-value="manyFormValidate[scope.$index + 1].vip_price"
                   :min="0"
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
                   class-unit="元"
-                  @input="
+                  @update:model-value="
                     (val) => {
-                      const newData = [...manyFormValidate];
-                      newData[scope.$index + 1].vip_price = val;
-                      emit('update:manyFormValidate', newData);
+                      updateManyFormValue(scope.$index + 1, 'vip_price', val);
                     }
                   "
                   @change="changeVipPrice(scope.$index + 1)"
@@ -185,16 +183,14 @@
               <template v-else-if="item.slot === 'vip_proportion'">
                 <el-input-number
                   :controls="false"
-                  :value="manyFormValidate[scope.$index + 1].vip_proportion"
+                  :model-value="manyFormValidate[scope.$index + 1].vip_proportion"
                   :min="0"
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
                   class-unit="%"
-                  @input="
+                  @update:model-value="
                     (val) => {
-                      const newData = [...manyFormValidate];
-                      newData[scope.$index + 1].vip_proportion = val;
-                      emit('update:manyFormValidate', newData);
+                      updateManyFormValue(scope.$index + 1, 'vip_proportion', val);
                     }
                   "
                   @change="changeDiscount(scope.$index + 1)"
@@ -264,6 +260,12 @@ function changeVipPrice(index, type) {
 }
 function changeDiscount(index, type) {
   emit('changeDiscount', index, type);
+}
+function updateManyFormValue(index, key, value) {
+  const newData = props.manyFormValidate.map((item, itemIndex) =>
+    itemIndex === index ? { ...item, [key]: value } : item,
+  );
+  emit('update:manyFormValidate', newData);
 }
 function brokerageSetUp() {
   emit('brokerageSetUp');

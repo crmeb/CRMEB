@@ -102,7 +102,7 @@
           v-show="currentTab === '5'"
           :formValidate="formValidate"
           :oneFormValidate="oneFormValidate"
-          :manyFormValidate="manyFormValidate"
+          v-model:manyFormValidate="manyFormValidate"
           :columnsInstall="columnsInstall"
           :columnsInstal2="columnsInstal2"
           v-model:manyVipPrice="manyVipPrice"
