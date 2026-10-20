@@ -1027,7 +1027,10 @@ function handleUserClick(item) {
     if (item.propValue.linkType === "url") {
       uni.navigateTo({
         url: item.propValue.link,
-      });
+        fail: () => {
+          uni.switchTab({ url: item.propValue.link });
+        },
+      })
     }
   } else if (!isLogin.value) {
     emit("changeLogin"); // Trigger login modal via parent
