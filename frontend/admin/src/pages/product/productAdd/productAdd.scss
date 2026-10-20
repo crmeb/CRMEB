@@ -481,7 +481,9 @@
   cursor: pointer;
 }
 
+/* el-form-item__content 在 Element Plus 下是 flex 容器，占满一行才能与开关、按钮区纵向堆叠 */
 .addCustom_content {
+  width: 100%;
   margin-top: 20px;
 
   .custom_box {
@@ -490,7 +492,7 @@
 }
 
 .addCustomBox {
-  margin-top: 12px;
+  width: 100%;
   font-size: 13px;
   font-weight: 400;
   color: var(--prev-color-primary);

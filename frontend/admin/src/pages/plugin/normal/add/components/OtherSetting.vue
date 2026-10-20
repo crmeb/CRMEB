@@ -107,10 +107,15 @@
     </el-col>
     <el-col :span="24">
       <el-form-item label="自定义表单：">
-        <el-switch :active-value="1" :inactive-value="0" v-model="innerCustomBtn" size="large">
-          <template #open><span>开启</span></template>
-          <template #close><span>关闭</span></template>
-        </el-switch>
+        <el-switch
+          v-model="innerCustomBtn"
+          class="defineSwitch"
+          active-text="开启"
+          inactive-text="关闭"
+          :active-value="1"
+          :inactive-value="0"
+          size="large"
+        />
         <div class="addCustom_content" v-if="customBtn">
           <div v-for="(item, index) in formValidate.custom_form" :key="index" class="custom_box">
             <el-input
