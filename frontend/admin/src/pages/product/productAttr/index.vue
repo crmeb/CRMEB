@@ -161,7 +161,7 @@ function handleSelectRow(selection) {
       ids.push(item.id);
     }
   }
-  selectedIds.value = ids;
+  selectedIds.value = new Set(ids);
   multipleSelection.value = uniqueArr;
   nextTick((e) => {
     setChecked();
