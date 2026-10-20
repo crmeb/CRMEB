@@ -52,35 +52,39 @@
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="推广二维码：">
-            <el-checkbox v-model="formItem.code" :true-label="1" :false-label="0">选择系统链接</el-checkbox>
-            <div v-if="formItem.code" class="link">
-              <div class="select-link">
-                链接：{{ formItem.code_url }}
-                <el-button
-                  v-if="hasPermission('admin-printer-content')"
-                  v-auth="['admin-printer-content']"
-                  link
-                  type="primary"
-                  v-db-click
-                  :disabled="!loaded || submitLoading"
-                  @click="getLink"
-                >
-                  {{ formItem.code_url ? '修改' : '选择' }}
-                </el-button>
+            <div class="form-item-content">
+              <el-checkbox v-model="formItem.code" :true-label="1" :false-label="0">选择系统链接</el-checkbox>
+              <div v-if="formItem.code" class="link">
+                <div class="select-link">
+                  链接：{{ formItem.code_url }}
+                  <el-button
+                    v-if="hasPermission('admin-printer-content')"
+                    v-auth="['admin-printer-content']"
+                    link
+                    type="primary"
+                    v-db-click
+                    :disabled="!loaded || submitLoading"
+                    @click="getLink"
+                  >
+                    {{ formItem.code_url ? '修改' : '选择' }}
+                  </el-button>
+                </div>
               </div>
             </div>
           </el-form-item>
           <el-form-item label="底部公告：">
-            <el-checkbox v-model="formItem.show_notice" :true-label="1" :false-label="0">底部公告</el-checkbox>
-            <div v-if="formItem.show_notice" class="notice-field">
-              <el-input
-                v-model="formItem.notice_content"
-                maxlength="80"
-                show-word-limit
-                type="textarea"
-                placeholder="请输入公告内容"
-                class="notice-input"
-              />
+            <div class="form-item-content">
+              <el-checkbox v-model="formItem.show_notice" :true-label="1" :false-label="0">底部公告</el-checkbox>
+              <div v-if="formItem.show_notice" class="notice-field">
+                <el-input
+                  v-model="formItem.notice_content"
+                  maxlength="80"
+                  show-word-limit
+                  type="textarea"
+                  placeholder="请输入公告内容"
+                  class="notice-input"
+                />
+              </div>
             </div>
           </el-form-item>
         </el-form>
@@ -203,20 +207,19 @@
           </div>
         </div>
       </div>
-    </el-card>
-    <el-card :bordered="false" shadow="never" class="fixed-card" :class="{ collapsed: menuCollapse, mobile: isMobile }">
-      <el-button
-        v-if="hasPermission('admin-printer-content')"
-        v-auth="['admin-printer-content']"
-        type="primary"
-        class="submission"
-        v-db-click
-        :loading="submitLoading"
-        :disabled="loading || !loaded"
-        @click="save"
-      >
-        保存
-      </el-button>
+      <div class="content-actions">
+        <el-button
+          v-if="hasPermission('admin-printer-content')"
+          v-auth="['admin-printer-content']"
+          type="primary"
+          v-db-click
+          :loading="submitLoading"
+          :disabled="loading || !loaded"
+          @click="save"
+        >
+          保存
+        </el-button>
+      </div>
     </el-card>
     <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
   </div>
@@ -229,7 +232,6 @@ import { ElMessage } from 'element-plus';
 import { printerChannelContentApi, printerChannelSaveContentApi } from '@/api/driver/printer';
 import linkaddress from '@/components/linkaddress';
 import QRCode from '@/vendor/qrcodejs2';
-import { useLayoutStore } from '@/store/module/layout';
 import { useMediaStore } from '@/store/module/media';
 import { usePrinterAuth } from './usePrinterAuth';
 
@@ -238,8 +240,6 @@ defineOptions({ name: 'PrinterContent' });
 const route = useRoute();
 const { hasPermission } = usePrinterAuth();
 
-// 原 mapState('admin/layout') 模块不存在；按语义映射到现有 layout/media store
-const layoutStore = useLayoutStore();
 const mediaStore = useMediaStore();
 
 const pageHeader = ref(null);
@@ -267,7 +267,6 @@ const formItem = ref({
 const id = route.query.id;
 
 const isMobile = computed(() => mediaStore.isMobile);
-const menuCollapse = computed(() => layoutStore.menuCollapse);
 const labelWidth = computed(() => (isMobile.value ? undefined : 120));
 const labelPosition = computed(() => (isMobile.value ? 'top' : 'right'));
 
@@ -369,48 +368,41 @@ function drawCode(url) {
 :deep(.el-checkbox__input) {
   margin-right: 6px;
 }
-:deep(.el-checkbox__input) {
-  width: 12px;
-  height: 12px;
-  font-size: 12px;
+:deep(.el-checkbox__inner) {
+  width: 14px;
+  height: 14px;
+  box-sizing: border-box;
 }
 .warpper {
   max-width: 1200px;
   gap: 30px;
 }
-.printer-content-page {
-  padding-bottom: 80px;
-}
 .content-form {
   flex: 1;
   min-width: 0;
+}
+.form-item-content {
+  width: 100%;
+}
+.content-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 .notice-field {
   width: 100%;
   max-width: 500px;
   min-width: 0;
+  margin-top: 10px;
 }
 .notice-input {
   width: 100%;
-}
-.fixed-card {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 180px !important;
-  z-index: 45;
-  box-shadow: 0 -1px 2px var(--prev-border-color-light);
-  &.collapsed {
-    left: 64px !important;
-  }
-  &.mobile {
-    left: 0 !important;
-  }
 }
 .link {
   background: var(--prev-bg-color);
   border-radius: 4px;
   padding: 15px;
+  margin-top: 10px;
 }
 .select-link {
   font-size: 12px;
