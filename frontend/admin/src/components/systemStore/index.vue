@@ -34,7 +34,7 @@
             <el-col :span="24">
               <el-col v-bind="grid">
                 <el-form-item label="门店电话：" label-for="phone" prop="phone">
-                  <el-input v-model="formItem.phone" placeholder="请输入门店电话：" />
+                  <el-input v-model="formItem.phone" placeholder="请输入门店电话" />
                 </el-form-item>
               </el-col>
             </el-col>

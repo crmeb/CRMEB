@@ -85,7 +85,7 @@
               @visible-change="moveImg"
             ></el-cascader>
           </div>
-          <div>
+          <div class="acea-row row-middle">
             <el-input
               class="mr10"
               v-model="fileData.real_name"

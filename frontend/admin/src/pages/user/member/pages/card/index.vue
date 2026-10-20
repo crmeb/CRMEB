@@ -55,7 +55,7 @@
         </el-table-column>
         <el-table-column label="备注" min-width="120">
           <template #default="scope"
-            ><span>{{ scope.row.remark }}</span></template
+            ><span>{{ scope.row.remark || '--' }}</span></template
           >
         </el-table-column>
         <el-table-column label="制卡时间" min-width="100">

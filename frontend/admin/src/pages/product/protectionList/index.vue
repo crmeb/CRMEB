@@ -54,6 +54,7 @@
             <div class="tabBox_img" v-viewer v-if="scope.row.image">
               <img v-lazy="scope.row.image" />
             </div>
+            <span v-else>--</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" prop="status" min-width="120">

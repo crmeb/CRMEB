@@ -127,7 +127,7 @@
         </el-table-column>
         <el-table-column label="回复内容" min-width="130">
           <template #default="scope">
-            <span>{{ scope.row.merchant_reply_content }}</span>
+            <span>{{ scope.row.merchant_reply_content || '--' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="审核状态" min-width="80">

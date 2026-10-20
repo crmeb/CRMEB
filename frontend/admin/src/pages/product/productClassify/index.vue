@@ -56,6 +56,7 @@
             <div class="tabBox_img" v-viewer v-if="row.pic">
               <img v-lazy="row.pic" />
             </div>
+            <span v-else>--</span>
           </template>
         </vxe-table-column>
         <vxe-table-column field="sort" title="排序" min-width="100" tooltip="true"></vxe-table-column>
