@@ -17,13 +17,13 @@
         class="info-value"
         :class="isDiscount(item.value) ? 'discount' : ''"
       >
-        {{ isDiscount(item.value) ? '' : '¥' }}{{ item.value }}
+        {{ formatMoney(item.value) }}
       </text>
     </view>
     <!-- 实付款 -->
     <view class="actualPay acea-row row-right">
       {{ $t('实付款') }}：
-      <text class="money font-color">¥{{ payPrice || '0.00' }}</text>
+      <text class="money font-color">{{ formatMoney(payPrice) }}</text>
     </view>
   </view>
 </template>
@@ -32,7 +32,7 @@
 /**
  * 价格明细卡片组件
  * 展示多行金额明细和实付款总额
- * 折扣类金额（以"-"开头）显示为折扣样式，不带¥符号
+ * 正负号统一显示在货币符号前面，例如 +¥2.70、-¥1.00
  * 通过 componentKey='price_detail' 匹配 section.component
  */
 export default {
@@ -67,6 +67,18 @@ const payPrice = computed(() => ctx.value.payPrice || '0.00');
 function isDiscount(val) {
   if (val === null || val === undefined) return false;
   return String(val).indexOf('-') === 0;
+}
+
+/**
+ * 统一金额显示格式，避免出现 ¥+2.70 这类符号顺序错误
+ * @param {string|number} val 金额值
+ * @return {string} 带货币符号的金额
+ */
+function formatMoney(val) {
+  const text = String(val === null || val === undefined || val === '' ? '0.00' : val);
+  const sign = text[0] === '+' || text[0] === '-' ? text[0] : '';
+  const amount = sign ? text.slice(1) : text;
+  return `${sign}¥${amount}`;
 }
 </script>
 
