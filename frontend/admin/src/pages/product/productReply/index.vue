@@ -142,17 +142,19 @@
             <span>{{ scope.row.add_time }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="170">
+        <el-table-column label="操作" fixed="right" width="220">
           <template #default="scope">
-            <template v-if="scope.row.status == 0">
-              <a v-db-click @click="adopt(scope.row, '审核通过', 1)">通过</a>
-              <el-divider direction="vertical"></el-divider>
-              <a v-db-click @click="adopt(scope.row, '拒绝', 2)">驳回</a>
-              <el-divider direction="vertical"></el-divider>
-            </template>
-            <a v-if="scope.row.status != 2" v-db-click @click="reply(scope.row)">回复</a>
-            <el-divider v-if="scope.row.status != 2" direction="vertical"></el-divider>
-            <a v-db-click @click="del(scope.row, '删除评论', scope.$index)">删除</a>
+            <div class="reply-actions">
+              <template v-if="scope.row.status == 0">
+                <a v-db-click @click="adopt(scope.row, '审核通过', 1)">通过</a>
+                <el-divider direction="vertical"></el-divider>
+                <a v-db-click @click="adopt(scope.row, '拒绝', 2)">驳回</a>
+                <el-divider direction="vertical"></el-divider>
+              </template>
+              <a v-if="scope.row.status != 2" v-db-click @click="reply(scope.row)">回复</a>
+              <el-divider v-if="scope.row.status != 2" direction="vertical"></el-divider>
+              <a v-db-click @click="del(scope.row, '删除评论', scope.$index)">删除</a>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -625,5 +627,8 @@ function removePicture(att_id) {
     height: 50px !important;
     margin-right: 10px;
   }
+}
+.reply-actions {
+  white-space: nowrap;
 }
 </style>

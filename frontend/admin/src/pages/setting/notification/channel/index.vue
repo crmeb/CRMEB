@@ -57,9 +57,11 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">配置</a>
-            <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="test(scope.row)">测试</a>
+            <div class="channel-actions">
+              <a v-db-click @click="edit(scope.row)">配置</a>
+              <el-divider direction="vertical"></el-divider>
+              <a v-db-click @click="test(scope.row)">测试</a>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -198,4 +200,10 @@ function test(row) {
 getList();
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.channel-actions {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+</style>
