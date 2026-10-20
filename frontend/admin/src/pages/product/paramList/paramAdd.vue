@@ -4,6 +4,7 @@
       v-loading="spinShow"
       ref="formDynamicRef"
       :model="formDynamic"
+      :rules="rules"
       class="attrFrom"
       label-position="right"
       label-width="auto"
@@ -12,14 +13,14 @@
       <el-row :gutter="24">
         <el-col :span="24">
           <el-col :span="8">
-            <el-form-item label="模板名称：" prop="rule_name">
+            <el-form-item label="模板名称：" prop="name">
               <el-input placeholder="请输入模板名称" :maxlength="20" v-model.trim="formDynamic.name" />
             </el-form-item>
           </el-col>
         </el-col>
         <el-col :span="24">
           <el-col :span="8">
-            <el-form-item label="排序：" prop="rule_name">
+            <el-form-item label="排序：" prop="sort">
               <el-input type="number" placeholder="请输入排序" :maxlength="20" v-model.trim="formDynamic.sort" />
             </el-form-item>
           </el-col>
@@ -102,6 +103,9 @@ const grid = {
 };
 const modal = ref(false);
 const index = ref(1);
+const rules = {
+  name: [{ required: true, message: '请输入模板名称', trigger: 'blur' }],
+};
 const formDynamic = ref({
   id: 0,
   name: '',

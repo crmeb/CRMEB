@@ -105,7 +105,7 @@ class StoreProductParamController extends AuthController
             ['sort', 0],
             ['status', 1]
         ]);
-        if (!$data['name']) return app('json')->fail('请输入参数名称');
+        if (!$data['name']) return app('json')->fail('请输入模板名称');
         if (!count($data['value'])) return app('json')->fail('请输入参数值');
         $this->services->saveParamData($id, $data);
         return app('json')->success('保存成功');
