@@ -66,7 +66,7 @@
             您的浏览器不支持 video 标签。
           </video>
           <div class="mark"></div>
-          <i class="el-icon-delete iconv" v-db-click @click="delVideo"></i>
+          <i class="el-icon-delete iconv" v-db-click @click.stop="delVideo"></i>
         </div>
         <el-progress class="progress" :percentage="progress" :stroke-width="5" v-if="upload.videoIng" />
         <div class="tip">建议时长：9～30秒，视频宽高比16:9</div>

@@ -151,15 +151,16 @@
 }
 .box-video-style .iconv {
   color: #fff;
-  line-height: 180px;
-  width: 50px;
-  height: 50px;
-  display: inherit;
-  font-size: 26px;
+  line-height: 20px;
+  width: 20px;
+  height: 20px;
+  display: block;
+  font-size: 18px;
   position: absolute;
-  top: -74px;
-  left: 50%;
-  margin-left: -25px;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+  text-align: center;
   cursor: pointer;
 }
 .box-video-style .mark {
