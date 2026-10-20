@@ -171,6 +171,40 @@
         </div></template
       >
     </el-dialog>
+    <!-- 审核弹窗 -->
+    <el-dialog
+      v-model="auditModal"
+      :title="auditForm.result === 'pass' ? '审核通过' : '审核拒绝'"
+      width="500px"
+      :close-on-click-modal="false"
+      @close="resetAuditForm"
+    >
+      <el-form :model="auditForm" label-width="100px">
+        <el-form-item label="审核结果">
+          <el-radio-group v-model="auditForm.result">
+            <el-radio label="pass" value="pass">审核通过</el-radio>
+            <el-radio label="reject" value="reject">审核拒绝</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="拒绝原因" v-if="auditForm.result === 'reject'" required>
+          <el-input type="textarea" v-model="auditForm.reject_reason" :rows="3" placeholder="请填写拒绝原因"></el-input>
+        </el-form-item>
+        <el-form-item label="审核备注">
+          <el-input
+            type="textarea"
+            v-model="auditForm.audit_remark"
+            :rows="3"
+            placeholder="审核备注（选填）"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer
+        ><div>
+          <el-button @click="auditModal = false">取消</el-button>
+          <el-button type="primary" v-db-click @click="submitAudit">确定</el-button>
+        </div></template
+      >
+    </el-dialog>
   </div>
 </template>
 
@@ -178,7 +212,7 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { afterSaleList, remarkAfterSale } from '@/api/afterSale';
+import { afterSaleList, auditAfterSale, remarkAfterSale } from '@/api/afterSale';
 import { orderCenterFilterOptions } from '@/api/orderCenter';
 import setting from '@/setting';
 
@@ -205,6 +239,9 @@ const loading = ref(false);
 const statusTab = ref('');
 const remarkModal = ref(false);
 const remarkForm = ref({ id: 0, remark: '' });
+const auditModal = ref(false);
+const auditId = ref(0);
+const auditForm = ref({ result: 'pass', reject_reason: '', audit_remark: '' });
 // 售后状态选项（与后端 STATUS_TEXT_MAP 对齐）
 const statusOptions = [
   { key: 'pending_audit', label: '待审核' },
@@ -335,13 +372,39 @@ function viewDetail(row) {
 }
 
 /**
- * 跳转详情页并定位审核区块
+ * 打开审核弹窗
  */
 function goAudit(row) {
-  router.push({
-    path: routePre + '/order/afterSale/detail/' + row.id,
-    query: { action: 'audit' },
-  });
+  auditId.value = row.id;
+  auditForm.value = { result: 'pass', reject_reason: '', audit_remark: '' };
+  auditModal.value = true;
+}
+
+/**
+ * 重置审核表单
+ */
+function resetAuditForm() {
+  auditId.value = 0;
+  auditForm.value = { result: 'pass', reject_reason: '', audit_remark: '' };
+}
+
+/**
+ * 提交审核
+ */
+function submitAudit() {
+  if (auditForm.value.result === 'reject' && !auditForm.value.reject_reason) {
+    ElMessage.warning('请填写拒绝原因');
+    return;
+  }
+  auditAfterSale(auditId.value, auditForm.value)
+    .then((res) => {
+      ElMessage.success(res.msg);
+      auditModal.value = false;
+      getList();
+    })
+    .catch((res) => {
+      ElMessage.error(res.msg);
+    });
 }
 
 /**
