@@ -53,7 +53,7 @@ import { resolveSectionComponent, InfoListComponent } from '../components/order/
 import SectionDispatcher from '../components/order/detail/SectionDispatcher.vue';
 // #endif
 import actionMap from '../api/action-map.js';
-import { getCenterOrderDetail } from '@/api/order-center.js';
+import { getCenterOrderDetail, takeOrder } from '@/api/order-center.js';
 import routes from '../api/routes.js';
 import { useColorTheme } from '@/composables/useColorTheme';
 import i18n from '@/utils/lang.js';
@@ -71,6 +71,7 @@ const { colorStyle } = useColorTheme();
 // 声明式渲染配置（res.data.page_config），v8.1 只返回 page_config
 const pageConfig = ref({ sections: [], extensions: {} });
 const loading = ref(true);
+const confirmingReceive = ref(false);
 
 // ---------- computed ----------
 /**
@@ -203,7 +204,26 @@ function onButtonAction(payload) {
     var orderNo = ((sectionPropsMap.value['order_info'] && sectionPropsMap.value['order_info'].fields)
       && sectionPropsMap.value['order_info'].fields.order_no)
       || (payload.params && payload.params.order_no) || '';
-    handler(Object.assign({}, sectionPropsMap.value, { order_no: orderNo }), payload.params || {});
+    var context = payload.action === 'confirmReceive' ? { onConfirm: confirmReceive } : undefined;
+    handler(Object.assign({}, sectionPropsMap.value, { order_no: orderNo }), payload.params || {}, context);
+  }
+}
+
+/**
+ * 详情页确认收货
+ * @param {object} payload {order_no}
+ */
+async function confirmReceive(payload) {
+  if (confirmingReceive.value) return;
+  confirmingReceive.value = true;
+  try {
+    await takeOrder(payload.order_no);
+    uni.showToast({ title: i18n.t('收货成功'), icon: 'success' });
+    await loadDetail();
+  } catch (e) {
+    uni.showToast({ title: e?.msg || i18n.t('收货失败'), icon: 'none' });
+  } finally {
+    confirmingReceive.value = false;
   }
 }
 /**

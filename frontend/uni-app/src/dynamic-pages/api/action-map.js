@@ -60,13 +60,17 @@ export default {
     });
   },
   /** 确认收货 */
-  confirmReceive(order, params) {
+  confirmReceive(order, params, context) {
     const orderNo = params.order_no || order.order_no || '';
     uni.showModal({
       title: i18n.t(`提示`),
       content: i18n.t(`确定已收到商品吗？`),
       success: (res) => {
         if (res.confirm) {
+          if (context && typeof context.onConfirm === 'function') {
+            context.onConfirm({ order_no: orderNo });
+            return;
+          }
           uni.$emit('order:confirm', { order_no: orderNo });
         }
       },
