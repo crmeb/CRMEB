@@ -1387,6 +1387,13 @@ function generateAttr(data, val) {
     manyFormValidate.value = [...oneFormBatch.value, ...rows];
   }
 }
+
+function normalizeNumber(value, fallback = null) {
+  if (value === '' || value === undefined || value === null) return fallback;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
 // 生成属性批次
 function generateAttrBatch(data, combinations, val) {
   const existingItems = manyFormValidate.value.slice(1); // 排除第一项默认数据
@@ -1405,8 +1412,8 @@ function generateAttrBatch(data, combinations, val) {
       is_show: 1,
       is_default_select: 0,
       unique: '',
-      weight: '',
-      volume: '',
+      weight: null,
+      volume: null,
       brokerage: 0,
       brokerage_two: 0,
       vip_price: 0,
@@ -1426,22 +1433,21 @@ function generateAttrBatch(data, combinations, val) {
 
       if (matchedItem) {
         Object.assign(row, {
-          price: matchedItem.price,
-          cost: matchedItem.cost,
-          original_price: matchedItem.original_price,
-          stock: matchedItem.stock,
+          price: normalizeNumber(matchedItem.price, 0),
+          cost: normalizeNumber(matchedItem.cost, 0),
+          original_price: normalizeNumber(matchedItem.original_price, 0),
+          stock: normalizeNumber(matchedItem.stock, 0),
           pic: matchedItem.pic,
           unique: matchedItem.unique || '',
-          weight: matchedItem.weight || '',
-          volume: matchedItem.volume || '',
+          weight: normalizeNumber(matchedItem.weight),
+          volume: normalizeNumber(matchedItem.volume),
           is_show: matchedItem.is_show || 1,
           is_default_select: matchedItem.is_default_select || 0,
-          volume: matchedItem.volume || 0,
           bar_code_number: matchedItem.bar_code_number || 0,
-          brokerage: matchedItem.brokerage,
-          brokerage_two: matchedItem.brokerage_two,
-          vip_price: matchedItem.vip_price,
-          vip_proportion: matchedItem.vip_proportion,
+          brokerage: normalizeNumber(matchedItem.brokerage, 0),
+          brokerage_two: normalizeNumber(matchedItem.brokerage_two, 0),
+          vip_price: normalizeNumber(matchedItem.vip_price),
+          vip_proportion: normalizeNumber(matchedItem.vip_proportion),
         });
       } else if (item.add_pic && combination.includes(val)) {
         const picItem = item.detail.find((e) => combination.includes(e.value));
