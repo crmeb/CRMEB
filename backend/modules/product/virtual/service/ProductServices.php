@@ -45,32 +45,54 @@ class ProductServices
      */
     public function getList(array $params): array
     {
-        $where = [
-            ['product_type', '=', 'virtual'],
+        $searchWhere = [
+            'product_type' => 'virtual',
+            'store_name'   => $params['store_name'] ?? '',
+            'cate_id'      => $params['cate_id'] ?? '',
+            'price_s'      => [
+                $params['price_min'] ?? '',
+                $params['price_max'] ?? '',
+            ],
+            'stock_s'      => [
+                $params['stock_min'] ?? '',
+                $params['stock_max'] ?? '',
+            ],
+            'time'         => $this->parseTimeRange($params['time'] ?? ''),
         ];
         $isDel = (int) ($params['is_del'] ?? 0);
-        if ($isDel === 0) {
-            $where[] = ['is_del', '=', 0];
-        } elseif ($isDel === 1) {
-            $where[] = ['is_del', '=', 1];
-        }
-        if (!empty($params['store_name'])) {
-            $where[] = ['name', 'like', '%' . $params['store_name'] . '%'];
-        }
-        if ($params['status'] !== '') {
-            $where[] = ['is_show', '=', (int) $params['status']];
+        $searchWhere['is_del'] = $isDel;
+        if (($params['status'] ?? '') !== '') {
+            $searchWhere['is_show'] = (int) $params['status'];
         }
         $page = max(1, (int) ($params['page'] ?? 1));
         $limit = max(1, (int) ($params['limit'] ?? 20));
-        $total = $this->centerDao->count($where);
-        $list = $this->centerDao->selectList(
-            $where,
-            'id,name as store_name,image,price,stock,sales,is_show,sort_order,add_time',
+        $total = $this->centerDao->getCount($searchWhere);
+        $list = $this->centerDao->getSearchList(
+            $searchWhere,
             $page,
             $limit,
-            'sort_order DESC, id DESC'
+            ['id', 'name as store_name', 'image', 'price', 'stock', 'sales', 'is_show', 'sort_order', 'add_time']
         );
         return compact('total', 'list');
+    }
+
+    /**
+     * 将前端日期范围转换为中台商品搜索器支持的时间戳数组。
+     * @param array|string $value
+     * @return array|string
+     */
+    protected function parseTimeRange(array|string $value): array|string
+    {
+        if (is_array($value) || $value === '') {
+            return $value;
+        }
+        $range = array_map('trim', explode(',', $value));
+        if (count($range) !== 2) {
+            return $value;
+        }
+        $start = strtotime($range[0] . ' 00:00:00');
+        $end = strtotime($range[1] . ' 23:59:59');
+        return [$start ?: 0, $end ?: 0];
     }
 
     /**

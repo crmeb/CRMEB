@@ -30,8 +30,14 @@ class ProductController extends AuthController
             ['page', 1],
             ['limit', 20],
             ['store_name', ''],
+            ['cate_id', ''],
             ['status', ''],
             ['is_del', 0],
+            ['price_min', ''],
+            ['price_max', ''],
+            ['stock_min', ''],
+            ['stock_max', ''],
+            ['time', ''],
         ]);
         $result = $service->getList($params);
         return app('json')->success($result);
