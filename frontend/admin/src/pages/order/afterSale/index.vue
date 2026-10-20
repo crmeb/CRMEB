@@ -88,66 +88,68 @@
         <el-tab-pane label="全部" name=""></el-tab-pane>
         <el-tab-pane v-for="item in statusOptions" :key="item.key" :label="item.label" :name="item.key"></el-tab-pane>
       </el-tabs>
-      <el-table :data="list" ref="table" v-loading="loading" empty-text="暂无数据" class="afterSaleData">
-        <el-table-column label="售后单号" min-width="180">
-          <template #default="scope">
-            <span>{{ scope.row.after_sale_no }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="订单号" min-width="160">
-          <template #default="scope">
-            <span>{{ scope.row.order_no }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="售后类型" width="110">
-          <template #default="scope">
-            <el-tag :type="getTypeClass(scope.row.type)" effect="plain">{{
-              scope.row.type_text || scope.row.type
-            }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="售后状态" width="110">
-          <template #default="scope">
-            <el-tag :type="getStatusClass(scope.row.status)">{{ scope.row.status_text || scope.row.status }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="产品类型" width="110">
-          <template #default="scope">
-            <span>{{ getProductTypeLabel(scope.row.product_type) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="退款金额" min-width="120">
-          <template #default="scope">
-            <span class="price">¥{{ scope.row.refund_price || '0.00' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="申请时间" min-width="160">
-          <template #default="scope">
-            <span>{{ scope.row.add_time ? formatDate(scope.row.add_time) : '--' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" fixed="right" width="140">
-          <template #default="scope">
-            <a v-db-click @click="viewDetail(scope.row)">详情</a>
-            <template v-if="scope.row.status === 'pending_audit'">
-              <el-divider direction="vertical" />
-              <a v-db-click @click="goAudit(scope.row)" v-auth="['admin-order-afterSale-audit']">审核</a>
+      <div class="table-content">
+        <el-table :data="list" ref="table" v-loading="loading" empty-text="暂无数据" class="afterSaleData">
+          <el-table-column label="售后单号" min-width="180">
+            <template #default="scope">
+              <span>{{ scope.row.after_sale_no }}</span>
             </template>
-            <template v-if="canRemark(scope.row.status)">
-              <el-divider direction="vertical" />
-              <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-afterSale-remark']">备注</a>
+          </el-table-column>
+          <el-table-column label="订单号" min-width="160">
+            <template #default="scope">
+              <span>{{ scope.row.order_no }}</span>
             </template>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
-          :total="total"
-          v-model:page="page.page"
-          v-model:limit="page.limit"
-          @pagination="getList"
-        />
+          </el-table-column>
+          <el-table-column label="售后类型" width="110">
+            <template #default="scope">
+              <el-tag :type="getTypeClass(scope.row.type)" effect="plain">{{
+                scope.row.type_text || scope.row.type
+              }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="售后状态" width="110">
+            <template #default="scope">
+              <el-tag :type="getStatusClass(scope.row.status)">{{ scope.row.status_text || scope.row.status }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="产品类型" width="110">
+            <template #default="scope">
+              <span>{{ getProductTypeLabel(scope.row.product_type) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="退款金额" min-width="120">
+            <template #default="scope">
+              <span class="price">¥{{ scope.row.refund_price || '0.00' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="申请时间" min-width="160">
+            <template #default="scope">
+              <span>{{ scope.row.add_time ? formatDate(scope.row.add_time) : '--' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" fixed="right" width="140">
+            <template #default="scope">
+              <a v-db-click @click="viewDetail(scope.row)">详情</a>
+              <template v-if="scope.row.status === 'pending_audit'">
+                <el-divider direction="vertical" />
+                <a v-db-click @click="goAudit(scope.row)" v-auth="['admin-order-afterSale-audit']">审核</a>
+              </template>
+              <template v-if="canRemark(scope.row.status)">
+                <el-divider direction="vertical" />
+                <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-afterSale-remark']">备注</a>
+              </template>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="acea-row row-right page">
+          <pagination
+            v-if="total"
+            :total="total"
+            v-model:page="page.page"
+            v-model:limit="page.limit"
+            @pagination="getList"
+          />
+        </div>
       </div>
     </el-card>
     <!-- 备注弹窗 -->
@@ -502,6 +504,10 @@ onMounted(() => {
 <style lang="scss" scoped>
 .form_content_width {
   width: 250px;
+}
+
+.table-content {
+  padding: 12px 20px 0;
 }
 
 .price {

@@ -22,182 +22,184 @@
     </div>
 
     <!-- 订单列表 -->
-    <el-table
-      :data="tableData"
-      v-loading="loading"
-      stripe
-      empty-text="暂无数据"
-      class="orderData"
-      @select="onSelectRow"
-      @select-all="onSelectAll"
-    >
-      <el-table-column type="expand" width="50">
-        <template #default="scope">
-          <OrderExpand :row="scope.row" />
-        </template>
-      </el-table-column>
-      <el-table-column type="selection" width="50" />
+    <div class="table-content">
+      <el-table
+        :data="tableData"
+        v-loading="loading"
+        stripe
+        empty-text="暂无数据"
+        class="orderData"
+        @select="onSelectRow"
+        @select-all="onSelectAll"
+      >
+        <el-table-column type="expand" width="50">
+          <template #default="scope">
+            <OrderExpand :row="scope.row" />
+          </template>
+        </el-table-column>
+        <el-table-column type="selection" width="50" />
 
-      <el-table-column label="订单号" width="180">
-        <template #default="scope">
-          <div>{{ scope.row.order_no }}</div>
-          <div style="font-size: 11px; color: var(--prev-color-text-secondary)">
-            [{{ getShippingTypeLabel(scope.row) }}]
-          </div>
-          <span v-if="scope.row.is_del === 1" style="color: #ed4014; font-size: 12px">用户已删除</span>
-          <span v-if="scope.row.is_cancel === 1 && scope.row.is_del === 0" style="color: #ed4014; font-size: 12px"
-            >用户已取消</span
-          >
-        </template>
-      </el-table-column>
-      <el-table-column label="商品信息" min-width="240">
-        <template #default="scope">
-          <div class="tab">
-            <img v-lazy="scope.row.image" />
-            <el-tooltip placement="top" :open-delay="300">
-              <template #content
-                ><div>
-                  <div>
-                    <span>商品名称：</span><span>{{ scope.row.title }}</span>
-                  </div>
-                  <div v-if="scope.row.subtitle">
-                    <span>副标题：</span><span>{{ scope.row.subtitle }}</span>
-                  </div>
-                  <div>
-                    <span>购买数量：</span><span>{{ scope.row.total_num }}</span>
-                  </div>
-                </div></template
-              >
-              <span class="line2 w-250">{{ scope.row.title }}</span>
-            </el-tooltip>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="用户信息" min-width="150">
-        <template #default="scope">
-          <div>{{ scope.row.nickname || '--' }}</div>
-          <div>{{ scope.row.user_phone || '--' }}</div>
-        </template>
-      </el-table-column>
-      <el-table-column label="订单金额" min-width="130">
-        <template #default="scope">
-          <div>
-            <span>总价：</span><span class="price">¥{{ scope.row.total_price }}</span>
-          </div>
-          <div>
-            <span>实付：</span><span class="price">¥{{ scope.row.pay_price }}</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="支付方式" width="90">
-        <template #default="scope">
-          <span>{{ scope.row.pay_type_name || scope.row.pay_type || '--' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="支付状态" width="90">
-        <template #default="scope">
-          <el-tag :type="isPaid(scope.row) ? 'success' : 'danger'">
-            {{ isPaid(scope.row) ? '已支付' : '未支付' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="订单状态" min-width="100">
-        <template #default="scope">
-          <el-tag :type="getBusinessStatus(scope.row).type">
-            {{ getRowStatusLabel(scope.row) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="售后" width="100">
-        <template #default="scope">
-          <el-tooltip
-            v-if="scope.row.after_sale && scope.row.after_sale.has_after_sale"
-            placement="top"
-            :open-delay="300"
-          >
-            <template #content
-              ><div>
-                <div>售后单数：{{ scope.row.after_sale.count }}</div>
-                <div>售后类型：{{ formatAfterSaleTypes(scope.row.after_sale.types) }}</div>
-                <div>售后状态：{{ formatAfterSaleStatuses(scope.row.after_sale.statuses) }}</div>
-              </div></template
-            >
-            <el-tag :type="scope.row.after_sale.is_processing ? 'warning' : 'info'">
-              {{ scope.row.after_sale.is_processing ? '售后中' : '有售后' }}
-            </el-tag>
-          </el-tooltip>
-          <span v-else style="color: #c0c4cc">--</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="配送信息" min-width="150">
-        <template #default="scope">
-          <template v-if="scope.row.delivery_name">
-            <div>{{ scope.row.delivery_name || '--' }}</div>
-            <div style="font-size: 12px; color: var(--prev-color-text-secondary)">
-              {{ scope.row.delivery_id || '--' }}
+        <el-table-column label="订单号" width="180">
+          <template #default="scope">
+            <div>{{ scope.row.order_no }}</div>
+            <div style="font-size: 11px; color: var(--prev-color-text-secondary)">
+              [{{ getShippingTypeLabel(scope.row) }}]
             </div>
-            <a
-              v-if="scope.row.delivery_type === 'express' && scope.row.delivery_id"
-              v-db-click
-              @click="onLogistics(scope.row)"
-              style="font-size: 12px"
-              >物流查询</a
+            <span v-if="scope.row.is_del === 1" style="color: #ed4014; font-size: 12px">用户已删除</span>
+            <span v-if="scope.row.is_cancel === 1 && scope.row.is_del === 0" style="color: #ed4014; font-size: 12px"
+              >用户已取消</span
             >
           </template>
-          <span v-else style="color: var(--prev-color-text-secondary)">{{
-            isPickupOrder(scope.row) ? '--' : '未发货'
-          }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" width="160">
-        <template #default="scope">
-          <span>{{ scope.row.add_time ? formatTime(scope.row.add_time) : '--' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" fixed="right" width="200">
-        <template #default="scope">
-          <a v-db-click @click="onDetail(scope.row)">详情</a>
-          <el-divider direction="vertical" />
-          <el-dropdown @command="(cmd) => handleCommand(scope.row, cmd)" :transfer="true">
-            <span class="el-dropdown-link"> 更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
-            <template #dropdown
-              ><el-dropdown-menu>
-                <!-- 确认付款（线下支付待支付） -->
-                <el-dropdown-item command="confirmPay" v-if="canConfirmPay(scope.row)">确认付款</el-dropdown-item>
-                <!-- 发货 -->
-                <el-dropdown-item command="shipment" v-if="canShip(scope.row)">发货</el-dropdown-item>
-                <!-- 确认收货 / 到店核销 -->
-                <el-dropdown-item command="confirm" v-if="canConfirm(scope.row)">{{
-                  getConfirmLabel(scope.row)
-                }}</el-dropdown-item>
-                <!-- 订单编辑 -->
-                <el-dropdown-item command="editOrder" v-if="canEditOrder(scope.row)">订单编辑</el-dropdown-item>
-                <!-- 小票打印 -->
-                <el-dropdown-item command="printReceipt" v-if="canPrint(scope.row)">小票打印</el-dropdown-item>
-                <!-- 配货单打印 -->
-                <el-dropdown-item command="printPick" v-if="canPrint(scope.row)">配货单打印</el-dropdown-item>
-                <!-- 修改地址 -->
-                <el-dropdown-item command="editAddress" v-if="canEditAddress(scope.row)">修改地址</el-dropdown-item>
-                <!-- 订单备注 -->
-                <el-dropdown-item command="remark">订单备注</el-dropdown-item>
-                <!-- 立即退款 -->
-                <el-dropdown-item command="refund" v-if="canRefund(scope.row)">立即退款</el-dropdown-item>
-                <!-- 配送信息 -->
-                <el-dropdown-item command="deliveryInfo" v-if="canShowDeliveryInfo(scope.row)"
-                  >配送信息</el-dropdown-item
+        </el-table-column>
+        <el-table-column label="商品信息" min-width="240">
+          <template #default="scope">
+            <div class="tab">
+              <img v-lazy="scope.row.image" />
+              <el-tooltip placement="top" :open-delay="300">
+                <template #content
+                  ><div>
+                    <div>
+                      <span>商品名称：</span><span>{{ scope.row.title }}</span>
+                    </div>
+                    <div v-if="scope.row.subtitle">
+                      <span>副标题：</span><span>{{ scope.row.subtitle }}</span>
+                    </div>
+                    <div>
+                      <span>购买数量：</span><span>{{ scope.row.total_num }}</span>
+                    </div>
+                  </div></template
                 >
-                <!-- 删除订单 -->
-                <el-dropdown-item command="delete" v-if="canDelete()">删除订单</el-dropdown-item>
-              </el-dropdown-menu></template
+                <span class="line2 w-250">{{ scope.row.title }}</span>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户信息" min-width="150">
+          <template #default="scope">
+            <div>{{ scope.row.nickname || '--' }}</div>
+            <div>{{ scope.row.user_phone || '--' }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单金额" min-width="130">
+          <template #default="scope">
+            <div>
+              <span>总价：</span><span class="price">¥{{ scope.row.total_price }}</span>
+            </div>
+            <div>
+              <span>实付：</span><span class="price">¥{{ scope.row.pay_price }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="支付方式" width="90">
+          <template #default="scope">
+            <span>{{ scope.row.pay_type_name || scope.row.pay_type || '--' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="支付状态" width="90">
+          <template #default="scope">
+            <el-tag :type="isPaid(scope.row) ? 'success' : 'danger'">
+              {{ isPaid(scope.row) ? '已支付' : '未支付' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="订单状态" min-width="100">
+          <template #default="scope">
+            <el-tag :type="getBusinessStatus(scope.row).type">
+              {{ getRowStatusLabel(scope.row) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="售后" width="100">
+          <template #default="scope">
+            <el-tooltip
+              v-if="scope.row.after_sale && scope.row.after_sale.has_after_sale"
+              placement="top"
+              :open-delay="300"
             >
-          </el-dropdown>
-        </template>
-      </el-table-column>
-    </el-table>
+              <template #content
+                ><div>
+                  <div>售后单数：{{ scope.row.after_sale.count }}</div>
+                  <div>售后类型：{{ formatAfterSaleTypes(scope.row.after_sale.types) }}</div>
+                  <div>售后状态：{{ formatAfterSaleStatuses(scope.row.after_sale.statuses) }}</div>
+                </div></template
+              >
+              <el-tag :type="scope.row.after_sale.is_processing ? 'warning' : 'info'">
+                {{ scope.row.after_sale.is_processing ? '售后中' : '有售后' }}
+              </el-tag>
+            </el-tooltip>
+            <span v-else style="color: #c0c4cc">--</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="配送信息" min-width="150">
+          <template #default="scope">
+            <template v-if="scope.row.delivery_name">
+              <div>{{ scope.row.delivery_name || '--' }}</div>
+              <div style="font-size: 12px; color: var(--prev-color-text-secondary)">
+                {{ scope.row.delivery_id || '--' }}
+              </div>
+              <a
+                v-if="scope.row.delivery_type === 'express' && scope.row.delivery_id"
+                v-db-click
+                @click="onLogistics(scope.row)"
+                style="font-size: 12px"
+                >物流查询</a
+              >
+            </template>
+            <span v-else style="color: var(--prev-color-text-secondary)">{{
+              isPickupOrder(scope.row) ? '--' : '未发货'
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" width="160">
+          <template #default="scope">
+            <span>{{ scope.row.add_time ? formatTime(scope.row.add_time) : '--' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" width="200">
+          <template #default="scope">
+            <a v-db-click @click="onDetail(scope.row)">详情</a>
+            <el-divider direction="vertical" />
+            <el-dropdown @command="(cmd) => handleCommand(scope.row, cmd)" :transfer="true">
+              <span class="el-dropdown-link"> 更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
+              <template #dropdown
+                ><el-dropdown-menu>
+                  <!-- 确认付款（线下支付待支付） -->
+                  <el-dropdown-item command="confirmPay" v-if="canConfirmPay(scope.row)">确认付款</el-dropdown-item>
+                  <!-- 发货 -->
+                  <el-dropdown-item command="shipment" v-if="canShip(scope.row)">发货</el-dropdown-item>
+                  <!-- 确认收货 / 到店核销 -->
+                  <el-dropdown-item command="confirm" v-if="canConfirm(scope.row)">{{
+                    getConfirmLabel(scope.row)
+                  }}</el-dropdown-item>
+                  <!-- 订单编辑 -->
+                  <el-dropdown-item command="editOrder" v-if="canEditOrder(scope.row)">订单编辑</el-dropdown-item>
+                  <!-- 小票打印 -->
+                  <el-dropdown-item command="printReceipt" v-if="canPrint(scope.row)">小票打印</el-dropdown-item>
+                  <!-- 配货单打印 -->
+                  <el-dropdown-item command="printPick" v-if="canPrint(scope.row)">配货单打印</el-dropdown-item>
+                  <!-- 修改地址 -->
+                  <el-dropdown-item command="editAddress" v-if="canEditAddress(scope.row)">修改地址</el-dropdown-item>
+                  <!-- 订单备注 -->
+                  <el-dropdown-item command="remark">订单备注</el-dropdown-item>
+                  <!-- 立即退款 -->
+                  <el-dropdown-item command="refund" v-if="canRefund(scope.row)">立即退款</el-dropdown-item>
+                  <!-- 配送信息 -->
+                  <el-dropdown-item command="deliveryInfo" v-if="canShowDeliveryInfo(scope.row)"
+                    >配送信息</el-dropdown-item
+                  >
+                  <!-- 删除订单 -->
+                  <el-dropdown-item command="delete" v-if="canDelete()">删除订单</el-dropdown-item>
+                </el-dropdown-menu></template
+              >
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <!-- 分页 -->
-    <div class="acea-row row-right page" v-if="total">
-      <pagination :total="total" v-model:page="page.page" v-model:limit="page.limit" @pagination="onPageChange" />
+      <!-- 分页 -->
+      <div class="acea-row row-right page" v-if="total">
+        <pagination :total="total" v-model:page="page.page" v-model:limit="page.limit" @pagination="onPageChange" />
+      </div>
     </div>
   </el-card>
 </template>
@@ -617,6 +619,10 @@ defineExpose({ selectedIds, page });
 .toolbar {
   padding: 10px 20px;
   border-bottom: 1px solid var(--prev-border-color-lighter);
+}
+
+.table-content {
+  padding: 12px 20px 0;
 }
 
 .orderData {

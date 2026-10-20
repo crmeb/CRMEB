@@ -151,106 +151,108 @@
         <el-tab-pane :label="getTabLabel('售后中', 'after_sale')" name="after_sale"></el-tab-pane>
         <el-tab-pane :label="getTabLabel('已删除', 'deleted')" name="deleted"></el-tab-pane>
       </el-tabs>
-      <el-table :data="orderList" ref="table" v-loading="loading" empty-text="暂无数据" class="orderData">
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column label="订单号" width="170">
-          <template #default="scope">
-            <span>{{ scope.row.order_no }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="订单分类" width="120">
-          <template #default="scope">
-            <span :class="getOrderCategoryClass(scope.row.order_category)">{{
-              getOrderCategoryLabel(scope.row.order_category)
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="产品类型" width="120">
-          <template #default="scope">
-            <span>{{ getProductTypeLabel(scope.row.product_type) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="活动类型" width="120">
-          <template #default="scope">
-            <span>{{ scope.row.activity_type_text || '--' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="商品信息" min-width="250">
-          <template #default="scope">
-            <div class="tab">
-              <img v-lazy="scope.row.image" />
-              <el-tooltip placement="top" :open-delay="300">
-                <template #content
-                  ><div>
-                    <div>
-                      <span>商品名称：</span><span>{{ scope.row.title }}</span>
-                    </div>
-                    <div>
-                      <span>购买数量：</span><span>{{ scope.row.total_num }}</span>
-                    </div>
-                  </div></template
-                >
-                <span class="line2 w-250">{{ scope.row.title }}</span>
-              </el-tooltip>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="用户信息" min-width="150">
-          <template #default="scope">
-            <div>{{ scope.row.nickname || '--' }}</div>
-            <div>{{ scope.row.user_phone || '--' }}</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="订单金额" min-width="120">
-          <template #default="scope">
-            <div>
-              <span>总价：</span><span class="price">¥{{ scope.row.total_price }}</span>
-            </div>
-            <div>
-              <span>实付：</span><span class="price">¥{{ scope.row.pay_price }}</span>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="支付状态" width="100">
-          <template #default="scope">
-            <el-tag :type="getPayStatusClass(scope.row.pay_status)">{{
-              getPayStatusLabel(scope.row.pay_status)
-            }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="订单状态" min-width="120">
-          <template #default="scope">
-            <el-tag :type="getStatusClass(scope.row.status_code)">{{ getStatusLabel(scope.row.status_code) }}</el-tag>
-            <div v-if="scope.row.business_status">
-              <span class="business-status">{{ scope.row.business_status.label }}</span>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" min-width="160">
-          <template #default="scope">
-            <span>{{ scope.row.add_time ? formatDate(scope.row.add_time * 1000) : '--' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" fixed="right" width="180">
-          <template #default="scope">
-            <a v-db-click @click="viewDetail(scope.row)">详情</a>
-            <el-divider direction="vertical" />
-            <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-orderCenter-remark']">备注</a>
-            <template v-if="statusTab === 'deleted'">
-              <el-divider direction="vertical" />
-              <a v-db-click @click="deleteOrder(scope.row)" v-auth="['admin-order-orderCenter-delete']">删除</a>
+      <div class="table-content">
+        <el-table :data="orderList" ref="table" v-loading="loading" empty-text="暂无数据" class="orderData">
+          <el-table-column type="selection" width="55"> </el-table-column>
+          <el-table-column label="订单号" width="170">
+            <template #default="scope">
+              <span>{{ scope.row.order_no }}</span>
             </template>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
-          :total="total"
-          v-model:page="page.page"
-          v-model:limit="page.limit"
-          @pagination="getList"
-        />
+          </el-table-column>
+          <el-table-column label="订单分类" width="120">
+            <template #default="scope">
+              <span :class="getOrderCategoryClass(scope.row.order_category)">{{
+                getOrderCategoryLabel(scope.row.order_category)
+              }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="产品类型" width="120">
+            <template #default="scope">
+              <span>{{ getProductTypeLabel(scope.row.product_type) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="活动类型" width="120">
+            <template #default="scope">
+              <span>{{ scope.row.activity_type_text || '--' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="商品信息" min-width="250">
+            <template #default="scope">
+              <div class="tab">
+                <img v-lazy="scope.row.image" />
+                <el-tooltip placement="top" :open-delay="300">
+                  <template #content
+                    ><div>
+                      <div>
+                        <span>商品名称：</span><span>{{ scope.row.title }}</span>
+                      </div>
+                      <div>
+                        <span>购买数量：</span><span>{{ scope.row.total_num }}</span>
+                      </div>
+                    </div></template
+                  >
+                  <span class="line2 w-250">{{ scope.row.title }}</span>
+                </el-tooltip>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户信息" min-width="150">
+            <template #default="scope">
+              <div>{{ scope.row.nickname || '--' }}</div>
+              <div>{{ scope.row.user_phone || '--' }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="订单金额" min-width="120">
+            <template #default="scope">
+              <div>
+                <span>总价：</span><span class="price">¥{{ scope.row.total_price }}</span>
+              </div>
+              <div>
+                <span>实付：</span><span class="price">¥{{ scope.row.pay_price }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="支付状态" width="100">
+            <template #default="scope">
+              <el-tag :type="getPayStatusClass(scope.row.pay_status)">{{
+                getPayStatusLabel(scope.row.pay_status)
+              }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="订单状态" min-width="120">
+            <template #default="scope">
+              <el-tag :type="getStatusClass(scope.row.status_code)">{{ getStatusLabel(scope.row.status_code) }}</el-tag>
+              <div v-if="scope.row.business_status">
+                <span class="business-status">{{ scope.row.business_status.label }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" min-width="160">
+            <template #default="scope">
+              <span>{{ scope.row.add_time ? formatDate(scope.row.add_time * 1000) : '--' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" fixed="right" width="180">
+            <template #default="scope">
+              <a v-db-click @click="viewDetail(scope.row)">详情</a>
+              <el-divider direction="vertical" />
+              <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-orderCenter-remark']">备注</a>
+              <template v-if="statusTab === 'deleted'">
+                <el-divider direction="vertical" />
+                <a v-db-click @click="deleteOrder(scope.row)" v-auth="['admin-order-orderCenter-delete']">删除</a>
+              </template>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="acea-row row-right page">
+          <pagination
+            v-if="total"
+            :total="total"
+            v-model:page="page.page"
+            v-model:limit="page.limit"
+            @pagination="getList"
+          />
+        </div>
       </div>
     </el-card>
     <el-dialog v-model="remarkModal" title="订单备注" width="500px">
@@ -518,7 +520,8 @@ function getPayStatusClass(status) {
 }
 
 function getTabLabel(text, statusCode) {
-  const count = statusCode === 'deleted' ? statData.value.deleted_count : statData.value.status_counts?.[statusCode]?.count;
+  const count =
+    statusCode === 'deleted' ? statData.value.deleted_count : statData.value.status_counts?.[statusCode]?.count;
   return count ? `${text}(${count})` : text;
 }
 
@@ -544,6 +547,10 @@ onMounted(() => {
 <style lang="scss" scoped>
 .form_content_width {
   width: 250px;
+}
+
+.table-content {
+  padding: 12px 20px 0;
 }
 
 .tab {
