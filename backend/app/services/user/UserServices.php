@@ -1047,7 +1047,7 @@ class UserServices extends BaseService
         $field[] = Form::input('time_diff', '到期时间', $timeDiff)->readonly(true);
         if ($userInfo['is_ever_level'] == 0) {
             $field[] = Form::input('day_diff', '剩余天数', $dayDiff)->readonly(true);
-            $field[] = Form::number('days', '增加时长(天)')->precision(0)->required();
+            $field[] = Form::number('days', '增加时长(天)')->min(1)->precision(0)->required();
         }
         return create_form('赠送付费会员时长', $field, Url::buildUrl('/user/save_give_level_time/' . $id), 'PUT');
     }

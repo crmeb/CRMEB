@@ -256,7 +256,11 @@ class UserController extends AuthController
         list($days) = $this->request->postMore([
             ['days', 0],
         ], true);
-        return app('json')->success($this->services->saveGiveLevelTime((int)$id, (int)$days) ? '赠送成功' : '赠送失败');
+        $days = filter_var($days, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($days === false) {
+            return app('json')->fail('增加时长必须为大于0的整数');
+        }
+        return app('json')->success($this->services->saveGiveLevelTime((int)$id, $days) ? '赠送成功' : '赠送失败');
     }
 
     /**
