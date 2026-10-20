@@ -5,38 +5,42 @@
       :title="$route.meta.title"
       description="查看各渠道消息发送结果与成功率，按渠道、状态筛选排查发送失败原因。"
     ></pages-header>
-    <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '20px 20px 20px' }">
-      <el-row class="mb14">
-        <el-col :span="6">
-          <el-select v-model="filter.channel_key" placeholder="选择渠道">
-            <el-option label="全部渠道" value="" />
-            <el-option label="系统站内信" value="is_system" />
-            <el-option label="短信" value="is_sms" />
-            <el-option label="公众号模板" value="is_wechat" />
-            <el-option label="小程序订阅" value="is_routine" />
-            <el-option label="企业微信" value="is_ent_wechat" />
-            <el-option label="钉钉" value="is_dingtalk" />
-            <el-option label="邮件" value="is_email" />
-            <el-option label="打印机" value="is_printer" />
-          </el-select>
-        </el-col>
-        <el-col :span="6">
-          <el-select v-model="filter.status" placeholder="选择状态">
-            <el-option label="全部状态" value="" />
-            <el-option label="待发送" :value="0" />
-            <el-option label="成功" :value="1" />
-            <el-option label="失败" :value="2" />
-          </el-select>
-        </el-col>
-        <el-col :span="6">
-          <el-input v-model="filter.mark" placeholder="消息标识" />
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" v-db-click @click="getList">搜索</el-button>
-          <el-button v-db-click @click="resetFilter">重置</el-button>
-        </el-col>
-      </el-row>
+    <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
+      <div class="padding-add">
+        <el-form :model="filter" :label-width="labelWidth" :label-position="labelPosition" inline @submit.prevent>
+          <el-form-item label="渠道：">
+            <el-select v-model="filter.channel_key" placeholder="请选择渠道" clearable class="form_content_width">
+              <el-option label="全部渠道" value="" />
+              <el-option label="系统站内信" value="is_system" />
+              <el-option label="短信" value="is_sms" />
+              <el-option label="公众号模板" value="is_wechat" />
+              <el-option label="小程序订阅" value="is_routine" />
+              <el-option label="企业微信" value="is_ent_wechat" />
+              <el-option label="钉钉" value="is_dingtalk" />
+              <el-option label="邮件" value="is_email" />
+              <el-option label="打印机" value="is_printer" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="状态：">
+            <el-select v-model="filter.status" placeholder="请选择状态" clearable class="form_content_width">
+              <el-option label="全部状态" value="" />
+              <el-option label="待发送" :value="0" />
+              <el-option label="成功" :value="1" />
+              <el-option label="失败" :value="2" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="消息标识：">
+            <el-input v-model="filter.mark" placeholder="请输入消息标识" clearable class="form_content_width" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-db-click @click="getList">搜索</el-button>
+            <el-button v-db-click @click="resetFilter">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-card>
 
+    <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0 20px 20px' }">
       <el-row class="mb14">
         <el-col :span="6">
           <el-card shadow="never" :body-style="{ padding: '10px' }">
@@ -199,8 +203,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { useMediaStore } from '@/store/module/media';
 import {
   noticeLogList,
   noticeLogDetail,
@@ -223,6 +228,9 @@ function formatDate(timestamp) {
 
 const logList = ref([]);
 const loading = ref(false);
+const mediaStore = useMediaStore();
+const labelWidth = computed(() => (mediaStore.isMobile ? undefined : '80px'));
+const labelPosition = computed(() => (mediaStore.isMobile ? 'top' : 'right'));
 const filter = ref({
   channel_key: '',
   status: '',
