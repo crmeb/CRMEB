@@ -1036,10 +1036,18 @@
 		 */
 	function handleConfirmResponse(res) {
 			userInfo.value = res.data.userInfo;
-			confirm.value = res.data.custom_form || [];
-			confirm.value.map(e => {
-				if (e.label === 'img') e.value = []
-			})
+			// 中台 confirm 接口返回 {label:标题, field, type, required}；
+			// 本页模板/校验按 {title, label:类型, status, value} 使用，此处统一归一化
+			confirm.value = (res.data.custom_form || []).map(e => {
+				const type = e.type || e.label || 'text';
+				return {
+					title: e.title || e.label || '',
+					label: type,
+					status: e.required !== undefined ? !!e.required : !!e.status,
+					field: e.field || '',
+					value: type === 'img' ? [] : '',
+				};
+			});
 			integral.value = res.data.usable_integral;
 			usable_integral.value = res.data.usable_integral;
 			contacts.value = res.data.userInfo.real_name;
@@ -1245,7 +1253,7 @@
 						real_name: contacts.value,
 						phone: contactsTel.value,
 						mark: mark.value,
-						custom_form: confirm.value,
+						custom_form: buildCustomFormPayload(),
 						invoice_id: invChecked.value,
 					},
 					coupon_id: couponId.value,
@@ -1288,7 +1296,7 @@
 					real_name: contacts.value,
 					phone: contactsTel.value,
 					mark: mark.value,
-					custom_form: confirm.value,
+					custom_form: buildCustomFormPayload(),
 					invoice_id: invChecked.value,
 					store_id: system_store.value ? system_store.value.id : 0,
 					delivery_type: shippingType.value == 1 ? 'pickup' : 'delivery',
@@ -1311,6 +1319,17 @@
 		}
 	function clickTextArea() {
 		textareaRef.value.focus()
+	}
+	/**
+	 * 自定义表单提交格式：{custom_field_N: 值}
+	 * 后端按商品定义回填标题后结构化存储，与下单引擎 OrderCreateEngine 提交口径一致
+	 */
+	function buildCustomFormPayload() {
+		const payload = {};
+		confirm.value.forEach((item, index) => {
+			payload[item.field || 'custom_field_' + index] = item.value;
+		});
+		return payload;
 	}
 	function SubOrder(e) {
 			let data = {};
