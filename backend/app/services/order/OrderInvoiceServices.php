@@ -95,9 +95,11 @@ class OrderInvoiceServices extends BaseService
             // 前端契约：列表展示的订单号对应中台 order_no
             $item['order_id'] = $order['order_no'] ?? '';
             $item['pay_price'] = $order['pay_price'] ?? 0.00;
-            // 收货人姓名电话优先取订单快照，缺失时回退下单用户资料
-            $item['real_name'] = $contact['name'] ?? ($user['real_name'] ?? ($user['nickname'] ?? ''));
-            $item['user_phone'] = $contact['phone'] ?? ($user['phone'] ?? '');
+            // 收货人姓名电话优先取订单快照，空串需回退下单用户资料（?? 只拦 null，拦不住空串）
+            $contactName = trim((string)($contact['name'] ?? ''));
+            $contactPhone = trim((string)($contact['phone'] ?? ''));
+            $item['real_name'] = $contactName !== '' ? $contactName : trim((string)($user['real_name'] ?? ($user['nickname'] ?? '')));
+            $item['user_phone'] = $contactPhone !== '' ? $contactPhone : trim((string)($user['phone'] ?? ''));
             $item['status'] = $this->statusToLegacy($order['status_code'] ?? '');
             $item['refund_status'] = $order['refund_status'] ?? 0;
             $item['add_time'] = date('Y-m-d H:i:s', $order['add_time'] ?? $item['invoice_add_time'] ?? time());
