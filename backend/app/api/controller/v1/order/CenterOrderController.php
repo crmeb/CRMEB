@@ -1539,15 +1539,25 @@ class CenterOrderController
                 throw new \RuntimeException('订单创建失败');
             }
 
+            // 中台主键：开票申请与活动回调共用
+            $centerOrderId = 0;
+            try {
+                $centerOrderId = (int)app()->make(OrderCenterDao::class)->value(['order_no' => $orderNo], 'id');
+            } catch (\Throwable $e) {
+                // 查询失败不影响主流程（活动回调另有兜底）
+            }
+
+            // 下单勾选发票：同步创建开票申请记录，供后台发票列表与支付回写 is_pay 使用
+            if (!empty($invoiceInfo) && $centerOrderId > 0) {
+                try {
+                    app()->make(OrderInvoiceServices::class)->createFromOrder((int)$uid, $centerOrderId, $invoiceInfo, 0);
+                } catch (\Throwable $e) {
+                    \think\facade\Log::warning('下单创建开票申请失败: ' . $orderNo . ': ' . $e->getMessage());
+                }
+            }
+
             // 6.1 活动订单创建后回调
             if ($isActivityOrder) {
-                // 查询中台订单记录主键，供扩展回调使用（如拼团 order_id_key 记录、pink_id 回写中台订单）
-                $centerOrderId = 0;
-                try {
-                    $centerOrderId = (int)app()->make(OrderCenterDao::class)->value(['order_no' => $orderNo], 'id');
-                } catch (\Throwable $e) {
-                    // 查询失败不影响主流程
-                }
                 $tradeModeHandler->afterOrderCreate($orderNo, $activityId, [
                     'order_no'    => $orderNo,
                     'id'          => $centerOrderId,

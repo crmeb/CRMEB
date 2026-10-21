@@ -248,6 +248,47 @@ class OrderInvoiceServices extends BaseService
         return ['id' => $re->id];
     }
 
+    /**
+     * 下单勾选发票时创建开票申请记录
+     * 列表/支付回写以 eb_order_invoice 为准；中台 order_center.invoice 只作快照展示
+     * @param int $uid 用户uid
+     * @param int $orderCenterId 订单中台主键
+     * @param array $invoice 用户发票抬头（eb_user_invoice）
+     * @param int $isPay 是否已支付 0/1
+     * @return int|null 开票记录id
+     */
+    public function createFromOrder(int $uid, int $orderCenterId, array $invoice, int $isPay = 0): ?int
+    {
+        if (!$orderCenterId || empty($invoice)) {
+            return null;
+        }
+        // 同一订单已有申请则跳过，避免拆单/重试重复写入
+        if ($this->dao->getOne(['order_id' => $orderCenterId, 'is_del' => 0])) {
+            return null;
+        }
+        $data = [];
+        $data['uid'] = $uid;
+        $data['category'] = 'order';
+        $data['order_id'] = $orderCenterId;
+        $data['invoice_id'] = (int)($invoice['id'] ?? 0);
+        $data['header_type'] = $invoice['header_type'] ?? 1;
+        $data['type'] = $invoice['type'] ?? 1;
+        $data['name'] = $invoice['name'] ?? '';
+        $data['duty_number'] = $invoice['duty_number'] ?? '';
+        $data['drawer_phone'] = $invoice['drawer_phone'] ?? '';
+        $data['email'] = $invoice['email'] ?? '';
+        $data['tell'] = $invoice['tell'] ?? '';
+        $data['address'] = $invoice['address'] ?? '';
+        $data['bank'] = $invoice['bank'] ?? '';
+        $data['card_number'] = $invoice['card_number'] ?? '';
+        $data['is_pay'] = $isPay;
+        $data['add_time'] = time();
+        if (!$re = $this->dao->save($data)) {
+            return null;
+        }
+        return (int)$re->id;
+    }
+
     public function setInvoice(int $id, array $data)
     {
         $orderInvoice = $this->dao->get($id);
