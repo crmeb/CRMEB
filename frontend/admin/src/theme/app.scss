@@ -169,6 +169,16 @@ body,
     @extend .el-scrollbar;
     padding: 16px;
 
+    // 顶层内容区不允许横向滚动：wrap 的原生 overflow-x 已被全局隐藏（element.scss / variables.scss），
+    // 但页面顶层的 gutter 行（el-row 负 margin ±10px，如订单中台/实物订单的统计卡行）等横向溢出
+    // 仍会撑大 wrap 的 scrollWidth，使 el-scrollbar 的模拟横向滚动条在内容区底部悬停时显示
+    // 一条几乎全宽的“幻影”滚动条（原生已禁滚，该条拖不动，仅有 10px 晃动量）。
+    // 在 view 层裁掉横向溢出，让 scrollWidth 恒等于 clientWidth；clip 不产生滚动容器与格式化上下文，
+    // 不影响纵向滚动和粘性定位，超出的部分只是 gutter 列的空白 padding，无可见内容被裁。
+    > .el-scrollbar__wrap > .el-scrollbar__view {
+      overflow-x: clip;
+    }
+
     // 容器内边距已提供 16px 顶部留白，页面首位卡片/行自带的上边距会叠加成 32px 双重间距，统一清零
     // 动作按钮行（.action-row）需保留 -6px 偏移实现距卡顶 14px，不在此清零范围
     > .el-scrollbar__wrap {
