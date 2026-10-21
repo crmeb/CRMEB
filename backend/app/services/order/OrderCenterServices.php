@@ -454,9 +454,13 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             $detail['custom_form'] = $this->parseExtraInfo($detail['custom_form']);
             $detail['custom_form'] = $this->transformCustomForm($detail['custom_form']);
         }
-        // 解析发票信息
+        // 解析发票信息：中台 invoice 仅是下单时抬头快照，不含开票状态；
+        // 开票状态（is_invoice/票号/开票时间）以申请表 eb_order_invoice 为真源，后台开票只写该表
+        $invoiceSnapshot = [];
         if (!empty($detail['invoice'])) {
-            $detail['invoice'] = $this->parseExtraInfo($detail['invoice']);
+            // 中台订单创建时保存的是用户发票原始字段（name/duty_number），
+            // 详情契约统一使用 title/tax_number，避免前端因数据来源不同而漏显示。
+            $invoiceSnapshot = $this->normalizeInvoice($this->parseExtraInfo($detail['invoice']));
         }
         // 支付方式从 eb_pay_channel 读取中文名称
         $detail['pay_type_name'] = $this->getPayTypeName($detail['pay_type']);
@@ -465,9 +469,13 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         // 必须在构建时间线、按钮、进度条之前调用，确保这些字段基于实时状态
         $this->loadSourceOrderInfo($detail);
 
-        // 发票信息：order_center.invoice 字段为空时，从发票申请表查询
-        if (empty($detail['invoice'])) {
-            $detail['invoice'] = $this->loadOrderInvoice((int)$detail['id']);
+        // 发票信息：优先取申请表（含开票状态），无申请记录时回退下单快照
+        $invoiceLive = $this->loadOrderInvoice((int)$detail['id']);
+        if (!empty($invoiceLive)) {
+            // 快照可补齐申请表未存的展示字段，但状态类字段必须以申请表为准
+            $detail['invoice'] = array_merge($invoiceSnapshot, $invoiceLive);
+        } else {
+            $detail['invoice'] = $invoiceSnapshot ?: null;
         }
 
         // loadSourceOrderInfo 可能重算 status_code，需同步刷新 status_text
@@ -1259,6 +1267,37 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             Log::warning('[OrderCenter] 加载发票信息失败: ' . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * 规范化订单详情发票字段
+     * 兼容中台历史订单保存的 name/duty_number 字段，并统一类型，供各端详情页使用。
+     * @param mixed $invoice 发票信息
+     * @return array
+     */
+    protected function normalizeInvoice($invoice): array
+    {
+        if (!is_array($invoice)) {
+            return [];
+        }
+
+        $title = trim((string)($invoice['title'] ?? ''));
+        if ($title === '') {
+            $title = trim((string)($invoice['name'] ?? ''));
+        }
+        $taxNumber = trim((string)($invoice['tax_number'] ?? ''));
+        if ($taxNumber === '') {
+            $taxNumber = trim((string)($invoice['duty_number'] ?? ''));
+        }
+
+        return array_merge($invoice, [
+            'title'        => $title,
+            'header_type'  => (int)($invoice['header_type'] ?? 1),
+            'type'         => (int)($invoice['type'] ?? 1),
+            'tax_number'   => $taxNumber,
+            'is_invoice'   => (int)($invoice['is_invoice'] ?? 0),
+            'invoice_time' => (int)($invoice['invoice_time'] ?? 0),
+        ]);
     }
 
     /**

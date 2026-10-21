@@ -76,8 +76,21 @@ const props = defineProps({
 const p = computed(() => (props.section && props.section.props) || {});
 /** 引擎注入的全局状态（预留，当前 InvoiceCard 不依赖全局状态） */
 const ctx = computed(() => (props.section && props.section._ctx) || {});
-/** 发票信息对象（后端下发在 section.props.fields），含 title/header_type/type/tax_number/email/is_invoice/invoice_number/invoice_time */
-const invoice = computed(() => p.value.fields || {});
+/**
+ * 发票信息对象（后端下发在 section.props.fields）。
+ * 兼容历史订单仍返回的 name/duty_number 字段，确保抬头和税号始终可见。
+ */
+const invoice = computed(() => {
+  const fields = p.value.fields || {};
+  return {
+    ...fields,
+    title: fields.title || fields.name || '',
+    tax_number: fields.tax_number || fields.duty_number || '',
+    header_type: Number(fields.header_type || 1),
+    type: Number(fields.type || 1),
+    is_invoice: Number(fields.is_invoice || 0),
+  };
+});
 
 /**
  * 格式化时间戳为可读字符串
