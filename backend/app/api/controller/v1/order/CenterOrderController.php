@@ -1231,8 +1231,9 @@ class CenterOrderController
                 $detailExtend = $handler->getDetailExtend($productId);
                 $productCustomForm = $detailExtend['custom_form'] ?? [];
                 $fieldTitleMap = [];
-                foreach ($productCustomForm as $key => $item) {
-                    $fieldTitleMap['custom_field_' . $key] = $item['title'] ?? ('自定义字段' . ($key + 1));
+                // 循环变量不得使用 $key：外层 $key 是订单确认缓存凭证，覆盖后 consumeOrderCache 会因类型错误崩溃
+                foreach ($productCustomForm as $fieldKey => $fieldItem) {
+                    $fieldTitleMap['custom_field_' . $fieldKey] = $fieldItem['title'] ?? ('自定义字段' . ($fieldKey + 1));
                 }
                 $structured = [];
                 foreach ($submittedCustomForm as $field => $value) {
