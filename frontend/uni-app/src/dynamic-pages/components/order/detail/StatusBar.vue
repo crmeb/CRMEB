@@ -42,7 +42,7 @@ const p = computed(() => (props.section && props.section.props) || {});
 const ctx = computed(() => (props.section && props.section._ctx) || {});
 /** 状态文案，如"进行中"、"待支付" */
 const text = computed(() => p.value.text || '');
-/** 状态图标 class（iconfont），如 icon-daizhifu */
+/** 状态图标 class（iconfont），如 icon-daifukuan */
 const icon = computed(() => p.value.icon || '');
 /** 业务状态副文案，如"商家已发货" */
 const subtitle = computed(() => p.value.subtitle || '');

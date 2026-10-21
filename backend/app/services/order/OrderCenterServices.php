@@ -1003,13 +1003,13 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             Log::warning('[OrderCenter] resolve product capabilities failed: ' . $e->getMessage());
         }
         $isVirtual = (($capabilities['order']['virtual'] ?? false) === true);
-        // 状态映射图标
+        // 状态映射图标（iconfont 项目 993865 中真实存在的图标，勿填不存在的字形名）
         $statusIcons = [
-            'pending_payment' => 'icon-daizhifu',
-            'processing'      => 'icon-jinxingzhong',
+            'pending_payment' => 'icon-daifukuan',
+            'processing'      => 'icon-daishouhuo',
             'completed'       => 'icon-yiwancheng',
             'canceled'        => 'icon-yiquxiao',
-            'after_sale'      => 'icon-shouhouzhong',
+            'after_sale'      => 'icon-a-shouhoutuikuan',
             'refunding'       => 'icon-tuikuanzhong',
             'refunded'        => 'icon-yituikuan',
         ];
@@ -1021,7 +1021,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         $status = [
             'code'           => $statusCode,
             'text'           => $statusText,
-            'icon'           => $statusIcons[$statusCode] ?? 'icon-jinxingzhong',
+            'icon'           => $statusIcons[$statusCode] ?? 'icon-daishouhuo',
             'subtitle'       => $businessStatus['text'] ?? '',
             'source_status'  => $detail['source_status'] ?? '',
             'business_status'=> $businessStatus,
