@@ -388,6 +388,7 @@ class ProductServices
                 break;
             case '4': // 警戒库存
                 $query->where('is_show', 1)->where('is_del', 0);
+                $this->applyWarningStockFilter($query);
                 break;
             case '5': // 回收站
                 $query->where('is_del', 1);
@@ -465,13 +466,37 @@ class ProductServices
     {
         $base = $this->centerDao->search()->where('product_type', 'normal');
 
+        $warningBase = (clone $base)->where('is_show', 1)->where('is_del', 0);
+        $this->applyWarningStockFilter($warningBase);
+
         return [
             ['type' => 1, 'name' => '出售中的商品', 'count' => (clone $base)->where('is_show', 1)->where('is_del', 0)->count()],
             ['type' => 2, 'name' => '仓库中的商品', 'count' => (clone $base)->where('is_show', 0)->where('is_del', 0)->count()],
             ['type' => 3, 'name' => '已售馨的商品', 'count' => (clone $base)->where('is_show', 1)->where('is_del', 0)->where('stock', 0)->count()],
-            ['type' => 4, 'name' => '警戒库存商品', 'count' => (clone $base)->where('is_show', 1)->where('is_del', 0)->count()],
+            ['type' => 4, 'name' => '警戒库存商品', 'count' => $warningBase->count()],
             ['type' => 5, 'name' => '回收站的商品', 'count' => (clone $base)->where('is_del', 1)->count()],
         ];
+    }
+
+    /**
+     * 按 SKU 库存筛选警戒库存商品。
+     * 只有存在启用 SKU 且至少一个 SKU 库存低于系统警戒值的商品才命中。
+     * @param mixed $query
+     * @return void
+     */
+    protected function applyWarningStockFilter($query): void
+    {
+        $warningStock = (int)sys_config('store_stock');
+        if ($warningStock <= 0) {
+            $warningStock = 2;
+        }
+
+        $query->whereIn('id', function ($skuQuery) use ($warningStock) {
+            $skuQuery->name('pt_normal_sku')
+                ->where('is_show', 1)
+                ->where('stock', '<', $warningStock)
+                ->field('product_id');
+        });
     }
 
     // ===== 商品生命周期管理（中台主表 + 扩展表同步） =====
