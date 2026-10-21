@@ -60,7 +60,7 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (720, 165, 'CRMEB-272-dianyuanguanli-xianxing', '服务人员管理', 'admin', '', '', '', '', '[]', 10, 1, 1, 1, '/setting/service_personnel/index', '165', 1, '', 0, 'setting-delivery-service', 'core:setting-delivery-service', 0, '服务人员管理'),
 (760, 4, 'CRMEB-186-shouyin-xianxing', '收银订单', 'admin', '', '', '', '', '[]', 40, 1, 1, 1, '/order/offline', '4', 1, '', 0, 'admin-order-offline', 'core:admin-order-offline', 0, '收银订单'),
 (766, 35, 'CRMEB-556-jiaoyijine-xianxing', '交易统计', 'admin', '', '', '', '', '[]', 100, 1, 1, 1, '/statistic/transaction', '35', 1, '', 0, 'admin-statistic', 'core:menu:7314a8884e7543f7fafec6119d7466922d7f51d0', 0, '交易统计'),
-(767, 36, '', '发票管理', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/order/invoice/list', '', 1, '', 0, 'admin-order-startOrderInvoice-index', 'core:admin-order-startOrderInvoice-index', 0, '发票管理'),
+(767, 37, '', '发票管理', 'admin', '', '', '', '', '[]', 0, 1, 1, 1, '/order/invoice/list', '35/37', 1, '', 0, 'admin-order-startOrderInvoice-index', 'core:admin-order-startOrderInvoice-index', 0, '发票管理'),
 (898, 12, 'CRMEB-748-xiaoxizhongxin-xianxing', '消息管理', 'admin', '', '', '', '', '[]', 111, 1, 1, 1, '/setting/notification/index', '12', 1, '', 0, 'setting-notification', 'core:setting-notification', 0, '消息管理'),
 (902, 656, 'CRMEB-873-zhuti-xianxing', '主题风格', 'admin', '', '', '', '', '[]', 2, 0, 0, 1, '/setting/theme_style', '12/656', 1, '', 0, 'admin-setting-theme_style', 'core:admin-setting-theme_style', 0, '主题风格'),
 (997, 4, 'CRMEB-166-tongji-xianxing', '订单统计', 'admin', '', '', '', '', '[]', 160, 1, 1, 1, '/statistic/order', '4', 1, '', 0, 'admin-statistic', 'core:menu:e79ea52b42a37b118dac049831b16384229e2b1a', 0, '订单统计'),
