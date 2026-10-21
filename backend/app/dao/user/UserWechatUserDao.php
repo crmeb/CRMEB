@@ -162,15 +162,19 @@ class UserWechatUserDao extends BaseDao
                 list($startTime, $endTime) = explode('-', $where['user_time']);
                 if ($startTime && $endTime) {
                     $endTime = strtotime($endTime) + 24 * 3600;
-                    // last_time 小于开始时间 或 大于结束时间（即不在该时间段内访问）
-                    $model = $model->where($userAlias . "last_time < " . strtotime($startTime) . " OR " . $userAlias . "last_time > " . $endTime);
+                    $startTime = strtotime($startTime);
+                    // last_time 不在指定时间段内（结束日期按当天 24:00 处理）
+                    $model = $model->where(function ($query) use ($userAlias, $startTime, $endTime) {
+                        $query->where($userAlias . 'last_time', '<', $startTime)
+                            ->whereOr($userAlias . 'last_time', '>=', $endTime);
+                    });
                 }
             }
             // 筛选指定时间内访问过的用户
             if ($where['user_time_type'] == 'visit' && $where['user_time'] !== '') {
                 list($startTime, $endTime) = explode('-', $where['user_time']);
                 if ($startTime && $endTime) {
-                    $model = $model->where($userAlias . 'last_time', '>', strtotime($startTime));
+                    $model = $model->where($userAlias . 'last_time', '>=', strtotime($startTime));
                     $model = $model->where($userAlias . 'last_time', '<', strtotime($endTime) + 24 * 3600);
                 }
             }
@@ -178,8 +182,28 @@ class UserWechatUserDao extends BaseDao
             if ($where['user_time_type'] == 'add_time' && $where['user_time'] !== '') {
                 list($startTime, $endTime) = explode('-', $where['user_time']);
                 if ($startTime && $endTime) {
-                    $model = $model->where($userAlias . 'add_time', '>', strtotime($startTime));
+                    $model = $model->where($userAlias . 'add_time', '>=', strtotime($startTime));
                     $model = $model->where($userAlias . 'add_time', '<', strtotime($endTime) + 24 * 3600);
+                }
+            }
+        }
+
+        // --- 上次消费时间筛选 ---
+        // 仅统计已支付且未退款订单，并按用户最近一次消费时间筛选。
+        if (isset($where['before_pay_time']) && $where['before_pay_time'] !== '') {
+            $timeRange = explode('-', $where['before_pay_time'], 2);
+            if (count($timeRange) === 2 && $timeRange[0] !== '' && $timeRange[1] !== '') {
+                $startTime = strtotime($timeRange[0]);
+                $endTime = strtotime($timeRange[1]) + 24 * 3600;
+                if ($startTime !== false && $endTime !== false) {
+                    $model = $model->whereIn($userAlias . 'uid', function ($query) use ($startTime, $endTime) {
+                        $query->name('order_center')
+                            ->where('pay_status', 1)
+                            ->where('refund_status', 0)
+                            ->field('uid')
+                            ->group('uid')
+                            ->having('MAX(pay_time) >= ' . (int)$startTime . ' AND MAX(pay_time) < ' . (int)$endTime);
+                    });
                 }
             }
         }
@@ -201,16 +225,16 @@ class UserWechatUserDao extends BaseDao
                 // 区间查询
                 $model = $model->whereBetween($userAlias . 'pay_count', $where['pay_count_num']);
             } elseif ($where['pay_count_num'][0] !== '' && $where['pay_count_num'][1] === '') {
-                // 大于最小值
-                $model = $model->where($userAlias . 'pay_count', '>', $where['pay_count_num'][0]);
+                // 大于等于最小值
+                $model = $model->where($userAlias . 'pay_count', '>=', $where['pay_count_num'][0]);
             } elseif ($where['pay_count_num'][0] === '' && $where['pay_count_num'][1] !== '') {
-                // 小于最大值
-                $model = $model->where($userAlias . 'pay_count', '<', $where['pay_count_num'][1]);
+                // 小于等于最大值
+                $model = $model->where($userAlias . 'pay_count', '<=', $where['pay_count_num'][1]);
             }
         }
 
         // --- 消费金额筛选 (区间) ---
-        // pay_count_money: [min, max] 统计 store_order 表中实际支付金额
+        // pay_count_money: [min, max] 统计 order_center 表中实际支付金额
         if (isset($where['pay_count_money']) && count($where['pay_count_money']) == 2) {
             $min = $where['pay_count_money'][0];
             $max = $where['pay_count_money'][1];
@@ -228,9 +252,9 @@ class UserWechatUserDao extends BaseDao
                         if ($min !== '' && $max !== '') {
                             $q->whereBetween('pay_price', [$min, $max]);
                         } elseif ($min !== '' && $max === '') {
-                            $q->where('pay_price', '>', $min);
+                            $q->where('pay_price', '>=', $min);
                         } elseif ($min === '' && $max !== '') {
-                            $q->where('pay_price', '<', $max);
+                            $q->where('pay_price', '<=', $max);
                         }
                     });
                     
@@ -297,9 +321,9 @@ class UserWechatUserDao extends BaseDao
             if ($where['integral'][0] !== '' && $where['integral'][1] !== '') {
                 $model = $model->whereBetween($userAlias . 'integral', $where['integral']);
             } elseif ($where['integral'][0] !== '' && $where['integral'][1] === '') {
-                $model = $model->where($userAlias . 'integral', '>', $where['integral'][0]);
+                $model = $model->where($userAlias . 'integral', '>=', $where['integral'][0]);
             } elseif ($where['integral'][0] === '' && $where['integral'][1] !== '') {
-                $model = $model->where($userAlias . 'integral', '<', $where['integral'][1]);
+                $model = $model->where($userAlias . 'integral', '<=', $where['integral'][1]);
             }
         }
 
