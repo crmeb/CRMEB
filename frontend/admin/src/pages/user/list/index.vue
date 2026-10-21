@@ -129,21 +129,6 @@
                 class="form_range_content_width"
               />
             </el-form-item>
-            <el-form-item label="充值次数：" label-for="store_name">
-              <el-input
-                clearable
-                placeholder="最小值"
-                v-model="userFrom.recharge_count[0]"
-                class="form_range_content_width"
-              />
-              <span class="ml5 mr5">~</span>
-              <el-input
-                clearable
-                placeholder="最大值"
-                v-model="userFrom.recharge_count[1]"
-                class="form_range_content_width"
-              />
-            </el-form-item>
             <el-form-item label="访问情况：" label-for="user_time_type">
               <el-select v-model="user_time_type" placeholder="请选择访问情况" clearable class="form_content_width">
                 <el-option value="" label="全部"></el-option>
@@ -486,7 +471,6 @@ const userFrom = ref({
   balance: ['', ''],
   integral: ['', ''],
   pay_count_money: ['', ''],
-  recharge_count: ['', ''],
   user_time_type: '',
   user_time: '',
   before_pay_time: '',
@@ -998,7 +982,6 @@ function reset(name) {
     balance: ['', ''],
     integral: ['', ''],
     pay_count_money: ['', ''],
-    recharge_count: ['', ''],
     user_time_type: '',
     user_time: '',
     before_pay_time: '',

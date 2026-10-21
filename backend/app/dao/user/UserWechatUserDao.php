@@ -273,45 +273,15 @@ class UserWechatUserDao extends BaseDao
             }
         }
 
-        // --- 充值次数筛选 (区间) ---
-        // recharge_count: [min, max] 统计 user_recharge 表中的记录数
-        if (isset($where['recharge_count']) && count($where['recharge_count']) == 2) {
-            $min = $where['recharge_count'][0];
-            $max = $where['recharge_count'][1];
-            
-            if ($min !== '' || $max !== '') {
-                $model = $model->where(function ($query) use ($userAlias, $min, $max) {
-                    // 子查询：通过分组统计充值记录数
-                    $query->whereExists(function ($q) use ($userAlias, $min, $max) {
-                        $q->name('user_recharge')
-                            ->whereColumn('uid', $userAlias . 'uid')
-                            ->field('uid')
-                            ->group('uid')
-                            ->having('COUNT(*) BETWEEN ' . (int)$min . ' AND ' . (int)$max);
-                    });
-                    
-                    // 特殊处理：包含无充值记录的用户
-                    if ($min === '' || $min == 0) {
-                        $query->whereOr(function ($q) use ($userAlias) {
-                            $q->whereNotExists(function ($sub) use ($userAlias) {
-                                $sub->name('user_recharge')
-                                    ->whereColumn('uid', $userAlias . 'uid');
-                            });
-                        });
-                    }
-                });
-            }
-        }
-
         // --- 余额筛选 (区间) ---
         // balance: [min, max]
         if (isset($where['balance']) && count($where['balance']) == 2) {
             if ($where['balance'][0] !== '' && $where['balance'][1] !== '') {
                 $model = $model->whereBetween($userAlias . 'now_money', $where['balance']);
             } elseif ($where['balance'][0] !== '' && $where['balance'][1] === '') {
-                $model = $model->where($userAlias . 'now_money', '>', $where['balance'][0]);
+                $model = $model->where($userAlias . 'now_money', '>=', $where['balance'][0]);
             } elseif ($where['balance'][0] === '' && $where['balance'][1] !== '') {
-                $model = $model->where($userAlias . 'now_money', '<', $where['balance'][1]);
+                $model = $model->where($userAlias . 'now_money', '<=', $where['balance'][1]);
             }
         }
 
