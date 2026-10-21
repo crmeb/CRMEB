@@ -17,8 +17,9 @@
     </view>
 
     <template v-if="!loading && !errorMsg">
-      <!-- 配送方式 + 收货地址，由 express_shipping / store_pickup / door_service 驱动 -->
+      <!-- 配送方式 + 收货地址，由 express_shipping / store_pickup / door_service 驱动；送礼订单由领取人填地址 -->
       <DeliverySection
+        v-if="!isGift"
         v-model="deliveryType"
         :express-shipping="features.express_shipping"
         :store-pickup="features.store_pickup"
@@ -81,11 +82,22 @@
         :fields="visitorFormConfig"
       />
 
-      <!-- 订单备注 -->
+      <!-- 订单备注 / 送礼留言 -->
       <OrderRemarkInput
+        v-if="!isGift"
         v-model="remark"
         :visible="features.remark"
       />
+      <view v-if="isGift" class="gift-mark-card">
+        <view class="gift-mark-label">{{ $t('礼物留言') }}</view>
+        <input
+          v-model="giftMark"
+          class="gift-mark-input"
+          type="text"
+          maxlength="40"
+          :placeholder="$t('填写好友留言，最多40字')"
+        />
+      </view>
 
       <!-- 发票信息（抬头选择模式，编辑/保存走原 user_invoice_form 页面） -->
       <OrderInvoicePanel
@@ -112,9 +124,10 @@
         :integral-price="integralPrice"
         :integral-total="integralTotal"
         :usable-integral="usableIntegral"
-        :show-postage="features.express_shipping && deliveryType === 'delivery'"
+        :gift-price="giftPrice"
+        :show-postage="!isGift && features.express_shipping && deliveryType === 'delivery'"
         :door-postage="features.door_service_postage"
-        :show-door-postage="features.door_service && deliveryType === 'door'"
+        :show-door-postage="!isGift && features.door_service && deliveryType === 'door'"
       />
 
       <!-- 底部提交栏 -->
@@ -197,6 +210,10 @@ const num = ref(1);
 const cartId = ref('');
 const news = ref(0);
 const isCartMode = ref(false);
+// 送礼订单：1=购买礼物（不填地址/不计运费），2=领取礼物
+const isGift = ref(0);
+const giftMark = ref('');
+const giftPrice = ref(0);
 // 详情页 display_sections block 选中数据（票种/场次/日期），通过 URL block_data 参数透传
 const selectedBlockData = ref([]);
 
@@ -318,10 +335,13 @@ const usableIntegralDisplay = computed(() => {
 const integralCheckDisabled = computed(() => usableIntegral.value <= 0 && !useIntegral.value);
 const totalPriceText = computed(() => totalPrice.value || '0.00');
 const payPriceText = computed(() => payPrice.value ?? '0.00');
-/** 提交禁用：快递配送模式下未选地址，自提模式下未选门店，上门模式下未填完整预约信息 */
+/** 提交禁用：快递配送模式下未选地址，自提模式下未选门店，上门模式下未填完整预约信息；送礼订单不校验收货信息 */
 const submitDisabled = computed(() => {
   if (!priceReady.value || priceComputing.value) {
     return true;
+  }
+  if (isGift.value) {
+    return false;
   }
   if (features.value.express_shipping && deliveryType.value === 'delivery') {
     return !addressInfo.value.real_name;
@@ -419,6 +439,7 @@ async function loadConfirmData() {
       if (activityType.value) params.activity_type = activityType.value;
       if (activityId.value) params.activity_id = activityId.value;
     }
+    if (isGift.value) params.is_gift = isGift.value;
     var res = await getCenterOrderConfirm(params);
 
     var data = res.data || {};
@@ -432,7 +453,17 @@ async function loadConfirmData() {
     levelPrice.value = confirmPriceGroup.levelPrice ?? data.level_price ?? 0;
     memberPrice.value = confirmPriceGroup.memberPrice ?? data.member_price ?? 0;
     postageDiscount.value = confirmPriceGroup.postageDiscount ?? data.postage_discount ?? 0;
+    giftPrice.value = confirmPriceGroup.giftPrice ?? data.gift_price ?? 0;
     features.value = { ...features.value, ...(data.features || {}) };
+    // 送礼订单：后端 features 仍按商品配送能力下发，前端按 is_gift 隐藏地址与运费
+    if (isGift.value) {
+      features.value = {
+        ...features.value,
+        express_shipping: false,
+        store_pickup: false,
+        door_service: false,
+      };
+    }
     // 保存活动订单信息（含免费支付方式标识与跳转地址，由交易模式 Handler 下发）
     activityInfo.value = data.activity_info || {};
     // 同步发票相关配置：后端未返回时默认开启专用发票
@@ -473,8 +504,8 @@ async function loadConfirmData() {
     }
 
     // 加载地址：有回跳 addressId 时加载地址详情，否则加载默认地址
-    // 购物车模式从地址列表选择后回跳会携带 address_id
-    if (features.value.express_shipping || features.value.store_pickup || features.value.door_service) {
+    // 购物车模式从地址列表选择后回跳会携带 address_id；送礼订单由领取人填地址，跳过
+    if (!isGift.value && (features.value.express_shipping || features.value.store_pickup || features.value.door_service)) {
       if (addressId.value) {
         await refreshAddressInfo();
       } else {
@@ -567,8 +598,8 @@ function ChangCoupons(e) {
  */
 async function computedPrice() {
   var requestSerial = ++priceRequestSerial;
-  // 快递运费依赖收货地址，未选择时等待地址回调再试算。
-  if (!orderKey.value || (features.value.express_shipping && deliveryType.value === 'delivery' && !addressId.value)) {
+  // 快递运费依赖收货地址，未选择时等待地址回调再试算；送礼订单不计运费，无需地址
+  if (!orderKey.value || (!isGift.value && features.value.express_shipping && deliveryType.value === 'delivery' && !addressId.value)) {
     priceComputing.value = false;
     priceReady.value = false;
     priceError.value = '';
@@ -593,11 +624,13 @@ async function computedPrice() {
       address_id: addressId.value,
       delivery_type: deliveryType.value,
       store_id: deliveryType.value === 'pickup' ? (storeInfo.value.id || 0) : 0,
+      is_gift: isGift.value || 0,
     });
     if (requestSerial !== priceRequestSerial) return;
     var data = res.data || {};
     payPrice.value = data.pay_price ?? 0;
     payPostage.value = data.pay_postage ?? 0;
+    giftPrice.value = data.gift_price ?? giftPrice.value;
     // computed 接口返回 snake_case 价格字段，和确认接口的 priceGroup 保持同一展示口径。
     levelPrice.value = data.level_price ?? data.priceGroup?.levelPrice ?? levelPrice.value;
     memberPrice.value = data.member_price ?? data.priceGroup?.memberPrice ?? memberPrice.value;
@@ -644,26 +677,29 @@ async function handleConfirm() {
     uni.showToast({ title: i18n.global.t('金额正在计算，请稍后再试'), icon: 'none' });
     return;
   }
-  if (features.value.express_shipping && deliveryType.value === 'delivery' && !addressId.value) {
-    uni.showToast({ title: i18n.global.t('请选择收货地址'), icon: 'none' });
-    return;
-  }
-  if (features.value.store_pickup && deliveryType.value === 'pickup' && !storeInfo.value.id) {
-    uni.showToast({ title: i18n.global.t('请选择自提门店'), icon: 'none' });
-    return;
-  }
-  if (features.value.door_service && deliveryType.value === 'door') {
-    if (!serviceInfo.value.contact_name) {
-      uni.showToast({ title: i18n.global.t('请填写联系人姓名'), icon: 'none' });
+  // 送礼订单由领取人填收货信息，不校验地址/门店/预约
+  if (!isGift.value) {
+    if (features.value.express_shipping && deliveryType.value === 'delivery' && !addressId.value) {
+      uni.showToast({ title: i18n.global.t('请选择收货地址'), icon: 'none' });
       return;
     }
-    if (!serviceInfo.value.contact_phone) {
-      uni.showToast({ title: i18n.global.t('请填写联系电话'), icon: 'none' });
+    if (features.value.store_pickup && deliveryType.value === 'pickup' && !storeInfo.value.id) {
+      uni.showToast({ title: i18n.global.t('请选择自提门店'), icon: 'none' });
       return;
     }
-    if (!serviceInfo.value.appointment_time) {
-      uni.showToast({ title: i18n.global.t('请选择预约时间'), icon: 'none' });
-      return;
+    if (features.value.door_service && deliveryType.value === 'door') {
+      if (!serviceInfo.value.contact_name) {
+        uni.showToast({ title: i18n.global.t('请填写联系人姓名'), icon: 'none' });
+        return;
+      }
+      if (!serviceInfo.value.contact_phone) {
+        uni.showToast({ title: i18n.global.t('请填写联系电话'), icon: 'none' });
+        return;
+      }
+      if (!serviceInfo.value.appointment_time) {
+        uni.showToast({ title: i18n.global.t('请选择预约时间'), icon: 'none' });
+        return;
+      }
     }
   }
   if (features.value.custom_form && customForm.value.length > 0) {
@@ -687,8 +723,8 @@ async function handleConfirm() {
         coupon_id: couponId.value,
         use_integral: useIntegral.value ? 1 : 0,
         order_data: {
-          address_id: !features.value.express_shipping || deliveryType.value === 'pickup' || deliveryType.value === 'door' ? 0 : addressId.value,
-          delivery_type: deliveryType.value,
+          address_id: isGift.value ? 0 : (!features.value.express_shipping || deliveryType.value === 'pickup' || deliveryType.value === 'door' ? 0 : addressId.value),
+          delivery_type: isGift.value ? 'delivery' : deliveryType.value,
           store_id: deliveryType.value === 'pickup' ? (storeInfo.value.id || 0) : 0,
           service: deliveryType.value === 'door' ? serviceInfo.value : {},
           mark: remark.value,
@@ -696,6 +732,8 @@ async function handleConfirm() {
           visitors: (visitorFormRef.value && features.value.visitor_form) ? visitorFormRef.value.getData() : [],
           block_data: selectedBlockData.value,
           invoice_id: features.value.invoice ? (invoiceId.value || 0) : 0,
+          is_gift: isGift.value || 0,
+          gift_mark: isGift.value ? giftMark.value : '',
         },
       };
     } else {
@@ -710,8 +748,8 @@ async function handleConfirm() {
         coupon_id: couponId.value,
         use_integral: useIntegral.value ? 1 : 0,
         order_data: {
-          address_id: !features.value.express_shipping || deliveryType.value === 'pickup' || deliveryType.value === 'door' ? 0 : addressId.value,
-          delivery_type: deliveryType.value,
+          address_id: isGift.value ? 0 : (!features.value.express_shipping || deliveryType.value === 'pickup' || deliveryType.value === 'door' ? 0 : addressId.value),
+          delivery_type: isGift.value ? 'delivery' : deliveryType.value,
           store_id: deliveryType.value === 'pickup' ? (storeInfo.value.id || 0) : 0,
           service: deliveryType.value === 'door' ? serviceInfo.value : {},
           mark: remark.value,
@@ -719,6 +757,8 @@ async function handleConfirm() {
           visitors: (visitorFormRef.value && features.value.visitor_form) ? visitorFormRef.value.getData() : [],
           block_data: selectedBlockData.value,
           invoice_id: features.value.invoice ? (invoiceId.value || 0) : 0,
+          is_gift: isGift.value || 0,
+          gift_mark: isGift.value ? giftMark.value : '',
         },
       };
       if (activityType.value) params.activity_type = activityType.value;
@@ -746,7 +786,7 @@ async function handleConfirm() {
       return;
     }
     uni.redirectTo({
-      url: routes.cashier + '?order_no=' + orderNo + '&from_type=order&price=' + payPrice,
+      url: routes.cashier + '?order_no=' + orderNo + '&from_type=order&price=' + payPrice + (isGift.value ? '&is_gift=1' : ''),
     });
   } catch (e) {
     uni.showToast({ title: e.msg || e.message || i18n.global.t('下单失败'), icon: 'none' });
@@ -953,6 +993,11 @@ function initFromOptions(options) {
   cartId.value = routeQuery.cartId || '';
   news.value = routeQuery.new === '1' || routeQuery.new === 1 ? 1 : 0;
   isCartMode.value = !!cartId.value;
+  // 送礼下单：详情页「送礼物」跳转携带 is_gift=1
+  isGift.value = Number(routeQuery.is_gift || 0) || 0;
+  if (isGift.value === 1) {
+    giftMark.value = i18n.global.t('这是送您的一份礼物~');
+  }
   productId.value = routeQuery.product_id || '';
   skuUnique.value = routeQuery.sku_unique || '';
   try {
@@ -1042,5 +1087,23 @@ onBeforeUnmount(() => {
 }
 .product-card-hover {
   opacity: 0.7;
+}
+
+/* 送礼留言 */
+.gift-mark-card {
+  margin: 20rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx 30rpx;
+}
+.gift-mark-label {
+  font-size: 28rpx;
+  color: #282828;
+  margin-bottom: 12rpx;
+}
+.gift-mark-input {
+  width: 100%;
+  font-size: 28rpx;
+  color: #282828;
 }
 </style>

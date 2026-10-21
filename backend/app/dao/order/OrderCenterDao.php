@@ -82,6 +82,20 @@ class OrderCenterDao extends BaseDao
     }
 
     /**
+     * 用户订单范围查询：本人下单的订单 + 本人领取的礼品订单
+     * 两个条件均为索引字段（idx_uid / idx_gift_uid），支持索引合并
+     * @param int $uid 用户ID
+     * @return mixed 返回查询对象
+     */
+    public function userOrderQuery(int $uid)
+    {
+        return $this->getModel()->whereRaw(
+            '(uid = :owner_uid OR gift_uid = :gift_uid)',
+            ['owner_uid' => $uid, 'gift_uid' => $uid]
+        );
+    }
+
+    /**
      * 保存或更新记录
      * 根据条件判断是新增还是更新，支持幂等性操作
      * 兜底机制：若按 order_no 找不到，再按 (source_type, source_id) 查找，

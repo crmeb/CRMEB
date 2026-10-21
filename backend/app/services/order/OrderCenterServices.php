@@ -420,26 +420,28 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     /**
      * 根据订单号获取订单详情
      * @param string $orderNo 订单号
+     * @param bool $withRemoteLogistics 是否同步请求第三方物流轨迹
      * @return array 返回订单详情数据
      * @throws \RuntimeException 订单不存在时抛出异常
      */
-    public function getDetailByOrderNo(string $orderNo): array
+    public function getDetailByOrderNo(string $orderNo, bool $withRemoteLogistics = true): array
     {
         $detail = $this->dao->get(['order_no' => $orderNo], ['id']);
         if (!$detail) {
             throw new \RuntimeException('订单不存在');
         }
-        return $this->getDetail((int)$detail['id']);
+        return $this->getDetail((int)$detail['id'], $withRemoteLogistics);
     }
 
     /**
      * 获取订单详情
      * 通过事件机制允许扩展模块注入详情数据
      * @param int $id 订单中台记录ID
+     * @param bool $withRemoteLogistics 是否同步请求第三方物流轨迹（详情首屏可关闭，改由前端异步查询）
      * @return array 返回订单详情数据
      * @throws \RuntimeException 订单不存在时抛出异常
      */
-    public function getDetail(int $id): array
+    public function getDetail(int $id, bool $withRemoteLogistics = true): array
     {
         $detail = $this->dao->get(['id' => $id]);
         if (!$detail) {
@@ -584,7 +586,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
 
         // 加载物流轨迹扩展数据（已发货订单调用物流查询驱动获取 tracks）
         // 前端 LogisticsTimeline 组件据此渲染物流轨迹卡片，无需点"查看物流"单独查询
-        $this->loadLogisticsExtension($detail);
+        $this->loadLogisticsExtension($detail, $withRemoteLogistics);
 
         // 加载订单完成态权益扩展数据（积分奖励/领券入口，系统内置能力，中台自行组装）
         $this->loadOrderRewardExtension($detail);
@@ -599,6 +601,24 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         }
 
         return $detail;
+    }
+
+    /**
+     * 判定是否送礼订单
+     * extra_info.gift / gift_mark 为下单写入的送礼标记，gift_price 为兼容旧单兜底
+     * @param array $detail 订单详情（含 extra_info）
+     * @return int 1=送礼订单 0=普通订单
+     */
+    protected function resolveIsGiftFlag(array $detail): int
+    {
+        $extra = $detail['extra_info'] ?? [];
+        if (!is_array($extra)) {
+            $extra = [];
+        }
+        if (!empty($extra['gift']) || isset($extra['gift_mark'])) {
+            return 1;
+        }
+        return (float)($detail['gift_price'] ?? 0) > 0 ? 1 : 0;
     }
 
     /**
@@ -657,6 +677,14 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 'label' => '付费会员优惠',
                 'value' => '-' . number_format((float)$detail['vip_discount'], 2, '.', ''),
                 'type'  => 'vip',
+            ];
+        }
+        // 礼品附加费（送礼订单按件累计）
+        if (!empty($detail['gift_price']) && (float)$detail['gift_price'] > 0) {
+            $items[] = [
+                'label' => '礼品附加费',
+                'value' => '+' . number_format((float)$detail['gift_price'], 2, '.', ''),
+                'type'  => 'gift',
             ];
         }
 
@@ -775,6 +803,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
 
         // 40. 配送/自提卡片（仅实物商品）
         // 上门服务订单不渲染地址卡片，预约信息由 service_appointment section（118）展示
+        // 送礼订单的可见性由查看者身份决定（购买者隐藏、领取人展示），在 applyGiftViewerPolicy 中裁剪
         if ($productType === 'normal' && !($detail['delivery']['is_door_service'] ?? false)) {
             $deliveryComponent = $isPickup ? 'store_card' : 'address_card';
             $deliveryProps = $isPickup
@@ -1090,6 +1119,11 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             'detail_route'    => $detail['detail_route'] ?? '',
             'admin_detail_url'=> $detail['admin_detail_url'] ?? '',
             'activity_detail_url' => $detail['activity_detail_url'] ?? '',
+            // 送礼订单：1=购买礼物 0=普通单；gift_uid 非 0 表示已被领取
+            'is_gift'         => $this->resolveIsGiftFlag($detail),
+            'gift_uid'        => (int)($detail['gift_uid'] ?? $detail['extra_info']['gift']['gift_uid'] ?? ($detail['extra_info']['gift_uid'] ?? 0)),
+            'gift_mark'       => (string)($detail['extra_info']['gift_mark'] ?? ''),
+            'gift_price'      => $detail['gift_price'] ?? '0.00',
         ];
 
         // 时间线
@@ -1357,12 +1391,13 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
      *   由中台基础 section + 插件 extend_sections 自声明 section 组成
      * - page_config.extensions：扩展数据（含 extra_info 深度定制数据）
      * @param int $id 订单中台记录ID
+     * @param bool $withRemoteLogistics 是否同步请求第三方物流轨迹（首屏可关闭，由前端异步补齐）
      * @return array 返回 {page_config: {sections: [...], extensions: {...}}}
      */
-    public function getDetailWithConfig(int $id): array
+    public function getDetailWithConfig(int $id, bool $withRemoteLogistics = true): array
     {
         // 1. 获取扁平详情数据（复用现有 getDetail 逻辑）
-        $flatDetail = $this->getDetail($id);
+        $flatDetail = $this->getDetail($id, $withRemoteLogistics);
 
         // 2. 组装分组数据（内部使用：buildDefaultPageConfig 依赖全量分组生成 sections）
         $data = $this->buildGroupedData($flatDetail);
@@ -1396,16 +1431,17 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     /**
      * 根据订单号获取带声明式渲染配置的订单详情
      * @param string $orderNo 订单号
+     * @param bool $withRemoteLogistics 是否同步请求第三方物流轨迹
      * @return array 返回 {page_config, data}
      * @throws \RuntimeException 订单不存在时抛出异常
      */
-    public function getDetailWithConfigByOrderNo(string $orderNo): array
+    public function getDetailWithConfigByOrderNo(string $orderNo, bool $withRemoteLogistics = true): array
     {
         $detail = $this->dao->get(['order_no' => $orderNo], ['id']);
         if (!$detail) {
             throw new \RuntimeException('订单不存在');
         }
-        return $this->getDetailWithConfig((int)$detail['id']);
+        return $this->getDetailWithConfig((int)$detail['id'], $withRemoteLogistics);
     }
 
     /**
@@ -1647,16 +1683,17 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
 
     /**
      * 加载物流轨迹扩展数据
-     * 已发货且填了快递单号的订单，调用物流查询驱动获取 tracks，注入 extend.logistics
+     * 已发货且填了快递单号的订单，读取物流轨迹（默认允许同步查询第三方；详情首屏可只读缓存）并注入 extend.logistics
      * 前端 LogisticsTimeline 组件据此渲染物流轨迹卡片，用户无需点"查看物流"单独查询
      * 数据流：本方法写入 $detail['extend']['logistics']
      *        → buildGroupedData() 合并到 extensions['logistics']
      *        → page_config 中 component='timeline' + key='logistics' → 复合 key 'timeline:logistics'
      *        → 前端 LogisticsTimeline 渲染 delivery_name/delivery_id + OrderTimeline 遍历 tracks
      * @param array $detail 订单详情数据（引用传递）
+     * @param bool $allowRemote 是否允许同步请求第三方物流接口；false 时仅读取已有缓存，避免详情首屏被慢请求阻塞
      * @return void
      */
-    protected function loadLogisticsExtension(array &$detail): void
+    protected function loadLogisticsExtension(array &$detail, bool $allowRemote = true): void
     {
         // 仅处理有快递单号的订单（已发货且填写了物流单号）
         $deliveryId = (string)($detail['delivery_id'] ?? '');
@@ -1690,7 +1727,10 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
 
             /** @var ExpressServices $expressServices */
             $expressServices = $this->app->make(ExpressServices::class);
-            $rawTracks = $expressServices->query($cacheName, $deliveryId, $deliveryCode, $phone);
+            // 详情首屏只读缓存；轨迹按需由前端调用 order/express 异步补齐，避免第三方慢请求阻塞详情
+            $rawTracks = $allowRemote
+                ? $expressServices->query($cacheName, $deliveryId, $deliveryCode, $phone)
+                : $expressServices->getCachedTracks($cacheName);
 
             // 归一化轨迹字段为前端统一格式 {title, time, desc}
             // 驱动返回格式差异：一号通 {time,status} / 阿里云 {time,context} / 其他兼容

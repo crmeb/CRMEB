@@ -24,13 +24,15 @@
 <script setup>
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
+import i18n from '@/utils/lang.js';
 
 const status = ref(0);
-const orderId = ref(0);
+const orderNo = ref('');
 
 onLoad((options) => {
 	status.value = options.status;
-	orderId.value = options.order_id;
+	// order_no 为现行参数；order_id 兼容历史链接（历史链接中携带的同样是订单号）
+	orderNo.value = options.order_no || options.order_id || '';
 });
 
 function goPage(type) {
@@ -38,11 +40,16 @@ function goPage(type) {
 		uni.reLaunch({
 			url: '/pages/index/index'
 		});
-	} else {
-		uni.reLaunch({
-			url: `/pages/goods/order_details/index?order_id=${orderId.value}`
-		});
+		return;
 	}
+	// 订单详情按订单号跳转（中台主键 id 不能作为 order_no 使用）
+	if (!orderNo.value) {
+		uni.showToast({ title: i18n.t(`订单信息异常`), icon: 'none' });
+		return;
+	}
+	uni.reLaunch({
+		url: `/pages/center/order/detail/index?order_no=${orderNo.value}`
+	});
 }
 </script>
 

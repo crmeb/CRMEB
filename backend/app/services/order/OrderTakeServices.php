@@ -83,12 +83,23 @@ class OrderTakeServices extends BaseService
      */
     public function takeOrder(string $uni, int $uid)
     {
-        $order = $this->dao->getOne(['order_no' => $uni, 'uid' => $uid]);
+        $order = $this->dao->getOne(['order_no' => $uni]);
         if (!$order) {
             throw new ApiException('订单不存在');
         }
         if (is_object($order)) {
             $order = $order->toArray();
+        }
+        // 订单归属人可确认收货；送礼订单的领取人也可确认收货
+        if ((int)($order['uid'] ?? 0) !== $uid) {
+            $extra = $order['extra_info'] ?? [];
+            if (is_string($extra)) {
+                $extra = json_decode($extra, true) ?: [];
+            }
+            $giftUid = (int)($order['gift_uid'] ?? $extra['gift']['gift_uid'] ?? ($extra['gift_uid'] ?? 0));
+            if ($giftUid !== $uid) {
+                throw new ApiException('订单不存在');
+            }
         }
         // 售后拦截：存在处理中售后单不可确认收货（售后引擎统一判断）
         $orderIsRefund = app()->make(AfterSaleServices::class)->hasActiveByOrderId((int)$order['id']);

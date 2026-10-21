@@ -18,7 +18,7 @@
         <text class="product-name">{{ item.store_name || '' }}</text>
         <text v-if="getSkuText(item)" class="sku-text">{{ getSkuText(item) }}</text>
         <view class="product-meta">
-          <text class="product-price">¥{{ item.true_price || item.price || '0.00' }}</text>
+          <text v-if="!isGiftReceiver" class="product-price">¥{{ item.true_price || item.price || '0.00' }}</text>
           <text class="product-qty">x{{ item.cart_num || 1 }}</text>
         </view>
       </view>
@@ -53,6 +53,8 @@ const emit = defineEmits(['click']);
 const p = computed(() => (props.section && props.section.props) || {});
 /** 引擎注入的全局状态 */
 const ctx = computed(() => (props.section && props.section._ctx) || {});
+/** 礼品领取人查看：不展示商品价格（与旧版 is_gift=2 一致） */
+const isGiftReceiver = computed(() => ctx.value.viewerRole === 'gift_receiver');
 /** 商品信息对象 */
 const product = computed(() => p.value.product || {});
 /**

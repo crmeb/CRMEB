@@ -14,6 +14,11 @@
       <view>{{ $t(`可用积分`) }}</view>
       <view class="money">{{ usableIntegral }}</view>
     </view>
+    <!-- 礼品附加费（送礼订单） -->
+    <view class="item acea-row row-between-wrapper" v-if="parseFloat(giftPrice) > 0">
+      <view>{{ $t(`礼品附加费`) }}</view>
+      <view class="money">￥{{ parseFloat(giftPrice).toFixed(2) }}</view>
+    </view>
     <!-- 运费（仅支持快递配送时显示） -->
     <view class="item acea-row row-between-wrapper" v-if="showPostage">
       <view>{{ $t(`快递费用`) }}</view>
@@ -78,6 +83,8 @@ const props = defineProps({
   integralPrice: { type: [Number, String], default: 0 },
   /** 积分兑换总额（非0时替换商品总价显示） */
   integralTotal: { type: [Number, String], default: 0 },
+  /** 礼品附加费（送礼订单按件累计） */
+  giftPrice: { type: [Number, String], default: 0 },
   /** 可用积分（积分兑换模式展示） */
   usableIntegral: { type: [Number, String], default: 0 },
   /** 是否显示快递费用行（快递配送关闭时隐藏） */

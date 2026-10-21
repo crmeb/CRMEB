@@ -39,6 +39,18 @@
           @click="onAction(action)"
         >{{ $t(action.label) }}</button>
       </view>
+      <!-- 送礼订单：支付成功后引导分享礼物（按钮样式与其它操作按钮一致） -->
+      <view v-if="isGiftShareVisible" @click="giftModalShow = true">
+        <button class="returnBnt bg-color" hover-class="none">{{ $t('送给好友') }}</button>
+      </view>
+      <!-- 蒙层置于弹窗下层，避免遮挡 giftModal -->
+      <view class="gift-mask" v-if="giftModalShow" @click="giftModalShow = false"></view>
+      <giftModal
+        :aleartStatus="giftModalShow"
+        :giftData="giftData"
+        @shareH5="shareH5"
+        @close="giftModalShow = false"
+      />
       <!-- 赠送优惠券 -->
       <view class="coupons" v-if="couponList.length">
         <view class="title acea-row row-center-wrapper">
@@ -92,6 +104,7 @@ import { useAppStore } from '@/store/modules/app';
 import { useColorTheme } from '@/composables/useColorTheme';
 import routes from '../api/routes.js';
 import i18n from '@/utils/lang.js';
+import giftModal from '@/pages/goods/order_pay_status/components/giftModal.vue';
 
 defineOptions({ name: 'PayStatusEngine' });
 
@@ -111,6 +124,9 @@ const msg = ref('');
 const payType = ref('');
 /** 是否礼品订单（0 否） */
 const isGift = ref(0);
+// 送礼分享弹窗与数据
+const giftModalShow = ref(false);
+const giftData = ref({});
 // 是否已完成首次查询
 const loading = ref(false);
 // 订单支付信息
@@ -180,6 +196,13 @@ const currentActions = computed(() => {
   // #endif
   list.push(actionMap.value.goIndex);
   return list;
+});
+/**
+ * 送礼分享入口可见性：送礼订单且已支付（含线下支付成功）
+ */
+const isGiftShareVisible = computed(() => {
+  const info = order_pay_info.value || {};
+  return !!isGift.value && (info.pay_status === 1 || info.pay_type === 'offline');
 });
 /**
  * 状态图标 class
@@ -291,6 +314,22 @@ function getOrderPayInfo() {
         pay_price: pricingProps.pay_price || '0.00',
         pay_status: statusProps.pay_status || 0,
       };
+      // 送礼订单：URL 参数缺失时按订单详情字段兜底
+      const orderIsGift = Number(orderInfoFields.is_gift || 0) || (isGift.value ? 1 : 0);
+      isGift.value = orderIsGift;
+      // section.props.product = { product: {title,image,items}, product_id }
+      const productObj = (propsMap['product'] && propsMap['product'].product) || {};
+      const productItems = productObj.items || [];
+      const firstProduct = productItems[0] || {};
+      giftData.value = {
+        id: orderInfoFields.id || 0,
+        image: firstProduct.image || productObj.image || '',
+        title: firstProduct.store_name || firstProduct.title || productObj.title || '',
+        message: orderInfoFields.gift_mark || '',
+        avatar: '',
+        nickname: '',
+        code: '',
+      };
       // 根据支付状态设置导航栏标题
       // pay_status: 0未支付 1已支付 2部分退款 3全额退款
       const isPaid = order_pay_info.value.pay_status === 1;
@@ -298,8 +337,10 @@ function getOrderPayInfo() {
         title: isPaid ? i18n.t('支付成功') : i18n.t('未支付'),
       });
       loading.value = true;
-      // 非礼品订单禁用分享（本引擎不支持礼品分享）
-      uni.hideShareMenu();
+      // 送礼订单允许分享领取链接；普通订单禁用分享
+      if (!isGift.value) {
+        uni.hideShareMenu();
+      }
       getOrderCoupon();
     })
     .catch(() => {
@@ -359,6 +400,12 @@ function goIndex() {
   uni.switchTab({
     url: '/pages/index/index',
   });
+}
+/**
+ * H5 分享面板（giftModal 回调）
+ */
+function shareH5() {
+  // 保留与旧支付结果页一致的回调占位；链接复制由 giftModal 内部完成
 }
 
 // 供壳子（pages/center/pay/status）onMounted 初始化、onShow 刷新，通过 engineRef 调用
@@ -435,6 +482,17 @@ defineExpose({
   text-align: center;
   line-height: 86rpx;
   margin: 0 auto 20rpx auto;
+}
+
+/* 送礼分享蒙层：压在内容上、置于 giftModal（z-index 999）之下 */
+.gift-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
 }
 
 .coupons {

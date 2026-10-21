@@ -8,7 +8,7 @@
     <view class="acea-row row-between-wrapper px-20 py-14" style="height: 100%">
       <div class="acea-row">
         <block v-if="!isCustomEntry">
-          <block v-for="(item_id, index) in showIcons" :key="index">
+          <block v-for="(item_id, index) in displayIcons" :key="index">
             <navigator :render-link="false"
               v-if="item_id === 3"
               hover-class="none"
@@ -357,6 +357,22 @@ const buyBtnStyle = computed(() => {
 const showIcons = computed(() => {
   if (!bottomConfig.value) return [3, 1, 2, 0, 4, 5];
   return bottomConfig.value.showContent.type;
+});
+// 送礼入口会占一席，左侧最多只保留 3 个按钮（含送礼）。
+// 超出时按 首页(3) → 客服(0) → 购物车(2) 的优先级隐藏，收藏/分享保留。
+// 模板仅渲染 0/1/2/3/4，占位 id 不参与配额，避免误判按钮数量。
+const RENDERABLE_ICON_IDS = [3, 1, 2, 0, 4];
+const displayIcons = computed(() => {
+  const icons = (showIcons.value || []).filter((id) => RENDERABLE_ICON_IDS.includes(id));
+  if (!props.is_gift) return (showIcons.value || []).slice();
+  const hideOrder = [3, 0, 2];
+  // 含送礼共 3 个 => 常规图标最多 2 个
+  for (const id of hideOrder) {
+    if (icons.length <= 2) break;
+    const idx = icons.indexOf(id);
+    if (idx > -1) icons.splice(idx, 1);
+  }
+  return icons;
 });
 const showCartButton = computed(() => {
   if (!bottomConfig.value) return true;

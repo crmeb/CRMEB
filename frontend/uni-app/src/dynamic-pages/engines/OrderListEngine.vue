@@ -44,6 +44,7 @@
               <view class="title acea-row row-between-wrapper">
                 <view class="acea-row row-middle">
                   <text v-if="order.type_label" class="type-tag">{{ order.type_label }}</text>
+                  <text v-if="order.is_gift" class="type-tag gift-tag">{{ order.is_gift_receiver ? $t('收到的礼物') : $t('礼物') }}</text>
                   <view>{{ formatTime(order.add_time) }}</view>
                 </view>
                 <StatusBadge :status-code="order.status_code" :status-text="order.status_text" />
@@ -58,7 +59,7 @@
                         <text class="goods-name line2">{{ item.store_name || '' }}</text>
                         <text v-if="getItemSkuText(item)" class="goods-sku line1">{{ getItemSkuText(item) }}</text>
                         <view class="goods-meta">
-                          <text class="goods-price">¥{{ item.true_price || item.price || '0.00' }}</text>
+                          <text v-if="!order.is_gift_receiver" class="goods-price">¥{{ item.true_price || item.price || '0.00' }}</text>
                           <text class="goods-num">x{{ item.cart_num || 1 }}</text>
                         </view>
                       </view>
@@ -73,7 +74,7 @@
                   <view class="text">
                     <view class="title-row">
                       <text class="name line2">{{ order.title || '' }}</text>
-                      <view class="money">
+                      <view v-if="!order.is_gift_receiver" class="money">
                         <view>{{ $t(`￥`) }}{{ order.pay_price || '0.00' }}</view>
                         <view>x{{ order.total_num || 0 }}</view>
                       </view>
@@ -424,6 +425,11 @@ defineExpose({ refresh: refreshList });
   color: var(--view-theme, #e93323);
   background: var(--view-op-ten, rgba(233, 51, 35, 0.1));
   border-radius: 6rpx;
+}
+
+.my-order .list .item .title .gift-tag {
+  color: #ff6b00;
+  background: rgba(255, 107, 0, 0.1);
 }
 
 .my-order .list .item .item-info {

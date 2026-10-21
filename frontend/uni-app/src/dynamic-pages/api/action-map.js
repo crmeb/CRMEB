@@ -76,6 +76,22 @@ export default {
       },
     });
   },
+  /**
+   * 送给好友（送礼订单分享礼物领取链接）
+   * 详情页引擎通过 context.onShareGift 打开送礼弹窗；无弹窗上下文的页面跳详情页操作
+   */
+  shareGift(order, params, context) {
+    if (context && typeof context.onShareGift === 'function') {
+      context.onShareGift(params || {});
+      return;
+    }
+    const orderNo = params.order_no || order.order_no || '';
+    if (!orderNo) {
+      uni.showToast({ title: i18n.t(`订单信息异常`), icon: 'none' });
+      return;
+    }
+    uni.navigateTo({ url: routes.orderDetail + '?order_no=' + orderNo });
+  },
   /** 申请退款（统一走售后流程，售后页按 available_types 渲染仅退款等类型） */
   applyRefund(order, params) {
     const orderNo = params.order_no || order.order_no || '';

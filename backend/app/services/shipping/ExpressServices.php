@@ -196,6 +196,48 @@ class ExpressServices extends BaseService
     }
 
     /**
+     * 解析当前启用的物流查询驱动
+     * @return array 驱动配置；未启用或所属插件停用时返回空数组
+     */
+    protected function resolveEnabledQueryDriver(): array
+    {
+        /** @var LogisticsDriverServices $logisticsDriverServices */
+        $logisticsDriverServices = app()->make(LogisticsDriverServices::class);
+        $enabledDriver = $logisticsDriverServices->getEnabledDriver() ?? [];
+        $driverKey = (string)($enabledDriver['driver_key'] ?? '');
+        $ownerPluginId = (string)($enabledDriver['owner_plugin_id'] ?? '');
+        // 插件或查询驱动关闭时，即使轨迹缓存仍存在也不返回旧数据。
+        if ($driverKey === '' || $ownerPluginId === '' || !ModuleStateChecker::isDriverActive($ownerPluginId)) {
+            return [];
+        }
+        if (!in_array($driverKey, ['aliyun_express', 'yihaotong'], true)) {
+            throw new \RuntimeException('物流查询驱动不支持');
+        }
+        return $enabledDriver;
+    }
+
+    /**
+     * 仅读取物流轨迹缓存，不请求第三方服务
+     * 用于订单详情首屏：避免第三方物流接口的慢请求阻塞详情返回
+     * @param string $cacheName 订单号 + 快递单号
+     * @return array 已缓存的轨迹数据，未命中返回空数组
+     */
+    public function getCachedTracks(string $cacheName): array
+    {
+        try {
+            $enabledDriver = $this->resolveEnabledQueryDriver();
+            $driverKey = (string)($enabledDriver['driver_key'] ?? '');
+            if ($driverKey === '') {
+                return [];
+            }
+            $data = CacheService::get('logistics:' . $driverKey . ':' . $cacheName, null);
+            return is_array($data) ? $data : [];
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
      * 物流公司查询
      * @param string $cacheName
      * @param string $expressNum
@@ -209,23 +251,21 @@ class ExpressServices extends BaseService
         $com = (string)($com ?? '');
         $phone = (string)($phone ?? '');
 
-        /** @var LogisticsDriverServices $logisticsDriverServices */
-        $logisticsDriverServices = app()->make(LogisticsDriverServices::class);
-        $enabledDriver = $logisticsDriverServices->getEnabledDriver() ?? [];
+        $enabledDriver = $this->resolveEnabledQueryDriver();
         $driverKey = (string)($enabledDriver['driver_key'] ?? '');
-        $ownerPluginId = (string)($enabledDriver['owner_plugin_id'] ?? '');
-        // 插件或查询驱动关闭时，即使轨迹缓存仍存在也不返回旧数据。
-        if ($driverKey === '' || $ownerPluginId === '' || !ModuleStateChecker::isDriverActive($ownerPluginId)) {
+        if ($driverKey === '') {
             return [];
-        }
-        if (!in_array($driverKey, ['aliyun_express', 'yihaotong'], true)) {
-            throw new \RuntimeException('物流查询驱动不支持');
         }
 
         // 按查询驱动隔离轨迹缓存，避免切换后复用其他服务商的数据。
         $driverCacheName = 'logistics:' . $driverKey . ':' . $cacheName;
         $resultData = CacheService::get($driverCacheName, null);
         if (!is_array($resultData) || empty($resultData)) {
+            // 第三方无轨迹/请求失败时短缓存，避免详情页与物流页反复触发慢请求
+            $emptyCacheName = $driverCacheName . ':empty:' . md5($phone . '|' . $com);
+            if ((int)CacheService::get($emptyCacheName, 0) === 1) {
+                return [];
+            }
             $data = [];
             $cacheTime = 0;
             switch ($driverKey) {
@@ -265,10 +305,12 @@ class ExpressServices extends BaseService
                 default:
                     throw new \RuntimeException('物流查询驱动不支持');
             }
-            // 空轨迹通常表示手机号/快递编码尚未满足验单条件，不缓存失败结果，
-            // 以便后续携带完整参数的查询可以重新请求第三方服务。
+            // 空轨迹通常表示手机号/快递编码尚未满足验单条件：按查询参数短缓存 120 秒，
+            // 既避免详情页/物流页反复触发第三方慢请求，又允许后续携带更完整参数时重试。
             if ($data !== []) {
                 CacheService::set($driverCacheName, $data, $cacheTime);
+            } else {
+                CacheService::set($emptyCacheName, 1, 120);
             }
             return $data;
         }

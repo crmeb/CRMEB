@@ -25,15 +25,106 @@ use think\facade\Log;
 class OrderCenterUserServices extends OrderCenterServices
 {
     /**
-     * 查询当前用户归属的订单中台记录 ID
+     * 查询当前用户可访问的订单中台记录 ID
+     *
+     * 可访问范围：
+     * 1. 订单归属人（uid 匹配）；
+     * 2. 送礼订单的领取人（gift_uid 匹配）——领取礼物后需查看物流、核销与领取进度。
+     *
      * @param string $orderNo 订单号
      * @param int $uid 当前用户 ID
-     * @return int|null 不属于当前用户或订单不存在时返回 null
+     * @return int|null 无权访问或订单不存在时返回 null
      */
     public function getOwnedOrderIdByNo(string $orderNo, int $uid): ?int
     {
-        $id = $this->dao->value(['order_no' => $orderNo, 'uid' => $uid], 'id');
-        return $id ? (int)$id : null;
+        $order = $this->dao->get(['order_no' => $orderNo], ['id', 'uid', 'gift_uid', 'extra_info']);
+        if (!$order) {
+            return null;
+        }
+        $order = is_array($order) ? $order : $order->toArray();
+        if ((int)($order['uid'] ?? 0) === $uid) {
+            return (int)$order['id'];
+        }
+        // 送礼订单：领取人可查看该订单（优先实体列，历史数据回退 extra_info）
+        $extra = $this->parseExtraInfo($order['extra_info'] ?? null);
+        $giftUid = (int)($order['gift_uid'] ?? $extra['gift']['gift_uid'] ?? ($extra['gift_uid'] ?? 0));
+        return $giftUid > 0 && $giftUid === $uid ? (int)$order['id'] : null;
+    }
+
+    /**
+     * 送礼订单详情按查看者身份裁剪渲染配置
+     *
+     * - 购买者：隐藏收货信息、物流轨迹，以及确认收货/申请退款/查看物流按钮；
+     * - 领取人：只读视角，保留收货信息、物流轨迹与确认收货/查看物流按钮，
+     *   隐藏金额/支付/发票等下单人信息。
+     * 非送礼订单不做任何处理。
+     *
+     * @param array $result getDetailWithConfig 返回的 page_config 结构
+     * @param int $viewerUid 查看者用户 ID
+     * @return array 裁剪后的结构
+     */
+    public function applyGiftViewerPolicy(array $result, int $viewerUid): array
+    {
+        $sections = $result['page_config']['sections'] ?? [];
+        if (empty($sections)) {
+            return $result;
+        }
+
+        // 从订单信息 section 读取送礼标识、下单人与领取人
+        $fields = [];
+        foreach ($sections as $section) {
+            if (($section['key'] ?? '') === 'order_info') {
+                $fields = $section['props']['fields'] ?? [];
+                break;
+            }
+        }
+        if ((int)($fields['is_gift'] ?? 0) !== 1) {
+            return $result;
+        }
+
+        $ownerUid = (int)($fields['uid'] ?? 0);
+        $giftUid = (int)($fields['gift_uid'] ?? 0);
+        $isReceiver = $ownerUid !== $viewerUid && $giftUid === $viewerUid;
+
+        if ($isReceiver) {
+            // 领取人：隐藏金额/支付/发票与下单人权益入口，保留收货信息、物流轨迹
+            $sections = array_values(array_filter(
+                $sections,
+                fn($section) => !in_array($section['key'] ?? '', ['pricing', 'payment', 'invoice', 'coupon_gift', 'points_reward'], true)
+            ));
+            $result['page_config']['extensions']['viewer_role'] = 'gift_receiver';
+            $visibleActions = ['confirmReceive', 'viewLogistics'];
+            $hiddenActions = [];
+        } else {
+            // 购买者：不展示收货信息与物流轨迹，隐藏确认收货/申请退款/查看物流
+            $sections = array_values(array_filter(
+                $sections,
+                fn($section) => !in_array($section['key'] ?? '', ['delivery', 'logistics'], true)
+            ));
+            $visibleActions = [];
+            $hiddenActions = ['confirmReceive', 'applyRefund', 'viewLogistics'];
+        }
+
+        // 按查看者身份过滤底部操作按钮
+        foreach ($sections as &$section) {
+            if (($section['key'] ?? '') !== 'buttons') {
+                continue;
+            }
+            $section['props']['buttons'] = array_values(array_filter(
+                $section['props']['buttons'] ?? [],
+                function ($button) use ($isReceiver, $visibleActions, $hiddenActions) {
+                    $action = (string)($button['action'] ?? '');
+                    return $isReceiver
+                        ? in_array($action, $visibleActions, true)
+                        : !in_array($action, $hiddenActions, true);
+                }
+            ));
+            $section['visible'] = !empty($section['props']['buttons']);
+        }
+        unset($section);
+
+        $result['page_config']['sections'] = $sections;
+        return $result;
     }
 
     /**
@@ -48,7 +139,6 @@ class OrderCenterUserServices extends OrderCenterServices
     public function getList(int $uid, array $where, int $page, int $limit): array
     {
         $searchWhere = [
-            ['uid', '=', $uid],
             ['is_del', '=', 0],
         ];
         // 订单大类筛选
@@ -84,15 +174,18 @@ class OrderCenterUserServices extends OrderCenterServices
             $searchWhere[] = ['take_time', '=', (int)$where['take_time']];
         }
 
-        $list = $this->dao->selectList(
-            $searchWhere,
-            'order_no, source_type, source_id, order_category, product_type, activity_type, status_code,
+        // 列表范围：本人下单 + 本人领取的礼品订单（userOrderQuery 内按 uid/gift_uid 索引查询）
+        $list = $this->dao->userOrderQuery($uid)
+            ->where($searchWhere)
+            ->field('uid, gift_uid, order_no, source_type, source_id, order_category, product_type, activity_type, status_code,
              total_price, pay_price, total_num, title, image,
              subtitle, pay_type, shipping_type, extra_info, detail_route,
-             add_time, pay_time, delivery_time, take_time',
-            $page, $limit, 'id DESC'
-        );
-        $total = $this->dao->count($searchWhere);
+             add_time, pay_time, delivery_time, take_time, gift_price')
+            ->page($page, $limit)
+            ->order('id DESC')
+            ->select()
+            ->toArray();
+        $total = (int)$this->dao->userOrderQuery($uid)->where($searchWhere)->count();
 
         // 批量加载扩展表子状态，供列表页按钮和扩展文案精确判断
         $sourceStatusMap = $this->loadSourceStatusesForList($list);
@@ -114,6 +207,18 @@ class OrderCenterUserServices extends OrderCenterServices
             // type_label: 订单类型短标签（秒杀/积分/充值/网盘/卡密等），用于列表项角标展示
             // 优先级：活动类型 > 订单大类 > 产品类型，各维度均通过注册中心/事件动态获取，新增类型无需改前端
             $item['type_label'] = $this->resolveTypeLabel($item);
+            // 送礼订单标识与礼品附加费，供列表角标与金额展示
+            $itemExtra = $item['extra_info'] ?? [];
+            $item['is_gift'] = (!empty($itemExtra['gift']) || isset($itemExtra['gift_mark'])) ? 1 : 0;
+            $item['gift_price'] = $item['gift_price'] ?? '0.00';
+            // 礼物领取人视角（非下单人）：只读列表，仅保留查看物流，避免出现退款/取消/删除等下单人操作
+            $item['is_gift_receiver'] = ((int)($item['uid'] ?? 0) !== $uid && (int)($item['gift_uid'] ?? 0) === $uid) ? 1 : 0;
+            if ($item['is_gift_receiver']) {
+                $item['order_buttons'] = array_values(array_filter(
+                    $item['order_buttons'] ?? [],
+                    fn($button) => ($button['action'] ?? '') === 'viewLogistics'
+                ));
+            }
         }
 
         // 为 viewAfterSale 按钮批量注入 after_sale_no（与详情接口 getOrderButtonsFromHandler 同口径）
@@ -319,27 +424,27 @@ class OrderCenterUserServices extends OrderCenterServices
      */
     public function getUserStatistics(int $uid): array
     {
-        // 缓存 key 带结构版本 v3 + 失效版本号：订单状态流转经 syncStatus/updateRecord 递增
-        // order_center:stat:ver 强制换 key 刷新（结构变更升级 v3），旧 key 靠自身 TTL 自然过期
+        // 缓存 key 带结构版本 v4 + 失效版本号：订单状态流转经 syncStatus/updateRecord 递增
+        // order_center:stat:ver 强制换 key 刷新（结构变更升级 v4：统计范围含领取的礼品订单），旧 key 靠自身 TTL 自然过期
         $ver = (int) app()->cache->get('order_center:stat:ver');
-        $cacheKey = 'order_center:user_stat:v3:' . $uid . ':' . $ver;
+        $cacheKey = 'order_center:user_stat:v4:' . $uid . ':' . $ver;
 
         return app()->cache->remember($cacheKey, function () use ($uid) {
-            $baseWhere = [
-                ['uid', '=', $uid],
-                ['is_del', '=', 0],
-            ];
+            // 统计范围：本人下单 + 本人领取的礼品订单（与订单列表口径一致）
+            // 金额只累计本人实际支付金额，收到的礼物不计入个人消费
+            $baseQuery = function () use ($uid) {
+                return $this->dao->userOrderQuery($uid)->where('is_del', 0);
+            };
+            $amountField = 'SUM(CASE WHEN uid = ' . $uid . ' THEN pay_price ELSE 0 END) as amount';
 
-            $statusStats = $this->dao->getDb()
-                ->where($baseWhere)
-                ->field('status_code, COUNT(*) as count, SUM(pay_price) as amount')
+            $statusStats = $baseQuery()
+                ->field('status_code, COUNT(*) as count, ' . $amountField)
                 ->group('status_code')
                 ->select()
                 ->toArray();
 
-            $all = $this->dao->getDb()
-                ->where($baseWhere)
-                ->field('COUNT(*) as count, SUM(pay_price) as amount')
+            $all = $baseQuery()
+                ->field('COUNT(*) as count, ' . $amountField)
                 ->find();
 
             $statusCounts = [];
@@ -353,10 +458,9 @@ class OrderCenterUserServices extends OrderCenterServices
 
             // STATUS_PROCESSING 按产品类型拆分：非实物业态=待使用(虚拟/卡密/酒店/门票等)
             // 实物(normal)进行中再按发货状态细分为待发货/待收货，与订单列表 tab 及角标口径一致
-            $processingByType = $this->dao->getDb()
-                ->where($baseWhere)
+            $processingByType = $baseQuery()
                 ->where('status_code', OrderCenter::STATUS_PROCESSING)
-                ->field('product_type, COUNT(*) as count, SUM(pay_price) as amount')
+                ->field('product_type, COUNT(*) as count, ' . $amountField)
                 ->group('product_type')
                 ->select()
                 ->toArray();
@@ -378,20 +482,18 @@ class OrderCenterUserServices extends OrderCenterServices
             }
 
             // 实物进行中按发货状态拆分：待发货=未发货（delivery_time=0），待收货=已发货未收货
-            $pendingShip = $this->dao->getDb()
-                ->where($baseWhere)
+            $pendingShip = $baseQuery()
                 ->where('status_code', OrderCenter::STATUS_PROCESSING)
                 ->where('product_type', 'normal')
                 ->where('delivery_time', 0)
-                ->field('COUNT(*) as count, SUM(pay_price) as amount')
+                ->field('COUNT(*) as count, ' . $amountField)
                 ->find();
-            $pendingReceipt = $this->dao->getDb()
-                ->where($baseWhere)
+            $pendingReceipt = $baseQuery()
                 ->where('status_code', OrderCenter::STATUS_PROCESSING)
                 ->where('product_type', 'normal')
                 ->where('delivery_time', '<>', 0)
                 ->where('take_time', 0)
-                ->field('COUNT(*) as count, SUM(pay_price) as amount')
+                ->field('COUNT(*) as count, ' . $amountField)
                 ->find();
 
             $grouped = [
@@ -540,7 +642,8 @@ class OrderCenterUserServices extends OrderCenterServices
      */
     public function getFriendDetail(int $orderId, int $uid)
     {
-        $detail = $this->getDetail($orderId);
+        // 代付详情不需要物流轨迹，跳过第三方物流查询
+        $detail = $this->getDetail($orderId, false);
         if (!$detail) {
             throw new ApiException('订单不存在');
         }
@@ -586,7 +689,8 @@ class OrderCenterUserServices extends OrderCenterServices
      */
     public function refundCartInfoList(array $cartIds = [], int $id = 0)
     {
-        $detail = $this->getDetail($id);
+        // 退款商品列表不需要物流轨迹，跳过第三方物流查询
+        $detail = $this->getDetail($id, false);
         if (!$detail) {
             throw new ApiException('订单不存在');
         }
@@ -676,7 +780,7 @@ class OrderCenterUserServices extends OrderCenterServices
             throw new ApiException('参数错误');
         }
 
-        $detail = $this->getDetailByOrderNo($uni);
+        $detail = $this->getDetailByOrderNo($uni, false);
         if (!$detail || (int)($detail['uid'] ?? 0) !== $uid) {
             throw new ApiException('订单不存在');
         }
@@ -798,7 +902,8 @@ class OrderCenterUserServices extends OrderCenterServices
      */
     public function giftDetail(int $oid)
     {
-        $detail = $this->getDetail($oid);
+        // 礼品详情不需要物流轨迹，跳过第三方物流查询
+        $detail = $this->getDetail($oid, false);
         if (!$detail) {
             throw new ApiException('订单不存在');
         }
@@ -807,8 +912,44 @@ class OrderCenterUserServices extends OrderCenterServices
         $userServices = app()->make(UserServices::class);
         $userInfo = $userServices->get($detail['uid']);
 
+        // 商品快照：中台 order_items 为扁平结构，旧版页面（orderGoods 组件）按 productInfo 嵌套结构渲染，
+        // 这里在保留扁平字段的同时补齐 productInfo 等旧版字段，供礼物领取页等旧页面直接复用
+        $orderItems = is_array($detail['order_items'] ?? null) ? $detail['order_items'] : [];
+        $cartInfo = [];
+        foreach ($orderItems as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            // 已是旧版结构时直接透传
+            if (!empty($item['productInfo']) && is_array($item['productInfo'])) {
+                $cartInfo[] = $item;
+                continue;
+            }
+            $attr = is_array($item['attr_info'] ?? null) ? $item['attr_info'] : [];
+            $cartInfo[] = array_merge($item, [
+                'unique'      => (string)($item['unique'] ?? ($attr['unique'] ?? '')),
+                'is_valid'    => $item['is_valid'] ?? true,
+                'is_reply'    => (int)($item['is_reply'] ?? 0),
+                'refund_num'  => (int)($item['refund_num'] ?? 0),
+                'productInfo' => [
+                    'product_id'    => (int)($item['product_id'] ?? ($attr['product_id'] ?? 0)),
+                    'store_name'    => (string)($item['store_name'] ?? ''),
+                    'image'         => (string)($item['image'] ?? ($attr['image'] ?? '')),
+                    'price'         => (string)($item['price'] ?? ($attr['price'] ?? '0.00')),
+                    'ot_price'      => (string)($attr['ot_price'] ?? ($item['ot_price'] ?? '0.00')),
+                    'store_mention' => (int)($item['store_mention'] ?? 1),
+                    'virtual_type'  => (int)($item['virtual_type'] ?? 0),
+                    'time_id'       => (int)($item['time_id'] ?? 0),
+                    'attrInfo'      => $attr ? array_merge($attr, [
+                        'image' => (string)($attr['image'] ?? ($item['image'] ?? '')),
+                        'price' => (string)($attr['price'] ?? ($item['price'] ?? '0.00')),
+                        'suk'   => (string)($attr['suk'] ?? ($item['sku'] ?? '')),
+                    ]) : null,
+                ],
+            ]);
+        }
+
         // 从 extra_info 提取物流方式信息
-        $cartInfo = $detail['order_items'] ?? [];
         $arr = [];
         foreach ($cartInfo as $cartInfoItem) {
             $arr[] = $cartInfoItem['productInfo']['logistics'] ?? '';
@@ -840,7 +981,8 @@ class OrderCenterUserServices extends OrderCenterServices
             'pay_price'  => $detail['pay_price'] ?? '0.00',
             'gift_key'   => $giftKey,
             'gift_mark'  => $extraInfo['gift_mark'] ?? '',
-            'gift_uid'   => $extraInfo['gift_uid'] ?? 0,
+            'gift_uid'   => (int)($detail['gift_uid'] ?? $extraInfo['gift']['gift_uid'] ?? ($extraInfo['gift_uid'] ?? 0)),
+            'is_gift'    => (!empty($extraInfo['gift']) || isset($extraInfo['gift_mark'])) ? 1 : 0,
             'refund_status' => $detail['refund_status'] ?? 0,
             'type'       => $type,
             'store_self_mention' => (int)sys_config('store_self_mention') ?? 0,
@@ -908,9 +1050,12 @@ class OrderCenterUserServices extends OrderCenterServices
         }
 
         // 更新 extra_info 中的礼物和联系人信息
+        // gift_time 供订单详情「礼品已领」进度节点展示；本人重复领取时保留首次领取时间
+        $giftTime = (int)($extraInfo['gift']['gift_time'] ?? 0) ?: time();
         $extraInfo['gift'] = [
-            'gift_uid' => $uid,
-            'gift_key' => $giftKey,
+            'gift_uid'  => $uid,
+            'gift_key'  => $giftKey,
+            'gift_time' => $giftTime,
         ];
         // 联系人信息
         $extraInfo['contact'] = [    
@@ -927,8 +1072,12 @@ class OrderCenterUserServices extends OrderCenterServices
             'shipping_type' => $shippingType,
             'store_id'      => $storeId,
             'verify_code'   => $verifyCode,
+            // 领取人写入实体列，供用户订单列表按 gift_uid 索引查询
+            'gift_uid'      => $uid,
             'extra_info'    => $this->encodeExtraInfo($extraInfo),
         ]);
+        // 领取后礼物订单进入领取人订单列表，清除统计缓存
+        $this->clearStatCache();
 
         return true;
     }

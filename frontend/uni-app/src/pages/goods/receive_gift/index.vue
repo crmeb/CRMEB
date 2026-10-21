@@ -48,7 +48,8 @@ const image = ref('');
 const store_name = ref('');
 const nickname = ref('');
 const giftStatusText = ref('');
-const o_id = ref(0);
+// 订单号：已领取后跳转订单详情使用
+const orderNo = ref('');
 // 原代码未在 data 声明、直接挂到实例上的字段
 let gift_uid;
 // 原代码 onLoad 中 this.uid = this.$store.state.app.uid 的快照
@@ -74,8 +75,13 @@ onLoad((options) => {
 
 function goGetGift() {
 	if (giftStatus.value == 2) {
+		// 已领取：查看礼物订单详情，按订单号跳转（中台主键 id 不能作为 order_no）
+		if (!orderNo.value) {
+			uni.showToast({ title: i18n.t(`订单信息异常`), icon: 'none' });
+			return;
+		}
 		uni.reLaunch({
-			url: `/pages/goods/order_details/index?is_gift=2&order_id=${o_id.value}&is_gift=2`
+			url: `/pages/center/order/detail/index?order_no=${orderNo.value}`
 		});
 	} else {
 		uni.reLaunch({
@@ -89,9 +95,12 @@ function getOrderInfo() {
 		gift_mark.value = res.data.gift_mark;
 		nickname.value = res.data.nickname;
 		refund_status.value = res.data.refund_status;
-		image.value = res.data.cartInfo[0].productInfo.image;
-		store_name.value = res.data.cartInfo[0].productInfo.store_name;
-		o_id.value = res.data.order_id
+		// order_items 为扁平商品快照；兼容旧结构 productInfo.*
+		const first = (res.data.cartInfo && res.data.cartInfo[0]) || {};
+		const product = first.productInfo || first;
+		image.value = product.image || first.image || '';
+		store_name.value = product.store_name || first.store_name || '';
+		orderNo.value = res.data.order_no || '';
 		if (gift_uid === 0) {
 			giftStatus.value = 1;
 			giftStatusText.value = i18n.t('收下礼物');
@@ -101,6 +110,8 @@ function getOrderInfo() {
 		} else if (gift_uid !== uidSnapshot) {
 			giftStatus.value = 3;
 		}
+	}).catch((err) => {
+		uni.showToast({ title: (err && err.msg) || i18n.t('加载失败'), icon: 'none' });
 	});
 }
 </script>

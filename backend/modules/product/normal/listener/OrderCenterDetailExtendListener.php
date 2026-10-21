@@ -52,15 +52,20 @@ class OrderCenterDetailExtendListener implements ListenerInterface
                 $detail['contact'] = $extraInfo['contact'];
                 unset($extraInfo['contact']);
 
-                // 将 contact.address 对象格式化为字符串，赋值给 user_address
-                if (isset($detail['contact']['address']) && is_array($detail['contact']['address'])) {
-                    $addr = $detail['contact']['address'];
-                    $detail['user_address'] = implode('', array_filter([
-                        $addr['province'] ?? '',
-                        $addr['city'] ?? '',
-                        $addr['district'] ?? '',
-                        $addr['detail'] ?? '',
-                    ]));
+                // 将 contact.address 统一转为字符串赋值给 user_address
+                // 送礼订单领取时写入的是字符串地址，普通订单是省市区对象，两种都要兼容
+                if (isset($detail['contact']['address'])) {
+                    if (is_array($detail['contact']['address'])) {
+                        $addr = $detail['contact']['address'];
+                        $detail['user_address'] = implode('', array_filter([
+                            $addr['province'] ?? '',
+                            $addr['city'] ?? '',
+                            $addr['district'] ?? '',
+                            $addr['detail'] ?? '',
+                        ]));
+                    } else {
+                        $detail['user_address'] = (string)$detail['contact']['address'];
+                    }
                 }
             }
 

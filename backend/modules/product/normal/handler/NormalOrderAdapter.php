@@ -359,6 +359,114 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
         return $this->extStatusMap[$statusCode]['user_buttons'] ?? [];
     }
 
+    public function getOrderButtons(array $detail): array
+    {
+        $buttons = parent::getOrderButtons($detail);
+        // 送礼订单：已支付且未领取时，提供「送给好友」（与申请退款同在底部按钮组）
+        if ($this->isGiftOrder($detail) && $this->isGiftShareable($detail)) {
+            array_unshift($buttons, [
+                'text'    => '送给好友',
+                'action'  => 'shareGift',
+                'primary' => true,
+                'params'  => ['order_no' => (string)($detail['order_no'] ?? '')],
+            ]);
+        }
+        return $buttons;
+    }
+
+    /**
+     * 是否送礼订单
+     */
+    protected function isGiftOrder(array $detail): bool
+    {
+        $extra = $detail['extra_info'] ?? [];
+        if (!is_array($extra)) {
+            $extra = [];
+        }
+        return !empty($extra['gift']) || isset($extra['gift_mark']) || (float)($detail['gift_price'] ?? 0) > 0;
+    }
+
+    /**
+     * 送礼订单是否可分享（已支付且尚未被领取）
+     */
+    protected function isGiftShareable(array $detail): bool
+    {
+        if ((int)($detail['pay_status'] ?? 0) !== 1) {
+            return false;
+        }
+        $extra = $detail['extra_info'] ?? [];
+        if (!is_array($extra)) {
+            $extra = [];
+        }
+        // 优先读取实体列 gift_uid（领取索引），历史数据回退 extra_info
+        $giftUid = (int)($detail['gift_uid'] ?? $extra['gift']['gift_uid'] ?? ($extra['gift_uid'] ?? 0));
+        return $giftUid === 0;
+    }
+
+    /**
+     * 送礼订单生命周期进度条
+     *
+     * 节点固定为：提交订单 → 支付成功 → 礼品待领 → 礼品已领 → 订单完成。
+     * 领取状态由实体列 gift_uid 判定（非 0 表示已被领取；历史数据回退 extra_info.gift.gift_uid），
+     * 领取时间取 extra_info.gift.gift_time（历史订单无该字段时留空）。
+     *
+     * @param array $detail 订单详情（含 status_code、pay_status、extra_info、add_time、pay_time、take_time 等）
+     * @return array 返回 {current, status, nodes}
+     */
+    protected function buildGiftProgress(array $detail): array
+    {
+        $statusCode  = (string)($detail['status_code'] ?? '');
+        $isCancel    = $statusCode === self::STATUS_CANCELED;
+        $isAfterSale = $statusCode === self::STATUS_AFTER_SALE;
+        $isRefunded  = $statusCode === self::STATUS_REFUNDED;
+        $isCompleted = $statusCode === self::STATUS_COMPLETED;
+
+        $extra    = is_array($detail['extra_info'] ?? null) ? $detail['extra_info'] : [];
+        $gift     = is_array($extra['gift'] ?? null) ? $extra['gift'] : [];
+        // 优先读取实体列 gift_uid（领取索引），历史数据回退 extra_info
+        $giftUid  = (int)($detail['gift_uid'] ?? $gift['gift_uid'] ?? ($extra['gift_uid'] ?? 0));
+        $giftTime = (int)($gift['gift_time'] ?? 0);
+        $addTime  = (int)($detail['add_time'] ?? 0);
+        $payTime  = (int)($detail['pay_time'] ?? 0);
+        $takeTime = (int)($detail['take_time'] ?? 0);
+        // 已领取：礼品待领/礼品已领两个节点同时完成
+        $isClaimed = $giftUid > 0;
+
+        $nodes = [
+            ['title' => '提交订单', 'key' => 'submit', 'time' => $addTime ? date('Y-m-d H:i:s', $addTime) : '', 'completed' => $addTime > 0],
+            ['title' => '支付成功', 'key' => 'pay', 'time' => $payTime ? date('Y-m-d H:i:s', $payTime) : '', 'completed' => $payTime > 0 || (int)($detail['pay_status'] ?? 0) === 1],
+            ['title' => '礼品待领', 'key' => 'gift_pending', 'time' => $isClaimed && $giftTime ? date('Y-m-d H:i:s', $giftTime) : '', 'completed' => $isClaimed],
+            ['title' => '礼品已领', 'key' => 'gift_received', 'time' => $isClaimed && $giftTime ? date('Y-m-d H:i:s', $giftTime) : '', 'completed' => $isClaimed],
+            ['title' => '订单完成', 'key' => 'complete', 'time' => $isCompleted && $takeTime ? date('Y-m-d H:i:s', $takeTime) : '', 'completed' => $isCompleted],
+        ];
+
+        // 当前激活节点：取消停在提交订单、售后/退款中断在支付成功、完成后停在订单完成
+        if ($isCancel) {
+            $current = 0;
+        } elseif ($isRefunded || $isAfterSale) {
+            $current = 1;
+        } elseif ($isCompleted) {
+            $current = 4;
+        } elseif ($isClaimed) {
+            $current = 3; // 已领取，等待订单完成（收货/自动收货）
+        } elseif ($payTime > 0) {
+            $current = 2; // 已支付，等待好友领取
+        } else {
+            $current = 0; // 刚提交，未支付
+        }
+
+        foreach ($nodes as $i => &$node) {
+            $node['active'] = ($i === $current);
+        }
+        unset($node);
+
+        return [
+            'current' => $current,
+            'status'  => $statusCode,
+            'nodes'   => $nodes,
+        ];
+    }
+
     /**
      * PROCESSING 状态动态按钮
      */
@@ -412,6 +520,11 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
         $isAfterSale  = $statusCode === self::STATUS_AFTER_SALE;
         $isRefunded   = $statusCode === self::STATUS_REFUNDED;
         $isCompleted  = $statusCode === self::STATUS_COMPLETED;
+
+        // 送礼订单：提交订单 → 支付成功 → 礼品待领 → 礼品已领 → 订单完成
+        if ($this->isGiftOrder($detail)) {
+            return $this->buildGiftProgress($detail);
+        }
 
         // 判断是否为到店自提（shipping_type=2），默认走快递配送流程
         $isPickup = ($detail['shipping_type'] ?? 0) == 2;

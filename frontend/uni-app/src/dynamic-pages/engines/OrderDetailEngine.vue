@@ -27,6 +27,14 @@
         />
         <!-- #endif -->
       </template>
+      <!-- 送礼订单：分享入口由底部按钮组（与「申请退款」同组）的 shareGift 动作唤起 -->
+      <giftModal
+        :aleartStatus="giftModalShow"
+        :giftData="giftShareData"
+        @shareH5="shareH5"
+        @close="giftModalShow = false"
+      />
+      <view class="mask" v-if="giftModalShow" @click="giftModalShow = false"></view>
     </view>
   </view>
 </template>
@@ -54,9 +62,11 @@ import SectionDispatcher from '../components/order/detail/SectionDispatcher.vue'
 // #endif
 import actionMap from '../api/action-map.js';
 import { getCenterOrderDetail, takeOrder } from '@/api/order-center.js';
+import { express } from '@/api/order.js';
 import routes from '../api/routes.js';
 import { useColorTheme } from '@/composables/useColorTheme';
 import i18n from '@/utils/lang.js';
+import giftModal from '@/pages/goods/order_pay_status/components/giftModal.vue';
 
 defineOptions({ name: 'OrderDetailEngine' });
 
@@ -72,6 +82,9 @@ const { colorStyle } = useColorTheme();
 const pageConfig = ref({ sections: [], extensions: {} });
 const loading = ref(true);
 const confirmingReceive = ref(false);
+const logisticsLoading = ref(false);
+// 送礼分享
+const giftModalShow = ref(false);
 
 // ---------- computed ----------
 /**
@@ -107,6 +120,30 @@ const payPrice = computed(() => {
 const payStatus = computed(() => {
   return (sectionPropsMap.value['status'] && sectionPropsMap.value['status'].pay_status) || 0;
 });
+/** 查看者角色：gift_receiver 表示当前用户是礼品领取人（只读视图） */
+const viewerRole = computed(() => {
+  return (pageConfig.value.extensions && pageConfig.value.extensions.viewer_role) || '';
+});
+/** 订单信息字段（送礼标识/领取人等） */
+const orderInfoFields = computed(() => {
+  return (sectionPropsMap.value['order_info'] && sectionPropsMap.value['order_info'].fields) || {};
+});
+/** giftModal 分享数据 */
+const giftShareData = computed(() => {
+  // section.props.product = { product: {title,image,items}, product_id }
+  var productObj = (sectionPropsMap.value['product'] && sectionPropsMap.value['product'].product) || {};
+  var productItems = productObj.items || [];
+  var first = productItems[0] || {};
+  return {
+    id: orderInfoFields.value.id || 0,
+    image: first.image || productObj.image || '',
+    title: first.store_name || first.title || productObj.title || '',
+    message: orderInfoFields.value.gift_mark || '',
+    avatar: '',
+    nickname: '',
+    code: '',
+  };
+});
 
 // ---------- watch ----------
 // The parent page receives route options in onLoad, after this child may
@@ -133,10 +170,49 @@ async function loadDetail() {
       return;
     }
     pageConfig.value = (res.data && res.data.page_config) || { sections: [], extensions: {} };
+    // 详情接口首屏只返回已缓存的物流轨迹，未命中时异步补齐，避免被第三方物流慢请求阻塞
+    loadLogisticsTracks();
   } catch (e) {
     uni.showToast({ title: i18n.t('加载失败'), icon: 'none' });
   } finally {
     loading.value = false;
+  }
+}
+
+/**
+ * 异步加载物流轨迹
+ * 详情接口不再同步请求第三方物流，仅返回已缓存轨迹；未命中时由前端按需查询并回填 section
+ * 失败时静默降级，仍展示快递公司 + 单号
+ * @return {Promise<void>}
+ */
+async function loadLogisticsTracks() {
+  if (logisticsLoading.value) return;
+  const sections = pageConfig.value.sections || [];
+  const section = sections.find(function (s) { return s.key === 'logistics'; });
+  if (!section) return;
+  // 已命中后端轨迹缓存，无需再次查询
+  const cached = (section.props && section.props.tracks) || [];
+  if (cached.length > 0) return;
+  const orderNo = (sectionPropsMap.value['order_info'] && sectionPropsMap.value['order_info'].fields
+    && sectionPropsMap.value['order_info'].fields.order_no) || props.orderNo || '';
+  if (!orderNo) return;
+  logisticsLoading.value = true;
+  try {
+    const res = await express(orderNo);
+    const list = res && res.data && res.data.express && res.data.express.result
+      ? res.data.express.result.list : null;
+    if (!Array.isArray(list) || list.length === 0) return;
+    section.props.tracks = list.map(function (track) {
+      return {
+        title: track.title || track.status || track.context || track.name || '',
+        time: track.time || track.ftime || '',
+        desc: track.desc || '',
+      };
+    });
+  } catch (e) {
+    // 物流查询失败不影响详情展示
+  } finally {
+    logisticsLoading.value = false;
   }
 }
 
@@ -158,6 +234,7 @@ function withCtx(section) {
       payStatus: payStatus.value,
       isRefund: isRefund.value,
       sectionPropsMap: sectionPropsMap.value,
+      viewerRole: viewerRole.value,
     },
   });
 }
@@ -207,9 +284,22 @@ function onButtonAction(payload) {
     var orderNo = ((sectionPropsMap.value['order_info'] && sectionPropsMap.value['order_info'].fields)
       && sectionPropsMap.value['order_info'].fields.order_no)
       || (payload.params && payload.params.order_no) || '';
-    var context = payload.action === 'confirmReceive' ? { onConfirm: confirmReceive } : undefined;
+    // 需要页面内弹窗/刷新等交互的动作，通过 context 回调注入，action-map 不直接持有页面状态
+    var context;
+    if (payload.action === 'confirmReceive') {
+      context = { onConfirm: confirmReceive };
+    } else if (payload.action === 'shareGift') {
+      context = { onShareGift: openGiftShare };
+    }
     handler(Object.assign({}, sectionPropsMap.value, { order_no: orderNo }), payload.params || {}, context);
   }
+}
+
+/**
+ * 打开送礼分享弹窗（送给好友按钮，与申请退款同组）
+ */
+function openGiftShare() {
+  giftModalShow.value = true;
 }
 
 /**
@@ -329,6 +419,10 @@ function goGoodCall() {
     && sectionPropsMap.value['order_info'].fields.order_no) || '';
   uni.navigateTo({ url: routes.customerChat + '?orderId=' + orderNo });
 }
+/** H5 分享面板回调（giftModal） */
+function shareH5() {
+  // 链接复制由 giftModal 内部完成
+}
 </script>
 
 <style scoped>
@@ -336,5 +430,16 @@ function goGoodCall() {
 .order-details {
   padding-bottom: calc(150rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  /* 低于 giftModal 的 999，避免遮罩盖住弹窗按钮 */
+  z-index: 998;
 }
 </style>

@@ -78,7 +78,7 @@ class StoreOrderInvoiceController
         $uid = (int)$request->uid();
         try {
             // 订单中台统一详情（含状态、支付、配送、发票等信息）
-            $order = $services->getDetailByOrderNo($uni);
+            $order = $services->getDetailByOrderNo($uni, false);
         } catch (\Throwable) {
             return app('json')->fail('订单不存在');
         }

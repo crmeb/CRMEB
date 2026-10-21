@@ -15,6 +15,7 @@ use crmeb\traits\ModelTrait;
  * 本模型保留常量别名以兼容已有代码，新代码请直接引用接口常量或从 Adapter 继承
  *
  * @method static $this where($field, $operator = null, $value = null)
+ * @property int $gift_uid 礼品领取人UID（0=未领取；领取后用于领取人订单列表/详情权限）
  * @property int $pay_counted 购买次数已记账标记，与用户计数同事务提交
  * @property int $take_rewards_given 收货奖励已记账标记，防止重复发奖
  * @property array|string|null $refund_reward_accounted 退款奖励累计已处理目标，含已核对短缺

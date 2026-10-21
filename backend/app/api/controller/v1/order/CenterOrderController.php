@@ -130,7 +130,8 @@ class CenterOrderController
             if ($ownedId === null) {
                 return app('json')->fail('订单不存在');
             }
-            $result = $services->getDetailWithConfig($ownedId);
+            // 详情首屏不同步请求第三方物流：只读轨迹缓存，未命中由前端走 order/express 异步补齐
+            $result = $services->getDetailWithConfig($ownedId, false);
             // 移动端订单详情不返回 timeline section，避免接口数据冗余
             if (!empty($result['page_config']['sections'])) {
                 $result['page_config']['sections'] = array_values(
@@ -139,6 +140,8 @@ class CenterOrderController
                     })
                 );
             }
+            // 送礼订单按查看者裁剪：购买者隐藏收货信息/物流/相关按钮，领取人保留只读物流能力
+            $result = $services->applyGiftViewerPolicy($result, $uid);
             return app('json')->success($result);
         } catch (\Throwable $e) {
             return app('json')->fail($e->getMessage());
@@ -435,14 +438,20 @@ class CenterOrderController
         $validCartInfo = $priceGroup['cartInfo'] ?? $validCartInfo;
 
         // 组装与单品直购模式一致的 priceData，供 computed/create 读取
+        // 送礼订单：应付价 = 商品总价 + 礼品附加费（无运费）
+        $giftPrice = $priceGroup['giftPrice'] ?? 0;
         $priceData = [
             'totalPrice'         => $priceGroup['totalPrice'] ?? 0,
-            'payPrice'           => bcadd((string)($priceGroup['totalPrice'] ?? 0), (string)($priceGroup['storePostage'] ?? 0), 2),
+            'payPrice'           => bcadd(
+                (string)bcadd((string)($priceGroup['totalPrice'] ?? 0), (string)($priceGroup['storePostage'] ?? 0), 2),
+                (string)$giftPrice,
+                2
+            ),
             'payPostage'         => $priceGroup['storePostage'] ?? 0,
             'isStoreFreePostage' => $priceGroup['isStoreFreePostage'] ?? false,
             'storeFreePostage'   => $priceGroup['storeFreePostage'] ?? 0,
             'costPrice'          => $priceGroup['costPrice'] ?? 0,
-            'giftPrice'          => $priceGroup['giftPrice'] ?? 0,
+            'giftPrice'          => $giftPrice,
             'levelPrice'         => $priceGroup['levelPrice'] ?? 0,
             'memberPrice'        => $priceGroup['memberPrice'] ?? 0,
         ];
@@ -569,10 +578,11 @@ class CenterOrderController
         }
 
         // 功能开关配置
+        // 送礼订单：收货信息由领取人填写，关闭配送/自提/上门入口
         $features = [
-            'express_shipping' => $expressShipping,                 // 是否支持快递配送（所有商品均支持快递）
-            'store_pickup'     => (bool)$storeSelfMention && $storePickupAll,// 是否支持到店自提（系统开启且所有商品均支持自提）
-            'door_service'     => $doorServiceAll,                  // 是否支持上门服务（所有商品均支持上门）
+            'express_shipping' => $isGift != 1 && $expressShipping,                 // 是否支持快递配送（所有商品均支持快递）
+            'store_pickup'     => $isGift != 1 && (bool)$storeSelfMention && $storePickupAll,// 是否支持到店自提（系统开启且所有商品均支持自提）
+            'door_service'     => $isGift != 1 && $doorServiceAll,                  // 是否支持上门服务（所有商品均支持上门）
             'door_service_postage' => $doorServicePostage,          // 上门服务费用（元）
             'remark'           => true,                             // 买家留言
             'invoice'          => (bool)sys_config('invoice_func_status', 0),// 发票
@@ -581,6 +591,8 @@ class CenterOrderController
             'custom_form'      => !empty($cartCustomForm),          // 自定义表单（取主商品定义）
             'params_list'      => false,                            // 商品参数（下单页不展示）
             'visitor_form'     => !empty($cartVisitorFormConfig),   // 游客信息表单（门票专属，取主商品定义）
+            'gift'             => $isGift == 1,                     // 送礼订单标记
+            'gift_mark'        => true,                             // 送礼留言输入
         ];
 
         $deduction = $cartGroup['deduction'] ?? [];
@@ -648,6 +660,8 @@ class CenterOrderController
             $addressId = (int) request()->param('address_id', 0);
             $deliveryType = $this->normalizeOrderDeliveryType((string) request()->param('delivery_type', ''));
             $storeId = (int) request()->param('store_id', 0);
+            // 送礼订单：不选地址、不计运费，累加礼品附加费
+            $isGift = (int) request()->param('is_gift', 0);
 
             if (!$key) {
                 return app('json')->fail('参数错误');
@@ -726,7 +740,8 @@ class CenterOrderController
                     $uid,
                     $cartInfo,
                     $rebuildAddressInfo,
-                    $shippingType
+                    $shippingType,
+                    $isGift
                 );
                 $cartInfo = $freshCartGroup['valid'] ?? [];
                 if (empty($cartInfo)) {
@@ -735,16 +750,20 @@ class CenterOrderController
                 if (!empty($freshCartGroup['invalid'])) {
                     return app('json')->fail('商品库存或配送条件已变化，请返回确认页刷新');
                 }
-                // 商品信息可能已变化，必须以重建后的商品能力再次校验配送方式。
-                $deliveryContext = $this->validateNormalOrderDelivery(
-                    $cartInfo,
-                    $deliveryType,
-                    $uid,
-                    $addressId,
-                    $storeId,
-                    [],
-                    false
-                );
+                // 送礼订单由领取人填收货信息，下单阶段不校验配送地址
+                $deliveryContext = ['address_info' => [], 'store_info' => []];
+                if ($isGift != 1) {
+                    // 商品信息可能已变化，必须以重建后的商品能力再次校验配送方式。
+                    $deliveryContext = $this->validateNormalOrderDelivery(
+                        $cartInfo,
+                        $deliveryType,
+                        $uid,
+                        $addressId,
+                        $storeId,
+                        [],
+                        false
+                    );
+                }
                 /** @var OrderComputedServices $computedServices */
                 $computedServices = app()->make(OrderComputedServices::class);
                 $priceGroup = $computedServices->getOrderPriceGroup(
@@ -753,7 +772,7 @@ class CenterOrderController
                     $deliveryContext['address_info'],
                     $userInfo,
                     $shippingType,
-                    0
+                    $isGift
                 );
                 $cartGroup['cartInfo'] = $cartInfo;
                 $cartGroup['priceData'] = [
@@ -872,7 +891,7 @@ class CenterOrderController
             $computedServices = app()->make(OrderComputedServices::class);
             $result = $computedServices->computedOrder(
                 $uid, $userInfo, $modifiedGroup, $addressId, '',
-                $useIntegral, 0, false, $shippingType, 0
+                $useIntegral, 0, false, $shippingType, $isGift
             );
 
             // 修正返回字段：total_price 用原始总价，coupon_price 用计算值
@@ -959,6 +978,9 @@ class CenterOrderController
             $formShippingType = $formDeliveryType === 'pickup' ? 2 : ($formDeliveryType === 'door' ? 3 : 1);
             $addressId = (int)($formData['address_id'] ?? 0);
             $storeId = (int)($formData['store_id'] ?? 0);
+            // 送礼订单：地址由领取人填写，下单阶段不选地址、不计运费
+            $isGift = (int)($formData['is_gift'] ?? request()->param('is_gift', 0));
+            $giftMark = trim((string)($formData['gift_mark'] ?? request()->param('gift_mark', '')));
             $storeInfo = [];
             $validatedAddressInfo = [];
             $normalDeliveryValidated = false;
@@ -1094,14 +1116,16 @@ class CenterOrderController
                         $cartIdsForRemove,
                         false,
                         [],
-                        $formShippingType
+                        $formShippingType,
+                        $isGift
                     );
                 } else {
                     $freshCartGroup = $cartServices->rebuildNormalCheckoutCart(
                         $uid,
                         $cartInfo,
                         [],
-                        $formShippingType
+                        $formShippingType,
+                        $isGift
                     );
                 }
                 $cartInfo = $freshCartGroup['valid'] ?? [];
@@ -1124,18 +1148,24 @@ class CenterOrderController
                 $num = (int)($cartInfo[0]['cart_num'] ?? $num);
                 $productInfo = $cartInfo[0]['productInfo'] ?? $productInfo;
 
-                // 重建后再次校验商品当前配送能力，并用当前地址计算运费。
-                $deliveryContext = $this->validateNormalOrderDelivery(
-                    $cartInfo,
-                    $formDeliveryType,
-                    $uid,
-                    $addressId,
-                    $storeId,
-                    is_array($formData['service'] ?? null) ? $formData['service'] : []
-                );
-                $validatedAddressInfo = $deliveryContext['address_info'];
-                $storeInfo = $deliveryContext['store_info'];
-                $normalDeliveryValidated = true;
+                // 送礼订单由领取人填收货信息，下单阶段不校验配送地址
+                if ($isGift == 1) {
+                    $validatedAddressInfo = [];
+                    $normalDeliveryValidated = true;
+                } else {
+                    // 重建后再次校验商品当前配送能力，并用当前地址计算运费。
+                    $deliveryContext = $this->validateNormalOrderDelivery(
+                        $cartInfo,
+                        $formDeliveryType,
+                        $uid,
+                        $addressId,
+                        $storeId,
+                        is_array($formData['service'] ?? null) ? $formData['service'] : []
+                    );
+                    $validatedAddressInfo = $deliveryContext['address_info'];
+                    $storeInfo = $deliveryContext['store_info'];
+                    $normalDeliveryValidated = true;
+                }
 
                 /** @var OrderComputedServices $computedServices */
                 $computedServices = app()->make(OrderComputedServices::class);
@@ -1145,7 +1175,7 @@ class CenterOrderController
                     $validatedAddressInfo,
                     $userInfo,
                     $formShippingType,
-                    0
+                    $isGift
                 );
                 $cartInfo = $priceGroup['cartInfo'] ?? $cartInfo;
                 $priceData = [
@@ -1160,18 +1190,23 @@ class CenterOrderController
                     'memberPrice'        => $priceGroup['memberPrice'] ?? 0,
                 ];
             } elseif ($productType === 'normal' && !$isActivityOrder) {
-                // 非普通重建路径（兼容旧活动/特殊缓存）仍必须校验配送信息。
-                $deliveryContext = $this->validateNormalOrderDelivery(
-                    $cartInfo,
-                    $formDeliveryType,
-                    $uid,
-                    $addressId,
-                    $storeId,
-                    is_array($formData['service'] ?? null) ? $formData['service'] : []
-                );
-                $validatedAddressInfo = $deliveryContext['address_info'];
-                $storeInfo = $deliveryContext['store_info'];
-                $normalDeliveryValidated = true;
+                // 非普通重建路径（兼容旧活动/特殊缓存）仍必须校验配送信息；送礼订单除外
+                if ($isGift == 1) {
+                    $validatedAddressInfo = [];
+                    $normalDeliveryValidated = true;
+                } else {
+                    $deliveryContext = $this->validateNormalOrderDelivery(
+                        $cartInfo,
+                        $formDeliveryType,
+                        $uid,
+                        $addressId,
+                        $storeId,
+                        is_array($formData['service'] ?? null) ? $formData['service'] : []
+                    );
+                    $validatedAddressInfo = $deliveryContext['address_info'];
+                    $storeInfo = $deliveryContext['store_info'];
+                    $normalDeliveryValidated = true;
+                }
             }
 
             // 记录实时原始总价（优惠券抵扣不影响 total_price 记录）
@@ -1337,7 +1372,7 @@ class CenterOrderController
             $computedServices = app()->make(OrderComputedServices::class);
             $computedResult = $computedServices->computedOrder(
                 $uid, $userInfo, $tmpCartGroup, $addressId, $payType,
-                $useIntegral, 0, false, $formShippingType, 0
+                $useIntegral, 0, false, $formShippingType, $isGift
             );
             $finalPayPrice = $computedResult['pay_price'] ?? 0;
             $finalDeductionPrice = $computedResult['deduction_price'] ?? 0;
@@ -1606,7 +1641,14 @@ class CenterOrderController
                     // 保存用户优惠券ID，取消或退款时用于恢复优惠券。
                     'coupon_id' => (!$isActivityOrder && $couponId > 0) ? $couponId : 0,
                     'activity_info' => $activityExtraInfo,
-                ],
+                ] + ($isGift == 1 ? [
+                    // 送礼订单：留言与领取记录挂在 extra_info，领取时写入 gift.gift_uid
+                    'gift_mark' => $giftMark,
+                    'gift' => [
+                        'gift_uid' => 0,
+                        'gift_key' => '',
+                    ],
+                ] : []),
                 'detail_route'   => $handler->getOrderDetailRoute($orderNo),
             ])) {
                 throw new \RuntimeException('订单创建失败');
@@ -2194,7 +2236,7 @@ class CenterOrderController
         // 从中台表查询订单
         /** @var OrderCenterUserServices $centerServices */
         $centerServices = app()->make(OrderCenterUserServices::class);
-        $centerOrder = $centerServices->getDetailByOrderNo($uni);
+        $centerOrder = $centerServices->getDetailByOrderNo($uni, false);
         if (!$centerOrder) {
             CacheService::delete('PAY_LOCK_' . $uni);
             return app('json')->fail('订单不存在');
@@ -2356,7 +2398,7 @@ class CenterOrderController
             case 'order':
                 /** @var OrderCenterUserServices $centerServices */
                 $centerServices = app()->make(OrderCenterUserServices::class);
-                $order = $centerServices->getDetailByOrderNo($orderNo);
+                $order = $centerServices->getDetailByOrderNo($orderNo, false);
                 if (!$order) {
                     return app('json')->fail('您支付的订单不存在');
                 }
@@ -2372,7 +2414,12 @@ class CenterOrderController
                 $data['offline_postage'] = (int)sys_config('offline_postage', 0);
                 $data['invalid_time'] = $time;
                 $data['oid'] = $order['id'] ?? 0;
-                $data['is_gift'] = 0;
+                // 送礼订单：支付成功后跳支付结果页并展示送礼分享
+                $payExtra = $order['extra_info'] ?? [];
+                $payExtra = is_string($payExtra) ? (json_decode($payExtra, true) ?: []) : ($payExtra ?: []);
+                $isGiftOrder = !empty($payExtra['gift']) || !empty($payExtra['gift_mark']) || (float)($order['gift_price'] ?? 0) > 0;
+                $data['is_gift'] = $isGiftOrder ? 1 : 0;
+                $data['gift_mark'] = (string)($payExtra['gift_mark'] ?? '');
                 break;
 
             default:
@@ -2531,7 +2578,7 @@ class CenterOrderController
     {
         if (!strlen(trim($uni))) return app('json')->fail('参数错误');
         $orderCenterServices = app()->make(OrderCenterUserServices::class);
-        $order = $orderCenterServices->getDetailByOrderNo($uni);
+        $order = $orderCenterServices->getDetailByOrderNo($uni, false);
         if (!$order) return app('json')->fail('订单不存在');
         // 订单详情格式化（OrderOutServices 已中台化，tidyOrder 基于中台数据）
         $orderData = app()->make(OrderOutServices::class)->tidyOrder($order, true);
@@ -2627,7 +2674,7 @@ class CenterOrderController
             // 快照为空时回退到订单中台读取商品列表（兼容早期未填充快照的售后单）
             if (empty($info) && !empty($afterSale['order_no'])) {
                 try {
-                    $sourceOrder = $orderCenterServices->getDetailByOrderNo($afterSale['order_no']);
+                    $sourceOrder = $orderCenterServices->getDetailByOrderNo($afterSale['order_no'], false);
                     foreach ($sourceOrder['order_items'] ?? [] as $item) {
                         $info[] = [
                             'cart_num'      => $item['cart_num'] ?? 1,
@@ -2664,7 +2711,8 @@ class CenterOrderController
                 if ($ownedId === null) {
                     return app('json')->fail('订单不存在');
                 }
-                $order = $orderCenterServices->getDetail($ownedId);
+                // 物流接口自身会查询轨迹，这里只取订单/配送信息，避免重复请求第三方
+                $order = $orderCenterServices->getDetail($ownedId, false);
             } catch (\Throwable $e) {
                 return app('json')->fail('订单不存在');
             }
@@ -2978,7 +3026,7 @@ class CenterOrderController
         }
         $uid = (int)request()->uid();
         $orderCenterServices = app()->make(OrderCenterUserServices::class);
-        $res = $orderCenterServices->receiveGift($uid, $oid, $gift_key, $shipping_type, $name, $phone, $address_id, $store_id);
+        $res = $orderCenterServices->receiveGift($uid, (int)$oid, $gift_key, (int)$shipping_type, $name, $phone, (int)$address_id, (int)$store_id);
         if ($res) {
             return app('json')->success('领取成功', ['status' => 1]);
         } else {
@@ -2997,7 +3045,8 @@ class CenterOrderController
             return app('json')->fail('缺少参数');
         }
         $orderCenterServices = app()->make(OrderCenterUserServices::class);
-        return app('json')->success($orderCenterServices->giftDetail($oid));
+        // 路由参数为字符串，服务层签名要求 int
+        return app('json')->success($orderCenterServices->giftDetail((int)$oid));
     }
 
     /**
@@ -3016,7 +3065,7 @@ class CenterOrderController
         try {
             /** @var OrderCenterUserServices $centerServices */
             $centerServices = app()->make(OrderCenterUserServices::class);
-            $order = $centerServices->getDetailByOrderNo($orderNo);
+            $order = $centerServices->getDetailByOrderNo($orderNo, false);
 
             // 从 order_items 获取商品明细
             $orderItems = $order['order_items'] ?? [];
@@ -3124,7 +3173,7 @@ class CenterOrderController
         /** @var OrderCenterUserServices $centerServices */
         $centerServices = app()->make(OrderCenterUserServices::class);
         try {
-            $order = $centerServices->getDetailByOrderNo($orderNo);
+            $order = $centerServices->getDetailByOrderNo($orderNo, false);
         } catch (\Throwable $e) {
             return app('json')->fail($e->getMessage());
         }
@@ -3165,7 +3214,7 @@ class CenterOrderController
         /** @var OrderCenterUserServices $centerServices */
         $centerServices = app()->make(OrderCenterUserServices::class);
         try {
-            $order = $centerServices->getDetailByOrderNo($orderNo);
+            $order = $centerServices->getDetailByOrderNo($orderNo, false);
         } catch (\Throwable $e) {
             return app('json')->fail('订单不存在');
         }

@@ -1463,8 +1463,10 @@
 			store_id: system_store.value ? system_store.value.id : 0,
 		}
 		orderReceiveGift(orderId.value, data).then(res => {
+			// 订单详情页按订单号（order_no）跳转，不能传中台主键 id
+			const receivedOrderNo = giftData.value.order_no || '';
 			uni.reLaunch({
-				url: `/pages/goods/receive_gifts_status/index?status=${res.data.status}&order_id=${giftData.value.order_id}`
+				url: `/pages/goods/receive_gifts_status/index?status=${res.data.status}&order_no=${receivedOrderNo}`
 			})
 		}).catch(err => {
 			uni.showToast({
