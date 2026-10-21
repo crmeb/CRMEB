@@ -361,11 +361,14 @@ watch(
   () => configObj.value?.toneCartConfig?.tabVal,
   (nVal, oVal) => {
     type5 = nVal;
+    // arr 须与其余 watcher 保持一致（勿插入 titleLeft 标题）：
+    // rCom 按 index 复用 key，此处多插一项会使后续控件全部错位重挂载，
+    // 顶部「选择风格」卡片（c_card_select）会因无初始化而渲染为空白
     var arr = [
-      {
-        components: toolCom.c_title,
-        configNme: 'titleLeft',
-      },
+      // {
+      //   components: toolCom.c_title,
+      //   configNme: 'titleLeft',
+      // },
       {
         components: toolCom.c_card_select,
         configNme: 'styleConfig',
@@ -461,27 +464,19 @@ function getRComContent(arr, type, type2, type3) {
   }
 }
 function getRComStyle(arr, type, type3, type4, type5) {
-  let obj4 = [],
-    currencyStyle = [];
+  let obj4 = [];
+  // 通用样式取模块级 currencyStyle（原 Vue2 为 [...this.currencyStyle]）；
+  // 勿在函数内再声明同名局部变量，否则遮蔽后自展开空数组，样式设置页会丢失整个通用样式区
+  const commonStyle = [...currencyStyle];
   if (type4) {
     if (type == 1 || type == 4) {
       obj4 = [...oneStyle1, ...oneStyle2];
-      currencyStyle = [...currencyStyle];
     } else if (type == 0) {
       obj4 = [...oneStyle1, ...oneStyle2, ...oneStyle3];
-      currencyStyle = [...currencyStyle];
     } else if (type == 2 || type == 3) {
       obj4 = [...oneStyle1];
-      currencyStyle = [...currencyStyle];
     } else {
       obj4 = [...oneStyle1, ...oneStyle2];
-      currencyStyle = [...currencyStyle];
-    }
-  } else {
-    if (type == 0 || type == 1 || type == 4) {
-      currencyStyle = [...currencyStyle];
-    } else {
-      currencyStyle = [...currencyStyle];
     }
   }
   let obj5 = [];
@@ -493,9 +488,9 @@ function getRComStyle(arr, type, type3, type4, type5) {
     }
   }
   if (type3 == 0) {
-    rCom.value = [...arr, ...oneStyle, ...obj4, ...obj5, ...currencyStyle];
+    rCom.value = [...arr, ...oneStyle, ...obj4, ...obj5, ...commonStyle];
   } else {
-    rCom.value = [...arr, ...oneStyle, ...obj4, ...currencyStyle];
+    rCom.value = [...arr, ...oneStyle, ...obj4, ...commonStyle];
   }
 }
 function getConfig(data, name) {

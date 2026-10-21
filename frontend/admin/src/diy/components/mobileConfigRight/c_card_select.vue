@@ -45,10 +45,12 @@ const configData = ref({});
 watch(
   () => props.configObj,
   (nVal) => {
-    defaults.value = nVal;
-    configData.value = nVal[props.configNme];
+    defaults.value = nVal || {};
+    // 配置面板 rCom 按 index 复用 key，条目插入/移出会使本组件重挂载，
+    // 必须 immediate 初始化（挂载时 props 已就绪），否则卡片渲染为空白、样式切换丢失
+    configData.value = nVal?.[props.configNme] || {};
   },
-  { deep: true },
+  { immediate: true, deep: true },
 );
 
 function handleSelect(index) {
