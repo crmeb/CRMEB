@@ -4,16 +4,39 @@
     v-if="aleartStatus"
     :style="'background-image: url(' + giftbag + ');'"
   >
+    <!-- 海报绘制画布：尺寸与海报一致，移出可视区；组件内 canvas 需配合组件实例使用 -->
+    <canvas canvas-id="posterCanvas" class="poster-canvas"></canvas>
     <template v-if="!posterImageStatus">
       <text class="iconfont icon-cha2 close" @click="posterImageClose"></text>
       <view class="from">{{ $t(`赠送给好友一份礼物`) }}</view>
       <view class="message">{{ giftData.message }}</view>
       <view class="aleart-body">
-        <image class="goods-img" :src="giftData.image" mode=""></image>
+        <image class="goods-img" :src="giftData.image" mode="aspectFill"></image>
       </view>
       <view class="title line1">
         {{ $t(giftData.title) }}
       </view>
+      <!-- 二维码仅用于生成海报，不在弹窗中展示 -->
+      <!-- #ifdef H5 || APP-PLUS -->
+      <view class="qrcode-hidden">
+        <zb-code
+          ref="qrcode"
+          :show="codeShow"
+          :cid="cid"
+          :val="codeVal"
+          :size="size"
+          :unit="unit"
+          :background="background"
+          :foreground="foreground"
+          :pdground="pdground"
+          :icon="codeIcon"
+          :iconSize="iconsize"
+          :onval="onval"
+          :loadMake="loadMake"
+          @result="qrR"
+        />
+      </view>
+      <!-- #endif -->
       <!-- #ifdef H5 -->
       <view class="btn" @click="copyLink()">
         {{ $t("复制礼物链接") }}
@@ -35,29 +58,11 @@
       <view class="keep">{{ $t(`长按图片可以保存到手机`) }}</view>
       <!-- #endif -->
     </template>
-    <!-- #ifdef H5 || APP-PLUS -->
-    <zb-code
-      ref="qrcode"
-      :show="codeShow"
-      :cid="cid"
-      :val="codeVal"
-      :size="size"
-      :unit="unit"
-      :background="background"
-      :foreground="foreground"
-      :pdground="pdground"
-      :icon="codeIcon"
-      :iconSize="iconsize"
-      :onval="onval"
-      :loadMake="loadMake"
-      @result="qrR"
-    />
-    <!-- #endif -->
   </view>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, getCurrentInstance } from 'vue';
 import { storeToRefs } from 'pinia';
 import { HTTP_REQUEST_URL } from "@/config/app";
 import { useAppStore } from '@/store/modules/app';
@@ -81,6 +86,8 @@ const emit = defineEmits(['close', 'shareH5']);
 
 const appStore = useAppStore();
 const { uid } = storeToRefs(appStore);
+// 组件内 canvas（小程序端 createCanvasContext/canvasToTempFilePath 必须传组件实例）
+const instance = getCurrentInstance();
 
 // 原代码未在 data 声明、通过 this.shareQrcode 访问的字段（undefined）
 let shareQrcode;
@@ -89,12 +96,12 @@ const aleartData = ref({});
 const bag = HTTP_REQUEST_URL + "/statics/images/canvas-bag.png";
 const giftBorder = HTTP_REQUEST_URL + "/statics/images/gift-border.png";
 const giftbag = HTTP_REQUEST_URL + "/statics/images/gift-bag.png";
-//二维码参数
+//二维码参数（仅供海报生成，弹窗不展示）
 const codeShow = ref(false);
 const cid = "1";
 const codeVal = ref(""); // 要生成的二维码值
 const size = 200; // 二维码大小
-const unit = "upx"; // 单位
+const unit = "px"; // 单位
 const background = "#FFF"; // 背景色
 const foreground = "#000"; // 前景色
 const pdground = "#000"; // 角标色
@@ -110,6 +117,9 @@ const posterImage = ref("");
 watch(() => props.aleartStatus, (status) => {
   if (!status) {
     aleartData.value = {};
+    // 关闭时重置海报状态，避免下次打开直接显示上一次的旧海报
+    posterImageStatus.value = false;
+    posterImage.value = "";
   } else {
     // #ifdef H5
     codeVal.value =
@@ -156,6 +166,14 @@ function posterImageClose() {
   emit("close", false);
 }
 
+/**
+ * 绘制海报
+ * 头像、二维码可能缺失（订单详情不返回赠送人头像、二维码异步生成），缺失时跳过对应绘制
+ * @param {Array} loadedImages [背景, 商品边框, 商品图, 头像, 二维码]
+ * @param {string} name 赠送人昵称（可能为空）
+ * @param {string} store_name 商品标题
+ * @return {Promise<string>} 海报临时文件路径
+ */
 function drawPoster(loadedImages, name, store_name) {
   // 截断标题函数
   function truncateTitle(title, maxLength) {
@@ -164,140 +182,146 @@ function drawPoster(loadedImages, name, store_name) {
     }
     return title;
   }
-  // 获取canvas上下文
-  const ctx = uni.createCanvasContext("posterCanvas");
-  return new Promise(async (resolve, reject) => {
+  // 获取canvas上下文（组件内 canvas 需传组件实例）
+  const ctx = uni.createCanvasContext("posterCanvas", instance);
+  return new Promise((resolve, reject) => {
     uni.getImageInfo({
       src: loadedImages[0],
-      success: (res) => {
-        // 海报尺寸
-        const posterWidth = 375;
-        const posterHeight = 579;
-        // const posterWidth = res.width / 2;
-        // const posterHeight = res.height / 2;
-        // 绘制背景图
-        ctx.drawImage(loadedImages[0], 0, 0, posterWidth, posterHeight);
-        ctx.save();
-        // 头像和标题的布局
+      fail: (err) => reject(err),
+      success: () => {
+        try {
+          // 海报尺寸
+          const posterWidth = 375;
+          const posterHeight = 579;
+          // 绘制背景图
+          ctx.drawImage(loadedImages[0], 0, 0, posterWidth, posterHeight);
+          ctx.save();
 
-        const avatarSize = 22; // 头像尺寸
-        const nickname = name; // 昵称
-        const title = i18n.t(`赠送给好友一份礼物`); // 标题文字
-        const titleFontSize = 14; // 标题字号
-        const nicknameFontSize = 14; // 昵称字号
-        const padding = 10; // 元素之间的间距
-        // 计算标题宽度
-        ctx.setFontSize(titleFontSize);
-        const titleWidth = ctx.measureText(title).width;
-        const nicknameWidth = ctx.measureText(nickname).width;
-        // 计算头像和标题的总宽度
-        const totalWidth =
-          avatarSize + padding + nicknameWidth + padding + titleWidth;
+          // 头像和标题的布局
+          const avatarSize = 22; // 头像尺寸
+          const nickname = name || ""; // 昵称
+          const title = i18n.t(`赠送给好友一份礼物`); // 标题文字
+          const titleFontSize = 14; // 标题字号
+          const nicknameFontSize = 14; // 昵称字号
+          const padding = 10; // 元素之间的间距
+          const avatarImage = loadedImages[3]; // 头像（可能为空）
+          const hasAvatar = !!avatarImage;
 
-        // 计算起始绘制位置（水平居中）
-        const startX = (posterWidth - totalWidth) / 2;
-        const startY = 77; // 距离顶部的距离
+          // 计算标题/昵称宽度，按实际存在的元素计算总宽并居中
+          ctx.setFontSize(titleFontSize);
+          const titleWidth = ctx.measureText(title).width;
+          const nicknameWidth = nickname ? ctx.measureText(nickname).width : 0;
+          const totalWidth =
+            (hasAvatar ? avatarSize + padding : 0) +
+            (nickname ? nicknameWidth + padding : 0) +
+            titleWidth;
 
-        // 绘制头像
-        // ctx.drawImage(loadedImages[3], startX, startY, avatarSize, avatarSize);
-        const avatarX = startX + avatarSize / 2; // 头像中心点 X
-        const avatarY = startY + avatarSize / 2; // 头像中心点 Y
-        ctx.save(); // 保存画布状态
-        ctx.beginPath();
-        ctx.arc(avatarX, avatarY, avatarSize / 2, 0, Math.PI * 2); // 绘制圆形路径
-        ctx.clip(); // 裁剪圆形区域
-        ctx.drawImage(
-          loadedImages[3],
-          startX,
-          startY,
-          avatarSize,
-          avatarSize
-        ); // 绘制头像
-        ctx.restore(); // 恢复画布状态
+          // 计算起始绘制位置（水平居中）
+          const startX = (posterWidth - totalWidth) / 2;
+          const startY = 77; // 距离顶部的距离
+          let cursorX = startX;
 
-        // 绘制昵称
-        ctx.setFontSize(nicknameFontSize);
-        ctx.setTextAlign("left");
-        ctx.fillText(
-          nickname,
-          startX + avatarSize + padding,
-          startY + avatarSize - 5
-        ); // 调整文字垂直居中
-        // 绘制标题
-        ctx.setFontSize(titleFontSize);
-        ctx.fillText(
-          title,
-          startX + avatarSize + padding + nicknameWidth + padding,
-          startY + avatarSize - 5
-        );
+          // 绘制头像（无头像时不占位，标题自动居中）
+          if (hasAvatar) {
+            const avatarX = startX + avatarSize / 2; // 头像中心点 X
+            const avatarY = startY + avatarSize / 2; // 头像中心点 Y
+            ctx.save(); // 保存画布状态
+            ctx.beginPath();
+            ctx.arc(avatarX, avatarY, avatarSize / 2, 0, Math.PI * 2); // 绘制圆形路径
+            ctx.clip(); // 裁剪圆形区域
+            ctx.drawImage(avatarImage, startX, startY, avatarSize, avatarSize); // 绘制头像
+            ctx.restore(); // 恢复画布状态
+            cursorX += avatarSize + padding;
+          }
 
-        // 商品图尺寸
-        const productImageSize = 225; // 商品图尺寸为 225px x 225px
+          // 绘制昵称（可能为空）
+          if (nickname) {
+            ctx.setFontSize(nicknameFontSize);
+            ctx.setTextAlign("left");
+            ctx.fillText(nickname, cursorX, startY + avatarSize - 5); // 调整文字垂直居中
+            cursorX += nicknameWidth + padding;
+          }
 
-        // 绘制商品图边框
-        const productBorderX = (posterWidth - productImageSize) / 2; // 水平居中
-        const productBorderY = startY + avatarSize + 31; // 距离头像和标题的间距
-        ctx.drawImage(
-          loadedImages[1],
-          productBorderX,
-          productBorderY,
-          productImageSize,
-          productImageSize
-        );
+          // 绘制标题
+          ctx.setFontSize(titleFontSize);
+          ctx.setTextAlign("left");
+          ctx.fillText(title, cursorX, startY + avatarSize - 5);
 
-        // 绘制商品图
-        const productImagePadding = 10; // 商品图与边框的内边距
-        const productImageX = productBorderX + productImagePadding;
-        const productImageY = productBorderY + productImagePadding + 11;
-        const productImageInnerSize =
-          productImageSize - 2 * productImagePadding; // 商品图实际绘制尺寸
-        ctx.drawImage(
-          loadedImages[2],
-          productImageX,
-          productImageY,
-          productImageInnerSize,
-          productImageInnerSize - 10
-        );
+          // 商品图尺寸
+          const productImageSize = 225; // 商品图尺寸为 225px x 225px
 
-        // 绘制商品标题
-        const productTitle = store_name;
-        const maxTitleLength = 20; // 标题最大长度
-        const truncatedTitle = truncateTitle(productTitle, maxTitleLength); // 截断标题
-        ctx.setFontSize(14);
-        ctx.setTextAlign("center");
-        ctx.fillText(
-          truncatedTitle,
-          posterWidth / 2,
-          productBorderY + productImageSize + 26
-        );
-        // 绘制分享二维码
-        const qrCodeSize = 100;
-        const qrCodeX = (posterWidth - qrCodeSize) / 2;
-        const qrCodeY = productBorderY + productImageSize + 63; // 距离商品标题的间距
-        ctx.drawImage(
-          loadedImages[4],
-          qrCodeX,
-          qrCodeY,
-          qrCodeSize,
-          qrCodeSize
-        );
+          // 绘制商品图边框
+          const productBorderX = (posterWidth - productImageSize) / 2; // 水平居中
+          const productBorderY = startY + avatarSize + 31; // 距离头像和标题的间距
+          ctx.drawImage(
+            loadedImages[1],
+            productBorderX,
+            productBorderY,
+            productImageSize,
+            productImageSize
+          );
 
-        // 绘制完成
-        ctx.draw(false, () => {
-          // 生成海报图片
-          uni.canvasToTempFilePath({
-            canvasId: "posterCanvas",
-            width: posterWidth,
-            height: posterHeight,
-            success: (res) => {
-              resolve(res.tempFilePath);
-            },
+          // 绘制商品图
+          const productImagePadding = 10; // 商品图与边框的内边距
+          const productImageX = productBorderX + productImagePadding;
+          const productImageY = productBorderY + productImagePadding + 11;
+          const productImageInnerSize =
+            productImageSize - 2 * productImagePadding; // 商品图实际绘制尺寸
+          ctx.drawImage(
+            loadedImages[2],
+            productImageX,
+            productImageY,
+            productImageInnerSize,
+            productImageInnerSize - 10
+          );
 
-            fail: (err) => {
-              reject(err);
-            },
+          // 绘制商品标题
+          const productTitle = store_name || "";
+          const maxTitleLength = 20; // 标题最大长度
+          const truncatedTitle = truncateTitle(productTitle, maxTitleLength); // 截断标题
+          ctx.setFontSize(14);
+          ctx.setTextAlign("center");
+          ctx.fillText(
+            truncatedTitle,
+            posterWidth / 2,
+            productBorderY + productImageSize + 26
+          );
+
+          // 绘制分享二维码（异步生成，可能为空）
+          if (loadedImages[4]) {
+            const qrCodeSize = 100;
+            const qrCodeX = (posterWidth - qrCodeSize) / 2;
+            const qrCodeY = productBorderY + productImageSize + 63; // 距离商品标题的间距
+            ctx.drawImage(
+              loadedImages[4],
+              qrCodeX,
+              qrCodeY,
+              qrCodeSize,
+              qrCodeSize
+            );
+          }
+
+          // 绘制完成
+          ctx.draw(false, () => {
+            // 生成海报图片
+            uni.canvasToTempFilePath(
+              {
+                canvasId: "posterCanvas",
+                width: posterWidth,
+                height: posterHeight,
+                success: (res) => {
+                  resolve(res.tempFilePath);
+                },
+                fail: (err) => {
+                  reject(err);
+                },
+              },
+              instance
+            );
           });
-        });
+        } catch (err) {
+          reject(err);
+        }
       },
     });
   });
@@ -319,31 +343,88 @@ function share() {
   emit("shareH5");
 }
 
-function getPoster() {
-  let images = [
-    bag,
-    giftBorder,
-    props.giftData.image,
-    props.giftData.avatar,
-    PromotionCode.value,
-  ];
-  let postImg = ["", "", "", "", ""];
-  // #ifdef MP
-  for (let i = 0; i < images.length; i++) {
-    uni.downloadFile({
-      url: images[i],
-      success: (res) => {
-        if (res.statusCode == 200) {
-          postImg[i] = res.tempFilePath;
-        }
-        const allNotEmpty = postImg.every((item) => item !== "");
-        if (allNotEmpty) goPoster(postImg);
-      },
-      fail: () => {
-        PromotionCode.value = "";
-      },
-    });
+/**
+ * 等待二维码生成（zb-code 异步出图，避免绘制时图片地址为空）
+ * @param {number} timeout 超时毫秒
+ * @return {Promise<string>} 二维码图片地址，超时返回空串
+ */
+function waitForPromotionCode(timeout = 3000) {
+  return new Promise((resolve) => {
+    if (PromotionCode.value) {
+      resolve(PromotionCode.value);
+      return;
+    }
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (PromotionCode.value || Date.now() - start >= timeout) {
+        clearInterval(timer);
+        resolve(PromotionCode.value || "");
+      }
+    }, 50);
+  });
+}
+
+/**
+ * 海报图片同源化（H5）
+ * 跨域图片会污染 canvas，导致 toDataURL/getImageData 抛 SecurityError；
+ * 后端自身域名（HTTP_REQUEST_URL）的图片改为相对路径，由开发环境 vite 代理走同源，
+ * 生产同源部署下同样可用；其他 CDN 域名保持原样，由其自行提供 CORS。
+ * @param {string} url 原始图片地址
+ * @return {string} 可用于绘制/下载的图片地址
+ */
+function toSameOriginUrl(url) {
+  if (!url) return "";
+  // #ifdef H5
+  if (/^https?:\/\//i.test(url)) {
+    try {
+      const target = new URL(url, window.location.origin);
+      if (target.origin === window.location.origin) {
+        return target.href;
+      }
+      const apiOrigin = new URL(HTTP_REQUEST_URL).origin;
+      if (target.origin === apiOrigin) {
+        return target.pathname + target.search;
+      }
+    } catch (e) {
+      return url;
+    }
   }
+  // #endif
+  return url;
+}
+
+async function getPoster() {
+  // 顺序固定：[背景, 商品边框, 商品图, 头像, 二维码]；空项在绘制时跳过
+  const qrCode = await waitForPromotionCode();
+  const images = [
+    toSameOriginUrl(bag),
+    toSameOriginUrl(giftBorder),
+    toSameOriginUrl(props.giftData.image || ""),
+    toSameOriginUrl(props.giftData.avatar || ""),
+    toSameOriginUrl(qrCode),
+  ];
+  // #ifdef MP
+  const postImg = ["", "", "", "", ""];
+  await Promise.all(
+    images.map(
+      (src, index) =>
+        new Promise((resolve) => {
+          if (!src) {
+            resolve();
+            return;
+          }
+          uni.downloadFile({
+            url: src,
+            success: (res) => {
+              if (res.statusCode == 200) postImg[index] = res.tempFilePath;
+              resolve();
+            },
+            fail: () => resolve(),
+          });
+        })
+    )
+  );
+  goPoster(postImg);
   // #endif
   // #ifndef MP
   goPoster(images);
@@ -363,6 +444,7 @@ function goPoster(postImg) {
     })
     .catch((err) => {
       console.error("海报生成失败:", err);
+      uni.showToast({ title: i18n.t(`海报生成失败`), icon: "none" });
     });
 }
 
@@ -438,7 +520,8 @@ function savePic(url) {
     height: 419rpx;
     background-image: url("../../static/gift-border.png");
     background-size: 100% 100%;
-    margin-bottom: 32rpx;
+    margin-bottom: 16rpx;
+    overflow: hidden;
     .goods-img {
       width: 360rpx;
       height: 360rpx;
@@ -450,7 +533,7 @@ function savePic(url) {
     font-weight: 400;
     font-size: 28rpx;
     color: #333333;
-    margin-bottom: 52rpx;
+    margin-bottom: 12rpx;
     text-align: center;
   }
   .btn,
@@ -489,5 +572,25 @@ function savePic(url) {
     bottom: -110rpx;
     display: block;
   }
+}
+
+/* 海报画布：尺寸与海报一致，移出可视区但仍参与布局（canvas 需要有效宽高） */
+.poster-canvas {
+  position: fixed;
+  left: -2000px;
+  top: 0;
+  width: 375px;
+  height: 579px;
+  z-index: -1;
+}
+
+/* 二维码画布只服务海报生成，视觉上不出现 */
+.qrcode-hidden {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 </style>

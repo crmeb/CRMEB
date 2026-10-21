@@ -11,8 +11,19 @@ export default defineConfig(({ mode }) => {
 	// 必须在 uni() 首次读取 pages.json 之前执行
 	installAutoSubpackages();
 
+	// 开发环境后端地址：海报等场景需要同源读取后端静态资源（避免 canvas 跨域污染）
+	const apiTarget = env.UNI_APP_API_URL || 'http://127.0.0.1:8011';
+
 	return {
 		plugins: [uniAutoSubpackagesPlugin(), uni()],
+		server: {
+			proxy: {
+				// 后台上传文件（商品图等）
+				'/uploads': { target: apiTarget, changeOrigin: true },
+				// 后端系统静态图（海报背景、礼物边框等）
+				'/statics': { target: apiTarget, changeOrigin: true }
+			}
+		},
 		define: {
 			// 注入 src/config/app.js 中使用的接口地址变量；.env 未配置时置空串，代码内回退到各端默认值
 			'process.env.UNI_APP_API_URL': JSON.stringify(env.UNI_APP_API_URL || '')
