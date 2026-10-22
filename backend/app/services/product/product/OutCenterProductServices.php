@@ -109,6 +109,12 @@ class OutCenterProductServices extends BaseService
         $data['presale'] = intval($data['presale']);
         $data['presale_start_time'] = $data['presale'] ? strtotime($data['presale_time'][0]) : 0;
         $data['presale_end_time'] = $data['presale'] ? strtotime($data['presale_time'][1]) : 0;
+        // 预售发货时间（预售活动结束后N天内发货）：>0 才覆盖写入，未传时新增走列默认值1、编辑保持原值
+        if (isset($data['presale_day']) && intval($data['presale_day']) > 0) {
+            $data['presale_day'] = intval($data['presale_day']);
+        } else {
+            unset($data['presale_day']);
+        }
 
         foreach ($detail as &$item) {
             if (isset($item['stock'])) {

@@ -167,6 +167,7 @@ class Installer extends BaseModuleInstaller
                 `presale` tinyint NOT NULL DEFAULT '0' COMMENT '是否预售(0否/1是)',
                 `presale_start_time` int NOT NULL DEFAULT '0' COMMENT '预售开始时间',
                 `presale_end_time` int NOT NULL DEFAULT '0' COMMENT '预售结束时间',
+                `presale_day` int NOT NULL DEFAULT '1' COMMENT '预售发货时间(预售活动结束后N天内发货)',
                 `valid_type` tinyint NOT NULL DEFAULT '0' COMMENT '有效期类型(0长期/1固定时段/2购买后N天)',
                 `valid_start_time` int NOT NULL DEFAULT '0' COMMENT '有效期开始时间',
                 `valid_end_time` int NOT NULL DEFAULT '0' COMMENT '有效期结束时间',
@@ -256,6 +257,7 @@ class Installer extends BaseModuleInstaller
             'is_sub' => "tinyint NOT NULL DEFAULT '0' COMMENT '是否开启分销（0否/1是）'",
             'is_vip' => "tinyint NOT NULL DEFAULT '0' COMMENT '是否开启会员价（0否/1是）'",
             'vip_product' => "tinyint NOT NULL DEFAULT '0' COMMENT '会员专属（0不限制/1仅会员可见可买/2所有人可见仅会员可买）'",
+            'presale_day' => "int NOT NULL DEFAULT '1' COMMENT '预售发货时间（预售活动结束后N天内发货）'",
         ];
         foreach ($columns as $column => $definition) {
             $this->ensureColumn($tableName, $column, $definition);

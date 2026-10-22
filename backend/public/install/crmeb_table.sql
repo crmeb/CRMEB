@@ -1072,6 +1072,7 @@ CREATE TABLE IF NOT EXISTS `eb_product_center` (
   `presale` tinyint NOT NULL DEFAULT '0' COMMENT '是否预售（0否/1是）',
   `presale_start_time` int NOT NULL DEFAULT '0' COMMENT '预售开始时间',
   `presale_end_time` int NOT NULL DEFAULT '0' COMMENT '预售结束时间',
+  `presale_day` int NOT NULL DEFAULT '1' COMMENT '预售发货时间（预售活动结束后N天内发货）',
   `valid_type` tinyint NOT NULL DEFAULT '0' COMMENT '有效期类型（0长期有效/1固定时段/2购买后N天）',
   `valid_start_time` int NOT NULL DEFAULT '0' COMMENT '有效期开始时间（valid_type=1时有效）',
   `valid_end_time` int NOT NULL DEFAULT '0' COMMENT '有效期结束时间（valid_type=1时有效）',

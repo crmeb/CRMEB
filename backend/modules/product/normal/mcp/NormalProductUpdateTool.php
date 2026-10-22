@@ -280,6 +280,7 @@ class NormalProductUpdateTool implements McpToolInterface
             'vip_product'      => (int)($current['vip_product'] ?? 0),
             'presale'          => (int)($current['presale'] ?? 0),
             'presale_time'     => (array)($current['presale_time'] ?? []),
+            'presale_day'      => max(1, (int)($current['presale_day'] ?? 1)),
             'is_limit'         => (int)($current['is_limit'] ?? 0),
             'min_qty'          => (int)($current['min_qty'] ?? 1),
             'limit_type'       => (int)($current['limit_type'] ?? 0),

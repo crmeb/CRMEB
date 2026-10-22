@@ -428,7 +428,7 @@ class ProductSaveServices extends BaseService
         $presaleStartTime = $presale && !empty($data['presale_time']) ? strtotime($data['presale_time'][0]) : 0;
         $presaleEndTime = $presale && !empty($data['presale_time']) ? strtotime($data['presale_time'][1]) : 0;
 
-        return [
+        $centerData = [
             'product_type' => $productType,
             'name'         => $data['store_name'] ?? '',
             'intro'        => $intro,
@@ -480,6 +480,13 @@ class ProductSaveServices extends BaseService
             'give_integral' => floatval($data['give_integral'] ?? 0),
             'give_coupon_ids' => !empty($data['coupon_ids']) && is_array($data['coupon_ids']) ? implode(',', $data['coupon_ids']) : '',
         ];
+        // 预售发货时间（预售活动结束后N天内发货）：仅调用方显式提供时才写入（最小1天），
+        // 未提供时新增走列默认值1、编辑保持库中原值，避免不带该字段的保存把已配置值重置
+        if (isset($data['presale_day'])) {
+            $centerData['presale_day'] = max(1, intval($data['presale_day']));
+        }
+
+        return $centerData;
     }
 
     /**

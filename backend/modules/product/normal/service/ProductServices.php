@@ -145,6 +145,8 @@ class ProductServices
         $pst = $product['presale_start_time'] ?? 0;
         $pet = $product['presale_end_time'] ?? 0;
         $product['presale_time'] = $pst == 0 ? [] : [date('Y-m-d H:i:s', $pst), date('Y-m-d H:i:s', $pet)];
+        // 预售发货时间（预售活动结束后N天内发货），历史数据无值时回退默认1天
+        $product['presale_day'] = max(1, (int)($product['presale_day'] ?? 1));
 
         // ============ 视频 ============
         $vl = $product['video_link'] ?? '';

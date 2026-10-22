@@ -269,6 +269,7 @@ class ProductController extends AuthController
             ['vip_product', 0],
             ['presale', 0],
             ['presale_time', []],
+            ['presale_day', 1],
             ['product_type', 'normal'],
             ['custom_form', []],
             ['params_list', []],
