@@ -233,40 +233,8 @@ class CenterOrderController
             // 活动订单不走优惠券自动匹配，标记前置（优惠券列表构建时使用）
             $isActivityOrder = $activityType !== 'normal' && $activityId > 0;
 
-            // 5. 获取用户可用优惠券
-            $couponList = [];
-            try {
-                /** @var StoreCouponUserServices $couponServices */
-                $couponServices = app()->make(StoreCouponUserServices::class);
-                $cartGroup = ['valid' => $cartInfo];
-                $couponList = $couponServices->getUsableCouponList($uid, $cartGroup);
-            } catch (\Throwable $e) {
-                // 优惠券列表获取失败不影响主流程
-            }
-            // 5.1 用户尚无可用券时，自动领取整单最优优惠券并入列表（预览即真实领取，与 computed/create 自动用券同口径）
-            if (!$isActivityOrder && empty($couponList)) {
-                try {
-                    $autoCoupon = app()->make(OrderComputedServices::class)->autoMatchCoupon($uid, $cartInfo, true);
-                    if (!empty($autoCoupon['coupon_user_id'])) {
-                        $autoRow = $couponServices->get((int)$autoCoupon['coupon_user_id'], ['*'], ['issue']);
-                        if ($autoRow) {
-                            $autoRow = $autoRow->toArray();
-                            // 行结构与 getUsableCouponList 对齐（前端优惠券选择器字段）
-                            $autoRow['title'] = $autoRow['coupon_title'];
-                            $autoRow['type'] = $autoRow['applicable_type'] ?? 0;
-                            $autoRow['use_min_price'] = floatval($autoRow['use_min_price'] ?? 0);
-                            $autoRow['coupon_price'] = floatval($autoRow['coupon_price'] ?? 0);
-                            $autoRow['start_time'] = $autoRow['start_time'] ? date('Y/m/d', $autoRow['start_time']) : date('Y/m/d', $autoRow['add_time']);
-                            $autoRow['add_time'] = date('Y/m/d', (int)$autoRow['add_time']);
-                            $autoRow['end_time'] = date('Y/m/d', (int)$autoRow['end_time']);
-                            $autoRow['is_use'] = 0;
-                            $couponList[] = $autoRow;
-                        }
-                    }
-                } catch (\Throwable $e) {
-                    // 自动领券失败不影响确认页主流程
-                }
-            }
+            // 5. 获取用户可用优惠券（无可用券时自动领取整单最优券并入列表，与 computed/create 自动用券同口径）
+            $couponList = $this->buildConfirmCouponList($uid, ['valid' => $cartInfo], $isActivityOrder, $pricingPolicy);
 
             // 6. 获取商品详情扩展数据（自定义表单、商品参数）
             $detailExtend = $handler->getDetailExtend($productId);
@@ -492,13 +460,13 @@ class CenterOrderController
         $integralRatio = sys_config('integral_ratio', 0);
         $integralOpen = (float)$integralRatio > 0 || $usableIntegral > 0;
 
-        // 可用优惠券
-        $couponList = [];
-        try {
-            $couponList = app()->make(StoreCouponUserServices::class)->getUsableCouponList($uid, $cartGroup);
-        } catch (\Throwable $e) {
-            // 优惠券列表获取失败不影响主流程
-        }
+        // 可用优惠券（无可用券时自动领取整单最优券并入列表，保证与 computed 的自动选券结果一致）
+        $couponList = $this->buildConfirmCouponList(
+            $uid,
+            $cartGroup,
+            false,
+            method_exists($handler, 'getPricingPolicy') ? $handler->getPricingPolicy() : []
+        );
 
         // 支付渠道状态
         /** @var PayChannelServices $payChannelServices */
@@ -645,6 +613,49 @@ class CenterOrderController
         ];
 
         return app('json')->success($data);
+    }
+
+    /**
+     * 构建确认页可用优惠券列表
+     * 用户已有可用券时直接返回；没有可用券时自动领取整单最优券并补入列表（预览即真实领取）。
+     * 与 computed/create 的自动用券同口径，保证 features.coupon、coupon_list 与后续自动选券结果一致，
+     * 避免确认页显示已用券但优惠券弹窗列表为空。
+     * @param int $uid 用户ID
+     * @param array $cartGroup 购物车分组（须含 valid 商品条目）
+     * @param bool $isActivityOrder 活动订单不参与优惠券
+     * @param array $pricingPolicy 产品类型计价策略，coupon=false 时不参与优惠券
+     * @return array
+     */
+    protected function buildConfirmCouponList(int $uid, array $cartGroup, bool $isActivityOrder, array $pricingPolicy = []): array
+    {
+        if ($isActivityOrder || ($pricingPolicy['coupon'] ?? true) !== true) {
+            return [];
+        }
+        /** @var StoreCouponUserServices $couponServices */
+        $couponServices = app()->make(StoreCouponUserServices::class);
+        $couponList = [];
+        try {
+            $couponList = $couponServices->getUsableCouponList($uid, $cartGroup);
+        } catch (\Throwable $e) {
+            // 优惠券列表获取失败不影响确认页主流程
+            $couponList = [];
+        }
+        if (!empty($couponList)) {
+            return $couponList;
+        }
+        // 用户尚无可用券：自动领取整单最优优惠券，行结构与 getUsableCouponList 保持一致
+        try {
+            /** @var OrderComputedServices $computedServices */
+            $computedServices = app()->make(OrderComputedServices::class);
+            $autoCoupon = $computedServices->autoMatchCoupon($uid, $cartGroup['valid'] ?? [], true);
+            $autoRow = $couponServices->getUsableCouponRow($uid, (int)($autoCoupon['coupon_user_id'] ?? 0));
+            if ($autoRow) {
+                $couponList[] = $autoRow;
+            }
+        } catch (\Throwable $e) {
+            // 自动领券失败不影响确认页主流程
+        }
+        return $couponList;
     }
 
     /**
@@ -901,16 +912,28 @@ class CenterOrderController
             $result['coupon_id'] = $couponId;
             $result['coupon_title'] = $couponTitle;
 
-            // 自动领取发生在确认接口返回之后时，重新查询可用券并返回给前端。
-            // 否则金额和标题已经更新，但优惠券选择弹窗仍使用确认阶段的旧列表。
+            // 自动领取发生在确认接口返回之后，或被自动选中并用于计价的券不在列表查询窗口内时，
+            // 重新查询可用券并返回给前端，按已选中的券补齐，保证金额、入口文案与弹窗列表口径一致。
             $result['coupon_list'] = [];
             if (!$isActivityOrder && ($pricingPolicy['coupon'] ?? true)) {
+                /** @var StoreCouponUserServices $couponServices */
+                $couponServices = app()->make(StoreCouponUserServices::class);
                 try {
-                    /** @var StoreCouponUserServices $couponServices */
-                    $couponServices = app()->make(StoreCouponUserServices::class);
                     $result['coupon_list'] = $couponServices->getUsableCouponList($uid, ['valid' => $cartInfo]);
                 } catch (\Throwable $e) {
                     // 优惠券列表刷新失败不影响金额计算和下单流程
+                    $result['coupon_list'] = [];
+                }
+                $usableCouponIds = array_map('intval', array_column($result['coupon_list'], 'id'));
+                if ($couponId > 0 && !in_array($couponId, $usableCouponIds, true)) {
+                    try {
+                        $usedCouponRow = $couponServices->getUsableCouponRow($uid, $couponId);
+                        if ($usedCouponRow) {
+                            $result['coupon_list'][] = $usedCouponRow;
+                        }
+                    } catch (\Throwable $e) {
+                        // 已选券回显失败不影响金额计算
+                    }
                 }
             }
 

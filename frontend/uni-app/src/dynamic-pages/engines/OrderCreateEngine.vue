@@ -594,6 +594,19 @@ function ChangCoupons(e) {
 }
 
 /**
+ * 判断优惠券列表是否已包含指定用户券
+ * @param {Array} list 优惠券列表
+ * @param {Number|String} id 用户券ID
+ * @returns {boolean}
+ */
+function hasCouponRow(list, id) {
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].id == id) return true;
+  }
+  return false;
+}
+
+/**
  * 计算价格（调用computed接口）
  */
 async function computedPrice() {
@@ -644,8 +657,19 @@ async function computedPrice() {
     // 自动领券发生在确认接口之后，计算接口返回的列表才是最新可用券列表。
     // 同步列表和选中状态，避免入口显示优惠券但弹窗仍显示为空。
     if (Array.isArray(data.coupon_list)) {
-      coupon.value.list = data.coupon_list;
-      features.value.coupon = data.coupon_list.length > 0;
+      var nextCouponList = data.coupon_list;
+      // 兜底：已使用的券不在最新列表中时保留原行（如自动领券与列表查询落在同一秒），
+      // 否则入口显示已用券、价格已抵扣，弹窗却渲染成空优惠券。
+      if (couponId.value > 0 && !hasCouponRow(nextCouponList, couponId.value)) {
+        for (var usedIndex = 0; usedIndex < coupon.value.list.length; usedIndex++) {
+          if (coupon.value.list[usedIndex].id == couponId.value) {
+            nextCouponList = nextCouponList.concat([coupon.value.list[usedIndex]]);
+            break;
+          }
+        }
+      }
+      coupon.value.list = nextCouponList;
+      features.value.coupon = nextCouponList.length > 0 || couponId.value > 0;
       for (var couponIndex = 0; couponIndex < coupon.value.list.length; couponIndex++) {
         coupon.value.list[couponIndex].is_use = coupon.value.list[couponIndex].id == couponId.value ? 1 : 0;
       }

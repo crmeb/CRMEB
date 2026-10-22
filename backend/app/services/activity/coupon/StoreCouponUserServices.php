@@ -172,20 +172,58 @@ class StoreCouponUserServices extends BaseService
                         break;
                 }
                 if ($count && $coupon['use_min_price'] <= $price) {
-                    $coupon['start_time'] = $coupon['start_time'] ? date('Y/m/d', $coupon['start_time']) : date('Y/m/d', $coupon['add_time']);
-                    $coupon['add_time'] = date('Y/m/d', $coupon['add_time']);
-                    $coupon['end_time'] = date('Y/m/d', $coupon['end_time']);
-                    $coupon['start_use_time'] = $coupon['start_use_time'] > 0 ? date('Y/m/d', $coupon['start_use_time']) : 0;
-                    $coupon['end_use_time'] = $coupon['start_use_time'] > 0 ? date('Y/m/d', $coupon['end_use_time']) : 0;
-                    $coupon['title'] = $coupon['coupon_title'];
-                    $coupon['type'] = $coupon['applicable_type'];
-                    $coupon['use_min_price'] = floatval($coupon['use_min_price']);
-                    $coupon['coupon_price'] = floatval($coupon['coupon_price']);
-                    $result[] = $coupon;
+                    $result[] = $this->formatUsableCouponRow($coupon);
                 }
             }
         }
         return $result;
+    }
+
+    /**
+     * 格式化用户优惠券为下单页可选券行（前端优惠券选择器字段契约）
+     * @param array $coupon 用户券行，须已绑定 issue 的 applicable_type/start_use_time/end_use_time 等字段
+     * @return array
+     */
+    public function formatUsableCouponRow(array $coupon): array
+    {
+        $startUseTime = (int)($coupon['start_use_time'] ?? 0);
+        $endUseTime = (int)($coupon['end_use_time'] ?? 0);
+        $coupon['start_time'] = $coupon['start_time'] ? date('Y/m/d', (int)$coupon['start_time']) : date('Y/m/d', (int)$coupon['add_time']);
+        $coupon['add_time'] = date('Y/m/d', (int)$coupon['add_time']);
+        $coupon['end_time'] = date('Y/m/d', (int)$coupon['end_time']);
+        $coupon['start_use_time'] = $startUseTime > 0 ? date('Y/m/d', $startUseTime) : 0;
+        $coupon['end_use_time'] = $startUseTime > 0 ? date('Y/m/d', $endUseTime) : 0;
+        $coupon['title'] = $coupon['coupon_title'];
+        $coupon['type'] = $coupon['applicable_type'] ?? 0;
+        $coupon['use_min_price'] = floatval($coupon['use_min_price']);
+        $coupon['coupon_price'] = floatval($coupon['coupon_price']);
+        return $coupon;
+    }
+
+    /**
+     * 获取指定用户券的下单页券行（自动领取后回显/补齐弹窗列表用）
+     * @param int $uid 用户ID
+     * @param int $couponUserId 用户券记录ID（eb_store_coupon_user.id）
+     * @return array 券不属于当前用户或不存在时返回空数组
+     */
+    public function getUsableCouponRow(int $uid, int $couponUserId): array
+    {
+        if ($couponUserId <= 0) {
+            return [];
+        }
+        $coupon = $this->dao->get($couponUserId, ['*'], ['issue']);
+        if (!$coupon) {
+            return [];
+        }
+        if (is_object($coupon)) {
+            $coupon = $coupon->toArray();
+        }
+        // 仅回显当前用户未使用的券，避免越权读取他人券
+        if ((int)($coupon['uid'] ?? 0) !== $uid || (int)($coupon['status'] ?? 0) !== 0) {
+            return [];
+        }
+        unset($coupon['status'], $coupon['is_fail']);
+        return $this->formatUsableCouponRow($coupon);
     }
 
     /**

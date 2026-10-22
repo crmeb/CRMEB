@@ -132,8 +132,12 @@ class StoreCouponUserDao extends BaseDao
      */
     public function getUserAllCoupon(int $uid)
     {
+        // start_time 用 <=：领取后 N 天可用的券在领取当秒 start_time 就等于 time()，
+        // 用 < 会把“确认页刚自动领取并已用于计价”的券漏查，导致优惠券弹窗列表为空。
+        // 该口径与 OrderComputedServices::autoMatchCoupon 的候选券查询保持一致。
+        $now = time();
         return $this->getModel()->where(['uid' => $uid, 'status' => 0, 'is_fail' => 0])
-            ->where('start_time', '<', time())->where('end_time', '>', time())
+            ->where('start_time', '<=', $now)->where('end_time', '>', $now)
             ->order('coupon_price DESC')->with('issue')->select()->hidden(['status', 'is_fail'])->toArray();
     }
 
