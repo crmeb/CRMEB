@@ -17,6 +17,7 @@
   <countdown v-else-if="matchedKey === 'countdown'" :section="section" @click="emit('click', $event)" @preview="emit('preview', $event)" @action="emit('action', $event)" />
   <custom-form v-else-if="matchedKey === 'custom_form'" :section="section" @click="emit('click', $event)" @preview="emit('preview', $event)" @action="emit('action', $event)" />
   <faq-list v-else-if="matchedKey === 'faq_list'" :section="section" @click="emit('click', $event)" @preview="emit('preview', $event)" @action="emit('action', $event)" />
+  <gift-info-card v-else-if="matchedKey === 'gift_info'" :section="section" @click="emit('click', $event)" @preview="emit('preview', $event)" @action="emit('action', $event)" />
   <fulfillment-card v-else-if="fulfillmentKeys.includes(matchedKey)" :section="section" @click="emit('click', $event)" @preview="emit('preview', $event)" @action="emit('action', $event)" />
   <invoice-card v-else-if="matchedKey === 'info_list:invoice'" :section="section" @click="emit('click', $event)" @preview="emit('preview', $event)" @action="emit('action', $event)" />
   <logistics-timeline v-else-if="matchedKey === 'timeline:logistics'" :section="section" @click="emit('click', $event)" @preview="emit('preview', $event)" @action="emit('action', $event)" />
@@ -61,6 +62,7 @@ import Countdown from './Countdown.vue';
 import CustomForm from './CustomForm.vue';
 import FaqList from './FaqList.vue';
 import FulfillmentCard from './FulfillmentCard.vue';
+import GiftInfoCard from './GiftInfoCard.vue';
 import InfoList from './InfoList.vue';
 import InvoiceCard from './InvoiceCard.vue';
 import LogisticsTimeline from './LogisticsTimeline.vue';

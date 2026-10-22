@@ -57,10 +57,12 @@
                       <image :src="item.image" mode="aspectFill" class="goods-img"></image>
                       <view class="goods-text">
                         <text class="goods-name line2">{{ item.store_name || '' }}</text>
-                        <text v-if="getItemSkuText(item)" class="goods-sku line1">{{ getItemSkuText(item) }}</text>
-                        <view class="goods-meta">
-                          <text v-if="!order.is_gift_receiver" class="goods-price">¥{{ item.true_price || item.price || '0.00' }}</text>
-                          <text class="goods-num">x{{ item.cart_num || 1 }}</text>
+                        <view class="goods-bottom">
+                          <text v-if="getItemSkuText(item)" class="goods-sku line1">{{ getItemSkuText(item) }}</text>
+                          <view class="goods-meta">
+                            <text v-if="!order.is_gift_receiver" class="goods-price">¥{{ item.true_price || item.price || '0.00' }}</text>
+                            <text class="goods-num">x{{ item.cart_num || 1 }}</text>
+                          </view>
                         </view>
                       </view>
                     </view>
@@ -451,26 +453,32 @@ defineExpose({ refresh: refreshList });
   border-bottom: none;
 }
 .my-order .list .item .item-info .multi-goods .goods-img {
-  width: 120rpx;
-  height: 120rpx;
+  width: 140rpx;
+  height: 140rpx;
   border-radius: 6rpx;
   flex-shrink: 0;
 }
 .my-order .list .item .item-info .multi-goods .goods-text {
   flex: 1;
   margin-left: 20rpx;
+  height: 140rpx;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 .my-order .list .item .item-info .multi-goods .goods-name {
   font-size: 28rpx;
   color: #333;
   line-height: 1.4;
 }
+.my-order .list .item .item-info .multi-goods .goods-bottom {
+  display: flex;
+  flex-direction: column;
+}
 .my-order .list .item .item-info .multi-goods .goods-sku {
   font-size: 24rpx;
   color: #999;
-  margin-top: 4rpx;
+  margin-top: 0;
 }
 .my-order .list .item .item-info .multi-goods .goods-meta {
   display: flex;
@@ -489,8 +497,9 @@ defineExpose({ refresh: refreshList });
 }
 
 .my-order .list .item .item-info .pictrue {
-  width: 120rpx;
-  height: 120rpx;
+  width: 140rpx;
+  height: 140rpx;
+  flex-shrink: 0;
 }
 
 .my-order .list .item .item-info .pictrue image {
@@ -500,12 +509,14 @@ defineExpose({ refresh: refreshList });
 }
 
 .my-order .list .item .item-info .text {
-  width: 486rpx;
+  flex: 1;
+  margin-left: 20rpx;
+  height: 140rpx;
   font-size: 28rpx;
   color: #999;
-  margin-top: 6rpx;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   line-height: 39rpx;
 }
 
@@ -529,7 +540,7 @@ defineExpose({ refresh: refreshList });
 .my-order .list .item .item-info .text .sku-text {
   font-size: 24rpx;
   color: #999;
-  margin-top: 8rpx;
+  margin-top: 0;
 }
 
 .my-order .list .item .extend-text {
@@ -570,6 +581,11 @@ defineExpose({ refresh: refreshList });
   padding: 0;
   margin: 0;
   border: none;
+}
+
+/* 去掉 uni-app 按钮默认 ::after 边框，避免与自定义描边叠加成双层边框 */
+.my-order .list .item .bottom .bnt::after {
+  border: 0;
 }
 
 .my-order .list .item .bottom .bnt.cancelBnt {

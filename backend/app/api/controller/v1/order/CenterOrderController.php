@@ -2842,10 +2842,32 @@ class CenterOrderController
     }
 
     /**
+     * 判断用户是否可对订单执行用户端操作：下单人本人或送礼订单领取人
+     * @param array $order 订单数据（含 uid / gift_uid / extra_info）
+     * @param int $uid 当前用户 ID
+     * @return bool
+     */
+    protected function canOperateOrder(array $order, int $uid): bool
+    {
+        if ((int)($order['uid'] ?? 0) === $uid) {
+            return true;
+        }
+        $giftUid = (int)($order['gift_uid'] ?? 0);
+        if ($giftUid === 0) {
+            $extra = $order['extra_info'] ?? [];
+            if (is_string($extra)) {
+                $extra = json_decode($extra, true) ?: [];
+            }
+            $giftUid = (int)($extra['gift']['gift_uid'] ?? ($extra['gift_uid'] ?? 0));
+        }
+        return $giftUid > 0 && $giftUid === $uid;
+    }
+
+    /**
      * 按 SKU 唯一码从中台订单快照定位商品行
      * 查询订单中台的 extra_info.items，匹配 attr_info.unique（与订单评价 unique 同源）
      * @param string $unique SKU 唯一码
-     * @param int|null $uid 限定用户（评价场景必传防越权），null 不限定
+     * @param int|null $uid 限定用户（评价场景必传防越权，下单人或送礼领取人），null 不限定
      * @return array|null 商品行（附 _order_no/_center_id），未找到返回 null
      */
     protected function findOrderItemBySkuUnique(string $unique, ?int $uid = null): ?array
@@ -2853,12 +2875,13 @@ class CenterOrderController
         if ($unique === '') {
             return null;
         }
+        // 不直接按 uid 过滤：送礼订单的领取人也需要能评价（领取人 uid 不等于订单 uid）
         $where = [['extra_info', 'like', '%' . $unique . '%']];
-        if ($uid !== null) {
-            $where[] = ['uid', '=', $uid];
-        }
-        $orders = app()->make(OrderCenterDao::class)->selectList($where, 'id, order_no, extra_info', 0, 0);
+        $orders = app()->make(OrderCenterDao::class)->selectList($where, 'id, uid, gift_uid, order_no, extra_info', 0, 0);
         foreach ($orders as $order) {
+            if ($uid !== null && !$this->canOperateOrder($order, $uid)) {
+                continue;
+            }
             $extra = is_string($order['extra_info']) ? json_decode($order['extra_info'], true) : ($order['extra_info'] ?? []);
             foreach ($extra['items'] ?? [] as $item) {
                 if (($item['attr_info']['unique'] ?? '') === $unique) {
@@ -2876,7 +2899,7 @@ class CenterOrderController
      * 评价必须落到用户指定的那笔订单：同商品重复购买时各订单 unique 相同，仅凭 unique 反查会命中旧订单
      * @param string $orderNo 中台订单号
      * @param string $unique SKU 唯一码
-     * @param int|null $uid 限定归属用户
+     * @param int|null $uid 限定归属用户（下单人或送礼领取人）
      * @return array|null
      */
     protected function findOrderItemByOrderNo(string $orderNo, string $unique, ?int $uid = null): ?array
@@ -2889,7 +2912,7 @@ class CenterOrderController
             return null;
         }
         $order = is_object($order) ? $order->toArray() : (array)$order;
-        if ($uid !== null && (int)($order['uid'] ?? 0) !== $uid) {
+        if ($uid !== null && !$this->canOperateOrder($order, $uid)) {
             return null;
         }
         $extra = is_string($order['extra_info'] ?? null) ? json_decode($order['extra_info'], true) : ($order['extra_info'] ?? []);
@@ -2951,8 +2974,9 @@ class CenterOrderController
         $orderInfo = $orderInfo->toArray();
 
         // ==================== 6. 权限验证 ====================
-        if ($uid != $orderInfo['uid']) {
-            return app('json')->fail('不是您自己的订单，无法评价');
+        // 下单人本人或送礼订单领取人均可评价（领取人评价时 uid 为领取人）
+        if (!$this->canOperateOrder($orderInfo, $uid)) {
+            return app('json')->fail('无权评价该订单');
         }
 
         // ==================== 7. 调用评价服务（业务逻辑和事件触发都在Service中）===================

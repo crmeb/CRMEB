@@ -6,23 +6,26 @@
 -->
 <template>
   <view class="product-card">
-    <!-- 多商品模式：遍历 items 渲染每个商品 -->
-    <view
-      v-for="(item, idx) in productList"
-      :key="idx"
-      class="product-row"
-      @click="goDetail(item)"
-    >
-      <image :src="item.image" mode="aspectFill" class="product-image" />
-      <view class="product-info">
-        <text class="product-name">{{ item.store_name || '' }}</text>
-        <text v-if="getSkuText(item)" class="sku-text">{{ getSkuText(item) }}</text>
-        <view class="product-meta">
-          <text v-if="!isGiftReceiver" class="product-price">¥{{ item.true_price || item.price || '0.00' }}</text>
-          <text class="product-qty">x{{ item.cart_num || 1 }}</text>
+    <view class="card-title">{{ $t('商品信息') }}</view>
+    <view class="product-list">
+      <!-- 多商品模式：遍历 items 渲染每个商品 -->
+      <view
+        v-for="(item, idx) in productList"
+        :key="idx"
+        class="product-row"
+        @click="goDetail(item)"
+      >
+        <image :src="item.image" mode="aspectFill" class="product-image" />
+        <view class="product-info">
+          <text class="product-name">{{ item.store_name || '' }}</text>
+          <text v-if="getSkuText(item)" class="sku-text">{{ getSkuText(item) }}</text>
+          <view class="product-meta">
+            <text v-if="!isGiftReceiver" class="product-price">¥{{ getItemPrice(item) }}</text>
+            <text class="product-qty">x{{ item.cart_num || 1 }}</text>
+          </view>
         </view>
+        <view class="arrow-icon"><text class="iconfont icon-xiangyou"></text></view>
       </view>
-      <view class="arrow-icon"><text class="iconfont icon-xiangyou"></text></view>
     </view>
   </view>
 </template>
@@ -71,10 +74,23 @@ const productList = computed(() => {
     image: product.value.image || '',
     store_name: product.value.title || '',
     cart_num: product.value.total_num || 0,
-    true_price: ctx.value.payPrice || '0.00',
+    price: product.value.price || ctx.value.payPrice || '0.00',
     product_id: p.value.product_id || 0,
   }];
 });
+
+/**
+ * 商品金额：展示规格原价（true_price 为优惠后单价，不作为商品金额展示）
+ * @param {object} item 商品项
+ * @return {string} 金额
+ */
+function getItemPrice(item) {
+  var attr = item.attr_info || {};
+  // 订单快照 item.price 可能是商品级价格，规格金额以 attr_info.price 为准
+  var val = attr.price || item.price || '0.00';
+  var num = parseFloat(val);
+  return isNaN(num) ? String(val) : num.toFixed(2);
+}
 
 /**
  * 提取规格文本
@@ -100,9 +116,11 @@ function goDetail(item) {
 </script>
 
 <style scoped>
-.product-card { margin: 20rpx; background: #fff; border-radius: 16rpx; padding: 0 24rpx; }
-.product-row { display: flex; align-items: center; padding: 24rpx 0; border-bottom: 1rpx solid #f5f5f5; }
-.product-row:last-child { border-bottom: none; }
+.product-card { margin: 20rpx; background: #fff; border-radius: 16rpx; padding: 30rpx; }
+.card-title { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 20rpx; }
+.product-row { display: flex; align-items: center; padding: 20rpx 0; border-bottom: 1rpx solid #f5f5f5; }
+.product-row:first-child { padding-top: 0; }
+.product-row:last-child { border-bottom: none; padding-bottom: 0; }
 .product-image { width: 140rpx; height: 140rpx; border-radius: 12rpx; flex-shrink: 0; }
 .product-info { flex: 1; margin-left: 20rpx; display: flex; flex-direction: column; }
 .product-name { font-size: 28rpx; color: #333; line-height: 1.4; }

@@ -449,10 +449,21 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         }
         $detail = $detail->toArray();
         $detail['extra_info'] = $this->parseExtraInfo($detail['extra_info']);
-        // 下单用户昵称/绑定电话（eb_user），供详情"用户信息"区展示
-        $detailUser = User::where('uid', (int)$detail['uid'])->field('nickname,phone')->find();
+        // 下单用户昵称/绑定电话/头像（eb_user），供详情"用户信息"与送礼信息区展示
+        $detailUser = User::where('uid', (int)$detail['uid'])->field('nickname,phone,avatar')->find();
         $detail['nickname'] = $detailUser['nickname'] ?? '';
         $detail['user_phone'] = $detailUser['phone'] ?? '';
+        $detail['user_avatar'] = set_file_url((string)($detailUser['avatar'] ?? ''));
+        // 送礼订单：领取人信息（gift_uid 非 0 时），供送礼人查看"谁领取了礼物"
+        $giftUid = (int)($detail['gift_uid'] ?? $detail['extra_info']['gift']['gift_uid'] ?? ($detail['extra_info']['gift_uid'] ?? 0));
+        if ($giftUid > 0) {
+            $receiver = User::where('uid', $giftUid)->field('nickname,avatar')->find();
+            $detail['gift_receiver'] = [
+                'uid'      => $giftUid,
+                'nickname' => (string)($receiver['nickname'] ?? ''),
+                'avatar'   => set_file_url((string)($receiver['avatar'] ?? '')),
+            ];
+        }
         // 解析 JSON 字段
         if (!empty($detail['custom_form'])) {
             $detail['custom_form'] = $this->parseExtraInfo($detail['custom_form']);
@@ -622,19 +633,50 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     }
 
     /**
+     * 计算订单商品原价总额（规格价 × 数量）
+     * total_price 为优惠后金额，价格明细中的“商品总额”需使用原价基数，才能与各项优惠对平
+     * @param array $detail 订单详情数据
+     * @return string 金额字符串（两位小数）
+     */
+    protected function resolveOriginalGoodsTotal(array $detail): string
+    {
+        $total = '0.00';
+        foreach (($detail['order_items'] ?? []) as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $price = is_array($item['attr_info'] ?? null) ? ($item['attr_info']['price'] ?? '') : '';
+            // 订单快照 item.price 可能是商品级价格，规格金额以 attr_info.price 为准
+            if ($price === '' || $price === null) {
+                $price = $item['price'] ?? '';
+            }
+            if ($price === '' || !is_numeric($price)) {
+                continue;
+            }
+            $num = max(1, (int)($item['cart_num'] ?? 1));
+            $total = bcadd($total, bcmul((string)$price, (string)$num, 2), 2);
+        }
+        if (bccomp($total, '0', 2) <= 0) {
+            $total = number_format((float)($detail['total_price'] ?? 0), 2, '.', '');
+        }
+        return $total;
+    }
+
+    /**
      * 组装价格明细数组
      * 将金额实体列转为 {label, value, type} 数组格式
      * 金额字段为中台实体列（价格链规范固定）；插件可通过 OrderPricingExtend 事件追加金额项
      * @param array $detail 订单详情数据
-     * @return array 返回 {items: [...], pay_price: string}
+     * @return array 返回 {items: [...], pay_price: string, original_total: string}
      */
     protected function buildPricingItems(array $detail): array
     {
         $items = [];
-        // 商品总额（始终存在）
+        // 商品总额按规格原价 × 数量汇总（total_price 是优惠后金额，不能作为明细基数）
+        $originalTotal = $this->resolveOriginalGoodsTotal($detail);
         $items[] = [
             'label' => '商品总额',
-            'value' => number_format((float)($detail['total_price'] ?? 0), 2, '.', ''),
+            'value' => $originalTotal,
             'type'  => 'subtotal',
         ];
 
@@ -693,8 +735,9 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         event('OrderPricingExtend', $pricingEvent);
 
         return [
-            'items'     => $items,
-            'pay_price' => number_format((float)($detail['pay_price'] ?? 0), 2, '.', ''),
+            'items'          => $items,
+            'pay_price'      => number_format((float)($detail['pay_price'] ?? 0), 2, '.', ''),
+            'original_total' => $originalTotal,
         ];
     }
 
@@ -823,6 +866,16 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 'order'     => 40,
             ];
         }
+
+        // 45. 礼物信息（送礼订单）：赠送人/领取人展示由查看者身份决定，在 applyGiftViewerPolicy 中填充
+        $gift = $detail['gift'] ?? null;
+        $sections[] = [
+            'key'       => 'gift',
+            'component' => 'gift_info',
+            'props'     => ['gift' => $gift ?? []],
+            'visible'   => !empty($gift),
+            'order'     => 45,
+        ];
 
         // 50. 商品卡片（始终存在）
         // product_id 供前端引擎跳转商品详情（goProductDetail）使用
@@ -1083,7 +1136,8 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         $pricing = [
             'items'            => $pricingData['items'],
             'pay_price'        => $pricingData['pay_price'],
-            'total_price'      => $detail['total_price'] ?? '0.00',
+            // 展示口径：商品总额按规格原价 × 数量汇总（原始 total_price 为优惠后金额，保留在详情顶层供业务计算）
+            'total_price'      => $pricingData['original_total'] ?? ($detail['total_price'] ?? '0.00'),
             'pay_postage'      => $detail['pay_postage'] ?? '0.00',
             'refund_price'     => $detail['refund_price'] ?? '0.00',
             'coupon_price'     => $detail['coupon_price'] ?? '0.00',
@@ -1232,6 +1286,25 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         // 原始 extra_info（供深度定制用）
         $extensions['extra_info'] = $detail['extra_info'] ?? [];
 
+        // 送礼订单信息：赠送人 / 领取人 / 留言 / 领取时间，供详情礼物卡片按查看者展示
+        $gift = null;
+        if ($this->resolveIsGiftFlag($detail) === 1) {
+            $extraInfo = $detail['extra_info'] ?? [];
+            $giftUid = (int)($detail['gift_uid'] ?? $extraInfo['gift']['gift_uid'] ?? ($extraInfo['gift_uid'] ?? 0));
+            $gift = [
+                'is_gift'   => 1,
+                'gift_uid'  => $giftUid,
+                'gift_mark' => (string)($extraInfo['gift_mark'] ?? ''),
+                'gift_time' => (int)($extraInfo['gift']['gift_time'] ?? 0),
+                'sender'    => [
+                    'uid'      => (int)($detail['uid'] ?? 0),
+                    'nickname' => (string)($detail['nickname'] ?? ''),
+                    'avatar'   => (string)($detail['user_avatar'] ?? ''),
+                ],
+                'receiver'  => $detail['gift_receiver'] ?? null,
+            ];
+        }
+
         // 返回分组结构：仅输出有值的分组，空分组（null/空数组）不下发，避免响应占位
         $result = [
             'status'     => $status,
@@ -1240,6 +1313,9 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             'order_info' => $orderInfo,
             'extensions' => $extensions,
         ];
+        if ($gift !== null) {
+            $result['gift'] = $gift;
+        }
         if (!empty($buttons)) {
             $result['buttons'] = $buttons;
         }

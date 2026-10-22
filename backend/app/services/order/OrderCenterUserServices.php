@@ -93,7 +93,7 @@ class OrderCenterUserServices extends OrderCenterServices
                 fn($section) => !in_array($section['key'] ?? '', ['pricing', 'payment', 'invoice', 'coupon_gift', 'points_reward'], true)
             ));
             $result['page_config']['extensions']['viewer_role'] = 'gift_receiver';
-            $visibleActions = ['confirmReceive', 'viewLogistics'];
+            $visibleActions = ['confirmReceive', 'viewLogistics', 'goComment'];
             $hiddenActions = [];
         } else {
             // 购买者：不展示收货信息与物流轨迹，隐藏确认收货/申请退款/查看物流
@@ -105,9 +105,22 @@ class OrderCenterUserServices extends OrderCenterServices
             $hiddenActions = ['confirmReceive', 'applyRefund', 'viewLogistics'];
         }
 
-        // 按查看者身份过滤底部操作按钮
+        // 按查看者身份处理礼物信息与底部操作按钮
         foreach ($sections as &$section) {
-            if (($section['key'] ?? '') !== 'buttons') {
+            $sectionKey = (string)($section['key'] ?? '');
+            // 礼物信息：送礼人展示领取人，领取人展示赠送人
+            if ($sectionKey === 'gift') {
+                $gift = $section['props']['gift'] ?? [];
+                if ($isReceiver) {
+                    $section['props']['role'] = 'receiver';
+                    $section['props']['display'] = $gift['sender'] ?? null;
+                } else {
+                    $section['props']['role'] = 'sender';
+                    $section['props']['display'] = $gift['receiver'] ?? null;
+                }
+                continue;
+            }
+            if ($sectionKey !== 'buttons') {
                 continue;
             }
             $section['props']['buttons'] = array_values(array_filter(
@@ -216,7 +229,7 @@ class OrderCenterUserServices extends OrderCenterServices
             if ($item['is_gift_receiver']) {
                 $item['order_buttons'] = array_values(array_filter(
                     $item['order_buttons'] ?? [],
-                    fn($button) => ($button['action'] ?? '') === 'viewLogistics'
+                    fn($button) => in_array($button['action'] ?? '', ['confirmReceive', 'viewLogistics', 'goComment'], true)
                 ));
             }
         }
@@ -348,7 +361,8 @@ class OrderCenterUserServices extends OrderCenterServices
         }
 
         // 订单大类文案：从 OrderTypeRegistry 动态获取，各适配器注册即生效
-        if ($orderCategory) {
+        // 普通商品订单已有「实物商品」角标，不再重复展示“商品订单”占位文案
+        if ($orderCategory && $orderCategory !== 'goods') {
             $categoryMap = OrderTypeRegistry::getCategoryMap();
             if (isset($categoryMap[$orderCategory])) {
                 return $categoryMap[$orderCategory];

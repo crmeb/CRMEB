@@ -192,6 +192,7 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
                 ])
                 ->userButtons([
                     Button::primary('去评价', 'goComment'),
+                    Button::make('查看物流', 'viewLogistics'),
                     Button::make('申请售后', 'applyAfterSale'),
                 ])
                 ->filter([['pt_normal_order.status', '=', self::EXT_STATUS_PENDING_REVIEW]]),
@@ -202,6 +203,7 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
                 ->label('已完成')
                 ->adminButtons([])
                 ->userButtons([
+                    Button::make('查看物流', 'viewLogistics'),
                     Button::make('申请售后', 'applyAfterSale'),
                     Button::primary('再次购买', 'repurchase'),
                 ])
