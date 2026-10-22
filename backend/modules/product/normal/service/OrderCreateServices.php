@@ -177,7 +177,8 @@ class OrderCreateServices extends BaseService
                     'delivery'              => [
                         'delivery_type' => $shippingType === 2 ? 'pickup' : ($shippingType === 3 ? 'door' : 'express'),
                     ],
-                    // 金额字段已提升为实体列，extra_info 中不再双写
+                    // 金额字段已提升为实体列；运费优惠需保留原始运费与优惠额供订单详情展示
+                    'postage_discount'      => (string)($priceData['postage_discount'] ?? '0.00'),
                     // 商品规格快照，供订单列表/详情页展示
                     'sku_info'              => $this->buildSkuInfo($cartGroup['cartInfo'][0] ?? []),
                     // v8.1.1 商品级售后：写入 items 快照（含 cart_id），供售后引擎加载商品列表
@@ -336,6 +337,8 @@ class OrderCreateServices extends BaseService
             'pay_price'        => $priceData['pay_price'] ?? 0,
             'coupon_price'     => $priceData['coupon_price'] ?? 0,
             'pay_postage'      => $priceData['pay_postage'] ?? 0,
+            // 会员运费优惠：pay_postage 是优惠后运费，需单独落库供详情页展示原运费与优惠
+            'postage_discount' => $priceData['storePostageDiscount'] ?? 0,
             'deduction_price'  => $priceData['deduction_price'] ?? 0,
             'usedIntegral'     => $priceData['usedIntegral'] ?? 0,
         ];

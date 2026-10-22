@@ -1403,11 +1403,14 @@ class CenterOrderController
 
             // 自提模式强制运费为 0；上门服务模式运费替换为商品上门费用（同上 computed 方法的处理逻辑）
             $finalPayPostage = $computedResult['pay_postage'] ?? 0;
+            // 会员运费优惠：pay_postage 为优惠后运费，详情页需还原原运费并单独展示优惠
+            $finalPostageDiscount = (string)($computedResult['storePostageDiscount'] ?? '0.00');
             if ($formDeliveryType === 'pickup') {
                 if ($finalPayPostage > 0) {
                     $finalPayPrice = bcsub((string)$finalPayPrice, (string)$finalPayPostage, 2);
                 }
                 $finalPayPostage = 0;
+                $finalPostageDiscount = '0.00';
             } elseif ($formDeliveryType === 'door') {
                 // 上门服务：运费 = 商品上门费用（实时从数据库读取，避免缓存快照过期导致金额不一致）
                 $doorPostage = 0.00;
@@ -1429,6 +1432,7 @@ class CenterOrderController
                 }
                 $finalPayPrice = bcadd((string)$finalPayPrice, (string)$doorPostage, 2);
                 $finalPayPostage = $doorPostage;
+                $finalPostageDiscount = '0.00';
             }
 
             // 5. 先写产品类型扩展表，拿到扩展表记录 id 作为中台表的 source_id
@@ -1633,7 +1637,8 @@ class CenterOrderController
                     'delivery'              => [
                         'delivery_type' => $deliveryType,
                     ],
-                    // 金额字段已提升为实体列，extra_info 中不再双写
+                    // 金额字段已提升为实体列；运费优惠需保留供详情页还原原运费
+                    'postage_discount'      => $finalPostageDiscount,
                     'sku_info'              => $this->buildSkuInfoForExtra($cartInfo[0] ?? []),
                     // 商品明细快照，供订单详情/退款页面使用
                     'items'                 => $this->buildOrderItemsForExtra($cartInfo),

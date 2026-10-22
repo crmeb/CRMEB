@@ -680,13 +680,27 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             'type'  => 'subtotal',
         ];
 
-        // 运费（>0 才显示）
+        // 快递运费：展示优惠前金额（pay_postage 为会员运费优惠后的实付运费）
         $postage = (float)($detail['pay_postage'] ?? 0);
-        if ($postage > 0) {
+        $extraInfo = $detail['extra_info'] ?? [];
+        if (!is_array($extraInfo)) {
+            $extraInfo = [];
+        }
+        $postageDiscount = (float)($extraInfo['postage_discount'] ?? 0);
+        $originalPostage = (float)bcadd((string)$postage, (string)$postageDiscount, 2);
+        if ($originalPostage > 0) {
             $items[] = [
-                'label' => '运费',
-                'value' => '+' . number_format($postage, 2, '.', ''),
+                'label' => '快递运费',
+                'value' => '+' . number_format($originalPostage, 2, '.', ''),
                 'type'  => 'shipping',
+            ];
+        }
+        // 会员运费优惠单独展示，与订单确认页口径一致
+        if ($postageDiscount > 0) {
+            $items[] = [
+                'label' => '会员运费优惠',
+                'value' => '-' . number_format($postageDiscount, 2, '.', ''),
+                'type'  => 'shipping_discount',
             ];
         }
         // 优惠券抵扣
