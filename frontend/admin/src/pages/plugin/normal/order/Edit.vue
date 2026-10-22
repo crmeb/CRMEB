@@ -10,7 +10,7 @@
           </el-col>
           <el-col :span="12">
             <span class="label">订单状态：</span>
-            <span class="value">{{ getStatusLabel(orderInfo.status_code) }}</span>
+            <span class="value">{{ businessStatus.text }}</span>
           </el-col>
         </el-row>
         <el-row :gutter="24" style="margin-top: 8px">
@@ -104,9 +104,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { ElMessage } from 'element-plus';
-import { saveEditOrder, getEditOrderForm, saveOrderIntegral } from '../normalOrder';
+import { saveEditOrder, getEditOrderForm, saveOrderIntegral, getOrderBusinessStatus } from '../normalOrder';
 
 defineOptions({ name: 'orderEdit' });
 
@@ -132,6 +132,9 @@ const integralData = reactive({
   give_integral: 0,
   back_integral: 0,
 });
+
+/** 订单状态与列表/详情同口径（待支付/待发货/待收货/待到店/待评价等） */
+const businessStatus = computed(() => getOrderBusinessStatus(orderInfo.value || {}));
 
 /** 打开弹窗 */
 function open(no) {
@@ -218,18 +221,6 @@ async function saveAll() {
 
 function handleClose() {
   visible.value = false;
-}
-
-function getStatusLabel(code) {
-  const map = {
-    pending_payment: '待支付',
-    processing: '进行中',
-    completed: '已完成',
-    canceled: '已取消',
-    refunding: '退款中',
-    refunded: '已退款',
-  };
-  return map[code] || code || '--';
 }
 
 defineExpose({ open });

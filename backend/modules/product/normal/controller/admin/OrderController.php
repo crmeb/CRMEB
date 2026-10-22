@@ -363,7 +363,7 @@ class OrderController extends AuthController
             return app('json')->fail('参数错误');
         }
         $order = $centerServices->getOne(['order_no' => $orderNo],
-            'order_no, total_price, pay_price, pay_postage, coupon_price, deduction_price, use_integral_num, extra_info');
+            'order_no, status_code, delivery_time, is_del, total_price, pay_price, pay_postage, coupon_price, deduction_price, use_integral_num, extra_info');
         if (!$order) {
             return app('json')->fail('订单不存在');
         }
@@ -376,7 +376,8 @@ class OrderController extends AuthController
         $data['give_integral'] = $extraInfo['give_integral'] ?? 0;
         $data['use_integral'] = $data['use_integral_num'] ?? $extraInfo['use_integral_num'] ?? 0;
         $data['backed_integral'] = $extraInfo['backed_integral'] ?? 0;
-        unset($data['extra_info']);
+        // 仅保留配送方式，供前端与列表同口径计算业务状态（待发货/待收货/待到店）
+        $data['extra_info'] = ['delivery_type' => (string)($extraInfo['delivery_type'] ?? '')];
         return app('json')->success($data);
     }
 
