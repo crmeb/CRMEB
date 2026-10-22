@@ -338,47 +338,62 @@ function getTrend() {
 }
 .code-row-bg {
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
+  align-items: stretch;
+  gap: 16px;
 }
 .code-row-bg .ivu-mt {
-  width: calc(50% - 8px);
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  /* .ivu-mt 的全局 margin-top 只作用于第二张卡，导致左右卡片顶部错位 */
+  margin-top: 0 !important;
 }
 .ech-box {
   margin-top: 10px;
 }
 .change-style {
-  border: 1px solid #ccc;
+  border: 1px solid var(--prev-border-color-base, #dcdfe6);
   border-radius: 15px;
-  padding: 0px 10px;
+  padding: 0 10px;
   cursor: pointer;
+  color: var(--prev-color-text-regular, #606266);
 }
 .percent-box {
   display: flex;
   align-items: center;
-  padding-right: 10px;
+  gap: 8px;
 }
 .line {
-  width: 100%;
-  position: relative;
-}
-.bg {
-  position: absolute;
-  width: 100%;
+  flex: 1;
+  min-width: 40px;
   height: 8px;
   border-radius: 8px;
   background-color: #f2f2f2;
+  overflow: hidden;
+}
+.bg {
+  display: none;
 }
 .percent {
-  position: absolute;
-  border-radius: 5px;
-  height: 8px;
+  height: 100%;
+  border-radius: 8px;
   background-color: var(--prev-color-primary);
-  z-index: 999;
 }
 .num {
+  flex: 0 0 52px;
+  width: 52px;
+  margin: 0;
+  text-align: right;
   white-space: nowrap;
-  margin: 0 10px;
-  width: 20px;
+  color: var(--prev-color-text-regular, #606266);
+  font-size: 12px;
+}
+@media (max-width: 1200px) {
+  .code-row-bg {
+    flex-wrap: wrap;
+  }
+  .code-row-bg .ivu-mt {
+    flex-basis: 100%;
+  }
 }
 </style>
