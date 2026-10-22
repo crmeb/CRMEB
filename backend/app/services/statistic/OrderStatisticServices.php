@@ -33,16 +33,26 @@ class OrderStatisticServices extends BaseService
         $orderDao = app()->make(OrderCenterDao::class);
         // 支付时间区间（timeKey 绑定 eb_order_center.pay_time）
         $timeKey = $this->buildTimeKey($time);
-        // 已支付订单：支付金额/订单量
-        $wherePay = ['pay_status' => OrderCenter::PAY_PAID, 'is_del' => 0];
-        $data['pay_price'] = $orderDao->getWhereSumField($wherePay + ['timeKey' => $timeKey], 'pay_price');
-        $data['pay_count'] = $orderDao->getDb()->where($wherePay)
+        $paidStatuses = [
+            OrderCenter::PAY_PAID,
+            OrderCenter::PAY_PARTIAL_REFUND,
+            OrderCenter::PAY_FULL_REFUND,
+        ];
+        // 已支付订单：支付金额/订单量（含后续退款订单，退款在退款卡片单独统计）
+        $wherePaySum = ['is_del' => 0, 'timeKey' => $timeKey];
+        $wherePaySum[] = ['pay_status', 'in', $paidStatuses];
+        $data['pay_price'] = $orderDao->getWhereSumField($wherePaySum, 'pay_price');
+        $data['pay_count'] = $orderDao->getDb()->where('is_del', 0)->whereIn('pay_status', $paidStatuses)
             ->whereBetweenTime('pay_time', $timeKey['start_time'], $timeKey['end_time'])->count();
-        // 已退款订单：退款金额/退款订单数（refund_status=已退款 累计 refund_price，按订单数计非售后单数）
-        $whereRefund = ['pay_status' => OrderCenter::PAY_PAID, 'refund_status' => OrderCenter::REFUND_SUCCESS, 'is_del' => 0];
-        $data['refund_price'] = $orderDao->getWhereSumField($whereRefund + ['timeKey' => $timeKey], 'refund_price');
+        // 已退款订单：退款金额/退款订单数（refund_status=已退款 累计 refund_price，按退款时间归属）
+        $whereRefund = ['refund_status' => OrderCenter::REFUND_SUCCESS, 'is_del' => 0];
+        $data['refund_price'] = $orderDao->getWhereSumField(
+            $whereRefund + ['timeKey' => $timeKey],
+            'refund_price',
+            'refund_time'
+        );
         $data['refund_count'] = $orderDao->getDb()->where($whereRefund)
-            ->whereBetweenTime('pay_time', $timeKey['start_time'], $timeKey['end_time'])->count();
+            ->whereBetweenTime('refund_time', $timeKey['start_time'], $timeKey['end_time'])->count();
         return $data;
     }
 
@@ -99,14 +109,19 @@ class OrderStatisticServices extends BaseService
                 }
             }
         }
-        // 支付金额/订单量趋势（按 pay_time 分组）
-        $wherePay = ['pay_status' => OrderCenter::PAY_PAID, 'is_del' => 0];
-        $pay_price = $this->groupTrend($storeOrder, $wherePay, 'SUM(pay_price)', $time, $timeType);
-        $pay_count = $this->groupTrend($storeOrder, $wherePay, 'COUNT(*)', $time, $timeType);
-        // 退款金额/退款单数趋势（refund_status=已退款 累计 refund_price）
-        $whereRefund = ['pay_status' => OrderCenter::PAY_PAID, 'refund_status' => OrderCenter::REFUND_SUCCESS, 'is_del' => 0];
-        $refund_price = $this->groupTrend($storeOrder, $whereRefund, 'SUM(refund_price)', $time, $timeType);
-        $refund_count = $this->groupTrend($storeOrder, $whereRefund, 'COUNT(*)', $time, $timeType);
+        // 支付金额/订单量趋势（按 pay_time 分组，含后续退款订单）
+        $paidStatuses = [
+            OrderCenter::PAY_PAID,
+            OrderCenter::PAY_PARTIAL_REFUND,
+            OrderCenter::PAY_FULL_REFUND,
+        ];
+        $wherePay = ['is_del' => 0];
+        $pay_price = $this->groupTrend($storeOrder, $wherePay, 'SUM(pay_price)', $time, $timeType, 'pay_time', $paidStatuses);
+        $pay_count = $this->groupTrend($storeOrder, $wherePay, 'COUNT(*)', $time, $timeType, 'pay_time', $paidStatuses);
+        // 退款金额/退款单数趋势（按 refund_time 分组）
+        $whereRefund = ['refund_status' => OrderCenter::REFUND_SUCCESS, 'is_del' => 0];
+        $refund_price = $this->groupTrend($storeOrder, $whereRefund, 'SUM(refund_price)', $time, $timeType, 'refund_time');
+        $refund_count = $this->groupTrend($storeOrder, $whereRefund, 'COUNT(*)', $time, $timeType, 'refund_time');
         $data = $series = [];
         foreach ($xAxis as $item) {
             $data['订单金额'][] = isset($pay_price[$item]) ? floatval($pay_price[$item]) : 0;
@@ -147,7 +162,11 @@ class OrderStatisticServices extends BaseService
                 'name' => $item,
                 'value' => $orderService->getDb()->alias('o')
                     ->join($userTable . ' u', 'o.uid = u.uid')
-                    ->where('o.pay_status', OrderCenter::PAY_PAID)
+                    ->whereIn('o.pay_status', [
+                        OrderCenter::PAY_PAID,
+                        OrderCenter::PAY_PARTIAL_REFUND,
+                        OrderCenter::PAY_FULL_REFUND,
+                    ])
                     ->where('o.is_del', 0)
                     // 结束日补至当天 23:59:59（whereBetweenTime 对纯日期字符串不扩展当天，join 别名场景用 whereBetween 时间戳更稳）
                     ->whereBetween('o.pay_time', [strtotime($time[0]), strtotime($time[1] . ' 23:59:59')])
@@ -194,7 +213,12 @@ class OrderStatisticServices extends BaseService
             if (!in_array('seckill', $model_checkbox) && $key == 1) continue;
             if (!in_array('bargain', $model_checkbox) && $key == 2) continue;
             if (!in_array('combination', $model_checkbox) && $key == 3) continue;
-            $whereType = ['pay_status' => OrderCenter::PAY_PAID, 'is_del' => 0, 'timeKey' => $timeKey];
+            $whereType = ['is_del' => 0, 'timeKey' => $timeKey];
+            $whereType[] = ['pay_status', 'in', [
+                OrderCenter::PAY_PAID,
+                OrderCenter::PAY_PARTIAL_REFUND,
+                OrderCenter::PAY_FULL_REFUND,
+            ]];
             // 普通订单匹配空或 normal，活动订单按活动类型字符串精确匹配
             $whereType[] = $key == 0
                 ? ['activity_type', 'IN', $activityMap[$key]]
@@ -242,14 +266,27 @@ class OrderStatisticServices extends BaseService
      * @param string $field 聚合表达式（SUM(x)/COUNT(*)）
      * @param array $time 起止时间数组
      * @param string $timeType 分组时间格式（%H/%m-%d/%Y-%m）
+     * @param string $timeField 时间过滤/分组字段（支付用 pay_time，退款用 refund_time）
+     * @param array $payStatuses 额外支付状态过滤
      * @return array days=>num 映射
      */
-    private function groupTrend(OrderCenterDao $orderDao, array $where, string $field, array $time, string $timeType): array
-    {
+    private function groupTrend(
+        OrderCenterDao $orderDao,
+        array $where,
+        string $field,
+        array $time,
+        string $timeType,
+        string $timeField = 'pay_time',
+        array $payStatuses = []
+    ): array {
+        $query = $orderDao->getDb()->where($where);
+        if ($payStatuses) {
+            $query->whereIn('pay_status', $payStatuses);
+        }
         // 结束日补至当天 23:59:59，保证结束日数据纳入统计
-        return array_column($orderDao->getDb()->where($where)
-            ->whereBetweenTime('pay_time', $time[0], $time[1] . ' 23:59:59')
-            ->field("FROM_UNIXTIME(pay_time,'$timeType') as days,$field as num")
+        return array_column($query
+            ->whereBetweenTime($timeField, $time[0], $time[1] . ' 23:59:59')
+            ->field("FROM_UNIXTIME($timeField,'$timeType') as days,$field as num")
             ->group('days')->select()->toArray(), 'num', 'days');
     }
 }
