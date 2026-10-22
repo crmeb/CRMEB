@@ -147,7 +147,7 @@ abstract class BaseAfterSaleHandler implements AfterSaleHandlerInterface
         if (in_array($type, ['refund_only', 'return_refund'])) {
             $fields[] = [
                 'key'         => 'refund_price',
-                'label'       => '申请退款金额',
+                'label'       => '退款金额',
                 'type'        => 'price',
                 'required'    => true,
                 'placeholder' => '请输入退款金额',

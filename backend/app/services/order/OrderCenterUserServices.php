@@ -741,14 +741,15 @@ class OrderCenterUserServices extends OrderCenterServices
 
         // 构建 _status，兼容旧版格式
         $data['_status'] = $this->buildRefundOrderStatus($detail);
-        // 判断是否支持退货：由各产品类型 Handler 独立声明（supportsReturn），中台不硬编码产品类型
+        // 判断是否支持退货：未发货订单只能仅退款；已发货再由产品类型 Handler 声明是否支持退货
         try {
             $productTypeRegistry = app()->make(ProductTypeRegistry::class);
             $productType = (string)($detail['product_type'] ?? '');
             if ($productType === '') throw new ApiException('订单产品类型缺失');
-            $data['_status']['_is_back'] = $productTypeRegistry->get($productType)->supportsReturn();
+            $isShipped = (int)($detail['delivery_time'] ?? 0) > 0;
+            $data['_status']['_is_back'] = $isShipped && $productTypeRegistry->get($productType)->supportsReturn();
         } catch (\Throwable $e) {
-            // Registry 异常时兜底支持退货，保证退款页可正常渲染
+            // Registry 异常时降级为仅退款，避免未发货订单出现退货入口
             $data['_status']['_is_back'] = false;
         }
         $data['cartInfo'] = $data['cartInfo'] ?? $cartInfo;

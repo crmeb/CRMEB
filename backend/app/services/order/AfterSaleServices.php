@@ -120,7 +120,7 @@ class AfterSaleServices extends BaseService
 
         return [
             'allowed'   => true,
-            'types'     => $rule['available_types'] ?? [],
+            'types'     => $this->filterTypesByDelivery($rule['available_types'] ?? [], $center),
             'deadline'  => $rule['deadline'] ?? 0,
             'max_num'   => $totalRefundable,
             // 用户实际支付的运费作为可退款金额的一部分下发，前端用于展示退款上限。
@@ -129,6 +129,21 @@ class AfterSaleServices extends BaseService
             'refund_targets' => ['has_cash' => $hasCash, 'has_integral' => $hasIntegral],
             'items'     => $items,
         ];
+    }
+
+    /**
+     * 按发货状态收敛售后类型
+     * 未发货订单（delivery_time=0）只能申请仅退款，避免用户选择退货退款/换货等需要先收货的类型。
+     * @param array $types 规则声明的可用类型
+     * @param array $center 中台订单
+     * @return array
+     */
+    protected function filterTypesByDelivery(array $types, array $center): array
+    {
+        if ((int)($center['delivery_time'] ?? 0) <= 0) {
+            return ['refund_only'];
+        }
+        return array_values($types);
     }
 
     /**
@@ -236,6 +251,7 @@ class AfterSaleServices extends BaseService
         // 组装返回
         $deductionIntegral = $integralUnitPrice > 0 ? [] : $this->allocateDeductionIntegral($center, $orderItems);
         $paidAmounts = $this->allocatePaidAmounts($center, $orderItems);
+        $isActivityOrder = !in_array((string)($center['activity_type'] ?? ''), ['', 'normal'], true);
         $result = [];
         foreach ($orderItems as $item) {
             $cartId = (int)($item['cart_id'] ?? 0);
@@ -264,6 +280,10 @@ class AfterSaleServices extends BaseService
                 'refunded_num'   => $refundedNum,
                 'refundable_num' => $refundableNum,
                 'true_price'     => (string)($item['true_price'] ?? $item['price'] ?? '0.00'),
+                // 商品信息卡展示规格原价；活动订单展示活动价（true_price 为等级/会员优惠后单价）
+                'original_price' => $isActivityOrder
+                    ? (string)($item['true_price'] ?? $item['price'] ?? '0.00')
+                    : (string)($item['price'] ?? $item['attr_info']['price'] ?? $item['true_price'] ?? '0.00'),
                 // 分摊后的整行实付现金（商品原价 - 优惠券/积分抵扣/促销等优惠），退款现金上限按此累计
                 'paid_amount_total' => $paidAmounts[$cartId] ?? '0.00',
                 // 积分参考价：非积分订单为 0，仅积分活动订单有值
@@ -795,6 +815,57 @@ class AfterSaleServices extends BaseService
     }
 
     /**
+     * 为售后商品快照补充原价
+     * 旧售后单快照只保存 true_price（等级/会员优惠后单价），详情商品卡需展示规格原价；
+     * 新快照已带 original_price，只有缺失时才查订单明细回填。
+     * @param array $snapshot 售后商品快照
+     * @param string $orderNo 订单号
+     * @return array
+     */
+    protected function enrichSnapshotOriginalPrice(array $snapshot, string $orderNo): array
+    {
+        $items = $snapshot['items'] ?? [];
+        if (!is_array($items) || empty($items)) {
+            return $snapshot;
+        }
+        $needEnrich = false;
+        foreach ($items as $item) {
+            if (!isset($item['original_price']) || $item['original_price'] === '') {
+                $needEnrich = true;
+                break;
+            }
+        }
+        if (!$needEnrich || $orderNo === '') {
+            return $snapshot;
+        }
+        $center = $this->centerServices->getOne(['order_no' => $orderNo]);
+        if (empty($center)) {
+            return $snapshot;
+        }
+        if (is_object($center)) {
+            $center = $center->toArray();
+        }
+        $orderItems = $this->centerServices->loadOrderItems($center);
+        $itemMap = [];
+        foreach ($orderItems as $orderItem) {
+            $itemMap[(string)($orderItem['cart_id'] ?? '')] = $orderItem;
+        }
+        $isActivityOrder = !in_array((string)($center['activity_type'] ?? ''), ['', 'normal'], true);
+        foreach ($items as &$item) {
+            if (isset($item['original_price']) && $item['original_price'] !== '') {
+                continue;
+            }
+            $orderItem = $itemMap[(string)($item['cart_id'] ?? '')] ?? [];
+            $item['original_price'] = $isActivityOrder
+                ? (string)($orderItem['true_price'] ?? $item['true_price'] ?? '0.00')
+                : (string)($orderItem['price'] ?? $orderItem['attr_info']['price'] ?? $item['true_price'] ?? '0.00');
+        }
+        unset($item);
+        $snapshot['items'] = $items;
+        return $snapshot;
+    }
+
+    /**
      * 获取售后详情
      * 含售后单信息、时间线、用户可操作按钮，前端详情模式据此渲染
      * @param string $afterSaleNo 售后单号
@@ -812,6 +883,16 @@ class AfterSaleServices extends BaseService
 
         // 构造时间线（按售后类型不同节点不同，终态特殊处理）
         $timeline = $this->buildTimeline($afterSale);
+
+        // 旧售后快照只有 true_price（优惠后），从订单商品明细回填原价供商品卡展示
+        $productSnapshot = $afterSale['product_snapshot'] ?? [];
+        if (is_string($productSnapshot)) {
+            $productSnapshot = json_decode($productSnapshot, true) ?: [];
+        }
+        $productSnapshot = $this->enrichSnapshotOriginalPrice(
+            is_array($productSnapshot) ? $productSnapshot : [],
+            (string)($afterSale['order_no'] ?? '')
+        );
 
         // 获取用户可操作按钮（由产品类型 Handler 提供）
         $productType = $afterSale['product_type'] ?? 'normal';
@@ -837,7 +918,7 @@ class AfterSaleServices extends BaseService
             'remark'              => $afterSale['remark'] ?? '',
             'reject_reason'       => $afterSale['reject_reason'] ?? '',
             'evidence_images'     => $afterSale['evidence_images'] ?? [],
-            'product_snapshot'    => $afterSale['product_snapshot'] ?? [],
+            'product_snapshot'    => $productSnapshot,
             // v8.1.1 商品级售后：返回 cart_ids 和 refund_num，供前端展示售后范围
             'cart_ids'            => $afterSale['cart_ids'] ?? [],
             'refund_num'           => (int)($afterSale['refund_num'] ?? 0),
@@ -1038,7 +1119,8 @@ class AfterSaleServices extends BaseService
         if (!$rule['allow']) {
             throw new \RuntimeException($rule['reject_reason'] ?: '当前订单不支持售后');
         }
-        if (!empty($rule['available_types']) && !in_array($type, $rule['available_types'])) {
+        $availableTypes = $this->filterTypesByDelivery($rule['available_types'] ?? [], $center);
+        if (!empty($availableTypes) && !in_array($type, $availableTypes, true)) {
             throw new \RuntimeException('当前订单不支持该售后类型');
         }
 

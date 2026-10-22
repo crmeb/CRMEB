@@ -28,12 +28,8 @@
       <!-- 订单信息卡 -->
       <view class="order-card">
         <view class="order-row">
-          <text class="label">{{ $t('订单号') }}</text>
+          <text class="label">{{ $t('订单编号') }}</text>
           <text class="value">{{ orderNo }}</text>
-        </view>
-        <view class="order-row">
-          <text class="label">{{ $t('订单金额') }}</text>
-          <text class="value price">¥{{ orderDetail.pay_price || '0.00' }}</text>
         </view>
       </view>
 
@@ -58,7 +54,7 @@
             <view class="goods-name">{{ item.store_name }}</view>
             <view class="goods-sku" v-if="item.sku">{{ $t('规格') }}：{{ item.sku }}</view>
             <view class="goods-bottom">
-              <text class="goods-price">¥{{ item.true_price }}</text>
+              <text class="goods-price">¥{{ getProductPaidAmount(item) }}</text>
               <view class="goods-right">
                 <!-- 选中时显示数量步进器，未选中显示购买数量 -->
                 <view class="num-stepper" v-if="itemSelectionEnabled && selectedCartIds.includes(item.cart_id)" @tap.stop>
@@ -90,6 +86,26 @@
       </view>
 
       <view class="list">
+        <!-- 退款金额/退还积分置顶，位于售后类型上方 -->
+        <view class="item acea-row row-between-wrapper" v-if="refundPriceField">
+          <view>{{ $t('退款金额') }}</view>
+          <input
+            class="num price-input"
+            type="digit"
+            v-model="formValues.refund_price"
+            :placeholder="$t(refundPriceField.placeholder || '')"
+          />
+        </view>
+        <view class="item acea-row row-between-wrapper" v-if="refundIntegralField">
+          <view>{{ $t('退还积分') }}</view>
+          <input
+            class="num"
+            type="number"
+            v-model="formValues.refund_integral"
+            :placeholder="$t(refundIntegralField.placeholder || '')"
+          />
+        </view>
+
         <!-- 售后类型选择 -->
         <view class="item acea-row row-between-wrapper">
           <view>{{ $t('售后类型') }}</view>
@@ -102,7 +118,7 @@
         </view>
 
         <!-- 动态表单字段（由后端 form_config 下发） -->
-        <block v-for="field in formFields" :key="field.key">
+        <block v-for="field in otherFields" :key="field.key">
           <!-- 退款金额 -->
           <view class="item acea-row row-between-wrapper" v-if="field.type === 'price'">
             <view>{{ $t(field.label) }}</view>
@@ -205,7 +221,7 @@
           <text class="value">{{ detail.after_sale_no }}</text>
         </view>
         <view class="info-row">
-          <text class="label">{{ $t('订单号') }}</text>
+          <text class="label">{{ $t('订单编号') }}</text>
           <text class="value" @tap="copyText(detail.order_no)">{{ detail.order_no }}</text>
         </view>
         <view class="info-row" v-if="detail.refund_price > 0">
@@ -254,7 +270,7 @@
             <view class="snapshot-name">{{ item.store_name }}</view>
             <view class="snapshot-sku" v-if="item.sku">{{ $t('规格') }}：{{ item.sku }}</view>
             <view class="snapshot-bottom">
-              <text class="snapshot-price">¥{{ item.true_price }}</text>
+              <text class="snapshot-price">¥{{ item.original_price || item.true_price }}</text>
               <text class="snapshot-num">x{{ item.cart_num }}</text>
             </view>
           </view>
@@ -468,6 +484,12 @@ const pendingAction = ref(null);
 // ===== computed =====
 /** 售后类型选项文案列表（优先后端 type_text，前端映射 fallback） */
 const typeOptions = computed(() => availableTypes.value.map(type => i18n.global.t(AFTER_SALE_TYPE_TEXT[type] || type)));
+/** 退款金额字段（置顶展示） */
+const refundPriceField = computed(() => formFields.value.find(field => field.key === 'refund_price') || null);
+/** 退还积分字段（紧跟退款金额展示） */
+const refundIntegralField = computed(() => formFields.value.find(field => field.key === 'refund_integral') || null);
+/** 其余动态字段（退款金额/积分已单独置顶，避免重复渲染） */
+const otherFields = computed(() => formFields.value.filter(field => !['refund_price', 'refund_integral'].includes(field.key)));
 /** 状态样式类（用于详情页顶部横幅配色） */
 const statusClass = computed(() => {
   const status = detail.value.status || '';
@@ -768,6 +790,20 @@ function uploadImage(fieldKey, max) {
   });
 }
 
+/**
+ * 商品实际付款金额（单价）：商品分摊实付 + 按实付占比分摊的运费
+ * @param {Object} item 可售后商品
+ * @return {string} 两位小数金额
+ */
+function getProductPaidAmount(item) {
+  const cartNum = Number(item.cart_num || 1) || 1;
+  const rowTotal = rowPaidTotal(item);
+  const totalPaid = refundableItems.value.reduce((sum, row) => sum + rowPaidTotal(row), 0);
+  const payPostage = Number(orderDetail.value.pay_postage || 0);
+  const postageShare = totalPaid > 0 && rowTotal > 0 ? payPostage * rowTotal / totalPaid : 0;
+  return ((rowTotal + postageShare) / cartNum).toFixed(2);
+}
+
 /** 构建售后商品快照（v8.1.1 按 cart_id 选择范围） */
 function buildSnapshot() {
   const items = selectedItems.value.map(item => ({
@@ -778,6 +814,7 @@ function buildSnapshot() {
     sku: item.sku,
     cart_num: refundNumMap.value[item.cart_id] || 0, // 售后数量（部分数量支持）
     true_price: item.true_price,
+    original_price: item.original_price || item.true_price,
   }));
   return {
     product_type: orderDetail.value.product_type || 'normal',
@@ -1050,7 +1087,9 @@ defineExpose({
     padding: 8rpx 0;
 
     .label {
-      color: #999;
+      color: #333;
+      font-size: 30rpx;
+      font-weight: 600;
       flex-shrink: 0;
       margin-right: 24rpx;
     }
@@ -1065,6 +1104,7 @@ defineExpose({
       color: #e93323;
       font-weight: 600;
     }
+
   }
 }
 
