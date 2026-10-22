@@ -202,13 +202,14 @@ class OrderCenterDao extends BaseDao
      * 根据条件获取字段求和
      * @param array $where 查询条件
      * @param string $field 求和字段
+     * @param string $timeField 时间过滤字段（支付统计用 pay_time，退款统计用 refund_time）
      * @return float 返回求和结果
      */
-    public function getWhereSumField(array $where, string $field)
+    public function getWhereSumField(array $where, string $field, string $timeField = 'pay_time')
     {
         return $this->buildWhereQuery($where)
-            ->when(isset($where['timeKey']), function ($query) use ($where) {
-                $query->whereBetweenTime('pay_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
+            ->when(isset($where['timeKey']), function ($query) use ($where, $timeField) {
+                $query->whereBetweenTime($timeField, $where['timeKey']['start_time'], $where['timeKey']['end_time']);
             })
             ->sum($field);
     }
@@ -218,13 +219,14 @@ class OrderCenterDao extends BaseDao
      * @param array $where 查询条件
      * @param string $field 求和字段
      * @param string $group 分组字段
+     * @param string $timeField 时间过滤字段（支付统计用 pay_time，退款统计用 refund_time）
      * @return mixed 返回分组结果
      */
-    public function getGroupField(array $where, string $field, string $group)
+    public function getGroupField(array $where, string $field, string $group, string $timeField = 'pay_time')
     {
         return $this->buildWhereQuery($where)
-            ->when(isset($where['timeKey']), function ($query) use ($where, $field, $group) {
-                $query->whereBetweenTime('pay_time', $where['timeKey']['start_time'], $where['timeKey']['end_time']);
+            ->when(isset($where['timeKey']), function ($query) use ($where, $field, $group, $timeField) {
+                $query->whereBetweenTime($timeField, $where['timeKey']['start_time'], $where['timeKey']['end_time']);
                 $timeUinx = "%H";
                 if ($where['timeKey']['days'] == 1) {
                     $timeUinx = "%H";
@@ -240,7 +242,7 @@ class OrderCenterDao extends BaseDao
                 $query->field("sum($field) as number,FROM_UNIXTIME($group, '$timeUinx') as time");
                 $query->group("FROM_UNIXTIME($group, '$timeUinx')");
             })
-            ->order('pay_time ASC')->select()->toArray();
+            ->order($timeField . ' ASC')->select()->toArray();
     }
 
     /**

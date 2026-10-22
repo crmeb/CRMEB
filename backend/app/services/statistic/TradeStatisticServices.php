@@ -332,17 +332,16 @@ class TradeStatisticServices extends BaseService
         $outYeOrderMoney = $this->getOrderTotalMoney(['pay_type' => "yue", 'time' => $where['time']], 'sum');
         $lastOutYeOrderMoney = $this->getOrderTotalMoney(['pay_type' => "yue", 'time' => $dateWhere['time']], 'sum', "", $isNum);
         $outYeOrderCurve = $this->getOrderTotalMoney(['pay_type' => "yue", 'time' => $where['time']], 'group', 'pay_time');
-        $outYeOrderChain = $this->countRate($outYeOrderMoney, $lastOutYeOrderMoney);
         //余额购买会员
         $outYeMemberMoney = $this->getMemberTotalMoney(['pay_type' => "yue", 'time' => $where['time']], 'sum');
         $lastOutYeMemberMoney = $this->getMemberTotalMoney(['pay_type' => "yue", 'time' => $dateWhere['time']], 'sum', "", $isNum);
         $outYeMemberCurve = $this->getMemberTotalMoney(['pay_type' => "yue", 'time' => $where['time']], 'group', "pay_time");
-        $outYeMemberChain = $this->countRate($outYeMemberMoney, $lastOutYeMemberMoney);
         //余额支付
         $outYeMoney = bcadd($outYeOrderMoney, $outYeMemberMoney, 2);
         $lastOutYeMoney = bcadd($lastOutYeOrderMoney, $lastOutYeMemberMoney, 2);
         $outYeCurve = $this->totalArrData([$outYeOrderCurve, $outYeMemberCurve]);
-        $outYeChain = $this->countRate($outYeOrderChain, $outYeMemberChain);
+        // 环比必须用余额支付总额计算，不能拿“订单余额环比”和“会员余额环比”再算一次
+        $outYeChain = $this->countRate($outYeMoney, $lastOutYeMoney);
         $topData[6] = [
             'title' => '余额支付金额',
             'desc' => '用户下单时使用余额实际支付的金额',
@@ -374,7 +373,7 @@ class TradeStatisticServices extends BaseService
         //商品退款金额（退款统计已归中台：refund_status=已退款 累计 refund_price）
         $outOrderRefund = $this->getOrderRefundTotalMoney(['time' => $where['time']], 'sum');
         $lastOutOrderRefund = $this->getOrderRefundTotalMoney(['time' => $dateWhere['time']], 'sum', "", $isNum);
-        $outOrderRefundCurve = $this->getOrderRefundTotalMoney(['time' => $where['time']], 'group', 'pay_time');
+        $outOrderRefundCurve = $this->getOrderRefundTotalMoney(['time' => $where['time']], 'group', 'refund_time');
         $orderRefundChain = $this->countRate($outOrderRefund, $lastOutOrderRefund);
         $topData[8] = [
             'title' => '商品退款金额',
@@ -565,22 +564,23 @@ class TradeStatisticServices extends BaseService
      */
     public function getOrderRefundTotalMoney($where, string $selectType, string $group = '', bool $isNum = false)
     {
-        /** 退款金额统计：从订单中台按 refund_status=已退款 累计 refund_price（旧售后单表已删除，不再参与统计） */
+        /** 退款金额统计：退款成功订单按 refund_time 归属区间，累计 refund_price（部分/全额退款均已成功） */
         /** @var OrderCenterDao $storeOrderService */
         $storeOrderService = app()->make(OrderCenterDao::class);
         $whereOrderMoner['refund_status'] = OrderCenter::REFUND_SUCCESS;
-        $whereOrderMoner['pay_status'] = 1;
+        // 全额退款订单 pay_status=3，不能再限定 pay_status=1，否则退款金额恒为 0
+        $whereOrderMoner['is_del'] = 0;
         $whereOrderMoner['timeKey'] = $this->TimeConvert($where['time'], $isNum);
 
         switch ($selectType) {
             case "sum":
-                $totalMoney = $storeOrderService->getWhereSumField($whereOrderMoner, 'refund_price');
+                $totalMoney = $storeOrderService->getWhereSumField($whereOrderMoner, 'refund_price', 'refund_time');
                 break;
             case "group":
-                $totalMoney = $storeOrderService->getGroupField($whereOrderMoner, 'refund_price', $group);
+                $totalMoney = $storeOrderService->getGroupField($whereOrderMoner, 'refund_price', 'refund_time', 'refund_time');
                 break;
             default:
-                $totalMoney = $storeOrderService->getWhereSumField($whereOrderMoner, 'refund_price');
+                $totalMoney = $storeOrderService->getWhereSumField($whereOrderMoner, 'refund_price', 'refund_time');
         }
 
         if ($group) {
@@ -603,9 +603,18 @@ class TradeStatisticServices extends BaseService
         /** 普通商品订单支付金额 */
         /** @var OrderCenterDao $storeOrderService */
         $storeOrderService = app()->make(OrderCenterDao::class);
+        // 支付口径：已支付/部分退款/全额退款都计入营业额，退款金额在“支出”中单独统计；
+        // 旧逻辑限定 pay_status=1 且 refund_status=0，会漏掉新退款链路下 pay_status=2/3 的订单。
         $orderSumField = isset($where['refund_status']) ? "refund_price" : "pay_price";
-        $whereOrderMoner['refund_status'] = isset($where['refund_status']) ? $where['refund_status'] : 0;
-        $whereOrderMoner['pay_status'] = 1;
+        $whereOrderMoner['is_del'] = 0;
+        $whereOrderMoner[] = ['pay_status', 'in', [
+            OrderCenter::PAY_PAID,
+            OrderCenter::PAY_PARTIAL_REFUND,
+            OrderCenter::PAY_FULL_REFUND,
+        ]];
+        if (isset($where['refund_status'])) {
+            $whereOrderMoner['refund_status'] = $where['refund_status'];
+        }
         // 支付方式条件（余额支付营收等场景，与 getMemberTotalMoney 对齐；旧版遗留：传了 pay_type 却未应用）
         if (isset($where['pay_type'])) {
             $whereOrderMoner['pay_type'] = $where['pay_type'];
@@ -839,7 +848,8 @@ class TradeStatisticServices extends BaseService
     public function countRate($nowValue, $lastValue)
     {
         if ($lastValue == 0 && $nowValue == 0) return 0;
-        if ($lastValue == 0) return round(bcmul(bcdiv($nowValue, 1, 4), 100, 2), 2);
+        // 无上期基数时无法计算环比，返回 0，避免 now*100 产生百万级虚假增长率
+        if ($lastValue == 0) return 0;
         if ($nowValue == 0) return -100;
         return bcmul(bcdiv((bcsub($nowValue, $lastValue, 2)), $lastValue, 2), 100, 2);
     }
