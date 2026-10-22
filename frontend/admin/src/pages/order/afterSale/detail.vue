@@ -364,7 +364,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="退款流水号">
-          <el-input v-model="refundForm.refund_trade_no" placeholder="退款交易流水号（选填）"></el-input>
+          <el-input v-model="refundForm.refund_trade_no" maxlength="64" placeholder="退款交易流水号（选填）"></el-input>
         </el-form-item>
       </el-form>
       <template #footer
@@ -526,25 +526,31 @@ const hasResendDelivery = computed(() => {
 });
 
 /**
+ * 商家是否已确认收到退货
+ * 退货退款/换货确认收货后仍沿用 receiving 状态，用 receive_time 区分收货前后动作
+ */
+const isReceived = computed(() => Number((detail.value && detail.value.receive_time) || 0) > 0);
+
+/**
  * 是否可执行退款
  * - 仅退款：audit_passed 状态可退款
- * - 退货退款：receiving 状态（确认收货后）可退款
+ * - 退货退款：receiving 状态且已确认收货后可退款
  */
 const canRefund = computed(() => {
   if (!detail.value) return false;
   const { status, type } = detail.value;
   if (type === 'refund_only' && status === 'audit_passed') return true;
-  if (type === 'return_refund' && status === 'receiving') return true;
+  if (type === 'return_refund' && status === 'receiving' && isReceived.value) return true;
   return false;
 });
 
 /**
- * 是否可确认收货（退货退款/换货类型，receiving 状态）
+ * 是否可确认收货（退货退款/换货类型，receiving 状态且尚未确认收货）
  */
 const canReceive = computed(() => {
   if (!detail.value) return false;
   const { status, type } = detail.value;
-  return status === 'receiving' && ['return_refund', 'exchange'].includes(type);
+  return status === 'receiving' && ['return_refund', 'exchange'].includes(type) && !isReceived.value;
 });
 
 /**
@@ -559,14 +565,14 @@ const canStartRepair = computed(() => {
 /**
  * 是否可补发商品
  * - 补发类型：audit_passed 状态可补发
- * - 换货类型：receiving 状态（确认收货后）可补发
+ * - 换货类型：receiving 状态且已确认收货后可补发
  * - 维修类型：repair_complete 状态可补发
  */
 const canResend = computed(() => {
   if (!detail.value) return false;
   const { status, type } = detail.value;
   if (type === 'resend' && status === 'audit_passed') return true;
-  if (type === 'exchange' && status === 'receiving') return true;
+  if (type === 'exchange' && status === 'receiving' && isReceived.value) return true;
   if (type === 'repair' && status === 'repair_complete') return true;
   return false;
 });

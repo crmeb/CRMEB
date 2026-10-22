@@ -174,16 +174,22 @@ class RefundEffectServices extends BaseService implements RefundEffectContextInt
             $handler->applyRefundEffects($this, $lockedArray, $afterSale, $order, $items);
 
             $now = time();
+            // 后台手工填写的退款流水号优先；未填写时才回退渠道退款号/系统退款单号
+            $refundContext = (array)($lockedArray['context'] ?? []);
+            $manualTradeNo = trim((string)($refundContext['refund_trade_no'] ?? ''));
+            $refundTradeNo = $manualTradeNo !== ''
+                ? $manualTradeNo
+                : (string)($locked['channel_refund_id'] ?: $locked['refund_no']);
             $this->afterSaleDao->update((int)$afterSale['id'], [
                 'status' => 'completed',
                 'actual_refund_price' => (string)$locked['amount'],
                 'refund_type' => (string)$locked['refund_method'],
-                'refund_trade_no' => (string)($locked['channel_refund_id'] ?: $locked['refund_no']),
+                'refund_trade_no' => $refundTradeNo,
                 'refund_time' => $now,
                 'complete_time' => $now,
             ]);
 
-            $handlerContext = (array)($lockedArray['context'] ?? []);
+            $handlerContext = $refundContext;
             $handlerContext['order_no'] = (string)$afterSale['order_no'];
             $handlerContext['refund_no'] = (string)$locked['refund_no'];
             $handlerContext['total_refund_amount'] = $projectedTotal;

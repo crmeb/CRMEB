@@ -697,6 +697,29 @@ class AfterSaleServices extends BaseService
     ];
 
     /**
+     * 解析售后单展示状态文案
+     * 退货退款/换货在商家确认收货后仍沿用 receiving 状态（退款/补发动作依赖该状态），
+     * 展示层按 receive_time 细分为“待退款”“待补发”，避免确认收货后仍显示“待收货”。
+     * @param array|object $afterSale 售后单数据
+     * @return string
+     */
+    protected function resolveStatusText($afterSale): string
+    {
+        $data = is_object($afterSale) ? $afterSale->toArray() : (array)$afterSale;
+        $status = (string)($data['status'] ?? '');
+        $type = (string)($data['type'] ?? '');
+        if ($status === 'receiving' && (int)($data['receive_time'] ?? 0) > 0) {
+            if ($type === 'return_refund') {
+                return '待退款';
+            }
+            if ($type === 'exchange') {
+                return '待补发';
+            }
+        }
+        return self::STATUS_TEXT_MAP[$status] ?? $status;
+    }
+
+    /**
      * 售后状态分组映射
      * 用于用户端列表 tab 筛选：processing=处理中，completed=已完成，canceled=已取消
      * repair_complete 归入处理中（维修完成待用户确认收货，流程未终结）
@@ -908,7 +931,7 @@ class AfterSaleServices extends BaseService
             'type'                => $type,
             'type_text'           => self::TYPE_TEXT_MAP[$type] ?? $type,
             'status'              => $status,
-            'status_text'         => self::STATUS_TEXT_MAP[$status] ?? $status,
+            'status_text'         => $this->resolveStatusText($afterSale),
             'refund_price'        => (float)($afterSale['refund_price'] ?? 0),
             'actual_refund_price' => (float)($afterSale['actual_refund_price'] ?? 0),
             // 退款标的物与退还积分：积分订单售后展示退还积分数
@@ -933,6 +956,8 @@ class AfterSaleServices extends BaseService
             ],
             'timeline'            => $timeline,
             'actions'             => $actions,
+            // 商家确认收货时间：前端据此区分“待收货”与“待退款/待补发”
+            'receive_time'        => (int)($afterSale['receive_time'] ?? 0),
             'add_time'            => (int)($afterSale['add_time'] ?? 0),
         ];
     }
@@ -1786,7 +1811,7 @@ class AfterSaleServices extends BaseService
         $specOrders = [];
         foreach ($list as &$item) {
             $item['type_text'] = self::TYPE_TEXT_MAP[$item['type'] ?? ''] ?? ($item['type'] ?? '');
-            $item['status_text'] = self::STATUS_TEXT_MAP[$item['status'] ?? ''] ?? ($item['status'] ?? '');
+            $item['status_text'] = $this->resolveStatusText($item);
             $item['status_group'] = $this->resolveStatusGroup($item['status'] ?? '');
             // 产品类型中文名：动态从注册中心获取，新增产品类型注册即生效
             $productType = $item['product_type'] ?? '';
@@ -1945,7 +1970,7 @@ class AfterSaleServices extends BaseService
         // 附加文案
         foreach ($list as &$item) {
             $item['type_text'] = self::TYPE_TEXT_MAP[$item['type'] ?? ''] ?? ($item['type'] ?? '');
-            $item['status_text'] = self::STATUS_TEXT_MAP[$item['status'] ?? ''] ?? ($item['status'] ?? '');
+            $item['status_text'] = $this->resolveStatusText($item);
         }
         unset($item);
 
@@ -2507,7 +2532,7 @@ class AfterSaleServices extends BaseService
             $refundStatus = 1;
         }
         $item['refund_status'] = $refundStatus;
-        $item['refund_status_text'] = self::STATUS_TEXT_MAP[$status] ?? $status;
+        $item['refund_status_text'] = $this->resolveStatusText($item);
         $item['refund_type_text'] = self::TYPE_TEXT_MAP[$item['type'] ?? ''] ?? ($item['type'] ?? '');
 
         // 旧 _status 结构：-1=申请中 -2=已退款 -3=已拒绝
@@ -2560,7 +2585,7 @@ class AfterSaleServices extends BaseService
         // 旧结构兼容键
         $detail['order_id'] = $detail['after_sale_no'] ?? '';
         $detail['store_order_id'] = (int)($detail['order_center_id'] ?? 0);
-        $detail['refund_status_text'] = self::STATUS_TEXT_MAP[$detail['status'] ?? ''] ?? ($detail['status'] ?? '');
+        $detail['refund_status_text'] = $this->resolveStatusText($detail);
         $detail['cartInfo'] = $detail['cart_info'] = $this->tidyOutItems($detail['product_snapshot'] ?? []);
         $detail['refunded_price'] = $detail['actual_refund_price'] ?? '0.00';
         $detail['_add_time'] = !empty($detail['add_time']) ? date('Y-m-d H:i:s', (int)$detail['add_time']) : '';

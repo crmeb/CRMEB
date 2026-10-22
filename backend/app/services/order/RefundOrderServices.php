@@ -43,6 +43,12 @@ class RefundOrderServices extends BaseService
             throw new \RuntimeException('退款金额格式错误');
         }
         $amount = bcadd((string)$amount, '0', 2);
+        // 后台选填的退款流水号：去空格并限制字段长度（eb_after_sale.refund_trade_no varchar(64)）
+        $refundTradeNo = trim((string)($context['refund_trade_no'] ?? ''));
+        if ($refundTradeNo !== '' && mb_strlen($refundTradeNo) > 64) {
+            throw new \RuntimeException('退款流水号不能超过64个字符');
+        }
+        $context['refund_trade_no'] = $refundTradeNo;
         $refund = $this->transaction(function () use ($afterSaleId, $amount, $context) {
             $afterSale = $this->afterSaleDao->getByIdForUpdate($afterSaleId);
             if (!$afterSale) {
@@ -115,7 +121,12 @@ class RefundOrderServices extends BaseService
                 'add_time' => time(),
                 'update_time' => time(),
             ]);
-            $this->afterSaleDao->update($afterSaleId, ['status' => 'refunding']);
+            $afterSaleUpdate = ['status' => 'refunding'];
+            if ((string)($context['refund_trade_no'] ?? '') !== '') {
+                // 先落库后台填写的流水号，退款处理中即可在详情看到，成功回调也不会被覆盖
+                $afterSaleUpdate['refund_trade_no'] = (string)$context['refund_trade_no'];
+            }
+            $this->afterSaleDao->update($afterSaleId, $afterSaleUpdate);
             /** @var OrderCenterServices $centerServices */
             $centerServices = $this->app->make(OrderCenterServices::class);
             $centerServices->syncStatus((string)$afterSale['order_no'], OrderCenter::STATUS_REFUNDING, [
