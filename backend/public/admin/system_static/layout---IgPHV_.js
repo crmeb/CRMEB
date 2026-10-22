@@ -1,0 +1,1 @@
+import{x as r}from"./index-BzWqH73M.js";import{l as s}from"./element-plus-D1Ezoxxm.js";const n=r("layout",()=>{const e=s(!1);function o(t){e.value=t}return{menuCollapse:e,changeCol:o}},{persist:!0});export{n as u};

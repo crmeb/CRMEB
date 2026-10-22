@@ -1,0 +1,1 @@
+import{ao as r,h as e}from"./element-plus-D1Ezoxxm.js";function n(t){return new Promise((i,a)=>{r.warning({title:t.title,duration:3e3,message:e("div",[e("a",{href:"http://www.crmeb.com",target:"_blank"},t.info)])}),i()})}export{n as a};
