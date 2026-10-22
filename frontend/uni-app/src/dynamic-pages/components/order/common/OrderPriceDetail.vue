@@ -22,7 +22,7 @@
     <!-- 运费（仅支持快递配送时显示） -->
     <view class="item acea-row row-between-wrapper" v-if="showPostage">
       <view>{{ $t(`快递费用`) }}</view>
-      <view class="money" v-if="!integralTotal && payPostage > 0">￥{{ payPostage }}</view>
+      <view class="money" v-if="!integralTotal && originalPostage > 0">￥{{ formattedOriginalPostage }}</view>
       <view class="money" v-else-if="!integralTotal">{{ $t(`免运费`) }}</view>
       <view class="money" v-else>{{ $t(`免运费`) }}</view>
     </view>
@@ -100,6 +100,16 @@ const formattedDoorPostage = computed(() => {
   const v = parseFloat(props.doorPostage || 0);
   return isNaN(v) ? '0.00' : v.toFixed(2);
 });
+
+/** 快递费用原价 = 优惠后运费 + 会员运费优惠，优惠单独展示在下方 */
+const originalPostage = computed(() => {
+  const pay = parseFloat(props.payPostage || 0);
+  const discount = parseFloat(props.postageDiscount || 0);
+  return (isNaN(pay) ? 0 : pay) + (isNaN(discount) ? 0 : discount);
+});
+
+/** 快递费用原价格式化：保留两位小数 */
+const formattedOriginalPostage = computed(() => originalPostage.value.toFixed(2));
 </script>
 
 <style scoped>

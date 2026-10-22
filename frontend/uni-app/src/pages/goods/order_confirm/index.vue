@@ -242,10 +242,10 @@
 					</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'
-					v-if="priceGroup.payPostage > 0 || priceGroup.payPostageDiscount > 0">
+					v-if="priceGroup.payPostage > 0 || priceGroup.postageDiscount > 0">
 					<view>{{$t(`配送运费`)}}：</view>
 					<view class='money'>
-						{{$t(`￥`)}}{{(parseFloat(priceGroup.payPostage)+parseFloat(priceGroup.payPostageDiscount)).toFixed(2)}}
+						{{$t(`￥`)}}{{(parseFloat(priceGroup.payPostage)+parseFloat(priceGroup.postageDiscount)).toFixed(2)}}
 					</view>
 				</view>
 				<view class='item acea-row row-between-wrapper'
@@ -258,9 +258,9 @@
 					<view>{{$t(`付费会员优惠`)}}：</view>
 					<view class='money'>-{{$t(`￥`)}}{{parseFloat(priceGroup.memberPrice).toFixed(2)}}</view>
 				</view>
-				<view class='item acea-row row-between-wrapper' v-if="priceGroup.payPostageDiscount > 0">
+				<view class='item acea-row row-between-wrapper' v-if="priceGroup.postageDiscount > 0">
 					<view>{{$t(`会员运费优惠`)}}：</view>
-					<view class='money'>-{{$t(`￥`)}}{{parseFloat(priceGroup.payPostageDiscount).toFixed(2)}}</view>
+					<view class='money'>-{{$t(`￥`)}}{{parseFloat(priceGroup.postageDiscount).toFixed(2)}}</view>
 				</view>
 				<view class='item acea-row row-between-wrapper' v-if="coupon_price > 0">
 					<view>{{$t(`优惠券抵扣`)}}：</view>
@@ -835,8 +835,8 @@
 				integral_price.value = result.deduction_price;
 				coupon_price.value = result.coupon_price;
 				integral.value = useIntegral.value ? result.SurplusIntegral : usable_integral.value;
-				priceGroup.value['payPostage'] = shippingTypeLocal == 1 ? 0 : result.pay_postage;
-				priceGroup.value['postageDiscount'] = result.storePostageDiscount;
+				priceGroup.value['payPostage'] = shippingTypeLocal == 1 ? 0 : (result.pay_postage ?? 0);
+				priceGroup.value['postageDiscount'] = result.storePostageDiscount ?? 0;
 			}
 		})
 	}
@@ -1064,9 +1064,17 @@
 			totalPrice.value = util.$h.Add(parseFloat(res.data.priceGroup.totalPrice),
 				parseFloat(res.data
 					.priceGroup.payPostage));
-			allPrice.value = util.$h.Add(parseFloat(res.data.priceGroup.totalPrice),
-				parseFloat(res.data
-					.priceGroup.memberPrice)).toFixed(2);
+			allPrice.value = (() => {
+				const pg = res.data.priceGroup || {};
+				// 商品总价展示规格原价之和；sumPrice 缺失时回补等级/会员优惠
+				const originalTotal = pg.sumPrice !== undefined && pg.sumPrice !== null
+					? pg.sumPrice
+					: util.$h.Add(
+						util.$h.Add(parseFloat(pg.totalPrice || 0), parseFloat(pg.levelPrice || 0)),
+						parseFloat(pg.memberPrice || 0)
+					);
+				return parseFloat(originalTotal).toFixed(2);
+			})();
 			seckillId.value = parseInt(res.data.seckill_id);
 			invoice_func.value = res.data.invoice_func;
 			special_invoice.value = res.data.special_invoice;

@@ -300,7 +300,8 @@ class CenterOrderController
                 'pay_price'      => $priceData['payPrice'],// 应付金额
                 'pay_postage'    => $priceData['payPostage'],// 配送费
                 'priceGroup'     => [
-                    'totalPrice'          => $priceData['totalPrice'],// 订单总金额
+                    'totalPrice'          => $priceData['totalPrice'],// 订单总金额（等级/会员优惠后）
+                    'sumPrice'            => $priceData['sumPrice'] ?? $priceData['totalPrice'],// 商品原价总额（等级/会员优惠前）
                     'payPostage'          => $priceData['payPostage'],// 配送费
                     'postageDiscount'     => 0,// 配送费优惠
                     'levelPrice'          => $priceData['levelPrice'] ?? 0,// 等级优惠
@@ -410,6 +411,8 @@ class CenterOrderController
         $giftPrice = $priceGroup['giftPrice'] ?? 0;
         $priceData = [
             'totalPrice'         => $priceGroup['totalPrice'] ?? 0,
+            // 原价总额：商品规格原价 × 数量之和，供确认页“商品总价”展示
+            'sumPrice'           => $priceGroup['sumPrice'] ?? 0,
             'payPrice'           => bcadd(
                 (string)bcadd((string)($priceGroup['totalPrice'] ?? 0), (string)($priceGroup['storePostage'] ?? 0), 2),
                 (string)$giftPrice,
@@ -576,7 +579,8 @@ class CenterOrderController
             'pay_price'          => $priceData['payPrice'],// 应付金额
             'pay_postage'        => $priceGroup['storePostage'] ?? 0,// 配送费
             'priceGroup'         => [
-                'totalPrice'      => $priceGroup['totalPrice'] ?? 0,// 订单总金额
+                'totalPrice'      => $priceGroup['totalPrice'] ?? 0,// 订单总金额（等级/会员优惠后）
+                'sumPrice'        => $priceGroup['sumPrice'] ?? 0,// 商品原价总额（等级/会员优惠前）
                 'payPostage'      => $priceGroup['storePostage'] ?? 0,// 配送费
                 'postageDiscount' => $priceGroup['storePostageDiscount'] ?? 0,// 配送费优惠
                 'levelPrice'      => $priceGroup['levelPrice'] ?? 0,// 等级优惠
@@ -2175,8 +2179,14 @@ class CenterOrderController
         }
 
         $totalPrice = bcmul((string)$cartInfo[0]['truePrice'], (string)$cartInfo[0]['cart_num'], 2);
+        // 活动订单没有等级/会员折扣，原价总额取活动价；普通订单取规格原价
+        $sumPrice = $isActivityOrder
+            ? $totalPrice
+            : bcmul((string)($skuInfo['price'] ?? $productInfo['price'] ?? 0), (string)$num, 2);
         $priceData = [
             'totalPrice'          => $totalPrice,
+            // 规格原价总额（等级/会员优惠前），与 cartInfo[0].sum_price 对齐
+            'sumPrice'            => $sumPrice,
             'payPrice'            => bcadd($totalPrice, (string)$payPostage, 2),
             'payPostage'          => $payPostage,
             'isStoreFreePostage'  => false,

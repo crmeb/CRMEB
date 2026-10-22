@@ -46,7 +46,7 @@
           :image="(item.productInfo || {}).image"
           :name="(item.productInfo || {}).store_name"
           :sku-label="getSkuLabel(item)"
-          :price="item.truePrice"
+          :price="getOriginalUnitPrice(item)"
           :integral-price="isIntegral && idx === 0 ? integralUnitPrice : 0"
           :num="item.cart_num"
         />
@@ -394,6 +394,21 @@ function getSkuLabel(item) {
   return '';
 }
 /**
+ * 商品卡片展示金额：规格原价（活动订单取活动价），不使用 truePrice（等级/会员优惠后单价）
+ * @param {Object} item 购物车商品项
+ * @return {string|number} 金额
+ */
+function getOriginalUnitPrice(item) {
+  if (!item) return '0.00';
+  // 活动订单展示活动价，普通订单展示规格原价（truePrice 是等级/会员优惠后单价）
+  if (item.activity_type && item.activity_type !== 'normal') {
+    return item.truePrice || item.sum_price || '0.00';
+  }
+  var productInfo = item.productInfo || {};
+  var attrInfo = productInfo.attrInfo || {};
+  return attrInfo.price || productInfo.price || item.sum_price || item.truePrice || '0.00';
+}
+/**
  * 点击商品卡片跳转对应商品详情页
  * @param {Object} item 购物车商品项
  */
@@ -445,11 +460,12 @@ async function loadConfirmData() {
     var data = res.data || {};
     cartInfo.value = data.cartInfo || [];
     orderKey.value = data.order_key || '';
-    totalPrice.value = data.total_price || 0;
-    payPrice.value = data.pay_price || 0;
-    payPostage.value = data.pay_postage || 0;
     // 确认接口返回 priceGroup，不能只使用顶层金额字段，否则等级/会员折扣会丢失。
     var confirmPriceGroup = data.priceGroup || {};
+    // 商品总价展示规格原价之和（等级/会员优惠前的 sumPrice）
+    totalPrice.value = confirmPriceGroup.sumPrice ?? data.sum_price ?? data.total_price ?? 0;
+    payPrice.value = data.pay_price || 0;
+    payPostage.value = data.pay_postage || 0;
     levelPrice.value = confirmPriceGroup.levelPrice ?? data.level_price ?? 0;
     memberPrice.value = confirmPriceGroup.memberPrice ?? data.member_price ?? 0;
     postageDiscount.value = confirmPriceGroup.postageDiscount ?? data.postage_discount ?? 0;
