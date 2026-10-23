@@ -285,6 +285,8 @@ function linkUrl(e) {
   // 将链接地址存储到对应的数据项中
   areaData.value[itemIndex.value].link = e;
 }
+// script setup 默认封闭，父组件通过模板 ref 驱动 dialogVisible，必须显式暴露
+defineExpose({ dialogVisible });
 </script>
 
 <style lang="scss" scoped>

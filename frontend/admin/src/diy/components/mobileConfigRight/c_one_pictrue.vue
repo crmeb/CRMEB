@@ -42,6 +42,7 @@
 
 <script setup>
 import { ref, watch, onMounted, nextTick } from 'vue';
+import { ElMessage } from 'element-plus';
 import uploadPictures from '@/components/uploadPictures';
 import OperationFloorModal from '@diy/components/hotpotModal';
 
@@ -111,7 +112,11 @@ function getPic(pc) {
 }
 function openFloorModal() {
   // 如果配置数据中有url，则显示热点图对话框
-  if (configData.value.url) hotpot.value.dialogVisible = true;
+  if (!configData.value.url) {
+    ElMessage.warning('请先上传图片');
+    return;
+  }
+  hotpot.value.dialogVisible = true;
 }
 /**
  * 处理区域数据
