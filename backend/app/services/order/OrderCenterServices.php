@@ -479,6 +479,9 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         }
         // 支付方式从 eb_pay_channel 读取中文名称
         $detail['pay_type_name'] = $this->getPayTypeName($detail['pay_type']);
+        // 实际退款金额：多端详情页契约字段 refunded_price（中台表无此列，按退款累计列输出）
+        // 真源是 refund_price（退款成功时由 RefundEffectServices 按退款单金额累计维护，含多次部分退款）
+        $detail['refunded_price'] = (string)($detail['refund_price'] ?? '0.00');
 
         // 从源订单表加载发票、备注、自定义表单等信息，并重新推导最新状态码和扩展状态
         // 必须在构建时间线、按钮、进度条之前调用，确保这些字段基于实时状态
