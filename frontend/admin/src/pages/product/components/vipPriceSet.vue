@@ -40,7 +40,7 @@
                 <span>付费会员价</span>
                 <el-popover
                   ref="vipSetPopover"
-                  v-model:value="vipSetPopoverPopver"
+                  v-model:visible="vipSetPopoverPopver"
                   placement="top"
                   width="290"
                   trigger="click"
@@ -66,9 +66,9 @@
                       <el-button type="primary" class="ml-14" @click="vipSetConfirm">确认</el-button>
                     </div>
                   </div>
-                  <template #reference
-                    ><span class="iconfont iconbianji1" @click.stop="vipSetPopoverPopver = true"></span
-                  ></template>
+                  <template #reference>
+                    <span class="iconfont iconbianji1"></span>
+                  </template>
                 </el-popover>
               </template>
               <template #default="scope">
@@ -189,9 +189,10 @@ function submitForm() {
       disabled.value = false;
     });
 }
-function closeVipSet(i) {
+function closeVipSet() {
+  // ElPopover（Element Plus 2.x）只暴露 hide()，没有旧版 Element UI 的 doClose()
   vipSetPopoverPopver.value = false;
-  vipSetPopover.value.doClose();
+  vipSetPopover.value?.hide?.();
   vipSetType.value = 0;
   vipSetNum.value = '';
 }

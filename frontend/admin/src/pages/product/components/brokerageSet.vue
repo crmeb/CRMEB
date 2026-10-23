@@ -264,8 +264,9 @@ function brokerageTwoRowReplace(item) {
   item.brokerage_two = item.brokerage_two.replace(/^-|\D/g, '');
 }
 function closePop() {
-  popoverRef_one.value.doClose();
-  popoverRef_two.value.doClose();
+  // ElPopover（Element Plus 2.x）只暴露 hide()，没有旧版 Element UI 的 doClose()
+  popoverRef_one.value?.hide?.();
+  popoverRef_two.value?.hide?.();
   brokerage_two.value = '';
   brokerage.value = '';
 }
