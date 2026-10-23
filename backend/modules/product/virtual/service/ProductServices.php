@@ -131,8 +131,9 @@ class ProductServices
         // ============ 列表/JSON字段 ============
         $product['logistics'] = !empty($product['logistics']) ? explode(',', $product['logistics']) : [];
         $product['recommend_list'] = !empty($product['recommend_list']) ? explode(',', (string)$product['recommend_list']) : [];
-        $product['cate_id'] = !empty($product['cate_id']) ? explode(',', (string)$product['cate_id']) : [];
-        $product['label_id'] = !empty($product['label_id']) ? explode(',', (string)$product['label_id']) : [];
+        // 分类/标签 ID 统一转 int：分类级联选项的 value 是数字，返回字符串会导致编辑页无法回显
+        $product['cate_id'] = !empty($product['cate_id']) ? array_map('intval', explode(',', (string)$product['cate_id'])) : [];
+        $product['label_id'] = !empty($product['label_id']) ? array_map('intval', explode(',', (string)$product['label_id'])) : [];
         $product['label_list'] = !empty($product['label_list']) ? array_map('intval', explode(',', (string)$product['label_list'])) : [];
         $product['protection_list'] = !empty($product['protection_list']) ? array_map('intval', explode(',', (string)$product['protection_list'])) : [];
         $product['params_list'] = !empty($product['params_list']) ? json_decode($product['params_list'], true) : [];

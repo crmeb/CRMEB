@@ -511,8 +511,10 @@ async function loadProduct() {
       formValidate.value.slider_image = images;
       formValidate.value.image = images[0] || '';
     }
-    const cate = data.cate_id || [];
-    formValidate.value.cate_id = Array.isArray(cate) ? cate : [cate];
+    // 分类回显：级联选项的 value 是数字，字符串 ID 无法命中节点，这里统一转成数字
+    const cate = data.cate_id;
+    const cateArr = Array.isArray(cate) ? cate : cate ? String(cate).split(',') : [];
+    formValidate.value.cate_id = cateArr.map((v) => Number(v)).filter((v) => !Number.isNaN(v) && v > 0);
     // 规格回显（优先使用 attr/attrs 中的数据）
     if (data.attr && typeof data.attr === 'object') {
       oneFormValidate.value[0].price = parseFloat(data.attr.price) || 0;
