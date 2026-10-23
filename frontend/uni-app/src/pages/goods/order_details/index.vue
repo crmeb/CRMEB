@@ -338,14 +338,17 @@
 			</view>
 			<view class="wrapper" v-if="customForm && customForm.length">
 				<view class="item acea-row row-between" v-for="(item, index) in customForm" :key="index">
-					<view class="upload" v-if="item.label == 'img'">
+					<!-- 图片字段：新格式 type=img，或存量订单无类型但值是图片链接 -->
+					<view class="upload" v-if="isImageFormItem(item)">
 						<view class="diy-from-title">{{ item.title }}：</view>
-						<view class="pictrue" v-for="(img, index) in item.value" :key="index">
-							<image :src="img"></image>
+						<view class="pictrue" v-for="(img, imgIndex) in formImageUrls(item)" :key="imgIndex">
+							<image :src="img" @click="previewFormImages(item, imgIndex)"></image>
 						</view>
 					</view>
-					<view v-if="item.label !== 'img'" class="diy-from-title">{{ item.title }}：</view>
-					<view v-if="item.label !== 'img'" class="conter">{{ item.value }}</view>
+					<template v-else>
+						<view class="diy-from-title">{{ item.title }}：</view>
+						<view class="conter">{{ item.value }}</view>
+					</template>
 				</view>
 				<view class="copy-text" @click="copyText()">{{ $t(`复制`) }}</view>
 			</view>
@@ -607,6 +610,30 @@ const { isLogin } = storeToRefs(appStore);
 // ---------- data ----------
 const imgHost = HTTP_REQUEST_URL;
 const customForm = ref(''); //自定义留言
+
+/**
+ * 自定义表单图片字段判断：新格式 type=img，或存量订单无类型但值是图片链接
+ * （旧数据 label 存类型值，新数据 label 是 custom_field_N，不能再用 label 判断）
+ */
+const IMAGE_EXT_RE = /\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i;
+function formImageUrls(item) {
+	if (!item || !item.value) return [];
+	const list = Array.isArray(item.value) ? item.value : [item.value];
+	return list.filter((v) => typeof v === 'string' && v.indexOf('http') === 0);
+}
+function isImageFormItem(item) {
+	if (!item) return false;
+	if (item.type === 'img') return true;
+	if (item.type) return false;
+	const urls = formImageUrls(item);
+	return urls.length > 0 && urls.every((v) => IMAGE_EXT_RE.test(v) || v.indexOf('/uploads/') !== -1);
+}
+function previewFormImages(item, index) {
+	const urls = formImageUrls(item);
+	if (!urls.length) return;
+	uni.previewImage({ urls, current: index });
+}
+
 //二维码参数
 const codeShow = ref(false);
 const cid = ref('1');

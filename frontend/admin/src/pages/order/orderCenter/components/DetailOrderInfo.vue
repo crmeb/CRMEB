@@ -211,13 +211,13 @@
     <div class="section" v-if="data.custom_form && data.custom_form.length">
       <div class="title">表单信息</div>
       <ul class="list">
-        <li class="item" :class="{ pic: item.label == 'img' }" v-for="(item, index) in data.custom_form" :key="index">
-          <template v-if="item.label !== 'img'">
+        <li class="item" :class="{ pic: isImageItem(item) }" v-for="(item, index) in data.custom_form" :key="index">
+          <template v-if="!isImageItem(item)">
             <div>{{ item.title }}：{{ item.value }}</div>
           </template>
           <template v-else>
             <div>{{ item.title }}：</div>
-            <div v-for="(img, i) in item.value" :key="i" class="img">
+            <div v-for="(img, i) in formImageUrls(item)" :key="i" class="img">
               <img v-viewer :src="img" alt="" />
             </div>
           </template>
@@ -287,6 +287,28 @@ function buildAddress(addr) {
   if (addr.detail) parts.push(addr.detail);
   if (addr.postal_code) parts.push(`(${addr.postal_code})`);
   return parts.join('');
+}
+
+// 图片扩展名判断
+const IMAGE_EXT_RE = /\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i;
+
+/** 自定义表单字段值规范化为图片 URL 数组（兼容字符串单图 / 数组多图） */
+function formImageUrls(item) {
+  if (!item || !item.value) return [];
+  const list = Array.isArray(item.value) ? item.value : [item.value];
+  return list.filter((v) => typeof v === 'string' && v.indexOf('http') === 0);
+}
+
+/**
+ * 图片字段判断：新订单 type=img，或存量订单无类型但值是图片链接
+ * （新数据 label 是 custom_field_N，不能再按 label == 'img' 判断）
+ */
+function isImageItem(item) {
+  if (!item) return false;
+  if (item.type === 'img') return true;
+  if (item.type) return false;
+  const urls = formImageUrls(item);
+  return urls.length > 0 && urls.every((v) => IMAGE_EXT_RE.test(v) || v.indexOf('/uploads/') !== -1);
 }
 </script>
 
