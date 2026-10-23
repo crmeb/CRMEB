@@ -23,6 +23,10 @@
 						<view class="iconfont icon-gouwuche6 acea-row row-center-wrapper"
 							v-if="item.activity && (item.activity.type === '1' || item.activity.type === '2' || item.activity.type === '3')">
 						</view>
+						<!-- 不支持加入购物车（自定义表单 / 产品类型 direct 模式）：显示立即购买，点击整行进详情 -->
+						<view class="bnt acea-row row-center-wrapper" v-else-if="item.cart_button == 0">
+							{{$t(`立即购买`)}}
+						</view>
 						<view v-else>
 							<!-- 多规格 -->
 							<view class="bnt acea-row row-center-wrapper" @click.stop="goCartDuo(item)"

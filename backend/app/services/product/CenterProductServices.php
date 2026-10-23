@@ -936,6 +936,11 @@ class CenterProductServices extends BaseService
         $storeInfo['selection_spec'] = $handler->getSelectionSpec();
         $storeInfo['cart_strategy']  = $handler->getCartStrategy();
 
+        // 自定义表单商品必须填写表单后直接下单，不支持加入购物车，强制 direct 单按钮模式
+        if ($this->hasCustomForm($storeInfo['custom_form'] ?? [])) {
+            $storeInfo['cart_strategy']['cart_mode'] = 'direct';
+        }
+
         // cart_button 由 cart_strategy.cart_mode 决定：direct 模式不展示加入购物车按钮
         // 预售商品在模板中走独立分支，不影响此处判断
         $storeInfo['cart_button'] = ($storeInfo['cart_strategy']['cart_mode'] ?? 'cart') === 'direct' ? 0 : 1;
@@ -1095,7 +1100,8 @@ class CenterProductServices extends BaseService
                 'text'   => '立即购买',
                 'action' => 'submitOrder',
                 // cart_button 由 cart_strategy.cart_mode 决定：direct 模式不展示加入购物车按钮
-                'extra'  => ['cart_button' => $this->getCartModeByType($productType) !== 'direct'],
+                // 自定义表单商品需填表后直接下单，同样不展示加入购物车
+                'extra'  => ['cart_button' => !$this->hasCustomForm($extensions['custom_form'] ?? []) && $this->getCartModeByType($productType) !== 'direct'],
             ],
             'submit_api' => 'center/order/create',
         ];
@@ -1580,6 +1586,27 @@ class CenterProductServices extends BaseService
     }
 
     /**
+     * 判断商品是否配置了自定义表单
+     * 自定义表单商品需先填写表单才能下单，无法按普通购物车流程结算，因此不支持加入购物车
+     * @param mixed $customForm 中台 custom_form 原值（JSON 字符串或已解码数组）
+     * @return bool
+     */
+    protected function hasCustomForm($customForm): bool
+    {
+        if (empty($customForm)) {
+            return false;
+        }
+        if (is_array($customForm)) {
+            return !empty($customForm);
+        }
+        $decoded = json_decode((string)$customForm, true);
+        if (is_array($decoded)) {
+            return !empty($decoded);
+        }
+        return trim((string)$customForm) !== '';
+    }
+
+    /**
      * 获取产品类型展示名称
      * 通过 ProductTypeRegistry 咨询对应 Handler
      * @param string $typeKey
@@ -1802,6 +1829,10 @@ class CenterProductServices extends BaseService
             $item['product_type'] = $item['product_type'] ?? 'normal';
             $item['type_name'] = $this->getProductTypeName($item['product_type']);
             $item['logistics'] = [];
+            // 相对路径图片补全站点域名，与 getList 口径保持一致（image 主图、recommend_image 推荐图、slider_image 轮播图为数组）
+            $item['image'] = set_file_url($item['image'] ?? '');
+            $item['recommend_image'] = set_file_url($item['recommend_image'] ?? '');
+            $item['slider_image'] = set_file_url($item['slider_image'] ?? []);
             // slider_image 由模型获取器自动解码
             if (isset($item['cate_id']) && $item['cate_id'] !== '') {
                 $cateIds[] = $item['cate_id'];
@@ -1838,6 +1869,8 @@ class CenterProductServices extends BaseService
                     $item['attrs'][$key] = $items;
                     $item['attrs'][$key]['suk'] = implode(',', $items['detail']);
                     $item['attrs'][$key]['product_price'] = $items['price'];
+                    // 规格图片同样补全站点域名
+                    $item['attrs'][$key]['pic'] = set_file_url($items['pic'] ?? '');
                     $key += 1;
                 }
             }
@@ -2436,7 +2469,8 @@ class CenterProductServices extends BaseService
             if (!$this->vipIsOpen(!!$item['is_vip'], $vipStatus)) {
                 $item['vip_price'] = 0;
             }
-            $item['cart_button'] = $this->getCartModeByType($item['product_type'] ?? 'normal') === 'direct' ? 0 : 1;
+            // 自定义表单商品不支持加入购物车（前端据此点击直接进详情）
+            $item['cart_button'] = $this->hasCustomForm($item['custom_form'] ?? '') || $this->getCartModeByType($item['product_type'] ?? 'normal') === 'direct' ? 0 : 1;
             if (count($item['star'])) {
                 $item['star'] = bcdiv((string)array_sum(array_column($item['star'], 'product_score')), (string)count($item['star']), 1);
             } else {
@@ -2708,9 +2742,16 @@ class CenterProductServices extends BaseService
         $productType = $this->getProductType($id);
         $handler = app()->make(ProductTypeRegistry::class)->get($productType);
 
+        // 自定义表单商品不支持加入购物车，强制 direct 单按钮模式
+        $cartStrategy = $handler->getCartStrategy();
+        if ($this->hasCustomForm($storeInfo['custom_form'] ?? [])) {
+            $cartStrategy['cart_mode'] = 'direct';
+        }
+        $storeInfo['cart_strategy'] = $cartStrategy;
+
         // cart_button 由 cart_strategy.cart_mode 决定：direct 模式不展示加入购物车按钮
         // 预售商品在模板中走独立分支，不影响此处判断
-        $storeInfo['cart_button'] = $this->getCartModeByType($productType) === 'direct' ? 0 : 1;
+        $storeInfo['cart_button'] = ($cartStrategy['cart_mode'] ?? 'cart') === 'direct' ? 0 : 1;
 
         $specs = $handler->getDetailSpecs($id);
         $productAttr = $specs['productAttr'] ?? [];
@@ -3704,6 +3745,16 @@ class CenterProductServices extends BaseService
         //通过事件代理查询商品启用的 SKU 列表，避免 app 层直接引用 modules
         $attrValueResults = event('ProductTypeDataProxy', ['product_type' => 'normal', 'action' => 'getShowListByProductId', 'args' => [(int)$id]]);
         $attrValue = (is_array($attrValueResults) && $attrValueResults[0] !== null) ? $attrValueResults[0] : [];
+        // SKU 图片在库中为相对路径（/uploads/...），返回前补全站点域名，避免后台规格图裂图
+        $siteUrl = sys_config('site_url');
+        foreach ($attrValue as &$attrItem) {
+            foreach (['image', 'pic'] as $imageField) {
+                if (!empty($attrItem[$imageField]) && is_string($attrItem[$imageField])) {
+                    $attrItem[$imageField] = set_file_url($attrItem[$imageField], $siteUrl);
+                }
+            }
+        }
+        unset($attrItem);
         return compact('storeInfo', 'attrValue');
     }
 
@@ -3995,6 +4046,7 @@ class CenterProductServices extends BaseService
             'sort_order',
             'is_vip',
             'vip_price',
+            'custom_form',
         ];
 
         $list = $this->dao->getSearchList($where, $page, $limit, $field);
@@ -4005,12 +4057,12 @@ class CenterProductServices extends BaseService
             $item['vip_price'] = '0.00';
             $item['is_virtual'] = $this->isVirtualProduct($item['product_type'] ?? 'normal');
             $item['presale'] = 0;
-            $item['custom_form'] = '';
             $item['min_qty'] = 1;
             $item['label_list'] = '';
             $item['store_info'] = '';
             $item['star'] = '5.0';
-            $item['cart_button'] = $this->getCartModeByType($item['product_type'] ?? 'normal') === 'direct' ? 0 : 1;
+            // 自定义表单商品不支持加入购物车（前端据此点击直接进详情）
+            $item['cart_button'] = $this->hasCustomForm($item['custom_form'] ?? '') || $this->getCartModeByType($item['product_type'] ?? 'normal') === 'direct' ? 0 : 1;
 
             // 标记活动商品
             if (!empty($item['activity'])) {

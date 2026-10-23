@@ -269,7 +269,7 @@ public function getCartStrategy(): array
 | 产品类型 | cart_mode | cart_button | confirm_window | 说明 |
 |---------|-----------|-------------|----------------|------|
 | normal（实物） | cart | 1 | editable | 双按钮，规格弹窗可选 |
-| virtual（虚拟） | cart | 1 | editable | 双按钮 |
+| virtual（网盘） | direct | 0 | editable | 单按钮「立即购买」，选中规格后跳单品直购页（`/pages/center/order/create/index?product_id=&sku_unique=&product_type=virtual&num=`），不写购物车 |
 | cardkey（卡密） | cart | 1 | readonly | 双按钮，规格只读高亮 |
 
 ### 7.2 cart_button 字段转换
@@ -281,7 +281,25 @@ public function getCartStrategy(): array
 $storeInfo['cart_button'] = ($storeInfo['cart_strategy']['cart_mode'] ?? 'cart') === 'direct' ? 0 : 1;
 ```
 
-> 中台 `CenterProductServices` 共 5 处 cart_button 计算（`getDetail`/`buildDefaultPageConfig`/`getProducts`列表/`productDetail`/`getUserList`）需统一走 `getCartModeByType()` 辅助方法，避免带自定义表单的 normal 商品错误隐藏加入购物车按钮。
+> 中台 `CenterProductServices` 共 5 处 cart_button 计算（`getDetail`/`buildDefaultPageConfig`/`getProducts`列表/`productDetail`/`getUserList`）需统一走 `getCartModeByType()` 辅助方法。
+
+**自定义表单商品不参与购物车**：商品 `eb_product_center.custom_form` 非空时，上述各处一律按 `direct` 处理，并统一用 `CenterProductServices::hasCustomForm()` 判断（兼容 JSON 字符串、`[]`、已解码数组）：
+
+| 环节 | 行为 |
+| --- | --- |
+| 商品详情 | `cart_strategy.cart_mode=direct`、`cart_button=0`，底部只显示「立即购买」 |
+| 商品列表（`getGoodsList`/`getUserList`） | 列表项 `cart_button=0`，前端卡片展示「立即购买」，点击整卡进详情，不再打开规格/加购弹窗 |
+| 加入购物车接口 | `StoreCartServices::setCart()` 在 `new=false`（加入购物车）时直接抛「该商品需填写自定义表单，请直接购买」；`new=true`（立即购买）不受限 |
+
+> 原因：自定义表单需在下单环节填写，购物车无法携带表单数据；表单收集与落库见 [product-type.md 附二](../03-系统商品说明/product-type.md)。
+
+**direct 模式商品不参与购物车**（网盘等按产品类型声明 `cart_mode=direct` 的商品）：`StoreCartServices::setCart()` 在 `new=false` 时走 `isDirectCartMode()` 校验，直接抛「该商品不支持加入购物车，请直接购买」；`new=true`（立即购买）不受限，保证历史链路兼容。
+
+| 环节 | 行为 |
+| --- | --- |
+| 商品详情 | `cart_button=0`，底部单按钮「立即购买」；多规格首次点击先弹规格窗，再次点击跳单品直购页 |
+| 商品列表（`getProducts`/`getUserList`） | 列表项 `cart_button=0`，卡片展示「立即购买」，点击整卡进详情 |
+| 加入购物车接口 | `new=false` 时抛「该商品不支持加入购物车，请直接购买」 |
 
 ### 7.3 SKU 信息获取
 

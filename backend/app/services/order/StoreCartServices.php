@@ -331,6 +331,14 @@ class StoreCartServices extends BaseService
     public function setCart(int $uid, int $product_id, int $cart_num = 1, string $product_attr_unique = '', int $type = 0, bool $new = true, int $combination_id = 0, int $seckill_id = 0, int $bargain_id = 0, int $advance_id = 0)
     {
         if ($cart_num < 1) $cart_num = 1;
+        // 自定义表单商品需先填写表单再下单，购物车无法承载表单数据，禁止加入购物车（立即购买 new=true 不受限）
+        if (!$new && $this->hasCustomForm($product_id)) {
+            throw new ApiException('该商品需填写自定义表单，请直接购买');
+        }
+        // direct 加购模式的产品类型（如网盘商品）只能直接购买，禁止加入购物车（立即购买 new=true 不受限）
+        if (!$new && $this->isDirectCartMode($product_id)) {
+            throw new ApiException('该商品不支持加入购物车，请直接购买');
+        }
         if ($type == 0) {
             //检查限购
             $this->checkLimit($uid, $product_id, $cart_num, $new);
@@ -407,6 +415,41 @@ class StoreCartServices extends BaseService
                 $add_time = time();
                 return $this->dao->save(compact('uid', 'product_id', 'cart_num', 'product_attr_unique', 'type', 'add_time'))->id;
             }
+        }
+    }
+
+    /**
+     * 判断商品是否配置了自定义表单
+     * 自定义表单需要在下单环节填写，购物车无法携带表单数据
+     * @param int $productId 商品ID
+     * @return bool
+     */
+    protected function hasCustomForm(int $productId): bool
+    {
+        try {
+            $productType = app()->make(CenterProductServices::class)->getProductType($productId);
+            $handler = app()->make(ProductTypeRegistry::class)->get($productType);
+            $extend = $handler->getDetailExtend($productId);
+            return !empty($extend['custom_form']);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断商品所属产品类型是否为 direct 加购模式
+     * direct 模式（网盘等）只能直接下单走单品直购链路，不支持加入购物车
+     * @param int $productId 商品ID
+     * @return bool
+     */
+    protected function isDirectCartMode(int $productId): bool
+    {
+        try {
+            $productType = app()->make(CenterProductServices::class)->getProductType($productId);
+            $handler = app()->make(ProductTypeRegistry::class)->get($productType);
+            return ($handler->getCartStrategy()['cart_mode'] ?? 'cart') === 'direct';
+        } catch (\Throwable $e) {
+            return false;
         }
     }
 

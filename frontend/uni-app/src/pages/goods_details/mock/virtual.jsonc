@@ -107,13 +107,13 @@
       },
 
       // ===== 加购策略 =====
-      // cart_strategy: 加购按钮策略（网盘产品使用cart双按钮加购模式）
+      // cart_strategy: 加购按钮策略（网盘产品只能直接购买，使用 direct 单按钮模式）
       "cart_strategy": {
-        "cart_mode": "cart",                    // 加购模式 cart双按钮（加购+立即购买）/buy单按钮（立即购买）
-        "multi_item": true,                     // 是否支持购物车多商品合并
+        "cart_mode": "direct",                  // 加购模式 cart双按钮（加购+立即购买）/direct单按钮（立即购买）
+        "multi_item": false,                    // 是否支持购物车多商品合并（direct 模式不支持）
         "button_text": "立即购买"                       // 自定义按钮文字（空使用默认）
       },
-      "cart_button": 1,                         // 加购按钮显示 0隐藏/1显示
+      "cart_button": 0,                         // 加购按钮显示 0隐藏/1显示（direct 模式为 0）
 
       // ===== 预售配置 =====
       "presale": 0,                             // 是否预售 0否/1是

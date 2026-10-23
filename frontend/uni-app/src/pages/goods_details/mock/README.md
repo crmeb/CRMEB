@@ -222,7 +222,7 @@
 | virtual_type | 0 | 1（网盘） | 2（卡密） |
 | spec_type | 1（多规格） | 1（多规格） | 0（单规格） |
 | requires_shipping | true | false | false |
-| cart_button | 1 | 1 | 1 |
+| cart_button | 1 | 0（direct 直购） | 1 |
 | limit_num | 5 | 0 | 5 |
 | unit_name | 件 | 份 | 张 |
 

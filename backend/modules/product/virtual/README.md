@@ -71,6 +71,14 @@ virtual/
 - 已发放后不支持售后
 - 仅支持退款类型
 
+## 用户端加购策略
+
+网盘商品不支持加入购物车，只能直接购买：
+
+- `Handler::getCartStrategy()` 返回 `cart_mode=direct`、`multi_item=false`，中台据此下发 `cart_button=0`，列表与详情只展示「立即购买」。
+- 商品详情页点击「立即购买」跳单品直购页 `/pages/center/order/create/index?product_id=&sku_unique=&product_type=virtual&num=`，由 `CenterOrderController::confirm/create` 的 direct 链路下单，不写购物车（多规格首次点击先弹规格窗确认规格）。
+- `StoreCartServices::setCart()` 对 `cart_mode=direct` 的商品在 `new=false` 时抛「该商品不支持加入购物车，请直接购买」，防止其他入口绕过 UI 加购。
+
 ## 数据表
 
 - `eb_pt_virtual` — 网盘商品扩展表

@@ -599,6 +599,8 @@ const selectedBlockData = ref([]);
 // readOnly 弹窗模式下存储第一次进入 goCat 时的 news 参数，供"确定"按钮复用
 // 加入购物车=undefined，立即购买=true
 const pendingNews = ref(undefined);
+// direct（单按钮直购）模式是否已弹过规格窗：首次点击先让用户确认规格，之后点击直接下单
+const directSpecOpened = ref(false);
 
 // ---------- 海报/分销二维码（替代原 mixins/sharePoster.js）----------
 // 原 mixin 写到页面 this 上的字段（posters/PromotionCode/posterImage/...）全部解构自 poster；
@@ -1542,6 +1544,13 @@ function goCat(news) {
         : "",
     virtual_type: storeInfo.value.virtual_type,
   };
+  // direct 模式（网盘等）：不写入购物车，选中规格后直接进单品直购页
+  if (isDirectMode.value) {
+    isOpen.value = false;
+    attr.cartAttr = false;
+    goDirectBuy(q.uniqueId, q.cartNum);
+    return;
+  }
   postCartAdd(q)
     .then((res) => {
       isOpen.value = false;
@@ -1614,6 +1623,13 @@ function navigateToCreate(cartId, blockData) {
  * @param {*} news 是否立即购买（truthy 跳下单页，falsy 提示添加成功）
  */
 function submitCartAdd(params, news) {
+  // direct 模式（网盘等）：跳过加购，直接进单品直购页
+  if (isDirectMode.value) {
+    isOpen.value = false;
+    attr.cartAttr = false;
+    goDirectBuy(params.uniqueId, params.cartNum);
+    return;
+  }
   postCartAdd(params)
     .then((res) => {
       isOpen.value = false;
@@ -1887,17 +1903,51 @@ function goBuy() {
   if (isLogin.value === false) {
     toLogin();
   } else {
-    // direct 模式（预售/租赁/服务）：跳过规格弹窗，直接用默认 SKU 下单
+    // direct 模式（网盘等）：不经过购物车，选中规格后跳单品直购页
     if (isDirectMode.value) {
-      const defaultUnique = storeInfo.value.default_sku || storeInfo.value.spec_unique || (attr.productSelect && attr.productSelect.unique) || '';
-      const params = buildCartParams(defaultUnique, 1, storeInfo.value.virtual_type);
-      params.new = 1;
-      submitCartAdd(params, true);
+      // 多规格首次点击先弹规格窗让用户确认规格，再次点击即用当前选中规格直购
+      if (hasMultiSpecValues() && !directSpecOpened.value) {
+        directSpecOpened.value = true;
+        attr.cartAttr = true;
+        isOpen.value = true;
+        return;
+      }
+      goDirectBuy(
+        (attr.productSelect && attr.productSelect.unique) ||
+          storeInfo.value.default_sku ||
+          storeInfo.value.spec_unique ||
+          '',
+        attr.productSelect.cart_num || 1
+      );
       return;
     }
     // this.$refs.proSwiper.videoIsPause();
     goCat(true);
   }
+}
+/**
+ * 是否存在多个可选规格值（多规格商品需让用户确认规格）
+ * @return {boolean}
+ */
+function hasMultiSpecValues() {
+  const productAttr = attr.productAttr || [];
+  return productAttr.some((item) => (item.attr_values || []).length > 1);
+}
+/**
+ * 跳转单品直购下单页（不写入购物车）
+ * @param {string} uniqueId SKU 唯一编码
+ * @param {number} cartNumArg 购买数量
+ */
+function goDirectBuy(uniqueId, cartNumArg) {
+  const pid = storeInfo.value.id || id.value;
+  const productType = storeInfo.value.product_type || 'virtual';
+  const num = Math.max(parseInt(cartNumArg, 10) || 1, 1);
+  const url =
+    `/pages/center/order/create/index?product_id=${pid}` +
+    `&sku_unique=${encodeURIComponent(uniqueId || '')}` +
+    `&product_type=${encodeURIComponent(productType)}` +
+    `&num=${num}`;
+  uni.navigateTo({ url });
 }
 function open(data) {
   showMenuIcon.value = data;

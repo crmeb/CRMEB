@@ -675,14 +675,16 @@ class Handler extends BaseProductTypeHandler
     }
 
     /**
-     * 加购策略契约（virtual 虚拟：双按钮 + 多品 + 默认文案）
+     * 加购策略契约（virtual 网盘：单按钮直接购买）
+     * 网盘商品支付后自动发放资源，不支持加入购物车：cart_mode=direct
+     * 中台据此下发 cart_button=0，列表/详情均只保留「立即购买」，下单走单品直购链路
      * @return array
      */
     public function getCartStrategy(): array
     {
         return [
-            'cart_mode'   => 'cart',
-            'multi_item'  => true,
+            'cart_mode'   => 'direct',
+            'multi_item'  => false,
             'button_text' => '',
         ];
     }

@@ -112,11 +112,11 @@
         "cart_unit": "item"
       },
       "cart_strategy": {
-        "cart_mode": "cart",
-        "multi_item": true,
+        "cart_mode": "direct",
+        "multi_item": false,
         "button_text": ""
       },
-      "cart_button": 1
+      "cart_button": 0
     },
     "productAttr": [
       {
