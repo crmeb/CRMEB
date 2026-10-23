@@ -1799,6 +1799,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_menus` (
   `is_header` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否顶部菜单1是0否',
   `unique_auth` varchar(150) NOT NULL DEFAULT '' COMMENT '前台唯一标识',
   `menu_key` varchar(190) NOT NULL DEFAULT '' COMMENT '菜单稳定标识，系统生成且不可修改',
+  `menu_key_unique` varchar(190) GENERATED ALWAYS AS (NULLIF(`menu_key`, '')) STORED COMMENT '菜单稳定标识唯一键（空值不参与唯一约束）',
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   `mark` varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
   `owner_plugin_id` varchar(96) NOT NULL DEFAULT '' COMMENT '所属插件复合标识，空为核心菜单',
@@ -1807,7 +1808,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_menus` (
   KEY `is_show` (`is_show`) USING BTREE,
   KEY `access` (`access`) USING BTREE,
   KEY `idx_owner_plugin_id` (`owner_plugin_id`),
-  UNIQUE KEY `uk_menu_key` ((NULLIF(`menu_key`, '')))
+  UNIQUE KEY `uk_menu_key` (`menu_key_unique`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4961 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='菜单表';
 
 -- eb_system_pem：证书表

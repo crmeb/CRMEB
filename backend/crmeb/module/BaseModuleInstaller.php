@@ -1608,14 +1608,27 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
         );
 
         $database = (string)config('database.connections.mysql.database');
+        // MySQL 5.7 不支持函数索引，改用 STORED 生成列 + 普通唯一索引。
+        // NULLIF 生成 NULL，允许空 key 重复；非空 key 仍由唯一索引约束。
+        $generatedColumn = Db::query(
+            'SELECT 1 FROM information_schema.columns'
+            . ' WHERE table_schema = ? AND table_name = ? AND column_name = ? LIMIT 1',
+            [$database, $fullTable, 'menu_key_unique']
+        );
+        if (empty($generatedColumn)) {
+            Db::execute(
+                "ALTER TABLE `{$fullTable}` ADD COLUMN `menu_key_unique` varchar(190) "
+                . "GENERATED ALWAYS AS (NULLIF(`menu_key`, '')) STORED "
+                . "COMMENT '菜单稳定标识唯一键（空值不参与唯一约束）' AFTER `menu_key`"
+            );
+        }
         $index = Db::query(
             'SELECT 1 FROM information_schema.statistics'
             . ' WHERE table_schema = ? AND table_name = ? AND index_name = ? LIMIT 1',
             [$database, $fullTable, 'uk_menu_key']
         );
         if (empty($index)) {
-            // NULLIF 允许极端中断场景暂存空 key，所有正常写入仍受唯一约束。
-            Db::execute("ALTER TABLE `{$fullTable}` ADD UNIQUE KEY `uk_menu_key` ((NULLIF(`menu_key`, ''))) ");
+            Db::execute("ALTER TABLE `{$fullTable}` ADD UNIQUE KEY `uk_menu_key` (`menu_key_unique`)");
         }
     }
 
