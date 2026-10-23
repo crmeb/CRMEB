@@ -170,15 +170,23 @@ class StoreProductRelationServices extends BaseService
         $relationType = strtolower($relationType);
         $category = strtolower($category);
         $relationData = [];
-        $productIdS = array_unique($productIdS);
+        // 过滤非法商品ID（如前端未取到 product_id 时传入的空值），避免写入 product_id=0 的脏数据
+        $productIdS = array_values(array_unique(array_filter(array_map('intval', $productIdS), function ($productId) {
+            return $productId > 0;
+        })));
+        if (!$productIdS) {
+            return true;
+        }
         $relationProductIdS = $this->dao->getColumn(['uid' => $uid, 'type' => $relationType, 'category' => $category, 'product_id' => $productIdS], 'product_id');
+        $addTime = time();
         foreach ($productIdS as $productId) {
             if (!in_array($productId, $relationProductIdS)) {
-                $relationData[] = ['uid' => $uid, 'product_id' => $productId, 'type' => $relationType, 'category' => $category];
+                $relationData[] = ['uid' => $uid, 'product_id' => $productId, 'type' => $relationType, 'category' => $category, 'add_time' => $addTime];
             }
         }
         if ($relationData) {
-            if (!$this->dao->saveAll($relationData)) {
+            // 该表为联合主键，Model::saveAll() 会因主键字段齐全而走 UPDATE 分支导致静默不写入，必须直接 insertAll
+            if ($this->dao->insertAll($relationData) < 1) {
                 throw new ApiException('添加失败');
             }
         }

@@ -30,6 +30,18 @@ class StoreProductRelationDao extends BaseDao
     }
 
     /**
+     * 批量插入，绕过模型 saveAll 语义
+     * 该表使用 (uid, product_id, type, category) 联合主键，saveAll() 会因主键字段齐全
+     * 而按 UPDATE 处理，导致新记录静默写入失败
+     * @param array $data
+     * @return int
+     */
+    public function insertAll(array $data): int
+    {
+        return $this->getModel()->insertAll($data);
+    }
+
+    /**
      * 获取收藏列表
      * @param array $where
      * @param string $field
