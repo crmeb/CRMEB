@@ -88,7 +88,7 @@ class SystemCrudServices extends BaseService
     ];
 
     //表字符集
-    const TABLR_COLLATION = 'utf8mb4_0900_ai_ci';
+    const TABLR_COLLATION = 'utf8mb4_general_ci';
 
     /**
      * SystemCrudServices constructor.

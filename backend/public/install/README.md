@@ -64,7 +64,7 @@ MySQL 校验（前端提交 `mysqldbpwd` 触发）：
 | `-2` | MySQL ≥ 5.7 且 `sql_mode` 含 `STRICT_TRANS_TABLES` / `STRICT_ALL_TABLES` / `TRADITIONAL` / `ANSI`，需要调整数据库配置 |
 | `-3` | 目标数据库非空（已存在数据表，不允许覆盖安装） |
 | `-4` | 数据库不存在且无权限创建 |
-| `-5` | MySQL 版本过低（须 ≥ 5.1） |
+| `-5` | MySQL 版本过低（须 ≥ 5.7，推荐 8.0） |
 
 Redis 校验（前端提交 `redisdbpwd` 触发）：实际执行 `connect` → `auth`（有密码时）→ `select`（指定库时）→ `set` 写入测试键，返回 `1` 成功、`-1` redis 扩展缺失或对象创建失败、`-3` 连接或写入失败。
 
@@ -171,7 +171,7 @@ Redis 校验（前端提交 `redisdbpwd` 触发）：实际执行 `connect` → 
 - **防重复安装**：入口处检测 `public/install.lock`，存在即阻止进入向导；如需重装，需手动删除 `public/install.lock`。
 - **环境变量优先**：数据库和 Redis 连接信息默认值优先从容器的 `MYSQL_HOST_IP`、`MYSQL_PORT`、`MYSQL_USER`、`MYSQL_PASSWORD`、`MYSQL_DATABASE`、`REDIS_HOST_IP` 等环境变量获取，适用于 Docker 部署场景；表单填写值仍以步骤3提交为准。
 - **表前缀替换**：SQL 文件默认使用 `eb_` 前缀，安装时按反引号整体形式动态替换为用户配置前缀；覆盖安装时 `DROP TABLE` 按实际前缀执行。
-- **数据库不存在时自动创建**：按 `utf8mb4` / `utf8mb4_0900_ai_ci` 字符集执行 `CREATE DATABASE IF NOT EXISTS`。
+- **数据库不存在时自动创建**：按 `utf8mb4` / `utf8mb4_general_ci` 字符集执行 `CREATE DATABASE IF NOT EXISTS`。
 - **管理员账户**：收尾阶段清空 `system_admin` 后写入 id=1 的超级管理员（账号为步骤3填写，密码经 `PASSWORD_BCRYPT` 加密，角色 `roles=1`）。
 - **站点域名写入**：收尾阶段将安装访问域名以 JSON 字符串形式更新到 `system_config` 的 `site_url`（与系统配置读取侧 `json_decode` 约定一致）。
-- **最低要求**：PHP 8.2-8.4（不含 8.5+），MySQL ≥ 5.1（5.7+ 需关闭严格 sql_mode），Redis 扩展（选择 redis 缓存时必需）。
+- **最低要求**：PHP 8.2-8.4（不含 8.5+），MySQL ≥ 5.7（推荐 8.0；5.7 需关闭严格 sql_mode），Redis 扩展（选择 redis 缓存时必需）。

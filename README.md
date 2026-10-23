@@ -2,7 +2,7 @@
 
 > 基于 ThinkPHP 8.0 的三端一体电商 CRM 系统：后端 + 管理端（Vue 3）+ 移动端（uni-app），支持 PC / H5 / 小程序 / APP。
 
-**后端运行环境**：PHP 8.2-8.4 + MySQL 8.0 + Redis ｜ **前端构建**：Node >= 18.20
+**后端运行环境**：PHP 8.2-8.4 + MySQL 5.7+（推荐 8.0）+ Redis ｜ **前端构建**：Node >= 18.20
 **主开发分支**：`v8.0.dev`，正式发布以 Release / Tag 为准
 
 > 本仓库提供统一的 AI 开发入口（AGENTS.md 标准）。使用 Claude Code、Cursor、Codex、Copilot 等 AI 工具开发本项目前，请让 AI 先读取 [AGENTS.md](AGENTS.md) → [.crmeb/AGENTS.md](.crmeb/AGENTS.md)。详见下文[用 AI 开发本项目](#用-ai-开发本项目)。
@@ -15,7 +15,7 @@
 cd backend
 composer install
 
-# 配置 backend/.env 并确保 MySQL 8、Redis 已在宿主机运行后启动
+# 配置 backend/.env 并确保 MySQL 5.7+（推荐 8.0）、Redis 已在宿主机运行后启动
 php think run --host 127.0.0.1 --port 8011
 ```
 
@@ -54,7 +54,7 @@ php think run --host 127.0.0.1 --port 8011
 | 服务 | 端口 |
 |------|------|
 | Nginx（Web 入口） | `8011` |
-| MySQL 8.0 | `33061` |
+| MySQL 8.0（兼容 5.7+） | `33061` |
 | Redis | `63791` |
 | Workerman（WebSocket） | `40001` |
 

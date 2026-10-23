@@ -14,7 +14,7 @@ CRMEB v8 电商系统，三端一体：
 
 | 区域 | 目录 | 技术栈 |
 | --- | --- | --- |
-| 后端 | `backend/` | PHP 8.2-8.4 + ThinkPHP 8 + MySQL 8 + Redis，多应用入口 `adminapi` / `api` |
+| 后端 | `backend/` | PHP 8.2-8.4 + ThinkPHP 8 + MySQL 5.7+（推荐 8.0）+ Redis，多应用入口 `adminapi` / `api` |
 | 管理后台 | `frontend/admin/` | Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4 + Vite 5（纯 JS） |
 | 移动端 | `frontend/uni-app/` | uni-app 官方 CLI（Vite 5）+ Vue 3 + Pinia + Sass |
 

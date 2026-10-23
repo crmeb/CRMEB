@@ -6,10 +6,10 @@
 
 | 区域 | 当前实现 |
 |---|---|
-| 后端 | PHP 8.2-8.4、ThinkPHP 8、MySQL 8、Redis |
+| 后端 | PHP 8.2-8.4、ThinkPHP 8、MySQL 5.7+（推荐 8.0）、Redis |
 | Admin | Vue 3.5、Vue Router 4、Pinia 2、Element Plus 2.9、Vite 5 |
 | 用户端 | uni-app CLI（Vite 5）工程，Vue 3 + `<script setup>`、Pinia 2、Sass |
-| 本地默认运行环境 | 宿主机 PHP 8.2-8.4 + MySQL 8 + Redis；HTTP 端口 `8011`，数据服务按 `backend/.env` 实际配置 |
+| 本地默认运行环境 | 宿主机 PHP 8.2-8.4 + MySQL 5.7+（推荐 8.0）+ Redis；HTTP 端口 `8011`，数据服务按 `backend/.env` 实际配置 |
 | 可选容器环境 | Docker Compose：Nginx `8011`、MySQL `33061`、Redis `63791` |
 
 版本信息以 `backend/composer.json`、`frontend/admin/package.json`、`frontend/uni-app/package.json` 和当前代码为准。管理端与用户端均已完成 Vue 3 迁移，README 中残留的 Vue 2 / Vuex / element-ui / ThinkPHP 6 描述属于过期资料。

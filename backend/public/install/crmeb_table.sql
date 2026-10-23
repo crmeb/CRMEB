@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `eb_after_sale` (
   KEY `idx_category` (`order_category`),
   KEY `idx_add_time` (`add_time`),
   KEY `idx_order_no_status` (`order_no`,`is_del`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='售后单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='售后单表';
 
 -- eb_after_sale_item：售后商品明细
 CREATE TABLE IF NOT EXISTS `eb_after_sale_item` (
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `eb_after_sale_item` (
   UNIQUE KEY `uk_after_sale_item` (`after_sale_id`,`order_item_key`),
   KEY `idx_after_sale_id` (`after_sale_id`),
   KEY `idx_product_sku` (`product_id`,`sku_unique`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='售后商品明细';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='售后商品明细';
 
 -- eb_agreement：协议表（含插件协议）
 CREATE TABLE IF NOT EXISTS `eb_agreement` (
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `eb_agreement` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_type_plugin` (`type`,`owner_plugin_id`) USING BTREE,
   KEY `idx_owner_plugin_id` (`owner_plugin_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='协议表（含插件协议）';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='协议表（含插件协议）';
 
 -- eb_ai_model：AI模型登记表（系统内置AI能力）
 CREATE TABLE IF NOT EXISTS `eb_ai_model` (
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `eb_ai_model` (
   KEY `idx_status` (`status`) USING BTREE,
   KEY `idx_protocol` (`protocol`) USING BTREE,
   KEY `idx_default` (`is_default`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='AI模型登记表（系统内置AI能力）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='AI模型登记表（系统内置AI能力）';
 
 -- eb_article：文章管理表
 CREATE TABLE IF NOT EXISTS `eb_article` (
@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `eb_article` (
   `is_hot` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否热门(小程序)',
   `is_banner` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否轮播图(小程序)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文章管理表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='文章管理表';
 
 -- eb_article_category：文章分类表
 CREATE TABLE IF NOT EXISTS `eb_article_category` (
@@ -164,14 +164,14 @@ CREATE TABLE IF NOT EXISTS `eb_article_category` (
   `add_time` varchar(255) NOT NULL DEFAULT '' COMMENT '添加时间',
   `hidden` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否隐藏',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文章分类表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='文章分类表';
 
 -- eb_article_content：文章内容表
 CREATE TABLE IF NOT EXISTS `eb_article_content` (
   `nid` int unsigned NOT NULL DEFAULT '0' COMMENT '文章id',
   `content` longtext COMMENT '文章内容',
   UNIQUE KEY `nid` (`nid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文章内容表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='文章内容表';
 
 -- eb_auxiliary：辅助表
 CREATE TABLE IF NOT EXISTS `eb_auxiliary` (
@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `eb_auxiliary` (
   `update_time` int NOT NULL DEFAULT '0' COMMENT '更新时间',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='辅助表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='辅助表';
 
 -- eb_cache：微信缓存表
 CREATE TABLE IF NOT EXISTS `eb_cache` (
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `eb_cache` (
   `expire_time` int NOT NULL DEFAULT '0' COMMENT '失效时间0=永久',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '缓存时间',
   PRIMARY KEY (`key`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信缓存表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='微信缓存表';
 
 -- eb_capital_flow：资金流水表
 CREATE TABLE IF NOT EXISTS `eb_capital_flow` (
@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `eb_capital_flow` (
   `mark` varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '交易时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='资金流水表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='资金流水表';
 
 -- eb_cart：购物车表
 CREATE TABLE IF NOT EXISTS `eb_cart` (
@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `eb_cart` (
   PRIMARY KEY (`id`),
   KEY `idx_uid` (`uid`),
   KEY `idx_product_id` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='购物车表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='购物车表';
 
 -- eb_category：标签分类
 CREATE TABLE IF NOT EXISTS `eb_category` (
@@ -241,7 +241,7 @@ CREATE TABLE IF NOT EXISTS `eb_category` (
   KEY `pid` (`pid`),
   KEY `name` (`name`),
   KEY `is_be` (`owner_id`,`type`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='标签分类';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='标签分类';
 
 -- eb_delivery_service：配送员表
 CREATE TABLE IF NOT EXISTS `eb_delivery_service` (
@@ -253,7 +253,7 @@ CREATE TABLE IF NOT EXISTS `eb_delivery_service` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '0隐藏1显示',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='配送员表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='配送员表';
 
 -- eb_diy：DIY数据表
 CREATE TABLE IF NOT EXISTS `eb_diy` (
@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `eb_diy` (
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT 'diy顶部title',
   `is_pro` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否新版本',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='DIY数据表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='DIY数据表';
 
 -- eb_driver：统一驱动字典表
 CREATE TABLE IF NOT EXISTS `eb_driver` (
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS `eb_driver` (
   UNIQUE KEY `uk_type_driver` (`driver_type`,`driver_key`),
   KEY `idx_status_sort` (`status`,`sort`),
   KEY `idx_owner_plugin_id` (`owner_plugin_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='统一驱动字典表';
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='统一驱动字典表';
 
 -- eb_express：快递公司表
 CREATE TABLE IF NOT EXISTS `eb_express` (
@@ -336,7 +336,7 @@ CREATE TABLE IF NOT EXISTS `eb_express` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `code` (`code`) USING BTREE,
   KEY `is_show` (`is_show`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快递公司表';
+) ENGINE=InnoDB AUTO_INCREMENT=1102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='快递公司表';
 
 -- eb_express_company：电子面单物流公司管理
 CREATE TABLE IF NOT EXISTS `eb_express_company` (
@@ -368,7 +368,7 @@ CREATE TABLE IF NOT EXISTS `eb_express_company` (
   UNIQUE KEY `uk_code` (`code`),
   KEY `idx_driver` (`driver_key`),
   KEY `idx_status_sort` (`status`,`sort`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='电子面单物流公司管理';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='电子面单物流公司管理';
 
 -- eb_express_dump_log：电子面单打印记录表
 CREATE TABLE IF NOT EXISTS `eb_express_dump_log` (
@@ -398,7 +398,7 @@ CREATE TABLE IF NOT EXISTS `eb_express_dump_log` (
   KEY `idx_order_id` (`order_id`),
   KEY `idx_com` (`com`),
   KEY `idx_add_time` (`add_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='电子面单打印记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='电子面单打印记录表';
 
 -- eb_express_setting：电子面单业务设置
 CREATE TABLE IF NOT EXISTS `eb_express_setting` (
@@ -413,7 +413,7 @@ CREATE TABLE IF NOT EXISTS `eb_express_setting` (
   `to_address` varchar(255) NOT NULL DEFAULT '' COMMENT '默认寄件人地址',
   `update_time` int NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='电子面单业务设置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='电子面单业务设置';
 
 -- eb_express_template：电子面单模板表
 CREATE TABLE IF NOT EXISTS `eb_express_template` (
@@ -434,7 +434,7 @@ CREATE TABLE IF NOT EXISTS `eb_express_template` (
   PRIMARY KEY (`id`),
   KEY `idx_com_temp` (`com`,`temp_id`),
   KEY `idx_driver_key` (`driver_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='电子面单模板表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='电子面单模板表';
 
 -- eb_lang_code：语言code表
 CREATE TABLE IF NOT EXISTS `eb_lang_code` (
@@ -445,7 +445,7 @@ CREATE TABLE IF NOT EXISTS `eb_lang_code` (
   `lang_explain` varchar(255) NOT NULL DEFAULT '' COMMENT '说明',
   `is_admin` tinyint(1) NOT NULL DEFAULT '0' COMMENT '服务端1，用户端2',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25231 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='语言code表';
+) ENGINE=InnoDB AUTO_INCREMENT=25231 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='语言code表';
 
 -- eb_lang_country：浏览器语言类型表
 CREATE TABLE IF NOT EXISTS `eb_lang_country` (
@@ -454,7 +454,7 @@ CREATE TABLE IF NOT EXISTS `eb_lang_country` (
   `code` varchar(50) NOT NULL DEFAULT '' COMMENT '国家标识',
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '国家名称',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=351 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='浏览器语言类型表';
+) ENGINE=InnoDB AUTO_INCREMENT=351 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='浏览器语言类型表';
 
 -- eb_lang_type：语言类型
 CREATE TABLE IF NOT EXISTS `eb_lang_type` (
@@ -466,7 +466,7 @@ CREATE TABLE IF NOT EXISTS `eb_lang_type` (
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='语言类型';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='语言类型';
 
 -- eb_member_card：会员卡表
 CREATE TABLE IF NOT EXISTS `eb_member_card` (
@@ -480,7 +480,7 @@ CREATE TABLE IF NOT EXISTS `eb_member_card` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `update_time` int NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`,`card_batch_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='会员卡表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员卡表';
 
 -- eb_member_card_batch：会员卡批次表
 CREATE TABLE IF NOT EXISTS `eb_member_card_batch` (
@@ -498,7 +498,7 @@ CREATE TABLE IF NOT EXISTS `eb_member_card_batch` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `update_time` int NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='会员卡批次表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员卡批次表';
 
 -- eb_member_order：会员订单表
 CREATE TABLE IF NOT EXISTS `eb_member_order` (
@@ -526,7 +526,7 @@ CREATE TABLE IF NOT EXISTS `eb_member_order` (
   UNIQUE KEY `uk_order_id` (`order_id`) USING BTREE,
   KEY `idx_uid` (`uid`) USING BTREE,
   KEY `idx_paid` (`paid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员订单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员订单表';
 
 -- eb_member_order_status：会员订单状态变更表
 CREATE TABLE IF NOT EXISTS `eb_member_order_status` (
@@ -537,7 +537,7 @@ CREATE TABLE IF NOT EXISTS `eb_member_order_status` (
   `add_time` int unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_order_id` (`order_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员订单状态变更表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员订单状态变更表';
 
 -- eb_member_right：会员权益
 CREATE TABLE IF NOT EXISTS `eb_member_right` (
@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS `eb_member_right` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`,`right_type`) USING BTREE,
   KEY `type` (`right_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='会员权益';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员权益';
 
 -- eb_member_ship：会员类型
 CREATE TABLE IF NOT EXISTS `eb_member_ship` (
@@ -568,7 +568,7 @@ CREATE TABLE IF NOT EXISTS `eb_member_ship` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `type` (`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='会员类型';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='会员类型';
 
 -- eb_module_install_log：模块安装日志表
 CREATE TABLE IF NOT EXISTS `eb_module_install_log` (
@@ -585,7 +585,7 @@ CREATE TABLE IF NOT EXISTS `eb_module_install_log` (
   UNIQUE KEY `uk_module_key` (`module_key`),
   KEY `idx_status` (`status`),
   KEY `idx_module_type` (`module_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='模块安装日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='模块安装日志表';
 
 -- eb_notice：站内信
 CREATE TABLE IF NOT EXISTS `eb_notice` (
@@ -614,7 +614,7 @@ CREATE TABLE IF NOT EXISTS `eb_notice` (
   KEY `idx_status` (`status`),
   KEY `idx_send_at` (`send_at`),
   KEY `idx_created_at` (`created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='站内信';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='站内信';
 
 -- eb_notice_channel：消息渠道配置表
 CREATE TABLE IF NOT EXISTS `eb_notice_channel` (
@@ -634,7 +634,7 @@ CREATE TABLE IF NOT EXISTS `eb_notice_channel` (
   `updated_at` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `channel_key` (`channel_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='消息渠道配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='消息渠道配置表';
 
 -- eb_notice_config：通知配置主表
 CREATE TABLE IF NOT EXISTS `eb_notice_config` (
@@ -648,7 +648,7 @@ CREATE TABLE IF NOT EXISTS `eb_notice_config` (
   `add_time` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_mark_type` (`mark`,`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='通知配置主表';
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='通知配置主表';
 
 -- eb_notice_log：消息发送记录表
 CREATE TABLE IF NOT EXISTS `eb_notice_log` (
@@ -669,7 +669,7 @@ CREATE TABLE IF NOT EXISTS `eb_notice_log` (
   KEY `channel_key` (`channel_key`),
   KEY `status` (`status`),
   KEY `send_time` (`send_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='消息发送记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='消息发送记录表';
 
 -- eb_notice_read：站内信已读记录
 CREATE TABLE IF NOT EXISTS `eb_notice_read` (
@@ -684,7 +684,7 @@ CREATE TABLE IF NOT EXISTS `eb_notice_read` (
   UNIQUE KEY `uk_notice_uid` (`notice_id`,`uid`),
   KEY `idx_uid_read` (`uid`,`is_read`),
   KEY `idx_uid_deleted` (`uid`,`is_deleted`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='站内信已读记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='站内信已读记录';
 
 -- eb_notice_template：通知-渠道关联表
 CREATE TABLE IF NOT EXISTS `eb_notice_template` (
@@ -701,7 +701,7 @@ CREATE TABLE IF NOT EXISTS `eb_notice_template` (
   UNIQUE KEY `notice_template` (`notification_id`,`channel_key`),
   KEY `channel_key` (`channel_key`),
   KEY `status` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='通知-渠道关联表';
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='通知-渠道关联表';
 
 -- eb_offline_receipt：其他订单表（线下收银）
 CREATE TABLE IF NOT EXISTS `eb_offline_receipt` (
@@ -727,7 +727,7 @@ CREATE TABLE IF NOT EXISTS `eb_offline_receipt` (
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_order_no` (`order_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='其他订单表（线下收银）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='其他订单表（线下收银）';
 
 -- eb_offline_receipt_status：其他订单状态变更表
 CREATE TABLE IF NOT EXISTS `eb_offline_receipt_status` (
@@ -737,7 +737,7 @@ CREATE TABLE IF NOT EXISTS `eb_offline_receipt_status` (
   `change_message` varchar(500) NOT NULL DEFAULT '' COMMENT '变更消息',
   `add_time` int unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='其他订单状态变更表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='其他订单状态变更表';
 
 -- eb_order_center：订单中台汇总表（统一所有订单类型的订单数据）
 CREATE TABLE IF NOT EXISTS `eb_order_center` (
@@ -805,7 +805,7 @@ CREATE TABLE IF NOT EXISTS `eb_order_center` (
   KEY `idx_uid_status_time` (`uid`,`status_code`,`add_time`),
   KEY `idx_pay_type_status_time` (`pay_type`,`pay_status`,`add_time`),
   KEY `idx_pay_type` (`pay_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单中台汇总表（统一所有订单类型的订单数据）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='订单中台汇总表（统一所有订单类型的订单数据）';
 
 -- eb_order_economize：用户资金节省表
 CREATE TABLE IF NOT EXISTS `eb_order_economize` (
@@ -826,7 +826,7 @@ CREATE TABLE IF NOT EXISTS `eb_order_economize` (
   KEY `add_time` (`add_time`) USING BTREE,
   KEY `pay_price` (`pay_price`) USING BTREE,
   KEY `status` (`status`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户资金节省表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户资金节省表';
 
 -- eb_order_invoice：订单发票表
 CREATE TABLE IF NOT EXISTS `eb_order_invoice` (
@@ -859,7 +859,7 @@ CREATE TABLE IF NOT EXISTS `eb_order_invoice` (
   `red_invoice_num` varchar(255) NOT NULL DEFAULT '' COMMENT '发票红字编码',
   `is_del` tinyint(1) DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单发票表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='订单发票表';
 
 -- eb_order_item：订单商品快照表
 CREATE TABLE IF NOT EXISTS `eb_order_item` (
@@ -875,7 +875,7 @@ CREATE TABLE IF NOT EXISTS `eb_order_item` (
   PRIMARY KEY (`id`),
   KEY `idx_order_no` (`order_no`),
   KEY `idx_product_id` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单商品快照表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='订单商品快照表';
 
 -- eb_order_log：订单状态日志表
 CREATE TABLE IF NOT EXISTS `eb_order_log` (
@@ -890,7 +890,7 @@ CREATE TABLE IF NOT EXISTS `eb_order_log` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '操作时间',
   PRIMARY KEY (`id`),
   KEY `idx_order_no` (`order_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单状态日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='订单状态日志表';
 
 -- eb_page_categroy：页面链接分类
 CREATE TABLE IF NOT EXISTS `eb_page_categroy` (
@@ -902,7 +902,7 @@ CREATE TABLE IF NOT EXISTS `eb_page_categroy` (
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='页面链接分类';
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='页面链接分类';
 
 -- eb_page_link：页面链接
 CREATE TABLE IF NOT EXISTS `eb_page_link` (
@@ -917,7 +917,7 @@ CREATE TABLE IF NOT EXISTS `eb_page_link` (
   `sort` smallint NOT NULL DEFAULT '0' COMMENT '排序',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='页面链接';
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='页面链接';
 
 -- eb_pay_channel：支付方式字典表
 CREATE TABLE IF NOT EXISTS `eb_pay_channel` (
@@ -940,7 +940,7 @@ CREATE TABLE IF NOT EXISTS `eb_pay_channel` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_channel_key` (`channel_key`),
   KEY `idx_status_sort` (`status`,`sort`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='支付方式字典表';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='支付方式字典表';
 
 -- eb_pay_channel_platform：支付方式-平台关联表
 CREATE TABLE IF NOT EXISTS `eb_pay_channel_platform` (
@@ -955,7 +955,7 @@ CREATE TABLE IF NOT EXISTS `eb_pay_channel_platform` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_channel_platform` (`channel_key`,`platform`),
   KEY `idx_platform_status` (`platform`,`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='支付方式-平台关联表';
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='支付方式-平台关联表';
 
 -- eb_pay_record：微信支付合同及恢复记录
 CREATE TABLE IF NOT EXISTS `eb_pay_record` (
@@ -983,7 +983,7 @@ CREATE TABLE IF NOT EXISTS `eb_pay_record` (
   KEY `idx_effects_state` (`effects_state`),
   KEY `idx_recovery_check` (`is_del`,`last_check_time`,`id`),
   KEY `idx_refund_state` (`refund_state`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信支付合同及恢复记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='微信支付合同及恢复记录';
 
 -- eb_printer_channel：打印机渠道表
 CREATE TABLE IF NOT EXISTS `eb_printer_channel` (
@@ -1003,7 +1003,7 @@ CREATE TABLE IF NOT EXISTS `eb_printer_channel` (
   `update_time` int NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_status_sort` (`status`,`sort`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='打印机渠道表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='打印机渠道表';
 
 -- eb_printer_task：小票设备提交进度表
 CREATE TABLE IF NOT EXISTS `eb_printer_task` (
@@ -1025,7 +1025,7 @@ CREATE TABLE IF NOT EXISTS `eb_printer_task` (
   UNIQUE KEY `uk_task_key` (`task_key`),
   KEY `idx_order_no_scene` (`order_no`,`scene`),
   KEY `idx_status_lease_until` (`status`,`lease_until`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小票设备提交进度表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='小票设备提交进度表';
 
 -- eb_product_center：商品中台主表
 CREATE TABLE IF NOT EXISTS `eb_product_center` (
@@ -1055,7 +1055,7 @@ CREATE TABLE IF NOT EXISTS `eb_product_center` (
   `unit_name` varchar(32) NOT NULL DEFAULT '' COMMENT '默认单位（列表展示用，如件/张/间/次；下单以SKU表unit_name或扩展表unit_name为准）',
   `spec_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '规格类型(0单规格/1多规格)',
   `delivery_methods` json DEFAULT NULL COMMENT '支持的交付方式：express(快递)/pickup(到店自提)/door_service(上门服务)/check_in(到店入住)/digital(数字交付)',
-  `freight_config` json NOT NULL DEFAULT (json_object(_utf8mb4'express',json_object(_utf8mb4'type',_utf8mb4'template',_utf8mb4'postage',0,_utf8mb4'temp_id',0),_utf8mb4'door_service',json_object(_utf8mb4'type',_utf8mb4'free',_utf8mb4'postage',0))) COMMENT '运费配置JSON：{"express":{"type":"free|fixed|template","postage":N,"temp_id":N},"door_service":{"type":"free|fixed","postage":N}}',
+  `freight_config` json DEFAULT NULL COMMENT '运费配置JSON：{"express":{"type":"free|fixed|template","postage":N,"temp_id":N},"door_service":{"type":"free|fixed","postage":N}}',
   `is_limit` tinyint NOT NULL DEFAULT '0' COMMENT '是否开启限购（0否/1是）',
   `limit_type` tinyint NOT NULL DEFAULT '0' COMMENT '限购类型（1单次/2永久）',
   `limit_num` int NOT NULL DEFAULT '0' COMMENT '限购数量',
@@ -1088,7 +1088,7 @@ CREATE TABLE IF NOT EXISTS `eb_product_center` (
   KEY `idx_is_del` (`is_del`),
   KEY `idx_sort_order` (`sort_order`),
   FULLTEXT KEY `ft_name_keyword` (`name`,`keyword`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品中台主表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品中台主表';
 
 -- eb_qrcode：微信二维码管理表
 CREATE TABLE IF NOT EXISTS `eb_qrcode` (
@@ -1106,7 +1106,7 @@ CREATE TABLE IF NOT EXISTS `eb_qrcode` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `third_type` (`third_type`,`third_id`) USING BTREE,
   KEY `ticket` (`ticket`(191)) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=COMPACT COMMENT='微信二维码管理表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='微信二维码管理表';
 
 -- eb_refund_effect：退款本地副作用幂等日志
 CREATE TABLE IF NOT EXISTS `eb_refund_effect` (
@@ -1122,7 +1122,7 @@ CREATE TABLE IF NOT EXISTS `eb_refund_effect` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_refund_effect` (`refund_order_id`,`effect_type`,`effect_key`),
   KEY `idx_refund_status` (`refund_order_id`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='退款本地副作用幂等日志';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='退款本地副作用幂等日志';
 
 -- eb_refund_order：统一退款单
 CREATE TABLE IF NOT EXISTS `eb_refund_order` (
@@ -1153,7 +1153,7 @@ CREATE TABLE IF NOT EXISTS `eb_refund_order` (
   UNIQUE KEY `uk_after_sale_id` (`after_sale_id`),
   KEY `idx_state_retry` (`state`,`next_retry_time`),
   KEY `idx_order_state` (`order_center_id`,`state`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='统一退款单';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='统一退款单';
 
 -- eb_shared_table_registry：插件间共享表准入登记表
 CREATE TABLE IF NOT EXISTS `eb_shared_table_registry` (
@@ -1164,7 +1164,7 @@ CREATE TABLE IF NOT EXISTS `eb_shared_table_registry` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_table_plugin` (`table_name`,`owner_plugin_id`),
   KEY `idx_table_name` (`table_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='插件间共享表准入登记表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='插件间共享表准入登记表';
 
 -- eb_shipping_templates：运费模板表
 CREATE TABLE IF NOT EXISTS `eb_shipping_templates` (
@@ -1176,7 +1176,7 @@ CREATE TABLE IF NOT EXISTS `eb_shipping_templates` (
   `sort` int NOT NULL DEFAULT '0' COMMENT '排序',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='运费模板表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='运费模板表';
 
 -- eb_shipping_templates_free：运费模板指定包邮关联表
 CREATE TABLE IF NOT EXISTS `eb_shipping_templates_free` (
@@ -1189,7 +1189,7 @@ CREATE TABLE IF NOT EXISTS `eb_shipping_templates_free` (
   `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '计费方式',
   `uniqid` varchar(32) NOT NULL DEFAULT '' COMMENT '分组唯一值',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='运费模板指定包邮关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='运费模板指定包邮关联表';
 
 -- eb_shipping_templates_no_delivery：运费模板指定不送达表
 CREATE TABLE IF NOT EXISTS `eb_shipping_templates_no_delivery` (
@@ -1199,7 +1199,7 @@ CREATE TABLE IF NOT EXISTS `eb_shipping_templates_no_delivery` (
   `city_id` int NOT NULL DEFAULT '0' COMMENT '城市ID',
   `uniqid` varchar(32) NOT NULL DEFAULT '' COMMENT '分组唯一值',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='运费模板指定不送达表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='运费模板指定不送达表';
 
 -- eb_shipping_templates_region：运费模板指定城市运费表
 CREATE TABLE IF NOT EXISTS `eb_shipping_templates_region` (
@@ -1214,7 +1214,7 @@ CREATE TABLE IF NOT EXISTS `eb_shipping_templates_region` (
   `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '计费方式',
   `uniqid` varchar(32) NOT NULL DEFAULT '' COMMENT '分组唯一值',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='运费模板指定城市运费表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='运费模板指定城市运费表';
 
 -- eb_sms_record：短信发送记录表
 CREATE TABLE IF NOT EXISTS `eb_sms_record` (
@@ -1228,7 +1228,7 @@ CREATE TABLE IF NOT EXISTS `eb_sms_record` (
   `resultcode` int unsigned NOT NULL DEFAULT '0' COMMENT '状态码 100=成功,130=失败,131=空号,132=停机,133=关机,134=无状态',
   `record_id` int unsigned NOT NULL DEFAULT '0' COMMENT '发送记录id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='短信发送记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='短信发送记录表';
 
 -- eb_store_cart：购物车表
 CREATE TABLE IF NOT EXISTS `eb_store_cart` (
@@ -1253,7 +1253,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_cart` (
   KEY `uid_2` (`uid`,`is_del`) USING BTREE,
   KEY `uid_3` (`uid`,`is_new`) USING BTREE,
   KEY `type` (`type`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=COMPACT COMMENT='购物车表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='购物车表';
 
 -- eb_store_category：商品分类表
 CREATE TABLE IF NOT EXISTS `eb_store_category` (
@@ -1270,7 +1270,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_category` (
   KEY `is_base` (`is_show`) USING BTREE,
   KEY `sort` (`sort`) USING BTREE,
   KEY `add_time` (`add_time`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品分类表';
 
 -- eb_store_coupon_issue：优惠券前台领取表
 CREATE TABLE IF NOT EXISTS `eb_store_coupon_issue` (
@@ -1308,14 +1308,14 @@ CREATE TABLE IF NOT EXISTS `eb_store_coupon_issue` (
   KEY `status` (`status`) USING BTREE,
   KEY `coupon_time` (`coupon_time`) USING BTREE,
   KEY `is_del` (`is_del`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=COMPACT COMMENT='优惠券前台领取表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='优惠券前台领取表';
 
 -- eb_store_coupon_issue_user：优惠券前台用户领取记录表
 CREATE TABLE IF NOT EXISTS `eb_store_coupon_issue_user` (
   `uid` int NOT NULL DEFAULT '0' COMMENT '领取优惠券用户ID',
   `issue_coupon_id` int NOT NULL DEFAULT '0' COMMENT '优惠券前台领取ID',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '领取时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='优惠券前台用户领取记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='优惠券前台用户领取记录表';
 
 -- eb_store_coupon_product：优惠券模板关联列表
 CREATE TABLE IF NOT EXISTS `eb_store_coupon_product` (
@@ -1323,7 +1323,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_coupon_product` (
   `product_id` int NOT NULL DEFAULT '0' COMMENT '商品id',
   `category_id` int NOT NULL DEFAULT '0' COMMENT '分类id',
   KEY `coupon_id` (`coupon_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='优惠券模板关联列表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='优惠券模板关联列表';
 
 -- eb_store_coupon_user：优惠券发放记录表
 CREATE TABLE IF NOT EXISTS `eb_store_coupon_user` (
@@ -1348,7 +1348,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_coupon_user` (
   KEY `status` (`status`) USING BTREE,
   KEY `idx_status_use_time_cid` (`status`,`use_time`,`cid`) USING BTREE,
   KEY `is_fail` (`is_fail`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='优惠券发放记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='优惠券发放记录表';
 
 -- eb_store_product_attr_value：商品属性值表
 CREATE TABLE IF NOT EXISTS `eb_store_product_attr_value` (
@@ -1380,7 +1380,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_attr_value` (
   PRIMARY KEY (`id`),
   KEY `unique` (`unique`,`suk`) USING BTREE,
   KEY `store_id` (`product_id`,`suk`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品属性值表';
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品属性值表';
 
 -- eb_store_product_cate：商品分类辅助表
 CREATE TABLE IF NOT EXISTS `eb_store_product_cate` (
@@ -1391,7 +1391,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_cate` (
   `cate_pid` int NOT NULL DEFAULT '0' COMMENT '一级分类id',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '商品状态',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品分类辅助表';
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品分类辅助表';
 
 -- eb_store_product_coupon：商品关联优惠券表
 CREATE TABLE IF NOT EXISTS `eb_store_product_coupon` (
@@ -1401,7 +1401,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_coupon` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT '优惠券名称',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品关联优惠券表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品关联优惠券表';
 
 -- eb_store_product_description：商品详情表
 CREATE TABLE IF NOT EXISTS `eb_store_product_description` (
@@ -1411,7 +1411,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_description` (
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '商品类型',
   KEY `product_id` (`product_id`,`type`),
   KEY `idx_product_activity` (`product_id`,`activity_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品详情表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品详情表';
 
 -- eb_store_product_label：商品标签
 CREATE TABLE IF NOT EXISTS `eb_store_product_label` (
@@ -1429,7 +1429,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_label` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `is_del` int NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品标签';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品标签';
 
 -- eb_store_product_label_cate：商品标签分类
 CREATE TABLE IF NOT EXISTS `eb_store_product_label_cate` (
@@ -1439,7 +1439,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_label_cate` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `is_del` int NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品标签分类';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品标签分类';
 
 -- eb_store_product_log：商品统计
 CREATE TABLE IF NOT EXISTS `eb_store_product_log` (
@@ -1461,7 +1461,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_log` (
   PRIMARY KEY (`id`),
   KEY `idx_add_time_product_id` (`add_time`,`product_id`),
   KEY `idx_product_id_add_time` (`product_id`,`add_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品统计';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品统计';
 
 -- eb_store_product_param：商品参数表
 CREATE TABLE IF NOT EXISTS `eb_store_product_param` (
@@ -1473,7 +1473,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_param` (
   `is_del` int NOT NULL DEFAULT '0' COMMENT '是否删除',
   `status` int NOT NULL DEFAULT '1' COMMENT '参数状态',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品参数表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品参数表';
 
 -- eb_store_product_protection：商品保障表
 CREATE TABLE IF NOT EXISTS `eb_store_product_protection` (
@@ -1487,7 +1487,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_protection` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `is_del` int NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品保障表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品保障表';
 
 -- eb_store_product_relation：商品点赞和收藏表
 CREATE TABLE IF NOT EXISTS `eb_store_product_relation` (
@@ -1499,7 +1499,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_relation` (
   UNIQUE KEY `uid` (`uid`,`product_id`,`type`,`category`) USING BTREE,
   KEY `type` (`type`) USING BTREE,
   KEY `category` (`category`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品点赞和收藏表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品点赞和收藏表';
 
 -- eb_store_product_reply：评论表
 CREATE TABLE IF NOT EXISTS `eb_store_product_reply` (
@@ -1529,7 +1529,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_reply` (
   KEY `is_del` (`is_del`) USING BTREE,
   KEY `product_score` (`product_score`) USING BTREE,
   KEY `service_score` (`service_score`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='评论表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='评论表';
 
 -- eb_store_product_rule：商品规则值(规格)表
 CREATE TABLE IF NOT EXISTS `eb_store_product_rule` (
@@ -1537,7 +1537,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_rule` (
   `rule_name` varchar(32) NOT NULL DEFAULT '' COMMENT '规格名称',
   `rule_value` text COMMENT '规格值',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品规则值(规格)表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品规则值(规格)表';
 
 -- eb_store_visit：商品浏览分析表
 CREATE TABLE IF NOT EXISTS `eb_store_visit` (
@@ -1552,7 +1552,7 @@ CREATE TABLE IF NOT EXISTS `eb_store_visit` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `product_id` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品浏览分析表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商品浏览分析表';
 
 -- eb_system_admin：后台管理员表
 CREATE TABLE IF NOT EXISTS `eb_system_admin` (
@@ -1573,7 +1573,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_admin` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `account` (`account`) USING BTREE,
   KEY `status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='后台管理员表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='后台管理员表';
 
 -- eb_system_attachment：附件管理表
 CREATE TABLE IF NOT EXISTS `eb_system_attachment` (
@@ -1592,7 +1592,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_attachment` (
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型，0图片，1视频',
   PRIMARY KEY (`att_id`) USING BTREE,
   KEY `idx_scan_token` (`scan_token`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='附件管理表';
+) ENGINE=InnoDB AUTO_INCREMENT=252 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='附件管理表';
 
 -- eb_system_attachment_category：附件分类表
 CREATE TABLE IF NOT EXISTS `eb_system_attachment_category` (
@@ -1603,7 +1603,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_attachment_category` (
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型，0图片，1视频',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='附件分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='附件分类表';
 
 -- eb_system_city：城市表
 CREATE TABLE IF NOT EXISTS `eb_system_city` (
@@ -1618,7 +1618,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_city` (
   `lat` varchar(50) NOT NULL DEFAULT '' COMMENT '纬度',
   `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否展示',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3975 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='城市表';
+) ENGINE=InnoDB AUTO_INCREMENT=3975 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='城市表';
 
 -- eb_system_config：配置表
 CREATE TABLE IF NOT EXISTS `eb_system_config` (
@@ -1643,7 +1643,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_config` (
   `owner_plugin_id` varchar(96) NOT NULL DEFAULT '' COMMENT '所属插件复合标识，空为核心配置',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_owner_plugin_id` (`owner_plugin_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=491 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=491 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='配置表';
 
 -- eb_system_config_tab：配置分类表
 CREATE TABLE IF NOT EXISTS `eb_system_config_tab` (
@@ -1660,7 +1660,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_config_tab` (
   `owner_plugin_id` varchar(96) NOT NULL DEFAULT '' COMMENT '所属插件复合标识，空为核心分组',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_owner_plugin_id` (`owner_plugin_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='配置分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='配置分类表';
 
 -- eb_system_crontab：定时器
 CREATE TABLE IF NOT EXISTS `eb_system_crontab` (
@@ -1684,7 +1684,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_crontab` (
   `customCode` text NOT NULL COMMENT '执行代码',
   `timeStr` varchar(255) NOT NULL DEFAULT '' COMMENT '时间代码',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='定时器';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='定时器';
 
 -- eb_system_crud：crud生成记录
 CREATE TABLE IF NOT EXISTS `eb_system_crud` (
@@ -1702,7 +1702,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_crud` (
   `table_comment` varchar(255) NOT NULL DEFAULT '' COMMENT '表备注',
   `add_time` int NOT NULL COMMENT '添加时间',
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='crud生成记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='crud生成记录';
 
 -- eb_system_crud_data：crud数据字典
 CREATE TABLE IF NOT EXISTS `eb_system_crud_data` (
@@ -1714,7 +1714,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_crud_data` (
   `sort` int NOT NULL DEFAULT '0' COMMENT '排序',
   `add_time` int NOT NULL COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='crud数据字典';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='crud数据字典';
 
 -- eb_system_crud_list：crud数据字典列表
 CREATE TABLE IF NOT EXISTS `eb_system_crud_list` (
@@ -1725,7 +1725,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_crud_list` (
   `status` int NOT NULL DEFAULT '1' COMMENT '状态',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='crud数据字典列表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='crud数据字典列表';
 
 -- eb_system_file_md5：文件md5
 CREATE TABLE IF NOT EXISTS `eb_system_file_md5` (
@@ -1733,7 +1733,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_file_md5` (
   `filename` varchar(255) NOT NULL DEFAULT '' COMMENT '文件路径',
   `md5` varchar(255) NOT NULL DEFAULT '' COMMENT '文件md5',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=963 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件md5';
+) ENGINE=InnoDB AUTO_INCREMENT=963 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='文件md5';
 
 -- eb_system_group：组合数据表
 CREATE TABLE IF NOT EXISTS `eb_system_group` (
@@ -1745,7 +1745,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_group` (
   `fields` text COMMENT '数据组字段以及类型（json数据）',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `config_name` (`config_name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='组合数据表';
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='组合数据表';
 
 -- eb_system_group_data：组合数据详情表
 CREATE TABLE IF NOT EXISTS `eb_system_group_data` (
@@ -1756,7 +1756,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_group_data` (
   `sort` int NOT NULL DEFAULT '0' COMMENT '数据排序',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态（1：开启；2：关闭；）',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1073 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='组合数据详情表';
+) ENGINE=InnoDB AUTO_INCREMENT=1073 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='组合数据详情表';
 
 -- eb_system_log：管理员操作记录表
 CREATE TABLE IF NOT EXISTS `eb_system_log` (
@@ -1774,7 +1774,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_log` (
   KEY `admin_id` (`admin_id`) USING BTREE,
   KEY `add_time` (`add_time`) USING BTREE,
   KEY `type` (`type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=595 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员操作记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=595 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='管理员操作记录表';
 
 -- eb_system_menus：菜单表
 CREATE TABLE IF NOT EXISTS `eb_system_menus` (
@@ -1808,7 +1808,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_menus` (
   KEY `access` (`access`) USING BTREE,
   KEY `idx_owner_plugin_id` (`owner_plugin_id`),
   UNIQUE KEY `uk_menu_key` ((NULLIF(`menu_key`, '')))
-) ENGINE=InnoDB AUTO_INCREMENT=4961 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜单表';
+) ENGINE=InnoDB AUTO_INCREMENT=4961 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='菜单表';
 
 -- eb_system_pem：证书表
 CREATE TABLE IF NOT EXISTS `eb_system_pem` (
@@ -1819,7 +1819,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_pem` (
   `content` text COMMENT '证书内容',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='证书表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='证书表';
 
 -- eb_system_role：身份管理表
 CREATE TABLE IF NOT EXISTS `eb_system_role` (
@@ -1830,7 +1830,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_role` (
   `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '状态',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `status` (`status`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='身份管理表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='身份管理表';
 
 -- eb_system_route：路由规则表
 CREATE TABLE IF NOT EXISTS `eb_system_route` (
@@ -1856,7 +1856,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_route` (
   `error_code` longtext NOT NULL COMMENT '错误码',
   PRIMARY KEY (`id`),
   KEY `path` (`path`)
-) ENGINE=InnoDB AUTO_INCREMENT=1698 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='路由规则表';
+) ENGINE=InnoDB AUTO_INCREMENT=1698 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='路由规则表';
 
 -- eb_system_route_cate：路由规分类表
 CREATE TABLE IF NOT EXISTS `eb_system_route_cate` (
@@ -1870,7 +1870,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_route_cate` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`),
   KEY `app_name` (`app_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='路由规分类表';
+) ENGINE=InnoDB AUTO_INCREMENT=184 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='路由规分类表';
 
 -- eb_system_store：门店自提
 CREATE TABLE IF NOT EXISTS `eb_system_store` (
@@ -1891,7 +1891,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_store` (
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `phone` (`phone`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店自提';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='门店自提';
 
 -- eb_system_store_staff：门店店员表
 CREATE TABLE IF NOT EXISTS `eb_system_store_staff` (
@@ -1905,7 +1905,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_store_staff` (
   `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='门店店员表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='门店店员表';
 
 -- eb_system_ticket：小票打印机列表
 CREATE TABLE IF NOT EXISTS `eb_system_ticket` (
@@ -1926,7 +1926,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_ticket` (
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '申请状态，0关闭，1开启',
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小票打印机列表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='小票打印机列表';
 
 -- eb_system_user_level：设置用户等级表
 CREATE TABLE IF NOT EXISTS `eb_system_user_level` (
@@ -1947,7 +1947,7 @@ CREATE TABLE IF NOT EXISTS `eb_system_user_level` (
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除.1=删除,0=未删除',
   `exp_num` int NOT NULL DEFAULT '0' COMMENT '升级经验',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='设置用户等级表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='设置用户等级表';
 
 -- eb_theme：主题表
 CREATE TABLE IF NOT EXISTS `eb_theme` (
@@ -1990,7 +1990,7 @@ CREATE TABLE IF NOT EXISTS `eb_theme` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   `up_time` int NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='主题表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='主题表';
 
 -- eb_theme_download：主题下载记录表
 CREATE TABLE IF NOT EXISTS `eb_theme_download` (
@@ -2000,7 +2000,7 @@ CREATE TABLE IF NOT EXISTS `eb_theme_download` (
   `download_time` int NOT NULL DEFAULT '0' COMMENT '下载时间',
   `download_url` varchar(500) NOT NULL DEFAULT '' COMMENT '下载地址',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='主题下载记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='主题下载记录表';
 
 -- eb_theme_module：主题组件表
 CREATE TABLE IF NOT EXISTS `eb_theme_module` (
@@ -2008,7 +2008,7 @@ CREATE TABLE IF NOT EXISTS `eb_theme_module` (
   `type` varchar(64) NOT NULL DEFAULT '' COMMENT '组件类型',
   `data` longtext COMMENT '组件数据',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='主题组件表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='主题组件表';
 
 -- eb_upgrade_log：升级记录
 CREATE TABLE IF NOT EXISTS `eb_upgrade_log` (
@@ -2024,7 +2024,7 @@ CREATE TABLE IF NOT EXISTS `eb_upgrade_log` (
   `package_link` varchar(255) NOT NULL DEFAULT '' COMMENT '文件备份地址',
   `data_link` varchar(255) NOT NULL DEFAULT '' COMMENT '数据备份地址',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='升级记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='升级记录';
 
 -- eb_upload_storage：云储存
 CREATE TABLE IF NOT EXISTS `eb_upload_storage` (
@@ -2048,7 +2048,7 @@ CREATE TABLE IF NOT EXISTS `eb_upload_storage` (
   KEY `status` (`status`),
   KEY `idx_driver_key_is_delete_status` (`driver_key`,`is_delete`,`status`),
   KEY `access_key` (`access_key`,`type`,`is_delete`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='云储存';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='云储存';
 
 -- eb_user：用户表
 CREATE TABLE IF NOT EXISTS `eb_user` (
@@ -2114,7 +2114,7 @@ CREATE TABLE IF NOT EXISTS `eb_user` (
   KEY `level` (`level`) USING BTREE,
   KEY `status` (`status`) USING BTREE,
   KEY `is_promoter` (`is_promoter`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户表';
 
 -- eb_user_address：用户地址表
 CREATE TABLE IF NOT EXISTS `eb_user_address` (
@@ -2137,7 +2137,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_address` (
   KEY `uid` (`uid`) USING BTREE,
   KEY `is_default` (`is_default`) USING BTREE,
   KEY `is_del` (`is_del`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户地址表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户地址表';
 
 -- eb_user_bill：用户账单表
 CREATE TABLE IF NOT EXISTS `eb_user_bill` (
@@ -2161,7 +2161,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_bill` (
   KEY `add_time` (`add_time`) USING BTREE,
   KEY `pm` (`pm`) USING BTREE,
   KEY `type` (`category`,`type`,`link_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户账单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户账单表';
 
 -- eb_user_brokerage：用户分佣账单表
 CREATE TABLE IF NOT EXISTS `eb_user_brokerage` (
@@ -2184,7 +2184,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_brokerage` (
   KEY `add_time` (`add_time`) USING BTREE,
   KEY `pm` (`pm`) USING BTREE,
   KEY `type` (`type`,`link_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户分佣账单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户分佣账单表';
 
 -- eb_user_brokerage_frozen：用户佣金冻结记录表
 CREATE TABLE IF NOT EXISTS `eb_user_brokerage_frozen` (
@@ -2198,7 +2198,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_brokerage_frozen` (
   `order_id` varchar(50) NOT NULL DEFAULT '' COMMENT '订单id',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户佣金冻结记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户佣金冻结记录表';
 
 -- eb_user_cancel：用户注销表
 CREATE TABLE IF NOT EXISTS `eb_user_cancel` (
@@ -2211,7 +2211,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_cancel` (
   `up_time` int NOT NULL DEFAULT '0' COMMENT '操作时间',
   `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户注销表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户注销表';
 
 -- eb_user_enter：商户申请表
 CREATE TABLE IF NOT EXISTS `eb_user_enter` (
@@ -2239,7 +2239,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_enter` (
   KEY `is_lock` (`is_lock`) USING BTREE,
   KEY `is_del` (`is_del`) USING BTREE,
   KEY `status` (`status`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商户申请表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商户申请表';
 
 -- eb_user_extract：用户提现表
 CREATE TABLE IF NOT EXISTS `eb_user_extract` (
@@ -2274,7 +2274,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_extract` (
   KEY `add_time` (`add_time`) USING BTREE,
   KEY `openid` (`uid`) USING BTREE,
   KEY `fail_time` (`fail_time`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户提现表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户提现表';
 
 -- eb_user_friends：用户好友关系
 CREATE TABLE IF NOT EXISTS `eb_user_friends` (
@@ -2284,14 +2284,14 @@ CREATE TABLE IF NOT EXISTS `eb_user_friends` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户好友关系';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户好友关系';
 
 -- eb_user_group：用户分组表
 CREATE TABLE IF NOT EXISTS `eb_user_group` (
   `id` smallint unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `group_name` varchar(64) NOT NULL DEFAULT '' COMMENT '用户分组名称',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户分组表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户分组表';
 
 -- eb_user_invoice：用户发票管理表
 CREATE TABLE IF NOT EXISTS `eb_user_invoice` (
@@ -2311,7 +2311,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_invoice` (
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='用户发票管理表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户发票管理表';
 
 -- eb_user_label：用户标签表
 CREATE TABLE IF NOT EXISTS `eb_user_label` (
@@ -2320,13 +2320,13 @@ CREATE TABLE IF NOT EXISTS `eb_user_label` (
   `label_name` varchar(255) NOT NULL DEFAULT '' COMMENT '标签名称',
   PRIMARY KEY (`id`),
   KEY `label_cate` (`label_cate`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户标签表';
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户标签表';
 
 -- eb_user_label_relation：用户标签关联表
 CREATE TABLE IF NOT EXISTS `eb_user_label_relation` (
   `uid` int NOT NULL DEFAULT '0' COMMENT '用户ID',
   `label_id` int NOT NULL DEFAULT '0' COMMENT '标签ID'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户标签关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户标签关联表';
 
 -- eb_user_level：用户等级记录表
 CREATE TABLE IF NOT EXISTS `eb_user_level` (
@@ -2345,7 +2345,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_level` (
   `discount` int NOT NULL DEFAULT '0' COMMENT '享受折扣',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户等级记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户等级记录表';
 
 -- eb_user_member：用户会员表
 CREATE TABLE IF NOT EXISTS `eb_user_member` (
@@ -2359,7 +2359,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_member` (
   `add_time` int NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户会员表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户会员表';
 
 -- eb_user_money：用户余额账单表
 CREATE TABLE IF NOT EXISTS `eb_user_money` (
@@ -2380,7 +2380,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_money` (
   KEY `add_time` (`add_time`) USING BTREE,
   KEY `pm` (`pm`) USING BTREE,
   KEY `type` (`type`,`link_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户余额账单表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户余额账单表';
 
 -- eb_user_recharge：用户充值表
 CREATE TABLE IF NOT EXISTS `eb_user_recharge` (
@@ -2401,7 +2401,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_recharge` (
   KEY `uid` (`uid`) USING BTREE,
   KEY `recharge_type` (`recharge_type`) USING BTREE,
   KEY `paid` (`paid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户充值表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户充值表';
 
 -- eb_user_search：用户搜索记录表
 CREATE TABLE IF NOT EXISTS `eb_user_search` (
@@ -2414,7 +2414,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_search` (
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户搜索记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户搜索记录表';
 
 -- eb_user_spread：用户推广关系表
 CREATE TABLE IF NOT EXISTS `eb_user_spread` (
@@ -2425,7 +2425,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_spread` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`) USING BTREE,
   KEY `spread_uid` (`spread_uid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户推广关系表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户推广关系表';
 
 -- eb_user_visit：用户访问表
 CREATE TABLE IF NOT EXISTS `eb_user_visit` (
@@ -2439,4 +2439,4 @@ CREATE TABLE IF NOT EXISTS `eb_user_visit` (
   `province` varchar(255) NOT NULL DEFAULT '' COMMENT '用户省份',
   PRIMARY KEY (`id`),
   KEY `time` (`channel_type`,`add_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户访问表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户访问表';

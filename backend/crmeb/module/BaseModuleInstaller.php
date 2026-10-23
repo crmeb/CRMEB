@@ -99,7 +99,7 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
     {
         $this->prefix    = (string) config('database.connections.mysql.prefix', 'eb_');
         $this->charset   = (string) config('database.connections.mysql.charset', 'utf8mb4');
-        $this->collation = $this->charset === 'utf8mb4' ? 'utf8mb4_0900_ai_ci' : 'utf8_general_ci';
+        $this->collation = $this->charset === 'utf8mb4' ? 'utf8mb4_general_ci' : 'utf8_general_ci';
     }
 
     // ============== 安装流程 ==============

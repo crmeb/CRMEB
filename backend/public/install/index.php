@@ -187,13 +187,13 @@ switch ($step) {
                     die(json_encode(-1));//链接失败
                 }
             } else {
-                if (mysqli_get_server_info($conn) < 5.1) {
+                if (version_compare(mysqli_get_server_info($conn), '5.7', '<')) {
                     die(json_encode(-5));//版本过低
                 }
                 $result = mysqli_query($conn, "SELECT @@global.sql_mode");
                 $result = $result->fetch_array();
                 $version = mysqli_get_server_info($conn);
-                if ($version >= 5.7) {
+                if (version_compare($version, '5.7', '>=')) {
                     if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
                         exit(json_encode(-2));//数据库配置需要修改
                 }
@@ -205,7 +205,7 @@ switch ($step) {
                 } else {
                     if (!@mysqli_select_db($conn, $dbName)) {
                         //创建数据时同时设置编码
-                        if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;")) {
+                        if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;")) {
                             exit(json_encode(-4));//无权限创建数据库
                         } else {
                             mysqli_query($conn, "DROP DATABASE `" . $dbName . "` ;");
@@ -301,16 +301,16 @@ switch ($step) {
                 $arr['msg'] = "连接数据库失败!" . mysqli_connect_error();
                 exit(json_encode($arr));
             }
-            mysqli_set_charset($conn, "utf8"); //,character_set_client=binary,sql_mode='';
+            mysqli_set_charset($conn, "utf8mb4");
             $version = mysqli_get_server_info($conn);
-            if ($version < 5.1) {
-                $arr['msg'] = '数据库版本太低! 必须5.1以上';
+            if (version_compare($version, '5.7', '<')) {
+                $arr['msg'] = '数据库版本太低! 必须5.7以上';
                 exit(json_encode($arr));
             }
 
             if (!mysqli_select_db($conn, $dbName)) {
                 //创建数据时同时设置编码
-                if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;")) {
+                if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;")) {
                     $arr['msg'] = '数据库 ' . $dbName . ' 不存在，也没权限创建新的数据库！';
                     exit(json_encode($arr));
                 }
@@ -550,14 +550,14 @@ function handleInstallPhase(string $phase, int $cursor, array $config): void
     if (!$conn || mysqli_connect_errno()) {
         exit(json_encode(['n' => -2, 'msg' => '连接数据库失败!' . mysqli_connect_error()], JSON_UNESCAPED_UNICODE));
     }
-    mysqli_set_charset($conn, 'utf8');
-    if (mysqli_get_server_info($conn) < 5.1) {
-        exit(json_encode(['n' => -2, 'msg' => '数据库版本太低! 必须5.1以上'], JSON_UNESCAPED_UNICODE));
+    mysqli_set_charset($conn, 'utf8mb4');
+    if (version_compare(mysqli_get_server_info($conn), '5.7', '<')) {
+        exit(json_encode(['n' => -2, 'msg' => '数据库版本太低! 必须5.7以上'], JSON_UNESCAPED_UNICODE));
     }
 
     $dbName = $config['dbName'];
     if (!mysqli_select_db($conn, $dbName)) {
-        if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;")) {
+        if (!mysqli_query($conn, "CREATE DATABASE IF NOT EXISTS `" . $dbName . "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;")) {
             exit(json_encode(['n' => -2, 'msg' => '数据库 ' . $dbName . ' 不存在，也没权限创建新的数据库！'], JSON_UNESCAPED_UNICODE));
         }
         mysqli_select_db($conn, $dbName);
