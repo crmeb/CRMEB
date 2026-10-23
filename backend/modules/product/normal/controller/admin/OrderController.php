@@ -668,34 +668,6 @@ class OrderController extends AuthController
     }
 
     /**
-     * 获取可拆分发货商品列表
-     */
-    public function getSplitCartInfo(OrderCenterServices $centerServices)
-    {
-        $orderNo = $this->request->param('order_no', '');
-        if (empty($orderNo)) {
-            return app('json')->fail('参数错误');
-        }
-        try {
-            $centerOrder = $centerServices->getOne(['order_no' => $orderNo], 'extra_info');
-            if (!$centerOrder) {
-                return app('json')->fail('订单不存在');
-            }
-            $centerOrder = $centerOrder->toArray();
-
-            $extraInfo = $centerOrder['extra_info'] ?? [];
-            if (is_string($extraInfo)) $extraInfo = json_decode($extraInfo, true) ?: [];
-            // 商品快照：下单时写入 extra_info.items（新架构唯一商品快照来源）
-            $items = $extraInfo['items'] ?? [];
-
-            return app('json')->success($items);
-        } catch (\Throwable $e) {
-            Log::error('[NormalOrder] getSplitCartInfo failed: ' . $e->getMessage());
-            return app('json')->fail('获取拆分商品列表失败');
-        }
-    }
-
-    /**
      * 批量发货
      * 上传 Excel 文件（列：订单号、快递公司、快递单号），逐条发货
      * 通过 OrderServices::updateDeliveryInfo 统一处理扩展表 + 中台表同步
@@ -1444,100 +1416,6 @@ class OrderController extends AuthController
         } catch (\Throwable $e) {
             Log::error('[NormalOrder] updateDistribution failed: ' . $e->getMessage());
             return app('json')->fail('修改配送信息失败');
-        }
-    }
-
-    /**
-     * 拆单发货（中台化）
-     * 将订单中部分商品拆出为独立子订单并单独发货（OrderServices::splitOrderDelivery）
-     * 基于 extra_info.items 快照整行拆分，金额按比例分摊
-     */
-    public function splitDelivery(OrderCenterServices $centerServices, OrderServices $orderServices)
-    {
-        $orderNo = $this->request->param('order_no', '');
-        $deliveryType = $this->request->param('delivery_type', 'express');
-        $cartIds = $this->request->param('cart_ids', []);
-
-        if (empty($orderNo)) {
-            return app('json')->fail('参数错误');
-        }
-        if (empty($cartIds) || !is_array($cartIds)) {
-            return app('json')->fail('请选择要拆单发货的商品');
-        }
-
-        // 校验 cart_ids 格式
-        foreach ($cartIds as &$cart) {
-            if (!isset($cart['cart_id']) || !$cart['cart_id'] || !isset($cart['cart_num']) || !$cart['cart_num']) {
-                return app('json')->fail('请重新选择发货商品，或填写发货件数');
-            }
-            $cart['cart_id'] = (int)$cart['cart_id'];
-            $cart['cart_num'] = (int)$cart['cart_num'];
-        }
-
-        $centerOrder = $centerServices->getOne(['order_no' => $orderNo], 'id, uid, status_code');
-        if (!$centerOrder) {
-            return app('json')->fail('订单不存在');
-        }
-
-        try {
-            // 构建发货数据
-            $deliveryData = [
-                'delivery_type' => $deliveryType,
-            ];
-
-            switch ($deliveryType) {
-                case 'express':
-                    $deliveryData['delivery_name'] = $this->request->param('delivery_name', '');
-                    $deliveryData['delivery_id'] = $this->request->param('delivery_id', '');
-                    if (empty($deliveryData['delivery_name'])) {
-                        return app('json')->fail('请选择快递公司');
-                    }
-                    if (empty($deliveryData['delivery_id'])) {
-                        return app('json')->fail('请填写快递单号');
-                    }
-                    $deliveryName = $deliveryData['delivery_name'];
-                    break;
-                case 'send':
-                    $deliveryData['delivery_name'] = $this->request->param('sh_delivery_name', '');
-                    $deliveryData['delivery_id'] = $this->request->param('sh_delivery_id', '');
-                    if (empty($deliveryData['delivery_name'])) {
-                        return app('json')->fail('请选择送货人');
-                    }
-                    if (empty($deliveryData['delivery_id'])) {
-                        return app('json')->fail('请输入送货人电话');
-                    }
-                    $deliveryName = $deliveryData['delivery_name'];
-                    break;
-                case 'fictitious':
-                    $deliveryData['delivery_name'] = '虚拟发货';
-                    $deliveryData['delivery_id'] = $this->request->param('fictitious_content', '');
-                    $deliveryName = '虚拟发货';
-                    break;
-                default:
-                    return app('json')->fail('不支持的发货类型');
-            }
-
-            // 中台拆单发货：拆出子订单并立即发货（模块内自治实现）
-            [$childOrderNo] = $orderServices->splitOrderDelivery($orderNo, $cartIds, $deliveryData);
-
-            // 写入订单记录
-            /** @var OrderLogDao $logDao */
-            $logDao = app()->make(OrderLogDao::class);
-            $logDao->save([
-                'order_no'      => $orderNo,
-                'uid'           => (int)($centerOrder['uid'] ?? 0),
-                'operator_id'   => (int)($this->adminInfo['id'] ?? 0),
-                'operator_type' => 'admin',
-                'from_status'   => $centerOrder['status_code'] ?? '',
-                'to_status'     => $centerOrder['status_code'] ?? '',
-                'content'       => '管理员拆单发货：' . $deliveryName . '，子订单：' . $childOrderNo,
-                'add_time'      => time(),
-            ]);
-
-            return app('json')->success(['child_order_no' => $childOrderNo], '拆单发货成功');
-        } catch (\Throwable $e) {
-            Log::error('[NormalOrder] splitDelivery failed: ' . $e->getMessage());
-            return app('json')->fail('拆单发货失败：' . $e->getMessage());
         }
     }
 

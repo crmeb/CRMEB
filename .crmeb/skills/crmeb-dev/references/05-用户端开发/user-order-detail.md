@@ -319,9 +319,8 @@ GET /api/center/order/detail/{orderNo}
     {"type": "warning", "text": "签收后请在7天内确认收货"}
   ],
 
-  // 11. related_orders — 关联订单（拆单/换货时存在）
+  // 11. related_orders — 关联订单（换货等衍生单时存在；系统不支持拆单，无子订单）
   "related_orders": [                       // ← 中台查关联订单
-    {"order_no": "cp123456790", "relation": "split", "title": "子订单1", "status_text": "已发货"},
     {"order_no": "cp123456791", "relation": "exchange", "title": "换货订单", "status_text": "进行中"}
   ],
 
@@ -593,7 +592,7 @@ eb_order_center 实体列 > extra_info JSON > 扩展订单表回退 > Handler �
 | countdown | `status_code=pending_payment` | 中台 |
 | verification | `shipping_type=2` 或需核销 | 中台 |
 | notice | 按状态规则 | 中台 |
-| related_orders | 有拆单/换货 | 中台 |
+| related_orders | 有换货等衍生单 | 中台 |
 | extensions.fulfillment | 各产品类型注入 | 产品类型监听器 |
 | extensions.activity | 交易模式注入 | 交易模式监听器 |
 | extensions.after_sale | 有售后记录 | 售后模块监听器 |

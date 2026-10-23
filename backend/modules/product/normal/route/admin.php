@@ -56,8 +56,6 @@ Route::group('normal', function () {
         Route::get('order/shipment/delivery_persons', [OrderController::class, 'getDeliveryPersons'])->option(['real_name' => '配送员列表']);
         Route::get('order/shipment/express_temp', [OrderController::class, 'getExpressTemp'])->option(['real_name' => '电子面单模板']);
         Route::get('order/shipment/sheet_info', [OrderController::class, 'getSheetInfo'])->option(['real_name' => '发件人配置信息']);
-        Route::get('order/shipment/split_cart_info/:order_no', [OrderController::class, 'getSplitCartInfo'])->option(['real_name' => '可拆单商品列表']);
-        Route::post('order/split_delivery', [OrderController::class, 'splitDelivery'])->option(['real_name' => '拆单发货']);
         // 修改配送信息
         Route::put('order/update_distribution', [OrderController::class, 'updateDistribution'])->option(['real_name' => '修改配送信息']);
         // 备注|删除|改价

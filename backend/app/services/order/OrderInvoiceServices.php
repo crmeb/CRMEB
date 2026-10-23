@@ -262,7 +262,7 @@ class OrderInvoiceServices extends BaseService
         if (!$orderCenterId || empty($invoice)) {
             return null;
         }
-        // 同一订单已有申请则跳过，避免拆单/重试重复写入
+        // 同一订单已有申请则跳过，避免重复写入
         if ($this->dao->getOne(['order_id' => $orderCenterId, 'is_del' => 0])) {
             return null;
         }
@@ -300,50 +300,6 @@ class OrderInvoiceServices extends BaseService
         }
         if (!$this->dao->update($id, $data, 'id')) {
             throw new AdminException('设置失败');
-        }
-        return true;
-    }
-
-    /**
-     * 拆分订单同步拆分申请开票记录
-     * @param int $oid
-     * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function splitOrderInvoice(int $oid)
-    {
-        /** @var OrderCenterDao $orderCenterServices */
-        $orderCenterServices = app()->make(OrderCenterDao::class);
-        $orderInfo = $orderCenterServices->getOne(['id' => $oid, 'is_del' => 0]);
-        if (!$orderInfo) {
-            throw new AdminException('订单不存在');
-        }
-        $pid = $orderInfo['pid'] > 0 ? $orderInfo['pid'] : $orderInfo['id'];
-        //查询开票记录
-        $orderInvoice = $this->dao->get(['order_id' => $oid]);
-        //查询子订单
-        $spliteOrder = $orderCenterServices->getColumn(['pid' => $pid, 'is_system_del' => 0], 'id,order_id');
-        if ($spliteOrder && $orderInvoice) {
-            $data = $orderInvoice->toArray();
-            unset($data['id']);
-            $data['add_time'] = strtotime($data['add_time']);
-            $data_all = [];
-            foreach ($spliteOrder as $order) {
-                if (!$this->dao->count(['order_id' => $order['id']])) {
-                    $data['order_id'] = $order['id'];
-                    $data_all[] = $data;
-                }
-            }
-            if ($data_all) {
-                $this->transaction(function () use ($data_all, $orderInvoice, $orderInfo) {
-                    $this->dao->saveAll($data_all);
-                    if ($orderInfo['pid'] <= 0) {
-                        $this->dao->update(['id' => $orderInvoice['id']], ['is_del' => 1]);
-                    }
-                });
-            }
         }
         return true;
     }

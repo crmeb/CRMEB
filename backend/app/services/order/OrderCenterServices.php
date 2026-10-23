@@ -1000,7 +1000,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             'order'     => 100,
         ];
 
-        // 105. 关联订单（拆单/换货）
+        // 105. 关联订单（换货衍生单）
         $relatedOrders = $detail['related_orders'] ?? null;
         $sections[] = [
             'key'       => 'related_orders',
@@ -1466,14 +1466,13 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     }
 
     /**
-     * 查询关联订单（拆单/换货）
+     * 查询关联订单（换货等衍生单）
+     * 系统不支持拆单发货/拆单退款，一个订单不会派生子订单，当前恒为 null
      * @param array $detail 订单详情
      * @return array|null 返回关联订单数组或null
      */
     protected function buildRelatedOrders(array $detail): ?array
     {
-        // 当前暂无拆单/换货功能，返回 null
-        // 后续实现拆单时，按 order_no 前缀或 parent_order_no 查询关联订单
         return null;
     }
 

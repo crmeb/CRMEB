@@ -39,13 +39,13 @@ class OrderExpressJob extends BaseJobs
             'sh_delivery_id' => '',
             'sh_delivery_uid' => '',
             'fictitious_content' => '',
-            'cart_ids' => [],
             'day_type' => 0,
             'pickup_time' => [],
             'service_type' => '',
         ];
         try {
-            app()->make(OrderDeliveryServices::class)->splitDelivery($id, $data, false);
+            // 整单发货（系统不支持拆单发货，统一走通用发货入口）
+            app()->make(OrderDeliveryServices::class)->delivery($id, $data);
         } catch (\Throwable $e) {
             Log::error('订单ID' . $id . '发货失败,失败原因:' . $e->getMessage());
         }

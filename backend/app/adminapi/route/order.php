@@ -40,12 +40,6 @@ Route::group('order', function () {
     // Route::put('delivery/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'updateDelivery']);
     //获取商家寄件金额 → modules/product/normal/OrderController::getSheetInfo
     // Route::post('price', [\app\adminapi\controller\order\OrderCenterController::class, 'getPrice']);
-    //获取订单可拆分商品列表 → modules/product/normal/OrderController::getSplitCartInfo
-    // Route::get('split_cart_info/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'splitCartInfo']);
-    //拆单发送货 → modules/product/normal/OrderController::splitDelivery
-    // Route::put('split_delivery/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'splitDelivery']);
-    //获取订单拆分子订单列表 → modules/product/normal/OrderController::getSplitOrderList（TODO）
-    // Route::get('split_order/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'splitOrder']);
     //订单退款表单 → modules/product/normal/OrderController::getRefundForm
     // Route::get('refund/:id', [\app\adminapi\controller\order\OrderCenterController::class, 'refund']);
     //订单退款 → modules/product/normal/OrderController::processRefund

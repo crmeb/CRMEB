@@ -30,8 +30,6 @@ use app\services\user\UserServices;
 use app\services\user\member\MemberCardServices;
 use app\services\order\RefundExecutorServices;
 use app\services\pay\PayServices;
-// @deprecated eb_store_order_status 表已删除
-use app\services\order\OrderTakeServices;
 use think\facade\Log;
 
 /**
@@ -313,13 +311,6 @@ class OrderLifecycleServices extends BaseService
                 'content'       => $content,
                 'add_time'      => time(),
             ]);
-
-            // 检查主订单是否需要修改状态
-            if (($order['pid'] ?? 0) > 0) {
-                /** @var OrderTakeServices $storeOrderTake */
-                $storeOrderTake = app()->make(OrderTakeServices::class);
-                $storeOrderTake->checkMaster($order['pid']);
-            }
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
             throw $e;

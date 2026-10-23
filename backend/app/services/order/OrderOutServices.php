@@ -42,9 +42,10 @@ class OrderOutServices extends BaseService
 
     /**
      * 发货类型
+     * 系统不支持拆单/分批发货，此处不声明拆分类型（旧拆分发货已随拆单功能下线）
      * @var string[]
      */
-    public $deliveryType = ['send' => '商家配送', 'express' => '快递配送', 'fictitious' => '虚拟发货', 'delivery_part_split' => '拆分部分发货', 'delivery_split' => '拆分发货完成'];
+    public $deliveryType = ['send' => '商家配送', 'express' => '快递配送', 'fictitious' => '虚拟发货'];
 
     /**
      * OrderOutServices constructor.
@@ -197,43 +198,6 @@ class OrderOutServices extends BaseService
     }
 
     /**
-     * 格式化订单商品
-     * @param array $cartInfo
-     * @param array $list
-     * @return array
-     */
-    public function tidyCartList(array $cartInfo, array $list, $cartId = 0): array
-    {
-        $list[] = [
-            'cart_id' => $cartId,
-            'store_name' => $cartInfo['productInfo']['store_name'] ?? '',
-            'suk' => $cartInfo['productInfo']['attrInfo']['suk'] ?? '',
-            'image' => $cartInfo['productInfo']['attrInfo']['image'] ?: $cartInfo['productInfo']['image'],
-            'price' => sprintf("%.2f", $cartInfo['truePrice'] ?? '0.00'),
-            'cart_num' => $cartInfo['cart_num'] ?? 0,
-            'surplus_num' => $cartInfo['surplus_num'] ?? 0,
-            'refund_num' => $cartInfo['refund_num'] ?? 0
-        ];
-        return $list;
-    }
-
-    /**
-     * 获取订单可以拆分商品信息
-     * @param string $orderId 订单号
-     * @return array
-     */
-    public function getCartList(string $orderId): array
-    {
-        $order = $this->dao->get(['order_id' => $orderId]);
-        if (!$order) {
-            throw new ApiException('订单不存在');
-        }
-
-        // 从订单中台 extra_info.items 构造可拆分商品列表（旧 cart_info 表已废弃）
-        return $this->buildOrderItemsFromExtraInfo((string)$order['order_id']);
-    }
-
-    /**
      * 订单收货
      * @param string $orderId 订单号
      * @return bool
@@ -289,27 +253,6 @@ class OrderOutServices extends BaseService
         /** @var OrderDeliveryServices $deliveryServices */
         $deliveryServices = app()->make(OrderDeliveryServices::class);
         return $deliveryServices->delivery((int)$orderInfo['id'], $data);
-    }
-
-    /**
-     * 订单拆单发送货
-     * @param string $orderId 订单号
-     * @param array $data
-     * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function splitDelivery(string $orderId, array $data): bool
-    {
-        $orderInfo = $this->dao->get(['order_id' => $orderId]);
-        if (!$orderInfo) {
-            throw new ApiException('订单未能查到,不能发货');
-        }
-
-        /** @var OrderDeliveryServices $deliveryServices */
-        $deliveryServices = app()->make(OrderDeliveryServices::class);
-        return $deliveryServices->splitDelivery((int)$orderInfo['id'], $data);
     }
 
     /**
@@ -381,8 +324,8 @@ class OrderOutServices extends BaseService
 
     /**
      * 从订单中台 extra_info.items 构造订单商品列表
-     * 用于订单列表/详情/拆单等场景（旧订单购物车明细服务已删除）
-     * 字段映射保持与 tidyCartList 输出一致，refund_num 默认 0（items 中不存储退款数）
+     * 用于订单列表/详情等场景（旧订单购物车明细服务已删除）
+     * 字段映射与后台发货列表一致，refund_num 默认 0（items 中不存储退款数）
      * @param string $orderNo 订单号
      * @return array 商品列表数组
      */
