@@ -72,6 +72,8 @@ AfterSaleServices::refund
 - Handler 中的资金/资源副作用一律经 `RefundEffectContextInterface::once()` 登记去重，禁止直接裸写。
 - 中台 `refund_status`（0 无 / 1 申请中 / 2 已退）由 Adapter `resolveRefundStatus` 推导，退款完成时 `syncStatus` 同步。
 
+**资金流水（`eb_capital_flow`）只记真实资金进出**：判定统一入口为 `PayServices::isCashChannel()`（第三方在线渠道 + 线下支付；余额 `yue`、后台代付、0 元单一律 false）。`CapitalFlowServices::setFlow()` 内部已做拦截，退款链路在调用前还要排除 `refund_type=balance` / `refund_method=balance` 的站内结转，即「余额支付订单退款」「原路退款但改退余额」都不产生现金流出，不记流水。
+
 > **现状说明**：`OrderRefundCreateAfter / OrderRefundRefuse / OrderRefundCancelAfter` 的模块监听器已注册但服务层触发点待接线（见 [订单生命周期·事件地图](order-lifecycle.md#三订单事件地图)），相关后置逻辑目前挂在 `AfterSaleServices` 内部回调（`lifecycle->afterApply/afterAudit`）。
 
 ## 五、自定义售后 Handler 开发步骤

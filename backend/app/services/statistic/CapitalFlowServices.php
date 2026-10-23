@@ -33,8 +33,12 @@ class CapitalFlowServices extends BaseService
 
     /**
      * 添加资金流水
-     * @param $orderInfo
-     * @param string $type
+     * 资金流水记录的是平台真实资金进出（第三方在线收款、线下收银、充值及对应退款），
+     * 余额支付、后台代付、0 元单等站内虚拟结算不产生现金流动，一律不记账。
+     * 该判定放在此处作为唯一出口，避免各业务分支各自判断导致漏过滤。
+     * @param array $orderInfo 业务订单信息
+     * @param string $type 流水类型
+     * @return bool 是否写入流水
      */
     public function setFlow($orderInfo, $type = '')
     {
@@ -97,12 +101,19 @@ class CapitalFlowServices extends BaseService
                 $data['pay_type'] = $orderInfo['pay_type'];
                 break;
             default:
-                break;
+                // 未知业务类型不记账，避免写入无金额无单号的空流水
+                return false;
         }
-        $data['nickname'] = $orderInfo['nickname'];
-        $data['phone'] = $orderInfo['phone'];
+        // 非现金渠道（余额支付/后台代付/0 元单等）无真实资金流，不记流水
+        /** @var PayServices $payServices */
+        $payServices = app()->make(PayServices::class);
+        if (!$payServices->isCashChannel((string)($data['pay_type'] ?? ''))) {
+            return false;
+        }
+        $data['nickname'] = $orderInfo['nickname'] ?? '';
+        $data['phone'] = $orderInfo['phone'] ?? '';
         $data['add_time'] = time();
-        $this->dao->save($data);
+        return (bool)$this->dao->save($data);
     }
 
     /**

@@ -337,8 +337,30 @@ class PayServices
      */
     public function isRealPaymentChannel(string $payType): bool
     {
-        // 系统固有渠道：余额支付 / 线下支付，不随驱动扩展，常量判定合法
-        if ($payType === self::YUE_PAY || $payType === self::OFFLINE_PAY) {
+        // 余额支付：站内虚拟资产结算，属于"有结算但无资金流"，在此方法中视为真实支付
+        if ($payType === self::YUE_PAY) {
+            return true;
+        }
+        return $this->isCashChannel($payType);
+    }
+
+    /**
+     * 判断支付方式是否产生真实资金进出（现金收付渠道）
+     * 包含：第三方在线支付渠道（由驱动注册中心动态获取）+ 线下支付
+     * 排除：余额支付（站内虚拟资产，充值后消费不再产生现金流动）、
+     *       空支付方式（0 元单）、后台代付等无资金流动的结算方式
+     * 资金流水（eb_capital_flow）只允许记录本方法判定为 true 的支付方式
+     * @param string $payType 支付方式标识
+     * @return bool
+     */
+    public function isCashChannel(string $payType): bool
+    {
+        $payType = trim($payType);
+        if ($payType === '' || $payType === self::YUE_PAY) {
+            return false;
+        }
+        // 线下支付为系统固有渠道，不随驱动扩展，常量判定合法
+        if ($payType === self::OFFLINE_PAY) {
             return true;
         }
         // 第三方渠道：从驱动注册中心动态获取

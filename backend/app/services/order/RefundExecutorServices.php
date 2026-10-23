@@ -97,7 +97,7 @@ class RefundExecutorServices extends BaseService
         }
 
         // 3. 资本流水 + 开票标记
-        $this->writeFlow($order, $refundPrice);
+        $this->writeFlow($order, $refundPrice, $context);
         $this->markInvoiceRefunded($order);
 
         return [
@@ -459,20 +459,26 @@ class RefundExecutorServices extends BaseService
 
     /**
      * 写资本流水（refund 类型）
+     * 只有真实资金流出才记账：退回用户余额属于站内结转，余额支付订单退款同理，均不记流水
      * @param array $order 中台订单数据
      * @param float $refundPrice 退款金额
+     * @param array $context 退款上下文（refund_type: original/balance）
      * @return void
      */
-    protected function writeFlow(array $order, float $refundPrice): void
+    protected function writeFlow(array $order, float $refundPrice, array $context = []): void
     {
         if ($refundPrice <= 0) {
             return;
         }
+        // 退款到余额：钱没离开平台，只是从订单转为用户余额，不产生资金流出
+        if (($context['refund_type'] ?? 'original') === 'balance') {
+            return;
+        }
         $payType = (string)($order['pay_type'] ?? '');
-        // 是否真实资金渠道由 PayServices 动态判定（第三方渠道来自驱动注册中心，yue/offline 为系统常量渠道）
+        // 是否真实资金渠道由 PayServices 动态判定（第三方渠道来自驱动注册中心，offline 为系统常量渠道）
         /** @var PayServices $payServices */
         $payServices = app()->make(PayServices::class);
-        if (!$payServices->isRealPaymentChannel($payType)) {
+        if (!$payServices->isCashChannel($payType)) {
             return;
         }
         /** @var UserServices $userServices */

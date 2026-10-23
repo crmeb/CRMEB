@@ -9,6 +9,7 @@ use app\dao\order\RefundEffectDao;
 use app\dao\order\RefundOrderDao;
 use app\model\order\OrderCenter;
 use app\model\order\RefundOrder;
+use app\services\pay\PayServices;
 use app\services\statistic\CapitalFlowServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserMoneyServices;
@@ -380,7 +381,12 @@ class RefundEffectServices extends BaseService implements RefundEffectContextInt
             });
         }
 
-        if (bccomp($amount, '0.00', 2) > 0) {
+        // 资金流水只记录真实资金流出：退回余额（refund_method=balance）或余额支付订单退款
+        // 属于站内结转，钱没有离开平台，不记流水
+        $flowPayType = (string)($order['pay_type'] ?? ($refundOrder['pay_channel'] ?? ''));
+        /** @var PayServices $payServices */
+        $payServices = $this->app->make(PayServices::class);
+        if (!$localBalance && bccomp($amount, '0.00', 2) > 0 && $payServices->isCashChannel($flowPayType)) {
             $this->once('capital_flow', (string)$refundOrder['refund_no'], ['amount' => $amount], function () use ($order, $amount): void {
                 /** @var UserServices $userServices */
                 $userServices = $this->app->make(UserServices::class);
