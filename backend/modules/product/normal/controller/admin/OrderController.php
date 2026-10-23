@@ -44,6 +44,8 @@ class OrderController extends AuthController
         // 提取前端搜索参数，与 list() 一致
         $params = $this->request->getMore([
             ['keyword', ''],
+            ['search_field', ''],
+            ['order_no', ''],
             ['date_range', ''],
             ['pay_type', ''],
             ['type', ''],
@@ -59,6 +61,8 @@ class OrderController extends AuthController
             'order_category' => 'goods',
             'product_type'   => 'normal',
             'keyword'        => $params['keyword'] ?? '',
+            'search_field'   => $params['search_field'] ?? '',
+            'order_no'       => $params['order_no'] ?? '',
             'date_range'     => $params['date_range'] ?? '',
             'pay_type'       => $params['pay_type'] ?? '',
             'activity_type'  => $activityType,
@@ -70,8 +74,8 @@ class OrderController extends AuthController
             ['product_type', '=', 'normal'],
         ];
 
-        // 构建公共筛选条件（关键词、日期范围、支付方式）
-        $commonFilter = $this->buildSearchFilter($params);
+        // 构建公共筛选条件（订单号、关键词、日期范围、支付方式）
+        $commonFilter = $this->buildSearchFilter($params, $centerServices);
 
         $businessStats = [];
 
@@ -143,23 +147,25 @@ class OrderController extends AuthController
 
     /**
      * 根据前端搜索参数构建公共筛选条件（闭包数组）
-     * 与 getAdminList 的筛选逻辑保持一致
-     * @param array $params [keyword, date_range, pay_type, type]
+     * 关键词/订单号筛选逻辑与 OrderCenterServices::getAdminList 保持一致
+     * @param array $params [keyword, search_field, order_no, date_range, pay_type, type]
+     * @param OrderCenterServices $centerServices 订单中台服务（复用关键词搜索闭包构建）
      * @return array 闭包数组，每个闭包可直接传给 $query->where()
      */
-    private function buildSearchFilter(array $params): array
+    private function buildSearchFilter(array $params, OrderCenterServices $centerServices): array
     {
         $filters = [];
 
-        if (!empty($params['keyword'])) {
-            $keyword = addcslashes($params['keyword'], '%_');
-            $filters[] = function ($query) use ($keyword) {
-                $query->where(function ($q) use ($keyword) {
-                    $q->whereOr('order_no', 'LIKE', "{$keyword}%")
-                      ->whereOrRaw("extra_info->>'$.contact.name' LIKE ?", ["%{$keyword}%"])
-                      ->whereOrRaw("extra_info->>'$.contact.phone' LIKE ?", ["%{$keyword}%"]);
-                });
-            };
+        // 订单号独立搜索框：前缀匹配
+        if (!empty($params['order_no'])) {
+            $orderNo = addcslashes(trim((string) $params['order_no']), '%_');
+            $filters[] = fn($q) => $q->where('order_no', 'LIKE', "{$orderNo}%");
+        }
+
+        // 关键词搜索（search_field 指定字段，口径与中台列表一致）
+        $keyword = trim((string) ($params['keyword'] ?? ''));
+        if ($keyword !== '') {
+            $filters[] = $centerServices->buildKeywordFilterClosure($keyword, (string) ($params['search_field'] ?? 'all'));
         }
 
         if (!empty($params['date_range'])) {

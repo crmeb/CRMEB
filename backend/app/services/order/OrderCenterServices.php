@@ -2429,6 +2429,47 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     }
 
     /**
+     * 构建关键词搜索闭包（后台订单列表/统计共用）
+     * 按 search_field 限定搜索字段：order_no=订单号前缀、contact_name=收货人、
+     * contact_phone=联系电话、uid=用户ID精确匹配，all/其它=订单号+联系人+电话
+     * 收货人/电话存于 extra_info JSON，走 JSON 路径匹配
+     * @param string $keyword 关键词（调用方需先 trim）
+     * @param string $searchField 搜索字段标识
+     * @return \Closure 可放入 where 数组或 ->where() 的闭包
+     */
+    public function buildKeywordFilterClosure(string $keyword, string $searchField = 'all'): \Closure
+    {
+        $escaped = addcslashes($keyword, '%_');
+        return function ($query) use ($escaped, $keyword, $searchField) {
+            $query->where(function ($q) use ($escaped, $keyword, $searchField) {
+                switch ($searchField) {
+                    case 'order_no':
+                        // 仅按订单号前缀搜索
+                        $q->where('order_no', 'LIKE', "{$escaped}%");
+                        break;
+                    case 'contact_name':
+                        // 仅按收货人姓名搜索
+                        $q->whereRaw("extra_info->>'$.contact.name' LIKE ?", ["%{$escaped}%"]);
+                        break;
+                    case 'contact_phone':
+                        // 仅按联系电话搜索
+                        $q->whereRaw("extra_info->>'$.contact.phone' LIKE ?", ["%{$escaped}%"]);
+                        break;
+                    case 'uid':
+                        // 用户ID精确匹配
+                        $q->where('uid', '=', (int) $keyword);
+                        break;
+                    default:
+                        // 全部字段：订单号前缀 + 收货人 + 电话
+                        $q->whereOr('order_no', 'LIKE', "{$escaped}%")
+                          ->whereOrRaw("extra_info->>'$.contact.name' LIKE ?", ["%{$escaped}%"])
+                          ->whereOrRaw("extra_info->>'$.contact.phone' LIKE ?", ["%{$escaped}%"]);
+                }
+            });
+        };
+    }
+
+    /**
      * 后台订单列表（带完整筛选和售后状态合并）
      * 支持多维度筛选和搜索，返回分页数据
      * @param array $where 查询条件
@@ -2474,14 +2515,15 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         if (!empty($where['uid'])) {
             $searchWhere[] = ['uid', '=', $where['uid']];
         }
-        // 关键词搜索（订单号、收货人姓名、联系电话，联系信息走 extra_info JSON 路径）
-        if (!empty($where['keyword'])) {
-            $searchWhere[] = function ($query) use ($where) {
-                $keyword = addcslashes($where['keyword'], '%_');
-                $query->whereOr('order_no', 'LIKE', "{$keyword}%")
-                      ->whereOrRaw("extra_info->>'$.contact.name' LIKE ?", ["%{$keyword}%"])
-                      ->whereOrRaw("extra_info->>'$.contact.phone' LIKE ?", ["%{$keyword}%"]);
-            };
+        // 订单号独立搜索框：前缀匹配，与其它条件 AND 组合
+        $orderNo = trim((string) ($where['order_no'] ?? ''));
+        if ($orderNo !== '') {
+            $searchWhere[] = ['order_no', 'LIKE', addcslashes($orderNo, '%_') . '%'];
+        }
+        // 关键词搜索（search_field 指定字段：订单号、收货人姓名、联系电话、UID；联系信息走 extra_info JSON 路径）
+        $keyword = trim((string) ($where['keyword'] ?? ''));
+        if ($keyword !== '') {
+            $searchWhere[] = $this->buildKeywordFilterClosure($keyword, (string) ($where['search_field'] ?? 'all'));
         }
         // 日期范围筛选
         if (!empty($where['date_range'])) {
@@ -2727,16 +2769,15 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             if (!empty($where['pay_type'])) {
                 $baseWhere[] = ['pay_type', '=', $where['pay_type']];
             }
-            // 按关键词搜索（订单号、联系人姓名、联系电话）
-            if (!empty($where['keyword'])) {
-                $keyword = addcslashes($where['keyword'], '%_');
-                $baseWhere[] = function ($query) use ($keyword) {
-                    $query->where(function ($q) use ($keyword) {
-                        $q->whereOr('order_no', 'LIKE', "{$keyword}%")
-                          ->whereOrRaw("extra_info->>'$.contact.name' LIKE ?", ["%{$keyword}%"])
-                          ->whereOrRaw("extra_info->>'$.contact.phone' LIKE ?", ["%{$keyword}%"]);
-                    });
-                };
+            // 按订单号搜索（独立订单号搜索框，前缀匹配，与列表口径一致）
+            $statOrderNo = trim((string) ($where['order_no'] ?? ''));
+            if ($statOrderNo !== '') {
+                $baseWhere[] = ['order_no', 'LIKE', addcslashes($statOrderNo, '%_') . '%'];
+            }
+            // 按关键词搜索（search_field 指定字段：订单号、联系人姓名、联系电话、UID）
+            $statKeyword = trim((string) ($where['keyword'] ?? ''));
+            if ($statKeyword !== '') {
+                $baseWhere[] = $this->buildKeywordFilterClosure($statKeyword, (string) ($where['search_field'] ?? 'all'));
             }
 
             // 按状态统计订单数和金额

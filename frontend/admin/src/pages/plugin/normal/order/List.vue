@@ -320,7 +320,9 @@ function getList() {
  */
 function getStatistics() {
   const params = {
+    order_no: searchParams.value.order_no || '',
     keyword: searchParams.value.keyword || '',
+    search_field: searchParams.value.search_field || 'all',
     date_range: searchParams.value.date_range || '',
     pay_type: searchParams.value.pay_type || '',
     type: searchParams.value.type || '',
