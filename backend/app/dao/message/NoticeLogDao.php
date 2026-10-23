@@ -32,16 +32,26 @@ class NoticeLogDao extends BaseDao
             ->toArray();
     }
 
+    /**
+     * 统计符合条件的记录数
+     * @param array $where
+     * @return int
+     */
+    public function getCount(array $where): int
+    {
+        return (int)$this->getModel()->where($where)->count();
+    }
+
     public function getStatistics(array $where): array
     {
-        $query = $this->getModel()->where($where);
-        $total = $query->count();
-        $success = $query->where('status', NoticeLog::STATUS_SUCCESS)->count();
-        $failed = $query->where('status', NoticeLog::STATUS_FAILED)->count();
+        // 每次 count 都基于独立的查询构造器，避免 where 条件累积（原实现复用 $query，导致 failed 恒为 0）
+        $total = $this->getCount($where);
+        $success = $this->getCount(array_merge($where, ['status' => NoticeLog::STATUS_SUCCESS]));
+        $failed = $this->getCount(array_merge($where, ['status' => NoticeLog::STATUS_FAILED]));
         return [
-            'total' => (int) $total,
-            'success' => (int) $success,
-            'failed' => (int) $failed,
+            'total' => $total,
+            'success' => $success,
+            'failed' => $failed,
             'success_rate' => $total > 0 ? round($success / $total * 100, 2) : 0,
         ];
     }

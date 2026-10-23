@@ -35,10 +35,11 @@ class NoticeLogController extends AuthController
             ['start_time', ''],
             ['end_time', ''],
         ]);
-        $page = $this->request->get('page', 1);
-        $limit = $this->request->get('limit', 20);
+        $page = max(1, (int)$this->request->get('page', 1));
+        $limit = (int)$this->request->get('limit', 20);
+        $limit = $limit > 0 && $limit <= 100 ? $limit : 20;
 
-        return app('json')->success($this->services->getList($filter, (int)$page, (int)$limit));
+        return app('json')->success($this->services->getList($filter, $page, $limit));
     }
 
     public function detail(int $id)
@@ -55,7 +56,10 @@ class NoticeLogController extends AuthController
 
     public function statistics()
     {
+        // 与列表保持同一套筛选条件（状态筛选不参与统计）
         $filter = $this->request->getMore([
+            ['mark', ''],
+            ['uid', ''],
             ['channel_key', ''],
             ['start_time', ''],
             ['end_time', ''],

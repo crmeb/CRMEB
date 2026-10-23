@@ -24,26 +24,48 @@ class NoticeLogServices extends BaseService
         $this->dao = $dao;
     }
 
-    public function getList(array $filter = [], int $page = 1, int $limit = 20): array
+    /**
+     * 组装查询条件
+     * @param array $filter 筛选条件
+     * @param bool $withStatus 是否附加状态条件（统计口径不按状态过滤，否则成功/失败恒为 0）
+     * @return array
+     */
+    protected function buildWhere(array $filter, bool $withStatus = true): array
     {
         $where = [];
         if (!empty($filter['mark'])) {
-            $where['mark'] = $filter['mark'];
+            $where['mark'] = trim((string)$filter['mark']);
         }
         if (!empty($filter['uid'])) {
-            $where['uid'] = $filter['uid'];
+            $where['uid'] = (int)$filter['uid'];
         }
         if (!empty($filter['channel_key'])) {
             $where['channel_key'] = $filter['channel_key'];
         }
-        if (!empty($filter['status'])) {
-            $where['status'] = $filter['status'];
+        // 状态 0（待发送）是合法筛选值，不能用 empty 判断，否则会被丢弃
+        if ($withStatus && isset($filter['status']) && $filter['status'] !== '' && $filter['status'] !== null) {
+            $where['status'] = (int)$filter['status'];
         }
         if (!empty($filter['start_time']) && !empty($filter['end_time'])) {
-            $where['send_time'] = [$filter['start_time'], $filter['end_time']];
+            $where['send_time'] = [(int)$filter['start_time'], (int)$filter['end_time']];
         }
+        return $where;
+    }
 
-        return $this->dao->getList($where, '*', $page, $limit);
+    /**
+     * 发送记录列表
+     * @param array $filter
+     * @param int $page
+     * @param int $limit
+     * @return array{list: array, count: int}
+     */
+    public function getList(array $filter = [], int $page = 1, int $limit = 20): array
+    {
+        $where = $this->buildWhere($filter);
+        return [
+            'list' => $this->dao->getList($where, '*', $page, $limit),
+            'count' => $this->dao->getCount($where),
+        ];
     }
 
     public function getDetail(int $id): array
@@ -52,16 +74,14 @@ class NoticeLogServices extends BaseService
         return $info ? $info->toArray() : [];
     }
 
+    /**
+     * 发送统计（与列表使用同一套筛选条件，状态筛选除外）
+     * @param array $filter
+     * @return array
+     */
     public function getStatistics(array $filter = []): array
     {
-        $where = [];
-        if (!empty($filter['channel_key'])) {
-            $where['channel_key'] = $filter['channel_key'];
-        }
-        if (!empty($filter['start_time']) && !empty($filter['end_time'])) {
-            $where['send_time'] = [$filter['start_time'], $filter['end_time']];
-        }
-        return $this->dao->getStatistics($where);
+        return $this->dao->getStatistics($this->buildWhere($filter, false));
     }
 
     public function createLog(string $mark, int $uid, string $channelKey, string $channelName, string $title = '', string $content = ''): int

@@ -33,7 +33,7 @@
             <el-input v-model="filter.mark" placeholder="请输入消息标识" clearable class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="getList">搜索</el-button>
+            <el-button type="primary" v-db-click @click="searchList">搜索</el-button>
             <el-button v-db-click @click="resetFilter">重置</el-button>
           </el-form-item>
         </el-form>
@@ -137,6 +137,16 @@
         </el-table-column>
       </el-table>
 
+      <div class="acea-row row-right page">
+        <pagination
+          v-if="list.total"
+          :total="list.total"
+          v-model:page="list.page"
+          v-model:limit="list.limit"
+          @pagination="getList"
+        />
+      </div>
+
       <el-row class="mt14" style="text-align: right">
         <el-button type="danger" v-db-click @click="clean">清理历史日志</el-button>
       </el-row>
@@ -231,6 +241,12 @@ const loading = ref(false);
 const mediaStore = useMediaStore();
 const labelWidth = computed(() => (mediaStore.isMobile ? undefined : '80px'));
 const labelPosition = computed(() => (mediaStore.isMobile ? 'top' : 'right'));
+// 分页状态：后端列表接口返回 { list, count }
+const list = reactive({
+  page: 1,
+  limit: 15,
+  total: 0,
+});
 const filter = ref({
   channel_key: '',
   status: '',
@@ -251,9 +267,17 @@ const cleanForm = reactive({
 
 function getList() {
   loading.value = true;
-  noticeLogList(filter.value)
+  noticeLogList({ ...filter.value, page: list.page, limit: list.limit })
     .then((res) => {
-      logList.value = res.data;
+      const data = res.data;
+      // 兼容旧格式（直接返回数组）与新格式（{ list, count }）
+      if (Array.isArray(data)) {
+        logList.value = data;
+        list.total = data.length;
+      } else {
+        logList.value = data?.list || [];
+        list.total = Number(data?.count || 0);
+      }
       loading.value = false;
     })
     .catch(() => {
@@ -261,9 +285,17 @@ function getList() {
     });
 }
 function getStatistics() {
-  noticeLogStatistics(filter.value).then((res) => {
-    statistics.value = res.data;
-  });
+  noticeLogStatistics(filter.value)
+    .then((res) => {
+      statistics.value = res.data;
+    })
+    .catch(() => {});
+}
+// 搜索：回到第一页并同时刷新列表与统计，避免筛选后仍停留在旧页码
+function searchList() {
+  list.page = 1;
+  getList();
+  getStatistics();
 }
 function resetFilter() {
   filter.value = {
@@ -271,6 +303,7 @@ function resetFilter() {
     status: '',
     mark: '',
   };
+  list.page = 1;
   getList();
   getStatistics();
 }
@@ -305,8 +338,8 @@ function doClean() {
     .then((res) => {
       ElMessage.success(res.msg);
       cleanVisible.value = false;
-      getList();
-      getStatistics();
+      // 清理后数据量变化，回到第一页重新加载
+      searchList();
     })
     .catch((err) => {
       ElMessage.error(err.msg);
