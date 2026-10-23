@@ -281,12 +281,13 @@ class UserSignServices extends BaseService
         if ($integral || $all) {
             /** @var UserBillServices $userBill */
             $userBill = app()->make(UserBillServices::class);
-            $user['sum_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,lottery_add,product_gain,pay_product_integral_back'));
-            $user['deduction_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'deduction,lottery_use,order_deduction,storeIntegral_use', '', true) ?? 0);
-            $user['today_integral'] = intval($userBill->getRecordCount($user['uid'], 'integral', 'sign,system_add,gain,product_gain,lottery_add,pay_product_integral_back', 'today'));
-            /** @var UserBillServices $userBillServices */
-            $userBillServices = app()->make(UserBillServices::class);
-            $user['frozen_integral'] = $userBillServices->getBillSum(['uid' => $user['uid'], 'is_frozen' => 1]);
+            // 按收支方向（pm）聚合，不再枚举 type 白名单：新增积分类型（如下单赠送 order_give_integral、
+            // 退款回收 order_gain_refund 等）无需同步维护即可正确计入累计
+            $user['sum_integral'] = intval($userBill->getIntegralSumByPm($user['uid'], 1));
+            $user['deduction_integral'] = intval($userBill->getIntegralSumByPm($user['uid'], 0));
+            $user['today_integral'] = intval($userBill->getIntegralSumByPm($user['uid'], 1, 'today'));
+            // 冻结积分：仅统计积分流水中处于冻结期内的收入项
+            $user['frozen_integral'] = $userBill->getIntegralSumByPm($user['uid'], 1, '', true);
         }
         unset($user['pwd']);
         if (!$user['is_promoter']) {

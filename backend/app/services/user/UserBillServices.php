@@ -457,6 +457,32 @@ class UserBillServices extends BaseService
         return $this->dao->getBillSumColumn($where);
     }
 
+    /**
+     * 按收支方向统计用户积分合计
+     * 用 pm 方向聚合替代 type 白名单，避免新增积分类型漏统计
+     * @param int $uid 用户ID
+     * @param int $pm 1=收入 0=支出
+     * @param string $time 时间筛选（today/week/month 等），空则不限
+     * @param bool $frozen 是否只统计冻结期内（frozen_time > 当前时间）的流水
+     * @return float
+     */
+    public function getIntegralSumByPm(int $uid, int $pm, string $time = '', bool $frozen = false): float
+    {
+        $where = [
+            'uid' => $uid,
+            'category' => 'integral',
+            'status' => 1,
+            'pm' => $pm,
+        ];
+        if ($time !== '') {
+            $where['time'] = $time;
+        }
+        if ($frozen) {
+            $where['is_frozen'] = 1;
+        }
+        return (float)$this->dao->getBillSumColumn($where);
+    }
+
     
     /**
      * 获取用户|所有佣金总数

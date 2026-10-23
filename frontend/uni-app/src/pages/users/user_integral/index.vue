@@ -34,11 +34,8 @@
 							:class="item.icon"></text>{{item.name}}</view>
 				</view>
 				<view class='list' :class="{'bag-white': integralList.length}" :hidden='current!=0'>
-					<view class='tip acea-row row-middle' v-if="!isTime"><text
+					<view class='tip acea-row row-middle'><text
 							class='iconfont icon-shuoming'></text>{{$t(`提示：积分数值的高低会直接影响您的会员等级`)}}</view>
-					<view class='tip acea-row row-middle' v-else><text
-							class='iconfont icon-shuoming'></text>{{$t(`提示：你有`)}}{{userInfo.clear_integral}}{{$t(`积分在`)}}{{ dateFormat(userInfo.clear_time) }}{{$t(`过期，请尽快使用`)}}
-					</view>
 					<view class='item acea-row row-between-wrapper' v-for="(item,index) in integralList" :key="index">
 						<view>
 							<view class='state'>{{$t(item.title)}}</view>
@@ -88,7 +85,6 @@ import {
 	postSignUser,
 	getIntegralList as getIntegralListApi
 } from '@/api/user.js';
-import dayjs from '@/plugin/dayjs/dayjs.min.js';
 import {
 	toLogin
 } from '@/libs/login.js';
@@ -125,7 +121,6 @@ const loading = ref(false);
 const loadTitle = ref(i18n.t(`加载更多`));
 const isAuto = ref(false); //没有授权的不会自动授权
 const isShowAuth = ref(false); //是否隐藏授权
-const isTime = ref(0);
 
 // ---------- watch ----------
 watch(isLogin, (newV, oldV) => {
@@ -152,9 +147,6 @@ onReachBottom(() => {
 });
 
 // ---------- methods ----------
-function dateFormat(value) {
-	return dayjs(value * 1000).format('YYYY-MM-DD');
-}
 /**
  * 授权回调
  */
@@ -173,14 +165,6 @@ function getUserInfo() {
 		all: 1
 	}).then(function(res) {
 		userInfo.value = res.data;
-		let clearTime = res.data.clear_time;
-		let showTime = clearTime - (86400 * 14);
-		let timestamp = Date.parse(new Date()) / 1000;
-		if (showTime < timestamp) {
-			isTime.value = 1
-		} else {
-			isTime.value = 0
-		}
 	});
 }
 
