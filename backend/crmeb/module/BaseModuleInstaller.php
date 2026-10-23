@@ -1652,10 +1652,14 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
 
         // 补齐 AI 提示词字段
         $columns = Db::query(
-            'SELECT column_name FROM information_schema.columns WHERE table_schema = ? AND table_name = ?',
+            'SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema = ? AND table_name = ?',
             [$database, $fullTable]
         );
-        $names = array_map(static fn ($row): string => (string) $row['COLUMN_NAME'], $columns);
+        // 不同 MySQL 驱动/版本返回的 information_schema 字段名大小写可能不同，做兼容读取。
+        $names = array_map(
+            static fn ($row): string => (string)($row['COLUMN_NAME'] ?? $row['column_name'] ?? ''),
+            $columns
+        );
         if (!in_array('system_prompt', $names, true)) {
             Db::execute("ALTER TABLE `{$fullTable}` ADD COLUMN `system_prompt` text COMMENT '系统AI提示词（AI写作的角色设定与格式要求）' AFTER `content`");
         }
