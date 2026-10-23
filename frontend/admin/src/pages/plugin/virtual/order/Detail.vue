@@ -22,7 +22,7 @@
                 {{ statusLabel(orderInfo.status_code) }}
               </el-tag>
               <span v-if="orderInfo.refund_status == 1" style="color: #ed4014; margin-left: 4px">
-                {{ orderInfo.is_all_refund ? '退款中' : '部分退款中' }}
+                退款中
               </span>
             </div>
           </li>

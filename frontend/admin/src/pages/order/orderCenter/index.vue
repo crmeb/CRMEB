@@ -505,12 +505,13 @@ function getStatusClass(code) {
 }
 
 function getPayStatusLabel(status) {
-  const map = { 0: '未支付', 1: '已支付', 2: '部分支付' };
+  // 口径对齐 OrderCenter::PAY_STATUS_MAP：2 是部分退款、3 是全额退款（不是"部分支付"）
+  const map = { 0: '未支付', 1: '已支付', 2: '部分退款', 3: '全额退款' };
   return map[status] || '--';
 }
 
 function getPayStatusClass(status) {
-  const map = { 0: 'danger', 1: 'success', 2: 'warning' };
+  const map = { 0: 'danger', 1: 'success', 2: 'warning', 3: 'info' };
   return map[status] || 'info';
 }
 
