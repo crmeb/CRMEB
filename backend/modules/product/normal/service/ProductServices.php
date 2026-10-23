@@ -15,6 +15,8 @@ use modules\product\normal\dao\NormalProductSkuDao;
 use app\dao\product\CenterProductDao;
 use app\dao\product\product\StoreDescriptionDao;
 use app\dao\product\product\StoreProductCateDao;
+use app\services\order\StoreCartServices;
+use app\services\product\product\StoreProductCateServices;
 use app\model\product\CenterProductModel;
 use app\model\user\UserLabel;
 use think\facade\Db;
@@ -513,13 +515,18 @@ class ProductServices
     // ===== 商品生命周期管理（中台主表 + 扩展表同步） =====
 
     /**
-     * 软删除商品（仅中台主表标记 is_del=1，扩展表无 is_del 字段）
+     * 软删除商品（放入回收站）
+     * 中台主表同时置 is_del=1、is_show=0，保证进回收站的商品自动下架；
+     * 扩展表无 is_del/is_show 字段，无需同步。
      * @param int $productId
      * @return void
      */
     public function softDelete(int $productId): void
     {
-        $this->centerDao->update($productId, ['is_del' => 1]);
+        $this->centerDao->update($productId, ['is_del' => 1, 'is_show' => 0]);
+        // 与中台删除链路保持一致：失效购物车商品、停用分类关联
+        app()->make(StoreCartServices::class)->changeStatus($productId, 0);
+        app()->make(StoreProductCateServices::class)->update(['product_id' => $productId], ['status' => 0]);
     }
 
     /**
