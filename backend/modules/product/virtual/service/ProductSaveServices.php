@@ -56,6 +56,8 @@ class ProductSaveServices extends BaseService
 
         $productId = $this->transaction(function () use ($id, $data, $centerData) {
             if ($id > 0) {
+                // 编辑不覆盖真实销量：sales 由支付成功累加、退款递减，保存表单不收集该字段，固定 0 更新会把销量清零
+                unset($centerData['sales']);
                 $this->centerProductServices->update($id, $centerData);
                 $productId = $id;
             } else {
