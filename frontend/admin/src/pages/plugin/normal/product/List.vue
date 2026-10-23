@@ -110,8 +110,8 @@
               <el-dropdown-item v-if="artFrom.type === '2'" :command="8">批量上架</el-dropdown-item>
               <el-dropdown-item :command="9">设置商品标签</el-dropdown-item>
               <el-dropdown-item :command="10">是否支持送礼</el-dropdown-item>
-              <el-dropdown-item v-if="artFrom.type !== '6'" :command="11">移到回收站</el-dropdown-item>
-              <el-dropdown-item v-if="artFrom.type == '6'" :command="12">恢复商品</el-dropdown-item>
+              <el-dropdown-item v-if="artFrom.type !== '5'" :command="11">移到回收站</el-dropdown-item>
+              <el-dropdown-item v-if="artFrom.type === '5'" :command="12">恢复商品</el-dropdown-item>
             </el-dropdown-menu></template
           >
         </el-dropdown>
@@ -201,16 +201,19 @@
               <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
               <template #dropdown
                 ><el-dropdown-menu>
-                  <el-dropdown-item>
+                  <el-dropdown-item v-if="artFrom.type !== '5'">
                     <router-link :to="{ path: routeProStr + '/product/product_reply/' + scope.row.id }"
                       ><a>查看评论</a></router-link
                     >
                   </el-dropdown-item>
-                  <el-dropdown-item @click="openModal(scope.row, 'vipPriceSet')">会员价管理</el-dropdown-item>
-                  <el-dropdown-item v-if="artFrom.type === '6'" @click="del(scope.row, '恢复商品', scope.$index)"
+                  <el-dropdown-item v-if="artFrom.type !== '5'" @click="openModal(scope.row, 'vipPriceSet')"
+                    >会员价管理</el-dropdown-item
+                  >
+                  <!-- 回收站 tab（type=5）：仅保留 恢复商品 / 彻底删除 -->
+                  <el-dropdown-item v-if="artFrom.type === '5'" @click="recover(scope.row, scope.$index)"
                     >恢复商品</el-dropdown-item
                   >
-                  <el-dropdown-item v-if="artFrom.type === '6'" @click="fullDel(scope.row, '彻底删除', scope.$index)"
+                  <el-dropdown-item v-if="artFrom.type === '5'" @click="fullDel(scope.row, '彻底删除', scope.$index)"
                     >彻底删除</el-dropdown-item
                   >
                   <el-dropdown-item v-else @click="del(scope.row, '移入回收站', scope.$index)"
@@ -924,6 +927,28 @@ function fullDel(row, tit, num) {
     num: num,
     url: `normal/product/full_del/${row.id}`,
     method: 'DELETE',
+  };
+  modalSure(delfromData)
+    .then((res) => {
+      ElMessage.success(res.msg);
+      tableList.value.splice(num, 1);
+      getDataList();
+      goodHeade();
+    })
+    .catch((res) => {
+      ElMessage.error(res.msg);
+    });
+}
+// 回收站恢复商品：走批量恢复接口按单条 id 恢复（del() 的 DELETE product/:id 是软删除接口，不能用于恢复）
+function recover(row, num) {
+  let delfromData = {
+    title: '恢复商品',
+    url: 'normal/product/batch_recover',
+    method: 'post',
+    ids: {
+      ids: [row.id],
+    },
+    un: 1,
   };
   modalSure(delfromData)
     .then((res) => {
