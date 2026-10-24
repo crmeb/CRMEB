@@ -102,6 +102,7 @@
               :props="{ checkStrictly: true, emitPath: false, label: 'title', value: 'id' }"
               clearable
               @visible-change="moveImg"
+              @change="moveChange"
             ></el-cascader>
           </div>
           <div>
@@ -114,7 +115,7 @@
             >
               <template #suffix><i class="el-icon-search el-input__icon" v-db-click @click="getFileList"></i></template>
             </el-input>
-            <el-radio-group class="mr10" v-if="isPage" v-model="lietStyle" @input="radioChange">
+            <el-radio-group class="mr10" v-if="isPage" v-model="lietStyle" @change="radioChange">
               <el-radio-button label="list" value="list">
                 <i class="el-icon-menu"></i>
               </el-radio-button>
@@ -370,6 +371,7 @@ let progress = 0;
 
 const imgListBox = ref(null);
 const upload = ref(null);
+const table = ref(null);
 const refid = ref(null);
 
 onMounted(() => {
@@ -545,14 +547,15 @@ function getToken() {
   header.value['Authori-zation'] = 'Bearer ' + getCookies('token');
 }
 function moveImg(status) {
-  if (!status) {
-    getMove();
-  } else {
-    if (!ids.value.toString()) {
-      ElMessage.warning('请先选择视频');
-      return;
-    }
+  // 仅在展开时做前置提示；移动只由 @change（真正选中目标分类）触发，
+  // 不能在收起时执行，否则未选分类也会以 pid=0 静默移动
+  if (status && !ids.value.toString()) {
+    ElMessage.warning('请先选择视频');
   }
+}
+function moveChange(value) {
+  if (!value) return; // 清空或未选中不移动
+  getMove();
 }
 function searchImg() {}
 // 移动分类
@@ -561,14 +564,14 @@ function getMove() {
     pid: pids.value,
     images: ids.value.toString(),
   };
-  if (!data.images) return;
+  // 未选图片或未选目标分类（pid=0 是「全部图片」，不在级联选项内）都不提交
+  if (!data.images || !data.pid) return;
   moveApi(data)
     .then(async (res) => {
       ElMessage.success(res.msg);
       getFileList();
       pids.value = 0;
-      checkPicList.value = [];
-      ids.value = [];
+      initData();
     })
     .catch((res) => {
       ElMessage.error(res.msg);
@@ -619,6 +622,9 @@ function initData() {
   checkPicList.value = [];
   ids.value = [];
   multipleSelection.value = [];
+  // 表格勾选列开了 reserve-selection，数据/分类切换后组件内部仍保留勾选，必须显式清掉，
+  // 否则出现「显示勾选但 ids 为空」或反向的幽灵选中
+  table.value?.clearSelection();
 }
 // 鼠标移入 移出
 function onMouseOver(root, node, data) {
@@ -632,6 +638,7 @@ function onMouseOver(root, node, data) {
 function appendBtn(data) {
   treeId.value = data.id;
   fileData.page = 1;
+  initData();
   getFileList();
 }
 // 点击添加
@@ -652,7 +659,7 @@ function remove(data, tit) {
     .then((res) => {
       ElMessage.success(res.msg);
       getList();
-      checkPicList.value = [];
+      initData();
     })
     .catch((res) => {
       ElMessage.error(res.msg);
@@ -788,7 +795,7 @@ function handleSelectRow(selection) {
 function pageChange(index) {
   fileData.page = index;
   getFileList();
-  checkPicList.value = [];
+  initData();
 }
 // 新建分类表单
 function getFrom() {
