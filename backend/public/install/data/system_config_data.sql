@@ -69,4 +69,5 @@ INSERT INTO `eb_system_config` (`id`, `menu_name`, `type`, `input_type`, `config
 (471,'elec_invoice_tax_rate','text','input',50,'',1,'{\"required\":false}',13,0,'\"0\"','电子发票税率','请填写电子发票的税率，填写0-100直接的整数，如：13%的税率请填写13',0,1,0,0,0),
 (472,'elec_invoice_cate_name','text','input',50,'',1,'{\"required\":false}',13,0,'\"\"','发票分类名称','电子发票分类对应的名称，用于回显',0,1,0,0,0),
 (187,'copy_product_apikey','text','input',136,'',1,'',0,0,'\"\"','99Api apiKey','注册99api采集接口在个人中心复制key',0,1,1,292,2),
-(292,'system_product_copy_type','radio','input',136,'1=>一号通\n2=>99Api',1,'',0,0,'1','商品采集接口','采集商品接口选择，一号通快速注册开通使用不用配置apikey，或者去99api网址：https://www.99api.com/注册帐号，推荐一号通方便快捷',999,1,0,0,0);
+(292,'system_product_copy_type','radio','input',136,'1=>一号通\n2=>99Api',1,'',0,0,'1','商品采集接口','采集商品接口选择，一号通快速注册开通使用不用配置apikey，或者去99api网址：https://www.99api.com/注册帐号，推荐一号通方便快捷',999,1,0,0,0),
+(520,'invite_poster_bg','upload','input',105,'',1,'',0,0,'\"\"','邀新海报背景图','分享邀新海报的底图，建议尺寸 750*1334（9:16）；未配置时回退「组合数据-个人中心分销海报」，两者都没有则邀新页无海报',99,1,0,0,0);
