@@ -128,12 +128,25 @@ class CapitalFlowServices extends BaseService
     {
         $export = $where['export'] ?? 0;
         unset($where['export']);
+        // 资金流水只展示现金渠道：余额支付、后台代付、0 元单等站内结算即使有历史数据也不展示
+        $where['cash_only'] = 1;
         [$page, $limit] = $this->getPageValue();
-        $status = ['全部', '支付订单', '订单退款', '充值订单', '充值退款', '抽奖红包', '佣金提现', '购买会员', '线下收银'];
+        // 全量类型文案（用于列表/导出展示，历史数据可能包含已下线的类型）
+        $typeLabels = [0 => '全部', 1 => '订单支付', 2 => '订单退款', 3 => '充值订单', 4 => '充值退款', 5 => '抽奖红包', 6 => '佣金提现', 7 => '购买会员', 8 => '线下收银'];
+        // 筛选下拉只保留资金流水页面实际使用的现金交易类型；value 与 trading_type 一一对应，不依赖数组下标
+        $type_options = [
+            ['label' => '全部', 'value' => 0],
+            ['label' => '订单支付', 'value' => 1],
+            ['label' => '订单退款', 'value' => 2],
+            ['label' => '购买会员', 'value' => 7],
+            ['label' => '线下收银', 'value' => 8],
+        ];
+        // 兼容旧前端：status 为下标即 trading_type 的全量类型列表；新前端改用 type_options
+        $status = ['全部', '订单支付', '订单退款', '充值订单', '充值退款', '抽奖红包', '佣金提现', '购买会员', '线下收银'];
         $list = $this->dao->getList($where, $page, $limit);
         foreach ($list as &$item) {
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
-            $item['trading_type'] = $status[$item['trading_type']];
+            $item['trading_type'] = $typeLabels[$item['trading_type']] ?? '其他';
             $item['pay_type_name'] = PayServices::getPayType()[$item['pay_type'] != 'routine' ? $item['pay_type'] : 'weixin'] ?? '其他方式';
         }
         $count = $this->dao->count($where);
@@ -143,7 +156,7 @@ class CapitalFlowServices extends BaseService
             $fileName = '账单导出' . date('YmdHis') . rand(1000, 9999);
             return compact('list', 'fileKey', 'header', 'fileName');
         } else {
-            return compact('list', 'count', 'status');
+            return compact('list', 'count', 'status', 'type_options');
         }
     }
 
@@ -170,6 +183,8 @@ class CapitalFlowServices extends BaseService
      */
     public function getFlowRecord($where)
     {
+        // 账单统计与流水列表口径保持一致，只统计现金渠道
+        $where['cash_only'] = 1;
         [$page, $limit] = $this->getPageValue();
         $data = $this->dao->getRecordList($where, $page, $limit);
         $i = 1;

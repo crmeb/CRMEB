@@ -23,8 +23,8 @@
             ></date-range-picker>
           </el-form-item>
           <el-form-item label="交易类型：">
-            <el-select v-model="formValidate.status" @change="selChange" class="form_content_width">
-              <el-option :label="item" :value="index" v-for="(item, index) in withdrawal" :key="index"></el-option>
+            <el-select v-model="formValidate.trading_type" @change="selChange" class="form_content_width">
+              <el-option :label="item.label" :value="item.value" v-for="item in typeOptions" :key="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="流水搜索：">
@@ -73,9 +73,7 @@
         </el-table-column>
         <el-table-column label="支付方式" min-width="90">
           <template #default="scope">
-            <div v-for="item in payment" :key="item.value">
-              <span v-if="scope.row.pay_type == item.value"> {{ item.title }} </span>
-            </div>
+            <span>{{ scope.row.pay_type_name || '--' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="备注" min-width="90">
@@ -129,29 +127,8 @@ const modals = ref(false);
 const total = ref(0);
 const loading = ref(false);
 const tabList = ref([]);
-const withdrawal = ref([]);
-const payment = [
-  {
-    title: '全部',
-    value: '',
-  },
-  {
-    title: '微信',
-    value: 'weixin',
-  },
-  {
-    title: '支付宝',
-    value: 'alipay',
-  },
-  {
-    title: '银行卡',
-    value: 'bank',
-  },
-  {
-    title: '线下支付',
-    value: 'offline',
-  },
-];
+// 交易类型筛选：后端返回 [{label, value}]，value 直接对应 trading_type
+const typeOptions = ref([]);
 const formValidate = ref({
   trading_type: 0,
   time: '',
@@ -214,7 +191,10 @@ function getList() {
       let data = res.data;
       tabList.value = data.list;
       total.value = data.count;
-      withdrawal.value = data.status;
+      typeOptions.value =
+        data.type_options && data.type_options.length
+          ? data.type_options
+          : (data.status || []).map((label, value) => ({ label, value }));
       loading.value = false;
     })
     .catch((res) => {

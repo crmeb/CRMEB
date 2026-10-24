@@ -59,4 +59,18 @@ class CapitalFlow extends BaseModel
     {
         if (!empty($value)) $query->whereIn('id', $value);
     }
+
+    /**
+     * 仅现金渠道搜索器
+     * 资金流水只统计真实资金进出：余额支付(yue)、后台代付(admin)、0 元单(空) 属于站内结算，
+     * 即使历史数据中存在也不在资金流水、账单中展示。
+     * @param $query
+     * @param $value
+     */
+    public function searchCashOnlyAttr($query, $value)
+    {
+        if ($value) {
+            $query->whereNotIn('pay_type', ['', 'yue', 'admin']);
+        }
+    }
 }
