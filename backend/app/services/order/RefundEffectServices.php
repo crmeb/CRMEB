@@ -368,15 +368,16 @@ class RefundEffectServices extends BaseService implements RefundEffectContextInt
 
         $refundIntegral = (int)($refundOrder['refund_integral'] ?? 0);
         if ($refundIntegral > 0) {
-            $this->once('integral_refund', 'uid:' . $uid, ['integral' => $refundIntegral], function () use ($uid, $refundIntegral, $refundOrder): void {
+            $this->once('integral_refund', 'uid:' . $uid, ['integral' => $refundIntegral], function () use ($uid, $refundIntegral, $orderCenterId): void {
                 /** @var UserBillServices $billServices */
                 $billServices = $this->app->make(UserBillServices::class);
+                // link_id 统一存中台订单ID（后台积分记录按它回查订单号展示在「关联订单」列），单号不写入备注
                 $billServices->billIntegralIncome(
                     'pay_product_integral_back',
                     $uid,
                     $refundIntegral,
-                    (int)$refundOrder['id'],
-                    '售后退款返还积分，退款单：' . $refundOrder['refund_no']
+                    $orderCenterId,
+                    '售后退款返还积分'
                 );
             });
         }

@@ -94,13 +94,14 @@ class OrderRefundRewardServices extends BaseService
             $deductProduct = min($dueProduct, $balance);
             $deduct = $deductOrder + $deductProduct;
             $userBillServices = $this->app->make(UserBillServices::class);
+            // 单号不写入备注：后台积分记录按 link_id 回查中台订单，展示在「关联订单」列
             if ($deductOrder > 0 && !$userBillServices->billIntegralIncome(
-                'order_gain_refund', $uid, $deductOrder, (int)$order['id'], '订单退款回收下单赠送积分：' . $order['order_no']
+                'order_gain_refund', $uid, $deductOrder, (int)$order['id'], '订单退款回收下单赠送积分'
             )) {
                 throw new \RuntimeException('退款赠积分冲正失败');
             }
             if ($deductProduct > 0 && !$userBillServices->billIntegralIncome(
-                'product_gain_refund', $uid, $deductProduct, (int)$order['id'], '订单退款回收购买商品赠送积分：' . $order['order_no']
+                'product_gain_refund', $uid, $deductProduct, (int)$order['id'], '订单退款回收购买商品赠送积分'
             )) {
                 throw new \RuntimeException('退款赠积分冲正失败');
             }
