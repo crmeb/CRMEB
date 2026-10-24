@@ -247,7 +247,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="姓名" min-width="150">
+        <el-table-column label="昵称" min-width="150">
           <template #default="scope">
             <div class="acea-row">
               <i class="el-icon-male" v-show="scope.row.sex === '男'" style="color: #2db7f5; font-size: 15px"></i>
