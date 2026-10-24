@@ -27,18 +27,6 @@
               <el-option v-for="item in productTypeOptions" :key="item.key" :value="item.key" :label="item.label" />
             </el-select>
           </el-form-item>
-          <el-form-item label="活动类型：">
-            <el-select
-              v-model="searchForm.activity_type"
-              clearable
-              @change="getList"
-              placeholder="全部"
-              class="form_content_width"
-            >
-              <el-option label="全部" value="" />
-              <el-option v-for="item in activityTypeOptions" :key="item.key" :value="item.key" :label="item.label" />
-            </el-select>
-          </el-form-item>
           <el-form-item label="支付方式：">
             <el-select
               v-model="searchForm.pay_type"
@@ -293,7 +281,6 @@ defineOptions({ name: 'orderCenter' });
 const searchForm = ref({
   order_category: '',
   product_type: '',
-  activity_type: '',
   status_code: '',
   pay_type: '',
   keyword: '',
@@ -315,7 +302,6 @@ const orderDetailRef = ref(null);
 const statusTab = ref('');
 const categoryOptions = ref([]);
 const productTypeOptions = ref([]);
-const activityTypeOptions = ref([]);
 const statusCodeOptions = [
   { key: 'pending_payment', label: '待支付' },
   { key: 'processing', label: '待处理' },
@@ -383,7 +369,6 @@ function loadFilterOptions() {
     .then((res) => {
       const data = res.data || {};
       productTypeOptions.value = data.product_types || [];
-      activityTypeOptions.value = data.activity_types || [];
       payTypeOptions.value = data.pay_types || [];
     })
     .catch(() => {});
@@ -400,7 +385,6 @@ function handleReset() {
   searchForm.value = {
     order_category: '',
     product_type: '',
-    activity_type: '',
     status_code: '',
     pay_type: '',
     keyword: '',
