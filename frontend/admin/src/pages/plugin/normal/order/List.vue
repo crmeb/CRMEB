@@ -325,7 +325,6 @@ function getStatistics() {
     search_field: searchParams.value.search_field || 'all',
     date_range: searchParams.value.date_range || '',
     pay_type: searchParams.value.pay_type || '',
-    type: searchParams.value.type || '',
   };
   getOrderStatistics(params)
     .then((res) => {

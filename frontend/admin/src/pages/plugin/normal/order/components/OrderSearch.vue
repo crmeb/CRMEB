@@ -11,22 +11,6 @@
             class="form_content_width"
           />
         </el-form-item>
-        <el-form-item label="订单类型：">
-          <el-select
-            v-model="formData.type"
-            clearable
-            @change="handleSearch"
-            placeholder="全部"
-            class="form_content_width"
-          >
-            <el-option label="全部订单" value="" />
-            <el-option label="普通订单" value="1" />
-            <el-option label="拼团订单" value="2" />
-            <el-option label="秒杀订单" value="3" />
-            <el-option label="砍价订单" value="4" />
-            <el-option label="预售订单" value="5" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="支付方式：">
           <el-select
             v-model="formData.pay_type"
@@ -105,7 +89,6 @@ const defaultSearch = () => ({
   search_field: 'all',
   date_range: '',
   pay_type: '',
-  type: '',
 });
 
 const formData = reactive(defaultSearch());
