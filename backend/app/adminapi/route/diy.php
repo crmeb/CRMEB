@@ -87,6 +87,7 @@ Route::group('theme', function () {
     Route::get('plugin_status', [\app\adminapi\controller\diy\ThemeController::class, 'getPluginStatus'])->option(['real_name' => '主题活动插件安装状态']);
     Route::get('list', [\app\adminapi\controller\diy\ThemeController::class, 'getThemeList'])->option(['real_name' => '主题列表']);
     Route::get('info/:id/[:type]', [\app\adminapi\controller\diy\ThemeController::class, 'getThemeInfo'])->option(['real_name' => '主题详情']);
+    Route::get('routine_code/:id', [\app\adminapi\controller\diy\ThemeController::class, 'getRoutineCode'])->option(['real_name' => '主题预览小程序码']);
     Route::post('save/:id', [\app\adminapi\controller\diy\ThemeController::class, 'saveTheme'])->option(['real_name' => '保存主题']);
     Route::post('save_title/:id', [\app\adminapi\controller\diy\ThemeController::class, 'saveThemeTitle'])->option(['real_name' => '保存主题名称和简介']);
     Route::post('save_image/:id', [\app\adminapi\controller\diy\ThemeController::class, 'saveThemeImage'])->option(['real_name' => '保存主题的图片']);

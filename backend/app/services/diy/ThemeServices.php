@@ -13,6 +13,7 @@
 namespace app\services\diy;
 
 use app\dao\diy\ThemeDao;
+use app\services\other\QrcodeServices;
 use crmeb\basic\BaseService;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
@@ -697,6 +698,27 @@ class ThemeServices extends BaseService
 
         // 返回导航配置（可能为空数组）
         return $navigation;
+    }
+
+    /**
+     * 取主题预览小程序二维码
+     *
+     * @param int $id 主题ID（eb_theme 表主键）
+     * @param string $pageType micro 时二维码指向微页面预览页，其余指向首页
+     * @return string|false
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getRoutineCode(int $id, string $pageType = 'home')
+    {
+        $theme = $this->dao->getOne(['id' => $id, 'is_del' => 0]);
+        if (!$theme) {
+            throw new AdminException('数据不存在');
+        }
+        /** @var QrcodeServices $QrcodeService */
+        $QrcodeService = app()->make(QrcodeServices::class);
+        return $QrcodeService->getThemeRoutineQrcodePath($id, $pageType);
     }
 
     /**

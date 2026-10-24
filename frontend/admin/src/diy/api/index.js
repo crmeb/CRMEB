@@ -285,6 +285,17 @@ export function getRoutineCode(id) {
 }
 
 /**
+ * @description 主题预览 -- 小程序二维码（theme/routine_code/:id，page_type=micro 时指向微页面预览页）；
+ */
+export function getThemeRoutineCode(id, pageType) {
+  return request({
+    url: `theme/routine_code/${id}`,
+    method: 'get',
+    params: pageType ? { page_type: pageType } : {},
+  });
+}
+
+/**
  * @description 个人中心-提交信息；
  */
 export function memberSave(data) {

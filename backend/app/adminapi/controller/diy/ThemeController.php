@@ -108,6 +108,18 @@ class ThemeController extends AuthController
     }
 
     /**
+     * 主题预览小程序二维码
+     * @param int $id 主题ID
+     * @return \think\Response
+     */
+    public function getRoutineCode($id)
+    {
+        $pageType = (string)$this->request->param('page_type', 'home');
+        $image = $this->services->getRoutineCode((int)$id, $pageType);
+        return app('json')->success(compact('image'));
+    }
+
+    /**
      * 保存主题基本信息
      * @param int $id 主题ID
      * @return \think\Response JSON格式的响应

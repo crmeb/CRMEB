@@ -223,7 +223,8 @@
           </div>
           <div class="acea-row row-column-around row-between-wrapper">
             <div class="QRpic">
-              <img v-lazy="qrcodeImg" />
+              <img v-if="qrcodeImg" v-lazy="qrcodeImg" />
+              <span v-else class="qr-empty">小程序二维码无法生成<br />请检查微信小程序配置</span>
             </div>
             <span class="mt10">小程序二维码</span>
           </div>
@@ -257,7 +258,7 @@ import {
   setDefault,
   recovery,
   diyUpdateName,
-  getRoutineCode,
+  getThemeRoutineCode,
   saveThemeImage,
   getColorChange,
   getDiyComponentStatus,
@@ -760,29 +761,31 @@ function preview() {
   modal.value = true;
   // 弹窗 DOM 首次打开时下一帧才挂载（Element Plus teleport 懒渲染），qrCodeUrl ref 需等 nextTick
   nextTick(() => {
-    creatQrCode(pageId.value, diyStatus.value);
+    creatQrCode();
   });
-  routineCode(pageId.value);
+  if (pageId.value) {
+    routineCode(pageId.value);
+  } else {
+    qrcodeImg.value = '';
+  }
 }
-//小程序二维码
+//小程序二维码（装修编辑器保存于 eb_theme，走主题预览码接口）
 function routineCode(id) {
-  getRoutineCode(id)
+  getThemeRoutineCode(id, isMicroPage.value ? 'micro' : 'home')
     .then((res) => {
-      qrcodeImg.value = res.data.image;
+      qrcodeImg.value = res.data.image || '';
     })
     .catch((err) => {
-      ElMessage.error(err);
+      qrcodeImg.value = '';
+      ElMessage.error(err?.msg || err?.message || '获取小程序预览码失败');
     });
 }
 //生成二维码
-function creatQrCode(id, status) {
+function creatQrCode() {
   qrCodeUrl.value.innerHTML = '';
-  let url = `${BaseURL}pages/index/index?theme_id=${route.query.id}`;
-  // if (status) {
-  //   url = `${BaseURL}pages/index/index`;
-  // } else {
-  //   url = `${BaseURL}pages/annex/special/index?id=${id}`;
-  // }
+  // 微页面预览页与首页均通过 theme_id 场景值解析主题（见 uni-app 对应页面 onLoad）
+  let path = isMicroPage.value ? 'pages/annex/special/index' : 'pages/index/index';
+  let url = `${BaseURL}${path}?theme_id=${route.query.id}`;
   var qrcode = new QRCode(qrCodeUrl.value, {
     text: url, // 需要转换为二维码的内容
     width: 160,
@@ -2408,6 +2411,17 @@ onUnmounted(() => {
   img {
     width: 100%;
     height: 100%;
+  }
+
+  .qr-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: var(--prev-color-text-secondary);
   }
 }
 

@@ -171,7 +171,8 @@
           </div>
           <div class="acea-row row-column-around row-between-wrapper">
             <div class="QRpic">
-              <img v-lazy="qrcodeImg" />
+              <img v-if="qrcodeImg" v-lazy="qrcodeImg" />
+              <span v-else class="qr-empty">小程序二维码无法生成<br />请检查微信小程序配置</span>
             </div>
             <span class="mt10">小程序二维码</span>
           </div>
@@ -372,10 +373,11 @@ function creatQrCode(id) {
 function routineCode(id) {
   getRoutineCode(id)
     .then((res) => {
-      qrcodeImg.value = res.data.image;
+      qrcodeImg.value = res.data.image || '';
     })
     .catch((err) => {
-      ElMessage.error(err);
+      qrcodeImg.value = '';
+      ElMessage.error(err?.msg || err?.message || '获取小程序预览码失败');
     });
 }
 function preview(row) {
@@ -592,6 +594,17 @@ function recovery(row) {
   img {
     width: 100%;
     height: 100%;
+  }
+
+  .qr-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: var(--prev-color-text-secondary);
   }
 }
 .left-wrapper {

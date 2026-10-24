@@ -238,8 +238,6 @@ class QrcodeServices extends BaseService
      */
     public function getRoutineQrcodePath(int $id, int $uid, int $type, array $param = [], bool $isSaveAttach = true)
     {
-        /** @var SystemAttachmentServices $systemAttachmentService */
-        $systemAttachmentService = app()->make(SystemAttachmentServices::class);
         $page = '';
         $namePath = '';
         $data = 'id=' . $id . '&pid=' . $uid;
@@ -281,6 +279,39 @@ class QrcodeServices extends BaseService
         if (!$page || !$namePath) {
             return false;
         }
+        return $this->createRoutineQrcode($data, $page, $namePath, $isSaveAttach);
+    }
+
+    /**
+     * 主题预览小程序码（scene 携带 theme_id，与移动端 pages/index/index、pages/annex/special/index 的 scene 解析一致）
+     * @param int $themeId
+     * @param string $pageType micro 时指向微页面预览页，其余指向首页
+     * @return false|mixed|string
+     */
+    public function getThemeRoutineQrcodePath(int $themeId, string $pageType = 'home')
+    {
+        if ($pageType === 'micro') {
+            $page = 'pages/annex/special/index';
+            $namePath = 'theme_micro_' . $themeId . '_routine_index_code.jpg';
+        } else {
+            $page = 'pages/index/index';
+            $namePath = 'theme_' . $themeId . '_routine_index_code.jpg';
+        }
+        return $this->createRoutineQrcode('theme_id=' . $themeId, $page, $namePath, false);
+    }
+
+    /**
+     * 通过事件代理生成小程序码并上传，返回图片地址
+     * @param string $data scene 参数
+     * @param string $page 小程序页面路径
+     * @param string $namePath 上传文件名（同时作为附件缓存键）
+     * @param bool $isSaveAttach 是否按附件名缓存复用
+     * @return false|mixed|string
+     */
+    protected function createRoutineQrcode(string $data, string $page, string $namePath, bool $isSaveAttach)
+    {
+        /** @var SystemAttachmentServices $systemAttachmentService */
+        $systemAttachmentService = app()->make(SystemAttachmentServices::class);
         try {
             if (!$isSaveAttach) {
                 $imageInfo = "";
