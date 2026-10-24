@@ -24,7 +24,12 @@
           </el-form-item>
           <el-form-item label="交易类型：">
             <el-select v-model="formValidate.trading_type" @change="selChange" class="form_content_width">
-              <el-option :label="item.label" :value="item.value" v-for="item in typeOptions" :key="item.value"></el-option>
+              <el-option
+                :label="item.label"
+                :value="item.value"
+                v-for="item in typeOptions"
+                :key="item.value"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="流水搜索：">
