@@ -37,7 +37,12 @@
               >
                 <el-table-column :label="item.title" min-width="120" v-for="(item, index) in columns" :key="index">
                   <template #default="scope">
-                    <template v-if="item.key">
+                    <template v-if="item.format === 'time'">
+                      <div>
+                        <span>{{ scope.row[item.key] ? timeFormat(scope.row[item.key]) : '--' }}</span>
+                      </div>
+                    </template>
+                    <template v-else-if="item.key">
                       <div>
                         <span>{{ scope.row[item.key] }}</span>
                       </div>
@@ -75,10 +80,19 @@
 import { nextTick, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { detailsApi, infoApi } from '@/api/user';
+import { formatDate } from '@/utils/validate';
 import userInfo from './userInfo';
 import userEditForm from './userEditForm';
 
 defineOptions({ name: 'userDetails' });
+
+// 秒级时间戳转 yyyy-MM-dd hh:mm（与用户模块 tableExpand 口径一致）
+function timeFormat(time) {
+  if (time) {
+    return formatDate(new Date(time * 1000), 'yyyy-MM-dd hh:mm');
+  }
+  return '--';
+}
 
 const isEdit = ref(false);
 const theme2 = ref('light');
@@ -170,13 +184,13 @@ function changeType() {
           case 'order':
             columns.value = [
               {
-                title: '订单ID',
-                key: 'order_id',
+                title: '订单号',
+                key: 'order_no',
                 minWidth: 160,
               },
               {
                 title: '收货人',
-                key: 'real_name',
+                key: 'contact_name',
                 minWidth: 100,
               },
               {
@@ -192,6 +206,7 @@ function changeType() {
               {
                 title: '交易完成时间',
                 key: 'pay_time',
+                format: 'time',
                 minWidth: 120,
               },
             ];

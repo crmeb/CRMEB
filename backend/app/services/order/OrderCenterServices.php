@@ -2927,13 +2927,20 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     public function getUserList(int $uid, array $where = [], int $page = 1, int $limit = 20): array
     {
         $where['uid'] = $uid;
-        $count = $this->dao->count($where, false);
-        $list = $this->dao->selectList($where, '*', $page, $limit, 'id desc', [], false);
+        // 已删除订单不进用户消费记录（与订单中台列表口径一致）
+        $where['is_del'] = 0;
+        $where['is_system_del'] = 0;
+        // uid/is_del/is_system_del 无搜索器，须走字段过滤：search=false 时 count 会丢弃非搜索器条件导致总数虚高
+        $count = $this->dao->count($where, true);
+        $list = $this->dao->selectList($where, '*', $page, $limit, 'id desc', [], true);
         foreach ($list as &$item) {
             $item['pay_type_name'] = $this->getPayTypeName($item['pay_type'] ?? '');
             $item['status_text'] = \app\model\order\OrderCenter::$statusMap[$item['status_code'] ?? ''] ?? '未知';
             $item['pay_status_text'] = \app\model\order\OrderCenter::$payStatusMap[$item['pay_status'] ?? 0] ?? '未知';
             $item['refund_status_text'] = \app\model\order\OrderCenter::$refundStatusMap[$item['refund_status'] ?? 0] ?? '未知';
+            // 解析扩展信息并提取收货人，供用户消费记录展示（与订单中台列表口径一致）
+            $item['extra_info'] = $this->parseExtraInfo($item['extra_info']);
+            $item['contact_name'] = $item['extra_info']['contact']['name'] ?? '';
         }
         return compact('list', 'count');
     }
