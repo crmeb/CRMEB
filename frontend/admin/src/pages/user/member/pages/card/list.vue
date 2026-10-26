@@ -43,9 +43,9 @@
           ><span>{{ scope.row.phone ? scope.row.phone : '-' }}</span></template
         >
       </el-table-column>
-      <el-table-column label="领取时间" min-width="100">
+      <el-table-column label="领取时间" min-width="170" width="170">
         <template #default="scope"
-          ><span>{{ scope.row.use_time }}</span></template
+          ><span class="use-time">{{ scope.row.use_time }}</span></template
         >
       </el-table-column>
       <el-table-column label="是否激活" min-width="100">
@@ -132,3 +132,9 @@ function formSubmit() {
   getMemberCard();
 }
 </script>
+
+<style scoped>
+.use-time {
+  white-space: nowrap;
+}
+</style>

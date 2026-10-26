@@ -72,16 +72,24 @@ class MemberCardServices extends BaseService
         //批量查询用户信息
         $userIds = array_column($list->toArray(), 'use_uid');
         $userList = $userService->getColumn([['uid', 'in', $userIds]], 'nickname,phone,real_name', 'uid');
-        foreach ($list as $k => $v) {
-            if ($v['use_uid']) {
-                $list[$k]['username'] = $userList[$v['use_uid']]['real_name'] ?: $userList[$v['use_uid']]['nickname'];
-                $list[$k]['phone'] = $userList[$v['use_uid']] ? $userList[$v['use_uid']]['phone'] : "";
+        // Model 写入整型字段会被截断（如 "2026-10-26 ..." → 2026），先转普通数组再格式化时间
+        $rows = [];
+        foreach ($list as $v) {
+            $item = is_object($v) ? $v->hidden([])->toArray() : (array)$v;
+            if (!empty($item['use_uid'])) {
+                $user = $userList[$item['use_uid']] ?? null;
+                $item['username'] = $user ? (($user['real_name'] ?: $user['nickname']) ?: '') : '';
+                $item['phone'] = $user['phone'] ?? '';
+            } else {
+                $item['username'] = '';
+                $item['phone'] = '';
             }
-            $list[$k]['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
-            $list[$k]['use_time'] = $v['use_time'] != 0 ? date('Y-m-d H:i:s', $v['use_time']) : "未使用";
+            $item['add_time'] = !empty($item['add_time']) ? date('Y-m-d H:i:s', (int)$item['add_time']) : '';
+            $item['use_time'] = !empty($item['use_time']) ? date('Y-m-d H:i:s', (int)$item['use_time']) : '未使用';
+            $rows[] = $item;
         }
         $count = $this->dao->count($where);
-        return compact('list', 'count');
+        return ['list' => $rows, 'count' => $count];
 
     }
 
@@ -333,19 +341,22 @@ class MemberCardServices extends BaseService
         $userService = app()->make(UserServices::class);
         /** @var MemberCardBatchServices $batchService */
         $batchService = app()->make(MemberCardBatchServices::class);
-        foreach ($data as $k => $v) {
-            $data[$k]['use_time'] = $v['use_time'] != 0 ? date('Y-m-d H:i:s', $v['use_time']) : "";
-            $data[$k]['user_name'] = '';
-            $data[$k]['user_phone'] = '';
-            if ($v['use_uid'] != 0) {
-                $userInfo = $userService->get($v['use_uid']);
-                $data[$k]['user_name'] = $userInfo['nickname'] ?: $userInfo['account'];
-                $data[$k]['user_phone'] = $userInfo['phone'];
+        $rows = [];
+        foreach ($data as $v) {
+            $item = is_object($v) ? $v->hidden([])->toArray() : (array)$v;
+            $item['use_time'] = !empty($item['use_time']) ? date('Y-m-d H:i:s', (int)$item['use_time']) : '';
+            $item['user_name'] = '';
+            $item['user_phone'] = '';
+            if (!empty($item['use_uid'])) {
+                $userInfo = $userService->get($item['use_uid']);
+                $item['user_name'] = $userInfo['nickname'] ?: $userInfo['account'];
+                $item['user_phone'] = $userInfo['phone'];
             }
+            $rows[] = $item;
         }
         $batchInfo = $batchService->getOne($where['batch_card_id']);
         $dataArray['title'] = $batchInfo ? $batchInfo['title'] : "";
-        $dataArray['data'] = $data;
+        $dataArray['data'] = $rows;
         return $dataArray;
     }
 
