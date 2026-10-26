@@ -127,7 +127,15 @@ class SystemRoleServices extends BaseService
         // AI Agent 接口可借内置 MCP 读取全站业务数据，同样 fail-closed：
         // 路由未登记权限节点时一律按无权限处理，禁止默认放行
         $requiresAiAgentAuth = str_starts_with($rule, 'aiagent/');
-        if (!$requiresPrinterAuth && !$requiresAiAgentAuth && !in_array($rule, $allAuth[$method] ?? [], true)) return true;
+        // ZIP 落盘写接口：未登记权限节点时不得默认放行（plugin 写接口已在菜单登记）
+        $requiresZipWriteAuth = in_array($rule, [
+            'theme/import',
+            'plugin/refresh_notices',
+        ], true);
+        if (!$requiresPrinterAuth && !$requiresAiAgentAuth && !$requiresZipWriteAuth
+            && !in_array($rule, $allAuth[$method] ?? [], true)) {
+            return true;
+        }
 
         // 如果是crud接口放行
         if (strpos($rule, 'crud/') === 0) return true;

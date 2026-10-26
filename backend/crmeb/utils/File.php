@@ -905,24 +905,12 @@ class File
      */
     public static function zipOpen(string $filename, string $savename)
     {
-        $zip = new \ZipArchive;
-        $zipfile = $filename;
-        $res = $zip->open($zipfile);
-        $toDir = $savename;
-        if (!file_exists($toDir)) mkdir($toDir, 0777);
-        $docnum = $zip->numFiles;
-        for ($i = 0; $i < $docnum; $i++) {
-            $statInfo = $zip->statIndex($i);
-            if ($statInfo['crc'] == 0 && $statInfo['comp_size'] != 2) {
-                //新建目录
-                mkdir($toDir . '/' . substr($statInfo['name'], 0, -1), 0777);
-            } else {
-                //拷贝文件
-                copy('zip://' . $zipfile . '#' . $statInfo['name'], $toDir . '/' . $statInfo['name']);
-            }
+        try {
+            SafeZip::extract($filename, $savename);
+            return true;
+        } catch (\Throwable $e) {
+            return false;
         }
-        $zip->close();
-        return true;
     }
 
     /**
@@ -1054,34 +1042,42 @@ class File
                             throw new AdminException('数据结构不正确');
                         }
                     } else {
+                        // 空单元格统一成空串，避免 null !== '' 触发条码重复误判、分类名异常等
+                        $cell = static function ($v): string {
+                            if ($v === null) {
+                                return '';
+                            }
+                            return is_scalar($v) ? trim((string)$v) : '';
+                        };
                         $data[] = [
-                            'id' => $t1,
-                            'store_name' => $t2,
-                            'cate_name_one' => $t4,
-                            'cate_name_two' => $t5,
-                            'unit_name' => $t6,
-                            'slider_image' => $t7,
-                            'video_link' => $t8,
-                            'description' => $t9,
-                            'ficti' => $t10,
-                            'min_qty' => $t11,
-                            'spec_type' => $t12,
-                            'sku_type_value' => $t13,
-                            'sku_name' => $t14,
-                            'sku_value' => $t15,
-                            'pic' => $t16,
-                            'price' => $t17,
-                            'ot_price' => $t18,
-                            'cost' => $t19,
-                            'stock' => $t20,
-                            'weight' => $t21,
-                            'volume' => $t22,
-                            'bar_code' => $t23,
-                            'bar_code_number' => $t24,
-                            'store_info' => $t25,
-                            'keyword' => $t26,
-                            'command_word' => $t27,
-                            'give_integral' => $t28,
+                            'id' => $cell($t1),
+                            'store_name' => $cell($t2),
+                            'product_type' => $cell($t3),
+                            'cate_name_one' => $cell($t4),
+                            'cate_name_two' => $cell($t5),
+                            'unit_name' => $cell($t6),
+                            'slider_image' => $cell($t7),
+                            'video_link' => $cell($t8),
+                            'description' => $cell($t9),
+                            'ficti' => $cell($t10),
+                            'min_qty' => $cell($t11),
+                            'spec_type' => $cell($t12),
+                            'sku_type_value' => $cell($t13),
+                            'sku_name' => $cell($t14),
+                            'sku_value' => $cell($t15),
+                            'pic' => $cell($t16),
+                            'price' => $cell($t17),
+                            'ot_price' => $cell($t18),
+                            'cost' => $cell($t19),
+                            'stock' => $cell($t20),
+                            'weight' => $cell($t21),
+                            'volume' => $cell($t22),
+                            'bar_code' => $cell($t23),
+                            'bar_code_number' => $cell($t24),
+                            'store_info' => $cell($t25),
+                            'keyword' => $cell($t26),
+                            'command_word' => $cell($t27),
+                            'give_integral' => $cell($t28),
                         ];
                     }
 
@@ -1152,9 +1148,12 @@ class File
             return false;
         }
 
-        $zip = new \ZipArchive;
-        $zip->open($source);
-        return $zip->extractTo($folder);
+        try {
+            SafeZip::extract($source, $folder);
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     /**

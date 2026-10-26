@@ -17,6 +17,7 @@ use app\services\system\module\ModuleInstaller;
 use app\services\system\module\CreateModuleInstallLogTable;
 use crmeb\plugin\PluginManager;
 use crmeb\plugin\PluginManifest;
+use crmeb\utils\SafeZip;
 use think\facade\App;
 
 /**
@@ -141,26 +142,22 @@ class PluginController extends AuthController
         }
 
         $targetDir = app()->getRootPath();
+        $tmpDir = '';
 
         try {
-            // 临时目录放到 public/uploads/ 下，方便统一管理
-            $tmpDir = $targetDir . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . '.plugin_tmp_' . uniqid() . DIRECTORY_SEPARATOR;
-            if (!is_dir($tmpDir)) {
-                mkdir($tmpDir, 0755, true);
+            // 临时目录放在 runtime（Web 根外），避免解压物被 HTTP 直接访问执行
+            $tmpRoot = $targetDir . 'runtime' . DIRECTORY_SEPARATOR . 'plugin_upload' . DIRECTORY_SEPARATOR;
+            if (!is_dir($tmpRoot) && !mkdir($tmpRoot, 0755, true) && !is_dir($tmpRoot)) {
+                return app('json')->fail('无法创建插件上传临时目录');
+            }
+            $tmpDir = $tmpRoot . '.plugin_tmp_' . uniqid('', true) . DIRECTORY_SEPARATOR;
+            if (!mkdir($tmpDir, 0755, true) && !is_dir($tmpDir)) {
+                return app('json')->fail('无法创建插件上传临时目录');
             }
 
             $zipPath = $tmpDir . 'package.zip';
             $file->move($tmpDir, 'package.zip');
-
-            // 解压到临时目录
-            $zip = new \ZipArchive();
-            if ($zip->open($zipPath) !== true) {
-                $this->cleanTempDir($tmpDir);
-                return app('json')->fail('无法打开 ZIP 文件，可能已损坏');
-            }
-            $this->validateZipEntries($zip);
-            $zip->extractTo($tmpDir);
-            $zip->close();
+            SafeZip::extract($zipPath, $tmpDir, ['require_plugin_json' => true]);
 
             // 查找 plugin.json（可能在根目录或一级子目录）
             $pluginJson = $tmpDir . 'plugin.json';
@@ -319,54 +316,6 @@ class PluginController extends AuthController
         } catch (\Throwable $e) {
             $this->cleanTempDir($tmpDir ?? '');
             return app('json')->fail('上传失败: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * 解压前验证所有 ZIP 条目，阻止目录穿越、绝对路径、符号链接和解压炸弹。
-     */
-    protected function validateZipEntries(\ZipArchive $zip): void
-    {
-        if ($zip->numFiles < 1 || $zip->numFiles > 2000) {
-            throw new \RuntimeException('ZIP 文件数量必须在 1 到 2000 之间');
-        }
-
-        $totalSize = 0;
-        $manifestCount = 0;
-        for ($i = 0; $i < $zip->numFiles; $i++) {
-            $stat = $zip->statIndex($i);
-            if (!is_array($stat) || !isset($stat['name'])) {
-                throw new \RuntimeException('ZIP 条目信息损坏');
-            }
-            $name = str_replace('\\', '/', (string) $stat['name']);
-            $segments = explode('/', $name);
-            if ($name === '' || str_contains($name, "\0") || str_starts_with($name, '/')
-                || preg_match('/^[A-Za-z]:\//', $name) || in_array('..', $segments, true)) {
-                throw new \RuntimeException("ZIP 包含非法路径: {$name}");
-            }
-            if (basename($name) === 'plugin.json') {
-                $manifestCount++;
-                if (count($segments) > 2) {
-                    throw new \RuntimeException('plugin.json 只能位于 ZIP 根目录或一级插件目录');
-                }
-            }
-
-            $totalSize += (int) ($stat['size'] ?? 0);
-            if ($totalSize > 150 * 1024 * 1024) {
-                throw new \RuntimeException('ZIP 解压后总体积不能超过 150MB');
-            }
-
-            $attributes = 0;
-            $opsys = 0;
-            if ($zip->getExternalAttributesIndex($i, $opsys, $attributes)) {
-                $fileType = ($attributes >> 16) & 0170000;
-                if ($fileType === 0120000) {
-                    throw new \RuntimeException("ZIP 不允许包含符号链接: {$name}");
-                }
-            }
-        }
-        if ($manifestCount !== 1) {
-            throw new \RuntimeException('ZIP 包必须且只能包含一个 plugin.json');
         }
     }
 

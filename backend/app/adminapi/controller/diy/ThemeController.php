@@ -18,6 +18,7 @@ use app\services\diy\ThemeDownloadServices;
 use app\services\diy\ThemeServices;
 use app\services\product\CenterProductServices;
 use app\services\system\module\ModuleInstaller;
+use crmeb\utils\SafeZip;
 use SplFileInfo;
 use think\facade\App;
 
@@ -352,16 +353,21 @@ class ThemeController extends AuthController
      */
     public function importTheme()
     {
-        // 1 获取文件
+        // 1 获取文件：url 必须落在 public/uploads 内，禁止路径穿越读取任意文件
         [$importUrl] = $this->request->postMore([
             ['url', ''],
         ], true);
-        $realPath = public_path() . $importUrl;
-        if (!file_exists($realPath)) return app('json')->fail('文件不存在');
+        try {
+            $realPath = $this->resolveThemeImportZip((string)$importUrl);
+        } catch (\Throwable $e) {
+            return app('json')->fail($e->getMessage() ?: '文件不存在或路径非法');
+        }
 
-        // 2. 解压文件到 theme/import/ 目录
-        $dir = 'theme/import/';
-        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        // 2. 解压到 public/theme/import/（绝对路径，禁止 CWD 相对解压）
+        $dir = rtrim(public_path('theme' . DIRECTORY_SEPARATOR . 'import'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+            return app('json')->fail('无法创建主题导入目录');
+        }
         // 清理导入目录，防止数据污染
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
@@ -375,10 +381,11 @@ class ThemeController extends AuthController
                 @unlink($fileInfo->getRealPath());
             }
         }
-        $zip = new \ZipArchive();
-        $zip->open($realPath);
-        $zip->extractTo($dir);
-        $zip->close();
+        try {
+            SafeZip::extract($realPath, $dir);
+        } catch (\Throwable $e) {
+            return app('json')->fail('主题包解压失败: ' . $e->getMessage());
+        }
 
         // 3. 读取解压后的 config.json 文件
         $configPath = $dir . 'config.json';
@@ -389,8 +396,11 @@ class ThemeController extends AuthController
         // 4. 处理图片资源迁移
         // 将压缩包里面的所有图片，移动到 uploads/theme/{时间戳}/ 文件夹下
         $timestamp = date('YmdHis');
-        $themeDir = 'uploads/theme/' . $timestamp . '/';
-        if (!is_dir($themeDir)) mkdir($themeDir, 0755, true);
+        $themeDirRel = 'uploads/theme/' . $timestamp . '/';
+        $themeDirAbs = rtrim(public_path('uploads' . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . $timestamp), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if (!is_dir($themeDirAbs) && !mkdir($themeDirAbs, 0755, true) && !is_dir($themeDirAbs)) {
+            return app('json')->fail('无法创建主题图片目录');
+        }
 
         $rootPath = realpath($dir);
         $imageMap = []; // 记录相对路径到新上传路径的映射
@@ -411,11 +421,11 @@ class ThemeController extends AuthController
             $relative = ltrim(str_replace($rootPath, '', $filePath), DIRECTORY_SEPARATOR);
             $basename = basename($filePath);
 
-            // 目标路径
-            $target = $themeDir . $basename;
-            // 移动/复制文件
-            if (@copy($filePath, $target)) {
-                $imageMap[$relative] = $target; // 记录映射：包内相对路径 => 新系统路径
+            // 目标路径（磁盘绝对路径写入，映射仍用站点相对路径）
+            $targetAbs = $themeDirAbs . $basename;
+            $targetRel = $themeDirRel . $basename;
+            if (@copy($filePath, $targetAbs)) {
+                $imageMap[$relative] = $targetRel;
             }
         }
 
@@ -574,5 +584,35 @@ class ThemeController extends AuthController
     {
         $data = $this->services->getMicroPageList();
         return app('json')->success($data);
+    }
+
+    /**
+     * 将主题导入 url（完整 URL /uploads 相对路径）解析为 uploads 目录内的本地 ZIP 路径。
+     */
+    protected function resolveThemeImportZip(string $importUrl): string
+    {
+        $importUrl = trim($importUrl);
+        if ($importUrl === '') {
+            throw new \RuntimeException('请先上传主题包');
+        }
+
+        $path = $importUrl;
+        if (preg_match('#^https?://#i', $importUrl)) {
+            $parts = parse_url($importUrl);
+            $path = (string)($parts['path'] ?? '');
+        }
+        $path = str_replace('\\', '/', $path);
+        $path = ltrim($path, '/');
+        if (str_starts_with($path, 'uploads/')) {
+            $path = substr($path, strlen('uploads/'));
+        }
+        if ($path === '' || str_contains($path, '..')) {
+            throw new \RuntimeException('文件不存在或路径非法');
+        }
+        if (!preg_match('/\.zip$/i', $path)) {
+            throw new \RuntimeException('仅支持 ZIP 主题包');
+        }
+
+        return SafeZip::resolveUnder(public_path('uploads'), $path);
     }
 }
