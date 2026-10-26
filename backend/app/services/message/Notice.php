@@ -13,6 +13,7 @@ use app\services\message\admin\NoticeLogServices;
 use app\services\message\pipeline\SendNoticeService;
 use crmeb\exceptions\NoticeSendException;
 use crmeb\plugin\ModuleStateChecker;
+use crmeb\services\notice\AbstractNoticeChannel;
 use crmeb\services\notice\NoticeChannelInterface;
 use crmeb\services\notice\NoticeMessage;
 use think\facade\Log;
@@ -311,13 +312,16 @@ class Notice
     {
         try {
             $message = $target['message'];
+            // 日志展示实际发出的文案，写入前用业务变量渲染模板占位符
+            $title = AbstractNoticeChannel::renderTemplate($message->title, $message->variables);
+            $content = AbstractNoticeChannel::renderTemplate($message->content, $message->variables);
             $logId = $this->logServices()->createLog(
                 $message->mark,
                 $message->uid,
                 $target['channel_key'],
                 $target['channel_name'],
-                $message->title,
-                $message->content
+                $title,
+                $content
             );
             if ($ok) {
                 $this->logServices()->logSuccess($logId);

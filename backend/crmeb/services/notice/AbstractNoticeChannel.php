@@ -69,12 +69,13 @@ abstract class AbstractNoticeChannel implements NoticeChannelInterface
      *
      * 值统一转 string，避免 int 参数触发 str_replace TypeError；
      * 非标量值（数组/对象）跳过不参与替换。
+     * 静态入口供写发送日志等非渠道场景复用，与实例方法行为一致。
      *
      * @param string $text      模板文本（含 {key} 占位符）
      * @param array  $variables 扁平业务变量
      * @return string
      */
-    protected function renderPlaceholders(string $text, array $variables): string
+    public static function renderTemplate(string $text, array $variables): string
     {
         if ($text === '' || empty($variables)) {
             return $text;
@@ -86,5 +87,17 @@ abstract class AbstractNoticeChannel implements NoticeChannelInterface
             $text = str_replace('{' . $key . '}', (string)$value, $text);
         }
         return $text;
+    }
+
+    /**
+     * 实例侧占位符渲染（委托静态实现，保持子类调用习惯）
+     *
+     * @param string $text      模板文本（含 {key} 占位符）
+     * @param array  $variables 扁平业务变量
+     * @return string
+     */
+    protected function renderPlaceholders(string $text, array $variables): string
+    {
+        return static::renderTemplate($text, $variables);
     }
 }

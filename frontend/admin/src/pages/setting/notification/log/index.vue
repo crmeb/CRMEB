@@ -152,44 +152,34 @@
       </el-row>
     </el-card>
 
-    <el-dialog title="发送记录详情" v-model="dialogVisible" width="700px">
-      <el-form :model="detailData" label-width="100px" disabled>
-        <el-form-item label="ID">
-          <span>{{ detailData.id }}</span>
-        </el-form-item>
-        <el-form-item label="消息标识">
-          <span>{{ detailData.mark }}</span>
-        </el-form-item>
-        <el-form-item label="用户ID">
-          <span>{{ detailData.uid || '-' }}</span>
-        </el-form-item>
-        <el-form-item label="渠道">
-          <span>{{ detailData.channel_name || detailData.channel_key }}</span>
-        </el-form-item>
-        <el-form-item label="标题">
-          <span>{{ detailData.title || '-' }}</span>
-        </el-form-item>
-        <el-form-item label="内容">
-          <textarea :value="detailData.content || ''" :rows="6" readonly class="detail-textarea" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-tag :type="detailData.status === 1 ? 'success' : detailData.status === 2 ? 'danger' : 'warning'">
+    <el-dialog title="发送记录详情" v-model="dialogVisible" width="640px" destroy-on-close>
+      <el-descriptions v-if="detailData.id" :column="2" border>
+        <el-descriptions-item label="ID">{{ detailData.id }}</el-descriptions-item>
+        <el-descriptions-item label="用户ID">{{ detailData.uid || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="消息标识">{{ detailData.mark || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="渠道">{{ detailData.channel_name || detailData.channel_key || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="标题" :span="2">{{ detailData.title || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="内容" :span="2">
+          <div class="detail-content">{{ detailData.content || '-' }}</div>
+        </el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="detailData.status === 1 ? 'success' : detailData.status === 2 ? 'danger' : 'warning'" size="small">
             {{ detailData.status === 1 ? '成功' : detailData.status === 2 ? '失败' : '待发送' }}
           </el-tag>
-        </el-form-item>
-        <el-form-item label="发送时间">
-          <span>{{ detailData.send_time ? formatDate(detailData.send_time) : '-' }}</span>
-        </el-form-item>
-        <el-form-item label="错误信息">
-          <span class="error-msg" v-if="detailData.error_msg">{{ detailData.error_msg }}</span>
-          <span v-else>-</span>
-        </el-form-item>
-      </el-form>
-      <template #footer
-        ><div class="dialog-footer">
+        </el-descriptions-item>
+        <el-descriptions-item label="发送时间">
+          {{ detailData.send_time ? formatDate(detailData.send_time) : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="错误信息" :span="2">
+          <span v-if="detailData.error_msg" class="error-msg">{{ detailData.error_msg }}</span>
+          <span v-else>—</span>
+        </el-descriptions-item>
+      </el-descriptions>
+      <template #footer>
+        <div class="dialog-footer">
           <el-button @click="dialogVisible = false">关闭</el-button>
-        </div></template
-      >
+        </div>
+      </template>
     </el-dialog>
 
     <el-dialog title="清理日志" v-model="cleanVisible" width="400px">
@@ -374,17 +364,17 @@ getStatistics();
   }
 }
 .error-msg {
-  color: #f56c6c;
+  color: var(--prev-color-danger, #f56c6c);
   font-size: 12px;
+  word-break: break-all;
 }
-.detail-textarea {
-  width: 100%;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  padding: 10px;
-  resize: none;
+.detail-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  color: var(--prev-color-text-regular);
 }
 .warning-text {
-  color: #f56c6c;
+  color: var(--prev-color-danger, #f56c6c);
 }
 </style>
