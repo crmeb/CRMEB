@@ -32,7 +32,7 @@
         </el-table-column>
         <el-table-column label="优惠券有效期限" min-width="130">
           <template #default="scope">
-            <div v-if="scope.row.coupon_time">{{ scope.row.coupon_time }}</div>
+            <div v-if="scope.row.coupon_time">{{ scope.row.coupon_time }}天</div>
             <div v-else>{{ scope.row.use_time }}</div>
           </template>
         </el-table-column>
