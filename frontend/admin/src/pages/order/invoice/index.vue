@@ -252,7 +252,6 @@
         <el-form-item label="发票备注：" v-if="formInline.is_invoice === 1">
           <el-input
             v-model="formInline.remark"
-            value="备注"
             type="textarea"
             :autosize="{ minRows: 2, maxRows: 5 }"
             placeholder="请输入发票备注"
@@ -263,9 +262,9 @@
         </div>
       </el-form>
     </el-dialog>
-    <el-dialog v-model="orderShow" title="订单详情" class="order_box" width="720px">
-      <orderDetall :orderId="orderId" @detall="detall" v-if="orderShow"></orderDetall>
-    </el-dialog>
+    <el-drawer v-model="orderShow" title="订单详情" size="720px" class="order-detail-drawer">
+      <OrderCenterDetail v-if="orderShow" :id="orderId" />
+    </el-drawer>
     <el-dialog
       v-model="invoiceModalShow"
       title="发票信息"
@@ -283,7 +282,7 @@ import { computed, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { useMediaStore } from '@/store/module/media';
-import orderDetall from './orderDetall';
+import OrderCenterDetail from '@/pages/order/orderCenter/detail.vue';
 import {
   orderInvoiceChart,
   orderInvoiceList,
@@ -386,10 +385,6 @@ function handleMessage(event) {
       });
       break;
   }
-}
-
-function detall(e) {
-  orderShow.value = e;
 }
 
 function orderInfo(id) {
@@ -542,5 +537,8 @@ function onClickTab() {
   font-size: 12px;
   color: var(--prev-color-primary);
   cursor: pointer;
+}
+:deep(.order-detail-drawer .el-drawer__body) {
+  padding: 20px 0 !important;
 }
 </style>
