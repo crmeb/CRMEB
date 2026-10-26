@@ -19,14 +19,19 @@
                   <view class="name line1" :style="[nameTextStyle]">{{
                     userName
                   }}</view>
-                  <view class="vip-badge" v-if="vipBadge.visible">
+                  <view
+                    class="vip-badge"
+                    v-for="(badge, bi) in vipBadges"
+                    :key="'vip-' + bi"
+                  >
                     <image
+                      v-if="badge.icon"
                       class="badge-icon"
-                      :src="vipBadge.icon"
+                      :src="badge.icon"
                       mode="aspectFill"
                     />
-                    <text class="badge-text" v-if="vipBadge.text">{{
-                      vipBadge.text
+                    <text class="badge-text" v-if="badge.text">{{
+                      badge.text
                     }}</text>
                   </view>
                 </view>
@@ -74,14 +79,19 @@
                   <view class="name line1" :style="[nameTextStyle]">{{
                     userName
                   }}</view>
-                  <view class="vip-badge" v-if="vipBadge.visible">
+                  <view
+                    class="vip-badge"
+                    v-for="(badge, bi) in vipBadges"
+                    :key="'vip-' + bi"
+                  >
                     <image
+                      v-if="badge.icon"
                       class="badge-icon"
-                      :src="vipBadge.icon"
+                      :src="badge.icon"
                       mode="aspectFill"
                     />
-                    <text class="badge-text" v-if="vipBadge.text">{{
-                      vipBadge.text
+                    <text class="badge-text" v-if="badge.text">{{
+                      badge.text
                     }}</text>
                   </view>
                 </view>
@@ -116,14 +126,19 @@
                   <view class="name line1" :style="[nameTextStyle]">{{
                     userName
                   }}</view>
-                  <view class="vip-badge" v-if="vipBadge.visible">
+                  <view
+                    class="vip-badge"
+                    v-for="(badge, bi) in vipBadges"
+                    :key="'vip-' + bi"
+                  >
                     <image
+                      v-if="badge.icon"
                       class="badge-icon"
-                      :src="vipBadge.icon"
+                      :src="badge.icon"
                       mode="aspectFill"
                     />
-                    <text class="badge-text" v-if="vipBadge.text">{{
-                      vipBadge.text
+                    <text class="badge-text" v-if="badge.text">{{
+                      badge.text
                     }}</text>
                   </view>
                 </view>
@@ -175,14 +190,19 @@
                     <view class="name line1" :style="[nameTextStyle]">{{
                       userName
                     }}</view>
-                    <view class="vip-badge" v-if="vipBadge.visible">
+                    <view
+                      class="vip-badge"
+                      v-for="(badge, bi) in vipBadges"
+                      :key="'vip-' + bi"
+                    >
                       <image
+                        v-if="badge.icon"
                         class="badge-icon"
-                        :src="vipBadge.icon"
+                        :src="badge.icon"
                         mode="aspectFill"
                       />
-                      <text class="badge-text" v-if="vipBadge.text">{{
-                        vipBadge.text
+                      <text class="badge-text" v-if="badge.text">{{
+                        badge.text
                       }}</text>
                     </view>
                   </view>
@@ -319,14 +339,19 @@
                     <view class="name line1" :style="[nameTextStyle]">{{
                       userName
                     }}</view>
-                    <view class="vip-badge" v-if="vipBadge.visible">
+                    <view
+                      class="vip-badge"
+                      v-for="(badge, bi) in vipBadges"
+                      :key="'vip-' + bi"
+                    >
                       <image
+                        v-if="badge.icon"
                         class="badge-icon"
-                        :src="vipBadge.icon"
+                        :src="badge.icon"
                         mode="aspectFill"
                       />
-                      <text class="badge-text" v-if="vipBadge.text">{{
-                        vipBadge.text
+                      <text class="badge-text" v-if="badge.text">{{
+                        badge.text
                       }}</text>
                     </view>
                   </view>
@@ -996,13 +1021,24 @@ const userName = computed(() => {
   if (!isLogin.value) return "请点击登录";
   return (userInfo.value && userInfo.value.nickname) || "";
 });
-// 付费会员标识：等级图标+等级名优先，纯付费会员展示皇冠+「付费会员」
-const vipBadge = computed(() => {
+// 等级角标与付费会员角标分开展示，避免有等级时盖掉「付费会员」
+const vipBadges = computed(() => {
+  if (!isLogin.value) return [];
   const info = userInfo.value || {};
-  const visible = Boolean(isLogin.value && (info.pay_vip_status || info.vip));
-  const icon = info.vip_icon || "";
-  const text = info.vip_name || (info.pay_vip_status ? "付费会员" : "");
-  return { visible: visible && Boolean(icon || text), icon, text };
+  const list = [];
+  if (info.vip && (info.vip_icon || info.vip_name)) {
+    list.push({
+      icon: info.vip_icon || "",
+      text: info.vip_name || "",
+    });
+  }
+  if (info.pay_vip_status) {
+    list.push({
+      icon: "/static/images/king.png",
+      text: "付费会员",
+    });
+  }
+  return list.filter((item) => item.icon || item.text);
 });
 const userSubText = computed(() => {
   if (!isLogin.value) return "";
