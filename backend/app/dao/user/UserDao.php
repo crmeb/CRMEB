@@ -256,8 +256,8 @@ class UserDao extends BaseDao
     {
         return $this->getModel()
             ->whereBetweenTime('add_time', $starday, $yesterday)
-            ->field("FROM_UNIXTIME(add_time,'%m-%e') as day,count(*) as count")
-            ->group("FROM_UNIXTIME(add_time, '%Y%m%e')")
+            ->field("FROM_UNIXTIME(add_time,'%m-%d') as day,count(*) as count")
+            ->group("FROM_UNIXTIME(add_time, '%Y-%m-%d')")
             ->order('add_time asc')->select()->toArray();
     }
 

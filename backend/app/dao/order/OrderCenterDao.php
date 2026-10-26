@@ -388,26 +388,32 @@ class OrderCenterDao extends BaseDao
 
     /**
      * 订单图表分组统计
-     * 按周期对已支付订单进行分组，统计每天的订单量与销售额
-     * @param int $startTime 开始时间戳
-     * @param int $endTime 结束时间戳
-     * @param string $cycle 统计周期：thirtyday=按天、month=按月、其余=按年
+     * 按周期对已支付订单分组，统计订单量与销售额
+     * @param string|int $dateBefore 开始日期（Y-m-d 或时间戳）
+     * @param string|int $dateAfter 结束日期（Y-m-d 或时间戳）
+     * @param string $timeType 分组粒度：30=月日、week=星期、month=日、year=月
      * @return array 返回分组统计列表（day/count/price）
      */
-    public function orderCharts(int $startTime, int $endTime, string $cycle = 'thirtyday'): array
+    public function orderCharts($dateBefore, $dateAfter, string $timeType = '30'): array
     {
-        // 根据统计周期决定分组粒度
-        switch ($cycle) {
-            case 'thirtyday':
-                $format = '%Y-%m-%d';
+        switch ($timeType) {
+            case 'week':
+                $format = '%w';
                 break;
             case 'month':
-                $format = '%Y-%m';
+                $format = '%d';
                 break;
+            case 'year':
+                $format = '%m';
+                break;
+            case '30':
             default:
-                $format = '%Y';
+                $format = '%m-%d';
                 break;
         }
+
+        $startTime = is_numeric($dateBefore) ? (int)$dateBefore : strtotime((string)$dateBefore);
+        $endTime = is_numeric($dateAfter) ? (int)$dateAfter : strtotime((string)$dateAfter);
 
         return $this->getModel()
             ->where('is_del', 0)
@@ -418,6 +424,25 @@ class OrderCenterDao extends BaseDao
             ->order('day', 'asc')
             ->select()
             ->toArray();
+    }
+
+    /**
+     * 统计区间内已支付订单总量与销售额
+     * @param string|int $dateBefore 开始日期
+     * @param string|int $dateAfter 结束日期
+     * @return array{count:int,price:float}
+     */
+    public function preTotalFind($dateBefore, $dateAfter): array
+    {
+        $startTime = is_numeric($dateBefore) ? (int)$dateBefore : strtotime((string)$dateBefore);
+        $endTime = is_numeric($dateAfter) ? (int)$dateAfter : strtotime((string)$dateAfter);
+        $res = $this->getModel()
+            ->where('is_del', 0)
+            ->where('pay_status', 1)
+            ->whereBetween('pay_time', [$startTime, $endTime])
+            ->fieldRaw('COUNT(*) as count, COALESCE(SUM(pay_price), 0) as price')
+            ->find();
+        return $res ? $res->toArray() : ['count' => 0, 'price' => 0];
     }
 
     /**

@@ -19,7 +19,7 @@
           ></echarts-from>
         </el-card>
       </el-col>
-      <el-col :xl="8" :lg="12" :md="24" :sm="24" :xs="24">
+      <el-col :xl="8" :lg="12" :md="24" :sm="24" :xs="24" class="ivu-mb">
         <el-card :bordered="false" shadow="never" class="dashboard-console-visit">
           <div class="card-title">
             <el-avatar
@@ -29,6 +29,29 @@
             <h4 class="ivu-pl-8">购买用户统计</h4>
           </div>
           <echarts-from ref="visitChart" :infoList="infoList" :echartsTitle="circle"></echarts-from>
+        </el-card>
+      </el-col>
+      <el-col :span="24" class="ivu-mb">
+        <el-card :bordered="false" shadow="never" class="dashboard-console-visit">
+          <div class="card-title">
+            <el-avatar
+              icon="TrendCharts"
+              style="color: var(--prev-color-primary); background-color: #e6f7ff"
+            ></el-avatar>
+            <h4 class="ivu-pl-8">商品支付排行</h4>
+          </div>
+          <div class="trees-coadd">
+            <div class="scollhide">
+              <div v-if="lists.length" class="rank-list">
+                <div v-for="(item, index) in lists" :key="item.product_id || index" class="rank-item">
+                  <span class="rank-index" :class="{ top: index < 3 }">{{ index + 1 }}</span>
+                  <span class="names" :title="item.store_name">{{ item.store_name }}</span>
+                  <span class="rank-val">¥{{ formatVal(item.val) }}</span>
+                </div>
+              </div>
+              <el-empty v-else description="暂无排行数据" :image-size="64" />
+            </div>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -50,21 +73,21 @@ const line = 'line';
 const circle = 'circle';
 const infoList = ref({});
 const series = ref([]);
-const xData = ref([]);
-const y1Data = ref([]);
-const y2Data = ref([]);
 const lists = ref([]);
-const bing_data = ref([]);
-const bing_xdata = ref([]);
+
+function formatVal(val) {
+  const num = Number(val || 0);
+  return Number.isFinite(num) ? num.toFixed(2) : '0.00';
+}
 
 // 统计
 function getStatistics() {
   userApi()
     .then(async (res) => {
-      infoList.value = res.data;
+      infoList.value = res.data || {};
       series.value = [
         {
-          data: res.data.series,
+          data: infoList.value.series || [],
           name: '人数（人）',
           type: 'line',
           tooltip: true,
@@ -77,8 +100,6 @@ function getStatistics() {
           },
         },
       ];
-      bing_data.value = res.bing_data;
-      bing_xdata.value = res.bing_xdata;
     })
     .catch((res) => {
       ElMessage.error(res.msg);
@@ -87,8 +108,7 @@ function getStatistics() {
 function getRank() {
   rankApi()
     .then(async (res) => {
-      let data = res.data;
-      lists.value = data.list;
+      lists.value = res.data?.list || [];
     })
     .catch((res) => {
       ElMessage.error(res.msg);
@@ -120,21 +140,55 @@ onMounted(() => {
   height: 100%;
   .scollhide {
     width: 100%;
-    height: 100%;
+    max-height: 320px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 }
 .scollhide::-webkit-scrollbar {
-  display: none;
+  width: 4px;
+}
+.rank-list {
+  padding: 8px 0 4px;
+}
+.rank-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--prev-border-color-lighter, #f0f2f5);
+  &:last-child {
+    border-bottom: none;
+  }
+}
+.rank-index {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--prev-bg-color-page, #f5f7fa);
+  color: var(--prev-color-text-secondary, #909399);
+  font-size: 12px;
+  line-height: 22px;
+  text-align: center;
+  &.top {
+    background: var(--prev-color-primary);
+    color: #fff;
+  }
 }
 .names {
-  display: inline-block;
-  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  width: 84%;
-  margin-bottom: -7px;
+  color: var(--prev-color-text-regular);
+}
+.rank-val {
+  flex: none;
+  margin-left: 12px;
+  color: var(--prev-color-text-primary);
+  font-weight: 500;
 }
 .card-title {
   display: flex;

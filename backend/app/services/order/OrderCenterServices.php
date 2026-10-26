@@ -2374,16 +2374,16 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             ],
         ];
 
-        // 计算日环比增长率
+        // 计算日环比增长率（昨日为 0 时：今日有值记 100%，否则 0）
         foreach ($info as &$item) {
-            $nowValue = $item['today'];
-            $lastValue = $item['yesterday'];
-            if ($lastValue == 0 && $nowValue == 0) {
+            $nowValue = (float)$item['today'];
+            $lastValue = (float)$item['yesterday'];
+            if ($lastValue == 0.0 && $nowValue == 0.0) {
                 $item['today_ratio'] = 0;
-            } elseif ($lastValue == 0) {
-                $item['today_ratio'] = round($nowValue, 2);
-            } elseif ($nowValue == 0) {
-                $item['today_ratio'] = -round($lastValue, 2);
+            } elseif ($lastValue == 0.0) {
+                $item['today_ratio'] = 100;
+            } elseif ($nowValue == 0.0) {
+                $item['today_ratio'] = -100;
             } else {
                 $item['today_ratio'] = (float)bcmul(bcdiv((string)($nowValue - $lastValue), (string)$lastValue, 4), '100', 2);
             }
@@ -2396,38 +2396,227 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     /**
      * 订单图表
      * 根据周期统计已支付订单的订单量与销售额，用于后台首页图表展示
-     * @param string $cycle 统计周期：thirtyday=近30天、month=近12月、year=近1年
-     * @return array 返回图表数据（legend/yAxis/xAxis/series）
+     * @param string $cycle thirtyday=近30天；week/month/year=上期与本期对比
+     * @return array 返回图表数据（legend/yAxis/xAxis/series 为 ECharts 结构）
      */
     public function orderCharts(string $cycle): array
     {
-        // 根据周期计算起始日期
-        $starday = $cycle == 'thirtyday' ? date('Y-m-d', strtotime('-30 day')) : ($cycle == 'month' ? date('Y-m-d', strtotime('-12 month')) : date('Y-m-d', strtotime('-1 year')));
-        $yesterday = date('Y-m-d', strtotime('+1 day'));
-        $startTime = strtotime($starday);
-        $endTime = strtotime($yesterday);
-
-        $orderList = $this->dao->orderCharts($startTime, $endTime, $cycle);
-
-        $chartdata = [];
-        $data = [];
-        $chartdata['legend'] = ['订单量', '销售额'];//分类
-        $chartdata['yAxis']['maxnum'] = 0;//最大值数量
-        $chartdata['xAxis'] = [$starday];//X轴值
-        $chartdata['series'] = [0, 0];//分类1值
-        if (!empty($orderList)) {
-            foreach ($orderList as $v) {
-                $data['day'][] = $v['day'];
-                $data['count'][] = $v['count'];
-                $data['price'][] = (float)$v['price'];
-                if ($chartdata['yAxis']['maxnum'] < $v['count'])
-                    $chartdata['yAxis']['maxnum'] = $v['count'];
-            }
-            $chartdata['xAxis'] = $data['day'];//X轴值
-            $chartdata['series'][0] = $data['count'];//分类1值
-            $chartdata['series'][1] = $data['price'];//分类2值
+        switch ($cycle) {
+            case 'week':
+                return $this->buildCompareOrderCharts(
+                    ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+                    ['上周金额', '本周金额', '上周订单数', '本周订单数'],
+                    date('Y-m-d', strtotime('-1 week Monday')),
+                    date('Y-m-d 23:59:59', strtotime('-1 week Sunday')),
+                    date('Y-m-d', (time() - ((date('w') == 0 ? 7 : date('w')) - 1) * 24 * 3600)),
+                    date('Y-m-d 23:59:59'),
+                    'week',
+                    static fn($k) => (string)(int)$k
+                );
+            case 'month':
+                $days = [];
+                for ($i = 1; $i <= 31; $i++) {
+                    $key = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+                    $days[$key] = (string)$i;
+                }
+                return $this->buildCompareOrderCharts(
+                    $days,
+                    ['上月金额', '本月金额', '上月订单数', '本月订单数'],
+                    date('Y-m-01', strtotime('-1 month')),
+                    date('Y-m-d 23:59:59', strtotime(date('Y-m-01')) - 1),
+                    date('Y-m-01'),
+                    date('Y-m-d 23:59:59'),
+                    'month'
+                );
+            case 'year':
+                return $this->buildCompareOrderCharts(
+                    [
+                        '01' => '一月', '02' => '二月', '03' => '三月', '04' => '四月',
+                        '05' => '五月', '06' => '六月', '07' => '七月', '08' => '八月',
+                        '09' => '九月', '10' => '十月', '11' => '十一月', '12' => '十二月',
+                    ],
+                    ['去年金额', '今年金额', '去年订单数', '今年订单数'],
+                    date('Y-01-01', strtotime('-1 year')),
+                    date('Y-12-31 23:59:59', strtotime('-1 year')),
+                    date('Y-01-01'),
+                    date('Y-12-31 23:59:59'),
+                    'year'
+                );
+            case 'thirtyday':
+            default:
+                return $this->buildThirtydayOrderCharts();
         }
-        return $chartdata;
+    }
+
+    /**
+     * 近 30 天订单金额/订单数图表（补齐缺失日期）
+     */
+    protected function buildThirtydayOrderCharts(): array
+    {
+        $dateBefore = date('Y-m-d', strtotime('-29 day'));
+        $dateAfter = date('Y-m-d 23:59:59');
+        $preBefore = date('Y-m-d', strtotime('-59 day'));
+        $preAfter = date('Y-m-d 23:59:59', strtotime('-30 day'));
+
+        $datalist = [];
+        for ($i = -29; $i <= 0; $i++) {
+            $label = date('m-d', strtotime($i . ' day'));
+            $datalist[$label] = $label;
+        }
+
+        $orderMap = [];
+        foreach ($this->dao->orderCharts($dateBefore, $dateAfter, '30') as $row) {
+            $orderMap[$row['day']] = $row;
+        }
+
+        $counts = [];
+        $prices = [];
+        $xAxis = [];
+        $maxNum = 0;
+        $maxPrice = 0;
+        foreach ($datalist as $day) {
+            $count = (int)($orderMap[$day]['count'] ?? 0);
+            $price = round((float)($orderMap[$day]['price'] ?? 0), 2);
+            $xAxis[] = $day;
+            $counts[] = $count;
+            $prices[] = $price;
+            $maxNum = max($maxNum, $count);
+            $maxPrice = max($maxPrice, $price);
+        }
+
+        $legend = ['订单金额', '订单数'];
+        $chartdata = [
+            'legend' => $legend,
+            'xAxis' => $xAxis,
+            'yAxis' => ['maxnum' => $maxNum, 'maxprice' => $maxPrice],
+            'series' => [
+                ['name' => $legend[0], 'type' => 'bar', 'itemStyle' => $this->orderChartBarStyle('#69cdff', '#1495eb'), 'data' => $prices],
+                ['name' => $legend[1], 'type' => 'line', 'itemStyle' => $this->orderChartBarStyle('#6fdeab', '#2cc981'), 'data' => $counts, 'yAxisIndex' => 1],
+            ],
+        ];
+        return array_merge($chartdata, $this->buildOrderCycleSummary($preBefore, $preAfter, $dateBefore, $dateAfter));
+    }
+
+    /**
+     * 周/月/年：上期 vs 本期对比图表
+     * @param array $axisLabels 轴标签（索引或关联）
+     * @param array $legend 图例四项
+     * @param string $preBefore 上期开始
+     * @param string $preAfter 上期结束
+     * @param string $nowBefore 本期开始
+     * @param string $nowAfter 本期结束
+     * @param string $timeType DAO 分组类型
+     * @param callable|null $keyNormalizer 将查询 day 规范为轴 key
+     */
+    protected function buildCompareOrderCharts(
+        array $axisLabels,
+        array $legend,
+        string $preBefore,
+        string $preAfter,
+        string $nowBefore,
+        string $nowAfter,
+        string $timeType,
+        ?callable $keyNormalizer = null
+    ): array {
+        $preMap = [];
+        foreach ($this->dao->orderCharts($preBefore, $preAfter, $timeType) as $row) {
+            $key = $keyNormalizer ? $keyNormalizer($row['day']) : (string)$row['day'];
+            $preMap[$key] = $row;
+        }
+        $nowMap = [];
+        foreach ($this->dao->orderCharts($nowBefore, $nowAfter, $timeType) as $row) {
+            $key = $keyNormalizer ? $keyNormalizer($row['day']) : (string)$row['day'];
+            $nowMap[$key] = $row;
+        }
+
+        $xAxis = [];
+        $preCount = [];
+        $prePrice = [];
+        $nowCount = [];
+        $nowPrice = [];
+        $maxNum = 0;
+        $maxPrice = 0;
+        foreach ($axisLabels as $key => $label) {
+            $axisKey = is_int($key) ? (string)$key : (string)$key;
+            $labelText = is_array($label) ? ($label[0] ?? $axisKey) : (string)$label;
+            $pc = (int)($preMap[$axisKey]['count'] ?? 0);
+            $pp = round((float)($preMap[$axisKey]['price'] ?? 0), 2);
+            $nc = (int)($nowMap[$axisKey]['count'] ?? 0);
+            $np = round((float)($nowMap[$axisKey]['price'] ?? 0), 2);
+            $xAxis[] = $labelText;
+            $preCount[] = $pc;
+            $prePrice[] = $pp;
+            $nowCount[] = $nc;
+            $nowPrice[] = $np;
+            $maxNum = max($maxNum, $pc, $nc);
+            $maxPrice = max($maxPrice, $pp, $np);
+        }
+
+        $chartdata = [
+            'legend' => $legend,
+            'xAxis' => $xAxis,
+            'yAxis' => ['maxnum' => $maxNum, 'maxprice' => $maxPrice],
+            'series' => [
+                ['name' => $legend[0], 'type' => 'bar', 'itemStyle' => $this->orderChartBarStyle('#69cdff', '#1495eb'), 'data' => $prePrice],
+                ['name' => $legend[1], 'type' => 'bar', 'itemStyle' => $this->orderChartBarStyle('#6fdeab', '#2cc981'), 'data' => $nowPrice],
+                ['name' => $legend[2], 'type' => 'line', 'itemStyle' => $this->orderChartBarStyle('#69cdff', '#1495eb'), 'data' => $preCount, 'yAxisIndex' => 1],
+                ['name' => $legend[3], 'type' => 'line', 'itemStyle' => $this->orderChartBarStyle('#6fdeab', '#2cc981'), 'data' => $nowCount, 'yAxisIndex' => 1],
+            ],
+        ];
+        return array_merge($chartdata, $this->buildOrderCycleSummary($preBefore, $preAfter, $nowBefore, $nowAfter));
+    }
+
+    /**
+     * 组装上期/本期汇总（环比）
+     */
+    protected function buildOrderCycleSummary(string $preBefore, string $preAfter, string $nowBefore, string $nowAfter): array
+    {
+        $preTotal = $this->dao->preTotalFind($preBefore, $preAfter);
+        $total = $this->dao->preTotalFind($nowBefore, $nowAfter);
+        $preCount = (int)($preTotal['count'] ?? 0);
+        $prePrice = (float)($preTotal['price'] ?? 0);
+        $nowCount = (int)($total['count'] ?? 0);
+        $nowPrice = (float)($total['price'] ?? 0);
+        $chaCount = $preCount - $nowCount;
+        $chaPrice = round($prePrice, 2) - round($nowPrice, 2);
+        $baseCount = $preCount == 0 ? 1 : $preCount;
+        $basePrice = $prePrice == 0 ? 1 : $prePrice;
+        return [
+            'pre_cycle' => [
+                'count' => ['data' => $preCount],
+                'price' => ['data' => $prePrice],
+            ],
+            'cycle' => [
+                'count' => [
+                    'data' => $nowCount,
+                    'percent' => round((abs($chaCount) / $baseCount) * 100, 2),
+                    'is_plus' => $chaCount > 0 ? -1 : ($chaCount == 0 ? 0 : 1),
+                ],
+                'price' => [
+                    'data' => $nowPrice,
+                    'percent' => round((abs($chaPrice) / $basePrice) * 100, 2),
+                    'is_plus' => $chaPrice > 0 ? -1 : ($chaPrice == 0 ? 0 : 1),
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * ECharts 柱/线渐变样式
+     */
+    protected function orderChartBarStyle(string $startColor, string $endColor): array
+    {
+        return [
+            'normal' => [
+                'color' => [
+                    'x' => 0, 'y' => 0, 'x2' => 0, 'y2' => 1,
+                    'colorStops' => [
+                        ['offset' => 0, 'color' => $startColor],
+                        ['offset' => 1, 'color' => $endColor],
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
