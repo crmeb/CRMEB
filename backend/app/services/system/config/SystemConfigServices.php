@@ -682,18 +682,22 @@ class SystemConfigServices extends BaseService
         if($type == 3){
             $fileDataValue = json_decode($data['value'], true) ?: '';
             if ($fileDataValue !== '') $fileDataValue = set_file_url($fileDataValue);
+            $fileDataValue = is_string($fileDataValue) ? $fileDataValue : '';
         } else{
             $fileDataValue = '';
         }   
         
-        $fileField = $this->builder->uploadFile($data['menu_name'], $data['info'], $this->url('/adminapi/file/upload/1', ['type' => 1], false, true), $fileDataValue)
-            ->name('file')->appendRule('suffix', [
-                'type' => 'div',
-                'class' => 'tips-info',
-                'style' => ['width' => '100%'], 'props' => ['innerHTML' => $data['desc'] ?? '']
-            ])->col(13)->data(['menu_name' => $data['menu_name']])->headers([
+        // 文件上传使用前端 form-create 自定义组件 FileUpload：非图片文件显示文件图标，上传前后同为 80×80
+        $fileField = $this->builder->fileUpload($data['menu_name'], $data['info'], $this->url('/adminapi/file/upload/1', ['type' => 1], false, true), $fileDataValue, [
+            'data' => ['menu_name' => $data['menu_name']],
+            'headers' => [
                 'Authori-zation' => app()->request->header('Authori-zation'),
-            ]);
+            ],
+        ])->appendRule('suffix', [
+            'type' => 'div',
+            'class' => 'tips-info',
+            'style' => ['width' => '100%'], 'props' => ['innerHTML' => $data['desc'] ?? '']
+        ])->col(13);
         
         // 如果需要显示类型选择器（编辑模式）
         if ($showTypeSelect) {

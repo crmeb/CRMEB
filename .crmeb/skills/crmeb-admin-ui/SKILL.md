@@ -475,6 +475,7 @@ function del(row, tit, num) {
 | 组件 | 用途 |
 |---|---|
 | `uploadImg` / `uploadPictures` / `uploadVideo2` | 图片上传 / 素材库选择（左分类树+右列表，`@getPic` 回传）/ 视频上传 |
+| `fileUpload` | 单文件上传（form-create 自定义组件，`main.js` 注册为 `type=FileUpload`，后端 `Form::fileUpload()` 生成规则）：空态 80×80 上传图标卡片；已上传时图片类文件（含 ico）显示缩略图、其它文件显示文件图标+文件名，上传前后同尺寸；值仍是文件地址字符串 |
 | `wangEditor` | 富文本（wangeditor v5；自定义工具栏按钮经 `Boot.registerMenu` 模块级只注册一次；回调走组件事件） |
 | `cropperImg` | 图片裁剪 |
 | `echartsNew` | 图表封装（props `optionData`/`styles`，deep watch 重绘） |

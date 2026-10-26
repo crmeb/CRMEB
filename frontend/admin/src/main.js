@@ -42,6 +42,7 @@ import pagesHeader from '@/components/pagesHeader';
 import dateRangePicker from '@/components/dateRangePicker/index.vue';
 import common_wrapper from '@diy/components/mobilePage/common_wrapper.vue';
 import iconCompat from '@/components/iconCompat/index.vue';
+import FileUpload from '@/components/fileUpload/index.vue';
 import imgModal from './components/uploadPictures/model';
 import videoModal from './components/uploadVideo2/model';
 import lazyDirective from '@/utils/lazyDirective';
@@ -126,6 +127,9 @@ app.use(router);
 app.use(i18n);
 app.use(ElementPlus, { locale: zhCn });
 app.use(formCreate);
+// form-create 自定义单文件上传组件（后端 Form::fileUpload() 生成 type=FileUpload 规则，
+// 替代按图片卡片渲染的内置 upload：非图片文件显示文件图标，上传前后尺寸一致）
+formCreate.component('FileUpload', FileUpload);
 app.use(VxeUIAll);
 app.use(VxeTable);
 app.use(imgModal);

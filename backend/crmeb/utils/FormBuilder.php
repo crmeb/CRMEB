@@ -31,6 +31,34 @@ class FormBuilder extends Form
     }
 
     /**
+     * 单文件上传（form-create 自定义组件）
+     *
+     * 前端 main.js 已注册 type=FileUpload 的自定义组件：空态为上传图标卡片，
+     * 已上传时图片类文件（含 ico）显示缩略图、其它文件显示文件图标与文件名，
+     * 上传前后同为 80×80。替代内置 upload 组件按图片卡片渲染文件
+     * （非图片文件没有缩略图会破图，且上传前后尺寸不一致）。
+     * 值为文件地址字符串，提交与回显行为与 uploadFile 一致。
+     *
+     * @param string $field 字段名
+     * @param string $title 字段标题
+     * @param string $action 上传地址
+     * @param string $value 已上传文件地址
+     * @param array $props 组件 props 覆盖：data 上传附加参数、headers 上传请求头、accept 允许的文件类型、disabled 是否禁用
+     * @return \FormBuilder\Driver\CustomComponent
+     */
+    public static function fileUpload($field, $title, $action, $value = '', array $props = [])
+    {
+        return self::createComponent('FileUpload')
+            ->field($field)
+            ->title($title)
+            ->value((string)$value)
+            ->props(array_merge([
+                'action' => $action,
+                'uploadName' => 'file',
+            ], $props));
+    }
+
+    /**
      * 富文本编辑器（form-create 自定义组件）
      *
      * 前端 SchemaForm 已注册 type=SchemaEditor 的自定义组件（适配系统 wangEditor），
