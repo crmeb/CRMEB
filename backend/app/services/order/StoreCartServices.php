@@ -339,6 +339,10 @@ class StoreCartServices extends BaseService
         if (!$new && $this->isDirectCartMode($product_id)) {
             throw new ApiException('该商品不支持加入购物车，请直接购买');
         }
+        // 预售商品走预售下单流程，禁止加入购物车（立即购买 new=true 不受限）
+        if (!$new && $this->isPresaleProduct($product_id)) {
+            throw new ApiException('预售商品不支持加入购物车，请直接购买');
+        }
         if ($type == 0) {
             //检查限购
             $this->checkLimit($uid, $product_id, $cart_num, $new);
@@ -448,6 +452,20 @@ class StoreCartServices extends BaseService
             $productType = app()->make(CenterProductServices::class)->getProductType($productId);
             $handler = app()->make(ProductTypeRegistry::class)->get($productType);
             return ($handler->getCartStrategy()['cart_mode'] ?? 'cart') === 'direct';
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断是否为预售商品（开启预售后只能走预售购买，不能进购物车）
+     * @param int $productId 商品ID
+     * @return bool
+     */
+    protected function isPresaleProduct(int $productId): bool
+    {
+        try {
+            return (int)app()->make(CenterProductServices::class)->value(['id' => $productId], 'presale') === 1;
         } catch (\Throwable $e) {
             return false;
         }
@@ -611,6 +629,10 @@ class StoreCartServices extends BaseService
 
         if (!$productServices->isValidProduct((int)$productId, 'id')) {
             throw new ApiException('该商品已下架或删除');
+        }
+        // 列表加购入口：预售商品禁止写入购物车
+        if ($this->isPresaleProduct((int)$productId)) {
+            throw new ApiException('预售商品不支持加入购物车，请直接购买');
         }
 
         // 通过 ProductTypeHandler 获取默认 SKU 并校验有效性

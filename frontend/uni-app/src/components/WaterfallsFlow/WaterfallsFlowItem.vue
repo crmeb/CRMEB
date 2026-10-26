@@ -23,12 +23,15 @@
 				</view>
 				<view class="flex-between-center mt-12">
 					<text class="fs-22 text--w111-999">{{ $t(`已售`) }}{{item.sales}}{{item.unit_name}}</text>
-					<view class="w-44 h-44 rd-24 bg-gradient flex-center" v-if="goDetail=='goDetail'">
-						<text class="iconfont icon-ic_ShoppingCart1 text--w111-fff fs-26"></text>
-					</view>
-					<view class="w-44 h-44 rd-24 bg-gradient flex-center" @tap.stop="addCartChange" v-else>
-						<text class="iconfont icon-ic_ShoppingCart1 text--w111-fff fs-26"></text>
-					</view>
+					<!-- 预售等 cart_button=0 的商品列表不展示加购入口 -->
+					<template v-if="item.cart_button != 0">
+						<view class="w-44 h-44 rd-24 bg-gradient flex-center" v-if="goDetail=='goDetail'">
+							<text class="iconfont icon-ic_ShoppingCart1 text--w111-fff fs-26"></text>
+						</view>
+						<view class="w-44 h-44 rd-24 bg-gradient flex-center" @tap.stop="addCartChange" v-else>
+							<text class="iconfont icon-ic_ShoppingCart1 text--w111-fff fs-26"></text>
+						</view>
+					</template>
 				</view>
 			</view>
 		</view>

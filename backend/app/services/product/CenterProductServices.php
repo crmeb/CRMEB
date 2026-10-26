@@ -780,6 +780,19 @@ class CenterProductServices extends BaseService
             $svipOpen = $memberCardService->isOpenMemberCard('vip_price');
         } catch (\Throwable $e) {}
         $svipPriceOpen = (int)sys_config('member_price_status');
+        // 商品主表 vip_price 可能为 0（会员价只写在 SKU），从规格中取最小有效会员价供详情展示
+        if ((float)($storeInfo['vip_price'] ?? 0) <= 0 && !empty($productValue)) {
+            $skuVipPrices = [];
+            foreach ($productValue as $skuRow) {
+                $skuVip = (float)($skuRow['vip_price'] ?? 0);
+                if ($skuVip > 0) {
+                    $skuVipPrices[] = $skuVip;
+                }
+            }
+            if ($skuVipPrices) {
+                $storeInfo['vip_price'] = (string)min($skuVipPrices);
+            }
+        }
         $storeInfo['svip_economize_price'] = bcsub((string)$storeInfo['price'], (string)$storeInfo['vip_price'], 2);
         if (!($svipOpen && sys_config('member_card_status') && $storeInfo['is_vip'] && sys_config('member_price_status', 1))) {
             $storeInfo['vip_price'] = 0;
@@ -931,9 +944,8 @@ class CenterProductServices extends BaseService
             $storeInfo['cart_strategy']['cart_mode'] = 'direct';
         }
 
-        // cart_button 由 cart_strategy.cart_mode 决定：direct 模式不展示加入购物车按钮
-        // 预售商品在模板中走独立分支，不影响此处判断
-        $storeInfo['cart_button'] = ($storeInfo['cart_strategy']['cart_mode'] ?? 'cart') === 'direct' ? 0 : 1;
+        // 预售 / 自定义表单 / direct 模式均不展示加入购物车
+        $storeInfo['cart_button'] = $this->canShowCartButton($storeInfo) ? 1 : 0;
 
         // ========== 14. 组装扁平返回数据 ==========
         $result = [
@@ -1088,9 +1100,12 @@ class CenterProductServices extends BaseService
             'bottom_bar' => [
                 'text'   => '立即购买',
                 'action' => 'submitOrder',
-                // cart_button 由 cart_strategy.cart_mode 决定：direct 模式不展示加入购物车按钮
-                // 自定义表单商品需填表后直接下单，同样不展示加入购物车
-                'extra'  => ['cart_button' => !$this->hasCustomForm($extensions['custom_form'] ?? []) && $this->getCartModeByType($productType) !== 'direct'],
+                // 预售 / 自定义表单 / direct 模式均不展示加入购物车
+                'extra'  => ['cart_button' => $this->canShowCartButton([
+                    'presale' => $data['product']['presale'] ?? 0,
+                    'custom_form' => $extensions['custom_form'] ?? [],
+                    'product_type' => $productType,
+                ])],
             ],
             'submit_api' => 'center/order/create',
         ];
@@ -1593,6 +1608,26 @@ class CenterProductServices extends BaseService
             return !empty($decoded);
         }
         return trim((string)$customForm) !== '';
+    }
+
+    /**
+     * 是否允许展示/使用加入购物车
+     * 预售、自定义表单、direct 加购模式均不允许进购物车，应进详情直接购买
+     * @param array $item 商品信息（需含 presale / custom_form / product_type）
+     * @return bool
+     */
+    protected function canShowCartButton(array $item): bool
+    {
+        if ((int)($item['presale'] ?? 0) === 1) {
+            return false;
+        }
+        if ($this->hasCustomForm($item['custom_form'] ?? '')) {
+            return false;
+        }
+        if ($this->getCartModeByType((string)($item['product_type'] ?? 'normal')) === 'direct') {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -2458,8 +2493,8 @@ class CenterProductServices extends BaseService
             if (!$this->vipIsOpen(!!$item['is_vip'], $vipStatus)) {
                 $item['vip_price'] = 0;
             }
-            // 自定义表单商品不支持加入购物车（前端据此点击直接进详情）
-            $item['cart_button'] = $this->hasCustomForm($item['custom_form'] ?? '') || $this->getCartModeByType($item['product_type'] ?? 'normal') === 'direct' ? 0 : 1;
+            // 预售 / 自定义表单 / direct 模式不支持加入购物车（前端据此进详情）
+            $item['cart_button'] = $this->canShowCartButton($item) ? 1 : 0;
             if (count($item['star'])) {
                 $item['star'] = bcdiv((string)array_sum(array_column($item['star'], 'product_score')), (string)count($item['star']), 1);
             } else {
@@ -2641,10 +2676,13 @@ class CenterProductServices extends BaseService
         if (!array_key_exists('vip_user', $where)) {
             $where['vip_user'] = $this->resolveVipUserLevel($uid);
         }
-        $list = $this->dao->getSearchList($where, $page, $limit, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,unit_name,presale,is_vip,vip_price']);
+        $list = $this->dao->getSearchList($where, $page, $limit, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,unit_name,presale,custom_form,product_type,is_vip,vip_price']);
         // eb_product_center 无 activity 列，补默认值兼容 getActivityList
         foreach ($list as &$item) {
             $item['activity'] = $item['activity'] ?? '';
+            $item['presale'] = (int)($item['presale'] ?? 0);
+            // 预售 / 自定义表单 / direct 模式不支持加入购物车
+            $item['cart_button'] = $this->canShowCartButton($item) ? 1 : 0;
         }
         $list = $this->getActivityList($list);
         return $list;
@@ -2742,9 +2780,8 @@ class CenterProductServices extends BaseService
         }
         $storeInfo['cart_strategy'] = $cartStrategy;
 
-        // cart_button 由 cart_strategy.cart_mode 决定：direct 模式不展示加入购物车按钮
-        // 预售商品在模板中走独立分支，不影响此处判断
-        $storeInfo['cart_button'] = ($cartStrategy['cart_mode'] ?? 'cart') === 'direct' ? 0 : 1;
+        // 预售 / 自定义表单 / direct 模式均不展示加入购物车
+        $storeInfo['cart_button'] = $this->canShowCartButton($storeInfo) ? 1 : 0;
 
         $specs = $handler->getDetailSpecs($id);
         $productAttr = $specs['productAttr'] ?? [];
@@ -3988,6 +4025,7 @@ class CenterProductServices extends BaseService
             'is_vip',
             'vip_price',
             'custom_form',
+            'presale',
         ];
 
         $list = $this->dao->getSearchList($where, $page, $limit, $field);
@@ -3997,13 +4035,13 @@ class CenterProductServices extends BaseService
             $item['activity'] = '';
             $item['vip_price'] = '0.00';
             $item['is_virtual'] = $this->isVirtualProduct($item['product_type'] ?? 'normal');
-            $item['presale'] = 0;
+            $item['presale'] = (int)($item['presale'] ?? 0);
             $item['min_qty'] = 1;
             $item['label_list'] = '';
             $item['store_info'] = '';
             $item['star'] = '5.0';
-            // 自定义表单商品不支持加入购物车（前端据此点击直接进详情）
-            $item['cart_button'] = $this->hasCustomForm($item['custom_form'] ?? '') || $this->getCartModeByType($item['product_type'] ?? 'normal') === 'direct' ? 0 : 1;
+            // 预售 / 自定义表单 / direct 模式不支持加入购物车（前端据此进详情）
+            $item['cart_button'] = $this->canShowCartButton($item) ? 1 : 0;
 
             // 标记活动商品
             if (!empty($item['activity'])) {

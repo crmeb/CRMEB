@@ -1570,8 +1570,6 @@ function ChangeCartNum(changeValue, num, stock, isDuo, id, index, cart) {
       if (!isDuo) {
         if (cart) {
           goCat(0, id, 1, 1, num.product_attr_unique);
-          // 遗留 bug：原 mixin 调用 this.getTotalPrice()，本组件从未定义该方法（运行时必报错），保持原语义
-          getTotalPrice();
         } else {
           goCat(0, id, 1);
         }
@@ -1599,7 +1597,6 @@ function ChangeCartNum(changeValue, num, stock, isDuo, id, index, cart) {
       if (!isDuo) {
         if (cart) {
           goCat(0, id, 0, 1, num.product_attr_unique);
-          getTotalPrice();
         } else {
           goCat(0, id, 0);
         }
@@ -1653,18 +1650,15 @@ function goCat(duo, goodsId, type, cart, unique) {
       }
 
       util.Tips({
-        title: res.msg
+        title: res.msg || '加入购物车成功'
       });
 
       getCartNum();
-      if (!cart) {
-        // 遗留 bug：原 mixin 调用 this.getCartList(1)，本组件从未定义该方法（运行时必报错），保持原语义
-        getCartList(1);
-      }
+      // DIY 商品列表无分类页悬浮购物车，不调用 getCartList
     })
     .catch(err => {
       return util.Tips({
-        title: err
+        title: (err && (err.msg || err.message)) || err
       });
     });
 }
@@ -1672,20 +1666,15 @@ function goCartDuo(item, num) {
   if (!isLogin.value) {
     toLogin();
   } else {
-    if(item.cart_button == 0){
-      if(item.is_presale_product){
-        uni.navigateTo({
-          url: `/pages/activity/goods_details/index?id=${item.id}&type=6`
-        })
-      }else{
-        //num:表示从首页点击进来的
-        let page1 = `/pages/goods_details/index?id=${item.id}&fromType=1`;
-        let page2 = `/pages/goods_details/index?id=${item.id}`;
-        uni.navigateTo({
-          url: num?page2:page1
-        })
-      }
-    }else{
+    // 预售 / 自定义表单 / direct 模式：列表不支持加购，进详情购买
+    if (item.cart_button == 0) {
+      //num:表示从首页点击进来的
+      let page1 = `/pages/goods_details/index?id=${item.id}&fromType=1`;
+      let page2 = `/pages/goods_details/index?id=${item.id}`;
+      uni.navigateTo({
+        url: num ? page2 : page1
+      });
+    } else {
       storeName.value = item.store_name;
       getAttrs(item.id);
       id.value = item.id;
@@ -1698,17 +1687,12 @@ function goCartDan(item, index, num) {
   if (!isLogin.value) {
     toLogin();
   } else {
-    if(item.cart_button == 0){
-      if(item.is_presale_product){
-        uni.navigateTo({
-          url: `/pages/activity/goods_details/index?id=${item.id}&type=6`
-        })
-      }else{
-        uni.navigateTo({
-          url: `/pages/goods_details/index?id=${item.id}&fromType=1`
-        })
-      }
-    }else{
+    // 预售 / 自定义表单 / direct 模式：列表不支持加购，进详情购买
+    if (item.cart_button == 0) {
+      uni.navigateTo({
+        url: `/pages/goods_details/index?id=${item.id}&fromType=1`
+      });
+    } else {
       tempArr.value[index].cart_num = 1;
       // num表示从门店过来的；
       // if(num){
