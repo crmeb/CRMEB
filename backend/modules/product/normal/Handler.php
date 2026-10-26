@@ -18,6 +18,7 @@ use modules\product\normal\dao\NormalProductDao;
 use modules\product\normal\dao\NormalProductSkuDao;
 use modules\product\normal\handler\NormalOrderAdapter;
 use modules\product\normal\service\FreightConfigHelper;
+use modules\product\normal\service\ProductSaveServices;
 
 /**
  * 实物商品处理器

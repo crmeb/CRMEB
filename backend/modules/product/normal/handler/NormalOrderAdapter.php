@@ -141,7 +141,7 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
                     Button::primary('去支付', 'payOrder'),
                 ]),
 
-            // ───── 待发货（进入 processing） ─────
+            // ───── 待发货（进入 processing；到店自提同态展示为「待核销」，见 resolveBusinessStatus） ─────
             OrderFlowNode::make(self::EXT_STATUS_PENDING_SHIPPED)
                 ->centerStatus(self::STATUS_PROCESSING)
                 ->label('待发货')
@@ -187,6 +187,7 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
             OrderFlowNode::make(self::EXT_STATUS_PENDING_REVIEW)
                 ->centerStatus(self::STATUS_PENDING_REVIEW)
                 ->label('待评价')
+                ->badge('pending_comment', '待评价')
                 ->adminButtons([
                     Button::make('查看物流', 'viewLogistics'),
                 ])
@@ -307,6 +308,7 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
 
     /**
      * 推导业务状态（前端 Badge 展示）
+     * 到店自提在「待发货」同态下展示「待核销」，避免详情顶部副文案误导
      */
     public function resolveBusinessStatus(array $sourceOrder): ?array
     {
@@ -328,8 +330,26 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
             return $businessStatus;
         }
 
+        // 到店自提：支付后同为 pending_shipped，文案应为待核销而非待发货
+        if ($status === self::EXT_STATUS_PENDING_SHIPPED && $this->isPickupSourceOrder($sourceOrder)) {
+            return ['code' => 'pending_verify', 'text' => '待核销', 'detail' => ''];
+        }
+
         // 从 STATUS_TREE 查找 badge
         return $this->getBadge($status);
+    }
+
+    /**
+     * 判断源订单是否为到店自提
+     * 优先 delivery_type（扩展表），兼容 shipping_type=2
+     */
+    protected function isPickupSourceOrder(array $sourceOrder): bool
+    {
+        $deliveryType = (string)($sourceOrder['delivery_type'] ?? '');
+        if ($deliveryType === 'pickup') {
+            return true;
+        }
+        return (int)($sourceOrder['shipping_type'] ?? 0) === 2;
     }
 
     // ======================== 4. 按钮逻辑 ========================
@@ -527,8 +547,8 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
      * 实物商品订单生命周期进度条
      *
      * 根据配送方式展示不同进度节点：
-     * - 快递配送（delivery）：提交订单 → 支付成功 → 商品发货 → 确认收货 → 订单完成
-     * - 到店自提（pickup）：  提交订单 → 支付成功 → 到店核销 → 订单完成
+     * - 快递配送（delivery）：提交订单 → 支付成功 → 商品发货 → 确认收货 → 订单评价 → 订单完成
+     * - 到店自提（pickup）：  提交订单 → 支付成功 → 到店核销 → 订单评价 → 订单完成
      *
      * @param array $detail 订单详情（含 status_code、source_status、add_time、pay_time、delivery_time、take_time、shipping_type 等）
      * @return array
@@ -541,6 +561,8 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
         $isAfterSale  = $statusCode === self::STATUS_AFTER_SALE;
         $isRefunded   = $statusCode === self::STATUS_REFUNDED;
         $isCompleted  = $statusCode === self::STATUS_COMPLETED;
+        $isPendingReview = $statusCode === self::STATUS_PENDING_REVIEW
+            || $sourceStatus === self::EXT_STATUS_PENDING_REVIEW;
 
         // 送礼订单：提交订单 → 支付成功 → 礼品待领 → 礼品已领 → 订单完成
         if ($this->isGiftOrder($detail)) {
@@ -548,30 +570,33 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
         }
 
         // 判断是否为到店自提（shipping_type=2），默认走快递配送流程
-        $isPickup = ($detail['shipping_type'] ?? 0) == 2;
+        $isPickup = ($detail['shipping_type'] ?? 0) == 2
+            || (($detail['delivery_type'] ?? '') === 'pickup');
 
-        // 根据配送方式定义进度节点
+        // 根据配送方式定义进度节点（订单完成前固定含「订单评价」）
         if ($isPickup) {
-            // 到店自提：提交订单 → 支付成功 → 到店核销 → 订单完成
+            // 到店自提：提交订单 → 支付成功 → 到店核销 → 订单评价 → 订单完成
             $nodes = [
                 ['title' => '提交订单', 'key' => 'submit', 'time_field' => 'add_time'],
                 ['title' => '支付成功', 'key' => 'pay', 'time_field' => 'pay_time'],
                 ['title' => '到店核销', 'key' => 'verify', 'time_field' => 'delivery_time'],
+                ['title' => '订单评价', 'key' => 'review', 'time_field' => ''],
                 ['title' => '订单完成', 'key' => 'complete', 'time_field' => ''],
             ];
-            $completeIndex = 3;  // 订单完成节点索引
-            $lastDeliveryIndex = 2; // 到店核销节点索引
+            $completeIndex = 4;
+            $reviewIndex = 3;
         } else {
-            // 快递配送：提交订单 → 支付成功 → 商品发货 → 确认收货 → 订单完成
+            // 快递配送：提交订单 → 支付成功 → 商品发货 → 确认收货 → 订单评价 → 订单完成
             $nodes = [
                 ['title' => '提交订单', 'key' => 'submit', 'time_field' => 'add_time'],
                 ['title' => '支付成功', 'key' => 'pay', 'time_field' => 'pay_time'],
                 ['title' => '商品发货', 'key' => 'delivery', 'time_field' => 'delivery_time'],
                 ['title' => '确认收货', 'key' => 'receive', 'time_field' => 'take_time'],
+                ['title' => '订单评价', 'key' => 'review', 'time_field' => ''],
                 ['title' => '订单完成', 'key' => 'complete', 'time_field' => ''],
             ];
-            $completeIndex = 4;
-            $lastDeliveryIndex = 3;
+            $completeIndex = 5;
+            $reviewIndex = 4;
         }
 
         // 计算每个节点的完成状态和发生时间
@@ -586,16 +611,21 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
         }
         unset($node);
 
-        // 最后一个节点（订单完成）特殊处理：只有订单真正完成才算完成
-        $completeNode = &$nodes[$completeIndex];
-        $completeNode['completed'] = $isCompleted;
-        if ($completeNode['completed']) {
+        // 订单评价：评价完成后进入已完成，故已完成即视为评价节点已完成
+        $nodes[$reviewIndex]['completed'] = $isCompleted;
+        if ($isCompleted) {
+            $finishTime = (int)($detail['take_time'] ?? 0) ?: (int)($detail['delivery_time'] ?? 0);
+            $nodes[$reviewIndex]['time'] = $finishTime ? date('Y-m-d H:i:s', $finishTime) : '';
+        }
+
+        // 订单完成：只有订单真正完成才算完成
+        $nodes[$completeIndex]['completed'] = $isCompleted;
+        if ($isCompleted) {
             // 到店自提使用核销时间（delivery_time），快递配送使用收货时间（take_time）
-            $completeNode['time'] = $isPickup
+            $nodes[$completeIndex]['time'] = $isPickup
                 ? ($detail['delivery_time'] ? date('Y-m-d H:i:s', (int)$detail['delivery_time']) : '')
                 : ($detail['take_time'] ? date('Y-m-d H:i:s', (int)$detail['take_time']) : '');
         }
-        unset($completeNode);
 
         // 重新计算最后一个已完成节点索引
         $lastCompleted = -1;
@@ -614,18 +644,15 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
             $current = 1; // 售后/退款：流程中断在支付成功后
         } elseif ($isCompleted) {
             $current = $completeIndex;
-        } elseif ($sourceStatus === self::EXT_STATUS_PENDING_REVIEW) {
-            $current = $completeIndex; // 待评价：激活"订单完成"作为当前待处理步骤
+        } elseif ($isPendingReview) {
+            $current = $reviewIndex; // 待评价：激活「订单评价」
         } elseif ($isPickup) {
             // —— 到店自提 current 映射 ——
-            if ($sourceStatus === self::EXT_STATUS_PENDING_RECEIVE) {
-                $current = 2; // 已核销（pending_receive）：到店核销已完成，该节点即为当前步骤
-            } elseif ($sourceStatus === self::EXT_STATUS_PENDING_SHIPPED) {
-                $current = 2; // 待核销（pending_shipped）：等待到店核销
-            } elseif ((int)($detail['delivery_time'] ?? 0) > 0) {
-                $current = 2; // 已核销
-            } elseif ((int)($detail['pay_time'] ?? 0) > 0) {
-                $current = 1; // 已支付，等待核销
+            if ($sourceStatus === self::EXT_STATUS_PENDING_SHIPPED
+                || $sourceStatus === self::EXT_STATUS_PENDING_RECEIVE
+                || (int)($detail['pay_time'] ?? 0) > 0
+            ) {
+                $current = 2; // 待核销 / 核销环节
             } elseif ((int)($detail['add_time'] ?? 0) > 0) {
                 $current = 0; // 刚提交，未支付
             }
