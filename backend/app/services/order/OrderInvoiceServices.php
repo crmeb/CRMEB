@@ -174,6 +174,8 @@ class OrderInvoiceServices extends BaseService
             $cartInfo[] = [
                 'cart_num' => $product['cart_num'] ?? 1,
                 'truePrice' => $product['true_price'] ?? 0,
+                // 开票仅针对已支付订单，商品按有效态展示（is_valid 缺省会被组件置灰半透明）
+                'is_valid' => true,
                 'productInfo' => [
                     'image' => $product['image'] ?? '',
                     'store_name' => $product['store_name'] ?? '',
