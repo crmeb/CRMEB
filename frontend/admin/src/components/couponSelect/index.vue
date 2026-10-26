@@ -1,5 +1,5 @@
 <template>
-  <div class="coupon-select">
+  <div ref="rootRef" class="coupon-select" :class="{ 'is-embed': isEmbed }">
     <el-form :inline="true" @submit.prevent>
       <el-form-item label="优惠券名称：">
         <el-input
@@ -17,23 +17,23 @@
     <el-table
       ref="couponTable"
       v-loading="loading"
-      class="mt15"
+      class="mt15 coupon-select__table"
       :data="couponList"
       :row-key="getRowKey"
       highlight-current-row
       no-userFrom-text="暂无数据"
       no-filtered-userFrom-text="暂无筛选结果"
-      height="420"
+      :max-height="tableMaxHeight"
       @selection-change="changeCheckbox"
     >
-      <el-table-column type="selection" width="55" :selectable="checkSelectable" :reserve-selection="true" />
-      <el-table-column label="ID" width="70" prop="id" />
-      <el-table-column label="优惠券名称" min-width="140">
+      <el-table-column type="selection" width="42" :selectable="checkSelectable" :reserve-selection="true" />
+      <el-table-column label="ID" width="54" prop="id" />
+      <el-table-column label="优惠券名称" min-width="96" show-overflow-tooltip>
         <template #default="scope">
           <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="优惠券类型" min-width="90">
+      <el-table-column label="类型" width="64">
         <template #default="scope">
           <span v-if="scope.row.type === 1">品类券</span>
           <span v-else-if="scope.row.type === 2">商品券</span>
@@ -41,36 +41,37 @@
           <span v-else>通用券</span>
         </template>
       </el-table-column>
-      <el-table-column label="面值" min-width="80">
+      <el-table-column label="面值" width="64">
         <template #default="scope">
           <span>{{ scope.row.coupon_price }}元</span>
         </template>
       </el-table-column>
-      <el-table-column label="最低消费" min-width="90">
+      <el-table-column label="门槛" width="72">
         <template #default="scope">
-          <span>{{ scope.row.use_min_price == '0.00' ? '无门槛' : `满${scope.row.use_min_price}元` }}</span>
+          <span>{{ scope.row.use_min_price == '0.00' ? '无门槛' : `满${scope.row.use_min_price}` }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="发布数量" min-width="130">
+      <el-table-column label="数量" width="88">
         <template #default="scope">
           <span v-if="scope.row.is_permanent">不限量</span>
-          <div v-else>
-            <span>发布：{{ scope.row.total_count }}</span>
-            <span class="ml10">剩余：{{ scope.row.remain_count }}</span>
-          </div>
+          <span v-else class="cell-nowrap">{{ scope.row.total_count }}/{{ scope.row.remain_count }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="领取期限" min-width="150">
+      <el-table-column label="领取期限" width="178">
         <template #default="scope">
-          <div v-if="scope.row.start_time || scope.row.end_time">
-            {{ $filters.formatDate(scope.row.start_time) }} ~ {{ $filters.formatDate(scope.row.end_time) }}
-          </div>
+          <span v-if="scope.row.start_time || scope.row.end_time" class="cell-nowrap">
+            {{ formatDay(scope.row.start_time) }}~{{ formatDay(scope.row.end_time) }}
+          </span>
           <span v-else>不限时</span>
         </template>
       </el-table-column>
-      <el-table-column label="使用有效期" min-width="150">
+      <el-table-column label="使用有效期" width="178">
         <template #default="scope">
-          <span>{{ scope.row.use_time }}</span>
+          <!-- 有固定使用起止时间用日期（仅年月日）；否则按领取后天数展示 -->
+          <span v-if="scope.row.start_use_time" class="cell-nowrap">
+            {{ formatDay(scope.row.start_use_time) }}~{{ formatDay(scope.row.end_use_time) }}
+          </span>
+          <span v-else>{{ Number(scope.row.coupon_time || 0) }}天</span>
         </template>
       </el-table-column>
     </el-table>
@@ -83,7 +84,8 @@
         @pagination="getList"
       />
     </div>
-    <div class="footer">
+    <!-- 嵌入 SchemaCoupon 弹窗时由外层页脚确认，避免重复按钮与高度浪费 -->
+    <div v-if="!isEmbed" class="footer">
       <el-button v-db-click @click="cancel">取 消</el-button>
       <el-button type="primary" v-db-click @click="confirm"
         >确认选择{{ selectedRows.length ? `（${selectedRows.length}）` : '' }}</el-button
@@ -93,7 +95,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, reactive, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
 import { releasedListApi } from '@/api/marketing';
@@ -102,18 +104,55 @@ defineOptions({ name: 'CouponSelect' });
 
 const route = useRoute();
 
+/** 是否嵌入 SchemaCoupon 弹窗（由 iframe query embed=1 标识） */
+const isEmbed = computed(() => String(route.query.embed || '') === '1');
+
+/** 表头约 40px + 单行约 48px，最多展示 6 行后出滚动条 */
+const TABLE_HEADER_HEIGHT = 40;
+const TABLE_ROW_HEIGHT = 48;
+const TABLE_MAX_ROWS = 6;
+const tableMaxHeight = TABLE_HEADER_HEIGHT + TABLE_ROW_HEIGHT * TABLE_MAX_ROWS;
+
 const loading = ref(false);
 const total = ref(0);
 const couponList = ref([]);
 const couponTable = ref(null);
+const rootRef = ref(null);
 const tableFrom = reactive({
   coupon_title: '',
-  receive_type: '',
+  // 支持 URL receive_type：新人礼传 3（系统赠送）；缺省不限，保持历史行为
+  receive_type: route.query.receive_type !== undefined && route.query.receive_type !== '' ? route.query.receive_type : '',
   page: 1,
   limit: 15,
 });
 /** 已选行完整数据（[{id,title,coupon_price,use_min_price}]，经 helper.set 回传展示券名） */
 const selectedRows = ref([]);
+
+/**
+ * 时间戳格式化为仅年月日（兼容秒/毫秒），用于期限列完整单行展示
+ * @param {number|string} data
+ * @returns {string}
+ */
+function formatDay(data) {
+  if (data === null || data === undefined || data === '' || Number(data) === 0) {
+    return '';
+  }
+  let ts = Number(data);
+  if (!Number.isFinite(ts)) {
+    return '';
+  }
+  if (ts > 0 && ts < 1e12) {
+    ts *= 1000;
+  }
+  const date = new Date(ts);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}/${m}/${d}`;
+}
 
 /**
  * 余量充足且在领取期内的券才允许勾选（与后端发券查询 getGiveCoupon 条件一致）
@@ -133,17 +172,32 @@ function getRowKey(row) {
   return row.id;
 }
 
+/** 通知外层弹窗按内容高度收缩 iframe，避免大片空白 */
+function reportHeight() {
+  if (!isEmbed.value || !window.parent || window.parent === window) return;
+  nextTick(() => {
+    const el = rootRef.value;
+    if (!el) return;
+    const height = Math.ceil(el.getBoundingClientRect().height);
+    window.parent.postMessage({ type: 'schema-coupon-resize', height }, '*');
+  });
+}
+
 function getList() {
   loading.value = true;
   releasedListApi(tableFrom)
     .then((res) => {
       couponList.value = res.data.list;
       total.value = res.data.count;
-      nextTick(() => setCheckedRows());
+      nextTick(() => {
+        setCheckedRows();
+        reportHeight();
+      });
       loading.value = false;
     })
     .catch(() => {
       loading.value = false;
+      reportHeight();
     });
 }
 
@@ -211,6 +265,8 @@ function waitHelper(timeout = 5000) {
   });
 }
 
+watch(loading, () => reportHeight());
+
 onMounted(async () => {
   const helper = await waitHelper();
   if (helper) {
@@ -225,6 +281,11 @@ onMounted(async () => {
     helper.onOk(confirm);
   }
   getList();
+  window.addEventListener('resize', reportHeight);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', reportHeight);
 });
 </script>
 
@@ -232,6 +293,20 @@ onMounted(async () => {
 .coupon-select {
   padding: 15px 15px 0;
   background-color: var(--prev-bg-white);
+
+  &.is-embed {
+    padding: 4px 4px 0;
+    min-height: 0;
+  }
+}
+.coupon-select__table {
+  width: 100%;
+}
+.cell-nowrap {
+  white-space: nowrap;
+}
+.page {
+  margin-top: 8px;
 }
 .footer {
   padding: 15px 0;

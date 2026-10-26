@@ -95,26 +95,34 @@ class FormBuilder extends Form
     }
 
     /**
-     * 优惠券标签选择器（form-create 自定义组件）
+     * 优惠券标签选择器（form-create 自定义组件 · 契约组件）
      *
      * 前端 SchemaForm 已注册 type=SchemaCoupon 的自定义组件：
      * el-tag 标签展示已选优惠券（可删除），弹窗打开系统选择优惠券页回填
      * （/admin/marketing.Coupon/list.html，弹窗页脚确定/取消触发回填）。
      * 值为对象数组 [{id, title, coupon_price, use_min_price}]，
      * 发券消费端（userFirstSubGiveCoupon）已兼容该格式。
+     * ⚠️ 契约组件：改前端只能向后兼容扩展（新增可选 props、默认行为不变）。
+     * 已支持 props：
+     * - receiveType：筛选发送方式（1 用户领取 / 3 系统赠送），默认 '' 不限；
+     *   新人礼等系统赠送场景应显式传 3。
      *
      * @param string $field 字段名
      * @param string $title 字段标题
      * @param array $value 已选优惠券对象数组
+     * @param array $props 组件 props 覆盖：receiveType 等
      * @return \FormBuilder\Driver\CustomComponent
      */
-    public static function couponSelect($field, $title, $value = [])
+    public static function couponSelect($field, $title, $value = [], array $props = [])
     {
         return self::createComponent('SchemaCoupon')
             ->field($field)
             ->title($title)
             ->value((array)$value)
-            ->props(['field' => $field]);
+            ->props(array_merge([
+                'field' => $field,
+                'receiveType' => '',
+            ], $props));
     }
 
     /**
