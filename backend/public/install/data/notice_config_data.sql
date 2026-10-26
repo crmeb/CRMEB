@@ -2,7 +2,7 @@ INSERT INTO `eb_notice_config` (`id`, `mark`, `owner_plugin_id`, `name`, `title`
 (32, 'verify_code', 'core', '短信验证码', '注册、登录等验证手机号时发送验证码', 1, '{code}验证码,{time}有效时间（分钟）', 0),
 (33, 'bind_spread_uid', 'core', '绑定推广关系通知', '新用户绑定上下级后提醒推广人', 1, '{nickname}新用户昵称,{uid}新用户ID,{spread_uid}推广人UID,{spread_time}绑定时间,{user_type}用户来源', 0),
 (34, 'order_pay_false', 'core', '未支付订单提醒', '订单创建后超时未支付提醒用户', 1, '{order_id}订单号,{pay_price}支付金额,{link}订单链接', 0),
-(35, 'user_balance_change', 'core', '余额变更', '账户余额变动后通知用户', 1, '{extract_number}变动金额,{type}变动类型,{mark}变动备注,{link}账单链接', 0),
+(35, 'user_balance_change', 'core', '余额变更', '账户余额变动后通知用户', 1, '{extract_number}变动金额,{type}变动类型中文标题,{mark}变动备注,{link}账单链接', 0),
 (36, 'revenue_received', 'core', '收益通知', '收益到账后通知用户', 1, '{amount}收益金额,{order_id}关联订单号,{type}收益说明,{link}账单链接', 0),
 (37, 'user_integral_change', 'core', '积分变更', '积分变动后通知用户', 1, '{give_integral}变动积分,{integral}剩余积分,{order_id}关联订单号,{store_title}来源,{link}详情链接', 0),
 (38, 'order_create', 'module:product:normal', '下单成功', '订单提交后提醒用户付款', 1, '{order_id}订单号,{pay_price}应付金额,{store_name}商品,{user_phone}联系电话', 0),

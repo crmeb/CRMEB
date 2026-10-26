@@ -129,6 +129,45 @@ class UserMoneyServices extends BaseService
     {
         $this->dao = $dao;
     }
+
+    /**
+     * 余额流水类型 → 中文标题（按 incomeData 的 type 字段匹配，兼容按配置键查找）
+     * @param string $type
+     * @return string
+     */
+    public function getTypeTitle(string $type): string
+    {
+        $type = trim($type);
+        if ($type === '') {
+            return '';
+        }
+        foreach ($this->incomeData as $key => $item) {
+            if (($item['type'] ?? '') === $type || (string)$key === $type) {
+                return (string)($item['title'] ?? $type);
+            }
+        }
+        return $type;
+    }
+
+    /**
+     * 全部余额类型中文映射（type => title）
+     * @return array<string, string>
+     */
+    public function getTypeTitleMap(): array
+    {
+        $map = [];
+        foreach ($this->incomeData as $key => $item) {
+            $title = (string)($item['title'] ?? '');
+            if ($title === '') {
+                continue;
+            }
+            $map[(string)$key] = $title;
+            if (!empty($item['type'])) {
+                $map[(string)$item['type']] = $title;
+            }
+        }
+        return $map;
+    }
     /**
      * 写入用户记录
      * @param string $type 写入类型
