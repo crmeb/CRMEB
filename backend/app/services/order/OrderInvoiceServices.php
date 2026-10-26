@@ -155,6 +155,11 @@ class OrderInvoiceServices extends BaseService
 
     /**
      * 由订单中台商品快照合成旧版 cartInfo 结构（兼容移动端旧组件）
+     *
+     * 移动端 orderGoods 组件按旧版结构取值：attrInfo 存在时图片/规格价取
+     * attrInfo.image / attrInfo.price，商品单价取 productInfo.price，
+     * 三者缺一会导致商品图片或金额不回显。
+     *
      * @param array $extra 解析后的 extra_info
      * @return array
      */
@@ -162,13 +167,22 @@ class OrderInvoiceServices extends BaseService
     {
         $cartInfo = [];
         foreach ($extra['items'] ?? [] as $product) {
+            $attrInfo = is_array($product['attr_info'] ?? null) ? $product['attr_info'] : [];
+            // 规格图优先，缺省回退商品主图；规格价优先，缺省回退商品价
+            $image = $attrInfo['image'] ?? ($product['image'] ?? '');
+            $price = $attrInfo['price'] ?? ($product['price'] ?? 0);
             $cartInfo[] = [
                 'cart_num' => $product['cart_num'] ?? 1,
                 'truePrice' => $product['true_price'] ?? 0,
                 'productInfo' => [
                     'image' => $product['image'] ?? '',
                     'store_name' => $product['store_name'] ?? '',
-                    'attrInfo' => ['suk' => $product['attr_info']['suk'] ?? ($product['sku'] ?? '')],
+                    'price' => $price,
+                    'attrInfo' => array_merge($attrInfo, [
+                        'suk' => $attrInfo['suk'] ?? ($product['sku'] ?? ''),
+                        'image' => $image,
+                        'price' => $price,
+                    ]),
                 ],
             ];
         }
