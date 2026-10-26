@@ -82,12 +82,13 @@
 			</view>
 			<!-- #endif -->
 			<view class="protocol">
+				<!-- 用 detail.value 同步勾选，避免仅取反与原生勾选状态打架 -->
 				<checkbox-group @change="ChangeIsDefault">
-					<checkbox :class="inAnimation ? 'trembling' : ''" @animationend="inAnimation = false" :checked="protocol ? true : false" backgroundColor="#ffffff" activeBackgroundColor="var(--view-theme, #E93323)" activeBorderColor="var(--view-theme, #E93323)" iconColor="#ffffff" />
+					<checkbox value="1" :class="inAnimation ? 'trembling' : ''" @animationend="inAnimation = false" :checked="protocol" backgroundColor="#ffffff" activeBackgroundColor="var(--view-theme, #E93323)" activeBorderColor="var(--view-theme, #E93323)" iconColor="#ffffff" />
 					{{ $t(`已阅读并同意`) }}
-					<text class="main-color" @click="privacy(4)">{{ $t(`《用户协议》`) }}</text>
+					<text class="main-color" @click.stop="privacy(4)">{{ $t(`《用户协议》`) }}</text>
 					{{ $t(`与`) }}
-					<text class="main-color" @click="privacy(3)">{{ $t(`《隐私协议》`) }}</text>
+					<text class="main-color" @click.stop="privacy(3)">{{ $t(`《隐私协议》`) }}</text>
 				</checkbox-group>
 			</view>
 		</view>
@@ -181,7 +182,8 @@ onMounted(() => {
 
 // ---------- methods ----------
 function ChangeIsDefault(e) {
-	protocol.value = !protocol.value;
+	const values = (e && e.detail && e.detail.value) || [];
+	protocol.value = values.length > 0;
 }
 function privacy(type) {
 	uni.navigateTo({

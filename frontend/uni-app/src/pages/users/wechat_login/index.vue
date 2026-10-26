@@ -59,17 +59,19 @@
       </view>
     </view>
     <view class="protocol" v-if="!canGetPrivacySetting">
-      <checkbox-group @click.stop="ChangeIsDefault">
+      <!-- 用 @change 同步勾选，避免微信 H5 下 @click 连点/冒泡导致 protocol 被来回拨回 -->
+      <checkbox-group @change="ChangeIsDefault">
         <checkbox
+          value="1"
           :class="inAnimation ? 'trembling' : ''"
           @animationend="inAnimation = false"
-          :checked="protocol ? true : false"
+          :checked="protocol"
           backgroundColor="#ffffff"
           activeBackgroundColor="var(--view-theme, #E93323)"
           activeBorderColor="var(--view-theme, #E93323)"
           iconColor="#ffffff"
         />
-        <text @click.stop="ChangeIsDefault">{{ $t(`已阅读并同意`) }}</text>
+        <text @click.stop="toggleProtocol">{{ $t(`已阅读并同意`) }}</text>
         <text class="main-color" @click.stop="privacy(4)">{{
           $t(`《用户协议》`)
         }}</text>
@@ -328,6 +330,10 @@ function getAuthLogin() {
     });
 }
 function ChangeIsDefault(e) {
+  const values = (e && e.detail && e.detail.value) || [];
+  protocol.value = values.length > 0;
+}
+function toggleProtocol() {
   protocol.value = !protocol.value;
 }
 function editSuccess() {
