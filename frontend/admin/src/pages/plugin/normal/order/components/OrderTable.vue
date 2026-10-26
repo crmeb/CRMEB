@@ -603,7 +603,15 @@ function formatTime(ts) {
   return `${y}/${m}/${day} ${h}:${min}:${s}`;
 }
 
-defineExpose({ selectedIds, page });
+/**
+ * 重置选项卡与分页（父级重置搜索时调用，保证 Tab 选中态与列表数据一致）
+ */
+function resetTab() {
+  currentTab.value = '';
+  page.page = 1;
+}
+
+defineExpose({ selectedIds, page, resetTab });
 </script>
 
 <style lang="scss" scoped>

@@ -350,6 +350,8 @@ function onSearch(params) {
 function onReset() {
   searchParams.value = {};
   statusTab.value = '';
+  // Tab 选中态在 OrderTable 组件内部，需同步重置，否则列表已查全部而 Tab 仍停在原状态
+  tableRef.value?.resetTab();
   getList();
   getStatistics();
 }
@@ -358,6 +360,8 @@ function onReset() {
 
 function onTabChange(tab) {
   statusTab.value = tab;
+  // 切换状态后回到第一页（OrderTable 内部已把分页归 1，这里同步请求参数）
+  searchParams.value.page = 1;
   getList();
   getStatistics();
 }
