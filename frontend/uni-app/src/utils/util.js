@@ -34,8 +34,13 @@ export default {
       to_url = opt;
       opt = {};
     }
-    let title = opt.title || "",
-      icon = opt.icon || "none",
+    // 兼容接口/异常对象：非字符串时取 msg/message，避免 toast 出现空黑框
+    let title = opt.title || "";
+    if (title && typeof title !== "string") {
+      title = title.msg || title.message || "";
+    }
+    title = title == null ? "" : String(title);
+    let icon = opt.icon || "none",
       endtime = opt.endtime || 2000,
       success = opt.success;
     if (title)
