@@ -7,6 +7,7 @@
 
 namespace modules\product\normal\service;
 
+use app\model\order\AfterSale;
 use app\model\order\OrderCenter;
 use app\model\order\StoreCart;
 use app\model\product\CenterProductModel;
@@ -141,23 +142,23 @@ class StatisticServices extends BaseService
         $order = $this->orderQuery()->where('is_del', 0)->whereBetweenTime('pay_time', $time[0], $time[1]);
         $data['order'] = $order->sum('total_num');
 
-        $paid = $this->orderQuery()->where('pay_status', OrderCenter::PAY_PAID)->where('is_del', 0)
+        // 支付口径含后续部分/全额退款订单（pay_status=2/3），退款在退款卡片单独统计
+        $paidWhere = fn() => $this->orderQuery()->whereIn('pay_status', $this->paidStatuses())->where('is_del', 0)
             ->whereBetweenTime('pay_time', $time[0], $time[1]);
-        $data['pay'] = $paid->sum('total_num');
-        $data['payPrice'] = $this->orderQuery()->where('pay_status', OrderCenter::PAY_PAID)->where('is_del', 0)
-            ->whereBetweenTime('pay_time', $time[0], $time[1])->sum('pay_price');
+        $data['pay'] = $paidWhere()->sum('total_num');
+        $data['payPrice'] = $paidWhere()->sum('pay_price');
         $data['cost'] = array_sum($this->costTrend($time, '%Y-%m-%d'));
 
-        $refunded = $this->orderQuery()->where('pay_status', OrderCenter::PAY_PAID)
+        // 全额退款后 pay_status=3，不能再限定 pay_status=1，否则退款金额/件数恒为 0；按 refund_time 归属
+        $data['refundPrice'] = $this->orderQuery()
             ->where('refund_status', OrderCenter::REFUND_SUCCESS)->where('is_del', 0)
-            ->whereBetweenTime('pay_time', $time[0], $time[1]);
-        $data['refundPrice'] = $refunded->sum('refund_price');
-        $data['refund'] = $this->orderQuery()->where('pay_status', OrderCenter::PAY_PAID)
-            ->where('refund_status', OrderCenter::REFUND_SUCCESS)->where('is_del', 0)
-            ->whereBetweenTime('pay_time', $time[0], $time[1])->sum('total_num');
+            ->whereBetweenTime('refund_time', $time[0], $time[1])->sum('refund_price');
+        $data['refund'] = (int)app()->make(AfterSale::class)
+            ->where('product_type', 'normal')->where('is_del', 0)
+            ->whereIn('status', ['refunded', 'completed'])
+            ->whereBetweenTime('refund_time', $time[0], $time[1])->sum('refund_num');
 
-        $payPeople = $this->orderQuery()->where('pay_status', OrderCenter::PAY_PAID)->where('is_del', 0)
-            ->whereBetweenTime('pay_time', $time[0], $time[1])->field('COUNT(DISTINCT uid) AS count')->find();
+        $payPeople = $paidWhere()->field('COUNT(DISTINCT uid) AS count')->find();
         $payPeople = (int)($payPeople['count'] ?? 0);
         $data['payPercent'] = $data['user'] > 0 ? round($payPeople / $data['user'] * 100, 2) : 0;
         return $data;
@@ -188,10 +189,10 @@ class StatisticServices extends BaseService
         $productIds = $this->productIds();
         $browse = $this->logTrend($productIds, $time, $timeType, 'SUM(visit_num)');
         $user = $this->logTrend($productIds, $time, $timeType, 'COUNT(DISTINCT uid)');
-        $paid = ['pay_status' => OrderCenter::PAY_PAID, 'is_del' => 0];
-        $refunded = ['pay_status' => OrderCenter::PAY_PAID, 'refund_status' => OrderCenter::REFUND_SUCCESS, 'is_del' => 0];
-        $pay = $this->groupOrderTrend($paid, 'SUM(pay_price)', $time, $timeType);
-        $refund = $this->groupOrderTrend($refunded, 'SUM(refund_price)', $time, $timeType);
+        $paid = [['pay_status', 'in', $this->paidStatuses()], ['is_del', '=', 0]];
+        $refunded = [['refund_status', '=', OrderCenter::REFUND_SUCCESS], ['is_del', '=', 0]];
+        $pay = $this->groupOrderTrend($paid, 'SUM(pay_price)', $time, $timeType, 'pay_time');
+        $refund = $this->groupOrderTrend($refunded, 'SUM(refund_price)', $time, $timeType, 'refund_time');
 
         if (!$excel) {
             $data = [
@@ -220,11 +221,11 @@ class StatisticServices extends BaseService
         }
 
         $cart = $this->cartTrend($productIds, $time, $timeType, 'SUM(cart_num)');
-        $order = $this->groupOrderTrend(['is_del' => 0], 'SUM(total_num)', $time, $timeType);
-        $payNum = $this->groupOrderTrend($paid, 'SUM(total_num)', $time, $timeType);
-        $payCount = $this->groupOrderTrend($paid, 'COUNT(*)', $time, $timeType);
+        $order = $this->groupOrderTrend([['is_del', '=', 0]], 'SUM(total_num)', $time, $timeType, 'pay_time');
+        $payNum = $this->groupOrderTrend($paid, 'SUM(total_num)', $time, $timeType, 'pay_time');
+        $payCount = $this->groupOrderTrend($paid, 'COUNT(*)', $time, $timeType, 'pay_time');
         $cost = $this->costTrend($time, $timeType);
-        $refundNum = $this->groupOrderTrend($refunded, 'SUM(total_num)', $time, $timeType);
+        $refundNum = $this->groupAfterSaleTrend($time, $timeType, 'SUM(refund_num)');
         $rows = [];
         foreach ($xAxis as $item) {
             $changes = !empty($user[$item]) ? round(((float)($payCount[$item] ?? 0) / (float)$user[$item]) * 100, 2) : 0;
@@ -268,6 +269,12 @@ class StatisticServices extends BaseService
         return app()->make(OrderCenter::class)->where('product_type', 'normal');
     }
 
+    /** @return int[] 已支付口径（含后续部分/全额退款） */
+    protected function paidStatuses(): array
+    {
+        return [OrderCenter::PAY_PAID, OrderCenter::PAY_PARTIAL_REFUND, OrderCenter::PAY_FULL_REFUND];
+    }
+
     protected function logTrend(array $productIds, array $time, string $timeType, string $expression): array
     {
         if (!$productIds) {
@@ -288,16 +295,26 @@ class StatisticServices extends BaseService
             ->group('days')->select()->toArray(), 'num', 'days');
     }
 
-    protected function groupOrderTrend(array $where, string $expression, array $time, string $timeType): array
+    protected function groupOrderTrend(array $where, string $expression, array $time, string $timeType, string $timeField = 'pay_time'): array
     {
-        $query = $this->orderQuery()->where($where)->whereBetweenTime('pay_time', $time[0], $time[1]);
-        return array_column($query->field("FROM_UNIXTIME(pay_time,'{$timeType}') AS days,{$expression} AS num")
+        $query = $this->orderQuery()->where($where)->whereBetweenTime($timeField, $time[0], $time[1]);
+        return array_column($query->field("FROM_UNIXTIME({$timeField},'{$timeType}') AS days,{$expression} AS num")
+            ->group('days')->select()->toArray(), 'num', 'days');
+    }
+
+    protected function groupAfterSaleTrend(array $time, string $timeType, string $expression): array
+    {
+        return array_column(app()->make(AfterSale::class)
+            ->where('product_type', 'normal')->where('is_del', 0)
+            ->whereIn('status', ['refunded', 'completed'])
+            ->whereBetweenTime('refund_time', $time[0], $time[1])
+            ->field("FROM_UNIXTIME(refund_time,'{$timeType}') AS days,{$expression} AS num")
             ->group('days')->select()->toArray(), 'num', 'days');
     }
 
     protected function costTrend(array $time, string $timeType): array
     {
-        $rows = $this->orderQuery()->where('pay_status', OrderCenter::PAY_PAID)->where('is_del', 0)
+        $rows = $this->orderQuery()->whereIn('pay_status', $this->paidStatuses())->where('is_del', 0)
             ->whereBetweenTime('pay_time', $time[0], $time[1])
             ->field("FROM_UNIXTIME(pay_time,'{$timeType}') AS days,extra_info")
             ->select()->toArray();
