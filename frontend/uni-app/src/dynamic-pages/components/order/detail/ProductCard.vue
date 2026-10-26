@@ -24,7 +24,6 @@
             <text class="product-qty">x{{ item.cart_num || 1 }}</text>
           </view>
         </view>
-        <view class="arrow-icon"><text class="iconfont icon-xiangyou"></text></view>
       </view>
     </view>
   </view>
@@ -128,6 +127,4 @@ function goDetail(item) {
 .product-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12rpx; }
 .product-price { font-size: 30rpx; color: var(--view-theme, #e93323); font-weight: 600; }
 .product-qty { font-size: 26rpx; color: #999; }
-.arrow-icon { margin-left: 10rpx; }
-.arrow-icon .iconfont { font-size: 24rpx; color: #ccc; }
 </style>
