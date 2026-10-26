@@ -63,7 +63,7 @@ class CenterProductController
         } else {
             $where['cate_id'] = [];
         }
-        $list = $services->getUserList($where, $page, $limit);
+        $list = $services->getUserList($where, $page, $limit, (int)$request->uid());
 
         // 为每个商品附加 type_info（通过 Handler 动态获取）
         $registry = app()->make(\crmeb\trade\product\ProductTypeRegistry::class);

@@ -58,6 +58,7 @@ class StoreProductLog extends BaseModel
             'product_price' => 'price',
             'stock',
             'is_show',
+            'vip_product',
         ]);
     }
 

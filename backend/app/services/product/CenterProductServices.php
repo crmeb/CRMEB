@@ -609,15 +609,11 @@ class CenterProductServices extends BaseService
         $siteUrl = sys_config('site_url');
         $productType = $info['product_type'] ?? 'normal';
 
-        // 会员商品可见性校验：vip_product=1 仅会员可见可买，非会员直接拦截详情页访问（防分享链接绕过列表过滤）
+        // 会员商品可见性校验：vip_product=1 仅会员可见可买，未登录/非会员直接拦截（防列表或分享链接绕过）
         $vipProduct = (int)($info['vip_product'] ?? 0);
-        $isMoneyLevel = 0;
-        if (in_array($vipProduct, [1, 2], true) && $uid > 0) {
-            $isMoneyLevel = (int)app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level');
-            // vip_product=1：仅会员可见可买，非会员直接拦截（列表已过滤，此处防分享链接直达）
-            if ($vipProduct === 1 && $isMoneyLevel === 0) {
-                throw new ApiException('此商品为会员专享，开通会员后可查看');
-            }
+        $isMoneyLevel = $this->resolveVipUserLevel($uid);
+        if ($vipProduct === 1 && $isMoneyLevel <= 0) {
+            throw new ApiException('此商品为会员专享，开通会员后可查看');
         }
 
         // 通过 Handler 获取产品类型处理器
@@ -808,13 +804,7 @@ class CenterProductServices extends BaseService
         $storeInfo['small_image'] = $storeInfo['image'];
         $storeInfo = get_thumb_water($storeInfo, 'small', ['small_image']);
 
-        // ========== 6. 分销价标识 ==========
-        $priceName = 0;
-        if ($uid && (int)sys_config('brokerage_window_switch', 1)) {
-            $priceName = $this->getPacketPrice($storeInfo, $productValue, $uid);
-        }
-
-        // ========== 7. 预售状态 ==========
+        // ========== 6. 预售状态 ==========
         if ($storeInfo['presale']) {
             if ($storeInfo['presale_start_time'] > time()) {
                 $storeInfo['presale_pay_status'] = 1;
@@ -860,7 +850,7 @@ class CenterProductServices extends BaseService
                 : array_map('intval', explode(',', (string)$recommendRaw));
             try {
                 $goodList = $recommendIds
-                    ? $this->getProducts(['ids' => $recommendIds, 'is_del' => 0, 'is_show' => 1], 12)
+                    ? $this->getProducts(['ids' => $recommendIds, 'is_del' => 0, 'is_show' => 1], 12, $uid)
                     : [];
             } catch (\Throwable $e) {}
         }
@@ -955,7 +945,6 @@ class CenterProductServices extends BaseService
             'storeInfo'             => $storeInfo,
             'svip_open'             => $svipOpen,
             'svip_price_open'       => $svipPriceOpen,
-            'priceName'             => $priceName,
             'reply'                 => $reply,
             'replyChance'           => $replyChance,
             'replyCount'            => $replyCount,
@@ -2439,7 +2428,7 @@ class CenterProductServices extends BaseService
             app()->make(UserSearchServices::class)->saveUserSearch($uid, $where['store_name'], [$where['store_name']], []);
         }
         [$page, $limit] = $this->getPageValue();
-        $where['vip_user'] = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
+        $where['vip_user'] = $this->resolveVipUserLevel($uid);
         $list = $this->dao->getSearchList($where, $page, $limit, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,original_price as ot_price,spec_type,recommend_image,unit_name,is_vip,vip_price,presale,custom_form,product_type,min_qty,label_list']);
         /** @var MemberCardServices $memberCardService */
         $memberCardService = app()->make(MemberCardServices::class);
@@ -2641,12 +2630,16 @@ class CenterProductServices extends BaseService
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getProducts(array $where, int $num = 0)
+    public function getProducts(array $where, int $num = 0, int $uid = 0)
     {
         [$page, $limit] = $this->getPageValue();
         if ($num) {
             $page = 1;
             $limit = $num;
+        }
+        // 未显式传入时按当前用户会员身份过滤仅会员可见商品
+        if (!array_key_exists('vip_user', $where)) {
+            $where['vip_user'] = $this->resolveVipUserLevel($uid);
         }
         $list = $this->dao->getSearchList($where, $page, $limit, ['id,name as store_name,cate_id,image,IFNULL(sales, 0) + IFNULL(virtual_sales, 0) as sales,price,stock,unit_name,presale,is_vip,vip_price']);
         // eb_product_center 无 activity 列，补默认值兼容 getActivityList
@@ -2791,31 +2784,8 @@ class CenterProductServices extends BaseService
         if (!$this->vipIsOpen(!!$storeInfo['is_vip'], $vipStatus)) {
             $data['storeInfo']['vip_price'] = 0;
         }
-        $data['priceName'] = 0;
-        if ($uid && (int)sys_config('brokerage_window_switch', 1)) {
-            $user = $request->user();
-            $agentProfile = event('DistributionServiceProxy', [
-            'service' => 'DistributionUserServices',
-            'action' => 'profile',
-        ]);
-            $isPromoter = (int)($agentProfile[0]['is_promoter'] ?? $user->is_promoter);
-            if (!$isPromoter) {
-                /** @var OrderCenterDao $storeOrderService */
-                $storeOrderService = app()->make(OrderCenterDao::class);
-                $price = $storeOrderService->sum(['pay_status' => 1, 'refund_status' => 0, 'uid' => $uid], 'pay_price');
-                $status = is_brokerage_statu($price);
-                if ($status) {
-                    $handled = event('DistributionServiceProxy', [
-                        'service' => 'DistributionUserServices',
-                        'action' => 'saveProfile',
-                        'args' => [(int)$uid, ['is_promoter' => 1, 'spread_open' => 1]],
-                    ]);
-                    if (!is_array($handled) || ($handled[0] ?? null) === null) {
-                        app()->make(UserServices::class)->update($uid, ['is_promoter' => 1]);
-                    }
-                }
-            }
-            $data['priceName'] = $this->getPacketPrice($storeInfo, $attrValue, $uid);
+        // 佣金窗口已随分销佣金功能下线，不再返回 priceName 与推广员升级逻辑
+        if ($uid) {
             //用户访问事件
             event('UserVisit', [$uid, $id, 'product', $storeInfo['cate_id'], 'view']);
         }
@@ -2827,11 +2797,10 @@ class CenterProductServices extends BaseService
         $data['replyChance'] = $replyChance;
         $data['replyCount'] = $replyCount;
         $data['mer_id'] = 0;
-        $vip_user = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
         // 商品详情关联推荐仅使用 recommend_list，is_good 字段已删除
         if ($storeInfo['recommend_list'] !== '') {
             $recommend_list = explode(',', $storeInfo['recommend_list']);
-            $data['good_list'] = $this->getProducts(['ids' => $recommend_list, 'is_del' => 0, 'is_show' => 1], 12);
+            $data['good_list'] = $this->getProducts(['ids' => $recommend_list, 'is_del' => 0, 'is_show' => 1], 12, $uid);
         } else {
             $data['good_list'] = [];
         }
@@ -2865,46 +2834,17 @@ class CenterProductServices extends BaseService
     }
 
     /**
-     * 获取商品分销佣金最低和最高
-     * @param $storeInfo
-     * @param $productValue
+     * 解析用户付费会员等级（用于列表 vip_user 搜索器）
+     * 未登录或非付费会员返回 0，付费会员返回 is_money_level
      * @param int $uid
-     * @return int|string
+     * @return int
      */
-    public function getPacketPrice($storeInfo, $productValue, int $uid)
+    public function resolveVipUserLevel(int $uid): int
     {
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        if (!$userServices->checkUserPromoter($uid)) {
+        if ($uid <= 0) {
             return 0;
         }
-        if (!count($productValue)) {
-            return 0;
-        }
-        if (!sys_config('brokerage_func_status')) {
-            return 0;
-        }
-        // 未开启分销时不计算返佣
-        if (empty($storeInfo['is_sub'])) {
-            return 0;
-        }
-        $store_brokerage_ratio = sys_config('store_brokerage_ratio');
-        $store_brokerage_ratio = bcdiv((string)$store_brokerage_ratio, '100', 2);
-        $maxPrice = max(array_column($productValue, 'price'));
-        $minPrice = min(array_column($productValue, 'price'));
-        $maxPrice = bcmul((string)$store_brokerage_ratio, (string)$maxPrice, 0);
-        $minPrice = bcmul((string)$store_brokerage_ratio, (string)$minPrice, 0);
-        if ($minPrice == 0 && $maxPrice == 0) {
-            $priceName = 0;
-        } else if ($minPrice == 0 && $maxPrice)
-            $priceName = $maxPrice;
-        else if ($maxPrice == 0 && $minPrice)
-            $priceName = $minPrice;
-        else if ($maxPrice == $minPrice && $minPrice)
-            $priceName = $maxPrice;
-        else
-            $priceName = $minPrice . '~' . $maxPrice;
-        return strlen(trim($priceName)) ? $priceName : 0;
+        return (int)(app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') ?: 0);
     }
 
     /**
@@ -3180,8 +3120,7 @@ class CenterProductServices extends BaseService
         }
 
         // 会员商品推荐保留（is_vip 字段未删除）
-        $vip_user = $uid ? app()->make(UserServices::class)->value(['uid' => $uid], 'is_money_level') : 0;
-        $where = ['is_show' => 1, 'is_del' => 0, 'vip_user' => $vip_user];
+        $where = ['is_show' => 1, 'is_del' => 0, 'vip_user' => $this->resolveVipUserLevel($uid)];
         if (is_array($field)) {
             $where = array_merge($where, $field);
         } elseif ($field === 'is_vip') {
@@ -3337,7 +3276,7 @@ class CenterProductServices extends BaseService
         if ($userType == 'routine') {
             /** @var QrcodeServices $qrcodeService */
             $qrcodeService = app()->make(QrcodeServices::class);
-            $url = $qrcodeService->getRoutineQrcodePath($id, $user['uid'], 0, ['is_promoter' => $user['is_promoter']]);
+            $url = $qrcodeService->getRoutineQrcodePath($id, $user['uid'], 0);
             if (!$url) {
                 throw new ApiException('二维码生成失败');
             } else {
@@ -4024,10 +3963,12 @@ class CenterProductServices extends BaseService
      * @param int $limit
      * @return array
      */
-    public function getUserList(array $where, int $page, int $limit): array
+    public function getUserList(array $where, int $page, int $limit, int $uid = 0): array
     {
         $where['is_show'] = 1;
         $where['is_del'] = 0;
+        // 移动端商品列表：未登录/非付费会员过滤 vip_product=1（仅会员可见可买）
+        $where['vip_user'] = $this->resolveVipUserLevel($uid);
 
         // 查询字段：中台列 → 前端需的字段
         $field = [

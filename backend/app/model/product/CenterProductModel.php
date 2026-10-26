@@ -205,14 +205,17 @@ class CenterProductModel extends BaseModel
 
     /**
      * 会员专属商品搜索器
+     * 传入当前用户 is_money_level（未登录/非会员为 0）：隐藏 vip_product=1（仅会员可见可买）
+     * vip_product=2（所有人可见仅会员可买）仍展示
      * @param Model $query
-     * @param int $value
+     * @param mixed $value
      */
     public function searchVipUserAttr($query, $value)
     {
-        // 非付费会员只能看到不限制（0）或所有人可见仅会员可买（2）的商品
-        if ($value === 0) {
-            $query->where('vip_product', 0)->whereOr('vip_product', 2);
+        // 未登录或非付费会员：仅保留不限制(0)与所有人可见仅会员可买(2)
+        // 必须用 whereIn，禁止 whereOr 破坏外层 is_show/is_del 等条件
+        if ((int)$value <= 0) {
+            $query->whereIn('vip_product', [0, 2]);
         }
     }
 

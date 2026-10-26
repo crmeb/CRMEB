@@ -82,8 +82,14 @@ class StoreProductRelationServices extends BaseService
         $where['type'] = 'collect';
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, 'product_id,category', $page, $limit);
+        // 收藏列表同样隐藏「仅会员可见」商品（未登录不可能到此；非付费会员需过滤）
+        $vipUserLevel = app()->make(\app\services\product\CenterProductServices::class)->resolveVipUserLevel($uid);
         foreach ($list as $k => $product) {
             if ($product['product'] && isset($product['product']['id'])) {
+                if ($vipUserLevel <= 0 && (int)($product['product']['vip_product'] ?? 0) === 1) {
+                    unset($list[$k]);
+                    continue;
+                }
                 // 中台商品表 eb_product_center 无 store_name/ot_price 列，名称/划线价字段为 name/original_price，
                 // 此处映射为移动端收藏列表的旧字段契约（CenterProductServices 同款映射）
                 $list[$k]['pid'] = $product['product']['id'] ?? 0;
@@ -99,6 +105,7 @@ class StoreProductRelationServices extends BaseService
                 unset($list[$k]);
             }
         }
+        $list = array_values($list);
         $count = $this->dao->count($where);
         return compact('list', 'count');
     }

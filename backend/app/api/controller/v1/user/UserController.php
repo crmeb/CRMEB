@@ -227,12 +227,19 @@ class UserController
      */
     public function visitList(Request $request, StoreProductLogServices $services)
     {
-        $where['uid'] = (int)$request->uid();
+        $uid = (int)$request->uid();
+        $where['uid'] = $uid;
         $where['type'] = 'visit';
         $result = $services->getList($where, 'product_id', 'id,product_id,max(add_time) as add_time');
         $time_data = [];
         if ($result['list']) {
+            // 非付费会员浏览记录不展示「仅会员可见」商品
+            $vipUserLevel = app()->make(\app\services\product\CenterProductServices::class)->resolveVipUserLevel($uid);
             foreach ($result['list'] as $key => &$item) {
+                if ($vipUserLevel <= 0 && (int)($item['vip_product'] ?? 0) === 1) {
+                    unset($result['list'][$key]);
+                    continue;
+                }
                 $add_time = strtotime($item['add_time']);
                 if (date('Y') == date('Y', $add_time)) {//今年
                     $item['time_key'] = date('m-d', $add_time);
@@ -240,6 +247,9 @@ class UserController
                     $item['time_key'] = date('Y-m-d', $add_time);
                 }
             }
+            unset($item);
+            $result['list'] = array_values($result['list']);
+            $result['count'] = count($result['list']);
             $time_data = array_merge(array_unique(array_column($result['list'], 'time_key')));
         }
         $result['time'] = $time_data;
