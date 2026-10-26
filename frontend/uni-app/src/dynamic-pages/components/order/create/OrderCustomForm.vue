@@ -1,6 +1,6 @@
 <!--
   订单自定义表单
-  根据后端 custom_form 动态渲染必填信息字段
+  根据后端 custom_form 动态渲染表单信息字段
   字段结构：{ label, field, type, options, required }
   type 为管理端「自定义表单」类型：text 文本框 / number 数字 / email 邮件 /
   data 日期 / time 时间 / id 身份证 / phone 手机号 / img 图片，
@@ -8,7 +8,7 @@
 -->
 <template>
   <view class="custom-form-section" v-if="visible && fields.length > 0">
-    <view class="section-title">{{ $t('必填信息') }}</view>
+    <view class="section-title">{{ $t('表单信息') }}</view>
     <view class="form-list">
       <view class="form-item" v-for="(field, index) in fields" :key="index" :class="{ 'is-bordered': index > 0 }">
         <view class="form-label">

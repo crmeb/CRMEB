@@ -203,8 +203,8 @@
     <div class="section">
       <div class="title">买家留言</div>
       <ul class="list">
-        <li class="item">
-          <div>{{ data.mark || '--' }}</div>
+        <li class="item item-full">
+          <div class="full-text">{{ data.mark || '--' }}</div>
         </li>
       </ul>
     </div>
@@ -227,8 +227,8 @@
     <div class="section">
       <div class="title">订单备注</div>
       <ul class="list">
-        <li class="item">
-          <div>{{ data.remark || '--' }}</div>
+        <li class="item item-full">
+          <div class="full-text">{{ data.remark || '--' }}</div>
         </li>
       </ul>
     </div>
@@ -351,6 +351,20 @@ function isImageItem(item) {
     &:nth-child(3n + 3) {
       padding-left: 20px;
     }
+
+    // 买家留言 / 订单备注：占满整行，避免按三列宽度提前换行
+    &.item-full {
+      flex: 0 0 100%;
+      padding-left: 0;
+      padding-right: 0;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+  }
+
+  .full-text {
+    width: 100%;
+    line-height: 1.6;
   }
 
   .value {

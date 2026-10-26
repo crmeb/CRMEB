@@ -61,7 +61,7 @@ import { resolveSectionComponent, InfoListComponent } from '../components/order/
 import SectionDispatcher from '../components/order/detail/SectionDispatcher.vue';
 // #endif
 import actionMap from '../api/action-map.js';
-import { getCenterOrderDetail, takeOrder } from '@/api/order-center.js';
+import { getCenterOrderDetail, takeOrder, cancelOrder } from '@/api/order-center.js';
 import { express } from '@/api/order.js';
 import routes from '../api/routes.js';
 import { useColorTheme } from '@/composables/useColorTheme';
@@ -82,6 +82,7 @@ const { colorStyle } = useColorTheme();
 const pageConfig = ref({ sections: [], extensions: {} });
 const loading = ref(true);
 const confirmingReceive = ref(false);
+const cancellingOrder = ref(false);
 const logisticsLoading = ref(false);
 // 送礼分享
 const giftModalShow = ref(false);
@@ -288,6 +289,8 @@ function onButtonAction(payload) {
     var context;
     if (payload.action === 'confirmReceive') {
       context = { onConfirm: confirmReceive };
+    } else if (payload.action === 'cancelOrder') {
+      context = { onCancel: cancelUnpaidOrder };
     } else if (payload.action === 'shareGift') {
       context = { onShareGift: openGiftShare };
     }
@@ -313,10 +316,31 @@ async function confirmReceive(payload) {
     await takeOrder(payload.order_no);
     uni.showToast({ title: i18n.t('收货成功'), icon: 'success' });
     await loadDetail();
+    // 通知列表页同步刷新（栈内列表仍挂载时立即更新）
+    uni.$emit('order:list-refresh');
   } catch (e) {
-    uni.showToast({ title: e?.msg || i18n.t('收货失败'), icon: 'none' });
+    uni.showToast({ title: (typeof e === 'string' ? e : e?.msg) || i18n.t('收货失败'), icon: 'none' });
   } finally {
     confirmingReceive.value = false;
+  }
+}
+
+/**
+ * 详情页取消未支付订单
+ * @param {object} payload {order_no}
+ */
+async function cancelUnpaidOrder(payload) {
+  if (cancellingOrder.value) return;
+  cancellingOrder.value = true;
+  try {
+    await cancelOrder(payload.order_no);
+    uni.showToast({ title: i18n.t('取消成功'), icon: 'success' });
+    await loadDetail();
+    uni.$emit('order:list-refresh');
+  } catch (e) {
+    uni.showToast({ title: (typeof e === 'string' ? e : e?.msg) || i18n.t('取消失败'), icon: 'none' });
+  } finally {
+    cancellingOrder.value = false;
   }
 }
 /**

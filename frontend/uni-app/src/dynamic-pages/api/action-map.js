@@ -46,14 +46,18 @@ export default {
     }
     uni.navigateTo({ url: routes.cashier + '?order_no=' + orderId + '&from_type=order' });
   },
-  /** 取消订单 */
-  cancelOrder(order, params) {
+  /** 取消订单（详情页通过 context.onCancel 自行调接口并刷新；列表页走事件总线） */
+  cancelOrder(order, params, context) {
     const orderNo = params.order_no || order.order_no || '';
     uni.showModal({
       title: i18n.t(`提示`),
       content: i18n.t(`确定取消该订单吗？`),
       success: (res) => {
         if (res.confirm) {
+          if (context && typeof context.onCancel === 'function') {
+            context.onCancel({ order_no: orderNo });
+            return;
+          }
           uni.$emit('order:cancel', { order_no: orderNo });
         }
       },

@@ -274,7 +274,7 @@ async function onCancelOrder({ order_no }) {
     uni.showToast({ title: i18n.t('取消成功'), icon: 'success' });
     refreshList();
   } catch (e) {
-    uni.showToast({ title: e?.msg || i18n.t('取消失败'), icon: 'none' });
+    uni.showToast({ title: (typeof e === 'string' ? e : e?.msg) || i18n.t('取消失败'), icon: 'none' });
   }
 }
 /**
@@ -286,7 +286,7 @@ async function onConfirmOrder({ order_no }) {
     uni.showToast({ title: i18n.t('收货成功'), icon: 'success' });
     refreshList();
   } catch (e) {
-    uni.showToast({ title: e?.msg || i18n.t('收货失败'), icon: 'none' });
+    uni.showToast({ title: (typeof e === 'string' ? e : e?.msg) || i18n.t('收货失败'), icon: 'none' });
   }
 }
 /**
@@ -298,15 +298,17 @@ async function onDeleteOrder({ order_no }) {
     uni.showToast({ title: i18n.t('删除成功'), icon: 'success' });
     refreshList();
   } catch (e) {
-    uni.showToast({ title: e?.msg || i18n.t('删除失败'), icon: 'none' });
+    uni.showToast({ title: (typeof e === 'string' ? e : e?.msg) || i18n.t('删除失败'), icon: 'none' });
   }
 }
 /**
  * 刷新列表
+ * 必须先复位 loading，否则进行中的 loadOrders 会让本次刷新被 if (loading) return 吞掉
  */
 function refreshList() {
   page.value = 1;
   finished.value = false;
+  loading.value = false;
   orders.value = [];
   getOrderData();
   loadOrders();
@@ -323,10 +325,13 @@ onMounted(() => {
   uni.$on('order:cancel', onCancelOrder);
   uni.$on('order:confirm', onConfirmOrder);
   uni.$on('order:delete', onDeleteOrder);
+  // 详情页取消/收货成功后同步刷新栈内列表
+  uni.$on('order:list-refresh', refreshList);
 });
 
 onBeforeUnmount(() => {
   uni.$off('order:cancel', onCancelOrder);
+  uni.$off('order:list-refresh', refreshList);
   uni.$off('order:confirm', onConfirmOrder);
   uni.$off('order:delete', onDeleteOrder);
 });
