@@ -131,6 +131,7 @@ function checkboxChange(e) {
 .title-tips {
   margin-right: 14px;
   color: #999;
+  margin-top: 7px;
   font-size: 12px;
   width: 82px;
 }
