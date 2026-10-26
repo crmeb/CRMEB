@@ -3503,13 +3503,17 @@ class CenterProductServices extends BaseService
                 $productAttr = $specs['productAttr'] ?? [];
                 $productValue = $specs['productValue'] ?? [];
 
-                $cateName = array_filter($cateList, function ($val) use ($productInfo) {
-                    if (in_array($val['id'], explode(',', $productInfo['cate_id']))) {
-                        return $val;
-                    }
-                });
-                if (count($cateName) == 1 && is_null($cateName[0]['one'])) {
-                    $cateName = [['one' => $cateName[0]['two'], 'two' => '', 'id' => $cateName[0]['id']]];
+                $cateMatched = array_values(array_filter($cateList, function ($val) use ($productInfo) {
+                    return in_array($val['id'], explode(',', (string)($productInfo['cate_id'] ?? '')), false);
+                }));
+                $cateRow = $cateMatched[0] ?? null;
+                // 仅挂一级分类时 one 为空、名称在 two，导出时上提到一级列
+                if ($cateRow && ($cateRow['one'] ?? null) === null) {
+                    $cateNameOne = (string)($cateRow['two'] ?? '');
+                    $cateNameTwo = '';
+                } else {
+                    $cateNameOne = (string)($cateRow['one'] ?? '');
+                    $cateNameTwo = (string)($cateRow['two'] ?? '');
                 }
 
                 // 构造规格类型值字符串
@@ -3520,22 +3524,44 @@ class CenterProductServices extends BaseService
                 }
                 $attrString = implode(';', $attrArr);
 
+                $sliderImage = $productInfo['slider_image'] ?? [];
+                if (!is_array($sliderImage)) {
+                    $sliderImage = $sliderImage !== '' && $sliderImage !== null
+                        ? (array)json_decode((string)$sliderImage, true)
+                        : [];
+                    if (!$sliderImage) {
+                        $sliderImage = array_filter(explode(',', (string)($productInfo['slider_image'] ?? '')));
+                    }
+                }
+
                 foreach ($productValue as $unique => $value) {
                     $detail = $value['detail'] ?? ($value['suk'] ? array_map('trim', explode(',', $value['suk'])) : ['默认']);
+                    if (!is_array($detail)) {
+                        $detail = ['默认'];
+                    }
+                    // detail 可能是关联数组（规格名=>值），按 productAttr 顺序取值
+                    if ($detail !== [] && !array_is_list($detail)) {
+                        $ordered = [];
+                        foreach ($productAttr as $attrItem) {
+                            $attrName = $attrItem['attr_name'] ?? '';
+                            $ordered[] = $detail[$attrName] ?? '';
+                        }
+                        $detail = $ordered ?: array_values($detail);
+                    }
                     $skuArr = [];
                     foreach ($productAttr as $index => $attrItem) {
                         $attrName = $attrItem['attr_name'] ?? ('规格' . ($index + 1));
                         $skuArr[$attrName] = $detail[$index] ?? '';
                     }
+                    // 字段顺序必须与上方 $header / 导入模板一一对应，禁止多插 type_name 等列
                     $one_data = [
                         'id' => intval($product_id),
                         'store_name' => $productInfo['name'],
-                        'product_type' => $productInfo['product_type'] ?? 'normal',
-                        'type_name' => $this->getProductTypeName($productInfo['product_type'] ?? 'normal'),
-                        'cate_name_one' => reset($cateName)['one'] ?? '',
-                        'cate_name_two' => reset($cateName)['two'] ?? '',
+                        'product_type' => $this->getProductTypeName($productInfo['product_type'] ?? 'normal'),
+                        'cate_name_one' => $cateNameOne,
+                        'cate_name_two' => $cateNameTwo,
                         'unit_name' => $productInfo['unit_name'],
-                        'slider_image' => implode(';', $productInfo['slider_image']),
+                        'slider_image' => implode(';', $sliderImage),
                         'video_link' => $productInfo['video_link'],
                         'description' => htmlspecialchars_decode($descriptionArr[$productInfo['id']] ?? ''),
                         'ficti' => intval($productInfo['virtual_sales'] ?? 0),
@@ -3543,16 +3569,16 @@ class CenterProductServices extends BaseService
                         'spec_type' => intval($productInfo['spec_type']) == 1 ? '多规格' : '单规格',
                         'sku_type_value' => $attrString,
                         'sku_name' => implode(',', $detail),
-                        'sku_value' => implode(';', array_map(function ($key, $value) {
-                            return "$key=$value";
+                        'sku_value' => implode(';', array_map(function ($key, $val) {
+                            return "$key=$val";
                         }, array_keys($skuArr), $skuArr)),
                         'pic' => $value['image'] ?? '',
                         'price' => floatval($value['price'] ?? 0),
                         'ot_price' => floatval($value['ot_price'] ?? 0),
                         'cost' => floatval($value['cost'] ?? 0),
                         'stock' => intval($value['stock'] ?? 0),
-                        'volume' => intval($value['volume'] ?? 0),
                         'weight' => intval($value['weight'] ?? 0),
+                        'volume' => intval($value['volume'] ?? 0),
                         'bar_code' => $value['bar_code'] ?? '',
                         'bar_code_number' => $value['bar_code_number'] ?? '',
                         'store_info' => $productInfo['intro'],
@@ -3592,9 +3618,51 @@ class CenterProductServices extends BaseService
         $barCodeArr = array_unique((is_array($barCodeResults) && $barCodeResults[0] !== null) ? $barCodeResults[0] : []);
         $barCodeNumberResults = event('ProductTypeDataProxy', ['product_type' => 'normal', 'action' => 'getColumn', 'args' => [[], 'bar_code_number', 'id']]);
         $barCodeNumberArr = array_unique((is_array($barCodeNumberResults) && $barCodeNumberResults[0] !== null) ? $barCodeNumberResults[0] : []);
+        // 导出写中文类型名，导入需还原为注册中心 typeKey；兼容直接写 normal/cardkey/virtual
+        $resolveProductType = function ($raw): string {
+            $raw = trim((string)$raw);
+            if ($raw === '') {
+                return 'normal';
+            }
+            /** @var ProductTypeRegistry $registry */
+            $registry = app()->make(ProductTypeRegistry::class);
+            if ($registry->has($raw)) {
+                return $raw;
+            }
+            foreach ($registry->all() as $typeKey) {
+                if ($registry->get((string)$typeKey)->getTypeName() === $raw) {
+                    return (string)$typeKey;
+                }
+            }
+            // 历史别名
+            $alias = [
+                '普通商品' => 'normal',
+                '实物' => 'normal',
+                '卡密/网盘' => 'cardkey',
+                '卡密' => 'cardkey',
+                '虚拟商品' => 'virtual',
+                '虚拟' => 'virtual',
+                '网盘' => 'virtual',
+                '优惠券' => 'normal',
+            ];
+            return $alias[$raw] ?? 'normal';
+        };
+
         foreach ($importData as $sku) {
-            if ($sku['id'] == null) continue;
+            if ($sku['id'] === null || $sku['id'] === '') {
+                continue;
+            }
+            $barCode = trim((string)($sku['bar_code'] ?? ''));
+            $barCodeNumber = trim((string)($sku['bar_code_number'] ?? ''));
+            // 仅非空条码做唯一性拦截；库中大量空串时 in_array('', ...) 会误伤全部无码商品
+            if ($barCode !== '' && in_array($barCode, $barCodeArr, true)) {
+                $issetProductArr[] = $sku['id'];
+            }
+            if ($barCodeNumber !== '' && in_array($barCodeNumber, $barCodeNumberArr, true)) {
+                $issetProductArr[] = $sku['id'];
+            }
             if (!isset($productData[$sku['id']])) {
+                $sliderRaw = trim((string)($sku['slider_image'] ?? ''));
                 $productData[$sku['id']]['disk_info'] = '';
                 $productData[$sku['id']]['logistics'] = [1, 2];
                 $productData[$sku['id']]['freight'] = 2;
@@ -3604,17 +3672,20 @@ class CenterProductServices extends BaseService
                 $productData[$sku['id']]['is_limit'] = 0;
                 $productData[$sku['id']]['limit_type'] = 0;
                 $productData[$sku['id']]['limit_num'] = 0;
-                $productData[$sku['id']]['video_open'] = $sku['video_link'] !== '' ? 1 : 0;
+                $productData[$sku['id']]['video_open'] = ($sku['video_link'] ?? '') !== '' ? 1 : 0;
                 $productData[$sku['id']]['vip_product'] = 0;
                 $productData[$sku['id']]['custom_form'] = [];
                 $productData[$sku['id']]['store_name'] = $sku['store_name'];
-                $productData[$sku['id']]['cate_id'] = $productCateServices->getCateId($sku['cate_name_one'] ?? '', $sku['cate_name_two'] ?? '');
+                $productData[$sku['id']]['cate_id'] = $productCateServices->getCateId(
+                    (string)($sku['cate_name_one'] ?? ''),
+                    (string)($sku['cate_name_two'] ?? '')
+                );
                 $productData[$sku['id']]['keyword'] = $sku['keyword'] ?? '';
                 $productData[$sku['id']]['unit_name'] = $sku['unit_name'] ?? '';
                 $productData[$sku['id']]['store_info'] = $sku['store_info'] ?? '';
                 $productData[$sku['id']]['image'] = '';
                 $productData[$sku['id']]['recommend_image'] = '';
-                $productData[$sku['id']]['slider_image'] = explode(';', $sku['slider_image']);
+                $productData[$sku['id']]['slider_image'] = $sliderRaw === '' ? [] : array_values(array_filter(explode(';', $sliderRaw)));
                 $productData[$sku['id']]['description'] = $sku['description'] ?? '';
                 $productData[$sku['id']]['ficti'] = $sku['ficti'] ?? 0;
                 $productData[$sku['id']]['give_integral'] = $sku['give_integral'] ?? 0;
@@ -3624,16 +3695,16 @@ class CenterProductServices extends BaseService
                 $productData[$sku['id']]['is_sub'] = 0;
                 $productData[$sku['id']]['is_vip'] = 0;
                 $productData[$sku['id']]['recommend_list'] = [];
-                $productData[$sku['id']]['product_type'] = $sku['product_type'] ?? 'normal';
-                $productData[$sku['id']]['spec_type'] = $sku['spec_type'] == '多规格' ? 1 : 0;
+                $productData[$sku['id']]['product_type'] = $resolveProductType($sku['product_type'] ?? 'normal');
+                $productData[$sku['id']]['spec_type'] = ($sku['spec_type'] ?? '') == '多规格' ? 1 : 0;
                 $productData[$sku['id']]['is_virtual'] = 0;
-                $productData[$sku['id']]['video_link'] = is_null($sku['video_link']) ? '' : $sku['video_link'];
+                $productData[$sku['id']]['video_link'] = (string)($sku['video_link'] ?? '');
                 $productData[$sku['id']]['temp_id'] = '';
                 $productData[$sku['id']]['activity'] = ['默认', '秒杀', '砍价', '拼团'];
                 $productData[$sku['id']]['couponName'] = [];
                 $productData[$sku['id']]['coupon_ids'] = [];
                 $productData[$sku['id']]['command_word'] = $sku['command_word'] ?? '';
-                $productData[$sku['id']]['min_qty'] = $sku['min_qty'];
+                $productData[$sku['id']]['min_qty'] = $sku['min_qty'] !== '' && $sku['min_qty'] !== null ? $sku['min_qty'] : 1;
                 $productData[$sku['id']]['type'] = 0;
                 $productData[$sku['id']]['is_copy'] = 0;
                 $productData[$sku['id']]['label_id'] = [];
@@ -3642,19 +3713,21 @@ class CenterProductServices extends BaseService
                 $productData[$sku['id']]['protection_list'] = [];
             }
             $detail = [];
-            foreach (explode(';', $sku['sku_value']) as $pair) {
-                list($key, $value) = explode('=', $pair);
-                $detail[$key] = $value;
-            }
-            if ($sku['bar_code'] !== '' && in_array($sku['bar_code'], $barCodeArr)) {
-                $issetProductArr[] = $sku['id'];
-            }
-            if ($sku['bar_code_number'] !== '' && in_array($sku['bar_code_number'], $barCodeNumberArr)) {
-                $issetProductArr[] = $sku['id'];
+            $skuValue = trim((string)($sku['sku_value'] ?? ''));
+            if ($skuValue !== '') {
+                foreach (explode(';', $skuValue) as $pair) {
+                    if ($pair === '' || !str_contains($pair, '=')) {
+                        continue;
+                    }
+                    [$key, $value] = explode('=', $pair, 2);
+                    $detail[$key] = $value;
+                }
             }
             $productData[$sku['id']]['attrs'][] = [
-                'attr_arr' => explode(',', $sku['sku_name']),
-                'detail' => $detail,
+                'attr_arr' => $sku['sku_name'] === '' || $sku['sku_name'] === null
+                    ? ['默认']
+                    : explode(',', (string)$sku['sku_name']),
+                'detail' => $detail ?: ['规格' => '默认'],
                 'price' => $sku['price'],
                 'pic' => $sku['pic'],
                 'ot_price' => $sku['ot_price'] ?? 0,
@@ -3670,27 +3743,34 @@ class CenterProductServices extends BaseService
                 'unique' => '',
                 'weight' => $sku['weight'],
                 'volume' => $sku['volume'],
-                'bar_code' => $sku['bar_code'],
-                'bar_code_number' => $sku['bar_code_number'],
+                'bar_code' => $barCode,
+                'bar_code_number' => $barCodeNumber,
             ];
             $items = [];
-            $pairs = explode(';', $sku['sku_type_value']);
+            $skuTypeValue = trim((string)($sku['sku_type_value'] ?? ''));
+            $pairs = $skuTypeValue === '' ? [] : explode(';', $skuTypeValue);
             foreach ($pairs as $pair) {
-                // 将每个部分按等号分割成 key 和 value
-                list($key, $values) = explode('=', $pair);
-                // 将 value 部分按逗号分割为数组
-                $detailArray = explode(',', $values);
+                if ($pair === '' || !str_contains($pair, '=')) {
+                    continue;
+                }
+                [$key, $values] = explode('=', $pair, 2);
+                $detailArray = $values === '' ? [] : explode(',', $values);
                 $detail = [];
-                foreach ($detailArray as &$det) {
+                foreach ($detailArray as $det) {
                     $detail[] = [
                         'value' => $det,
                         'pic' => '',
                     ];
                 }
-                // 重新构建原始数组的结构
                 $items[] = [
                     'value' => $key,
                     'detail' => $detail
+                ];
+            }
+            if ($items === []) {
+                $items[] = [
+                    'value' => '规格',
+                    'detail' => [['value' => '默认', 'pic' => '']],
                 ];
             }
             $productData[$sku['id']]['items'] = $items;
