@@ -1549,7 +1549,24 @@
 					"navigationBarTitleText": ""
 				}
 			}]
-		}	
+		},
+		{
+			"root": "pages/admin",
+			"name": "adminWriteOff",
+			"pages": [{
+				"path": "order_cancellation/index",
+				"style": {
+					"navigationBarTitleText": "订单核销",
+					"app-plus": {
+						// #ifdef APP-PLUS
+						"titleNView": {
+							"type": "default"
+						}
+						// #endif
+					}
+				}
+			}]
+		}
 
 	],
 	"tabBar": { // 底部菜单

@@ -524,7 +524,10 @@ function getMyMenus() {
     let myMenu = [];
     res.data.routine_my_menus.forEach((el, index, arr) => {
       // el.name 为后端下发的菜单名，保持中文原文比较，不可包 $t
-      if (el.name == "客服接待") {
+      if (
+        el.name == "客服接待" ||
+        el.url == "/pages/admin/order_cancellation/index"
+      ) {
         storeMenuLocal.push(el);
       } else {
         myMenu.push(el);

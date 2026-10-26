@@ -83,7 +83,11 @@ class OrderWriteOffServices extends BaseService
         }
 
         $statusCode = (string)($orderInfo['status_code'] ?? '');
-        if ($statusCode === OrderCenter::STATUS_COMPLETED) {
+        // 核销后进入待评价，待评价/已完成均视为已核销
+        if (in_array($statusCode, [
+            OrderCenter::STATUS_PENDING_REVIEW,
+            OrderCenter::STATUS_COMPLETED,
+        ], true)) {
             throw new ApiException('该订单已被核销');
         }
         if (in_array($statusCode, [
@@ -159,49 +163,42 @@ class OrderWriteOffServices extends BaseService
 
         $orderInfo['order_id'] = $orderInfo['order_no'] ?? ($orderInfo['order_id'] ?? '');
 
-        // 8. 执行核销：到店自提直接进入完成态，并补齐核销时间
+        // 8. 执行核销：与确认收货一致，进入待评价（评价后才到已完成）
         $now = time();
-        if ((int)($orderInfo['shipping_type'] ?? 0) === 2) {
-            $orderPayload = is_object($orderInfo) ? $orderInfo->toArray() : (array)$orderInfo;
-            $orderPayload['delivery_time'] = $now;
-            $orderPayload['take_time'] = $now;
+        $targetStatus = OrderCenter::STATUS_PENDING_REVIEW;
+        $orderPayload = is_object($orderInfo) ? $orderInfo->toArray() : (array)$orderInfo;
+        $orderPayload['delivery_time'] = $now;
+        $orderPayload['take_time'] = $now;
 
-            /** @var OrderLifecycleServices $lifecycleServices */
-            $lifecycleServices = app()->make(OrderLifecycleServices::class);
-            $lifecycleServices->handleTake(
-                $orderPayload,
-                OrderCenter::STATUS_COMPLETED,
-                '到店核销',
-                'admin',
-                $uid > 0 ? $uid : 0
-            );
+        /** @var OrderLifecycleServices $lifecycleServices */
+        $lifecycleServices = app()->make(OrderLifecycleServices::class);
+        $lifecycleServices->handleTake(
+            $orderPayload,
+            $targetStatus,
+            '到店核销',
+            'admin',
+            $uid > 0 ? $uid : 0
+        );
 
-            try {
-                OrderTypeRegistry::getAdapter((string)($orderInfo['source_type'] ?? ''))
-                    ->advance((string)($orderInfo['order_no'] ?? ''), OrderCenter::STATUS_COMPLETED);
-            } catch (\Throwable $e) {
-                $this->dao->update($orderInfo['id'], [
-                    'status_code' => OrderCenter::STATUS_COMPLETED,
-                ]);
-            }
-
-            /** @var OrderCenterServices $centerServices */
-            $centerServices = app()->make(OrderCenterServices::class);
-            $centerServices->updateRecord((string)($orderInfo['order_no'] ?? ''), [
-                'delivery_time' => $now,
-                'take_time'     => $now,
-            ]);
-
-            $orderInfo['status_code']   = OrderCenter::STATUS_COMPLETED;
-            $orderInfo['delivery_time'] = $now;
-            $orderInfo['take_time']     = $now;
-        } else {
-            // 其他核销码订单：保持原有完成逻辑
+        try {
+            OrderTypeRegistry::getAdapter((string)($orderInfo['source_type'] ?? ''))
+                ->advance((string)($orderInfo['order_no'] ?? ''), $targetStatus);
+        } catch (\Throwable $e) {
             $this->dao->update($orderInfo['id'], [
-                'status_code' => OrderCenter::STATUS_COMPLETED,
+                'status_code' => $targetStatus,
             ]);
-            $orderInfo['status_code'] = OrderCenter::STATUS_COMPLETED;
         }
+
+        /** @var OrderCenterServices $centerServices */
+        $centerServices = app()->make(OrderCenterServices::class);
+        $centerServices->updateRecord((string)($orderInfo['order_no'] ?? ''), [
+            'delivery_time' => $now,
+            'take_time'     => $now,
+        ]);
+
+        $orderInfo['status_code']   = $targetStatus;
+        $orderInfo['delivery_time'] = $now;
+        $orderInfo['take_time']     = $now;
 
         // 9. 核销后续处理（赠送积分、发放佣金等）
         /** @var OrderTakeServices $storeOrderTask */

@@ -262,12 +262,20 @@ Route::group(function () {
 
     // 代理商相关路由已迁移至 modules/distribution/route/user.php
 
+    /** 移动端订单核销（核销员/配送员，商城用户登录态） */
+    Route::group(function () {
+        Route::post('order/order_verific', [\app\api\controller\v1\order\OrderWriteOffController::class, 'orderVerific'])
+            ->name('orderVerific')
+            ->middleware(\app\api\middleware\WriteOffAuthMiddleware::class)
+            ->option(['real_name' => '订单核销']);
+    })->option(['mark' => 'order_verific', 'mark_name' => '移动端订单核销']);
+
     Route::group(function () {
         /** 佣金相关 */
         Route::get('commission', [\app\api\controller\v1\user\UserBrokerageController::class, 'commission'])->name('commission')->option(['real_name' => '推广数据']);//推广数据 昨天的佣金 累计提现金额 当前佣金
         Route::get('brokerage_rank', [\app\api\controller\v1\user\UserBrokerageController::class, 'brokerageRank'])->name('brokerageRank')->option(['real_name' => '佣金排行']);//佣金排行
         /** 用户注销 */
-        Route::get('user_cancel', [\app\api\controller\v1\user\UserController::class, 'SetUserCancel'])->name('SetUserCancel')->option(['real_name' => '用户注销']);//用户注销
+        Route::get('user_cancel', [\app\api\controller\v1\user\UserController::class, 'SetUserCancel'])->name('SetUserCancel')->option(['real_name' => '用户注销']);
         /** 用户浏览记录 */
         Route::get('user/visit_list', [\app\api\controller\v1\user\UserController::class, 'visitList'])->name('visitList')->option(['real_name' => '商品浏览列表']);//商品浏览列表
         Route::delete('user/visit', [\app\api\controller\v1\user\UserController::class, 'visitDelete'])->name('visitDelete')->option(['real_name' => '商品浏览记录删除']);//商品浏览记录删除

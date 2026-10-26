@@ -171,6 +171,10 @@ class PublicController
         $auth['/pages/users/user_invoice_list/index'] = $invoiceStatus;
         $auth['/pages/annex/vip_paid/index'] = $svipOpen;
         $auth['/kefu/mobile_list'] = $userService;
+        // 移动端核销页仅对核销员/配送员开放；已删除的商家管理页强制隐藏
+        $auth['/pages/admin/order_cancellation/index'] = $userVerifyStatus || $deliveryUser;
+        $auth['/pages/admin/order/index'] = false;
+        $auth['/pages/admin/manage/index'] = false;
         foreach ($menusInfo as $key => &$value) {
             if (isset($value['is_show']) && $value['is_show'] == 0) {
                 unset($menusInfo[$key]);
@@ -971,6 +975,10 @@ class PublicController
             $auth['/pages/users/user_invoice_list/index'] = $invoiceOpen;
             $auth['/pages/annex/vip_paid/index'] = $sVipOpen;
             $auth['/kefu/mobile_list'] = $userIsService;
+            // 移动端核销页仅对核销员/配送员开放；已删除的商家管理页强制隐藏
+            $auth['/pages/admin/order_cancellation/index'] = $userIsVerify || $userIsDelivery;
+            $auth['/pages/admin/order/index'] = false;
+            $auth['/pages/admin/manage/index'] = false;
 
             // 处理主题菜单配置
             if ($themeInfo) {

@@ -103,7 +103,8 @@ CRMEB 开源版（KY）移动端，基于 **uni-app（Vue 3 + `<script setup>`�
 
 ## v8 相对 v6 的移除项
 
-- `pages/admin/`（移动端商家管理）已整体移除，`api/admin.js` 一并删除，勿再引用。
+- `pages/admin/` 商家管理整包已移除（订单/商品/用户/统计等），`api/admin.js` 一并删除，勿再引用。
+- 例外：仅恢复核销页 `pages/admin/order_cancellation/index` + `api/writeoff.js`（接口 `order/order_verific`），路径为 DIY/`page_link`/个人中心菜单硬契约，勿改名。
 - Vue2 遗留的 `mixins/`（color/SendVerifyCode/sharePoster/skuSelect/debounce）已被 composables 取代或内联，勿再引用。
 
 ## Vue3 迁移注记

@@ -28,4 +28,5 @@ INSERT INTO `eb_page_link` (`id`, `cate_id`, `type`, `name`, `url`, `param`, `ex
 (39, 20, 1, '我的收藏', '/pages/users/user_goods_collection/index', '', '', 1, 0, 1772520919),
 (40, 20, 1, '发票管理', '/pages/users/user_invoice_list/index', '', '', 1, 0, 1772520919),
 (41, 20, 1, '每日签到', '/pages/users/user_sgin/index', '', '', 1, 0, 1772520919),
-(42, 20, 1, '客服接待', '/kefu/mobile_list', '', '', 1, 0, 1772520919);
+(42, 20, 1, '客服接待', '/kefu/mobile_list', '', '', 1, 0, 1772520919),
+(54, 20, 1, '订单核销', '/pages/admin/order_cancellation/index', '', '', 1, 0, 1772520919);

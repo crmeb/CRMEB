@@ -917,7 +917,7 @@ CREATE TABLE IF NOT EXISTS `eb_page_link` (
   `sort` smallint NOT NULL DEFAULT '0' COMMENT '排序',
   `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='页面链接';
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='页面链接';
 
 -- eb_pay_channel：支付方式字典表
 CREATE TABLE IF NOT EXISTS `eb_pay_channel` (
