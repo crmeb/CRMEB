@@ -15,7 +15,6 @@
               v-model="tableFrom.coupon_title"
               placeholder="请输入优惠券名称"
               class="form_content_width"
-              maxlength="18"
               show-word-limit
               clearable
             />
