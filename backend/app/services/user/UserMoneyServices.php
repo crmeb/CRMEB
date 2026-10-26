@@ -360,6 +360,22 @@ class UserMoneyServices extends BaseService
     }
 
     /**
+     * 用户累计充值入账金额（含系统加款/提现入余额/抽奖/注册赠送等正入账类型）
+     * 移动端「我的余额」与资金统计统一走此口径，勿再读废弃 user_bill.recharge
+     * @param int $uid
+     * @return string
+     */
+    public function getUserRechargeSum(int $uid): string
+    {
+        $sum = $this->dao->sum([
+            ['uid', '=', $uid],
+            ['pm', '=', 1],
+            ['type', 'in', ['recharge', 'system_add', 'extract', 'register_system_add', 'lottery_add']],
+        ], 'number', false);
+        return sprintf('%.2f', (float)$sum);
+    }
+
+    /**
      * 余额统计基础
      * @return array
      * @throws \ReflectionException

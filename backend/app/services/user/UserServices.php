@@ -19,7 +19,6 @@ use app\services\diy\DiyServices;
 use app\services\user\MemberOrderServices;
 use app\services\order\OrderCenterServices;
 use app\dao\order\OrderCenterDao;
-use app\services\order\OrderTakeServices;
 use app\services\other\QrcodeServices;
 use app\services\product\product\StoreProductLogServices;
 use app\services\product\product\StoreProductRelationServices;
@@ -210,8 +209,10 @@ class UserServices extends BaseService
             'service' => 'DistributionUserServices', 'action' => 'profile', 'args' => [0, []],
         ]);
         if (is_array($agentAvailable[0] ?? null)) {
-            unset($data['staff_id'], $data['agent_id'], $data['division_id'], $data['spread_uid'], $data['spread_time']);
+            unset($data['spread_uid'], $data['spread_time']);
         }
+        // 员工/代理/事业部归属字段已从用户表移除：插件可用走档案，不可用时丢弃
+        unset($data['staff_id'], $data['agent_id'], $data['division_id']);
         $res = $this->dao->save($data);
         if (!$res)
             throw new AdminException('保存用户信息失败');
@@ -228,15 +229,6 @@ class UserServices extends BaseService
         return $res;
     }
 
-    /**
-     * 某些条件用户佣金总和
-     * @param array $where
-     * @return mixed
-     */
-    public function getSumBrokerage(array $where)
-    {
-        return $this->dao->getWhereSumField($where, 'brokerage_price');
-    }
 
     /**
      * 根据条件获取用户指定字段列表
@@ -291,11 +283,7 @@ class UserServices extends BaseService
     public function getAgentUserList(array $where = [], string $field = '*', $is_page = true)
     {
         $where_data['status'] = 1;
-        $where_data['is_promoter'] = 1;
-        $where_data['spread_open'] = 1;
-        //人人分销时  去除分销员字段的限制
-        $store_brokerage_statu = sys_config('store_brokerage_statu');
-        if ($store_brokerage_statu == 2) unset($where_data['is_promoter']);
+        // is_promoter/spread_open 列已移除：资格判断由分销插件档案决定，未启用时全部正常用户可选
         if (isset($where['nickname']) && $where['nickname'] !== '') {
             $where_data['like'] = $where['nickname'];
         }
@@ -317,8 +305,6 @@ class UserServices extends BaseService
     public function getAgentUserIds(array $where)
     {
         $where['status'] = 1;
-        if (sys_config('store_brokerage_statu') != 2) $where['is_promoter'] = 1;
-        $where['spread_open'] = 1;
         if (isset($where['nickname']) && $where['nickname'] !== '') {
             $where['like'] = $where['nickname'];
             unset($where['nickname']);
@@ -446,8 +432,7 @@ class UserServices extends BaseService
         if (is_array($handled) && ($handled[0] ?? null) !== null) {
             return (bool)$handled[0];
         }
-        if (!$this->dao->incField($uid, 'spread_count', $num))
-            throw new AdminException('增加推广人数失败');
+        // spread_count 列已移除：插件未接管时无可统计的下级数，直接跳过
         return true;
     }
 
@@ -466,27 +451,6 @@ class UserServices extends BaseService
         return true;
     }
 
-    /**
-     * 设置推广员
-     * @param int $uid
-     * @param int $is_promoter
-     * @return bool
-     * @throws Exception
-     */
-    public function setIsPromoter(int $uid, $is_promoter = 1)
-    {
-        $handled = event('DistributionServiceProxy', [
-            'service' => 'DistributionUserServices',
-            'action' => 'saveProfile',
-            'args' => [$uid, ['is_promoter' => (int)$is_promoter]],
-        ]);
-        if (is_array($handled) && ($handled[0] ?? null) !== null) {
-            return (bool)$handled[0];
-        }
-        if (!$this->dao->update($uid, ['is_promoter' => $is_promoter]))
-            throw new AdminException('设置推广员失败');
-        return true;
-    }
 
     /**
      * 设置用户分组
@@ -498,29 +462,6 @@ class UserServices extends BaseService
         return $this->dao->batchUpdate($uids, ['group_id' => $group_id], 'uid');
     }
 
-    /**
-     * 减少用户佣金
-     * @param int $uid
-     * @param float $brokerage_price
-     * @param float $price
-     * @return bool
-     * @throws Exception
-     */
-    public function cutBrokeragePrice(int $uid, $brokerage_price, $price)
-    {
-        $balance = bcsub((string)$brokerage_price, (string)$price, 2);
-        $handled = event('DistributionServiceProxy', [
-            'service' => 'DistributionUserServices',
-            'action' => 'saveProfile',
-            'args' => [$uid, ['brokerage_price' => $balance]],
-        ]);
-        if (is_array($handled) && ($handled[0] ?? null) !== null) {
-            return (bool)$handled[0];
-        }
-        if (!$this->dao->update($uid, ['brokerage_price' => $balance]))
-            throw new AdminException('减少用户佣金失败');
-        return true;
-    }
 
 
     /**
@@ -567,7 +508,6 @@ class UserServices extends BaseService
             $uids = array_column($list, 'uid');
             $userlabel = $this->getUserLablel($uids);
             $userGroup = app()->make(UserGroupServices::class)->getUsersGroupName(array_unique(array_column($list, 'group_id')));
-            $userExtract = app()->make(UserExtractServices::class)->getUsersSumList($uids);
             $levelName = app()->make(SystemUserLevelServices::class)->getUsersLevel(array_unique(array_column($list, 'level')));
             $userLevel = app()->make(UserLevelServices::class)->getUsersLevelInfo($uids);
             $spread_names = $this->dao->getColumn([['uid', 'in', array_unique(array_column($list, 'spread_uid'))]], 'nickname', 'uid');
@@ -584,7 +524,6 @@ class UserServices extends BaseService
                 }
                 $item['status'] = ($item['status'] == 1) ? '正常' : '禁止';
                 $item['birthday'] = $item['birthday'] ? date('Y-m-d', (int)$item['birthday']) : '';
-                $item['extract_count_price'] = $userExtract[$item['uid']] ?? 0;//累计提现
                 $item['spread_uid_nickname'] = $item['spread_uid'] ? ($spread_names[$item['spread_uid']] ?? '') . '(' . $item['spread_uid'] . ')' : '无';
                 //用户类型
                 if ($item['user_type'] == 'routine') {
@@ -1166,8 +1105,6 @@ class UserServices extends BaseService
             ['name' => '积分', 'value' => $userInfo['integral']],
             ['name' => '上级推广人', 'value' => $userInfo['spread_uid'] ? $this->getUserInfo($userInfo['spread_uid'], ['nickname'])['nickname'] ?? '' : ''],
             ['name' => '账户余额', 'value' => $userInfo['now_money']],
-            ['name' => '佣金总收入', 'value' => app()->make(UserBillServices::class)->getBrokerageSum($uid)],
-            ['name' => '提现总金额', 'value' => app()->make(UserExtractServices::class)->getUserExtract($uid)],
         ];
 
     }
@@ -1205,7 +1142,7 @@ class UserServices extends BaseService
             ],
             [
                 'title' => '总消费金额',
-                'value' => $orderServices->getWhereSumField($where, 'pay_price'),
+                'value' => $this->getUserBalanceSpentAmount($uid, $userInfo['now_money'] ?? 0),
                 'key' => '元',
             ],
             [
@@ -1374,34 +1311,46 @@ class UserServices extends BaseService
      */
     public function userChart()
     {
-        $starday = date('Y-m-d', strtotime('-30 day'));
+        $starday = date('Y-m-d', strtotime('-29 day'));
         $yesterday = date('Y-m-d', strtotime('+1 day'));
 
-        $user_list = $this->dao->userList($starday, $yesterday);
-        $chartdata = [];
-        $data = [];
-        $chartdata['legend'] = ['用户数'];//分类
-        $chartdata['yAxis']['maxnum'] = 0;//最大值数量
-        $chartdata['xAxis'] = [date('m-d')];//X轴值
-        $chartdata['series'] = [0];//分类1值
-        if (!empty($user_list)) {
-            foreach ($user_list as $k => $v) {
-                $data['day'][] = $v['day'];
-                $data['count'][] = $v['count'];
-                if ($chartdata['yAxis']['maxnum'] < $v['count'])
-                    $chartdata['yAxis']['maxnum'] = $v['count'];
-            }
-            $chartdata['xAxis'] = $data['day'];//X轴值
-            $chartdata['series'] = $data['count'];//分类1值
+        $userMap = [];
+        foreach ($this->dao->userList($starday, $yesterday) as $row) {
+            $userMap[$row['day']] = (int)$row['count'];
         }
-        $chartdata['bing_xdata'] = ['未消费用户', '消费一次用户', '留存客户', '回流客户'];
+
+        $xAxis = [];
+        $series = [];
+        $maxnum = 0;
+        for ($i = -29; $i <= 0; $i++) {
+            $day = date('m-d', strtotime($i . ' day'));
+            $count = $userMap[$day] ?? 0;
+            $xAxis[] = $day;
+            $series[] = $count;
+            $maxnum = max($maxnum, $count);
+        }
+
+        $chartdata = [
+            'legend' => ['用户数'],
+            'yAxis' => ['maxnum' => $maxnum],
+            'xAxis' => $xAxis,
+            'series' => $series,
+            'bing_xdata' => ['未消费用户', '消费一次用户', '留存客户', '回流客户'],
+        ];
         $color = ['#5cadff', '#b37feb', '#19be6b', '#ff9900'];
-        $pay[0] = $this->dao->count(['pay_count' => 0]);
-        $pay[1] = $this->dao->count(['pay_count' => 1]);
-        $pay[2] = $this->dao->userCount(1);
-        $pay[3] = $this->dao->userCount(2);
+        $pay = [
+            $this->dao->count(['pay_count' => 0]),
+            $this->dao->count(['pay_count' => 1]),
+            (int)$this->dao->userCount(1),
+            (int)$this->dao->userCount(2),
+        ];
+        $bing_data = [];
         foreach ($pay as $key => $item) {
-            $bing_data[] = ['name' => $chartdata['bing_xdata'][$key], 'value' => $pay[$key], 'itemStyle' => ['color' => $color[$key]]];
+            $bing_data[] = [
+                'name' => $chartdata['bing_xdata'][$key],
+                'value' => $item,
+                'itemStyle' => ['color' => $color[$key]],
+            ];
         }
         $chartdata['bing_data'] = $bing_data;
         return $chartdata;
@@ -1418,8 +1367,6 @@ class UserServices extends BaseService
      */
     public function userInfo($info)
     {
-        /** @var UserBillServices $userBill */
-        $userBill = app()->make(UserBillServices::class);
         $uid = (int)$info['uid'];
         $agentProfile = event('DistributionServiceProxy', [
             'service' => 'DistributionUserServices',
@@ -1429,21 +1376,8 @@ class UserServices extends BaseService
         if (is_array($agentProfile) && is_array($agentProfile[0] ?? null)) {
             $info = array_replace((array)$info, $agentProfile[0]);
         }
-        $broken_time = intval(sys_config('extract_time'));
-        $search_time = time() - 86400 * $broken_time;
-        //改造时间
-        $search_time = '1970/01/01' . ' - ' . date('Y/m/d H:i:s', $search_time);
-        //可提现佣金
-        //返佣 +
-        $brokerage_commission = (string)$userBill->getUsersBokerageSum(['uid' => $uid, 'pm' => 1], $search_time);
-        //退款退的佣金 -
-        $refund_commission = (string)$userBill->getUsersBokerageSum(['uid' => $uid, 'pm' => 0], $search_time);
-        $info['broken_commission'] = bcsub($brokerage_commission, $refund_commission, 2);
-        if ($info['broken_commission'] < 0)
-            $info['broken_commission'] = 0;
-        $info['commissionCount'] = bcsub($info['brokerage_price'], $info['broken_commission'], 2);
-        if ($info['commissionCount'] < 0)
-            $info['commissionCount'] = 0;
+        // 佣金档案由分销插件维护（brokerage_price 列已移除），无插件时兜底为 0
+        $info['brokerage_price'] = $info['brokerage_price'] ?? 0;
         return $info;
     }
 
@@ -1467,8 +1401,6 @@ class UserServices extends BaseService
         $storeCoupon = app()->make(StoreCouponUserServices::class);
         /** @var UserBillServices $userBill */
         $userBill = app()->make(UserBillServices::class);
-        /** @var UserExtractServices $userExtract */
-        $userExtract = app()->make(UserExtractServices::class);
         /** @var OrderCenterDao $orderCenterDao */
         $orderCenterDao = app()->make(OrderCenterDao::class);
         /** @var UserLevelServices $userLevel */
@@ -1498,28 +1430,9 @@ class UserServices extends BaseService
         /** @var UserMoneyServices $userMoney */
         $userMoney = app()->make(UserMoneyServices::class);
 
-        $user['recharge'] = $userMoney->sum([
-            ['uid', '=', $uid], ['pm', '=', 1], ['type', 'in', ['recharge', 'system_add', 'extract', 'register_system_add', 'lottery_add']]
-        ], 'number');
-        $user['orderStatusSum'] = bcsub((string)$user['recharge'], (string)$user['now_money'], 2);
-        $user['extractTotalPrice'] = $userExtract->getExtractSum(['uid' => $uid, 'status' => 1]);//累计提现
-        $user['extractPrice'] = $user['brokerage_price'];//可提现
-        $user['statu'] = (int)sys_config('store_brokerage_statu');
-        if (!$user['is_promoter']) {
-            $price = $orderCenterDao->sum([['pay_status', '>', 0], ['refund_status', '=', 0], ['uid', '=', $user['uid']]], 'pay_price');
-            if (is_brokerage_statu($price)) {
-                $this->setIsPromoter((int)$uid, 1);
-                $user['is_promoter'] = 1;
-            }
-        }
-        /** @var UserBrokerageServices $frozenPrices */
-        $frozenPrices = app()->make(UserBrokerageServices::class);
-        $user['broken_commission'] = $frozenPrices->getUserFrozenPrice($uid);
-        if ($user['broken_commission'] < 0)
-            $user['broken_commission'] = 0;
-        $user['commissionCount'] = bcsub((string)$user['brokerage_price'], (string)$user['broken_commission'], 2);
-        if ($user['commissionCount'] < 0)
-            $user['commissionCount'] = 0;
+        // 资金恒等式：现有资产 + 累计消费 = 累计充值（与后台「总消费金额」同口径：余额已用）
+        $user['recharge'] = $userMoney->getUserRechargeSum((int)$uid);
+        $user['orderStatusSum'] = $this->getUserBalanceSpentAmount((int)$uid, $user['now_money'] ?? 0);
         if (!sys_config('member_func_status'))
             $user['vip'] = false;
         else {
@@ -1531,7 +1444,6 @@ class UserServices extends BaseService
                 $user['vip_name'] = $userLevel['name'] ?? '';
             }
         }
-        $user['yesterDay'] = $frozenPrices->getUsersBokerageSum(['uid' => $uid, 'pm' => 1], 'yesterday');
         $user['recharge_switch'] = (int)sys_config('recharge_switch');//充值开关
         $user['adminid'] = (bool)(event('KefuConfigQuery', ['uid' => $uid, 'customer' => 1])[0] ?? false);
         if ($user['phone'] && $user['user_type'] != 'h5') {
@@ -1549,13 +1461,11 @@ class UserServices extends BaseService
         } else if (!$user['phone']) {
             $user['switchUserInfo'][] = $userInfo;
         }
-        $user['broken_day'] = (int)sys_config('extract_time');//佣金冻结时间
         $user['balance_func_status'] = (int)sys_config('balance_func_status', 0);
         $invoice_func = $userInvoice->invoiceFuncStatus();
         $user['invioce_func'] = $invoice_func['invoice_func'];
         $user['special_invoice'] = $invoice_func['special_invoice'];
         $user['collectCount'] = $collect->count(['uid' => $uid]);
-        $user['spread_status'] = $this->checkUserPromoter($user['uid']);
         $user['pay_vip_status'] = $user['is_ever_level'] || ($user['is_money_level'] && $user['overdue_time'] > time());
         $user['member_style'] = (int)$diyServices->getColorChange('member');
         if ($user['is_ever_level']) {
@@ -1618,12 +1528,8 @@ class UserServices extends BaseService
             'status_code' => ['pending_payment', 'processing', 'completed'],
         ]);
 
-        // 累计消费金额（已支付且未退款的）
-        $data['sum_price'] = (string)$orderCenterDao->sum([
-            ['uid', '=', $uid],
-            ['pay_status', '>', 0],
-            ['refund_status', '=', 0],
-        ], 'pay_price');
+        // 累计消费金额（余额已用，与余额页 / 后台总消费金额同口径）
+        $data['sum_price'] = $this->getUserBalanceSpentAmount($uid);
 
         // 待付款
         $data['unpaid_count'] = (string)$orderCenterDao->count($baseWhere + ['status_code' => 'pending_payment']);
@@ -1662,6 +1568,24 @@ class UserServices extends BaseService
     }
 
     /**
+     * 用户余额侧累计消费（已用金额）
+     * 口径：累计充值入账 − 当前余额，保证 现有资产 + 累计消费 = 累计充值
+     * @param int $uid
+     * @param mixed $nowMoney 已知余额时可传入，避免重复查库
+     * @return string
+     */
+    public function getUserBalanceSpentAmount(int $uid, $nowMoney = null): string
+    {
+        if ($nowMoney === null) {
+            $nowMoney = $this->dao->value(['uid' => $uid], 'now_money');
+        }
+        /** @var UserMoneyServices $userMoney */
+        $userMoney = app()->make(UserMoneyServices::class);
+        $spent = bcsub($userMoney->getUserRechargeSum($uid), (string)($nowMoney ?? 0), 2);
+        return bccomp($spent, '0', 2) < 0 ? '0.00' : $spent;
+    }
+
+    /**
      * 用户资金统计
      * @param int $uid
      */
@@ -1671,13 +1595,11 @@ class UserServices extends BaseService
         if (!$userInfo) {
             throw new AdminException('用户不存在');
         }
-        /** @var UserBillServices $userBill */
-        $userBill = app()->make(UserBillServices::class);
-        /** @var OrderCenterDao $storeOrder */
-        $storeOrder = app()->make(OrderCenterDao::class);
+        /** @var UserMoneyServices $userMoney */
+        $userMoney = app()->make(UserMoneyServices::class);
         $user['now_money'] = $userInfo['now_money'];//当前总资金
-        $user['recharge'] = $userBill->getRechargeSum($uid);//累计充值
-        $user['orderStatusSum'] = $storeOrder->sum(['uid' => $uid, 'pay_status' => 1, 'is_del' => 0], 'pay_price');//累计消费
+        $user['recharge'] = $userMoney->getUserRechargeSum($uid);//累计充值（user_money）
+        $user['orderStatusSum'] = $this->getUserBalanceSpentAmount($uid, $user['now_money']);
         return $user;
     }
 
@@ -1793,22 +1715,8 @@ class UserServices extends BaseService
                 'friends_uid' => $spreadUid,
             ]);
         }
-        $check = false;
-        if (sys_config('brokerage_bindind') == 1) {
-            if (sys_config('store_brokerage_binding_status') == 1) {
-                if (!$userArray['spread_uid']) {
-                    $check = true;
-                }
-            } elseif (sys_config('store_brokerage_binding_status') == 2 && (($userArray['spread_time'] + (sys_config('store_brokerage_binding_time') * 86400)) < time())) {
-                $check = true;
-            } elseif (sys_config('store_brokerage_binding_status') == 3) {
-                $check = true;
-            }
-        } elseif (sys_config('brokerage_bindind') == 2) {
-            if ($userArray['add_time'] == $userArray['last_time'] && $userArray['spread_uid'] == 0) {
-                $check = true;
-            }
-        }
+        // 仅允许没有上级的用户建立推广关系，不受分销配置开关和时间窗影响。
+        $check = empty($userArray['spread_uid']);
         if ($userArray['uid'] == $spreadUid || $userArray['uid'] == $userSpreadUid) $check = false;
         if ($check) {
             $spreadLegacy = $this->dao->get($spreadUid);
@@ -1817,9 +1725,7 @@ class UserServices extends BaseService
             $data = [];
             $data['spread_uid'] = $spreadUid;
             $data['spread_time'] = time();
-            $data['division_id'] = $spreadInfo['division_id'];
-            $data['agent_id'] = $spreadInfo['agent_id'];
-            $data['staff_id'] = $spreadInfo['staff_id'];
+            // 事业部/代理/员工归属由分销插件档案接管，不再写用户表
             $handledProfile = event('DistributionServiceProxy', ['service' => 'DistributionUserServices', 'action' => 'saveProfile', 'args' => [$uid, [
                 'division_id' => (int)($spreadInfo['division_id'] ?? 0),
                 'agent_id' => (int)($spreadInfo['agent_id'] ?? 0),
@@ -1975,48 +1881,6 @@ class UserServices extends BaseService
     }
 
 
-    /**
-     * 检测用户是否是推广员
-     * @param int $uid
-     * @param $user
-     * @return bool
-     */
-    public function checkUserPromoter(int $uid, $user = [])
-    {
-        if (!$user) {
-            $user = $this->getUserInfo($uid, 'spread_open,is_promoter');
-        }
-        if (!$user) {
-            return false;
-        }
-        $profile = event('DistributionServiceProxy', [
-            'service' => 'DistributionUserServices',
-            'action' => 'profile',
-            'args' => [$uid, is_object($user) && method_exists($user, 'toArray') ? $user->toArray() : (array)$user],
-        ]);
-        if (is_array($profile) && is_array($profile[0] ?? null)) {
-            $user = $profile[0];
-        }
-        //分销是否开启
-        if (!sys_config('brokerage_func_status')) {
-            return false;
-        }
-        if (isset($user['spread_open']) && !$user['spread_open']) {
-            return false;
-        }
-        /** @var OrderCenterDao $storeOrder */
-        $storeOrder = app()->make(OrderCenterDao::class);
-        $sumPrice = $storeOrder->sum(['uid' => $uid, 'pay_status' => 1], 'pay_price');//累计消费
-        $store_brokerage_statu = sys_config('store_brokerage_statu');
-        $store_brokerage_price = sys_config('store_brokerage_price');
-        if ($user['is_promoter'] || $store_brokerage_statu == 2 || ($store_brokerage_statu == 3 && $sumPrice > $store_brokerage_price)) {
-            if (!$user['is_promoter']) {
-                $this->setIsPromoter($uid, 1);
-            }
-            return true;
-        }
-        return false;
-    }
 
     /** 修改会员的时间及是否会员状态
      * @param int $vip_day 会员天数
@@ -2088,88 +1952,6 @@ class UserServices extends BaseService
     }
 
     /**
-     * 增加推广用户佣金
-     * @param int $uid
-     * @param int $spread_uid
-     * @param array $userInfo
-     * @param array $spread_user
-     * @return bool|mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function addBrokeragePrice(int $uid, int $spread_uid, array $userInfo = [], array $spread_user = [])
-    {
-        if (!$uid || !$spread_uid) {
-            return false;
-        }
-        //商城分销功能是否开启 0关闭1开启
-        if (!sys_config('brokerage_func_status')) return true;
-        if (!sys_config('brokerage_user_status')) return true;
-        //获取设置推广佣金单价
-        $brokerage_price = sys_config('uni_brokerage_price', 0);
-        //获取推广佣金当日限额
-        $day_brokerage_price_upper = sys_config('day_brokerage_price_upper', 0);
-        if (!floatval($brokerage_price) || !floatval($day_brokerage_price_upper)) {
-            return true;
-        }
-        if (!$userInfo) {
-            $userInfo = $this->getUserInfo($uid);
-        }
-        if (!$userInfo) {
-            return false;
-        }
-
-        //根据手机号码查询此用户注销过，不反推广佣金
-        if ($userInfo['phone'] !== '' && $this->dao->getCount(['phone' => $userInfo['phone'], 'is_del' => 1])) {
-            return false;
-        }
-        //根据渠道事件查询此用户是否注销过，不反推广佣金
-        $canceled = event('UserCancelStatusQuery', ['uid' => $uid]);
-        if (!empty($canceled) && ($canceled[0] ?? false)) {
-            return false;
-        }
-
-        if (!$spread_user) {
-            $spread_user = $this->dao->getOne(['uid' => $spread_uid, 'status' => 1]);
-        }
-        if (!$spread_user) {
-            return false;
-        }
-        if (!$this->checkUserPromoter($spread_uid, $spread_user)) {
-            return false;
-        }
-        /** @var UserBrokerageServices $userBrokerageServices */
-        $userBrokerageServices = app()->make(UserBrokerageServices::class);
-        // -1不限制
-        if ($day_brokerage_price_upper != -1) {
-            if ($day_brokerage_price_upper <= 0) {
-                return true;
-            } else {
-                //获取上级用户今日获取推广用户佣金
-                $spread_day_brokerage = $userBrokerageServices->getUserBrokerageSum($spread_uid, ['brokerage_user'], 'today');
-                //超过上限
-                if (($spread_day_brokerage + $brokerage_price) > $day_brokerage_price_upper) {
-                    return true;
-                }
-            }
-        }
-
-        return $this->transaction(function () use ($uid, $spread_uid, $brokerage_price, $userInfo, $userBrokerageServices) {
-            // 添加返佣记录（事务内自动增加余额并记录流水）
-            $res1 = $userBrokerageServices->brokerageIncome('get_user_brokerage', $spread_uid, [
-                'nickname' => $userInfo['nickname'],
-                'number' => floatval($brokerage_price)
-            ], $uid);
-            //给上级发送获得佣金的模板消息
-            /** @var OrderTakeServices $storeOrderTakeServices */
-            $storeOrderTakeServices = app()->make(OrderTakeServices::class);
-            $storeOrderTakeServices->sendBackOrderBrokerage([], $spread_uid, $brokerage_price, 'user');
-            return $res1;
-        });
-    }
-
-    /**
      * 获取上级uid
      * @param int $uid
      * @param array $userInfo
@@ -2181,8 +1963,6 @@ class UserServices extends BaseService
         if (!$uid) {
             return 0;
         }
-        //商城分销功能是否开启 0关闭1开启
-        if (!sys_config('brokerage_func_status')) return -1;
         if (!$userInfo) {
             $userInfo = $this->getUserInfo($uid);
         }
@@ -2198,26 +1978,11 @@ class UserServices extends BaseService
             $userInfo['spread_uid'] = $relation[0]['spread_uid'];
             $userInfo['spread_time'] = $relation[0]['spread_time'];
         }
-        //上级的上级不需要检测自购
-        if ($is_spread) {
-            //开启自购
-            $is_self_brokerage = sys_config('is_self_brokerage', 0);
-            if ($is_self_brokerage && $is_spread) {
-                return $uid;
-            }
+        // 保留自购配置：查询一级推广关系时，开启自购则归属当前用户自身。
+        if ($is_spread && sys_config('is_self_brokerage', 0)) {
+            return $uid;
         }
-
-        //绑定类型
-        $store_brokergae_binding_status = sys_config('store_brokerage_binding_status', 1);
-        if ($store_brokergae_binding_status == 1 || $store_brokergae_binding_status == 3) {
-            return $userInfo['spread_uid'];
-        }
-        //分销绑定类型为时间段且没过期
-        $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
-        if ($store_brokergae_binding_status == 2 && ($userInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) > time()) {
-            return $userInfo['spread_uid'];
-        }
-        return -1;
+        return (int)($userInfo['spread_uid'] ?? 0);
     }
 
     /**

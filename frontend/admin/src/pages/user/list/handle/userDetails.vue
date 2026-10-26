@@ -1,60 +1,70 @@
 <template>
   <div style="width: 100%">
-    <el-drawer v-model="modals" title="用户详情" :wrapperClosable="false" :size="1100" @closed="draChange">
-      <div class="acea-row head">
-        <div class="avatar mr15"><img :src="psInfo.avatar" /></div>
-        <div class="dashboard-workplace-header-tip">
-          <p class="dashboard-workplace-header-tip-title f-w-b" v-text="psInfo.nickname || '-'"></p>
-          <div class="dashboard-workplace-header-tip-desc">
-            <span class="dashboard-workplace-header-tip-desc-sp" v-for="(item, index) in detailsData" :key="index">{{
-              item.title + '：' + item.value
-            }}</span>
+    <el-drawer
+      class="user-details-drawer"
+      v-model="modals"
+      title="用户详情"
+      :wrapperClosable="false"
+      :size="1100"
+      @closed="draChange"
+    >
+      <div class="user-details-body">
+        <div class="acea-row head">
+          <div class="avatar mr15"><img :src="psInfo.avatar" /></div>
+          <div class="dashboard-workplace-header-tip">
+            <p class="dashboard-workplace-header-tip-title f-w-b" v-text="psInfo.nickname || '-'"></p>
+            <div class="dashboard-workplace-header-tip-desc">
+              <span class="dashboard-workplace-header-tip-desc-sp" v-for="(item, index) in detailsData" :key="index">{{
+                item.title + '：' + item.value
+              }}</span>
+            </div>
+          </div>
+          <div class="edit-btn" v-if="!psInfo.is_del">
+            <el-button v-if="!isEdit" type="primary" v-db-click @click="edit">编辑</el-button>
+            <el-button v-if="isEdit" v-db-click @click="edit">取消</el-button>
+            <el-button v-if="isEdit" type="primary" v-db-click @click="editSave">保存</el-button>
           </div>
         </div>
-        <div class="edit-btn" v-if="!psInfo.is_del">
-          <el-button v-if="!isEdit" type="primary" v-db-click @click="edit">编辑</el-button>
-          <el-button v-if="isEdit" v-db-click @click="edit">取消</el-button>
-          <el-button v-if="isEdit" type="primary" v-db-click @click="editSave">保存</el-button>
-        </div>
-      </div>
-      <el-row justify="space-between" class="mt14">
-        <el-col :span="24">
-          <!-- tab-click 回调拿到的是 pane 组件实例（tab.name 为 undefined），type 会丢参；tab-change 直接收 name 字符串 -->
-          <el-tabs type="border-card" v-model="activeName" @tab-change="changeTab">
-            <el-tab-pane name="user" label="用户信息">
+        <!-- tab-click 回调拿到的是 pane 组件实例（tab.name 为 undefined），type 会丢参；tab-change 直接收 name 字符串 -->
+        <el-tabs class="user-details-tabs mt14" type="border-card" v-model="activeName" @tab-change="changeTab">
+          <el-tab-pane name="user" label="用户信息" lazy>
+            <div class="tab-pane-body is-info">
               <userEditForm ref="editForm" :userId="userId" @success="getDetails(userId)" v-if="isEdit"></userEditForm>
               <user-info :ps-info="psInfo" v-else></user-info>
-            </el-tab-pane>
-            <el-tab-pane :name="item.val" v-for="(item, index) in list" :key="index" :label="item.label">
-              <el-table
-                class="mt20"
-                :data="userLists"
-                max-height="400"
-                ref="table"
-                v-loading="loading"
-                no-userFrom-text="暂无数据"
-                no-filtered-userFrom-text="暂无筛选结果"
-              >
-                <el-table-column :label="item.title" min-width="120" v-for="(item, index) in columns" :key="index">
-                  <template #default="scope">
-                    <template v-if="item.format === 'time'">
-                      <div>
-                        <span>{{ scope.row[item.key] ? timeFormat(scope.row[item.key]) : '--' }}</span>
-                      </div>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane :name="item.val" v-for="(item, index) in list" :key="index" :label="item.label" lazy>
+            <div class="tab-pane-body">
+              <div class="tab-table-wrap">
+                <el-table
+                  :data="userLists"
+                  height="100%"
+                  ref="table"
+                  v-loading="loading"
+                  no-userFrom-text="暂无数据"
+                  no-filtered-userFrom-text="暂无筛选结果"
+                >
+                  <el-table-column :label="item.title" min-width="120" v-for="(item, index) in columns" :key="index">
+                    <template #default="scope">
+                      <template v-if="item.format === 'time'">
+                        <div>
+                          <span>{{ scope.row[item.key] ? timeFormat(scope.row[item.key]) : '--' }}</span>
+                        </div>
+                      </template>
+                      <template v-else-if="item.key">
+                        <div>
+                          <span>{{ scope.row[item.key] }}</span>
+                        </div>
+                      </template>
+                      <template v-else-if="item.slot === 'number'">
+                        <div :class="scope.row.pm ? 'plusColor' : 'reduceColor'">
+                          {{ scope.row.pm ? '+' + scope.row.number : '-' + scope.row.number }}
+                        </div>
+                      </template>
                     </template>
-                    <template v-else-if="item.key">
-                      <div>
-                        <span>{{ scope.row[item.key] }}</span>
-                      </div>
-                    </template>
-                    <template v-else-if="item.slot === 'number'">
-                      <div :class="scope.row.pm ? 'plusColor' : 'reduceColor'">
-                        {{ scope.row.pm ? '+' + scope.row.number : '-' + scope.row.number }}
-                      </div>
-                    </template>
-                  </template>
-                </el-table-column>
-              </el-table>
+                  </el-table-column>
+                </el-table>
+              </div>
               <div class="acea-row row-right page">
                 <pagination
                   v-if="total"
@@ -64,14 +74,10 @@
                   @pagination="changeType"
                 />
               </div>
-            </el-tab-pane>
-          </el-tabs>
-        </el-col>
-
-        <!-- <el-col :span="24">
-          
-        </el-col> -->
-      </el-row>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </el-drawer>
   </div>
 </template>
@@ -373,11 +379,71 @@ defineExpose({ modals, getDetails });
     height: 100%;
   }
 }
-:deep(.el-drawer__body) {
-  padding: 20px 0 !important;
+.user-details-drawer {
+  :deep(.el-drawer) {
+    display: flex;
+    flex-direction: column;
+  }
+  :deep(.el-drawer__header) {
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+  :deep(.el-drawer__body) {
+    padding: 20px 0 !important;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
 }
-:deep(.el-tabs--border-card > .el-tabs__content) {
-  padding: 0 35px;
+.user-details-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+.user-details-tabs {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  :deep(.el-tabs__header) {
+    flex-shrink: 0;
+  }
+  :deep(.el-tabs__content) {
+    flex: 1;
+    min-height: 0;
+    padding: 0 35px 12px;
+    overflow: hidden;
+  }
+  :deep(.el-tab-pane) {
+    height: 100%;
+  }
+}
+.tab-pane-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  &.is-info {
+    overflow: auto;
+  }
+
+  .tab-table-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .page {
+    flex-shrink: 0;
+    padding-top: 12px;
+  }
 }
 :deep(.el-tabs--border-card > .el-tabs__header),
 :deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:active) {
@@ -409,9 +475,11 @@ defineExpose({ modals, getDetails });
 :deep(.el-tabs--border-card) {
   border: none;
   box-shadow: none;
+  height: 100%;
 }
 .head {
   position: relative;
+  flex-shrink: 0;
   padding: 0 15px;
   .edit-btn {
     position: absolute;

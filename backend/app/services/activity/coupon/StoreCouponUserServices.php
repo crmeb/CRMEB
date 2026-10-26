@@ -74,13 +74,18 @@ class StoreCouponUserServices extends BaseService
     }
 
     /**
-     * 获取用户优惠券
-     * @param int $id
+     * 获取用户持有优惠券（管理端用户详情）
+     * 仅展示未使用（status=0），不含已使用、已过期
+     * @param int $id 用户 uid
+     * @return array{list: array, count: int}
      */
     public function getUserCouponList(int $id)
     {
         [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->getList(['uid' => $id], '*', ['issue'], $page, $limit);
+        // StoreCouponUser 无 status 搜索器，需显式 where；status: 0未使用 1已使用 2已过期
+        $count = $this->dao->search(['uid' => $id])->where('status', 0)->count();
+        $list = $this->dao->search(['uid' => $id])->where('status', 0)
+            ->field('*')->with(['issue'])->page($page, $limit)->order('id desc')->select()->toArray();
         foreach ($list as &$item) {
             $item['_add_time'] = date('Y-m-d H:i:s', $item['add_time']);
             $item['_end_time'] = date('Y-m-d H:i:s', $item['end_time']);
@@ -88,7 +93,6 @@ class StoreCouponUserServices extends BaseService
                 $item['coupon_time'] = bcdiv((string)($item['end_use_time'] - $item['start_use_time']), '86400', 0);
             }
         }
-        $count = $this->dao->count(['uid' => $id]);
         return compact('list', 'count');
     }
 
