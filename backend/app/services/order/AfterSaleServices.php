@@ -1624,30 +1624,59 @@ class AfterSaleServices extends BaseService
 
     /**
      * 维修完成
+     * 记录维修结果与可选寄回物流后，直接完结售后并恢复中台订单到申请前状态。
+     * 兼容已停在 repair_complete、尚未完结的历史单。
+     *
      * @param int $afterSaleId
      * @param string $repairRemark
+     * @param array $deliveryData 可选寄回物流 delivery_type/delivery_no
      * @return void
      */
-    public function repairComplete(int $afterSaleId, string $repairRemark = ''): void
+    public function repairComplete(int $afterSaleId, string $repairRemark = '', array $deliveryData = []): void
     {
         $afterSale = $this->dao->get($afterSaleId);
         if (empty($afterSale)) {
             throw new \RuntimeException('售后单不存在');
         }
-        if ($afterSale['status'] !== 'repairing') {
+        if (!in_array($afterSale['status'], ['repairing', 'repair_complete'], true)) {
             throw new \RuntimeException('当前状态不可维修完成');
         }
-
-        $this->dao->update($afterSaleId, [
-            'status'              => 'repair_complete',
-            'repair_remark'       => $repairRemark,
-            'repair_complete_time'=> time(),
-        ]);
+        if (($afterSale['type'] ?? '') !== 'repair') {
+            throw new \RuntimeException('非维修类型售后不可执行维修完成');
+        }
 
         $lifecycle = $this->getLifecycleHandler($afterSale['product_type']);
-        if ($lifecycle) {
+        $update = [];
+        if ($afterSale['status'] === 'repairing') {
+            $update['status'] = 'repair_complete';
+            $update['repair_complete_time'] = time();
+        }
+        if ($repairRemark !== '') {
+            $update['repair_remark'] = $repairRemark;
+        }
+        $deliveryType = trim((string)($deliveryData['delivery_type'] ?? ''));
+        $deliveryNo = trim((string)($deliveryData['delivery_no'] ?? ''));
+        if ($deliveryType !== '' || $deliveryNo !== '') {
+            $update['resend_delivery_type'] = $deliveryType;
+            $update['resend_delivery_no'] = $deliveryNo;
+            $update['resend_time'] = time();
+        }
+        if ($update) {
+            $this->dao->update($afterSaleId, $update);
+        }
+
+        if ($afterSale['status'] === 'repairing' && $lifecycle) {
             $lifecycle->afterRepair($afterSale['after_sale_no'], 'repair_complete');
         }
+        if (($deliveryType !== '' || $deliveryNo !== '') && $lifecycle) {
+            $lifecycle->afterResend($afterSale['after_sale_no'], [
+                'delivery_type' => $deliveryType,
+                'delivery_no' => $deliveryNo,
+            ]);
+        }
+
+        // 维修流程终结：完结售后单并恢复订单原状态（不再等待用户二次确认收货）
+        $this->complete($afterSaleId);
     }
 
     /**
@@ -1945,26 +1974,31 @@ class AfterSaleServices extends BaseService
      */
     public function getListForAdmin(array $where, int $page, int $limit): array
     {
-        $map = [];
-        // 售后单号模糊查询
+        // 关联键走模型搜索器（status/type 等）；模糊/区间条件用三元数组
+        $map = ['is_del' => 0];
         if (!empty($where['after_sale_no'])) {
-            $map[] = ['after_sale_no', 'like', '%' . $where['after_sale_no'] . '%'];
+            $map[] = ['after_sale_no', 'like', '%' . trim((string)$where['after_sale_no']) . '%'];
         }
-        // 订单号模糊查询
         if (!empty($where['order_no'])) {
-            $map[] = ['order_no', 'like', '%' . $where['order_no'] . '%'];
+            $map[] = ['order_no', 'like', '%' . trim((string)$where['order_no']) . '%'];
         }
-        // 精确筛选
-        foreach (['status', 'type', 'product_type', 'order_category'] as $field) {
-            if (!empty($where[$field])) {
-                $map[] = [$field, '=', $where[$field]];
+        // 状态：单值精确；逗号串/数组走 whereIn（兼容流程分组）
+        $status = $where['status'] ?? '';
+        if ($status !== '' && $status !== null) {
+            if (is_string($status) && str_contains($status, ',')) {
+                $map['status'] = array_values(array_filter(array_map('trim', explode(',', $status))));
+            } else {
+                $map['status'] = $status;
             }
         }
-        // 时间范围
+        foreach (['type', 'product_type', 'order_category'] as $field) {
+            if (!empty($where[$field])) {
+                $map[$field] = $where[$field];
+            }
+        }
         if (!empty($where['start_time']) && !empty($where['end_time'])) {
             $map[] = ['add_time', 'between', [(int)$where['start_time'], (int)$where['end_time']]];
         }
-        $map[] = ['is_del', '=', 0];
 
         $list = $this->dao->getList($map, $page, $limit);
         // 附加文案
@@ -2383,8 +2417,13 @@ class AfterSaleServices extends BaseService
                 $query->where('status', 'audit_rejected');
                 break;
             case 'refunded':
-                // 已退款：refunded 为退款落账瞬时态、completed 为终态，双取兜底历史数据
-                $query->whereIn('status', ['refunded', 'completed']);
+                // 已退款：退款型终态；兼容历史误写入 completed 的退款单
+                $query->where(function ($q) {
+                    $q->where('status', 'refunded')->whereOr(function ($q2) {
+                        $q2->where('status', 'completed')
+                            ->whereIn('type', ['refund_only', 'return_refund']);
+                    });
+                });
                 break;
             default:
                 return 0;
@@ -2482,8 +2521,13 @@ class AfterSaleServices extends BaseService
                 case 3: // 退货待收货
                     $query->where('status', 'receiving');
                     break;
-                case 4: // 已退款
-                    $query->whereIn('status', ['refunded', 'completed']);
+                case 4: // 已退款（含历史误标 completed 的退款型）
+                    $query->where(function ($q) {
+                        $q->where('status', 'refunded')->whereOr(function ($q2) {
+                            $q2->where('status', 'completed')
+                                ->whereIn('type', ['refund_only', 'return_refund']);
+                        });
+                    });
                     break;
             }
         }
@@ -2509,7 +2553,11 @@ class AfterSaleServices extends BaseService
             3 => ['name' => '拒绝退款', 'num' => (clone $base)->where('status', 'audit_rejected')->count()],
             4 => ['name' => '商品待退货', 'num' => (clone $base)->where('status', 'pending_return')->count()],
             5 => ['name' => '退货待收货', 'num' => (clone $base)->where('status', 'receiving')->count()],
-            6 => ['name' => '已退款', 'num' => (clone $base)->whereIn('status', ['refunded', 'completed'])->count()],
+            6 => ['name' => '已退款', 'num' => (clone $base)->where(function ($q) {
+                $q->where('status', 'refunded')->whereOr(function ($q2) {
+                    $q2->where('status', 'completed')->whereIn('type', ['refund_only', 'return_refund']);
+                });
+            })->count()],
         ];
         return ['list' => $list, 'count' => $count, 'num' => $num];
     }
@@ -2523,8 +2571,11 @@ class AfterSaleServices extends BaseService
     protected function tidyKefuListItem(array $item, array $orderMap): array
     {
         $status = $item['status'] ?? '';
+        $type = $item['type'] ?? '';
         // 旧数字 refund_status：1=处理中 2=已退款 3=已拒绝
-        if (in_array($status, ['refunded', 'completed'])) {
+        // completed 仅对退款型计为已退款；换货/补发/维修的 completed 仍属处理完结而非退款
+        if ($status === 'refunded'
+            || ($status === 'completed' && in_array($type, ['refund_only', 'return_refund'], true))) {
             $refundStatus = 2;
         } elseif ($status === 'audit_rejected' || $status === 'canceled') {
             $refundStatus = 3;
@@ -2629,11 +2680,11 @@ class AfterSaleServices extends BaseService
             $query->whereBetween('add_time', [strtotime($start), strtotime($end) + 86399]);
         }
         if (($where['refund_status'] ?? 0) == 1) {
-            // 进行中：未完结且未取消/驳回
-            $query->whereNotIn('status', ['completed', 'canceled', 'audit_rejected']);
+            // 进行中：未完结且未取消/驳回（含已退款终态）
+            $query->whereNotIn('status', ['completed', 'refunded', 'canceled', 'audit_rejected']);
         } elseif (($where['refund_status'] ?? 0) == 2) {
-            // 已完成
-            $query->where('status', 'completed');
+            // 已完结：已完成 + 已退款
+            $query->whereIn('status', ['completed', 'refunded']);
         }
         $count = (clone $query)->count();
         $list = $query->field('id, after_sale_no, order_no, uid, type, status, refund_price, actual_refund_price, refund_integral, reason, reject_reason, remark, refund_num, add_time, refund_time')

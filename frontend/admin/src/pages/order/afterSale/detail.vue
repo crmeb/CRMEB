@@ -278,9 +278,9 @@
               v-auth="['admin-order-afterSale-start_repair']"
               >开始维修</el-button
             >
-            <!-- 维修中：维修完成 -->
+            <!-- 维修中 / 已维修完成未完结：维修完成（完结售后并恢复订单原状态） -->
             <el-button
-              v-if="detail.status === 'repairing'"
+              v-if="detail.status === 'repairing' || detail.status === 'repair_complete'"
               type="success"
               v-db-click
               @click="openRepairComplete"
@@ -399,7 +399,12 @@
     </el-dialog>
 
     <!-- 维修完成弹窗 -->
-    <el-dialog v-model="repairModal" title="维修完成" width="500px" @close="repairForm = { repair_remark: '' }">
+    <el-dialog
+      v-model="repairModal"
+      title="维修完成"
+      width="500px"
+      @close="repairForm = { repair_remark: '', delivery_type: '', delivery_no: '' }"
+    >
       <el-form :model="repairForm" label-width="100px">
         <el-form-item label="维修备注">
           <el-input
@@ -409,7 +414,13 @@
             placeholder="维修过程记录（选填）"
           ></el-input>
         </el-form-item>
-        <div class="repair-tip">维修完成后将进入补发流程，请填写补发物流寄回用户。</div>
+        <el-form-item label="寄回快递">
+          <el-input v-model="repairForm.delivery_type" placeholder="快递公司（选填）"></el-input>
+        </el-form-item>
+        <el-form-item label="寄回单号">
+          <el-input v-model="repairForm.delivery_no" placeholder="快递单号（选填）"></el-input>
+        </el-form-item>
+        <div class="repair-tip">填写寄回物流并确认后，售后完结，订单将变为「待收货」。</div>
       </el-form>
       <template #footer
         ><div>
@@ -463,7 +474,7 @@ const resendModal = ref(false);
 const resendForm = ref({ delivery_type: '', delivery_no: '' });
 // 维修完成弹窗
 const repairModal = ref(false);
-const repairForm = ref({ repair_remark: '' });
+const repairForm = ref({ repair_remark: '', delivery_type: '', delivery_no: '' });
 // 产品类型文案映射（与列表页保持一致）
 const productTypeOptions = [
   { key: 'normal', label: '实物商品' },
@@ -566,14 +577,13 @@ const canStartRepair = computed(() => {
  * 是否可补发商品
  * - 补发类型：audit_passed 状态可补发
  * - 换货类型：receiving 状态且已确认收货后可补发
- * - 维修类型：repair_complete 状态可补发
+ * - 维修类型：维修完成时一并处理寄回，不再单独补发
  */
 const canResend = computed(() => {
   if (!detail.value) return false;
   const { status, type } = detail.value;
   if (type === 'resend' && status === 'audit_passed') return true;
   if (type === 'exchange' && status === 'receiving' && isReceived.value) return true;
-  if (type === 'repair' && status === 'repair_complete') return true;
   return false;
 });
 
@@ -732,7 +742,7 @@ function handleStartRepair() {
  * 打开维修完成弹窗
  */
 function openRepairComplete() {
-  repairForm.value = { repair_remark: '' };
+  repairForm.value = { repair_remark: '', delivery_type: '', delivery_no: '' };
   repairModal.value = true;
 }
 

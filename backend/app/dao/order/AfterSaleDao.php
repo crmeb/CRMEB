@@ -266,9 +266,13 @@ class AfterSaleDao extends BaseDao
             $processingStatuses = ['pending_audit', 'audit_passed', 'refunding', 'pending_return', 'receiving', 'resending', 'repairing', 'repair_complete'];
             $query->whereIn('status', $processingStatuses);
         } elseif ($mode === 'refunded') {
-            // 已退款完成：退款/退货退款类型且已完结
-            $query->whereIn('status', ['refunded', 'completed'])
-                  ->whereIn('type', ['refund_only', 'return_refund']);
+            // 已退款：退款落账终态；兼容历史误写入 completed 的退款型售后
+            $query->where(function ($q) {
+                $q->where('status', 'refunded')->whereOr(function ($q2) {
+                    $q2->where('status', 'completed')
+                        ->whereIn('type', ['refund_only', 'return_refund']);
+                });
+            });
         }
         // all 模式：不追加状态条件，返回所有有售后记录的订单号
 

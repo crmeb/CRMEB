@@ -3,18 +3,6 @@
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form :model="searchForm" label-width="80px" label-position="right" inline @submit.prevent>
-          <el-form-item label="售后状态：">
-            <el-select
-              v-model="searchForm.status"
-              clearable
-              @change="getList(1)"
-              placeholder="全部"
-              class="form_content_width"
-            >
-              <el-option label="全部" value="" />
-              <el-option v-for="item in statusOptions" :key="item.key" :value="item.key" :label="item.label" />
-            </el-select>
-          </el-form-item>
           <el-form-item label="售后类型：">
             <el-select
               v-model="searchForm.type"
@@ -85,7 +73,7 @@
     </el-card>
     <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0 0 20px' }">
       <el-tabs v-model="statusTab" @tab-change="handleStatusTabClick">
-        <el-tab-pane label="全部" name=""></el-tab-pane>
+        <el-tab-pane label="全部" name="all"></el-tab-pane>
         <el-tab-pane v-for="item in statusOptions" :key="item.key" :label="item.label" :name="item.key"></el-tab-pane>
       </el-tabs>
       <div class="table-content">
@@ -224,7 +212,6 @@ const router = useRouter();
 const routePre = setting.routePre;
 
 const searchForm = ref({
-  status: '',
   type: '',
   product_type: '',
   order_category: '',
@@ -238,7 +225,8 @@ const list = ref([]);
 const total = ref(0);
 const page = ref({ page: 1, limit: 15 });
 const loading = ref(false);
-const statusTab = ref('');
+/** 状态 Tab：all=全部，其余为售后状态码（勿用空字符串，EP 会回退为序号名） */
+const statusTab = ref('all');
 const remarkModal = ref(false);
 const remarkForm = ref({ id: 0, remark: '' });
 const auditModal = ref(false);
@@ -255,6 +243,7 @@ const statusOptions = [
   { key: 'pending_return', label: '待退货' },
   { key: 'receiving', label: '待收货' },
   { key: 'repairing', label: '维修中' },
+  { key: 'repair_complete', label: '维修完成' },
   { key: 'resending', label: '补发中' },
   { key: 'completed', label: '已完成' },
 ];
@@ -283,9 +272,8 @@ const categoryOptions = [
 function getList(res) {
   page.value.page = res === 1 ? 1 : page.value.page;
   loading.value = true;
-  // 状态 Tab 优先于筛选下拉
-  const status = statusTab.value || searchForm.value.status;
-  // 单号搜索映射到对应字段
+  // 状态仅来自 Tab：all 表示不筛选，避免与空字符串/筛选下拉互相抢优先级
+  const status = statusTab.value === 'all' ? '' : statusTab.value;
   const params = {
     status,
     type: searchForm.value.type,
@@ -345,7 +333,6 @@ function onchangeTime(e) {
  */
 function handleReset() {
   searchForm.value = {
-    status: '',
     type: '',
     product_type: '',
     order_category: '',
@@ -355,14 +342,16 @@ function handleReset() {
     end_time: '',
   };
   timeVal.value = [];
-  statusTab.value = '';
+  statusTab.value = 'all';
   getList(1);
 }
 
 /**
- * 状态 Tab 切换
+ * 状态 Tab 切换（以事件入参为准，避免 v-model 时序导致读到旧值）
+ * @param {string} name Tab name
  */
-function handleStatusTabClick() {
+function handleStatusTabClick(name) {
+  statusTab.value = name || 'all';
   getList(1);
 }
 
@@ -433,10 +422,10 @@ function saveRemark() {
 }
 
 /**
- * 终态不可备注（已完成/已取消/审核拒绝）
+ * 终态不可备注（已退款/已完成/已取消/审核拒绝）
  */
 function canRemark(status) {
-  return !['completed', 'canceled', 'audit_rejected'].includes(status);
+  return !['refunded', 'completed', 'canceled', 'audit_rejected'].includes(status);
 }
 
 /**

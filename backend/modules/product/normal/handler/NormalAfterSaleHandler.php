@@ -14,6 +14,7 @@ use crmeb\trade\order\aftersale\BaseAfterSaleHandler;
 use app\dao\order\AfterSaleDao;
 use modules\product\normal\dao\NormalOrderDao;
 use modules\product\normal\dao\NormalProductDao;
+use modules\product\normal\service\OrderServices as NormalOrderServices;
 use app\services\order\OrderCenterServices;
 
 /**
@@ -270,5 +271,119 @@ class NormalAfterSaleHandler extends BaseAfterSaleHandler
         $this->orderDao->update(['order_no' => $orderNo], [
             'refund_status' => 0,
         ]);
+    }
+
+    /**
+     * 补发/维修寄回后
+     * 扩展表进入待收货，并同步中台发货信息
+     * @param string $afterSaleNo
+     * @param array $deliveryData
+     * @return void
+     */
+    public function afterResend(string $afterSaleNo, array $deliveryData): void
+    {
+        $orderNo = $this->getOrderNo($afterSaleNo);
+        if ($orderNo === '') {
+            return;
+        }
+        $deliveryName = trim((string)($deliveryData['delivery_type'] ?? $deliveryData['delivery_name'] ?? ''));
+        $deliveryId = trim((string)($deliveryData['delivery_no'] ?? $deliveryData['delivery_id'] ?? ''));
+        if ($deliveryName === '' && $deliveryId === '') {
+            return;
+        }
+
+        /** @var NormalOrderServices $orderServices */
+        $orderServices = app(NormalOrderServices::class);
+        $orderServices->updateDeliveryInfo(
+            $orderNo,
+            $deliveryName !== '' ? $deliveryName : '快递',
+            $deliveryId,
+            'express'
+        );
+    }
+
+    /**
+     * 非退款型售后完结后
+     * 必须清掉扩展表 refund_status=1，否则适配器仍会推导为「售后中」
+     * 维修/换货/补发若已寄回，确保扩展状态为待收货
+     * @param string $afterSaleNo
+     * @return void
+     */
+    public function afterComplete(string $afterSaleNo): void
+    {
+        $orderNo = $this->getOrderNo($afterSaleNo);
+        if ($orderNo === '') {
+            return;
+        }
+
+        $afterSale = $this->getAfterSaleRecord($afterSaleNo);
+        $type = (string)($afterSale['type'] ?? '');
+        $deliveryName = trim((string)($afterSale['resend_delivery_type'] ?? ''));
+        $deliveryId = trim((string)($afterSale['resend_delivery_no'] ?? ''));
+        $needPendingReceive = in_array($type, ['repair', 'exchange', 'resend'], true)
+            && ($deliveryName !== '' || $deliveryId !== '');
+
+        $sourceUpdate = ['refund_status' => 0];
+        if ($needPendingReceive) {
+            $sourceUpdate['status'] = NormalOrderAdapter::EXT_STATUS_PENDING_RECEIVE;
+            $sourceUpdate['delivery_type'] = 'express';
+            if ($deliveryName !== '') {
+                $sourceUpdate['delivery_name'] = $deliveryName;
+            }
+            if ($deliveryId !== '') {
+                $sourceUpdate['delivery_id'] = $deliveryId;
+            }
+        }
+        $this->orderDao->update(['order_no' => $orderNo], $sourceUpdate);
+
+        $centerOrder = $this->centerServices->getOne(['order_no' => $orderNo], 'status_code,extra_info,delivery_time');
+        $centerUpdate = ['refund_status' => 0];
+        if (($centerOrder['status_code'] ?? '') === 'after_sale') {
+            $centerUpdate['status_code'] = \app\model\order\OrderCenter::STATUS_PROCESSING;
+        }
+        if ($needPendingReceive) {
+            $extraInfo = $centerOrder['extra_info'] ?? [];
+            if (is_string($extraInfo)) {
+                $extraInfo = json_decode($extraInfo, true) ?: [];
+            }
+            $extraInfo['delivery'] = [
+                'delivery_type' => 'express',
+                'delivery_name' => $deliveryName !== '' ? $deliveryName : (string)($extraInfo['delivery']['delivery_name'] ?? ''),
+                'delivery_id' => $deliveryId !== '' ? $deliveryId : (string)($extraInfo['delivery']['delivery_id'] ?? ''),
+                'delivery_uid' => (int)($extraInfo['delivery']['delivery_uid'] ?? 0),
+            ];
+            $extraInfo['business_status'] = [
+                'code' => NormalOrderAdapter::EXT_STATUS_PENDING_RECEIVE,
+                'text' => '待收货',
+                'detail' => '维修/补发商品运输中',
+                'extend' => new \stdClass(),
+            ];
+            $centerUpdate['extra_info'] = json_encode($extraInfo, JSON_UNESCAPED_UNICODE);
+            if (empty($centerOrder['delivery_time'])) {
+                $centerUpdate['delivery_time'] = time();
+            }
+            // restoreOrderStatus 可能已把中台写成 processing；寄回场景显式保持 processing
+            $centerUpdate['status_code'] = \app\model\order\OrderCenter::STATUS_PROCESSING;
+        }
+        $this->centerServices->updateRecord($orderNo, $centerUpdate);
+    }
+
+    /**
+     * @param string $afterSaleNo
+     * @return array
+     */
+    protected function getAfterSaleRecord(string $afterSaleNo): array
+    {
+        try {
+            /** @var AfterSaleDao $afterSaleDao */
+            $afterSaleDao = app(AfterSaleDao::class);
+            $record = $afterSaleDao->getByNo($afterSaleNo);
+            if (empty($record)) {
+                return [];
+            }
+            return is_object($record) ? $record->toArray() : (array)$record;
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 }

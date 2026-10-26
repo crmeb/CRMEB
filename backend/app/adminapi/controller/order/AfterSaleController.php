@@ -233,7 +233,7 @@ class AfterSaleController extends AuthController
 
     /**
      * 维修完成
-     * 维修完成后商家寄回商品，进入补发流程
+     * 可附带寄回物流；完成后售后完结，订单恢复为申请前状态
      * @param int $id 售后单主键
      * @return mixed
      */
@@ -242,12 +242,17 @@ class AfterSaleController extends AuthController
         if ($id <= 0) {
             return app('json')->fail('参数错误');
         }
-        [$repairRemark] = $this->request->postMore([
+        [$repairRemark, $deliveryType, $deliveryNo] = $this->request->postMore([
             ['repair_remark', ''],
+            ['delivery_type', ''],
+            ['delivery_no', ''],
         ], true);
         try {
-            $this->services->repairComplete($id, $repairRemark);
-            return app('json')->success('维修完成');
+            $this->services->repairComplete($id, (string)$repairRemark, [
+                'delivery_type' => (string)$deliveryType,
+                'delivery_no' => (string)$deliveryNo,
+            ]);
+            return app('json')->success('维修完成，订单已恢复原状态');
         } catch (\RuntimeException $e) {
             return app('json')->fail($e->getMessage());
         }

@@ -181,8 +181,9 @@ class RefundEffectServices extends BaseService implements RefundEffectContextInt
             $refundTradeNo = $manualTradeNo !== ''
                 ? $manualTradeNo
                 : (string)($locked['channel_refund_id'] ?: $locked['refund_no']);
+            // 退款型售后终态为 refunded（已退款 tab）；换货/补发/维修走 complete() 才是 completed
             $this->afterSaleDao->update((int)$afterSale['id'], [
-                'status' => 'completed',
+                'status' => 'refunded',
                 'actual_refund_price' => (string)$locked['amount'],
                 'refund_type' => (string)$locked['refund_method'],
                 'refund_trade_no' => $refundTradeNo,
