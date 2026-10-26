@@ -348,17 +348,20 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
     public function getStatusButtons(string $statusCode, array $detail = []): array
     {
         if ($statusCode === self::STATUS_PROCESSING) {
-            return $this->getProcessingButtons($detail);
+            $buttons = $this->getProcessingButtons($detail);
+        } else {
+            // 其他状态：从 STATUS_TREE 静态读取
+            $node = $this->centerStatusMap[$statusCode][0] ?? null;
+            if ($node) {
+                $buttons = $node['user_buttons'] ?? [];
+            } else {
+                // 回退：纯扩展状态节点（after_sale / refunded）
+                $buttons = $this->extStatusMap[$statusCode]['user_buttons'] ?? [];
+            }
         }
 
-        // 其他状态：从 STATUS_TREE 静态读取
-        $node = $this->centerStatusMap[$statusCode][0] ?? null;
-        if ($node) {
-            return $node['user_buttons'] ?? [];
-        }
-
-        // 回退：纯扩展状态节点（after_sale / refunded）
-        return $this->extStatusMap[$statusCode]['user_buttons'] ?? [];
+        // 到店自提 / 上门服务无快递物流，列表与详情都不展示「查看物流」
+        return $this->filterLogisticsButtons($buttons, $detail);
     }
 
     public function getOrderButtons(array $detail): array
@@ -373,7 +376,23 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
                 'params'  => ['order_no' => (string)($detail['order_no'] ?? '')],
             ]);
         }
-        return $buttons;
+        // parent 已走 getStatusButtons 过滤；此处再滤一次，防止后续插入按钮后遗漏
+        return $this->filterLogisticsButtons($buttons, $detail);
+    }
+
+    /**
+     * 到店自提（shipping_type=2）/ 上门服务（shipping_type=3）去掉「查看物流」
+     */
+    protected function filterLogisticsButtons(array $buttons, array $detail): array
+    {
+        $shippingType = (int)($detail['shipping_type'] ?? 0);
+        if (!in_array($shippingType, [2, 3], true)) {
+            return $buttons;
+        }
+        return array_values(array_filter(
+            $buttons,
+            static fn($btn) => ($btn['action'] ?? '') !== 'viewLogistics'
+        ));
     }
 
     /**

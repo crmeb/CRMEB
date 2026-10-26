@@ -67,7 +67,7 @@
 						@click.stop="openSubcribe(item)">
 						{{$t(`申请退款`)}}</view>
 					<view class="rig-btn" v-if="status_type === 2 && index === cartInfo.length - 1 || !split">
-						<view v-if="delivery_type === 'express'" class="logistics" @click.stop="logistics(orderId)">{{$t(`查看物流`)}}
+						<view v-if="delivery_type === 'express' && shipping_type !== 2 && shipping_type !== 3" class="logistics" @click.stop="logistics(orderId)">{{$t(`查看物流`)}}
 						</view>
 						<view class="logistics sure" v-if="status_type === 2" @click.stop="confirmOrder(orderId)">{{$t(`确认收货`)}}
 						</view>

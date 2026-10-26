@@ -487,7 +487,7 @@
 					</view>
 					<navigator :render-link="false"
 						class="bnt cancel"
-						v-if="orderInfo.delivery_type == 'express' && status.class_status == 3 && status.type == 2 && !split.length"
+						v-if="orderInfo.shipping_type == 1 && orderInfo.delivery_type == 'express' && status.class_status == 3 && status.type == 2 && !split.length"
 						hover-class="none"
 						:url="'/pages/goods/goods_logistics/index?orderId=' + orderInfo.order_id"
 					>
