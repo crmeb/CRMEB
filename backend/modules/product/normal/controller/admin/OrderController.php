@@ -1243,6 +1243,23 @@ class OrderController extends AuthController
         ]);
         $where['order_category'] = 'goods';
         $where['product_type'] = 'normal';
+        $where['is_deleted'] = !empty($where['is_deleted']);
+
+        // 订单类型映射：与 list 接口一致
+        $type = $where['type'] ?? '';
+        if (!empty($type)) {
+            $activityType = $this->mapOrderType($type);
+            if ($activityType !== '') {
+                $where['activity_type'] = $activityType;
+            }
+        }
+        unset($where['type']);
+
+        // 业务状态（待发货/待收货等）与列表同口径翻译
+        $businessStatus = (string)$this->request->get('business_status', '');
+        if ($businessStatus !== '') {
+            $this->translateBusinessStatus($businessStatus, $where);
+        }
 
         try {
             $result = $centerServices->getAdminList($where, (int)$where['page'], (int)$where['limit']);
@@ -1259,12 +1276,18 @@ class OrderController extends AuthController
 
             $exportData = [];
             foreach ($list as $item) {
-                $items = $item['items'] ?? [];
-                $storeName = '';
-                if (!empty($items)) {
-                    $first = $items[0];
-                    $storeName = $first['store_name'] ?? $first['title'] ?? '';
+                // 列表接口无顶层 items，商品名在中台 title 或 extra_info.items[].store_name
+                $goodsItems = $item['extra_info']['items'] ?? ($item['items'] ?? []);
+                $goodsNames = [];
+                foreach ((array)$goodsItems as $goods) {
+                    $name = trim((string)($goods['store_name'] ?? $goods['title'] ?? $goods['name'] ?? ''));
+                    if ($name !== '') {
+                        $goodsNames[] = $name;
+                    }
                 }
+                $storeName = $goodsNames
+                    ? implode(' / ', $goodsNames)
+                    : (string)($item['title'] ?? $item['subtitle'] ?? '');
 
                 $exportData[] = [
                     'order_no'    => $item['order_no'] ?? '',

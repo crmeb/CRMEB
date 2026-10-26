@@ -33,18 +33,17 @@
             value-format="YYYY-MM-DD"
           ></date-range-picker>
         </el-form-item>
-        <el-form-item label="订单搜索：">
+        <el-form-item label="用户搜索：">
           <el-input
             clearable
             v-model="formData.keyword"
-            placeholder="订单号/联系人/UID"
+            placeholder="联系人/联系电话/UID"
             class="form_content_width"
             @keyup.enter="handleSearch"
           >
             <template #prepend
               ><el-select v-model="formData.search_field" style="width: 100px">
                 <el-option value="all" label="全部"></el-option>
-                <el-option value="order_no" label="订单号"></el-option>
                 <el-option value="contact_name" label="联系人"></el-option>
                 <el-option value="contact_phone" label="联系电话"></el-option>
                 <el-option value="uid" label="UID"></el-option> </el-select
@@ -61,11 +60,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
+import { orderCenterFilterOptions } from '@/api/orderCenter';
 
 /**
  * 实物商品订单 - 搜索栏组件
- * 提供订单号/支付方式/创建时间/关键词等多维度搜索
+ * 提供订单号/支付方式/创建时间/用户关键词等多维度搜索
  */
 defineOptions({ name: 'OrderSearch' });
 
@@ -93,12 +93,8 @@ const defaultSearch = () => ({
 
 const formData = reactive(defaultSearch());
 const timeVal = ref([]);
-const payTypeOptions = [
-  { key: 'weixin', label: '微信支付' },
-  { key: 'yue', label: '余额支付' },
-  { key: 'alipay', label: '支付宝' },
-  { key: 'offline', label: '线下支付' },
-];
+/** 支付方式下拉：按已安装且启用的支付渠道动态加载，不硬编码 */
+const payTypeOptions = ref([]);
 
 watch(
   () => props.value,
@@ -109,6 +105,16 @@ watch(
   },
   { immediate: true },
 );
+
+onMounted(() => {
+  orderCenterFilterOptions()
+    .then((res) => {
+      payTypeOptions.value = res.data?.pay_types || [];
+    })
+    .catch(() => {
+      payTypeOptions.value = [];
+    });
+});
 
 /**
  * 触发搜索，重置到第一页

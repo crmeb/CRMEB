@@ -500,6 +500,17 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         // 确保 buildGroupedData 和前端引擎都能拿到正确的状态文案
         $detail['status_text'] = OrderCenter::$statusMap[$detail['status_code'] ?? ''] ?? ($detail['status_code'] ?? '');
 
+        // 用户已删除：详情状态统一展示「已删除」（is_del 为软删标记，不改写 status_code）
+        if ((int)($detail['is_del'] ?? 0) === 1) {
+            $detail['status_text'] = '已删除';
+            $detail['business_status'] = [
+                'code'  => 'deleted',
+                'label' => '已删除',
+                'text'  => '已删除',
+                'type'  => 'danger',
+            ];
+        }
+
         // 构建操作按钮（委托给产品类型 Handler）
         $detail['order_buttons'] = $this->getOrderButtonsFromHandler($detail);
         // 构建订单生命周期进度条（不同订单类型节点不同，委托给产品类型 Handler）
@@ -2622,7 +2633,8 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     /**
      * 构建关键词搜索闭包（后台订单列表/统计共用）
      * 按 search_field 限定搜索字段：order_no=订单号前缀、contact_name=收货人、
-     * contact_phone=联系电话、uid=用户ID精确匹配，all/其它=订单号+联系人+电话
+     * contact_phone=联系电话、uid=用户ID精确匹配；
+     * all/其它=用户相关（收货人+电话，纯数字兼查 UID），订单号走独立 order_no 条件
      * 收货人/电话存于 extra_info JSON，走 JSON 路径匹配
      * @param string $keyword 关键词（调用方需先 trim）
      * @param string $searchField 搜索字段标识
@@ -2651,10 +2663,12 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                         $q->where('uid', '=', (int) $keyword);
                         break;
                     default:
-                        // 全部字段：订单号前缀 + 收货人 + 电话
-                        $q->whereOr('order_no', 'LIKE', "{$escaped}%")
-                          ->whereOrRaw("extra_info->>'$.contact.name' LIKE ?", ["%{$escaped}%"])
+                        // 用户搜索「全部」：收货人 + 电话；纯数字时兼查 UID（订单号由独立筛选项承担）
+                        $q->whereRaw("extra_info->>'$.contact.name' LIKE ?", ["%{$escaped}%"])
                           ->whereOrRaw("extra_info->>'$.contact.phone' LIKE ?", ["%{$escaped}%"]);
+                        if (ctype_digit((string) $keyword)) {
+                            $q->whereOr('uid', '=', (int) $keyword);
+                        }
                 }
             });
         };
@@ -2764,20 +2778,25 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             }
         }
 
+        // 扩展表子状态（如待发货/待收货）经 _order_nos 两步筛选；不可因无 extra_conditions 而丢弃
+        $orderNos = $where['_order_nos'] ?? [];
+
         if (empty($extraConditions)) {
-            // 无扩展条件：直接走 DAO 方法
+            // 无闭包扩展条件：直接走 DAO 方法
             $finalWhere = $searchWhere;
+            if (!empty($orderNos)) {
+                $finalWhere[] = ['order_no', 'IN', $orderNos];
+            }
             if (!empty($afterSaleOrderNos)) {
                 $finalWhere[] = ['order_no', 'IN', $afterSaleOrderNos];
             }
             $list = $this->dao->selectList($finalWhere, $fields, $page, $limit, 'id DESC');
             $total = $this->dao->count($finalWhere);
         } else {
-            // 有扩展条件：用 DAO 提供的查询构建器，避免直接 Db::table
+            // 有闭包扩展条件：用 DAO 提供的查询构建器，避免直接 Db::table
             $query = $this->dao->getDb()->where($searchWhere);
 
             // 扩展表条件用两步查询（先查 order_no，再 IN），不 JOIN
-            $orderNos = $where['_order_nos'] ?? [];
             if (!empty($orderNos)) {
                 $query->whereIn('order_no', $orderNos);
             }

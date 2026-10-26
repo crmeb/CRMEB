@@ -204,8 +204,8 @@
           </el-table-column>
           <el-table-column label="订单状态" min-width="120">
             <template #default="scope">
-              <el-tag :type="getStatusClass(scope.row.status_code)">{{ getStatusLabel(scope.row.status_code) }}</el-tag>
-              <div v-if="scope.row.business_status">
+              <el-tag :type="getStatusClass(scope.row)">{{ getStatusLabel(scope.row) }}</el-tag>
+              <div v-if="Number(scope.row.is_del) !== 1 && scope.row.business_status">
                 <span class="business-status">{{ scope.row.business_status.label }}</span>
               </div>
             </template>
@@ -469,12 +469,18 @@ function getProductTypeLabel(type) {
   return item ? item.label : type || '--';
 }
 
-function getStatusLabel(code) {
+function getStatusLabel(rowOrCode) {
+  const row = typeof rowOrCode === 'object' && rowOrCode ? rowOrCode : null;
+  if (row && Number(row.is_del) === 1) return '已删除';
+  const code = row ? row.status_code : rowOrCode;
   const item = statusCodeOptions.find((opt) => opt.key === code);
   return item ? item.label : code || '--';
 }
 
-function getStatusClass(code) {
+function getStatusClass(rowOrCode) {
+  const row = typeof rowOrCode === 'object' && rowOrCode ? rowOrCode : null;
+  if (row && Number(row.is_del) === 1) return 'danger';
+  const code = row ? row.status_code : rowOrCode;
   const map = {
     pending_payment: 'warning',
     processing: 'primary',
@@ -484,6 +490,7 @@ function getStatusClass(code) {
     after_sale: 'warning',
     refunding: 'warning',
     refunded: 'info',
+    deleted: 'danger',
   };
   return map[code] || 'info';
 }

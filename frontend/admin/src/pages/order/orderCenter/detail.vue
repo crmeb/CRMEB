@@ -14,10 +14,11 @@
             <li class="item">
               <div class="title">订单状态</div>
               <div>
-                <el-tag :type="getStatusClass(detailData.status_code)">{{
-                  getStatusLabel(detailData.status_code)
-                }}</el-tag>
-                <span v-if="detailData.refund_status == 1" style="color: #ed4014; margin-left: 4px">
+                <el-tag :type="getStatusClass(detailData)">{{ getStatusLabel(detailData) }}</el-tag>
+                <span
+                  v-if="Number(detailData.is_del) !== 1 && detailData.refund_status == 1"
+                  style="color: #ed4014; margin-left: 4px"
+                >
                   退款中
                 </span>
               </div>
@@ -114,7 +115,11 @@ function getLogisticsData() {
     });
 }
 
-function getStatusLabel(code) {
+/** 详情状态：用户已删除优先展示「已删除」，否则按 status_code / status_text */
+function getStatusLabel(detail) {
+  if (detail && Number(detail.is_del) === 1) return '已删除';
+  if (detail?.status_text) return detail.status_text;
+  const code = typeof detail === 'string' ? detail : detail?.status_code;
   const map = {
     pending_payment: '待支付',
     processing: '待处理',
@@ -124,12 +129,15 @@ function getStatusLabel(code) {
     after_sale: '售后中',
     refunding: '退款中',
     refunded: '已退款',
+    deleted: '已删除',
   };
   return map[code] || code || '--';
 }
 
 /* 与列表 getStatusClass 同口径 */
-function getStatusClass(code) {
+function getStatusClass(detail) {
+  if (detail && Number(detail.is_del) === 1) return 'danger';
+  const code = typeof detail === 'string' ? detail : detail?.status_code;
   const map = {
     pending_payment: 'warning',
     processing: 'primary',
@@ -139,6 +147,7 @@ function getStatusClass(code) {
     after_sale: 'warning',
     refunding: 'warning',
     refunded: 'info',
+    deleted: 'danger',
   };
   return map[code] || 'info';
 }

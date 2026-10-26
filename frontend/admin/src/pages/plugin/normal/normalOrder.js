@@ -189,7 +189,8 @@ export function getOrderExpress(orderNo) {
  * 供详情弹窗等场景复用（列表/详情状态展示保持一致）
  */
 export function getOrderBusinessStatus(row = {}) {
-  if (row.is_del === 1) {
+  // is_del 可能为数字 1 或字符串 "1"，与列表口径一致按真值判断
+  if (Number(row.is_del) === 1) {
     return { code: 'deleted', text: '已删除', type: 'danger' };
   }
   if (row.status_code === 'pending_payment') {

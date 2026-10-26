@@ -508,7 +508,7 @@ function onPageChange() {
 /* ===== 工具方法 ===== */
 
 function getBusinessStatus(row) {
-  if (row.is_del === 1) {
+  if (Number(row.is_del) === 1) {
     return { code: 'deleted', text: '已删除', type: 'danger' };
   }
 

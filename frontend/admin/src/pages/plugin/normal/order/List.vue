@@ -122,46 +122,73 @@
       </el-dialog>
 
       <!-- 批量发货对话框 -->
-      <el-dialog v-model="batchShipmentModal" title="批量发货" width="560px">
-        <div>
-          <p class="mb10">请上传 Excel 文件（<b>xls/xlsx</b>），格式如下：</p>
-          <el-table :data="templateData" border stripe class="mb10">
-            <el-table-column label="订单号" width="200">
-              <template>CP1234567890</template>
-            </el-table-column>
-            <el-table-column label="快递公司" width="150">
-              <template>顺丰速运</template>
-            </el-table-column>
-            <el-table-column label="快递单号" width="150">
-              <template>SF1234567890</template>
-            </el-table-column>
-          </el-table>
-          <p class="mb10" style="color: var(--prev-color-text-secondary); font-size: 12px">
-            第一行为表头，从第二行开始为数据
-          </p>
+      <el-dialog
+        v-model="batchShipmentModal"
+        title="批量发货"
+        width="560px"
+        append-to-body
+        :close-on-click-modal="false"
+        class="normal-batch-shipment-dialog"
+        @closed="onBatchDialogClosed"
+      >
+        <div class="batch-shipment">
+          <div class="batch-shipment__tip">
+            请按下方格式编辑 Excel（<b>xls / xlsx</b>）后上传，系统将按行完成发货。
+          </div>
+
+          <div class="batch-shipment__format">
+            <div class="batch-shipment__format-title">Excel 格式示例</div>
+            <el-table :data="templateData" border size="small" class="batch-shipment__table">
+              <el-table-column label="订单号" min-width="160" show-overflow-tooltip>
+                <template #default="{ row }">{{ row.order_no }}</template>
+              </el-table-column>
+              <el-table-column label="快递公司" min-width="120" show-overflow-tooltip>
+                <template #default="{ row }">{{ row.delivery_name }}</template>
+              </el-table-column>
+              <el-table-column label="快递单号" min-width="140" show-overflow-tooltip>
+                <template #default="{ row }">{{ row.delivery_id }}</template>
+              </el-table-column>
+            </el-table>
+            <div class="batch-shipment__format-note">第一行为表头，从第二行开始填写数据</div>
+          </div>
+
           <el-upload
-            ref="upload"
-            :action="adminApi + 'normal/order/batch_shipment'"
-            :headers="headers"
-            :on-success="onBatchUploadSuccess"
+            ref="batchUploadRef"
+            class="batch-shipment__upload"
+            drag
+            :action="batchUploadUrl"
+            :headers="batchUploadHeaders"
+            :disabled="batchUploading"
+            :on-success="onBatchFileUploadSuccess"
             :on-error="onBatchUploadError"
             :before-upload="onBeforeUpload"
             accept=".xls,.xlsx"
             :show-file-list="false"
           >
-            <template #trigger><el-button type="primary">选取文件上传</el-button></template>
+            <div class="batch-shipment__upload-inner">
+              <i class="el-icon-upload batch-shipment__upload-icon"></i>
+              <div class="batch-shipment__upload-text">
+                <template v-if="batchUploading">正在上传并处理，请稍候…</template>
+                <template v-else>将文件拖到此处，或<em>点击上传</em></template>
+              </div>
+              <div class="batch-shipment__upload-hint">仅支持 .xls、.xlsx</div>
+            </div>
           </el-upload>
-        </div>
-        <div v-if="batchResult" class="batch-result mt10">
-          <p>{{ batchResult.msg }}</p>
-          <p v-if="batchResult.data && batchResult.data.errors && batchResult.data.errors.length">
-            <a v-db-click @click="showBatchErrors = !showBatchErrors">
-              {{ showBatchErrors ? '收起' : '查看' }}失败详情（{{ batchResult.data.errors.length }}条）
-            </a>
-          </p>
-          <ul v-if="showBatchErrors" style="color: #ed4014; font-size: 12px">
-            <li v-for="(err, idx) in batchResult.data.errors" :key="idx">{{ err }}</li>
-          </ul>
+
+          <div v-if="batchResult" class="batch-shipment__result">
+            <div class="batch-shipment__result-msg">{{ batchResult.msg }}</div>
+            <div
+              v-if="batchResult.data && batchResult.data.errors && batchResult.data.errors.length"
+              class="batch-shipment__result-toggle"
+            >
+              <a v-db-click href="javascript:;" @click="showBatchErrors = !showBatchErrors">
+                {{ showBatchErrors ? '收起' : '查看' }}失败详情（{{ batchResult.data.errors.length }}条）
+              </a>
+            </div>
+            <ul v-if="showBatchErrors" class="batch-shipment__result-errors">
+              <li v-for="(err, idx) in batchResult.data.errors" :key="idx">{{ err }}</li>
+            </ul>
+          </div>
         </div>
       </el-dialog>
     </div>
@@ -197,7 +224,9 @@ import {
   getPrintPickList,
   getOrderExpress,
   exportOrderList as exportNormalOrder,
+  batchShipment,
 } from '../normalOrder';
+import { getCookies } from '@/libs/util';
 
 import OrderStatistics from './components/OrderStatistics';
 import OrderSearch from './components/OrderSearch';
@@ -276,17 +305,24 @@ const editOrderData = ref(null);
 const batchShipmentModal = ref(false);
 const batchResult = ref(null);
 const showBatchErrors = ref(false);
-const templateData = [{}];
+const batchUploading = ref(false);
+const batchUploadRef = ref(null);
+const templateData = [
+  {
+    order_no: 'CP1234567890',
+    delivery_name: '顺丰速运',
+    delivery_id: 'SF1234567890',
+  },
+];
 
 // 批量删除
 const selectedIds = ref([]);
 
-const adminApi = computed(() => {
-  return import.meta.env.VITE_APP_API_URL + '/adminapi/';
-});
-const headers = computed(() => {
-  return { 'Authori-zation': 'Bearer ' + localStorage.getItem('token') };
-});
+// 先上传到文件服务拿到路径，再调批量发货接口（与商品导入同口径）
+const batchUploadUrl = computed(() => setting.apiBaseURL + '/file/upload/1');
+const batchUploadHeaders = computed(() => ({
+  'Authori-zation': 'Bearer ' + (getCookies('token') || ''),
+}));
 
 /* ===== 数据加载 ===== */
 
@@ -616,29 +652,61 @@ function openRecord(row) {
 function openBatchShipment() {
   batchResult.value = null;
   showBatchErrors.value = false;
+  batchUploading.value = false;
   batchShipmentModal.value = true;
 }
 
-function onBatchUploadSuccess(res) {
-  batchResult.value = res;
-  if (res.code === 200) {
-    ElMessage.success(res.msg || '批量发货完成');
-    getList();
-  } else {
-    ElMessage.error(res.msg || '批量发货失败');
+function onBatchDialogClosed() {
+  batchResult.value = null;
+  showBatchErrors.value = false;
+  batchUploading.value = false;
+}
+
+/**
+ * 文件上传成功后，用返回路径调用批量发货接口
+ */
+function onBatchFileUploadSuccess(res) {
+  if (res.status !== 200 || !res.data || !res.data.src) {
+    batchUploading.value = false;
+    ElMessage.error(res.msg || '文件上传失败');
+    return;
   }
+  batchShipment({ file: res.data.src })
+    .then((result) => {
+      batchResult.value = result;
+      ElMessage.success(result.msg || '批量发货完成');
+      getList();
+      getStatistics();
+    })
+    .catch((err) => {
+      ElMessage.error((err && err.msg) || '批量发货失败');
+    })
+    .finally(() => {
+      batchUploading.value = false;
+    });
 }
 
 function onBatchUploadError(err) {
-  ElMessage.error('批量发货失败：' + (err.msg || '文件上传异常'));
+  batchUploading.value = false;
+  let msg = '文件上传失败';
+  try {
+    const res = JSON.parse(err?.message || '');
+    if (res && res.msg) msg = res.msg;
+  } catch (e) {
+    // 非 JSON 响应，保留默认提示
+  }
+  ElMessage.error(msg);
 }
 
 function onBeforeUpload(file) {
-  var suffix = file.name.split('.').pop().toLowerCase();
+  const suffix = (file.name.split('.').pop() || '').toLowerCase();
   if (!['xls', 'xlsx'].includes(suffix)) {
-    ElMessage.error('文件格式不正确，请上传xls或xlsx格式');
+    ElMessage.error('文件格式不正确，请上传 xls 或 xlsx 格式');
     return false;
   }
+  batchResult.value = null;
+  showBatchErrors.value = false;
+  batchUploading.value = true;
   return true;
 }
 
@@ -750,9 +818,12 @@ function handleExport() {
         page: 1,
         limit: 200,
         ...searchParams.value,
-        status_code: statusTab.value === 'deleted' ? '' : statusTab.value,
         is_deleted: statusTab.value === 'deleted' ? 1 : '',
       };
+      // 与列表同口径：业务子状态走 business_status，勿把 pending_shipped 等塞进 status_code
+      if (statusTab.value && statusTab.value !== 'deleted') {
+        params.business_status = statusTab.value;
+      }
       doExport(params);
     })
     .catch(() => {});
@@ -805,13 +876,6 @@ onMounted(() => {
     margin-top: 10px;
   }
 
-  .batch-result {
-    padding: 10px;
-    background: #f5f7fa;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
   .logistics-box {
     .logistics-header {
       display: flex;
@@ -840,6 +904,139 @@ onMounted(() => {
       font-size: 13px;
       color: var(--prev-color-text-primary);
     }
+  }
+}
+</style>
+
+<!-- append-to-body 弹窗挂到 body，需非 scoped 样式才能命中 -->
+<style lang="scss">
+.normal-batch-shipment-dialog {
+  .batch-shipment {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .batch-shipment__tip {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--prev-color-text-regular);
+
+    b {
+      color: var(--prev-color-primary);
+      font-weight: 500;
+    }
+  }
+
+  .batch-shipment__format {
+    padding: 12px;
+    background: var(--prev-bg-color);
+    border: 1px solid var(--prev-border-color-lighter);
+    border-radius: 4px;
+  }
+
+  .batch-shipment__format-title {
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--prev-color-text-regular);
+  }
+
+  .batch-shipment__table {
+    width: 100%;
+
+    .el-table__empty-block {
+      min-height: 48px;
+    }
+  }
+
+  .batch-shipment__format-note {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--prev-color-text-secondary);
+  }
+
+  .batch-shipment__upload {
+    width: 100%;
+
+    .el-upload {
+      width: 100%;
+    }
+
+    .el-upload-dragger {
+      width: 100%;
+      height: auto;
+      padding: 28px 16px;
+      border-radius: 4px;
+      border-color: var(--prev-border-color-light);
+      background: var(--prev-bg-white);
+
+      &:hover {
+        border-color: var(--prev-color-primary);
+      }
+    }
+  }
+
+  .batch-shipment__upload-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .batch-shipment__upload-icon {
+    font-size: 40px;
+    color: var(--prev-color-primary);
+    margin-bottom: 8px;
+  }
+
+  .batch-shipment__upload-text {
+    font-size: 14px;
+    color: var(--prev-color-text-regular);
+    line-height: 1.5;
+
+    em {
+      font-style: normal;
+      color: var(--prev-color-primary);
+    }
+  }
+
+  .batch-shipment__upload-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--prev-color-text-secondary);
+  }
+
+  .batch-shipment__result {
+    padding: 12px;
+    background: var(--prev-bg-color);
+    border-radius: 4px;
+    border: 1px solid var(--prev-border-color-lighter);
+  }
+
+  .batch-shipment__result-msg {
+    font-size: 13px;
+    color: var(--prev-color-text-regular);
+    line-height: 1.5;
+  }
+
+  .batch-shipment__result-toggle {
+    margin-top: 8px;
+
+    a {
+      font-size: 12px;
+      color: var(--prev-color-primary);
+      text-decoration: none;
+    }
+  }
+
+  .batch-shipment__result-errors {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--prev-color-danger, #f56c6c);
   }
 }
 </style>
