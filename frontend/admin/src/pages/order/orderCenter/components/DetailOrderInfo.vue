@@ -186,6 +186,10 @@
           <div>联系电话：</div>
           <div class="value">{{ data.invoice.drawer_phone || '--' }}</div>
         </li>
+        <li class="item" v-if="data.invoice.header_type === 1 && data.invoice.type === 1">
+          <div>联系邮箱：</div>
+          <div class="value">{{ data.invoice.email || '--' }}</div>
+        </li>
         <li class="item" v-if="data.invoice.header_type === 2 && data.invoice.type === 1">
           <div>联系电话：</div>
           <div class="value">{{ data.invoice.user_phone || '--' }}</div>
