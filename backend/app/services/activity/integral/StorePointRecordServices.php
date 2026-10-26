@@ -211,15 +211,21 @@ class StorePointRecordServices extends BaseService
     }
 
     /**
-     * 订单来源
+     * 积分来源分析（不含抽奖插件；赠送类兼容新旧落库 type）
      * @param $where
      * @return array
      */
     public function getChannel($where)
     {
-        $bing_xdata = ['订单赠送', '商品赠送', '后台赠送', '签到获得', '九宫格抽奖'];
-        $color = ['#64a1f4', '#3edeb5', '#70869f', '#ffc653', '#fc7d6a'];
-        $data = ['gain', 'product_gain', 'system_add', 'sign', 'lottery_add'];
+        // billIntegralIncome 落库为 order_give_integral / pay_give_integral；旧 income 链路为 gain / product_gain
+        $bing_xdata = ['订单赠送', '商品赠送', '后台赠送', '签到获得'];
+        $color = ['#64a1f4', '#3edeb5', '#70869f', '#ffc653'];
+        $data = [
+            ['gain', 'order_give_integral'],
+            ['product_gain', 'pay_give_integral'],
+            ['system_add'],
+            ['sign'],
+        ];
         $bing_data = [];
         foreach ($data as $key => $item) {
             $bing_data[] = [
@@ -242,15 +248,20 @@ class StorePointRecordServices extends BaseService
     }
 
     /**
-     * 订单类型
+     * 积分消耗分析（不含抽奖插件；退款收回兼容新旧落库 type）
      * @param $where
      * @return array
      */
     public function getType($where)
     {
-        $bing_xdata = ['订单抵扣', '九宫格抽奖', '后台减少', '退款退回', '兑换商品'];
-        $color = ['#64a1f4', '#3edeb5', '#70869f', '#ffc653', '#fc7d6a'];
-        $data = ['deduction', 'lottery_use', 'system_sub', 'order_deduction', 'storeIntegral_use'];
+        $bing_xdata = ['订单抵扣', '后台减少', '退款退回', '兑换商品'];
+        $color = ['#64a1f4', '#70869f', '#ffc653', '#fc7d6a'];
+        $data = [
+            ['deduction', 'product_deduction'],
+            ['system_sub'],
+            ['order_deduction', 'order_gain_refund', 'product_gain_refund'],
+            ['storeIntegral_use'],
+        ];
         $bing_data = [];
         foreach ($data as $key => $item) {
             $bing_data[] = [
