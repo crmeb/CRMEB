@@ -106,10 +106,7 @@
           :columnsInstall="columnsInstall"
           :columnsInstal2="columnsInstal2"
           v-model:manyVipPrice="manyVipPrice"
-          v-model:manyVipDiscount="manyVipDiscount"
           @checkAllGroupChange="checkAllGroupChange"
-          @changeVipPrice="changeVipPrice"
-          @changeDiscount="changeDiscount"
           @brokerageSetUp="brokerageSetUp"
         ></price-commission>
 
@@ -465,7 +462,6 @@ const picTit = ref('');
 const tableIndex = ref(0);
 const ruleValidate = RuleValidate;
 const manyVipPrice = ref(undefined);
-const manyVipDiscount = ref(undefined);
 const upload = reactive({
   videoIng: false, // 是否显示进度条；
 });
@@ -483,12 +479,6 @@ const member = [
   {
     title: '会员价',
     slot: 'vip_price',
-    align: 'center',
-    width: 95,
-  },
-  {
-    title: '会员折扣',
-    slot: 'vip_proportion',
     align: 'center',
     width: 95,
   },
@@ -794,10 +784,6 @@ function infoData(data, isCopy) {
   formValidate.value.cate_id = cate_id;
   if (data.attr) {
     oneFormValidate.value = [data.attr];
-    oneFormValidate.value[0].vip_proportion = (
-      (oneFormValidate.value[0].vip_price / oneFormValidate.value[0].price) *
-      100
-    ).toFixed(2);
     oneFormValidate.value[0].weight = data.weight ?? 0;
     oneFormValidate.value[0].volume = data.volume ?? 0;
   }
@@ -886,19 +872,6 @@ function see(data, name, index) {
   tabIndex.value = index;
   goodsCoupon.value.isTemplate = true;
   goodsCoupon.value.tableList(3);
-}
-// 修改分佣比例
-function changeDiscount(index, type = 'manyFormValidate') {
-  // 根据分佣比例 vip_proportion 修改会员价,写回数字(字符串会破坏 el-input-number 输入)
-  formTable(type)[index].vip_price = Number(
-    (formTable(type)[index].price * (formTable(type)[index].vip_proportion / 100)).toFixed(2),
-  );
-}
-// 修改会员价
-function changeVipPrice(index, type = 'manyFormValidate') {
-  // 售价为 0 时无法反推折扣,置 0 防止 Infinity 被钳制成极大值写回
-  const row = formTable(type)[index];
-  row.vip_proportion = row.price > 0 ? Number(((row.vip_price / row.price) * 100).toFixed(2)) : 0;
 }
 // 添加优惠券
 function addGoodsCoupon(index, name) {
@@ -1015,23 +988,13 @@ function userSearchs() {
 function addRule() {
   addattr.value.modal = true;
 }
-// 批量设置会员价/会员折扣（商品页已不再设置佣金）
+// 批量设置会员价（商品页已不再设置佣金/会员折扣）
 function brokerageSetUp() {
-  if (manyVipPrice.value == undefined && manyVipDiscount.value == undefined) {
-    return ElMessage.error('请填写会员价或会员折扣后进行批量添加');
-  }
-  if (manyVipPrice.value != undefined && manyVipDiscount.value != undefined) {
-    return ElMessage.error('会员价和会员折扣只能二选一添加');
+  if (!(manyVipPrice.value > 0)) {
+    return ElMessage.error('请填写会员价后进行批量添加');
   }
   for (let val of manyFormValidate.value) {
-    if (manyVipPrice.value != undefined) {
-      val['vip_price'] = manyVipPrice.value;
-      // 售价为 0 时无法反推折扣,置 0 防止 Infinity
-      val['vip_proportion'] = val.price > 0 ? Number(((val.vip_price / val.price) * 100).toFixed(2)) : 0;
-    } else {
-      val['vip_proportion'] = manyVipDiscount.value;
-      val['vip_price'] = Number((val.price * (manyVipDiscount.value / 100)).toFixed(2));
-    }
+    val.vip_price = manyVipPrice.value;
   }
 }
 // 批量设置会员价

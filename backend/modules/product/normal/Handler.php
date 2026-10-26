@@ -558,15 +558,16 @@ class Handler extends BaseProductTypeHandler
 
                     $sukKey = implode(',', array_values($detail));
                     $productValue[$sukKey] = [
-                        'suk'      => $sukKey,
-                        'price'    => $sku['price'] ?? '0.00',
-                        'stock'    => $sku['stock'] ?? 0,
-                        'image'    => $sku['image'] ?? '',
-                        'unique'   => $sku['unique_code'] ?? '',
-                        'cost'     => $sku['cost'] ?? '0.00',
-                        'ot_price' => $sku['original_price'] ?? '0.00',
-                        'bar_code' => $sku['bar_code'] ?? '',
-                        'is_show'  => $sku['is_show'] ?? 1,
+                        'suk'       => $sukKey,
+                        'price'     => $sku['price'] ?? '0.00',
+                        'vip_price' => $sku['vip_price'] ?? '0.00',
+                        'stock'     => $sku['stock'] ?? 0,
+                        'image'     => $sku['image'] ?? '',
+                        'unique'    => $sku['unique_code'] ?? '',
+                        'cost'      => $sku['cost'] ?? '0.00',
+                        'ot_price'  => $sku['original_price'] ?? '0.00',
+                        'bar_code'  => $sku['bar_code'] ?? '',
+                        'is_show'   => $sku['is_show'] ?? 1,
                     ];
                 }
 
@@ -588,12 +589,13 @@ class Handler extends BaseProductTypeHandler
                     ?: $normalSkuDao->getOne(['product_id' => $productId, 'is_show' => 1]);
                 if (is_object($sku)) $sku = $sku->toArray();
 
-                $skuPrice   = $sku['price'] ?? '0.00';
-                $skuStock   = $sku['stock'] ?? 0;
-                $skuImage   = $sku['image'] ?? '';
-                $skuUnique  = $sku['unique_code'] ?? '';
-                $skuCost    = $sku['cost'] ?? '0.00';
-                $skuOtPrice = $sku['original_price'] ?? '0.00';
+                $skuPrice    = $sku['price'] ?? '0.00';
+                $skuVipPrice = $sku['vip_price'] ?? '0.00';
+                $skuStock    = $sku['stock'] ?? 0;
+                $skuImage    = $sku['image'] ?? '';
+                $skuUnique   = $sku['unique_code'] ?? '';
+                $skuCost     = $sku['cost'] ?? '0.00';
+                $skuOtPrice  = $sku['original_price'] ?? '0.00';
 
                 $productAttr = [
                     [
@@ -606,15 +608,16 @@ class Handler extends BaseProductTypeHandler
                 ];
                 $productValue = [
                     '默认' => [
-                        'suk'      => '默认',
-                        'price'    => $skuPrice,
-                        'stock'    => $skuStock,
-                        'image'    => $skuImage,
-                        'unique'   => $skuUnique,
-                        'cost'     => $skuCost,
-                        'ot_price' => $skuOtPrice,
-                        'bar_code' => '',
-                        'is_show'  => 1,
+                        'suk'       => '默认',
+                        'price'     => $skuPrice,
+                        'vip_price' => $skuVipPrice,
+                        'stock'     => $skuStock,
+                        'image'     => $skuImage,
+                        'unique'    => $skuUnique,
+                        'cost'      => $skuCost,
+                        'ot_price'  => $skuOtPrice,
+                        'bar_code'  => '',
+                        'is_show'   => 1,
                     ],
                 ];
 

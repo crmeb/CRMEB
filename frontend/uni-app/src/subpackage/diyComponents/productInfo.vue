@@ -414,7 +414,7 @@
               </view>
             </view>
             <view
-              >{{ $t(`预售结束后`) }} {{ productData.presale_day }}
+              >{{ $t(`预售结束后`) }} {{ productData.presale_day || 1 }}
               {{ $t(`天内发货`) }}</view
             >
           </view>
@@ -470,7 +470,8 @@ const displayInfo = computed(() => {
   let price = props.priceData.price || "0.00";
   let real_price = props.priceData.real_price || "0.00";
   let ot_price = props.priceData.ot_price || "0.00";
-  let vip_price = props.priceData.vip_price;
+  // real_price 接口字段为 member_price，详情 storeInfo/SKU 为 vip_price，两端兼容
+  let vip_price = props.priceData.vip_price || props.priceData.member_price || 0;
   let stock = props.productData.stock || 0;
   let fsales = props.productData.fsales || 0;
   let unit_name = props.productData.unit_name || "";
@@ -481,14 +482,14 @@ const displayInfo = computed(() => {
       if (sku.price) price = sku.price;
       if (sku.real_price) price = sku.real_price;
       if (sku.ot_price) ot_price = sku.ot_price;
-      if (sku.vip_price) vip_price = sku.vip_price;
+      if (Number(sku.vip_price) > 0) vip_price = sku.vip_price;
       if (sku.stock || sku.stock === 0) stock = sku.stock;
     }
   }
   return {
     price,
     ot_price,
-    vip_price,
+    vip_price: Number(vip_price) > 0 ? vip_price : 0,
     stock,
     fsales,
     unit_name,

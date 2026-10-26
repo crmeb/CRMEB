@@ -70,18 +70,6 @@
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
                   class-unit="元"
-                  @change="changeVipPrice(0, 'oneFormValidate')"
-                ></el-input-number>
-              </template>
-              <template v-else-if="item.slot === 'vip_proportion'">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].vip_proportion"
-                  :min="0"
-                  :max="9999999999"
-                  class="priceBox input-number-unit-class"
-                  class-unit="%"
-                  @change="changeDiscount(0, 'oneFormValidate')"
                 ></el-input-number>
               </template>
             </template>
@@ -100,20 +88,6 @@
             class-unit="元"
             :model-value="manyVipPrice"
             @update:model-value="(val) => emit('update:manyVipPrice', val)"
-            @focus="emit('update:manyVipDiscount', undefined)"
-          ></el-input-number>
-        </span>
-        <span class="brokerage" v-if="formValidate.is_vip == 1">
-          会员折扣：<el-input-number
-            :controls="false"
-            placeholder="请输入折扣比例"
-            :min="0"
-            :max="9999999999"
-            class="columnsBox input_width input-number-unit-class"
-            class-unit="%"
-            :model-value="manyVipDiscount"
-            @update:model-value="(val) => emit('update:manyVipDiscount', val)"
-            @focus="emit('update:manyVipPrice', undefined)"
           ></el-input-number>
         </span>
         <el-button type="primary" v-db-click @click="brokerageSetUp">批量设置</el-button>
@@ -177,23 +151,6 @@
                       updateManyFormValue(scope.$index + 1, 'vip_price', val);
                     }
                   "
-                  @change="changeVipPrice(scope.$index + 1)"
-                ></el-input-number>
-              </template>
-              <template v-else-if="item.slot === 'vip_proportion'">
-                <el-input-number
-                  :controls="false"
-                  :model-value="manyFormValidate[scope.$index + 1].vip_proportion"
-                  :min="0"
-                  :max="9999999999"
-                  class="priceBox input-number-unit-class"
-                  class-unit="%"
-                  @update:model-value="
-                    (val) => {
-                      updateManyFormValue(scope.$index + 1, 'vip_proportion', val);
-                    }
-                  "
-                  @change="changeDiscount(scope.$index + 1)"
                 ></el-input-number>
               </template>
             </template>
@@ -233,19 +190,12 @@ const props = defineProps({
     type: Number,
     default: undefined,
   },
-  manyVipDiscount: {
-    type: Number,
-    default: undefined,
-  },
 });
 
 const emit = defineEmits([
   'checkAllGroupChange',
-  'changeVipPrice',
-  'changeDiscount',
   'brokerageSetUp',
   'update:manyVipPrice',
-  'update:manyVipDiscount',
   'update:manyFormValidate',
 ]);
 
@@ -254,12 +204,6 @@ function checkAllGroupChange(val) {
 }
 function onVipChange() {
   emit('checkAllGroupChange');
-}
-function changeVipPrice(index, type) {
-  emit('changeVipPrice', index, type);
-}
-function changeDiscount(index, type) {
-  emit('changeDiscount', index, type);
 }
 function updateManyFormValue(index, key, value) {
   const newData = props.manyFormValidate.map((item, itemIndex) =>

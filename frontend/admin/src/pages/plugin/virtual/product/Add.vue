@@ -91,21 +91,16 @@
           @getEditorContent="getEditorContent"
         ></product-detail>
 
-        <!-- 会员价/佣金 -->
+        <!-- 会员价 -->
         <price-commission
           v-show="currentTab === '4'"
           :formValidate="formValidate"
           :oneFormValidate="oneFormValidate"
-          :manyFormValidate="manyFormValidate"
+          v-model:manyFormValidate="manyFormValidate"
           :columnsInstall="columnsInstall"
           :columnsInstal2="columnsInstal2"
-          v-model:manyBrokerage="manyBrokerage"
-          v-model:manyBrokerageTwo="manyBrokerageTwo"
           v-model:manyVipPrice="manyVipPrice"
-          v-model:manyVipDiscount="manyVipDiscount"
           @checkAllGroupChange="checkAllGroupChange"
-          @changeVipPrice="changeVipPrice"
-          @changeDiscount="changeDiscount"
           @brokerageSetUp="brokerageSetUp"
         ></price-commission>
 
@@ -231,7 +226,7 @@ import goodsList from '@/components/goodsList/index';
 import BasicInfo from '../../../../pages/product/productAdd/components/BasicInfo.vue';
 import SpecStock from '../../../../pages/product/productAdd/components/SpecStock.vue';
 import ProductDetail from '../../../../pages/product/productAdd/components/ProductDetail.vue';
-import PriceCommission from '../../../../pages/product/productAdd/components/PriceCommission.vue';
+import PriceCommission from './components/PriceCommission.vue';
 import MarketingSetting from '../../../../pages/product/productAdd/components/MarketingSetting.vue';
 import OtherSetting from '../../../../pages/product/productAdd/components/OtherSetting.vue';
 import LogisticsSetting from '../../../../pages/product/productAdd/components/LogisticsSetting.vue';
@@ -281,7 +276,7 @@ const headTab = ref([
   { tit: '基础信息', name: '1' },
   { tit: '规格库存', name: '2' },
   { tit: '商品详情', name: '3' },
-  { tit: '会员价/佣金', name: '4' },
+  { tit: '会员价', name: '4' },
   { tit: '营销设置', name: '5' },
   { tit: '其他设置', name: '6' },
 ]);
@@ -429,21 +424,11 @@ const dataLabel = ref([]);
 const labelShow = ref(false);
 const tagShow = ref(false);
 const activity = ref({ 默认: 'red', 秒杀: 'blue', 砍价: 'green', 拼团: 'yellow' });
-// 会员/佣金
-const manyBrokerage = ref(undefined);
-const manyBrokerageTwo = ref(undefined);
+// 会员价
 const manyVipPrice = ref(undefined);
-const manyVipDiscount = ref(undefined);
 const columnsInstall = ref([]);
 const columnsInstal2 = ref([]);
-const rakeBack = [
-  { title: '一级返佣(元)', slot: 'brokerage', align: 'center', width: 95 },
-  { title: '二级返佣(元)', slot: 'brokerage_two', align: 'center', width: 95 },
-];
-const member = [
-  { title: '会员价', slot: 'vip_price', align: 'center', width: 95 },
-  { title: '会员折扣', slot: 'vip_proportion', align: 'center', width: 95 },
-];
+const member = [{ title: '会员价', slot: 'vip_price', align: 'center', width: 95 }];
 const columnsInstalM = ref([]);
 // 商品标签
 const goods_modals = ref(false);
@@ -541,9 +526,9 @@ async function loadProduct() {
     }
     // 商品详情回显
     contents.value = data.description || '';
-    // 触发 checkAllGroup 构建会员价/佣金表格列
+    // 触发 checkAllGroup 构建会员价表格列
     setTimeout(() => {
-      checkAllGroup(formValidate.value.is_sub);
+      checkAllGroup();
     }, 500);
   } catch (e) {
     ElMessage.error('加载商品信息失败');
@@ -1079,59 +1064,27 @@ function addGoodsCoupon(index, name) {}
 function getEditorContent(data) {
   content.value = data;
 }
-// ----- 会员价/佣金 -----
+// ----- 会员价 -----
 function checkAllGroupChange() {
   checkAllGroup();
 }
 function checkAllGroup() {
   let endLength = attrs.value.length + 3;
-  const hasCommission = formValidate.value.is_sub == 1;
   const hasVip = formValidate.value.is_vip == 1;
   if (formValidate.value.spec_type === 0) {
-    if (hasCommission && hasVip) columnsInstall.value = columns2.slice(0, endLength).concat(rakeBack).concat(member);
-    else if (hasVip) columnsInstall.value = columns2.slice(0, endLength).concat(member);
-    else if (hasCommission) columnsInstall.value = columns2.slice(0, endLength).concat(rakeBack);
-    else columnsInstall.value = columns2.slice(0, endLength);
+    columnsInstall.value = hasVip ? columns2.slice(0, endLength).concat(member) : columns2.slice(0, endLength);
   } else {
-    if (hasCommission && hasVip)
-      columnsInstal2.value = columnsInstalM.value
-        .slice(0, endLength + 1)
-        .concat(rakeBack)
-        .concat(member);
-    else if (hasVip) columnsInstal2.value = columnsInstalM.value.slice(0, endLength).concat(member);
-    else if (hasCommission) columnsInstal2.value = columnsInstalM.value.slice(0, endLength).concat(rakeBack);
-    else columnsInstal2.value = columnsInstalM.value.slice(0, endLength);
+    columnsInstal2.value = hasVip
+      ? columnsInstalM.value.slice(0, endLength).concat(member)
+      : columnsInstalM.value.slice(0, endLength);
   }
-}
-function changeDiscount(index, type = 'manyFormValidate') {
-  const list = type === 'oneFormValidate' ? oneFormValidate.value : manyFormValidate.value;
-  list[index].vip_price = (list[index].price * (list[index].vip_proportion / 100)).toFixed(2);
-}
-function changeVipPrice(index, type = 'manyFormValidate') {
-  const list = type === 'oneFormValidate' ? oneFormValidate.value : manyFormValidate.value;
-  list[index].vip_proportion = ((list[index].vip_price / list[index].price) * 100).toFixed(2);
 }
 function brokerageSetUp() {
-  if (formValidate.value.is_sub == 1) {
-    if (manyBrokerage.value <= 0 || manyBrokerageTwo.value <= 0) return ElMessage.error('请填写返佣金额后进行批量添加');
-  }
-  if (formValidate.value.is_vip == 1) {
-    if (manyVipPrice.value <= 0) return ElMessage.error('请填写会员价后进行批量添加');
-  }
-  if (formValidate.value.is_sub == 1 && formValidate.value.is_vip == 1) {
-    if (manyBrokerage.value <= 0 || manyBrokerageTwo.value <= 0) return ElMessage.error('请填写完金额后进行批量添加');
-    if (manyVipPrice.value > 0 && manyVipDiscount.value > 0) return ElMessage.error('会员价和会员折扣只能二选一添加');
+  if (!(manyVipPrice.value > 0)) {
+    return ElMessage.error('请填写会员价后进行批量添加');
   }
   for (let val of manyFormValidate.value) {
-    manyBrokerage.value !== undefined && (val['brokerage'] = manyBrokerage.value);
-    manyBrokerageTwo.value !== undefined && (val['brokerage_two'] = manyBrokerageTwo.value);
-    if (manyVipPrice.value !== undefined) {
-      val['vip_price'] = manyVipPrice.value;
-      val['vip_proportion'] = ((val.vip_price / val.price) * 100).toFixed(2);
-    } else if (manyVipDiscount.value !== undefined) {
-      val['vip_proportion'] = manyVipDiscount.value;
-      val['vip_price'] = (val.price * (manyVipDiscount.value / 100)).toFixed(2);
-    }
+    val.vip_price = manyVipPrice.value;
   }
 }
 // ----- 营销设置 -----
@@ -1255,8 +1208,8 @@ function handleSubmit() {
   if (!formValidate.value.cate_id.length) return ElMessage.warning('请选择商品分类');
   if (!formValidate.value.slider_image.length) return ElMessage.warning('请上传商品图片');
 
-  // 会员价/佣金验证
-  if (formValidate.value.is_sub == 1 || formValidate.value.is_vip == 1) {
+  // 会员价验证
+  if (formValidate.value.is_vip == 1) {
     let item;
     if (formValidate.value.spec_type === 0) {
       item = JSON.parse(JSON.stringify(oneFormValidate.value));
@@ -1264,11 +1217,9 @@ function handleSubmit() {
       item = JSON.parse(JSON.stringify(manyFormValidate.value));
       item.shift();
     }
-    if (formValidate.value.is_vip == 1) {
-      for (let i = 0; i < item.length; i++) {
-        if (item[i].vip_price === null || item[i].vip_price <= 0) {
-          return ElMessage.error('营销设置-会员价不能为空或0');
-        }
+    for (let i = 0; i < item.length; i++) {
+      if (item[i].vip_price === null || item[i].vip_price <= 0) {
+        return ElMessage.error('会员价不能为空或0');
       }
     }
   }
@@ -1328,9 +1279,10 @@ function handleSubmit() {
     custom_form: formValidate.value.custom_form || [],
     coupon_ids: formValidate.value.coupon_ids || [],
     label_list: formValidate.value.label_list || [],
-    is_sub: formValidate.value.is_sub ?? 0,
+    // 网盘商品页不再设置分销，保存时统一关闭
+    is_sub: 0,
     presale_time: formValidate.value.presale_time || [],
-    // VIP/佣金
+    // 会员价
     oneFormValidate: oneFormValidate.value || [],
     manyFormValidate: manyFormValidate.value || [],
     min_qty: formValidate.value.min_qty || 1,

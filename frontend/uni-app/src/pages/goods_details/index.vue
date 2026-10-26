@@ -659,11 +659,13 @@ const modalRefs = {
 
 // ---------- computed ----------
 const isShowPaidVip = computed(() => {
-  let s =
-    !is_money_level.value &&
-    storeInfo.value.vip_price &&
-    storeInfo.value.is_vip;
-  return !!s;
+  // 非付费会员才展示「开通 SVIP 预计省」；会员价来自 storeInfo 或 realPrice 的 member_price
+  const vipPrice =
+    Number(storeInfo.value.vip_price) ||
+    Number(realPriceData.value.member_price) ||
+    Number(realPriceData.value.vip_price) ||
+    0;
+  return !is_money_level.value && !!storeInfo.value.is_vip && vipPrice > 0;
 });
 /**
  * 加购模式：cart（双按钮）| direct（单按钮直接下单）
@@ -1106,7 +1108,11 @@ function ChangeAttr(res) {
 }
 function setRealPrice(productId, unique) {
   realPrice(productId, unique).then((res) => {
-    realPriceData.value = res.data;
+    // 统一补齐 vip_price，供 DIY 价格区 / 开通会员条使用（接口字段名为 member_price）
+    realPriceData.value = {
+      ...res.data,
+      vip_price: res.data.member_price || res.data.vip_price || 0,
+    };
     attr.productSelect["price"] = res.data.real_price;
     attr.productSelect["vip_price"] = res.data.member_price;
     ot_price.value = res.data.ot_price;

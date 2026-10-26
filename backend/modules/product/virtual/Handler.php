@@ -443,12 +443,13 @@ class Handler extends BaseProductTypeHandler
             } catch (\Throwable $e) {
                 $center = null;
             }
-            $skuPrice   = $center['price'] ?? '0.00';
-            $skuStock   = $center['stock'] ?? 0;
-            $skuImage   = $center['image'] ?? '';
-            $skuUnique  = (string)$productId;
-            $skuCost    = '0.00';
-            $skuOtPrice = $center['price'] ?? '0.00';
+            $skuPrice    = $center['price'] ?? '0.00';
+            $skuVipPrice = $center['vip_price'] ?? '0.00';
+            $skuStock    = $center['stock'] ?? 0;
+            $skuImage    = $center['image'] ?? '';
+            $skuUnique   = (string)$productId;
+            $skuCost     = '0.00';
+            $skuOtPrice  = $center['price'] ?? '0.00';
 
             $productAttr = [
                 [
@@ -463,6 +464,7 @@ class Handler extends BaseProductTypeHandler
                 '默认' => [
                     'suk'               => '默认',
                     'price'             => $skuPrice,
+                    'vip_price'         => $skuVipPrice,
                     'stock'             => $skuStock,
                     'image'             => $skuImage,
                     'unique'            => $skuUnique,
@@ -510,6 +512,7 @@ class Handler extends BaseProductTypeHandler
             $productValue[$suk] = [
                 'suk'               => $suk,
                 'price'             => $sku['price'] ?? '0.00',
+                'vip_price'         => $sku['vip_price'] ?? '0.00',
                 'stock'             => $sku['stock'] ?? 0,
                 'image'             => $skuImage,
                 'unique'            => (string)($sku['id'] ?? ''),
