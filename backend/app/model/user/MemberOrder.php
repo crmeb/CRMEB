@@ -52,6 +52,15 @@ class MemberOrder extends BaseModel
     }
 
     /**
+     * 关联用户
+     * @return \think\model\relation\HasOne
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class, 'uid', 'uid')->field('uid,nickname,phone,avatar');
+    }
+
+    /**
      * 用户ID搜索器
      * @param mixed $query
      * @param mixed $value
@@ -117,11 +126,44 @@ class MemberOrder extends BaseModel
      */
     public function searchMemberTypeAttr($query, $value)
     {
+        if ($value === '' || $value === null) {
+            return;
+        }
         if ($value === -1) {
             $query->where('member_type', '<>', '');
         } else {
             $query->where('member_type', $value);
         }
+    }
+
+    /**
+     * 支付方式搜索器
+     * @param mixed $query
+     * @param mixed $value
+     */
+    public function searchPayTypeAttr($query, $value)
+    {
+        if ($value === '' || $value === null) {
+            return;
+        }
+        $query->where('pay_type', $value);
+    }
+
+    /**
+     * 免费支付筛选（免费领取 / 试用免费单）
+     * @param mixed $query
+     * @param mixed $value
+     */
+    public function searchFreePayAttr($query, $value)
+    {
+        if (!$value) {
+            return;
+        }
+        $query->where(function ($q) {
+            $q->where('type', 0)->whereOr(function ($q2) {
+                $q2->where('type', 1)->where('is_free', 1);
+            });
+        });
     }
 
     /**

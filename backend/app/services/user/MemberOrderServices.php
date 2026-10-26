@@ -453,18 +453,51 @@ class MemberOrderServices extends BaseService
      */
     public function getMemberRecord(array $where)
     {
-        $where['type'] = [0, 1, 2];
-        $where['paid'] = 1;
-        //时间范围筛选
-        if ($where['add_time']) {
-            $searchTime = explode('-', $where['add_time']);
-            $startTime = strtotime($searchTime[0]);
-            $endTime = strtotime($searchTime[1]);
-            if ($startTime == $endTime) {
-                $endTime += 86400;
+        // 空筛选不得下发到搜索器/字段条件，否则会出现 member_type=''、pay_type='' 把结果滤空
+        foreach (['name', 'member_type', 'pay_type', 'add_time'] as $key) {
+            if (!isset($where[$key]) || $where[$key] === '' || $where[$key] === null) {
+                unset($where[$key]);
             }
-            $where['add_time'] = [$startTime, $endTime];
         }
+        unset($where['page'], $where['limit']);
+
+        // 0免费 1购买 2卡密 3后台赠送
+        $where['type'] = [0, 1, 2, 3];
+        $where['paid'] = 1;
+
+        // 用户名/手机号/UID 模糊搜索 → uid 集合
+        if (!empty($where['name'])) {
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $uids = $userServices->getColumn([['account|nickname|phone|real_name|uid', 'like', '%' . $where['name'] . '%']], 'uid');
+            unset($where['name']);
+            if (!$uids) {
+                return ['list' => [], 'count' => 0];
+            }
+            $where['uid'] = $uids;
+        }
+
+        // 支付方式「免费」：免费领取 / 试用免费单
+        if (isset($where['pay_type']) && $where['pay_type'] === 'free') {
+            unset($where['pay_type']);
+            $where['free_pay'] = 1;
+        }
+
+        // 时间范围筛选
+        if (!empty($where['add_time'])) {
+            $searchTime = explode('-', $where['add_time']);
+            $startTime = strtotime($searchTime[0] ?? '');
+            $endTime = strtotime($searchTime[1] ?? '');
+            if ($startTime && $endTime) {
+                if ($startTime == $endTime) {
+                    $endTime += 86400;
+                }
+                $where['add_time'] = [$startTime, $endTime];
+            } else {
+                unset($where['add_time']);
+            }
+        }
+
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, '*', $page, $limit);
         if ($list) {
@@ -473,36 +506,51 @@ class MemberOrderServices extends BaseService
             $shipInfo = $memberShipService->getApiList([]);
             $shipInfo = array_column($shipInfo, 'title', 'type');
             $shipInfo['owner'] = '自定义';
+            $shipInfo['free'] = '试用';
+            $shipInfo['card'] = '卡密';
             foreach ($list as &$v) {
-                $v['member_type'] = $v['member_type'] ? $shipInfo[$v['member_type']] ?? '其他' : '其他';
-                $v['pay_time'] = date('Y-m-d H:i:s', $v['pay_time']);
-                $v['add_time'] = date('Y-m-d H:i:s', $v['add_time']);
-                $v['overdue_time'] = date('Y-m-d H:i:s', $v['overdue_time']);
-                //支付方式转换
+                $memberTypeKey = (string)($v['member_type'] ?? '');
+                $v['member_type'] = $memberTypeKey !== '' && $memberTypeKey !== '0'
+                    ? ($shipInfo[$memberTypeKey] ?? '其他')
+                    : ($v['type'] == 3 ? '后台赠送' : '其他');
+                $v['pay_time'] = $v['pay_time'] ? date('Y-m-d H:i:s', (int)$v['pay_time']) : '';
+                $v['add_time'] = $v['add_time'] ? date('Y-m-d H:i:s', (int)$v['add_time']) : '';
+                $v['overdue_time'] = $v['overdue_time'] ? date('Y-m-d H:i:s', (int)$v['overdue_time']) : '';
+                // 支付方式转换
                 switch ($v['pay_type']) {
-                    case "yue":
-                        $v['pay_type'] = "余额";
+                    case 'yue':
+                        $v['pay_type'] = '余额';
                         break;
-                    case "weixin":
-                        $v['pay_type'] = "微信";
+                    case 'weixin':
+                        $v['pay_type'] = '微信';
                         break;
-                    case "alipay":
-                        $v['pay_type'] = "支付宝";
+                    case 'alipay':
+                        $v['pay_type'] = '支付宝';
                         break;
                     case 'allinpay':
-                        $v['pay_type'] = "通联支付";
+                        $v['pay_type'] = '通联支付';
                         break;
-                    case "admin":
-                        $v['pay_type'] = "后台赠送";
+                    case 'admin':
+                        $v['pay_type'] = '后台赠送';
                         break;
                 }
-                //订单类型特殊处理
-                if ($v['type'] == 0) $v['pay_type'] = "免费领取";
-                if ($v['type'] == 2) {
-                    $v['pay_type'] = "卡密领取";
-                    $v['member_type'] = "卡密激活";
+                // 订单类型特殊处理
+                if ((int)$v['type'] === 0) {
+                    $v['pay_type'] = '免费领取';
                 }
-                if ($v['type'] == 1 && $v['is_free'] == 1) $v['pay_type'] = "免费领取";
+                if ((int)$v['type'] === 2) {
+                    $v['pay_type'] = '卡密领取';
+                    $v['member_type'] = '卡密激活';
+                }
+                if ((int)$v['type'] === 1 && (int)$v['is_free'] === 1) {
+                    $v['pay_type'] = '免费领取';
+                }
+                if ((int)$v['type'] === 3) {
+                    $v['pay_type'] = '后台赠送';
+                }
+                if (!isset($v['user']) || !is_array($v['user'])) {
+                    $v['user'] = ['nickname' => '', 'phone' => ''];
+                }
             }
         }
         $count = $this->dao->count($where);
