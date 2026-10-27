@@ -139,7 +139,6 @@ export default {
     });
   },
   ossHttp(evfile, res, videoIng) {
-    let that = this;
     let fileObject = evfile.target.files[0];
     let file = fileObject.name;
     let pos = file.lastIndexOf('.');
@@ -150,28 +149,33 @@ export default {
     let filename = this.getVideoName(suffix);
     let formData = new FormData();
     let data = res.data;
-    // 注意formData里append添加的键的大小写
-    formData.append('key', filename); // 存储在oss的文件路径
-    formData.append('OSSAccessKeyId', data.accessid); // accessKeyId
-    formData.append('policy', data.policy); // policy
-    formData.append('Signature', data.signature); // 签名
-    // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
+    // PostObject Signature V4（新 Bucket 已禁用 V1：OSSAccessKeyId + Signature）
+    formData.append('key', filename);
+    formData.append('policy', data.policy);
+    formData.append('success_action_status', 200);
+    formData.append('x-oss-signature-version', data.signature_version || 'OSS4-HMAC-SHA256');
+    formData.append('x-oss-credential', data.x_oss_credential || '');
+    formData.append('x-oss-date', data.x_oss_date || '');
+    formData.append('x-oss-signature', data.signature);
+    // 兼容旧凭证（若后端仍返回 V1 字段）
+    if (!data.x_oss_credential && data.accessid) {
+      formData.append('OSSAccessKeyId', data.accessid);
+      formData.append('Signature', data.signature);
+    }
     formData.append('file', fileObject);
-    formData.append('success_action_status', 200); // 成功后返回的操作码
     let url = data.host;
-    let fileUrl = url + '/' + filename;
+    let fileUrl = (data.cdn || url) + '/' + filename;
     videoIng(true, 100);
     return new Promise((resolve, reject) => {
       axios.defaults.withCredentials = false;
       axios
         .post(url, formData)
         .then(() => {
-          // that.progress = 0;
           videoIng(false, 0);
           resolve({ url: fileUrl });
         })
-        .catch((res) => {
-          reject({ msg: res });
+        .catch((err) => {
+          reject({ msg: err });
         });
     });
   },

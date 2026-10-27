@@ -14,6 +14,7 @@ use crmeb\services\upload\BaseUpload;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\UploadException;
 use OSS\Core\OssException;
+use OSS\Credentials\StaticCredentialsProvider;
 use OSS\Model\CorsConfig;
 use OSS\Model\CorsRule;
 use OSS\OssClient;
@@ -63,6 +64,12 @@ class Driver extends BaseUpload
     protected $storageRegion;
 
     /**
+     * OSS 区域 ID（V4 签名必填，如 cn-hangzhou）
+     * @var string
+     */
+    protected $regionId = '';
+
+    /**
      * 水印位置
      * @var string[]
      */
@@ -96,7 +103,13 @@ class Driver extends BaseUpload
         $this->uploadUrl = rtrim(trim($config['uploadUrl'] ?? ''), '/');
         $this->storageName = trim($config['storageName'] ?? '');
         $this->cdn = rtrim(trim($config['cdn'] ?? ''), '/');
-        $this->storageRegion = $this->normalizeEndpoint($config['storageRegion'] ?? '');
+        // region：驱动配置里显式选择的区域；storageRegion：当前启用空间的区域/端点
+        $configRegion = trim((string)($config['region'] ?? ''));
+        $rawRegion = trim((string)($config['storageRegion'] ?? ''));
+        $this->regionId = $this->resolveRegionId($configRegion) ?: $this->resolveRegionId($rawRegion);
+        // 端点优先用空间区域；空间未填时回退驱动配置区域
+        $endpointSource = $rawRegion !== '' ? $rawRegion : $configRegion;
+        $this->storageRegion = $this->normalizeEndpoint($endpointSource);
         // 未配置自定义域名时，使用当前空间的公共访问域名。
         if (!$this->uploadUrl && $this->storageName && $this->storageRegion) {
             $this->uploadUrl = 'https://' . $this->storageName . '.' . parse_url($this->storageRegion, PHP_URL_HOST);
@@ -188,13 +201,48 @@ class Driver extends BaseUpload
     }
 
     /**
-     * 实例化 SDK 客户端
+     * 从区域配置或 endpoint 解析 V4 所需 regionId（如 cn-hangzhou）
+     * @param string $regionOrEndpoint 区域短名 / oss-cn-xxx / 完整 endpoint
+     * @return string
+     */
+    protected function resolveRegionId(string $regionOrEndpoint): string
+    {
+        $raw = trim($regionOrEndpoint);
+        if ($raw === '') {
+            return '';
+        }
+        if (preg_match('/^oss-([a-z0-9-]+)$/i', $raw, $m)) {
+            return strtolower($m[1]);
+        }
+        if (preg_match('/^([a-z0-9-]+)$/i', $raw) && !str_contains($raw, '.')) {
+            // 已是区域短名（cn-hangzhou）
+            return strtolower($raw);
+        }
+        $host = parse_url(strpos($raw, '://') === false ? ('https://' . $raw) : $raw, PHP_URL_HOST) ?: '';
+        if (preg_match('/^oss-([a-z0-9-]+?)(?:-internal)?\.aliyuncs\.com$/i', (string)$host, $m)) {
+            return strtolower($m[1]);
+        }
+        return '';
+    }
+
+    /**
+     * 实例化 SDK 客户端（强制 Signature V4：新 UID/新 Bucket 已禁用 V1）
      * @param string $endpoint 完整服务端点
      * @return OssClient
      */
     protected function newOssClient(string $endpoint): OssClient
     {
-        return new OssClient($this->accessKey, $this->secretKey, $endpoint);
+        $regionId = $this->regionId ?: $this->resolveRegionId($endpoint);
+        if ($regionId === '') {
+            throw new UploadException('OSS:无法解析存储区域，请配置形如 oss-cn-hangzhou 的区域');
+        }
+        $this->regionId = $regionId;
+        return new OssClient([
+            'provider' => new StaticCredentialsProvider($this->accessKey, $this->secretKey),
+            'endpoint' => $endpoint,
+            'signatureVersion' => OssClient::OSS_SIGNATURE_VERSION_V4,
+            'region' => $regionId,
+        ]);
     }
 
     /**
@@ -600,7 +648,8 @@ class Driver extends BaseUpload
     }
 
     /**
-     * 获取OSS上传密钥
+     * 获取OSS直传凭证（PostObject Signature V4）
+     * 新 UID / 新 Bucket 已禁用 V1 表单签名，统一下发 OSS4-HMAC-SHA256 字段
      * @return mixed|void
      */
     public function getTempKeys($callbackUrl = '', $dir = '')
@@ -609,23 +658,47 @@ class Driver extends BaseUpload
         if (!$this->accessKey || !$this->secretKey || !$this->uploadUrl) {
             return $this->setError('请先配置accessKey、secretKey和空间域名');
         }
-        $expire = time() + 30;
+        $regionId = $this->regionId ?: $this->resolveRegionId((string)$this->storageRegion);
+        if ($regionId === '') {
+            return $this->setError('请先配置有效的存储区域（如 oss-cn-hangzhou）');
+        }
+        $expire = time() + 1800;
+        $utcNow = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $date = $utcNow->format('Ymd');
+        $ossDate = $utcNow->format('Ymd\THis\Z');
+        $credential = sprintf('%s/%s/%s/oss/aliyun_v4_request', $this->accessKey, $date, $regionId);
+
         $base64CallbackBody = base64_encode(json_encode([
             'callbackUrl' => $callbackUrl,
             'callbackBody' => 'filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}',
             'callbackBodyType' => "application/x-www-form-urlencoded"
         ]));
 
+        $conditions = [
+            ['content-length-range', 0, 1048576000],
+            ['eq', '$x-oss-signature-version', 'OSS4-HMAC-SHA256'],
+            ['eq', '$x-oss-credential', $credential],
+            ['eq', '$x-oss-date', $ossDate],
+        ];
+        if ($dir !== '') {
+            $conditions[] = ['starts-with', '$key', $dir];
+        }
+        if ($this->storageName !== '') {
+            $conditions[] = ['eq', '$bucket', $this->storageName];
+        }
+
         $policy = json_encode([
             'expiration' => $this->gmtIso8601($expire),
-            'conditions' =>
-                [
-                    [0 => 'content-length-range', 1 => 0, 2 => 1048576000],
-                    [0 => 'starts-with', 1 => '$key', 2 => $dir]
-                ]
-        ]);
+            'conditions' => $conditions,
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $base64Policy = base64_encode($policy);
-        $signature = base64_encode(hash_hmac('sha1', $base64Policy, $this->secretKey, true));
+        // V4 Post 签名：对 Base64(policy) 做派生密钥 HMAC-SHA256，结果为十六进制
+        $kDate = hash_hmac('sha256', $date, 'aliyun_v4' . $this->secretKey, true);
+        $kRegion = hash_hmac('sha256', $regionId, $kDate, true);
+        $kService = hash_hmac('sha256', 'oss', $kRegion, true);
+        $kSigning = hash_hmac('sha256', 'aliyun_v4_request', $kService, true);
+        $signature = hash_hmac('sha256', $base64Policy, $kSigning);
+
         return [
             'accessid' => $this->accessKey,
             'host' => $this->uploadUrl,
@@ -634,7 +707,12 @@ class Driver extends BaseUpload
             'signature' => $signature,
             'expire' => $expire,
             'callback' => $base64CallbackBody,
-            'type' => 'OSS'
+            'type' => 'OSS',
+            // PostObject V4 表单字段（前端直传必填）
+            'signature_version' => 'OSS4-HMAC-SHA256',
+            'x_oss_credential' => $credential,
+            'x_oss_date' => $ossDate,
+            'region' => $regionId,
         ];
     }
 

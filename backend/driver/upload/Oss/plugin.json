@@ -37,9 +37,10 @@
             "link": "https://www.aliyun.com/product/oss",
             "steps": [
                 "第一步：注册阿里云账号，开通对象存储OSS服务",
-                "第二步：进入OSS控制台，创建Bucket（空间名称不能重复）",
-                "第三步（必选）：在Bucket列表中，设置读写权限为【公共读】",
-                "第四步（可选）：使用自定义域名时，在Bucket详情中绑定域名并进行CNAME解析"
+                "第二步：进入OSS控制台，创建Bucket（空间名称不能重复），并记下所在区域",
+                "第三步（必选）：在下方「区域配置」中选择与控制台一致的存储区域（Signature V4 必填）",
+                "第四步（必选）：在Bucket列表中，设置读写权限为【公共读】",
+                "第五步（可选）：使用自定义域名时，在Bucket详情中绑定域名并进行CNAME解析"
             ]
         },
         "config_fields": [
@@ -58,6 +59,56 @@
                 "required": true,
                 "group": "密钥配置",
                 "tip": "阿里云 SecretKey"
+            },
+            {
+                "field": "region",
+                "label": "存储区域",
+                "type": "select",
+                "required": true,
+                "group": "区域配置",
+                "tip": "Bucket 所在区域，Signature V4 必填；须与控制台区域一致（如华东1选杭州）",
+                "options": [
+                    {
+                        "value": "oss-cn-hangzhou",
+                        "label": "华东1(杭州)"
+                    },
+                    {
+                        "value": "oss-cn-shanghai",
+                        "label": "华东2(上海)"
+                    },
+                    {
+                        "value": "oss-cn-qingdao",
+                        "label": "华北1(青岛)"
+                    },
+                    {
+                        "value": "oss-cn-beijing",
+                        "label": "华北2(北京)"
+                    },
+                    {
+                        "value": "oss-cn-zhangjiakou",
+                        "label": "华北3(张家口)"
+                    },
+                    {
+                        "value": "oss-cn-huhehaote",
+                        "label": "华北5(呼和浩特)"
+                    },
+                    {
+                        "value": "oss-cn-shenzhen",
+                        "label": "华南1(深圳)"
+                    },
+                    {
+                        "value": "oss-cn-hongkong",
+                        "label": "中国香港"
+                    },
+                    {
+                        "value": "oss-us-west-1",
+                        "label": "美国(硅谷)"
+                    },
+                    {
+                        "value": "oss-ap-southeast-1",
+                        "label": "新加坡"
+                    }
+                ]
             }
         ],
         "region_map": {
