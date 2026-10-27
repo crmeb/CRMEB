@@ -77,8 +77,6 @@ class LiveGoodsServices extends BaseService
         if (!$goods_info) throw new AdminException('参数错误');
         $product_ids = array_column($goods_info, 'id');
         $this->create($product_ids);
-        /** @var DownloadImage $download */
-        $download = app()->make(DownloadImage::class);
         $dataAll = $data = [];
         $time = time();
         foreach ($goods_info as $product) {
@@ -93,8 +91,10 @@ class LiveGoodsServices extends BaseService
                 'sort' => $product['sort'] ?? 0,
                 'add_time' => $time
             ];
+            $path = null;
+            $temporary = false;
             try {
-                $path = root_path() . 'public' . $download->thumb(true)->downloadImage($data['cover_img'])['path'];
+                [$path, $temporary] = $this->coverLocalPath($data['cover_img']);
                 // 通过事件调用微信小程序素材上传能力，解耦 activity 与 channel 模块
                 $coverImgUrl = event('MiniProgramApiCall', [
                     'method' => 'materialTemporaryService',
@@ -102,11 +102,11 @@ class LiveGoodsServices extends BaseService
                         ['method' => 'uploadImage', 'args' => [$path], 'return_field' => 'media_id'],
                     ],
                 ], true);
-                @unlink($path);
             } catch (\Throwable $e) {
                 Log::error('添加直播商品图片错误，原因：' . $e->getMessage());
-                @unlink($path);
                 $coverImgUrl = $data['cover_img'];
+            } finally {
+                if ($temporary) $this->deleteTempFile($path);
             }
             // 通过事件调用微信小程序直播商品添加接口，解耦 activity 与 channel 模块
             $res = event('MiniProgramApiCall', [
@@ -125,6 +125,37 @@ class LiveGoodsServices extends BaseService
     }
 
     /**
+     * 解析直播商品封面图的本地文件路径
+     * 远程图片下载并生成缩略图（临时文件，用后需删除）；本站相对路径直接定位 public 下已存在文件
+     * @param string $coverImg
+     * @return array{0: string, 1: bool} [本地绝对路径, 是否为下载的临时文件]
+     */
+    protected function coverLocalPath(string $coverImg): array
+    {
+        if (preg_match('~^(?:https?:)?//~i', $coverImg)) {
+            /** @var DownloadImage $download */
+            $download = app()->make(DownloadImage::class);
+            return [root_path() . 'public' . $download->thumb(true)->downloadImage($coverImg)['path'], true];
+        }
+        $path = root_path() . 'public' . DIRECTORY_SEPARATOR . ltrim($coverImg, '/\\');
+        if (!is_file($path)) {
+            throw new AdminException('直播商品封面图片不存在');
+        }
+        return [$path, false];
+    }
+
+    /**
+     * 删除下载的临时图片文件，仅处理合法的本地路径，避免误删
+     * @param string|null $path
+     */
+    protected function deleteTempFile(?string $path): void
+    {
+        if ($path && is_file($path)) {
+            @unlink($path);
+        }
+    }
+
+    /**
      * 同步商品
      * @return bool
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
@@ -133,10 +164,8 @@ class LiveGoodsServices extends BaseService
     {
         $liveGoods = $this->dao->getColumn([['goods_id', '>', 0]], '*', 'id');
         if ($liveGoods) {
-            /** @var DownloadImage $downloadImage */
-            $downloadImage = app()->make(DownloadImage::class);
             foreach ($liveGoods as $good) {
-                $path = root_path() . 'public' . $downloadImage->thumb(true)->downloadImage($good['cover_img'])['path'];
+                [$path, $temporary] = $this->coverLocalPath($good['cover_img']);
                 // 通过事件调用微信小程序素材上传能力，解耦 activity 与 channel 模块
                 $coverImgUrl = event('MiniProgramApiCall', [
                     'method' => 'materialTemporaryService',
@@ -144,7 +173,7 @@ class LiveGoodsServices extends BaseService
                         ['method' => 'uploadImage', 'args' => [$path], 'return_field' => 'media_id'],
                     ],
                 ], true);
-                @unlink($path);
+                if ($temporary) $this->deleteTempFile($path);
                 // 通过事件调用微信小程序直播商品添加接口，解耦 activity 与 channel 模块
                 $res = event('MiniProgramApiCall', [
                     'method' => 'addGoods',
@@ -167,9 +196,7 @@ class LiveGoodsServices extends BaseService
             throw new AdminException('商品已创建');
 
         $goods = $goods->toArray();
-        /** @var DownloadImage $downloadImage */
-        $downloadImage = app()->make(DownloadImage::class);
-        $path = root_path() . 'public' . $downloadImage->thumb(true)->downloadImage($goods['cover_img'])['path'];
+        [$path, $temporary] = $this->coverLocalPath($goods['cover_img']);
 
         $url = 'pages/goods_details/index?id=' . $goods['product_id'];
         // 通过事件调用微信小程序素材上传能力，解耦 activity 与 channel 模块
@@ -179,7 +206,7 @@ class LiveGoodsServices extends BaseService
                 ['method' => 'uploadImage', 'args' => [$path], 'return_field' => 'media_id'],
             ],
         ], true);
-        @unlink($path);
+        if ($temporary) $this->deleteTempFile($path);
         // 通过事件调用微信小程序直播商品添加接口，解耦 activity 与 channel 模块
         return event('MiniProgramApiCall', [
             'method' => 'addGoods',
