@@ -36,10 +36,10 @@
         </li>
       </ul>
     </div>
-    <!-- 收货信息（快递配送）/ 自提门店信息（到店自提） -->
+    <!-- 收货信息（快递配送/送货/无需配送）/ 自提门店信息（到店自提） -->
     <div class="section">
-      <div class="title">{{ data.order_delivery_type === 'pickup' ? '自提门店' : '收货信息' }}</div>
-      <ul class="list" v-if="data.order_delivery_type === 'pickup' && data.store_info">
+      <div class="title">{{ isPickup ? '自提门店' : '收货信息' }}</div>
+      <ul class="list" v-if="isPickup && data.store_info">
         <li class="item">
           <div>门店名称：</div>
           <div class="value">{{ data.store_info.store_name || '--' }}</div>
@@ -91,7 +91,7 @@
           <div>积分抵扣：</div>
           <div class="value">¥{{ data.deduction_price || '0.00' }}</div>
         </li>
-        <li class="item" v-if="data.order_delivery_type !== 'pickup'">
+        <li class="item" v-if="!isPickup">
           <div>交付邮费：</div>
           <div class="value">¥{{ data.pay_postage || '0.00' }}</div>
         </li>
@@ -144,17 +144,17 @@
       </ul>
     </div>
     <div class="section" v-if="data.delivery_name">
-      <div class="title">{{ data.delivery_type == 'express' ? '物流信息' : '送货人信息' }}</div>
+      <div class="title">{{ isExpress ? '物流信息' : deliveryType === 'send' ? '送货人信息' : '发货信息' }}</div>
       <ul class="list">
         <li class="item">
-          <div>{{ data.delivery_type == 'express' ? '物流公司：' : '送货人姓名：' }}</div>
+          <div>{{ isExpress ? '物流公司：' : deliveryType === 'send' ? '送货人姓名：' : '发货方式：' }}</div>
           <div class="value">{{ data.delivery_name || '--' }}</div>
         </li>
         <li class="item">
-          <div>{{ data.delivery_type == 'express' ? '物流单号：' : '送货人电话：' }}</div>
+          <div>{{ isExpress ? '物流单号：' : deliveryType === 'send' ? '送货人电话：' : '发货备注：' }}</div>
           <div class="value">
             {{ data.delivery_id || '--' }}
-            <a v-if="data.delivery_type == 'express'" v-db-click @click="$emit('openLogistics')">物流查询</a>
+            <a v-if="isExpress" v-db-click @click="$emit('openLogistics')">物流查询</a>
           </div>
         </li>
       </ul>
@@ -254,6 +254,14 @@ const props = defineProps({
 const orderItems = computed(() => {
   return props.data.order_items || props.data.cartInfo || [];
 });
+
+/** 配送方式：express 快递 / send 送货 / fictitious 无需配送 / pickup 自提 / door 上门 */
+const deliveryType = computed(
+  () => props.data.delivery_type || props.data.extra_info?.delivery_type || '',
+);
+const isExpress = computed(() => deliveryType.value === 'express');
+/** 到店自提：后端统一标识 is_pickup，兼容旧字段 order_delivery_type */
+const isPickup = computed(() => props.data.is_pickup == 1 || props.data.order_delivery_type === 'pickup');
 
 function formatDate(timestamp) {
   if (!timestamp) return '--';

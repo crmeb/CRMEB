@@ -91,9 +91,7 @@
                 <el-col :span="8"
                   ><div class="detail-item">
                     <span class="label">配送方式：</span
-                    ><span class="value">{{
-                      detailData.extra_info?.delivery_type === 'pickup' ? '到店自提' : '快递配送'
-                    }}</span>
+                    ><span class="value">{{ deliveryTypeText }}</span>
                   </div></el-col
                 >
               </el-row>
@@ -101,25 +99,23 @@
 
             <!-- 发货/物流信息 -->
             <div class="section" v-if="detailData.delivery_name">
-              <div class="section-title">{{ detailData.delivery_type == 'express' ? '物流信息' : '送货人信息' }}</div>
+              <div class="section-title">{{ isExpressDelivery ? '物流信息' : '发货信息' }}</div>
               <el-row :gutter="24" class="detail-grid">
                 <el-col :span="8"
                   ><div class="detail-item">
-                    <span class="label">{{
-                      detailData.delivery_type == 'express' ? '物流公司：' : '送货人姓名：'
-                    }}</span
+                    <span class="label">{{ isExpressDelivery ? '物流公司：' : deliveryType === 'send' ? '送货人姓名：' : '发货方式：' }}</span
                     ><span class="value">{{ detailData.delivery_name || '--' }}</span>
                   </div></el-col
                 >
                 <el-col :span="12"
                   ><div class="detail-item">
                     <span class="label">{{
-                      detailData.delivery_type == 'express' ? '物流单号：' : '送货人电话：'
+                      isExpressDelivery ? '物流单号：' : deliveryType === 'send' ? '送货人电话：' : '发货备注：'
                     }}</span
                     ><span class="value"
                       >{{ detailData.delivery_id || '--'
                       }}<a
-                        v-if="detailData.delivery_type == 'express'"
+                        v-if="isExpressDelivery"
                         v-db-click
                         @click="toggleLogistics"
                         class="track-link"
@@ -473,6 +469,22 @@ const orderItems = computed(() => {
 
 /** 订单状态与列表同口径（待发货/待收货/待到店等业务状态） */
 const businessStatus = computed(() => getOrderBusinessStatus(detailData.value || {}));
+
+/** 配送方式：express 快递 / send 送货 / fictitious 无需配送 / pickup 自提 / door 上门 */
+const deliveryType = computed(
+  () => detailData.value?.extra_info?.delivery_type || detailData.value?.delivery_type || '',
+);
+const deliveryTypeText = computed(
+  () =>
+    ({
+      express: '快递配送',
+      send: '送货上门',
+      fictitious: '无需配送',
+      pickup: '到店自提',
+      door: '上门服务',
+    })[deliveryType.value] || '快递配送',
+);
+const isExpressDelivery = computed(() => deliveryType.value === 'express');
 
 /** 售后进度数据（后端注入到 detail.extend.after_sale） */
 const afterSaleInfo = computed(() => {
