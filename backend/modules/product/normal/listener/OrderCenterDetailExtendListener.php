@@ -90,7 +90,10 @@ class OrderCenterDetailExtendListener implements ListenerInterface
                 }
             }
 
-            $deliveryType = (string)($extraInfo['delivery_type'] ?? ($extraInfo['delivery']['delivery_type'] ?? ''));
+            // 发货配送方式以 extra_info.delivery.delivery_type（发货时写入）为准；
+            // 顶层 extra_info.delivery_type 是下单收货方式（express/pickup/door），
+            // 存量订单发货后两者可能不一致，不能让顶层旧值覆盖实际发货方式
+            $deliveryType = (string)(($extraInfo['delivery']['delivery_type'] ?? '') ?: ($extraInfo['delivery_type'] ?? ''));
             if ($deliveryType === '') {
                 $shippingType = (int)($detail['shipping_type'] ?? 0);
                 $deliveryType = $shippingType === 2 ? 'pickup' : ($shippingType === 3 ? 'door' : 'express');

@@ -174,6 +174,8 @@ class OrderServices extends BaseService
             'delivery_id'   => $deliveryId,
             'delivery_uid'  => $deliveryUid,
         ];
+        // 顶层 delivery_type 为下单收货方式，发货后以实际发货配送方式为准，两处必须同步
+        $extraInfo['delivery_type'] = $deliveryType;
         $this->centerServices->updateRecord($orderNo, [
             'extra_info'    => json_encode($extraInfo, JSON_UNESCAPED_UNICODE),
             'delivery_time' => time(),
