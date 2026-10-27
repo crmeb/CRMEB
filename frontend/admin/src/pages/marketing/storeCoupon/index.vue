@@ -113,13 +113,12 @@
             <span v-else>不限时</span>
           </template>
         </el-table-column>
-        <el-table-column label="使用时间" min-width="100">
+        <el-table-column label="使用时间" width="200">
           <template #default="scope">
-            <div v-if="scope.row.start_use_time">
-              {{ $filters.formatDate(scope.row.start_use_time) }} -
-              {{ $filters.formatDate(scope.row.end_use_time) }}
-            </div>
-            <div v-else>{{ scope.row.coupon_time }}天</div>
+            <span v-if="scope.row.start_use_time" class="cell-nowrap">
+              {{ formatDay(scope.row.start_use_time) }}~{{ formatDay(scope.row.end_use_time) }}
+            </span>
+            <span v-else>{{ scope.row.coupon_time }}天</span>
           </template>
         </el-table-column>
         <el-table-column label="发布数量" min-width="100">
@@ -262,6 +261,32 @@ onActivated(() => {
   getList();
 });
 
+/**
+ * 时间戳格式化为仅年月日（YYYY/MM/DD），兼容秒/毫秒
+ * @param {number|string} data
+ * @returns {string}
+ */
+function formatDay(data) {
+  if (data === null || data === undefined || data === '' || Number(data) === 0) {
+    return '';
+  }
+  let ts = Number(data);
+  if (!Number.isFinite(ts)) {
+    return '';
+  }
+  if (ts > 0 && ts < 1e12) {
+    ts *= 1000;
+  }
+  const date = new Date(ts);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}/${m}/${d}`;
+}
+
 const isMobile = computed(() => mediaStore.isMobile);
 const labelWidth = computed(() => (isMobile.value ? undefined : '90px'));
 const labelPosition = computed(() => (isMobile.value ? 'top' : 'right'));
@@ -367,6 +392,9 @@ function openChange(data) {
 </script>
 
 <style lang="scss" scoped>
+.cell-nowrap {
+  white-space: nowrap;
+}
 .fa {
   color: #0a6aa1;
   display: block;
