@@ -346,6 +346,13 @@ class StoreCartServices extends BaseService
         if ($type == 0) {
             //检查限购
             $this->checkLimit($uid, $product_id, $cart_num, $new);
+            // 普通商品：付费会员专属需校验（含再次购买 againOrder→setCart，不经加购接口）
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $userInfo = $userServices->getUserInfo($uid);
+            if ($userInfo) {
+                $this->checkVipGoodsBuy(is_object($userInfo) ? $userInfo->toArray() : $userInfo, $product_id);
+            }
         }
         //检测库存限量
         [$attrInfo, $product_attr_unique, $bargainPriceMin, $cart_num, $productInfo] = $this->checkProductStock($uid, $cart_num, $product_attr_unique, $type, $product_id, $seckill_id, $bargain_id, $combination_id, $advance_id);
@@ -1053,9 +1060,24 @@ class StoreCartServices extends BaseService
      */
     public function checkVipGoodsBuy($user, $pid)
     {
-        $is_vip_product = app()->make(CenterProductServices::class)->value(['id' => $pid], 'vip_product');
+        $user = is_object($user) ? $user->toArray() : (array)$user;
+        $uid = (int)($user['uid'] ?? 0);
+        // 先按 overdue_time 落库刷新会员状态，避免会话/库内 is_money_level 仍为有效会员
+        if ($uid > 0) {
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $stillMember = $userServices->offMemberLevel($uid, $user);
+            if ($stillMember === false) {
+                $user['is_money_level'] = 0;
+            } else {
+                $user = is_object($stillMember) ? $stillMember->toArray() : (array)$stillMember;
+            }
+        }
+        $is_vip_product = (int)app()->make(CenterProductServices::class)->value(['id' => $pid], 'vip_product');
         // 1=仅会员可见可买，2=所有人可见仅会员可买，非付费会员均无权购买
-        if (in_array($is_vip_product, [1, 2]) && $user['is_money_level'] == 0) throw new ApiException('此商品为付费会员专属，您无权购买');
+        if (in_array($is_vip_product, [1, 2], true) && (int)($user['is_money_level'] ?? 0) === 0) {
+            throw new ApiException('此商品为付费会员专属，您无权购买');
+        }
         return true;
     }
 }
