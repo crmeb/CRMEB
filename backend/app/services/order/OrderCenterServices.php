@@ -1665,6 +1665,11 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             if ($sourceOrder) {
                 $centerStatus = (string)($detail['status_code'] ?? '');
                 $sourceStatus = $adapter->resolveStatusCode($sourceOrder);
+                // 中台表 shipping_type 为配送方式权威来源；扩展表无该列，
+                // 合并进源订单供业务状态推导使用（如到店自提展示「待核销」而非「待发货」）
+                if (!isset($sourceOrder['shipping_type']) && isset($detail['shipping_type'])) {
+                    $sourceOrder['shipping_type'] = $detail['shipping_type'];
+                }
                 if (!$this->isAuthoritativeCenterStatus($centerStatus) || $sourceStatus === $centerStatus) {
                     $detail['status_code'] = $sourceStatus;
                     $detail['business_status'] = $adapter->resolveBusinessStatus($sourceOrder);
