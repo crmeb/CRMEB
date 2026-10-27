@@ -539,7 +539,14 @@ class RefundOrderServices extends BaseService
             && (int)($afterSale['receive_time'] ?? 0) <= 0) {
             throw new \RuntimeException('请先确认收到退货再执行退款');
         }
-        if (bccomp($amount, '0.00', 2) < 0 || ((int)($afterSale['refund_integral'] ?? 0) <= 0 && bccomp($amount, '0.00', 2) <= 0)) {
+        if (bccomp($amount, '0.00', 2) < 0) {
+            throw new \RuntimeException('退款金额不能为负数');
+        }
+        // 0 元售后（申请金额与退还积分均为 0）允许实退 0，走本地退款闭环；有可退现金却实退 0 仍拦截
+        $hasCash = bccomp($amount, '0.00', 2) > 0;
+        $hasIntegral = (int)($afterSale['refund_integral'] ?? 0) > 0;
+        if (!$hasCash && !$hasIntegral
+            && bccomp((string)($afterSale['refund_price'] ?? '0.00'), '0.00', 2) > 0) {
             throw new \RuntimeException('退款金额或退款积分必须大于零');
         }
         if (bccomp($amount, (string)($afterSale['refund_price'] ?? '0.00'), 2) > 0) {

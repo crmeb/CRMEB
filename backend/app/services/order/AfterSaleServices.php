@@ -760,8 +760,8 @@ class AfterSaleServices extends BaseService
         if ($targets['has_integral']) {
             $fields = $this->appendRefundIntegralField($fields);
         }
-        // 纯积分订单（无现金可退）：移除"申请退款金额"字段
-        if (!$targets['has_cash'] && $targets['has_integral']) {
+        // 无现金可退（纯积分或 0 元单）：移除"申请退款金额"字段，避免必填 0 金额干扰申请
+        if (!$targets['has_cash']) {
             $fields = $this->removeRefundPriceField($fields);
         }
         $config['fields'] = $fields;
@@ -1249,9 +1249,14 @@ class AfterSaleServices extends BaseService
                 && ((float)$maxRefundPrice <= 0 || (int)($center['use_integral_num'] ?? 0) > 0)) {
                 $refundIntegral = $maxRefundIntegral;
             }
+            // 0 元单（无现金、无积分可退）：未传金额时按 0 落库，仍走售后闭环（库存/状态）
+            if ($refundPrice <= 0 && (float)$maxRefundPrice <= 0) {
+                $refundPrice = 0.0;
+            }
 
-            // 退款金额与退还积分至少一项大于 0
-            if ($refundPrice <= 0 && $refundIntegral <= 0) {
+            // 存在可退现金或积分时，至少一项须大于 0；两侧上限均为 0 时允许 0 退款
+            if ($refundPrice <= 0 && $refundIntegral <= 0
+                && ((float)$maxRefundPrice > 0 || $maxRefundIntegral > 0)) {
                 throw new \RuntimeException('退款金额或退还积分至少一项必须大于 0');
             }
             if ($refundPrice > (float)$maxRefundPrice) {

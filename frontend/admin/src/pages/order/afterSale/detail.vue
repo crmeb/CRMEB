@@ -348,11 +348,11 @@
         <el-form-item label="可退金额">
           <span class="price">¥{{ detail.refund_price || '0.00' }}</span>
         </el-form-item>
-        <el-form-item label="退款金额" required>
+        <el-form-item label="退款金额" :required="Number(detail.refund_price) > 0">
           <el-input-number
             v-model="refundForm.amount"
-            :min="0.01"
-            :max="Number(detail.refund_price) || 0"
+            :min="Number(detail.refund_price) > 0 ? 0.01 : 0"
+            :max="Math.max(Number(detail.refund_price) || 0, 0)"
             :precision="2"
             style="width: 200px"
           ></el-input-number>
@@ -676,7 +676,15 @@ function openRefund() {
  * 提交退款
  */
 function submitRefund() {
-  if (refundForm.value.amount <= 0) {
+  const amount = Number(refundForm.value.amount) || 0;
+  const maxCash = Number(detail.value.refund_price) || 0;
+  const refundIntegral = Number(detail.value.refund_integral) || 0;
+  // 有可退现金时金额须 > 0；0 元单（无现金、可无积分）允许实退 0
+  if (amount < 0) {
+    ElMessage.warning('退款金额不能为负数');
+    return;
+  }
+  if (amount <= 0 && refundIntegral <= 0 && maxCash > 0) {
     ElMessage.warning('退款金额必须大于0');
     return;
   }
