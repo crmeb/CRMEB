@@ -115,10 +115,47 @@ function getLogisticsData() {
     });
 }
 
-/** 详情状态：用户已删除优先展示「已删除」，否则按 status_code / status_text */
+const CENTER_STATUS_CODES = [
+  'pending_payment',
+  'processing',
+  'pending_review',
+  'completed',
+  'canceled',
+  'after_sale',
+  'refunding',
+  'refunded',
+  'deleted',
+];
+
+function getBusinessStatusText(detail) {
+  if (!detail || typeof detail === 'string') return '';
+  const bs = detail.business_status;
+  if (!bs || typeof bs !== 'object') return '';
+  const text = String(bs.label || bs.text || '').trim();
+  if (!text) return '';
+  const code = String(bs.code || '');
+  const genericTexts = [
+    '待支付',
+    '待处理',
+    '进行中',
+    '待评价',
+    '已完成',
+    '已取消',
+    '售后中',
+    '退款中',
+    '已退款',
+    '已删除',
+  ];
+  if (!genericTexts.includes(text)) return text;
+  if (code && !CENTER_STATUS_CODES.includes(code)) return text;
+  return '';
+}
+
+/** 有业务子状态（待发货/待收货等）时只展示这一项，否则按中台 status_code */
 function getStatusLabel(detail) {
   if (detail && Number(detail.is_del) === 1) return '已删除';
-  if (detail?.status_text) return detail.status_text;
+  const businessText = getBusinessStatusText(detail);
+  if (businessText) return businessText;
   const code = typeof detail === 'string' ? detail : detail?.status_code;
   const map = {
     pending_payment: '待支付',
@@ -131,12 +168,13 @@ function getStatusLabel(detail) {
     refunded: '已退款',
     deleted: '已删除',
   };
-  return map[code] || code || '--';
+  return map[code] || detail?.status_text || code || '--';
 }
 
 /* 与列表 getStatusClass 同口径 */
 function getStatusClass(detail) {
   if (detail && Number(detail.is_del) === 1) return 'danger';
+  if (getBusinessStatusText(detail)) return 'primary';
   const code = typeof detail === 'string' ? detail : detail?.status_code;
   const map = {
     pending_payment: 'warning',
@@ -185,6 +223,13 @@ defineExpose({ loadDetail });
 :deep(.el-tabs__item) {
   height: 40px !important;
   line-height: 40px !important;
+}
+
+.business-status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #999;
+  line-height: 1.2;
 }
 
 .head {

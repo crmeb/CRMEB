@@ -84,7 +84,7 @@
               </el-row>
             </div>
 
-            <!-- 配送方式 -->
+            <!-- 配送方式（下单时 express/pickup/door） -->
             <div class="section">
               <div class="section-title">配送方式</div>
               <el-row :gutter="24" class="detail-grid">
@@ -97,25 +97,23 @@
               </el-row>
             </div>
 
-            <!-- 发货/物流信息 -->
+            <!-- 发货/物流信息（发货后 express/send/fictitious） -->
             <div class="section" v-if="detailData.delivery_name">
-              <div class="section-title">{{ isExpressDelivery ? '物流信息' : '发货信息' }}</div>
+              <div class="section-title">{{ shipInfoSectionTitle }}</div>
               <el-row :gutter="24" class="detail-grid">
                 <el-col :span="8"
                   ><div class="detail-item">
-                    <span class="label">{{ isExpressDelivery ? '物流公司：' : deliveryType === 'send' ? '送货人姓名：' : '发货方式：' }}</span
+                    <span class="label">{{ shipInfoNameLabel }}</span
                     ><span class="value">{{ detailData.delivery_name || '--' }}</span>
                   </div></el-col
                 >
-                <el-col :span="12"
+                <el-col :span="12" v-if="shipDeliveryType !== 'fictitious' || detailData.delivery_id"
                   ><div class="detail-item">
-                    <span class="label">{{
-                      isExpressDelivery ? '物流单号：' : deliveryType === 'send' ? '送货人电话：' : '发货备注：'
-                    }}</span
+                    <span class="label">{{ shipInfoIdLabel }}</span
                     ><span class="value"
                       >{{ detailData.delivery_id || '--'
                       }}<a
-                        v-if="isExpressDelivery"
+                        v-if="shipDeliveryType === 'express'"
                         v-db-click
                         @click="toggleLogistics"
                         class="track-link"
@@ -125,8 +123,8 @@
                   </div></el-col
                 >
               </el-row>
-              <!-- 物流轨迹展开区域 -->
-              <div v-if="logisticsVisible" class="logistics-panel">
+              <!-- 物流轨迹展开区域（仅真实快递） -->
+              <div v-if="logisticsVisible && shipDeliveryType === 'express'" class="logistics-panel">
                 <div class="logistics-header">
                   <img class="logistics-icon" src="../../../../assets/images/expressi.jpg" />
                   <div class="logistics-info">
@@ -470,21 +468,47 @@ const orderItems = computed(() => {
 /** 订单状态与列表同口径（待发货/待收货/待到店等业务状态） */
 const businessStatus = computed(() => getOrderBusinessStatus(detailData.value || {}));
 
-/** 配送方式：express 快递 / send 送货 / fictitious 无需配送 / pickup 自提 / door 上门 */
-const deliveryType = computed(
-  () => detailData.value?.extra_info?.delivery_type || detailData.value?.delivery_type || '',
-);
+/** 下单配送方式（express/pickup/door），用于「配送方式」区块 */
+const orderDeliveryType = computed(() => {
+  const t = String(detailData.value?.extra_info?.delivery_type || '');
+  if (['express', 'pickup', 'door'].includes(t)) return t;
+  const shippingType = Number(detailData.value?.shipping_type || 0);
+  if (shippingType === 2) return 'pickup';
+  if (shippingType === 3) return 'door';
+  return 'express';
+});
 const deliveryTypeText = computed(
   () =>
     ({
       express: '快递配送',
-      send: '送货上门',
-      fictitious: '无需配送',
       pickup: '到店自提',
       door: '上门服务',
-    })[deliveryType.value] || '快递配送',
+    })[orderDeliveryType.value] || '快递配送',
 );
-const isExpressDelivery = computed(() => deliveryType.value === 'express');
+
+/** 发货方式（express/send/fictitious）；未发货为空 */
+const shipDeliveryType = computed(() => {
+  const t = String(detailData.value?.delivery_type || '');
+  return ['express', 'send', 'fictitious'].includes(t) && detailData.value?.delivery_name ? t : '';
+});
+
+const shipInfoSectionTitle = computed(() => {
+  if (shipDeliveryType.value === 'fictitious') return '发货信息';
+  if (shipDeliveryType.value === 'send') return '送货人信息';
+  return '物流信息';
+});
+
+const shipInfoNameLabel = computed(() => {
+  if (shipDeliveryType.value === 'fictitious') return '发货方式：';
+  if (shipDeliveryType.value === 'send') return '送货人姓名：';
+  return '物流公司：';
+});
+
+const shipInfoIdLabel = computed(() => {
+  if (shipDeliveryType.value === 'fictitious') return '发货备注：';
+  if (shipDeliveryType.value === 'send') return '送货人电话：';
+  return '物流单号：';
+});
 
 /** 售后进度数据（后端注入到 detail.extend.after_sale） */
 const afterSaleInfo = computed(() => {

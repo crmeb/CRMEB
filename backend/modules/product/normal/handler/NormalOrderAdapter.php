@@ -380,7 +380,7 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
             }
         }
 
-        // 到店自提 / 上门服务无快递物流，列表与详情都不展示「查看物流」
+        // 非快递履约（自提/上门/虚拟发货/商家送货）不展示「查看物流」
         return $this->filterLogisticsButtons($buttons, $detail);
     }
 
@@ -401,18 +401,41 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
     }
 
     /**
-     * 到店自提（shipping_type=2）/ 上门服务（shipping_type=3）去掉「查看物流」
+     * 无真实快递轨迹时去掉「查看物流」：
+     * - 到店自提 / 上门服务
+     * - 虚拟发货（fictitious）/ 商家送货（send）
      */
     protected function filterLogisticsButtons(array $buttons, array $detail): array
     {
-        $shippingType = (int)($detail['shipping_type'] ?? 0);
-        if (!in_array($shippingType, [2, 3], true)) {
+        if ($this->hasExpressLogistics($detail)) {
             return $buttons;
         }
         return array_values(array_filter(
             $buttons,
             static fn($btn) => ($btn['action'] ?? '') !== 'viewLogistics'
         ));
+    }
+
+    /**
+     * 是否具备可查询的快递物流（仅 express 发货）
+     */
+    protected function hasExpressLogistics(array $detail): bool
+    {
+        $shippingType = (int)($detail['shipping_type'] ?? 0);
+        if (in_array($shippingType, [2, 3], true)) {
+            return false;
+        }
+        $deliveryType = (string)($detail['delivery_type']
+            ?? ($detail['extra_info']['delivery']['delivery_type'] ?? ''));
+        if (in_array($deliveryType, ['fictitious', 'send', 'pickup', 'door'], true)) {
+            return false;
+        }
+        // 兼容：发货方式字段被误写成 express，但公司名为「虚拟发货」
+        if ((string)($detail['delivery_name'] ?? '') === '虚拟发货') {
+            return false;
+        }
+        // 仅快递发货且已有运单号才展示查看物流
+        return $deliveryType === 'express' && (string)($detail['delivery_id'] ?? '') !== '';
     }
 
     /**

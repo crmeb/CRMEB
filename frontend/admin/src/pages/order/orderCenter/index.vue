@@ -205,9 +205,6 @@
           <el-table-column label="订单状态" min-width="120">
             <template #default="scope">
               <el-tag :type="getStatusClass(scope.row)">{{ getStatusLabel(scope.row) }}</el-tag>
-              <div v-if="Number(scope.row.is_del) !== 1 && scope.row.business_status">
-                <span class="business-status">{{ scope.row.business_status.label }}</span>
-              </div>
             </template>
           </el-table-column>
           <el-table-column label="创建时间" min-width="160">
@@ -469,9 +466,36 @@ function getProductTypeLabel(type) {
   return item ? item.label : type || '--';
 }
 
+const CENTER_STATUS_CODES = [
+  'pending_payment',
+  'processing',
+  'pending_review',
+  'completed',
+  'canceled',
+  'after_sale',
+  'refunding',
+  'refunded',
+  'deleted',
+];
+
+function getBusinessStatusText(row) {
+  if (!row || typeof row !== 'object') return '';
+  const bs = row.business_status;
+  if (!bs || typeof bs !== 'object') return '';
+  const text = String(bs.label || bs.text || '').trim();
+  if (!text) return '';
+  const code = String(bs.code || '');
+  const genericTexts = statusCodeOptions.map((o) => o.label).concat(['进行中']);
+  if (!genericTexts.includes(text)) return text;
+  if (code && !CENTER_STATUS_CODES.includes(code)) return text;
+  return '';
+}
+
 function getStatusLabel(rowOrCode) {
   const row = typeof rowOrCode === 'object' && rowOrCode ? rowOrCode : null;
   if (row && Number(row.is_del) === 1) return '已删除';
+  const businessText = getBusinessStatusText(row);
+  if (businessText) return businessText;
   const code = row ? row.status_code : rowOrCode;
   const item = statusCodeOptions.find((opt) => opt.key === code);
   return item ? item.label : code || '--';
@@ -480,6 +504,7 @@ function getStatusLabel(rowOrCode) {
 function getStatusClass(rowOrCode) {
   const row = typeof rowOrCode === 'object' && rowOrCode ? rowOrCode : null;
   if (row && Number(row.is_del) === 1) return 'danger';
+  if (getBusinessStatusText(row)) return 'primary';
   const code = row ? row.status_code : rowOrCode;
   const map = {
     pending_payment: 'warning',

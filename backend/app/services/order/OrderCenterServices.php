@@ -10,7 +10,6 @@ use app\model\order\OrderCenter;
 use app\model\product\product\StoreVisit;
 use app\model\user\User;
 use app\services\product\product\StoreProductReplyServices;
-use app\services\shipping\ExpressServices;
 use app\jobs\UnpaidOrderSend;
 use crmeb\services\CacheService;
 use crmeb\basic\BaseService;
@@ -609,8 +608,7 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         // 前端 AfterSaleProgress 组件据此渲染，不再硬编码售后类型映射表
         $this->loadAfterSaleExtension($detail);
 
-        // 加载物流轨迹扩展数据（已发货订单调用物流查询驱动获取 tracks）
-        // 前端 LogisticsTimeline 组件据此渲染物流轨迹卡片，无需点"查看物流"单独查询
+        // 加载配送信息扩展（快递公司/单号）；轨迹节点改由「查看物流」页按需查询，详情页不再拉第三方轨迹
         $this->loadLogisticsExtension($detail, $withRemoteLogistics);
 
         // 加载订单完成态权益扩展数据（积分奖励/领券入口，系统内置能力，中台自行组装）
@@ -920,7 +918,54 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             'order'     => 50,
         ];
 
-        // 65. 核销码（有核销码的订单：自提订单 或 已支付的非自提订单如酒店预订）
+        // 模块顺序：收货信息(40) → 商品信息(50) → 订单信息 → 价格信息 → 配送信息 → 发票信息
+        // 支付时间/方式已在订单信息，实付在价格信息，不再单独下发「支付详情」
+        // 55. 订单信息（始终存在）
+        $sections[] = [
+            'key'       => 'order_info',
+            'component' => 'info_list',
+            'props'     => ['fields' => $detail['order_info'] ?? [], 'title' => '订单信息'],
+            'visible'   => true,
+            'order'     => 55,
+        ];
+
+        // 60. 价格明细（始终存在）
+        $sections[] = [
+            'key'       => 'pricing',
+            'component' => 'price_detail',
+            'props'     => [
+                'items'     => $detail['pricing']['items'] ?? [],
+                'pay_price' => $detail['pricing']['pay_price'] ?? '0.00',
+            ],
+            'visible'   => true,
+            'order'     => 60,
+        ];
+
+        // 70. 配送信息（express：公司/单号；send：送货人/电话）
+        $logisticsExt = $detail['extensions']['logistics'] ?? null;
+        $sections[] = [
+            'key'       => 'logistics',
+            'component' => 'timeline',
+            'props'     => [
+                'delivery_type' => $logisticsExt['delivery_type'] ?? '',
+                'delivery_name' => $logisticsExt['delivery_name'] ?? '',
+                'delivery_id'   => $logisticsExt['delivery_id'] ?? '',
+            ],
+            'visible'   => !empty($logisticsExt),
+            'order'     => 70,
+        ];
+
+        // 75. 发票信息（从 extensions.invoice 取值，由 loadOrderInvoice 组装）
+        $invoiceExt = $detail['extensions']['invoice'] ?? null;
+        $sections[] = [
+            'key'       => 'invoice',
+            'component' => 'info_list',
+            'props'     => ['fields' => $invoiceExt ?? [], 'title' => '发票信息'],
+            'visible'   => !empty($invoiceExt),
+            'order'     => 75,
+        ];
+
+        // 52. 核销码（自提等；紧挨商品信息，便于核销）
         // 可见性由 buildGroupedData 中 verification 对象是否构造决定，此处只需检查 code 是否存在
         $verificationVisible = !empty($detail['verification']['code']);
         $verification = $detail['verification'] ?? [];
@@ -933,72 +978,17 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 'status'     => $verification['status'] ?? 'pending',
             ],
             'visible'   => $verificationVisible,
-            'order'     => 65,
+            'order'     => 52,
         ];
 
-        // 70. 自定义表单
+        // 82. 自定义表单（发票信息之后）
         $customForm = $detail['extensions']['custom_form'] ?? null;
         $sections[] = [
             'key'       => 'custom_form',
             'component' => 'custom_form',
             'props'     => ['items' => $customForm ?? []],
             'visible'   => !empty($customForm),
-            'order'     => 70,
-        ];
-
-        // 75. 物流轨迹
-        $logisticsExt = $detail['extensions']['logistics'] ?? null;
-        $sections[] = [
-            'key'       => 'logistics',
-            'component' => 'timeline',
-            'props'     => [
-                'tracks'        => $logisticsExt['tracks'] ?? [],
-                'delivery_name' => $logisticsExt['delivery_name'] ?? '',
-                'delivery_id'   => $logisticsExt['delivery_id'] ?? '',
-            ],
-            'visible'   => !empty($logisticsExt),
-            'order'     => 75,
-        ];
-
-        // 80. 价格明细（始终存在）
-        $sections[] = [
-            'key'       => 'pricing',
-            'component' => 'price_detail',
-            'props'     => [
-                'items'     => $detail['pricing']['items'] ?? [],
-                'pay_price' => $detail['pricing']['pay_price'] ?? '0.00',
-            ],
-            'visible'   => true,
-            'order'     => 80,
-        ];
-
-        // 85. 订单信息（始终存在）
-        $sections[] = [
-            'key'       => 'order_info',
-            'component' => 'info_list',
-            'props'     => ['fields' => $detail['order_info'] ?? [], 'title' => '订单信息'],
-            'visible'   => true,
-            'order'     => 85,
-        ];
-
-        // 90. 发票信息（从 extensions.invoice 取值，由 loadOrderInvoice 组装）
-        $invoiceExt = $detail['extensions']['invoice'] ?? null;
-        $sections[] = [
-            'key'       => 'invoice',
-            'component' => 'info_list',
-            'props'     => ['fields' => $invoiceExt ?? [], 'title' => '发票信息'],
-            'visible'   => !empty($invoiceExt),
-            'order'     => 90,
-        ];
-
-        // 93. 支付详情（已支付订单）
-        $payment = $detail['payment'] ?? null;
-        $sections[] = [
-            'key'       => 'payment',
-            'component' => 'info_list',
-            'props'     => ['fields' => $payment ?? [], 'title' => '支付详情'],
-            'visible'   => !empty($payment),
-            'order'     => 93,
+            'order'     => 82,
         ];
 
         // 100. 售后进度
@@ -1301,6 +1291,10 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         if (!empty($detail['invoice'])) {
             $extensions['invoice'] = $detail['invoice'];
         }
+        // 发票功能开关（前端申请开票弹窗依赖 special_invoice 控制专用票可选）
+        $extensions['invoice_func'] = (bool)sys_config('invoice_func_status', 0);
+        $extensions['special_invoice'] = $extensions['invoice_func']
+            && (bool)sys_config('special_invoice_status', 0);
         // 上门服务订单：预约信息（供 service_appointment section 渲染）
         if (!empty($detail['service'])) {
             $extensions['service'] = $detail['service'];
@@ -1388,16 +1382,26 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 return null;
             }
             $invoice = is_object($invoice) ? $invoice->toArray() : $invoice;
+            // 个人抬头电话在 drawer_phone，企业注册电话在 tell；弹窗联系电话优先 drawer_phone
+            $phone = trim((string)($invoice['drawer_phone'] ?? ''));
+            if ($phone === '') {
+                $phone = trim((string)($invoice['tell'] ?? ''));
+            }
             return [
+                'name'           => $invoice['name'] ?? '',           // 兼容查看发票弹窗字段
                 'title'          => $invoice['name'] ?? '',           // 发票抬头名称
                 'header_type'    => (int)($invoice['header_type'] ?? 1), // 1=个人 2=企业
-                'type'           => (int)($invoice['type'] ?? 1),       // 1=电子发票 2=纸质发票
+                'type'           => (int)($invoice['type'] ?? 1),       // 1=普通发票 2=专用发票
+                'duty_number'    => $invoice['duty_number'] ?? '',     // 兼容弹窗字段
                 'tax_number'     => $invoice['duty_number'] ?? '',     // 税号（企业抬头才有）
                 'email'          => $invoice['email'] ?? '',           // 接收邮箱
-                'phone'          => $invoice['tell'] ?? '',            // 联系电话
+                'drawer_phone'   => $phone,                           // 联系电话（弹窗字段）
+                'phone'          => $phone,                           // 联系电话（契约字段）
+                'tell'           => $invoice['tell'] ?? '',            // 企业电话原值
                 'address'        => $invoice['address'] ?? '',         // 地址
                 'bank'           => $invoice['bank'] ?? '',            // 开户银行
                 'bank_account'   => $invoice['card_number'] ?? '',     // 银行账号
+                'remark'         => $invoice['remark'] ?? '',          // 发票备注
                 'is_invoice'     => (int)($invoice['is_invoice'] ?? 0),   // 0=未开票 1=已开票
                 'invoice_number' => $invoice['invoice_number'] ?? '',  // 发票号码（已开票时才有）
                 'invoice_time'   => (int)($invoice['invoice_time'] ?? 0), // 开票时间
@@ -1790,78 +1794,46 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
     }
 
     /**
-     * 加载物流轨迹扩展数据
-     * 已发货且填了快递单号的订单，读取物流轨迹（默认允许同步查询第三方；详情首屏可只读缓存）并注入 extend.logistics
-     * 前端 LogisticsTimeline 组件据此渲染物流轨迹卡片，用户无需点"查看物流"单独查询
-     * 数据流：本方法写入 $detail['extend']['logistics']
-     *        → buildGroupedData() 合并到 extensions['logistics']
-     *        → page_config 中 component='timeline' + key='logistics' → 复合 key 'timeline:logistics'
-     *        → 前端 LogisticsTimeline 渲染 delivery_name/delivery_id + OrderTimeline 遍历 tracks
+     * 加载配送信息扩展数据
+     * - express：快递公司 + 运单号（轨迹由「查看物流」按需查询）
+     * - send：送货人 + 联系电话
+     * - fictitious：有人工备注时展示发货备注（无备注时 delivery_id 为自动时间戳，不展示）
+     * 自提 / 上门不展示本区块
      * @param array $detail 订单详情数据（引用传递）
-     * @param bool $allowRemote 是否允许同步请求第三方物流接口；false 时仅读取已有缓存，避免详情首屏被慢请求阻塞
+     * @param bool $allowRemote 兼容旧调用签名，详情页不再使用
      * @return void
      */
     protected function loadLogisticsExtension(array &$detail, bool $allowRemote = true): void
     {
-        // 仅处理有快递单号的订单（已发货且填写了物流单号）
+        unset($allowRemote);
         $deliveryId = (string)($detail['delivery_id'] ?? '');
-        if ($deliveryId === '') {
-            return;
-        }
-
-        // 到店自提 / 上门服务订单无物流轨迹，仅处理快递配送
-        $deliveryType = (string)($detail['delivery_type'] ?? '');
-        if ($deliveryType !== '' && $deliveryType !== 'express') {
-            return;
-        }
-
-        $orderNo      = (string)($detail['order_no'] ?? '');
         $deliveryName = (string)($detail['delivery_name'] ?? '');
-        // delivery_code 传空字符串而非 null：一号通驱动 query() 第二参数声明为 string，null 会触发 TypeError
-        $deliveryCode = (string)($detail['delivery_code'] ?? '');
-
-        // 物流轨迹查询（失败时 tracks 置空，仍展示快递公司 + 单号，不阻断详情渲染）
-        $tracks = [];
-        try {
-            // 收件人手机号（顺丰等物流查询需要）
-            $phone   = '';
-            $contact = $detail['contact'] ?? ($detail['extra_info']['contact'] ?? []);
-            if (is_array($contact) && !empty($contact['phone'])) {
-                $phone = (string)$contact['phone'];
-            }
-
-            // 缓存键名：订单号 + 快递单号（ExpressServices 内部按此缓存，已签收缓存 0 秒，未签收缓存 1800 秒）
-            $cacheName = $orderNo . $deliveryId;
-
-            /** @var ExpressServices $expressServices */
-            $expressServices = $this->app->make(ExpressServices::class);
-            // 详情首屏只读缓存；轨迹按需由前端调用 order/express 异步补齐，避免第三方慢请求阻塞详情
-            $rawTracks = $allowRemote
-                ? $expressServices->query($cacheName, $deliveryId, $deliveryCode, $phone)
-                : $expressServices->getCachedTracks($cacheName);
-
-            // 归一化轨迹字段为前端统一格式 {title, time, desc}
-            // 驱动返回格式差异：一号通 {time,status} / 阿里云 {time,context} / 其他兼容
-            foreach ($rawTracks ?? [] as $track) {
-                if (!is_array($track)) {
-                    continue;
-                }
-                $tracks[] = [
-                    'title' => (string)($track['title'] ?? $track['status'] ?? $track['context'] ?? $track['name'] ?? ''),
-                    'time'  => (string)($track['time'] ?? $track['ftime'] ?? ''),
-                    'desc'  => (string)($track['desc'] ?? ''),
-                ];
-            }
-        } catch (\Throwable $e) {
-            // 物流查询失败不阻断订单详情渲染（驱动未配置 / 网络异常等场景降级为仅展示快递公司+单号）
-            Log::warning('[OrderCenter] loadLogisticsExtension failed: ' . $e->getMessage());
+        if ($deliveryId === '' && $deliveryName === '') {
+            return;
         }
 
-        // 始终写入 extend.logistics：即使 tracks 查询失败，也展示快递公司 + 单号
+        $deliveryType = (string)($detail['delivery_type']
+            ?? ($detail['extra_info']['delivery']['delivery_type'] ?? ''));
+        if (!in_array($deliveryType, ['express', 'send', 'fictitious'], true)) {
+            return;
+        }
+        // 快递须有运单号
+        if ($deliveryType === 'express' && $deliveryId === '') {
+            return;
+        }
+        // 虚拟发货：仅当存在发货备注时展示（未填备注时后端用 YmdHis 占位，不算备注）
+        if ($deliveryType === 'fictitious') {
+            if ($deliveryId === '' || preg_match('/^\d{14}$/', $deliveryId)) {
+                return;
+            }
+            $deliveryName = $deliveryName !== '' ? $deliveryName : '虚拟发货';
+        }
+
         $detail['extend']['logistics'] = [
+            'delivery_type' => $deliveryType,
             'delivery_name' => $deliveryName,
             'delivery_id'   => $deliveryId,
-            'tracks'        => $tracks,
+            'tracks'        => [],
         ];
     }
 
@@ -2073,6 +2045,61 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
                 }
             }
             unset($button);
+        }
+
+        // 已支付且无退款时，按发票开关/已有申请记录追加「申请开票 / 查看发票」（左下角「更多」）
+        return $this->appendInvoiceButtons($buttons, $detail);
+    }
+
+    /**
+     * 追加发票相关底部按钮（对齐旧版订单详情左下角「更多」）
+     *
+     * 条件：已支付且无退款；开启发票功能时可申请；已有开票申请/快照时可查看。
+     * placement=more 由前端 ButtonGroup 收入左下角「更多」菜单，不占右侧主操作位。
+     *
+     * @param array $buttons 已有按钮
+     * @param array $detail 订单详情
+     * @return array
+     */
+    protected function appendInvoiceButtons(array $buttons, array $detail): array
+    {
+        $payStatus = (int)($detail['pay_status'] ?? 0);
+        $refundStatus = (int)($detail['refund_status'] ?? 0);
+        if ($payStatus !== 1 || $refundStatus !== 0) {
+            return $buttons;
+        }
+
+        $invoiceFunc = (bool)sys_config('invoice_func_status', 0);
+        $hasInvoice = !empty($detail['invoice']);
+        if (!$invoiceFunc && !$hasInvoice) {
+            return $buttons;
+        }
+
+        $orderNo = (string)($detail['order_no'] ?? '');
+        $params = $orderNo !== '' ? ['order_no' => $orderNo] : [];
+
+        // 避免适配器或其它扩展重复注入
+        $existing = [];
+        foreach ($buttons as $btn) {
+            $existing[(string)($btn['action'] ?? '')] = true;
+        }
+
+        if ($hasInvoice && empty($existing['viewInvoice'])) {
+            $buttons[] = [
+                'text'      => '查看发票',
+                'action'    => 'viewInvoice',
+                'primary'   => false,
+                'placement' => 'more',
+                'params'    => $params,
+            ];
+        } elseif ($invoiceFunc && !$hasInvoice && empty($existing['applyInvoice'])) {
+            $buttons[] = [
+                'text'      => '申请开票',
+                'action'    => 'applyInvoice',
+                'primary'   => false,
+                'placement' => 'more',
+                'params'    => $params,
+            ];
         }
 
         return $buttons;
@@ -2853,7 +2880,11 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             }
             // 订单扩展信息
             $item['extra_info'] = $this->parseExtraInfo($item['extra_info']);
-            $item['business_status'] = $item['extra_info']['business_status'] ?? null;
+            $businessStatus = $item['extra_info']['business_status'] ?? null;
+            if (is_array($businessStatus) && empty($businessStatus['label']) && !empty($businessStatus['text'])) {
+                $businessStatus['label'] = $businessStatus['text'];
+            }
+            $item['business_status'] = is_array($businessStatus) ? $businessStatus : null;
             // 提取联系人信息到顶层，供列表页展示
             $item['contact_name'] = $item['extra_info']['contact']['name'] ?? '';
             $item['contact_phone'] = $item['extra_info']['contact']['phone'] ?? '';

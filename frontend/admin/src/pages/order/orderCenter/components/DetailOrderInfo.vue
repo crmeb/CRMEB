@@ -103,6 +103,10 @@
           <div>付费会员优惠：</div>
           <div class="value">¥{{ data.vip_discount || '0.00' }}</div>
         </li>
+        <li class="item" v-if="Number(data.gift_price) > 0">
+          <div>礼品附加费：</div>
+          <div class="value">¥{{ data.gift_price || '0.00' }}</div>
+        </li>
         <li class="item">
           <div>实际支付：</div>
           <div class="value price">¥{{ data.pay_price || '0.00' }}</div>
@@ -150,7 +154,7 @@
           <div>{{ isExpress ? '物流公司：' : deliveryType === 'send' ? '送货人姓名：' : '发货方式：' }}</div>
           <div class="value">{{ data.delivery_name || '--' }}</div>
         </li>
-        <li class="item">
+        <li class="item" v-if="deliveryType !== 'fictitious' || data.delivery_id">
           <div>{{ isExpress ? '物流单号：' : deliveryType === 'send' ? '送货人电话：' : '发货备注：' }}</div>
           <div class="value">
             {{ data.delivery_id || '--' }}

@@ -97,28 +97,37 @@ class OrderCenterListExtendListener
             $delivery = $extraInfo['delivery'] ?? [];
             $extDelivery = $mappedExtDeliveries[$orderNo] ?? [];
 
-            $deliveryType = (string)($delivery['delivery_type'] ?? ($extraInfo['delivery_type'] ?? ''));
-            if ($deliveryType === '') {
-                $deliveryType = (string)($extDelivery['delivery_type'] ?? '');
-            }
-            if ($deliveryType === '') {
+            // 下单配送方式（express/pickup/door）与发货方式（express/send/fictitious）分离，禁止互相覆盖
+            $orderDeliveryType = (string)($extraInfo['delivery_type'] ?? '');
+            if (!in_array($orderDeliveryType, ['express', 'pickup', 'door'], true)) {
                 $shippingType = (int)($item['shipping_type'] ?? 0);
-                $deliveryType = $shippingType === 2 ? 'pickup' : ($shippingType === 3 ? 'door' : 'express');
+                $orderDeliveryType = $shippingType === 2 ? 'pickup' : ($shippingType === 3 ? 'door' : 'express');
+            }
+
+            $shipDeliveryType = (string)($delivery['delivery_type'] ?? '');
+            if (!in_array($shipDeliveryType, ['express', 'send', 'fictitious'], true)) {
+                $shipDeliveryType = (string)($extDelivery['delivery_type'] ?? '');
+            }
+            if (!in_array($shipDeliveryType, ['express', 'send', 'fictitious'], true)) {
+                $shipDeliveryType = '';
             }
 
             $deliveryName = (string)($delivery['delivery_name'] ?? ($extDelivery['delivery_name'] ?? ''));
             $deliveryId = (string)($delivery['delivery_id'] ?? ($extDelivery['delivery_id'] ?? ''));
 
-            $item['delivery_type'] = $deliveryType;
+            // 顶层 delivery_type：已发货用发货方式，未发货用下单配送方式（列表按钮/标签依赖）
+            $item['delivery_type'] = $shipDeliveryType !== '' ? $shipDeliveryType : $orderDeliveryType;
             $item['delivery_name'] = $deliveryName;
             $item['delivery_id'] = $deliveryId;
 
-            $extraInfo['delivery_type'] = $deliveryType;
-            $extraInfo['delivery'] = array_merge($delivery, [
-                'delivery_type' => $deliveryType,
-                'delivery_name' => $deliveryName,
-                'delivery_id'   => $deliveryId,
-            ]);
+            $extraInfo['delivery_type'] = $orderDeliveryType;
+            if ($shipDeliveryType !== '') {
+                $extraInfo['delivery'] = array_merge($delivery, [
+                    'delivery_type' => $shipDeliveryType,
+                    'delivery_name' => $deliveryName,
+                    'delivery_id'   => $deliveryId,
+                ]);
+            }
             $item['extra_info'] = $extraInfo;
         }
         unset($item);

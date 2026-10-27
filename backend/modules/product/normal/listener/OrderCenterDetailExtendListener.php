@@ -90,19 +90,33 @@ class OrderCenterDetailExtendListener implements ListenerInterface
                 }
             }
 
-            // 发货配送方式以 extra_info.delivery.delivery_type（发货时写入）为准；
-            // 顶层 extra_info.delivery_type 是下单收货方式（express/pickup/door），
-            // 存量订单发货后两者可能不一致，不能让顶层旧值覆盖实际发货方式
-            $deliveryType = (string)(($extraInfo['delivery']['delivery_type'] ?? '') ?: ($extraInfo['delivery_type'] ?? ''));
-            if ($deliveryType === '') {
+            // 下单配送方式（express/pickup/door）与发货方式（express/send/fictitious）语义不同，禁止互相覆盖。
+            // extra_info.delivery_type：下单时写入，供详情「配送方式」展示；
+            // detail.delivery_type / extra_info.delivery.delivery_type：发货后写入，供物流/虚拟发货展示。
+            $orderDeliveryType = (string)($extraInfo['delivery_type'] ?? '');
+            if (!in_array($orderDeliveryType, ['express', 'pickup', 'door'], true)) {
+                // 兼容被误写成发货方式（fictitious/send）的旧数据：按 shipping_type 回退
                 $shippingType = (int)($detail['shipping_type'] ?? 0);
-                $deliveryType = $shippingType === 2 ? 'pickup' : ($shippingType === 3 ? 'door' : 'express');
+                $orderDeliveryType = $shippingType === 2 ? 'pickup' : ($shippingType === 3 ? 'door' : 'express');
             }
-            $extraInfo['delivery_type'] = $deliveryType;
-            $extraInfo['delivery'] = array_merge($extraInfo['delivery'] ?? [], [
-                'delivery_type' => $deliveryType,
-            ]);
-            $detail['delivery_type'] = $deliveryType;
+            $extraInfo['delivery_type'] = $orderDeliveryType;
+
+            $shipDeliveryType = (string)($detail['delivery_type'] ?? '');
+            if (!in_array($shipDeliveryType, ['express', 'send', 'fictitious'], true)) {
+                $nestedShipType = (string)(($extraInfo['delivery']['delivery_type'] ?? ''));
+                $shipDeliveryType = in_array($nestedShipType, ['express', 'send', 'fictitious'], true)
+                    ? $nestedShipType
+                    : '';
+            }
+            if ($shipDeliveryType !== '') {
+                $detail['delivery_type'] = $shipDeliveryType;
+                $extraInfo['delivery'] = array_merge($extraInfo['delivery'] ?? [], [
+                    'delivery_type' => $shipDeliveryType,
+                ]);
+            } else {
+                // 未发货：不把下单配送方式写回顶层 delivery_type，避免物流区误判为已快递发货
+                $detail['delivery_type'] = $detail['delivery_type'] ?? '';
+            }
 
             // 前端统一的到店自提/上门服务标识（与中台保持一致计算口径）
             $isPickup = ($detail['shipping_type'] ?? 0) == 2;
