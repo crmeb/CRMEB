@@ -46,7 +46,18 @@ class CenterProductController
             ['limit', 30],
             ['ids', ''],
             ['store_label_id', ''],
+            // 旧版移动端列表页（goods_list/goods_cate/首页/微页专题）仍传 cid/sid/productId/coupon_category_id，
+            // DAO getSearchList 按旧语义处理：cid 含子分类下钻、sid 精确匹配、coupon_category_id 优惠券分类
+            [['cid', 'd'], 0],
+            [['sid', 'd'], 0],
+            ['coupon_category_id', ''],
+            ['productId', ''],
         ]);
+        // 旧参数 productId 与 ids 同义（指定商品跳转），统一并入 ids 处理
+        if (!empty($where['productId'])) {
+            $where['ids'] = $where['productId'];
+        }
+        unset($where['productId']);
         [$page, $limit] = $services->getPageValue();
         // limit 强制整型并设上限，避免异常大分页
         $limit = max(1, min(100, (int)($where['limit'] ?: $limit)));
