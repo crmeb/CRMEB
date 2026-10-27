@@ -31,7 +31,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <div class="active-btn" v-if="goodsList.length > 0">
+      <div class="active-btn" v-if="goods.length > 0">
         <el-button type="primary" v-db-click @click="liveGoods">生成直播商品</el-button>
       </div>
       <div class="table-box" v-if="isShowBox">
