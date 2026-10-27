@@ -122,6 +122,8 @@
 		page: 1,
 		limit: 20,
 		cid: 0,
+		coupon_category_id: '',
+		productId: '',
 	});
 	const price = ref(0);
 	const stock = ref(0);
@@ -144,7 +146,11 @@
 		where.value.cid = options.cid || 0;
 		where.value.coupon_category_id = options.coupon_category_id || '';
 		where.value['sid'] = options.sid || 0;
-		title.value = options.title || '';
+		try {
+			title.value = options.title ? decodeURIComponent(options.title) : '';
+		} catch (e) {
+			title.value = options.title || '';
+		}
 		where.value['keyword'] = options.searchValue || '';
 		where.value['productId'] = options.productId || '';
 		get_product_list();
@@ -445,9 +451,14 @@
 	}
 
 	.productList .list .item .text .money {
+		display: inline-block;
 		font-size: 26rpx;
 		font-weight: bold;
 		margin-top: 8rpx;
+		white-space: nowrap;
+		/* 覆盖偶发全局 .money { flex-direction:column } 污染（如优惠券页未 scoped） */
+		flex-direction: row;
+		align-items: baseline;
 	}
 
 	.productList .list .item .text .money.on {
@@ -455,6 +466,7 @@
 	}
 
 	.productList .list .item .text .money .num {
+		display: inline;
 		font-size: 34rpx;
 	}
 

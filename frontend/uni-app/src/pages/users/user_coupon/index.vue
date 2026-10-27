@@ -122,10 +122,10 @@ function useCoupon(item) {
 	if (navOn.value == 2) return
 	let url = '';
 	if (item.category_id == 0 && item.product_id == '') {
-		url = '/pages/goods/goods_list/index?title=' + i18n.t(`默认`)
+		url = '/pages/goods/goods_list/index?title=' + encodeURIComponent(i18n.t(`默认`))
 	}
 	if (item.category_id != 0) {
-		url = `/pages/goods/goods_list/index?title=${item.coupon_title}&coupon_category_id=${item.category_id}`
+		url = `/pages/goods/goods_list/index?title=${encodeURIComponent(item.coupon_title || '')}&coupon_category_id=${item.category_id}`
 	}
 	if (item.product_id != '') {
 		let arr = item.product_id.split(',');
@@ -133,7 +133,7 @@ function useCoupon(item) {
 		if (num == 1) {
 			url = '/pages/goods_details/index?id=' + item.product_id
 		} else {
-			url = '/pages/goods/goods_list/index?productId=' + item.product_id + '&title=' + i18n.t(`默认`)
+			url = '/pages/goods/goods_list/index?productId=' + item.product_id + '&title=' + encodeURIComponent(i18n.t(`默认`))
 		}
 	}
 	uni.navigateTo({
@@ -180,69 +180,6 @@ function getUseCoupons() {
 }
 </script>
 
-<style>
-	.money {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-	}
-
-	.pic-num {
-		color: #ffffff;
-		font-size: 24rpx;
-	}
-	.coupon-list .item{
-	}
-	.coupon-list .item .text{
-		padding: 14rpx 24rpx;
-	}
-	.coupon-list .item .text .condition {
-		display: flex;
-	}
-
-	.coupon-list .item .text .condition .name {
-		font-size: 24rpx;
-		font-weight: 500;
-		line-height: 44rpx;
-		/* display: flex;
-		align-items: center; */
-	}
-
-	.coupon-list .item .text .condition .pic {
-		width: 30rpx;
-		height: 30rpx;
-		display: block;
-		margin-right: 10rpx;
-		display: inline-block;
-		vertical-align: middle;
-	}
-
-	.condition .line-title {
-		/* width: 70rpx; */
-		height: 36rpx !important;
-		padding: 0 5px;
-		line-height: 32rpx;
-		text-align: center;
-		box-sizing: border-box;
-		background: rgba(255, 247, 247, 1);
-		border: 1px solid var(--view-theme);
-		opacity: 1;
-		border-radius: 20rpx;
-		font-size: 18rpx !important;
-		color: var(--view-theme);
-		margin-right: 12rpx;
-		text-align: center;
-		display: inline-block;
-		vertical-align: middle;
-	}
-
-	.condition .line-title.bg-color-huic {
-		border-color: #BBB !important;
-		color: #bbb !important;
-		background-color: #F5F5F5 !important;
-	}
-</style>
-
 <style lang="scss" scoped>
 	.navbar {
 		position: fixed;
@@ -258,7 +195,7 @@ function getUseCoupons() {
 			border-bottom: 5rpx solid transparent;
 			font-size: 30rpx;
 			color: #999999;
-			
+
 			&.on {
 				border-bottom-color: var(--view-theme);
 				color: #282828;
@@ -268,6 +205,63 @@ function getUseCoupons() {
 
 	.coupon-list {
 		margin-top: 122rpx;
+
+		// 必须写在本页 scoped 内：原先全局 .money { flex-direction:column } 会污染商品列表价格样式
+		.money {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		.pic-num {
+			color: #ffffff;
+			font-size: 24rpx;
+		}
+
+		.item .text {
+			padding: 14rpx 24rpx;
+
+			.condition {
+				display: flex;
+
+				.name {
+					font-size: 24rpx;
+					font-weight: 500;
+					line-height: 44rpx;
+				}
+
+				.pic {
+					width: 30rpx;
+					height: 30rpx;
+					margin-right: 10rpx;
+					display: inline-block;
+					vertical-align: middle;
+				}
+			}
+		}
+	}
+
+	.condition .line-title {
+		height: 36rpx !important;
+		padding: 0 5px;
+		line-height: 32rpx;
+		text-align: center;
+		box-sizing: border-box;
+		background: rgba(255, 247, 247, 1);
+		border: 1px solid var(--view-theme);
+		opacity: 1;
+		border-radius: 20rpx;
+		font-size: 18rpx !important;
+		color: var(--view-theme);
+		margin-right: 12rpx;
+		display: inline-block;
+		vertical-align: middle;
+
+		&.bg-color-huic {
+			border-color: #bbb !important;
+			color: #bbb !important;
+			background-color: #f5f5f5 !important;
+		}
 	}
 
 	.noCommodity {
