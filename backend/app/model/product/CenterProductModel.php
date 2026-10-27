@@ -238,15 +238,34 @@ class CenterProductModel extends BaseModel
      */
     public function searchCateIdAttr($query, $value)
     {
-        if ($value) {
-            if (is_array($value)) {
-                $query->whereIn('id', function ($query) use ($value) {
-                    $query->name('store_product_cate')->where('cate_id', 'IN', $value)->whereOr('cate_pid', 'IN', $value)->field('product_id')->select();
-                });
-            } else {
-                $query->whereFindInSet('cate_id', $value);
-            }
+        if (!$value) {
+            return;
         }
+        $cateIds = toIntArray($value);
+        if (!$cateIds) {
+            return;
+        }
+        // 展开传入分类及其子分类，再按商品 cate_id 匹配（与列表/用券逻辑一致）
+        try {
+            $categoryRows = app()->make(\app\dao\product\product\StoreCategoryDao::class)->getAllById($cateIds) ?: [];
+            $expanded = array_values(array_unique(array_map('intval', array_column($categoryRows, 'id'))));
+            if ($expanded) {
+                $cateIds = $expanded;
+            }
+        } catch (\Throwable $e) {
+            // 分类服务不可用时回退为原始 id
+        }
+        $query->where(function ($q) use ($cateIds) {
+            foreach ($cateIds as $index => $cid) {
+                if ($index === 0) {
+                    $q->whereFindInSet('cate_id', $cid);
+                } else {
+                    $q->whereOr(function ($sub) use ($cid) {
+                        $sub->whereFindInSet('cate_id', $cid);
+                    });
+                }
+            }
+        });
     }
 
     /**

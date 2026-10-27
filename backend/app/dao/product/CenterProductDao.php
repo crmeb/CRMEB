@@ -40,23 +40,11 @@ class CenterProductDao extends BaseDao implements ProductQueryInterface
     public function getCount(array $where)
     {
         return $this->search($where, false)->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
-            $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->where('cate_id', is_array($where['sid']) ? 'in' : '=', $where['sid'])->field('product_id')->select();
-            });
+            $this->applyCategoryFilter($query, $where['sid'], false);
         })->when(isset($where['cid']) && $where['cid'], function ($query) use ($where) {
-            $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->whereIn('cate_id', function ($query) use ($where) {
-                    $query->name('store_category')->where('pid', is_array($where['cid']) ? 'in' : '=', $where['cid'])
-                        ->whereOr('id', is_array($where['cid']) ? 'in' : '=', $where['cid'])->field('id')->select();
-                })->field('product_id')->select();
-            });
+            $this->applyCategoryFilter($query, $where['cid'], true);
         })->when(!empty($where['coupon_category_id']), function ($query) use ($where) {
-            $where['coupon_category_id'] = toIntArray($where['coupon_category_id']);
-            $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->whereIn('cate_id', function ($query) use ($where) {
-                    $query->name('store_category')->whereIn('pid', $where['coupon_category_id'])->field('id')->select();
-                })->whereOr('cate_id', 'in', $where['coupon_category_id'])->field('product_id')->select();
-            });
+            $this->applyCategoryFilter($query, $where['coupon_category_id'], true);
         })->when(isset($where['ids']) && $where['ids'], function ($query) use ($where) {
             if ((isset($where['priceOrder']) && $where['priceOrder'] !== '') || (isset($where['salesOrder']) && $where['salesOrder'] !== '')) {
                 $query->whereIn('id', $where['ids']);
@@ -231,23 +219,11 @@ class CenterProductDao extends BaseDao implements ProductQueryInterface
         return $this->search($where, false)->with($with)->when($page != 0 && $limit != 0, function ($query) use ($page, $limit) {
             $query->page($page, $limit);
         })->when(isset($where['sid']) && $where['sid'], function ($query) use ($where) {
-            $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->where('cate_id', is_array($where['sid']) ? 'in' : '=', $where['sid'])->field('product_id')->select();
-            });
+            $this->applyCategoryFilter($query, $where['sid'], false);
         })->when(isset($where['cid']) && $where['cid'], function ($query) use ($where) {
-            $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->whereIn('cate_id', function ($query) use ($where) {
-                    $query->name('store_category')->where('pid', is_array($where['cid']) ? 'in' : '=', $where['cid'])
-                        ->whereOr('id', is_array($where['cid']) ? 'in' : '=', $where['cid'])->field('id')->select();
-                })->field('product_id')->select();
-            });
+            $this->applyCategoryFilter($query, $where['cid'], true);
         })->when(!empty($where['coupon_category_id']), function ($query) use ($where) {
-            $where['coupon_category_id'] = toIntArray($where['coupon_category_id']);
-            $query->whereIn('id', function ($query) use ($where) {
-                $query->name('store_product_cate')->whereIn('cate_id', function ($query) use ($where) {
-                    $query->name('store_category')->whereIn('pid', $where['coupon_category_id'])->field('id')->select();
-                })->whereOr('cate_id', 'in', $where['coupon_category_id'])->field('product_id')->select();
-            });
+            $this->applyCategoryFilter($query, $where['coupon_category_id'], true);
         })->when(isset($where['ids']) && $where['ids'], function ($query) use ($where) {
             if ((isset($where['priceOrder']) && $where['priceOrder'] !== '') || (isset($where['salesOrder']) && $where['salesOrder'] !== '')) {
                 $query->whereIn('id', $where['ids']);
@@ -258,22 +234,12 @@ class CenterProductDao extends BaseDao implements ProductQueryInterface
             $query->whereNotIn('id', function ($query) {
                 $query->name('live_goods')->where('is_del', 0)->where('audit_status', '<>', 3)->field('product_id')->select();
             });
-        })->when(isset($where['priceOrder']) && $where['priceOrder'] !== '', function ($query) use ($where) {
-            if ($where['priceOrder'] === 'desc') {
-                $query->order("price desc");
-            } else {
-                $query->order("price asc");
-            }
-        })->when(isset($where['newsOrder']) && $where['newsOrder'] !== '', function ($query) use ($where) {
-            if ($where['newsOrder'] === 'news') {
-                $query->order("id desc");
-            }
-        })->when(isset($where['salesOrder']) && $where['salesOrder'] !== '', function ($query) use ($where) {
-            if ($where['salesOrder'] === 'desc') {
-                $query->order("sales desc");
-            } else {
-                $query->order("sales asc");
-            }
+        })->when(isset($where['priceOrder']) && in_array($where['priceOrder'], ['asc', 'desc'], true), function ($query) use ($where) {
+            $query->order('price ' . $where['priceOrder']);
+        })->when(isset($where['newsOrder']) && $where['newsOrder'] === 'news', function ($query) {
+            $query->order('id desc');
+        })->when(isset($where['salesOrder']) && in_array($where['salesOrder'], ['asc', 'desc'], true), function ($query) use ($where) {
+            $query->order('sales ' . $where['salesOrder']);
         })->when(!isset($where['ids']), function ($query) use ($where) {
             if (isset($where['timeOrder']) && $where['timeOrder'] == 1) {
                 $query->order('id desc');
@@ -282,10 +248,15 @@ class CenterProductDao extends BaseDao implements ProductQueryInterface
             }
         })->when(!$page && $limit, function ($query) use ($limit) {
             $query->limit($limit);
-        })->when(isset($where['store_label_id']), function ($query) use ($where) {
-            $query->where(function ($query) use ($where) {
-                foreach ($where['store_label_id'] as $value) {
-                    $query->whereOr('FIND_IN_SET(:value, label_list)', ['value' => $value]);
+        })->when(!empty($where['store_label_id']), function ($query) use ($where) {
+            $labelIds = toIntArray($where['store_label_id']);
+            if (!$labelIds) {
+                return;
+            }
+            $query->where(function ($query) use ($labelIds) {
+                foreach ($labelIds as $index => $value) {
+                    // 避免循环复用同名绑定导致 PDO 只取最后一次
+                    $query->whereOr('FIND_IN_SET(' . (int)$value . ', label_list)');
                 }
             });
         })->order('sort_order desc')->field($field)->select()->toArray();
@@ -488,5 +459,42 @@ class CenterProductDao extends BaseDao implements ProductQueryInterface
             })->order($order)->limit($limit)->select()->toArray();
         }
         return $list;
+    }
+
+    /**
+     * 按分类筛选商品（与下单品类券校验一致：商品表 cate_id）
+     * @param mixed $query
+     * @param mixed $categoryId 分类 id 或逗号串/数组
+     * @param bool $expandChildren true=展开子分类（一级/品类券）；false=仅匹配自身（二级 sid）
+     * @return void
+     */
+    protected function applyCategoryFilter($query, $categoryId, bool $expandChildren = true): void
+    {
+        $cateIds = toIntArray($categoryId);
+        if (!$cateIds) {
+            $query->whereRaw('1 = 0');
+            return;
+        }
+        if ($expandChildren) {
+            /** @var \app\dao\product\product\StoreCategoryDao $categoryDao */
+            $categoryDao = app()->make(\app\dao\product\product\StoreCategoryDao::class);
+            $categoryRows = $categoryDao->getAllById($cateIds) ?: [];
+            $cateIds = array_values(array_unique(array_map('intval', array_column($categoryRows, 'id'))));
+            if (!$cateIds) {
+                $query->whereRaw('1 = 0');
+                return;
+            }
+        }
+        $query->where(function ($q) use ($cateIds) {
+            foreach ($cateIds as $index => $cid) {
+                if ($index === 0) {
+                    $q->whereFindInSet('cate_id', $cid);
+                } else {
+                    $q->whereOr(function ($sub) use ($cid) {
+                        $sub->whereFindInSet('cate_id', $cid);
+                    });
+                }
+            }
+        });
     }
 }

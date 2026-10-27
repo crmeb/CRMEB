@@ -30,23 +30,57 @@ class CenterProductController
      */
     public function productList(Request $request, CenterProductServices $services)
     {
+        /** @var \app\services\product\product\StoreCategoryServices $categoryServices */
+        $categoryServices = app()->make(\app\services\product\product\StoreCategoryServices::class);
         $where = $request->getMore([
+            [['sid', 'd'], 0],
+            [['cid', 'd'], 0],
             ['keyword', '', '', 'store_name'],
             ['priceOrder', ''],
             ['salesOrder', ''],
+            [['news', 'd'], 0],
+            [['selectId', 'd'], 0],
+            ['productId', ''],
+            ['coupon_category_id', ''],
             ['cate_id', ''],
             ['limit', 30],
             ['ids', ''],
             ['store_label_id', ''],
         ]);
         [$page, $limit] = $services->getPageValue();
-        if (!empty($where['limit'])) {
-            $limit = (int)$where['limit'];
+        // limit 强制整型并设上限，避免异常大分页
+        $limit = max(1, min(100, (int)($where['limit'] ?: $limit)));
+        unset($where['limit']);
+        // 排序字段白名单：只允许 asc/desc，其余清空（防 ORDER BY 注入）
+        foreach (['priceOrder', 'salesOrder'] as $orderKey) {
+            $orderVal = strtolower(trim((string)($where[$orderKey] ?? '')));
+            $where[$orderKey] = in_array($orderVal, ['asc', 'desc'], true) ? $orderVal : '';
+            if ($where[$orderKey] === '') {
+                unset($where[$orderKey]);
+            }
         }
-        // DIY 商品列表/商品选项卡「指定商品」「商品标签」：ids/store_label_id 逗号串转数组（DAO 按数组 whereIn/FIND_IN_SET 处理，ids 需按顺序排序）
+        // 分类页 selectId：有父级视为二级，否则一级
+        if ($where['selectId'] && (!$where['sid'] || !$where['cid'])) {
+            if ($categoryServices->value(['id' => $where['selectId']], 'pid')) {
+                $where['sid'] = $where['selectId'];
+            } else {
+                $where['cid'] = $where['selectId'];
+            }
+        }
+        unset($where['selectId']);
+        // 品类/商品券落地页：productId → ids
+        if (!empty($where['productId'])) {
+            $where['ids'] = $where['productId'];
+        }
+        unset($where['productId']);
+        // 新品排序（前端 news=1）
+        if (!empty($where['news'])) {
+            $where['newsOrder'] = 'news';
+        }
+        unset($where['news']);
+        // DIY「指定商品」「商品标签」：逗号串转整型数组
         foreach (['ids', 'store_label_id'] as $idKey) {
-            $idValue = is_array($where[$idKey]) ? $where[$idKey] : explode(',', (string)$where[$idKey]);
-            $where[$idKey] = array_values(array_filter(array_map('intval', $idValue)));
+            $where[$idKey] = toIntArray($where[$idKey] ?? '');
             if (empty($where[$idKey])) {
                 unset($where[$idKey]);
             }
@@ -55,13 +89,27 @@ class CenterProductController
             // 指定商品按已选数量返回，不受默认分页条数限制
             $limit = max($limit, count($where['ids']));
         }
-        if ($where['cate_id'] !== '') {
-            $where['cate_id'] = explode(',', $where['cate_id']);
-            foreach ($where['cate_id'] as $keys => &$items) {
-                $where['cate_id'][$keys] = (int)$items;
+        // 分类 / 品类券：统一整型化
+        $where['cate_id'] = toIntArray($where['cate_id'] ?? '');
+        $where['coupon_category_id'] = toIntArray($where['coupon_category_id'] ?? '');
+        if (empty($where['cate_id'])) {
+            unset($where['cate_id']);
+        }
+        if (empty($where['coupon_category_id'])) {
+            unset($where['coupon_category_id']);
+        }
+        if (empty($where['sid'])) {
+            unset($where['sid']);
+        }
+        if (empty($where['cid'])) {
+            unset($where['cid']);
+        }
+        // 关键词截断，降低超长 LIKE 压力
+        if (isset($where['store_name']) && is_string($where['store_name'])) {
+            $where['store_name'] = mb_substr(trim($where['store_name']), 0, 50);
+            if ($where['store_name'] === '') {
+                unset($where['store_name']);
             }
-        } else {
-            $where['cate_id'] = [];
         }
         $list = $services->getUserList($where, $page, $limit, (int)$request->uid());
 
