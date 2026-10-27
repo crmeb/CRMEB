@@ -16,7 +16,7 @@
     </view>
     <!-- #endif -->
     <view class="merchant-msg">
-      <img :src="configData.wap_login_logo" />
+      <image class="logo" :src="configData.wap_login_logo" mode="aspectFit" />
       <view class="name">
         {{ configData.site_name }}
       </view>
@@ -628,7 +628,8 @@ page {
     position: relative;
 
     /* #endif */
-    img {
+    /* 用 image + class，避免小程序把 img 编译成 image 后尺寸样式丢失 */
+    .logo {
       width: 152rpx;
       height: 152rpx;
       border-radius: 50%;
