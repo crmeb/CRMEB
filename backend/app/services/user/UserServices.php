@@ -800,7 +800,7 @@ class UserServices extends BaseService
             $f[] = Form::radio('integration_status', '修改积分', 1)->options([['value' => 1, 'label' => '增加'], ['value' => 2, 'label' => '减少']]);
             $f[] = Form::number('integration', '积分', 0)->min(0)->precision(0)->max(999999);
         }
-        $f[] = Form::input('mark', '备注', '')->type('textarea')->required();
+        $f[] = Form::input('mark', '备注', '')->type('textarea');
         return create_form($type == 'money' ? '修改余额' : '修改积分', $f, Url::buildUrl('/user/update_other/' . $id), 'PUT');
     }
 
