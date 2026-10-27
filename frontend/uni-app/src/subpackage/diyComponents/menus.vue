@@ -189,8 +189,10 @@
                         </view>
                         <view
                           class="fs-24"
-                          :class="{ 'mt-10': listStyle === 0 }"
-                          :style="[textColor]"
+                          :style="[
+                            textColor,
+                            { marginTop: listStyle === 0 ? '20rpx' : '0' },
+                          ]"
                           v-if="navDisplayStyle !== 1"
                           >{{ itemn.info[0].value }}</view
                         >
@@ -236,8 +238,10 @@
                           </view>
                           <view
                             class="fs-24"
-                            :class="{ 'mt-10': listStyle === 0 }"
-                            :style="[textColor]"
+                            :style="[
+                              textColor,
+                              { marginTop: listStyle === 0 ? '20rpx' : '0' },
+                            ]"
                             v-if="navDisplayStyle !== 1"
                             >{{ itemn.info[0].value }}</view
                           >
@@ -299,8 +303,10 @@
                   </view>
                   <view
                     class="fs-24"
-                    :class="{ 'mt-10': listStyle === 0 }"
-                    :style="[textColor]"
+                    :style="[
+                      textColor,
+                      { marginTop: listStyle === 0 ? '20rpx' : '0' },
+                    ]"
                     v-if="navDisplayStyle !== 1"
                     >{{ item.info[0].value }}</view
                   >
@@ -347,8 +353,10 @@
                     </view>
                     <view
                       class="fs-24"
-                      :class="{ 'mt-10': listStyle === 0 }"
-                      :style="[textColor]"
+                      :style="[
+                        textColor,
+                        { marginTop: listStyle === 0 ? '20rpx' : '0' },
+                      ]"
                       v-if="navDisplayStyle !== 1"
                       >{{ item.info[0].value }}</view
                     >
@@ -411,8 +419,26 @@ const number = computed(() => {
   return props.dataConfig.number.tabVal;
 });
 const configData = computed(() => {
+  const data = props.dataConfig;
   return {
-    ...props.dataConfig,
+    ...data,
+    // 旧数据迁移：后台预览 setConfig 对缺失的 paddingConfig/marginConfig 直接用
+    // defaultConfig 补全（上内边距 10、外边距 0），移动端按同口径回填，
+    // 避免旧数据下移动端上下间距比后台 diy 展示小
+    paddingConfig: data.paddingConfig || {
+      isAll: true,
+      val: 0,
+      min: 0,
+      max: 100,
+      valList: [{ val: 10 }, { val: 0 }, { val: 0 }, { val: 0 }],
+    },
+    marginConfig: data.marginConfig || {
+      isAll: false,
+      val: 0,
+      min: 0,
+      max: 100,
+      valList: [{ val: 0 }, { val: 0 }, { val: 0 }, { val: 0 }],
+    },
   };
 });
 const menus = computed(() => {
@@ -585,7 +611,11 @@ const gridContainerStyle = computed(() => {
       rowGap: gridItemStyle.value.itemPaddingTop * 2 + "rpx",
     };
   } else {
-    return gridColumns.value;
+    return {
+      ...gridColumns.value,
+      // 排列/图文展示换行行距对齐后台预览条目 margin-bottom: 12px
+      rowGap: 12 * 2 + "rpx",
+    };
   }
 });
 const gridItemContentStyle = computed(() => {
@@ -729,7 +759,7 @@ function goMenuPage(url) {
   display: grid;
   grid-template-rows: auto;
   width: 100%;
-  padding: 0 0 20rpx 0;
+  padding: 0 0 24rpx 0;
 }
 .swiper {
   z-index: 20;
