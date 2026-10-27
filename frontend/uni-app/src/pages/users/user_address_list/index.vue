@@ -368,6 +368,22 @@ function addAddress() {
 			(from.value === 'order_create' ? '&from=order_create' : '')
 	})
 }
+/**
+ * 是否领取礼物选地址链路（is_gift=2）
+ * 与正常购买 / 下单引擎回跳互斥，避免误进 center/order/create
+ */
+function isGiftReceiveFlow() {
+	return Number(is_gift.value) === 2 && !!orderId.value;
+}
+
+/** 回跳礼物确认页并带回选中地址 */
+function redirectGiftConfirm(addressId) {
+	uni.redirectTo({
+		url: '/pages/goods/order_confirm/index?order_id=' + orderId.value +
+			'&is_gift=2&addressId=' + addressId + '&is_address=1'
+	});
+}
+
 function goOrder(id) {
 	let cartIdVal = '';
 	let pinkIdVal = '';
@@ -377,6 +393,11 @@ function goOrder(id) {
 		if (!id) return;
 		uni.$emit('orderCreateAddressSelect', { addressId: id });
 		uni.navigateBack();
+		return;
+	}
+	// 领取礼物：回到礼物确认页，不走正常购买下单页
+	if (isGiftReceiveFlow() && id) {
+		redirectGiftConfirm(id);
 		return;
 	}
 	if (cartId.value && id) {

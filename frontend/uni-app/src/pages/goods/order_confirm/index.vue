@@ -567,7 +567,8 @@
 			couponId.value = options.couponId || 0;
 			noCoupon.value = Number(options.noCoupon) || 0;
 			pinkId.value = options.pinkId ? parseInt(options.pinkId) : 0;
-			addressId.value = options.addressId || 0;
+			// 地址列表回跳可能带 addressId 或 address_id，两种都认
+			addressId.value = options.addressId || options.address_id || 0;
 			cartId.value = options.cartId;
 			orderId.value = options.order_id || 0
 			is_address.value = options.is_address ? true : false;

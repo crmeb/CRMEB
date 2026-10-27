@@ -151,6 +151,34 @@ function backToOrderCreate(addressId) {
 	uni.$emit('orderCreateAddressSelect', { addressId: addressId });
 	uni.navigateBack({ delta: 2 });
 }
+
+/**
+ * 是否领取礼物选地址链路（is_gift=2）
+ * 与正常购买 / 下单引擎回跳互斥，避免误进 center/order/create
+ */
+function isGiftReceiveFlow() {
+	return Number(is_gift.value) === 2 && !!orderId.value;
+}
+
+/** 回跳礼物确认页并带回新建/编辑后的地址 */
+function redirectGiftConfirm(addressId) {
+	uni.redirectTo({
+		url: '/pages/goods/order_confirm/index?order_id=' + orderId.value +
+			'&is_gift=2&addressId=' + addressId + '&is_address=1'
+	});
+}
+
+/**
+ * 保存地址后的统一回跳：礼物领取 → 礼物确认页；有 cartId → 正常下单页；其余原逻辑
+ * @param {number|string} addressId
+ */
+function afterAddressSaved(addressId) {
+	if (isGiftReceiveFlow() && addressId) {
+		redirectGiftConfirm(addressId);
+		return true;
+	}
+	return false;
+}
 // #ifdef APP-PLUS
 // 获取选择的地区
 function handleGetRegion(regionData) {
@@ -307,6 +335,10 @@ function getWxAddress() {
 						type: 1,
 					}).then(res => {
 						setTimeout(function() {
+							const savedId = id.value ? id.value : res.data.id;
+							if (afterAddressSaved(savedId)) {
+								return;
+							}
 							if (cartId.value) {
 								let cartIdVal = cartId.value;
 								let pinkIdVal = pinkId.value;
@@ -317,11 +349,7 @@ function getWxAddress() {
 								uni.navigateTo({
 									url: '/pages/center/order/create/index?cartId=' +
 										cartIdVal +
-										'&address_id=' + (
-											id.value ? id
-											.value :
-											res.data
-											.id) +
+										'&address_id=' + savedId +
 										'&pinkId=' +
 										pinkIdVal +
 										'&couponId=' +
@@ -334,7 +362,7 @@ function getWxAddress() {
 										'&order_id=' + orderId.value
 									});
 								} else if (from.value === 'order_create') {
-									backToOrderCreate(id.value ? id.value : res.data.id);
+									backToOrderCreate(savedId);
 								} else {
 									uni.navigateBack({
 										delta: 1
@@ -401,6 +429,10 @@ function getAddress() {
 					title: i18n.t(`添加成功`),
 					icon: 'success'
 				}, () => {
+					const savedId = id.value ? id.value : res.data.id;
+					if (afterAddressSaved(savedId)) {
+						return;
+					}
 					if (cartId.value) {
 						let cartIdVal = cartId.value;
 						let pinkIdVal = pinkId.value;
@@ -410,15 +442,13 @@ function getAddress() {
 						couponId.value = '';
 						uni.navigateTo({
 							url: '/pages/center/order/create/index?cartId=' +
-								cartIdVal + '&address_id=' + (id.value ? id.value :
-									res.data
-									.id) + '&pinkId=' + pinkIdVal +
+								cartIdVal + '&address_id=' + savedId + '&pinkId=' + pinkIdVal +
 								'&couponId=' +
 								couponIdVal + '&new=' + news.value + '&is_gift=' + is_gift.value +
 								'&order_id=' + orderId.value
 							});
 						} else if (from.value === 'order_create') {
-							backToOrderCreate(id.value ? id.value : res.data.id);
+							backToOrderCreate(savedId);
 						} else {
 							uni.navigateTo({
 								url: '/pages/users/user_address_list/index'
@@ -482,6 +512,10 @@ function formSubmit(e) {
 				icon: 'success'
 			});
 		setTimeout(function() {
+			const savedId = id.value ? id.value : res.data.id;
+			if (afterAddressSaved(savedId)) {
+				return;
+			}
 			if (cartId.value) {
 				let cartIdVal = cartId.value;
 				let pinkIdVal = pinkId.value;
@@ -491,15 +525,14 @@ function formSubmit(e) {
 				couponId.value = '';
 				uni.navigateTo({
 					url: '/pages/center/order/create/index?new=' + news.value +
-						'&cartId=' + cartIdVal + '&address_id=' + (id.value ? id.value :
-							res.data.id) + '&pinkId=' + pinkIdVal + '&couponId=' +
+						'&cartId=' + cartIdVal + '&address_id=' + savedId + '&pinkId=' + pinkIdVal + '&couponId=' +
 						couponIdVal +
 				'&noCoupon=' + noCoupon
 							.value + '&is_gift=' + is_gift.value +
 							'&order_id=' + orderId.value
 					});
 				} else if (from.value === 'order_create') {
-					backToOrderCreate(id.value ? id.value : res.data.id);
+					backToOrderCreate(savedId);
 				} else {
 				// #ifdef H5
 				return history.back();

@@ -54,8 +54,9 @@ class OrderCenterUserServices extends OrderCenterServices
     /**
      * 送礼订单详情按查看者身份裁剪渲染配置
      *
-     * - 购买者：隐藏收货信息、物流轨迹，以及确认收货/申请退款/查看物流按钮；
-     * - 领取人：只读视角，保留收货信息、物流轨迹与确认收货/查看物流按钮，
+     * - 购买者（送礼人）：隐藏收货信息、物流轨迹、售后进度，以及确认收货/申请退款/
+     *   查看物流/去评价/申请售后/查看售后按钮（履约与评价由领取人侧处理）；
+     * - 领取人：只读视角，保留收货信息、物流轨迹与确认收货/查看物流/去评价按钮，
      *   隐藏金额/支付/发票等下单人信息。
      * 非送礼订单不做任何处理。
      *
@@ -90,19 +91,28 @@ class OrderCenterUserServices extends OrderCenterServices
             // 领取人：隐藏金额/支付/发票与下单人权益入口，保留收货信息、物流轨迹
             $sections = array_values(array_filter(
                 $sections,
-                fn($section) => !in_array($section['key'] ?? '', ['pricing', 'payment', 'invoice', 'coupon_gift', 'points_reward'], true)
+                fn($section) => !in_array($section['key'] ?? '', ['pricing', 'invoice', 'coupon_gift', 'points_reward'], true)
             ));
             $result['page_config']['extensions']['viewer_role'] = 'gift_receiver';
+            // 领取人不可开票（非付款人）；可评价/收货/看物流
             $visibleActions = ['confirmReceive', 'viewLogistics', 'goComment'];
             $hiddenActions = [];
         } else {
-            // 购买者：不展示收货信息与物流轨迹，隐藏确认收货/申请退款/查看物流
+            // 送礼人：不展示收货/物流/售后进度；隐藏履约、评价与售后入口（开票仍保留）
             $sections = array_values(array_filter(
                 $sections,
-                fn($section) => !in_array($section['key'] ?? '', ['delivery', 'logistics'], true)
+                fn($section) => !in_array($section['key'] ?? '', ['delivery', 'logistics', 'after_sale'], true)
             ));
+            $result['page_config']['extensions']['viewer_role'] = 'gift_sender';
             $visibleActions = [];
-            $hiddenActions = ['confirmReceive', 'applyRefund', 'viewLogistics'];
+            $hiddenActions = [
+                'confirmReceive',
+                'applyRefund',
+                'viewLogistics',
+                'goComment',
+                'applyAfterSale',
+                'viewAfterSale',
+            ];
         }
 
         // 按查看者身份处理礼物信息与底部操作按钮
@@ -224,12 +234,22 @@ class OrderCenterUserServices extends OrderCenterServices
             $itemExtra = $item['extra_info'] ?? [];
             $item['is_gift'] = (!empty($itemExtra['gift']) || isset($itemExtra['gift_mark'])) ? 1 : 0;
             $item['gift_price'] = $item['gift_price'] ?? '0.00';
-            // 礼物领取人视角（非下单人）：只读列表，仅保留查看物流，避免出现退款/取消/删除等下单人操作
+            // 礼物领取人视角（非下单人）：只读列表，仅保留收货/物流/评价
             $item['is_gift_receiver'] = ((int)($item['uid'] ?? 0) !== $uid && (int)($item['gift_uid'] ?? 0) === $uid) ? 1 : 0;
             if ($item['is_gift_receiver']) {
                 $item['order_buttons'] = array_values(array_filter(
                     $item['order_buttons'] ?? [],
                     fn($button) => in_array($button['action'] ?? '', ['confirmReceive', 'viewLogistics', 'goComment'], true)
+                ));
+            } elseif ((int)($item['is_gift'] ?? 0) === 1) {
+                // 送礼人列表：与详情策略一致，不展示评价与售后（含退款）及履约相关按钮
+                $item['order_buttons'] = array_values(array_filter(
+                    $item['order_buttons'] ?? [],
+                    fn($button) => !in_array(
+                        $button['action'] ?? '',
+                        ['confirmReceive', 'applyRefund', 'viewLogistics', 'goComment', 'applyAfterSale', 'viewAfterSale'],
+                        true
+                    )
                 ));
             }
         }
