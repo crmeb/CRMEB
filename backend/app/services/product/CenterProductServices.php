@@ -840,10 +840,13 @@ class CenterProductServices extends BaseService
         $reply = null;
         $replyCount = 0;
         $replyChance = 0;
+        $replyService = app()->make(\app\services\product\product\StoreProductReplyServices::class);
+        // 统计与推荐评价拆开：推荐评价失败不应拖垮数量/好评率
         try {
-            $replyService = app()->make(\app\services\product\product\StoreProductReplyServices::class);
-            $reply = get_thumb_water($replyService->getRecProductReply($id), 'big', ['pics']);
             [$replyCount, $goodReply, $replyChance] = $replyService->getProductReplyData($id);
+        } catch (\Throwable $e) {}
+        try {
+            $reply = get_thumb_water($replyService->getRecProductReply($id), 'big', ['pics']);
         } catch (\Throwable $e) {}
 
         // ========== 9. 优惠券 ==========

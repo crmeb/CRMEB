@@ -54,8 +54,9 @@ class StoreProductReplyDao extends BaseDao
      */
     public function getProductReply(int $productId)
     {
+        // cartInfo 关联已随 eb_store_order_cart_info 删除，SKU 由本表 suk 承载，仅预加载 userInfo
         return $this->search(['product_id' => $productId, 'is_del' => 0, 'status' => 1])
-            ->with(['cartInfo', 'userInfo'])
+            ->with(['userInfo'])
             ->order('add_time DESC,product_score DESC,service_score DESC,add_time DESC')
             ->find();
     }

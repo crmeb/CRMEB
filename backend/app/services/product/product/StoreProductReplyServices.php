@@ -246,17 +246,16 @@ class StoreProductReplyServices extends BaseService
 
         if ($res) {
             $res = $res->toArray();
-            if ($res['suk'] === '') {
-                $res['suk'] = isset($res['cart_info']['productInfo']['attrInfo']) ? $res['cart_info']['productInfo']['attrInfo']['suk'] : '';
-            }
+            // SKU 以评价表 suk 为准（旧 cartInfo 关联已删除）
+            $res['suk'] = (string)($res['suk'] ?? '');
             $res['nickname'] = anonymity($res['nickname']);
-            $res['merchant_reply_time'] = date('Y-m-d H:i', $res['merchant_reply_time']);
+            $replyTime = (int)($res['merchant_reply_time'] ?? 0);
+            $res['merchant_reply_time'] = $replyTime > 0 ? date('Y-m-d H:i', $replyTime) : '';
             $res['add_time'] = time_tran($res['add_time']);
-            $res['star'] = bcadd($res['product_score'], $res['service_score'], 2);
+            $res['star'] = bcadd((string)$res['product_score'], (string)$res['service_score'], 2);
             $res['star'] = bcdiv($res['star'], '2', 0);
             $res['comment'] = $res['comment'] ?: '此用户没有填写评价';
             $res['pics'] = is_string($res['pics']) ? json_decode($res['pics'], true) : $res['pics'];
-            unset($res['cartInfo']);
         }
         return $res;
     }
