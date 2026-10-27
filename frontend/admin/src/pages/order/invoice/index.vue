@@ -83,11 +83,7 @@
         </el-table-column>
         <el-table-column label="订单状态" min-width="130">
           <template #default="scope">
-            <div v-if="scope.row.status === 0">未发货</div>
-            <div v-else-if="scope.row.status === 1">待收货</div>
-            <div v-else-if="scope.row.status === 2">待评价</div>
-            <div v-else-if="scope.row.status === 3">已完成</div>
-            <div v-else-if="scope.row.status === -2">已退款</div>
+            <el-tag :type="getOrderStatusClass(scope.row)">{{ getOrderStatusLabel(scope.row) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="300">
@@ -131,8 +127,8 @@
               >
               <el-divider v-if="scope.row.is_invoice !== 1 && scope.row.refund_status == 0" direction="vertical" />
             </template>
-            <a v-if="scope.row.status != -2" v-db-click @click="edit(scope.row)">操作</a>
-            <el-divider v-if="scope.row.status != -2" direction="vertical" />
+            <a v-if="!isRefundedOrder(scope.row)" v-db-click @click="edit(scope.row)">操作</a>
+            <el-divider v-if="!isRefundedOrder(scope.row)" direction="vertical" />
             <a v-db-click @click="orderInfo(scope.row.id)">订单信息</a>
           </template>
         </el-table-column>
@@ -331,6 +327,77 @@ const orderData = ref({
 });
 const orderId = ref(0);
 const invoiceId = ref(0);
+
+/** 中台统一状态码（有业务子状态时不叠展示「待处理」等） */
+const CENTER_STATUS_CODES = [
+  'pending_payment',
+  'processing',
+  'pending_review',
+  'completed',
+  'canceled',
+  'after_sale',
+  'refunding',
+  'refunded',
+  'deleted',
+];
+
+/** 与订单中台列表 statusCodeOptions 同口径 */
+const ORDER_STATUS_OPTIONS = [
+  { key: 'pending_payment', label: '待支付' },
+  { key: 'processing', label: '待处理' },
+  { key: 'pending_review', label: '待评价' },
+  { key: 'completed', label: '已完成' },
+  { key: 'canceled', label: '已取消' },
+  { key: 'after_sale', label: '售后中' },
+  { key: 'refunding', label: '退款中' },
+  { key: 'refunded', label: '已退款' },
+  { key: 'deleted', label: '已删除' },
+];
+
+function getBusinessStatusText(row) {
+  const bs = row?.business_status;
+  if (!bs || typeof bs !== 'object') return '';
+  const text = String(bs.label || bs.text || '').trim();
+  if (!text) return '';
+  const code = String(bs.code || '');
+  const genericTexts = ORDER_STATUS_OPTIONS.map((o) => o.label).concat(['进行中']);
+  // 待发货/待收货等业务文案优先；中台统一码快照（待处理/进行中）忽略
+  if (!genericTexts.includes(text)) return text;
+  if (code && !CENTER_STATUS_CODES.includes(code)) return text;
+  return '';
+}
+
+function getOrderStatusLabel(row) {
+  if (row && Number(row.is_del) === 1) return '已删除';
+  // 后端已按源订单实时推导 status_text（待收货/待发货优先）
+  if (row?.status_text) return row.status_text;
+  const businessText = getBusinessStatusText(row);
+  if (businessText) return businessText;
+  const code = row?.status_code;
+  const item = ORDER_STATUS_OPTIONS.find((opt) => opt.key === code);
+  return item ? item.label : code || '--';
+}
+
+function getOrderStatusClass(row) {
+  if (row && Number(row.is_del) === 1) return 'danger';
+  if (getBusinessStatusText(row)) return 'primary';
+  const map = {
+    pending_payment: 'warning',
+    processing: 'primary',
+    pending_review: 'success',
+    completed: 'success',
+    canceled: 'danger',
+    after_sale: 'warning',
+    refunding: 'warning',
+    refunded: 'info',
+    deleted: 'danger',
+  };
+  return map[row?.status_code] || 'info';
+}
+
+function isRefundedOrder(row) {
+  return row?.status_code === 'refunded' || Number(row?.status) === -2;
+}
 
 // created
 getTabs();
@@ -540,5 +607,9 @@ function onClickTab() {
 }
 :deep(.order-detail-drawer .el-drawer__body) {
   padding: 20px 0 !important;
+}
+.business-status {
+  font-size: 12px;
+  color: #999;
 }
 </style>

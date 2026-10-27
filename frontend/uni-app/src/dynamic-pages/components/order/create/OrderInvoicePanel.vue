@@ -107,8 +107,8 @@ const props = defineProps({
   },
   /** 当前选中的抬头 ID（字符串） */
   checked: { type: String, default: '' },
-  /** 是否启用专用发票（受 features.special_invoice 控制） */
-  specialInvoice: { type: Boolean, default: true },
+  /** 是否启用专用发票（受 features.special_invoice 控制，缺省关闭） */
+  specialInvoice: { type: Boolean, default: false },
   /** 跳转 user_invoice_form 时携带的回跳参数（不含 ?） */
   urlQuery: { type: String, default: '' },
   /** 弹窗显隐（支持 v-model:popupShow） */

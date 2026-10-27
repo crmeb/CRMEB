@@ -128,14 +128,18 @@ export default {
   buyAgain(order, params) {
     repurchaseToOrderCreate(order, params);
   },
-  /** 删除订单 */
-  deleteOrder(order, params) {
+  /** 删除订单（详情页通过 context.onDelete 自行调接口并返回列表；列表页走事件总线） */
+  deleteOrder(order, params, context) {
     const orderNo = params.order_no || order.order_no || '';
     uni.showModal({
       title: i18n.t(`提示`),
       content: i18n.t(`确定删除该订单吗？删除后不可恢复`),
       success: (res) => {
         if (res.confirm) {
+          if (context && typeof context.onDelete === 'function') {
+            context.onDelete({ order_no: orderNo });
+            return;
+          }
           uni.$emit('order:delete', { order_no: orderNo });
         }
       },
@@ -207,5 +211,25 @@ export default {
   /** 已退款（查看订单详情） */
   refunded(order, params) {
     uni.navigateTo({ url: routes.orderDetail + '?order_no=' + order.order_no });
+  },
+  /**
+   * 申请开票（详情页通过 context.onApplyInvoice 打开抬头选择弹窗）
+   */
+  applyInvoice(order, params, context) {
+    if (context && typeof context.onApplyInvoice === 'function') {
+      context.onApplyInvoice(params || {});
+      return;
+    }
+    uni.showToast({ title: i18n.t(`请在订单详情中申请开票`), icon: 'none' });
+  },
+  /**
+   * 查看发票（详情页通过 context.onViewInvoice 打开发票信息弹窗）
+   */
+  viewInvoice(order, params, context) {
+    if (context && typeof context.onViewInvoice === 'function') {
+      context.onViewInvoice(params || {});
+      return;
+    }
+    uni.showToast({ title: i18n.t(`请在订单详情中查看发票`), icon: 'none' });
   },
 };

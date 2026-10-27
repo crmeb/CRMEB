@@ -140,7 +140,7 @@ class CenterOrderController
                     })
                 );
             }
-            // 送礼订单按查看者裁剪：购买者隐藏收货信息/物流/相关按钮，领取人保留只读物流能力
+            // 送礼订单按查看者裁剪：送礼人隐藏收货/物流/评价/售后，领取人保留收货物流与评价
             $result = $services->applyGiftViewerPolicy($result, $uid);
             return app('json')->success($result);
         } catch (\Throwable $e) {
@@ -282,6 +282,9 @@ class CenterOrderController
                 'door_service_postage' => $doorServicePostage, // 上门服务费用（元）
                 'remark'        => true,                                          // 买家留言，与配送方式无关
                 'invoice'       => (bool)sys_config('invoice_func_status', 0),    // 发票，与商品类型无关
+                // 专用发票：须发票功能开启且专票开关开启
+                'special_invoice' => (bool)sys_config('invoice_func_status', 0)
+                    && (bool)sys_config('special_invoice_status', 0),
                 'integral'      => !$isActivityOrder && $integralOpen,              // 积分抵扣，与商品类型无关
                 'coupon'        => !$isActivityOrder && !empty($couponList),        // 优惠券，与商品类型无关
                 'custom_form'   => !empty($formattedCustomForm),                    // 自定义表单，与商品类型无关
@@ -557,6 +560,9 @@ class CenterOrderController
             'door_service_postage' => $doorServicePostage,          // 上门服务费用（元）
             'remark'           => true,                             // 买家留言
             'invoice'          => (bool)sys_config('invoice_func_status', 0),// 发票
+            // 专用发票：须发票功能开启且专票开关开启
+            'special_invoice'  => (bool)sys_config('invoice_func_status', 0)
+                && (bool)sys_config('special_invoice_status', 0),
             'integral'         => $integralOpen,                    // 积分抵扣
             'coupon'           => !empty($couponList),              // 优惠券
             'custom_form'      => !empty($cartCustomForm),          // 自定义表单（取主商品定义）

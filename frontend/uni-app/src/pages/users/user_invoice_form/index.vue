@@ -13,7 +13,8 @@
 						</label>
 					</radio-group>
 				</view>
-				<view class="acea-row row-middle" v-if="basicConfigData.special_invoice_status === '1' && header_type === '2'">
+				<!-- 仅企业 + 后台开启专用发票时可选专票（个人只能普票） -->
+				<view class="acea-row row-middle" v-if="specialInvoice && header_type === '2'">
 					<view>{{$t(`发票类型`)}}</view>
 					<text class="w-fill" @click="callType">
 						<text>{{ type === '2' ? $t(`增值税电子专用发票`) : $t(`增值税电子普通发票`) }} </text>
@@ -131,9 +132,19 @@ const popupType = ref(false);
 const typeName = ref('');
 const urlQuery = ref('');
 const from = ref('');
-const specialInvoice = ref(true);
+/** 是否允许企业选择专用发票（由 BASIC_CONFIG / 路由参数共同决定） */
+const specialInvoice = ref(false);
 const order_id = ref('');
-const basicConfigData = uni.getStorageSync('BASIC_CONFIG') || '';
+const basicConfigData = uni.getStorageSync('BASIC_CONFIG') || {};
+
+/**
+ * 配置开关真值判断（兼容 1/'1'/true/'true'）
+ * @param {*} value
+ * @return {boolean}
+ */
+function isConfigEnabled(value) {
+	return value === true || value === 1 || value === '1' || value === 'true';
+}
 
 // ---------- computed ----------
 const backUrl = computed(() => {
@@ -152,6 +163,8 @@ onHide(() => {
 	from.value = ''
 });
 onLoad((options) => {
+	// 先读基础配置；路由参数可覆盖（下单/详情页会显式传入）
+	specialInvoice.value = isConfigEnabled(basicConfigData.special_invoice_status);
 
 	if (options.id) uni.setNavigationBarTitle({
 		title: i18n.t(`编辑发票`)
@@ -177,9 +190,7 @@ onLoad((options) => {
 				getInvoiceDetail();
 				break;
 			case 'specialInvoice':
-				if (options[key] === 'false') {
-					specialInvoice.value = false;
-				}
+				specialInvoice.value = isConfigEnabled(options[key]);
 				break;
 		}
 	}
@@ -397,17 +408,14 @@ function formSubmit(e) {
 						})
 					}
 					break;
-				case 'order_details':
-					if (id.value) {
-						uni.navigateTo({
-							url: `/pages/goods/order_details/index?order_id=${order_id.value}&invoice_id=${id.value}&header_type=${header_type.value}`
-						})
-					} else {
-						uni.navigateTo({
-							url: `/pages/goods/order_details/index?order_id=${order_id.value}&invoice_id=${res.data.id}&header_type=${header_type.value}`
-						})
-					}
+				case 'order_details': {
+					// 订单详情已迁中台引擎，勿再跳旧 order_details（会请求已废弃的 order/detail）
+					const invoiceId = id.value || (res.data && res.data.id) || '';
+					uni.redirectTo({
+						url: `/pages/center/order/detail/index?order_no=${order_id.value}&invoice_id=${invoiceId}&header_type=${header_type.value}`
+					});
 					break;
+				}
 				default:
 					uni.navigateTo({
 						url: '/pages/users/user_invoice_list/index?from=invoice_form'

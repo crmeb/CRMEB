@@ -86,29 +86,99 @@ class StoreOrderInvoiceController
         if ((int)($order['uid'] ?? 0) !== $uid) {
             return app('json')->fail('订单不存在');
         }
-        // 本人开票记录
+        // 本人开票记录（申请表为真源）；无记录时回退下单快照
         $orderInvoice = $this->services->getOne(['order_id' => (int)$order['id'], 'uid' => $uid]);
-        $order['invoice'] = $orderInvoice ? $orderInvoice->toArray() : [];
+        if ($orderInvoice) {
+            $invoice = $orderInvoice->toArray();
+        } else {
+            $invoice = is_array($order['invoice'] ?? null) ? $order['invoice'] : [];
+        }
+        // 兼容旧页字段：备注列名、时间展示
+        if ($invoice) {
+            if (!isset($invoice['remark']) && isset($invoice['invoice_reamrk'])) {
+                $invoice['remark'] = $invoice['invoice_reamrk'];
+            }
+            if (isset($invoice['add_time']) && is_numeric($invoice['add_time'])) {
+                $invoice['add_time'] = date('Y-m-d H:i:s', (int)$invoice['add_time']);
+            }
+            if (isset($invoice['invoice_time']) && is_numeric($invoice['invoice_time']) && (int)$invoice['invoice_time'] > 0) {
+                $invoice['invoice_time'] = date('Y-m-d H:i:s', (int)$invoice['invoice_time']);
+            }
+        }
+        $order['invoice'] = $invoice ?: [];
+
         // 以下映射旧版发票详情页所需的订单字段（旧 eb_store_order 结构已由订单中台替代）
         $order['order_id'] = $order['order_no'] ?? $uni;
-        $order['add_time_y'] = date('Y-m-d', (int)($order['add_time'] ?? time()));
-        $order['add_time_h'] = date('H:i:s', (int)($order['add_time'] ?? time()));
-        $order['paid'] = (int)($order['pay_status'] ?? 0) == 1;
+        $addTime = (int)($order['add_time'] ?? time());
+        $order['add_time_y'] = date('Y-m-d', $addTime);
+        $order['add_time_h'] = date('H:i:s', $addTime);
+        $payStatus = (int)($order['pay_status'] ?? 0);
+        $order['paid'] = in_array($payStatus, [1, 2], true) ? 1 : 0;
+        $legacyStatus = $this->services->statusToLegacy((string)($order['status_code'] ?? ''));
+        $order['status'] = $legacyStatus;
         $order['_status'] = [
-            '_type' => $this->services->statusToLegacy($order['status_code'] ?? ''),
-            '_payType' => $order['pay_type_name'] ?? ($order['pay_type'] ?? ''),
+            '_type' => $legacyStatus,
+            '_payType' => (string)($order['pay_type_name'] ?? ($order['pay_type'] ?? '')),
         ];
-        // 收货人信息优先取订单配送快照
-        $contact = is_array($order['contact'] ?? null) ? $order['contact'] : [];
-        $order['real_name'] = $contact['name'] ?? '';
-        $order['user_phone'] = $contact['phone'] ?? '';
-        // 物流信息
-        $logistics = $order['extensions']['logistics'] ?? [];
-        $order['delivery_type'] = ($order['delivery_type'] ?? '') ?: 'express';
-        $order['delivery_name'] = $logistics['delivery_name'] ?? '';
-        $order['delivery_id'] = $logistics['delivery_id'] ?? '';
-        // 商品快照合成旧版 cartInfo，供订单商品组件展示
-        $order['cartInfo'] = $this->services->buildLegacyCartInfo(is_array($order['extra_info'] ?? null) ? $order['extra_info'] : []);
+
+        // 收货人：顶层 contact → extra_info.contact → delivery.contact
+        $extra = is_array($order['extra_info'] ?? null) ? $order['extra_info'] : [];
+        $contact = [];
+        if (is_array($order['contact'] ?? null) && $order['contact']) {
+            $contact = $order['contact'];
+        } elseif (is_array($extra['contact'] ?? null)) {
+            $contact = $extra['contact'];
+        } elseif (is_array($order['delivery']['contact'] ?? null)) {
+            $contact = $order['delivery']['contact'];
+        }
+        $order['real_name'] = trim((string)($contact['name'] ?? ($order['real_name'] ?? '')));
+        if ($order['real_name'] === '') {
+            $order['real_name'] = trim((string)($order['nickname'] ?? ''));
+        }
+        $order['user_phone'] = trim((string)($contact['phone'] ?? ($order['user_phone'] ?? '')));
+        // 收货地址
+        if (empty($order['user_address'])) {
+            $addr = $contact['address'] ?? ($order['delivery']['user_address'] ?? '');
+            if (is_array($addr)) {
+                $order['user_address'] = implode('', array_filter([
+                    $addr['province'] ?? '',
+                    $addr['city'] ?? '',
+                    $addr['district'] ?? '',
+                    $addr['detail'] ?? '',
+                ]));
+            } else {
+                $order['user_address'] = trim((string)$addr);
+            }
+        }
+
+        // 物流：顶层 → extensions → extra_info.delivery
+        $logistics = is_array($order['extensions']['logistics'] ?? null) ? $order['extensions']['logistics'] : [];
+        $deliveryExtra = is_array($extra['delivery'] ?? null) ? $extra['delivery'] : [];
+        if (empty($order['delivery_name'])) {
+            $order['delivery_name'] = (string)($logistics['delivery_name'] ?? ($deliveryExtra['delivery_name'] ?? ''));
+        }
+        if (empty($order['delivery_id'])) {
+            $order['delivery_id'] = (string)($logistics['delivery_id'] ?? ($deliveryExtra['delivery_id'] ?? ''));
+        }
+        if (empty($order['delivery_type'])) {
+            $shippingType = (int)($order['shipping_type'] ?? 0);
+            $order['delivery_type'] = (string)($logistics['delivery_type']
+                ?? ($deliveryExtra['delivery_type'] ?? ($extra['delivery_type'] ?? '')));
+            if ($order['delivery_type'] === '') {
+                $order['delivery_type'] = $shippingType === 2 ? 'pickup' : ($shippingType === 3 ? 'door' : 'express');
+            }
+        }
+
+        // 商品快照：extra_info.items 优先，缺省回退 order_items
+        if (empty($extra['items']) && !empty($order['order_items']) && is_array($order['order_items'])) {
+            $extra['items'] = $order['order_items'];
+        }
+        $order['cartInfo'] = $this->services->buildLegacyCartInfo($extra);
+        $order['mark'] = (string)($order['mark'] ?? ($extra['mark'] ?? ''));
+        $order['use_integral'] = (int)($order['use_integral'] ?? ($order['use_integral_num'] ?? 0));
+        $order['system_store'] = is_array($order['store'] ?? null)
+            ? $order['store']
+            : (is_array($order['system_store'] ?? null) ? $order['system_store'] : []);
         $order['mapKey'] = sys_config('tengxun_map_key');
         /** @var PayChannelServices $payChannelServices */
         $payChannelServices = app()->make(PayChannelServices::class);

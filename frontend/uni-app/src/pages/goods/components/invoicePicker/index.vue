@@ -1,9 +1,12 @@
 <template>
-	<view>
-		<view :class="{ mask: invShow }" @touchmove.stop.prevent @click="invClose"></view>
-		<view class="popup" :class="{ on: invShow }">
-			<view class="popup-hd">{{$t(`抬头选择`)}}<text class="iconfont icon-guanbi" @click="invClose"></text></view>
-			<scroll-view class="popup-bd" scroll-y="true">
+	<!-- 独立层级容器：盖住订单底栏(z=20)与悬浮 home(z=999)；背景滚动由 mask + 页面锁处理 -->
+	<view class="invoice-picker-root" v-if="invShow">
+		<view class="mask" @touchmove.stop.prevent @click="invClose"></view>
+		<!-- stop 阻断冒泡到页面；勿 prevent，否则内部 scroll-view 无法滑动 -->
+		<view class="popup on" @touchmove.stop>
+			<view class="popup-hd" @touchmove.stop.prevent>{{$t(`抬头选择`)}}<text class="iconfont icon-guanbi" @click="invClose"></text></view>
+			<!-- scroll-view 需可纵向滚动，勿在其上 prevent -->
+			<scroll-view class="popup-bd" scroll-y="true" :show-scrollbar="false">
 				<radio-group v-if="invList.length" name="inv" @change="invChange">
 					<template v-for="(item, index) in invList" :key="item.id">
 						<label v-if="item.type === 1 || item.type === 2 && isSpecial"
@@ -35,7 +38,7 @@
 										hover-class="none"><text class="iconfont icon-bianji"></text>{{$t(`编辑`)}}
 									</navigator>
 									<navigator :render-link="false" v-else class="navigator"
-										:url="`/pages/users/user_invoice_form/index?from=order_details&id=${item.id}&order_id=${orderId}`"
+										:url="`/pages/users/user_invoice_form/index?from=order_details&id=${item.id}&order_id=${orderId}&${urlQuery}`"
 										hover-class="none"><text class="iconfont icon-bianji"></text>{{$t(`编辑`)}}
 									</navigator>
 								</view>
@@ -48,7 +51,7 @@
 					<view>{{$t(`您还没有添加发票信息哟`)}}~</view>
 				</view>
 			</scroll-view>
-			<view class="popup-ft">
+			<view class="popup-ft" @touchmove.stop.prevent>
 				<navigator :render-link="false" v-if="!isOrder" class="navigator"
 					:url="`/pages/users/user_invoice_form/index?from=order_confirm&${urlQuery}`" hover-class="none">
 					<text class="iconfont icon-fapiao"></text>{{$t(`添加新的抬头`)}}
@@ -132,21 +135,46 @@
 		margin-right: 0;
 	}
 
-	.popup {
+	/* 高于订单底栏(20)与悬浮 home(999)，避免底栏/悬浮钮压在弹层上 */
+	.invoice-picker-root {
 		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 10050;
+	}
+
+	.mask {
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		opacity: 1;
+		z-index: 1;
+	}
+
+	.popup {
+		position: absolute;
 		bottom: 0;
 		left: 0;
-		z-index: 9;
+		z-index: 2;
 		width: 100%;
+		max-height: 85vh;
+		display: flex;
+		flex-direction: column;
 		border-top-left-radius: 16rpx;
 		border-top-right-radius: 16rpx;
 		background-color: #F5F5F5;
-		transform: translateY(100%);
-		transition: 0.3s;
+		box-sizing: border-box;
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
 	}
 
 	.popup.on {
-		transform: translateY(0);
+		transform: none;
 	}
 
 	.popup-hd {
@@ -168,7 +196,9 @@
 	}
 
 	.popup-bd {
+		flex: 1;
 		height: 600rpx;
+		max-height: 50vh;
 		padding-right: 30rpx;
 		padding-left: 30rpx;
 		box-sizing: border-box;
@@ -274,7 +304,9 @@
 	}
 
 	.popup-ft {
+		flex-shrink: 0;
 		padding: 14rpx 30rpx 44rpx;
+		background-color: #F5F5F5;
 
 		.navigator {
 			height: 86rpx;

@@ -1,5 +1,7 @@
 <template>
-  <view :style="colorStyle">
+  <!-- 弹层打开时锁页面滚动，避免滑动穿透到订单详情 -->
+  <page-meta :page-style="pageLocked ? 'overflow:hidden;' : ''" />
+  <view :style="colorStyle" :class="{ 'page-locked': pageLocked }">
     <page-loading v-if="loading" />
     <view v-else class="order-details">
       <!-- =============================================== -->
@@ -34,7 +36,26 @@
         @shareH5="shareH5"
         @close="giftModalShow = false"
       />
-      <view class="mask" v-if="giftModalShow" @click="giftModalShow = false"></view>
+      <view class="mask" v-if="giftModalShow || invoiceModalShow" @click="closeInvoiceOverlays"></view>
+      <!-- 查看发票 -->
+      <invoiceModal
+        :aleartStatus="invoiceModalShow"
+        :invoiceData="invoiceModalData"
+        @close="invoiceModalShow = false"
+      />
+      <!-- 申请开票：选择已有抬头并提交 make_up_invoice -->
+      <invoice-picker
+        :inv-show="invoicePickerShow"
+        :is-special="specialInvoice"
+        :url-query="invoiceUrlQuery"
+        :inv-checked="invoiceCheckedId"
+        :order-id="orderNo"
+        :inv-list="invoiceList"
+        :is-order="1"
+        @inv-close="invoicePickerShow = false"
+        @inv-change="submitInvoiceApply"
+        @inv-cancel="invoicePickerShow = false"
+      />
     </view>
   </view>
 </template>
@@ -61,19 +82,25 @@ import { resolveSectionComponent, InfoListComponent } from '../components/order/
 import SectionDispatcher from '../components/order/detail/SectionDispatcher.vue';
 // #endif
 import actionMap from '../api/action-map.js';
-import { getCenterOrderDetail, takeOrder, cancelOrder } from '@/api/order-center.js';
-import { express } from '@/api/order.js';
+import { getCenterOrderDetail, takeOrder, cancelOrder, delOrder } from '@/api/order-center.js';
 import routes from '../api/routes.js';
 import { useColorTheme } from '@/composables/useColorTheme';
 import i18n from '@/utils/lang.js';
 import giftModal from '@/pages/goods/order_pay_status/components/giftModal.vue';
+import invoiceModal from '@/pages/goods/components/invoiceModal/index.vue';
+import invoicePicker from '@/pages/goods/components/invoicePicker/index.vue';
+import { invoiceList as fetchInvoiceList, makeUpinvoice } from '@/api/user.js';
 
 defineOptions({ name: 'OrderDetailEngine' });
 
 const props = defineProps({
   /** 订单号 */
   orderNo: { type: String, default: '' },
+  /** 从发票抬头页带回的待选抬头 ID；有值且订单尚未开票时自动打开开票弹层 */
+  pendingInvoiceId: { type: String, default: '' },
 });
+/** 向包装页同步开票弹层显隐（用于隐藏悬浮 home） */
+const emit = defineEmits(['invoice-overlay', 'pending-invoice-consumed']);
 
 const { colorStyle } = useColorTheme();
 
@@ -83,9 +110,15 @@ const pageConfig = ref({ sections: [], extensions: {} });
 const loading = ref(true);
 const confirmingReceive = ref(false);
 const cancellingOrder = ref(false);
-const logisticsLoading = ref(false);
+const deletingOrder = ref(false);
 // 送礼分享
 const giftModalShow = ref(false);
+// 发票：申请开票 / 查看发票
+const invoicePickerShow = ref(false);
+const invoiceModalShow = ref(false);
+const invoiceList = ref([]);
+const invoiceCheckedId = ref('');
+const invoiceApplying = ref(false);
 
 // ---------- computed ----------
 /**
@@ -129,6 +162,27 @@ const viewerRole = computed(() => {
 const orderInfoFields = computed(() => {
   return (sectionPropsMap.value['order_info'] && sectionPropsMap.value['order_info'].fields) || {};
 });
+/** 是否启用专用发票（extensions.special_invoice） */
+const specialInvoice = computed(() => !!(pageConfig.value.extensions && pageConfig.value.extensions.special_invoice));
+/** 跳转抬头表单时携带的回跳参数 */
+const invoiceUrlQuery = computed(() => `specialInvoice=${specialInvoice.value ? 1 : 0}`);
+/**
+ * 查看发票弹窗数据（兼容 invoiceModal 使用的 name/duty_number 字段）
+ */
+const invoiceModalData = computed(() => {
+  const inv = (pageConfig.value.extensions && pageConfig.value.extensions.invoice) || {};
+  const phone = inv.drawer_phone || inv.phone || inv.tell || '';
+  return {
+    ...inv,
+    name: inv.name || inv.title || '',
+    duty_number: inv.duty_number || inv.tax_number || '',
+    drawer_phone: phone,
+    phone,
+    remark: inv.remark || '',
+    is_invoice: Number(inv.is_invoice || 0),
+    pay_price: payPrice.value,
+  };
+});
 /** giftModal 分享数据 */
 const giftShareData = computed(() => {
   // section.props.product = { product: {title,image,items}, product_id }
@@ -170,9 +224,9 @@ async function loadDetail() {
       uni[r.mode || 'redirectTo']({ url: r.url });
       return;
     }
-    pageConfig.value = (res.data && res.data.page_config) || { sections: [], extensions: {} };
-    // 详情接口首屏只返回已缓存的物流轨迹，未命中时异步补齐，避免被第三方物流慢请求阻塞
-    loadLogisticsTracks();
+    pageConfig.value = sanitizePageConfig((res.data && res.data.page_config) || { sections: [], extensions: {} });
+    // 详情页配送信息只展示公司/单号，轨迹由「查看物流」单独查询，此处不再异步拉轨迹
+    maybeOpenPendingInvoice();
   } catch (e) {
     uni.showToast({ title: i18n.t('加载失败'), icon: 'none' });
   } finally {
@@ -181,44 +235,65 @@ async function loadDetail() {
 }
 
 /**
- * 异步加载物流轨迹
- * 详情接口不再同步请求第三方物流，仅返回已缓存轨迹；未命中时由前端按需查询并回填 section
- * 失败时静默降级，仍展示快递公司 + 单号
- * @return {Promise<void>}
+ * 从发票抬头编辑页返回时：若带回 invoice_id 且订单尚未开票，自动打开抬头选择并预选该抬头
  */
-async function loadLogisticsTracks() {
-  if (logisticsLoading.value) return;
-  const sections = pageConfig.value.sections || [];
-  const section = sections.find(function (s) { return s.key === 'logistics'; });
-  if (!section) return;
-  // 已命中后端轨迹缓存，无需再次查询
-  const cached = (section.props && section.props.tracks) || [];
-  if (cached.length > 0) return;
-  const orderNo = (sectionPropsMap.value['order_info'] && sectionPropsMap.value['order_info'].fields
-    && sectionPropsMap.value['order_info'].fields.order_no) || props.orderNo || '';
-  if (!orderNo) return;
-  logisticsLoading.value = true;
-  try {
-    const res = await express(orderNo);
-    const list = res && res.data && res.data.express && res.data.express.result
-      ? res.data.express.result.list : null;
-    if (!Array.isArray(list) || list.length === 0) return;
-    section.props.tracks = list.map(function (track) {
-      return {
-        title: track.title || track.status || track.context || track.name || '',
-        time: track.time || track.ftime || '',
-        desc: track.desc || '',
-      };
-    });
-  } catch (e) {
-    // 物流查询失败不影响详情展示
-  } finally {
-    logisticsLoading.value = false;
+function maybeOpenPendingInvoice() {
+  const invoiceId = String(props.pendingInvoiceId || '');
+  if (!invoiceId) return;
+  emit('pending-invoice-consumed');
+  const inv = (pageConfig.value.extensions && pageConfig.value.extensions.invoice) || {};
+  // 已有开票申请则不再弹层
+  if (inv && (inv.id || inv.invoice_id || inv.name || inv.title)) {
+    return;
   }
+  openInvoiceApply(invoiceId);
+}
+
+/**
+ * 裁剪查看物流按钮：虚拟发货 / 商家送货 / 无配送信息区时不展示「查看物流」
+ * （配送信息区本身由后端按类型下发；虚拟发货有备注时仍保留区块）
+ * @param {object} config page_config
+ * @return {object}
+ */
+function sanitizePageConfig(config) {
+  const next = config || { sections: [], extensions: {} };
+  const sections = Array.isArray(next.sections) ? next.sections : [];
+  const logistics = sections.find(function (s) { return s && s.key === 'logistics'; });
+  const deliveryType = String((logistics && logistics.props && logistics.props.delivery_type) || '');
+  const stripLogisticsBtn = deliveryType === 'fictitious'
+    || deliveryType === 'send'
+    || !logistics
+    || logistics.visible === false;
+  if (!stripLogisticsBtn) return next;
+
+  const stripViewLogistics = function (list) {
+    if (!Array.isArray(list)) return list;
+    return list.filter(function (btn) { return (btn && btn.action) !== 'viewLogistics'; });
+  };
+  const ex = next.extensions || {};
+  if (ex.order_buttons) ex.order_buttons = stripViewLogistics(ex.order_buttons);
+  if (ex.buttons) ex.buttons = stripViewLogistics(ex.buttons);
+  next.extensions = ex;
+  next.sections = sections.map(function (s) {
+    if (!s || !s.props || !Array.isArray(s.props.buttons)) return s;
+    return Object.assign({}, s, {
+      props: Object.assign({}, s.props, { buttons: stripViewLogistics(s.props.buttons) }),
+    });
+  });
+  return next;
 }
 
 // 包装页 onShow 返回时调用（评价完成/售后进度变化等场景，返回详情需看到最新状态）
-defineExpose({ refresh: loadDetail });
+/** 开票/查看发票弹层是否打开（供包装页隐藏悬浮 home） */
+const invoiceOverlayOpen = computed(() => invoicePickerShow.value || invoiceModalShow.value);
+/** 任意遮罩弹层打开时锁定页面滚动 */
+const pageLocked = computed(() => invoiceOverlayOpen.value || giftModalShow.value);
+
+watch(invoiceOverlayOpen, (open) => {
+  emit('invoice-overlay', open);
+}, { immediate: true });
+
+defineExpose({ refresh: loadDetail, invoiceOverlayOpen });
 
 // ========== 全局状态注入 ==========
 
@@ -291,8 +366,14 @@ function onButtonAction(payload) {
       context = { onConfirm: confirmReceive };
     } else if (payload.action === 'cancelOrder') {
       context = { onCancel: cancelUnpaidOrder };
+    } else if (payload.action === 'deleteOrder') {
+      context = { onDelete: deleteOrderAndBack };
     } else if (payload.action === 'shareGift') {
       context = { onShareGift: openGiftShare };
+    } else if (payload.action === 'applyInvoice') {
+      context = { onApplyInvoice: openInvoiceApply };
+    } else if (payload.action === 'viewInvoice') {
+      context = { onViewInvoice: openInvoiceView };
     }
     handler(Object.assign({}, sectionPropsMap.value, { order_no: orderNo }), payload.params || {}, context);
   }
@@ -303,6 +384,72 @@ function onButtonAction(payload) {
  */
 function openGiftShare() {
   giftModalShow.value = true;
+}
+
+/** 关闭发票相关浮层 */
+function closeInvoiceOverlays() {
+  invoiceModalShow.value = false;
+  giftModalShow.value = false;
+}
+
+/** 查看发票 */
+function openInvoiceView() {
+  if (!invoiceModalData.value || !(invoiceModalData.value.name || invoiceModalData.value.title)) {
+    uni.showToast({ title: i18n.t('暂无发票信息'), icon: 'none' });
+    return;
+  }
+  invoiceModalShow.value = true;
+}
+
+/**
+ * 申请开票：拉取抬头列表并打开选择弹窗
+ * @param {string} [preselectId] 预选抬头 ID（从抬头编辑页返回时传入）
+ */
+function openInvoiceApply(preselectId = '') {
+  uni.showLoading({ title: i18n.t('正在加载中'), mask: true });
+  fetchInvoiceList()
+    .then((res) => {
+      uni.hideLoading();
+      invoiceList.value = (res.data || []).map((item) => {
+        item.id = String(item.id);
+        return item;
+      });
+      invoiceCheckedId.value = preselectId ? String(preselectId) : '';
+      invoicePickerShow.value = true;
+    })
+    .catch((err) => {
+      uni.hideLoading();
+      uni.showToast({ title: (typeof err === 'string' ? err : err?.msg) || i18n.t('加载失败'), icon: 'none' });
+    });
+}
+
+/**
+ * 确认提交开票申请
+ * @param {string} invoiceId 选中的抬头 ID
+ */
+function submitInvoiceApply(invoiceId) {
+  if (!invoiceId) {
+    uni.showToast({ title: i18n.t('请选择发票抬头'), icon: 'none' });
+    return;
+  }
+  if (invoiceApplying.value) return;
+  invoiceApplying.value = true;
+  makeUpinvoice({
+    order_id: props.orderNo,
+    invoice_id: invoiceId,
+  })
+    .then(async () => {
+      uni.showToast({ title: i18n.t('申请成功'), icon: 'success' });
+      invoicePickerShow.value = false;
+      await loadDetail();
+      invoiceModalShow.value = true;
+    })
+    .catch((err) => {
+      uni.showToast({ title: (typeof err === 'string' ? err : err?.msg) || i18n.t('申请失败'), icon: 'none' });
+    })
+    .finally(() => {
+      invoiceApplying.value = false;
+    });
 }
 
 /**
@@ -341,6 +488,32 @@ async function cancelUnpaidOrder(payload) {
     uni.showToast({ title: (typeof e === 'string' ? e : e?.msg) || i18n.t('取消失败'), icon: 'none' });
   } finally {
     cancellingOrder.value = false;
+  }
+}
+
+/**
+ * 详情页删除订单：成功后通知列表刷新并返回列表（订单已不存在，不可留在详情）
+ * @param {object} payload {order_no}
+ */
+async function deleteOrderAndBack(payload) {
+  if (deletingOrder.value) return;
+  deletingOrder.value = true;
+  try {
+    await delOrder(payload.order_no);
+    uni.$emit('order:list-refresh');
+    uni.showToast({ title: i18n.t('删除成功'), icon: 'success' });
+    setTimeout(() => {
+      const pages = getCurrentPages();
+      if (pages.length > 1) {
+        uni.navigateBack({ delta: 1 });
+      } else {
+        uni.redirectTo({ url: '/pages/goods/order_list/index' });
+      }
+    }, 500);
+  } catch (e) {
+    uni.showToast({ title: (typeof e === 'string' ? e : e?.msg) || i18n.t('删除失败'), icon: 'none' });
+  } finally {
+    deletingOrder.value = false;
   }
 }
 /**
@@ -456,6 +629,12 @@ function shareH5() {
   padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
+/* H5：弹层打开时锁住页面滚动（小程序侧靠 page-meta） */
+.page-locked {
+  height: 100vh;
+  overflow: hidden;
+}
+
 .mask {
   position: fixed;
   left: 0;
@@ -463,7 +642,7 @@ function shareH5() {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  /* 低于 giftModal 的 999，避免遮罩盖住弹窗按钮 */
+  /* 低于 giftModal 的 999，避免遮罩盖住弹窗按钮；高于开票弹层由 invoicePicker 自管 */
   z-index: 998;
 }
 </style>

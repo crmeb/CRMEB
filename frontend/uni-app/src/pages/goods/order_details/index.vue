@@ -432,8 +432,8 @@
 					<view class="conter">-{{ $t(`￥`) }}{{ parseFloat(orderInfo.memberPrice).toFixed(2) }}</view>
 				</view>
 				<view v-if="orderInfo.gift_price > 0" class="item acea-row row-between">
-					<view>{{ $t(`礼品附加费用`) }}：</view>
-					<view class="conter">-{{ $t(`￥`) }}{{ parseFloat(orderInfo.gift_price).toFixed(2) }}</view>
+					<view>{{ $t(`礼品附加费`) }}：</view>
+					<view class="conter">+{{ $t(`￥`) }}{{ parseFloat(orderInfo.gift_price).toFixed(2) }}</view>
 				</view>
 				<view class="item acea-row row-between" v-if="orderInfo.coupon_price > 0">
 					<view>{{ $t(`优惠券抵扣`) }}：</view>
@@ -777,11 +777,18 @@ const refundedPriceText = computed(() => {
 });
 
 // ---------- 生命周期 ----------
+// 已重定向到中台详情时，禁止 onShow 再调废弃的 order/detail
+const redirectedToCenter = ref(false);
+
 onLoad((options) => {
 	// 订单数据结构已迁移至中台 OrderCenter，旧版扁平接口（order/detail）已废弃
 	// 延用原页面路径作为入口，重定向到新版引擎页面，避免修改 20+ 个跳转入口
 	if (options.order_id) {
-		uni.redirectTo({ url: '/pages/center/order/detail/index?order_no=' + options.order_id });
+		redirectedToCenter.value = true;
+		const q = [`order_no=${options.order_id}`];
+		if (options.invoice_id) q.push(`invoice_id=${options.invoice_id}`);
+		if (options.header_type) q.push(`header_type=${options.header_type}`);
+		uni.redirectTo({ url: '/pages/center/order/detail/index?' + q.join('&') });
 		return;
 	}
 	if (options.order_id) {
@@ -794,6 +801,7 @@ onLoad((options) => {
 });
 
 onShow(() => {
+	if (redirectedToCenter.value) return;
 	if (isLogin.value) {
 		getOrderInfo();
 		getUserInfo();

@@ -56,22 +56,32 @@
 					<view class="conter">{{orderInfo.invoice.remark}}</view>
 				</view>
 			</view>
-			<orderGoods :evaluate='evaluate' :orderId="order_id" :cartInfo="cartInfo" :jump="true" :paid="orderInfo.paid" :oid="orderInfo.id" :isShow="false" :statusType="status.type"></orderGoods>
+			<orderGoods
+				v-if="cartInfo && cartInfo.length"
+				:evaluate="evaluate"
+				:orderId="order_id"
+				:cartInfo="cartInfo"
+				:jump="true"
+				:paid="orderInfo.paid"
+				:oid="orderInfo.id"
+				:isShow="false"
+				:statusType="status.type"
+			></orderGoods>
 			<view class='wrapper'>
 				<view class='item acea-row row-between'>
 					<view>{{$t(`订单编号`)}}：</view>
-					<view class='conter acea-row row-middle row-right'>{{orderInfo.order_id}}
+					<view class='conter acea-row row-middle row-right'>{{orderInfo.order_id || orderInfo.order_no}}
 						<!-- #ifndef H5 -->
 						<text class='copy' @tap='copy'>{{$t(`复制`)}}</text>
 						<!-- #endif -->
 						<!-- #ifdef H5 -->
-						<text class='copy copy-data' :data-clipboard-text="orderInfo.order_id">{{$t(`复制`)}}</text>
+						<text class='copy copy-data' :data-clipboard-text="orderInfo.order_id || orderInfo.order_no">{{$t(`复制`)}}</text>
 						<!-- #endif -->
 					</view>
 				</view>
 				<view class='item acea-row row-between'>
 					<view>{{$t(`下单时间`)}}：</view>
-					<view class='conter'>{{(orderInfo.add_time_y || '') +' '+(orderInfo.add_time_h || 0)}}</view>
+					<view class='conter'>{{(orderInfo.add_time_y || '') +' '+(orderInfo.add_time_h || '')}}</view>
 				</view>
 				<view class='item acea-row row-between'>
 					<view>{{$t(`支付状态`)}}：</view>
@@ -80,7 +90,7 @@
 				</view>
 				<view class='item acea-row row-between'>
 					<view>{{$t(`支付方式`)}}：</view>
-					<view class='conter'>{{orderInfo._status._payType}}</view>
+					<view class='conter'>{{ (orderInfo._status && orderInfo._status._payType) || orderInfo.pay_type_name || orderInfo.pay_type || '' }}</view>
 				</view>
 				<view class='item acea-row row-between' v-if="orderInfo.mark">
 					<view>{{$t(`买家留言`)}}：</view>
@@ -688,13 +698,14 @@ function getOrderInfo() {
 		title: i18n.t(`正在加载中`)
 	});
 	orderInvoiceDetail(order_id.value).then(res => {
-		let _type = res.data._status._type;
+		const data = res.data || {};
+		const statusInfo = data._status || {};
 		uni.hideLoading();
-		orderInfo.value = res.data;
-		cartInfo.value = res.data.cartInfo;
-		evaluate.value = _type == 3 ? 3 : 0;
-		system_store.value = res.data.system_store;
-		if (orderInfo.value.refund_status != 0) {
+		orderInfo.value = Object.assign({ system_store: {}, _status: {} }, data);
+		cartInfo.value = Array.isArray(data.cartInfo) ? data.cartInfo : [];
+		evaluate.value = statusInfo._type == 3 ? 3 : 0;
+		system_store.value = data.system_store || {};
+		if (Number(orderInfo.value.refund_status) !== 0) {
 			isGoodsReturn.value = true;
 		}
 		getOrderStatus();
@@ -712,7 +723,7 @@ function getOrderInfo() {
 // #ifndef H5
 function copy() {
 	uni.setClipboardData({
-		data: orderInfo.value.order_id
+		data: orderInfo.value.order_id || orderInfo.value.order_no || ''
 	});
 }
 // #endif

@@ -138,11 +138,13 @@ export function getGiftOrderDetail(id) {
 	return request.get('order/gift_detail/' + id);
 }
 /**
- * 订单详情
- * @param string uni 
+ * 订单详情（兼容旧调用：已迁移至中台 center/order/detail）
+ * @param string uni 订单号
  */
 export function getOrderDetail(uni, cart_id) {
-	return request.get('order/detail/' + uni + `${cart_id ? `/${cart_id}`:''}`);
+	// 旧路由 order/detail 已下线；统一走中台详情。cart_id 参数已废弃。
+	void cart_id;
+	return request.get(`center/order/detail/${uni}`);
 }
 /**
  * 退款订单详情

@@ -242,7 +242,7 @@ const features = ref({
   door_service: false,     // 是否支持上门服务
   remark: true,
   invoice: true,
-  special_invoice: true,
+  special_invoice: false,
   integral: false,
   coupon: false,
   custom_form: false,
@@ -301,7 +301,7 @@ const remark = ref('');
 const invoiceList = ref([]); // 已保存的抬头列表
 const invoiceId = ref(''); // 选中的抬头 ID（字符串）
 const invoicePopupShow = ref(false); // 抬头选择弹窗显隐
-const specialInvoice = ref(true); // 是否启用专用发票（由 features.special_invoice 控制）
+const specialInvoice = ref(false); // 是否启用专用发票（由 features.special_invoice 控制）
 
 // 提交
 const submitting = ref(false);
@@ -363,7 +363,7 @@ const invoiceUrlQuery = computed(() => {
       '&new=' + news.value +
       '&address_id=' + addressId.value +
       '&submit_api=' + encodeURIComponent(submitApi.value) +
-      '&specialInvoice=' + (specialInvoice.value ? 'true' : 'false');
+      '&specialInvoice=' + (specialInvoice.value ? '1' : '0');
   } else {
     query =
       'product_id=' + encodeURIComponent(productId.value) +
@@ -373,7 +373,7 @@ const invoiceUrlQuery = computed(() => {
       '&activity_id=' + activityId.value +
       '&num=' + num.value +
       '&submit_api=' + encodeURIComponent(submitApi.value) +
-      '&specialInvoice=' + (specialInvoice.value ? 'true' : 'false');
+      '&specialInvoice=' + (specialInvoice.value ? '1' : '0');
   }
   return query;
 });
@@ -482,8 +482,8 @@ async function loadConfirmData() {
     }
     // 保存活动订单信息（含免费支付方式标识与跳转地址，由交易模式 Handler 下发）
     activityInfo.value = data.activity_info || {};
-    // 同步发票相关配置：后端未返回时默认开启专用发票
-    specialInvoice.value = features.value.special_invoice !== false;
+    // 同步发票相关配置（专用发票须后台显式开启，缺省为关）
+    specialInvoice.value = !!features.value.special_invoice;
     usableIntegral.value = parseInt(data.usable_integral || 0);
     integralOpen.value = !!data.integral_open;
     integralRatio.value = data.integral_ratio || 0;

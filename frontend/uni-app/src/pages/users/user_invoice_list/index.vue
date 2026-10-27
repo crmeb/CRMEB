@@ -7,8 +7,8 @@
 		<view v-show="nav === 1" class="record-wrapper">
 			<view v-for="item in orderList" :key="item.id" class="item">
 				<view class="item-hd acea-row">
-					<image class="image" :src="item.order.cartInfo[0].productInfo.image"></image>
-					<view class="text">{{ item.order.cartInfo[0].productInfo.store_name + item.order.cartInfo[0].productInfo.attrInfo.suk || '' }}</view>
+					<image class="image" :src="invoiceGoodsImage(item)"></image>
+					<view class="text">{{ invoiceGoodsName(item) }}</view>
 				</view>
 				<view class="item-bd acea-row row-between-wrapper">
 					<view>
@@ -17,14 +17,18 @@
 					</view>
 					<view class="money">
 						{{ $t(`￥`) }}
-						<text class="num">{{ item.order.pay_price }}</text>
+						<text class="num">{{ (item.order && item.order.pay_price) || '0.00' }}</text>
 					</view>
 				</view>
 				<view class="item-ft acea-row row-between-wrapper">
 					<view>{{ item.is_invoice ? $t(`已开票`) : $t(`未开票`) }}</view>
 					<view class="acea-row row-center-wrapper">
 						<view class="link mr20" @click="getInvoiceLink(item.id)" v-if="item.is_invoice == 1 && item.unique_num != '' && item.red_invoice_num == ''">{{ $t(`复制`) }}</view>
-						<navigator :render-link="false" class="link" :url="`/pages/users/user_invoice_order/index?order_id=${item.order.order_id}`">{{ $t(`查看详情`) }}</navigator>
+						<navigator
+							:render-link="false"
+							class="link"
+							:url="`/pages/users/user_invoice_order/index?order_id=${(item.order && (item.order.order_id || item.order.order_no)) || ''}`"
+						>{{ $t(`查看详情`) }}</navigator>
 					</view>
 				</view>
 			</view>
@@ -68,7 +72,7 @@
 				<image :src="imgHost + '/statics/images/noInvoice.png'"></image>
 				<view>{{ $t(`没有发票信息哟~`) }}</view>
 			</view>
-			<navigator :render-link="false" class="add-link" :url="`/pages/users/user_invoice_form/index?specialInvoice=${specialInvoice}`">
+			<navigator :render-link="false" class="add-link" :url="`/pages/users/user_invoice_form/index?specialInvoice=${specialInvoice ? 1 : 0}`">
 				<text class="iconfont icon-fapiao"></text>
 				{{ $t(`添加新发票`) }}
 			</navigator>
@@ -105,7 +109,7 @@ const page = ref(1);
 const limit = ref(30);
 const loading = ref(false);
 const finished = ref(false);
-const specialInvoice = ref(true);
+const specialInvoice = ref(false);
 
 // ---------- watch ----------
 watch(nav, (value) => {
@@ -131,6 +135,15 @@ onLoad((option) => {
 });
 
 // ---------- methods ----------
+function invoiceGoodsImage(item) {
+	const product = item?.order?.cartInfo?.[0]?.productInfo || {};
+	return product?.attrInfo?.image || product?.image || '';
+}
+function invoiceGoodsName(item) {
+	const product = item?.order?.cartInfo?.[0]?.productInfo || {};
+	const suk = product?.attrInfo?.suk || '';
+	return `${product?.store_name || ''}${suk}`;
+}
 function getInvoiceLink(id) {
 	uni.showLoading({
 		title: i18n.t(`复制中`)

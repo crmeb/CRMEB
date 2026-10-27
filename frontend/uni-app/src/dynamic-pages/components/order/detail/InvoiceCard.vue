@@ -16,10 +16,10 @@
         <text class="invoice-tag">{{ invoice.header_type === 2 ? $t('企业') : $t('个人') }}</text>
       </view>
     </view>
-    <!-- 发票类型：电子/纸质 -->
+    <!-- 发票类型：1=普通 2=专用（与 eb_user_invoice / eb_order_invoice.type 一致） -->
     <view class="info-row acea-row row-between">
       <text class="info-label">{{ $t('发票类型') }}</text>
-      <text class="info-value">{{ invoice.type === 2 ? $t('纸质发票') : $t('电子发票') }}</text>
+      <text class="info-value">{{ invoice.type === 2 ? $t('增值税电子专用发票') : $t('增值税电子普通发票') }}</text>
     </view>
     <!-- 税号（企业抬头才有） -->
     <view v-if="invoice.tax_number" class="info-row acea-row row-between">

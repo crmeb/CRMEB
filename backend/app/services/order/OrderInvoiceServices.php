@@ -22,6 +22,7 @@ use crmeb\services\invoice\Invoice;
 use app\dao\order\OrderInvoiceDao;
 use app\services\user\UserInvoiceServices;
 use app\services\user\UserServices;
+use crmeb\trade\order\type\OrderTypeRegistry;
 use think\facade\Log;
 
 
@@ -78,10 +79,12 @@ class OrderInvoiceServices extends BaseService
         $field = 'id as invoice_id,order_id,header_type,type,name,duty_number,drawer_phone,email,tell,address,bank,card_number,is_invoice,invoice_number,remark as invoice_reamrk,invoice_time,add_time as invoice_add_time,unique_num,invoice_num,invoice_type,invoice_serial_number,red_invoice_num';
         $where['is_pay'] = 1;
         $where['is_del'] = 0;
-        // 订单中台关联查询：仅选择中台表实际存在的字段
+        // 订单中台关联查询：带 source_type/source_id，便于实时推导待发货/待收货
         $list = $this->dao->getList($where, $field, ['order' => function ($query) {
-            $query->field('id,order_no,uid,pay_price,status_code,refund_status,extra_info,add_time');
+            $query->field('id,order_no,uid,pay_price,status_code,refund_status,extra_info,add_time,source_type,source_id');
         }], 'add_time desc', $page, $list);
+        // 按源订单类型批量解析业务子状态（extra_info 快照会被 syncStatus 覆盖成 processing，不能直接用）
+        $businessStatusMap = $this->resolveBusinessStatusMap($list);
         // 批量取下单用户，作为收货人姓名电话的兜底数据
         $uids = array_filter(array_unique(array_column(array_column($list, 'order'), 'uid')));
         $userList = $uids ? app()->make(UserServices::class)->getColumn([['uid', 'in', $uids]], 'uid,real_name,nickname,phone', 'uid') : [];
@@ -100,29 +103,98 @@ class OrderInvoiceServices extends BaseService
             $contactPhone = trim((string)($contact['phone'] ?? ''));
             $item['real_name'] = $contactName !== '' ? $contactName : trim((string)($user['real_name'] ?? ($user['nickname'] ?? '')));
             $item['user_phone'] = $contactPhone !== '' ? $contactPhone : trim((string)($user['phone'] ?? ''));
-            $item['status'] = $this->statusToLegacy($order['status_code'] ?? '');
+            $statusCode = (string)($order['status_code'] ?? '');
+            $item['status_code'] = $statusCode;
+            $centerId = (int)($order['id'] ?? 0);
+            $businessStatus = $businessStatusMap[$centerId] ?? null;
+            if (is_array($businessStatus)) {
+                if (empty($businessStatus['label']) && !empty($businessStatus['text'])) {
+                    $businessStatus['label'] = $businessStatus['text'];
+                }
+                $item['business_status'] = $businessStatus;
+                // 列表唯一展示文案：优先业务子状态（待收货），否则中台统一状态
+                $item['status_text'] = (string)($businessStatus['label'] ?: ($businessStatus['text'] ?? ''));
+            } else {
+                $item['business_status'] = null;
+                $item['status_text'] = '';
+            }
+            if ($item['status_text'] === '') {
+                // 管理端与订单中台列表一致：processing 展示「待处理」
+                $item['status_text'] = $statusCode === OrderCenter::STATUS_PROCESSING
+                    ? '待处理'
+                    : (OrderCenter::$statusMap[$statusCode] ?? ($statusCode !== '' ? $statusCode : '--'));
+            }
+            // 兼容旧前端/移动端数字状态
+            $item['status'] = $this->statusToLegacy($statusCode);
             $item['refund_status'] = $order['refund_status'] ?? 0;
             $item['add_time'] = date('Y-m-d H:i:s', $order['add_time'] ?? $item['invoice_add_time'] ?? time());
             $item['invoice_add_time'] = date('Y-m-d H:i:s', $item['invoice_add_time']);
             // 中台关联原始数据不再下发给前端
             unset($item['order']);
         }
+        unset($item);
         $count = $this->dao->count($where);
         return compact('list', 'count');
     }
 
     /**
-     * 订单中台状态码映射为旧版订单状态数值（兼容发票模块前端展示）
+     * 批量从源订单适配器推导业务子状态
+     * @param array $list 含 order 关联的发票列表
+     * @return array<int, array|null> order_center.id => business_status
+     */
+    protected function resolveBusinessStatusMap(array $list): array
+    {
+        $grouped = [];
+        $centerIndex = [];
+        foreach ($list as $row) {
+            $order = $row['order'] ?? [];
+            $centerId = (int)($order['id'] ?? 0);
+            $sourceType = (string)($order['source_type'] ?? '');
+            $sourceId = (int)($order['source_id'] ?? 0);
+            if ($centerId <= 0 || $sourceType === '' || $sourceId <= 0) {
+                continue;
+            }
+            $grouped[$sourceType][$sourceId] = true;
+            $centerIndex[$sourceType][$sourceId][] = $centerId;
+        }
+        $result = [];
+        foreach ($grouped as $sourceType => $idMap) {
+            try {
+                $adapter = OrderTypeRegistry::getAdapter($sourceType);
+                $modelClass = $adapter::getModelClass();
+                /** @var \crmeb\basic\BaseModel $model */
+                $model = app()->make($modelClass);
+                $sourceRows = $model->whereIn('id', array_keys($idMap))->select()->toArray();
+                foreach ($sourceRows as $sourceOrder) {
+                    $sourceId = (int)($sourceOrder['id'] ?? 0);
+                    $businessStatus = $adapter->resolveBusinessStatus($sourceOrder);
+                    foreach ($centerIndex[$sourceType][$sourceId] ?? [] as $centerId) {
+                        $result[$centerId] = $businessStatus;
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::warning('发票列表推导订单业务状态失败: ' . $e->getMessage(), ['source_type' => $sourceType]);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * 订单中台状态码映射为旧版订单状态数值（兼容移动端发票列表 _type）
      * @param string $statusCode
      * @return int
      */
     public function statusToLegacy(string $statusCode): int
     {
         return match ($statusCode) {
+            OrderCenter::STATUS_PENDING_PAYMENT => 0,
             OrderCenter::STATUS_PROCESSING => 0,
             OrderCenter::STATUS_PENDING_REVIEW => 2,
             OrderCenter::STATUS_COMPLETED => 3,
+            OrderCenter::STATUS_CANCELED => -1,
+            OrderCenter::STATUS_AFTER_SALE, OrderCenter::STATUS_REFUNDING => -3,
             OrderCenter::STATUS_REFUNDED => -2,
+            OrderCenter::STATUS_DELETED => -4,
             default => 0,
         };
     }
@@ -145,11 +217,13 @@ class OrderInvoiceServices extends BaseService
             $extra = $order['extra_info'] ?? '';
             $extra = is_string($extra) ? (json_decode($extra, true) ?: []) : ($extra ?: []);
             $order['cartInfo'] = $this->buildLegacyCartInfo($extra);
+            $order['pay_price'] = $order['pay_price'] ?? '0.00';
             // 移动端跳转开票详情携带的订单号对应中台 order_no
             $order['order_id'] = $order['order_no'] ?? '';
             unset($order['extra_info']);
             $item['order'] = $order;
         }
+        unset($item);
         return $list;
     }
 

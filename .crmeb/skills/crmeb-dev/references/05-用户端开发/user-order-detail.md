@@ -497,7 +497,7 @@ GET /api/center/order/detail/{orderNo}
     "invoice": {                            // 发票信息（order_center.invoice 为空时从 eb_store_order_invoice 查询）
       "title": "公司名称",                   // 发票抬头名称
       "header_type": 2,                     // 1=个人 2=企业
-      "type": 1,                            // 1=电子发票 2=纸质发票
+      "type": 1,                            // 1=普通发票 2=专用发票
       "tax_number": "91110000MA00XXXXXX",   // 税号（企业抬头才有）
       "email": "test@example.com",          // 接收邮箱
       "phone": "13800138000",               // 联系电话
