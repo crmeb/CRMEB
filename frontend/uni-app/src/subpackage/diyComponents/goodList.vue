@@ -1141,7 +1141,9 @@ const imgStyle = computed(() => {
 /*商品名称样式*/
 const productStyle = computed(() => {
   return {
-    color: props.dataConfig.goodsNameColor.color[0].item,
+    color: props.dataConfig.toneConfig.tabVal
+      ? props.dataConfig.goodsNameColor.color[0].item
+      : "#333",
     fontWeight: props.dataConfig.goodsName.tabVal ? "normal" : "bold",
   };
 });
@@ -1151,7 +1153,7 @@ const checkboxInfo = computed(() => {
 });
 /* 价格颜色 */
 const priceColor = computed(() => {
-  return props.dataConfig.toneCartConfig.tabVal
+  return props.dataConfig.toneConfig.tabVal
     ? props.dataConfig.goodsPriceColor.color[0].item
     : "var(--view-theme)";
 });
@@ -1168,7 +1170,7 @@ const showBtn = computed(() => {
 /* 按钮颜色 */
 const btnBgColor = computed(() => {
   return {
-    background: props.dataConfig.toneConfig.tabVal
+    background: props.dataConfig.toneCartConfig.tabVal
       ? `linear-gradient(90deg,${props.dataConfig.bntBgColor.color[0].item} 0%,${props.dataConfig.bntBgColor.color[1].item} 100%)`
       : "linear-gradient(90deg, var(--view-theme) 0%, var(--view-gradient) 100%)",
   };

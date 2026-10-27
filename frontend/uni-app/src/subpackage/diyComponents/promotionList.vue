@@ -288,8 +288,9 @@ function buildGoodDataConfig() {
     checkboxInfo: {
       type: [0, 1, 2, 3, 4, 5],
     },
+    // 促销列表的价格/按钮颜色跟随按钮色调开关（与后台 home_product 预览一致）
     toneConfig: {
-      tabVal: 0,
+      tabVal: props.dataConfig.toneCartConfig.tabVal,
     },
     toneCartConfig: props.dataConfig.toneCartConfig,
     bntBgColor: props.dataConfig.bntBgColor,
@@ -303,12 +304,11 @@ function buildGoodDataConfig() {
         },
       ],
     },
-    goodsPriceColor: {
+    goodsPriceColor: props.dataConfig.goodsPriceColor,
+    soldNumColor: {
       color: [
         {
-          item: props.dataConfig.toneCartConfig.tabVal
-            ? props.dataConfig.goodsPriceColor.color[0].item
-            : "var(--view-theme)",
+          item: "#999999",
         },
       ],
     },
