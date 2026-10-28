@@ -7,9 +7,9 @@
   <view class="info-card custom-form-card" v-if="items && items.length > 0">
     <view class="card-title">{{ $t('自定义信息') }}</view>
     <template v-for="(item, idx) in items" :key="idx">
-      <!-- 图片字段：类型为 img，或存量订单无类型但值是图片链接 -->
-      <view class="info-row info-row--block" v-if="isImageItem(item)">
-        <view class="info-label">{{ item.title || item.label }}：</view>
+      <!-- 图片字段：名称左、图片右（多图可换行） -->
+      <view class="info-row info-row--image" v-if="isImageItem(item)">
+        <text class="info-label">{{ item.title || item.label }}</text>
         <view class="info-images">
           <image
             v-for="(url, i) in imageList(item)"
@@ -21,9 +21,9 @@
           />
         </view>
       </view>
-      <!-- 文本字段：值跟随标签左对齐，长文本自动换行 -->
+      <!-- 文本字段：名称左、内容右，与订单信息卡片左右分离一致 -->
       <view class="info-row" v-else>
-        <text class="info-label">{{ item.title || item.label }}：</text>
+        <text class="info-label">{{ item.title || item.label }}</text>
         <text class="info-value">{{ item.value }}</text>
       </view>
     </template>
@@ -97,11 +97,42 @@ function previewImages(item, index) {
 <style scoped>
 .custom-form-card { margin: 20rpx; background: #fff; border-radius: 16rpx; padding: 30rpx; }
 .card-title { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 20rpx; }
-.info-row { display: flex; align-items: baseline; padding: 12rpx 0; font-size: 26rpx; }
-.info-label { color: #999; flex-shrink: 0; }
-.info-value { color: #333; flex: 1; margin-left: 16rpx; line-height: 1.5; word-break: break-all; text-align: left; }
-/* 图片字段：标签在上、图片缩略图在下 */
-.info-row--block { display: block; padding: 12rpx 0; }
-.info-images { display: flex; flex-wrap: wrap; margin-top: 12rpx; }
-.info-image { width: 160rpx; height: 160rpx; border-radius: 12rpx; margin: 0 12rpx 12rpx 0; background: #f5f5f5; }
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12rpx 0;
+  font-size: 26rpx;
+  gap: 24rpx;
+}
+.info-label {
+  color: #999;
+  flex-shrink: 0;
+  max-width: 40%;
+  line-height: 1.5;
+}
+.info-value {
+  color: #333;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+  word-break: break-all;
+  text-align: right;
+}
+/* 图片字段：名称左、缩略图右对齐 */
+.info-row--image { align-items: flex-start; }
+.info-images {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+.info-image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  margin: 0 0 12rpx 12rpx;
+  background: #f5f5f5;
+}
 </style>

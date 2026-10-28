@@ -372,12 +372,12 @@
               </el-row>
             </div>
 
-            <!-- 表单信息 -->
+            <!-- 表单信息（图片字段按 type=img 判断，与订单中台 DetailOrderInfo 同口径） -->
             <div class="section" v-if="detailData.custom_form && detailData.custom_form.length">
               <div class="section-title">表单信息</div>
               <el-row :gutter="24" class="detail-grid">
                 <template v-for="(item, idx) in detailData.custom_form" :key="idx">
-                  <el-col :span="8" v-if="item.label !== 'img'">
+                  <el-col :span="8" v-if="!isImageItem(item)">
                     <div class="detail-item">
                       <span class="label">{{ item.title }}：</span><span class="value">{{ item.value }}</span>
                     </div>
@@ -386,7 +386,13 @@
                     <div class="detail-item">
                       <span class="label">{{ item.title }}：</span>
                       <span class="value">
-                        <img v-for="(img, i) in item.value" :key="i" :src="img" class="form-img" v-viewer />
+                        <img
+                          v-for="(img, i) in formImageUrls(item)"
+                          :key="i"
+                          :src="img"
+                          class="form-img"
+                          v-viewer
+                        />
                       </span>
                     </div>
                   </el-col>
@@ -599,6 +605,28 @@ function formatDate(ts) {
     .getSeconds()
     .toString()
     .padStart(2, '0')}`;
+}
+
+// 图片扩展名判断
+const IMAGE_EXT_RE = /\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i;
+
+/** 自定义表单字段值规范化为图片 URL 数组（兼容字符串单图 / 数组多图） */
+function formImageUrls(item) {
+  if (!item || !item.value) return [];
+  const list = Array.isArray(item.value) ? item.value : [item.value];
+  return list.filter((v) => typeof v === 'string' && v.indexOf('http') === 0);
+}
+
+/**
+ * 图片字段判断：新订单 type=img，或存量订单无类型但值是图片链接
+ * （新数据 label 是 custom_field_N，不能再按 label == 'img' 判断）
+ */
+function isImageItem(item) {
+  if (!item) return false;
+  if (item.type === 'img') return true;
+  if (item.type) return false;
+  const urls = formImageUrls(item);
+  return urls.length > 0 && urls.every((v) => IMAGE_EXT_RE.test(v) || v.indexOf('/uploads/') !== -1);
 }
 
 /** 将 "Y-m-d H:i:s" 或 "Y-m-d H:i" 字符串转为时间戳，用于时间线排序 */
