@@ -22,7 +22,7 @@ export default {
     auth: ['admin-finance'],
   },
   redirect: {
-    name: `${pre}cashApply`,
+    name: `${pre}billingRecords`,
   },
   component: LayoutMain,
   children: [

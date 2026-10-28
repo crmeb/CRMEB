@@ -19,3 +19,16 @@ INSERT INTO `eb_system_config`
 SELECT 520, 'invite_poster_bg', 'upload', 'input', 105, '', 1, '', 0, 0, '""', '邀新海报背景图', '分享邀新海报的底图，建议尺寸 750*1334（9:16）；未配置时回退「组合数据-个人中心分销海报」，两者都没有则邀新页无海报', 99, 1, 0, 0, 0
 FROM DUAL
 WHERE NOT EXISTS (SELECT 1 FROM `eb_system_config` WHERE `menu_name` = 'invite_poster_bg');
+
+-- 2026-10-28 下线佣金提现后清理残留菜单权限（父级 36/39 已不存在，仅剩孤儿按钮/接口权限）
+DELETE FROM `eb_system_menus`
+WHERE `id` IN (2965, 2966, 2967, 2968, 2969, 2970)
+   OR `unique_auth` IN (
+        'extract-status',
+        'extract-edit',
+        'finance-extract-refuse',
+        'finance-extract-adopt',
+        'finance-extract',
+        'finance-extract-edit'
+   )
+   OR (`api_url` LIKE 'finance/extract%' AND `api_url` <> '');

@@ -118,9 +118,9 @@ import { ref, computed, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { useMediaStore } from '@/store/module/media';
-import { getFlowList, cashEditApi, setMarks } from '@/api/finance';
+import { getFlowList, setMarks } from '@/api/finance';
 
-defineOptions({ name: 'cashApply' });
+defineOptions({ name: 'capitalFlow' });
 
 const { isMobile } = storeToRefs(useMediaStore());
 

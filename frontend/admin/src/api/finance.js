@@ -33,65 +33,6 @@ export function billListApi(data) {
 }
 
 /**
- * @description 佣金记录 -- 个人提现列表
- * @param {Number} param id {Number} 佣金记录 用户ID
- */
-export function extractlistApi(id, data) {
-  return request({
-    url: `finance/finance/extract_list/${id}`,
-    method: 'get',
-    params: data,
-  });
-}
-
-/**
- * @description 提现申请 -- 列表
- * @param {Object} param data {Object} 提现申请传值
- */
-export function cashListApi(data) {
-  return request({
-    url: `finance/extract`,
-    method: 'get',
-    params: data,
-  });
-}
-
-/**
- * @description 提现申请 -- 编辑表单
- * @param {Number} param id {Number} 提现申请id
- */
-export function cashEditApi(id) {
-  return request({
-    url: `finance/extract/${id}/edit`,
-    method: 'get',
-  });
-}
-
-/**
- * @description 提现申请 -- 拒绝申请
- * @param {Number} param id {Number} 提现申请id
- */
-export function refuseApi(id, data) {
-  return request({
-    url: `finance/extract/refuse/${id}`,
-    method: 'put',
-    data,
-  });
-}
-
-/**
- * @description 提现申请 -- 通过申请
- * @param {Number} param id {Number} 提现申请id
- */
-export function adoptApi(id, data) {
-  return request({
-    url: `finance/extract/adopt/${id}`,
-    method: 'put',
-    data,
-  });
-}
-
-/**
  * @description 充值记录 -- 列表
  * @param {Object} param data {Object} 充值记录传值
  */
