@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="{{['base-tag', c && 'middle']}}" style="{{d}}">{{b}}</view><image wx:else class="{{['img-tag', e && 'middle-img-tag']}}" src="{{f}}" mode="heightFix"></image>

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "修改密码",
+  "usingComponents": {
+    "verify": "../components/verify/index"
+  }
+}

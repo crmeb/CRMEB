@@ -1,1 +1,0 @@
-import{b1 as t}from"./index-zpxrlmYx.js";const r="/assets/address-aleart-header-CSJ-gkCL.png";function e(r,e){return t.get(`v2/lottery/info/${r}${e?"/"+e:""}`)}function n(r){return t.post("v2/lottery",r)}function o(r){return t.post("v2/lottery/receive",r)}function s(r){return t.get("v2/lottery/record",r)}export{r as _,s as a,e as g,o as r,n as s};

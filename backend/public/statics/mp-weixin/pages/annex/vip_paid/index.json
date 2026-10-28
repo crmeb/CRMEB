@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "SVIP会员",
+  "usingComponents": {
+    "payment": "../../../components/payment/index"
+  }
+}

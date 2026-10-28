@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="remark-section data-v-4e2614e9"><view class="section-title data-v-4e2614e9">{{b}}</view><block wx:if="{{r0}}"><textarea class="remark-textarea data-v-4e2614e9" placeholder="{{c}}" maxlength="100" value="{{d}}" bindinput="{{e}}"></textarea></block></view>

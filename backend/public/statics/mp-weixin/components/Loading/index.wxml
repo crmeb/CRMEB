@@ -1,0 +1,1 @@
+<view><view wx:if="{{a}}" class="Loads acea-row row-center-wrapper" style="margin-top:.2rem"><view wx:if="{{b}}"><view class="iconfont icon-jiazai loading acea-row row-center-wrapper"></view> {{c}}</view><view wx:else>{{d}}</view></view></view>

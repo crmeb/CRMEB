@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "商品分类",
+  "usingComponents": {
+    "goods-cate1": "./goods_cate1",
+    "goods-cate2": "./goods_cate2",
+    "goods-cate3": "./goods_cate3",
+    "page-footer": "../../components/pageFooter/index"
+  }
+}

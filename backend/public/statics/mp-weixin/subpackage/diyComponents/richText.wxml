@@ -1,0 +1,1 @@
+<view hidden="{{!e}}"><common-wrapper wx:if="{{d}}" u-s="{{['d']}}" u-i="111f6722-0" bind:__l="__l" u-p="{{d}}"><view wx:if="{{a}}" class="richText" style="{{c}}"><mp-html wx:if="{{b}}" u-i="111f6722-1,111f6722-0" bind:__l="__l" u-p="{{b}}"/></view></common-wrapper></view>

@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "easy-loadimage": "../../components/easy-loadimage/easy-loadimage",
+    "product-window": "../../components/productWindow/index",
+    "common-wrapper": "./commonWrapper"
+  }
+}

@@ -1,0 +1,1 @@
+.order-details.data-v-b8e2dd75{padding-bottom:calc(150rpx + constant(safe-area-inset-bottom));padding-bottom:calc(150rpx + env(safe-area-inset-bottom))}.page-locked.data-v-b8e2dd75{height:100vh;overflow:hidden}.mask.data-v-b8e2dd75{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:998}

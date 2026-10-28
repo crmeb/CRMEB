@@ -1,0 +1,1 @@
+"use strict";exports.Debounce=(t,e)=>{const o=e||500;let n;return function(){const e=arguments;n&&clearTimeout(n),n=setTimeout(()=>{n=null,t.apply(this,e)},o)}},exports.Throttle=(t,e)=>{let o,n;const s=e||500;return function(){const e=arguments,u=+new Date;o&&u-o<s?(clearTimeout(n),n=setTimeout(()=>{o=u,t.apply(this,e)},s)):(o=u,t.apply(this,e))}};

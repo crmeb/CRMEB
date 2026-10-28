@@ -1,0 +1,1 @@
+<common-wrapper wx:if="{{c}}" u-s="{{['d']}}" data-c-h="{{!b}}" u-i="6b52d34c-0" bind:__l="__l" u-p="{{c}}"><view class="blankPage"><view class="bankCon" style="{{a}}"></view></view></common-wrapper>

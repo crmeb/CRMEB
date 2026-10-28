@@ -1,0 +1,1 @@
+<view class="posterCon" style="{{e}}"><view class="poster-poster"><view class="tip"><text class="iconfont icon-shuoming"></text> {{a}}</view><view class="pictrue"><image wx:if="{{b}}" class="canvas" src="{{c}}" bindtap="{{d}}"></image><canvas wx:else class="canvas" canvas-id="myCanvas"></canvas></view></view></view>

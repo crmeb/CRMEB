@@ -1,0 +1,1 @@
+"use strict";const o=require("../common/vendor.js");exports.useColorTheme=function(){const e=o.ref(o.index.getStorageSync("viewColor")),n=o=>{e.value=o};return o.index.$on("ok",n),o.onUnmounted(()=>{o.index.$off("ok",n)}),{colorStyle:e}};

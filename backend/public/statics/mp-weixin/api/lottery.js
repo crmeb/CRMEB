@@ -1,0 +1,1 @@
+"use strict";const t=require("../utils/request.js");exports.getLotteryData=function(e,r){return t.request.get(`v2/lottery/info/${e}${r?"/"+r:""}`)},exports.getLotteryList=function(e){return t.request.get("v2/lottery/record",e)},exports.receiveLottery=function(e){return t.request.post("v2/lottery/receive",e)},exports.startLottery=function(e){return t.request.post("v2/lottery",e)};

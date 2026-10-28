@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "edit-user-modal": "../../../components/editUserModal/index",
+    "privacy-agreement-popup": "../../../components/privacyAgreementPopup/index",
+    "verify": "../components/verify/index"
+  }
+}

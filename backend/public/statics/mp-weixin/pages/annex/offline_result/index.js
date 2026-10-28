@@ -1,0 +1,1 @@
+"use strict";const e=require("../../../common/vendor.js"),t=require("../../../common/assets.js"),s={__name:"index",setup:s=>(e.onLoad(t=>{let s=t.site_name||"";s&&e.index.setNavigationBarTitle({title:s})}),(s,a)=>({a:t._imports_0$33,b:e.t(s.$t("支付成功")),c:e.t(s.$t("进入商城"))}))},a=e._export_sfc(s,[["__scopeId","data-v-2084e30c"]]);wx.createPage(a);

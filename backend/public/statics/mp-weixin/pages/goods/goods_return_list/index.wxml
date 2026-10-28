@@ -1,0 +1,1 @@
+<view class="data-v-7bc4a0d6" style="{{e}}"><view class="apply-return data-v-7bc4a0d6"><split-order wx:if="{{b}}" class="data-v-7bc4a0d6" bindgetList="{{a}}" u-i="7bc4a0d6-0" bind:__l="__l" u-p="{{b}}"></split-order><button class="returnBnt bg-color data-v-7bc4a0d6" bindtap="{{d}}">{{c}}</button></view></view>

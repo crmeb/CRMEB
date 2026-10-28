@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "分销申请",
+  "usingComponents": {
+    "mp-html": "../../../components/mp-html/mp-html",
+    "authorize": "../../../components/Authorize",
+    "verify": "../components/verify/verify"
+  }
+}

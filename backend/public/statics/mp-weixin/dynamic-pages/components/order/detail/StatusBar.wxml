@@ -1,0 +1,1 @@
+<view class="{{['header', 'bg-color', 'data-v-a37c6940', g]}}"><view wx:if="{{a}}" class="{{['pictrue', 'data-v-a37c6940', c]}}"><text class="{{['iconfont', 'data-v-a37c6940', b]}}"></text></view><view class="data data-v-a37c6940"><view class="state data-v-a37c6940">{{d}}</view><view wx:if="{{e}}" class="sub data-v-a37c6940">{{f}}</view></view></view>

@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "砍价记录",
+  "usingComponents": {
+    "count-down": "../../../components/countDown/index",
+    "empty-page": "../../../components/emptyPage",
+    "loading": "../../../components/Loading/index"
+  }
+}

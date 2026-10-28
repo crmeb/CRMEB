@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "usingComponents": {
+    "section-dispatcher": "../components/order/detail/SectionDispatcher",
+    "gift-modal": "../../pages/goods/order_pay_status/components/giftModal",
+    "invoice-modal": "../../pages/goods/components/invoiceModal/index",
+    "invoice-picker": "../../pages/goods/components/invoicePicker/index"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "gift-modal": "../../pages/goods/order_pay_status/components/giftModal"
+  }
+}

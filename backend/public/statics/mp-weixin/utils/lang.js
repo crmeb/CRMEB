@@ -1,0 +1,1 @@
+"use strict";const e=require("../common/vendor.js"),a=require("./cache.js");let l="";l=a.Cache.has("locale")?a.Cache.get("locale"):"zh-CN";const c=e.createI18n({legacy:!0,locale:l,fallbackLocale:"zh-CN",messages:e.index.getStorageSync("localeJson"),silentTranslationWarn:!0,silentFallbackWarn:!0});c.t=c.global.t.bind(c.global),exports.i18n=c;

@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "common-wrapper": "./commonWrapper",
+    "good-list": "./goodList"
+  }
+}

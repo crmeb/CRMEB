@@ -1,0 +1,1 @@
+<view class="main"><guide wx:if="{{a}}" u-i="6d747cdf-0" bind:__l="__l" u-p="{{b}}"></guide></view>

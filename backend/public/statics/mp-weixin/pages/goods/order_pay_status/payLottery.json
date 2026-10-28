@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "grids-lottery": "../components/lottery/index",
+    "lottery-alert": "./components/lotteryAlert",
+    "user-address": "./components/userAddress"
+  }
+}

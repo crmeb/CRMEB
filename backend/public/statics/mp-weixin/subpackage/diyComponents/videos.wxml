@@ -1,0 +1,1 @@
+<view class="data-v-661ee4fb" hidden="{{!e}}"><common-wrapper wx:if="{{d}}" class="data-v-661ee4fb" u-s="{{['d']}}" u-i="661ee4fb-0" bind:__l="__l" u-p="{{d}}"><view class="video-box data-v-661ee4fb" id="myVideo" style="{{c}}"><video class="video data-v-661ee4fb" object-fit="cover" src="{{a}}" poster="{{b}}" controls></video></view></common-wrapper></view>

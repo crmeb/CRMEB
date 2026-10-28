@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="poster-first data-v-a9db4358"><view class="mask-share data-v-a9db4358"><image class="data-v-a9db4358" src="{{b}}" bindtap="{{c}}" catchtouchmove="{{d}}"></image></view></view>

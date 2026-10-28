@@ -1,0 +1,1 @@
+"use strict";exports.EXPIRES_TIME="EXPIRES_TIME",exports.LOGIN_STATUS="LOGIN_STATUS_TOKEN",exports.LOGO_URL="LOGO_URL",exports.STATE_R_KEY="roution_authorize_state",exports.SUBSCRIBE_MESSAGE="SUBSCRIBE_MESSAGE",exports.UID="UID",exports.USER_INFO="USER_INFO";

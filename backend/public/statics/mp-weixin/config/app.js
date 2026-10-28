@@ -1,0 +1,1 @@
+"use strict";const t="https://demo.crmeb.com",o={"content-type":"application/json","Form-type":"routine"},E="Authori-zation",e=1e5,T={HTTP_REQUEST_URL:t,HEADER:o,TOKENNAME:E,EXPIRE:0,LIMIT:10,TIMEOUT:e};exports.EXPIRE=0,exports.HEADER=o,exports.HTTP_REQUEST_URL=t,exports.LIMIT=10,exports.TIMEOUT=e,exports.TOKENNAME=E,exports.configs=T;

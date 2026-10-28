@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "mp-html": "../../components/mp-html/mp-html",
+    "common-wrapper": "./commonWrapper"
+  }
+}

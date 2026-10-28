@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "申请售后",
+  "usingComponents": {
+    "after-sale-engine": "../../../../dynamic-pages/engines/AfterSaleEngine"
+  }
+}

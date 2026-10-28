@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "确认订单",
+  "usingComponents": {
+    "order-create-engine": "../../../../dynamic-pages/engines/OrderCreateEngine"
+  }
+}

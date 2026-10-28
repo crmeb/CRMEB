@@ -1,0 +1,11 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "product-con-swiper": "../../../components/productConSwiper/index",
+    "product-window": "./component/productWindow",
+    "page-design": "../../../subpackage/diyComponents/pageDesign",
+    "kefu-icon": "../../../components/kefuIcon/index",
+    "cus-preview-img": "../../../components/cusPreviewImg/index",
+    "home-list": "../../../components/homeList/index"
+  }
+}

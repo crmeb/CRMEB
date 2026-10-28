@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="load">{{b}}</view>

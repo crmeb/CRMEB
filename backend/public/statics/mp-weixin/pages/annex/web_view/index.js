@@ -1,0 +1,1 @@
+"use strict";const e=require("../../../common/vendor.js"),r={__name:"index",setup(r){const n=e.ref(0),a=e.ref(0),o=e.ref({progress:{color:"transparent"}}),t=e.ref("");return e.onLoad(r=>{t.value=r.url;try{const r=e.index.getWindowInfo();a.value=r.windowWidth,n.value=r.windowHeight}catch(o){}}),(e,r)=>({a:o.value,b:t.value,c:a.value+"px",d:n.value+"px"})}};wx.createPage(r);

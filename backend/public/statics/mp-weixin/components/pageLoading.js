@@ -1,0 +1,1 @@
+"use strict";const e=require("../common/vendor.js"),n={__name:"pageLoading",setup(n){const o=e.ref(!1);return e.onMounted(()=>{o.value=e.index.getStorageSync("loadStatus"),e.index.$once("loadClose",()=>{o.value=!1})}),(n,t)=>e.e({a:o.value},o.value?{b:e.t(n.$t("正在加载中"))}:{})}};wx.createComponent(n);

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "隐私协议",
+  "usingComponents": {
+    "mp-html": "../../../components/mp-html/mp-html"
+  }
+}

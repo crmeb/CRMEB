@@ -1,0 +1,15 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "专题页",
+  "componentPlaceholder": {
+    "page-design": "view"
+  },
+  "usingComponents": {
+    "coupon-window": "../../../components/couponWindow/index",
+    "waterfalls-flow": "../../../components/WaterfallsFlow/WaterfallsFlow",
+    "empty-page": "../../../components/emptyPage",
+    "home": "../../../components/home/index",
+    "loading": "../../../components/Loading/index",
+    "page-design": "../../../subpackage/diyComponents/pageDesign"
+  }
+}

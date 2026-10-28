@@ -1,0 +1,17 @@
+{
+  "component": true,
+  "usingComponents": {
+    "address-window": "../../components/addressWindow/index",
+    "coupon-list-window": "../../components/couponListWindow/index",
+    "delivery-section": "../components/order/create/DeliverySection",
+    "order-product-card": "../components/order/common/OrderProductCard",
+    "order-block-info": "../components/order/common/OrderBlockInfo",
+    "order-discount-panel": "../components/order/create/OrderDiscountPanel",
+    "order-custom-form": "../components/order/create/OrderCustomForm",
+    "order-visitor-form": "../components/order/create/OrderVisitorForm",
+    "order-remark-input": "../components/order/create/OrderRemarkInput",
+    "order-invoice-panel": "../components/order/create/OrderInvoicePanel",
+    "order-price-detail": "../components/order/common/OrderPriceDetail",
+    "order-submit-bar": "../components/order/create/OrderSubmitBar"
+  }
+}

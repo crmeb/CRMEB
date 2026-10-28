@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="countdown-bar data-v-b35bc477"><text class="iconfont icon-shijian data-v-b35bc477"></text><text class="countdown-text data-v-b35bc477">{{b}}</text></view>

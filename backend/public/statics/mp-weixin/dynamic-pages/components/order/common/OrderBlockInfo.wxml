@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="block-info-card data-v-2e11ef8b"><view class="block-info-card__title data-v-2e11ef8b">{{b}}</view><view wx:for="{{c}}" wx:for-item="info" wx:key="c" class="block-info-card__row data-v-2e11ef8b"><text class="block-info-card__label data-v-2e11ef8b">{{info.a}}</text><text class="block-info-card__value data-v-2e11ef8b">{{info.b}}</text></view></view>

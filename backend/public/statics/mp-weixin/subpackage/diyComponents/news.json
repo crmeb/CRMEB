@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "common-wrapper": "./commonWrapper",
+    "uni-notice-bar": "../../components/uniNoticeBar/uni-notice-bar"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "账单明细",
+  "usingComponents": {
+    "empty-page": "../../../components/emptyPage",
+    "home": "../../../components/home/index"
+  }
+}

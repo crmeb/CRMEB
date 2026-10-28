@@ -1,0 +1,1 @@
+"use strict";const e=require("../../../../common/vendor.js");Math||n();const n=()=>"../../../../dynamic-pages/engines/AfterSaleEngine.js",a={__name:"index",setup(n){const a=e.ref(null);return e.onLoad(e=>{a.value=e||{}}),(n,s)=>({a:e.p({options:a.value})})}};wx.createPage(a);

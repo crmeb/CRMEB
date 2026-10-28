@@ -1,0 +1,1 @@
+<view class="scan_login"><view class="head"><image src="{{a}}" mode=""></image><view class="big">{{b}}</view><view class="small">{{c}}</view><view class="sub_btn btn" bindtap="{{e}}">{{d}}</view><view class="out btn" bindtap="{{g}}">{{f}}</view></view></view>

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "收银台",
+  "usingComponents": {
+    "cashier-engine": "../../../dynamic-pages/engines/CashierEngine"
+  }
+}

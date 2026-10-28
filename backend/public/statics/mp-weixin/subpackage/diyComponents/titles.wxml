@@ -1,0 +1,1 @@
+<common-wrapper wx:if="{{j}}" u-s="{{['d']}}" data-c-h="{{!i}}" u-i="47a63754-0" bind:__l="__l" u-p="{{j}}"><view style="{{h}}"><view bindtap="{{f}}" class="title acea-row row-middle row-between" style="{{g}}"><view style="{{b}}">{{a}}</view><view wx:if="{{c}}" class="more" style="{{e}}">{{d}} <text class="iconfont icon-ic_rightarrow"></text></view></view></view></common-wrapper>

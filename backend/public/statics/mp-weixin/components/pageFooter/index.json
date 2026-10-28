@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "base-badge": "../BaseBadge/index"
+  }
+}

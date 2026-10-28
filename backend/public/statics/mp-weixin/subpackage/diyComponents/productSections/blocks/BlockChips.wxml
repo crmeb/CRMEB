@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="block-chips data-v-8dfc5fe5"><view wx:for="{{b}}" wx:for-item="item" wx:key="c" class="block-chips__item data-v-8dfc5fe5"><text class="block-chips__label data-v-8dfc5fe5">{{item.a}}</text><text class="block-chips__value data-v-8dfc5fe5">{{item.b}}</text></view></view>

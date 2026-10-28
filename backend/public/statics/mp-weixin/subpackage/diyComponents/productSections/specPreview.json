@@ -1,0 +1,12 @@
+{
+  "component": true,
+  "usingComponents": {
+    "block-chips": "./blocks/BlockChips",
+    "block-matrix": "./blocks/BlockMatrix",
+    "block-price-list": "./blocks/BlockPriceList",
+    "block-time-slots": "./blocks/BlockTimeSlots",
+    "block-calendar": "./blocks/BlockCalendar",
+    "block-policy": "./blocks/BlockPolicy",
+    "common-wrapper": "./commonWrapper"
+  }
+}

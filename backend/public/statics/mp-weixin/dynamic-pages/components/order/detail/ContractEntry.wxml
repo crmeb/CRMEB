@@ -1,0 +1,1 @@
+<view class="action-card contract-entry data-v-74b07035" bindtap="{{b}}"><text class="iconfont icon-xieyi data-v-74b07035"></text><text class="action-title data-v-74b07035">{{a}}</text><text class="iconfont icon-xiangyou action-arrow data-v-74b07035"></text></view>

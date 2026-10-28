@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "status-badge": "../components/order/common/StatusBadge",
+    "empty-page": "../../components/emptyPage"
+  }
+}

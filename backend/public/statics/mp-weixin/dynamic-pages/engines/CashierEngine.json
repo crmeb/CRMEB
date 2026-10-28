@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "count-down": "../../components/countDown/index",
+    "number-scroll": "../../components/numberScroll"
+  }
+}

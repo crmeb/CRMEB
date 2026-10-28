@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "订单详情",
+  "usingComponents": {
+    "home": "../../../components/home/index",
+    "order-goods": "../../../components/orderGoods/index",
+    "invoice-picker": "../components/invoicePicker/index",
+    "invoice-modal": "../components/invoiceModal/index",
+    "gift-modal": "../order_pay_status/components/giftModal",
+    "zb-code": "../../../components/zb-code/zb-code"
+  }
+}

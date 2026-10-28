@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="notice-bar data-v-cdfb4554"><view wx:for="{{b}}" wx:for-item="notice" wx:key="c" class="{{['data-v-cdfb4554', 'notice-item', notice.d]}}"><text wx:if="{{notice.a}}" class="iconfont icon-zhuyi-copy data-v-cdfb4554"></text><text class="data-v-cdfb4554">{{notice.b}}</text></view></view>

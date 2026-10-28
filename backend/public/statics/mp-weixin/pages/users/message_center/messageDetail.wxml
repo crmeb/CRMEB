@@ -1,0 +1,1 @@
+<view class="msg-det data-v-c4f7acd0"><view class="title data-v-c4f7acd0">{{a}}</view><view class="content data-v-c4f7acd0">{{b}}</view><view class="add-time data-v-c4f7acd0">{{c}}{{d}}</view></view>

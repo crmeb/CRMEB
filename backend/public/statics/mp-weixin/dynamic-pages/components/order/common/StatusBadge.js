@@ -1,0 +1,1 @@
+"use strict";const t=require("../../../../common/vendor.js"),e=Object.assign({name:"PrimitiveStatusBadge"},{__name:"StatusBadge",props:{statusCode:{type:String,default:""},statusText:{type:String,default:""}},setup:e=>(s,a)=>({a:t.t(e.statusText),b:t.n("status-"+e.statusCode)})}),s=t._export_sfc(e,[["__scopeId","data-v-10ef0921"]]);wx.createComponent(s);

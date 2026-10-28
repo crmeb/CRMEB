@@ -1,0 +1,1 @@
+.Loads{height:80rpx;font-size:25rpx;color:#000}.Loads .iconfont{font-size:30rpx;margin-right:10rpx;height:32rpx;line-height:32rpx}@keyframes load{0%{transform:rotate(0)}to{transform:rotate(360deg)}}.loadingpic{animation:load 3s linear 1s infinite}.loading{animation:load linear 1s infinite}

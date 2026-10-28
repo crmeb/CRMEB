@@ -1,0 +1,1 @@
+.status-badge.data-v-10ef0921{font-size:28rpx;font-weight:700}.status-pending_payment.data-v-10ef0921{color:var(--view-theme, #e93323)}.status-processing.data-v-10ef0921{color:#f90}.status-completed.data-v-10ef0921{color:#07c160}.status-canceled.data-v-10ef0921{color:#999}.status-refunding.data-v-10ef0921{color:#f60}.status-refunded.data-v-10ef0921{color:#999}

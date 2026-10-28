@@ -1,0 +1,1 @@
+"use strict";const e=require("../../common/vendor.js"),t=e.defineStore("indexData",()=>{const t=e.ref({}),n=e.ref(0);return{indexDatas:t,cartNum:n,setIndexData:function(e){t.value=e},setCartNum:function(e){n.value=e}}});exports.useIndexDataStore=t;

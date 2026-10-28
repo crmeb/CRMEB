@@ -1,0 +1,1 @@
+<view class="data-v-255a11b1"><view wx:if="{{a}}" class="{{['tui-drawer-mask', 'data-v-255a11b1', b && 'tui-drawer-mask_show']}}" style="{{'z-index:' + c}}" bindtap="{{d}}" catchtouchmove="{{e}}"></view><view class="{{['tui-drawer-container', 'data-v-255a11b1', f, g]}}" style="{{'z-index:' + h + ';' + ('background-color:' + i)}}" catchtouchmove="{{j}}"><slot></slot></view></view>

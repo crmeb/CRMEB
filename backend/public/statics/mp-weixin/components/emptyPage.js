@@ -1,0 +1,1 @@
+"use strict";const e=require("../common/vendor.js"),t=require("../config/app.js"),r={__name:"emptyPage",props:{title:{type:String,default:""}},setup(r){const n=e.ref(t.HTTP_REQUEST_URL);return(t,s)=>({a:n.value+"/statics/images/empty-box.png",b:e.t(r.title||t.$t("暂无记录"))})}};wx.createComponent(r);

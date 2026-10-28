@@ -1,0 +1,1 @@
+<view id="_root" class="{{c}}" style="{{d}}"><slot wx:if="{{a}}"/><node wx:else u-i="dce299f2-0" bind:__l="__l" u-p="{{b||''}}"/></view>

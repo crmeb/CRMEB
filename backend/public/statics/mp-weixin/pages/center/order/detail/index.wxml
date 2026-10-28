@@ -1,0 +1,1 @@
+<view><order-detail-engine wx:if="{{d}}" class="r" u-r="engine" bindinvoiceOverlay="{{b}}" bindpendingInvoiceConsumed="{{c}}" u-i="5168fd8f-0" bind:__l="__l" u-p="{{d}}"/></view>

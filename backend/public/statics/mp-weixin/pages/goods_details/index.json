@@ -1,0 +1,20 @@
+{
+  "navigationStyle": "custom",
+  "transparentTitle": "auto",
+  "componentPlaceholder": {
+    "page-design": "view",
+    "product-bottom": "view"
+  },
+  "usingComponents": {
+    "cus-preview-img": "../../components/cusPreviewImg/index",
+    "swiper-preview": "../../components/cusPreviewImg/swiperPreview",
+    "coupon-list-window": "../../components/couponListWindow/index",
+    "product-window": "../../components/productWindow/index",
+    "kefu-icon": "../../components/kefuIcon/index",
+    "home-list": "../../components/homeList/index",
+    "specs": "./components/specs/index",
+    "service-modal": "./components/serviceModal/index",
+    "page-design": "../../subpackage/diyComponents/pageDesign",
+    "product-bottom": "../../subpackage/diyComponents/productBottom"
+  }
+}

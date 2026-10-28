@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "mobile-login": "../components/login_mobile/index",
+    "routine-phone": "../components/login_mobile/routine_phone",
+    "edit-user-modal": "../../../components/editUserModal/index",
+    "privacy-agreement-popup": "../../../components/privacyAgreementPopup/index"
+  }
+}

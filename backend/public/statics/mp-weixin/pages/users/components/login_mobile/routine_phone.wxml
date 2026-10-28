@@ -1,0 +1,1 @@
+<view wx:if="{{a}}"><view class="mobile-bg"></view><view class="{{['mobile-mask', 'animated', g && 'slideInUp']}}"><view class="info-box"><image src="{{b}}"></image><view class="title">{{c}}</view><view class="txt">{{d}}</view></view><button class="sub_btn" open-type="getPhoneNumber" bindgetphonenumber="{{f}}">{{e}}</button></view></view>

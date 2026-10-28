@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "积分订单",
+  "usingComponents": {
+    "coupon-list-window": "../../components/couponListWindow/index",
+    "address-window": "../../components/addressWindow/index",
+    "home": "../../components/home/index"
+  }
+}

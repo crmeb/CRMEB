@@ -1,0 +1,1 @@
+<view class="marquee-wrap data-v-8b00d84b"><view class="{{['marquee-list', 'data-v-8b00d84b', d && 'animate-up']}}"><view wx:for="{{a}}" wx:for-item="item" wx:key="c" class="data-v-8b00d84b">{{b}} {{item.a}} {{c}} {{item.b}}</view></view></view>

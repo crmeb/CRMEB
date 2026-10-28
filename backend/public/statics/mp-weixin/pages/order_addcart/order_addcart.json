@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "购物车",
+  "usingComponents": {
+    "recommend": "../../components/recommend/index",
+    "product-window": "../../components/productWindow/index",
+    "page-footer": "../../components/pageFooter/index"
+  }
+}

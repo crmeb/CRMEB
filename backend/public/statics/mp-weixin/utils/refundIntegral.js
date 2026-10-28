@@ -1,0 +1,1 @@
+"use strict";exports.getRefundIntegral=function(t,a){const r=Math.max(0,Number(t.cart_num)||0),e=Math.max(0,Number(a)||0),n=Math.max(0,Number(t.deduction_integral_total)||0);if(n>0&&r>0){const a=Math.min(r,Math.max(0,Number(t.refunded_num)||0)),u=Math.min(r,a+e);return Math.floor(n*u/r)-Math.floor(n*a/r)}return Math.max(0,Number(t.integral_unit_price)||0)*e};

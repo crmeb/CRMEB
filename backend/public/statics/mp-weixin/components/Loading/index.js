@@ -1,0 +1,1 @@
+"use strict";const e=require("../../common/vendor.js"),o=Object.assign({name:"Loading"},{__name:"index",props:{loaded:{type:Boolean,default:!1},loading:{type:Boolean,default:!1}},setup:o=>(a,d)=>e.e({a:o.loading&&!o.loaded},o.loading&&!o.loaded?e.e({b:o.loading},o.loading?{c:e.t(a.$t("正在加载中"))}:{d:e.t(a.$t("上拉加载更多"))}):{})});wx.createComponent(o);

@@ -1,0 +1,1 @@
+"use strict";const r=require("./crypto-js.js");exports.aesEncrypt=function(t,e="XwKsGlMcdPMEhR1B"){var p=r.CryptoJS.enc.Utf8.parse(e),o=r.CryptoJS.enc.Utf8.parse(t);return r.CryptoJS.AES.encrypt(o,p,{mode:r.CryptoJS.mode.ECB,padding:r.CryptoJS.pad.Pkcs7}).toString()};

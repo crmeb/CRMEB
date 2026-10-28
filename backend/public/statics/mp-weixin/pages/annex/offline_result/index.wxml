@@ -1,0 +1,1 @@
+<view class="data-v-2084e30c"><view class="result data-v-2084e30c"><view class="image-wrap data-v-2084e30c"><image class="image data-v-2084e30c" src="{{a}}"></image></view><view class="text data-v-2084e30c">{{b}}</view></view><navigator render-link="{{false}}" class="link data-v-2084e30c" url="/pages/index/index" open-type="switchTab">{{c}}</navigator></view>

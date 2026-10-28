@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "余额充值",
+  "usingComponents": {
+    "payment": "../../../components/payment/index"
+  }
+}

@@ -1,0 +1,1 @@
+<view wx:if="{{a}}" class="block-policy data-v-9bb3d4ad"><view wx:for="{{b}}" wx:for-item="item" wx:key="c" class="block-policy__item data-v-9bb3d4ad"><view class="block-policy__label data-v-9bb3d4ad">{{item.a}}</view><view class="block-policy__value data-v-9bb3d4ad">{{item.b}}</view></view></view>

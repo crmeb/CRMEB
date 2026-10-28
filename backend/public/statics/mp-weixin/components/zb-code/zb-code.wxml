@@ -1,0 +1,1 @@
+<view class="zb-code"><block wx:if="{{r0}}"><canvas class="zb-code-canvas" canvas-id="{{a}}" style="{{'width:' + b + ';' + ('height:' + c)}}"/></block><image hidden="{{!d}}" src="{{e}}" style="{{'width:' + f + ';' + ('height:' + g)}}"/></view>

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "兑换记录",
+  "usingComponents": {
+    "empty-page": "../../components/emptyPage",
+    "loading": "../../components/Loading/index"
+  }
+}

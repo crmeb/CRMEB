@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "退货列表",
+  "usingComponents": {
+    "empty-page": "../../../components/emptyPage"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "资讯详情",
+  "usingComponents": {
+    "mp-html": "../../../components/mp-html/mp-html",
+    "share-info": "../components/shareInfo/index"
+  }
+}

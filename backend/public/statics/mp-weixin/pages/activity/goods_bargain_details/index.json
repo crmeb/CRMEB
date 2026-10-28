@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "砍价活动",
+  "usingComponents": {
+    "mp-html": "../../../components/mp-html/mp-html",
+    "bargain-poster": "../poster-poster/index",
+    "count-down": "../../../components/countDown/index"
+  }
+}

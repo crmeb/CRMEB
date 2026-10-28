@@ -1,0 +1,1 @@
+<view class="action-card data-v-dcc001b6" bindtap="{{f}}"><image wx:if="{{a}}" src="{{b}}" mode="aspectFill" class="action-image data-v-dcc001b6"/><text wx:elif="{{c}}" class="{{['data-v-dcc001b6', 'iconfont', d]}}"></text><text class="action-title data-v-dcc001b6">{{e}}</text><text class="iconfont icon-xiangyou action-arrow data-v-dcc001b6"></text></view>
