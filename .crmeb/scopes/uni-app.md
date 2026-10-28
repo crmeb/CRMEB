@@ -52,9 +52,21 @@ CRMEB 开源版（KY）移动端，基于 **uni-app（Vue 3 + `<script setup>`�
     │   ├── center/           # 【v8 新增】订单中心子包：order/create|detail|aftersale、pay/index|status
     │   └── goods/order_list  # 旧路径保留，内部已替换为 OrderListEngine
     ├── subpackage/diyComponents/  # DIY 装修组件分包；【v8 新增】productSections/（详情页展示块）
+    ├── pages-modules/        # 免注册业务模块分包：丢目录即自动注册路由（见下文专节；_template/ 为复制模板）
     ├── components/ store/ utils/ libs/ config/   # 常规公共层（components/mp-html 为富文本组件，勿改内部实现）
     └── pages.json            # 路由配置（带注释 JSON）
 ```
+
+## pages-modules 自动分包注册（免改 pages.json）
+
+`src/pages-modules/` 是业务模块的"丢入即用"投放目录：新增页面不再手工编辑 `src/pages.json`，把模块目录放进去即可编译、打包、上传。机制与边界：
+
+- **原理**：本版本 uni 编译器（`@dcloudio` 3.0.0-5020420260813003）没有官方目录注册机制，`src/pages.json` 是路由唯一输入。工程在 `vite.config.js` 里调用 `scripts/uni-auto-subpackages.mjs`，对"读取 src/pages.json"做路径级 `fs.readFileSync` 拦截，把 `pages-modules/` 扫描出的分包条目**在内存中 append-only 合并**进返回文本——磁盘上的 `pages.json` 保持字节不变（255 处注释与 `// #ifdef` 块全部保留）。uni 官方在 `@dcloudio/vite-plugin-uni` 内部用同样手法拦截 scss 读取（`rewriteScssReadFileSync`）。
+- **约定**：`src/pages-modules/<snake_case 模块名>/` = 一个独立分包，root 为 `pages-modules/<模块名>`；模块内 `.vue` 自动注册为页面（路径 = 去扩展名的相对路径，如 `/pages-modules/lottery/index`），排除 `components/`、`component/`、`static/` 角色目录与 `_` 前缀文件/目录（`_template/` 模板因此永不参与编译）。页面目录同样遵守 snake_case + `index.vue`（`lint:naming` 已覆盖本目录并强制页面入口唯一形态）。**模块目录名即插件标识**（与后端 `modules/<标识>`、自有表前缀 `eb_{标识}_*` 对齐）；营销插件（秒杀等）命名细则与对照表见 `docs/命名规范.md` §2.1。
+- **片段模式**：模块根放自己的 `pages.json`（JSONC，`{ "pages": [{ "path", "style" }] }`）显式声明页面与标题/导航样式；提供后该模块不再自动扫描，完全按片段注册。
+- **跳转**：模块自带 `routes.js` 路由常量（参考 `_template/routes.js`），模块内外互跳各自引用常量、禁止硬编码路径，也不改系统 `dynamic-pages/api/routes.js`。
+- **边界**：只能新增分包页面；tabBar、easycom、globalStyle、preloadRule 等全局配置变更仍须改 `src/pages.json`。微信小程序单包 2MB / 总包 30MB 限制照常适用（每模块 = 一分包）。dev 长跑进程中 easycom 等次要消费点有一次缓存，极端情况重启 dev server；路由主链路与 build 产物不受影响（dev watch 下丢文件 15s 内自动重编，已实测）。
+- **回归口径**：`@dcloudio/*` 整组锁版升级后，须复验注入仍生效——`npm run build:mp-weixin` 后检查 `dist/build/mp-weixin/app.json` 的 subPackages 含 `pages-modules/*`。日常调试：`node scripts/uni-auto-subpackages.mjs [--print]`。
 
 ## 核心架构：dynamic-pages 动态渲染
 

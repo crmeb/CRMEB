@@ -23,6 +23,7 @@ Node >= 18；全部 `@dcloudio/*` 锁定同一版本，升级必须整体同步�
 ## 确定改动位置
 
 - 普通页面：在 `src/pages/` 下创建或修改页面，在 `src/pages.json` 注册，并放入合适的分包（主包只保留 tab/guide 页）。
+- 独立业务模块页面：复制 `src/pages-modules/_template/` 为 `<snake_case 模块名>/` 即自动注册为分包，免改 `src/pages.json`；约定与边界见 `frontend/uni-app/AGENTS.md`「pages-modules 自动分包注册」。
 - 共享行为：优先复用相近组件、composables、`utils/`、`libs/`，不要把平台逻辑复制到多个页面。
 - HTTP 接口：在 `src/api/` 下添加领域函数并调用 `@/utils/request.js`；路径不要带 `/api/`，封装层会自动添加。
 - 订单、下单、支付、售后：走 `src/dynamic-pages/` 引擎与契约，阅读 [references/dynamic-pages.md](references/dynamic-pages.md)。
@@ -52,4 +53,4 @@ Node >= 18；全部 `@dcloudio/*` 锁定同一版本，升级必须整体同步�
 
 ## 验证
 
-用 CLI 构建受影响的平台（至少 H5 + 需求指定的端），检查导航、认证过期、空数据/错误状态和条件编译分支。改到命名/契约相关文件时跑 `npm run lint:naming`。若缺少平台凭据或真机环境，必须明确说明限制。
+**日常修改完成后不做构建检查**：不必每次改动都跑 `build:*`，编译错误由对应 dev 命令（如 `dev:h5`）实时暴露，功能验证在已运行的 dev 环境里检查导航、认证过期、空数据/错误状态和条件编译分支。构建仅在交付/发布（H5 发布到 `backend/public`、小程序/APP 出正式包）或用户明确要求时执行。改到命名/契约相关文件时跑 `npm run lint:naming`。若缺少平台凭据或真机环境，必须明确说明限制。

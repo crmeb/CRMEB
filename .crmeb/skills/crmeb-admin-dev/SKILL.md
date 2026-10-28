@@ -41,4 +41,4 @@ description: 开发和修改 frontend/admin 下的 CRMEB Admin 管理端：Vue 3
 
 ## 验证
 
-Node 版本与依赖安装约定见 [admin 端约定](../../scopes/admin.md)。尽量对变更文件执行定向 lint（`npm run eslint`）；修改路由、配置或共享组件时运行 `npm run build`。扩展用 `npm run build:ext -- --ext <key>` 构建，确认 `dist/static/extensions/<key>/` 下只有 `app.umd.js` 和 `app.umd.css`。
+Node 版本与依赖安装约定见 [admin 端约定](../../scopes/admin.md)。**日常修改完成后不做构建检查**：每次改动都跑 `npm run build` 既慢也无必要，编译错误由 dev server 实时暴露，验证以定向 lint（`npm run eslint`）+ dev server 实际操作为准。构建仅在交付/发布（需更新 `backend/public/admin` 静态资源）或用户明确要求时执行。扩展 UMD 包在交付扩展时用 `npm run build:ext -- --ext <key>` 构建，确认 `dist/static/extensions/<key>/` 下只有 `app.umd.js` 和 `app.umd.css`。

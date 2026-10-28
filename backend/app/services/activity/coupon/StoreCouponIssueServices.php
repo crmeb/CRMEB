@@ -259,14 +259,39 @@ class StoreCouponIssueServices extends BaseService
     public function userFirstSubGiveCoupon(int $uid)
     {
         $giveCoupon = sys_config('reward_coupon', []);
-        if (count($giveCoupon)) {
-            // 兼容两种存储格式：纯 id 数组（通用页面表单）/ 旧版对象数组 [{id,title}]
-            $couponIds = is_array($giveCoupon[0] ?? null) ? array_column($giveCoupon, 'id') : $giveCoupon;
-            $couponList = $this->dao->getGiveCoupon([['id', 'in', $couponIds]]);
-            $this->giveUserCoupon($uid, $couponList ?: []);
+        // 兼容异常存储：初始值曾写成 "\"[]\""，json_decode 后是字符串 "[]"
+        if (is_string($giveCoupon)) {
+            $decoded = json_decode($giveCoupon, true);
+            $giveCoupon = is_array($decoded) ? $decoded : [];
+        } elseif (!is_array($giveCoupon)) {
+            $giveCoupon = [];
+        }
+        if (!count($giveCoupon)) {
+            return false;
+        }
+        // 兼容两种存储格式：纯 id 数组（通用页面表单）/ 旧版对象数组 [{id,title}]
+        $couponIds = is_array($giveCoupon[0] ?? null) ? array_column($giveCoupon, 'id') : $giveCoupon;
+        $couponIds = array_values(array_filter(array_map('intval', (array)$couponIds)));
+        if (!$couponIds) {
+            return false;
+        }
+
+        // 幂等：UserRegister 在带推广码注册时可能触发两次，已领过的券不再发
+        /** @var \app\dao\activity\coupon\StoreCouponIssueUserDao $issueUserDao */
+        $issueUserDao = app()->make(\app\dao\activity\coupon\StoreCouponIssueUserDao::class);
+        $pendingIds = [];
+        foreach ($couponIds as $couponId) {
+            if (!$issueUserDao->getIssueUserCount($uid, $couponId)) {
+                $pendingIds[] = $couponId;
+            }
+        }
+        if (!$pendingIds) {
             return true;
         }
-        return false;
+
+        $couponList = $this->dao->getGiveCoupon([['id', 'in', $pendingIds]]);
+        $this->giveUserCoupon($uid, $couponList ?: []);
+        return true;
     }
 
     /**

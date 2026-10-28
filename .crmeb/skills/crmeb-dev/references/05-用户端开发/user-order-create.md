@@ -96,6 +96,14 @@ GET /api/center/order/confirm
 | `params_list` | bool | 商品参数展示（由产品类型 Handler 决定） |
 | `visitor_form` | bool | 游客信息表单（门票专属，由产品类型 Handler 的 `visitor_form_config` 决定） |
 
+#### 优惠券列表与自动领券口径
+
+单品直购（`confirm()`）与购物车合单（`cartConfirm()`）共用 `CenterOrderController::buildConfirmCouponList()`：
+
+- 用户有可用券时原样返回；没有可用券时自动领取整单最优券并入 `coupon_list`（**预览即真实领取**，与 `computed`/`create` 的自动用券同口径）。
+- `computed`（`POST /api/center/order/computed`）重算时同样自动匹配并返回 `coupon_list`/`coupon_id`/`coupon_title`；已选中但不在列表查询结果内的券会按 `StoreCouponUserServices::getUsableCouponRow()` 补一行，避免“入口显示已用券、弹窗列表为空”。
+- 可用券查询的时间边界必须是 `start_time <= now`（`StoreCouponUserDao::getUserAllCoupon()`）：领取后 N 天可用的券在领取当秒 `start_time == time()`，用 `<` 会漏掉刚自动领取并已用于计价的券，必须与 `OrderComputedServices::autoMatchCoupon()` 的口径一致。
+
 ### 2.2 下单提交
 
 ```

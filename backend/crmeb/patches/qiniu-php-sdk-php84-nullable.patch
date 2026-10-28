@@ -11,3 +11,41 @@ index 26812b9..f767930 100644
      {
          $this->zone = $z;
          $this->useHTTPS = false;
+diff --git a/src/Qiniu/Storage/UploadManager.php b/src/Qiniu/Storage/UploadManager.php
+--- a/src/Qiniu/Storage/UploadManager.php
++++ b/src/Qiniu/Storage/UploadManager.php
+@@ -24,7 +24,7 @@ class UploadManager
+      * @param Config|null $config
+      * @param RequestOptions|null $reqOpt
+      */
+-    public function __construct(Config $config = null, RequestOptions $reqOpt = null)
++    public function __construct(?Config $config = null, ?RequestOptions $reqOpt = null)
+     {
+         if ($config === null) {
+             $config = new Config();
+diff --git a/src/Qiniu/Storage/BucketManager.php b/src/Qiniu/Storage/BucketManager.php
+--- a/src/Qiniu/Storage/BucketManager.php
++++ b/src/Qiniu/Storage/BucketManager.php
+@@ -22,7 +22,7 @@ final class BucketManager
+ 
+     public function __construct(
+         Auth $auth,
+-        Config $config = null,
++        ?Config $config = null,
+         $proxy = null,
+         $proxy_auth = null,
+         $proxy_user_password = null
+     ) {
+diff --git a/src/Qiniu/Storage/ArgusManager.php b/src/Qiniu/Storage/ArgusManager.php
+--- a/src/Qiniu/Storage/ArgusManager.php
++++ b/src/Qiniu/Storage/ArgusManager.php
+@@ -22,7 +22,7 @@ final class ArgusManager
+ 
+     public function __construct(
+         Auth $auth,
+-        Config $config = null,
++        ?Config $config = null,
+         $proxy = null,
+         $proxy_auth = null,
+         $proxy_user_password = null
+     ) {

@@ -7,6 +7,12 @@
 
 # backend 本地文件与目录
 /backend/tests/
+/backend/public/admin/
+/backend/public/assets/
+/backend/public/pages/
+/backend/public/static/
+/backend/public/index.html
+/backend/public/theme/
 /backend/public/uploads/
 /backend/public/install.lock
 /backend/public/install/install.log
@@ -32,3 +38,4 @@
 #docker
 /docker/mysql/data/*
 /docker/mysql/log/*
+.DS_Store
