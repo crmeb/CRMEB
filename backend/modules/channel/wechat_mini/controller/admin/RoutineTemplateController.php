@@ -91,7 +91,7 @@ class RoutineTemplateController extends AuthController
             //拷贝源文件
             /** @var File $fileService */
             $fileService = app(File::class);
-            $fileService->copyDir(public_path() . 'statics/mp_view', public_path() . 'statics/download');
+            $fileService->copyDir(public_path() . 'statics/mp-weixin', public_path() . 'statics/download');
             //替换appid和名称
             $this->updateConfigJson(sys_config('routine_appId'), $name !== '' ? $name : sys_config('routine_name'));
             //是否开启直播

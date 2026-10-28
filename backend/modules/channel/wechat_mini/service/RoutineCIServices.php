@@ -182,7 +182,7 @@ class RoutineCIServices extends BaseService
      *
      * 上传前的项目准备工作，包括复制源码和替换配置:
      * 1. 清理旧的项目文件 (如果存在)
-     * 2. 将小程序源码从 mp_view 目录复制到 download 目录
+     * 2. 将小程序源码从 mp-weixin 目录复制到 download 目录
      * 3. 替换 project.config.json 中的 appid 和 projectname
      * 4. 根据是否开启直播决定是否移除直播插件配置
      * 5. 替换代码中的 API 域名为当前服务器域名
@@ -206,10 +206,10 @@ class RoutineCIServices extends BaseService
             }
 
             // 步骤2: 复制小程序源码到目标目录
-            // 源目录: public/statics/mp_view (小程序编译后的源码)
+            // 源目录: public/statics/mp-weixin (小程序编译后的源码)
             /** @var File $fileService */
             $fileService = app(File::class);
-            $fileService->copyDir(public_path() . 'statics/mp_view', $this->projectPath);
+            $fileService->copyDir(public_path() . 'statics/mp-weixin', $this->projectPath);
 
             // 步骤3: 替换 project.config.json 中的 appid 和 项目名称
             $this->updateConfigJson($this->appId, sys_config('routine_name', ''));

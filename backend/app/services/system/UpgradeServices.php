@@ -833,7 +833,7 @@ class UpgradeServices extends BaseService
         if (is_file($serverPackageName)) {
             $clearDirs = [
                 app()->getRootPath() . 'public' . DS . 'admin',
-                app()->getRootPath() . 'public' . DS . 'statics' . DS . 'mp_view',
+                app()->getRootPath() . 'public' . DS . 'statics' . DS . 'mp-weixin',
                 app()->getRootPath() . 'public' . DS . 'statics' . DS . 'download',
             ];
             foreach ($clearDirs as $clearDir) {
