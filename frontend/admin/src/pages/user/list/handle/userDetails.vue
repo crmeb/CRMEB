@@ -379,25 +379,7 @@ defineExpose({ modals, getDetails });
     height: 100%;
   }
 }
-.user-details-drawer {
-  :deep(.el-drawer) {
-    display: flex;
-    flex-direction: column;
-  }
-  :deep(.el-drawer__header) {
-    flex-shrink: 0;
-    margin-bottom: 0;
-  }
-  :deep(.el-drawer__body) {
-    padding: 20px 0 !important;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-}
+/* 布局类样式放下方非 scoped：抽屉 teleport 到 body，scoped 选择器匹配不到 */
 .user-details-body {
   display: flex;
   flex-direction: column;
@@ -417,7 +399,7 @@ defineExpose({ modals, getDetails });
   :deep(.el-tabs__content) {
     flex: 1;
     min-height: 0;
-    padding: 0 35px 12px;
+    padding: 0 20px 12px;
     overflow: hidden;
   }
   :deep(.el-tab-pane) {
@@ -547,5 +529,27 @@ defineExpose({ modals, getDetails });
 <style lang="scss" scoped>
 .user_menu :deep(.ivu-menu) {
   width: 100% !important;
+}
+</style>
+
+<style lang="scss">
+/* 抽屉 teleport 到 body，须非 scoped 才能盖住全局 variables.scss 的 20px 35px */
+.user-details-drawer.el-drawer,
+.user-details-drawer .el-drawer {
+  display: flex;
+  flex-direction: column;
+}
+.user-details-drawer .el-drawer__header {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+.user-details-drawer .el-drawer__body {
+  padding: 20px 0 !important;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 </style>
