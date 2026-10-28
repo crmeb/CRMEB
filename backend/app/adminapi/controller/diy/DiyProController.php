@@ -177,7 +177,6 @@ class DiyProController extends AuthController
             ['label' => '订单总数', 'value' => 'order_num'],
             ['label' => '我的积分', 'value' => 'integral'],
             ['label' => '我的余额', 'value' => 'now_money'],
-            ['label' => '我的佣金', 'value' => 'brokerage_price'],
             ['label' => '未读消息', 'value' => 'unread_msg_num'],
         ];
 

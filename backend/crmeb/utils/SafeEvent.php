@@ -57,7 +57,6 @@ class SafeEvent extends Event
         'OutPush',
         'UserRecharge',
         'UserRechargeRefund',
-        'UserExtract',
         'UserRevenue',
         'UserBalanceChange',
         // 营销旁路类：失败影响活动参与但不应影响交易主流程

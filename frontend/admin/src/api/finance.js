@@ -33,29 +33,6 @@ export function billListApi(data) {
 }
 
 /**
- * @description 佣金记录 -- 列表
- * @param {Object} param data {Object} 传值
- */
-export function commissionListApi(data) {
-  return request({
-    url: 'finance/finance/commission_list',
-    method: 'get',
-    params: data,
-  });
-}
-
-/**
- * @description 佣金记录 -- 详情
- * @param {Number} param id {Number} 佣金记录ID
- */
-export function commissionDetailApi(id) {
-  return request({
-    url: `finance/finance/user_info/${id}`,
-    method: 'get',
-  });
-}
-
-/**
  * @description 佣金记录 -- 个人提现列表
  * @param {Number} param id {Number} 佣金记录 用户ID
  */
@@ -156,18 +133,6 @@ export function refundEditApi(id) {
 export function userFinanceApi(data) {
   return request({
     url: `export/userFinance`,
-    method: 'get',
-    params: data,
-  });
-}
-
-/**
- * @description 佣金记录 -- 用户佣金导出
- * @param {Number} param data {Number} 请求参数data
- */
-export function userCommissionApi(data) {
-  return request({
-    url: `export/userCommission`,
     method: 'get',
     params: data,
   });

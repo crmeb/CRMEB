@@ -220,40 +220,32 @@ class LoginServices extends BaseService
                     event('UserRegister', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 1]);
                 }
             } else {
-                //永久绑定
-                $store_brokerage_binding_status = sys_config('store_brokerage_binding_status', 1);
-                if ($agentUserInfo['spread_uid'] && $store_brokerage_binding_status == 1 && !isset($user['is_staff'])) {
+                // 已有上级时保持原关系；没有上级时允许建立一次推广关系。
+                if ($agentUserInfo['spread_uid'] && !isset($user['is_staff'])) {
                     $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
                 } else {
-                    //绑定分销关系 = 所有用户
-                    if (sys_config('brokerage_bindind', 1) == 1) {
-                        //分销绑定类型为时间段且过期 ｜｜临时
-                        $store_brokerage_binding_time = sys_config('store_brokerage_binding_time', 30);
-                        if (!$agentUserInfo['spread_uid'] || $store_brokerage_binding_status == 3 || ($store_brokerage_binding_status == 2 && ($agentUserInfo['spread_time'] + $store_brokerage_binding_time * 24 * 3600) < time())) {
-                            $upperRelation = event('DistributionServiceProxy', [
-                                'service' => 'DistributionRelationServices',
-                                'action' => 'relation',
-                                'args' => [(int)$spreadUid, []],
-                            ]);
-                            $upperSpreadUid = (int)($upperRelation[0]['spread_uid'] ?? $this->dao->value(['uid' => $spreadUid], 'spread_uid'));
-                            if ($spreadUid && $user['code'] != $userInfo->uid && $userInfo->uid != $upperSpreadUid) {
-                                $spreadInfo = $this->dao->get($spreadUid);
-                                $spreadProfile = event('DistributionServiceProxy', [
-                                    'service' => 'DistributionUserServices',
-                                    'action' => 'profile',
-                                    'args' => [(int)$spreadUid, $spreadInfo ? $spreadInfo->toArray() : []],
-                                ]);
-                                $spreadData = is_array($spreadProfile[0] ?? null) ? $spreadProfile[0] : ($spreadInfo ? $spreadInfo->toArray() : []);
-                                $spreadUid = (int)$spreadUid;
-                                $data['spread_uid'] = $spreadUid;
-                                $data['spread_time'] = time();
-                                $data['agent_id'] = $spreadData['agent_id'] ?? 0;
-                                $data['division_id'] = $spreadData['division_id'] ?? 0;
-                                $data['staff_id'] = $spreadData['staff_id'] ?? 0;
-                                //绑定用户后置事件（包含消息通知和绑定关系记录）
-                                event('UserRegister', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
-                            }
-                        }
+                    $upperRelation = event('DistributionServiceProxy', [
+                        'service' => 'DistributionRelationServices',
+                        'action' => 'relation',
+                        'args' => [(int)$spreadUid, []],
+                    ]);
+                    $upperSpreadUid = (int)($upperRelation[0]['spread_uid'] ?? $this->dao->value(['uid' => $spreadUid], 'spread_uid'));
+                    if ($spreadUid && $user['code'] != $userInfo->uid && $userInfo->uid != $upperSpreadUid) {
+                        $spreadInfo = $this->dao->get($spreadUid);
+                        $spreadProfile = event('DistributionServiceProxy', [
+                            'service' => 'DistributionUserServices',
+                            'action' => 'profile',
+                            'args' => [(int)$spreadUid, $spreadInfo ? $spreadInfo->toArray() : []],
+                        ]);
+                        $spreadData = is_array($spreadProfile[0] ?? null) ? $spreadProfile[0] : ($spreadInfo ? $spreadInfo->toArray() : []);
+                        $spreadUid = (int)$spreadUid;
+                        $data['spread_uid'] = $spreadUid;
+                        $data['spread_time'] = time();
+                        $data['agent_id'] = $spreadData['agent_id'] ?? 0;
+                        $data['division_id'] = $spreadData['division_id'] ?? 0;
+                        $data['staff_id'] = $spreadData['staff_id'] ?? 0;
+                        //绑定用户后置事件（包含消息通知和绑定关系记录）
+                        event('UserRegister', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
                     }
                 }
             }
@@ -264,15 +256,14 @@ class LoginServices extends BaseService
         ];
         $agentData = array_intersect_key($data, array_flip($agentFields));
         if ($agentData) {
-            $handled = event('DistributionServiceProxy', [
+            // 事业部/代理/员工字段已从用户表移除：插件接管走插件档案，未接管时丢弃，不再写用户表
+            event('DistributionServiceProxy', [
                 'service' => 'DistributionUserServices',
                 'action' => 'saveProfile',
                 'args' => [(int)$userInfo['uid'], $agentData],
             ]);
-            if (is_array($handled) && ($handled[0] ?? null) !== null) {
-                foreach ($agentFields as $field) {
-                    unset($data[$field]);
-                }
+            foreach ($agentFields as $field) {
+                unset($data[$field]);
             }
         }
         if (array_key_exists('spread_uid', $data)) {
@@ -339,10 +330,10 @@ class LoginServices extends BaseService
             ]);
             $pluginAgentEnabled = is_array($spreadProfile[0] ?? null);
             $profile = $pluginAgentEnabled ? $spreadProfile[0] : ($spreadInfo ? $spreadInfo->toArray() : []);
-            $data['division_id'] = $profile['division_id'] ?? 0;
-            $data['agent_id'] = $profile['agent_id'] ?? 0;
-            $data['staff_id'] = $profile['staff_id'] ?? 0;
             if ($pluginAgentEnabled) {
+                $data['division_id'] = $profile['division_id'] ?? 0;
+                $data['agent_id'] = $profile['agent_id'] ?? 0;
+                $data['staff_id'] = $profile['staff_id'] ?? 0;
                 $agentData = array_intersect_key($data, array_flip(['division_id', 'agent_id', 'staff_id']));
                 unset($data['spread_uid'], $data['spread_time'], $data['division_id'], $data['agent_id'], $data['staff_id']);
             }

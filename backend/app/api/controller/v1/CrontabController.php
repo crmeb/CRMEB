@@ -71,14 +71,6 @@ class CrontabController
     }
 
     /**
-     * 自动解绑上级绑定
-     */
-    public function distributionUnbind()
-    {
-        event('DistributionUnbindCrontab');
-    }
-
-    /**
      * 更新直播商品状态
      */
     public function syncGoodStatus()

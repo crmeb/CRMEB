@@ -290,10 +290,7 @@ class UserSignServices extends BaseService
             $user['frozen_integral'] = $userBill->getIntegralSumByPm($user['uid'], 1, '', true);
         }
         unset($user['pwd']);
-        if (!$user['is_promoter']) {
-            $user['is_promoter'] = (int)sys_config('store_brokerage_statu') == 2;
-        }
-        return $user->hidden(['account', 'real_name', 'birthday', 'card_id', 'mark', 'partner_id', 'group_id', 'add_time', 'add_ip', 'phone', 'last_time', 'last_ip', 'spread_uid', 'spread_time', 'user_type', 'status', 'level', 'clean_time', 'addres'])->toArray();
+        return $user->hidden(['account', 'real_name', 'birthday', 'card_id', 'mark', 'group_id', 'add_time', 'add_ip', 'phone', 'last_time', 'last_ip', 'spread_uid', 'spread_time', 'user_type', 'status', 'level', 'clean_time', 'addres'])->toArray();
     }
 
     /**

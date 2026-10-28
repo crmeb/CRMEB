@@ -47,8 +47,8 @@ class PosterJob extends BaseJobs
             $routineSpreadBanner = sys_data('routine_spread_banner');
             if (!count($routineSpreadBanner)) return false;
             //小程序
-            $name_routine      = $user['uid'] . '_' . $user['is_promoter'] . '_user_routine.jpg';
-            $name_wap          = $user['uid'] . '_' . $user['is_promoter'] . '_user_wap.jpg';
+            $name_routine      = $user['uid'] . '_user_routine.jpg';
+            $name_wap          = $user['uid'] . '_user_wap.jpg';
             $imageInfo_routine = $attachment->getInfo(['real_name' => $name_routine, 'module_type' => 2]);
             $imageInfo_wap     = $attachment->getInfo(['real_name' => $name_wap, 'module_type' => 2]);
             if (isset($imageInfo_routine['att_dir']) && strstr($imageInfo_routine['att_dir'], 'http') !== false && curl_file_exist($imageInfo_routine['att_dir']) === false) {
@@ -143,7 +143,7 @@ class PosterJob extends BaseJobs
                     ),
                     'background' => $item['pic']
                 );
-                $resRoutine         = $resRoutine && $posterInfo_routine = PosterServices::setSharePoster($config, 'routine/spread/poster', $user['uid'] . '_' . $user['is_promoter'] . '_user_routine_poster_' . $key . '.jpg');
+                $resRoutine         = $resRoutine && $posterInfo_routine = PosterServices::setSharePoster($config, 'routine/spread/poster', $user['uid'] . '_user_routine_poster_' . $key . '.jpg');
                 if (!is_array($posterInfo_routine)) return false;
                 $attachment->attachmentAdd($posterInfo_routine['name'], $posterInfo_routine['size'], $posterInfo_routine['type'], $posterInfo_routine['dir'], $posterInfo_routine['thumb_path'], 1, $posterInfo_routine['image_type'], $posterInfo_routine['time'], 2);
                 if ($resRoutine) {
@@ -192,7 +192,7 @@ class PosterJob extends BaseJobs
                     ),
                     'background' => $item['pic']
                 );
-                $resWap         = $resWap && $posterInfo_wap = PosterServices::setSharePoster($config, 'wap/spread/poster', $user['uid'] . '_' . $user['is_promoter'] . '_user_wap_poster_' . $key . '.jpg');
+                $resWap         = $resWap && $posterInfo_wap = PosterServices::setSharePoster($config, 'wap/spread/poster', $user['uid'] . '_user_wap_poster_' . $key . '.jpg');
                 if (!is_array($posterInfo_wap)) return false;
                 $attachment->attachmentAdd($posterInfo_wap['name'], $posterInfo_wap['size'], $posterInfo_wap['type'], $posterInfo_wap['dir'], $posterInfo_wap['thumb_path'], 1, $posterInfo_wap['image_type'], $posterInfo_wap['time'], 2);
                 if ($resWap) {

@@ -760,30 +760,6 @@ if (!function_exists('filter_str')) {
     }
 }
 
-if (!function_exists('is_brokerage_statu')) {
-
-    /**
-     * 是否能成为推广人
-     * @param float $price
-     * @return bool
-     */
-    function is_brokerage_statu(float $price)
-    {
-        if (!sys_config('brokerage_func_status')) {
-            return false;
-        }
-        $storeBrokerageStatus = sys_config('store_brokerage_statu', 1);
-        if ($storeBrokerageStatus == 1) {
-            return false;
-        } else if ($storeBrokerageStatus == 2) {
-            return true;
-        } else {
-            $storeBrokeragePrice = sys_config('store_brokerage_price', 0);
-            return $price >= $storeBrokeragePrice;
-        }
-    }
-}
-
 if (!function_exists('array_unique_fb')) {
     /**
      * 二维数组去掉重复值

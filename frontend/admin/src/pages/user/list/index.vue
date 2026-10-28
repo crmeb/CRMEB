@@ -37,17 +37,6 @@
             </el-select>
           </el-form-item>
           <template v-if="collapse">
-            <el-form-item v-if="distributionEnabled" label="分销等级：">
-              <el-select v-model="agent_level" placeholder="请选择分销等级" clearable class="form_content_width">
-                <el-option value="all" label="全部"></el-option>
-                <el-option
-                  :value="item.grade"
-                  v-for="(item, index) in membershipList"
-                  :key="index"
-                  :label="item.name"
-                ></el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label="用户标签：" label-for="label_id">
               <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
                 <div style="width: 222px">
@@ -481,14 +470,12 @@ const userFrom = ref({
   limit: 15,
   level: '',
   group_id: '',
-  agent_level: '',
   field_key: '',
 });
 const before_pay_time = ref([]);
 const field_key = ref('');
 const level = ref('');
 const group_id = ref('');
-const agent_level = ref('');
 const label_id = ref('');
 const user_time_type = ref('');
 const pay_count = ref('');
@@ -891,7 +878,6 @@ function getList() {
   userFrom.value.field_key = field_key.value === 'all' ? '' : field_key.value;
   userFrom.value.level = level.value === 'all' ? '' : level.value;
   userFrom.value.group_id = group_id.value === 'all' ? '' : group_id.value;
-  userFrom.value.agent_level = agent_level.value === 'all' ? '' : agent_level.value;
   loading.value = true;
   userList(userFrom.value)
     .then(async (res) => {
@@ -925,7 +911,6 @@ async function exportList() {
   userFrom.value.field_key = field_key.value === 'all' ? '' : field_key.value;
   userFrom.value.level = level.value === 'all' ? '' : level.value;
   userFrom.value.group_id = group_id.value === 'all' ? '' : group_id.value;
-  userFrom.value.agent_level = agent_level.value === 'all' ? '' : agent_level.value;
   let [th, filekey, data, fileName] = [[], [], [], ''];
   //   let fileName = "";
   let excelData = JSON.parse(JSON.stringify(userFrom.value));
@@ -992,13 +977,11 @@ function reset(name) {
     limit: 15,
     level: '',
     group_id: '',
-    agent_level: '',
     field_key: '',
   };
   field_key.value = '';
   level.value = '';
   group_id.value = '';
-  agent_level.value = '';
   dataLabel.value = [];
   selectDataLabel.value = [];
   user_time_type.value = '';

@@ -45,7 +45,6 @@ class UserController extends AuthController
             ['nickname', ''],
             ['status', ''],
             ['pay_count', ''],
-            ['is_promoter', ''],
             ['order', ''],
             ['data', ''],
             ['user_type', ''],
@@ -66,7 +65,6 @@ class UserController extends AuthController
             ['before_pay_time', ''],
             ['pay_count_num', []],
             ['pay_count_money', []],
-            ['agent_level', 0],
         ]);
         $where['label_id'] = toIntArray($where['label_id']);
         return app('json')->success($this->services->index($where));

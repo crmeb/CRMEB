@@ -14,12 +14,10 @@ namespace app\services\order;
 
 use app\dao\order\OrderCenterDao;
 use app\dao\product\CenterProductDao;
-use app\dao\user\UserBrokerageDao;
 use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\pay\PayServices;
 use app\services\statistic\CapitalFlowServices;
 use app\services\user\UserBillServices;
-use app\services\user\UserBrokerageServices;
 use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
 use crmeb\basic\BaseService;
@@ -30,45 +28,21 @@ use think\facade\Log;
  * 订单退款执行引擎（D 系列批次 D2c 新增）
  *
  * 统一承载退款资金回滚能力（承接自旧退款服务，旧实现已随批次 C 删除）。
- * 输入为中台订单（eb_order_center）数据，按五维执行回滚：
- * - 佣金：按分销插件佣金流水 link_id=中台订单 id 反查回退
+ * 输入为中台订单（eb_order_center）数据，按四维执行回滚：
  * - 积分：收回赠送积分（幂等）+ 返还下单使用积分
  * - 库存：从中台 extra_info.items 读取快照，经 ProductTypeHandler / ActivityDataProxy 回退
  * - 优惠券：从中台订单 extra_info 读取 coupon_id 并恢复用户优惠券
  * - 支付退款：balance 退余额 / yue 余额退款 / weixin、alipay、allinpay 走 PayServices::refund
+ *
+ * 佣金回退由分销插件自行处理，引擎不再负责。
  *
  * 引擎只负责资金/资源回滚与流水记录，不负责订单状态流转（状态机由调用方维护）
  */
 class RefundExecutorServices extends BaseService
 {
     /**
-     * 佣金流水类型集合（与分佣写入侧一致，用于按 link_id 反查回退）
-     * @var array
-     */
-    protected const BROKERAGE_REFUND_TYPES = [
-        'self_brokerage', 'one_brokerage', 'two_brokerage',
-        'staff_brokerage', 'agent_brokerage', 'division_brokerage', 'pink_master_brokerage',
-    ];
-
-    /**
-     * 佣金流水数据访问
-     * @var UserBrokerageDao
-     */
-    protected UserBrokerageDao $brokerageDao;
-
-    /**
-     * 构造方法
-     * RefundExecutorServices constructor.
-     * @param UserBrokerageDao $brokerageDao
-     */
-    public function __construct(UserBrokerageDao $brokerageDao)
-    {
-        $this->brokerageDao = $brokerageDao;
-    }
-
-    /**
      * 执行订单资金回滚（引擎主入口）
-     * 依次执行：佣金回退 → 积分回退 → 库存回退 → 优惠券降级 → 支付退款 → 资本流水 → 开票标记
+     * 依次执行：积分回退 → 库存回退 → 优惠券降级 → 支付退款 → 资本流水 → 开票标记
      * @param array $order 中台订单数据
      * @param float $refundPrice 现金退款金额（纯积分退款传 0）
      * @param array $context 上下文：refund_type(original/balance)、refund_trade_no、refund_integral、refund_id
@@ -82,9 +56,8 @@ class RefundExecutorServices extends BaseService
             throw new \RuntimeException('订单未支付，无法退款');
         }
 
-        // 1. 本地资源回滚（事务内：佣金/积分/库存/优惠券均为本地库操作，支付退款为远程通道不放事务）
+        // 1. 本地资源回滚（事务内：积分/库存/优惠券均为本地库操作，支付退款为远程通道不放事务）
         $this->transaction(function () use ($order, $context) {
-            $this->rollbackBrokerage($order);
             $this->rollbackIntegral($order, (int)($context['refund_integral'] ?? 0));
             $this->rollbackStock($order);
             $this->rollbackCoupon($order);
@@ -310,55 +283,6 @@ class RefundExecutorServices extends BaseService
             }
         }
         return $res;
-    }
-
-    /**
-     * 佣金回退：按分销插件佣金流水 link_id=中台订单 id 反查并回退
-     * @param array $order 中台订单数据
-     * @return void
-     */
-    protected function rollbackBrokerage(array $order): void
-    {
-        $orderId = (int)($order['id'] ?? 0);
-        if ($orderId <= 0) {
-            return;
-        }
-        $where = [
-            'link_id' => $orderId,
-            'type'    => self::BROKERAGE_REFUND_TYPES,
-            'pm'      => 1,
-        ];
-        $list = $this->brokerageDao->getUserBrokerageList($where);
-        if (empty($list)) {
-            return;
-        }
-
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        /** @var UserBrokerageServices $brokerageServices */
-        $brokerageServices = app()->make(UserBrokerageServices::class);
-        foreach ($list as $item) {
-            $uid = (int)($item['uid'] ?? 0);
-            $number = (float)($item['number'] ?? 0);
-            if ($uid <= 0 || $number <= 0) {
-                continue;
-            }
-            // 退佣时余额不足则只扣到 0，差额不追回（与旧 orderRefundBrokerageBack 行为一致）
-            $legacyBalance = (float)$userServices->value(['uid' => $uid], 'brokerage_price');
-            $profile = event('DistributionServiceProxy', [
-                'service' => 'DistributionUserServices',
-                'action' => 'profile',
-                'args' => [$uid, ['brokerage_price' => $legacyBalance]],
-            ]);
-            $brokeragePrice = (float)($profile[0]['brokerage_price'] ?? $legacyBalance);
-            $backNumber = min($number, $brokeragePrice);
-            if ($backNumber <= 0) {
-                continue;
-            }
-            $brokerageServices->brokerageIncome('brokerage_refund', $uid, $backNumber, $orderId);
-        }
-        // 解除分佣冻结
-        $this->brokerageDao->update($where, ['frozen_time' => 0]);
     }
 
     /**

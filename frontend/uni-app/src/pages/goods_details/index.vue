@@ -101,13 +101,14 @@
         @goBuy="goBuy"
         @share="listenerActionSheet"
       ></productBottom>
-      <shareRedPackets
+      <!-- 分销佣金悬浮窗已随主程序分销功能下线（后端不再返回 priceName），如启用分销插件需恢复 -->
+      <!-- <shareRedPackets
         :sharePacket="sharePacket"
         @listenerActionSheet="listenerActionSheet"
         @closeChange="closeChange"
         :showAnimate="showAnimate"
         @boxStatus="boxStatus"
-      ></shareRedPackets>
+      ></shareRedPackets> -->
       <!-- 组件 -->
       <productWindow
         :attr="attr"
@@ -553,7 +554,7 @@ const isShowAuth = ref(false); //是否隐藏授权
 const isOpen = ref(false); //是否打开属性组件
 const posterbackgd = ref("/static/images/posterbackgd.png");
 const sharePacket = reactive({
-  isState: true, //默认不显示
+  isState: false, // 分销佣金已下线，默认不显示
 }); //分销商详细
 const uid = ref(0); //用户uid
 const good_list = ref([]);
@@ -937,7 +938,7 @@ function appShare(scene) {
 }
 // #endif
 function closeChange() {
-  sharePacket["isState"] = true;
+  sharePacket["isState"] = false;
 }
 function boxStatus(data) {
   showAnimate.value = data;
@@ -1151,8 +1152,8 @@ function getGoodsDetails() {
       attr["productAttr"] = res.data.productAttr;
       productValue.value = res.data.productValue;
       is_vip.value = res.data.storeInfo.is_vip;
-      sharePacket["priceName"] = res.data.priceName;
-      sharePacket["isState"] = res.data.priceName != 0 ? true : false;
+      // 后端已随分销下线不再返回 priceName；undefined != 0 恒真会导致佣金悬浮窗误显示，直接关闭
+      sharePacket["isState"] = false;
       storeSelfMention.value = res.data.store_self_mention;
       good_list.value = goodList;
       // 透传后端 display_sections（产品类型/营销监听器输出的展示块）

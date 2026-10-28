@@ -17,7 +17,6 @@ use app\dao\order\OrderCenterDao;
 use app\services\product\product\StoreProductReplyServices;
 use app\services\product\CenterProductServices;
 use app\services\system\log\SystemFileMd5Services;
-use app\services\user\UserExtractServices;
 use crmeb\exceptions\AdminException;
 use app\dao\system\admin\SystemAdminDao;
 use app\services\system\SystemMenusServices;
@@ -453,10 +452,7 @@ class SystemAdminServices extends BaseService
             /** @var StoreProductReplyServices $replyServices */
             $replyServices = app()->make(StoreProductReplyServices::class);
             $data['commentnum'] = $replyServices->count(['is_reply' => 0]);
-            /** @var UserExtractServices $extractServices */
-            $extractServices = app()->make(UserExtractServices::class);
-            $data['reflectnum'] = $extractServices->getCount(['status' => 0]); //提现
-            $data['msgcount'] = intval($data['ordernum']) + intval($data['inventory']) + intval($data['commentnum']) + intval($data['reflectnum']);
+            $data['msgcount'] = intval($data['ordernum']) + intval($data['inventory']) + intval($data['commentnum']);
             ChannelService::instance()->send('ADMIN_NEW_PUSH', $data);
         } catch (\Exception $e) {
         }

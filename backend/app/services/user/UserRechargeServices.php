@@ -185,69 +185,6 @@ class UserRechargeServices extends BaseService
         return 'wx' . date('YmdHis', time()) . substr(implode(NULL, array_map('ord', str_split(substr(uniqid('', true), 7, 13), 1))), 0, 8);
     }
 
-    public function importNowMoney(int $uid, $price)
-    {
-        /** @var \app\services\user\UserServices $userServices */
-        $userServices = app()->make(\app\services\user\UserServices::class);
-        $user = $userServices->getUserInfo($uid);
-        if (!$user) {
-            throw new ApiException('参数错误');
-        }
-        $profile = event('DistributionServiceProxy', [
-            'service' => 'DistributionUserServices', 'action' => 'profile',
-            'args' => [$uid, is_object($user) ? $user->toArray() : (array)$user],
-        ]);
-        if (is_array($profile[0] ?? null)) {
-            $user = array_replace(is_object($user) ? $user->toArray() : (array)$user, $profile[0]);
-        }
-        /** @var \app\services\user\UserBrokerageServices $frozenPrices */
-        $frozenPrices = app()->make(\app\services\user\UserBrokerageServices::class);
-        $broken_commission = $frozenPrices->getUserFrozenPrice($uid);
-        $commissionCount = bcsub((string)$user['brokerage_price'], (string)$broken_commission, 2);
-        if ($price > $commissionCount) {
-            throw new ApiException('转入金额不能大于可提现佣金');
-        }
-
-        return $this->transaction(function () use ($uid, $price, $user) {
-            $rechargeInfo = [
-                'uid' => $uid,
-                'order_id' => SnowflakeIdGenerator::generate('cz'),
-                'recharge_type' => 'balance',
-                'price' => $price,
-                'give_price' => 0,
-                'paid' => 1,
-                'pay_time' => time(),
-                'add_time' => time()
-            ];
-            if (!$re = $this->dao->save($rechargeInfo)) {
-                throw new ApiException('写入余额充值失败');
-            }
-
-            /** @var \app\services\user\UserBrokerageServices $userBrokerageServices */
-            $userBrokerageServices = app()->make(\app\services\user\UserBrokerageServices::class);
-            $userBrokerageServices->brokerageIncome('brokerage_to_nowMoney', $uid, $price, $re['id']);
-
-            /** @var \app\services\user\UserMoneyServices $userMoneyServices */
-            $userMoneyServices = app()->make(\app\services\user\UserMoneyServices::class);
-            $userMoneyServices->moneyIncome('brokerage_to_nowMoney', $uid, $price, $re['id']);
-
-            $extractInfo = [
-                'uid' => $uid,
-                'real_name' => $user['nickname'],
-                'extract_type' => 'balance',
-                'extract_price' => $price,
-                'balance' => $user['brokerage_price'],
-                'add_time' => time(),
-                'status' => 1
-            ];
-            /** @var \app\services\user\UserExtractServices $userExtract */
-            $userExtract = app()->make(\app\services\user\UserExtractServices::class);
-            $userExtract->save($extractInfo);
-
-            return true;
-        });
-    }
-
     public function recharge(int $uid, $price, $recharId, $type, $from, bool $renten = false)
     {
         /** @var \app\services\user\UserServices $userServices */
@@ -301,9 +238,6 @@ class UserRechargeServices extends BaseService
                     return $order_info;
                 }
                 return ['msg' => '', 'type' => $from, 'data' => $order_info];
-            case 1:
-                $this->importNowMoney($uid, $price);
-                return ['msg' => '转入余额成功', 'type' => $from, 'data' => []];
             default:
                 throw new ApiException('参数错误');
         }

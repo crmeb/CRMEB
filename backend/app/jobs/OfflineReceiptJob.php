@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace app\jobs;
 
-use app\services\user\OfflineReceiptServices;
 use app\services\order\OrderLifecycleServices;
-use app\services\user\MemberOrderServices;
 use app\services\user\member\MemberCardServices;
 use app\services\user\UserServices;
 use app\services\user\UserBillServices;
@@ -47,8 +45,8 @@ class OfflineReceiptJob extends BaseJobs
     }
 
     /**
-     * 更新用户订单数和推广员状态
-     * 增加用户订单计数，并判断是否达到推广员门槛
+     * 更新用户订单数
+     * 推广员升级已由分销插件接管，本方法只保留 pay_count 累加逻辑
      * @param array $order 订单数据
      */
     public function setUserPayCountAndPromoter($order)
@@ -58,19 +56,6 @@ class OfflineReceiptJob extends BaseJobs
         $userInfo = $userServices->get($order['uid']);
         if ($userInfo) {
             $userInfo->pay_count = $userInfo->pay_count + 1;
-            if (!$userInfo->is_promoter) {
-                /** @var OfflineReceiptServices $orderServices */
-                $orderServices = app()->make(OfflineReceiptServices::class);
-                /** @var MemberOrderServices $memberOrderServices */
-                $memberOrderServices = app()->make(MemberOrderServices::class);
-                // 累计消费金额 = 会员订单 + 线下收银订单（两表合计）
-                $price = $orderServices->sum(['paid' => 1, 'uid' => $userInfo['uid']], 'paid_price')
-                    + $memberOrderServices->sum(['paid' => 1, 'uid' => $userInfo['uid']], 'pay_price');
-                $status = is_brokerage_statu($price);
-                if ($status) {
-                    $userInfo->is_promoter = 1;
-                }
-            }
             $userInfo->save();
         }
     }

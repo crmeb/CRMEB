@@ -119,7 +119,7 @@ class StoreProductController
         if ($request->uid()) {
             $user = $request->user();
         } else {
-            $user = ['uid' => 0, 'is_promoter' => 0];
+            $user = ['uid' => 0];
         }
         $code = $this->services->getCode((int)$id, $request->get('user_type', 'wechat'), $user);
         return app('json')->success(['code' => $code]);

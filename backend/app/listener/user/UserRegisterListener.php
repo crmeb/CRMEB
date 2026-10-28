@@ -40,9 +40,6 @@ class UserRegisterListener implements ListenerInterface
                 /** @var UserBillServices $userBill */
                 $userBill = app()->make(UserBillServices::class);
                 $userBill->inviteUserIncExp((int)$spreadUid);
-                /** @var UserServices $userServices */
-                $userServices = app()->make(UserServices::class);
-                $userServices->addBrokeragePrice($uid, $spreadUid);
 
                 event('UserRegisterDistributionJob', ['uid' => $uid]);
             }
@@ -69,9 +66,7 @@ class UserRegisterListener implements ListenerInterface
                     'action' => 'saveProfile',
                     'args' => [(int)$uid, ['is_promoter' => 1, 'spread_open' => 1]],
                 ]);
-                if (!is_array($handled) || ($handled[0] ?? null) === null) {
-                    app()->make(UserServices::class)->update($uid, ['is_promoter' => 1]);
-                }
+                // is_promoter 列已移除：插件未接管时不落用户表
             }
         }
     }

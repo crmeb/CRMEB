@@ -80,8 +80,6 @@ class Installer extends BaseModuleInstaller
                 `unit_name` varchar(32) NOT NULL DEFAULT '' COMMENT 'SKU单位（SKU级实际单位，如瓶/箱/盒）',
                 `image` varchar(128) NOT NULL DEFAULT '' COMMENT 'SKU图片',
                 `unique_code` char(8) NOT NULL DEFAULT '' COMMENT '唯一码',
-                `brokerage` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '一级返佣',
-                `brokerage_two` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '二级返佣',
                 `is_default_select` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否默认选中',
                 `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                 `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

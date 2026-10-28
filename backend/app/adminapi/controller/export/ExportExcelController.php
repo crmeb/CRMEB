@@ -76,7 +76,6 @@ class ExportExcelController extends AuthController
             ['nickname', ''],
             ['status', ''],
             ['pay_count', ''],
-            ['is_promoter', ''],
             ['order', ''],
             ['data', ''],
             ['user_type', ''],
@@ -226,26 +225,6 @@ class ExportExcelController extends AuthController
         ]);
         $data = $services->getBillList($where, '*', false);
         return app('json')->success($this->service->userFinance($data['data'] ?? []));
-    }
-
-    /**
-     * 用户佣金
-     * @param UserBillServices $services
-     * @return mixed
-     */
-    public function userCommission(UserBillServices $services)
-    {
-        $where = $this->request->getMore([
-            ['page', 1],
-            ['limit', 20],
-            ['nickname', ''],
-            ['price_max', ''],
-            ['price_min', ''],
-            ['excel', '1'],
-            ['time', ''],
-        ]);
-        $data = $services->getCommissionList($where, false);
-        return app('json')->success($this->service->userCommission($data['list'] ?? []));
     }
 
     /**

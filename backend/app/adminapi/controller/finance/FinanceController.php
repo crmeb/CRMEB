@@ -61,47 +61,4 @@ class FinanceController extends AuthController
         return app('json')->success($this->services->getBillList($where));
     }
 
-    /**
-     * 佣金记录
-     * @return mixed
-     */
-    public function getCommissionList()
-    {
-        $where = $this->request->getMore([
-            ['nickname', ''],
-            ['price_max', ''],
-            ['price_min', ''],
-            ['sum_number', 'normal'],
-            ['brokerage_price', 'normal'],
-            ['time', '']
-        ]);
-        return app('json')->success($this->services->getCommissionList($where));
-    }
-
-    /**
-     * 佣金详情用户信息
-     * @param $id
-     * @return mixed
-     */
-    public function userInfo($id)
-    {
-        return app('json')->success($this->services->user_info((int)$id));
-    }
-
-    /**
-     * 佣金提现记录个人列表
-     */
-    public function getExtractList($id = '')
-    {
-        if (empty($id)) return app('json')->fail('参数错误');
-        $where = $this->request->getMore([
-            ['start_time', ''],
-            ['end_time', ''],
-            ['nickname', '']
-        ]);
-        $where['category'] = 'now_money';
-        $where['type'] = ['brokerage', 'brokerage_user'];
-        return app('json')->success($this->services->getBillOneList((int)$id, $where));
-    }
-
 }

@@ -41,8 +41,7 @@ class UserCancel extends BaseModel
     public function user()
     {
         return $this->hasOne(User::class, 'uid', 'uid')->bind([
-            'money' => 'now_money',
-            'brokerage' => 'brokerage_price'
+            'money' => 'now_money'
         ]);
     }
 

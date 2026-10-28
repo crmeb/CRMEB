@@ -14,10 +14,8 @@ namespace app\services\user;
 
 use crmeb\basic\BaseService;
 use app\dao\user\UserBillDao;
-use app\dao\order\OrderCenterDao;
 use crmeb\exceptions\AdminException;
 use crmeb\exceptions\ApiException;
-use think\Exception;
 use crmeb\services\CacheService;
 use think\facade\Log;
 
@@ -486,60 +484,6 @@ class UserBillServices extends BaseService
     
     /**
      * 获取用户|所有佣金总数
-     * @param array $where
-     * @param int $time
-     * @return float
-     */
-    public function getUsersBokerageSum(array $where, $time = 0)
-    {
-        $where_data = [
-            'type' => ['brokerage', 'brokerage_user'],
-            'category' => 'now_money',
-            'status' => 1,
-            'pm' => $where['pm'] ?? '',
-            'uid' => $where['uid'] ?? '',
-            'time' => $where['time'] ?? 0
-        ];
-        if ($time) $where_data['time'] = $time;
-        return $this->dao->getBillSumColumn($where_data);
-    }
-
-    /**
-     * 某个用户佣金总和
-     * @param int $uid
-     * @return float
-     */
-    public function getUserBillBrokerageSum(int $uid, array $type = ['brokerage', 'brokerage_user'], $time = '')
-    {
-        $where = ['uid' => $uid, 'category' => 'now_money'];
-        if ($type) $where['type'] = $type;
-        if ($time) $where['time'] = $time;
-        return $this->dao->getBillSum($where);
-    }
-
-    /**
-     * 获取用户|所有佣金总数
-     * @param int $uid
-     * @param array $where_time
-     * @return float
-     */
-    public function getBrokerageSum(int $uid = 0, $where_time = [])
-    {
-        $where = ['category' => 'now_money', 'type' => ['system_add', 'pay_product', 'extract', 'pay_product_refund', 'system_sub'], 'pm' => 1, 'status' => 1];
-        if ($uid) $where['uid'] = $uid;
-        if ($where_time) $where['add_time'] = $where_time;
-        return $this->dao->getBillSum($where);
-    }
-
-    public function getBrokerageNumSum($link_ids = [])
-    {
-        $where = ['category' => 'now_money', 'type' => ['brokerage', 'brokerage_user']];
-        if ($link_ids) $where['link_id'] = $link_ids;
-        return $this->dao->getBillSum($where);
-    }
-
-    /**
-     * 获取用户|所有佣金总数
      * @param int $uid
      * @param array $where_time
      * @return float
@@ -831,76 +775,6 @@ class UserBillServices extends BaseService
     }
 
     /**
-     * 获取佣金列表
-     * @param array $where
-     * @param int $limit
-     * @return array
-     */
-    public function getCommissionList(array $where, int $limit = 0)
-    {
-        $where_data = [];
-        $where_data['time'] = $where['time'];
-        if (isset($where['nickname']) && $where['nickname']) {
-            $where_data[] = ['u.nickname|u.uid', 'LIKE', "%$where[nickname]%"];
-        }
-        $brokerageModel = app()->make(\app\model\user\UserBrokerage::class);
-        $balanceField = $brokerageModel->getName() === 'distribution_brokerage' ? 'au.brokerage_price' : 'u.brokerage_price';
-        if (isset($where['price_max']) && isset($where['price_min'])) {
-            if ($where['price_max'] !== '' && $where['price_min'] !== '') {
-                $where_data[] = [$balanceField, 'between', [$where['price_min'], $where['price_max']]];
-            } elseif ($where['price_min'] !== '' && $where['price_max'] === '') {
-                $where_data[] = [$balanceField, '>=', $where['price_min']];
-            } elseif ($where['price_min'] === '' && $where['price_max'] !== '') {
-                $where_data[] = [$balanceField, '<=', $where['price_max']];
-            }
-        }
-        $order_string = '';
-        $order_arr = ['asc', 'desc'];
-        if (isset($where['sum_number']) && in_array($where['sum_number'], $order_arr)) {
-            $order_string .= ',income ' . $where['sum_number'];
-        }
-        if (isset($where['brokerage_price']) && in_array($where['brokerage_price'], $order_arr)) {
-            $order_string .= ',' . $balanceField . ' ' . $where['brokerage_price'];
-        }
-        if ($order_string) {
-            $order_string = trim($order_string, ',');
-        }
-        /** @var UserUserBrokerageServices $userUserBrokerage */
-        $userUserBrokerage = app()->make(UserUserBrokerageServices::class);
-        [$count, $list] = $userUserBrokerage->getBrokerageList($where_data, "b.type,b.pm,sum(IF(b.pm = 1 AND b.type <> 'extract_fail', b.number, 0)) as income,sum(IF(b.pm = 0, b.number, 0)) as pay,u.nickname,u.phone,u.uid,u.now_money,{$balanceField} as brokerage_price,b.add_time as time", $order_string, $limit);
-        $uids = array_unique(array_column($list, 'uid'));
-        /** @var UserExtractServices $userExtract */
-        $userExtract = app()->make(UserExtractServices::class);
-        $extractSumList = $userExtract->getUsersSumList($uids);
-        foreach ($list as &$item) {
-            $item['sum_number'] = $item['income'];
-            $item['nickname'] = $item['nickname'] . " | " . ($item['phone'] ? $item['phone'] . " | " : '') . $item['uid'];
-            $item['extract_price'] = $extractSumList[$item['uid']] ?? 0;
-            $item['time'] = $item['time'] ? date('Y-m-d H:i:s', $item['time']) : '';
-        }
-        return compact('count', 'list');
-    }
-
-    public function user_info(int $uid)
-    {
-        /** @var UserServices $user */
-        $user = app()->make(UserServices::class);
-        $user_info = $user->getUserInfo($uid, 'nickname,spread_uid,now_money,add_time,brokerage_price');
-        if (!$user_info) {
-            throw new AdminException('用户信息不存在');
-        }
-        $user_info = $user_info->toArray();
-        $profile = event('DistributionServiceProxy', ['service' => 'DistributionUserServices', 'action' => 'profile', 'args' => [$uid, $user_info]]);
-        $relation = event('DistributionServiceProxy', ['service' => 'DistributionRelationServices', 'action' => 'relation', 'args' => [$uid, $user_info]]);
-        if (is_array($profile[0] ?? null)) $user_info = array_replace($user_info, $profile[0]);
-        if (is_array($relation[0] ?? null)) $user_info = array_replace($user_info, $relation[0]);
-        $user_info['number'] = $user_info['brokerage_price'];
-        $user_info['add_time'] = date('Y-m-d H:i:s', $user_info['add_time']);
-        $user_info['spread_name'] = $user_info['spread_uid'] ? $user->getUserInfo((int)$user_info['spread_uid'], 'nickname', true)['nickname'] ?? '' : '';
-        return compact('user_info');
-    }
-
-    /**
      * 记录分享次数
      * @param int $uid 用户uid
      * @param int $cd 冷却时间
@@ -924,25 +798,6 @@ class UserBillServices extends BaseService
         }
         CacheService::set($cachename, 1, $cd);
         return true;
-    }
-
-    /**
-     * 获取佣金提现列表
-     * @param int $uid
-     * @param array $where
-     * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function getBillOneList(int $uid, array $where)
-    {
-        $where['uid'] = $uid;
-        $data = $this->getBillList($where);
-        foreach ($data['data'] as &$item) {
-            $item['_add_time'] = $item['add_time'] ?? '';
-        }
-        return $data;
     }
 
     /**
@@ -1031,204 +886,10 @@ class UserBillServices extends BaseService
     }
 
     /**
-     * 佣金排行
-     * @param string $time
-     * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function brokerageRankList(string $time = 'week')
-    {
-        $where = [];
-        $where['category'] = 'now_money';
-        $where['type'] = ['brokerage', 'brokerage_user'];
-        if ($time) {
-            $where['time'] = $time;
-        }
-        [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->brokerageRankList($where, $page, $limit);
-        foreach ($list as $key => &$item) {
-            if (!isset($item['user']) || !$item['user']) {
-                unset($list['$key']);
-                continue;
-            }
-            $item['nickname'] = $item['user']['nickname'] ?? '';
-            $item['avatar'] = $item['user']['avatar'] ?? '';
-            if ($item['brokerage_price'] == '0.00' || $item['brokerage_price'] == 0 || !$item['brokerage_price']) {
-                unset($list[$key]);
-            }
-            unset($item['user']);
-        }
-        return $list;
-    }
-
-    /**
-     * 获取用户排名
-     * @param int $uid
-     * @param string $time
-     */
-    public function getUserBrokerageRank(int $uid, string $time = 'week')
-    {
-        $where = [];
-        $where['category'] = 'now_money';
-        $where['type'] = ['brokerage', 'brokerage_user'];
-        if ($time) {
-            $where['time'] = $time;
-        }
-        $list = $this->dao->brokerageRankList($where, 0, 0);
-        $position_tmp_one = array_column($list, 'uid');
-        $position_tmp_two = array_column($list, 'brokerage_price', 'uid');
-        if (!in_array($uid, $position_tmp_one)) {
-            $position = 0;
-        } else {
-            if ($position_tmp_two[$uid] == 0.00) {
-                $position = 0;
-            } else {
-                $position = array_search($uid, $position_tmp_one) + 1;
-            }
-        }
-        return $position;
-    }
-
-
-    /**
-     * 推广数据    昨天的佣金   累计提现金额  当前佣金
-     * @param int $uid
-     * @return mixed
-     */
-    public function commission(int $uid)
-    {
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        if (!$userServices->getUserInfo($uid)) {
-            throw new ApiException('数据不存在');
-        }
-        /** @var UserExtractServices $userExtract */
-        $userExtract = app()->make(UserExtractServices::class);
-        $data = [];
-        $data['uid'] = $uid;
-        $data['pm'] = 1;
-        $data['commissionSum'] = $this->getUsersBokerageSum($data);
-        $data['pm'] = 0;
-        $data['commissionRefund'] = $this->getUsersBokerageSum($data);
-        $data['commissionCount'] = $data['commissionSum'] > $data['commissionRefund'] ? bcsub((string)$data['commissionSum'], (string)$data['commissionRefund'], 2) : 0.00;
-        $data['lastDayCount'] = $this->getUsersBokerageSum($data, 'yesterday');//昨天的佣金
-        $data['extractCount'] = $userExtract->getUserExtract($uid);//累计提现金额
-
-        return $data;
-    }
-
-    /**
-     * 前端佣金排行页面数据
-     * @param int $uid
-     * @param $type
-     * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function brokerage_rank(int $uid, $type)
-    {
-        /** @var UserServices $userService */
-        $userService = app()->make(UserServices::class);
-        if (!$userService->getUserInfo($uid)) {
-            throw new ApiException('数据不存在');
-        }
-        return [
-            'rank' => $this->brokerageRankList($type),
-            'position' => $this->getUserBrokerageRank($uid, $type)
-        ];
-    }
-
-    /**
-     * @param $uid
-     * @param $type
-     * @return array
-     */
-    public function getUserBillList(int $uid, int $type)
-    {
-        $where = [];
-        $where['uid'] = $uid;
-        $where['category'] = 'now_money';
-        switch ((int)$type) {
-            case 0:
-                $where['type'] = ['recharge', 'pay_money', 'system_add', 'pay_product_refund', 'system_sub', 'pay_member', 'offline_scan', 'lottery_add'];
-                break;
-            case 1:
-                $where['type'] = ['pay_money', 'pay_member', 'offline_scan', 'user_recharge_refund'];
-                break;
-            case 2:
-                $where['type'] = ['recharge', 'system_add', 'lottery_add'];
-                break;
-            case 3:
-                $where['type'] = ['brokerage', 'brokerage_user'];
-                break;
-            case 4:
-                $where['type'] = ['extract'];
-                /** @var UserExtractServices $userExtractService */
-                $userExtractService = app()->make(UserExtractServices::class);
-                $userExtract = $userExtractService->getColumn(['uid' => $uid], 'fail_msg', 'id');
-                break;
-        }
-        $field = 'FROM_UNIXTIME(add_time,"%Y-%m") as time,group_concat(id SEPARATOR ",") ids';
-        [$page, $limit] = $this->getPageValue();
-        $list = $this->dao->getUserBillListByGroup($where, $field, 'time', $page, $limit);
-        $data = [];
-        if ($list) {
-            $listIds = array_column($list, 'ids');
-            $ids = [];
-            foreach ($listIds as $id) {
-                $ids = array_merge($ids, explode(',', $id));
-            }
-            $info = $this->dao->getColumn([['id', 'in', $ids]], 'FROM_UNIXTIME(add_time,"%Y-%m-%d %H:%i") as add_time,title,number,pm,link_id', 'id');
-            foreach ($list as $item) {
-                $value['time'] = $item['time'];
-                $id = explode(',', $item['ids']);
-                array_multisort($id, SORT_DESC);
-                $value['list'] = [];
-                foreach ($id as $v) {
-                    if (isset($info[$v])) {
-                        if ($info[$v]['pm'] == 1 && $type == 4) $info[$v]['fail_msg'] = $userExtract[$info[$v]['link_id']];
-                        $value['list'][] = $info[$v];
-                    }
-                }
-                array_push($data, $value);
-            }
-        }
-        return $data;
-    }
-
-    /**
-     * 推广 佣金/提现 总和
-     * @param int $uid
-     * @param $type 3 佣金  4 提现
-     * @return mixed
-     */
-    public function spread_count(int $uid, $type)
-    {
-        /** @var UserServices $userService */
-        $userService = app()->make(UserServices::class);
-        if (!$userService->getUserInfo($uid)) {
-            throw new ApiException('数据不存在');
-        }
-        $count = 0;
-        if ($type == 3) {
-            $count1 = $this->getRecordCount($uid, 'now_money', ['brokerage', 'brokerage_user']);
-            $count2 = $this->getRecordCount($uid, 'now_money', ['brokerage', 'brokerage_user'], '', true);
-            $count = $count1 - $count2;
-        } else if ($type == 4) {
-            /** @var UserExtractServices $userExtract */
-            $userExtract = app()->make(UserExtractServices::class);
-            $count = $userExtract->getUserExtract($uid);//累计提现
-        }
-        return $count ?: 0;
-    }
-
-    /**
      * 推广订单
-     * @param Request $request
-     * @return mixed
+     * @param int $uid
+     * @param array $data
+     * @return array
      */
     public function spread_order(int $uid, array $data)
     {
@@ -1291,56 +952,5 @@ class UserBillServices extends BaseService
             case "group" :
                 return $this->dao->getGroupField($where, $rechargeSumField, $group);
         }
-    }
-
-    /**
-     * 事业部/代理商订单
-     * @param $uid
-     * @return array
-     */
-    public function divisionOrder($uid)
-    {
-        /** @var UserServices $userService */
-        $userService = app()->make(UserServices::class);
-        $userInfo = $userService->getUserInfo($uid);
-        if (!$userInfo) {
-            throw new ApiException('数据不存在');
-        }
-        $profile = event('DistributionServiceProxy', [
-            'service' => 'DistributionUserServices', 'action' => 'profile',
-            'args' => [(int)$uid, is_object($userInfo) ? $userInfo->toArray() : (array)$userInfo],
-        ]);
-        if (is_array($profile[0] ?? null)) {
-            $userInfo = array_replace(is_object($userInfo) ? $userInfo->toArray() : (array)$userInfo, $profile[0]);
-        }
-        $division_type = (int)$userInfo['division_type'];
-        [$page, $limit] = $this->getPageValue();
-        $snapshot = event('DistributionServiceProxy', [
-            'service' => 'DistributionOrderServices', 'action' => 'divisionOrderPage',
-            'args' => [(int)$uid, $division_type, $page, $limit],
-        ]);
-        $snapshot = is_array($snapshot[0] ?? null) ? $snapshot[0] : ['list' => [], 'count' => 0, 'months' => [], 'amountField' => 'division_brokerage'];
-        $list = $snapshot['list'];
-        $result['count'] = $snapshot['count'];
-        $time_data = [];
-        if ($list) {
-            $uids = array_unique(array_column($list, 'uid'));
-            $userInfos = $userService->getColumn([['uid', 'in', $uids]], 'uid,avatar,nickname', 'uid');
-            foreach ($list as &$item) {
-                $item['avatar'] = $userInfos[$item['uid']]['avatar'] ?? '';
-                $item['nickname'] = $userInfos[$item['uid']]['nickname'] ?? '';
-                $item['order_id'] = $item['order_no'] ?: $item['order_id'];
-                $item['time'] = $item['add_time'] ? date('Y-m-d H:i', $item['add_time']) : '';
-                $item['time_key'] = $item['add_time'] ? date('Y-m', $item['add_time']) : '';
-                $item['type'] = ($item['status_code'] ?? '') === 'completed' ? 'brokerage' : 'number';
-                $item['number'] = $item[$snapshot['amountField']] ?? 0;
-            }
-            foreach ($snapshot['months'] as $month) {
-                $time_data[] = ['time' => $month['month'], 'count' => (int)$month['count']];
-            }
-        }
-        $result['list'] = $list;
-        $result['time'] = $time_data;
-        return $result;
     }
 }

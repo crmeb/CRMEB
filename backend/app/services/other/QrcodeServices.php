@@ -75,8 +75,16 @@ class QrcodeServices extends BaseService
     public function createTemporaryQrcode($id, $type, $qrcode_id = '')
     {
         //通过事件代理获取微信公众号 qrcode 实例，避免 app 层直接引用 modules
-        $_qrResults = event('ChannelServiceProxy', ['endpoint' => 'wechat_mp', 'service' => 'WechatService', 'action' => 'qrcodeService', 'args' => []]);
-        $qrcode = (is_array($_qrResults) && $_qrResults[0] !== null) ? $_qrResults[0] : null;
+        // 多渠道同时注册 ChannelServiceProxy 时需取首个非 null 结果（勿用 [0]）
+        $qrcode = proxy_event_result(event('ChannelServiceProxy', [
+            'endpoint' => 'wechat_mp',
+            'service' => 'WechatService',
+            'action' => 'qrcodeService',
+            'args' => [],
+        ]));
+        if (!$qrcode) {
+            throw new AdminException('微信公众号二维码服务不可用，请检查公众号配置与渠道插件');
+        }
         $data = $qrcode->temporary($id, 30 * 24 * 3600)->toArray();
         $data['qrcode_url'] = $data['url'];
         $data['expire_seconds'] = $data['expire_seconds'] + time();
@@ -122,8 +130,16 @@ class QrcodeServices extends BaseService
     public function createForeverQrcode($id, $type)
     {
         //通过事件代理获取微信公众号 qrcode 实例，避免 app 层直接引用 modules
-        $_qrResults = event('ChannelServiceProxy', ['endpoint' => 'wechat_mp', 'service' => 'WechatService', 'action' => 'qrcodeService', 'args' => []]);
-        $qrcode = (is_array($_qrResults) && $_qrResults[0] !== null) ? $_qrResults[0] : null;
+        // 多渠道同时注册 ChannelServiceProxy 时需取首个非 null 结果（勿用 [0]）
+        $qrcode = proxy_event_result(event('ChannelServiceProxy', [
+            'endpoint' => 'wechat_mp',
+            'service' => 'WechatService',
+            'action' => 'qrcodeService',
+            'args' => [],
+        ]));
+        if (!$qrcode) {
+            throw new AdminException('微信公众号二维码服务不可用，请检查公众号配置与渠道插件');
+        }
         $data = $qrcode->forever($id)->toArray();
         $data['qrcode_url'] = $data['url'];
         $data['url'] = $qrcode->url($data['ticket']);
@@ -244,7 +260,7 @@ class QrcodeServices extends BaseService
         switch ($type) {
             case 0:
                 $page = 'pages/goods_details/index';
-                $namePath = $id . '_' . $uid . '_' . $param['is_promoter'] . '_product.jpg';
+                $namePath = $id . '_' . $uid . '_product.jpg';
                 break;
             case 1:
                 $page = 'pages/activity/goods_combination_details/index';
@@ -321,8 +337,13 @@ class QrcodeServices extends BaseService
             $siteUrl = sys_config('site_url');
             if (!$imageInfo) {
                 //通过事件代理获取小程序码，避免 app 层直接引用 modules
-                $_mpResults = event('ChannelServiceProxy', ['endpoint' => 'wechat_mini', 'service' => 'MiniProgramService', 'action' => 'appCodeUnlimitService', 'args' => [$data, $page, 280]]);
-                $res = (is_array($_mpResults) && $_mpResults[0] !== null) ? $_mpResults[0] : null;
+                // 多渠道同时注册 ChannelServiceProxy 时需取首个非 null 结果（勿用 [0]）
+                $res = proxy_event_result(event('ChannelServiceProxy', [
+                    'endpoint' => 'wechat_mini',
+                    'service' => 'MiniProgramService',
+                    'action' => 'appCodeUnlimitService',
+                    'args' => [$data, $page, 280],
+                ]));
                 if (!$res) return false;
                 $res = (string)$res;
                 if (strlen($res) < 100) return 'unpublished';

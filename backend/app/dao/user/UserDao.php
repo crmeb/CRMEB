@@ -30,7 +30,7 @@ class UserDao extends BaseDao
     public function getByUidForUpdate(int $uid)
     {
         return $this->getModel()->where('uid', $uid)
-            ->field('uid, integral, brokerage_price, pay_count, is_promoter')->lock(true)->find();
+            ->field('uid, integral, pay_count')->lock(true)->find();
     }
 
     protected function setModel(): string

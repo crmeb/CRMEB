@@ -43,6 +43,7 @@ class OrderLifecycleServices extends BaseService
 {
     /**
      * 按订单幂等增加购买次数，标记与计数同事务提交。
+     * 推广员升级已由分销插件接管，本方法只保留 pay_count 累加逻辑。
      * @param array $order 订单任务数据
      * @return void
      */
@@ -68,14 +69,6 @@ class OrderLifecycleServices extends BaseService
             $userServices = $this->app->make(UserServices::class);
             if (!$userServices->bcInc((int)$center['uid'], 'pay_count', '1', 'uid', 0)) {
                 throw new \RuntimeException('购买次数更新失败');
-            }
-            if (!(int)$user['is_promoter']) {
-                $price = $centerDao->sum(['pay_status' => 1, 'refund_status' => 0, 'uid' => (int)$center['uid']], 'pay_price');
-                if (is_brokerage_statu($price)) {
-                    if (!$userServices->update((int)$center['uid'], ['is_promoter' => 1])) {
-                        throw new \RuntimeException('推广资格更新失败');
-                    }
-                }
             }
             if (!$centerDao->update((int)$center['id'], ['pay_counted' => 1])) {
                 throw new \RuntimeException('购买次数幂等标记更新失败');

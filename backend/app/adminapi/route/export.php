@@ -34,8 +34,6 @@ Route::group('export', function () {
     Route::get('userAgent', [\app\adminapi\controller\export\ExportExcelController::class, 'userAgent'])->option(['real_name' => '分销员推广列表导出']);
     //用户资金监控
     Route::get('userFinance', [\app\adminapi\controller\export\ExportExcelController::class, 'userFinance'])->option(['real_name' => '用户资金导出']);
-    //用户佣金
-    Route::get('userCommission', [\app\adminapi\controller\export\ExportExcelController::class, 'userCommission'])->option(['real_name' => '用户佣金导出']);
     //用户积分
     Route::get('userPoint', [\app\adminapi\controller\export\ExportExcelController::class, 'userPoint'])->option(['real_name' => '用户积分导出']);
     //用户充值

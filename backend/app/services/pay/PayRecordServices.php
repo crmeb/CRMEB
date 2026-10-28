@@ -8,7 +8,6 @@ use app\dao\order\OrderCenterDao;
 use app\dao\user\UserRechargeDao;
 use app\dao\user\MemberOrderDao;
 use app\dao\user\OfflineReceiptDao;
-use app\dao\user\UserExtractDao;
 use app\services\statistic\CapitalFlowServices;
 use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
@@ -117,34 +116,6 @@ class PayRecordServices extends BaseService
     }
 
     /**
-     * 转账前保存原单号及收款身份，接口受理不代表到账。
-     * @param int $id 提现ID
-     * @param string $orderNo 固定转账单号
-     * @param string $amount 实际到账金额
-     * @param array $context 原商户、应用及收款人
-     * @return void
-     */
-    public function prepareTransfer(int $id, string $orderNo, string $amount, array $context): void
-    {
-        $this->transaction(function () use ($id, $orderNo, $amount, $context) {
-            $source = app()->make(UserExtractDao::class)->getDb()->where('id', $id)->lock(true)->find();
-            if (!$source || (int)$source['status'] !== 0) throw new PayException('提现状态已变化');
-            $original = (string)$source['wechat_order_id'];
-            if ($original !== '' && $original !== $orderNo) throw new PayException('原转账单号已变化');
-            if (bccomp(bcsub((string)$source['extract_price'], (string)$source['extract_fee'], 2), $amount, 2) !== 0
-                || bccomp($amount, '0', 2) <= 0) throw new PayException('提现金额不一致');
-            $record = $this->dao->byOrder($orderNo, true);
-            if ($record) {
-                if ($record['context'] !== $context || bccomp((string)$record['amount'], $amount, 2) !== 0) throw new PayException('原转账身份已变化');
-                return;
-            }
-            $source->save(['wechat_order_id' => $orderNo, 'out_bill_no' => $orderNo]);
-            $this->dao->save(['order_no' => $orderNo, 'business_type' => 'user_extract', 'channel_key' => $context['channel_key'] ?? 'weixin_v3',
-                'amount' => $amount, 'context' => $context, 'state' => 'prepared', 'add_time' => time(), 'update_time' => time()]);
-        });
-    }
-
-    /**
      * 获取业务源订单，支付和取消使用同一行锁。
      * @param string $kind 业务类型
      * @param string $orderNo 订单号
@@ -154,8 +125,7 @@ class PayRecordServices extends BaseService
     public function source(string $kind, string $orderNo, bool $lock = false): array
     {
         $sources = ['product' => [OrderCenterDao::class, 'order_no'], 'user_recharge' => [UserRechargeDao::class, 'order_id'],
-            'member' => [MemberOrderDao::class, 'order_id'], 'offline_scan' => [OfflineReceiptDao::class, 'order_no'],
-            'user_extract' => [UserExtractDao::class, 'wechat_order_id|out_bill_no']];
+            'member' => [MemberOrderDao::class, 'order_id'], 'offline_scan' => [OfflineReceiptDao::class, 'order_no']];
         if (!isset($sources[$kind])) throw new PayException('支付业务类型不存在');
         [$class, $field] = $sources[$kind];
         $order = app()->make($class)->getDb()->where($field, $orderNo)->lock($lock)->find();
@@ -444,8 +414,7 @@ class PayRecordServices extends BaseService
                         ->where('update_time', $record['update_time'])->update(['state' => 'prepared', 'update_time' => time()]);
                 }
                 if (in_array($record['state'], ['prepared', 'creating', 'closing', 'received'], true) && $record['context']) {
-                    if ($record['business_type'] === 'user_extract') app()->make(PayTransferNotifyServices::class)->sync($orderNo);
-                    else $this->syncPayment($orderNo);
+                    $this->syncPayment($orderNo);
                 }
                 $this->processRefund($orderNo);
                 $this->runEffects($orderNo);

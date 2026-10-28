@@ -310,11 +310,6 @@ class UserWechatUserDao extends BaseDao
         if (isset($where['status']) && $where['status'] !== '' && $where['status'] !== null) {
             $model = $model->where($userAlias . 'status', $where['status']);
         }
-        // 是否为推广员
-        if (isset($where['is_promoter']) && $where['is_promoter'] !== '' && $where['is_promoter'] !== null) {
-            $model = $model->where($userAlias . 'is_promoter', $where['is_promoter']);
-        }
-        
         // --- 标签筛选 ---
         // label_id: 单个ID或ID数组/逗号分隔字符串
         if (isset($where['label_id']) && $where['label_id']) {
@@ -414,11 +409,6 @@ class UserWechatUserDao extends BaseDao
         // --- 指定ID筛选 ---
         if (isset($where['ids']) && count($where['ids'])) {
             $model->whereIn($userAlias . 'uid', $where['ids']);
-        }
-
-        // --- 代理等级筛选 ---
-        if (isset($where['agent_level']) && $where['agent_level'] !== '' && $where['agent_level'] !== null) {
-            $model->where($userAlias . 'agent_level', $where['agent_level']);
         }
 
         return $field ? $model->field($field) : $model;

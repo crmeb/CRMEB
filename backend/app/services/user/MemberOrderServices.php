@@ -12,7 +12,6 @@ use app\services\pay\PayRecordServices;
 use app\services\statistic\CapitalFlowServices;
 use app\services\user\member\MemberShipServices;
 use app\services\user\UserMoneyServices;
-use app\services\user\UserBrokerageServices;
 use app\services\user\UserServices;
 use app\services\user\member\MemberCardServices;
 use crmeb\exceptions\ApiException;
@@ -329,46 +328,12 @@ class MemberOrderServices extends BaseService
             $capitalFlowServices->setFlow($orderInfo, $type);
         }
         $res = $res1 && $res2 && $res3 && $res4;
-        //分销佣金处理
-        if (sys_config('member_brokerage', 0) == 1 && sys_config('brokerage_func_status', 0) == 1) {
-            $spread_one = sys_config('is_self_brokerage') ? $orderInfo['uid'] : $userServices->getSpreadUid($orderInfo['uid']);
-            $spread_two = sys_config('brokerage_level', 2) == 2 ? $userServices->getSpreadUid($spread_one, [], false) : 0;
-            $spread_one_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_ratio', 0), '100', 4), 2);
-            $spread_two_price = bcmul((string)$orderInfo['pay_price'], (string)bcdiv((string)sys_config('store_brokerage_two', 0), '100', 4), 2);
-            if ($spread_one && $spread_one_price > 0 && $userServices->checkUserPromoter($spread_one)) $this->memberBrokerage($spread_one, $spread_one_price, sys_config('is_self_brokerage') ? 'get_self_member_brokerage' : 'get_member_brokerage', $orderInfo);
-            if ($spread_two && $spread_two_price > 0 && $userServices->checkUserPromoter($spread_two)) $this->memberBrokerage($spread_two, $spread_two_price, 'get_two_member_brokerage', $orderInfo);
-        }
 
         $orderInfo['pay_type'] = $paytype;
         //触发订单发货事件
         event('OrderShipping', ['member', $orderInfo, 3, '', '']);
         if (!$res) throw new \RuntimeException('会员支付业务处理失败');
         return true;
-    }
-
-    /**
-     * 会员分销佣金处理
-     * 处理会员购买产生的分销佣金
-     * @param int $uid 分销员ID
-     * @param float $price 佣金金额
-     * @param string $type 佣金类型
-     * @param array $orderInfo 订单信息
-     */
-    public function memberBrokerage($uid, $price, $type, $orderInfo)
-    {
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        $userInfo = $userServices->get($uid);
-        $broken_time = intval(sys_config('extract_time'));
-        $frozen_time = time() + $broken_time * 86400;
-        /** @var UserBrokerageServices $userBrokerageServices */
-        $userBrokerageServices = app()->make(UserBrokerageServices::class);
-        $userBrokerageServices->brokerageIncome($type, $uid, [
-            'nickname' => $userInfo['nickname'],
-            'pay_price' => floatval($orderInfo['pay_price']),
-            'number' => floatval($price),
-            'frozen_time' => $frozen_time
-        ], $orderInfo['id']);
     }
 
     /**

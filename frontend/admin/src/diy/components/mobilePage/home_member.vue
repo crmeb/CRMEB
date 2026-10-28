@@ -545,7 +545,6 @@ export const getDefaultConfig = (num) => ({
       { id: 2, name: '积分' },
       { id: 5, name: '收藏商品' },
       { id: 6, name: '浏览记录' },
-      { id: 8, name: '推广佣金' },
       { id: 9, name: '推广人' },
       { id: 10, name: '推广订单' },
     ],
@@ -734,7 +733,6 @@ const dataList = computed(() => {
     { id: 2, name: '积分', val: '3000' },
     { id: 5, name: '收藏商品', val: '1660' },
     { id: 6, name: '浏览记录', val: '1660' },
-    { id: 8, name: '推广佣金', val: '666' },
     { id: 9, name: '推广人', val: '1660' },
     { id: 10, name: '推广订单', val: '1660' },
   ];

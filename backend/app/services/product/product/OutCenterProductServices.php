@@ -511,8 +511,6 @@ class OutCenterProductServices extends BaseService
                 'stock'             => $item['stock'] ?? 0,
                 'image'             => $item['image'] ?? '',
                 'unique_code'       => $unique,
-                'brokerage'         => $item['brokerage'] ?? 0,
-                'brokerage_two'     => $item['brokerage_two'] ?? 0,
                 'is_default_select' => $item['is_default_select'] ?? ($index === 0 ? 1 : 0),
                 'is_show'           => $item['is_show'] ?? 1,
                 'bar_code'          => $item['bar_code'] ?? '',

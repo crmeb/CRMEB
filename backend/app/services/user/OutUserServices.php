@@ -49,8 +49,8 @@ class OutUserServices extends BaseService
     {
         /** @var UserWechatuserServices $userWechatUser */
         $userWechatUser = app()->make(UserWechatuserServices::class);
-        $fields = 'u.uid, u.real_name, u.mark, u.nickname, u.avatar, u.phone, u.now_money, u.brokerage_price, u.integral, u.exp, u.sign_num, u.user_type, 
-        u.status, u.level, u.agent_level, u.spread_open, u.spread_uid, u.spread_time, u.user_type, u.is_promoter, u.pay_count, u.is_ever_level, u.is_money_level, 
+        $fields = 'u.uid, u.real_name, u.mark, u.nickname, u.avatar, u.phone, u.now_money, u.integral, u.exp, u.sign_num, u.user_type,
+        u.status, u.level, u.spread_uid, u.spread_time, u.user_type, u.pay_count, u.is_ever_level, u.is_money_level,
         u.overdue_time, u.add_time';
         [$list, $count] = $userWechatUser->getWhereUserList($where, $fields);
         if ($list) {
@@ -95,14 +95,12 @@ class OutUserServices extends BaseService
     public function userInfo($uid)
     {
         $userType = ['h5' => 'H5', 'wechat' => '公众号', 'routine' => '小程序', 'app' => 'APP'];
-        $fields = ['uid', 'real_name', 'mark', 'nickname', 'avatar', 'phone', 'now_money', 'brokerage_price', 'integral', 'exp', 'sign_num', 'user_type', 'status', 'level',
-            'agent_level', 'spread_open', 'spread_uid', 'spread_time', 'user_type', 'is_promoter', 'pay_count', 'is_ever_level', 'is_money_level', 'overdue_time', 'add_time'];
+        $fields = ['uid', 'real_name', 'mark', 'nickname', 'avatar', 'phone', 'now_money', 'integral', 'exp', 'sign_num', 'user_type', 'status', 'level',
+            'spread_uid', 'spread_time', 'user_type', 'pay_count', 'is_ever_level', 'is_money_level', 'overdue_time', 'add_time'];
         $data = app()->make(UserServices::class)->get($uid, $fields);
         $data['user_type'] = $userType[$data['user_type']];
         $data['status'] = $data['status'] ? '正常' : '禁用';
         $data['level'] = app()->make(SystemUserLevelServices::class)->value($data['level'], 'name') ?? '无';
-        $data['agent_level'] = '无';
-        $data['spread_open'] = $data['spread_open'] ? '分销开启' : '分销关闭';
         $data['spread_name'] = app()->make(UserServices::class)->value($data['spread_uid'], 'nickname') ?? '无';
         $data['spread_time'] = date('Y-m-d H:i:s', $data['spread_time']);
         $data['add_time'] = date('Y-m-d H:i:s', $data['add_time']);

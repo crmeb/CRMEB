@@ -16,9 +16,6 @@
             </div>
           </div>
           <div class="item acea-row row-middle">
-            <div class="name commission ivu-form-item-content">
-              佣金：<span>{{ spread.brokerage_price }}</span>
-            </div>
             <div class="name ivu-form-item-content">
               真实姓名：<span>{{ spread.real_name }}</span>
             </div>

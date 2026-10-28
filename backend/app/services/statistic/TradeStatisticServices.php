@@ -17,7 +17,6 @@ use app\services\other\export\ExportServices;
 use app\services\user\OfflineReceiptServices;
 use app\services\user\MemberOrderServices;
 use app\dao\order\OrderCenterDao;
-use app\services\user\UserExtractServices;
 use app\services\user\UserMoneyServices;
 use app\services\user\UserRechargeServices;
 
@@ -354,22 +353,6 @@ class TradeStatisticServices extends BaseService
         $Chain['out_ye'] = $outYeCurve;
 
 
-        //支付佣金金额
-        $outExtractMoney = $this->getExtractTotalMoney($where, 'sum');
-        $lastOutExtractMoney = $this->getExtractTotalMoney($dateWhere, 'sum', "", $isNum);
-        $OutExtractCurve = $this->getExtractTotalMoney($where, 'group', "add_time");
-        $OutExtractChain = $this->countRate($outExtractMoney, $lastOutExtractMoney);
-        $topData[7] = [
-            'title' => '支付佣金金额',
-            'desc' => '后台给推广员支付的推广佣金，以实际支付为准',
-            'total_money' => $outExtractMoney,
-            'rate' => $OutExtractChain,
-            'value' => $OutExtractCurve['y'],
-            'type' => 0,
-            'sign' => 'yong',
-        ];
-        $Chain['extract'] = $OutExtractCurve;
-
         //商品退款金额（退款统计已归中台：refund_status=已退款 累计 refund_price）
         $outOrderRefund = $this->getOrderRefundTotalMoney(['time' => $where['time']], 'sum');
         $lastOutOrderRefund = $this->getOrderRefundTotalMoney(['time' => $dateWhere['time']], 'sum', "", $isNum);
@@ -387,13 +370,13 @@ class TradeStatisticServices extends BaseService
         $Chain['refund'] = $outOrderRefundCurve;
 
         //支出金额
-        $outTotalMoney = bcadd(bcadd($outYeMoney, $outExtractMoney, 2), $outOrderRefund, 2);
-        $lastOutTotalMoney = bcadd(bcadd($lastOutYeMoney, $lastOutExtractMoney, 2), $lastOutOrderRefund, 2);
-        $outTotalCurve = $this->totalArrData([$outYeCurve, $OutExtractCurve, $outOrderRefundCurve]);
+        $outTotalMoney = bcadd($outYeMoney, $outOrderRefund, 2);
+        $lastOutTotalMoney = bcadd($lastOutYeMoney, $lastOutOrderRefund, 2);
+        $outTotalCurve = $this->totalArrData([$outYeCurve, $outOrderRefundCurve]);
         $outTotalChain = $this->countRate($outTotalMoney, $lastOutTotalMoney);
         $topData[5] = [
             'title' => '支出金额',
-            'desc' => '余额支付金额、支付佣金金额、商品退款金额',
+            'desc' => '余额支付金额、商品退款金额',
             'total_money' => $outTotalMoney,
             'rate' => $outTotalChain,
             'value' => $outTotalCurve['y'],
@@ -634,32 +617,6 @@ class TradeStatisticServices extends BaseService
 
         if ($group) {
             $totalMoney = $this->trendYdata($totalMoney, $whereOrderMoner['timeKey']);
-        }
-        return $totalMoney;
-    }
-
-    /**
-     * 支付佣金
-     * @param $where
-     * @param string $selectType
-     * @param string $group
-     * @param bool $isNum
-     * @return array|float|mixed
-     * @throws \Exception
-     */
-    public function getExtractTotalMoney($where, string $selectType, string $group = "", bool $isNum = false)
-    {
-        /** 普通商品订单支付金额 */
-        /** @var UserExtractServices $extractService */
-        $extractService = app()->make(UserExtractServices::class);
-        $orderSumField = "extract_price";
-        $whereData['status'] = 1;
-        $whereData['timeKey'] = $this->TimeConvert($where['time'], $isNum);
-        $totalMoney = $extractService->getOutMoneyByWhere($whereData, $orderSumField, $selectType, $group);
-        if ($group) {
-
-            $totalMoney = $this->trendYdata($totalMoney, $whereData['timeKey']);
-
         }
         return $totalMoney;
     }

@@ -205,49 +205,6 @@ class UserBillDao extends BaseDao
 
     /**
      * @param array $where
-     * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function getUserBillList(array $where)
-    {
-        return $this->search($where)->select()->toArray();
-    }
-
-    /**
-     * 获取佣金排行
-     * @param array $where
-     * @param int $page
-     * @param int $limit
-     * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function brokerageRankList(array $where, int $page, int $limit)
-    {
-        return $this->search($where)->field('uid,SUM(IF(pm=1,`number`,-`number`)) as brokerage_price')->with(['user' => function ($query) {
-            $query->field('uid,avatar,nickname');
-        }])->order('brokerage_price desc')->group('uid')->page($page, $limit)->select()->toArray();
-    }
-
-    /**
-     * 时间分组
-     * @param array $where
-     * @param string $filed
-     * @param string $group
-     * @param int $page
-     * @param int $limit
-     * @return mixed
-     */
-    public function getUserBillListByGroup(array $where, string $filed, string $group, int $page, int $limit)
-    {
-        return $this->search($where)->field($filed)->where('number', '>', 0)->order('add_time desc')->group($group)->page($page, $limit)->select()->toArray();
-    }
-
-    /**
-     * @param array $where
      * @param int $page
      * @param int $limit
      * @return array

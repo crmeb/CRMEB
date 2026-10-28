@@ -551,32 +551,6 @@ class ExportServices extends BaseService
     }
 
     /**
-     * 用户佣金导出
-     * @param $data 导出数据
-     */
-    public function userCommission($data = [])
-    {
-        $export = [];
-        if (!empty($data)) {
-            foreach ($data as &$value) {
-                $export[] = [
-                    $value['nickname'],
-                    $value['sum_number'],
-                    $value['now_money'],
-                    $value['brokerage_price'],
-                    $value['extract_price'],
-                ];
-            }
-        }
-        $header = ['昵称/姓名', '总佣金金额', '账户余额', '账户佣金', '提现到账佣金'];
-        $title = ['佣金记录', '佣金记录' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time())];
-        $filename = '佣金记录_' . date('YmdHis', time());
-        $suffix = 'xlsx';
-        $is_save = true;
-        return $this->export($header, $title, $export, $filename, $suffix, $is_save);
-    }
-
-    /**
      * 用户积分导出
      * @param $data 导出数据
      */
@@ -655,7 +629,7 @@ class ExportServices extends BaseService
                     $item['brokerage_money'],
                     $item['extract_count_price'],
                     $item['extract_count_num'],
-                    $item['brokerage_price'],
+                    $item['brokerage_price'] ?? 0,
                     $item['spread_name'],
                 ];
             }

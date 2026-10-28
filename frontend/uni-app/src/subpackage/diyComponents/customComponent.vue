@@ -980,7 +980,6 @@ function getDisplayText(item, dataItem) {
     if (field === "order_num") return dataItem.order_num;
     if (field === "integral") return dataItem.integral;
     if (field === "now_money") return dataItem.now_money;
-    if (field === "brokerage_price") return dataItem.brokerage_price;
     if (field === "unread_msg_num") return dataItem.unread_msg_num;
     if (field === "mobile") return dataItem.mobile;
     if (field === "add_time") return dataItem.add_time;

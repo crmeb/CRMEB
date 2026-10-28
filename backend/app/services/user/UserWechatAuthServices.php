@@ -104,16 +104,8 @@ class UserWechatAuthServices extends BaseService
             $wechatInfo = [];
         }
         $userServices = app()->make(UserServices::class);
-        $spreadInfo = $userServices->getUserInfo((int)$spreadId);
-        if (!$spreadInfo) {
+        if (!$userServices->getUserInfo((int)$spreadId)) {
             $spreadId = 0;
-            $wechatInfo['staff_id'] = 0;
-            $wechatInfo['agent_id'] = 0;
-            $wechatInfo['division_id'] = 0;
-        } else {
-            $wechatInfo['staff_id'] = $spreadInfo['staff_id'];
-            $wechatInfo['agent_id'] = $spreadInfo['agent_id'];
-            $wechatInfo['division_id'] = $spreadInfo['division_id'];
         }
 
         unset($wechatInfo['subscribe_scene'], $wechatInfo['qr_scene'], $wechatInfo['qr_scene_str']);

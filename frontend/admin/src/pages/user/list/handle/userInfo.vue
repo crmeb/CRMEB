@@ -51,10 +51,6 @@
       <div class="section-hd">用户概况</div>
       <div class="section-bd">
         <div class="item">
-          <div>推广资格：</div>
-          <div class="value">{{ psInfo.spread_open ? '开启' : '关闭' }}</div>
-        </div>
-        <div class="item">
           <div>用户状态：</div>
           <div class="value">{{ psInfo.status ? '开启' : '锁定' }}</div>
         </div>

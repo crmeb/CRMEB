@@ -961,7 +961,7 @@ CREATE TABLE IF NOT EXISTS `eb_pay_channel_platform` (
 CREATE TABLE IF NOT EXISTS `eb_pay_record` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `order_no` varchar(32) NOT NULL DEFAULT '' COMMENT '原商户订单号',
-  `business_type` varchar(32) NOT NULL DEFAULT '' COMMENT '支付业务: product/user_recharge/member/offline_scan/user_extract',
+  `business_type` varchar(32) NOT NULL DEFAULT '' COMMENT '支付业务: product/user_recharge/member/offline_scan',
   `channel_key` varchar(32) NOT NULL DEFAULT '' COMMENT '原支付渠道',
   `amount` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '服务端支付金额',
   `context` json DEFAULT NULL COMMENT '原支付身份快照，不含密钥',
@@ -1367,8 +1367,6 @@ CREATE TABLE IF NOT EXISTS `eb_store_product_attr_value` (
   `vip_price` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '会员专享价',
   `weight` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '重量',
   `volume` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '体积',
-  `brokerage` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '一级返佣',
-  `brokerage_two` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '二级返佣',
   `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '活动类型 0=商品，1=秒杀，2=砍价，3=拼团',
   `quota` int NOT NULL DEFAULT '0' COMMENT '活动限购数量',
   `quota_show` int NOT NULL DEFAULT '0' COMMENT '活动限购数量显示',
@@ -2060,7 +2058,6 @@ CREATE TABLE IF NOT EXISTS `eb_user` (
   `birthday` int NOT NULL DEFAULT '0' COMMENT '生日',
   `card_id` varchar(20) NOT NULL DEFAULT '' COMMENT '身份证号码',
   `mark` varchar(255) NOT NULL DEFAULT '' COMMENT '用户备注',
-  `partner_id` int NOT NULL DEFAULT '0' COMMENT '合伙人id',
   `group_id` int NOT NULL DEFAULT '0' COMMENT '用户分组id',
   `nickname` varchar(60) NOT NULL DEFAULT '' COMMENT '用户昵称',
   `avatar` varchar(256) NOT NULL DEFAULT '' COMMENT '用户头像',
@@ -2071,21 +2068,16 @@ CREATE TABLE IF NOT EXISTS `eb_user` (
   `last_time` int unsigned NOT NULL DEFAULT '0' COMMENT '最后一次登录时间',
   `last_ip` varchar(16) NOT NULL DEFAULT '' COMMENT '最后一次登录ip',
   `now_money` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '用户余额',
-  `brokerage_price` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '佣金金额',
   `integral` int unsigned NOT NULL DEFAULT '0' COMMENT '用户剩余积分',
   `exp` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '会员经验',
   `sign_num` int NOT NULL DEFAULT '0' COMMENT '连续签到天数',
   `sign_remind` tinyint(1) NOT NULL DEFAULT '0' COMMENT '签到提醒状态',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1为正常，0为禁止',
   `level` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '等级',
-  `agent_level` int NOT NULL DEFAULT '0' COMMENT '分销等级',
-  `spread_open` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否有推广资格',
-  `spread_uid` int unsigned NOT NULL DEFAULT '0' COMMENT '推广元id',
-  `spread_time` int unsigned NOT NULL DEFAULT '0' COMMENT '推广员关联时间',
+  `spread_uid` int unsigned NOT NULL DEFAULT '0' COMMENT '上级用户',
+  `spread_time` int unsigned NOT NULL DEFAULT '0' COMMENT '上级关联时间',
   `user_type` varchar(32) NOT NULL DEFAULT '' COMMENT '用户类型',
-  `is_promoter` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否为推广员',
   `pay_count` int unsigned NOT NULL DEFAULT '0' COMMENT '用户购买次数',
-  `spread_count` int NOT NULL DEFAULT '0' COMMENT '下级人数',
   `clean_time` int NOT NULL DEFAULT '0' COMMENT '清理会员时间',
   `addres` varchar(255) NOT NULL DEFAULT '' COMMENT '详细地址',
   `adminid` int unsigned NOT NULL DEFAULT '0' COMMENT '管理员编号 ',
@@ -2095,26 +2087,12 @@ CREATE TABLE IF NOT EXISTS `eb_user` (
   `is_ever_level` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否永久性会员  0: 非永久会员  1：永久会员',
   `overdue_time` bigint NOT NULL DEFAULT '0' COMMENT '会员到期时间',
   `uniqid` varchar(32) NOT NULL DEFAULT '' COMMENT '用户唯一值',
-  `division_name` varchar(255) NOT NULL DEFAULT '' COMMENT '事业部/代理商名称',
-  `division_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '代理类型：0普通，1事业部，2代理，3员工',
-  `division_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '代理状态',
-  `is_division` tinyint(1) NOT NULL DEFAULT '0' COMMENT '事业部状态',
-  `is_agent` tinyint(1) NOT NULL DEFAULT '0' COMMENT '代理状态',
-  `is_staff` tinyint(1) NOT NULL DEFAULT '0' COMMENT '员工状态',
-  `division_id` int NOT NULL DEFAULT '0' COMMENT '事业部id',
-  `agent_id` int NOT NULL DEFAULT '0' COMMENT '代理商id',
-  `staff_id` int NOT NULL DEFAULT '0' COMMENT '员工id',
-  `division_percent` int NOT NULL DEFAULT '0' COMMENT '分佣比例',
-  `division_change_time` int NOT NULL DEFAULT '0' COMMENT '事业部/代理/员工修改时间',
-  `division_end_time` int NOT NULL DEFAULT '0' COMMENT '事业部/代理/员工结束时间',
-  `division_invite` int NOT NULL DEFAULT '0' COMMENT '代理商邀请码',
   `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否注销',
   PRIMARY KEY (`uid`) USING BTREE,
   KEY `account` (`account`) USING BTREE,
   KEY `spreaduid` (`spread_uid`) USING BTREE,
   KEY `level` (`level`) USING BTREE,
-  KEY `status` (`status`) USING BTREE,
-  KEY `is_promoter` (`is_promoter`) USING BTREE
+  KEY `status` (`status`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户表';
 
 -- eb_user_address：用户地址表
@@ -2164,42 +2142,7 @@ CREATE TABLE IF NOT EXISTS `eb_user_bill` (
   KEY `type` (`category`,`type`,`link_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户账单表';
 
--- eb_user_brokerage：用户分佣账单表
-CREATE TABLE IF NOT EXISTS `eb_user_brokerage` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '用户佣金id',
-  `uid` int unsigned NOT NULL DEFAULT '0' COMMENT '用户uid',
-  `link_id` varchar(32) NOT NULL DEFAULT '0' COMMENT '关联id',
-  `type` varchar(64) NOT NULL DEFAULT '' COMMENT '明细类型',
-  `title` varchar(64) NOT NULL DEFAULT '' COMMENT '账单标题',
-  `number` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '明细数字',
-  `balance` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '剩余',
-  `pm` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '0 = 支出 1 = 获得',
-  `mark` varchar(512) NOT NULL DEFAULT '' COMMENT '备注',
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 = 带确定 1 = 有效 -1 = 无效',
-  `take` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 = 未收货 1 = 已收货',
-  `frozen_time` int unsigned NOT NULL DEFAULT '0' COMMENT '冻结到期时间',
-  `add_time` int unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `uid` (`uid`) USING BTREE,
-  KEY `status` (`status`) USING BTREE,
-  KEY `add_time` (`add_time`) USING BTREE,
-  KEY `pm` (`pm`) USING BTREE,
-  KEY `type` (`type`,`link_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户分佣账单表';
 
--- eb_user_brokerage_frozen：用户佣金冻结记录表
-CREATE TABLE IF NOT EXISTS `eb_user_brokerage_frozen` (
-  `id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `uid` int NOT NULL DEFAULT '0' COMMENT '用户uid',
-  `price` decimal(12,2) NOT NULL DEFAULT '0.00' COMMENT '金额',
-  `uill_id` int NOT NULL DEFAULT '0' COMMENT '关联id',
-  `frozen_time` int NOT NULL DEFAULT '0' COMMENT '冻结到期时间',
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否有效',
-  `add_time` int NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `order_id` varchar(50) NOT NULL DEFAULT '' COMMENT '订单id',
-  PRIMARY KEY (`id`),
-  KEY `uid` (`uid`,`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户佣金冻结记录表';
 
 -- eb_user_cancel：用户注销表
 CREATE TABLE IF NOT EXISTS `eb_user_cancel` (
@@ -2242,40 +2185,6 @@ CREATE TABLE IF NOT EXISTS `eb_user_enter` (
   KEY `status` (`status`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='商户申请表';
 
--- eb_user_extract：用户提现表
-CREATE TABLE IF NOT EXISTS `eb_user_extract` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `wechat_order_id` varchar(32) NOT NULL DEFAULT '' COMMENT '微信订单ID',
-  `uid` int unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
-  `real_name` varchar(64) NOT NULL DEFAULT '' COMMENT '名称',
-  `user_name` varchar(64) NOT NULL DEFAULT '' COMMENT '用户姓名',
-  `extract_type` varchar(32) NOT NULL DEFAULT 'bank' COMMENT 'bank = 银行卡 alipay = 支付宝wx=微信',
-  `bank_code` varchar(32) NOT NULL DEFAULT '0' COMMENT '银行卡',
-  `bank_address` varchar(256) NOT NULL DEFAULT '' COMMENT '开户地址',
-  `alipay_code` varchar(64) NOT NULL DEFAULT '' COMMENT '支付宝账号',
-  `extract_price` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '提现金额',
-  `extract_fee` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '提现手续费',
-  `mark` varchar(512) NOT NULL DEFAULT '' COMMENT '备注',
-  `balance` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '提现前佣金',
-  `fail_msg` varchar(128) NOT NULL DEFAULT '' COMMENT '无效原因',
-  `fail_time` int unsigned NOT NULL DEFAULT '0' COMMENT '无效时间',
-  `add_time` int unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `status` tinyint NOT NULL DEFAULT '0' COMMENT '-1 未通过 0 审核中 1 已提现',
-  `wechat` varchar(50) NOT NULL DEFAULT '' COMMENT '微信号',
-  `qrcode_url` varchar(255) NOT NULL DEFAULT '' COMMENT '二维码地址',
-  `channel_type` varchar(32) NOT NULL DEFAULT '' COMMENT '提现来源',
-  `out_bill_no` varchar(255) NOT NULL DEFAULT '' COMMENT '商户单号',
-  `transfer_bill_no` varchar(255) NOT NULL DEFAULT '' COMMENT '微信转账单号',
-  `state` varchar(32) NOT NULL DEFAULT '' COMMENT '单据状态',
-  `package_info` varchar(2000) NOT NULL DEFAULT '' COMMENT '跳转领取页面的package信息',
-  `fail_reason` varchar(255) NOT NULL DEFAULT '' COMMENT '失败原因',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `extract_type` (`extract_type`) USING BTREE,
-  KEY `status` (`status`) USING BTREE,
-  KEY `add_time` (`add_time`) USING BTREE,
-  KEY `openid` (`uid`) USING BTREE,
-  KEY `fail_time` (`fail_time`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户提现表';
 
 -- eb_user_friends：用户好友关系
 CREATE TABLE IF NOT EXISTS `eb_user_friends` (
@@ -2421,8 +2330,8 @@ CREATE TABLE IF NOT EXISTS `eb_user_search` (
 CREATE TABLE IF NOT EXISTS `eb_user_spread` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `uid` int NOT NULL DEFAULT '0' COMMENT '用户uid',
-  `spread_uid` int NOT NULL DEFAULT '0' COMMENT '推广人uid',
-  `spread_time` int NOT NULL DEFAULT '0' COMMENT '推广时间',
+  `spread_uid` int NOT NULL DEFAULT '0' COMMENT '上级用户',
+  `spread_time` int NOT NULL DEFAULT '0' COMMENT '上级关联时间',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`) USING BTREE,
   KEY `spread_uid` (`spread_uid`) USING BTREE

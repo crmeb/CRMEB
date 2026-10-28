@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace modules\service\mcp\tools;
 
-use app\dao\user\UserBrokerageDao;
-use app\dao\user\UserExtractDao;
 use app\dao\user\UserMoneyDao;
 use app\dao\user\UserRechargeDao;
 use crmeb\interfaces\McpToolInterface;
@@ -22,7 +20,7 @@ use modules\service\mcp\ReportPeriod;
 /**
  * MCP 工具：财务总览统计
  *
- * 汇总指定时间段内平台核心资金数据：充值、提现、余额流水、佣金流水。
+ * 汇总指定时间段内平台核心资金数据：充值、余额流水（提现/佣金统计已随分销佣金功能下线移除）。
  */
 class FinanceOverviewTool implements McpToolInterface
 {
@@ -33,40 +31,22 @@ class FinanceOverviewTool implements McpToolInterface
     private UserRechargeDao $rechargeDao;
 
     /**
-     * 提现 DAO
-     * @var UserExtractDao
-     */
-    private UserExtractDao $extractDao;
-
-    /**
      * 余额流水 DAO
      * @var UserMoneyDao
      */
     private UserMoneyDao $moneyDao;
 
     /**
-     * 佣金流水 DAO
-     * @var UserBrokerageDao
-     */
-    private UserBrokerageDao $brokerageDao;
-
-    /**
      * 构造函数
      * @param UserRechargeDao $rechargeDao 充值 DAO
-     * @param UserExtractDao $extractDao 提现 DAO
      * @param UserMoneyDao $moneyDao 余额流水 DAO
-     * @param UserBrokerageDao $brokerageDao 佣金流水 DAO
      */
     public function __construct(
         UserRechargeDao $rechargeDao,
-        UserExtractDao $extractDao,
-        UserMoneyDao $moneyDao,
-        UserBrokerageDao $brokerageDao
+        UserMoneyDao $moneyDao
     ) {
         $this->rechargeDao = $rechargeDao;
-        $this->extractDao = $extractDao;
         $this->moneyDao = $moneyDao;
-        $this->brokerageDao = $brokerageDao;
     }
 
     /**
@@ -86,9 +66,7 @@ class FinanceOverviewTool implements McpToolInterface
     {
         return '汇总统计指定时间段内平台核心资金数据：'
             . '充值（仅已支付，按支付时间统计笔数、金额、赠送金额）；'
-            . '提现（按申请时间统计已提现/审核中/未通过的笔数与金额及成功手续费）；'
-            . '余额流水（按记账时间统计有效记录的收入与支出笔数、金额）；'
-            . '佣金流水（按记账时间统计有效记录的收入与支出笔数、金额，收入含冻结中佣金）。'
+            . '余额流水（按记账时间统计有效记录的收入与支出笔数、金额）。'
             . '不包含积分/经验变动，金额单位为元。默认近7天，最多31天。';
     }
 
@@ -143,18 +121,6 @@ class FinanceOverviewTool implements McpToolInterface
             ->find();
         $recharge = $recharge ? $recharge->toArray() : [];
 
-        // 提现：按申请时间，分状态统计
-        $extractFields = ['COUNT(id) AS cnt', 'COALESCE(SUM(extract_price),0) AS amount', 'COALESCE(SUM(extract_fee),0) AS fee'];
-        $extractSuccess = $this->extractDao->search([['status', '=', 1]])
-            ->whereBetween('add_time', $range)->field($extractFields)->find();
-        $extractSuccess = $extractSuccess ? $extractSuccess->toArray() : [];
-        $extractAudit = $this->extractDao->search([['status', '=', 0]])
-            ->whereBetween('add_time', $range)->field($extractFields)->find();
-        $extractAudit = $extractAudit ? $extractAudit->toArray() : [];
-        $extractFail = $this->extractDao->search([['status', '=', -1]])
-            ->whereBetween('add_time', $range)->field(['COUNT(id) AS cnt'])->find();
-        $extractFail = $extractFail ? $extractFail->toArray() : [];
-
         // 余额流水：仅有效记录，按记账时间统计收/支
         $flowFields = ['COUNT(id) AS cnt', 'COALESCE(SUM(number),0) AS amount'];
         $moneyIn = $this->moneyDao->search([['pm', '=', 1], ['status', '=', 1]])
@@ -163,14 +129,6 @@ class FinanceOverviewTool implements McpToolInterface
         $moneyOut = $this->moneyDao->search([['pm', '=', 0], ['status', '=', 1]])
             ->whereBetween('add_time', $range)->field($flowFields)->find();
         $moneyOut = $moneyOut ? $moneyOut->toArray() : [];
-
-        // 佣金流水：仅有效记录，按记账时间统计收/支（收入含冻结中佣金）
-        $brokerageIn = $this->brokerageDao->search([['pm', '=', 1], ['status', '=', 1]])
-            ->whereBetween('add_time', $range)->field($flowFields)->find();
-        $brokerageIn = $brokerageIn ? $brokerageIn->toArray() : [];
-        $brokerageOut = $this->brokerageDao->search([['pm', '=', 0], ['status', '=', 1]])
-            ->whereBetween('add_time', $range)->field($flowFields)->find();
-        $brokerageOut = $brokerageOut ? $brokerageOut->toArray() : [];
 
         return [
             'start_date' => $period['start_date'],
@@ -181,25 +139,11 @@ class FinanceOverviewTool implements McpToolInterface
                     'amount'      => (string)($recharge['amount'] ?? '0.00'),
                     'give_amount' => (string)($recharge['give_amount'] ?? '0.00'),
                 ],
-                'extract'  => [
-                    'success_count'  => (int)($extractSuccess['cnt'] ?? 0),
-                    'success_amount' => (string)($extractSuccess['amount'] ?? '0.00'),
-                    'success_fee'    => (string)($extractSuccess['fee'] ?? '0.00'),
-                    'auditing_count' => (int)($extractAudit['cnt'] ?? 0),
-                    'auditing_amount' => (string)($extractAudit['amount'] ?? '0.00'),
-                    'fail_count'     => (int)($extractFail['cnt'] ?? 0),
-                ],
                 'user_money' => [
                     'in_count'  => (int)($moneyIn['cnt'] ?? 0),
                     'in_amount' => (string)($moneyIn['amount'] ?? '0.00'),
                     'out_count' => (int)($moneyOut['cnt'] ?? 0),
                     'out_amount' => (string)($moneyOut['amount'] ?? '0.00'),
-                ],
-                'user_brokerage' => [
-                    'in_count'  => (int)($brokerageIn['cnt'] ?? 0),
-                    'in_amount' => (string)($brokerageIn['amount'] ?? '0.00'),
-                    'out_count' => (int)($brokerageOut['cnt'] ?? 0),
-                    'out_amount' => (string)($brokerageOut['amount'] ?? '0.00'),
                 ],
             ],
         ];

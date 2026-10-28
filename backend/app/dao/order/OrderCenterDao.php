@@ -5,7 +5,6 @@ namespace app\dao\order;
 
 use crmeb\basic\BaseDao;
 use app\model\order\OrderCenter;
-use app\model\user\User;
 
 /**
  * 订单中台数据访问层
@@ -328,41 +327,6 @@ class OrderCenterDao extends BaseDao
             });
         $count = $model->count();
         $list = $model->order('add_time desc')->page($page, $limit)->select()->toArray();
-        return compact('list', 'count');
-    }
-
-    /**
-     * 按下单人的归属字段分组统计订单（事业部/代理商/员工维度统计）
-     * 新架构订单表无 division_id/agent_id/staff_id 快照字段，归属关系实时取自用户表
-     * @param string $userField 用户表分组字段（division_id/agent_id/staff_id，白名单校验）
-     * @param array $time 时间范围 [开始日期, 结束日期]
-     * @param int $page 页码
-     * @param int $limit 每页数量
-     * @param string $sort 排序字段（为空时默认按订单数倒序）
-     * @param string $order 排序方向
-     * @return array ['list' => 列表, 'count' => 总数]
-     */
-    public function statisticGroupByUserField(string $userField, array $time = [], int $page = 0, int $limit = 0, string $sort = '', string $order = ''): array
-    {
-        // 分组字段白名单校验，防止 SQL 注入
-        if (!in_array($userField, ['division_id', 'agent_id', 'staff_id'], true)) {
-            $userField = 'division_id';
-        }
-        // 取用户表真实表名（含前缀），拼接关联查询
-        $userTable = app()->make(User::class)->getName();
-        $model = $this->getModel()->alias('o')
-            ->join($userTable . ' u', 'o.uid = u.uid')
-            ->where('u.' . $userField, '>', 0)
-            ->when(!empty($time), function ($query) use ($time) {
-                // 按下单时间范围筛选
-                $query->whereBetween('o.add_time', [strtotime($time[0]), strtotime($time[1] . ' 23:59:59')]);
-            });
-        // 分组后总数：先取全部分组键再计数（分组维度为事业部/代理商/员工，数量有限）
-        $count = count($model->distinct(true)->field('u.' . $userField)->select()->toArray());
-        // 默认按订单数倒序
-        $orderStr = $sort === '' ? 'order_sum desc' : $sort . ' ' . $order;
-        $list = $model->fieldRaw('u.' . $userField . ', COUNT(*) AS order_sum, SUM(o.pay_price) AS order_sum_price')
-            ->group('u.' . $userField)->order($orderStr)->page($page, $limit)->select()->toArray();
         return compact('list', 'count');
     }
 

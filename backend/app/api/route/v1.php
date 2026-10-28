@@ -83,9 +83,8 @@ Route::group(function () {
         Route::post('switch_h5', [\app\api\controller\v1\LoginController::class, 'switchH5'])->name('switch_h5')->option(['real_name' => '切换账号']);// 切换账号
         //公共类
         Route::post('upload/image', [\app\api\controller\v1\PublicController::class, 'uploadImage'])->name('uploadImage')->option(['real_name' => '图片上传']);//图片上传
-        // 用户微信转账详情接口
+        // 用户微信转账详情接口（提现已由分销插件接管，type=1 仅返回下线提示）
         Route::get('transfer/info', [\app\api\controller\v1\PublicController::class, 'getTransferInfo'])->name('getTransferInfo')->option(['real_name' => '用户微信转账详情接口']);// 用户微信转账详情接口
-        Route::post('transfer/info', [\app\api\controller\v1\user\UserExtractController::class, 'checkTransfer'])->name('checkTransfer')->option(['real_name' => '用户微信转账收款核验']);// 核验并同步当前用户的转账终态
 
     })->option(['mark' => 'common', 'mark_name' => '公共接口']);
 
@@ -177,21 +176,13 @@ Route::group(function () {
         //账单类
         Route::post('spread/people', [\app\api\controller\v1\user\UserController::class, 'spreadPeople'])->name('spreadPeople')->option(['real_name' => '推荐用户']);//推荐用户
         Route::post('spread/order', [\app\api\controller\v1\user\UserBillController::class, 'spreadOrder'])->name('spreadOrder')->option(['real_name' => '推广订单']);//推广订单
-        Route::get('spread/commission/:type', [\app\api\controller\v1\user\UserBillController::class, 'spreadCommission'])->name('spreadCommission')->option(['real_name' => '推广佣金明细']);//推广佣金明细
-        Route::get('spread/count/:type', [\app\api\controller\v1\user\UserBillController::class, 'spreadCount'])->name('spreadCount')->option(['real_name' => '推广佣金']);//推广 佣金 3/提现 4 总和
         Route::get('spread/banner', [\app\api\controller\v1\user\UserBillController::class, 'spreadBanner'])->name('spreadBanner')->option(['real_name' => '推广分销二维码海报生成']);//推广分销二维码海报生成
+        Route::get('user/spread_info', [\app\api\controller\v1\user\UserBillController::class, 'getSpreadInfo'])->name('getSpreadInfo')->option(['real_name' => '分享邀新海报素材']);//分享邀新海报素材
         Route::get('integral/list', [\app\api\controller\v1\user\UserBillController::class, 'integralList'])->name('integralList')->option(['real_name' => '积分记录']);//积分记录
         Route::get('user/money/list/:type', [\app\api\controller\v1\user\UserBillController::class, 'moneyList'])->name('userMoneyList')->option(['real_name' => '资金明细']);//资金明细
         Route::get('user/routine_code', [\app\api\controller\v1\user\UserBillController::class, 'getRoutineCode'])->name('getRoutineCode')->option(['real_name' => '小程序二维码']);//小程序二维码
-        Route::get('user/spread_info', [\app\api\controller\v1\user\UserBillController::class, 'getSpreadInfo'])->name('getSpreadInfo')->option(['real_name' => '获取分销背景等信息']);//获取分销背景等信息
-        Route::post('division/order', [\app\api\controller\v1\user\UserBillController::class, 'divisionOrder'])->name('divisionOrder')->option(['real_name' => '事业部推广订单']);//事业部推广订单
     })->option(['mark' => 'division', 'mark_name' => '账单']);
 
-    Route::group(function () {
-        //提现类
-        Route::get('extract/bank', [\app\api\controller\v1\user\UserExtractController::class, 'bank'])->name('extractBank')->option(['real_name' => '提现银行']);//提现银行/提现最低金额
-        Route::post('extract/cash', [\app\api\controller\v1\user\UserExtractController::class, 'cash'])->name('extractCash')->option(['real_name' => '提现申请']);//提现申请
-    })->option(['mark' => 'extract', 'mark_name' => '提现']);
 
     Route::group(function () {
         //会员等级类
@@ -272,8 +263,6 @@ Route::group(function () {
 
     Route::group(function () {
         /** 佣金相关 */
-        Route::get('commission', [\app\api\controller\v1\user\UserBrokerageController::class, 'commission'])->name('commission')->option(['real_name' => '推广数据']);//推广数据 昨天的佣金 累计提现金额 当前佣金
-        Route::get('brokerage_rank', [\app\api\controller\v1\user\UserBrokerageController::class, 'brokerageRank'])->name('brokerageRank')->option(['real_name' => '佣金排行']);//佣金排行
         /** 用户注销 */
         Route::get('user_cancel', [\app\api\controller\v1\user\UserController::class, 'SetUserCancel'])->name('SetUserCancel')->option(['real_name' => '用户注销']);
         /** 用户浏览记录 */
@@ -421,8 +410,6 @@ Route::group(function () {
         Route::get('crontab/order_cancel', [\app\api\controller\v1\CrontabController::class, 'orderUnpaidCancel'])->name('orderUnpaidCancel')->option(['real_name' => '未支付自动取消订单']);
         //拼团到期订单处理
         Route::get('crontab/pink_expiration', [\app\api\controller\v1\CrontabController::class, 'pinkExpiration'])->name('pinkExpiration')->option(['real_name' => '拼团到期订单处理']);
-        //自动解绑上级绑定
-        Route::get('crontab/distribution_unbind', [\app\api\controller\v1\CrontabController::class, 'distributionUnbind'])->name('distributionUnbind')->option(['real_name' => '自动解绑上级绑定']);
         //更新直播商品状态
         Route::get('crontab/live_product_status', [\app\api\controller\v1\CrontabController::class, 'syncGoodStatus'])->name('syncGoodStatus')->option(['real_name' => '更新直播商品状态']);
         //更新直播间状态

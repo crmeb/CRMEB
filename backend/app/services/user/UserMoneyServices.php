@@ -309,10 +309,21 @@ class UserMoneyServices extends BaseService
      */
     public function balanceList($where)
     {
-        $status = [];
+        $typeTitleMap = [];
         foreach ($this->incomeData as $value) {
-            $status[$value['type']] = $value['title'];
+            $typeTitleMap[$value['type']] = $value['title'];
         }
+        // 交易类型筛选项不展示：充值及退款、佣金转余额、抽奖、注册赠送
+        $filterExcludeTypes = [
+            'recharge',
+            'recharge_refund',
+            'recharge_refund_release',
+            'extract',
+            'lottery_use',
+            'lottery_add',
+            'register_system_add',
+        ];
+        $status = array_diff_key($typeTitleMap, array_flip($filterExcludeTypes));
         [$page, $limit] = $this->getPageValue();
         $list = $this->dao->getList($where, $page, $limit);
         //关联用户
@@ -336,10 +347,10 @@ class UserMoneyServices extends BaseService
             } elseif ($item['type'] == 'pay_member') {
                 $item['relation'] = $memberOrderServices->value(['id' => $item['link_id']], 'order_id');
             } else {
-                $item['relation'] = $status[$item['type']];
+                $item['relation'] = $typeTitleMap[$item['type']] ?? $item['type'];
             }
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
-            $item['type_name'] = $status[$item['type']];
+            $item['type_name'] = $typeTitleMap[$item['type']] ?? $item['type'];
         }
         $count = $this->dao->count($where);
         return compact('list', 'count', 'status');

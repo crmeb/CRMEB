@@ -24,7 +24,7 @@ class UserCancelServices extends BaseService
     protected $status = ['待审核', '已通过', '已拒绝'];
 
     /**
-     * UserExtractServices constructor.
+     * UserCancelServices constructor.
      * @param UserCancelDao $dao
      */
     public function __construct(UserCancelDao $dao)

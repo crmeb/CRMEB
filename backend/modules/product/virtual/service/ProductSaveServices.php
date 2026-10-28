@@ -200,10 +200,8 @@ class ProductSaveServices extends BaseService
         // 首图：从轮播图第一张取
         $data['image'] = $data['slider_image'][0] ?? '';
 
-        // 从 oneFormValidate 取 vip_price、brokerage 等值
+        // 从 oneFormValidate 取 vip_price 等值
         $oneForm = $data['oneFormValidate'][0] ?? [];
-        $brokerage = (float)($oneForm['brokerage'] ?? 0);
-        $brokerageTwo = (float)($oneForm['brokerage_two'] ?? 0);
         $vipPrice = (float)($oneForm['vip_price'] ?? 0);
 
         // 未携带 attrs（异常兜底）时，自动生成单规格默认 SKU
@@ -214,8 +212,6 @@ class ProductSaveServices extends BaseService
                 'stock'             => $data['stock'] ?? 0,
                 'cost'              => $data['cost'] ?? 0,
                 'pic'               => $data['image'] ?: '',
-                'brokerage'         => $brokerage,
-                'brokerage_two'     => $brokerageTwo,
                 'vip_price'         => $vipPrice,
                 'detail'            => ['规格' => '默认'],
                 'download_url'      => '',

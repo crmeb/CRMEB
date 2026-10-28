@@ -302,7 +302,7 @@ onMounted(() => { getList(); });
 - **页面标题头统一 52px 紧凑标准**：全局类组合 `.i-layout-page-header.header-title`（白底、`10px 20px`、圆角 5px、下距 16px）+ `.ivu-page-header-title`（18px/500/`#17233d`/line-height 32px）；带返回用 `<pages-header :title :back-url>`（组件内部即该结构），右侧说明文字放组件默认 slot。禁止再用 el-card 包页面标题（旧实现总高约 67px）。
 - **顶部操作按钮与表格同卡**：新增等顶部动作按钮渲染在数据卡内部、表格上方；间距为「上 14px / 下 14px」。实现：按钮行/按钮挂 `.action-row`（全局类，`margin-top: -6px` 抵消卡 20px 上内边距；见 `styles/style.scss`）+ 下距 `mb14` 或表格 `mt14`（等效）。`.action-row` 仅用于卡内首个动作元素；上方有搜索行/tabs 时不可挂。SchemaPage 动作区已内置同款偏移（跟在分类头后自动归零）。禁止按钮独立成卡、禁止下距超过 14px（历史问题见 13.2）。
 - 搜索表单 `inline` + `label-width="80px"` + `@submit.prevent`；搜索控件宽度统一用 `.form_content_width`（250px）/ `.form_range_content_width`（117px）。
-- 多条件搜索用 `div.acea-row.search-form` 包裹 + `collapse` 布尔做「展开/收起」。
+- 多条件搜索的额外筛选项用 `<template v-if="collapse">` 内联追加在常显项之后；查询/重置/展开收起按钮组写成末尾的无 label `el-form-item`，跟随筛选项流式换行，不固定在卡片右侧（2026-09-28 用户裁定，废弃原 `div.acea-row.search-form` + `justify-content: space-between` 右上固定方案）。
 - 表格默认 **el-table**（样式已全局定制，见 1.6）；**仅树形数据用 vxe-table**（`<vxe-table-column ... tree-node>`，插槽 `v-slot="{ row }"`）。
 - 多选列 `<el-table-column type="selection">`，选中后顶部 `<el-alert show-icon>` 显示「已选择 N 项」。
 - 页面卡片一律 `shadow="never"`，卡片间距 `.ivu-mt` / `.mt16`（16px）。
@@ -466,7 +466,7 @@ function del(row, tit, num) {
 |---|---|
 | `<pagination>` | 分页（`:total` 必填，`v-model:page/limit`，`@pagination`，默认 pageSizes `[15,20,30,50]`，翻页自动回顶） |
 | `<pages-header>` | 页面标题头（统一 52px 紧凑标准；props `title` / `backUrl` / `description`）：description 渲染于标题右侧、12px 次要色、前置 14px 主色 `InfoFilled` 图标、与标题基线对齐；默认 slot 置于最右侧（动作按钮等）；描述文案仅说明性内容，不放操作 |
-| `<date-range-picker>` | 日期范围搜索统一入口（v-model 值为 `[start, end]`）：内置 `libs/timeOptions` 快捷项（今天/昨天/本月/上月/最近N天/本年/去年）、分隔符「至」、默认 320px 对齐筛选控件基准宽并强制 `flex-grow: 0`（EP `.el-input__wrapper` 自带 `flex-grow: 1`，不压制会在 flex 搜索行内被拉伸占满）；`format`/`value-format`/`clearable` 等经 attrs 透传可覆盖。时间范围筛选**不要直接裸写 `el-date-picker` daterange**，避免快捷项缺失与宽度不一（快捷项数据唯一真源在 `libs/timeOptions.js`，Element Plus 格式 `{text, value: () => [start, end]}`） |
+| `<date-range-picker>` | 日期范围搜索统一入口（v-model 值为 `[start, end]`）：内置 `libs/timeOptions` 快捷项（今天/昨天/本月/上月/最近N天/本年/去年）、分隔符「至」、默认 220px（弹窗等非筛选场景兜底）并强制 `flex-grow: 0`（EP `.el-input__wrapper` 自带 `flex-grow: 1`，不压制会在 flex 搜索行内被拉伸占满）；**筛选行一律显式传 `width` 对齐同行控件**（250px 基准，2026-09-29 起全站 47 处消费方均已显式传宽；SchemaPage 搜索栏随其 200px 体系传 200px、`plugin/virtual/product` 随其 220px 体系传 220px）。组件行内样式的优先级高于 class，给组件挂 `.form_content_width` 等宽度类是死代码，禁止。`format`/`value-format`/`clearable` 等经 attrs 透传可覆盖。时间范围筛选**不要直接裸写 `el-date-picker` daterange**，避免快捷项缺失与宽度不一（快捷项数据唯一真源在 `libs/timeOptions.js`，Element Plus 格式 `{text, value: () => [start, end]}`） |
 | `<icon>` | iView/EP 兼容图标组件（菜单/面包屑/DIY 历史模板用） |
 | EP 全部图标 | `@element-plus/icons-vue` 逐个全局注册 |
 
@@ -503,7 +503,7 @@ function del(row, tit, num) {
 - [ ] 表格默认 el-table（树形才 vxe-table）；状态列 `defineSwitch` + 失败回滚；图片列 `tabBox_img + v-viewer + v-lazy`；超长文本 `line1/line2`
 - [ ] 字体、颜色、间距和尺寸按规则核对 computed style，未误用参考项目变量或存量尺寸
 - [ ] 筛选条件按实际行数折叠，窄容器按钮不覆盖字段，重置/搜索分页状态正确
-- [ ] 时间范围筛选用全局 `<date-range-picker>`（自带快捷项与 320px 基准宽），未裸写 `el-date-picker` daterange
+- [ ] 时间范围筛选用全局 `<date-range-picker>`（自带快捷项）且显式传 `width` 对齐同行控件（筛选行 250px 基准；组件行内样式优先于 class，宽度类无效），未裸写 `el-date-picker` daterange
 - [ ] dialog/drawer 在短视口仍能操作，表单宽度适配容器，长内容/错误提示不被裁切
 - [ ] 新增/编辑优先 `modalForm(api(id)).then(getList)`；复杂表单拆 `edit.vue` 放抽屉（`wrapper-closable=false`，`v-if` 惰性渲染）
 - [ ] 删除走 `modalSure`（含明确确认文案）；dialog 表单类带 `:close-on-click-modal="false"`
@@ -605,6 +605,15 @@ function del(row, tit, num) {
 **已修复**（2026-09-23，`src/theme/element.scss`）：
 
 - 页签高度重新裁定：用户以「实物订单」页现效果为准，页面页签高度 44px → 54px（`--el-tabs-header-height`），字号 14px / 选中 500 / 激活条 3px 不变，[前端规范 4.4「Tabs」](../../rules/前端规范.md) 定稿值同步更新（此前 2026-09-22 的 44px 定稿记录见上，54px 为当前验收值）。同批清理订单中心（`order/orderCenter/index.vue`）、电子发票（`order/invoice/index.vue`）、实物订单列表（`plugin/normal/order/components/OrderTable.vue`）残留的 54px 局部高度覆盖，页签视觉规格继续只由 `theme/element.scss` 一处提供。
+
+**已修复**（2026-09-28，筛选展开/收起按钮组位置与筛选行日期宽度）：
+
+- 用户列表（`user/list`）筛选展开后「查询/重置/收起」被 `justify-content: space-between` 钉在卡片右侧（展开态垂直悬在右中、收起态换行沉底），日期范围 320px 与 250px 筛选控件不等宽，页面观感错乱（用户验收否决）。
+- 结构统一为内联流式：常显筛选项直接平铺在 `el-form` 下，额外项包 `<template v-if="collapse">`，按钮组为末尾无 label `el-form-item`，随筛选内容自然换行；删除 `div.acea-row.search-form` / `div.search-form-box` 包装层、重复的双份表单与配套 scoped CSS。筛选行 `<date-range-picker>` 传 `width="250px"` 对齐 `.form_content_width`。
+- 同批改造同结构的 `plugin/coupon`、`plugin/cardkey`、`plugin/normal/product`（三页原按钮固定右上，date-range-picker 挂的 `form_range_content_width` 117px 类被组件行内 320px 覆盖、实为死代码，一并换成 `width="250px"`）。`plugin/virtual/product/List` 本就内联流式、控件用自有宽度体系（220/180/120px），未动；`center/product/list` 无展开收起、仍为右侧固定布局，未动。
+- 规则 [前端规范 4.3「筛选交互」](../../rules/前端规范.md) 同步改为「跟排在筛选项末尾、随换行自然流动」，废弃原「固定搜索卡右上」验收值；第四节要点与第十二节清单同步。
+- 补充（2026-09-29）：实物订单列表（`plugin/normal/order/components/OrderSearch.vue`）漏在上述批次外，筛选控件为 180/120/220px 临时宽度 + 默认宽日期选择器，观感错乱；已统一为 `.form_content_width`（250px）+ `date-range-picker width="250px"`，容器换全局 `.padding-add`（该页无展开收起，仅宽度问题）。虚拟订单列表（`plugin/virtual/order/List.vue`）同批修复：搜索卡 body 自写 `16px 20px` 与表单项 18px margin-bottom 叠加致底部留白 34px（顶部仅 16px），换 `.padding-add` 结构后上下平衡，控件宽度与按钮 `v-db-click` 一并对齐标准。
+- 遗留清零（2026-09-29，用户裁定全站统一）：上条遗留的 43 处默认宽消费方全部显式传宽——筛选行 38 处 + 订单中心死 class 换 `width="250px"`（合计 39 处，`finance/*`、`statistic/*`、营销/分销/秒杀/拼团/砍价/抽奖/积分/发票/售后/线下订单/系统日志/会员记录等）；SchemaPage 搜索栏随其 200px 输入体系传 200px；`plugin/virtual/product` 随其 220px 体系传 220px（两处不强行 250px，保持行内一致）。组件默认宽度由用户调整为 220px（弹窗等非筛选场景），文档不再写 320px。校验：`grep` 全站 47 处 `<date-range-picker>` 开标签均含显式 `width="…px"`。
 
 **待处理**：
 

@@ -63,7 +63,6 @@ class UserSpreadServices extends BaseService
             return false;
         }
         if ($this->dao->save(['uid' => $uid, 'spread_uid' => $spread_uid, 'spread_time' => $spread_time ?: time()])) {
-            $userServices->incField($spread_uid, 'spread_count', 1);
             return true;
         } else {
             return false;

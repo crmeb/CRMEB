@@ -35,10 +35,8 @@ return [
         'UserExpChange' => [\app\listener\user\UserExpChangeListener::class],
         'UserBalanceChange' => [\app\listener\user\UserBalanceChangeListener::class, \app\listener\user\UserBalanceChangeNoticeListener::class],
         // UserRecharge / UserRechargeRefund 已由 modules/marketing/recharge/event.php 自注册，勿在此重复注册
-        'UserExtract' => [\app\listener\user\UserExtractListener::class],
-        'UserExtractApply' => [\app\listener\user\UserExtractApplyListener::class],
+        // UserExtract / UserExtractApply / UserBrokerageChange 事件随提现与佣金链路下线（归属分销插件）一并移除
         'UserRevenue' => [\app\listener\user\UserRevenueListener::class, \app\listener\user\UserRevenueNoticeListener::class],
-        'UserBrokerageChange' => [\app\listener\user\UserBrokerageChangeListener::class],
         'UserCancel' => [\app\listener\user\UserCancelListener::class],
 
         // ============ 管理员事件 ============

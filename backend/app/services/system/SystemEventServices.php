@@ -55,10 +55,7 @@ class SystemEventServices extends BaseService
         'UserBalanceChange' => '用户余额变动事件',
         'UserRecharge' => '用户充值成功事件',
         'UserRechargeRefund' => '用户充值退款事件',
-        'UserExtract' => '用户提现成功事件',
-        'UserExtractApply' => '用户提现申请事件',
         'UserRevenue' => '用户收益事件',
-        'UserBrokerageChange' => '用户佣金变动事件',
         'UserCancel' => '用户注销事件',
         // 管理员事件
         'AdminLogin' => '管理员登录事件',
@@ -118,7 +115,6 @@ class SystemEventServices extends BaseService
         'OrderDivisionInfoQuery' => '订单分账信息查询',
         'UserRegisterDistributionJob' => '用户注册分销任务',
         'BrokerageBindingStatusChange' => '佣金绑定状态变更',
-        'DistributionUnbindCrontab' => '分销关系到期解绑定时任务',
         // 通知事件
         'UnpaidOrderNotice' => '未支付订单通知事件',
         'MemberExpireNotice' => '会员过期通知事件',

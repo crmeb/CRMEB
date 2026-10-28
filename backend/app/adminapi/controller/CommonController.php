@@ -17,7 +17,6 @@ use app\services\order\OrderCenterServices;
 use app\services\product\CenterProductServices;
 use app\services\product\product\StoreProductReplyServices;
 use app\services\system\UpgradeServices;
-use app\services\user\UserExtractServices;
 use app\services\system\SystemMenusServices;
 use app\services\user\UserServices;
 use app\services\system\attachment\SystemAttachmentServices;
@@ -216,10 +215,7 @@ class CommonController extends AuthController
         /** @var StoreProductReplyServices $replyServices */
         $replyServices = app()->make(StoreProductReplyServices::class);
         $data['commentnum'] = $replyServices->replyCount();
-        /** @var UserExtractServices $extractServices */
-        $extractServices = app()->make(UserExtractServices::class);
-        $data['reflectnum'] = $extractServices->userExtractCount();//提现
-        $data['msgcount'] = intval($data['ordernum']) + intval($data['inventory']) + intval($data['commentnum']) + intval($data['reflectnum']);
+        $data['msgcount'] = intval($data['ordernum']) + intval($data['inventory']) + intval($data['commentnum']);
         $value = [];
         if ($data['ordernum'] != 0) {
             $value[] = [
@@ -240,13 +236,6 @@ class CommonController extends AuthController
                 'title' => "您有$data[commentnum]条评论待回复",
                 'type' => 3,
                 'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/product/product_reply?is_reply=0'
-            ];
-        }
-        if ($data['reflectnum'] != 0) {
-            $value[] = [
-                'title' => "您有$data[reflectnum]个提现申请待审核",
-                'type' => 4,
-                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/finance/user_extract/index?status=0',
             ];
         }
         return app('json')->success($this->noticeData($value));

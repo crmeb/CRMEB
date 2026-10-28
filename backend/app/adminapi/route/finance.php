@@ -15,19 +15,6 @@ use think\facade\Route;
  */
 Route::group('finance', function () {
 
-    /** 提现 */
-    Route::group(function () {
-        //申请列表
-        Route::get('extract', [\app\adminapi\controller\finance\UserExtractController::class, 'index'])->option(['real_name' => '提现申请列表']);
-        //编辑表单
-        Route::get('extract/:id/edit', [\app\adminapi\controller\finance\UserExtractController::class, 'edit'])->option(['real_name' => '提现记录修改表单']);
-        //保存修改
-        Route::put('extract/:id', [\app\adminapi\controller\finance\UserExtractController::class, 'update'])->option(['real_name' => '提现记录修改']);
-        //拒绝申请
-        Route::put('extract/refuse/:id', [\app\adminapi\controller\finance\UserExtractController::class, 'refuse'])->option(['real_name' => '拒绝提现申请']);
-        //通过申请
-        Route::put('extract/adopt/:id', [\app\adminapi\controller\finance\UserExtractController::class, 'adopt'])->option(['real_name' => '通过提现申请']);
-    })->option(['parent' => 'finance', 'cate_name' => '提现']);
 
     /** 资金记录 */
     Route::group(function () {
@@ -35,12 +22,6 @@ Route::group('finance', function () {
         Route::get('finance/bill_type', [\app\adminapi\controller\finance\FinanceController::class, 'billType'])->option(['real_name' => '资金记录类型']);
         //资金记录
         Route::get('finance/list', [\app\adminapi\controller\finance\FinanceController::class, 'list'])->option(['real_name' => '资金记录列表']);
-        //佣金记录
-        Route::get('finance/commission_list', [\app\adminapi\controller\finance\FinanceController::class, 'getCommissionList'])->option(['real_name' => '佣金记录列表']);
-        //佣金详情用户信息
-        Route::get('finance/user_info/:id', [\app\adminapi\controller\finance\FinanceController::class, 'userInfo'])->option(['real_name' => '佣金详情用户信息']);
-        //佣金提现记录个人列表
-        Route::get('finance/extract_list/:id', [\app\adminapi\controller\finance\FinanceController::class, 'getExtractList'])->option(['real_name' => '佣金提现记录个人列表']);
         /** 余额记录 */
         Route::get('balance/list', [\app\adminapi\controller\finance\UserBalanceController::class, 'balanceList'])->option(['real_name' => '余额记录列表']);
         Route::post('balance/set_mark/:id', [\app\adminapi\controller\finance\UserBalanceController::class, 'balanceRecordRemark'])->option(['real_name' => '余额记录备注']);

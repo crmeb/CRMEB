@@ -1211,7 +1211,6 @@ const dataList = computed(() => {
     { id: 2, name: "积分", key: "integral" },
     { id: 5, name: "收藏商品", key: "collection" },
     { id: 6, name: "浏览记录", key: "visit" },
-    { id: 8, name: "推广佣金", key: "brokerage" },
     { id: 9, name: "推广人", key: "spreadCount" },
     { id: 10, name: "推广订单", key: "spreadOrderCount" },
   ];
@@ -1245,8 +1244,6 @@ function getDataValue(key) {
   if (key === "integral") return u.integral || 0;
   if (key === "collection") return u.collectCount || u.collect_count || 0;
   if (key === "visit") return u.visitCount || u.visit_num || 0;
-  if (key === "brokerage")
-    return u.brokerage_price || u.brokeragePrice || u.brokerage || 0;
   if (key === "spreadCount") return u.spread_count || u.spreadCount || 0;
   if (key === "spreadOrderCount")
     return u.order_count || u.spread_order_count || u.spreadOrderCount || 0;

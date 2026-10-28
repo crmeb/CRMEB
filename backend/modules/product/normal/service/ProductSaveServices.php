@@ -252,9 +252,6 @@ class ProductSaveServices extends BaseService
                 if (isset($attr['is_vip_price']) && !isset($attr['vip_price'])) {
                     $attr['vip_price'] = $attr['is_vip_price'];
                 }
-                if (isset($attr['is_sub_price']) && !isset($attr['brokerage'])) {
-                    $attr['brokerage'] = $attr['is_sub_price'];
-                }
                 // suk（逗号分隔字符串,如"红色,M"）→ detail（KV对象，如{"颜色":"红色","尺寸":"M"}）
                 if (!isset($attr['detail']) && !empty($attr['suk']) && !empty($data['items'])) {
                     $sukValues = explode(',', $attr['suk']);
@@ -291,8 +288,6 @@ class ProductSaveServices extends BaseService
                 'stock'         => $data['stock'] ?? 0,
                 'cost'          => $data['cost'] ?? 0,
                 'pic'           => $data['image'] ?: '',
-                'brokerage'     => 0,
-                'brokerage_two' => 0,
                 'vip_price'     => $data['vip_price'] ?? 0,
                 'detail'        => ['规格' => '默认'],
             ]];
@@ -339,23 +334,6 @@ class ProductSaveServices extends BaseService
             }
             $item['cost'] = $item['cost'] ?? 0;
             $item['vip_price'] = $item['vip_price'] ?? $item['price'];
-            $item['brokerage'] = $item['brokerage'] ?? 0;
-            $item['brokerage_two'] = $item['brokerage_two'] ?? 0;
-        }
-        unset($item);
-
-        // 佣金校验（is_sub 可能为数组或标量，统一判断分销开关）
-        $isSub = is_array($data['is_sub'] ?? [])
-            ? (in_array(1, $data['is_sub']) ? 1 : 0)
-            : intval($data['is_sub'] ?? 0);
-        foreach ($detail as &$item) {
-            if ($isSub == 0) {
-                $item['brokerage'] = 0;
-                $item['brokerage_two'] = 0;
-            }
-            if (($item['brokerage'] + $item['brokerage_two']) > $item['price']) {
-                throw new \RuntimeException('一二级返佣相加不能大于商品售价');
-            }
         }
         unset($item);
 
@@ -559,8 +537,6 @@ class ProductSaveServices extends BaseService
                 'stock'             => $item['stock'] ?? 0,
                 'image'             => $image,
                 'unique_code'       => $uniqueCode,
-                'brokerage'         => $item['brokerage'] ?? 0,
-                'brokerage_two'     => $item['brokerage_two'] ?? 0,
                 'is_default_select' => (int)($item['is_default_select'] ?? ($index === 0 ? 1 : 0)),
                 'is_show'           => $item['is_show'] ?? 1,
                 'bar_code'          => $item['bar_code'] ?? '',
