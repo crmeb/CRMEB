@@ -10,15 +10,9 @@ return [
         // 订单生命周期事件（触发方：app/ 层订单中台流水线）
         // ================================================================
 
-        /** 支付成功：同步中台状态，推进扩展表为待发货/待到店 + 发送通知 */
+        /** 支付成功通知。待发货由产品 Handler::fulfillOrder 在提交后直接调用。 */
         'OrderPaySuccess' => [
-            \modules\product\normal\listener\OrderPaidListener::class,
             \modules\product\normal\listener\OrderPaySuccessNoticeListener::class,
-        ],
-
-        /** 订单取消：释放库存，更新中台状态，推进扩展表状态 */
-        'OrderCancel' => [
-            \modules\product\normal\listener\OrderCancelListener::class,
         ],
 
         /** 订单完成：推进扩展表状态为已完成 */

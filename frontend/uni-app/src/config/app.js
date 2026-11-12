@@ -32,8 +32,8 @@ export const TOKENNAME = 'Authori-zation';
 export const EXPIRE = 0;
 //分页最多显示条数
 export const LIMIT = 10;
-// 请求超时限制 默认10秒
-export const TIMEOUT = 100000;
+// 请求超时限制 默认30秒
+export const TIMEOUT = 30000;
 
 export default {
 	HTTP_REQUEST_URL,

@@ -95,6 +95,22 @@ class OrderCenterDao extends BaseDao
     }
 
     /**
+     * 按礼物领取令牌查找订单中台 ID（extra_info.gift.gift_key）
+     * @param string $giftKey 32 位 hex 令牌
+     * @return int|null
+     */
+    public function getIdByGiftKey(string $giftKey): ?int
+    {
+        if ($giftKey === '' || !preg_match('/^[a-f0-9]{32}$/', $giftKey)) {
+            return null;
+        }
+        $id = $this->getModel()
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(extra_info, '$.gift.gift_key')) = ?", [$giftKey])
+            ->value('id');
+        return $id ? (int)$id : null;
+    }
+
+    /**
      * 保存或更新记录
      * 根据条件判断是新增还是更新，支持幂等性操作
      * 兜底机制：若按 order_no 找不到，再按 (source_type, source_id) 查找，

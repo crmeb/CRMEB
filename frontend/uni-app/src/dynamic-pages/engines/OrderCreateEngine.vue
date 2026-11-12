@@ -57,6 +57,7 @@
 
       <!-- 优惠信息（优惠券 + 积分） -->
       <OrderDiscountPanel
+        v-if="features.coupon || features.integral || isIntegral"
         :features="features"
         :coupon-title="couponTitle"
         :use-integral="useIntegral"
@@ -266,6 +267,8 @@ const coupon = ref({
 const couponId = ref(0);
 const couponTitle = ref(i18n.global.t('请选择'));
 const couponPrice = ref(0);
+/** 是否允许后端自动选券；用户手动选券/取消后为 false，避免取消后又被自动用上 */
+const couponAutoEnabled = ref(true);
 
 // 地址
 const addressInfo = ref({});
@@ -602,6 +605,8 @@ function ChangCoupons(e) {
     nextCouponTitle = list[index].coupon_title || list[index].title;
     nextCouponId = list[index].id;
   }
+  // 用户已手动决策（选用或取消），后续试算/下单不再触发自动选券
+  couponAutoEnabled.value = false;
   couponTitle.value = nextCouponTitle;
   couponId.value = nextCouponId;
   coupon.value.coupon = false;
@@ -620,6 +625,30 @@ function hasCouponRow(list, id) {
     if (list[i].id == id) return true;
   }
   return false;
+}
+
+/**
+ * 合并优惠券列表：以最新列表为主，补回本地已有但接口未带回的券
+ * 避免试算只回填「当前最优/已选」一张时把确认页完整列表冲掉
+ * @param {Array} prev 本地列表
+ * @param {Array} next 接口列表
+ * @returns {Array}
+ */
+function mergeCouponList(prev, next) {
+  var map = {};
+  var out = [];
+  var listNext = Array.isArray(next) ? next : [];
+  var listPrev = Array.isArray(prev) ? prev : [];
+  for (var i = 0; i < listNext.length; i++) {
+    map[listNext[i].id] = true;
+    out.push(listNext[i]);
+  }
+  for (var j = 0; j < listPrev.length; j++) {
+    if (!map[listPrev[j].id]) {
+      out.push(listPrev[j]);
+    }
+  }
+  return out;
 }
 
 /**
@@ -649,6 +678,7 @@ async function computedPrice() {
     var res = await postCenterOrderComputed({
       key: orderKey.value,
       coupon_id: couponId.value,
+      allow_auto_coupon: couponAutoEnabled.value ? 1 : 0,
       use_integral: useIntegral.value ? 1 : 0,
       address_id: addressId.value,
       delivery_type: deliveryType.value,
@@ -665,17 +695,16 @@ async function computedPrice() {
     memberPrice.value = data.member_price ?? data.priceGroup?.memberPrice ?? memberPrice.value;
     postageDiscount.value = data.storePostageDiscount ?? data.postage_discount ?? data.priceGroup?.postageDiscount ?? postageDiscount.value;
     couponPrice.value = data.coupon_price ?? 0;
-    // 后端自动选券回显：未手动选券时展示后端自动领取并使用的优惠券
-    if (!couponId.value && data.coupon_id > 0) {
+    // 后端自动选券回显：仅在仍允许自动选券、且前端尚未持有券时写入
+    if (couponAutoEnabled.value && !couponId.value && data.coupon_id > 0) {
       couponId.value = data.coupon_id;
       couponTitle.value = data.coupon_title || i18n.global.t('请选择');
     }
     // 自动领券发生在确认接口之后，计算接口返回的列表才是最新可用券列表。
     // 同步列表和选中状态，避免入口显示优惠券但弹窗仍显示为空。
     if (Array.isArray(data.coupon_list)) {
-      var nextCouponList = data.coupon_list;
-      // 兜底：已使用的券不在最新列表中时保留原行（如自动领券与列表查询落在同一秒），
-      // 否则入口显示已用券、价格已抵扣，弹窗却渲染成空优惠券。
+      var nextCouponList = mergeCouponList(coupon.value.list, data.coupon_list);
+      // 兜底：已使用的券不在最新列表中时保留原行（如自动领券与列表查询落在同一秒）
       if (couponId.value > 0 && !hasCouponRow(nextCouponList, couponId.value)) {
         for (var usedIndex = 0; usedIndex < coupon.value.list.length; usedIndex++) {
           if (coupon.value.list[usedIndex].id == couponId.value) {
@@ -688,6 +717,9 @@ async function computedPrice() {
       features.value.coupon = nextCouponList.length > 0 || couponId.value > 0;
       for (var couponIndex = 0; couponIndex < coupon.value.list.length; couponIndex++) {
         coupon.value.list[couponIndex].is_use = coupon.value.list[couponIndex].id == couponId.value ? 1 : 0;
+        if (!coupon.value.list[couponIndex].is_use) {
+          coupon.value.list[couponIndex].use_title = '';
+        }
       }
     }
     integralPrice.value = data.deduction_price ?? 0;
@@ -770,6 +802,7 @@ async function handleConfirm() {
       params = {
         key: orderKey.value,
         coupon_id: couponId.value,
+        allow_auto_coupon: couponAutoEnabled.value ? 1 : 0,
         use_integral: useIntegral.value ? 1 : 0,
         order_data: {
           address_id: isGift.value ? 0 : (!features.value.express_shipping || deliveryType.value === 'pickup' || deliveryType.value === 'door' ? 0 : addressId.value),
@@ -795,6 +828,7 @@ async function handleConfirm() {
         product_type: productType.value,
         num: num.value,
         coupon_id: couponId.value,
+        allow_auto_coupon: couponAutoEnabled.value ? 1 : 0,
         use_integral: useIntegral.value ? 1 : 0,
         order_data: {
           address_id: isGift.value ? 0 : (!features.value.express_shipping || deliveryType.value === 'pickup' || deliveryType.value === 'door' ? 0 : addressId.value),

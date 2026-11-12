@@ -40,8 +40,29 @@ class UserStoreOrderServices extends BaseService
 
     public function getUserSpreadCountList($uid, $orderBy = '', $keyword = '')
     {
-        if ($orderBy === '') {
-            $orderBy = 'u.add_time desc';
+        // 排序白名单映射：sort 来自用户输入，禁止直通 ->order()（安全审计 B5）
+        switch (trim((string)$orderBy)) {
+            case 'childCount ASC':
+                $orderBy = 'childCount ASC';
+                break;
+            case 'childCount DESC':
+                $orderBy = 'childCount DESC';
+                break;
+            case 'numberCount ASC':
+                $orderBy = 'numberCount ASC';
+                break;
+            case 'numberCount DESC':
+                $orderBy = 'numberCount DESC';
+                break;
+            case 'orderCount ASC':
+                $orderBy = 'orderCount ASC';
+                break;
+            case 'orderCount DESC':
+                $orderBy = 'orderCount DESC';
+                break;
+            default:
+                $orderBy = 'u.add_time desc';
+                break;
         }
         $where = [];
         $where[] = ['u.uid', 'IN', $uid];

@@ -23,7 +23,7 @@
     <template #footer
       ><div>
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="submitRemark" :loading="submitLoading">保存</el-button>
+        <el-button v-db-click type="primary" @click="submitRemark" :loading="submitLoading">保存</el-button>
       </div></template
     >
   </el-dialog>

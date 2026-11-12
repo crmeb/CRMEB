@@ -82,11 +82,24 @@ class MessageSystemController
             ['value', ''],
             ['all', 0]
         ]);
+        $uid = (int)$request->uid();
+        $field = (string)$data['key'];
+        // 仅允许已读/删除，且必须作用于当前登录用户
+        if (!in_array($field, ['look', 'is_del'], true)) {
+            return app('json')->fail('不允许的操作');
+        }
         $all = (int)$data['all'];
         if ($all === 1) {
-            $this->services->update(['uid' => $request->uid()], [$data['key'] => $data['value']]);
+            if ($field !== 'look') {
+                return app('json')->fail('参数错误');
+            }
+            $this->services->update(['uid' => $uid], ['look' => 1]);
         } else {
-            $this->services->update($data['id'], [$data['key'] => $data['value']]);
+            $id = (int)$data['id'];
+            if ($id <= 0) {
+                return app('json')->fail('参数错误');
+            }
+            $this->services->updateForUser($uid, $id, [$field => $data['value']]);
         }
         return app('json')->success('设置成功');
     }

@@ -41,7 +41,7 @@ class ChannelServiceProxyListener implements ListenerInterface
         ],
         'RoutineSchemeServices' => [
             RoutineSchemeServices::class,
-            ['value'],
+            ['value', 'redirectHtml'],
         ],
         // 渠道认证器：统一登录入口 AuthController 通过事件代理调用
         'Authenticator' => [

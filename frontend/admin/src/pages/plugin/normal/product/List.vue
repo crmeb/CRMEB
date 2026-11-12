@@ -92,7 +92,7 @@
       </el-tabs>
       <div class="Button">
         <router-link v-auth="['admin-normal-product-add']" :to="routeProStr + '/product/normal/add'"
-          ><el-button type="primary" class="mr14">添加商品</el-button></router-link
+          ><el-button v-db-click type="primary" class="mr14">添加商品</el-button></router-link
         >
         <el-button v-auth="['product-crawl-save']" type="success" class="mr14" v-db-click @click="onCopy"
           >商品采集</el-button

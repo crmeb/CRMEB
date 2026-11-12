@@ -35,13 +35,13 @@
           正在导入，您可关闭当前弹窗，稍候可在列表查看导入结果
           <i class="el-icon-loading"></i>
         </div>
-        <el-button v-else class="btn-import" type="primary" @click="importThemePkg">立即导入</el-button>
+        <el-button v-db-click v-else class="btn-import" type="primary" @click="importThemePkg">立即导入</el-button>
       </div>
       <div v-show="fileUrl && importStatus" class="file-info">
         <img class="el-upload-dragger__icon mb20" :src="statusImage" alt="" />
         <div class="el-upload__text">导入成功</div>
         <div>
-          <el-button class="btn-import" @click="selectFile">再次导入</el-button>
+          <el-button v-db-click class="btn-import" @click="selectFile">再次导入</el-button>
           <el-button type="primary" class="btn-import" @click="close">完成</el-button>
         </div>
       </div>

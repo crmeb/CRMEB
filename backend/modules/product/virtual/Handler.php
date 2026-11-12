@@ -13,6 +13,7 @@ namespace modules\product\virtual;
 use app\dao\product\CenterProductDao;
 use app\dao\order\OrderCenterDao;
 use app\services\order\OrderCenterServices;
+use app\services\product\CenterProductServices;
 use crmeb\trade\order\aftersale\AfterSaleHandlerInterface;
 use crmeb\trade\product\BaseProductTypeHandler;
 use modules\product\virtual\handler\VirtualOrderAdapter;
@@ -598,23 +599,79 @@ class Handler extends BaseProductTypeHandler
     public function fulfillOrder(string $orderNo, array $orderInfo): bool
     {
         try {
-            $orderDao = app(VirtualOrderDao::class);
-            $fulfilledAt = time();
-            $orderDao->update(['order_no' => $orderNo], [
-                'status'    => VirtualOrderAdapter::EXT_STATUS_PENDING_REVIEW,
-                'send_time' => $fulfilledAt,
-            ]);
-
-            // 网盘商品履约后进入待评价，同步中台订单状态。
-            $centerServices = app(\app\services\order\OrderCenterServices::class);
-            $centerServices->syncStatus($orderNo, VirtualOrderAdapter::STATUS_PENDING_REVIEW, [
-                'delivery_time' => $fulfilledAt,
-                'take_time'     => $fulfilledAt,
-            ]);
-
+            $center = app(OrderCenterDao::class)->get(['order_no' => $orderNo]);
+            if (!$center || ($center['product_type'] ?? '') !== 'virtual') {
+                return false;
+            }
+            $center = $center->toArray();
+            if (in_array($center['status_code'] ?? '', ['pending_review', 'completed', 'refunded', 'canceled'], true)) {
+                return true;
+            }
+            $ext = app(VirtualOrderDao::class)->search([], false)->where('order_no', $orderNo)->find();
+            if ($ext && in_array($ext['status'], [
+                VirtualOrderAdapter::EXT_STATUS_PENDING_REVIEW,
+                VirtualOrderAdapter::EXT_STATUS_COMPLETED,
+            ], true)) {
+                return true;
+            }
+            app(\app\services\order\OrderCenterServices::class)->transaction(function () use ($orderNo, $orderInfo, $center) {
+                app(\app\services\order\OrderLifecycleServices::class)->handlePaySuccess($orderInfo);
+                $this->afterPay($orderNo, $this->virtualCartFromExtra($center, $orderInfo));
+                $this->incVirtualSales($center);
+            });
             return true;
         } catch (\Throwable $e) {
+            \think\facade\Log::error('[Virtual] 履约失败 order_no=' . $orderNo . ' ' . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * 从订单快照组装网盘履约所需的商品行。
+     * @param array $center 中台订单
+     * @param array $orderInfo 支付订单
+     * @return array
+     */
+    protected function virtualCartFromExtra(array $center, array $orderInfo): array
+    {
+        $extra = $center['extra_info'] ?? [];
+        if (is_string($extra)) {
+            $extra = json_decode($extra, true) ?: [];
+        }
+        $cart = [];
+        foreach (($extra['items'] ?? []) as $item) {
+            if (empty($item['product_id'])) {
+                continue;
+            }
+            $item['uid'] = $center['uid'] ?? ($orderInfo['uid'] ?? 0);
+            $item['cart_num'] = $item['cart_num'] ?? 1;
+            $cart[] = $item;
+        }
+        return $cart;
+    }
+
+    /**
+     * 按商品快照累加销量。
+     * @param array $center 中台订单
+     * @return void
+     */
+    protected function incVirtualSales(array $center): void
+    {
+        $extra = $center['extra_info'] ?? [];
+        if (is_string($extra)) {
+            $extra = json_decode($extra, true) ?: [];
+        }
+        $qtyByProduct = [];
+        foreach ((is_array($extra) ? ($extra['items'] ?? []) : []) as $item) {
+            $productId = (int)($item['product_id'] ?? 0);
+            $num = (int)($item['cart_num'] ?? 0);
+            if ($productId > 0 && $num > 0) {
+                $qtyByProduct[$productId] = ($qtyByProduct[$productId] ?? 0) + $num;
+            }
+        }
+        $productServices = app(CenterProductServices::class);
+        foreach ($qtyByProduct as $productId => $num) {
+            $productServices->incSales($productId, $num);
         }
     }
 

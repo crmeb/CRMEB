@@ -142,9 +142,13 @@
       <div class="table-content">
         <el-table :data="orderList" ref="table" v-loading="loading" empty-text="暂无数据" class="orderData">
           <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column label="订单号" width="170">
+          <el-table-column label="订单号" width="180">
             <template #default="scope">
-              <span>{{ scope.row.order_no }}</span>
+              <div>{{ scope.row.order_no }}</div>
+              <div style="font-size: 11px; color: var(--prev-color-text-secondary)">
+                [{{ getShippingTypeLabel(scope.row) }}]<template v-if="scope.row.activity_type_text">
+                  [{{ scope.row.activity_type_text }}]</template>
+              </div>
             </template>
           </el-table-column>
           <el-table-column label="订单分类" width="120">
@@ -212,11 +216,20 @@
               <span>{{ scope.row.add_time ? formatDate(scope.row.add_time * 1000) : '--' }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" fixed="right" width="180">
+          <el-table-column label="操作" fixed="right" width="220">
             <template #default="scope">
               <a v-db-click @click="viewDetail(scope.row)">详情</a>
               <el-divider direction="vertical" />
               <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-orderCenter-remark']">备注</a>
+              <template v-if="scope.row.canceled_refund_pending">
+                <el-divider direction="vertical" />
+                <a
+                  v-db-click
+                  @click="submitCanceledRefund(scope.row)"
+                  v-auth="['admin-order-orderCenter-canceled-refund']"
+                  >原路退款</a
+                >
+              </template>
               <template v-if="statusTab === 'deleted'">
                 <el-divider direction="vertical" />
                 <a v-db-click @click="deleteOrder(scope.row)" v-auth="['admin-order-orderCenter-delete']">删除</a>
@@ -244,7 +257,7 @@
       <template #footer
         ><div>
           <el-button @click="remarkModal = false">取消</el-button>
-          <el-button type="primary" @click="saveRemark">保存</el-button>
+          <el-button v-db-click type="primary" @click="saveRemark">保存</el-button>
         </div></template
       >
     </el-dialog>
@@ -255,7 +268,7 @@
       class="order-detail-drawer"
       @opened="onDetailDrawerOpened"
     >
-      <OrderCenterDetail :id="detailOrderId" ref="orderDetailRef" />
+      <OrderCenterDetail :id="detailOrderId" ref="orderDetailRef" @refunded="getList" />
     </el-drawer>
   </div>
 </template>
@@ -268,6 +281,7 @@ import {
   orderCenterStat,
   orderCenterRemark,
   orderCenterDelete,
+  orderCenterCanceledRefund,
   orderCenterCategories,
   orderCenterFilterOptions,
 } from '@/api/orderCenter';
@@ -428,6 +442,30 @@ function saveRemark() {
     });
 }
 
+function submitCanceledRefund(row) {
+  ElMessageBox({
+    title: '原路退款',
+    message: '该订单已取消，但款项已到账。确定按原支付单号退回一次？',
+    showCancelButton: true,
+    cancelButtonText: '取消',
+    confirmButtonText: '确定',
+  })
+    .then(() => {
+      orderCenterCanceledRefund({ order_no: row.order_no })
+        .then((res) => {
+          ElMessage.success(res.msg);
+          getList();
+          if (orderDetailRef.value) {
+            orderDetailRef.value.loadDetail();
+          }
+        })
+        .catch((res) => {
+          ElMessage.error(res.msg);
+        });
+    })
+    .catch(() => {});
+}
+
 function deleteOrder(row) {
   ElMessageBox({
     title: '提示',
@@ -464,6 +502,14 @@ function getOrderCategoryClass(category) {
 function getProductTypeLabel(type) {
   const item = productTypeOptions.value.find((opt) => opt.key === type);
   return item ? item.label : type || '--';
+}
+
+/**
+ * 配送方式文案（shipping_type：1快递 2自提 3上门）
+ */
+function getShippingTypeLabel(row) {
+  const type = Number(row?.shipping_type ?? 1);
+  return type === 2 ? '到店自提' : type === 3 ? '上门服务' : '快递配送';
 }
 
 const CENTER_STATUS_CODES = [

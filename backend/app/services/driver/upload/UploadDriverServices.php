@@ -432,12 +432,24 @@ class UploadDriverServices extends BaseService
             }
             $data['thumb_watermark_config'] = $this->prepareCommonConfig($driver->thumb_watermark_config ?: [], $data['thumb_watermark_config']);
         }
+        // 基础配置（密钥/名称等）允许先保存；仅「启用驱动」要求已有使用中的存储空间。
+        $enableBlocked = false;
+        if (($data['status'] ?? 0) === 1 && $driver->driver_key !== 'local'
+            && !app()->make(UploadStorageDao::class)->count(['driver_key' => $driver->driver_key, 'status' => 1, 'is_delete' => 0])) {
+            // 不含 status=1 时顺带写入的 config_fields，避免纯启用被误判为“同时保存配置”
+            $hasOtherUpdates = $configValues !== null
+                || array_key_exists('driver_name', $data)
+                || array_key_exists('sort', $data)
+                || array_key_exists('thumb_watermark_config', $data);
+            if (!$hasOtherUpdates) {
+                throw new AdminException('未有正在使用的存储空间，请先在「空间配置」中添加并开启存储空间');
+            }
+            $data['status'] = (int)$driver->status;
+            $enableBlocked = true;
+        }
+
         $this->transaction(function () use ($id, $driver, $data) {
             // 状态切换与配置保存必须一起成功，失败时回滚其他驱动的停用。
-            if (($data['status'] ?? 0) === 1 && $driver->driver_key !== 'local'
-                && !app()->make(UploadStorageDao::class)->count(['driver_key' => $driver->driver_key, 'status' => 1, 'is_delete' => 0])) {
-                throw new AdminException('未有正在使用的存储空间');
-            }
             if (($data['status'] ?? 0) === 1 && $this->dao->disableAllExcept($id) === false) {
                 throw new \RuntimeException('切换存储驱动失败');
             }
@@ -451,7 +463,7 @@ class UploadDriverServices extends BaseService
         });
         $this->invalidateUploadCache();
 
-        return true;
+        return $enableBlocked ? 'config_saved_enable_blocked' : true;
     }
 
     /**
@@ -610,6 +622,44 @@ class UploadDriverServices extends BaseService
     {
         $driver['config_fields'] = $this->redactConfigFields(is_array($driver['config_fields'] ?? null) ? $driver['config_fields'] : []);
         return $driver;
+    }
+
+    /**
+     * 将 plugin.json 中带前缀的配置键映射为驱动 initialize() 期望的短键
+     *
+     * 优先剥离 {driverKey}_；兼容历史厂商前缀（如 cos 的 tengxun_、obs 的 hw_）。
+     *
+     * @param string $driverKey
+     * @param array $config
+     * @return array
+     */
+    public function normalizeDriverConfig(string $driverKey, array $config): array
+    {
+        $prefix = $driverKey . '_';
+        foreach ($config as $name => $value) {
+            if (!is_string($name) || !str_starts_with($name, $prefix)) {
+                continue;
+            }
+            $shortName = substr($name, strlen($prefix));
+            if ($shortName !== '' && !array_key_exists($shortName, $config)) {
+                $config[$shortName] = $value;
+            }
+        }
+        foreach (['accessKey', 'secretKey', 'appid', 'storageRegion'] as $short) {
+            if (($config[$short] ?? '') !== '' && $config[$short] !== null) {
+                continue;
+            }
+            foreach ($config as $name => $value) {
+                if (!is_string($name) || $name === $short || $value === '' || $value === null) {
+                    continue;
+                }
+                if (str_ends_with($name, '_' . $short)) {
+                    $config[$short] = $value;
+                    break;
+                }
+            }
+        }
+        return $config;
     }
 
     /**

@@ -59,6 +59,8 @@ class SafeEvent extends Event
         'UserRechargeRefund',
         'UserRevenue',
         'UserBalanceChange',
+        // 一号通旁路：短信余额检查失败不影响登录/后台消息主流程
+        'SmsBalanceCheck',
         // 营销旁路类：失败影响活动参与但不应影响交易主流程
         'OrderPayLottery',
         'OrderCommentLotteryCheck',
@@ -104,9 +106,6 @@ class SafeEvent extends Event
 
         // 事件分级判定：安全事件下所有监听器异常均隔离
         $isSafeEvent = in_array($event, $this->safeEvents, true);
-        if ($isSafeEvent && \crmeb\services\pay\PaymentDispatch::defer(['type' => 'event', 'event' => $event, 'params' => $params])) {
-            return $once ? true : [];
-        }
 
         $result    = [];
         $listeners = $this->listener[$event] ?? [];
@@ -131,15 +130,11 @@ class SafeEvent extends Event
         $listeners = array_unique($listeners, SORT_REGULAR);
 
         foreach ($listeners as $key => $listener) {
-            if (is_string($listener) && $this->isSafeListener($listener)
-                && \crmeb\services\pay\PaymentDispatch::defer(['type' => 'listener', 'class' => $listener, 'params' => $params])) {
-                continue;
-            }
             try {
                 $result[$key] = $this->dispatch($listener, $params);
             } catch (\Throwable $e) {
-                // 关键事件中的关键监听器：异常继续上抛中断主流程，保证订单/资金/库存数据一致性
-                if (\crmeb\services\pay\PaymentDispatch::replaying() || (!$isSafeEvent && !$this->isSafeListener($listener))) {
+                // 关键事件中的关键监听器：异常继续上抛，保证订单、资金和库存一致。
+                if (!$isSafeEvent && !$this->isSafeListener($listener)) {
                     throw $e;
                 }
                 // 安全监听器异常：记录日志后继续执行后续监听器，不中断主流程
@@ -148,10 +143,6 @@ class SafeEvent extends Event
             }
 
             if (false === $result[$key] || (!is_null($result[$key]) && $once)) {
-                if (false === $result[$key] && (\crmeb\services\pay\PaymentDispatch::replaying()
-                    || (\crmeb\services\pay\PaymentDispatch::collecting() && !$isSafeEvent))) {
-                    throw new \RuntimeException('支付后置事件处理失败：' . $event);
-                }
                 break;
             }
         }

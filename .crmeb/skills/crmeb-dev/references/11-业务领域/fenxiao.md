@@ -2,7 +2,7 @@
 alwaysApply: false
 description: 分销返佣业务参考 - 返佣层级结构与计算规则说明；当前返佣链路由 OrderPaySuccess 等事件与 distribution 模块监听器接入，历史流程仅供迁移定位
 ---
-> **⚠️ 版本说明**：当前返佣链路已中台化——订单支付成功由 `app/services/order/OrderSuccessServices.php` 触发 `OrderPaySuccess` 事件（基于 `eb_order_center` 中台表）；`modules/distribution/listener/` 下监听器负责订单快照、佣金发放和用户扩展，但 **distribution 模块未随当前版本提供**，表中相关路径为规划结构，实际以自身二开实现为准。本文保留的旧流程只供迁移定位，当前字段与行为以代码为准。
+> **版本说明**：分销模块在 `backend/modules/distribution/`。订单支付成功由 `app/services/order/OrderSuccessServices.php` 触发 `OrderPaySuccess`，模块 `event.php` 把快照、支付和返佣接到对应监听器。下文若与代码不一致，以代码为准。
 
 ## 二、核心架构
 
@@ -26,16 +26,18 @@ description: 分销返佣业务参考 - 返佣层级结构与计算规则说明�
 
 | 服务文件 | 职责 | 关键方法 |
 |---------|------|---------|
-| [UserBrokerageServices.php](../../../../../backend/app/services/user/UserBrokerageServices.php) | 用户佣金管理 | `brokerageIncome()`、`orderRefundBrokerageBack()` |
-| `modules/distribution/listener/OrderCreateSnapshotListener.php`（未随版本提供） | 订单创建后写入分销快照 | `OrderCreateAfter` |
-| `modules/distribution/listener/OrderPaidListener.php`（未随版本提供） | 支付成功后的分销处理 | `OrderPaySuccess` |
-| `modules/distribution/listener/OrderSpreadBrokerageListener.php`（未随版本提供） | 返佣规则与佣金分配 | `OrderSpreadBrokerage` |
+| `app/services/user/UserBrokerageServices` | 佣金服务。`DistributionManageServices` 引用了这个类，仓库里目前没有对应的 php 文件 | 以类内实际方法为准 |
+| `backend/modules/distribution/listener/OrderCreateSnapshotListener.php` | 订单创建后的分销快照 | `OrderCreateAfter` |
+| `backend/modules/distribution/listener/OrderPaidListener.php` | 支付成功后的分销处理 | `OrderPaySuccess` |
+| `backend/modules/distribution/listener/OrderSpreadBrokerageListener.php` | 返佣规则与佣金分配 | `OrderSpreadBrokerage` |
 
 ---
 
 ## 三、佣金类型配置
 
-在 `UserBrokerageServices::$incomeData` 中定义：
+下面这张表是历史佣金类型。`app/services/user/UserBrokerageServices.php` 当前不在仓库里，不要为了补上这张表去新建核心类。佣金逻辑在 `backend/modules/distribution/`。
+
+在旧的 `UserBrokerageServices::$incomeData` 中曾这样定义：
 
 | 类型标识 | title | type | pm | 说明 |
 |---------|-------|------|-----|------|

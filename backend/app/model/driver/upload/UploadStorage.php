@@ -38,6 +38,12 @@ class UploadStorage extends BaseModel
     protected $autoWriteTimestamp = false;
 
     /**
+     * 关闭框架对 update_time 字段的日期字符串转换，保持 Unix 时间戳
+     * @var bool
+     */
+    protected $updateTime = false;
+
+    /**
      * 按驱动隔离存储空间查询
      * @param mixed $query
      * @param string $value

@@ -87,7 +87,7 @@
 </template>
 <script setup>
 	import { ref, watch, nextTick } from 'vue';
-	import { onLoad, onShow } from '@dcloudio/uni-app';
+	import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 	import {
 		integralOrderConfirm,
 		integralOrderCreate,
@@ -234,7 +234,17 @@
 	// 模板 ref：地址弹窗组件
 	const addressWindowRef = ref(null);
 
+	// 门店列表页选择门店回传（goods_details_store emit）；具名注册/解绑，避免全量 $off 误删其他页面的同名监听
+	function onStoreSelect(res) {
+		if (res) {
+			system_store.value = res.address
+		}
+	}
+	onUnload(() => {
+		uni.$off('handClick', onStoreSelect);
+	});
 	onLoad((options) => {
+		uni.$on('handClick', onStoreSelect);
 		// #ifdef H5
 		from.value = Auth.isWeixin() ? 'weixin' : 'weixinh5'
 		// #endif
@@ -275,13 +285,6 @@
 	 * 生命周期函数--监听页面显示
 	 */
 	onShow(() => {
-		uni.$on("handClick", res => {
-			if (res) {
-				system_store.value = res.address
-			}
-			// 清除监听
-			uni.$off('handClick');
-		})
 	});
 
 	// ---------- methods ----------

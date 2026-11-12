@@ -157,7 +157,7 @@
       <template #footer
         ><div>
           <el-button @click="remarkModal = false">取消</el-button>
-          <el-button type="primary" @click="saveRemark">保存</el-button>
+          <el-button v-db-click type="primary" @click="saveRemark">保存</el-button>
         </div></template
       >
     </el-dialog>

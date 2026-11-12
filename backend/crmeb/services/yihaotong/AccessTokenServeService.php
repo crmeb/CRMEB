@@ -46,7 +46,7 @@ class AccessTokenServeService extends Http
     /**
      * @var string
      */
-    protected $apiHost = 'https://sms.crmeb.net/api/';
+    protected $apiHost = 'https://api.crmeb.net/api/';
 
     /**
      * 沙盒地址
@@ -147,6 +147,15 @@ class AccessTokenServeService extends Http
                 throw new ApiException('配置已更改或token已失效');
             }
             $header = array_merge($header, ['Authorization:Bearer-' . $this->accessToken]);
+        }
+
+        //公共参数：站点域名、系统版本（+= 不覆盖业务同名参数，注入失败不影响请求）
+        try {
+            $data += [
+                'd' => request()->host(),
+                'v' => get_crmeb_version(),
+            ];
+        } catch (\Throwable) {
         }
 
         $res = $this->request($this->get($url), $method, $data, $header);

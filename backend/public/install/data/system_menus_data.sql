@@ -628,6 +628,7 @@ INSERT INTO `eb_system_menus` (`id`, `pid`, `icon`, `menu_name`, `module`, `cont
 (6005, 3593, '', '禁用插件', 'admin', '', '', 'plugin/disable', 'POST', '[]', 1, 1, 1, 1, '', '', 2, '', 0, 'plugin-plugin-disable', '', 0, '禁用插件'),
 (6006, 3593, '', '上传插件', 'admin', '', '', 'plugin/upload', 'POST', '[]', 1, 1, 1, 1, '', '', 2, '', 0, 'plugin-plugin-upload', '', 0, '上传插件'),
 (3616, 4, 'CRMEB-102-dingdan-xianxing', '订单中台', 'admin', 'order.order_center', 'index', '', '', '[]', 140, 1, 1, 1, '/order/center', '4', 1, 'order', 1, 'admin-order-orderCenter-index', 'core:admin-order-orderCenter-index', 0, '订单中台管理'),
+(3617, 3616, '', '取消订单原路退款', 'admin', '', '', 'order/center/canceled_refund', 'POST', '[]', 1, 0, 0, 1, '', '4/3616', 2, 'order', 0, 'admin-order-orderCenter-canceled-refund', 'core:admin-order-orderCenter-canceled-refund', 0, '已取消但仍收款时提交一次原路退款'),
 (4517, 9, 'CRMEB-334-fufeihuiyuan-xianxing', '付费会员', 'admin', 'member', 'index', 'user/member/ship', '', '[]', 6, 1, 1, 1, '/user/member/type', '9', 1, '', 0, '', 'core:menu:097ede824633b4d8ca7f2605bbbe3c4c8cd5c13d', 0, ''),
 (4518, 4517, '', '会员类型', 'admin', 'member', 'type', 'user/member/ship', '', '[]', 1, 1, 1, 1, '/user/member/type', '', 1, '', 0, '', 'core:menu:458cf32fbfdad972c8cc62bdded5788a1bc91458', 0, ''),
 (4519, 4517, '', '会员卡批次', 'admin', 'member', 'card', 'user/member_batch/index', '', '[]', 2, 1, 1, 1, '/user/member/card', '', 1, '', 0, '', 'core:menu:4119513f0b548e0a5af785a95cc439f07514d655', 0, ''),

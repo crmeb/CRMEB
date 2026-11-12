@@ -120,9 +120,13 @@ function handleMenuChange(menuKey) {
   if (isDirty.value) {
     isDirty.value = false;
   }
-  activeMenu.value = menuKey;
+  // 必须先更新 query.type，再切换 activeMenu 挂载编辑器。
+  // diyIndex 在 setup 时读取 route.query.type；若先改 activeMenu，会带着旧 type 加载（详情/个人中心数据对调）。
   if (route.query.type !== menuKey) {
     router.replace({ query: { ...route.query, type: menuKey } });
+    // activeMenu 由下方 watch(route.query.type) 在 URL 就绪后同步
+  } else {
+    activeMenu.value = menuKey;
   }
 }
 

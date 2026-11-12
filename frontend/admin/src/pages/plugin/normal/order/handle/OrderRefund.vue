@@ -35,7 +35,7 @@
     <template #footer
       ><div>
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="danger" @click="submitRefund" :loading="submitLoading">确认退款</el-button>
+        <el-button v-db-click type="danger" @click="submitRefund" :loading="submitLoading">确认退款</el-button>
       </div></template
     >
   </el-dialog>

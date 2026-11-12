@@ -21,6 +21,7 @@ use app\services\user\UserBillServices;
 use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
 use crmeb\basic\BaseService;
+use crmeb\trade\mode\TradeModeRegistry;
 use crmeb\trade\product\ProductTypeRegistry;
 use think\facade\Log;
 
@@ -59,7 +60,18 @@ class RefundExecutorServices extends BaseService
         // 1. 本地资源回滚（事务内：积分/库存/优惠券均为本地库操作，支付退款为远程通道不放事务）
         $this->transaction(function () use ($order, $context) {
             $this->rollbackIntegral($order, (int)($context['refund_integral'] ?? 0));
-            $this->rollbackStock($order);
+            /** @var TradeModeRegistry $tradeModeRegistry */
+            $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+            [$activityType, $activityId] = $tradeModeRegistry->resolveOrderActivity($order);
+            if ($activityType !== '' && $activityId > 0 && $tradeModeRegistry->has($activityType)) {
+                $tradeModeRegistry->get($activityType)->afterOrderRefund(
+                    (string)($order['order_no'] ?? $order['order_id'] ?? ''),
+                    $activityId,
+                    $order
+                );
+            } else {
+                $this->rollbackStock($order);
+            }
             $this->rollbackCoupon($order);
         });
 
@@ -184,8 +196,8 @@ class RefundExecutorServices extends BaseService
     }
 
     /**
-     * 库存回退：从中台 extra_info.items 读取商品快照，经 ProductTypeHandler / ActivityDataProxy 回退
-     * 由旧退款链路 regressionStock 迁移（原实现已中台化）
+     * 库存回退：从中台 extra_info.items 读取商品快照，经产品类型处理器回退
+     * 活动订单不走这里，由交易模式 afterOrderCancel / afterOrderRefund 回退活动库存
      * @param array $order 中台订单数据
      * @return bool
      */
@@ -222,16 +234,7 @@ class RefundExecutorServices extends BaseService
         }
         $items = $extraInfo['items'] ?? [];
 
-        // 活动订单的活动 ID 从中台 extra_info.activity_info 提取（中台无 combination_id 等实体列）
-        $activityInfo = $extraInfo['activity_info'] ?? [];
-        if (!is_array($activityInfo)) {
-            $activityInfo = [];
-        }
-        $combinationId = (int)($activityInfo['combination_id'] ?? 0);
-        $seckillId = (int)($activityInfo['seckill_id'] ?? 0);
-        $bargainId = (int)($activityInfo['bargain_id'] ?? 0);
-
-        // 通过 ProductTypeHandler 回退库存（活动商品保留事件代理）
+        // 普通商品通过产品类型处理器回退库存
         $productType = $order['product_type'] ?? '';
         $handler = null;
         if ($productType) {
@@ -252,32 +255,17 @@ class RefundExecutorServices extends BaseService
             }
             $unique = (string)($item['attr_info']['unique'] ?? '');
             $productId = (int)($item['product_id'] ?? 0);
-            if ($combinationId) {
-                // 通过 ActivityDataProxy 事件代理回退拼团库存（避免直接引用 modules 层）
-                $_results = event('ActivityDataProxy', ['mode' => 'combination', 'action' => 'incCombinationStock', 'args' => [$cartNum, $combinationId, $unique]]);
-                $res = $res && proxy_event_result($_results, false);
-            } elseif ($seckillId) {
-                // 通过 ActivityDataProxy 事件代理回退秒杀库存
-                $_results = event('ActivityDataProxy', ['mode' => 'seckill', 'action' => 'incSeckillStock', 'args' => [$cartNum, $seckillId, $unique]]);
-                $res = $res && proxy_event_result($_results, false);
-            } elseif ($bargainId) {
-                // 通过 ActivityDataProxy 事件代理回退砍价库存
-                $_results = event('ActivityDataProxy', ['mode' => 'bargain', 'action' => 'incBargainStock', 'args' => [$cartNum, $bargainId, $unique]]);
-                $res = $res && proxy_event_result($_results, false);
-            } else {
-                // 普通商品通过 ProductTypeHandler 回退库存
-                if ($handler && $productId > 0) {
+            if ($handler && $productId > 0) {
+                try {
+                    $res = $res && $handler->incStock($productId, $unique, $cartNum);
+                } catch (\Throwable $e) {
+                    $res = false;
+                }
+                // 回退支付时累加的冗余销量（仅已支付订单），失败不影响退款主流程
+                if ($paidOrder) {
                     try {
-                        $res = $res && $handler->incStock($productId, $unique, $cartNum);
+                        app()->make(CenterProductDao::class)->decSales($productId, $cartNum);
                     } catch (\Throwable $e) {
-                        $res = false;
-                    }
-                    // 回退支付时累加的冗余销量（仅已支付订单），失败不影响退款主流程
-                    if ($paidOrder) {
-                        try {
-                            app()->make(CenterProductDao::class)->decSales($productId, $cartNum);
-                        } catch (\Throwable $e) {
-                        }
                     }
                 }
             }

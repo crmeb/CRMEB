@@ -223,7 +223,7 @@ onShareAppMessage(() => {
 	return {
 		title: giftData.value.message || '',
 		imageUrl: mpGiftImg || '',
-		path: '/pages/goods/receive_gift/index?id=' + giftData.value.id + '&spid=' + appStore.uid
+		path: '/pages/goods/receive_gift/index?id=' + giftData.value.id + '&spid=' + appStore.uid + (giftData.value.gift_key ? '&key=' + giftData.value.gift_key : '')
 	};
 });
 onShareTimeline(() => {
@@ -246,7 +246,7 @@ function setOpenShare() {
 		let configAppMessage = {
 			desc: giftData.value.message,
 			title: giftData.value.title,
-			link: window.location.protocol + '//' + window.location.host + '/pages/goods/receive_gift/index?id=' + giftData.value.id + '&spid=' + appStore.uid,
+			link: window.location.protocol + '//' + window.location.host + '/pages/goods/receive_gift/index?id=' + giftData.value.id + '&spid=' + appStore.uid + (giftData.value.gift_key ? '&key=' + giftData.value.gift_key : ''),
 			imgUrl: mpGiftImg
 		};
 		Auth.wechatEvevt(['updateAppMessageShareData', 'updateTimelineShareData', 'onMenuShareAppMessage', 'onMenuShareTimeline'], configAppMessage)
@@ -304,7 +304,8 @@ function getOrderPayInfo() {
 				id: res.data.id,
 				avatar: res.data.avatar,
 				nickname: res.data.nickname,
-				code: res.data.gift_code
+				gift_key: res.data.gift_key || '',
+				code: res.data.gift_code || ''
 			};
 			// #ifdef H5
 			if (is_gift.value) setOpenShare();

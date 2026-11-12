@@ -32,3 +32,28 @@ Route::group('v2', function () {
         Route::post('routine/binding_phone', [\modules\channel\wechat_mini\controller\AuthController::class, 'bindingPhone'])->option(['real_name' => '小程序授权后绑定手机号']);
     })->option(['mark' => 'wechat_auto', 'mark_name' => '微信授权']);
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\StationOpenMiddleware::class);
+
+// 小程序外链跳转（自 app/api/route/v1.php 迁入，URL 保持不变）
+Route::group(function () {
+    Route::get('get_scheme_url/:id', [\modules\channel\wechat_mini\controller\SchemeController::class, 'redirect'])->option(['real_name' => '小程序跳转url接口']);
+})->middleware(\app\http\middleware\AllowOriginMiddleware::class)
+    ->middleware(\app\api\middleware\StationOpenMiddleware::class)
+    ->option(['mark' => 'mini_scheme', 'mark_name' => '小程序外链']);
+
+// 用户推广小程序码（需登录）
+Route::group(function () {
+    Route::get('user/routine_code', [\modules\channel\wechat_mini\controller\RoutineCodeController::class, 'spreadCode'])->name('getRoutineCode')->option(['real_name' => '小程序二维码']);
+})->middleware(\app\http\middleware\AllowOriginMiddleware::class)
+    ->middleware(\app\api\middleware\StationOpenMiddleware::class)
+    ->middleware(\app\api\middleware\AuthTokenMiddleware::class, true)
+    ->option(['mark' => 'mini_code', 'mark_name' => '小程序码']);
+
+// 直播状态同步的旧 HTTP 定时入口，路径与原先一致
+Route::group(function () {
+    Route::get('crontab/live_product_status', [\modules\channel\wechat_mini\controller\CrontabController::class, 'syncGoodStatus'])->name('syncGoodStatus')->option(['real_name' => '更新直播商品状态']);
+    Route::get('crontab/live_room_status', [\modules\channel\wechat_mini\controller\CrontabController::class, 'syncRoomStatus'])->name('syncRoomStatus')->option(['real_name' => '更新直播间状态']);
+})->middleware(\app\http\middleware\AllowOriginMiddleware::class)
+    ->middleware(\app\api\middleware\StationOpenMiddleware::class)
+    ->middleware(\app\api\middleware\AuthTokenMiddleware::class, false)
+    ->middleware(\app\api\middleware\CrontabKeyMiddleware::class)
+    ->option(['mark' => 'mini_crontab', 'mark_name' => '小程序定时任务']);

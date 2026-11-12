@@ -179,7 +179,9 @@
                   ><div class="detail-item">
                     <span class="label">收货地址：</span
                     ><span class="value">{{
-                      formatAddress(detailData.user_address || detailData.contact?.address) || '--'
+                      formatAddress(detailData.user_address) ||
+                      formatAddress(detailData.contact?.address) ||
+                      '--'
                     }}</span>
                   </div></el-col
                 >
@@ -234,6 +236,12 @@
                   ><div class="detail-item">
                     <span class="label">付费会员优惠：</span
                     ><span class="value">-¥{{ detailData.vip_discount || '0.00' }}</span>
+                  </div></el-col
+                >
+                <el-col :span="8" v-if="Number(detailData.gift_price) > 0"
+                  ><div class="detail-item">
+                    <span class="label">礼品附加费：</span
+                    ><span class="value">¥{{ detailData.gift_price || '0.00' }}</span>
                   </div></el-col
                 >
                 <el-col :span="8"
@@ -337,6 +345,12 @@
                   ><div class="detail-item">
                     <span class="label">联系电话：</span
                     ><span class="value">{{ detailData.invoice.drawer_phone || '--' }}</span>
+                  </div></el-col
+                >
+                <el-col :span="8" v-if="detailData.invoice.header_type === 1 && detailData.invoice.type === 1"
+                  ><div class="detail-item">
+                    <span class="label">联系邮箱：</span
+                    ><span class="value">{{ detailData.invoice.email || '--' }}</span>
                   </div></el-col
                 >
                 <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"

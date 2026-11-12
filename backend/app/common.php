@@ -638,6 +638,9 @@ if (!function_exists('image_to_base64')) {
             curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+            // DNS 解析固定到前置校验的 IP，防解析与请求分离的 DNS 重绑定 TOCTOU（安全审计 E2）
+            $resolvePort = (int)(parse_url($avatar, PHP_URL_PORT) ?: 80);
+            curl_setopt($curl, CURLOPT_RESOLVE, [$url . ':' . $resolvePort . ':' . $ip]);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
             $data = curl_exec($curl);
             $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -665,9 +668,19 @@ if (!function_exists('put_image')) {
         if ($url === '') {
             return false;
         }
+        // 仅允许 http/https，杜绝 phar/data 等 stream wrapper（安全审计 E2）
+        if (!is_string($url) || !preg_match('#^https?://#i', $url)) {
+            return false;
+        }
+        // SSRF 校验：拒绝内网/保留地址与重绑定解析（安全审计 E2）
+        try {
+            \crmeb\utils\SsrfGuard::assertSafeUrl($url);
+        } catch (\Throwable $e) {
+            return false;
+        }
         try {
             if ($filename === '') {
-                $ext = pathinfo($url, PATHINFO_EXTENSION);
+                $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
                 if (!in_array($ext, ['jpg', 'jpeg', 'png'])) {
                     return false;
                 }

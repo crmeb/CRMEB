@@ -81,7 +81,12 @@ class LiveGoodsController extends AuthController
         $error = false;
         foreach ($goods_info as $goods) {
             $this->validate($goods, \modules\channel\wechat_mini\validate\LiveGoodsValidate::class, 'save');
-            if (!preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $goods['image']) && strpos(strtolower($goods['image']), "phar://") !== false) {
+            // 正向校验（安全审计 D6）：拒绝危险 stream wrapper（phar/zip/data/file 等），
+            // 后缀白名单放行；相对路径与 http/https 均兼容
+            $image = (string)($goods['image'] ?? '');
+            $scheme = strtolower((string)parse_url($image, PHP_URL_SCHEME));
+            if (in_array($scheme, ['phar', 'zip', 'data', 'file', 'ftp', 'php'], true)
+                || !preg_match('/\.(png|jpg|jpeg|gif)$/i', $image)) {
                 $error = true;
             }
         }

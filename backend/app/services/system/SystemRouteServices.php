@@ -18,7 +18,6 @@ use crmeb\services\CacheService;
 use crmeb\utils\FormBuilder;
 use think\App;
 use think\exception\ValidateException;
-use think\helper\Str;
 
 /**
  * Class SystemRouteServices
@@ -167,26 +166,20 @@ class SystemRouteServices extends BaseService
         }
 
         $route = $this->app->route->getRuleList();
-        $action_arr = ['index', 'read', 'create', 'save', 'edit', 'update', 'delete'];
-
 
         foreach ($route as $key => $item) {
+            $action = $this->resolveRouteAction($item['route'] ?? null);
             $real_name = $item['option']['real_name'] ?? '';
             if (is_array($real_name)) {
-                foreach ($action_arr as $a) {
-                    // 现代路由写法使用 [Controller::class, 'action'] 数组，不能直接按字符串匹配。
-                    $routeName = is_string($item['route']) ? $item['route'] : ($item['route'][1] ?? '');
-                    if (Str::contains($routeName, $a)) {
-                        $real_name = $real_name[$a] ?? '';
-                    }
-                }
+                // 资源路由 real_name 按 action 精确取值，避免 Str::contains 误伤控制器类名。
+                $real_name = ($action !== '' && isset($real_name[$action]))
+                    ? $real_name[$action]
+                    : ($action !== '' ? $action : '');
             }
             $item['option']['real_name'] = $real_name;
             $route[$key] = $item;
             $except = $item['option']['except'] ?? [];
 
-            $router = is_string($item['route']) ? explode('/', $item['route']) : [];
-            $action = $router[count($router) - 1] ?? null;
             //去除不需要的路由
             if ($except && $action && in_array($action, $except)) {
                 unset($route[$key]);
@@ -287,22 +280,7 @@ class SystemRouteServices extends BaseService
             foreach ($value as $item) {
                 $routeKey = strtolower($item['method']) . '|' . strtolower($item['rule']);
                 if (!isset($knownRoutes[$routeKey]) && strstr($item['rule'], '<MISS>') === false) {
-                    //判断路由是否带@符号
-                    if (is_array($item['route'])) {
-                        // 插件路由通常以 [完整控制器类名, 方法名] 表示。
-                        $controller = (string)($item['route'][0] ?? '');
-                        $action = (string)($item['route'][1] ?? '');
-                        $filePath = ltrim(str_replace('\\', '/', $controller), '/') . '.php';
-                    } elseif (strpos($item['route'], '@') !== false) {
-                        list($controller, $action) = explode('@', $item['route'], 2);
-                        $controller = str_replace('\\', '/', ltrim($controller, '\\'));
-                        $filePath = $controller . '.php';
-                    } else {
-                        $pathAndAction = explode('/', $item['route']);
-                        $controller = $pathAndAction[0] ?? '';
-                        $action = $pathAndAction[1] ?? '';
-                        $filePath = 'app/' . $app . '/controller/' . str_replace('.', '/', $controller) . '.php';
-                    }
+                    [$filePath, $action] = $this->resolveRouteFilePath($item['route'] ?? null, $app);
                     $save[] = [
                         'name' => $item['option']['real_name'] ?? $item['name'],
                         'path' => $item['rule'],
@@ -636,5 +614,72 @@ class SystemRouteServices extends BaseService
     public function getNameList(string $app = 'adminapi')
     {
         return $this->dao->getColumn(['app_name' => $app], 'name', 'path');
+    }
+
+    /**
+     * 从路由定义解析 action 名
+     * @param mixed $route
+     * @return string
+     */
+    protected function resolveRouteAction($route): string
+    {
+        if (is_array($route)) {
+            return (string)($route[1] ?? '');
+        }
+        if (!is_string($route) || $route === '') {
+            return '';
+        }
+        if (strpos($route, '@') !== false) {
+            return (string)explode('@', $route, 2)[1];
+        }
+        $parts = explode('/', str_replace('\\', '/', $route));
+        return (string)end($parts);
+    }
+
+    /**
+     * 从路由定义解析控制器文件路径与 action
+     * @param mixed $route
+     * @param string $app
+     * @return array{0:string,1:string}
+     */
+    protected function resolveRouteFilePath($route, string $app): array
+    {
+        $action = '';
+        $controller = '';
+        if (is_array($route)) {
+            // [Controller::class, 'action']
+            $controller = (string)($route[0] ?? '');
+            $action = (string)($route[1] ?? '');
+        } elseif (is_string($route) && $route !== '') {
+            if (strpos($route, '@') !== false) {
+                [$controller, $action] = explode('@', $route, 2);
+            } else {
+                $normalized = str_replace('\\', '/', ltrim($route, '\\/'));
+                // FQCN/action，如 app/adminapi/controller/cms/ArticleController/index
+                if (preg_match('#^(app/(?:admin)?api/controller/.+)/([^/]+)$#', $normalized, $m)
+                    || preg_match('#^((?:app/)?(?:admin)?api/controller/.+)/([^/]+)$#', $normalized, $m)
+                    || preg_match('#^(.+Controller)/([^/]+)$#i', $normalized, $m)
+                ) {
+                    $controller = $m[1];
+                    $action = $m[2];
+                } else {
+                    // 传统短写法：controller.folder/action
+                    $pathAndAction = explode('/', $route);
+                    $controller = $pathAndAction[0] ?? '';
+                    $action = $pathAndAction[1] ?? '';
+                    $filePath = 'app/' . $app . '/controller/' . str_replace('.', '/', $controller) . '.php';
+                    return [$filePath, $action];
+                }
+            }
+        }
+
+        $controller = ltrim(str_replace('\\', '/', (string)$controller), '/');
+        if ($controller === '') {
+            return ['', $action];
+        }
+        if (!str_ends_with($controller, '.php')) {
+            $controller .= '.php';
+        }
+        return [$controller, $action];
     }
 }

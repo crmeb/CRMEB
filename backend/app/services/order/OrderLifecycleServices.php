@@ -30,6 +30,7 @@ use app\services\user\UserServices;
 use app\services\user\member\MemberCardServices;
 use app\services\order\RefundExecutorServices;
 use app\services\pay\PayServices;
+use crmeb\trade\mode\TradeModeRegistry;
 use think\facade\Log;
 
 /**
@@ -146,9 +147,12 @@ class OrderLifecycleServices extends BaseService
 
     /**
      * 订单取消通用处理
-     * @param array $order 订单信息
+     * @param array $order 取消前的订单信息
+     * @param string $fromStatus 取消前的中台状态
+     * @param int $operatorId 操作人
+     * @param string $operatorType 操作来源 user 或 system
      */
-    public function handleCancel(array $order): void
+    public function handleCancel(array $order, string $fromStatus = '', int $operatorId = 0, string $operatorType = 'user'): void
     {
         // 取消订单回滚：积分/库存/优惠券走退款资金回滚引擎统一实现
         /** @var RefundExecutorServices $refundExecutor */
@@ -157,8 +161,19 @@ class OrderLifecycleServices extends BaseService
         // 返还使用积分
         $refundExecutor->rollbackIntegral($order);
 
-        // 回滚库存和销量
-        $refundExecutor->rollbackStock($order);
+        // 活动订单把库存交回对应交易模式；普通订单回退商品库存
+        /** @var TradeModeRegistry $tradeModeRegistry */
+        $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+        [$activityType, $activityId] = $tradeModeRegistry->resolveOrderActivity($order);
+        if ($activityType !== '' && $activityId > 0 && $tradeModeRegistry->has($activityType)) {
+            $tradeModeRegistry->get($activityType)->afterOrderCancel(
+                (string)($order['order_no'] ?? $order['order_id'] ?? ''),
+                $activityId,
+                $order
+            );
+        } else {
+            $refundExecutor->rollbackStock($order);
+        }
 
         // 恢复下单时消费的优惠券
         $refundExecutor->rollbackCoupon($order);
@@ -169,9 +184,9 @@ class OrderLifecycleServices extends BaseService
         $logDao->save([
             'order_no'      => $order['order_no'] ?? $order['order_id'] ?? '',
             'uid'           => $order['uid'] ?? 0,
-            'operator_id'   => $order['uid'] ?? 0,
-            'operator_type' => 'user',
-            'from_status'   => OrderCenter::STATUS_PROCESSING,
+            'operator_id'   => $operatorId,
+            'operator_type' => $operatorType,
+            'from_status'   => $fromStatus !== '' ? $fromStatus : (string)($order['status_code'] ?? ''),
             'to_status'     => OrderCenter::STATUS_CANCELED,
             'content'       => '订单已取消',
             'add_time'      => time(),

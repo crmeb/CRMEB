@@ -208,8 +208,9 @@ interface OrderTypeAdapterInterface
      * 一步完成：扩展表 status 推进 + onEnter 回调 + 中台 status_code 同步
      * @param string $orderNo 订单号
      * @param string $extStatus 扩展表状态码（如 EXT_STATUS_CANCELED）
-     * @param array $extra 额外字段（如 cancel_time）
+     * @param array $extra 扩展表附加字段
+     * @param array $centerExtra 中台附加字段（如 cancel_time）
      * @return void
      */
-    public function advance(string $orderNo, string $extStatus, array $extra = []): void;
+    public function advance(string $orderNo, string $extStatus, array $extra = [], array $centerExtra = []): void;
 }

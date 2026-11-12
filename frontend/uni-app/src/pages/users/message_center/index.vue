@@ -87,6 +87,7 @@ import i18n from '@/utils/lang.js';
 import {
 	HTTP_REQUEST_URL
 } from '@/config/app';
+import { replaceEm } from '@/utils/chatEmoji';
 
 const { colorStyle } = useColorTheme();
 
@@ -302,10 +303,10 @@ function getList() {
 			loading.value = false;
 			data.forEach(item => {
 				if (item.message_type === 1) {
-					item.message = replace_em(item.message);
+					item.message = replaceEm(item.message);
 				}
 				if (item.message_type === 2) {
-					item.message = replace_em(item.message);
+					item.message = replaceEm(item.message);
 				}
 			});
 			list.value = list.value.concat(data);
@@ -318,10 +319,6 @@ function getList() {
 				icon: 'none'
 			})
 		})
-}
-function replace_em(str) {
-	str = str.replace(/\[([^\[\]]+)\]/g, "<span class='em $1'/></span>");
-	return str;
 }
 function goChat(item) {
 	item.mssage_num = 0

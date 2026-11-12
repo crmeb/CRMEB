@@ -13,6 +13,7 @@ namespace app\adminapi\controller\order;
 use app\adminapi\controller\AuthController;
 use app\dao\driver\pay\PayChannelDao;
 use app\services\order\OrderCenterServices;
+use app\services\pay\PayRecordServices;
 use crmeb\trade\mode\TradeModeRegistry;
 use crmeb\trade\order\type\OrderTypeRegistry;
 use crmeb\trade\product\ProductTypeRegistry;
@@ -173,5 +174,20 @@ class OrderCenterController extends AuthController
             'activity_types' => $activityTypes,
             'pay_types'      => $payTypes,
         ]);
+    }
+
+    /**
+     * 对已取消但仍收到付款的订单提交一次原路退款。
+     * @param PayRecordServices $records 支付记录
+     * @return mixed
+     */
+    public function submitCanceledRefund(PayRecordServices $records)
+    {
+        $orderNo = (string)$this->request->post('order_no', '');
+        if ($orderNo === '') {
+            return app('json')->fail('缺少订单号');
+        }
+        $records->submitCanceledRefund($orderNo);
+        return app('json')->success('已提交原路退款');
     }
 }

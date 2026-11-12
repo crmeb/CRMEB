@@ -65,8 +65,8 @@
       </el-tabs>
 
       <div class="mb12">
-        <el-button type="primary" @click="goAdd">添加网盘商品</el-button>
-        <el-button :disabled="!selectedIds.length" @click="onBatchDelete">批量删除</el-button>
+        <el-button v-db-click type="primary" @click="goAdd">添加网盘商品</el-button>
+        <el-button v-db-click :disabled="!selectedIds.length" @click="onBatchDelete">批量删除</el-button>
       </div>
 
       <el-table

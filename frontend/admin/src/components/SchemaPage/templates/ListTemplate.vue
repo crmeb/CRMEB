@@ -1,10 +1,15 @@
 <template>
   <div class="schema-list">
+    <!-- 搜索区可声明 search_first，排在统计卡之前 -->
+    <el-card v-if="searchFirst && hasSearch" shadow="never" class="schema-list__search">
+      <SchemaSearchBar :fields="config.search" @search="onSearch" />
+    </el-card>
+
     <!-- 统计卡片行（config.cards 声明，数据来自 list 响应 summary） -->
     <SchemaCards :cards="config.cards || []" :data="summary" />
 
     <!-- 搜索区 -->
-    <el-card v-if="config.search && config.search.length" shadow="never" class="schema-list__search">
+    <el-card v-if="!searchFirst && hasSearch" shadow="never" class="schema-list__search">
       <SchemaSearchBar :fields="config.search" @search="onSearch" />
     </el-card>
 
@@ -51,7 +56,7 @@
         @selection-change="onSelectionChange"
       />
       <div class="schema-list__page">
-        <pagination v-if="total" :total="total" v-model:page="page" v-model:limit="limit" @pagination="loadList" />
+        <pagination :total="total" v-model:page="page" v-model:limit="limit" @pagination="loadList" />
       </div>
     </el-card>
 
@@ -82,7 +87,7 @@
  */
 import { ref, reactive, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import request from '@/libs/request';
 import SchemaSearchBar from '../components/SchemaSearchBar.vue';
 import SchemaTable from '../components/SchemaTable.vue';
@@ -130,6 +135,12 @@ const currentOrder = ref({});
 const summary = ref(null);
 /** 状态分类头计数（list 响应 tabs_count 键，键为选项 value 字符串形式） */
 const tabsCount = ref({});
+
+/** 搜索栏是否排在统计卡之前（页面声明 search_first） */
+const searchFirst = computed(() => !!props.config.search_first);
+
+/** 是否有搜索项 */
+const hasSearch = computed(() => Array.isArray(props.config.search) && props.config.search.length > 0);
 
 /** 状态分类头配置（未声明或 options 为空时为 null；后端未声明时下发空数组，JS 中为真值需显式排除） */
 const tabsConfig = computed(() => {
@@ -345,10 +356,29 @@ function onBatchAction(actionItem) {
  */
 async function executeAction(actionItem, payload) {
   await runAction(actionItem, async () => {
-    const res = await schemaActionApi(props.pluginKey, props.pageKey, {
+    let res = await schemaActionApi(props.pluginKey, props.pageKey, {
       action: actionItem.action,
       payload,
     });
+    // 服务端按当前数据返回确认文案时，先弹窗，确认后再带上 confirm.payload 执行
+    for (let i = 0; i < 2 && res?.data?.confirm?.message; i += 1) {
+      try {
+        await ElMessageBox({
+          title: '提示',
+          message: res.data.confirm.message,
+          type: 'warning',
+          showCancelButton: true,
+          cancelButtonText: '取消',
+          confirmButtonText: '确定',
+        });
+      } catch {
+        return;
+      }
+      res = await schemaActionApi(props.pluginKey, props.pageKey, {
+        action: actionItem.action,
+        payload: { ...payload, ...(res.data.confirm.payload || {}) },
+      });
+    }
     handleActionResponse(res, loadList);
   });
 }

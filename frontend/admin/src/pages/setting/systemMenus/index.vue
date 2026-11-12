@@ -155,7 +155,6 @@ import { useMenusStore } from '@/store/module/menus';
 import { useUserInfoStore } from '@/store/module/userInfo';
 import { useRoutesListStore } from '@/store/module/routesList';
 import { useKeepAliveNamesStore } from '@/store/module/keepAliveNames';
-
 defineOptions({ name: 'systemMenus' });
 
 const emit = defineEmits(['onCancel']);

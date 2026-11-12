@@ -37,11 +37,7 @@ class NotifyListener
         if (in_array($payType, ['weixin', 'weixin_v3'], true) && ($notify['event_type'] ?? '') === 'REFUND.SUCCESS') {
             $record = app()->make(PayRecordServices::class)->find((string)($notify['out_trade_no'] ?? ''));
             if ($record && ($record['refund']['refund_no'] ?? '') === ($notify['out_refund_no'] ?? '')) {
-                if ($payType === 'weixin') {
-                    return app()->make(PayRecordServices::class)->handleWechatRefundNotify($notify, $payType);
-                }
-                app()->make(PayRecordServices::class)->processRefund($record['order_no']);
-                return true;
+                return app()->make(PayRecordServices::class)->applyRefundNotify($record['order_no'], $notify, $payType);
             }
             return app()->make(RefundOrderServices::class)->handleWechatRefundNotify($notify, $payType);
         }

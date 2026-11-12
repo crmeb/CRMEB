@@ -52,7 +52,7 @@
           </div>
         </div>
         <div class="conter">
-          <el-button type="primary" @click="addLink">添加链接</el-button>
+          <el-button v-db-click type="primary" @click="addLink">添加链接</el-button>
           <el-table
             :data="linkList"
             ref="couponTable"

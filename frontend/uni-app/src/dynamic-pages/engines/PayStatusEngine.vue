@@ -321,14 +321,16 @@ function getOrderPayInfo() {
       const productObj = (propsMap['product'] && propsMap['product'].product) || {};
       const productItems = productObj.items || [];
       const firstProduct = productItems[0] || {};
+      const giftSection = (propsMap['gift'] && propsMap['gift'].gift) || {};
       giftData.value = {
         id: orderInfoFields.id || 0,
         image: firstProduct.image || productObj.image || '',
         title: firstProduct.store_name || firstProduct.title || productObj.title || '',
-        message: orderInfoFields.gift_mark || '',
-        avatar: '',
-        nickname: '',
-        code: '',
+        message: orderInfoFields.gift_mark || giftSection.gift_mark || '',
+        avatar: (giftSection.sender && giftSection.sender.avatar) || '',
+        nickname: (giftSection.sender && giftSection.sender.nickname) || '',
+        gift_key: giftSection.gift_key || '',
+        code: giftSection.gift_code || '',
       };
       // 根据支付状态设置导航栏标题
       // pay_status: 0未支付 1已支付 2部分退款 3全额退款

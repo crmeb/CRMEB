@@ -161,6 +161,7 @@ import { getChatRecord } from "@/api/user";
 let statusBarHeight = uni.getWindowInfo().statusBarHeight + "px";
 import { socketInstance } from "@/libs/new_chat";
 import emojiList, { qqEmojis } from "@/utils/emoji";
+import { replaceEm } from "@/utils/chatEmoji";
 import Loading from "@/components/Loading";
 import { useColorTheme } from "@/composables/useColorTheme";
 import { HTTP_REQUEST_URL } from "@/config/app.js";
@@ -329,7 +330,7 @@ function onSuccess() {
 // 消息接收
 function onReplyChat(data) {
   if (data.msn_type == 1) {
-    data.msn = replace_em(data.msn);
+    data.msn = replaceEm(data.msn, httpUrl.value);
   }
   data._add_time = data._add_time.substring(0, data._add_time.length - 3);
   chatList.value.push(data);
@@ -441,16 +442,6 @@ function addEmoji(item) {
 function addQqEmoji(item) {
   con.value += item.char;
 }
-// 聊天表情转换
-function replace_em(str) {
-  str = str.replace(
-    /\[([^\[\]]+)\]/g,
-    "<span class='em $1' style='background-image:url(" +
-      httpUrl.value +
-      ")'></span>"
-  );
-  return str;
-}
 // 获取聊天列表
 function getChatList() {
   getChatRecord({
@@ -482,7 +473,7 @@ function getChatList() {
       res.data.serviceList.forEach((el) => {
         el._add_time = el._add_time.substring(0, el._add_time.length - 3);
         if (el.msn_type == 1 || el.msn_type == 2) {
-          el.msn = replace_em(el.msn);
+          el.msn = replaceEm(el.msn, httpUrl.value);
         }
       });
       loading.value = false;

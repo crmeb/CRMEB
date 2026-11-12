@@ -144,7 +144,8 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
      */
     public function resolveStatusCode(array $sourceOrder): string
     {
-        if (($sourceOrder['is_cancel'] ?? 0) == 1) {
+        $status = (string)($sourceOrder['status'] ?? '');
+        if (($sourceOrder['is_cancel'] ?? 0) == 1 || $status === self::EXT_STATUS_CANCELED) {
             return self::STATUS_CANCELED;
         }
         $refundStatus = (int)($sourceOrder['refund_status'] ?? 0);
@@ -154,7 +155,6 @@ class VirtualOrderAdapter extends BaseOrderTypeAdapter
         if ($refundStatus === 1) {
             return self::STATUS_AFTER_SALE;
         }
-        $status = (string)($sourceOrder['status'] ?? '');
         // 扩展表不一定携带 paid 字段，资源已发放的状态均视为已支付
         $isPaid = (bool)($sourceOrder['paid'] ?? 0)
             || in_array($status, [self::EXT_STATUS_PENDING_REVIEW, self::EXT_STATUS_COMPLETED], true);

@@ -5,12 +5,8 @@
  */
 return [
     'listen' => [
-        'OrderPaySuccess' => [
-            \modules\product\virtual\listener\OrderPaidListener::class,
-        ],
-        'OrderCancel' => [
-            \modules\product\virtual\listener\OrderCancelListener::class,
-        ],
+        // 网盘发放由 Handler::fulfillOrder 在支付提交后直接调用，不再挂在支付成功广播上。
+        // 未支付取消由 OrderCenterServices::cancelUnpaidOrder 直接推进，不再监听 OrderCancel。
         'OrderRefundCreateAfter' => [
             \modules\product\virtual\listener\OrderRefundCreateAfterListener::class,
         ],

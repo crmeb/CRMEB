@@ -397,6 +397,16 @@ class CenterOrderController
         }
         $productType = $productTypes[0];
 
+        // 秒杀等活动走同一条确认，但不使用会员价、优惠券、积分和运费优惠
+        /** @var TradeModeRegistry $tradeModeRegistry */
+        $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+        [$activityType, $activityId] = $tradeModeRegistry->primaryCartActivity($validCartInfo);
+        $allowDiscount = $tradeModeRegistry->orderAllowsDiscount($validCartInfo);
+        if ($allowDiscount || $activityType === '' || !$tradeModeRegistry->has($activityType)) {
+            $activityType = 'normal';
+            $activityId = 0;
+        }
+
         // 计算价格组（含运费模板运费、会员运费折扣），与旧版确认页结构一致
         /** @var OrderComputedServices $computedServices */
         $computedServices = app()->make(OrderComputedServices::class);
@@ -408,6 +418,10 @@ class CenterOrderController
         if (is_object($userInfo)) $userInfo = $userInfo->toArray();
         $priceGroup = $computedServices->getOrderPriceGroup($storeFreePostage, $validCartInfo, $addr, $userInfo, $shippingType, $isGift);
         $validCartInfo = $priceGroup['cartInfo'] ?? $validCartInfo;
+        if (!$allowDiscount) {
+            $priceGroup['levelPrice'] = 0;
+            $priceGroup['memberPrice'] = 0;
+        }
 
         // 组装与单品直购模式一致的 priceData，供 computed/create 读取
         // 送礼订单：应付价 = 商品总价 + 礼品附加费（无运费）
@@ -438,8 +452,8 @@ class CenterOrderController
         $orderServices = app()->make(OrderCenterUserServices::class);
         $orderKey = $orderServices->cacheOrderInfo($uid, $validCartInfo, $priceData, [
             'product_type'  => $productType,
-            'activity_type' => 'normal',
-            'activity_id'   => 0,
+            'activity_type' => $activityType,
+            'activity_id'   => $activityId,
             'order_mode'    => 'cart',
             'cart_ids'      => $cartId,   // 下单成功后清除购物车
             'new'           => $new,      // 是否缓存key模式（立即购买）
@@ -467,12 +481,12 @@ class CenterOrderController
         $integralOpen = (float)$integralRatio > 0 || $usableIntegral > 0;
 
         // 可用优惠券（无可用券时自动领取整单最优券并入列表，保证与 computed 的自动选券结果一致）
-        $couponList = $this->buildConfirmCouponList(
+        $couponList = $allowDiscount ? $this->buildConfirmCouponList(
             $uid,
             $cartGroup,
             false,
             method_exists($handler, 'getPricingPolicy') ? $handler->getPricingPolicy() : []
-        );
+        ) : [];
 
         // 支付渠道状态
         /** @var PayChannelServices $payChannelServices */
@@ -563,8 +577,8 @@ class CenterOrderController
             // 专用发票：须发票功能开启且专票开关开启
             'special_invoice'  => (bool)sys_config('invoice_func_status', 0)
                 && (bool)sys_config('special_invoice_status', 0),
-            'integral'         => $integralOpen,                    // 积分抵扣
-            'coupon'           => !empty($couponList),              // 优惠券
+            'integral'         => $allowDiscount && $integralOpen,  // 积分抵扣
+            'coupon'           => $allowDiscount && !empty($couponList), // 优惠券
             'custom_form'      => !empty($cartCustomForm),          // 自定义表单（取主商品定义）
             'params_list'      => false,                            // 商品参数（下单页不展示）
             'visitor_form'     => !empty($cartVisitorFormConfig),   // 游客信息表单（门票专属，取主商品定义）
@@ -576,8 +590,8 @@ class CenterOrderController
         $data = [
             'order_key'          => $orderKey,// 订单缓存key
             'product_type'       => $productType,// 商品类型
-            'activity_type'      => 'normal',// 活动类型
-            'activity_id'        => 0,// 活动ID
+            'activity_type'      => $activityType,// 活动类型
+            'activity_id'        => $activityId,// 活动ID
             'features'           => $features,// 功能开关配置
             'cartInfo'           => $validCartInfo,// 有效购物车商品（失效商品不参与合单展示与计价）
             'valid_count'        => count($validCartInfo),// 有效商品数量
@@ -597,7 +611,7 @@ class CenterOrderController
             ],
             'userInfo'           => $userInfo,// 用户信息
             'usable_integral'    => $usableIntegral,// 可用积分
-            'integral_open'      => $integralOpen,// 是否开启积分抵扣
+            'integral_open'      => $allowDiscount && $integralOpen,// 是否开启积分抵扣
             'integral_ratio'     => $integralRatio,// 积分抵扣比例
             'integralRatio'      => $integralRatio,// 兼容旧字段名
             'coupon_list'        => $couponList,// 优惠券列表
@@ -653,14 +667,22 @@ class CenterOrderController
         if (!empty($couponList)) {
             return $couponList;
         }
-        // 用户尚无可用券：自动领取整单最优优惠券，行结构与 getUsableCouponList 保持一致
+        // 用户尚无可用券：自动领取整单最优优惠券；领取后重新拉取完整可用列表，避免弹窗只剩最优一张
         try {
             /** @var OrderComputedServices $computedServices */
             $computedServices = app()->make(OrderComputedServices::class);
             $autoCoupon = $computedServices->autoMatchCoupon($uid, $cartGroup['valid'] ?? [], true);
-            $autoRow = $couponServices->getUsableCouponRow($uid, (int)($autoCoupon['coupon_user_id'] ?? 0));
-            if ($autoRow) {
-                $couponList[] = $autoRow;
+            $autoCouponUserId = (int)($autoCoupon['coupon_user_id'] ?? 0);
+            try {
+                $couponList = $couponServices->getUsableCouponList($uid, $cartGroup);
+            } catch (\Throwable $e) {
+                $couponList = [];
+            }
+            if (empty($couponList) && $autoCouponUserId > 0) {
+                $autoRow = $couponServices->getUsableCouponRow($uid, $autoCouponUserId);
+                if ($autoRow) {
+                    $couponList[] = $autoRow;
+                }
             }
         } catch (\Throwable $e) {
             // 自动领券失败不影响确认页主流程
@@ -677,6 +699,8 @@ class CenterOrderController
             $uid = (int) request()->uid();
             $key = (string) request()->param('key', '');
             $couponId = (int) request()->param('coupon_id', 0);
+            // 默认允许自动选券；前端用户手动取消后传 0，避免 coupon_id=0 再次被自动用上
+            $allowAutoCoupon = (int) request()->param('allow_auto_coupon', 1) !== 0;
             $useIntegral = (bool) request()->param('use_integral', false);
             $addressId = (int) request()->param('address_id', 0);
             $deliveryType = $this->normalizeOrderDeliveryType((string) request()->param('delivery_type', ''));
@@ -707,6 +731,11 @@ class CenterOrderController
             $isActivityOrder = (($cartGroup['activity_type'] ?? 'normal') !== 'normal')
                 && (int)($cartGroup['activity_id'] ?? 0) > 0;
             $cartInfo = $cartGroup['cartInfo'] ?? [];
+            if (!app()->make(TradeModeRegistry::class)->orderAllowsDiscount($cartInfo)) {
+                $couponId = 0;
+                $allowAutoCoupon = false;
+                $useIntegral = false;
+            }
 
             // 重算金额必须使用当前用户上下文，积分抵扣和会员价格都依赖用户信息。
             /** @var UserServices $userServices */
@@ -810,7 +839,8 @@ class CenterOrderController
             }
 
             // 用户未选券时自动领取并使用整单最优优惠券（折扣对应真实领取的券，与商品详情到手价口径一致；失败降级为无券）
-            if (!$couponId && !$isActivityOrder && ($pricingPolicy['coupon'] ?? true)) {
+            // allow_auto_coupon=0 表示用户已显式取消用券，不得再自动选中
+            if (!$couponId && $allowAutoCoupon && !$isActivityOrder && ($pricingPolicy['coupon'] ?? true)) {
                 /** @var OrderComputedServices $computedServices */
                 $computedServices = app()->make(OrderComputedServices::class);
                 $autoCoupon = $computedServices->autoMatchCoupon($uid, $cartInfo, true);
@@ -1007,6 +1037,8 @@ class CenterOrderController
             $activityId = (int) request()->param('activity_id', 0);
             $formData = request()->param('order_data/a', []);
             $couponId = (int) request()->param('coupon_id', 0);
+            // 与 computed 同口径：用户手动取消用券后传 0，创建订单时不再自动选券
+            $allowAutoCoupon = (int) request()->param('allow_auto_coupon', 1) !== 0;
             $formDeliveryType = $this->normalizeOrderDeliveryType((string)($formData['delivery_type'] ?? ''));
             $formShippingType = $formDeliveryType === 'pickup' ? 2 : ($formDeliveryType === 'door' ? 3 : 1);
             $addressId = (int)($formData['address_id'] ?? 0);
@@ -1014,6 +1046,7 @@ class CenterOrderController
             // 送礼订单：地址由领取人填写，下单阶段不选地址、不计运费
             $isGift = (int)($formData['is_gift'] ?? request()->param('is_gift', 0));
             $giftMark = trim((string)($formData['gift_mark'] ?? request()->param('gift_mark', '')));
+            $giftClaimKey = $isGift == 1 ? bin2hex(random_bytes(16)) : '';
             $storeInfo = [];
             $validatedAddressInfo = [];
             $normalDeliveryValidated = false;
@@ -1053,10 +1086,17 @@ class CenterOrderController
                 || ($cacheMode === '' && (array_key_exists('cart_ids', $cartGroup) || array_key_exists('new', $cartGroup)));
             $activityType = (string)($cartGroup['activity_type'] ?? 'normal');
             $activityId = (int)($cartGroup['activity_id'] ?? 0);
-            $isActivityOrder = $activityType !== 'normal' && $activityId > 0;
-
             /** @var TradeModeRegistry $tradeModeRegistry */
             $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+            if (($activityType === '' || $activityType === 'normal' || $activityId <= 0)) {
+                [$resolvedType, $resolvedId] = $tradeModeRegistry->primaryCartActivity($cartInfo);
+                if ($resolvedType !== '' && $resolvedId > 0 && $tradeModeRegistry->has($resolvedType)
+                    && !$tradeModeRegistry->get($resolvedType)->allowsOrderDiscount()) {
+                    $activityType = $resolvedType;
+                    $activityId = $resolvedId;
+                }
+            }
+            $isActivityOrder = $activityType !== 'normal' && $activityId > 0;
             $tradeModeHandler = $tradeModeRegistry->get($activityType);
 
             // 校验确认缓存中的商品类型，避免客户端修改 product_type 绕过 Handler。
@@ -1246,7 +1286,8 @@ class CenterOrderController
             $originalTotalPrice = $priceData['totalPrice'] ?? 0;
 
             // 用户未选券时自动匹配整单最优优惠券（可领取的先领取，失败降级为无券；活动订单与关闭券能力的商品类型不参与）
-            if (!$couponId && !$isActivityOrder) {
+            // allow_auto_coupon=0 表示用户已显式取消用券，不得再自动选中
+            if (!$couponId && $allowAutoCoupon && !$isActivityOrder) {
                 $couponPolicyEnabled = true;
                 $autoHandler = $registry->get($productType);
                 if (method_exists($autoHandler, 'getPricingPolicy')) {
@@ -1531,7 +1572,7 @@ class CenterOrderController
             // 库存、产品扩展、中台订单须原子提交；产品钩子可能预留稀缺资源。
             \think\facade\Db::startTrans();
             $orderTransactionStarted = true;
-            // 普通实物订单在创建时锁定库存。活动订单由活动 Handler 自己管理库存，不能重复扣减。
+            // 普通实物订单在创建时锁定库存。活动订单由活动处理器在下单回调里占用库存。
             if (!$isActivityOrder) {
                 foreach ($cartInfo as $cartItem) {
                     $itemProductId = (int)($cartItem['product_id'] ?? $cartItem['productInfo']['id'] ?? 0);
@@ -1684,11 +1725,11 @@ class CenterOrderController
                     'coupon_id' => (!$isActivityOrder && $couponId > 0) ? $couponId : 0,
                     'activity_info' => $activityExtraInfo,
                 ] + ($isGift == 1 ? [
-                    // 送礼订单：留言与领取记录挂在 extra_info，领取时写入 gift.gift_uid
+                    // 送礼订单：留言与领取记录挂在 extra_info；gift_key 为不可猜测领取令牌
                     'gift_mark' => $giftMark,
                     'gift' => [
                         'gift_uid' => 0,
-                        'gift_key' => '',
+                        'gift_key' => $giftClaimKey,
                     ],
                 ] : []),
                 'detail_route'   => $handler->getOrderDetailRoute($orderNo),
@@ -1702,6 +1743,15 @@ class CenterOrderController
                 $centerOrderId = (int)app()->make(OrderCenterDao::class)->value(['order_no' => $orderNo], 'id');
             } catch (\Throwable $e) {
                 // 查询失败不影响主流程（活动回调另有兜底）
+            }
+
+            // 送礼令牌 → 订单 ID 缓存，供小程序码 scene 反查
+            if ($isGift == 1 && $giftClaimKey !== '' && $centerOrderId > 0) {
+                try {
+                    \crmeb\services\CacheService::set('gift_claim_key_' . $giftClaimKey, $centerOrderId, 86400 * 30);
+                } catch (\Throwable $e) {
+                    // 缓存失败不影响下单；领取时回退 JSON 查询
+                }
             }
 
             // 下单勾选发票：同步创建开票申请记录，供后台发票列表与支付回写 is_pay 使用
@@ -2268,11 +2318,12 @@ class CenterOrderController
      */
     public function pay(YuePayServices $yuePayServices, OrderPayServices $payServices)
     {
-        [$uni, $paytype, $quitUrl, $type] = request()->postMore([
+        [$uni, $paytype, $quitUrl, $type, $friendKey] = request()->postMore([
             ['uni', ''],
             ['paytype', ''],
             ['quitUrl', ''],
-            ['type', 0]
+            ['type', 0],
+            ['friend_key', ''],
         ], true);
 
         if (!$uni) return app('json')->fail('参数错误');
@@ -2291,13 +2342,41 @@ class CenterOrderController
         }
 
         if (in_array($centerOrder['status_code'] ?? '', [OrderCenter::STATUS_CANCELED, OrderCenter::STATUS_DELETED], true)) {
+            CacheService::delete('PAY_LOCK_' . $uni);
             return app('json')->fail('订单已经超过系统支付时间，无法支付，请重新下单');
         }
         if ($centerOrder['pay_status'] == 1) {
+            CacheService::delete('PAY_LOCK_' . $uni);
             return app('json')->fail('订单已支付');
         }
 
-        $uid = $type == 1 ? (int)request()->uid() : $centerOrder['uid'];
+        // 支付身份：本人支付须为订单归属人；好友代付须持有 friend_key（防任意用户代付/盗刷）
+        $callerUid = (int)request()->uid();
+        $type = (int)$type;
+        if ($type === 1) {
+            $extraInfo = $centerOrder['extra_info'] ?? [];
+            if (is_string($extraInfo)) {
+                $extraInfo = json_decode($extraInfo, true) ?: [];
+            }
+            $storedKey = (string)($extraInfo['friend_pay']['friend_key'] ?? '');
+            if (!$centerServices->isValidGiftKeyFormat((string)$friendKey)
+                || !$centerServices->isValidGiftKeyFormat($storedKey)
+                || !hash_equals($storedKey, (string)$friendKey)) {
+                CacheService::delete('PAY_LOCK_' . $uni);
+                return app('json')->fail('无权支付该订单');
+            }
+            if ($callerUid === (int)($centerOrder['uid'] ?? 0)) {
+                CacheService::delete('PAY_LOCK_' . $uni);
+                return app('json')->fail('不能代付自己的订单');
+            }
+            $uid = $callerUid;
+        } else {
+            if ((int)($centerOrder['uid'] ?? 0) !== $callerUid) {
+                CacheService::delete('PAY_LOCK_' . $uni);
+                return app('json')->fail('订单不存在');
+            }
+            $uid = $callerUid;
+        }
         $orderNo = $centerOrder['order_no'] ?? $uni;
 
         // 构建兼容支付服务接口的订单数组
@@ -2339,55 +2418,14 @@ class CenterOrderController
         }
 
         if (bcsub((string)$orderInfo['pay_price'], '0', 2) <= 0 || ($isActivityOrder && $isFreePay)) {
-            // 活动订单在 0 元支付前先执行活动支付处理（如扣减积分）
-            if ($isActivityOrder && $tradeModeHandler) {
-                try {
-                    $extraInfo = $centerOrder['extra_info'] ?? [];
-                    $skuUnique = $extraInfo['sku_info']['unique'] ?? '';
-                    $tradeModeHandler->beforeOrderPay($orderNo, $activityId, $centerOrder);
-                    $tradeModeHandler->onOrderPay($orderNo, $activityId, array_merge($centerOrder, [
-                        'sku_unique' => $skuUnique,
-                    ]));
-                } catch (\Throwable $e) {
-                    CacheService::delete('PAY_LOCK_' . $uni);
-                    return app('json')->status('pay_error', $e->getMessage());
-                }
-            }
-
             /** @var OrderSuccessServices $success */
             $success = app()->make(OrderSuccessServices::class);
-            // 免费活动订单使用 free 支付方式记录，避免被记录为余额支付
+            // 免费活动订单使用 free 支付方式记录，避免被记录为余额支付。活动钩子由 paySuccess 统一调用。
             $freePayType = $isActivityOrder && $isFreePay ? 'free' : PayServices::YUE_PAY;
             $payPriceStatus = $success->zeroYuanPayment($orderInfo, $uid, $freePayType);
             if ($payPriceStatus) {
-                // 0 元支付成功后触发活动支付成功回调（如扣减活动库存）
-                if ($isActivityOrder && $tradeModeHandler) {
-                    try {
-                        $extraInfo = $centerOrder['extra_info'] ?? [];
-                        $skuUnique = $extraInfo['sku_info']['unique'] ?? '';
-                        $tradeModeHandler->afterOrderPay($orderNo, $activityId, array_merge($centerOrder, [
-                            'sku_unique' => $skuUnique,
-                        ]));
-                    } catch (\Throwable $e) {
-                        \think\facade\Log::warning('活动支付成功回调执行失败: ' . $e->getMessage());
-                    }
-                }
                 return app('json')->status('success', '支付成功', ['order_id' => $orderNo, 'key' => $orderNo]);
             }
-
-            // 0 元支付失败时，触发活动支付失败回调回滚已扣减资源（如积分）
-            if ($isActivityOrder && $tradeModeHandler) {
-                try {
-                    $extraInfo = $centerOrder['extra_info'] ?? [];
-                    $skuUnique = $extraInfo['sku_info']['unique'] ?? '';
-                    $tradeModeHandler->onOrderPayFail($orderNo, $activityId, array_merge($centerOrder, [
-                        'sku_unique' => $skuUnique,
-                    ]));
-                } catch (\Throwable $e) {
-                    \think\facade\Log::warning('活动支付失败回调执行失败: ' . $e->getMessage());
-                }
-            }
-
             return app('json')->status('pay_error', '支付失败');
         }
 
@@ -2438,15 +2476,21 @@ class CenterOrderController
             'yue_pay_status'    => $payChannelServices->getChannelStatus('yue'),
         ];
 
+        $uid = (int)request()->uid();
         $data['order_id'] = $orderNo;
         $data['pay_price'] = '0';
-        $data['now_money'] = app()->make(UserServices::class)->value(['uid' => (int)request()->uid()], 'now_money');
+        $data['now_money'] = app()->make(UserServices::class)->value(['uid' => $uid], 'now_money');
 
         switch ($type) {
             case 'order':
                 /** @var OrderCenterUserServices $centerServices */
                 $centerServices = app()->make(OrderCenterUserServices::class);
-                $order = $centerServices->getDetailByOrderNo($orderNo, false);
+                // 仅订单归属人（或礼物领取人）可读收银台支付元数据，防 IDOR
+                $ownedId = $centerServices->getOwnedOrderIdByNo((string)$orderNo, $uid);
+                if ($ownedId === null) {
+                    return app('json')->fail('您支付的订单不存在');
+                }
+                $order = $centerServices->getDetail($ownedId, false);
                 if (!$order) {
                     return app('json')->fail('您支付的订单不存在');
                 }
@@ -2625,8 +2669,14 @@ class CenterOrderController
     public function refundDetail($uni, $cartId = '')
     {
         if (!strlen(trim($uni))) return app('json')->fail('参数错误');
+        $uid = (int)request()->uid();
         $orderCenterServices = app()->make(OrderCenterUserServices::class);
-        $order = $orderCenterServices->getDetailByOrderNo($uni, false);
+        // 归属校验：仅订单归属人或礼物领取人可查看（与 center/order/detail 一致，防 IDOR）
+        $ownedId = $orderCenterServices->getOwnedOrderIdByNo((string)$uni, $uid);
+        if ($ownedId === null) {
+            return app('json')->fail('订单不存在');
+        }
+        $order = $orderCenterServices->getDetail($ownedId, false);
         if (!$order) return app('json')->fail('订单不存在');
         // 订单详情格式化（OrderOutServices 已中台化，tidyOrder 基于中台数据）
         $orderData = app()->make(OrderOutServices::class)->tidyOrder($order, true);
@@ -2866,7 +2916,8 @@ class CenterOrderController
     public function product()
     {
         [$unique] = request()->postMore([['unique', '']], true);
-        $item = $this->findOrderItemBySkuUnique((string)$unique);
+        // 评价页商品展示：必须限定当前用户可操作订单（下单人或礼物领取人），防凭 unique 扫他人行项
+        $item = $this->findOrderItemBySkuUnique((string)$unique, (int)request()->uid());
         if (!$item) return app('json')->fail('商品不存在');
         // 订单号由辅助方法附带返回（_order_no）
         $cartProduct = [];
@@ -3063,16 +3114,21 @@ class CenterOrderController
      */
     public function friendDetail()
     {
-        [$orderId] = request()->getMore([
-            ['order_id', '']
+        [$orderId, $friendKey] = request()->getMore([
+            ['order_id', ''],
+            ['friend_key', ''],
         ], true);
         $orderId = (int) $orderId;
         if ($orderId <= 0) {
             return app('json')->fail('订单参数错误');
         }
-        $orderCenterServices = app()->make(OrderCenterUserServices::class);
-        $info = $orderCenterServices->getFriendDetail($orderId, (int) request()->uid());
-        return app('json')->success(compact('info'));
+        try {
+            $orderCenterServices = app()->make(OrderCenterUserServices::class);
+            $info = $orderCenterServices->getFriendDetail($orderId, (int) request()->uid(), (string)$friendKey);
+            return app('json')->success(compact('info'));
+        } catch (\Throwable $e) {
+            return app('json')->fail($e->getMessage());
+        }
     }
 
     /**
@@ -3107,18 +3163,41 @@ class CenterOrderController
     }
 
     /**
-     * 礼品详情
+     * 礼品详情（须带 gift_key，防止仅凭 oid 枚举劫持）
      * @param $oid
      * @return mixed
      */
     public function giftDetail($oid)
     {
-        if (!$oid) {
+        $giftKey = (string)request()->param('gift_key', '');
+        if (!$oid || $giftKey === '') {
             return app('json')->fail('缺少参数');
         }
-        $orderCenterServices = app()->make(OrderCenterUserServices::class);
-        // 路由参数为字符串，服务层签名要求 int
-        return app('json')->success($orderCenterServices->giftDetail((int)$oid));
+        try {
+            $orderCenterServices = app()->make(OrderCenterUserServices::class);
+            return app('json')->success($orderCenterServices->giftDetail((int)$oid, $giftKey));
+        } catch (\Throwable $e) {
+            return app('json')->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * 按礼物令牌获取礼品详情（小程序码 scene 仅含 token）
+     * @param string $key
+     * @return mixed
+     */
+    public function giftByKey($key)
+    {
+        $giftKey = (string)$key;
+        if ($giftKey === '') {
+            return app('json')->fail('缺少参数');
+        }
+        try {
+            $orderCenterServices = app()->make(OrderCenterUserServices::class);
+            return app('json')->success($orderCenterServices->giftDetailByKey($giftKey));
+        } catch (\Throwable $e) {
+            return app('json')->fail($e->getMessage());
+        }
     }
 
     /**

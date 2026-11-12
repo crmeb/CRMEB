@@ -14,11 +14,7 @@ namespace app\jobs;
 
 use app\dao\order\OrderCenterDao;
 use app\services\order\OrderCenterServices;
-use app\services\order\OrderLifecycleServices;
-use app\services\pay\PayRecordServices;
 use crmeb\basic\BaseJobs;
-use crmeb\trade\order\type\OrderTypeAdapterInterface;
-use crmeb\trade\order\type\OrderTypeRegistry;
 use think\facade\Log;
 use think\facade\Env;
 
@@ -80,57 +76,20 @@ class UnpaidOrderCancelJob extends BaseJobs
     }
 
     /**
-     * 处理中台架构订单的自动取消（所有产品类型统一）
-     * 统一两步：
-     * 1. OrderTypeAdapter::advance 推进扩展表状态 + onEnter 回调 + 中台状态同步
-     * 2. OrderLifecycleServices::handleCancel 返还积分/优惠券、回滚库存、写日志
+     * 到期后交给中台的同一次未支付取消。
      * @param array $orderInfo 订单中台记录
      * @return bool
      */
     protected function handleCenterOrder(array $orderInfo): bool
     {
-        $orderNo = $orderInfo['order_no'] ?? '';
-        $statusCode = $orderInfo['status_code'] ?? '';
-        $payStatus = (int)($orderInfo['pay_status'] ?? 0);
-        $sourceType = $orderInfo['source_type'] ?? '';
-
-        // 已支付、已取消、已退款的无待处理
-        if ($payStatus !== 0 || $statusCode === 'canceled' || $statusCode === 'refunded') {
-            return true;
-        }
-        if (empty($orderNo) || empty($sourceType)) {
+        $orderNo = (string)($orderInfo['order_no'] ?? '');
+        if ($orderNo === '') {
             return true;
         }
 
         try {
-            app()->make(PayRecordServices::class)->closeBeforeCancel($orderNo);
-            return app()->make(OrderCenterServices::class)->transaction(function () use ($orderNo, $sourceType, $orderInfo) {
-            $locked = app()->make(OrderCenterDao::class)->getByIdForUpdate((int)$orderInfo['id']);
-            if (!$locked || (int)$locked['pay_status'] !== 0 || in_array($locked['status_code'], ['canceled', 'deleted', 'refunded'], true)) return true;
-            $orderInfo = $locked->toArray();
-            // 通过订单类型注册器获取适配器，统一推进至已取消状态
-            /** @var OrderTypeRegistry $registry */
-            $registry = app()->make(OrderTypeRegistry::class);
-            /** @var OrderTypeAdapterInterface $adapter */
-            $adapter = $registry->getAdapter($sourceType);
-
-            // 1. advance 一步完成：扩展表状态推进 + onEnter 回调 + 中台 status_code 同步
-            if ($adapter->advance($orderNo, OrderTypeAdapterInterface::EXT_STATUS_CANCELED) === false) {
-                throw new \RuntimeException('扩展订单取消失败');
-            }
-
-            // 2. 补写中台 cancel_time（advance 内部只同步 status_code）
-            app()->make(OrderCenterServices::class)->syncStatus(
-                $orderNo,
-                OrderTypeAdapterInterface::STATUS_CANCELED,
-                ['cancel_time' => time()]
-            );
-
-            // 3. 通用生命周期处理：返还积分/优惠券、回滚库存、写日志
-            app()->make(OrderLifecycleServices::class)->handleCancel($orderInfo);
-
+            app()->make(OrderCenterServices::class)->cancelUnpaidOrder($orderNo, 0, 'system');
             return true;
-            });
         } catch (\Throwable $e) {
             Log::error('[UnpaidOrderCancelJob] 中台订单自动取消失败, order_no=' . $orderNo . ', 原因:' . $e->getMessage());
             return false;

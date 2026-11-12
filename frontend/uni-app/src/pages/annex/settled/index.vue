@@ -230,7 +230,7 @@
 	import {
 		useColorTheme
 	} from '@/composables/useColorTheme';
-	import Verify from '../components/verify/verify.vue';
+	import Verify from '@/components/Verify/index.vue';
 	import {
 		useSendVerifyCode
 	} from '@/composables/useSendVerifyCode';

@@ -64,7 +64,7 @@ CRMEB 开源版（KY）移动端，基于 **uni-app（Vue 3 + `<script setup>`�
 - **原理**：本版本 uni 编译器（`@dcloudio` 3.0.0-5020420260813003）没有官方目录注册机制，`src/pages.json` 是路由唯一输入。工程在 `vite.config.js` 里调用 `scripts/uni-auto-subpackages.mjs`，对"读取 src/pages.json"做路径级 `fs.readFileSync` 拦截，把 `pages-modules/` 扫描出的分包条目**在内存中 append-only 合并**进返回文本——磁盘上的 `pages.json` 保持字节不变（255 处注释与 `// #ifdef` 块全部保留）。uni 官方在 `@dcloudio/vite-plugin-uni` 内部用同样手法拦截 scss 读取（`rewriteScssReadFileSync`）。
 - **约定**：`src/pages-modules/<snake_case 模块名>/` = 一个独立分包，root 为 `pages-modules/<模块名>`；模块内 `.vue` 自动注册为页面（路径 = 去扩展名的相对路径，如 `/pages-modules/lottery/index`），排除 `components/`、`component/`、`static/` 角色目录与 `_` 前缀文件/目录（`_template/` 模板因此永不参与编译）。页面目录同样遵守 snake_case + `index.vue`（`lint:naming` 已覆盖本目录并强制页面入口唯一形态）。**模块目录名即插件标识**（与后端 `modules/<标识>`、自有表前缀 `eb_{标识}_*` 对齐）；营销插件（秒杀等）命名细则与对照表见 `docs/命名规范.md` §2.1。
 - **片段模式**：模块根放自己的 `pages.json`（JSONC，`{ "pages": [{ "path", "style" }] }`）显式声明页面与标题/导航样式；提供后该模块不再自动扫描，完全按片段注册。
-- **跳转**：模块自带 `routes.js` 路由常量（参考 `_template/routes.js`），模块内外互跳各自引用常量、禁止硬编码路径，也不改系统 `dynamic-pages/api/routes.js`。
+- **跳转**：模块自带 `routes.js` 路由常量（参考 `_template/routes.js`），模块内外互跳引用该常量，也不改系统 `dynamic-pages/api/routes.js`。放入之后如何打开页面、如何写入装修链接，见 [.crmeb/skills/crmeb-plugin-dev/references/uniapp-pages.md](../skills/crmeb-plugin-dev/references/uniapp-pages.md)。
 - **边界**：只能新增分包页面；tabBar、easycom、globalStyle、preloadRule 等全局配置变更仍须改 `src/pages.json`。微信小程序单包 2MB / 总包 30MB 限制照常适用（每模块 = 一分包）。dev 长跑进程中 easycom 等次要消费点有一次缓存，极端情况重启 dev server；路由主链路与 build 产物不受影响（dev watch 下丢文件 15s 内自动重编，已实测）。
 - **回归口径**：`@dcloudio/*` 整组锁版升级后，须复验注入仍生效——`npm run build:mp-weixin` 后检查 `dist/build/mp-weixin/app.json` 的 subPackages 含 `pages-modules/*`。日常调试：`node scripts/uni-auto-subpackages.mjs [--print]`。
 
@@ -138,4 +138,4 @@ CRMEB 开源版（KY）移动端，基于 **uni-app（Vue 3 + `<script setup>`�
   - 模板静态资源根路径 `/pages/...` 在 CLI 下不可解析（vite root 为项目根），改用 `@/pages/...`；
   - rollup 严格校验命名导出：`libs/wechat.js`（纯 H5 模块）补非 H5 空默认导出、`api.js` 的 `switchH5Login` 补 `H5 || APP-PLUS` 分支；
   - `App.vue` 全局样式块需 `lang="scss"`（其中 `@import` 了含 SCSS 注释的 .scss 文件）。
-- 已知事项：微信主包体积实测 ~1.56MB（2026-08 `build:mp-weixin` 产物口径，主包 = 总量 − 各分包 root），未超 2MB 上限；此前「~3.2MB」记录疑为开发者工具统计口径差异，若上传报超限再专项优化——可优化点：主包页面（index/user 等）直接引用的 `components/` 组件、`dynamic-pages/` 全量、static 未瘦身（productSections 卡片已收敛至 diyComponents 分包）；CSS 中 `url(/pages/...)` 绝对路径与 p/img/span 标签选择器在小程序端的警告为存量问题。
+- 已知事项：微信主包体积实测 ~1.29MB（2026-11 `build:mp-weixin` 产物口径，主包 = 总量 − 各分包 root；此前 ~1.6MB，已裁剪 animate.css 为实际用到的 5 个动画、数字字体子集化为 Latin，全局样式/字体移至 `src/styles/` 避免 static 原样拷贝）。新增动画需从 animate.css 3.7.2 补对应 keyframes；字体需新字符时按原字体重新子集化。首页 `preloadRule` 预下载 `subpackage/diyComponents`。剩余可选优化：`dynamic-pages/` 中仅被 `pages/center` 使用的引擎与组件（约 220KB）仍在主包，`optimization.subPackages` 只下沉 JS 公共块、不移动组件文件，需搬目录才能下沉；CSS 中 `url(/pages/...)` 绝对路径与 p/img/span 标签选择器在小程序端的警告为存量问题。

@@ -659,6 +659,7 @@ CREATE TABLE IF NOT EXISTS `eb_notice_log` (
   `channel_name` varchar(100) DEFAULT '' COMMENT '渠道名称',
   `title` varchar(255) DEFAULT '' COMMENT '消息标题',
   `content` text COMMENT '消息内容',
+  `variables` json DEFAULT NULL COMMENT '原始业务变量（JSON，供失败重试）',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '发送状态（0待发送/1成功/2失败）',
   `error_msg` varchar(500) DEFAULT '' COMMENT '错误信息',
   `send_time` int unsigned NOT NULL DEFAULT '0' COMMENT '发送时间',
@@ -1577,8 +1578,8 @@ CREATE TABLE IF NOT EXISTS `eb_system_admin` (
 CREATE TABLE IF NOT EXISTS `eb_system_attachment` (
   `att_id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `name` varchar(100) NOT NULL DEFAULT '' COMMENT '附件名称',
-  `att_dir` varchar(200) NOT NULL DEFAULT '' COMMENT '附件路径',
-  `satt_dir` varchar(200) NOT NULL DEFAULT '' COMMENT '压缩图片路径',
+  `att_dir` varchar(500) NOT NULL DEFAULT '' COMMENT '附件路径',
+  `satt_dir` varchar(500) NOT NULL DEFAULT '' COMMENT '压缩图片路径',
   `att_size` char(30) NOT NULL DEFAULT '' COMMENT '附件大小',
   `att_type` char(30) NOT NULL DEFAULT '' COMMENT '附件类型',
   `pid` int NOT NULL DEFAULT '0' COMMENT '分类ID0编辑器,1商品图片,2拼团图片,3砍价图片,4秒杀图片,5文章图片,6组合数据图',

@@ -327,10 +327,14 @@ class PublicController
         if ($domainArr && (($imageUrl && !in_array($imageUrlHost, $domainArr)) || ($codeUrl && !in_array($codeUrlHost, $domainArr)))) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
-        if ($imageUrl !== '' && !preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $imageUrl) && strpos(strtolower($imageUrl), "phar://") !== false) {
+        // 正向校验（安全审计 E2）：拒绝危险 stream wrapper（phar/zip/data/file 等）+ 图片后缀白名单，
+        // 相对路径与 http/https 均兼容
+        if ($imageUrl !== '' && (in_array(strtolower((string)parse_url($imageUrl, PHP_URL_SCHEME)), ['phar', 'zip', 'data', 'file', 'ftp', 'php'], true)
+            || !preg_match('/\.(png|jpg|jpeg|gif)$/i', $imageUrl))) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
-        if ($codeUrl !== '' && !(preg_match('/.*(\.png|\.jpg|\.jpeg|\.gif)$/', $codeUrl) || strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') !== false) && strpos(strtolower($codeUrl), "phar://") !== false) {
+        if ($codeUrl !== '' && !(preg_match('/\.(png|jpg|jpeg|gif)$/i', $codeUrl)
+            || strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') === 0)) {
             return app('json')->success(['code' => false, 'image' => false]);
         }
         try {
@@ -772,25 +776,6 @@ class PublicController
     }
 
     /**
-     * 小程序跳转链接接口
-     * @param $id
-     * @author wuhaotian
-     * @email 442384644@qq.com
-     * @date 2024/2/26
-     */
-    public function getSchemeUrl($id)
-    {
-        //通过事件代理查询小程序方案URL，避免 app 层直接引用 modules
-        $results = event('ChannelServiceProxy', ['endpoint' => 'wechat_mini', 'service' => 'RoutineSchemeServices', 'action' => 'value', 'args' => [$id, 'url']]);
-        $url = proxy_event_result($results, '');
-        if ($url) {
-            echo '<script>window.location.href="' . $url . '";</script>';
-        } else {
-            echo '<h1>未找到跳转路径</h1>';
-        }
-    }
-
-    /**
      * 微信服务商支付
      * @param Request $request
      * @return \think\Response
@@ -808,6 +793,13 @@ class PublicController
             ['out_trade_no', ''],
             ['check_code', ''],
         ], true);
+        // 免登录协议接口无法强鉴权，以限流防 out_trade_no 批量枚举（安全审计 B2）
+        $rateKey = 'spr_' . md5($request->ip() . '|' . $out_trade_no);
+        $rateNum = (int)CacheService::get($rateKey, 0);
+        if ($rateNum >= 30) {
+            throw new ApiException('请求过于频繁，请稍后再试');
+        }
+        CacheService::set($rateKey, $rateNum + 1, 60);
         $data['site_name'] = sys_config('site_name'); //网站名称
         $data['site_url'] = sys_config('site_url'); //网站地址
         $data['site_logo'] = sys_config('wap_login_logo'); //移动端登录logo

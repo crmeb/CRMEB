@@ -321,7 +321,8 @@ class Notice
                 $target['channel_key'],
                 $target['channel_name'],
                 $title,
-                $content
+                $content,
+                is_array($message->variables) ? $message->variables : []
             );
             if ($ok) {
                 $this->logServices()->logSuccess($logId);

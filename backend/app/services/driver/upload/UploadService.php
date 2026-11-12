@@ -214,17 +214,8 @@ class UploadService
             $config[$fieldName] = $field['value'] ?? '';
         }
 
-        // 映射带前缀的字段名：plugin.json 中可能定义了 {driverKey}_accessKey 等，
-        // 但驱动 initialize() 期望 accessKey（无前缀）
-        $prefix = $driverKey . '_';
-        foreach ($config as $key => $value) {
-            if (strpos($key, $prefix) === 0) {
-                $unprefixed = substr($key, strlen($prefix));
-                if (!isset($config[$unprefixed])) {
-                    $config[$unprefixed] = $value;
-                }
-            }
-        }
+        // 映射带前缀的字段名：plugin.json 中可能是 {driverKey}_accessKey 或历史厂商前缀
+        $config = $driverServices->normalizeDriverConfig($driverKey, $config);
 
         /** @var UploadStorageServices $storageServices */
         $storageServices = app()->make(UploadStorageServices::class);

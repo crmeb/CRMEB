@@ -31,17 +31,4 @@ class PayRecordDao extends BaseDao
         return $this->getModel()->where('order_no', $orderNo)->lock($lock)->find();
     }
 
-    /**
-     * 读取待恢复支付记录。
-     * @param int $limit 批量上限
-     * @return array
-     */
-    public function recoverable(int $limit = 100): array
-    {
-        return $this->getModel()->where('is_del', 0)->where(function ($query) {
-            $query->whereIn('state', ['prepared', 'creating', 'closing', 'received', 'compensating'])
-                ->whereOr('effects_state', 'pending')->whereOr('refund_state', 'PENDING')->whereOr('refund_state', 'SUBMITTING')
-                ->whereOr('refund_state', 'PROCESSING')->whereOr('refund_state', 'UNKNOWN');
-        })->field('order_no')->order('last_check_time asc,id asc')->limit($limit)->column('order_no');
-    }
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace crmeb\trade\order\aftersale;
 
+use crmeb\trade\mode\TradeModeRegistry;
 use crmeb\trade\product\ProductTypeRegistry;
 
 /**
@@ -57,11 +58,9 @@ abstract class BaseAfterSaleHandler implements AfterSaleHandlerInterface
         /** @var ProductTypeRegistry $registry */
         $registry = app()->make(ProductTypeRegistry::class);
         $handler = $registry->get((string)($afterSale['product_type'] ?? 'normal'));
-        $extraInfo = $order['extra_info'] ?? [];
-        if (is_string($extraInfo)) {
-            $extraInfo = json_decode($extraInfo, true) ?: [];
-        }
-        $activityInfo = is_array($extraInfo) ? (array)($extraInfo['activity_info'] ?? []) : [];
+        /** @var TradeModeRegistry $tradeModeRegistry */
+        $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+        [$resolvedType, $resolvedId] = $tradeModeRegistry->resolveOrderActivity($order);
 
         foreach ($items as $item) {
             $num = (int)($item['refund_num'] ?? 0);
@@ -76,8 +75,12 @@ abstract class BaseAfterSaleHandler implements AfterSaleHandlerInterface
                 'refund_num' => $num,
             ];
             $activityType = (string)($item['activity_type'] ?? $afterSale['activity_type'] ?? '');
+            if ($activityType === '' || $activityType === 'normal') {
+                $activityType = $resolvedType;
+            }
             if ($activityType !== '' && $activityType !== 'normal') {
-                $this->applyActivityInventoryEffect($effects, $activityType, $effectKey, $payload, $activityInfo);
+                $activityId = $activityType === $resolvedType ? $resolvedId : 0;
+                $this->applyActivityInventoryEffect($effects, $tradeModeRegistry, $activityType, $activityId, $effectKey, $payload);
             } else {
                 $effects->once('product_inventory_restore', $effectKey, $payload, function () use ($handler, $payload): void {
                     $restored = $handler->incStock($payload['product_id'], $payload['sku_unique'], $payload['refund_num']);
@@ -90,37 +93,38 @@ abstract class BaseAfterSaleHandler implements AfterSaleHandlerInterface
     }
 
     /**
-     * 兼容现有交易活动库存。新活动类型应在自己的产品售后处理器中覆写 applyRefundEffects()。
+     * 按交易模式回退本次售后的活动库存
+     * @param RefundEffectContextInterface $effects 效果上下文
+     * @param TradeModeRegistry $tradeModeRegistry 交易模式注册中心
+     * @param string $activityType 活动类型
+     * @param int $activityId 活动ID
+     * @param string $effectKey 效果去重键
+     * @param array $payload 商品、SKU、数量
+     * @return void
      */
     protected function applyActivityInventoryEffect(
         RefundEffectContextInterface $effects,
+        TradeModeRegistry $tradeModeRegistry,
         string $activityType,
+        int $activityId,
         string $effectKey,
-        array $payload,
-        array $activityInfo
+        array $payload
     ): void {
-        $definitions = [
-            'combination' => ['id_key' => 'combination_id', 'action' => 'incCombinationStock'],
-            'seckill' => ['id_key' => 'seckill_id', 'action' => 'incSeckillStock'],
-            'bargain' => ['id_key' => 'bargain_id', 'action' => 'incBargainStock'],
-        ];
-        if (!isset($definitions[$activityType])) {
-            throw new \RuntimeException("活动类型 {$activityType} 未定义退款库存效果，请由产品售后处理器实现");
+        if (!$tradeModeRegistry->has($activityType)) {
+            throw new \RuntimeException("活动类型 {$activityType} 未注册，无法恢复活动库存");
         }
-        $definition = $definitions[$activityType];
-        $activityId = (int)($activityInfo[$definition['id_key']] ?? 0);
         if ($activityId <= 0) {
             throw new \RuntimeException("活动类型 {$activityType} 缺少退款所需活动快照");
         }
         $payload['activity_type'] = $activityType;
         $payload['activity_id'] = $activityId;
-        $effects->once('activity_inventory_restore', $activityType . ':' . $effectKey, $payload, function () use ($definition, $payload): void {
-            $results = event('ActivityDataProxy', [
-                'mode' => $payload['activity_type'],
-                'action' => $definition['action'],
-                'args' => [$payload['refund_num'], $payload['activity_id'], $payload['sku_unique']],
-            ]);
-            if (!proxy_event_result($results, false)) {
+        $effects->once('activity_inventory_restore', $activityType . ':' . $effectKey, $payload, function () use ($tradeModeRegistry, $payload): void {
+            $restored = $tradeModeRegistry->get($payload['activity_type'])->incStock(
+                (int)$payload['refund_num'],
+                (int)$payload['activity_id'],
+                (string)$payload['sku_unique']
+            );
+            if (!$restored) {
                 throw new \RuntimeException('活动库存恢复失败');
             }
         });

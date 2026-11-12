@@ -131,11 +131,20 @@ export function orderDel(uni) {
 }
 
 /**
- * 礼品订单详情
- * @param string uni 
+ * 礼品订单详情（须 gift_key，防仅凭 oid 枚举）
+ * @param {string|number} id 订单中台 ID
+ * @param {string} giftKey 礼物领取令牌
  */
-export function getGiftOrderDetail(id) {
-	return request.get('order/gift_detail/' + id);
+export function getGiftOrderDetail(id, giftKey) {
+	return request.get('order/gift_detail/' + id, { gift_key: giftKey || '' });
+}
+
+/**
+ * 按礼物令牌获取礼品详情（小程序码 scene 仅含 token）
+ * @param {string} giftKey
+ */
+export function getGiftOrderByKey(giftKey) {
+	return request.get('order/gift_by_key/' + giftKey);
 }
 /**
  * 订单详情（兼容旧调用：已迁移至中台 center/order/detail）

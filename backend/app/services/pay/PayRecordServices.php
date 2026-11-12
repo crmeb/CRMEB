@@ -5,6 +5,7 @@ namespace app\services\pay;
 
 use app\dao\pay\PayRecordDao;
 use app\dao\order\OrderCenterDao;
+use app\dao\user\UserDao;
 use app\dao\user\UserRechargeDao;
 use app\dao\user\MemberOrderDao;
 use app\dao\user\OfflineReceiptDao;
@@ -12,12 +13,11 @@ use app\services\statistic\CapitalFlowServices;
 use app\services\user\UserMoneyServices;
 use app\services\user\UserServices;
 use crmeb\basic\BaseService;
-use crmeb\services\pay\PaymentDispatch;
 use crmeb\exceptions\PayException;
 use think\facade\Log;
 
 /**
- * 原支付合同、成功事务及可恢复后置任务。
+ * 一笔订单的支付合同：拉起前记下渠道和金额，通知到来时核对，退款只提交一次。
  */
 class PayRecordServices extends BaseService
 {
@@ -55,6 +55,7 @@ class PayRecordServices extends BaseService
      */
     public function prepare(string $orderNo, string $kind, string $amount, array $context): void
     {
+        $this->releaseStaleLock($orderNo);
         $this->transaction(function () use ($orderNo, $kind, $amount, $context) {
             $order = $this->source($kind, $orderNo, true);
             $sourceAmount = (string)($order[$kind === 'user_recharge' ? 'price' : ($kind === 'offline_scan' ? 'paid_price' : 'pay_price')] ?? '0');
@@ -185,41 +186,48 @@ class PayRecordServices extends BaseService
     }
 
     /**
-     * 在源订单锁和事务内完成关键支付效果，将后置任务可靠写入记录。
+     * 有微信流水时把合同标成已完成，不写后置任务。
      * @param string $orderNo 订单号
-     * @param string $kind 业务类型
      * @param string $tradeNo 微信流水
-     * @param callable $callback 关键业务处理
-     * @return bool
+     * @return void
      */
-    public function complete(string $orderNo, string $kind, string $tradeNo, callable $callback): bool
+    public function markCompleted(string $orderNo, string $tradeNo): void
     {
-        $result = PaymentDispatch::collect(function () use ($orderNo, $kind, $tradeNo, $callback) {
-            return $this->transaction(function () use ($orderNo, $kind, $tradeNo, $callback) {
-                $order = $this->source($kind, $orderNo, true);
-                $record = $this->dao->byOrder($orderNo, true);
-                if ($record && !empty($record['transaction_id']) && $record['transaction_id'] !== $tradeNo) {
-                    throw new PayException('支付流水与原订单不一致');
-                }
-                if (!$callback($order)) throw new PayException('支付业务处理失败');
-                $record = $this->dao->byOrder($orderNo, true);
-                if ($record && in_array($record['state'], ['completed', 'compensating', 'compensated'], true)) return true;
-                if ($record) {
-                    $context = $record['context'];
-                    $context['transaction_id'] = $tradeNo;
-                    $record->save(['state' => 'completed', 'transaction_id' => $tradeNo, 'context' => $context,
-                        'effects' => PaymentDispatch::tasks(), 'effects_state' => 'pending', 'update_time' => time()]);
-                } elseif (PaymentDispatch::tasks()) {
-                    $this->dao->save(['order_no' => $orderNo, 'business_type' => $kind, 'state' => 'completed',
-                        'transaction_id' => $tradeNo, 'effects' => PaymentDispatch::tasks(), 'effects_state' => 'pending',
-                        'add_time' => time(), 'update_time' => time()]);
-                }
-                return true;
-            });
-        });
-        $this->runEffects($orderNo);
-        $this->processRefund($orderNo);
-        return $result;
+        $record = $this->dao->byOrder($orderNo, true);
+        if (!$record || $tradeNo === '') {
+            return;
+        }
+        if ((string)$record['transaction_id'] !== '' && $record['transaction_id'] !== $tradeNo) {
+            throw new PayException('支付流水与原订单不一致');
+        }
+        $context = is_array($record['context']) ? $record['context'] : [];
+        $context['transaction_id'] = $tradeNo;
+        $record->save([
+            'state' => 'completed',
+            'transaction_id' => $tradeNo,
+            'context' => $context,
+            'effects' => [],
+            'effects_state' => '',
+            'update_time' => time(),
+        ]);
+    }
+
+    /**
+     * 下单或关单写到一半时，超过 5 分钟改回可继续；没超过就拒绝。
+     * @param string $orderNo 订单号
+     * @return void
+     */
+    public function releaseStaleLock(string $orderNo): void
+    {
+        $record = $this->find($orderNo);
+        if (!in_array($record['state'] ?? '', ['creating', 'closing'], true)) {
+            return;
+        }
+        if ($this->recordTimestamp($record) > time() - 300) {
+            throw new PayException('订单正在处理支付结果，请稍后重试');
+        }
+        $this->dao->getDb()->where('order_no', $orderNo)->where('state', $record['state'])
+            ->update(['state' => 'prepared', 'update_time' => time()]);
     }
 
     /**
@@ -228,16 +236,114 @@ class PayRecordServices extends BaseService
      * @param string $tradeNo 微信流水
      * @return bool
      */
-    public function compensateCanceled(string $orderNo, string $tradeNo): bool
+    public function compensateCanceled(string $orderNo, string $tradeNo, array $notice = []): bool
     {
         $record = $this->dao->byOrder($orderNo, true);
-        if (!$record || empty($record['context'])) throw new PayException('历史取消订单缺少原支付合同，需人工核对退款');
-        if (in_array($record['state'], ['compensating', 'compensated'], true)) return true;
-        $context = $record['context'];
+        if ($record && in_array($record['state'], ['compensating', 'compensated'], true)) return true;
+        $amount = $this->noticeAmount($notice, $record ? (string)$record['amount'] : '0.00');
+        $context = ($record && is_array($record['context']) && $record['context']) ? $record['context'] : [
+            'channel_key' => (string)($notice['pay_type'] ?? 'weixin'),
+            'mch_id' => (string)($notice['mchid'] ?? ''),
+            'sub_mch_id' => (string)($notice['sub_mchid'] ?? ''),
+            'app_id' => (string)($notice['appid'] ?? ''),
+        ];
         $context['transaction_id'] = $tradeNo;
-        $record->save(['state' => 'compensating', 'context' => $context, 'transaction_id' => $tradeNo,
-            'refund_state' => 'PENDING', 'refund' => ['refund_no' => 'tk' . substr(hash('sha256', $orderNo), 0, 28),
-                'amount' => $record['amount'], 'kind' => 'canceled', 'submitted_at' => 0], 'update_time' => time()]);
+        $refund = ['refund_no' => 'tk' . substr(hash('sha256', $orderNo), 0, 28),
+            'amount' => $amount, 'kind' => 'canceled', 'submitted_at' => 0];
+        $data = ['state' => 'compensating', 'context' => $context, 'transaction_id' => $tradeNo,
+            'channel_key' => (string)($context['channel_key'] ?? 'weixin'),
+            'amount' => $amount, 'refund_state' => 'PENDING', 'refund' => $refund, 'update_time' => time()];
+        if ($record) {
+            $record->save($data);
+            return true;
+        }
+        $data['order_no'] = $orderNo;
+        $data['business_type'] = 'product';
+        $data['add_time'] = time();
+        $this->dao->save($data);
+        return true;
+    }
+
+    /**
+     * 从通知金额或原记录取出待退金额。
+     * @param array $notice 支付通知
+     * @param string $fallback 原记录金额
+     * @return string
+     */
+    protected function noticeAmount(array $notice, string $fallback): string
+    {
+        $total = $notice['amount']['total'] ?? null;
+        if (is_int($total) && $total > 0) {
+            return bcdiv((string)$total, '100', 2);
+        }
+        return $fallback !== '' ? $fallback : '0.00';
+    }
+
+    /**
+     * 支付记录上的更新时间。模型可能把整型时间读成日期字符串。
+     * @param array $record 支付记录
+     * @return int
+     */
+    protected function recordTimestamp(array $record): int
+    {
+        $updated = $record['update_time'] ?? 0;
+        if (is_numeric($updated)) {
+            return (int)$updated;
+        }
+        $parsed = strtotime((string)$updated);
+        return $parsed === false ? 0 : $parsed;
+    }
+
+    /**
+     * 已取消但仍收款、且还没点过退款的记录，不由定时任务自动原路退。
+     * @param array $record 支付记录
+     * @return bool
+     */
+    public function deferCanceledRefund(array $record): bool
+    {
+        $refund = is_array($record['refund'] ?? null) ? $record['refund'] : [];
+        return ($record['state'] ?? '') === 'compensating'
+            && ($refund['kind'] ?? '') === 'canceled'
+            && ($record['refund_state'] ?? '') === 'PENDING';
+    }
+
+    /**
+     * 列出仍等待管理端点一次原路退款的订单号。
+     * @param array $orderNos 订单号
+     * @return array<string, int>
+     */
+    public function pendingCanceledRefundMap(array $orderNos): array
+    {
+        $orderNos = array_values(array_unique(array_filter($orderNos)));
+        if (!$orderNos) {
+            return [];
+        }
+        $rows = $this->dao->getDb()->whereIn('order_no', $orderNos)
+            ->where('state', 'compensating')
+            ->where('refund_state', 'PENDING')
+            ->field('order_no,state,refund_state,refund')
+            ->select();
+        $map = [];
+        foreach ($rows as $row) {
+            $data = is_array($row) ? $row : $row->toArray();
+            if ($this->deferCanceledRefund($data)) {
+                $map[(string)$data['order_no']] = 1;
+            }
+        }
+        return $map;
+    }
+
+    public function submitCanceledRefund(string $orderNo): bool
+    {
+        $record = $this->find($orderNo);
+        $refund = is_array($record['refund'] ?? null) ? $record['refund'] : [];
+        if (!$record || $record['state'] !== 'compensating' || ($refund['kind'] ?? '') !== 'canceled') {
+            throw new PayException('没有待退的取消收款');
+        }
+        if (!in_array($record['refund_state'], ['PENDING', 'SUBMITTING'], true)) {
+            return true;
+        }
+        $this->submitRefundOnce($orderNo);
         return true;
     }
 
@@ -245,194 +351,193 @@ class PayRecordServices extends BaseService
      * 充值退款先在事务内冻结余额，避免退款过程中余额再次消费。
      * @param int $id 充值记录ID
      * @param bool $deductGift 是否同时扣赠送余额
+     * @param bool $allowShortfall 余额不足时仍继续退款，只扣光当前余额
      * @return bool
      */
-    public function refundRecharge(int $id, bool $deductGift): bool
+    public function refundRecharge(int $id, bool $deductGift, bool $allowShortfall = false): bool
     {
         $orderNo = (string)app()->make(UserRechargeDao::class)->value(['id' => $id], 'order_id');
         if (!$orderNo) throw new PayException('充值记录不存在');
-        PaymentDispatch::collect(function () use ($orderNo, $deductGift, $id) {
-            $this->transaction(function () use ($orderNo, $deductGift, $id) {
-                $order = $this->source('user_recharge', $orderNo, true);
-                if (!(int)$order['paid']) throw new PayException('订单未支付');
-                if ($order['recharge_type'] === 'balance') throw new PayException('佣金转入余额不能原路退款');
-                if (bccomp((string)$order['refund_price'], (string)$order['price'], 2) >= 0) throw new PayException('充值已退款');
-                $record = $this->dao->byOrder($orderNo, true);
-                if ($record && $record['refund_state'] !== '') return;
-                $number = $deductGift ? bcadd((string)$order['price'], (string)$order['give_price'], 2) : (string)$order['price'];
-                // 不允许先退本金再让余额形成无法追偿的缺口；不足时由财务人工处理。
+        $this->transaction(function () use ($orderNo, $deductGift, $allowShortfall, $id) {
+            $order = $this->source('user_recharge', $orderNo, true);
+            if (!(int)$order['paid']) throw new PayException('订单未支付');
+            if ($order['recharge_type'] === 'balance') throw new PayException('佣金转入余额不能原路退款');
+            if (bccomp((string)$order['refund_price'], (string)$order['price'], 2) >= 0) throw new PayException('充值已退款');
+            $record = $this->dao->byOrder($orderNo, true);
+            if ($record && $record['refund_state'] !== '') return;
+            $number = $deductGift ? bcadd((string)$order['price'], (string)$order['give_price'], 2) : (string)$order['price'];
+            if ($allowShortfall) {
+                $lockedUser = app()->make(UserDao::class)->getDb()->where('uid', (int)$order['uid'])->lock(true)->field('uid,now_money')->find();
+                if (!$lockedUser) throw new PayException('用户不存在');
+                $balance = (string)$lockedUser['now_money'];
+                if (bccomp($balance, $number, 2) < 0) {
+                    $number = bccomp($balance, '0', 2) > 0 ? $balance : '0';
+                }
+            }
+            $debited = false;
+            if (bccomp($number, '0', 2) > 0) {
+                // 未允许缺口时，余额不足会在扣款处中断，避免先退本金再留下无法追偿的差额。
                 app()->make(UserMoneyServices::class)->moneyIncome('user_recharge_refund',
                     (int)$order['uid'], $number, $id);
-                $refund = ['refund_no' => 'tk' . substr(hash('sha256', 'recharge:' . $orderNo), 0, 28),
-                    'amount' => $order['price'], 'number' => $number, 'kind' => 'recharge', 'uid' => $order['uid'],
-                    'source_id' => $id, 'submitted_at' => 0, 'debited' => true];
-                $data = ['refund' => $refund, 'refund_state' => 'PENDING', 'update_time' => time()];
-                if ($record) {
-                    $record->save($data);
-                } else {
-                    $this->dao->save($data + ['order_no' => $orderNo, 'business_type' => 'user_recharge',
-                        'channel_key' => $order['recharge_type'], 'amount' => $order['price'], 'transaction_id' => $order['trade_no'],
-                        'state' => 'completed', 'add_time' => time()]);
-                }
-                if (PaymentDispatch::tasks()) {
-                    $current = $this->dao->byOrder($orderNo, true);
-                    $current->save(['effects' => array_merge($current['effects'] ?? [], PaymentDispatch::tasks()), 'effects_state' => 'pending']);
-                }
-            });
+                $debited = true;
+            }
+            $refund = ['refund_no' => 'tk' . substr(hash('sha256', 'recharge:' . $orderNo), 0, 28),
+                'amount' => $order['price'], 'number' => $number, 'kind' => 'recharge', 'uid' => $order['uid'],
+                'source_id' => $id, 'submitted_at' => 0, 'debited' => $debited];
+            $data = ['refund' => $refund, 'refund_state' => 'PENDING', 'update_time' => time()];
+            if ($record) {
+                $record->save($data);
+            } else {
+                $this->dao->save($data + ['order_no' => $orderNo, 'business_type' => 'user_recharge',
+                    'channel_key' => $order['recharge_type'], 'amount' => $order['price'], 'transaction_id' => $order['trade_no'],
+                    'state' => 'completed', 'add_time' => time()]);
+            }
         });
-        $this->runEffects($orderNo);
-        $this->processRefund($orderNo);
+        $this->submitRefundOnce($orderNo);
         return true;
     }
 
     /**
-     * 接收驱动查验签名结果后的 V2 退款通知，充值和取消补偿立即完成而不等待查询租约。
-     * @param array $notify 已核验退款通知
-     * @param string $payChannel 可信驱动渠道
+     * 用原退款号向微信提交一次。当场成功或失败就写本地，其余等退款通知。
+     * @param string $orderNo 原订单号
+     * @return void
+     */
+    public function submitRefundOnce(string $orderNo): void
+    {
+        $record = $this->find($orderNo);
+        if (!in_array($record['refund_state'] ?? '', ['PENDING', 'SUBMITTING'], true)) {
+            return;
+        }
+        if ($record['refund_state'] === 'PENDING') {
+            $changed = $this->dao->getDb()->where('order_no', $orderNo)->where('refund_state', 'PENDING')
+                ->update(['refund_state' => 'SUBMITTING', 'update_time' => time()]);
+            if (!$changed) {
+                return;
+            }
+        }
+        $refund = $record['refund'];
+        $result = app()->make(PayServices::class)->submitRefund(
+            $record['channel_key'],
+            $orderNo,
+            $refund['refund_no'],
+            (string)$refund['amount'],
+            (string)$record['amount'],
+            ['extra_info' => ['payment' => $record['context'] ?? []], 'trade_no' => $record['transaction_id']]
+        );
+        if (!in_array($result['status'], [PayServices::REFUND_SUCCESS, PayServices::REFUND_FAILED], true)) {
+            return;
+        }
+        $this->transaction(function () use ($orderNo, $result) {
+            $snapshot = $this->find($orderNo);
+            $this->source($snapshot['business_type'], $orderNo, true);
+            $locked = $this->dao->byOrder($orderNo, true);
+            $this->finishRefund($locked, $result['status'], (string)($result['channel_refund_id'] ?? ''));
+        });
+        if ($result['status'] === PayServices::REFUND_FAILED) {
+            throw new PayException($result['message'] !== '' ? $result['message'] : '原路退款失败');
+        }
+    }
+
+    /**
+     * 退款通知核对后退款号、流水和金额，再写本地结果。不一致则抛错，通知按失败返回。
+     * @param string $orderNo 原订单号
+     * @param array $notify 已验签的退款通知
+     * @param string $payChannel 通知渠道
      * @return bool 本地完成才确认通知
      */
-    public function handleWechatRefundNotify(array $notify, string $payChannel): bool
+    public function applyRefundNotify(string $orderNo, array $notify, string $payChannel): bool
     {
         try {
-            $orderNo = (string)($notify['out_trade_no'] ?? '');
             $this->transaction(function () use ($orderNo, $notify, $payChannel): void {
                 $snapshot = $this->find($orderNo);
-                if (!$snapshot) throw new PayException('退款通知缺少原支付合同');
+                if (!$snapshot) {
+                    throw new PayException('退款通知缺少原支付合同');
+                }
                 $this->source($snapshot['business_type'], $orderNo, true);
                 $record = $this->dao->byOrder($orderNo, true);
-                $context = $record['context'] ?? [];
-                $refund = $record['refund'] ?? [];
+                $context = is_array($record['context'] ?? null) ? $record['context'] : [];
+                $refund = is_array($record['refund'] ?? null) ? $record['refund'] : [];
                 $amount = $notify['amount'] ?? [];
+                foreach (['refund', 'total'] as $moneyKey) {
+                    if (is_string($amount[$moneyKey] ?? null) && preg_match('/^\d+$/D', $amount[$moneyKey])) {
+                        $amount[$moneyKey] = (int)$amount[$moneyKey];
+                    }
+                }
                 $notifyAppId = !empty($context['sub_mch_id']) ? ($notify['sub_appid'] ?? '') : ($notify['appid'] ?? '');
-                if ($payChannel !== PayServices::WEIXIN_PAY || $record['channel_key'] !== $payChannel
-                    || ($context['mode'] ?? '') !== 'v2' || ($notify['payment_mode'] ?? '') !== 'v2'
+                $mode = (string)($context['mode'] ?? '');
+                $v2 = $mode === 'v2' || ($notify['payment_mode'] ?? '') === 'v2';
+                if ($record['channel_key'] !== $payChannel
                     || ($notify['refund_status'] ?? '') !== 'SUCCESS' || empty($notify['refund_id'])
                     || empty($refund['refund_no']) || $refund['refund_no'] !== ($notify['out_refund_no'] ?? '')
                     || ($context['mch_id'] ?? '') !== ($notify['mchid'] ?? '')
                     || ($context['sub_mch_id'] ?? '') !== ($notify['sub_mchid'] ?? '')
-                    || ((empty($context['sub_mch_id']) || $notifyAppId !== '') && ($context['app_id'] ?? '') !== $notifyAppId)
-                    || empty($record['transaction_id']) || $record['transaction_id'] !== ($notify['transaction_id'] ?? '')
                     || (!empty($refund['channel_refund_id']) && $refund['channel_refund_id'] !== $notify['refund_id'])
                     || !is_int($amount['refund'] ?? null) || !is_int($amount['total'] ?? null)
                     || $amount['refund'] !== (int)bcmul((string)$refund['amount'], '100', 0)
-                    || $amount['total'] !== (int)bcmul((string)$record['amount'], '100', 0)) {
-                    throw new PayException('V2退款通知与支付合同、流水或金额不一致');
+                    || $amount['total'] !== (int)bcmul((string)$record['amount'], '100', 0)
+                    || ($v2 && ($payChannel !== PayServices::WEIXIN_PAY
+                        || ($notify['payment_mode'] ?? '') !== 'v2'
+                        || ((empty($context['sub_mch_id']) || $notifyAppId !== '') && ($context['app_id'] ?? '') !== $notifyAppId)
+                        || empty($record['transaction_id']) || $record['transaction_id'] !== ($notify['transaction_id'] ?? '')))) {
+                    throw new PayException('退款通知与支付合同、流水或金额不一致');
                 }
-                if (!empty($refund['applied'])) return;
-                $refund['channel_refund_id'] = $notify['refund_id'];
-                $record->save(['refund_state' => 'SUCCESS', 'refund' => $refund, 'update_time' => time()]);
+                $this->finishRefund($record, 'SUCCESS', (string)$notify['refund_id']);
             });
-            $this->processRefund($orderNo);
             return !empty($this->find($orderNo)['refund']['applied']);
         } catch (\Throwable $e) {
-            Log::error('[WechatV2Refund] 本地退款处理失败 type=' . get_class($e));
+            Log::error('[PayRefund] 退款通知未写入 type=' . get_class($e));
             return false;
         }
     }
 
     /**
-     * 提交或查询同一固定退款号，未知结果绝不换号重提。
-     * @param string $orderNo 原订单号
+     * 把渠道退款结果写入本地流水或取消补偿。调用时合同行已锁定。
+     * @param mixed $record 锁定的支付记录
+     * @param string $status 渠道结果
+     * @param string $channelRefundId 微信退款号
      * @return void
      */
-    public function processRefund(string $orderNo): void
+    protected function finishRefund($record, string $status, string $channelRefundId = ''): void
     {
-        $record = $this->find($orderNo);
-        if (!$record || !in_array($record['refund_state'], ['PENDING', 'SUBMITTING', 'UNKNOWN', 'PROCESSING', 'SUCCESS'], true)) return;
-        $refund = $record['refund'];
-        $pay = app()->make(PayServices::class);
-        $info = ['extra_info' => ['payment' => $record['context'] ?? []], 'trade_no' => $record['transaction_id']];
-        if ($record['refund_state'] === 'PENDING') {
-            $changed = $this->dao->getDb()->where('order_no', $orderNo)->where('refund_state', 'PENDING')
-                ->update(['refund_state' => 'SUBMITTING', 'update_time' => time()]);
-            if (!$changed) return;
-            $result = $pay->submitRefund($record['channel_key'], $orderNo, $refund['refund_no'],
-                (string)$refund['amount'], (string)$record['amount'], $info);
-        } elseif ($record['refund_state'] === 'SUCCESS') {
-            $result = ['status' => 'SUCCESS'];
-        } else {
-            if ($record['refund_state'] === 'SUBMITTING' && (int)$record['update_time'] > time() - 120) return;
-            $result = $pay->queryRefundStatus($record['channel_key'], $orderNo, $refund['refund_no'], ['order_info' => $info]);
+        $refund = is_array($record['refund'] ?? null) ? $record['refund'] : [];
+        if (!empty($refund['applied'])) {
+            return;
         }
-        // 对微信到账查询结果和本地余额/流水效果使用同一事务边界。
-        PaymentDispatch::collect(function () use ($orderNo, $result) {
-            $this->transaction(function () use ($orderNo, $result) {
-                $snapshot = $this->find($orderNo);
-                $this->source($snapshot['business_type'], $orderNo, true);
-                $record = $this->dao->byOrder($orderNo, true);
-                $refund = $record['refund'];
-                if (!empty($refund['applied'])) return;
-                $refund['status'] = $result['status'];
-                $refund['message'] = (string)($result['message'] ?? '');
-                $status = $result['status'];
-                // 先保留渠道成功信息，后续本地失败仍可查询同一退款恢复。
-                if ($status === 'SUCCESS') {
-                    if ($refund['kind'] === 'recharge') {
-                        $order = $this->source('user_recharge', $orderNo, true);
-                        app()->make(UserRechargeDao::class)->update($order['id'], ['refund_price' => $refund['amount']]);
-                        $user = app()->make(UserServices::class)->getUserInfo((int)$order['uid']);
-                        $order['nickname'] = $user['nickname'];
-                        $order['phone'] = $user['phone'];
-                        app()->make(CapitalFlowServices::class)->setFlow($order, 'refund_recharge');
-                        event('UserRechargeRefund', ['recharge_order_refund_status', ['uid' => $order['uid'],
-                            'amount' => $refund['amount'], 'order_id' => $orderNo, 'user_type' => $order['channel_type']]]);
-                        event('UserRechargeRefund', ['recharge_refund', ['uid' => $order['uid'], 'order_id' => $orderNo, 'price' => $refund['amount']]]);
-                    } else {
-                        app()->make(OrderCenterDao::class)->update(['order_no' => $orderNo], ['pay_status' => 3, 'refund_status' => 2]);
-                    }
-                    $refund['applied'] = true;
-                } elseif ($status === 'FAILED' && $refund['kind'] === 'recharge' && !empty($refund['debited'])) {
-                    app()->make(UserMoneyServices::class)->moneyIncome('user_recharge_refund_release',
-                        (int)$refund['uid'], (string)$refund['number'], $refund['source_id']);
-                    $refund['debited'] = false;
-                }
-                $effects = array_merge($record['effects'] ?? [], PaymentDispatch::tasks());
-                $record->save(['refund_state' => $status, 'refund' => $refund, 'effects' => $effects,
-                    'effects_state' => $effects ? 'pending' : ($record['effects_state'] ?? ''), 'update_time' => time(),
-                    'state' => $refund['kind'] === 'canceled' && !empty($refund['applied']) ? 'compensated' : $record['state']]);
-            });
-        });
-        $this->runEffects($orderNo);
-    }
-
-    /**
-     * 分批恢复漏单、崩溃后租约、退款及后置任务，只使用既有合同和退款号。
-     * @param int $limit 批量上限
-     * @return array 汇总，不包含凭证及个人信息
-     */
-    public function recover(int $limit = 100): array
-    {
-        $stats = ['checked' => 0, 'failed' => 0];
-        foreach ($this->dao->recoverable(max(1, min(100, $limit))) as $orderNo) {
-            ++$stats['checked'];
-            try {
-                $record = $this->find($orderNo);
-                // 微信请求超时上限远小于此租约；刚开始的下单/关单不可抢占。
-                if (in_array($record['state'], ['creating', 'closing'], true)) {
-                    if ((int)$record['update_time'] > time() - 300) continue;
-                    $this->dao->getDb()->where('order_no', $orderNo)->where('state', $record['state'])
-                        ->where('update_time', $record['update_time'])->update(['state' => 'prepared', 'update_time' => time()]);
-                }
-                if (in_array($record['state'], ['prepared', 'creating', 'closing', 'received'], true) && $record['context']) {
-                    $this->syncPayment($orderNo);
-                }
-                $this->processRefund($orderNo);
-                $this->runEffects($orderNo);
-                $latest = $this->find($orderNo);
-                if (($latest['effects_state'] ?? '') === 'pending' || ($latest['refund_state'] ?? '') === 'FAILED') ++$stats['failed'];
-            } catch (\Throwable $e) {
-                ++$stats['failed'];
-                Log::error('[PayRecord] 恢复待重试 order_no=' . $orderNo . ' type=' . get_class($e));
-            } finally {
-                // 更新检查时间，避免长期未付单占据批次头部饿死其他记录。
-                $this->dao->getDb()->where('order_no', $orderNo)->update(['last_check_time' => time()]);
+        $orderNo = (string)$record['order_no'];
+        $refund['status'] = $status;
+        if ($status === PayServices::REFUND_SUCCESS) {
+            if (($refund['kind'] ?? '') === 'recharge') {
+                $order = $this->source('user_recharge', $orderNo, true);
+                app()->make(UserRechargeDao::class)->update($order['id'], ['refund_price' => $refund['amount']]);
+                $user = app()->make(UserServices::class)->getUserInfo((int)$order['uid']);
+                $order['nickname'] = $user['nickname'];
+                $order['phone'] = $user['phone'];
+                app()->make(CapitalFlowServices::class)->setFlow($order, 'refund_recharge');
+                event('UserRechargeRefund', ['recharge_order_refund_status', ['uid' => $order['uid'],
+                    'amount' => $refund['amount'], 'order_id' => $orderNo, 'user_type' => $order['channel_type']]]);
+                event('UserRechargeRefund', ['recharge_refund', ['uid' => $order['uid'], 'order_id' => $orderNo, 'price' => $refund['amount']]]);
+            } else {
+                app()->make(OrderCenterDao::class)->update(['order_no' => $orderNo], ['pay_status' => 3, 'refund_status' => 2]);
             }
+            $refund['applied'] = true;
+            if ($channelRefundId !== '') {
+                $refund['channel_refund_id'] = $channelRefundId;
+            }
+        } elseif ($status === PayServices::REFUND_FAILED && ($refund['kind'] ?? '') === 'recharge' && !empty($refund['debited'])) {
+            app()->make(UserMoneyServices::class)->moneyIncome('user_recharge_refund_release',
+                (int)$refund['uid'], (string)$refund['number'], $refund['source_id']);
+            $refund['debited'] = false;
         }
-        return $stats;
+        $record->save([
+            'refund_state' => $status,
+            'refund' => $refund,
+            'update_time' => time(),
+            'state' => ($refund['kind'] ?? '') === 'canceled' && !empty($refund['applied']) ? 'compensated' : $record['state'],
+        ]);
     }
 
     /**
-     * 主动查单恢复或核对新版小程序通知。
+     * 取消前核对是否已经支付，以及核对新版小程序通知。
      * @param string $orderNo 原订单号
      * @param string $expectedTradeNo 通知流水（主动查单时可为空）
      * @param string $expectedOpenid 通知支付者（主动查单时可为空）
@@ -477,9 +582,13 @@ class PayRecordServices extends BaseService
      */
     public function closeBeforeCancel(string $orderNo): void
     {
+        $this->releaseStaleLock($orderNo);
         $record = $this->find($orderNo);
         if (!$record || empty($record['context'])) return;
         if ($record['state'] === 'closed') return;
+        if (in_array($record['state'], ['prepared', 'creating'], true) && $this->recordTimestamp($record) > time() - 5) {
+            throw new PayException('支付处理中，请稍后再取消');
+        }
         $claimed = $this->dao->getDb()->where('order_no', $orderNo)->where('state', 'prepared')
             ->update(['state' => 'closing', 'update_time' => time()]);
         if (!$claimed) throw new PayException('订单正在下单或处理支付结果，请稍后取消');
@@ -495,107 +604,4 @@ class PayRecordServices extends BaseService
             throw $e;
         }
     }
-
-    /**
-     * 提交后逐项执行后置任务，失败保留未执行项，租约防止并发重放。
-     * @param string $orderNo 订单号
-     * @return void
-     */
-    public function runEffects(string $orderNo): void
-    {
-        $token = bin2hex(random_bytes(16));
-        $claimed = $this->dao->getDb()->where('order_no', $orderNo)->where('effects_state', 'pending')
-            ->where('effects_lock_until', '<', time())->update(['effects_token' => $token, 'effects_lock_until' => time() + 300]);
-        if (!$claimed) return;
-        try {
-            $record = $this->find($orderNo);
-            $tasks = $record['effects'] ?? [];
-            $result = $this->processEffectTasks($tasks, function (array $task): bool {
-                if ($task['type'] === 'event') {
-                    return PaymentDispatch::replay(fn () => event($task['event'], $task['params'])) !== false;
-                }
-                if ($task['type'] === 'listener') {
-                    return PaymentDispatch::replay(fn () => app()->make($task['class'])->handle($task['params'])) !== false;
-                }
-                $class = $task['class'];
-                if (!is_subclass_of($class, \crmeb\basic\BaseJobs::class)) {
-                    throw new \RuntimeException('支付后置任务类型不正确');
-                }
-                return PaymentDispatch::replay(fn () => $class::runPaymentTask($task['action'], $task['data'])) !== false;
-            }, function (array $remaining) use ($orderNo, $token): bool {
-                $db = $this->dao->getDb();
-                $updated = $db->where('order_no', $orderNo)->where('effects_token', $token)
-                    ->update(['effects' => json_encode($remaining, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
-                        'effects_state' => 'pending', 'effects_lock_until' => time() + 300, 'update_time' => time()]);
-                if ($updated) return true;
-
-                // MySQL may report 0 when the serialized state is unchanged; verify ownership
-                // before treating it as a concurrent replay failure.
-                return (bool)$this->dao->getDb()->where('order_no', $orderNo)->where('effects_token', $token)->count();
-            });
-
-            foreach ($result['failed'] as $failedTask) {
-                Log::error('[PayRecord] 单项支付后置任务失败 type=' . ($failedTask['type'] ?? 'unknown')
-                    . ' class=' . ($failedTask['class'] ?? ($failedTask['event'] ?? '')));
-            }
-
-            $remaining = $result['tasks'];
-            if ($remaining) return;
-            $this->dao->getDb()->where('order_no', $orderNo)->where('effects_token', $token)
-                ->update(['effects' => json_encode([], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
-                    'effects_state' => 'completed', 'effects_lock_until' => time() + 300, 'update_time' => time()]);
-        } catch (\Throwable $e) {
-            Log::error('[PayRecord] 支付后置任务待恢复 order_no=' . $orderNo . ' type=' . get_class($e));
-        } finally {
-            $this->dao->getDb()->where('order_no', $orderNo)->where('effects_token', $token)
-            ->update(['effects_lock_until' => 0, 'effects_token' => '']);
-        }
-    }
-
-    /**
-     * 逐项执行支付后置任务；单项失败或延迟不阻塞后续任务。
-     * 失败任务保留在队列中，供后续恢复流程重试。
-     *
-     * @param array<int, array<string, mixed>> $tasks
-     * @param callable(array<string, mixed>): bool $executor
-     * @param callable(array): bool|null $onProgress
-     * @return array{tasks: array, failed: array, succeeded: int, deferred: int}
-     */
-    protected function processEffectTasks(array $tasks, callable $executor, ?callable $onProgress = null): array
-    {
-        $remaining = [];
-        $failed = [];
-        $succeeded = 0;
-        $deferred = 0;
-
-        foreach ($tasks as $task) {
-            if ((int)($task['available_at'] ?? 0) > time()) {
-                $remaining[] = $task;
-                ++$deferred;
-                if ($onProgress && $onProgress(array_merge($failed, $remaining)) === false) {
-                    throw new \RuntimeException('支付后置任务状态保存失败');
-                }
-                continue;
-            }
-            try {
-                if (!$executor($task)) {
-                    throw new \RuntimeException('支付后置任务执行失败');
-                }
-                ++$succeeded;
-            } catch (\Throwable $e) {
-                $failed[] = $task;
-            }
-            if ($onProgress && $onProgress(array_merge($failed, $remaining)) === false) {
-                throw new \RuntimeException('支付后置任务状态保存失败');
-            }
-        }
-
-        return [
-            'tasks' => array_merge($failed, $remaining),
-            'failed' => $failed,
-            'succeeded' => $succeeded,
-            'deferred' => $deferred,
-        ];
-    }
-
 }

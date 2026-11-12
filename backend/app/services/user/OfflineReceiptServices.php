@@ -184,57 +184,62 @@ class OfflineReceiptServices extends BaseService
      * @param array $other 其他参数
      * @return bool 返回处理结果
      */
-    public function paySuccess(array $orderInfo, string $paytype = PayServices::WEIXIN_PAY, array $other = [])
+    public function paySuccess(array $orderInfo, string $paytype = PayServices::WEIXIN_PAY, array $other = []): bool
     {
-        if (!\crmeb\services\pay\PaymentDispatch::collecting()) {
-            return app()->make(PayRecordServices::class)->complete((string)$orderInfo['order_no'], 'offline_scan',
-                (string)($other['trade_no'] ?? ''), fn(array $fresh) => $fresh['paid'] ? true
-                    : $this->paySuccess(array_replace($orderInfo, $fresh), $paytype, $other));
+        $orderNo = (string)($orderInfo['order_no'] ?? '');
+        $paidOrder = null;
+        $this->transaction(function () use ($orderNo, $paytype, $other, $orderInfo, &$paidOrder) {
+            $row = $this->dao->getDb()->where('order_no', $orderNo)->lock(true)->find();
+            if (!$row || (int)$row['paid'] !== 0) {
+                return;
+            }
+            $order = array_replace($orderInfo, $row->toArray());
+            $records = app()->make(PayRecordServices::class);
+            $paytype = $records->validate($order, 'offline_scan', $paytype, $other);
+            if ($paytype === PayServices::YUE_PAY && bccomp((string)$order['paid_price'], '0', 2) > 0) {
+                $records->assertChannel($orderNo, PayServices::YUE_PAY);
+                if (isset($orderInfo['pay_price']) && bccomp((string)$order['paid_price'], (string)$orderInfo['pay_price'], 2) !== 0) {
+                    throw new ApiException('订单金额已变化');
+                }
+                app()->make(UserMoneyServices::class)->moneyIncome('offline_scan', (int)$order['uid'], (string)$order['paid_price'], (int)$order['id']);
+            }
+            /** @var OfflineReceiptStatusServices $statusService */
+            $statusService = app()->make(OfflineReceiptStatusServices::class);
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $updata = ['paid' => 1, 'pay_time' => time()];
+            $order['pay_time'] = $updata['pay_time'];
+            $res2 = $this->dao->update($order['id'], $updata);
+            $res3 = $statusService->save([
+                'order_id' => $order['id'],
+                'change_type' => 'pay_success',
+                'change_message' => '用户付款成功',
+            ]);
+            $order['order_id'] = $order['order_no'];
+            $order['money'] = $order['total_price'];
+            $order['pay_price'] = $order['paid_price'];
+            $order['pay_type'] = $paytype;
+            $order['is_channel'] = 2;
+            $order['total_num'] = 1;
+            if ($order['pay_type'] != 'yue') {
+                /** @var CapitalFlowServices $capitalFlowServices */
+                $capitalFlowServices = app()->make(CapitalFlowServices::class);
+                $userInfo = $userServices->get($order['uid']);
+                $order['nickname'] = $userInfo['nickname'];
+                $order['phone'] = $userInfo['phone'];
+                $capitalFlowServices->setFlow($order, 'offline_scan');
+            }
+            if (!($res2 && $res3)) {
+                throw new \RuntimeException('收银支付业务处理失败');
+            }
+            $records->markCompleted($orderNo, (string)($other['trade_no'] ?? ''));
+            $paidOrder = $order;
+        });
+        if (!$paidOrder) {
+            return true;
         }
-        /** @var OfflineReceiptStatusServices $statusService */
-        $statusService = app()->make(OfflineReceiptStatusServices::class);
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        $type = 'offline_scan';
-        $res1 = true;
-        //更新支付状态（eb_offline_receipt 无 trade_no/pay_type 列，仅更新支付状态与支付时间）
-        $updata['paid'] = 1;
-        $updata['pay_time'] = time();
-        $orderInfo['pay_time'] = $updata['pay_time'];
-        $res2 = $this->dao->update($orderInfo['id'], $updata);
-        //记录订单状态变更
-        $res3 = $statusService->save([
-            'order_id' => $orderInfo['id'],
-            'change_type' => 'pay_success',
-            'change_message' => '用户付款成功',
-        ]);
-        $res4 = true;
-        // 余额扣款由 YuePayServices 在同一支付事务中完成，此处不能重复扣款。
-        //线下表字段兼容映射：供 OfflineReceiptJob / CapitalFlowServices 使用
-        $orderInfo['order_id'] = $orderInfo['order_no'];
-        $orderInfo['money'] = $orderInfo['total_price'];
-        $orderInfo['pay_price'] = $orderInfo['paid_price'];
-        $orderInfo['pay_type'] = $paytype;
-        //派发异步任务
-        OfflineReceiptJob::dispatch([$orderInfo]);
-        $orderInfo['is_channel'] = 2;
-        $orderInfo['total_num'] = 1;
-
-        //非余额支付记录资金流水
-        if ($orderInfo['pay_type'] != 'yue') {
-            /** @var CapitalFlowServices $capitalFlowServices */
-            $capitalFlowServices = app()->make(CapitalFlowServices::class);
-            $userInfo = $userServices->get($orderInfo['uid']);
-            $orderInfo['nickname'] = $userInfo['nickname'];
-            $orderInfo['phone'] = $userInfo['phone'];
-            $capitalFlowServices->setFlow($orderInfo, $type);
-        }
-        $res = $res1 && $res2 && $res3 && $res4;
-
-        $orderInfo['pay_type'] = $paytype;
-        //触发订单发货事件
-        event('OrderShipping', ['offline_scan', $orderInfo, 3, '', '']);
-        if (!$res) throw new \RuntimeException('收银支付业务处理失败');
+        OfflineReceiptJob::dispatch([$paidOrder]);
+        event('OrderShipping', ['offline_scan', $paidOrder, 3, '', '']);
         return true;
     }
 

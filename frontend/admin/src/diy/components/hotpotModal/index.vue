@@ -67,7 +67,7 @@
       </div>
       <template #footer
         ><div>
-          <el-button class="mr20" type="primary" @click="saveAreaData"> 完成 </el-button>
+          <el-button v-db-click class="mr20" type="primary" @click="saveAreaData"> 完成 </el-button>
         </div></template
       >
     </el-dialog>

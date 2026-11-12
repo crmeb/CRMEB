@@ -274,7 +274,7 @@
   </div>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onBeforeUnmount } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { useMediaStore } from '@/store/module/media';
@@ -428,6 +428,8 @@ function getInvoice(row) {
     invoiceId.value = row.invoice_id;
     keyUrl.value = res.data.uri;
     invoiceModalShow.value = true;
+    // 先解绑再绑定：多次打开开票弹窗不叠加监听（否则 onSuccess 会重复保存）
+    window.removeEventListener('message', handleMessage);
     window.addEventListener('message', handleMessage);
   });
 }
@@ -439,7 +441,7 @@ function handleMessage(event) {
       invoiceModalShow.value = false;
       keyUrl.value = '';
       invoiceId.value = 0;
-      window.removeEventListener('message');
+      window.removeEventListener('message', handleMessage);
       break;
     case 'onSuccess':
       saveInvoiceInfo(invoiceId.value, event.data.data).then((res) => {
@@ -448,11 +450,15 @@ function handleMessage(event) {
         keyUrl.value = '';
         invoiceId.value = 0;
         invoiceModalShow.value = false;
-        window.removeEventListener('message');
+        window.removeEventListener('message', handleMessage);
       });
       break;
   }
 }
+
+onBeforeUnmount(() => {
+  window.removeEventListener('message', handleMessage);
+});
 
 function orderInfo(id) {
   orderId.value = id;

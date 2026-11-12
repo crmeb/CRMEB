@@ -111,8 +111,32 @@ class LoginController extends AuthController
         }
 
         $this->validate(['account' => $account, 'pwd' => $password], \app\adminapi\validate\setting\SystemAdminValidata::class, 'get');
+
+        // 登录失败锁定：按 账号+IP 计数，5 次锁 1 分钟、10 次锁 2 分钟、20 次及以上锁 5 分钟（封顶 5 分钟），防在线爆破（安全审计 A4）
+        $failKey = 'admin_login_fail:' . md5(strtolower(trim((string)$account)) . '|' . $this->request->ip());
+        $lockKey = 'admin_login_lock:' . md5(strtolower(trim((string)$account)) . '|' . $this->request->ip());
+        $lockExpiry = (int)CacheService::get($lockKey, 0);
+        if ($lockExpiry > time()) {
+            return app('json')->fail('失败次数过多，账号已锁定，请 ' . ($lockExpiry - time()) . ' 秒后重试');
+        }
+
         $result = $this->services->login($account, $password, 'admin', $key);
         if (!$result) {
+            // 累计失败次数并按档位设置锁定到期时间（同档重复失败仅顺延不叠加）
+            $failNum = (int)CacheService::get($failKey, 0) + 1;
+            CacheService::set($failKey, $failNum, 600);
+            $lockMinutes = 0;
+            if ($failNum >= 20) {
+                $lockMinutes = 5;
+            } elseif ($failNum >= 10) {
+                $lockMinutes = 2;
+            } elseif ($failNum >= 5) {
+                $lockMinutes = 1;
+            }
+            if ($lockMinutes > 0) {
+                $newExpiry = time() + $lockMinutes * 60;
+                CacheService::set($lockKey, max((int)CacheService::get($lockKey, 0), $newExpiry), 600);
+            }
             $num = CacheService::get('login_captcha', 1);
             if ($num > 1) {
                 return app('json')->fail('账号或密码错误', ['login_captcha' => 1]);
@@ -120,6 +144,9 @@ class LoginController extends AuthController
             CacheService::set('login_captcha', $num + 1, 60);
             return app('json')->fail('账号或密码错误', ['login_captcha' => 0]);
         }
+        // 登录成功清空该账号的失败计数与锁定状态
+        CacheService::delete($failKey);
+        CacheService::delete($lockKey);
         CacheService::delete('login_captcha');
         return app('json')->success($result);
     }

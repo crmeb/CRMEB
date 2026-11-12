@@ -10,7 +10,10 @@ declare(strict_types=1);
 
 namespace modules\product\normal;
 
+use app\dao\order\OrderCenterDao;
 use app\dao\product\CenterProductDao;
+use app\services\order\OrderLifecycleServices;
+use app\services\product\CenterProductServices;
 use crmeb\trade\order\aftersale\AfterSaleHandlerInterface;
 use crmeb\trade\product\BaseProductTypeHandler;
 use modules\product\normal\dao\NormalOrderDao;
@@ -755,5 +758,50 @@ class Handler extends BaseProductTypeHandler
         /** @var ProductSaveServices $productSaveServices */
         $productSaveServices = app(ProductSaveServices::class);
         return $productSaveServices->save($id, $data);
+    }
+
+    /**
+     * 支付提交后推进到待发货，并累加销量。重复调用不再推进、不再加销量。
+     * @param string $orderNo 订单号
+     * @param array $orderInfo 已支付订单
+     * @return bool
+     */
+    public function fulfillOrder(string $orderNo, array $orderInfo): bool
+    {
+        $centerOrder = app(OrderCenterDao::class)->get(['order_no' => $orderNo], ['product_type', 'extra_info']);
+        if (!$centerOrder || ($centerOrder['product_type'] ?? '') !== 'normal') {
+            return false;
+        }
+        $extOrder = app(\modules\product\normal\model\NormalOrderModel::class)->where('order_no', $orderNo)->field('status,paid')->find();
+        if ($extOrder && ($extOrder['status'] ?? '') !== NormalOrderAdapter::EXT_STATUS_PENDING_PAYMENT) {
+            return true;
+        }
+        app(OrderLifecycleServices::class)->handlePaySuccess($orderInfo);
+        NormalOrderAdapter::instance()->advance($orderNo, NormalOrderAdapter::EXT_STATUS_PENDING_SHIPPED, [
+            'paid'      => 1,
+            'pay_price' => $orderInfo['pay_price'] ?? 0,
+        ]);
+        try {
+            $extra = $centerOrder['extra_info'] ?? [];
+            if (is_string($extra)) {
+                $extra = json_decode($extra, true) ?: [];
+            }
+            $items = is_array($extra) ? ($extra['items'] ?? []) : [];
+            $qtyByProduct = [];
+            foreach ($items as $item) {
+                $productId = (int)($item['product_id'] ?? 0);
+                $num = (int)($item['cart_num'] ?? 0);
+                if ($productId > 0 && $num > 0) {
+                    $qtyByProduct[$productId] = ($qtyByProduct[$productId] ?? 0) + $num;
+                }
+            }
+            $productServices = app(CenterProductServices::class);
+            foreach ($qtyByProduct as $productId => $num) {
+                $productServices->incSales($productId, $num);
+            }
+        } catch (\Throwable $e) {
+            \think\facade\Log::warning('实物商品支付成功累加销量失败: ' . $e->getMessage());
+        }
+        return true;
     }
 }

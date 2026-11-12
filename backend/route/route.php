@@ -2,8 +2,14 @@
 
 use think\facade\Route;
 
-Route::get('surl/:id', function(\app\Request $request){
-    return app()->make(\app\api\controller\v1\PublicController::class)->getSchemeUrl($request->param('id'));
+Route::get('surl/:id', function (\app\Request $request) {
+    $results = event('ChannelServiceProxy', [
+        'endpoint' => 'wechat_mini',
+        'service' => 'RoutineSchemeServices',
+        'action' => 'redirectHtml',
+        'args' => [$request->param('id')],
+    ]);
+    return response((string)proxy_event_result($results, '<h1>未找到跳转路径</h1>'));
 });
 
 Route::miss(function () {

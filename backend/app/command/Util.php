@@ -30,7 +30,7 @@ class Util extends Command
     protected function configure()
     {
         $this->setName('util')
-            ->addArgument('type', Argument::REQUIRED, '类型replace/route/apifox')
+            ->addArgument('type', Argument::REQUIRED, '类型replace/route/route_doc/apifox')
             ->addOption('h', null, Option::VALUE_REQUIRED, '替换成当前域名')
             ->addOption('u', null, Option::VALUE_REQUIRED, '替换的域名')
             ->addOption('a', null, Option::VALUE_REQUIRED, '应用名')
@@ -60,6 +60,20 @@ class Util extends Command
                     return $output->error('缺少应用名称');
                 }
                 app()->make(SystemRouteServices::class)->syncRoute($appName);
+                break;
+            case 'route_doc':
+                $appName = $input->getOption('a') ?: 'adminapi';
+                $apps = $appName === 'all' ? ['adminapi', 'api'] : [$appName];
+                foreach ($apps as $app) {
+                    $result = app()->make(\app\services\system\SystemRouteDocBuilder::class)->build($app);
+                    $output->writeln(sprintf(
+                        '[%s] total=%d updated=%d skipped=%d',
+                        $app,
+                        $result['total'],
+                        $result['updated'],
+                        $result['skipped']
+                    ));
+                }
                 break;
             case 'apifox':
                 $filePath = $input->getOption('f');

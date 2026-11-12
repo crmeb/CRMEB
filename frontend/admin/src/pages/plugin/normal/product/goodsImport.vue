@@ -36,7 +36,7 @@
           正在导入，您可关闭当前弹窗，稍候可在列表查看导入结果
           <i class="el-icon-loading"></i>
         </div>
-        <el-button v-else class="btn-import" type="primary" @click="importGoods">立即导入</el-button>
+        <el-button v-db-click v-else class="btn-import" type="primary" @click="importGoods">立即导入</el-button>
       </div>
       <div v-show="fileUrl && importStatus" class="file-info">
         <img class="el-upload-dragger__icon mb20" :src="statusImage" alt="" />
@@ -48,7 +48,7 @@
           您可以下载失败数据，修改后再重新导入 <span class="active-btn" @click="downloadFailData">下载失败数据</span>
         </div>
         <div>
-          <el-button class="btn-import" @click="selectFile">再次导入</el-button>
+          <el-button v-db-click class="btn-import" @click="selectFile">再次导入</el-button>
           <el-button type="primary" class="btn-import" @click="close">完成</el-button>
         </div>
       </div>

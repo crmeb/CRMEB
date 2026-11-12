@@ -82,10 +82,10 @@ class MiniOrderJob extends BaseJobs
                             if (!$deliveryType) continue;
                             $order['user_phone'] = $extra['contact']['phone'] ?? '';
                         }
-                        \crmeb\services\pay\PaymentDispatch::replay(fn () => event('OrderShipping', [
+                        event('OrderShipping', [
                             $kind === 'user_recharge' ? 'recharge' : $kind, $order, $deliveryType,
                             $delivery['delivery_id'] ?? '', $delivery['delivery_name'] ?? '',
-                        ]));
+                        ]);
                     }
                     if (empty($res['has_more']) || empty($res['last_index'])) break;
                     $params['last_index'] = $res['last_index'];

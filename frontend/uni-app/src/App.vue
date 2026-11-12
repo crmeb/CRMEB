@@ -355,12 +355,12 @@ onHide(() => {
 <style lang="scss">
 @import "@/plugin/emoji-awesome/css/tuoluojiang.css";
 @import "@/plugin/animate/animate.min.css";
-@import "@/static/css/base.css";
+@import "@/styles/css/base.css";
 @import "@/static/iconfont/iconfont.css";
-@import "@/static/css/guildford.css";
-@import "@/static/css/style.scss";
-@import "@/static/css/unocss.css";
-@import "@/static/fonts/font.scss";
+@import "@/styles/css/guildford.css";
+@import "@/styles/css/style.scss";
+@import "@/styles/css/unocss.css";
+@import "@/styles/fonts/font.scss";
 
 view {
   box-sizing: border-box;

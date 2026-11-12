@@ -865,7 +865,7 @@ onShareAppMessage(() => {
 	return {
 		title: giftModalData.value.gift_mark || '',
 		imageUrl: mpGiftImg || '',
-		path: '/pages/goods/receive_gift/index?id=' + giftModalData.value.id + '&spid=' + appStore.uid
+		path: '/pages/goods/receive_gift/index?id=' + giftModalData.value.id + '&spid=' + appStore.uid + (giftModalData.value.gift_key ? '&key=' + giftModalData.value.gift_key : '')
 	};
 });
 onShareTimeline(() => {
@@ -873,10 +873,11 @@ onShareTimeline(() => {
 	return {
 		title: giftModalData.value.gift_mark,
 		query: {
-			id: id,
-			spid: uid || 0
+			id: giftModalData.value.id,
+			spid: appStore.uid || 0,
+			key: giftModalData.value.gift_key || ''
 		},
-		path: '/pages/goods/receive_gift/index?id=' + giftModalData.value.id + '&spid=' + appStore.uid,
+		path: '/pages/goods/receive_gift/index?id=' + giftModalData.value.id + '&spid=' + appStore.uid + (giftModalData.value.gift_key ? '&key=' + giftModalData.value.gift_key : ''),
 		imageUrl: mpGiftImg
 	};
 });
@@ -890,7 +891,7 @@ function setOpenShare() {
 		let configAppMessage = {
 			desc: giftModalData.value.gift_mark,
 			title: giftModalData.value.title,
-			link: window.location.protocol + '//' + window.location.host + '/pages/goods/receive_gift/index?id=' + giftModalData.value.id + '&spid=' + appStore.uid,
+			link: window.location.protocol + '//' + window.location.host + '/pages/goods/receive_gift/index?id=' + giftModalData.value.id + '&spid=' + appStore.uid + (giftModalData.value.gift_key ? '&key=' + giftModalData.value.gift_key : ''),
 			imgUrl: mpGiftImg
 		};
 		Auth.wechatEvevt(['updateAppMessageShareData', 'updateTimelineShareData', 'onMenuShareAppMessage', 'onMenuShareTimeline'], configAppMessage);
@@ -1107,7 +1108,8 @@ function getOrderInfo() {
 					avatar: res.data.avatar,
 					nickname: res.data.nickname,
 					gift_mark: res.data.gift_mark,
-					code: res.data.gift_code
+					gift_key: res.data.gift_key || '',
+					code: res.data.gift_code || ''
 				};
 				//#ifdef H5
 				setOpenShare();

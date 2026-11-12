@@ -1569,6 +1569,13 @@
 		}
 
 	],
+	// 首页与个人中心的 page-design 来自 diyComponents 分包（componentPlaceholder 异步加载），进入首页即预下载
+	"preloadRule": {
+		"pages/index/index": {
+			"network": "all",
+			"packages": ["subpackage/diyComponents"]
+		}
+	},
 	"tabBar": { // 底部菜单
 		"color": "#282828",
 		"selectedColor": "#ff3366",

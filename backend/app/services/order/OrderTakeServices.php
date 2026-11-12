@@ -22,6 +22,7 @@ use app\services\order\AfterSaleServices;
 use app\model\order\OrderCenter;
 use crmeb\exceptions\ApiException;
 use crmeb\utils\Str;
+use crmeb\trade\mode\TradeModeRegistry;
 use crmeb\trade\product\ProductTypeRegistry;
 use think\facade\Log;
 
@@ -263,15 +264,16 @@ class OrderTakeServices extends BaseService
         if (!$userInfo) {
             return true;
         }
-        // 营销产品送积分
-        if (isset($order['combination_id']) && $order['combination_id']) {
-            return true;
-        }
-        if (isset($order['seckill_id']) && $order['seckill_id']) {
-            return true;
-        }
-        if (isset($order['bargain_id']) && $order['bargain_id']) {
-            return true;
+        // 活动订单先走完成回调，再由模式声明是否发放购买积分
+        /** @var TradeModeRegistry $tradeModeRegistry */
+        $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+        [$activityType, $activityId] = $tradeModeRegistry->resolveOrderActivity($order);
+        if ($activityType !== '' && $activityId > 0 && $tradeModeRegistry->has($activityType)) {
+            $handler = $tradeModeRegistry->get($activityType);
+            $handler->onOrderComplete((string)($order['order_no'] ?? ''), $activityId, $order);
+            if (!$handler->grantsPurchaseIntegral()) {
+                return true;
+            }
         }
         /** @var UserBillServices $userBillServices */
         $userBillServices = app()->make(UserBillServices::class);

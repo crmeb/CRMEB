@@ -30,14 +30,6 @@
           >
             同步存储空间
           </el-button>
-          <el-button
-            v-auth="['driver-upload-save-config']"
-            v-db-click
-            :disabled="!driverInfo"
-            @click="showConfigModal = true"
-          >
-            修改配置信息
-          </el-button>
         </el-col>
       </el-row>
 
@@ -147,59 +139,6 @@
     </el-dialog>
 
     <el-dialog
-      v-model="showConfigModal"
-      class="storage-dialog"
-      title="配置信息"
-      width="min(570px, calc(100% - 32px))"
-      :close-on-click-modal="false"
-      append-to-body
-    >
-      <el-form
-        class="storage-form"
-        ref="configFormRef"
-        :model="configFormData"
-        :rules="configRules"
-        label-width="140px"
-      >
-        <template v-for="(field, index) in configFields" :key="index">
-          <el-form-item :label="field.label + ':'" :prop="field.field">
-            <el-input
-              v-if="field.type === 'text'"
-              v-model="configFormData[field.field]"
-              :placeholder="'请输入' + field.label"
-            ></el-input>
-            <el-input
-              v-else-if="field.type === 'password'"
-              v-model="configFormData[field.field]"
-              :placeholder="'请输入' + field.label"
-              type="password"
-              show-password
-            ></el-input>
-            <el-select
-              v-else-if="field.type === 'select'"
-              v-model="configFormData[field.field]"
-              :placeholder="'请选择' + field.label"
-            >
-              <el-option
-                v-for="opt in field.options"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
-              ></el-option>
-            </el-select>
-            <div v-if="field.tip" class="form-tip">{{ field.tip }}</div>
-          </el-form-item>
-        </template>
-      </el-form>
-      <template #footer
-        ><div class="dialog-footer">
-          <el-button v-db-click @click="showConfigModal = false">取消</el-button>
-          <el-button type="primary" v-db-click :loading="configSaving" @click="submitConfigForm">确定</el-button>
-        </div></template
-      >
-    </el-dialog>
-
-    <el-dialog
       v-model="showAddStorageModal"
       class="storage-dialog"
       title="添加云空间"
@@ -265,7 +204,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { storageListApi, storageSynchApi, storageStatusApi, editStorageApi, storageSaveApi } from '@/api/setting';
 import modalForm from '@/utils/modalForm';
 import { modalSure } from '@/utils/public';
-import { uploadDriverDetailApi, saveDriverConfigApi } from '@/api/driver/uploadDriver';
+import { uploadDriverDetailApi } from '@/api/driver/uploadDriver';
 
 defineOptions({ name: 'UploadDriverStorage' });
 
@@ -279,7 +218,6 @@ const props = defineProps({
 const route = useRoute();
 const { proxy } = getCurrentInstance();
 
-const configFormRef = ref(null);
 const addStorageFormRef = ref(null);
 const storageList = ref([]);
 const loading = ref(false);
@@ -292,15 +230,10 @@ const list = ref({
 const driverInfo = ref(null);
 const configuModal = ref(false);
 const configData = ref('');
-const showConfigModal = ref(false);
 const showAddStorageModal = ref(false);
-const configFields = ref([]);
 const bucketFields = ref([]);
-const configFormData = ref({});
 const addStorageFormData = ref({});
-const configRules = ref({});
 const addStorageRules = ref({});
-const configSaving = ref(false);
 const addSaving = ref(false);
 const syncSaving = ref(false);
 let detailRequest = 0;
@@ -329,10 +262,8 @@ function getDriverDetail() {
       driverInfo.value = res.data;
       list.value.driver_key = res.data.driver_key;
       list.value.page = 1;
-      configFields.value = res.data.config_fields || [];
       bucketFields.value = res.data.bucket_fields || [];
-      initFormData(configFields.value, 'config');
-      initFormData(bucketFields.value, 'add');
+      initFormData(bucketFields.value);
       return getlist();
     })
     .catch((err) => {
@@ -342,7 +273,7 @@ function getDriverDetail() {
       if (requestId === detailRequest) loading.value = false;
     });
 }
-function initFormData(fields, type) {
+function initFormData(fields) {
   const formData = {};
   const rules = {};
   fields.forEach((field) => {
@@ -357,13 +288,8 @@ function initFormData(fields, type) {
       ];
     }
   });
-  if (type === 'config') {
-    configFormData.value = formData;
-    configRules.value = rules;
-  } else {
-    addStorageFormData.value = formData;
-    addStorageRules.value = rules;
-  }
+  addStorageFormData.value = formData;
+  addStorageRules.value = rules;
 }
 function insertCopy(text) {
   proxy
@@ -473,30 +399,6 @@ function del(row, tit, num) {
       ElMessage.error(res.msg);
     });
 }
-function submitConfigForm() {
-  if (configSaving.value || !driverInfo.value) return;
-  configFormRef.value.validate((valid) => {
-    if (valid && !configSaving.value) {
-      const id = props.driverId || (route && route.params.id);
-      const driverData = {
-        ...configFormData.value,
-      };
-      configSaving.value = true;
-      saveDriverConfigApi(id, driverData)
-        .then((res) => {
-          ElMessage.success(res.msg || '保存成功');
-          showConfigModal.value = false;
-          getDriverDetail();
-        })
-        .catch((err) => {
-          ElMessage.error(err.msg || err.message || '保存失败');
-        })
-        .finally(() => {
-          configSaving.value = false;
-        });
-    }
-  });
-}
 function submitAddStorageForm() {
   if (addSaving.value || !driverInfo.value) return;
   addStorageFormRef.value.validate((valid) => {
@@ -506,7 +408,7 @@ function submitAddStorageForm() {
         .then((res) => {
           ElMessage.success(res.msg || '添加成功');
           showAddStorageModal.value = false;
-          initFormData(bucketFields.value, 'add');
+          initFormData(bucketFields.value);
           getlist();
         })
         .catch((err) => {

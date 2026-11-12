@@ -138,49 +138,85 @@ class StoreCouponUserServices extends BaseService
     {
         $userCoupons = $this->dao->getUserAllCoupon($uid);
         $result = [];
-        if ($userCoupons) {
-            $cartInfo = $cartGroup['valid'];
-            foreach ($userCoupons as $coupon) {
-                $price = 0;
-                $count = 0;
-                switch ($coupon['applicable_type']) {
-                    case 0:
-                    case 3:
-                        foreach ($cartInfo as $cart) {
-                            $price += bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
-                            $count++;
-                        }
-                        break;
-                    case 1://品类券
-                        /** @var StoreCategoryServices $storeCategoryServices */
-                        $storeCategoryServices = app()->make(StoreCategoryServices::class);
-                        $coupon_category = explode(',', (string)$coupon['category_id']);
-                        $category_ids = $storeCategoryServices->getAllById($coupon_category);
-                        if ($category_ids) {
-                            $cateIds = array_column($category_ids, 'id');
-                            foreach ($cartInfo as $cart) {
-                                if (isset($cart['productInfo']['cate_id']) && array_intersect(explode(',', $cart['productInfo']['cate_id']), $cateIds)) {
-                                    $price += bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
-                                    $count++;
-                                }
-                            }
-                        }
-                        break;
-                    case 2:
-                        foreach ($cartInfo as $cart) {
-                            if (isset($cart['product_id']) && in_array($cart['product_id'], explode(',', $coupon['product_id']))) {
-                                $price += bcmul((string)$cart['truePrice'], (string)$cart['cart_num'], 2);
-                                $count++;
-                            }
-                        }
-                        break;
+        $cartInfo = $cartGroup['valid'] ?? [];
+        if (!$userCoupons || empty($cartInfo)) {
+            return $result;
+        }
+        // 与 OrderComputedServices::couponMatchedSubset 同口径，避免确认页/试算只回填最优一张、其余可用券被错误过滤
+        $items = [];
+        foreach ($cartInfo as $cart) {
+            if (is_object($cart)) {
+                $cart = $cart->toArray();
+            }
+            $cateId = $cart['productInfo']['cate_id'] ?? '';
+            if (is_array($cateId)) {
+                $cateId = implode(',', $cateId);
+            }
+            $items[] = [
+                'product_id' => (int)($cart['product_id'] ?? 0),
+                'cate_ids'   => array_map('intval', array_filter(explode(',', (string)$cateId))),
+                'price'      => bcmul((string)($cart['truePrice'] ?? '0'), (string)($cart['cart_num'] ?? '0'), 2),
+            ];
+        }
+        foreach ($userCoupons as $coupon) {
+            [$subset, $count] = $this->couponMatchedSubsetPrice($coupon, $items);
+            if (!$count || bccomp((string)($coupon['use_min_price'] ?? '0'), $subset, 2) > 0) {
+                continue;
+            }
+            $result[] = $this->formatUsableCouponRow($coupon);
+        }
+        return $result;
+    }
+
+    /**
+     * 计算优惠券对购物车适用子集金额与命中条数（与订单自动选券口径一致）
+     * @param array $coupon
+     * @param array $items [['product_id'=>int,'cate_ids'=>int[],'price'=>string], ...]
+     * @return array [subsetPrice, matchedCount]
+     */
+    protected function couponMatchedSubsetPrice(array $coupon, array $items): array
+    {
+        $subset = '0';
+        $count = 0;
+        $type = (int)($coupon['applicable_type'] ?? 0);
+        if (in_array($type, [0, 3], true)) {
+            foreach ($items as $item) {
+                $subset = bcadd($subset, $item['price'], 2);
+                $count++;
+            }
+            return [$subset, $count];
+        }
+        if ($type === 1) {
+            $couponCategory = array_values(array_filter(explode(',', (string)($coupon['category_id'] ?? ''))));
+            $cateIds = [];
+            if ($couponCategory) {
+                $categoryIds = app()->make(\app\dao\product\product\StoreCategoryDao::class)->getAllById($couponCategory);
+                $cateIds = $categoryIds ? array_map('intval', array_column($categoryIds, 'id')) : [];
+            }
+            if (!$cateIds) {
+                return [$subset, 0];
+            }
+            foreach ($items as $item) {
+                if (!empty($item['cate_ids']) && array_intersect($item['cate_ids'], $cateIds)) {
+                    $subset = bcadd($subset, $item['price'], 2);
+                    $count++;
                 }
-                if ($count && $coupon['use_min_price'] <= $price) {
-                    $result[] = $this->formatUsableCouponRow($coupon);
+            }
+            return [$subset, $count];
+        }
+        if ($type === 2) {
+            $productIds = array_map('intval', array_filter(explode(',', (string)($coupon['product_id'] ?? ''))));
+            if (!$productIds) {
+                return [$subset, 0];
+            }
+            foreach ($items as $item) {
+                if (in_array((int)$item['product_id'], $productIds, true)) {
+                    $subset = bcadd($subset, $item['price'], 2);
+                    $count++;
                 }
             }
         }
-        return $result;
+        return [$subset, $count];
     }
 
     /**

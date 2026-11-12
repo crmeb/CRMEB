@@ -20,7 +20,7 @@
               <a href="https://mp.weixin.qq.com" target="_blank" style="color: #409eff">点击发布</a>
             </div>
             <div class="summary-actions">
-              <el-button type="primary" @click="handleUploadMini" :loading="uploadingMini">上传小程序</el-button>
+              <el-button v-db-click type="primary" @click="handleUploadMini" :loading="uploadingMini">上传小程序</el-button>
               <el-button class="ml8" @click="handleRefreshStatus">暂不上传</el-button>
             </div>
           </div>
@@ -44,7 +44,7 @@
             </div>
             <div class="summary-sub">发现可升级的新版本，点击立即升级</div>
             <div class="summary-actions">
-              <el-button type="primary" @click="startDownload" :disabled="startingDownload" :loading="startingDownload"
+              <el-button v-db-click type="primary" @click="startDownload" :disabled="startingDownload" :loading="startingDownload"
                 >立即升级</el-button
               >
               <el-button class="ml8 check-update-btn" @click="checkRemoteUpdate" :loading="checkingRemote"
@@ -212,8 +212,8 @@
               </div>
             </div>
             <div class="check-error-actions mt10" v-if="downloadType === 0">
-              <el-button type="primary" @click="cancelUpgrade">取消升级</el-button>
-              <el-button class="ml8" @click="ignoreAndProceed(0)">忽略并执行</el-button>
+              <el-button v-db-click type="primary" @click="cancelUpgrade">取消升级</el-button>
+              <el-button v-db-click class="ml8" @click="ignoreAndProceed(0)">忽略并执行</el-button>
             </div>
           </template>
           <div v-else class="check-success-box mt16">{{ downloadSteps[0].message || '检测完成' }}</div>
@@ -237,9 +237,9 @@
               </div>
             </div>
             <div class="check-error-actions mt10">
-              <el-button type="primary" @click="cancelUpgrade">取消升级</el-button>
-              <el-button class="ml8" @click="ignoreAndProceed(1)">忽略并执行</el-button>
-              <el-button class="ml8" @click="reExecuteUpgrade">重新备份</el-button>
+              <el-button v-db-click type="primary" @click="cancelUpgrade">取消升级</el-button>
+              <el-button v-db-click class="ml8" @click="ignoreAndProceed(1)">忽略并执行</el-button>
+              <el-button v-db-click class="ml8" @click="reExecuteUpgrade">重新备份</el-button>
             </div>
           </template>
         </div>
@@ -376,7 +376,7 @@
       <template #footer
         ><span class="dialog-footer">
           <el-button @click="agreementVisible = false">不同意</el-button>
-          <el-button type="primary" @click="doStartDownload" :loading="startingDownload">同意并升级</el-button>
+          <el-button v-db-click type="primary" @click="doStartDownload" :loading="startingDownload">同意并升级</el-button>
         </span></template
       >
     </el-dialog>

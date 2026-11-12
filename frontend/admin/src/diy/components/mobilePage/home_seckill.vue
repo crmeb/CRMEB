@@ -6,9 +6,9 @@
           class="hd"
           :style="
             (styleConfig
-              ? 'backgroundImage:url(' + imgBgUrl + ')'
+              ? 'background-image:url(' + imgBgUrl + ')'
               : `background:linear-gradient(90deg,${headerBgColorLeft} 0%,${headerBgColorRight} 100%)`) +
-            ';borderRadius:' +
+            ';border-radius:' +
             bgRadius
           "
         >
@@ -181,7 +181,7 @@
                   </div>
                 </div>
                 <div
-                  class="bnt"
+                  class="seckill-bnt"
                   v-if="!seckillConfig"
                   :style="{
                     color: toneConfig ? goodsBntTxtColor : '#fff',
@@ -250,7 +250,7 @@
                   ¥3699.00
                 </div>
                 <div
-                  class="bnt"
+                  class="seckill-bnt"
                   :class="checkboxInfo.indexOf(2) == -1 && !seckillConfig ? 'on' : ''"
                   v-if="!seckillConfig"
                   :style="{
@@ -365,7 +365,7 @@
                   ¥3699.00
                 </div>
                 <div
-                  class="bnt"
+                  class="seckill-bnt"
                   :class="checkboxInfo.indexOf(3) == -1 && !seckillConfig ? 'on2' : ''"
                   v-if="!seckillConfig"
                   :style="{
@@ -1459,7 +1459,7 @@ function setConfig(data) {
           margin-top: 9px;
         }
       }
-      .bnt {
+      .seckill-bnt {
         width: 57px;
         height: 26px;
         border-radius: 13px;
@@ -1520,7 +1520,7 @@ function setConfig(data) {
           margin-top: 1px;
         }
       }
-      .bnt {
+      .seckill-bnt {
         width: 33px;
         height: 20px;
         line-height: 20px;
@@ -1650,7 +1650,7 @@ function setConfig(data) {
             margin-left: 4px;
           }
         }
-        .bnt {
+        .seckill-bnt {
           width: 60px;
           height: 28px;
           background: linear-gradient(90deg, #ff7931 0%, #e93323 100%);

@@ -24,7 +24,7 @@
         </template>
       </draggable>
       <div class="add-btn" @click="addHotTxt" v-if="configData.list.length < 20">
-        <el-button class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
+        <el-button v-db-click class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
       </div>
     </div>
   </div>

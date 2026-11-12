@@ -392,8 +392,7 @@ const buyButtonText = computed(() => {
   return text ? i18n.t(text) : i18n.t(`立即购买`);
 });
 const isCartButtonVisible = computed(() => {
-  // direct 模式不显示加入购物车按钮
-  if (isDirectMode.value) return false;
+  // 仅按后端 cart_button（及 DIY 配置）控制「加入购物车」展示；立即购买始终可用
   return !!props.storeInfo.cart_button && showCartButton.value;
 });
 // 会员专享商品（vip_product=2 非会员）：后端下发 vip_exclusive 标识，渲染"开通会员"引导按钮

@@ -127,7 +127,7 @@
                     </div>
                     <div class="hover-actions">
                       <el-button plain @click="viewStyleDetail(item)">查看详情</el-button>
-                      <el-button type="primary" @click="handleStyleSelect(item)">使用风格</el-button>
+                      <el-button v-db-click type="primary" @click="handleStyleSelect(item)">使用风格</el-button>
                     </div>
                   </div>
                 </div>

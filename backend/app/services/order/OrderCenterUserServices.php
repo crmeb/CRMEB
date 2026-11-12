@@ -5,7 +5,6 @@ namespace app\services\order;
 
 use app\dao\order\AfterSaleDao;
 use app\model\order\OrderCenter;
-use app\services\pay\PayRecordServices;
 use app\services\order\StoreCartServices;
 use app\services\user\UserServices;
 use app\services\user\UserAddressServices;
@@ -118,16 +117,29 @@ class OrderCenterUserServices extends OrderCenterServices
         // 按查看者身份处理礼物信息与底部操作按钮
         foreach ($sections as &$section) {
             $sectionKey = (string)($section['key'] ?? '');
-            // 礼物信息：送礼人展示领取人，领取人展示赠送人
+            // 礼物信息：送礼人展示领取人，领取人展示赠送人；送礼人附带分享令牌与小程序码
             if ($sectionKey === 'gift') {
                 $gift = $section['props']['gift'] ?? [];
                 if ($isReceiver) {
                     $section['props']['role'] = 'receiver';
                     $section['props']['display'] = $gift['sender'] ?? null;
+                    unset($gift['gift_key'], $gift['gift_code']);
                 } else {
                     $section['props']['role'] = 'sender';
                     $section['props']['display'] = $gift['receiver'] ?? null;
+                    $orderId = (int)($fields['id'] ?? 0);
+                    if ($orderId > 0) {
+                        try {
+                            $share = $this->ensureGiftShareSecrets($orderId, $viewerUid);
+                            $gift['gift_key'] = $share['gift_key'];
+                            $gift['gift_code'] = $share['gift_code'];
+                        } catch (\Throwable $e) {
+                            // 分享密钥/小程序码失败不阻断详情；前端无 key 时无法生成有效领取链接
+                            Log::warning('礼物分享令牌生成失败 oid=' . $orderId . ': ' . $e->getMessage());
+                        }
+                    }
                 }
+                $section['props']['gift'] = $gift;
                 continue;
             }
             if ($sectionKey !== 'buttons') {
@@ -644,37 +656,46 @@ class OrderCenterUserServices extends OrderCenterServices
             throw new ApiException('订单已经支付无法取消');
         }
 
-        app()->make(PayRecordServices::class)->closeBeforeCancel($orderNo);
-        $this->transaction(function () use ($order, $uid) {
-            $order = $this->dao->getByIdForUpdate((int)$order['id']);
-            if ((int)$order['pay_status'] !== 0) throw new ApiException('订单已经支付无法取消');
-            if ($order['status_code'] === OrderCenter::STATUS_CANCELED) return;
-            // 修改订单状态为已取消，同时记录取消时间（与超时自动取消的 cancel_time 口径一致）
-            $order->status_code = OrderCenter::STATUS_CANCELED;
-            $order->cancel_time = time();
-            if (!$order->save()) {
-                throw new ApiException('取消失败');
-            }
-
-            // 在事务内触发订单取消事件，保证数据一致性
-            event('OrderCancel', [$order->toArray(), $uid]);
-        });
-
-        // 同步中台状态
-        $this->syncStatus($orderNo, OrderCenter::STATUS_CANCELED);
+        $this->cancelUnpaidOrder($orderNo, $uid, 'user');
 
         return true;
     }
 
     /**
+     * 确保代付分享令牌存在（写入 extra_info.friend_pay.friend_key）
+     * @return string 32 位 hex
+     */
+    public function ensureFriendPayKey(int $orderId): string
+    {
+        $order = $this->dao->get($orderId, ['id', 'extra_info']);
+        if (!$order) {
+            throw new ApiException('订单不存在');
+        }
+        $orderArr = is_array($order) ? $order : $order->toArray();
+        $extraInfo = $this->parseExtraInfo($orderArr['extra_info'] ?? null);
+        $key = (string)($extraInfo['friend_pay']['friend_key'] ?? '');
+        if ($this->isValidGiftKeyFormat($key)) {
+            return $key;
+        }
+        $key = $this->generateGiftKey();
+        $extraInfo['friend_pay'] = array_merge(
+            is_array($extraInfo['friend_pay'] ?? null) ? $extraInfo['friend_pay'] : [],
+            ['friend_key' => $key]
+        );
+        $this->dao->update($orderId, ['extra_info' => $this->encodeExtraInfo($extraInfo)]);
+        return $key;
+    }
+
+    /**
      * 代付详情
-     * 获取订单代付相关信息，包含下单人和代付人信息
+     * 下单人可直接查看；好友须持有 friend_key（分享链接），已代付成功的支付人也可查看
      * @param int $orderId 订单中台记录ID
      * @param int $uid 当前用户ID
+     * @param string $friendKey 代付分享令牌
      * @return array 返回代付详情数据
-     * @throws ApiException 订单不存在时抛出
+     * @throws ApiException 订单不存在或无权查看时抛出
      */
-    public function getFriendDetail(int $orderId, int $uid)
+    public function getFriendDetail(int $orderId, int $uid, string $friendKey = '')
     {
         // 代付详情不需要物流轨迹，跳过第三方物流查询
         $detail = $this->getDetail($orderId, false);
@@ -682,12 +703,30 @@ class OrderCenterUserServices extends OrderCenterServices
             throw new ApiException('订单不存在');
         }
 
+        $extraInfo = is_array($detail['extra_info'] ?? null) ? $detail['extra_info'] : [];
+        $payUid = (int)($extraInfo['pay_uid'] ?? 0);
+        $ownerUid = (int)($detail['uid'] ?? 0);
+        $isOwner = $uid > 0 && $uid === $ownerUid;
+        $isPayer = $uid > 0 && $payUid > 0 && $uid === $payUid;
+        $storedKey = (string)($extraInfo['friend_pay']['friend_key'] ?? '');
+        $keyOk = $this->isValidGiftKeyFormat($friendKey)
+            && $this->isValidGiftKeyFormat($storedKey)
+            && hash_equals($storedKey, $friendKey);
+
+        if (!$isOwner && !$isPayer && !$keyOk) {
+            throw new ApiException('订单不存在');
+        }
+
+        // 下单人打开代付页时签发/回传令牌，供分享链接携带
+        $shareKey = $storedKey;
+        if ($isOwner) {
+            $shareKey = $this->ensureFriendPayKey($orderId);
+        }
+
         /** @var UserServices $userServices */
         $userServices = app()->make(UserServices::class);
-        $userInfo = $userServices->get($detail['uid']);
+        $userInfo = $userServices->get($ownerUid);
 
-        // 从 extra_info 读取代付人信息
-        $payUid = $detail['extra_info']['pay_uid'] ?? 0;
         $friendInfo = $payUid ? $userServices->get($payUid) : null;
 
         // 构建商品明细（与旧版 cartInfo 结构兼容）
@@ -699,17 +738,18 @@ class OrderCenterUserServices extends OrderCenterServices
             // Keep the legacy mobile client contract; order_id is the order
             // number used by the order detail route, not the center table id.
             'order_id'    => $detail['order_no'],
-            'uid'          => $detail['uid'],
+            'uid'          => $ownerUid,
             'avatar'       => $userInfo['avatar'] ?? '',
             'nickname'     => $userInfo['nickname'] ?? '',
             'cartInfo'     => $cartInfo,
             'paid'         => $detail['pay_status'] == OrderCenter::PAY_PAID ? 1 : 0,
             'total_num'    => $detail['total_num'] ?? 0,
             'pay_price'    => $detail['pay_price'] ?? '0.00',
-            'type'         => $uid == $detail['uid'] ? 0 : 1,
+            'type'         => $uid == $ownerUid ? 0 : 1,
             'pay_uid'      => $friendInfo['uid'] ?? 0,
             'pay_nickname' => $friendInfo['nickname'] ?? '',
             'pay_avatar'   => $friendInfo['avatar'] ?? '',
+            'friend_key'   => $isOwner ? $shareKey : '',
         ];
     }
 
@@ -929,18 +969,125 @@ class OrderCenterUserServices extends OrderCenterServices
     }
 
     /**
-     * 礼品详情
-     * 获取礼物订单的分享详情，供领取者查看
-     * @param int $oid 订单中台记录ID
-     * @return array 返回礼品详情数据
-     * @throws ApiException 订单不存在时抛出
+     * 生成礼物领取令牌（32 位 hex，可整段放入微信小程序码 scene）
      */
-    public function giftDetail(int $oid)
+    public function generateGiftKey(): string
     {
+        return bin2hex(random_bytes(16));
+    }
+
+    /**
+     * 校验礼物令牌格式
+     */
+    public function isValidGiftKeyFormat(string $giftKey): bool
+    {
+        return (bool)preg_match('/^[a-f0-9]{32}$/', $giftKey);
+    }
+
+    /**
+     * 读取订单已存礼物令牌（非 32 位 hex 视为无效，需重新签发）
+     */
+    protected function readStoredGiftKey(array $extraInfo): string
+    {
+        $key = (string)($extraInfo['gift']['gift_key'] ?? '');
+        return $this->isValidGiftKeyFormat($key) ? $key : '';
+    }
+
+    /**
+     * 送礼人打开详情/分享时确保有领取令牌，并生成小程序码
+     * 旧单无令牌时懒生成写入；仅订单归属人可调用
+     *
+     * @return array{gift_key:string,gift_code:string}
+     */
+    public function ensureGiftShareSecrets(int $orderId, int $viewerUid): array
+    {
+        $order = $this->dao->get($orderId, ['id', 'uid', 'order_no', 'extra_info', 'gift_uid']);
+        if (!$order) {
+            throw new ApiException('订单不存在');
+        }
+        $orderArr = is_array($order) ? $order : $order->toArray();
+        if ((int)($orderArr['uid'] ?? 0) !== $viewerUid) {
+            throw new ApiException('无权获取礼物分享信息');
+        }
+        $extraInfo = $this->parseExtraInfo($orderArr['extra_info'] ?? null);
+        if (empty($extraInfo['gift']) && !isset($extraInfo['gift_mark'])) {
+            throw new ApiException('非送礼订单');
+        }
+
+        $giftKey = $this->readStoredGiftKey($extraInfo);
+        if ($giftKey === '') {
+            $giftKey = $this->generateGiftKey();
+            $extraInfo['gift'] = array_merge(
+                is_array($extraInfo['gift'] ?? null) ? $extraInfo['gift'] : [],
+                ['gift_uid' => (int)($extraInfo['gift']['gift_uid'] ?? ($orderArr['gift_uid'] ?? 0)), 'gift_key' => $giftKey]
+            );
+            $this->dao->update($orderId, ['extra_info' => $this->encodeExtraInfo($extraInfo)]);
+            CacheService::set('gift_claim_key_' . $giftKey, $orderId, 86400 * 30);
+        }
+
+        $giftCode = '';
+        try {
+            /** @var \app\services\other\QrcodeServices $qrcodeServices */
+            $qrcodeServices = app()->make(\app\services\other\QrcodeServices::class);
+            $code = $qrcodeServices->getRoutineQrcodePath($orderId, $viewerUid, 7, ['gift_key' => $giftKey]);
+            if (is_string($code) && $code !== '' && $code !== 'unpublished') {
+                $giftCode = set_file_url($code);
+            }
+        } catch (\Throwable $e) {
+            // 小程序码失败不影响 H5/App 链接分享
+        }
+
+        return ['gift_key' => $giftKey, 'gift_code' => $giftCode];
+    }
+
+    /**
+     * 按礼物令牌解析订单 ID
+     */
+    public function resolveOrderIdByGiftKey(string $giftKey): int
+    {
+        if (!$this->isValidGiftKeyFormat($giftKey)) {
+            throw new ApiException('礼物链接无效');
+        }
+        $cached = CacheService::get('gift_claim_key_' . $giftKey, '');
+        if ($cached !== '' && $cached !== null && (int)$cached > 0) {
+            return (int)$cached;
+        }
+        $id = $this->dao->getIdByGiftKey($giftKey);
+        if (!$id) {
+            throw new ApiException('礼物不存在或链接已失效');
+        }
+        CacheService::set('gift_claim_key_' . $giftKey, $id, 86400 * 30);
+        return $id;
+    }
+
+    /**
+     * 礼品详情（须持有 gift_key，防仅凭 oid 枚举劫持）
+     * @param int $oid 订单中台记录ID
+     * @param string $giftKey 礼物领取令牌
+     * @return array 返回礼品详情数据
+     * @throws ApiException
+     */
+    public function giftDetail(int $oid, string $giftKey)
+    {
+        if (!$this->isValidGiftKeyFormat($giftKey)) {
+            throw new ApiException('礼物链接无效');
+        }
+
         // 礼品详情不需要物流轨迹，跳过第三方物流查询
         $detail = $this->getDetail($oid, false);
         if (!$detail) {
             throw new ApiException('订单不存在');
+        }
+
+        $extraInfo = $detail['extra_info'] ?? [];
+        $isGift = !empty($extraInfo['gift']) || isset($extraInfo['gift_mark']);
+        if (!$isGift) {
+            throw new ApiException('非送礼订单');
+        }
+
+        $storedKey = $this->readStoredGiftKey($extraInfo);
+        if ($storedKey === '' || !hash_equals($storedKey, $giftKey)) {
+            throw new ApiException('礼物链接无效');
         }
 
         /** @var UserServices $userServices */
@@ -993,16 +1140,12 @@ class OrderCenterUserServices extends OrderCenterServices
         if (count($res) == 2) {
             $type = 0;
         } else {
-            if ($res[0] == 2 && sys_config('store_self_mention') == 0) {
+            if (($res[0] ?? '') == 2 && sys_config('store_self_mention') == 0) {
                 $type = 1;
             } else {
-                $type = (int)$res[0];
+                $type = (int)($res[0] ?? 0);
             }
         }
-
-        // 从 extra_info 提取礼物相关字段
-        $extraInfo = $detail['extra_info'] ?? [];
-        $giftKey = md5($detail['id'] . '_' . $detail['order_no'] . '_' . $detail['uid']);
 
         return [
             'id'         => $detail['id'],
@@ -1014,14 +1157,23 @@ class OrderCenterUserServices extends OrderCenterServices
             'paid'       => $detail['pay_status'] == OrderCenter::PAY_PAID ? 1 : 0,
             'total_num'  => $detail['total_num'] ?? 0,
             'pay_price'  => $detail['pay_price'] ?? '0.00',
-            'gift_key'   => $giftKey,
+            'gift_key'   => $storedKey,
             'gift_mark'  => $extraInfo['gift_mark'] ?? '',
             'gift_uid'   => (int)($detail['gift_uid'] ?? $extraInfo['gift']['gift_uid'] ?? ($extraInfo['gift_uid'] ?? 0)),
-            'is_gift'    => (!empty($extraInfo['gift']) || isset($extraInfo['gift_mark'])) ? 1 : 0,
+            'is_gift'    => 1,
             'refund_status' => $detail['refund_status'] ?? 0,
             'type'       => $type,
             'store_self_mention' => (int)sys_config('store_self_mention') ?? 0,
         ];
+    }
+
+    /**
+     * 仅凭礼物令牌获取礼品详情（小程序码 scene 仅含 token 时使用）
+     */
+    public function giftDetailByKey(string $giftKey): array
+    {
+        $oid = $this->resolveOrderIdByGiftKey($giftKey);
+        return $this->giftDetail($oid, $giftKey);
     }
 
     /**
@@ -1039,14 +1191,20 @@ class OrderCenterUserServices extends OrderCenterServices
      */
     public function receiveGift(int $uid, int $oid, string $giftKey, int $shippingType, string $name, string $phone, int $addressId = 0, int $storeId = 0)
     {
+        if (!$this->isValidGiftKeyFormat($giftKey)) {
+            throw new AdminException('领取失败');
+        }
+
         $order = $this->dao->get($oid);
         if (!$order) {
             throw new AdminException('订单不存在');
         }
         $orderArr = $order->toArray();
 
-        // 验证礼物密钥
-        if ($giftKey != md5($orderArr['id'] . '_' . $orderArr['order_no'] . '_' . $orderArr['uid'])) {
+        // 解析 extra_info
+        $extraInfo = is_array($orderArr['extra_info'] ?? null) ? $orderArr['extra_info'] : (json_decode((string)($orderArr['extra_info'] ?? '{}'), true) ?: []);
+        $storedKey = $this->readStoredGiftKey($extraInfo);
+        if ($storedKey === '' || !hash_equals($storedKey, $giftKey)) {
             throw new AdminException('领取失败');
         }
         // 已退款订单不能领取
@@ -1058,9 +1216,7 @@ class OrderCenterUserServices extends OrderCenterServices
             throw new AdminException('不能领取自己的礼物');
         }
 
-        // 解析 extra_info
-        $extraInfo = is_array($orderArr['extra_info'] ?? null) ? $orderArr['extra_info'] : (json_decode((string)($orderArr['extra_info'] ?? '{}'), true) ?: []);
-        $currentGiftUid = $extraInfo['gift']['gift_uid'] ?? 0;
+        $currentGiftUid = (int)($orderArr['gift_uid'] ?? ($extraInfo['gift']['gift_uid'] ?? 0));
         // 如果已被别人领取且不是本人
         if ($currentGiftUid != 0 && $currentGiftUid != $uid) {
             return false;
@@ -1089,11 +1245,11 @@ class OrderCenterUserServices extends OrderCenterServices
         $giftTime = (int)($extraInfo['gift']['gift_time'] ?? 0) ?: time();
         $extraInfo['gift'] = [
             'gift_uid'  => $uid,
-            'gift_key'  => $giftKey,
+            'gift_key'  => $storedKey,
             'gift_time' => $giftTime,
         ];
         // 联系人信息
-        $extraInfo['contact'] = [    
+        $extraInfo['contact'] = [
             'name'    => $name,
             'phone'   => $phone,
             'address' => $address ?: ($extraInfo['contact']['address'] ?? ''),

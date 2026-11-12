@@ -16,8 +16,8 @@
       <!-- 顶部操作栏 -->
       <div class="action-bar">
         <div class="left-actions">
-          <el-button type="primary" @click="handleAdd">新建主题</el-button>
-          <el-button @click="handleImport">导入主题</el-button>
+          <el-button v-db-click type="primary" @click="handleAdd">新建主题</el-button>
+          <el-button v-db-click @click="handleImport">导入主题</el-button>
           <img class="theme-in" src="https://www.crmeb.com/static/images/zhutishichang.png" alt="" @click="toTheme" />
         </div>
         <div class="right-actions flex">
@@ -57,7 +57,7 @@
               <!-- 底部按钮 -->
               <div class="bottom-buttons">
                 <el-button @click="handleEdit(item)">编辑主题</el-button>
-                <el-button type="primary" @click="handleUse(item)">使用主题</el-button>
+                <el-button v-db-click type="primary" @click="handleUse(item)">使用主题</el-button>
               </div>
             </div>
           </div>

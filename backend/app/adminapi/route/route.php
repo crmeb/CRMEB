@@ -25,23 +25,23 @@ foreach ($files as $file) {
  */
 Route::group(function () {
     //升级程序
-    Route::get('upgrade', [\app\adminapi\controller\UpgradeController::class, 'index']);
-    Route::get('upgrade/run', [\app\adminapi\controller\UpgradeController::class, 'upgrade']);
+    Route::get('upgrade', [\app\adminapi\controller\UpgradeController::class, 'index'])->option(['real_name' => '升级程序入口']);
+    Route::get('upgrade/run', [\app\adminapi\controller\UpgradeController::class, 'upgrade'])->option(['real_name' => '执行升级程序']);
     //用户名密码登录
-    Route::post('login', [\app\adminapi\controller\LoginController::class, 'login'])->name('AdminLogin')->option(['real_name' => '下载表备份记录']);
+    Route::post('login', [\app\adminapi\controller\LoginController::class, 'login'])->name('AdminLogin')->option(['real_name' => '管理员登录']);
     //后台登录页面数据
     Route::get('login/info', [\app\adminapi\controller\LoginController::class, 'info'])->option(['real_name' => '登录信息']);
     //验证码
     Route::get('captcha_pro', [\app\adminapi\controller\LoginController::class, 'captcha'])->name('')->option(['real_name' => '获取验证码']);
     //获取验证码
-    Route::get('ajcaptcha', [\app\adminapi\controller\LoginController::class, 'ajcaptcha'])->name('ajcaptcha')->option(['real_name' => '获取验证码']);
+    Route::get('ajcaptcha', [\app\adminapi\controller\LoginController::class, 'ajcaptcha'])->name('ajcaptcha')->option(['real_name' => '获取行为验证码']);
     //一次验证
-    Route::post('ajcheck', [\app\adminapi\controller\LoginController::class, 'ajcheck'])->name('ajcheck')->option(['real_name' => '一次验证']);
+    Route::post('ajcheck', [\app\adminapi\controller\LoginController::class, 'ajcheck'])->name('ajcheck')->option(['real_name' => '行为验证码校验']);
     //获取客服数据
     Route::get('get_workerman_url', [\app\adminapi\controller\PublicController::class, 'getWorkerManUrl'])->option(['real_name' => '获取客服数据']);
     //扫码上传图片
     Route::post('image/scan_upload', [\app\adminapi\controller\PublicController::class, 'scanUpload'])->option(['real_name' => '扫码上传图片']);
-    Route::get('custom_admin_js', [\app\adminapi\controller\PublicController::class, 'customAdminJs'])->option(['real_name' => '测试地址']);
+    Route::get('custom_admin_js', [\app\adminapi\controller\PublicController::class, 'customAdminJs'])->option(['real_name' => '获取自定义后台JS']);
 
 })->middleware(AllowOriginMiddleware::class)->option(['mark' => 'login', 'mark_name' => '登录相关']);
 

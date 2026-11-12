@@ -41,7 +41,6 @@ use crmeb\trade\product\ProductTypeRegistry;
 use app\jobs\ProductCopyJob;
 use crmeb\exceptions\ApiException;
 use crmeb\utils\File;
-use app\services\system\config\SystemGroupDataServices;
 use think\facade\Config;
 
 /**
@@ -65,6 +64,17 @@ class CenterProductServices extends BaseService
     public function __construct(CenterProductDao $dao)
     {
         $this->dao = $dao;
+    }
+
+    /**
+     * 支付成功后按数量累加商品销量。
+     * @param int $id 商品ID
+     * @param int $num 数量
+     * @return bool
+     */
+    public function incSales(int $id, int $num): bool
+    {
+        return $this->dao->incSales($id, $num);
     }
 
     /**
@@ -942,12 +952,7 @@ class CenterProductServices extends BaseService
         $storeInfo['selection_spec'] = $handler->getSelectionSpec();
         $storeInfo['cart_strategy']  = $handler->getCartStrategy();
 
-        // 自定义表单商品必须填写表单后直接下单，不支持加入购物车，强制 direct 单按钮模式
-        if ($this->hasCustomForm($storeInfo['custom_form'] ?? [])) {
-            $storeInfo['cart_strategy']['cart_mode'] = 'direct';
-        }
-
-        // 预售 / 自定义表单 / direct 模式均不展示加入购物车
+        // 自定义表单 / 预售 / 类型 direct：仅隐藏「加入购物车」；立即购买仍走 new=1 加购拿 cartId
         $storeInfo['cart_button'] = $this->canShowCartButton($storeInfo) ? 1 : 0;
 
         // ========== 14. 组装扁平返回数据 ==========
@@ -1614,8 +1619,8 @@ class CenterProductServices extends BaseService
     }
 
     /**
-     * 是否允许展示/使用加入购物车
-     * 预售、自定义表单、direct 加购模式均不允许进购物车，应进详情直接购买
+     * 是否允许展示「加入购物车」按钮
+     * 仅约束用户主动加购（new=0）；立即购买（new=1）仍走加购接口拿 cartId，不受此限制
      * @param array $item 商品信息（需含 presale / custom_form / product_type）
      * @return bool
      */
@@ -2556,7 +2561,7 @@ class CenterProductServices extends BaseService
      * @param array $productIds
      * @return array
      */
-    public function getActivityList(array $list, bool $status = true, $seckillIdsList = false, $pinkIdsList = false, $bargrainIdsList = false)
+    public function getActivityList(array $list, bool $status = true)
     {
         if (!$list) return [];
         if ($status) {
@@ -2566,28 +2571,25 @@ class CenterProductServices extends BaseService
             $list = [$list];
         }
 
-        // 通过活动注册中心获取活动ID列表
+        // 按已启用的营销模式收集角标，时段等差异留在各模式处理器
+        /** @var TradeModeRegistry $activityRegistry */
         $activityRegistry = app()->make(TradeModeRegistry::class);
-        if ($seckillIdsList === false) {
-            $seckillIdsList = $activityRegistry->get('seckill')->getActivityIdsList($productIds, ['id', 'time_id', 'product_id']);
-        }
-        if ($pinkIdsList === false) {
-            $pinkIdsList = $activityRegistry->get('combination')->getActivityIdsList($productIds, ['id']);
-        }
-        if ($bargrainIdsList === false) {
-            $bargrainIdsList = $activityRegistry->get('bargain')->getActivityIdsList($productIds, ['id']);
+        $badges = [];
+        foreach ($activityRegistry->getMarketingKeys() as $modeKey) {
+            $handler = $activityRegistry->get($modeKey);
+            $legacyType = $handler->getLegacyType();
+            if ($legacyType <= 0) {
+                continue;
+            }
+            $rows = $handler->getActivityIdsList($productIds, ['id', 'product_id']);
+            $badges[$legacyType] = $handler->pickActivityBadges($rows);
         }
 
         /** @var StoreCouponIssueServices $couponIssueServices */
         $couponIssueServices = app()->make(StoreCouponIssueServices::class);
 
         foreach ($list as &$item) {
-            $seckillId = array_filter($seckillIdsList, function ($val) use ($item) {
-                if ($val['product_id'] === $item['id']) {
-                    return $val;
-                }
-            });
-            $item['activity'] = $this->activity($item['activity'], $item['id'], $pinkIdsList[$item['id']] ?? 0, $seckillId, $bargrainIdsList[$item['id']] ?? 0, $status);
+            $item['activity'] = $this->pickProductActivity((string)($item['activity'] ?? ''), (int)$item['id'], $badges, $status);
             $item['checkCoupon'] = $couponIssueServices->checkProductCoupon($item['id']);
         }
         if ($status) {
@@ -2598,62 +2600,39 @@ class CenterProductServices extends BaseService
     }
 
     /**
-     * 获取商品在此时段活动优先类型
-     * @param string $activity
-     * @param int $id
-     * @param int $combinationId
-     * @param array $seckillId
-     * @param int $bargainId
-     * @param bool $status
+     * 按商品上的活动顺序选出当前角标
+     * 顺序仍是旧协议数字：1 秒杀、2 砍价、3 拼团。第一位为 0 表示列表不展示活动。
+     * @param string $activity 商品活动顺序
+     * @param int $productId 商品ID
+     * @param array $badges 旧协议类型 => [商品ID => 角标]
+     * @param bool $status true 返回当前优先的一项，false 返回全部命中项
      * @return array
      */
-    public function activity(string $activity, int $id, int $combinationId, array $seckillId, int $bargainId, bool $status = true)
+    protected function pickProductActivity(string $activity, int $productId, array $badges, bool $status = true)
     {
-        if (!$activity) {
-            $activity = '0,1,2,3'; //如果老商品没有活动顺序，默认活动顺序，秒杀-砍价-拼团
+        if ($activity === '') {
+            $activity = '0,1,2,3';
         }
-        $activity = explode(',', $activity);
-        if ($activity[0] == 0 && $status) return [];
-        $activityId = [];
-        $time_id = 0;
-        if ($seckillId) {
-            foreach ($seckillId as $v) {
-                // 按 time_id 查询秒杀时间段数据（直接调 app 层服务，无需全局函数封装）
-                try {
-                    $_ids = is_string($v['time_id']) ? explode(',', $v['time_id']) : $v['time_id'];
-                    $_data = app()->make(SystemGroupDataServices::class)->getGroupDataColumn($_ids);
-                    $timeInfo = is_object($_data) ? $_data->toArray() : $_data;
-                } catch (\Exception $e) {
-                    $timeInfo = [];
-                }
-                foreach ($timeInfo as $time) {
-                    $value = json_decode($time['value'], true);
-                    if (date('H') >= $value['time']['value'] && date('H') < ($value['time']['value'] + $value['continued']['value'])) {
-                        $activityId[1] = $v['id'];
-                        $time_id = $time['id'];
-                        break;
-                    }
-                }
-            }
+        $order = explode(',', $activity);
+        if (($order[0] ?? '') === '0' && $status) {
+            return [];
         }
-        if ($bargainId) $activityId[2] = $bargainId;
-        if ($combinationId) $activityId[3] = $combinationId;
         $data = [];
-        foreach ($activity as $k => $v) {
-            if (array_key_exists($v, $activityId)) {
-                if ($status) {
-                    $data['type'] = $v;
-                    $data['id'] = $activityId[$v];
-                    if ($v == 1) $data['time_id'] = $time_id;
-                    break;
-                } else {
-                    if ($v != 0) {
-                        $arr['type'] = $v;
-                        $arr['id'] = $activityId[$v];
-                        if ($v == 1) $arr['time_id'] = $time_id;
-                        $data[] = $arr;
-                    }
-                }
+        foreach ($order as $type) {
+            $legacyType = (int)$type;
+            $badge = $badges[$legacyType][$productId] ?? null;
+            if (!$badge) {
+                continue;
+            }
+            $row = ['type' => (string)$legacyType, 'id' => $badge['id']];
+            if (isset($badge['time_id'])) {
+                $row['time_id'] = $badge['time_id'];
+            }
+            if ($status) {
+                return $row;
+            }
+            if ($legacyType !== 0) {
+                $data[] = $row;
             }
         }
         return $data;
@@ -2776,14 +2755,8 @@ class CenterProductServices extends BaseService
         $productType = $this->getProductType($id);
         $handler = app()->make(ProductTypeRegistry::class)->get($productType);
 
-        // 自定义表单商品不支持加入购物车，强制 direct 单按钮模式
-        $cartStrategy = $handler->getCartStrategy();
-        if ($this->hasCustomForm($storeInfo['custom_form'] ?? [])) {
-            $cartStrategy['cart_mode'] = 'direct';
-        }
-        $storeInfo['cart_strategy'] = $cartStrategy;
-
-        // 预售 / 自定义表单 / direct 模式均不展示加入购物车
+        // 类型自带 cart_strategy；自定义表单等仅通过 cart_button=0 隐藏加入购物车，不改立即购买链路
+        $storeInfo['cart_strategy'] = $handler->getCartStrategy();
         $storeInfo['cart_button'] = $this->canShowCartButton($storeInfo) ? 1 : 0;
 
         $specs = $handler->getDetailSpecs($id);
@@ -4026,52 +3999,65 @@ class CenterProductServices extends BaseService
             return true;
         }
 
-        // 触发产品类型删除回调，由各自 Handler 清理扩展表/SKU 数据
-        // 不再直接操作已弃用的 eb_store_product_attr* 表
         /** @var ProductTypeRegistry $registry */
         $registry = app()->make(ProductTypeRegistry::class);
-        foreach ($ids as $productId) {
-            try {
-                $productType = $this->getProductType((int)$productId);
-                $registry->get($productType)->afterProductDelete((int)$productId);
-            } catch (\Throwable $e) {
-                // 单个商品删除回调异常不影响整体流程
+        $registeredTypes = $registry->all();
+        if ($registeredTypes === []) {
+            throw new AdminException('未注册任何产品类型，无法清理回收站商品');
+        }
+
+        // 回收站中若存在未注册产品类型，拒绝清理，避免扩展表残留
+        $productTypes = array_unique(array_map(
+            static fn($type): string => (string)($type ?: 'normal'),
+            $this->dao->getColumn([['id', 'in', $ids]], 'product_type')
+        ));
+        $missingTypes = array_values(array_filter(
+            $productTypes,
+            static fn(string $type): bool => !$registry->has($type)
+        ));
+        if ($missingTypes !== []) {
+            throw new AdminException('回收站存在未注册的产品类型[{:types}]，请先安装对应插件后再清除', [
+                'types' => implode(',', $missingTypes),
+            ]);
+        }
+
+        return $this->transaction(function () use ($ids, $id, $registry, $registeredTypes) {
+            // 向所有已注册产品类型广播删除回调：各 Handler 按 product_id 清理自有扩展表/SKU，
+            // 不依赖单条商品的 product_type 字段，避免类型错标或回退 normal 漏删。
+            foreach ($ids as $productId) {
+                foreach ($registeredTypes as $typeKey) {
+                    $registry->get($typeKey)->afterProductDelete((int)$productId);
+                }
             }
-        }
 
-        // 删除商品详情
-        /** @var StoreDescriptionServices $productDescription */
-        $productDescription = app()->make(StoreDescriptionServices::class);
-        $productDescription->delete([['product_id', 'in', $ids], ['type', '=', '0']]);
+            /** @var StoreDescriptionServices $productDescription */
+            $productDescription = app()->make(StoreDescriptionServices::class);
+            $productDescription->delete([['product_id', 'in', $ids], ['type', '=', '0']]);
 
-        // 删除商品关联分类数据
-        /** @var StoreProductCateServices $productCate */
-        $productCate = app()->make(StoreProductCateServices::class);
-        $productCate->delete([['product_id', 'in', $ids]]);
+            /** @var StoreProductCateServices $productCate */
+            $productCate = app()->make(StoreProductCateServices::class);
+            $productCate->delete([['product_id', 'in', $ids]]);
 
-        // 删除商品关联优惠券数据
-        /** @var StoreProductCouponServices $productCoupon */
-        $productCoupon = app()->make(StoreProductCouponServices::class);
-        $productCoupon->delete([['product_id', 'in', $ids]]);
+            /** @var StoreProductCouponServices $productCoupon */
+            $productCoupon = app()->make(StoreProductCouponServices::class);
+            $productCoupon->delete([['product_id', 'in', $ids]]);
 
-        // 删除商品收藏记录
-        /** @var StoreProductReplyServices $productRelation */
-        $productRelation = app()->make(StoreProductReplyServices::class);
-        $productRelation->delete([['product_id', 'in', $ids], ['reply_type', '=', 'product']]);
+            /** @var StoreProductRelationServices $productRelation */
+            $productRelation = app()->make(StoreProductRelationServices::class);
+            $productRelation->delete([['product_id', 'in', $ids]]);
 
-        // 删除商品的评论
-        /** @var StoreProductReplyServices $productReply */
-        $productReply = app()->make(StoreProductReplyServices::class);
-        $productReply->delete([['product_id', 'in', $ids]]);
+            /** @var StoreProductReplyServices $productReply */
+            $productReply = app()->make(StoreProductReplyServices::class);
+            $productReply->delete([['product_id', 'in', $ids]]);
 
-        // 删除商品
-        if ($id) {
-            $this->delete($id);
-        } else {
-            $this->delete(1, 'is_del');
-        }
+            if ($id) {
+                $this->delete($id);
+            } else {
+                $this->delete(1, 'is_del');
+            }
 
-        return true;
+            return true;
+        });
     }
 
     /**

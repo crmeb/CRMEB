@@ -11,15 +11,11 @@
 namespace app\adminapi\controller\system;
 
 
-use app\services\product\product\StoreDescriptionServices;
-use app\services\product\product\StoreProductCateServices;
-use app\services\product\product\StoreProductCouponServices;
-use app\services\product\product\StoreProductReplyServices;
 use think\facade\App;
+use think\facade\Db;
+use think\facade\Env;
 use app\adminapi\controller\AuthController;
 use app\services\system\SystemClearServices;
-use app\services\product\CenterProductServices;
-use app\services\system\attachment\SystemAttachmentServices;
 
 
 /**
@@ -48,12 +44,40 @@ class SystemClearDataController extends AuthController
     }
 
     /**
-     * 统一方法
-     * @param $type
+     * 危险清理统一门禁：开发模式 + 超管 + 登录密码
+     * @return mixed|null 失败时返回 json 响应，通过返回 null
+     */
+    protected function guardDangerousAction()
+    {
+        if (!Env::get('app_debug', false)) {
+            return app('json')->fail('生产环境无法使用此功能，如需使用请修改.env文件中app_debug项为true');
+        }
+        if (!$this->adminInfo || (int)($this->adminInfo['level'] ?? -1) !== 0) {
+            return app('json')->fail('仅超级管理员可以操作');
+        }
+        [$pwd] = $this->request->postMore([
+            ['pwd', ''],
+        ], true);
+        if ($pwd === '' || $pwd === null) {
+            return app('json')->fail('请输入登录密码');
+        }
+        $admin = Db::name('system_admin')->where('id', (int)$this->adminId)->where('is_del', 0)->find();
+        if (!$admin || !password_verify((string)$pwd, (string)($admin['pwd'] ?? ''))) {
+            return app('json')->fail('登录密码错误');
+        }
+        return null;
+    }
+
+    /**
+     * 统一清除入口
+     * @param string $type
      * @return mixed
      */
     public function index($type)
     {
+        if ($deny = $this->guardDangerousAction()) {
+            return $deny;
+        }
         switch ($type) {
             case 'temp':
                 return $this->userTemp();
@@ -88,10 +112,7 @@ class SystemClearDataController extends AuthController
      */
     public function userTemp()
     {
-        /** @var SystemAttachmentServices $services */
-        $services = app()->make(SystemAttachmentServices::class);
-        $services->clearTemporaryAttachments();
-        $this->services->clearData(['qrcode'], true);
+        $this->services->clearTempData();
         return app('json')->success('清除数据成功');
     }
 
@@ -99,15 +120,9 @@ class SystemClearDataController extends AuthController
      * 清除回收站商品
      * @return mixed
      */
-    public function recycleProduct($id = 0)
+    public function recycleProduct()
     {
-        /** @var CenterProductServices $product */
-        $product = app()->make(CenterProductServices::class);
-        $product->recycleProduct($id);
-
-        if ($id) {
-            return true;
-        }
+        $this->services->clearRecycleProduct();
         return app('json')->success('清除数据成功');
     }
 
@@ -117,59 +132,7 @@ class SystemClearDataController extends AuthController
      */
     public function userRelevantData()
     {
-        $this->services->clearData([
-            'distribution_level_task_record',
-            'member_card',
-            'member_card_batch',
-            'capital_flow',
-            'delivery_service',
-            'division_agent_apply',
-            'luck_lottery_record',
-            'offline_receipt',
-            'offline_receipt_status',
-            'member_order',
-            'member_order_status',
-            'qrcode',
-            'sms_record',
-            'store_bargain_user',
-            'store_bargain_user_help',
-            'store_cart',
-            'store_coupon_issue_user',
-            'store_coupon_user',
-            'store_integral_order',
-            'store_integral_order_status',
-            'order_center',
-            'order_economize',
-            'store_order_invoice',
-            'store_product_relation',
-            'store_product_reply',
-            'store_service',
-            'store_service_feedback',
-            'store_service_log',
-            'store_service_record',
-            'store_visit',
-            'system_store_staff',
-            'user',
-            'user_address',
-            'user_bill',
-            'user_brokerage_frozen',
-            'user_cancel',
-            'user_enter',
-            'user_friends',
-            'user_group',
-            'user_invoice',
-            'user_label',
-            'user_label_relation',
-            'user_level',
-            'user_money',
-            'user_recharge',
-            'user_search',
-            'user_sign',
-            'user_spread',
-            'user_visit',
-            'wechat_user',
-        ], true);
-        $this->services->delDirAndFile('./public/uploads/store/comment');
+        $this->services->clearUserRelevantData();
         return app('json')->success('清除数据成功');
     }
 
@@ -179,97 +142,7 @@ class SystemClearDataController extends AuthController
      */
     public function storeData()
     {
-        $this->services->clearData([
-            'distribution_level_task',
-            'distribution_level_task_record',
-            'article',
-            'article_category',
-            'article_content',
-            'auxiliary',
-            'cache',
-            'capital_flow',
-            'category',
-            'delivery_service',
-            'division_agent_apply',
-            'live_anchor',
-            'live_goods',
-            'live_room',
-            'live_room_goods',
-            'luck_lottery',
-            'luck_lottery_record',
-            'luck_prize',
-            'member_card',
-            'member_card_batch',
-            'offline_receipt',
-            'offline_receipt_status',
-            'member_order',
-            'member_order_status',
-            'qrcode',
-            'sms_record',
-            'store_advance',
-            'store_bargain',
-            'store_bargain_user',
-            'store_bargain_user_help',
-            'store_cart',
-            'store_category',
-            'store_combination',
-            'store_coupon_issue',
-            'store_coupon_issue_user',
-            'store_coupon_product',
-            'store_coupon_user',
-            'store_integral',
-            'store_integral_order',
-            'store_integral_order_status',
-            'order_center',
-            'order_economize',
-            'store_order_invoice',
-            'store_pink',
-            'product_center',
-            'store_product_cate',
-            'store_product_coupon',
-            'store_product_description',
-            'store_product_log',
-            'store_product_relation',
-            'store_product_reply',
-            'store_product_rule',
-            'store_product_virtual',
-            'store_seckill',
-            'store_service',
-            'store_service_feedback',
-            'store_service_log',
-            'store_service_record',
-            'store_visit',
-            'system_log',
-            'system_store',
-            'system_store_staff',
-            'user',
-            'user_address',
-            'user_bill',
-            'user_brokerage_frozen',
-            'user_cancel',
-            'user_enter',
-            'user_friends',
-            'user_group',
-            'user_invoice',
-            'user_label',
-            'user_label_relation',
-            'user_level',
-            'user_money',
-            'user_recharge',
-            'user_search',
-            'user_sign',
-            'user_spread',
-            'user_visit',
-            'wechat_key',
-            'wechat_media',
-            'wechat_message',
-            'wechat_news_category',
-            'wechat_qrcode',
-            'wechat_qrcode_cate',
-            'wechat_qrcode_record',
-            'wechat_reply',
-            'wechat_user',
-        ], true);
+        $this->services->clearStoreData();
         return app('json')->success('清除数据成功');
     }
 
@@ -279,7 +152,7 @@ class SystemClearDataController extends AuthController
      */
     public function categoryData()
     {
-        $this->services->clearData(['store_category'], true);
+        $this->services->clearCategoryData();
         return app('json')->success('清除数据成功');
     }
 
@@ -289,19 +162,7 @@ class SystemClearDataController extends AuthController
      */
     public function orderData()
     {
-        $this->services->clearData([
-            'offline_receipt',
-            'offline_receipt_status',
-            'member_order',
-            'member_order_status',
-            'store_cart',
-            'store_integral_order',
-            'store_integral_order_status',
-            'order_center',
-            'order_economize',
-            'store_order_invoice',
-            'store_pink',
-        ], true);
+        $this->services->clearOrderData();
         return app('json')->success('清除数据成功');
     }
 
@@ -311,14 +172,7 @@ class SystemClearDataController extends AuthController
      */
     public function kefuData()
     {
-        $this->services->clearData([
-            'store_service',
-            'store_service_log',
-            'store_service_record',
-            'store_service_feedback',
-            'store_service_speechcraft'
-        ], true);
-        $this->services->delDirAndFile('./public/uploads/store/service');
+        $this->services->clearKefuData();
         return app('json')->success('清除数据成功');
     }
 
@@ -328,18 +182,7 @@ class SystemClearDataController extends AuthController
      */
     public function wechatData()
     {
-        $this->services->clearData([
-            'cache',
-            'wechat_key',
-            'wechat_media',
-            'wechat_message',
-            'wechat_news_category',
-            'wechat_qrcode',
-            'wechat_qrcode_cate',
-            'wechat_qrcode_record',
-            'wechat_reply'
-        ], true);
-        $this->services->delDirAndFile('./public/uploads/wechat');
+        $this->services->clearWechatData();
         return app('json')->success('清除数据成功');
     }
 
@@ -349,32 +192,50 @@ class SystemClearDataController extends AuthController
      */
     public function attachmentData()
     {
-        $this->services->clearData([
-            'system_attachment',
-            'system_attachment_category'
-        ], true);
-        $this->services->delDirAndFile('./public/uploads/');
+        $this->services->clearAttachmentData();
         return app('json')->success('清除数据成功');
     }
 
-    //清除内容分类
+    /**
+     * 清除内容分类
+     * @return mixed
+     */
     public function articleData()
     {
-        $this->services->clearData([
-            'article_category',
-            'article',
-            'article_content'
-        ], true);
+        $this->services->clearArticleData();
         return app('json')->success('清除数据成功');
     }
 
-    //清除系统记录
+    /**
+     * 清除系统记录
+     * @return mixed
+     */
     public function systemData()
     {
-        $this->services->clearData([
-            'system_log'
-        ], true);
+        $this->services->clearSystemLogData();
         return app('json')->success('清除数据成功');
+    }
+
+    /**
+     * 恢复出厂设置
+     * @return mixed
+     */
+    public function factoryReset()
+    {
+        if ($deny = $this->guardDangerousAction()) {
+            return $deny;
+        }
+        $steps = $this->services->factoryReset((int)$this->adminId);
+        return app('json')->success('恢复出厂成功，请重新登录', ['steps' => $steps, 'relogin' => true]);
+    }
+
+    /**
+     * 获取当前网站域名（用于更换域名弹窗默认原域名）
+     * @return mixed
+     */
+    public function getSiteUrl()
+    {
+        return app('json')->success(['site_url' => (string)sys_config('site_url')]);
     }
 
     /**
@@ -383,14 +244,28 @@ class SystemClearDataController extends AuthController
      */
     public function replaceSiteUrl()
     {
-        list($url) = $this->request->postMore([
-            ['url', '']
+        if ($deny = $this->guardDangerousAction()) {
+            return $deny;
+        }
+        [$url, $oldUrl] = $this->request->postMore([
+            ['url', ''],
+            ['old_url', ''],
         ], true);
-        if (!$url)
-            return app('json')->fail('请输入需要更换的域名');
-        if (!verify_domain($url))
-            return app('json')->fail('域名不合法');
-        $this->services->replaceSiteUrl($url);
+        $url = trim((string)$url);
+        $oldUrl = trim((string)$oldUrl);
+        if ($oldUrl === '') {
+            return app('json')->fail('请输入要被替换的域名');
+        }
+        if ($url === '') {
+            return app('json')->fail('请输入新的域名');
+        }
+        if (!verify_domain($oldUrl)) {
+            return app('json')->fail('要被替换的域名不合法，格式为：http://或https://域名');
+        }
+        if (!verify_domain($url)) {
+            return app('json')->fail('新域名不合法，格式为：http://或https://域名');
+        }
+        $this->services->replaceSiteUrl($url, $oldUrl);
         return app('json')->success('替换成功');
     }
 }

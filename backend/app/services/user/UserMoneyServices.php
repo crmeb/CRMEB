@@ -479,9 +479,9 @@ class UserMoneyServices extends BaseService
      */
     public function getChannel($where)
     {
-        $bing_xdata = ['系统增加', '用户充值', '佣金提现', '抽奖赠送', '商品退款'];
-        $color = ['#64a1f4', '#3edeb5', '#70869f', '#ffc653', '#fc7d6a'];
-        $data = ['system_add', 'recharge', 'extract', 'lottery_add', 'pay_product_refund'];
+        $bing_xdata = ['系统增加', '用户充值', '商品退款'];
+        $color = ['#64a1f4', '#3edeb5', '#fc7d6a'];
+        $data = ['system_add', 'recharge', 'pay_product_refund'];
         $bing_data = [];
         foreach ($data as $key => $item) {
             $bing_data[] = [

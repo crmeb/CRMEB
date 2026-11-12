@@ -273,66 +273,71 @@ class MemberOrderServices extends BaseService
      * @param array $other 其他参数
      * @return bool 返回处理结果
      */
-    public function paySuccess(array $orderInfo, string $paytype = PayServices::WEIXIN_PAY, array $other = [])
+    public function paySuccess(array $orderInfo, string $paytype = PayServices::WEIXIN_PAY, array $other = []): bool
     {
-        if (!\crmeb\services\pay\PaymentDispatch::collecting()) {
-            return app()->make(PayRecordServices::class)->complete((string)$orderInfo['order_id'], 'member',
-                (string)($other['trade_no'] ?? ''), fn(array $fresh) => $fresh['paid'] ? true
-                    : $this->paySuccess(array_replace($orderInfo, $fresh), $paytype, $other));
+        $orderNo = (string)($orderInfo['order_id'] ?? '');
+        $paidOrder = null;
+        $this->transaction(function () use ($orderNo, $paytype, $other, $orderInfo, &$paidOrder) {
+            $row = $this->dao->getDb()->where('order_id', $orderNo)->lock(true)->find();
+            if (!$row || (int)$row['paid'] !== 0) {
+                return;
+            }
+            $order = array_replace($orderInfo, $row->toArray());
+            $records = app()->make(PayRecordServices::class);
+            $paytype = $records->validate($order, 'member', $paytype, $other);
+            if ($paytype === PayServices::YUE_PAY && bccomp((string)$order['pay_price'], '0', 2) > 0) {
+                $records->assertChannel($orderNo, PayServices::YUE_PAY);
+                if (isset($orderInfo['pay_price']) && bccomp((string)$order['pay_price'], (string)$orderInfo['pay_price'], 2) !== 0) {
+                    throw new ApiException('订单金额已变化');
+                }
+                app()->make(UserMoneyServices::class)->moneyIncome('pay_member', (int)$order['uid'], (string)$order['pay_price'], (int)$order['id']);
+            }
+            /** @var MemberOrderStatusServices $statusService */
+            $statusService = app()->make(MemberOrderStatusServices::class);
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $type = 'pay_member';
+            $res1 = true;
+            switch ($order['type']) {
+                case 0:
+                case 1:
+                case 2:
+                    $res1 = $userServices->setMemberOverdueTime($order['vip_day'], $order['uid'], 1, $order['member_type']);
+                    break;
+            }
+            $updata = ['paid' => 1, 'pay_type' => $paytype, 'pay_time' => time()];
+            if (($other['trade_no'] ?? '') !== '') {
+                $updata['trade_no'] = $other['trade_no'];
+            }
+            $order['pay_time'] = $updata['pay_time'];
+            $order['pay_type'] = $paytype;
+            $res2 = $this->dao->update($order['id'], $updata);
+            $res3 = $statusService->save([
+                'order_id' => $order['id'],
+                'change_type' => 'pay_success',
+                'change_message' => '用户付款成功',
+            ]);
+            if ($order['pay_type'] != 'yue') {
+                /** @var CapitalFlowServices $capitalFlowServices */
+                $capitalFlowServices = app()->make(CapitalFlowServices::class);
+                $userInfo = $userServices->get($order['uid']);
+                $order['nickname'] = $userInfo['nickname'];
+                $order['phone'] = $userInfo['phone'];
+                $capitalFlowServices->setFlow($order, $type);
+            }
+            if (!($res1 && $res2 && $res3)) {
+                throw new \RuntimeException('会员支付业务处理失败');
+            }
+            $records->markCompleted($orderNo, (string)($other['trade_no'] ?? ''));
+            $order['is_channel'] = 2;
+            $order['total_num'] = 1;
+            $paidOrder = $order;
+        });
+        if (!$paidOrder) {
+            return true;
         }
-        /** @var MemberOrderStatusServices $statusService */
-        $statusService = app()->make(MemberOrderStatusServices::class);
-        /** @var UserServices $userServices */
-        $userServices = app()->make(UserServices::class);
-        $type = 'pay_member';
-        $res1 = true;
-        //根据订单类型执行不同的支付成功逻辑
-        switch ($orderInfo['type']) {
-            case 0:
-            case 1:
-            case 2:
-                $type = "pay_member";
-                $res1 = $userServices->setMemberOverdueTime($orderInfo['vip_day'], $orderInfo['uid'], 1, $orderInfo['member_type']);
-                break;
-        }
-        //支付宝支付记录交易号
-        if (isset($other['trade_no'])) {
-            $updata['trade_no'] = $other['trade_no'];
-        }
-        $updata['paid'] = 1;
-        $updata['pay_type'] = $paytype;
-        $updata['pay_time'] = time();
-        $orderInfo['pay_time'] = $updata['pay_time'];
-        $res2 = $this->dao->update($orderInfo['id'], $updata);
-        //记录订单状态变更
-        $res3 = $statusService->save([
-            'order_id' => $orderInfo['id'],
-            'change_type' => 'pay_success',
-            'change_message' => '用户付款成功',
-        ]);
-        $res4 = true;
-        // 余额扣款由 YuePayServices 在同一支付事务中完成，此处不能重复扣款。
-        $orderInfo['pay_type'] = $paytype;
-        //派发异步任务
-        OfflineReceiptJob::dispatch([$orderInfo]);
-        $orderInfo['is_channel'] = 2;
-        $orderInfo['total_num'] = 1;
-
-        //非余额支付记录资金流水
-        if ($orderInfo['pay_type'] != 'yue') {
-            /** @var CapitalFlowServices $capitalFlowServices */
-            $capitalFlowServices = app()->make(CapitalFlowServices::class);
-            $userInfo = $userServices->get($orderInfo['uid']);
-            $orderInfo['nickname'] = $userInfo['nickname'];
-            $orderInfo['phone'] = $userInfo['phone'];
-            $capitalFlowServices->setFlow($orderInfo, $type);
-        }
-        $res = $res1 && $res2 && $res3 && $res4;
-
-        $orderInfo['pay_type'] = $paytype;
-        //触发订单发货事件
-        event('OrderShipping', ['member', $orderInfo, 3, '', '']);
-        if (!$res) throw new \RuntimeException('会员支付业务处理失败');
+        OfflineReceiptJob::dispatch([$paidOrder]);
+        event('OrderShipping', ['member', $paidOrder, 3, '', '']);
         return true;
     }
 

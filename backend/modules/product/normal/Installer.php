@@ -67,7 +67,7 @@ class Installer extends BaseModuleInstaller
             $this->exec("CREATE TABLE IF NOT EXISTS `{$this->table('pt_normal_sku')}` (
                 `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
                 `product_id` int unsigned NOT NULL DEFAULT '0' COMMENT '商品ID',
-                `suk` varchar(128) NOT NULL DEFAULT '' COMMENT 'SKU规格值JSON',
+                `suk` varchar(1000) NOT NULL DEFAULT '' COMMENT 'SKU规格值JSON',
                 `price` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '售价',
                 `original_price` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT 'SKU划线价',
                 `cost` decimal(12,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '成本价',
@@ -78,7 +78,7 @@ class Installer extends BaseModuleInstaller
                 `weight` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '单SKU重量（kg）',
                 `volume` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '单SKU体积（m³）',
                 `unit_name` varchar(32) NOT NULL DEFAULT '' COMMENT 'SKU单位（SKU级实际单位，如瓶/箱/盒）',
-                `image` varchar(128) NOT NULL DEFAULT '' COMMENT 'SKU图片',
+                `image` varchar(500) NOT NULL DEFAULT '' COMMENT 'SKU图片',
                 `unique_code` char(8) NOT NULL DEFAULT '' COMMENT '唯一码',
                 `is_default_select` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否默认选中',
                 `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -263,7 +263,10 @@ class Installer extends BaseModuleInstaller
     }
 
     /**
-     * 确保普通商品 SKU 的唯一码长度与保存逻辑一致。
+     * 确保普通商品 SKU 列宽与保存逻辑一致。
+     * - unique_code：统一 8 位短码
+     * - suk：采集/淘宝长规格名在 json_encode 默认转义后易超 128，扩到 1000
+     * - image：外链 CDN 地址常超 128，扩到 500
      */
     protected function ensureNormalSkuColumns(): void
     {
@@ -274,22 +277,47 @@ class Installer extends BaseModuleInstaller
                 "SELECT data_type, character_maximum_length FROM information_schema.columns WHERE table_schema = ? AND table_name = ? AND column_name = ? LIMIT 1",
                 [$database, $tableName, 'unique_code']
             );
+            if (!empty($result)) {
+                $column = $result[0];
+                $currentLength = (int)($column['character_maximum_length'] ?? 0);
+                if ($currentLength !== 8) {
+                    $lengthResult = Db::query(
+                        "SELECT COALESCE(MAX(CHAR_LENGTH(`unique_code`)), 0) AS max_length FROM `{$tableName}` WHERE `unique_code` <> ''"
+                    );
+                    $maxLength = (int)($lengthResult[0]['max_length'] ?? 0);
+                    if ($maxLength <= 8) {
+                        $this->exec("ALTER TABLE `{$tableName}` MODIFY COLUMN `unique_code` char(8) NOT NULL DEFAULT '' COMMENT '唯一码'");
+                    }
+                }
+            }
+
+            $this->ensureColumnLength($tableName, 'suk', 1000, "varchar(1000) NOT NULL DEFAULT '' COMMENT 'SKU规格值JSON'");
+            $this->ensureColumnLength($tableName, 'image', 500, "varchar(500) NOT NULL DEFAULT '' COMMENT 'SKU图片'");
+        } catch (\Throwable $e) {
+            // 兼容只读/非 MySQL 安装环境，列修复失败不阻断其他模块初始化。
+        }
+    }
+
+    /**
+     * 列存在且最大长度不足时 MODIFY 扩容（幂等）。
+     */
+    protected function ensureColumnLength(string $table, string $column, int $minLength, string $definition): void
+    {
+        try {
+            $database = config('database.connections.mysql.database');
+            $result = Db::query(
+                "SELECT character_maximum_length FROM information_schema.columns WHERE table_schema = ? AND table_name = ? AND column_name = ? LIMIT 1",
+                [$database, $table, $column]
+            );
             if (empty($result)) {
                 return;
             }
-            $column = $result[0];
-            $currentLength = (int)($column['character_maximum_length'] ?? 0);
-            if ($currentLength !== 8) {
-                $lengthResult = Db::query(
-                    "SELECT COALESCE(MAX(CHAR_LENGTH(`unique_code`)), 0) AS max_length FROM `{$tableName}` WHERE `unique_code` <> ''"
-                );
-                $maxLength = (int)($lengthResult[0]['max_length'] ?? 0);
-                if ($maxLength <= 8) {
-                    $this->exec("ALTER TABLE `{$tableName}` MODIFY COLUMN `unique_code` char(8) NOT NULL DEFAULT '' COMMENT '唯一码'");
-                }
+            $currentLength = (int)($result[0]['character_maximum_length'] ?? 0);
+            if ($currentLength > 0 && $currentLength < $minLength) {
+                $this->exec("ALTER TABLE `{$table}` MODIFY COLUMN `{$column}` {$definition}");
             }
         } catch (\Throwable $e) {
-            // 兼容只读/非 MySQL 安装环境，列修复失败不阻断其他模块初始化。
+            // 静默忽略
         }
     }
 
@@ -447,14 +475,33 @@ class Installer extends BaseModuleInstaller
                 'variables' => [
                     'order_id' => '订单号',
                     'pay_price' => '支付金额',
-                    'total_num' => '数量'
+                    'total_num' => '数量',
+                    'email' => '收件邮箱',
                 ],
                 'channels' => [
                     'is_system' => [
                         'title' => '新订单待发货',
                         'content' => '订单{order_id}已支付{pay_price}元，请跟进发货。',
                         'status' => 2
-                    ]
+                    ],
+                    'is_email' => [
+                        'title' => '新订单待发货',
+                        'content' => '<p>订单{order_id}已支付{pay_price}元（共{total_num}件），请跟进发货。</p>',
+                    ],
+                    'is_dingtalk' => [
+                        'title' => '新订单待发货',
+                        'content' => '订单{order_id}已支付{pay_price}元（共{total_num}件），请跟进发货。',
+                        'extra' => [
+                            'webhook' => '',
+                        ],
+                    ],
+                    'is_ent_wechat' => [
+                        'title' => '新订单待发货',
+                        'content' => "新订单待发货\n订单号：{order_id}\n支付金额：{pay_price}元\n商品数量：{total_num}",
+                        'extra' => [
+                            'url' => '',
+                        ],
+                    ],
                 ]
             ],
             [
@@ -595,14 +642,33 @@ class Installer extends BaseModuleInstaller
                 'variables' => [
                     'order_id' => '订单号',
                     'store_name' => '商品',
-                    'pay_price' => '金额'
+                    'pay_price' => '金额',
+                    'email' => '收件邮箱',
                 ],
                 'channels' => [
                     'is_system' => [
                         'title' => '订单已收货',
                         'content' => '订单{order_id}已确认收货。',
                         'status' => 2
-                    ]
+                    ],
+                    'is_email' => [
+                        'title' => '订单已收货',
+                        'content' => '<p>订单{order_id}（{store_name}）已确认收货，金额{pay_price}元。</p>',
+                    ],
+                    'is_dingtalk' => [
+                        'title' => '订单已收货',
+                        'content' => '订单{order_id}（{store_name}）已确认收货，金额{pay_price}元。',
+                        'extra' => [
+                            'webhook' => '',
+                        ],
+                    ],
+                    'is_ent_wechat' => [
+                        'title' => '订单已收货',
+                        'content' => "订单已收货\n订单号：{order_id}\n商品：{store_name}\n金额：{pay_price}元",
+                        'extra' => [
+                            'url' => '',
+                        ],
+                    ],
                 ]
             ],
             [
@@ -686,14 +752,33 @@ class Installer extends BaseModuleInstaller
                 'variables' => [
                     'order_id' => '订单号',
                     'pay_price' => '金额',
-                    'refund_price' => '申请金额'
+                    'refund_price' => '申请金额',
+                    'email' => '收件邮箱',
                 ],
                 'channels' => [
                     'is_system' => [
                         'title' => '新退款申请',
                         'content' => '订单{order_id}申请退款{refund_price}元，请审核。',
                         'status' => 2
-                    ]
+                    ],
+                    'is_email' => [
+                        'title' => '新退款申请',
+                        'content' => '<p>订单{order_id}申请退款{refund_price}元（订单金额{pay_price}元），请审核。</p>',
+                    ],
+                    'is_dingtalk' => [
+                        'title' => '新退款申请',
+                        'content' => '订单{order_id}申请退款{refund_price}元（订单金额{pay_price}元），请审核。',
+                        'extra' => [
+                            'webhook' => '',
+                        ],
+                    ],
+                    'is_ent_wechat' => [
+                        'title' => '新退款申请',
+                        'content' => "新退款申请\n订单号：{order_id}\n申请金额：{refund_price}元\n订单金额：{pay_price}元",
+                        'extra' => [
+                            'url' => '',
+                        ],
+                    ],
                 ]
             ],
             [
@@ -1333,6 +1418,7 @@ class Installer extends BaseModuleInstaller
     {
         // 已安装插件再次执行安装时，基类会直接返回 skipped；仍需补跑菜单和种子，
         // 让旧版叶子菜单能够幂等升级为「实物商品 → 商品管理 / 商品统计」结构。
+        $this->ensureNormalSkuColumns();
         $this->migrateMenuStructure();
         $this->insertMenus();
         $this->seed();

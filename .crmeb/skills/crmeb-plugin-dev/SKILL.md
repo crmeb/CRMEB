@@ -1,6 +1,6 @@
 ---
 name: crmeb-plugin-dev
-description: 创建和修改 CRMEB 可安装插件、第三方驱动与 backend/modules 业务模块。覆盖 plugin.json 清单、Installer 生命周期、菜单种子、消息通知与渠道种子、DIY 声明、打包升级、admin UMD 资源，以及产品类型、交易模式、营销观察者、渠道、分销模块的领域归属、Handler 注册、事件、路由、定时任务、数据分层与前端契约；含插件向 MCP 服务贡献工具（McpToolInterface 契约、McpToolsRegister 事件）。凡涉及插件管理或模块业务行为均适用。
+description: 创建和修改 CRMEB 可安装插件、第三方驱动与 backend/modules 业务模块。选定类型时先读 references/catalog/00-总览-类型路由与边界.md，再读对应 01-驱动或 02-模块分册。覆盖 plugin.json 清单、Installer 生命周期、菜单种子、消息通知与渠道种子、DIY 声明、打包升级、admin UMD 资源、uni-app pages-modules 独立页放入后的跳转与装修链接，以及产品类型、交易模式、营销观察者、渠道、分销模块的领域归属、Handler 注册、事件、路由、定时任务、数据分层与前端契约；含插件向 MCP 服务贡献工具（McpToolInterface 契约、McpToolsRegister 事件）。凡涉及插件管理或模块业务行为均适用。
 ---
 
 # CRMEB 插件开发
@@ -9,11 +9,14 @@ description: 创建和修改 CRMEB 可安装插件、第三方驱动与 backend/
 
 ## 先确定插件类型
 
+开发插件或驱动前，先读 [类型总览](references/catalog/00-总览-类型路由与边界.md)，按其中的类型表打开对应 `01-驱动-*` 或 `02-模块-*` 分册，再写代码。
+
 - 业务模块插件：放在 `backend/modules/{category}/{name}/`，或采用现有的扁平结构 `backend/modules/{name}/`。先读 [references/domain-selection.md](references/domain-selection.md) 确定领域归属（product/trade/marketing/channel/agent），再读 [references/registration-and-contracts.md](references/registration-and-contracts.md) 了解注册中心、事件、路由、数据层、定时任务与前端契约。
 - 插件需要让 AI 客户端通过 `/api/mcp` 调用本插件能力（新增 MCP 工具、覆盖内置工具）时，阅读 [references/mcp-tools.md](references/mcp-tools.md)。
 - 插件需要发送站内信/短信/邮件/机器人等消息通知，或注册自有消息渠道时，阅读 [../crmeb-dev/references/10-消息通知/notice.md](../crmeb-dev/references/10-消息通知/notice.md)（Notice 门面、`getNoticeDefinitions()` / `getNoticeChannelDefinitions()` 种子与渠道契约）。
 - 第三方驱动插件：放在 `backend/driver/{category}/{name}/`，其中 category 必须是驱动发现服务已支持的类别。
 - Admin 扩展资源：需要协调后端插件生命周期与 Vue 管理端 UMD 产物，阅读 [references/admin-extension.md](references/admin-extension.md)。
+- 用户端独立页面：页面放进 `frontend/uni-app/src/pages-modules/<标识>/` 之后，跳转、装修链接、参数和验收见 [references/uniapp-pages.md](references/uniapp-pages.md)。
 
 创建清单、修改安装/卸载行为、新增菜单或数据、打包升级版本前，阅读 [references/manifest-and-lifecycle.md](references/manifest-and-lifecycle.md)。
 
@@ -31,7 +34,7 @@ description: 创建和修改 CRMEB 可安装插件、第三方驱动与 backend/
 4. 确保 `plugin.json` 能通过 `PluginManifest::fromFile()`：`key`、`name`、`type`、`version` 和 `path` 必须是有效字符串，声明路径必须与实际目录一致。模块 key 遵循相近模块约定（如 `product_cardkey`、`activity_seckill` 下划线格式），`plugin.json`、Installer、事件、菜单权限和前端扩展 key 必须一致。
 5. `Installer::getKey()` 必须兼容现有记录使用的清单旧 key/path。当旧 key 可能产生歧义时，管理边界优先使用 canonical ID。
 6. 安装、种子写入、菜单插入、启用和禁用操作必须幂等；基类 `onEnable()` 默认会重新执行 `seed()`，种子逻辑必须经得起重复调用；清理范围只能覆盖本插件拥有的资源。
-7. 插件提供 uni-app 独立页面时，用基类 `ensurePageLinkCategory()` / `seedPageLinks()` 把页面注册进 DIY 链接选择器，卸载用 `cleanPageLinks()` 清理；插件自带 DIY 组件时在清单声明 `diy.components`（见 manifest-and-lifecycle.md 的 DIY 两节）。
+7. 插件提供 uni-app 独立页面时，源码放 `frontend/uni-app/src/pages-modules/<标识>/`，跳转与装修都使用该模块 `routes.js` 的路径（见 [references/uniapp-pages.md](references/uniapp-pages.md)）。Installer 用基类 `ensurePageLinkCategory()` / `seedPageLinks()` 把同一条路径注册进 DIY 链接选择器，卸载用 `cleanPageLinks()` 清理；插件自带 DIY 组件时在清单声明 `diy.components`（见 manifest-and-lifecycle.md 的 DIY 两节）。
 8. 依赖关系写入清单 `require`，不得用分散的运行时判断重复实现。
 9. 使用插件间共享表时，覆写 `sharedTables()` 声明准入，卸载用 `dropSharedTableIfUnclaimed()` 仲裁删表，`cleanTable()` 只按归属条件清理自身数据行（表需同步声明进 `getOwnedTables()`）；协议细则见 [.crmeb/rules/架构规范详解.md](../../rules/架构规范详解.md)「插件间共享表准入协议」。
 10. 保持前端契约数据驱动：商品 `display_sections`、订单 `page_config`、订单按钮/状态和扩展载荷，应让 admin/uni-app 无需增加中央类型分支即可渲染新能力。新增产品类型或交易模式时，优先向现有前端契约添加数据，不修改核心前端。

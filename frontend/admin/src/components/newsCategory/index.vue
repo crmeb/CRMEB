@@ -15,7 +15,7 @@
         <el-form-item>
           <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
           <router-link :to="routePre + '/app/wechat/news_category/save/0'">
-            <el-button type="primary" class="bnt ml15">添加图文消息</el-button>
+            <el-button v-db-click type="primary" class="bnt ml15">添加图文消息</el-button>
           </router-link>
         </el-form-item>
       </el-form>

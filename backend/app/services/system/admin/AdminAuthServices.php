@@ -53,9 +53,23 @@ class AdminAuthServices extends BaseService
     public function parseToken(string $token, string $msg = '登录已过期,请重新登录'): array
     {
         // 统一走认证校验骨架：空值/令牌桶缓存/JWT 校验已收口至 AuthTokenVerifier；失败回调承接编辑商品草稿暂存
-        [$md5Token, $id, $type, $pwd] = AuthTokenVerifier::verify($token, $msg, $msg, $msg, 401, function ($id, $type) {
+        [$md5Token, $id, $type, $pwd, $cacheData] = AuthTokenVerifier::verify($token, $msg, $msg, $msg, 401, function ($id, $type) {
             $this->authFailAfter($id, $type);
         });
+
+        // 令牌桶缓存数据结构校验：登录态缓存必为数组且含 uid/type，非登录写入的任意标量缓存一律拒绝（安全审计 A2）
+        if (!is_array($cacheData) || !isset($cacheData['uid'], $cacheData['type']) || (int)$cacheData['uid'] !== (int)$id || $cacheData['type'] !== 'admin') {
+            if (!request()->isCli()) {
+                CacheService::delete($md5Token);
+            }
+            $this->authFailAfter($id, $type);
+            throw new AuthException($msg, [], 401);
+        }
+
+        // 端类型校验（与结构校验双保险）：仅接受 admin 端签发的令牌
+        if ($type !== 'admin') {
+            throw new AuthException($msg, [], 401);
+        }
 
         //获取管理员信息
         $adminInfo = $this->dao->get($id);

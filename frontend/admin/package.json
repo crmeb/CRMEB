@@ -33,7 +33,6 @@
     "echarts": "^5.6.0",
     "element-plus": "^2.9.3",
     "emoji-awesome": "0.0.2",
-    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
@@ -45,7 +44,6 @@
     "monaco-editor": "^0.52.2",
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^3.2.3",
-    "print-js": "^1.6.0",
     "qiniu-js": "^2.5.5",
     "screenfull": "^5.2.0",
     "sortablejs": "^1.15.6",
@@ -61,7 +59,7 @@
     "vxe-pc-ui": "^4.17.25",
     "vxe-table": "^4.21.3",
     "xe-utils": "^3.7.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

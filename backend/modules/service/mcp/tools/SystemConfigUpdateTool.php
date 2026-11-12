@@ -125,6 +125,10 @@ class SystemConfigUpdateTool implements McpToolInterface
         if (!array_key_exists('value', $args)) {
             throw new McpException('value 不能为空');
         }
+        // 服务端写边界：MCP 自身配置（改之可自扩读白名单/换密钥/开关工具面）与站点地址禁止经 MCP 修改（安全审计 D3）
+        if (strpos($menuName, 'mcp_') === 0 || $menuName === 'site_url') {
+            throw new McpException('该配置项涉及 MCP/站点安全边界，禁止通过 MCP 修改，请登录管理后台操作');
+        }
         $value = $args['value'];
 
         $config = $this->dao->getOne(['menu_name' => $menuName]);

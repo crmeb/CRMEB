@@ -13,7 +13,7 @@ namespace app\api\controller\v1;
 
 
 use app\Request;
-use app\services\PlatformDetector;
+use app\services\channel\PlatformDetector;
 use app\services\driver\pay\PayChannelServices;
 use crmeb\services\pay\Pay;
 

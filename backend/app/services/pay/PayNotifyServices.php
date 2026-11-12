@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace app\services\pay;
 
-use app\model\order\OrderCenter;
 use app\services\user\OfflineReceiptServices;
 use app\services\user\MemberOrderServices;
 use app\services\user\UserRechargeServices;
 use app\services\order\OrderSuccessServices;
+use crmeb\exceptions\PayException;
 use think\facade\Log;
 
 /**
@@ -68,8 +68,8 @@ class PayNotifyServices
     }
 
     /**
-     * 原订单锁内验证并完成资金和履约，失败不提交已付状态。
-     * @param string $kind 业务类型
+     * 按支付合同上的业务把通知交给对应核心服务。
+     * @param string $kind 钩子业务，日志用
      * @param string|null $orderNo 订单号
      * @param string|null $tradeNo 流水
      * @param string $channel 渠道
@@ -82,30 +82,7 @@ class PayNotifyServices
             if (!$orderNo || !$tradeNo) {
                 return false;
             }
-            $records = app()->make(PayRecordServices::class);
-            $result = $records->complete($orderNo, $kind, $tradeNo, function (array $order) use ($records, $kind, $orderNo, $tradeNo, $channel, $other) {
-                $channel = $records->validate($order, $kind, $channel, $other);
-                if ((int)($order[$kind === 'product' ? 'pay_status' : 'paid'] ?? 0) !== 0) return true;
-                if ($kind === 'product' && in_array($order['status_code'] ?? '', [OrderCenter::STATUS_CANCELED, OrderCenter::STATUS_DELETED], true)) {
-                    // 已实际扣款的取消订单不能复活，可靠保存原路退款补偿意图。
-                    return $records->compensateCanceled($orderNo, $tradeNo);
-                }
-                $extra = $order['extra_info'] ?? [];
-                if (is_string($extra)) $extra = json_decode($extra, true) ?: [];
-                $order['payment_context'] = $records->find($orderNo)['context'] ?? $extra['payment'] ?? [];
-                $order['payment_context']['transaction_id'] = $tradeNo;
-                $order['pay_type'] = $channel;
-                $data = ['trade_no' => $tradeNo, 'pay_type' => $channel];
-                if ($kind === 'user_recharge') return app()->make(UserRechargeServices::class)->rechargeSuccess($orderNo, $data);
-                if ($kind === 'member') return app()->make(MemberOrderServices::class)->paySuccess($order, $channel, $data);
-                if ($kind === 'offline_scan') return app()->make(OfflineReceiptServices::class)->paySuccess($order, $channel, $data);
-                $order['order_id'] = $order['order_no'];
-                $order['paid'] = 0;
-                $order['combination_id'] = $order['combination_id'] ?? 0;
-                $order['real_name'] = $extra['contact']['name'] ?? '';
-                return app()->make(OrderSuccessServices::class)->paySuccess($order, $channel, $data);
-            });
-            return $result;
+            return $this->paid($orderNo, $tradeNo, $channel, $other);
         } catch (\Throwable $e) {
             Log::error('[PayNotify] 支付处理失败 ' . json_encode([
                 'order_no' => $orderNo,
@@ -118,6 +95,35 @@ class PayNotifyServices
                 'line' => $e->getLine(),
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
             return false;
+        }
+    }
+
+    /**
+     * 付款通知进入对应的核心服务。
+     * @param string $orderNo 订单号
+     * @param string $tradeNo 微信流水
+     * @param string $channel 渠道
+     * @param array $other 可信通知信息
+     * @return bool
+     */
+    public function paid(string $orderNo, string $tradeNo, string $channel, array $other): bool
+    {
+        $record = app()->make(PayRecordServices::class)->find($orderNo);
+        $other['trade_no'] = $tradeNo;
+        $other['pay_type'] = $channel;
+        switch ((string)($record['business_type'] ?? '')) {
+            case 'product':
+                return app()->make(OrderSuccessServices::class)->paySuccess(
+                    ['order_no' => $orderNo, 'order_id' => $orderNo], $channel, $other
+                );
+            case 'member':
+                return app()->make(MemberOrderServices::class)->paySuccess(['order_id' => $orderNo], $channel, $other);
+            case 'user_recharge':
+                return app()->make(UserRechargeServices::class)->rechargeSuccess($orderNo, $other);
+            case 'offline_scan':
+                return app()->make(OfflineReceiptServices::class)->paySuccess(['order_no' => $orderNo], $channel, $other);
+            default:
+                throw new PayException('支付业务不存在');
         }
     }
 }

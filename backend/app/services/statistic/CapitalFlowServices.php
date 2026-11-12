@@ -191,7 +191,7 @@ class CapitalFlowServices extends BaseService
         foreach ($data['list'] as &$item) {
             $item['id'] = $i;
             $i++;
-            $item['entry_price'] = bcadd($item['income_price'], $item['exp_price'], 2);
+            $item['entry_price'] = bcadd((string)($item['income_price'] ?? 0), (string)($item['exp_price'] ?? 0), 2);
             switch ($where['type']) {
                 case "day" :
                     $item['title'] = "日账单";

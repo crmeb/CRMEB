@@ -104,7 +104,7 @@
       <template #footer
         ><div class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="save">保存</el-button>
+          <el-button v-db-click type="primary" @click="save">保存</el-button>
         </div></template
       >
     </el-dialog>

@@ -52,6 +52,12 @@ class UserAuthServices extends BaseService
         // 统一走认证校验骨架：空值/令牌桶缓存/JWT 校验已收口至 AuthTokenVerifier
         [$md5Token, $id, $type, $pwd, $tokenData] = AuthTokenVerifier::verify((string)$token, '请登录', '请登录', '登录已过期,请重新登录', 401);
 
+        // 端类型校验：仅接受 api 端登录签发的令牌，admin/kefu token 禁止跨端复用（安全审计 A1）
+        if ($type !== 'api') {
+            if (!request()->isCli()) CacheService::delete($md5Token);
+            throw new AuthException('登录状态有误,请重新登录', [], 401);
+        }
+
         // 令牌桶缓存数据结构校验（登录态缓存必含 uid）
         if (!is_array($tokenData) || empty($tokenData) || !isset($tokenData['uid'])) {
             throw new AuthException('请登录', [], 401);
@@ -63,6 +69,12 @@ class UserAuthServices extends BaseService
         if (!$user || $user->uid != $tokenData['uid']) {
             if (!request()->isCli()) CacheService::delete($md5Token);
             throw new AuthException('登录状态有误,请重新登录', [], 401);
+        }
+
+        // 改密踢人：令牌内 pwd 指纹与当前密码不一致则拒绝，改密/重置密码后旧 token 立即失效（安全审计 A6）
+        if ($pwd !== '' && $pwd !== md5((string)($user->pwd ?? ''))) {
+            if (!request()->isCli()) CacheService::delete($md5Token);
+            throw new AuthException('登录状态已变更,请重新登录', [], 401);
         }
 
         $this->dao->update(['uid' => $id], ['last_time' => time()]);

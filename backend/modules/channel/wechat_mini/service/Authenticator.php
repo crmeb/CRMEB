@@ -14,20 +14,21 @@ namespace modules\channel\wechat_mini\service;
 
 use app\services\other\QrcodeServices;
 use app\services\user\UserWechatAuthServices;
-use crmeb\basic\BaseService;
+use crmeb\channel\BaseChannelAuthenticator;
 use crmeb\exceptions\ApiException;
-use crmeb\services\CacheService;
 
 /**
  * 小程序渠道认证器
  * 封装小程序所有登录方式的认证逻辑，返回 uid 由统一入口 AuthController 调用 createToken
  * 不调用现有 RoutineServices 的登录方法（避免重复 createToken），直接调用底层组件完成认证
+ * 继承渠道认证器统一契约基类（crmeb\channel\BaseChannelAuthenticator）
  * @package modules\channel\wechat_mini\service
  */
-class Authenticator extends BaseService
+class Authenticator extends BaseChannelAuthenticator
 {
     /**
-     * 渠道登录认证
+     * 渠道登录认证（统一分发入口）
+     * 按登录方式分发到对应能力方法，注册/注销无小程序差异化逻辑，走基类默认实现
      * @param string $loginType 登录方式（wechat_code_init/wechat_code/wechat_code_with_phone/mobile）
      * @param array $credentials 凭证
      * @return array 认证结果 ['uid'=>int, 'user_info'=>array, 'isbind'=>bool, 'bind_key'=>string, 'extra'=>array]
@@ -35,22 +36,58 @@ class Authenticator extends BaseService
      */
     public function login(string $loginType, array $credentials): array
     {
-        switch ($loginType) {
-            case 'wechat_code_init':
-                // 两步式第一步：code 换 session，返回缓存 key + 是否需要绑定手机号
-                return $this->authType($credentials);
-            case 'wechat_code':
-                // 两步式第二步：根据缓存 key 认证
-                return $this->authLogin($credentials);
-            case 'wechat_code_with_phone':
-                // 授权 + 绑定手机号一步到位
-                return $this->authBindingPhone($credentials);
-            case 'mobile':
-                // 手机号登录（验证码）
-                return $this->phoneLogin($credentials);
-            default:
-                throw new ApiException('不支持的登录方式: ' . $loginType);
-        }
+        return match ($loginType) {
+            // 授权登录：两步式第一步（code 换 session）/ 第二步（凭缓存 key 认证）
+            'wechat_code_init', 'wechat_code' => $this->oauthLogin($loginType, $credentials),
+            // 授权 + 绑定手机号一步到位
+            'wechat_code_with_phone' => $this->bindMobile($loginType, $credentials),
+            // 手机号登录（验证码）
+            'mobile' => $this->accountLogin($loginType, $credentials),
+            default => throw new ApiException('不支持的登录方式: ' . $loginType),
+        };
+    }
+
+    /**
+     * 授权登录
+     * 小程序 code 授权，含两步式授权的先后两个阶段
+     * @param string $loginType 授权登录方式（wechat_code_init=第一步换session/wechat_code=第二步凭key认证）
+     * @param array $credentials 凭证
+     * @return array 统一认证结果
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function oauthLogin(string $loginType, array $credentials): array
+    {
+        return match ($loginType) {
+            'wechat_code_init' => $this->authType($credentials),
+            'wechat_code' => $this->authLogin($credentials),
+            default => throw new ApiException('不支持的登录方式: ' . $loginType),
+        };
+    }
+
+    /**
+     * 绑定手机号
+     * 授权 + 绑定手机号一步到位
+     * @param string $loginType 绑定流程标识（wechat_code_with_phone）
+     * @param array $credentials 凭证
+     * @return array 统一认证结果
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function bindMobile(string $loginType, array $credentials): array
+    {
+        return $this->authBindingPhone($credentials);
+    }
+
+    /**
+     * 账号登录
+     * 手机号验证码登录
+     * @param string $loginType 账号登录方式（mobile）
+     * @param array $credentials 凭证
+     * @return array 统一认证结果
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function accountLogin(string $loginType, array $credentials): array
+    {
+        return $this->phoneLogin($credentials);
     }
 
     /**
@@ -69,13 +106,7 @@ class Authenticator extends BaseService
         }
         // 复用现有 authType 方法（不调 createToken，只返回 key + bindPhone）
         $result = app()->make(RoutineServices::class)->authType($code, $spread, $spid);
-        return [
-            'uid'       => 0,
-            'user_info' => [],
-            'isbind'    => (bool)$result['bindPhone'],
-            'bind_key'  => $result['key'] ?? '',
-            'extra'     => [],
-        ];
+        return $this->authResult(0, [], (bool)$result['bindPhone'], (string)($result['key'] ?? ''));
     }
 
     /**
@@ -90,19 +121,11 @@ class Authenticator extends BaseService
         if (!$key) {
             throw new ApiException('缺少缓存key');
         }
-        $createData = CacheService::get($key);
-        if (!$createData) {
-            throw new ApiException('授权已过期，请重新登录');
-        }
+        $createData = $this->getAuthCache($key);
         $user = $this->wechatOauthAfter($createData);
-        return [
-            'uid'       => (int)$user['uid'],
-            'user_info' => $user,
-            'isbind'    => false,
-            'extra'     => [
-                'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
-            ],
-        ];
+        return $this->authResult((int)$user['uid'], $user, false, '', [
+            'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
+        ]);
     }
 
     /**
@@ -130,10 +153,7 @@ class Authenticator extends BaseService
         $userType = $login_type = 'routine';
         // 若有缓存 key，从缓存恢复已授权数据
         if ($key) {
-            $cachedData = CacheService::get($key);
-            if (!$cachedData) {
-                throw new ApiException('授权已过期，请重新登录');
-            }
+            $cachedData = $this->getAuthCache($key);
             [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType] = $cachedData;
         }
 
@@ -163,14 +183,9 @@ class Authenticator extends BaseService
         $wechatInfo['phone'] = $userInfo['purePhoneNumber'];
 
         $user = $this->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType]);
-        return [
-            'uid'       => (int)$user['uid'],
-            'user_info' => $user,
-            'isbind'    => false,
-            'extra'     => [
-                'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
-            ],
-        ];
+        return $this->authResult((int)$user['uid'], $user, false, '', [
+            'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
+        ]);
     }
 
     /**
@@ -197,10 +212,7 @@ class Authenticator extends BaseService
             if (!$key) {
                 throw new ApiException('缺少缓存key或授权code');
             }
-            $cachedData = CacheService::get($key);
-            if (!$cachedData) {
-                throw new ApiException('授权已过期，请重新登录');
-            }
+            $cachedData = $this->getAuthCache($key);
             [$openid, $routineInfo, $spid, $agent_id, $login_type, $userType] = $cachedData;
             $routineInfo['phone'] = $phone;
             $createData = [$openid, $routineInfo, $spid, $agent_id, $login_type, $userType];
@@ -226,14 +238,9 @@ class Authenticator extends BaseService
         }
 
         $user = $this->wechatOauthAfter($createData);
-        return [
-            'uid'       => (int)$user['uid'],
-            'user_info' => $user,
-            'isbind'    => false,
-            'extra'     => [
-                'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
-            ],
-        ];
+        return $this->authResult((int)$user['uid'], $user, false, '', [
+            'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
+        ]);
     }
 
     /**

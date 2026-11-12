@@ -28,8 +28,9 @@ function baseRequest(url, method, data, {
 	noAuth = false,
 	noVerify = false
 }) {
+	// 每次请求复制一份，避免改写共享的 HEADER（否则退出登录后旧 token 仍随请求发送）
 	let Url = HTTP_REQUEST_URL,
-		header = HEADER;
+		header = { ...HEADER };
 
 	if (!noAuth) {
 		//登录过期自动登录
@@ -61,18 +62,20 @@ function baseRequest(url, method, data, {
 					toLogin();
 					reject(res.data);
 				} else if (res.data.status == 402) {
+					// 站点升级中：弹窗提示后仍需 reject，否则调用方 Promise 永远挂起（loading 不关闭）
 					uni.showModal({
 						title: i18n.t(`提示`),
 						content: res.data.msg,
 						showCancel: false,
 						confirmText: i18n.t(`我知道了`)
 					});
+					reject(res.data.msg);
 				} else
 					reject(res.data.msg || i18n.t(`系统错误`));
 			},
 			fail: (msg) => {
 				let data = {
-					mag: i18n.t(`请求失败`),
+					msg: i18n.t(`请求失败`),
 					status: 1 //1没网
 				}
 				// #ifdef APP-PLUS

@@ -50,7 +50,6 @@ import { nextTick, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
 import { productGetTempKeysApi, uploadType } from '@/api/product';
-import videoCloud from '@/utils/videoCloud';
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import { isVideoUpload } from '@/utils';
@@ -143,7 +142,9 @@ function zh_uploadFile_change(evfile) {
     key: evfile.target.files[0].name,
     contentType: evfile.target.files[0].type,
   };
-  productGetTempKeysApi(types).then((res) => {
+  productGetTempKeysApi(types).then(async (res) => {
+    // 云存储 SDK（qiniu/cos 等）体积大，仅上传时按需加载
+    const { default: videoCloud } = await import('@/utils/videoCloud');
     videoCloud
       .videoUpload({
         type: res.data.type,

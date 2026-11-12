@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 
 defineOptions({ name: "countDown" });
 
@@ -91,7 +91,16 @@ const timeTxtStyle = computed(() => {
   return {};
 });
 
+let timer = null;
+function stopTimer() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
+
 function show_time() {
+  stopTimer();
   function runTime() {
     //时间函数
     let intDiff = props.datatime - Date.parse(new Date()) / 1000; //获取数据中的时间戳的时间差；
@@ -125,15 +134,20 @@ function show_time() {
       hour.value = "00";
       minute.value = "00";
       second.value = "00";
+      // 归零即停；datatime 变化时由 watch 重新启动
+      stopTimer();
     }
   }
+  timer = setInterval(runTime, 1000);
   runTime();
-  setInterval(runTime, 1000);
 }
 
 onMounted(() => {
   show_time();
 });
+// 父组件常在接口返回后才传入 datatime，需重新计时
+watch(() => props.datatime, show_time);
+onBeforeUnmount(stopTimer);
 </script>
 
 <style>

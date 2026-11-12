@@ -143,7 +143,7 @@
         <el-form-item class="mt20">
           <el-button v-if="currentTab !== '1'" @click="upTab">上一项</el-button>
           <el-button v-if="currentTab !== '6'" type="primary" @click="downTab">下一项</el-button>
-          <el-button type="primary" :loading="saving" @click="handleSubmit">保存</el-button>
+          <el-button v-db-click type="primary" :loading="saving" @click="handleSubmit">保存</el-button>
         </el-form-item>
       </el-form>
     </el-card>

@@ -143,12 +143,7 @@ class UploadStorageServices extends BaseService
     {
         $config = [];
         foreach ($this->prepareConfigFields($driverKey, []) as $field) $config[$field['field']] = $field['value'] ?? '';
-        foreach ($config as $name => $value) {
-            if (str_starts_with($name, $driverKey . '_')) {
-                $shortName = substr($name, strlen($driverKey) + 1);
-                if (!array_key_exists($shortName, $config)) $config[$shortName] = $value;
-            }
-        }
+        $config = $this->driverServices->normalizeDriverConfig($driverKey, $config);
         $config['storageName'] = $storage['name'] ?? '';
         $config['storageRegion'] = $storage['region'] ?? ($config['storageRegion'] ?? '');
         $config['uploadUrl'] = $storage['domain'] ?? '';
@@ -308,7 +303,10 @@ class UploadStorageServices extends BaseService
         } else {
             $this->validateStorageUrl($info['domain'], 100, false);
             $upload = $this->storageUpload($driverKey, $info);
-            if ($upload->setBucketCors($info['name'], $info['region']) === false) throw new \Exception(getLang('设置云空间跨域规则失败'));
+            if ($upload->setBucketCors($info['name'], $info['region']) === false) {
+                $error = method_exists($upload, 'getError') ? (string)$upload->getError() : '';
+                throw new AdminException($error !== '' ? $error : '设置云空间跨域规则失败');
+            }
         }
         $this->transaction(function () use ($info, $driverKey, $status) {
             if ($status === 1 && $this->dao->disableByDriverKey($driverKey) === false) throw new \Exception(getLang('切换云空间失败'));
@@ -365,8 +363,8 @@ class UploadStorageServices extends BaseService
                 $item['cname'] = parse_url($item['domain'], PHP_URL_HOST) ?: '';
             }
             $item['_region'] = $this->getRegionName($item['region'], $driverKey ?: $item['driver_key']);
-            $item['_add_time'] = date('Y-m-d H:i:s', (int)$item['add_time']);
-            $item['_update_time'] = date('Y-m-d H:i:s', (int)$item['update_time']);
+            $item['_add_time'] = $this->formatStorageTime($item['add_time'] ?? 0);
+            $item['_update_time'] = $this->formatStorageTime($item['update_time'] ?? 0);
         }
         $count = $this->dao->count($where);
         return compact('list', 'count');
@@ -386,6 +384,23 @@ class UploadStorageServices extends BaseService
         $info = DriverRegistry::get('upload', $driverKey);
         $map = $info['region_map'] ?? [];
         return $map[$region] ?? $region;
+    }
+
+    /**
+     * 兼容时间戳与日期字符串，避免 (int)'2026-11-02 ...' 被截成 2026
+     * @param mixed $value
+     * @return string
+     */
+    protected function formatStorageTime($value): string
+    {
+        if (is_numeric($value)) {
+            $timestamp = (int)$value;
+        } elseif (is_string($value) && $value !== '') {
+            $timestamp = strtotime($value) ?: 0;
+        } else {
+            $timestamp = 0;
+        }
+        return $timestamp > 0 ? date('Y-m-d H:i:s', $timestamp) : '';
     }
 
     /**
@@ -493,33 +508,44 @@ class UploadStorageServices extends BaseService
         $storage = $this->dao->get(['driver_key' => $driverKey, 'status' => 1, 'is_delete' => 0]);
         $driver = $this->storageUpload($driverKey, $storage ?: []);
         $buckets = $driver->listbuckets($storage['region'] ?? '');
-        if ($buckets === false) throw new \Exception(getLang('同步云空间失败'));
-        if (!is_array($buckets)) throw new \Exception(getLang('云空间列表格式错误'));
-        $existingNames = $this->dao->getColumn(['driver_key' => $driverKey, 'is_delete' => 0], 'name');
+        if ($buckets === false) {
+            $error = method_exists($driver, 'getError') ? (string)$driver->getError() : '';
+            throw new AdminException($error !== '' ? $error : '同步云空间失败');
+        }
+        if (!is_array($buckets)) throw new AdminException('云空间列表格式错误');
+        $localList = $this->dao->getList(['driver_key' => $driverKey], ['id', 'name', 'status']);
+        $existingNames = array_column($localList, 'name');
         $type = $this->driverServices->getTypeByDriverKey($driverKey);
         $driverInfo = $this->driverServices->getByDriverKey($driverKey);
         $domainTemplate = $driverInfo['domain_template'] ?? '';
         $appid = '';
         if (str_contains($domainTemplate, '{appid}')) {
-            $config = $this->getStorageConfigByDriverKey($driverKey);
-            $appid = (string)($config['appid'] ?? $config[$driverKey . '_appid'] ?? '');
+            $config = $this->driverServices->normalizeDriverConfig($driverKey, $this->getStorageConfigByDriverKey($driverKey));
+            $appid = (string)($config['appid'] ?? '');
         }
+        // 部分云厂商仅返回 1 个桶时是关联数组，不是桶列表
+        if (is_array($buckets) && $buckets !== [] && !array_is_list($buckets)
+            && (isset($buckets['Name']) || isset($buckets['name']) || isset($buckets['id']))) {
+            $buckets = [$buckets];
+        }
+
         $records = [];
+        $remoteNames = [];
         foreach ($buckets as $bucket) {
             if (is_array($bucket) || is_object($bucket)) {
                 $bucketArr = (array)$bucket;
                 $name = $bucketArr['name'] ?? $bucketArr['Name'] ?? $bucketArr['id'] ?? '';
                 $region = $bucketArr['region'] ?? $bucketArr['Region'] ?? $bucketArr['location'] ?? $bucketArr['Location'] ?? '';
-            } elseif (is_string($bucket)) {
-                $name = $bucket;
-                $region = '';
             } else {
                 continue;
             }
 
-            if (!is_string($name) || !is_string($region) || $name === '' || in_array($name, $existingNames, true)) continue;
-            if (!preg_match('/^[a-z0-9][a-z0-9_.-]{0,99}$/i', $name)) throw new AdminException('云空间名称格式错误');
-            if (strlen($region) > 100 || ($region !== '' && !preg_match('/^[a-z0-9-]+$/i', $region))) throw new AdminException('云空间区域格式错误');
+            if (!is_string($name) || !is_string($region) || $name === '') continue;
+            // 同步远端数据时跳过非法项，避免单个脏字段中断整次同步
+            if (!preg_match('/^[a-z0-9][a-z0-9_.-]{0,99}$/i', $name)) continue;
+            if (strlen($region) > 100 || ($region !== '' && !preg_match('/^[a-z0-9-]+$/i', $region))) continue;
+            $remoteNames[] = $name;
+            if (in_array($name, $existingNames, true)) continue;
             $domain = $this->formatStorageDomain($domainTemplate, $name, $region, $appid);
             $records[] = [
                 'name' => $name,
@@ -535,10 +561,36 @@ class UploadStorageServices extends BaseService
             ];
             $existingNames[] = $name;
         }
-        if ($records) {
-            // 远程请求已完成，事务中只执行批量元数据写入。
-            $this->transaction(function () use ($records) {
-                if ($this->dao->saveAll($records) === false) throw new \Exception(getLang('保存同步云空间失败'));
+
+        $removeIds = [];
+        $removedActive = false;
+        foreach ($localList as $local) {
+            if (in_array($local['name'], $remoteNames, true)) continue;
+            $removeIds[] = (int)$local['id'];
+            if ((int)$local['status'] === 1) $removedActive = true;
+        }
+
+        if ($records || $removeIds) {
+            // 远程请求已完成，事务中只执行本地增删元数据。
+            $this->transaction(function () use ($records, $removeIds, $removedActive, $driverKey) {
+                if ($records && $this->dao->saveAll($records) === false) {
+                    throw new \Exception(getLang('保存同步云空间失败'));
+                }
+                if ($removeIds) {
+                    $deleted = $this->dao->getDb()->whereIn('id', $removeIds)->where('is_delete', 0)->update([
+                        'is_delete' => 1,
+                        'status' => 0,
+                        'update_time' => time(),
+                    ]);
+                    if ($deleted === false) throw new AdminException('同步删除本地云空间失败');
+                }
+                // 正在使用的空间被远端删除后，回退到本地存储，避免上传驱动悬空
+                if ($removedActive) {
+                    $enabled = $this->driverServices->getEnabledDrivers();
+                    if (!empty($enabled) && ($enabled[0]['driver_key'] ?? '') === $driverKey) {
+                        $this->driverServices->updateStatus('local', 1);
+                    }
+                }
             });
             CacheService::delete('storage_list');
         }
@@ -668,9 +720,14 @@ class UploadStorageServices extends BaseService
     {
         $driver = $this->driverServices->getByDriverKey($driverKey);
         $domainTemplate = $driver['domain_template'] ?? '';
-        if ($appid === '' && str_contains($domainTemplate, '{appid}')) {
-            $config = $this->getStorageConfigByDriverKey($driverKey);
-            $appid = (string)($config['appid'] ?? $config[$driverKey . '_appid'] ?? '');
+        if ($appid === '') {
+            $config = $this->driverServices->normalizeDriverConfig($driverKey, $this->getStorageConfigByDriverKey($driverKey));
+            $appid = (string)($config['appid'] ?? '');
+        }
+        // 腾讯云桶名在控制台/API 中通常已含 -APPID；手动填写短名时再补上
+        if ($driverKey === 'cos' && $appid !== '' && !str_contains($domainTemplate, '{appid}')
+            && !str_ends_with($name, '-' . $appid)) {
+            $name .= '-' . $appid;
         }
         return $this->formatStorageDomain($domainTemplate, $name, $region, $appid);
     }

@@ -21,7 +21,7 @@
 const app = getApp();
 import { ref, onMounted } from 'vue';
 import Routine from '@/libs/routine';
-import Verify from '../verify/index.vue';
+import Verify from '@/components/Verify/index.vue';
 import Cache from '@/utils/cache';
 import {
 	loginMobile,

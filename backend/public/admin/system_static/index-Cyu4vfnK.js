@@ -1,0 +1,1 @@
+import{J as r,G as o}from"./element-plus-BlM_hkkP.js";import t from"./index-B2EKFNHt.js";import"./common-BjnwXDgI.js";import"./form-create-wUo3gcl5.js";import"./index-CkuUPZaJ.js";const _=Object.assign({name:"storageConfig"},{__name:"index",setup(e){return(a,i)=>(r(),o(t))}});export{_ as default};

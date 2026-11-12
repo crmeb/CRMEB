@@ -159,7 +159,7 @@
     <template #footer
       ><div>
         <el-button @click="handleCancel">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitLoading">提交</el-button>
+        <el-button v-db-click type="primary" @click="handleSubmit" :loading="submitLoading">提交</el-button>
       </div></template
     >
   </el-dialog>

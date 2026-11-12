@@ -50,10 +50,10 @@ request.get('public/resource', params, { noAuth: true });
 
 ## 页面与导航
 
-- 每个页面都必须在 `src/pages.json` 的主包 `pages` 或某个 `subPackages[].pages` 中声明。
+- 核心页面在 `src/pages.json` 的主包 `pages` 或某个 `subPackages[].pages` 中声明。插件独立页放 `src/pages-modules/<标识>/`，由扫描器注册，用法见 [uniapp-pages.md](../../crmeb-plugin-dev/references/uniapp-pages.md)。
 - 大型流程放入合适的现有分包，不要无必要扩大主包。
 - tab bar 页面使用 `uni.switchTab`，普通页面栈导航使用 `uni.navigateTo`；只有确实需要相应历史行为时才用 `redirectTo` 或 `reLaunch`。
-- 已使用 `dynamic-pages/api/routes.js` 的核心流程继续在其中统一维护路由，不得散落硬编码路径。
+- 订单中台跳转继续用 `dynamic-pages/api/routes.js`。插件页跳转用该模块自己的 `routes.js`。
 - 页面生命周期从 `@dcloudio/uni-app` 引入：`onLoad(options)` 读参数，`onShow` 刷新可能变化的动态数据。
 - 筛选条件变化时同时重置分页，并用 `loading`、`finished` 防止触底重复请求。
 

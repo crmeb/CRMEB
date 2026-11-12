@@ -668,7 +668,7 @@ export function noticeBatchDelete(ids) {
 
 /**
  * 苹果账号登录
- * @param {Object} data
+ * @param {Object} data { identityToken, email?, phone?, captcha? }
  */
 export function appleLogin(data) {
 	return request.post('apple_login', data, {
@@ -703,10 +703,13 @@ export function agentLevelTaskList(id) {
 
 /**
  * 获取代付详情
- * @param int id 任务id
+ * @param {number|string} id 订单中台 ID
+ * @param {string} [friendKey] 代付分享令牌（非下单人必传）
  */
-export function friendDetail(id) {
-	return request.get('order/friend_detail?order_id=' + id);
+export function friendDetail(id, friendKey = '') {
+	const query = { order_id: id };
+	if (friendKey) query.friend_key = friendKey;
+	return request.get('order/friend_detail', query);
 }
 
 /**

@@ -136,6 +136,7 @@ Route::group('setting', function () {
                 'index' => '获取组合数据列表',
                 'create' => '获取组合数据表单',
                 'save' => '保存组合数据',
+                'read' => '获取组合数据详情',
                 'edit' => '获取修改组合数据表单',
                 'update' => '修改组合数据',
                 'delete' => '删除组合数据'

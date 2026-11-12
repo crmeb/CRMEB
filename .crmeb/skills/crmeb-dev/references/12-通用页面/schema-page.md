@@ -158,13 +158,15 @@ class ToolListPage extends BaseSchemaPageProvider
 
 ### 4.0 统计卡片（cards）与状态分类头（tabs）
 
-**统计卡片**（渲染在页面顶部，数据由 `list()` 响应的 `summary` 键下发，对象格式 `{field: value}`）：
+**统计卡片**（默认渲染在搜索栏之前；页面声明 `search_first => true` 时搜索栏在上、统计卡在下。数据由 `list()` 响应的 `summary` 键下发，对象格式 `{field: value}`）：
 
 ```php
 'cards' => [
-    ['field' => 'sum_price', 'label' => '充值总金额', 'type' => 'amount'], // type: text/number/amount（缺省 text）
+    ['field' => 'sum_price', 'label' => '充值总金额', 'type' => 'amount', 'icon' => 'el-icon-yuan', 'theme' => 'primary'],
     ['field' => 'count',     'label' => '充值笔数',   'type' => 'number'],
 ],
+// icon 可选。任一项声明 icon 后，每项单独成卡（左侧图标、右侧数值与标题，对齐订单中台统计卡）。
+// theme 可选：primary / success / warning / danger，缺省 primary。未声明 icon 时仍在同一张卡片内并排展示。
 // list() 返回：['list' => [...], 'count' => n, 'summary' => ['sum_price' => 123.45, 'count' => 88]]
 ```
 
@@ -264,6 +266,8 @@ visible 支持的 op：`eq` / `neq` / `gt` / `lt` / `gte` / `lte`（数值比较
 | drawer_form | 右侧抽屉 form-create 表单，提交调 save | `form()` + `save()` |
 | drawer_detail | 右侧抽屉详情描述列表 | `detail()` |
 | confirm_action | 确认弹窗（`confirm` 文案）→ 调 action | `action()` |
+
+`action()` 也可先返回确认指令，由列表页弹窗后再提交：`['refresh' => false, 'confirm' => ['message' => '确认文案', 'payload' => ['id' => 1, 'confirmed' => 1]]]`。确认后的请求会把 `payload` 合并进原参数。未返回 `confirm` 时行为不变。
 | direct_action | 直接调 action | `action()` |
 | navigate | 跳转（`path` 支持 `:字段` 占位替换行数据） | — |
 

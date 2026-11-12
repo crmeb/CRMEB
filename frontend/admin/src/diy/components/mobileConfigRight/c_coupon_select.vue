@@ -23,7 +23,7 @@
           </template>
         </draggable>
         <div class="add-item" @click="openModal">
-          <el-button class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
+          <el-button v-db-click class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
         </div>
       </div>
     </div>

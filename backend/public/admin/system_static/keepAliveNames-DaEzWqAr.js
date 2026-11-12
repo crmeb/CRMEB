@@ -1,0 +1,1 @@
+import{d as i}from"./common-BjnwXDgI.js";import{r as o}from"./element-plus-BlM_hkkP.js";const p=i("keepAliveNames",()=>{const t=o([]);function r(e){t.value=e}async function s(e){r(e)}return{keepAliveNames:t,getCacheKeepAlive:r,setCacheKeepAlive:s}},{persist:!0});export{p as u};

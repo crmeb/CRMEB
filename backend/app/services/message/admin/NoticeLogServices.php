@@ -11,9 +11,11 @@
 
 namespace app\services\message\admin;
 
-use crmeb\basic\BaseService;
 use app\dao\message\NoticeLogDao;
 use app\model\message\NoticeLog;
+use app\services\message\Notice;
+use crmeb\basic\BaseService;
+use crmeb\exceptions\AdminException;
 
 class NoticeLogServices extends BaseService
 {
@@ -84,7 +86,18 @@ class NoticeLogServices extends BaseService
         return $this->dao->getStatistics($this->buildWhere($filter, false));
     }
 
-    public function createLog(string $mark, int $uid, string $channelKey, string $channelName, string $title = '', string $content = ''): int
+    /**
+     * 写入发送日志（含原始业务变量，失败后可安全重试）
+     * @param string $mark 消息标识
+     * @param int $uid 接收用户
+     * @param string $channelKey 渠道标识
+     * @param string $channelName 渠道名称
+     * @param string $title 渲染后的标题
+     * @param string $content 渲染后的内容
+     * @param array $variables 原始业务变量
+     * @return int 日志 ID
+     */
+    public function createLog(string $mark, int $uid, string $channelKey, string $channelName, string $title = '', string $content = '', array $variables = []): int
     {
         $data = [
             'mark' => $mark,
@@ -93,6 +106,7 @@ class NoticeLogServices extends BaseService
             'channel_name' => $channelName,
             'title' => $title,
             'content' => $content,
+            'variables' => $variables === [] ? null : json_encode($variables, JSON_UNESCAPED_UNICODE),
             'status' => NoticeLog::STATUS_PENDING,
         ];
         return $this->dao->createLog($data);
@@ -106,6 +120,67 @@ class NoticeLogServices extends BaseService
     public function logFailed(int $id, string $errorMsg): bool
     {
         return $this->dao->updateStatus($id, NoticeLog::STATUS_FAILED, $errorMsg);
+    }
+
+    /**
+     * 按日志保存的原始变量，仅重试失败记录对应的单一渠道
+     * @param int $id 日志 ID
+     * @return bool
+     * @throws AdminException 记录不存在、非失败态、缺变量、渠道未执行或重试仍失败
+     */
+    public function retry(int $id): bool
+    {
+        $info = $this->getDetail($id);
+        if (!$info) {
+            throw new AdminException('记录不存在');
+        }
+        if ((int)($info['status'] ?? -1) !== NoticeLog::STATUS_FAILED) {
+            throw new AdminException('仅失败记录可重试');
+        }
+
+        $variables = $this->decodeVariables($info['variables'] ?? null);
+        if ($variables === null) {
+            throw new AdminException('该日志未保存原始变量，无法安全重试');
+        }
+
+        $mark = (string)($info['mark'] ?? '');
+        $channelKey = (string)($info['channel_key'] ?? '');
+        if ($mark === '' || $channelKey === '') {
+            throw new AdminException('日志缺少消息标识或渠道，无法重试');
+        }
+
+        $results = Notice::to((int)($info['uid'] ?? 0))
+            ->channel($channelKey)
+            ->sendMsg($mark, (string)($info['title'] ?: $mark), $variables);
+
+        $result = $results[$channelKey] ?? null;
+        if ($result === null) {
+            throw new AdminException('重试未执行：渠道未启用或通知未配置');
+        }
+        if (empty($result['success'])) {
+            throw new AdminException('重试失败：' . ((string)($result['error'] ?? '') ?: '未知错误'));
+        }
+        return true;
+    }
+
+    /**
+     * 解析日志中的原始变量
+     * @param mixed $raw JSON 字符串或已解码数组
+     * @return array|null 有效关联数组；空/非法返回 null（不可重试）
+     */
+    protected function decodeVariables($raw): ?array
+    {
+        if (is_array($raw)) {
+            return $raw === [] ? null : $raw;
+        }
+        if (!is_string($raw) || trim($raw) === '') {
+            return null;
+        }
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded) || $decoded === []) {
+            return null;
+        }
+        return $decoded;
     }
 
     public function cleanLogs(int $days = 30): int

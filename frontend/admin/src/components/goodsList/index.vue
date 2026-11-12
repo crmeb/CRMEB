@@ -1,5 +1,5 @@
 <template>
-  <div class="goodList">
+  <div class="goodList" :class="{ 'is-compact': compact }">
     <el-form :model="formValidate" label-width="80px" label-position="right" inline class="tabform">
       <el-form-item label="商品分类：" v-if="!liveStatus">
         <el-cascader
@@ -49,19 +49,19 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="商品ID" width="80">
+      <el-table-column label="商品ID" :width="compact ? 96 : 80">
         <template #default="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="图片" width="80">
+      <el-table-column label="图片" :width="compact ? 96 : 80">
         <template #default="scope">
           <div class="tabBox_img" v-viewer>
             <img v-lazy="scope.row.image" />
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="商品名称" min-width="250">
+      <el-table-column label="商品名称" :min-width="compact ? 140 : 250" :show-overflow-tooltip="compact">
         <template #default="scope">
           <span>{{ scope.row.store_name }}</span>
         </template>
@@ -125,6 +125,10 @@ const props = defineProps({
     default: false,
   },
   isdiy: {
+    type: Boolean,
+    default: false,
+  },
+  compact: {
     type: Boolean,
     default: false,
   },
@@ -419,5 +423,9 @@ defineExpose({ getList, goodsCategory, formValidate });
   :deep(table) {
     width: 100% !important;
   }
+}
+.goodList.is-compact :deep(.el-table__header),
+.goodList.is-compact :deep(.el-table__body) {
+  table-layout: fixed;
 }
 </style>

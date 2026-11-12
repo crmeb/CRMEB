@@ -68,5 +68,8 @@ class UserLoginListener implements ListenerInterface
         } catch (\Throwable $e) {
             Log::error('用户登录监听失败,失败原因:' . $e->getMessage());
         }
+
+        //一号通短信余额检查（监听器内有节流）
+        event('SmsBalanceCheck');
     }
 }

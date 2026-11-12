@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "verify-slide": "./VerifySlide",
+    "verify-point": "./VerifyPoint"
+  }
+}

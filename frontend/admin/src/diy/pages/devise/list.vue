@@ -24,7 +24,7 @@
         <div class="table-box">
           <div class="acea-row row-between-wrapper">
             <div class="button acea-row row-middle">
-              <el-button class="m-r-10" type="primary" @click="createdPage">添加页面</el-button>
+              <el-button v-db-click class="m-r-10" type="primary" @click="createdPage">添加页面</el-button>
               <el-upload
                 :action="UploadPath"
                 :before-upload="beforeUpload"

@@ -1,156 +1,217 @@
 <template>
-  <div>
-    <el-card :bordered="false" shadow="never">
-      <el-alert type="info" :closable="false">
-        <template #title>
-          系统事件说明：<br />
-          1、系统事件是框架内置的核心事件，用于解耦业务逻辑和扩展功能。<br />
-          2、事件由 app 层定义和触发，modules 层监听和处理。<br />
-          3、监听器来源分为：app（应用层）、modules（扩展模块）、core（核心层）。<br />
-        </template>
-      </el-alert>
-      <div class="mt14">
-        <el-row :gutter="20">
-          <el-col :span="6" v-for="category in categories" :key="category.name">
-            <el-card class="category-card">
-              <div class="category-title">{{ category.name }}</div>
-              <div class="category-count">{{ category.event_count }} 个事件</div>
-            </el-card>
-          </el-col>
-        </el-row>
-      </div>
-      <div class="mt14">
-        <div v-for="category in eventList" :key="category.name">
-          <div class="category-header">
-            <i class="el-icon-folder-opened"></i>
-            <span>{{ category.name }}</span>
-            <span class="category-badge">{{ category.events.length }} 个事件</span>
-          </div>
-          <el-table :data="category.events" v-loading="loading" class="event-table">
-            <el-table-column label="事件名称" min-width="200">
-              <template #default="scope">
-                <span class="event-name">{{ scope.row.name }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="事件描述" min-width="300">
-              <template #default="scope">
-                <span class="event-desc">{{ scope.row.description }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="监听器数量" width="120">
-              <template #default="scope">
-                <el-tag :type="scope.row.listener_count > 0 ? 'success' : 'info'">
-                  {{ scope.row.listener_count }} 个
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="监听器详情" min-width="300">
-              <template #default="scope">
-                <div v-if="scope.row.listeners.length > 0">
-                  <el-tag
-                    v-for="(listener, index) in scope.row.listeners"
-                    :key="index"
-                    :type="getListenerType(listener.source)"
-                    size="small"
-                    class="listener-tag"
-                  >
-                    {{ listener.short_class }}
-                    <span class="listener-source">({{ getSourceName(listener.source) }})</span>
-                  </el-tag>
-                </div>
-                <span v-else class="empty-text">暂无监听器</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="100" fixed="right">
-              <template #default="scope">
-                <a v-db-click @click="showDetail(scope.row)">详情</a>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </div>
-      <el-drawer
-        v-model="dialogVisible"
-        :title="currentEvent?.name + ' - 事件详情'"
-        direction="rtl"
-        size="50%"
-        @closed="closeDialog"
+  <div class="system-event">
+    <pages-header
+      title="系统事件"
+      description="查看框架内置核心事件及其监听器，便于排查扩展与解耦关系。点击分类可筛选。"
+    />
+
+    <div class="stat-row" v-loading="categoryLoading">
+      <el-card
+        v-for="item in categories"
+        :key="item.name"
+        shadow="never"
+        class="stat-card"
+        :class="{ 'is-active': activeCategory === item.name }"
+        @click="toggleCategory(item.name)"
       >
-        <div v-if="currentEvent" class="detail-content">
-          <el-form label-width="100px">
-            <el-form-item label="事件名称">
-              <span>{{ currentEvent.name }}</span>
-            </el-form-item>
-            <el-form-item label="事件描述">
-              <span>{{ currentEvent.description }}</span>
-            </el-form-item>
-            <el-form-item label="监听器数量">
-              <el-tag type="success">{{ currentEvent.listener_count }} 个</el-tag>
-            </el-form-item>
-            <el-form-item label="监听器列表">
-              <div v-if="currentEvent.listeners.length > 0">
-                <el-table :data="currentEvent.listeners" border>
-                  <el-table-column label="类名" prop="class"></el-table-column>
-                  <el-table-column label="短类名" prop="short_class"></el-table-column>
-                  <el-table-column label="来源">
-                    <template #default="scope">
-                      <el-tag :type="getListenerType(scope.row.source)" size="small">
-                        {{ getSourceName(scope.row.source) }}
-                      </el-tag>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-              <span v-else class="empty-text">暂无监听器</span>
-            </el-form-item>
-          </el-form>
+        <div class="stat-name">{{ item.name }}</div>
+        <div class="stat-value">{{ item.event_count }}</div>
+        <div class="stat-unit">个事件</div>
+      </el-card>
+    </div>
+
+    <el-card shadow="never" class="ivu-mt mt16">
+      <div class="list-toolbar acea-row row-middle row-between">
+        <div class="acea-row row-middle">
+          <el-input
+            v-model="keyword"
+            clearable
+            placeholder="搜索事件名称 / 描述"
+            class="form_content_width"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+          <template v-if="activeCategory">
+            <el-tag class="ml14" type="primary" effect="plain" closable @close="activeCategory = ''">
+              {{ activeCategory }}
+            </el-tag>
+          </template>
         </div>
-      </el-drawer>
+        <span class="list-count">共 {{ flatEventList.length }} 个事件</span>
+      </div>
+
+      <el-table
+        :data="flatEventList"
+        v-loading="loading"
+        highlight-current-row
+        class="mt14 event-table"
+        @row-click="showDetail"
+      >
+        <el-table-column label="分类" width="120">
+          <template #default="{ row }">
+            <el-tag size="small" effect="plain" type="info">{{ row.category }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="事件" width="350" show-overflow-tooltip>
+          <template #default="{ row }">
+            <div class="event-cell">
+              <div class="event-name">{{ row.name }}</div>
+              <div class="event-desc line1">{{ row.description || '暂无描述' }}</div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="监听器" min-width="220">
+          <template #default="{ row }">
+            <div v-if="row.listeners?.length" class="listener-cell">
+              <el-tag
+                v-for="(listener, index) in row.listeners.slice(0, 5)"
+                :key="index"
+                :type="getListenerType(listener.source)"
+                size="small"
+                effect="plain"
+              >
+                {{ listener.short_class }}
+              </el-tag>
+              <el-tag v-if="row.listener_count > 5" size="small" type="info" effect="plain">
+                +{{ row.listener_count - 5 }}
+              </el-tag>
+            </div>
+            <span v-else class="empty-text">未注册</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="数量" width="72" align="center">
+          <template #default="{ row }">
+            <span v-if="row.listener_count" class="listener-count">{{ row.listener_count }}</span>
+            <span v-else class="empty-text">0</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="72">
+          <template #default="{ row }">
+            <el-button class="op-link" link type="primary" v-db-click @click.stop="showDetail(row)">详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
+
+    <el-drawer
+      v-model="dialogVisible"
+      :title="drawerTitle"
+      direction="rtl"
+      size="720"
+      @closed="closeDialog"
+    >
+      <div v-if="currentEvent" class="detail-content">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="所属分类">{{ currentEvent.category }}</el-descriptions-item>
+          <el-descriptions-item label="事件名称">
+            <code class="event-code">{{ currentEvent.name }}</code>
+          </el-descriptions-item>
+          <el-descriptions-item label="事件描述">{{ currentEvent.description || '—' }}</el-descriptions-item>
+          <el-descriptions-item label="监听器数量">
+            <el-tag :type="currentEvent.listener_count > 0 ? 'success' : 'info'" size="small">
+              {{ currentEvent.listener_count }} 个
+            </el-tag>
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <div class="detail-section-title">监听器列表</div>
+        <el-table v-if="currentEvent.listeners?.length" :data="currentEvent.listeners">
+          <el-table-column label="短类名" prop="short_class" min-width="160" />
+          <el-table-column label="完整类名" prop="class" min-width="280" show-overflow-tooltip />
+          <el-table-column label="来源" width="110">
+            <template #default="{ row }">
+              <el-tag :type="getListenerType(row.source)" size="small" effect="plain">
+                {{ getSourceName(row.source) }}
+              </el-tag>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div v-else class="empty-box">暂无监听器</div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { eventIndex, eventCategories } from '@/api/system';
 
 defineOptions({ name: 'system_event' });
 
 const loading = ref(false);
+const categoryLoading = ref(false);
 const eventList = ref([]);
 const categories = ref([]);
+const activeCategory = ref('');
+const keyword = ref('');
 const dialogVisible = ref(false);
 const currentEvent = ref(null);
+
+const flatEventList = computed(() => {
+  const key = keyword.value.trim().toLowerCase();
+  const rows = [];
+  eventList.value.forEach((category) => {
+    if (activeCategory.value && category.name !== activeCategory.value) return;
+    (category.events || []).forEach((event) => {
+      if (key) {
+        const hitName = (event.name || '').toLowerCase().includes(key);
+        const hitDesc = (event.description || '').toLowerCase().includes(key);
+        if (!hitName && !hitDesc) return;
+      }
+      rows.push({ ...event, category: category.name });
+    });
+  });
+  return rows;
+});
+
+const drawerTitle = computed(() => {
+  return currentEvent.value ? `${currentEvent.value.name} - 事件详情` : '事件详情';
+});
 
 function getList() {
   loading.value = true;
   eventIndex({})
     .then((res) => {
-      loading.value = false;
-      eventList.value = res.data;
+      eventList.value = res.data || [];
     })
     .catch((res) => {
-      loading.value = false;
       ElMessage.error(res.msg);
+    })
+    .finally(() => {
+      loading.value = false;
     });
 }
+
 function getCategories() {
+  categoryLoading.value = true;
   eventCategories()
     .then((res) => {
-      categories.value = res.data;
+      categories.value = res.data || [];
     })
     .catch((res) => {
       ElMessage.error(res.msg);
+    })
+    .finally(() => {
+      categoryLoading.value = false;
     });
 }
+
+function toggleCategory(name) {
+  activeCategory.value = activeCategory.value === name ? '' : name;
+}
+
 function showDetail(event) {
   currentEvent.value = event;
   dialogVisible.value = true;
 }
+
 function closeDialog() {
   currentEvent.value = null;
 }
+
 function getListenerType(source) {
   const types = {
     app: 'primary',
@@ -159,6 +220,7 @@ function getListenerType(source) {
   };
   return types[source] || 'info';
 }
+
 function getSourceName(source) {
   const names = {
     app: '应用层',
@@ -173,88 +235,142 @@ getCategories();
 </script>
 
 <style lang="scss" scoped>
-.mt14 {
-  margin-top: 14px;
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
 }
 
-.category-card {
-  text-align: center;
+.stat-card {
   cursor: pointer;
-  transition: all 0.3s;
-  margin: 10px 0;
+  transition: background-color 0.2s ease;
+
+  :deep(.el-card__body) {
+    padding: 16px 20px;
+  }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: var(--prev-bg-color);
   }
 
-  .category-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--prev-color-text-regular);
-    margin-bottom: 8px;
-  }
+  &.is-active {
+    background: var(--prev-color-primary-light-9);
 
-  .category-count {
-    font-size: 24px;
-    color: #409eff;
-    font-weight: bold;
+    .stat-name,
+    .stat-unit,
+    .stat-value {
+      color: var(--prev-color-primary);
+    }
   }
 }
 
-.category-header {
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: bold;
+.stat-name {
+  font-size: 12px;
+  color: var(--prev-color-text-secondary);
+  line-height: 1.4;
+}
+
+.stat-value {
+  margin-top: 6px;
+  font-size: 24px;
+  font-weight: 500;
   color: var(--prev-color-text-regular);
-  margin-top: 20px;
-  margin-bottom: 10px;
-  padding-left: 10px;
-  border-left: 4px solid #409eff;
-
-  .el-icon-folder-opened {
-    margin-right: 8px;
-    color: #409eff;
-  }
-
-  .category-badge {
-    margin-left: auto;
-    font-size: 12px;
-    font-weight: normal;
-    color: var(--prev-color-text-secondary);
-  }
+  line-height: 1.2;
 }
 
-.event-table {
-  margin-bottom: 20px;
+.stat-unit {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--prev-color-text-placeholder);
+}
+
+.list-toolbar {
+  min-height: 32px;
+}
+
+.list-count {
+  font-size: 12px;
+  color: var(--prev-color-text-secondary);
+}
+
+.event-cell {
+  padding: 2px 0;
 }
 
 .event-name {
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: 12px;
   font-weight: 500;
+  line-height: 18px;
   color: var(--prev-color-text-regular);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-desc {
-  color: var(--prev-color-text-primary);
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--prev-color-text-secondary);
 }
 
-.listener-tag {
-  margin-right: 8px;
-  margin-bottom: 4px;
+.listener-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
 
-  .listener-source {
-    font-size: 10px;
-    opacity: 0.7;
-    margin-left: 4px;
-  }
+.listener-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--prev-color-primary);
+  background: var(--prev-color-primary-light-9);
 }
 
 .empty-text {
-  color: #c0c4cc;
+  color: var(--prev-color-text-placeholder);
+}
+
+.event-table {
+  :deep(.el-table__row) {
+    cursor: pointer;
+  }
+
+  :deep(.op-link.el-button) {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto;
+    min-height: auto;
+  }
+}
+
+.event-code {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--prev-color-primary);
+  background: var(--prev-color-primary-light-9);
 }
 
 .detail-content {
-  padding: 10px 0;
+  .detail-section-title {
+    margin: 20px 0 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--prev-color-text-regular);
+  }
 }
 </style>

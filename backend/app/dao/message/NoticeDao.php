@@ -22,6 +22,35 @@ class NoticeDao extends BaseDao
         return $this->getModel()->where('is_del', 0)->findOrEmpty($id)->toArray();
     }
 
+    /**
+     * 用户侧单条详情：校验可见性（已发布/在发送窗口/未过期/定向含本人），防任意 id 读取未发布或他人定向消息（安全审计 B6.1）
+     * @param int $id
+     * @param int $uid
+     * @return array
+     */
+    public function getDetailForUser(int $id, int $uid): array
+    {
+        $now = time();
+        $uidJson = json_encode($uid);
+        $notice = $this->getModel()
+            ->where('is_del', 0)
+            ->where('id', $id)
+            ->where('status', Notice::STATUS_PUBLISHED)
+            ->where('send_at', '<=', $now)
+            ->where(function ($q) use ($now) {
+                $q->where('expire_at', 0)->whereOr('expire_at', '>', $now);
+            })
+            ->where(function ($q) use ($uid, $uidJson) {
+                $q->where('target_type', Notice::TARGET_ALL)
+                    ->whereOr(function ($q2) use ($uid, $uidJson) {
+                        $q2->where('target_type', Notice::TARGET_USER)
+                            ->whereRaw("JSON_CONTAINS(target_ids, ?, '$')", [$uidJson]);
+                    });
+            })
+            ->findOrEmpty();
+        return $notice->isEmpty() ? [] : $notice->toArray();
+    }
+
     public function create(array $data): array
     {
         $data['created_at'] = time();

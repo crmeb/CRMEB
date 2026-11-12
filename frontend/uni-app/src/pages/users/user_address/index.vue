@@ -111,6 +111,7 @@ const news = ref('');
 const noCoupon = ref(0);
 const is_gift = ref(0);
 const order_id = ref(0);
+const gift_key = ref('');
 // 原代码未在 data 声明、直接挂到实例上的字段（与 order_id 并存）
 const orderId = ref('');
 // 打开来源标记：order_create = 下单页地址链路（保存后经 uni.$emit 直跳回下单页）
@@ -134,6 +135,7 @@ onLoad((options) => {
 		news.value = options.new || '';
 		is_gift.value = options.is_gift || '';
 		orderId.value = options.order_id || '';
+		gift_key.value = options.gift_key || '';
 		from.value = options.from || '';
 		uni.setNavigationBarTitle({
 			title: options.id ? i18n.t(`修改地址`) : i18n.t(`添加地址`)
@@ -164,7 +166,8 @@ function isGiftReceiveFlow() {
 function redirectGiftConfirm(addressId) {
 	uni.redirectTo({
 		url: '/pages/goods/order_confirm/index?order_id=' + orderId.value +
-			'&is_gift=2&addressId=' + addressId + '&is_address=1'
+			'&is_gift=2&addressId=' + addressId + '&is_address=1' +
+			(gift_key.value ? '&gift_key=' + gift_key.value : '')
 	});
 }
 

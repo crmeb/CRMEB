@@ -1397,7 +1397,11 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
             'thumb_watermark_config' => $json($driver['thumb_watermark_config'] ?? []),
             'platforms' => $json($driver['platforms'] ?? []),
             'sort' => (int) ($driver['sort'] ?? 0),
-            'status' => !empty($driver['is_builtin']) ? 1 : 0,
+            // 互斥类型不可因“内置”全部默认启用，否则会同时点亮多个驱动
+            'status' => $this->resolveDriverInstallStatus(
+                $manifest->identity->category,
+                !empty($driver['is_builtin'])
+            ),
             'add_time' => $now,
             'update_time' => $now,
         ];
@@ -1408,6 +1412,37 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
             'bucket_fields', 'thumb_watermark_config', 'platforms', 'sort', 'update_time',
         ])->insert($row);
         return true;
+    }
+
+    /**
+     * 计算驱动首次写入字典时的启用状态
+     *
+     * 短信/邮件/采集/物流等为互斥类型：仅当同类型尚无启用记录时，内置驱动才默认启用；
+     * 并存类型（如上传）保持内置默认启用。
+     *
+     * @param string $driverType 驱动类型（driver_type）
+     * @param bool $isBuiltin 是否内置驱动
+     * @return int 1=启用 0=禁用
+     */
+    protected function resolveDriverInstallStatus(string $driverType, bool $isBuiltin): int
+    {
+        if (!$isBuiltin) {
+            return 0;
+        }
+
+        // 与各 *DriverServices::updateStatus 互斥约定保持一致
+        $exclusiveTypes = ['sms', 'email', 'copyproduct', 'logistics'];
+        if (!in_array($driverType, $exclusiveTypes, true)) {
+            return 1;
+        }
+
+        $hasEnabled = (int) Db::table($this->table('driver'))
+            ->where('driver_type', $driverType)
+            ->where('status', 1)
+            ->where('owner_plugin_id', '<>', '')
+            ->count();
+
+        return $hasEnabled > 0 ? 0 : 1;
     }
 
     /** 驱动卸载时删除当前插件拥有的字典记录，并兼容升级前的无归属旧记录。 */

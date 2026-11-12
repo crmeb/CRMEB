@@ -52,8 +52,7 @@ Route::group(function () {
     Route::get('copyright', [\app\api\controller\v1\PublicController::class, 'copyright'])->option(['real_name' => '申请版权'])->option(['real_name' => '查询版权']);
     //商城基础配置汇总接口
     Route::get('basic_config', [\app\api\controller\v1\PublicController::class, 'getMallBasicConfig'])->option(['real_name' => '商城基础配置汇总接口']);
-    //小程序跳转url接口
-    Route::get('get_scheme_url/:id', [\app\api\controller\v1\PublicController::class, 'getSchemeUrl'])->option(['real_name' => '小程序跳转url接口']);
+    // 小程序外链跳转已迁移至 modules/channel/wechat_mini/route/user.php
     //远程注册用户
     Route::get('remote_register', [\app\api\controller\v1\LoginController::class, 'remoteRegister'])->option(['real_name' => '远程注册用户']);
 
@@ -164,7 +163,8 @@ Route::group(function () {
         Route::get('order/cashier/:orderNo/[:type]', [\app\api\controller\v1\order\CenterOrderController::class, 'cashier'])->name('orderCashier')->option(['real_name' => '订单收银台']); //订单收银台
         Route::get('order/friend_detail', [\app\api\controller\v1\order\CenterOrderController::class, 'friendDetail'])->name('friendDetail')->option(['real_name' => '代付详情']);//代付详情
         Route::post('order/receive_gift/:oid', [\app\api\controller\v1\order\CenterOrderController::class, 'receiveGift'])->name('receiveGift')->option(['real_name' => '领取礼物']);//领取礼物
-        Route::get('order/gift_detail/:oid', [\app\api\controller\v1\order\CenterOrderController::class, 'giftDetail'])->name('giftDetail')->option(['real_name' => '礼品详情']); //礼品详情
+        Route::get('order/gift_detail/:oid', [\app\api\controller\v1\order\CenterOrderController::class, 'giftDetail'])->name('giftDetail')->option(['real_name' => '礼品详情']); //礼品详情（须 gift_key）
+        Route::get('order/gift_by_key/:key', [\app\api\controller\v1\order\CenterOrderController::class, 'giftByKey'])->name('giftByKey')->option(['real_name' => '按令牌礼品详情']); //小程序码 scene 仅 token
 
     })->option(['mark' => 'order', 'mark_name' => '订单']);
 
@@ -180,7 +180,7 @@ Route::group(function () {
         Route::get('user/spread_info', [\app\api\controller\v1\user\UserBillController::class, 'getSpreadInfo'])->name('getSpreadInfo')->option(['real_name' => '分享邀新海报素材']);//分享邀新海报素材
         Route::get('integral/list', [\app\api\controller\v1\user\UserBillController::class, 'integralList'])->name('integralList')->option(['real_name' => '积分记录']);//积分记录
         Route::get('user/money/list/:type', [\app\api\controller\v1\user\UserBillController::class, 'moneyList'])->name('userMoneyList')->option(['real_name' => '资金明细']);//资金明细
-        Route::get('user/routine_code', [\app\api\controller\v1\user\UserBillController::class, 'getRoutineCode'])->name('getRoutineCode')->option(['real_name' => '小程序二维码']);//小程序二维码
+        // 用户推广小程序码已迁移至 modules/channel/wechat_mini/route/user.php
     })->option(['mark' => 'division', 'mark_name' => '账单']);
 
 
@@ -281,7 +281,7 @@ Route::group(function () {
         Route::get('index', [\app\api\controller\v1\PublicController::class, 'index'])->name('index')->option(['real_name' => '首页']);//首页
         Route::get('site_config', [\app\api\controller\v1\PublicController::class, 'getSiteConfig'])->name('getSiteConfig')->option(['real_name' => '获取网站配置']);//获取网站配置
         //DIY接口
-        Route::get('diy/get_diy/[:id]', [\app\api\controller\v1\PublicController::class, 'getDiy']);
+        Route::get('diy/get_diy/[:id]', [\app\api\controller\v1\PublicController::class, 'getDiy'])->option(['real_name' => '获取DIY数据']);
         Route::get('home/products', [\app\api\controller\v1\PublicController::class, 'homeProductsList'])->name('homeProductsList')->option(['real_name' => '获取首页推荐不同类型商品的轮播图和商品']);//获取首页推荐不同类型商品的轮播图和商品
 
         Route::get('theme_info/:type', [\app\api\controller\v1\PublicController::class, 'themeInfo'])->name('themeInfo')->option(['real_name' => '主题详情']);
@@ -410,10 +410,7 @@ Route::group(function () {
         Route::get('crontab/order_cancel', [\app\api\controller\v1\CrontabController::class, 'orderUnpaidCancel'])->name('orderUnpaidCancel')->option(['real_name' => '未支付自动取消订单']);
         //拼团到期订单处理
         Route::get('crontab/pink_expiration', [\app\api\controller\v1\CrontabController::class, 'pinkExpiration'])->name('pinkExpiration')->option(['real_name' => '拼团到期订单处理']);
-        //更新直播商品状态
-        Route::get('crontab/live_product_status', [\app\api\controller\v1\CrontabController::class, 'syncGoodStatus'])->name('syncGoodStatus')->option(['real_name' => '更新直播商品状态']);
-        //更新直播间状态
-        Route::get('crontab/live_room_status', [\app\api\controller\v1\CrontabController::class, 'syncRoomStatus'])->name('syncRoomStatus')->option(['real_name' => '更新直播间状态']);
+        // 直播商品/直播间状态同步已迁移至 modules/channel/wechat_mini/route/user.php
         //自动收货
         Route::get('crontab/take_delivery', [\app\api\controller\v1\CrontabController::class, 'autoTakeOrder'])->name('autoTakeOrder')->option(['real_name' => '自动收货']);
         //查询预售到期商品自动下架
@@ -423,7 +420,7 @@ Route::group(function () {
         //清除昨日海报
         Route::get('crontab/clear_poster', [\app\api\controller\v1\CrontabController::class, 'emptyYesterdayAttachment'])->name('emptyYesterdayAttachment')->option(['real_name' => '清除昨日海报']);
 
-    })->option(['mark' => 'crontab', 'mark_name' => '定时任务']);
+    })->middleware(\app\api\middleware\CrontabKeyMiddleware::class)->option(['mark' => 'crontab', 'mark_name' => '定时任务']);
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)
     ->middleware(\app\api\middleware\StationOpenMiddleware::class)

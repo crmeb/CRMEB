@@ -313,6 +313,29 @@ body {
   border-radius: 6px;
   /* EP2.9 起根元素自带 12px 内边距，与 header/content 的 15px 叠成双重边距 */
   padding: 0;
+
+  /* message 区按内容收缩时，给表单一个稳定内容宽，避免输入框过窄或贴满 */
+  .el-message-box__content,
+  .el-message-box__container,
+  .el-message-box__message,
+  .common-form-create,
+  .form-create {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .el-form-item__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .el-input,
+  .el-select,
+  .el-input-number,
+  .el-textarea {
+    width: 320px;
+    max-width: 100%;
+  }
 }
 
 .modal-form .el-message-box__header {

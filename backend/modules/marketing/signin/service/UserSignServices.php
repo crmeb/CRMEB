@@ -132,7 +132,7 @@ class UserSignServices extends BaseService
             $multiplier = $this->getMemberMultiplier($user, $now);
             $reward = $this->calculateSignReward($continuousDays, $cumulativeDays, $multiplier);
             $title = '签到奖励';
-            if ($multiplier > 1 && !$yesterdaySigned) {
+            if ($multiplier > 1) {
                 $title .= '(SVIP+' . ($reward['point'] - intdiv($reward['point'], $multiplier)) . ')';
             }
             if (!$this->dao->save([

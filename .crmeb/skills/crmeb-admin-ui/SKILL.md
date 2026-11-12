@@ -238,7 +238,7 @@ onMounted(() => { getList(); });
 - 数据以 `ref` 为主；查询对象 `ref({ page: 1, limit: 15, ... })` 或 `reactive({...})` 均可。
 - **消息提示统一 `import { ElMessage } from 'element-plus'`**；不使用 `$msgErr`（不存在）。
 - 子组件方法需被父级 `$refs` 调用时 `defineExpose`（如 `defineExpose({ modals })`）。
-- API 函数模式：`export function userList(data) { return request({ url: 'user/user', method: 'get', params: data }); }`，统一 `import request from '@/libs/request'`（`libs/axios.js` 是废弃遗留勿用）。
+- API 函数模式：`export function userList(data) { return request({ url: 'user/user', method: 'get', params: data }); }`，统一 `import request from '@/libs/request'`（已删除的 `libs/axios.js` 不要恢复）。
 
 ## 四、列表页骨架（搜索卡 + 数据卡 + 分页区）
 

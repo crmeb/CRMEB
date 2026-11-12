@@ -222,6 +222,14 @@
       }
     ]
   },
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "all",
+      "packages": [
+        "subpackage/diyComponents"
+      ]
+    }
+  },
   "permission": {
     "scope.userLocation": {
       "desc": "你的位置信息将用于查看与门店的距离"

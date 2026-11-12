@@ -252,7 +252,10 @@
         }
     },
     "_spaceID" : "679f0930-8f60-425c-9033-8c135f397ea5",
-    "lazyCodeLoading" : "requiredComponents"
+    "lazyCodeLoading" : "requiredComponents",
+    "uniStatistics" : {
+        "enable" : false
+    }
 }
 /* ios打包配置 */
 

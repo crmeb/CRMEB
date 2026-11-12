@@ -9,6 +9,7 @@
 | 项目约定与任务路由 | [AGENTS.md](AGENTS.md) | 决定本次任务需要读取哪些规则和技能 |
 | 开发规则 | [规则索引](AGENTS.md#规则索引crmebrules) | 架构、代码、数据库、安全、接口等强制约束 |
 | 操作手册 | [技能索引](AGENTS.md#技能索引crmebskills) | 8 个专项技能，详细教程在各自 `references/` 中 |
+| 插件与驱动类型分册 | [类型总览](skills/crmeb-plugin-dev/references/catalog/00-总览-类型路由与边界.md) | 开发插件或驱动时先读总览，再读对应 `01-驱动` / `02-模块` 分册 |
 | 专项角色 | [角色索引](AGENTS.md#子智能体索引crmebagents) | 架构检查、模块构建、路由校验的执行流程 |
 | 各端补充约定 | [管理端](scopes/admin.md)、[移动端](scopes/uni-app.md) | 只在对应端任务中读取 |
 | 项目说明 | [文档索引](../help/docs/文档索引.md) | 项目、架构、模块与运行说明，不代替当前规则或执行授权 |

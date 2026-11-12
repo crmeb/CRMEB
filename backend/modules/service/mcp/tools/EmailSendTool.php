@@ -108,6 +108,28 @@ class EmailSendTool implements McpToolInterface
         if ($to === '' || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
             throw new McpException('收件邮箱不能为空且必须是合法邮箱地址');
         }
+        // 收件白名单：默认拒绝一切外发，超管在系统配置 mcp_email_recipients 登记
+        // （逗号分隔，支持精确邮箱与 @domain 域名后缀）后方可外发（安全审计 D3）
+        $whitelist = array_filter(array_map('trim', explode(',', (string)sys_config('mcp_email_recipients', ''))));
+        $allowed = false;
+        foreach ($whitelist as $item) {
+            if ($item === '') {
+                continue;
+            }
+            if (strpos($item, '@') === 0) {
+                // @domain：任意本地部分的域名后缀放行
+                if (substr($to, -strlen($item)) === strtolower($item)) {
+                    $allowed = true;
+                    break;
+                }
+            } elseif ($to === strtolower($item)) {
+                $allowed = true;
+                break;
+            }
+        }
+        if (!$allowed) {
+            throw new McpException('收件人不在 MCP 邮件白名单内，请管理员在系统配置 mcp_email_recipients 中登记');
+        }
         if ($subject === '') {
             throw new McpException('邮件主题不能为空');
         }

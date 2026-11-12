@@ -69,24 +69,48 @@ class SystemCrudController extends AuthController
     }
 
     /**
-     * 验证路径
+     * 归一化相对路径：消除 `..`/`.` 片段与反斜杠，阻断 `../` 穿越绕过前缀校验（安全审计 C1）
+     * @param string $path
+     * @return string 归一化后的相对路径，非法输入返回空串
+     */
+    protected function normalizeCrudPath(string $path): string
+    {
+        $path = str_replace('\\', '/', (string)$path);
+        if (strpos($path, "\0") !== false) return '';
+        $parts = [];
+        foreach (explode('/', $path) as $seg) {
+            if ($seg === '' || $seg === '.') continue;
+            if ($seg === '..') {
+                array_pop($parts);
+                continue;
+            }
+            $parts[] = $seg;
+        }
+        return implode('/', $parts);
+    }
+
+    /**
+     * 验证路径（归一化后再判前缀，`../` 逃逸不再可能通过，安全审计 C1）
      * @param $data
      * @return bool
      * @author wuhaotian
-     * @email 442384644@qq.com
+     * @email 442404644@qq.com
      * @date 2024/2/19
      */
     public function crudVerifyPath($data)
     {
-        if (strpos($data['controller'], 'app' . DS . 'adminapi' . DS . 'controller' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['validate'], 'app' . DS . 'adminapi' . DS . 'validate' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['service'], 'app' . DS . 'services' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['dao'], 'app' . DS . 'dao' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['model'], 'app' . DS . 'model' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['route'], 'app' . DS . 'adminapi' . DS . 'route' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['router'], 'router' . DS . 'modules' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['api'], 'api' . DS . 'crud' . DS) !== 0) return false;
-        if (strpos($data['pages'], 'pages' . DS . 'crud' . DS) !== 0) return false;
+        foreach (['controller', 'validate', 'service', 'dao', 'model', 'route', 'router', 'api', 'pages'] as $key) {
+            $data[$key] = $this->normalizeCrudPath((string)($data[$key] ?? ''));
+        }
+        if (strpos($data['controller'], 'app/adminapi/controller/crud/') !== 0) return false;
+        if (strpos($data['validate'], 'app/adminapi/validate/crud/') !== 0) return false;
+        if (strpos($data['service'], 'app/services/crud/') !== 0) return false;
+        if (strpos($data['dao'], 'app/dao/crud/') !== 0) return false;
+        if (strpos($data['model'], 'app/model/crud/') !== 0) return false;
+        if (strpos($data['route'], 'app/adminapi/route/crud/') !== 0) return false;
+        if (strpos($data['router'], 'router/modules/crud/') !== 0) return false;
+        if (strpos($data['api'], 'api/crud/') !== 0) return false;
+        if (strpos($data['pages'], 'pages/crud/') !== 0) return false;
         return true;
     }
 
@@ -318,11 +342,19 @@ class SystemCrudController extends AuthController
         ]);
 
         $data = [];
+        // 存库路径同样归一化校验后再读文件（安全审计 C1：读收敛白名单根目录）
+        $verifyData = [];
+        foreach ($make as $key => $item) {
+            $verifyData[$key] = $this->normalizeCrudPath((string)($item['path'] ?? ''));
+        }
+        if (!$this->crudVerifyPath($verifyData)) {
+            throw new \RuntimeException('生成文件路径不合法');
+        }
         foreach ($make as $key => $item) {
             if (in_array($key, ['pages', 'router', 'api'])) {
-                $path = Make::adminTemplatePath() . $item['path'];
+                $path = Make::adminTemplatePath() . $verifyData[$key];
             } else {
-                $path = app()->getRootPath() . $item['path'];
+                $path = app()->getRootPath() . $verifyData[$key];
             }
             $item['name'] = $item['path'];
             try {
@@ -595,7 +627,16 @@ class SystemCrudController extends AuthController
 
         if ($info->make_path) {
             $errorFile = [];
+            // 存库路径归一化校验后再删除（安全审计 C1：删收敛白名单根目录）
+            $verifyData = [];
             foreach ($info->make_path as $key => $item) {
+                $verifyData[$key] = $this->normalizeCrudPath((string)$item);
+            }
+            if (!$this->crudVerifyPath($verifyData)) {
+                throw new \RuntimeException('生成文件路径不合法');
+            }
+            foreach ($info->make_path as $key => $item) {
+                $item = $verifyData[$key];
                 if (in_array($key, ['pages', 'router', 'api'])) {
                     $item = Make::adminTemplatePath() . $item;
                 } else {

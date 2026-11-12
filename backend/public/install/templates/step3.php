@@ -114,12 +114,6 @@
                             <div id="J_install_tip_manager_ckpwd"></div>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="tar">演示数据：</td>
-                        <td colspan="2"><input style="width:14px;height:14px;" type="checkbox" id="demo" name="demo"
-                                               value="demo" checked></td>
-                    </tr>
-
                 </table>
                 <table>
                     <tr>
@@ -226,8 +220,7 @@
                         'dbUser': $('#dbuser').val(),
                         'dbPwd': $('#dbpw').val(),
                         'dbName': $('#dbname').val(),
-                        'dbport': $('#dbport').val(),
-                        'demo': $('#demo').val()
+                        'dbport': $('#dbport').val()
                     };
                     let url = "<?php echo $_SERVER['PHP_SELF']; ?>?step=3&mysqldbpwd=1";
                     return new Promise((resolve, reject) => {

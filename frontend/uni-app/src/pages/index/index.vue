@@ -288,6 +288,30 @@ watch(
 );
 
 // ---------- 生命周期 ----------
+// 移动网络下视频播放确认（promotionList emit）；具名以便 onUnload 成对解绑
+function onConfirmVideoStatus() {
+  if (confirm_video_status.value) {
+    return;
+  }
+  confirm_video_status.value = true;
+  let flag = true;
+  // #ifdef H5
+  flag = window.self == window.top;
+  // #endif
+  if (!flag) {
+    return;
+  }
+  uni.showModal({
+    content: i18n.t(`当前使用移动网络，是否继续播放视频？`),
+    success: (res) => {
+      if (res.confirm) {
+        // 监听
+        uni.$emit('product_video_observe');
+      }
+    },
+  });
+}
+
 onLoad((options) => {
   uni.hideTabBar();
   getOptions(options);
@@ -320,35 +344,15 @@ onLoad((options) => {
     }
   }
   diyData();
-  // #ifdef H5
-  setOpenShare();
-  // #endif
+  // 分享配置只请求一次：小程序/APP 分享取 shareInfo，H5 微信内同时用于 JSSDK 分享
   getShare().then((res) => {
     shareInfo.value = res.data;
+    // #ifdef H5
+    setOpenShare(res.data);
+    // #endif
   });
   getCopyRight();
-  uni.$on('confirm_video_status', () => {
-    if (confirm_video_status.value) {
-      return;
-    }
-    confirm_video_status.value = true;
-    let flag = true;
-    // #ifdef H5
-    flag = window.self == window.top;
-    // #endif
-    if (!flag) {
-      return;
-    }
-    uni.showModal({
-      content: i18n.t(`当前使用移动网络，是否继续播放视频？`),
-      success: (res) => {
-        if (res.confirm) {
-          // 监听
-          uni.$emit('product_video_observe');
-        }
-      },
-    });
-  });
+  uni.$on('confirm_video_status', onConfirmVideoStatus);
 
   // #ifdef APP-PLUS
   let onNetworkStatusChange = (res) => {
@@ -362,8 +366,7 @@ onLoad((options) => {
 });
 onUnload(() => {
   isPageVisible.value = false;
-  // 清除监听
-  uni.$off('activeFn');
+  uni.$off('confirm_video_status', onConfirmVideoStatus);
 });
 onShow(() => {
   isPageVisible.value = true;
@@ -642,12 +645,19 @@ function getGoodsList() {
     page: goodPage.value,
     limit: 10,
     cid: sortList.value.id,
-  }).then((res) => {
-    loading.value = false;
-    loaded.value = res.data.length < 10;
-    goodPage.value++;
-    goodList.value = goodList.value.concat(res.data);
-  });
+  })
+    .then((res) => {
+      loaded.value = res.data.length < 10;
+      goodPage.value++;
+      goodList.value = goodList.value.concat(res.data);
+    })
+    .catch((err) => {
+      // 失败不推进页码，下次触底可重试；不复位 loading 会导致列表再也无法加载
+      uni.showToast({ title: typeof err === 'string' ? err : err?.msg || i18n.t(`加载失败`), icon: 'none' });
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 }
 // 新用户优惠券
 function getNewCoupon() {
@@ -862,22 +872,19 @@ function newDataStatus(val, num) {
 }
 // #ifdef H5
 // 微信分享；
-function setOpenShare() {
+function setOpenShare(data) {
   let uidParam = uid.value ? uid.value : 0;
   if (Auth.isWeixin()) {
-    getShare().then((res) => {
-      let data = res.data;
-      let configAppMessage = {
-        desc: data.synopsis,
-        title: data.title,
-        link: location.href + '?spid=' + uidParam,
-        imgUrl: data.img,
-      };
-      Auth.wechatEvevt(
-        ['updateAppMessageShareData', 'updateTimelineShareData', 'onMenuShareAppMessage', 'onMenuShareTimeline'],
-        configAppMessage
-      );
-    });
+    let configAppMessage = {
+      desc: data.synopsis,
+      title: data.title,
+      link: location.href + '?spid=' + uidParam,
+      imgUrl: data.img,
+    };
+    Auth.wechatEvevt(
+      ['updateAppMessageShareData', 'updateTimelineShareData', 'onMenuShareAppMessage', 'onMenuShareTimeline'],
+      configAppMessage
+    );
   }
 }
 // #endif

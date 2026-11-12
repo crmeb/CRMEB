@@ -22,7 +22,7 @@ description: CRMEB v8 二开流程导航。需要选择插件、驱动、产品�
 ## 规则与验证
 
 - 架构和扩展边界：[架构规范](../../rules/架构规范.md)、[架构规范详解](../../rules/架构规范详解.md)。
-- 编码、事件与持久化：[代码规范](../../rules/代码规范.md)、[事件规范](../../rules/事件规范.md)、[数据库规范](../../rules/数据库规范.md)。
+- 编码、事件与持久化：[代码规范](../../rules/代码规范.md)、[编码克制规范](../../rules/编码克制规范.md)、[事件规范](../../rules/事件规范.md)、[数据库规范](../../rules/数据库规范.md)。
 - 订单行为：[订单中台规范](../../rules/订单中台规范.md)；安全、接口、日志、性能等规则按[规则索引](../../AGENTS.md)选择。
 - 安装与版本策略以架构规范中的「当前发布阶段」为准，不照搬旧教程的升级流程。
 - 运行命令与验证范围见 [验证与运行环境](../crmeb-project-dev/references/verification.md)。安装、迁移、卸载、清理数据库等操作仍需任务授权。
@@ -33,6 +33,7 @@ description: CRMEB v8 二开流程导航。需要选择插件、驱动、产品�
 
 | 场景 | 参考手册 |
 | --- | --- |
+| 插件或驱动选型（先读总览，再读对应 01-驱动 / 02-模块分册） | [00-总览-类型路由与边界.md](../crmeb-plugin-dev/references/catalog/00-总览-类型路由与边界.md) |
 | 系统插件管理机制（运行时注册、安装/卸载/启用/禁用、清单与身份、路由加载） | [01-插件机制/module-mechanism.md](references/01-插件机制/module-mechanism.md) |
 | 插件与生命周期的完整示例（创建/打包） | [crmeb-plugin-dev/references/manifest-and-lifecycle.md](../crmeb-plugin-dev/references/manifest-and-lifecycle.md) |
 | 系统驱动机制（管理、注册、调用链、配置存储、生命周期） | [02-驱动机制/driver-mechanism.md](references/02-驱动机制/driver-mechanism.md) |
@@ -40,6 +41,7 @@ description: CRMEB v8 二开流程导航。需要选择插件、驱动、产品�
 | 产品类型、Handler、订单适配器 | [03-系统商品说明/product-type.md](references/03-系统商品说明/product-type.md) |
 | 系统订单架构（订单中台代码定位、调用链、排查路径） | [15-系统订单架构/order-architecture.md](references/15-系统订单架构/order-architecture.md) |
 | 管理端 UMD 扩展 | [04-前端扩展/backend-frontend.md](references/04-前端扩展/backend-frontend.md) |
+| 用户端插件页（pages-modules 放入后的跳转与装修） | [uniapp-pages.md](../crmeb-plugin-dev/references/uniapp-pages.md) |
 | SchemaPage 通用管理页面 | [12-通用页面/schema-page.md](references/12-通用页面/schema-page.md) |
 
 ## 用户端业务流程

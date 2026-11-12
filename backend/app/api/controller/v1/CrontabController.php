@@ -71,24 +71,6 @@ class CrontabController
     }
 
     /**
-     * 更新直播商品状态
-     */
-    public function syncGoodStatus()
-    {
-        //通过事件代理同步直播商品状态，避免 app 层直接引用 modules
-        event('ChannelServiceProxy', ['endpoint' => 'wechat_mini', 'service' => 'LiveGoodsServices', 'action' => 'syncGoodStatus', 'args' => []]);
-    }
-
-    /**
-     * 更新直播间状态
-     */
-    public function syncRoomStatus()
-    {
-        //通过事件代理同步直播间状态，避免 app 层直接引用 modules
-        event('ChannelServiceProxy', ['endpoint' => 'wechat_mini', 'service' => 'LiveRoomServices', 'action' => 'syncRoomStatus', 'args' => []]);
-    }
-
-    /**
      * 自动收货
      */
     public function autoTakeOrder()

@@ -3,9 +3,9 @@
   <el-row :gutter="24">
     <el-col :span="24">
       <el-form-item label="规格类型：" props="spec_type">
-        <el-radio-group v-model="formValidate.spec_type" @input="changeSpec">
-          <el-radio :label="0" :value="0" class="radio">单规格</el-radio>
-          <el-radio :label="1" :value="1">多规格</el-radio>
+        <el-radio-group v-model="formValidate.spec_type" @change="changeSpec">
+          <el-radio :value="0" class="radio">单规格</el-radio>
+          <el-radio :value="1">多规格</el-radio>
         </el-radio-group>
         <el-dropdown v-if="formValidate.spec_type == 1" class="ml20" @command="confirm" trigger="hover">
           <span class="el-dropdown-link"> 选择规格模板<i class="el-icon-arrow-down el-icon--right"></i> </span>
@@ -47,7 +47,7 @@
                       @change="attrChangeValue(index, item.value)"
                       @focus="handleFocus(item.value)"
                       class="specifications-item-name-input"
-                      maxlength="30"
+                      maxlength="50"
                       show-word-limit
                     ></el-input>
                     <el-checkbox
@@ -87,7 +87,7 @@
                             placeholder="规格值"
                             @change="attrDetailChangeValue(det.value, index)"
                             @focus="handleFocus(det.value)"
-                            maxlength="30"
+                            maxlength="100"
                             @blur="handleBlur()"
                           >
                             <template #prefix>

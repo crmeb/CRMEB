@@ -28,7 +28,7 @@
         </template>
       </draggable>
       <div class="add-btn" @click="modals = true">
-        <el-button class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
+        <el-button v-db-click class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
       </div>
     </div>
 
@@ -106,7 +106,7 @@
       <template #footer
         ><span class="dialog-footer">
           <el-button @click="modals = false">取 消</el-button>
-          <el-button type="primary" @click="addSelectedArticles">确 定</el-button>
+          <el-button v-db-click type="primary" @click="addSelectedArticles">确 定</el-button>
         </span></template
       >
     </el-dialog>

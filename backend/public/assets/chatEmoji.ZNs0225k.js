@@ -1,0 +1,1 @@
+const n={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"};function t(t,r){const e=r?` style='background-image:url(${r})'`:"";return function(t){return String(t??"").replace(/[&<>"']/g,t=>n[t])}(t).replace(/\[([\w-]+)\]/g,`<span class='em $1'${e}></span>`)}export{t as r};

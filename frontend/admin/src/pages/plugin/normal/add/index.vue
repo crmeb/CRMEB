@@ -742,22 +742,156 @@ function getUploadType() {
   });
 }
 // 初始化数据展示
+function mapCopyItems(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .map((item) => ({
+      value: item.value ?? item.name ?? '',
+      detail: (Array.isArray(item.detail) ? item.detail : Array.isArray(item.values) ? item.values : []).map((v) =>
+        typeof v === 'string' ? { value: v, pic: '' } : { value: v?.value ?? v?.name ?? '', pic: v?.pic ?? v?.image ?? '' },
+      ),
+      add_pic: Number(item.add_pic) || 0,
+    }))
+    .map((item) => ({
+      ...item,
+      detail: item.detail.filter((d) => String(d.value || '').trim() !== ''),
+    }))
+    .filter((item) => item.value !== '' && item.detail.length > 0);
+}
+
+function isPlaceholderSpec(list) {
+  if (!Array.isArray(list) || list.length === 0) return true;
+  if (list.length !== 1) return false;
+  const name = String(list[0].value || '').trim();
+  if (!['默认', '规格', ''].includes(name)) return false;
+  const detail = list[0].detail || [];
+  if (detail.length > 1) return false;
+  const val = String((detail[0] && detail[0].value) || '').trim();
+  return val === '' || val === '默认' || val === '规格';
+}
+
+function rebuildAttrsFromSkuMap(skuMap) {
+  if (!skuMap || typeof skuMap !== 'object') return [];
+  const keys = Object.keys(skuMap).filter((k) => k && k !== '默认');
+  if (!keys.length) return [];
+  const detail = keys.map((k) => ({
+    value: k.includes(',') ? k.split(',')[0] : k,
+    pic: skuMap[k]?.pic || skuMap[k]?.image || '',
+  }));
+  // 多维 sku 键（a,b）时按段拆成多规格
+  const dimCount = keys.reduce((max, k) => Math.max(max, String(k).split(',').length), 1);
+  if (dimCount <= 1) {
+    const hasPic = detail.some((d) => d.pic);
+    return [{ value: '规格', detail, add_pic: hasPic ? 1 : 0 }];
+  }
+  const dims = Array.from({ length: dimCount }, (_, i) => ({
+    value: `规格${i + 1}`,
+    detail: [],
+    add_pic: 0,
+  }));
+  keys.forEach((k) => {
+    const parts = String(k).split(',').map((s) => s.trim());
+    parts.forEach((part, i) => {
+      if (!part || dims[i].detail.some((d) => d.value === part)) return;
+      const pic = i === parts.length - 1 ? skuMap[k]?.pic || skuMap[k]?.image || '' : '';
+      dims[i].detail.push({ value: part, pic });
+      if (pic) dims[i].add_pic = 1;
+    });
+  });
+  return dims.filter((d) => d.detail.length > 0);
+}
+
+function rebuildAttrsFromSkuRows(skuRows) {
+  const map = {};
+  (skuRows || []).forEach((row) => {
+    const detail = row?.detail;
+    if (!detail || typeof detail !== 'object' || Array.isArray(detail)) return;
+    Object.keys(detail).forEach((name) => {
+      if (!name) return;
+      // 跳过纯占位 {规格|默认: 默认}
+      if (['默认', '规格'].includes(name) && detail[name] === '默认' && Object.keys(detail).length === 1) return;
+      if (!map[name]) map[name] = { value: name, detail: [], add_pic: 0 };
+      const val = detail[name];
+      if (val == null || val === '' || val === '默认') return;
+      if (!map[name].detail.some((d) => d.value === val)) {
+        map[name].detail.push({ value: String(val), pic: row.pic || '' });
+      }
+      if (row.pic) map[name].add_pic = 1;
+    });
+  });
+  return Object.values(map).filter((i) => i.detail.length > 0);
+}
+
+function mergeCrawlSkuIntoMany(skuRows, skuMap) {
+  const rows = manyFormValidate.value.slice(1);
+  rows.forEach((row) => {
+    const values = row.attr_arr || Object.values(row.detail || {});
+    const key = values.join(',');
+    const fromMap = skuMap && skuMap[key] ? skuMap[key] : null;
+    const matched =
+      (skuRows || []).find((r) => {
+        const rv = r.attr_arr || Object.values(r.detail || {});
+        return arraysEqual(rv, values);
+      }) || null;
+    const src = matched || fromMap;
+    if (!src) return;
+    row.price = normalizeNumber(src.price, row.price || 0);
+    row.cost = normalizeNumber(src.cost, row.cost || 0);
+    row.original_price = normalizeNumber(
+      src.original_price ?? src.ot_price,
+      row.original_price || 0,
+    );
+    row.ot_price = row.original_price;
+    row.stock = normalizeNumber(src.stock, row.stock || 0);
+    row.pic = src.pic || src.image || row.pic || '';
+    row.vip_price = normalizeNumber(src.vip_price, row.vip_price || 0);
+  });
+}
+
 function infoData(data, isCopy) {
-  let cate_id = data.cate_id.map(Number);
-  let label_id = data.label_id.map(Number);
-  // 兼容两种 items 来源：中台编辑回填为 {name, values}（规格名在 name、规格值为字符串数组）；
-  // 采集回填为 {value, detail}（detail 为字符串数组或 [{value, pic}] 对象数组），规格名统一归一到 value 键
-  attrs.value = Array.isArray(data.items)
-    ? data.items.map((item) => ({
-        value: item.value ?? item.name,
-        detail: (item.detail ?? item.values ?? []).map((v) =>
-          typeof v === 'string' ? { value: v, pic: '' } : { value: v.value ?? '', pic: v.pic ?? '' },
-        ),
-        add_pic: item.add_pic ?? 0,
-      }))
+  let cate_id = (Array.isArray(data.cate_id) ? data.cate_id : []).map(Number);
+  let label_id = (Array.isArray(data.label_id) ? data.label_id : []).map(Number);
+  // 兼容两种 items 来源：中台编辑回填为 {name, values}；采集为 {value, detail} / info.attr
+  let sourceItems = data.items;
+  if (isCopy) {
+    const mappedItems = mapCopyItems(data.items);
+    const mappedInfoAttr = mapCopyItems(data.info?.attr);
+    if (!isPlaceholderSpec(mappedItems)) {
+      sourceItems = data.items;
+    } else if (!isPlaceholderSpec(mappedInfoAttr)) {
+      sourceItems = data.info.attr;
+    } else {
+      sourceItems = data.items;
+    }
+  }
+  attrs.value = mapCopyItems(sourceItems);
+
+  // 采集 SKU 行：ot_price → original_price，避免划线价列空白
+  const copyAttrs = Array.isArray(data.attrs)
+    ? data.attrs.map((row) => {
+        const next = { ...row };
+        if (next.original_price === undefined || next.original_price === null || next.original_price === '') {
+          next.original_price = next.ot_price ?? 0;
+        }
+        return next;
+      })
     : [];
+
+  // 采集结果若仍是「规格/默认」占位，尝试从 attrs.detail 或 sku 映射键恢复
+  if (isCopy && isPlaceholderSpec(attrs.value)) {
+    const fromRows = rebuildAttrsFromSkuRows(copyAttrs);
+    if (!isPlaceholderSpec(fromRows)) {
+      attrs.value = fromRows;
+    } else {
+      const fromSku = rebuildAttrsFromSkuMap(data.sku);
+      if (!isPlaceholderSpec(fromSku)) {
+        attrs.value = fromSku;
+      }
+    }
+  }
+
   let ids = [];
-  data.coupons.map((item) => {
+  (Array.isArray(data.coupons) ? data.coupons : []).map((item) => {
     ids.push(item.id);
   });
   Object.assign(formValidate.value, data);
@@ -791,7 +925,19 @@ function infoData(data, isCopy) {
 
   formValidate.value.header = [];
   specType = Number(data.spec_type);
+  // 采集回填：多规格值 / 多 SKU 时强制多规格，避免 radio 仍停在默认单规格
+  if (isCopy) {
+    const hasMulti =
+      attrs.value.length > 1 ||
+      attrs.value.some((item) => (item.detail || []).length > 1) ||
+      copyAttrs.length > 1 ||
+      (data.sku && Object.keys(data.sku).length > 1);
+    if (hasMulti) {
+      specType = 1;
+    }
+  }
   formValidate.value.spec_type = specType;
+  canSel.value = true;
   attrs.value.map((item) => {
     if (item.add_pic) canSel.value = false;
   });
@@ -816,9 +962,21 @@ function infoData(data, isCopy) {
       },
     ];
 
-    generateHeader(attrs.value);
-    manyFormValidate.value = [...oneFormBatch.value, ...(Array.isArray(data.attrs) ? data.attrs : [])];
+    // 采集：先放入接口 SKU 便于按 attr_arr 复用价格图，再按 attrs 重生成，最后再合并一次
+    if (isCopy && attrs.value.length) {
+      manyFormValidate.value = [...oneFormBatch.value, ...copyAttrs];
+      generateAttr(attrs.value);
+      mergeCrawlSkuIntoMany(copyAttrs, data.sku);
+    } else {
+      generateHeader(attrs.value);
+      manyFormValidate.value = [...oneFormBatch.value, ...copyAttrs];
+    }
   }
+
+  // 对话框关闭后 radio 可能尚未同步，下一帧再钉一次 spec_type
+  nextTick(() => {
+    formValidate.value.spec_type = specType;
+  });
 
   setTimeout((e) => {
     checkAllGroup();

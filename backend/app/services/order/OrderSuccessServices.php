@@ -13,10 +13,14 @@ namespace app\services\order;
 
 
 use app\dao\order\OrderCenterDao;
-use crmeb\basic\BaseService;
-use app\services\pay\PayServices;
 use app\services\pay\PayRecordServices;
+use app\services\pay\PayServices;
+use app\services\user\UserMoneyServices;
+use crmeb\basic\BaseService;
 use crmeb\exceptions\ApiException;
+use crmeb\trade\mode\TradeModeRegistry;
+use crmeb\trade\product\ProductTypeRegistry;
+use think\facade\Log;
 
 /**
  * 订单支付成功处理
@@ -59,82 +63,158 @@ class OrderSuccessServices extends BaseService
     }
 
     /**
-     * 支付成功
-     * @param array $orderInfo
-     * @param string $paytype
-     * @param array $other
+     * 商品支付成功。一次事务内改已支付并处理必须同成败的活动；提交后再履约和广播。
+     * @param array $orderInfo 订单信息，至少含订单号
+     * @param string $paytype 支付渠道
+     * @param array $other 流水与通知字段
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function paySuccess(array $orderInfo, string $paytype = PayServices::WEIXIN_PAY, array $other = [])
+    public function paySuccess(array $orderInfo, string $paytype = PayServices::WEIXIN_PAY, array $other = []): bool
     {
-        if (!\crmeb\services\pay\PaymentDispatch::collecting()) {
-            $orderNo = (string)($orderInfo['order_no'] ?? $orderInfo['order_id'] ?? '');
-            return app()->make(PayRecordServices::class)->complete($orderNo, 'product',
-                (string)($other['trade_no'] ?? ''), function (array $fresh) use ($orderInfo, $paytype, $other) {
-                    if ((int)$fresh['pay_status'] !== 0) return true;
-                    if (in_array($fresh['status_code'], ['canceled', 'deleted', 'refunded'], true)) throw new ApiException('订单已取消');
-                    return $this->paySuccess(array_replace($orderInfo, $fresh), $paytype, $other);
-                });
-        }
-        $updata = ['paid' => 1, 'pay_type' => $paytype, 'pay_time' => time()];
-        $orderInfo['pay_time'] = $updata['pay_time'];
-        $orderInfo['pay_type'] = $paytype;
-        if ($other && isset($other['trade_no'])) {
-            $updata['trade_no'] = $other['trade_no'];
+        $orderNo = (string)($orderInfo['order_no'] ?? $orderInfo['order_id'] ?? '');
+        $tradeNo = (string)($other['trade_no'] ?? '');
+        $paidOrder = null;
+
+        $this->transaction(function () use ($orderInfo, $paytype, $other, $orderNo, $tradeNo, &$paidOrder) {
+            $row = $this->dao->getDb()->where('order_no', $orderNo)->lock(true)->find();
+            if (!$row) {
+                throw new ApiException('订单不存在');
+            }
+            $order = array_replace($orderInfo, $row->toArray());
+            $order['order_id'] = $orderNo;
+            $extra = $this->parseExtra($order['extra_info'] ?? []);
+            $order['real_name'] = $extra['contact']['name'] ?? ($order['real_name'] ?? '');
+            $order['sku_unique'] = (string)($order['sku_unique'] ?? ($extra['sku_info']['unique'] ?? ''));
+            $order['pink_id'] = (int)($order['pink_id'] ?? ($extra['pink_id'] ?? 0));
+
+            if ((int)$order['pay_status'] !== 0) {
+                return;
+            }
+            if (in_array($order['status_code'], ['canceled', 'deleted', 'refunded'], true)) {
+                if ($tradeNo !== '') {
+                    Log::error('[Pay] 已取消订单收到付款，需人工处理 order_no=' . $orderNo);
+                    app()->make(PayRecordServices::class)->compensateCanceled($orderNo, $tradeNo, $other);
+                    return;
+                }
+                throw new ApiException('订单已取消');
+            }
+
+            $records = app()->make(PayRecordServices::class);
+            $paytype = $records->validate($order, 'product', $paytype, $other);
+
+            if ($paytype === PayServices::YUE_PAY && bccomp((string)$order['pay_price'], '0', 2) > 0) {
+                $records->assertChannel($orderNo, PayServices::YUE_PAY);
+                $amount = (string)$order['pay_price'];
+                if (bccomp($amount, (string)($orderInfo['pay_price'] ?? $amount), 2) !== 0) {
+                    throw new ApiException('订单金额已变化');
+                }
+                app()->make(UserMoneyServices::class)->moneyIncome('pay_product', (int)$order['uid'], $amount, (int)$order['id']);
+            }
+
+            $activityType = (string)($order['activity_type'] ?? 'normal');
+            $activityId = (int)($order['activity_id'] ?? 0);
+            if ($activityType !== '' && $activityType !== 'normal' && $activityId > 0) {
+                app()->make(TradeModeRegistry::class)->get($activityType)->onOrderPay($orderNo, $activityId, $order);
+                $fresh = $this->dao->getDb()->where('order_no', $orderNo)->find();
+                if ($fresh) {
+                    $order = array_replace($order, $fresh->toArray());
+                    $order['order_id'] = $orderNo;
+                }
+            }
+
+            $payTime = time();
+            $order['pay_time'] = $payTime;
+            $order['pay_type'] = $paytype;
+            $statusData = ['pay_status' => 1, 'pay_type' => $paytype, 'pay_time' => $payTime];
+            if ($tradeNo !== '') {
+                $extra = $this->parseExtra($order['extra_info'] ?? []);
+                $extra['trade_no'] = $tradeNo;
+                $extra['pay_uid'] = (int)($order['uid'] ?? 0);
+                if (isset($extra['payment']) && is_array($extra['payment'])) {
+                    $extra['payment']['transaction_id'] = $tradeNo;
+                }
+                $order['extra_info'] = $extra;
+                $statusData['extra_info'] = json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+            }
+            if (!app()->make(OrderCenterServices::class)->syncStatus($orderNo, 'processing', $statusData)) {
+                throw new \RuntimeException('订单支付状态更新失败');
+            }
+            $records->markCompleted($orderNo, $tradeNo);
+            $order['pay_status'] = 1;
+            $order['send_name'] = $order['real_name'] ?? '';
+            $paidOrder = $order;
+        });
+
+        if (!$paidOrder) {
+            return true;
         }
 
-        $orderNo = $orderInfo['order_id'] ?? '';
-        /** @var OrderCenterServices $centerServices */
-        $centerServices = app()->make(OrderCenterServices::class);
+        $this->fulfillAfterPay($orderNo, $paidOrder);
+        $this->broadcastAfterPay($paidOrder);
+        return true;
+    }
 
-        // 直接更新中台表订单状态
-        $statusData = [
-            'pay_status' => 1,
-            'pay_type'   => $paytype,
-            'pay_time'   => time(),
+    /**
+     * 解析订单扩展字段。
+     * @param mixed $extra 数组或 JSON
+     * @return array
+     */
+    protected function parseExtra($extra): array
+    {
+        if (is_string($extra)) {
+            $extra = json_decode($extra, true) ?: [];
+        }
+        return is_array($extra) ? $extra : [];
+    }
+
+    /**
+     * 提交后按产品类型履约，再按交易模式做支付后处理。失败只记日志。
+     * @param string $orderNo 订单号
+     * @param array $order 已支付订单
+     * @return void
+     */
+    protected function fulfillAfterPay(string $orderNo, array $order): void
+    {
+        try {
+            $type = (string)($order['product_type'] ?? 'normal');
+            if (!app()->make(ProductTypeRegistry::class)->get($type)->fulfillOrder($orderNo, $order)) {
+                Log::error('[Pay] 产品履约未完成 order_no=' . $orderNo . ' product_type=' . $type);
+            }
+        } catch (\Throwable $e) {
+            Log::error('[Pay] 产品履约失败 order_no=' . $orderNo . ' ' . $e->getMessage());
+        }
+
+        $activityType = (string)($order['activity_type'] ?? 'normal');
+        $activityId = (int)($order['activity_id'] ?? 0);
+        if ($activityType === '' || $activityType === 'normal' || $activityId <= 0) {
+            return;
+        }
+        try {
+            app()->make(TradeModeRegistry::class)->get($activityType)->afterOrderPay($orderNo, $activityId, $order);
+        } catch (\Throwable $e) {
+            Log::error('[Pay] 活动支付后处理失败 order_no=' . $orderNo . ' ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 支付提交后的广播。一次失败不挡住下一次，也不改回未支付。
+     * @param array $order 已支付订单
+     * @return void
+     */
+    protected function broadcastAfterPay(array $order): void
+    {
+        $events = [
+            ['OrderPayLottery', [$order]],
+            ['OrderPaySuccess', [$order]],
+            ['OutPush', ['order_pay_push', ['order_id' => (int)($order['id'] ?? 0)]]],
         ];
-        if (!empty($other['trade_no'])) {
-            $extra = $orderInfo['extra_info'] ?? [];
-            if (is_string($extra)) {
-                $extra = json_decode($extra, true) ?: [];
+        foreach ($events as [$name, $payload]) {
+            try {
+                event($name, $payload);
+            } catch (\Throwable $e) {
+                Log::error('[Pay] 支付后广播失败 event=' . $name . ' order_no=' . ($order['order_id'] ?? '') . ' ' . $e->getMessage());
             }
-            $extra['trade_no'] = $other['trade_no'];
-            $extra['pay_uid'] = (int)($orderInfo['payment_context']['payer_uid'] ?? $orderInfo['uid']);
-            if (isset($extra['payment'])) {
-                $extra['payment']['transaction_id'] = $other['trade_no'];
-            }
-            $orderInfo['extra_info'] = $extra;
-            $statusData['extra_info'] = json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         }
-        $res1 = $centerServices->syncStatus($orderNo, 'processing', $statusData);
-        if (!$res1) throw new \RuntimeException('订单支付状态更新失败');
-
-        $resPink = true;
-        if ($orderInfo['combination_id'] && $res1 && !$orderInfo['refund_status']) {
-            // 通过 ActivityDataProxy 事件代理调用拼团创建（避免直接引用 modules 层）
-            $_pinkResults = event('ActivityDataProxy', [
-                'mode' => 'combination',
-                'sub_service' => 'pink',
-                'action' => 'createPink',
-                'args' => [$orderInfo],
-            ]);
-            $resPink = proxy_event_result($_pinkResults, false);
-            if (!$resPink) throw new \RuntimeException('拼团支付处理失败');
-        }
-        //订单支付成功事件（插件通过监听 'OrderPayLottery' 处理抽奖缓存等）
-        event('OrderPayLottery', [$orderInfo]);
-        $orderInfo['send_name'] = $orderInfo['real_name'];
-        //订单支付成功后置事件（通知/小票打印等监听器处理）
-        event('OrderPaySuccess', [$orderInfo]);
-        // 推送订单
-        event('OutPush', ['order_pay_push', ['order_id' => (int)$orderInfo['id']]]);
-
-        $res = $res1 && $resPink;
-        return false !== $res;
     }
 
 }

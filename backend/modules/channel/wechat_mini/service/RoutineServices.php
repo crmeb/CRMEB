@@ -64,8 +64,10 @@ class RoutineServices extends BaseService
         $routineInfo['session_key'] = $userInfoConfig['session_key'];
         $routineInfo['headimgurl'] = sys_config('h5_avatar');
         $createData = [$openid, $routineInfo, $spid, $agent_id, 'routine', 'routine'];
-        $userInfoKey = md5($openid . '_' . time() . '_routine');
-        CacheService::set($userInfoKey, $createData, 7200);
+        // 登录票据改服务端随机串：md5(openid+时间戳) 可按 openid+7200 个时间戳候选枚举接管（安全审计 D4）
+        $userInfoKey = 'routine_ticket_' . bin2hex(random_bytes(32));
+        // 票据窗口 7200s → 600s，缩小被冒用的窗口
+        CacheService::set($userInfoKey, $createData, 600);
         $bindPhone = false;
         /** @var UserWechatAuthServices $wechatAuthServices */
         $wechatAuthServices = app()->make(UserWechatAuthServices::class);
@@ -88,7 +90,15 @@ class RoutineServices extends BaseService
      */
     public function authLogin($key)
     {
-        $createData = CacheService::get($key);
+        // 按 IP 限速：票据枚举类接口的基础防护（安全审计 D4）
+        $rateKey = 'rtl_' . md5((string)request()->ip());
+        $rateNum = (int)CacheService::get($rateKey, 0);
+        if ($rateNum >= 60) {
+            throw new ApiException('请求过于频繁，请稍后再试');
+        }
+        CacheService::set($rateKey, $rateNum + 1, 60);
+
+        $createData = CacheService::get((string)$key);
         if (!is_array($createData) || count($createData) < 6) {
             throw new ApiException('授权已过期，请重新登录');
         }

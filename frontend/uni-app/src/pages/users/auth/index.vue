@@ -52,7 +52,7 @@ import {
 import {
 	registerVerify
 } from '@/api/user.js'
-import Verify from '../components/verify/index.vue';
+import Verify from '@/components/Verify/index.vue';
 import { useSendVerifyCode } from '@/composables/useSendVerifyCode';
 import { useAppStore } from '@/store/modules/app';
 import Cache from '@/utils/cache';

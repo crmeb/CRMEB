@@ -43,7 +43,8 @@
           <template #default="scope">
             <div>{{ scope.row.order_no }}</div>
             <div style="font-size: 11px; color: var(--prev-color-text-secondary)">
-              [{{ getShippingTypeLabel(scope.row) }}]
+              [{{ getShippingTypeLabel(scope.row) }}]<template v-if="scope.row.activity_type_text">
+                [{{ scope.row.activity_type_text }}]</template>
             </div>
             <span v-if="scope.row.is_del === 1" style="color: #ed4014; font-size: 12px">用户已删除</span>
             <span v-if="scope.row.is_cancel === 1 && scope.row.is_del === 0" style="color: #ed4014; font-size: 12px"
@@ -130,13 +131,11 @@
             <span v-else style="color: #c0c4cc">--</span>
           </template>
         </el-table-column>
-        <el-table-column label="配送信息" min-width="150">
+        <el-table-column label="配送信息" min-width="200">
           <template #default="scope">
             <template v-if="scope.row.delivery_name">
               <div>{{ scope.row.delivery_name || '--' }}</div>
-              <div style="font-size: 12px; color: var(--prev-color-text-secondary)">
-                {{ scope.row.delivery_id || '--' }}
-              </div>
+              <div class="delivery-no">{{ scope.row.delivery_id || '--' }}</div>
               <a
                 v-if="scope.row.delivery_type === 'express' && scope.row.delivery_id"
                 v-db-click
@@ -654,6 +653,13 @@ defineExpose({ selectedIds, page, resetTab });
 .price {
   color: #ed4014;
   font-weight: bold;
+}
+
+.delivery-no {
+  font-size: 12px;
+  color: var(--prev-color-text-secondary);
+  white-space: nowrap;
+  word-break: normal;
 }
 
 :deep(.el-dropdown-link) {

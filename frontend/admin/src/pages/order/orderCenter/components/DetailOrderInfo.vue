@@ -39,18 +39,25 @@
     <!-- 收货信息（快递配送/送货/无需配送）/ 自提门店信息（到店自提） -->
     <div class="section">
       <div class="title">{{ isPickup ? '自提门店' : '收货信息' }}</div>
-      <ul class="list" v-if="isPickup && data.store_info">
+      <ul class="list" v-if="isPickup">
         <li class="item">
           <div>门店名称：</div>
-          <div class="value">{{ data.store_info.store_name || '--' }}</div>
+          <div class="value">{{ storeInfo?.name || storeInfo?.store_name || '--' }}</div>
         </li>
         <li class="item">
           <div>门店电话：</div>
-          <div class="value">{{ data.store_info.store_phone || '--' }}</div>
+          <div class="value">{{ storeInfo?.phone || storeInfo?.store_phone || '--' }}</div>
         </li>
         <li class="item">
           <div>门店地址：</div>
-          <div class="value">{{ data.store_info.detailed_address || data.store_info.address || '--' }}</div>
+          <div class="value">
+            {{ formatStoreAddress(storeInfo) || '--' }}
+          </div>
+        </li>
+      </ul>
+      <ul class="list" v-else-if="isUnclaimedGift">
+        <li class="item item-full">
+          <div class="full-text">礼物尚未领取，暂无收货信息</div>
         </li>
       </ul>
       <ul class="list" v-else>
@@ -64,7 +71,7 @@
         </li>
         <li class="item">
           <div>收货地址：</div>
-          <div class="value">{{ formatAddress(data.user_address) || data.contact?.address || '--' }}</div>
+          <div class="value">{{ displayAddress }}</div>
         </li>
       </ul>
     </div>
@@ -264,8 +271,50 @@ const deliveryType = computed(
   () => props.data.delivery_type || props.data.extra_info?.delivery_type || '',
 );
 const isExpress = computed(() => deliveryType.value === 'express');
-/** 到店自提：后端统一标识 is_pickup，兼容旧字段 order_delivery_type */
-const isPickup = computed(() => props.data.is_pickup == 1 || props.data.order_delivery_type === 'pickup');
+/** 到店自提：后端统一标识 is_pickup / shipping_type=2，兼容旧字段 */
+const isPickup = computed(
+  () =>
+    props.data.is_pickup == 1 ||
+    props.data.is_pickup === true ||
+    Number(props.data.shipping_type) === 2 ||
+    props.data.order_delivery_type === 'pickup' ||
+    deliveryType.value === 'pickup',
+);
+/** 门店信息：中台详情下发 store（name/phone/address），兼容 store_info / delivery.store */
+const storeInfo = computed(
+  () => props.data.store || props.data.store_info || props.data.delivery?.store || null,
+);
+
+/** 送礼订单且尚未领取：无收货人/电话/地址，不应展示空 JSON */
+const isUnclaimedGift = computed(() => {
+  const isGift = Number(props.data.is_gift) === 1 || Number(props.data.gift_price) > 0;
+  const giftUid = Number(props.data.gift_uid || props.data.gift?.gift_uid || 0);
+  return isGift && giftUid <= 0;
+});
+
+/** 收货地址：统一走 formatAddress，避免空地址对象回退成原始 JSON 字符串 */
+const displayAddress = computed(
+  () =>
+    formatAddress(props.data.user_address) ||
+    formatAddress(props.data.contact?.address) ||
+    '--',
+);
+
+/**
+ * 拼接门店地址（省市区 + 详细地址）
+ * @param {Record<string, any>|null} store 门店对象
+ * @returns {string}
+ */
+function formatStoreAddress(store) {
+  if (!store || typeof store !== 'object') return '';
+  const region = Array.isArray(store.address2)
+    ? store.address2.filter(Boolean).join('')
+    : typeof store.address === 'string'
+      ? store.address.replace(/,/g, '')
+      : '';
+  const detail = store.detailed_address || '';
+  return `${region}${detail}`.trim() || region || detail || '';
+}
 
 function formatDate(timestamp) {
   if (!timestamp) return '--';

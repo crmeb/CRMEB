@@ -103,7 +103,7 @@ npm run build:all   # 主应用 + 插件扩展
 - **页面**：`src/pages/<模块>/<功能>/` 小驼峰，标准结构 `index.vue + components/ + tableFrom.vue/tableList.vue + handle/`
 - **组件**：一组件一目录（公共组件在 `src/components/`，DIY 三件套、SchemaPage 通用页面系统在内）
 - **API**：一业务域一文件，`export function userList(data) { return request({...}) }` 模式带 JSDoc，url 相对 baseURL（不含 `/adminapi`）；请求头为约定拼写 `Authori-zation: Bearer <token>`（勿"修正"）
-- **状态**：Pinia setup 风格 `useXxxStore()`；**Vuex 已卸载，勿再引入**；`src/libs/axios.js` 是废弃遗留，封装用 `src/libs/request.js`
+- **状态**：Pinia setup 风格 `useXxxStore()`；**Vuex 已卸载，勿再引入**；请求封装用 `src/libs/request.js`（不要恢复已删除的 `src/libs/axios.js`）
 - **别名**：`@`→src、`_c`→components、`@api`→api、`@diy`→diy；`vue` 别名指向 esm-bundler（保留运行时模板编译，勿改）
 - **表单/确认**：`proxy.$modalForm(apiPromise)` 渲染后端 form-create schema；删除确认用 `utils/public.js` 的 `modalSure`；事件总线 `@/utils/bus`（mitt，off 必须传具名函数）
 - **权限**：路由 `meta.auth: ['perm']`、按钮 `v-auth="['perm']"`

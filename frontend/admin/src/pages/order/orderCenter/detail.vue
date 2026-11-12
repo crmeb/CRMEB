@@ -15,6 +15,14 @@
               <div class="title">订单状态</div>
               <div>
                 <el-tag :type="getStatusClass(detailData)">{{ getStatusLabel(detailData) }}</el-tag>
+                <a
+                  v-if="detailData.canceled_refund_pending"
+                  v-db-click
+                  class="refund-link"
+                  @click="submitCanceledRefund"
+                  v-auth="['admin-order-orderCenter-canceled-refund']"
+                  >原路退款</a
+                >
                 <span
                   v-if="Number(detailData.is_del) !== 1 && detailData.refund_status == 1"
                   style="color: #ed4014; margin-left: 4px"
@@ -61,10 +69,10 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import __asset_order_icon_0 from '@/assets/images/order_icon.png';
 
-import { orderCenterDetail } from '@/api/orderCenter';
+import { orderCenterDetail, orderCenterCanceledRefund } from '@/api/orderCenter';
 import { getExpress } from '@/api/order';
 import DetailOrderInfo from './components/DetailOrderInfo';
 import DetailOrderList from './components/DetailOrderList';
@@ -74,6 +82,7 @@ defineOptions({ name: 'orderCenterDetail' });
 
 // 传入 id 时作为抽屉内嵌组件使用；不传时为路由整页（取 route.params.id）
 const props = defineProps({ id: { type: [String, Number], default: '' } });
+const emit = defineEmits(['refunded']);
 
 const route = useRoute();
 
@@ -97,6 +106,29 @@ function loadDetail() {
       detailLoading.value = false;
       ElMessage.error(res.msg);
     });
+}
+
+function submitCanceledRefund() {
+  if (!detailData.value) return;
+  ElMessageBox({
+    title: '原路退款',
+    message: '该订单已取消，但款项已到账。确定按原支付单号退回一次？',
+    showCancelButton: true,
+    cancelButtonText: '取消',
+    confirmButtonText: '确定',
+  })
+    .then(() => {
+      orderCenterCanceledRefund({ order_no: detailData.value.order_no })
+        .then((res) => {
+          ElMessage.success(res.msg);
+          emit('refunded');
+          loadDetail();
+        })
+        .catch((res) => {
+          ElMessage.error(res.msg);
+        });
+    })
+    .catch(() => {});
 }
 
 function openLogistics() {
@@ -230,6 +262,11 @@ defineExpose({ loadDetail });
   font-size: 12px;
   color: #999;
   line-height: 1.2;
+}
+
+.refund-link {
+  margin-left: 8px;
+  color: var(--prev-color-primary);
 }
 
 .head {

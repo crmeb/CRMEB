@@ -28,8 +28,7 @@
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { storeToRefs } from 'pinia';
-import { getGiftOrderDetail } from '@/api/order.js';
-import { HTTP_REQUEST_URL } from '@/config/app';
+import { getGiftOrderDetail, getGiftOrderByKey } from '@/api/order.js';
 import { toLogin } from '@/libs/login.js';
 import { useAppStore } from '@/store/modules/app';
 import util from '@/utils/util.js';
@@ -41,6 +40,7 @@ const { isLogin } = storeToRefs(appStore);
 const { uid } = storeToRefs(appStore);
 
 const order_id = ref('');
+const gift_key = ref('');
 const giftStatus = ref(0);
 const refund_status = ref(0);
 const gift_mark = ref('');
@@ -57,15 +57,25 @@ let uidSnapshot;
 
 onLoad((options) => {
 	if (isLogin.value) {
-		order_id.value = options.id;
+		order_id.value = options.id || '';
+		gift_key.value = options.key || '';
 		// #ifdef MP
 		if (options.scene) {
 			let value = util.getUrlParams(decodeURIComponent(options.scene));
-			if (value.id) order_id.value = value.id;
-			//记录推广人uid
-			if (value.pid) app.globalData.spid = value.pid;
+			// scene 仅含 32 位 token 时 getUrlParams 返回原字符串
+			if (typeof value === 'string') {
+				gift_key.value = value;
+			} else if (value && typeof value === 'object') {
+				if (value.id) order_id.value = value.id;
+				if (value.key) gift_key.value = value.key;
+				// 记录推广人 uid
+				if (value.pid) app.globalData.spid = value.pid;
+			}
 		}
 		// #endif
+		if (options.spid) {
+			app.globalData.spid = options.spid;
+		}
 		uidSnapshot = uid.value;
 		getOrderInfo();
 	} else {
@@ -84,32 +94,48 @@ function goGetGift() {
 			url: `/pages/center/order/detail/index?order_no=${orderNo.value}`
 		});
 	} else {
+		if (!gift_key.value) {
+			uni.showToast({ title: i18n.t(`礼物链接无效`), icon: 'none' });
+			return;
+		}
 		uni.reLaunch({
-			url: `/pages/goods/order_confirm/index?order_id=${order_id.value}&is_gift=2`
+			url: `/pages/goods/order_confirm/index?order_id=${order_id.value}&is_gift=2&gift_key=${gift_key.value}`
 		});
 	}
 }
+function applyGiftDetail(data) {
+	gift_uid = data.gift_uid;
+	gift_mark.value = data.gift_mark;
+	nickname.value = data.nickname;
+	refund_status.value = data.refund_status;
+	order_id.value = data.id || order_id.value;
+	gift_key.value = data.gift_key || gift_key.value;
+	// order_items 为扁平商品快照；兼容旧结构 productInfo.*
+	const first = (data.cartInfo && data.cartInfo[0]) || {};
+	const product = first.productInfo || first;
+	image.value = product.image || first.image || '';
+	store_name.value = product.store_name || first.store_name || '';
+	orderNo.value = data.order_no || '';
+	if (gift_uid === 0) {
+		giftStatus.value = 1;
+		giftStatusText.value = i18n.t('收下礼物');
+	} else if (gift_uid === uidSnapshot) {
+		giftStatus.value = 2;
+		giftStatusText.value = i18n.t('查看礼物');
+	} else if (gift_uid !== uidSnapshot) {
+		giftStatus.value = 3;
+	}
+}
 function getOrderInfo() {
-	getGiftOrderDetail(order_id.value).then((res) => {
-		gift_uid = res.data.gift_uid;
-		gift_mark.value = res.data.gift_mark;
-		nickname.value = res.data.nickname;
-		refund_status.value = res.data.refund_status;
-		// order_items 为扁平商品快照；兼容旧结构 productInfo.*
-		const first = (res.data.cartInfo && res.data.cartInfo[0]) || {};
-		const product = first.productInfo || first;
-		image.value = product.image || first.image || '';
-		store_name.value = product.store_name || first.store_name || '';
-		orderNo.value = res.data.order_no || '';
-		if (gift_uid === 0) {
-			giftStatus.value = 1;
-			giftStatusText.value = i18n.t('收下礼物');
-		} else if (gift_uid === uidSnapshot) {
-			giftStatus.value = 2;
-			giftStatusText.value = i18n.t('查看礼物');
-		} else if (gift_uid !== uidSnapshot) {
-			giftStatus.value = 3;
-		}
+	if (!gift_key.value) {
+		uni.showToast({ title: i18n.t('礼物链接无效'), icon: 'none' });
+		return;
+	}
+	const req = order_id.value
+		? getGiftOrderDetail(order_id.value, gift_key.value)
+		: getGiftOrderByKey(gift_key.value);
+	req.then((res) => {
+		applyGiftDetail(res.data || {});
 	}).catch((err) => {
 		uni.showToast({ title: (err && err.msg) || i18n.t('加载失败'), icon: 'none' });
 	});

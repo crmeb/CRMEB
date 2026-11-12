@@ -75,7 +75,7 @@
 		<view class="share-box" v-if="shareModal">
 			<image src="../static/share-info2.png" @click="shareModal = false"></image>
 		</view>
-		<payment :payMode="payMode" :pay_close="pay_close" :friendPay="true" @onChangeFun="onChangeFun" :order_id="order_id" :totalPrice="resData.pay_price"></payment>
+		<payment :payMode="payMode" :pay_close="pay_close" :friendPay="true" :friendKey="friendKey" @onChangeFun="onChangeFun" :order_id="order_id" :totalPrice="resData.pay_price"></payment>
 		<!-- #ifndef MP -->
 		<home></home>
 		<!-- #endif -->
@@ -131,6 +131,12 @@ const payMode = ref([
 const pay_close = ref(false);
 const oid = ref('');
 const order_id = ref('');
+const friendKey = ref('');
+
+function friendShareQuery() {
+	const keyPart = friendKey.value ? '&key=' + friendKey.value : '';
+	return 'oid=' + oid.value + '&spread=' + appStore.uid + keyPart;
+}
 
 // ---------- watch ----------
 watch(isLogin, (newV, oldV) => {
@@ -146,7 +152,8 @@ onReady(() => {
 	// });
 });
 onLoad((option) => {
-	oid.value = option.oid;
+	oid.value = option.oid || option.order_id || '';
+	friendKey.value = option.key || option.friend_key || '';
 });
 onShow(() => {
 	if (isLogin.value) {
@@ -160,7 +167,7 @@ onShareAppMessage(() => {
 	return {
 		title: '',
 		imageUrl: '',
-		path: '/pages/users/payment_on_behalf/index?oid=' + oid.value + '&spread=' + appStore.uid
+		path: '/pages/users/payment_on_behalf/index?' + friendShareQuery()
 	};
 });
 // #endif
@@ -177,10 +184,22 @@ function payOpen() {
 	}).catch(err => util.Tips({ title: err }));
 }
 function getDetail() {
-	friendDetail(oid.value)
+	friendDetail(oid.value, friendKey.value)
 		.then((res) => {
 			resData.value = res.data.info;
 			order_id.value = res.data.info.order_id;
+			if (res.data.info.friend_key) {
+				friendKey.value = res.data.info.friend_key;
+				// #ifdef H5
+				// 下单人首次签发令牌后写回地址栏，保证微信分享当前页带上 key
+				try {
+					const url = new URL(location.href);
+					url.searchParams.set('oid', String(oid.value));
+					url.searchParams.set('key', friendKey.value);
+					history.replaceState(null, '', url.toString());
+				} catch (e) {}
+				// #endif
+			}
 			if (resData.value.paid && !resData.value.type) {
 				goOrderDetail();
 			}
@@ -203,6 +222,14 @@ function getDetail() {
 //#ifdef H5
 function ShareInfo(data) {
 	let href = location.href;
+	if (friendKey.value) {
+		try {
+			const url = new URL(href);
+			url.searchParams.set('oid', String(oid.value));
+			url.searchParams.set('key', friendKey.value);
+			href = url.toString();
+		} catch (e) {}
+	}
 	if (Auth.isWeixin()) {
 		let configAppMessage = {
 			desc: i18n.t(`帮我付一下这件商品了，谢谢~`),
@@ -219,13 +246,12 @@ function ShareInfo(data) {
 //#endif
 // #ifdef APP-PLUS
 function appShare(scene) {
-	let routes = getCurrentPages(); // 获取当前打开过的页面路由数组
-	let curRoute = routes[routes.length - 1].$page.fullPath; // 获取当前页面路由，也就是最后一个打开的页面路由
+	const sharePath = '/pages/users/payment_on_behalf/index?' + friendShareQuery();
 	uni.share({
 		provider: 'weixin',
 		scene: scene,
 		type: 0,
-		href: `${HTTP_REQUEST_URL}${curRoute}`,
+		href: `${HTTP_REQUEST_URL}${sharePath}`,
 		title: i18n.t(`好友代付`),
 		summary: i18n.t(`帮我付一下这件商品了，谢谢~`),
 		imageUrl: resData.value.paid && !resData.value.type && resData.value.pay_uid === appStore.uid ? resData.value.pay_avatar : resData.value.avatar,
@@ -286,7 +312,8 @@ function pay_complete() {
 	pay_close.value = false;
 	getDetail();
 	uni.navigateTo({
-		url: '/pages/users/payment_on_behalf/pay_status?order_id=' + oid.value
+		url: '/pages/users/payment_on_behalf/pay_status?order_id=' + oid.value +
+			(friendKey.value ? '&key=' + friendKey.value : '')
 	});
 }
 function goOrderDetail() {

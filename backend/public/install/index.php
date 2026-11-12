@@ -400,60 +400,6 @@ switch ($step) {
             }
 
 
-            // 清空测试数据
-            if (empty($_POST['demo'])) {
-                $result = mysqli_query($conn, "show tables");
-                $tables = mysqli_fetch_all($result);//参数MYSQL_ASSOC、MYSQLI_NUM、MYSQLI_BOTH规定产生数组类型
-                $bl_table = array(
-                    'eb_agent_level',
-                    'eb_agreement',
-                    'eb_cache',
-                    'eb_diy',
-                    'eb_express',
-                    'eb_express_company',
-                    'eb_express_template',
-                    'eb_lang_code',
-                    'eb_lang_country',
-                    'eb_lang_type',
-                    'eb_member_right',
-                    'eb_member_ship',
-                    'eb_out_interface',
-                    'eb_page_categroy',
-                    'eb_page_link',
-                    'eb_shipping_templates',
-                    'eb_shipping_templates_region',
-                    'eb_system_admin',
-                    'eb_system_city',
-                    'eb_system_config',
-                    'eb_system_config_tab',
-                    'eb_system_event_data',
-                    'eb_system_group',
-                    'eb_system_group_data',
-                    'eb_system_menus',
-                    'eb_notice_config',
-                    'eb_notice_channel',
-                    'eb_module_install_log',
-                    'eb_pay_channel',
-                    'eb_pay_channel_platform',
-                    'eb_driver',
-                    'eb_printer_channel',
-                    'eb_system_ticket',
-                    'eb_system_route',
-                    'eb_system_route_cate',
-                    'eb_system_crontab',
-                    'eb_system_user_level'
-                );
-                foreach ($bl_table as $k => $v) {
-                    $bl_table[$k] = str_replace('eb_', $dbPrefix, $v);
-                }
-
-                foreach ($tables as $key => $val) {
-                    if (!in_array($val[0], $bl_table)) {
-                        mysqli_query($conn, "truncate table " . $val[0]);
-                    }
-                }
-            }
-
             $unique = uniqid();
 
             //读取配置文件，并替换真实配置数据1
@@ -736,32 +682,11 @@ function prepareInstallSql(string $sql, string $dbPrefix, string $requestScheme,
 }
 
 /**
- * 默认数据完成后写入环境配置、演示数据选项和管理员账号。
+ * 默认数据完成后写入环境配置和管理员账号。
  */
 function finalizeBaseInstall($conn, array $config): void
 {
     $dbPrefix = $config['dbPrefix'];
-
-    // 清空测试数据，但保留系统配置、菜单和其他安装基础数据。
-    if (empty($_POST['demo'])) {
-        $result = mysqli_query($conn, 'show tables');
-        $tables = $result ? mysqli_fetch_all($result) : [];
-        $baseTables = [
-            'agent_level', 'agreement', 'cache', 'diy', 'express', 'express_company', 'express_template',
-            'lang_code', 'lang_country', 'lang_type', 'member_right', 'member_ship', 'out_interface',
-            'page_categroy', 'page_link', 'shipping_templates', 'shipping_templates_region', 'system_admin',
-            'system_city', 'system_config', 'system_config_tab', 'system_event_data', 'system_group',
-            'system_group_data', 'system_menus', 'notice_config', 'notice_channel', 'module_install_log',
-            'pay_channel', 'pay_channel_platform', 'driver', 'printer_channel', 'system_ticket',
-            'system_route', 'system_route_cate', 'system_crontab', 'system_user_level',
-        ];
-        $baseTables = array_map(static fn (string $table): string => $dbPrefix . $table, $baseTables);
-        foreach ($tables as $table) {
-            if (!in_array($table[0], $baseTables, true)) {
-                mysqli_query($conn, 'truncate table `' . $table[0] . '`');
-            }
-        }
-    }
 
     $unique = uniqid();
     $strConfig = file_get_contents(SITE_DIR . 'install/' . '.env');

@@ -113,7 +113,7 @@
               style="width: 150px"
               @change="searchFile"
             >
-              <template #suffix><i class="el-icon-search el-input__icon" v-db-click @click="getFileList"></i></template>
+              <template #suffix><i class="el-icon-search" v-db-click @click="getFileList"></i></template>
             </el-input>
             <el-radio-group class="mr10" v-if="isPage" v-model="lietStyle" @change="radioChange">
               <el-radio-button label="list" value="list">
@@ -270,7 +270,6 @@ import {
 } from '@/api/uploadPictures';
 import { productGetTempKeysApi, uploadType } from '@/api/product';
 import { uploadByPieces } from '@/utils/upload'; //引入uploadByPieces方法
-import videoCloud from '@/utils/videoCloud';
 
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
@@ -417,7 +416,9 @@ function zh_uploadFile_change(evfile) {
     key: evfile.target.files[0].name,
     contentType: evfile.target.files[0].type,
   };
-  productGetTempKeysApi(types).then((res) => {
+  productGetTempKeysApi(types).then(async (res) => {
+    // 云存储 SDK（qiniu/cos 等）体积大，仅上传时按需加载
+    const { default: videoCloud } = await import('@/utils/videoCloud');
     videoCloud
       .videoUpload({
         type: res.data.type,

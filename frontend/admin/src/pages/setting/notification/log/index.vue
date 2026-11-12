@@ -195,7 +195,7 @@
       <template #footer
         ><div class="dialog-footer">
           <el-button @click="cleanVisible = false">取消</el-button>
-          <el-button type="danger" @click="doClean">确定清理</el-button>
+          <el-button v-db-click type="danger" @click="doClean">确定清理</el-button>
         </div></template
       >
     </el-dialog>

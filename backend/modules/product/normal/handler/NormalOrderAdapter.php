@@ -110,6 +110,20 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
         return NormalOrderModel::class;
     }
 
+    /**
+     * 取消时写扩展表的取消标记。该列只存在于实物扩展表。
+     * @param string $orderNo 订单号
+     * @param string $extStatus 目标扩展状态
+     * @param array $extra 附加字段
+     */
+    protected function updateExtStatus(string $orderNo, string $extStatus, array $extra = []): void
+    {
+        if ($extStatus === self::EXT_STATUS_CANCELED) {
+            $extra['is_cancel'] = 1;
+        }
+        parent::updateExtStatus($orderNo, $extStatus, $extra);
+    }
+
     // ======================== 2. 状态树（唯一数据源） ========================
 
     /**
@@ -255,7 +269,7 @@ class NormalOrderAdapter extends BaseOrderTypeAdapter
         $paid         = (bool) ($sourceOrder['paid'] ?? 0);
         $status       = (string) ($sourceOrder['status'] ?? '');
 
-        if ($isCancel)           return self::STATUS_CANCELED;
+        if ($isCancel || $status === self::EXT_STATUS_CANCELED) return self::STATUS_CANCELED;
         if ($refundStatus === 2) {
             $refundPrice = (float)($sourceOrder['refund_price'] ?? 0);
             $payPrice = (float)($sourceOrder['pay_price'] ?? 0);

@@ -314,4 +314,97 @@ abstract class BaseTradeModeHandler implements TradeModeHandlerInterface
     {
         return [];
     }
+
+    /**
+     * 回退活动库存
+     * @param int $num 回退数量
+     * @param int $activityId 活动ID
+     * @param string $unique SKU唯一码
+     * @return bool
+     */
+    public function incStock(int $num, int $activityId, string $unique = ''): bool
+    {
+        return false;
+    }
+
+    /**
+     * 把活动查询结果收成商品角标
+     * 兼容两种查询结果：商品ID => 活动ID，或带 product_id、id 的行列表
+     * @param array $rows 活动查询结果
+     * @return array<int, array{id: int, time_id?: int}>
+     */
+    public function pickActivityBadges(array $rows): array
+    {
+        $map = [];
+        foreach ($rows as $key => $row) {
+            if (is_array($row)) {
+                $productId = (int)($row['product_id'] ?? $key);
+                $id = (int)($row['id'] ?? 0);
+                if ($productId <= 0 || $id <= 0 || isset($map[$productId])) {
+                    continue;
+                }
+                $badge = ['id' => $id];
+                if (isset($row['time_id']) && $row['time_id'] !== '' && $row['time_id'] !== null) {
+                    $badge['time_id'] = $row['time_id'];
+                }
+                $map[$productId] = $badge;
+                continue;
+            }
+            $productId = (int)$key;
+            $id = (int)$row;
+            if ($productId > 0 && $id > 0 && !isset($map[$productId])) {
+                $map[$productId] = ['id' => $id];
+            }
+        }
+        return $map;
+    }
+
+    /**
+     * 确认收货时是否发放购买积分
+     * @return bool
+     */
+    public function grantsPurchaseIntegral(): bool
+    {
+        return true;
+    }
+
+    /**
+     * 下单时是否允许使用优惠
+     * @return bool
+     */
+    public function allowsOrderDiscount(): bool
+    {
+        return true;
+    }
+
+    /**
+     * 按订单商品快照回退本单占用的活动库存
+     * @param int $activityId 活动ID
+     * @param array $orderInfo 订单信息，读取 extra_info.items
+     * @return void
+     */
+    protected function restoreOrderItemStock(int $activityId, array $orderInfo): void
+    {
+        $extra = $orderInfo['extra_info'] ?? [];
+        if (is_string($extra)) {
+            $extra = json_decode($extra, true) ?: [];
+        }
+        if (!is_array($extra)) {
+            $extra = [];
+        }
+        $items = $extra['items'] ?? [];
+        if (!$items && !empty($orderInfo['cartInfo']) && is_array($orderInfo['cartInfo'])) {
+            $items = $orderInfo['cartInfo'];
+        }
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $num = (int)($item['cart_num'] ?? $item['refund_num'] ?? 0);
+            $unique = (string)($item['attr_info']['unique'] ?? $item['sku_unique'] ?? $item['product_attr_unique'] ?? '');
+            if ($num > 0) {
+                $this->incStock($num, $activityId, $unique);
+            }
+        }
+    }
 }

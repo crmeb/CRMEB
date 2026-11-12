@@ -15,4 +15,15 @@ Object.keys(modules).forEach((key) => {
   }
   obj[key.replace(/(\.\/|\.vue)/g, '')] = comp;
 });
+
+/**
+ * DIY 预览组件依赖全局 <common_wrapper>，仅在进入装修页时注册，避免拖入入口包。
+ * @param {import('vue').App} app
+ */
+export function registerDiyMobilePageGlobals(app) {
+  if (app._context.components.common_wrapper) return;
+  const wrapper = modules['./common_wrapper.vue']?.default;
+  if (wrapper) app.component('common_wrapper', wrapper);
+}
+
 export default obj;

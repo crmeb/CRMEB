@@ -112,7 +112,7 @@
     </div>
     <template v-if="configData.list">
       <div class="add-btn" v-if="configData.list.length < configData.maxList">
-        <el-button class="btn" type="primary" ghost @click="addBox">
+        <el-button v-db-click class="btn" type="primary" ghost @click="addBox">
           <span class="iconfont iconjiahao"></span>{{ configData.bnt }}
         </el-button>
       </div>

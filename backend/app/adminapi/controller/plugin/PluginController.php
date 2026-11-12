@@ -19,6 +19,7 @@ use crmeb\plugin\PluginManager;
 use crmeb\plugin\PluginManifest;
 use crmeb\utils\SafeZip;
 use think\facade\App;
+use think\facade\Env;
 
 /**
  * 插件管理控制器
@@ -127,6 +128,10 @@ class PluginController extends AuthController
      */
     public function upload()
     {
+        if (!Env::get('app_debug', false)) {
+            return app('json')->fail('生产环境无法上传插件，如需使用请修改.env文件中app_debug项为true');
+        }
+
         $file = $this->request->file('plugin_package');
         if (!$file) {
             return app('json')->fail('请上传插件安装包（ZIP 格式）');

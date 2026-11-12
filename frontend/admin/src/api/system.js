@@ -304,11 +304,43 @@ export function filesImportApi(data) {
 }
 
 /**
- * @description 安全维护 -- 更换域名
+ * @description 安全维护 -- 获取当前网站域名
+ */
+export function getSiteUrlApi() {
+  return request({
+    url: `system/replace_site_url`,
+    method: 'get',
+  });
+}
+
+/**
+ * @description 安全维护 -- 更换域名（须登录密码）
  */
 export function replaceSiteUrlApi(data) {
   return request({
     url: `system/replace_site_url`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 安全维护 -- 按类型清除数据（须登录密码）
+ */
+export function clearDataApi(type, data) {
+  return request({
+    url: `system/clear/${type}`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * @description 安全维护 -- 恢复出厂设置（须登录密码）
+ */
+export function factoryResetApi(data) {
+  return request({
+    url: `system/factory_reset`,
     method: 'post',
     data,
   });

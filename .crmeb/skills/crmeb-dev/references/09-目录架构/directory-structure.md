@@ -176,7 +176,7 @@ uni-app/src/
 | 想做什么 | 去哪里找代码 |
 |---------|------------|
 | 加后台管理页面 | 后端 `app/adminapi/controller/{业务}/` + `route/xxx.php`；前端 `admin/src/pages/` + `admin/src/api/` |
-| 加用户端页面 | 后端 `app/api/controller/v1/` + `route/v1.php`；前端 `uni-app/src/pages/` + `uni-app/src/api/` |
+| 加用户端页面 | 核心页面：后端 `app/api/controller/v1/` + `route/v1.php`；前端 `uni-app/src/pages/` + `uni-app/src/api/`。插件独立页放 `uni-app/src/pages-modules/<标识>/`，用法见 [uniapp-pages.md](../../../crmeb-plugin-dev/references/uniapp-pages.md) |
 | 改商品/订单逻辑 | 后端 `app/services/product|order/`（CenterProductServices/OrderCenterServices）+ `app/dao/` + `app/model/` |
 | 新增产品类型 | `modules/product/{type}/`（详参 03-系统商品说明） |
 | 新增交易模式 | `modules/trade/{type}/`（详参 01-插件机制） |

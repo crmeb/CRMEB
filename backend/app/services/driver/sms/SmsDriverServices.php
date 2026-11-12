@@ -295,6 +295,13 @@ class SmsDriverServices extends BaseService
         if (!$driver) {
             return null;
         }
+
+        // 脏数据自愈：历史安装曾把多个内置短信驱动同时置为启用，运行时收敛为互斥
+        $enabledCount = (int)$this->dao->count(['status' => 1]);
+        if ($enabledCount > 1) {
+            $this->dao->disableAllExcept((int)$driver->id);
+        }
+
         $data = $driver->toArray();
 
         // 一号通驱动：yihaotong_appid/yihaotong_appsecret 存储在系统配置表 sys_config 中

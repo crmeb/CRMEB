@@ -59,6 +59,8 @@ class SystemEventServices extends BaseService
         'UserCancel' => '用户注销事件',
         // 管理员事件
         'AdminLogin' => '管理员登录事件',
+        // 一号通短信
+        'SmsBalanceCheck' => '一号通短信余额检查事件',
         // 系统事件
         // 订单事件
         'OrderCreateAfter' => '订单创建后置事件',

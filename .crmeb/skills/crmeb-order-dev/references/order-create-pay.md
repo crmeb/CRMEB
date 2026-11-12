@@ -68,14 +68,18 @@ Db::commit();
 核心服务：[OrderSuccessServices.php](../../../../backend/app/services/order/OrderSuccessServices.php)::`paySuccess($orderInfo, $paytype, $other)`，支付回调（同步/异步）与 0 元支付共同汇聚于此：
 
 ```
-paySuccess
- ├─ PayRecordServices::complete()          // 支付单幂等闭环（校验 pay_status/终态）
- ├─ OrderCenterServices::syncStatus(       // 中台：processing + pay_status=1 + 交易号
- │        'processing', [pay_status, pay_time, extra_info.trade_no...])
- ├─ event('ActivityDataProxy', ...)        // 拼团单经代理事件建团（app 不直接引 modules）
- ├─ event('OrderPayLottery', ...)          // 抽奖旁路
- ├─ event('OrderPaySuccess', [$orderInfo]) // ★ 各产品类型/分销监听的主事件
- └─ event('OutPush', ...)                  // 外部推送
+paySuccess（一次事务）
+ ├─ 行锁订单；已支付直接返回
+ ├─ 已取消且带微信流水：PayRecordServices::compensateCanceled()
+ ├─ validate()；余额支付在本次事务扣款
+ ├─ 活动 onOrderPay()
+ ├─ OrderCenterServices::syncStatus('processing', ...)
+ └─ 有微信流水时 markCompleted()
+事务提交后
+ ├─ 产品类型 fulfillOrder()，再活动 afterOrderPay()
+ ├─ event('OrderPayLottery', ...)
+ ├─ event('OrderPaySuccess', [$orderInfo])
+ └─ event('OutPush', ...)
 ```
 
 - **`OrderPaySuccess` 的 `$orderInfo` 是中台订单数组**（`order_id` 字段即 order_no）。各模块监听器先校验 `product_type`/`source_type` 防误触，再幂等推进自己的扩展表（自动履约型在此调 `Handler::afterPay()`；实物推进 `pending_shipped`）。
@@ -99,4 +103,4 @@ paySuccess
 - [ ] 活动单：限购校验生效；`afterOrderCreate` 后置数据（团记录等）落库
 - [ ] 支付成功：中台 `processing` + `pay_status=1`；扩展表推进；返佣/积分流水正确
 - [ ] 0 元支付：`payType='free'` 闭环，`paySuccess` 正常触发
-- [ ] 支付回调重复通知：`PayRecordServices::complete()` 幂等，不重复推进
+- [ ] 支付回调重复通知：`paySuccess` 看到已支付直接返回，不重复推进

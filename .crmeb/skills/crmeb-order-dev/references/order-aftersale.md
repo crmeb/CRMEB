@@ -68,7 +68,7 @@ AfterSaleServices::refund
 
 幂等设计要点：
 
-- `PaymentDispatch::replay` 保证 `OrderRefundSuccess` 事件重放安全；触发失败转待办 `recoverSuccessEvents` 补偿。
+- `OrderRefundSuccess` 在资金事务外直接 `event()`。触发失败把效果记回待办，由 `recoverSuccessEvents` 再投递。
 - Handler 中的资金/资源副作用一律经 `RefundEffectContextInterface::once()` 登记去重，禁止直接裸写。
 - 中台 `refund_status`（0 无 / 1 申请中 / 2 已退）由 Adapter `resolveRefundStatus` 推导，退款完成时 `syncStatus` 同步。
 

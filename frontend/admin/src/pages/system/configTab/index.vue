@@ -102,7 +102,6 @@ import { modalSure } from '@/utils/public';
 import { authLapse } from '@/utils/authLapse';
 import { useMediaStore } from '@/store/module/media';
 import Setting from '@/setting';
-
 defineOptions({ name: 'configTab' });
 
 const router = useRouter();

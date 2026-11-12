@@ -331,6 +331,9 @@ class StoreCartServices extends BaseService
     public function setCart(int $uid, int $product_id, int $cart_num = 1, string $product_attr_unique = '', int $type = 0, bool $new = true, int $combination_id = 0, int $seckill_id = 0, int $bargain_id = 0, int $advance_id = 0)
     {
         if ($cart_num < 1) $cart_num = 1;
+        if (!$new && $seckill_id) {
+            throw new ApiException('秒杀商品不支持加入购物车，请直接购买');
+        }
         // 自定义表单商品需先填写表单再下单，购物车无法承载表单数据，禁止加入购物车（立即购买 new=true 不受限）
         if (!$new && $this->hasCustomForm($product_id)) {
             throw new ApiException('该商品需填写自定义表单，请直接购买');
@@ -362,6 +365,8 @@ class StoreCartServices extends BaseService
             $info['id'] = $key;
             $info['type'] = $type;
             $info['seckill_id'] = $seckill_id;
+            $info['activity_type'] = $seckill_id ? 'seckill' : 'normal';
+            $info['activity_id'] = $seckill_id;
             $info['bargain_id'] = $bargain_id;
             $info['combination_id'] = $combination_id;
             $info['advance_id'] = $advance_id;
@@ -606,9 +611,10 @@ class StoreCartServices extends BaseService
         if ($res) {
             $res->cart_num = $res->cart_num + $num;
             $res->save();
-            $this->dao->delete($id);
+            // 删除/更新必须限定本人购物车行，防止越权改删他人购物车（安全审计 B6.2）
+            $this->dao->delete(['id' => (int)$id, 'uid' => (int)$uid]);
         } else {
-            $this->dao->update($id, ['product_attr_unique' => $unique, 'cart_num' => $num]);
+            $this->dao->update(['id' => (int)$id, 'uid' => (int)$uid], ['product_attr_unique' => $unique, 'cart_num' => $num]);
         }
     }
 
@@ -885,6 +891,20 @@ class StoreCartServices extends BaseService
             }
             // 优先从产品类型 Handler 读取真实 SKU 信息（attrInfo 关联临时指向中台商品表，无 suk/product_id 等 SKU 字段）
             $skuAttr = [];
+            $activityPrice = [];
+            /** @var TradeModeRegistry $tradeModeRegistry */
+            $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+            [$activityType, $activityId] = $tradeModeRegistry->resolveCartActivity($item);
+            if ($activityType !== '' && $activityId > 0 && $tradeModeRegistry->has($activityType)
+                && !$tradeModeRegistry->get($activityType)->allowsOrderDiscount()) {
+                $activityPrice = $tradeModeRegistry->get($activityType)->getActivityPrice(
+                    (int)($item['product_id'] ?? 0),
+                    (string)($item['product_attr_unique'] ?? ''),
+                    $activityId
+                );
+                $item['activity_type'] = $activityType;
+                $item['activity_id'] = $activityId;
+            }
             try {
                 $skuInfo = app()->make(ProductTypeRegistry::class)
                     ->get((string)($item['productInfo']['product_type'] ?? 'normal'))
@@ -915,7 +935,9 @@ class StoreCartServices extends BaseService
             $capabilities = method_exists($typeHandler, 'getCapabilities')
                 ? $typeHandler->getCapabilities() : [];
             $checkStock = ($capabilities['inventory']['check_stock'] ?? true) === true;
-            $availableStock = (int)($productInfo['attrInfo']['stock'] ?? $productInfo['stock'] ?? 0);
+            $availableStock = $activityPrice
+                ? (int)($activityPrice['stock'] ?? 0)
+                : (int)($productInfo['attrInfo']['stock'] ?? $productInfo['stock'] ?? 0);
             $cartNum = (int)($item['cart_num'] ?? 0);
             if ($checkStock && ($cartNum <= 0 || $availableStock < $cartNum)) {
                 $item['is_valid'] = 0;
@@ -926,7 +948,20 @@ class StoreCartServices extends BaseService
             }
             $item['vip_truePrice'] = 0;
             $is_activity = $item['seckill_id'] || $item['bargain_id'] || $item['combination_id'] || $item['advance_id'];
-            if (isset($productInfo['attrInfo']['product_id']) && $item['product_attr_unique']) {
+            if ($activityType !== '' && !$tradeModeRegistry->orderAllowsDiscount([$item]) && !$activityPrice) {
+                $item['is_valid'] = 0;
+                $item['invalid_reason'] = '活动商品已失效';
+                $invalid[] = $item;
+                unset($item['attrInfo']);
+                continue;
+            }
+            if ($activityPrice) {
+                $item['costPrice'] = $productInfo['attrInfo']['cost'] ?? 0;
+                $item['trueStock'] = (int)($activityPrice['stock'] ?? 0);
+                $item['truePrice'] = $activityPrice['unit_price'];
+                $item['sum_price'] = $activityPrice['unit_price'];
+                $item['price_type'] = 'activity';
+            } elseif (isset($productInfo['attrInfo']['product_id']) && $item['product_attr_unique']) {
                 $item['costPrice'] = $productInfo['attrInfo']['cost'] ?? 0;
                 $item['trueStock'] = $productInfo['attrInfo']['stock'] ?? 0;
                 $item['truePrice'] = $productInfo['attrInfo']['price'] ?? 0;

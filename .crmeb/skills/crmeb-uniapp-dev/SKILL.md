@@ -1,6 +1,6 @@
 ---
 name: crmeb-uniapp-dev
-description: 开发和修改 frontend/uni-app 下的 CRMEB 移动端（uni-app 官方 CLI + Vue 3 + script setup + Pinia + Sass），包括 H5/微信小程序/支付宝小程序/APP 页面、API 封装、条件编译、分包及后端驱动的订单/商品动态渲染。适用于用户侧多端客户端任务，不用于管理端或后端。
+description: 开发和修改 frontend/uni-app 下的 CRMEB 移动端（uni-app 官方 CLI + Vue 3 + script setup + Pinia + Sass），包括 H5/微信小程序/支付宝小程序/APP 页面、API 封装、条件编译、分包、pages-modules 插件页放入后的跳转，及后端驱动的订单/商品动态渲染。适用于用户侧多端客户端任务，不用于管理端或后端。
 ---
 
 # CRMEB Uni-App 开发
@@ -23,7 +23,7 @@ Node >= 18；全部 `@dcloudio/*` 锁定同一版本，升级必须整体同步�
 ## 确定改动位置
 
 - 普通页面：在 `src/pages/` 下创建或修改页面，在 `src/pages.json` 注册，并放入合适的分包（主包只保留 tab/guide 页）。
-- 独立业务模块页面：复制 `src/pages-modules/_template/` 为 `<snake_case 模块名>/` 即自动注册为分包，免改 `src/pages.json`；约定与边界见 `frontend/uni-app/AGENTS.md`「pages-modules 自动分包注册」。
+- 独立业务模块页面：复制 `src/pages-modules/_template/` 为 `<snake_case 模块名>/` 即自动注册为分包。放入之后的地址、`routes.js` 跳转、装修链接与验收见 [uniapp-pages.md](../crmeb-plugin-dev/references/uniapp-pages.md)；扫描机制见 [uni-app 端约定](../../scopes/uni-app.md)「pages-modules 自动分包注册」。
 - 共享行为：优先复用相近组件、composables、`utils/`、`libs/`，不要把平台逻辑复制到多个页面。
 - HTTP 接口：在 `src/api/` 下添加领域函数并调用 `@/utils/request.js`；路径不要带 `/api/`，封装层会自动添加。
 - 订单、下单、支付、售后：走 `src/dynamic-pages/` 引擎与契约，阅读 [references/dynamic-pages.md](references/dynamic-pages.md)。
@@ -36,7 +36,7 @@ Node >= 18；全部 `@dcloudio/*` 锁定同一版本，升级必须整体同步�
 2. 新代码用 Vue 3 `<script setup>`：页面生命周期（`onLoad/onShow/onReachBottom` 等）从 `@dcloudio/uni-app` 引入，组件生命周期（`onMounted/onBeforeUnmount`）从 `vue` 引入。
 3. 状态用 Pinia（`useAppStore()` 等 + `storeToRefs`），禁止新增 Vuex；主题色/验证码/海报用 `composables/`（`useColorTheme` / `useSendVerifyCode` / `useSharePoster`），禁止新增 mixin。
 4. 导航、请求、存储、上传、权限和反馈统一使用 `uni.*` API；多端差异用 `#ifdef H5 / MP-WEIXIN / APP-PLUS` 条件编译保护。
-5. 订单相关跳转一律引用 `dynamic-pages/api/routes.js` 的常量；其他新页面必须注册到 `pages.json`，并使用准确路径导航。
+5. 订单相关跳转引用 `dynamic-pages/api/routes.js`。插件独立页放 `pages-modules/`，跳转引用该模块 `routes.js`（见 [uniapp-pages.md](../crmeb-plugin-dev/references/uniapp-pages.md)）。其余核心新页面写入 `src/pages.json`。
 6. 后端下发的 `page_config` 区块、按钮、状态文案和扩展数据视为契约；模块可扩展的业务类型不得新增前端硬编码映射。
 7. 提供适合触屏和小屏幕的加载、空数据、重试、错误和禁止重复提交状态。
 

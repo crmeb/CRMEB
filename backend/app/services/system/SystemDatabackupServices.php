@@ -67,7 +67,11 @@ class SystemDatabackupServices extends BaseService
     public function getRead(string $tablename)
     {
         $database = Env::get("database.database");
-        $list = Db::query("select * from information_schema.columns where table_name = '" . $tablename . "' and table_schema = '" . $database . "'");
+        // 表名参数化绑定查询 information_schema，杜绝拼接注入（安全审计 C6）
+        $list = Db::query(
+            'select * from information_schema.columns where table_name = :tablename and table_schema = :database',
+            ['tablename' => $tablename, 'database' => $database]
+        );
         $count = count($list);
         foreach ($list as $key => $f) {
             $list[$key]['EXTRA'] = ($f['EXTRA'] == 'auto_increment' ? '是' : ' ');

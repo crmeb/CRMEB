@@ -408,14 +408,53 @@ class SystemCrudServices extends BaseService
      * @email 136327134@qq.com
      * @date 2023/4/24
      */
+    /**
+     * DDL 参数白名单校验：类型白名单、长度仅数字/逗号、字段名仅字母数字下划线、enum 选项逐项转义（安全审计 C5）
+     * @param string $field
+     * @param string $changeFiled
+     * @param string $prevFiled
+     * @param string $type
+     * @param mixed $limit
+     * @param array $options
+     * @throws AdminException
+     */
+    protected function verifyAlterParams(string $field, string $changeFiled, string $prevFiled, string $type, $limit, array $options): void
+    {
+        $allowedTypes = [
+            'int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'decimal', 'float', 'double',
+            'varchar', 'char', 'tinytext', 'text', 'mediumtext', 'longtext',
+            'date', 'datetime', 'timestamp', 'time', 'year', 'enum', 'json',
+        ];
+        $type = strtolower(trim($type));
+        if (!in_array($type, $allowedTypes, true)) {
+            throw new AdminException('字段类型不合法：' . $type);
+        }
+        foreach ([$field, $changeFiled, $prevFiled] as $namePart) {
+            if ($namePart !== '' && !preg_match('/^[A-Za-z0-9_]+$/', $namePart)) {
+                throw new AdminException('字段名称不合法');
+            }
+        }
+        if ($limit !== '' && !preg_match('/^\d+(,\d+)?$/', (string)$limit)) {
+            throw new AdminException('字段长度不合法');
+        }
+        foreach ((array)($options['options'] ?? []) as $option) {
+            // 禁止枚举选项包含单引号与反斜杠，杜绝拼入 enum('...') 后逃逸（安全审计 C5）
+            if (!is_string($option) || $option === '' || strpos($option, "'") !== false || strpos($option, '\\') !== false) {
+                throw new AdminException('枚举选项不合法');
+            }
+        }
+    }
+
     protected function updateAlter(string $tableName, string $field, string $changeFiled, string $prevFiled, string $type, $limit = '', string $default = '', string $comment = '', array $options = [])
     {
         $tableName = $this->getTableName($tableName);
+        // 字段名/类型/长度白名单校验，杜绝 DDL 注入（安全审计 C5）
+        $this->verifyAlterParams($field, $changeFiled, $prevFiled, $type, $limit, $options);
         $comment = addslashes($comment);
         $field = addslashes($field);
         $changeFiled = addslashes($changeFiled);
         $prevFiled = addslashes($prevFiled);
-        $type = addslashes($type);
+        $type = strtolower(trim($type));
         $default = addslashes($default);
         if ($prevFiled) {
             $after = "AFTER `$prevFiled`";
@@ -471,10 +510,12 @@ class SystemCrudServices extends BaseService
     public function addAlter(string $tableName, string $field, string $prevFiled, string $type, $limit = '', string $default = '', string $comment = '', array $options = [])
     {
         $tableName = $this->getTableName($tableName);
+        // 字段名/类型/长度白名单校验，杜绝 DDL 注入（安全审计 C5）
+        $this->verifyAlterParams($field, $field, $prevFiled, $type, $limit, $options);
         $comment = addslashes($comment);
         $field = addslashes($field);
         $prevFiled = addslashes($prevFiled);
-        $type = addslashes($type);
+        $type = strtolower(trim($type));
         $default = addslashes($default);
         if ($prevFiled) {
             $after = "AFTER `$prevFiled`";

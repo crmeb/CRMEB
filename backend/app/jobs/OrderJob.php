@@ -11,6 +11,7 @@
 
 namespace app\jobs;
 
+use app\dao\order\OrderCenterDao;
 use app\services\order\OrderLifecycleServices;
 use app\services\product\CenterProductServices;
 use app\services\user\UserLabelRelationServices;

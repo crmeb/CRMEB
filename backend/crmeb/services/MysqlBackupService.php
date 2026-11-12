@@ -17,6 +17,35 @@ use crmeb\services\CacheService;
 class MysqlBackupService
 {
     /**
+     * 校验表名白名单：仅允许字母/数字/下划线，且必须真实存在于当前库（information_schema 参数化核对，安全审计 C4）
+     * @param array $tables
+     * @return array
+     * @throws AdminException
+     */
+    protected function verifyTables(array $tables): array
+    {
+        if (empty($tables)) {
+            throw new AdminException('请指定数据表');
+        }
+        foreach ($tables as $table) {
+            if (!is_string($table) || !preg_match('/^[A-Za-z0-9_]+$/', $table)) {
+                throw new AdminException('数据表名称不合法');
+            }
+        }
+        $rows = Db::query(
+            'SELECT table_name AS name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name IN (' . implode(',', array_fill(0, count($tables), '?')) . ')',
+            $tables
+        );
+        $exists = array_column($rows, 'name');
+        foreach ($tables as $table) {
+            if (!in_array($table, $exists, true)) {
+                throw new AdminException('数据表不存在：' . $table);
+            }
+        }
+        return $tables;
+    }
+
+    /**
      * 文件指针
      * @var resource
      */
@@ -349,6 +378,8 @@ class MysqlBackupService
      */
     public function backup(string $table, int $start, $sql = '')
     {
+        // 单表名先过白名单校验（安全审计 C4）
+        $this->verifyTables([$table]);
         $db = self::connect();
         // 备份表结构
         if (0 == $start) {
@@ -402,10 +433,12 @@ class MysqlBackupService
         if ($tables) {
             $db = self::connect();
             if (is_array($tables)) {
-                $tables = implode('`,`', $tables);
+                // 表名白名单校验后拼回反引号（安全审计 C4）
+                $tables = implode('`,`', $this->verifyTables($tables));
                 $list = $db->query("OPTIMIZE TABLE `{$tables}`");
             } else {
-                $list = $db->query("OPTIMIZE TABLE {$tables}");
+                $tables = implode('`,`', $this->verifyTables([$tables]));
+                $list = $db->query("OPTIMIZE TABLE `{$tables}`");
             }
             if (!$list) {
                 throw new AdminException('修复错误，请重试');
@@ -429,10 +462,12 @@ class MysqlBackupService
         if ($tables) {
             $db = self::connect();
             if (is_array($tables)) {
-                $tables = implode('`,`', $tables);
+                // 表名白名单校验后拼回反引号（安全审计 C4）
+                $tables = implode('`,`', $this->verifyTables($tables));
                 $list = $db->query("REPAIR TABLE `{$tables}`");
             } else {
-                $list = $db->query("REPAIR TABLE {$tables}");
+                $tables = implode('`,`', $this->verifyTables([$tables]));
+                $list = $db->query("REPAIR TABLE `{$tables}`");
             }
             if ($list) {
                 return $list;

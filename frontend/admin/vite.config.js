@@ -77,7 +77,7 @@ function devExtLoaderStubPlugin(command) {
 
 export default defineConfig(({ command }) => ({
   // 与 publicPath / routePre 一致：非根路径部署
-  base: '/admin',
+  base: '/admin/',
   plugins: [
     vue(),
     // script setup 下自动引入 vue API（ref/computed/onMounted 等），与显式 import 共存；
@@ -94,6 +94,9 @@ export default defineConfig(({ command }) => ({
     monacoEditorPlugin({
       // editor + json worker；语法高亮走 basic-languages 不需要独立 worker（与 src/libs/monaco.js 配套）
       languageWorkers: ['editorWorkerService', 'json'],
+      // 插件默认写到 outDir/base/monacoeditorwork（即 dist/admin/...），而 dist 本身部署在 /admin 下，
+      // 线上会变成 /admin/admin/...；直接写到 outDir 根，与运行时地址 /admin/monacoeditorwork 对应
+      customDistPath: (root, outDir) => path.join(root, outDir, 'monacoeditorwork'),
     }),
   ],
   resolve: {
@@ -138,18 +141,46 @@ export default defineConfig(({ command }) => ({
     assetsDir: 'system_static',
     sourcemap: false,
     chunkSizeWarningLimit: 1500,
+    // 入口静态依赖被异步页反向引用时，Vite 默认会把其依赖链全部 modulepreload；
+    // monaco / vxe 仅少数页需要，禁止挂到首屏 preload。
+    modulePreload: {
+      resolveDependencies(filename, deps) {
+        return deps.filter((dep) => !/monaco-editor|[/\\]vxe-|xlsx-/.test(dep));
+      },
+    },
     rollupOptions: {
       output: {
-        // 大依赖拆独立 chunk：长缓存友好，避免全部塞进入口（monaco/echarts/xlsx 本身只被懒加载页面引用）
+        // 大依赖拆独立 chunk：长缓存友好。
+        // monaco 不进 manualChunks：强制单包会与入口形成循环依赖，导致几乎所有异步页都静态 import monaco。
+        // 公共 src 抽到 common，避免异步页 from"./index-*.js"（入口）反引并拖入 vxe/monaco。
         manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined;
-          if (id.includes('monaco-editor')) return 'monaco-editor';
-          if (id.includes('echarts') || id.includes('zrender')) return 'echarts';
-          if (id.includes('element-plus') || id.includes('@element-plus')) return 'element-plus';
-          if (id.includes('vxe-table') || id.includes('vxe-pc-ui') || id.includes('xe-utils')) return 'vxe';
-          if (id.includes('@wangeditor')) return 'wangeditor';
-          if (id.includes('@form-create')) return 'form-create';
-          if (id.includes('xlsx')) return 'xlsx';
+          if (id.includes('node_modules')) {
+            if (id.includes('echarts') || id.includes('zrender')) return 'echarts';
+            if (id.includes('element-plus') || id.includes('@element-plus')) return 'element-plus';
+            if (id.includes('vxe-table') || id.includes('vxe-pc-ui') || id.includes('xe-utils')) return 'vxe';
+            if (id.includes('@wangeditor')) return 'wangeditor';
+            if (id.includes('@form-create')) return 'form-create';
+            if (id.includes('xlsx')) return 'xlsx';
+            return undefined;
+          }
+          const normalized = id.replace(/\\/g, '/');
+          // Excel 工具同步依赖 xlsx（~276KB）、videoCloud 同步依赖 qiniu/cos 等云存储 SDK，
+          // 均为按需 import()，勿并入 common，否则会随入口预加载
+          if (/\/src\/(utils\/(newToExcel|videoCloud)\.js|vendor\/Export2Excel\.js)/.test(normalized)) {
+            return undefined;
+          }
+          if (
+            normalized.includes('/src/utils/') ||
+            normalized.includes('/src/api/') ||
+            normalized.includes('/src/setting.js') ||
+            normalized.includes('/src/libs/request') ||
+            normalized.includes('/src/libs/util') ||
+            normalized.includes('/src/libs/tools') ||
+            normalized.includes('/src/libs/timeOptions') ||
+            normalized.includes('/src/libs/auth')
+          ) {
+            return 'common';
+          }
           return undefined;
         },
       },

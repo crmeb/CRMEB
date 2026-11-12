@@ -26,7 +26,7 @@
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <router-link :to="Setting.routePre + '/cms/article/add_article'" v-auth="['cms-article-creat']"
-        ><el-button type="primary" class="action-row bnt">添加文章</el-button></router-link
+        ><el-button v-db-click type="primary" class="action-row bnt">添加文章</el-button></router-link
       >
       <el-table
         :data="cmsList"

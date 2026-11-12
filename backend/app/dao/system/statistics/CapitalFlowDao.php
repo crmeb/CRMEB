@@ -54,35 +54,47 @@ class CapitalFlowDao extends BaseDao
      */
     public function getRecordList($where, int $page = 0, int $limit = 0)
     {
-        $timeUnix = "%Y-%m-%d";
-        switch ($where['type']) {
-            case "day" :
-                $timeUnix = "%Y-%m-%d";
-                break;
-            case "week" :
-                $timeUnix = "%u";
-                break;
-            case "month" :
-                $timeUnix = "%Y-%m";
-                break;
-        }
-        $model = $this->search($where, false)
-            ->when(isset($where['type']) && $where['type'] !== '', function ($query) use ($where, $timeUnix) {
-                $query->field("FROM_UNIXTIME(add_time,'$timeUnix') as day,sum(if(price >= 0,price,0)) as income_price,sum(if(price < 0,price,0)) as exp_price,add_time");
-                $query->group("FROM_UNIXTIME(add_time, '$timeUnix')");
-            });
-        $count = $model->count();
-        $list = $model->when($page && $limit, function ($query) use ($page, $limit) {
-            $query->page($page, $limit);
-        })->order('add_time desc')->select()->toArray();
+        // type 只表示分组粒度，不是表字段；从 where 剥离，避免 search=true 时误写成 where type=day
+        $type = (string)($where['type'] ?? 'day');
+        unset($where['type']);
+
+        $timeUnix = match ($type) {
+            'week' => '%u',
+            'month' => '%Y-%m',
+            default => '%Y-%m-%d',
+        };
+        // max(add_time) 满足 ONLY_FULL_GROUP_BY；裸 add_time 在严格 sql_mode 下会直接报错
+        $field = "FROM_UNIXTIME(add_time,'{$timeUnix}') as day,"
+            . "sum(if(price >= 0,price,0)) as income_price,"
+            . "sum(if(price < 0,price,0)) as exp_price,"
+            . "max(add_time) as add_time";
+        $group = "FROM_UNIXTIME(add_time, '{$timeUnix}')";
+
+        // countWithGroup 会把当前查询的 field 改成 count(*)，不能与 select 共用同一条 query
+        $count = (int)$this->search($where, false)->field($field)->group($group)->count();
+        $list = $this->search($where, false)
+            ->field($field)
+            ->group($group)
+            ->when($page && $limit, function ($query) use ($page, $limit) {
+                $query->page($page, $limit);
+            })
+            ->order('add_time desc')
+            ->select()
+            ->toArray();
+
+        $cashOnly = !empty($where['cash_only']);
         foreach ($list as &$item) {
-            if ($where['type'] == 'day') {
-                $item['ids'] = array_merge($this->getModel()->whereDay('add_time', $item['day'])->column('id'));
-            } elseif ($where['type'] == 'week') {
-                $day = $this->weekDayTime(date('Y'), $item['day']);
-                $item['ids'] = array_merge($this->getModel()->whereWeek('add_time', $day)->column('id'));
-            } elseif ($where['type'] == 'month') {
-                $item['ids'] = array_merge($this->getModel()->whereMonth('add_time', $item['day'])->column('id'));
+            $idsQuery = $this->getModel();
+            if ($cashOnly) {
+                $idsQuery = $idsQuery->whereNotIn('pay_type', ['', 'yue', 'admin']);
+            }
+            if ($type === 'day') {
+                $item['ids'] = array_values($idsQuery->whereDay('add_time', $item['day'])->column('id'));
+            } elseif ($type === 'week') {
+                $day = $this->weekDayTime((int)date('Y'), (int)$item['day']);
+                $item['ids'] = array_values($idsQuery->whereWeek('add_time', $day)->column('id'));
+            } elseif ($type === 'month') {
+                $item['ids'] = array_values($idsQuery->whereMonth('add_time', $item['day'])->column('id'));
             }
         }
         return compact('list', 'count');

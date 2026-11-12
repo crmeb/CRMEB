@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import { diyGetInfo } from '@diy/api';
 import Setting from '@/setting';
@@ -70,6 +70,9 @@ function handleMessage(event) {
 onMounted(() => {
   //监听子页面给当前页面传值
   window.addEventListener('message', handleMessage, false);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener('message', handleMessage, false);
 });
 </script>
 

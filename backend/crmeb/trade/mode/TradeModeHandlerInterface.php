@@ -274,4 +274,36 @@ interface TradeModeHandlerInterface
      *               activityInfo 为交易模式附加信息（如砍价的 bargainUserInfo），无则为空数组
      */
     public function checkCartStock(int $uid, int $cartNum, string $unique, int $activityId, int $productId): array;
+
+    /**
+     * 回退活动库存
+     * 取消、退款按订单明细调用。默认不处理，由占用活动库存的模式覆写。
+     * @param int $num 回退数量
+     * @param int $activityId 活动ID
+     * @param string $unique SKU唯一码
+     * @return bool 未接管库存时返回 false
+     */
+    public function incStock(int $num, int $activityId, string $unique = ''): bool;
+
+    /**
+     * 把活动查询结果收成商品角标
+     * 键为商品ID，值为当前可展示的活动：id，秒杀可带 time_id
+     * @param array $rows getActivityIdsList 的返回
+     * @return array<int, array{id: int, time_id?: int}>
+     */
+    public function pickActivityBadges(array $rows): array;
+
+    /**
+     * 确认收货时是否发放购买积分
+     * 秒杀、砍价、拼团不发购买积分，由各模式覆写为 false
+     * @return bool
+     */
+    public function grantsPurchaseIntegral(): bool;
+
+    /**
+     * 下单时是否允许使用优惠
+     * 包含会员价、等级价、优惠券、积分抵扣、促销和运费优惠。秒杀覆写为 false
+     * @return bool
+     */
+    public function allowsOrderDiscount(): bool;
 }

@@ -40,35 +40,29 @@ import installPlugin from '@/plugin';
 import Pagination from '@/components/Pagination';
 import pagesHeader from '@/components/pagesHeader';
 import dateRangePicker from '@/components/dateRangePicker/index.vue';
-import common_wrapper from '@diy/components/mobilePage/common_wrapper.vue';
 import iconCompat from '@/components/iconCompat/index.vue';
 import FileUpload from '@/components/fileUpload/index.vue';
 import imgModal from './components/uploadPictures/model';
 import videoModal from './components/uploadVideo2/model';
 import lazyDirective from '@/utils/lazyDirective';
 
-// 第三方库
-import VxeTable from 'vxe-table';
-import VxeUIAll from 'vxe-pc-ui';
+// 第三方库（vxe-table 仅树表等少数页使用：异步壳 + 按需装载，勿同步 import）
 import Viewer from 'v-viewer';
 import formCreate from '@form-create/element-ui';
+import { registerVxePlaceholders } from '@/libs/vxe';
 
 // 工具函数
 import bus from '@/utils/bus';
 import modalForm from '@/utils/modalForm';
-import videoCloud from '@/utils/videoCloud';
 import { modalSure, HandlePrice } from '@/utils/public';
 
 // 样式文件
 import './assets/fonts/font.css';
 import '@/theme/index.scss';
 import './assets/iconfontYI/iconfontYI.css';
-import './plugin/emoji-awesome/css/google.min.css';
 import './styles/index.scss';
 import './styles/font/iconfont.js';
 import 'viewerjs/dist/viewer.css';
-import 'vxe-table/lib/style.css';
-import 'vxe-pc-ui/lib/style.css';
 
 // 全局过滤器（Vue3 以 $filters 形式挂载）
 import * as filters from './filters';
@@ -110,7 +104,6 @@ app.config.globalProperties.bus = {
 // 注册全局组件
 app.component('Pagination', Pagination);
 app.component('pagesHeader', pagesHeader);
-app.component('common_wrapper', common_wrapper);
 // 日期范围搜索（内置系统快捷项，见 libs/timeOptions）
 app.component('dateRangePicker', dateRangePicker);
 // iView <Icon type="..."> 兼容（面包屑/菜单/DIY 等历史模板仍在使用）
@@ -127,11 +120,11 @@ app.use(router);
 app.use(i18n);
 app.use(ElementPlus, { locale: zhCn });
 app.use(formCreate);
+// vxe 异步壳：必须在任何页面 setup 的 resolveComponent 之前注册
+registerVxePlaceholders(app);
 // form-create 自定义单文件上传组件（后端 Form::fileUpload() 生成 type=FileUpload 规则，
 // 替代按图片卡片渲染的内置 upload：非图片文件显示文件图标，上传前后尺寸一致）
 formCreate.component('FileUpload', FileUpload);
-app.use(VxeUIAll);
-app.use(VxeTable);
 app.use(imgModal);
 app.use(videoModal);
 app.use(Viewer, {
@@ -157,7 +150,6 @@ app.config.globalProperties.$routeProStr = settings.routePre;
 app.config.globalProperties.$modalForm = modalForm;
 app.config.globalProperties.$modalSure = modalSure;
 app.config.globalProperties.$HandlePrice = HandlePrice;
-app.config.globalProperties.$videoCloud = videoCloud;
 app.config.globalProperties.$timeOptions = timeOptions;
 app.config.globalProperties.$tools = tools;
 app.config.globalProperties.$filters = filters;

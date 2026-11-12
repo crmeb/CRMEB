@@ -74,6 +74,11 @@
 		friendPay: {
 			type: Boolean,
 			default: false
+		},
+		/** 好友代付分享令牌（type=1 时必传） */
+		friendKey: {
+			type: String,
+			default: ''
 		}
 	});
 
@@ -162,6 +167,7 @@
 			uni: props.order_id,
 			paytype: paytype,
 			type: props.friendPay ? 1 : 0,
+			friend_key: props.friendPay ? (props.friendKey || '') : '',
 			// #ifdef MP
 			'from': 'routine',
 			// #endif

@@ -1,0 +1,1 @@
+import{ad as a}from"./common-BjnwXDgI.js";import"./element-plus-BlM_hkkP.js";import"./form-create-wUo3gcl5.js";const d="/virtual";function f(e,r={}){const o=(r.method||"get").toLowerCase(),t={url:d+e,method:o};return r.body&&(t.data=typeof r.body=="string"?JSON.parse(r.body):r.body),a(t)}export{f as virtualApi};

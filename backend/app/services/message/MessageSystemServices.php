@@ -111,34 +111,30 @@ class MessageSystemServices extends BaseService
             return $noticeService->markAllAsRead((int)$id['uid']);
         }
 
-        $noticeId = (int)$id;
-        // 标记已读
-        if (isset($data['look'])) {
-            $uid = $this->getUserIdForNotice($noticeId);
-            return $uid > 0 ? $noticeService->markAsRead($noticeId, $uid) : true;
-        }
-        // 标记删除
-        if (isset($data['is_del'])) {
-            $uid = $this->getUserIdForNotice($noticeId);
-            return $uid > 0 ? $noticeService->deleteForUser($noticeId, $uid) : true;
-        }
-
-        // 其他字段更新：旧表 eb_message_system 已于 v8.1.0 随通知重构删除，数据已迁至 eb_notice，
-        // 不再提供已读/删除以外的更新能力，禁止回落到废弃 DAO 触发 SQLSTATE[42S02]
+        // 单条更新必须走 updateForUser，禁止按 notice_id 反查他人 uid（防 IDOR）
         throw new ApiException('站内信仅支持标记已读或删除操作');
     }
 
     /**
-     * 根据 notice_id 查询关联的 uid（从 notice_read 表）
-     * @param int $noticeId
-     * @return int
+     * 当前用户对指定站内信标记已读/删除
+     * @param int $uid 当前登录用户
+     * @param int $noticeId 通知 ID
+     * @param array $data 含 look 或 is_del
+     * @return mixed
      */
-    private function getUserIdForNotice(int $noticeId): int
+    public function updateForUser(int $uid, int $noticeId, array $data)
     {
-        $readDao = app()->make(\app\dao\message\NoticeReadDao::class);
-        $record = $readDao->getModel()
-            ->where('notice_id', $noticeId)
-            ->find();
-        return $record ? (int)$record['uid'] : 0;
+        if ($uid <= 0 || $noticeId <= 0) {
+            throw new ApiException('参数错误');
+        }
+        /** @var NoticeServices $noticeService */
+        $noticeService = app()->make(NoticeServices::class);
+        if (isset($data['look'])) {
+            return $noticeService->markAsRead($noticeId, $uid);
+        }
+        if (isset($data['is_del'])) {
+            return $noticeService->deleteForUser($noticeId, $uid);
+        }
+        throw new ApiException('站内信仅支持标记已读或删除操作');
     }
 }

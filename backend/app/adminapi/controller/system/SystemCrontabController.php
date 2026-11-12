@@ -135,23 +135,44 @@ class SystemCrontabController extends AuthController
      */
     function isSafePhpCode($code)
     {
-        // 检查是否包含删除表，删除表数据，删除文件，修改文件内容以及后缀，执行命令等操作的关键词
+        // 黑名单加固（安全审计 C7，eval 功能保留但强化前置过滤）：
+        // 1. 匹配改为大小写不敏感（原实现对 Delete/drop 等变体全部漏放）
+        // 2. 补齐原缺失的高危关键词：文件写读删、命令执行体系、include/require、eval/assert、反引号、动态调用
         $dangerous_keywords = array(
             'delete',
             'destroy',
-            'DROP TABLE',
-            'DELETE FROM',
+            'drop table',
+            'delete from',
+            'truncate table',
             'unlink(',
             'fwrite(',
+            'file_put_contents(',
+            'file_get_contents(',
+            'fopen(',
+            'fputs(',
             'shell_exec(',
             'exec(',
             'system(',
-            'passthru('
+            'passthru(',
+            'popen(',
+            'proc_open(',
+            'eval(',
+            'assert(',
+            'create_function(',
+            'base64_decode(',
+            'include',
+            'require',
         );
+        $code = (string)$code;
+        $lower = strtolower($code);
         foreach ($dangerous_keywords as $keyword) {
-            if (strpos($code, $keyword) !== false) {
+            if (strpos($lower, $keyword) !== false) {
                 return false;
             }
+        }
+        // 反引号执行符单独检测（黑名单数组无法直写字符串）
+        if (strpos($code, chr(96)) !== false) {
+            return false;
         }
         return true; // 如果通过所有安全检查，返回 true
     }

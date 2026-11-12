@@ -119,6 +119,7 @@ const news = ref('');
 const noCoupon = ref(0);
 const is_gift = ref(0);
 const order_id = ref(0);
+const gift_key = ref('');
 // 原代码未在 data 声明、直接挂到实例上的字段（与 order_id 并存）
 const orderId = ref(0);
 // 打开来源标记：order_create = 下单页引擎（走 uni.$emit 事件回跳），空 = 地址管理
@@ -140,6 +141,7 @@ onLoad((options) => {
 		news.value = options.news || 0;
 		orderId.value = options.order_id || 0;
 		is_gift.value = options.is_gift || 0;
+		gift_key.value = options.gift_key || '';
 		from.value = options.from || '';
 		getAddressList(true);
 	} else {
@@ -365,6 +367,7 @@ function addAddress() {
 	uni.navigateTo({
 		url: '/pages/users/user_address/index?cartId=' + cartIdVal + '&pinkId=' + pinkIdVal +
 			'&couponId=' + couponIdVal + '&new=' + news.value + '&is_gift=' + is_gift.value + '&order_id=' + orderId.value +
+			(gift_key.value ? '&gift_key=' + gift_key.value : '') +
 			(from.value === 'order_create' ? '&from=order_create' : '')
 	})
 }
@@ -380,7 +383,8 @@ function isGiftReceiveFlow() {
 function redirectGiftConfirm(addressId) {
 	uni.redirectTo({
 		url: '/pages/goods/order_confirm/index?order_id=' + orderId.value +
-			'&is_gift=2&addressId=' + addressId + '&is_address=1'
+			'&is_gift=2&addressId=' + addressId + '&is_address=1' +
+			(gift_key.value ? '&gift_key=' + gift_key.value : '')
 	});
 }
 

@@ -118,6 +118,8 @@ Route::group('order', function () {
     Route::get('center/categories', [\app\adminapi\controller\order\OrderCenterController::class, 'categories'])->option(['real_name' => '订单中台分类列表']);
     //订单中台筛选选项
     Route::get('center/filter_options', [\app\adminapi\controller\order\OrderCenterController::class, 'filterOptions'])->option(['real_name' => '订单中台筛选选项']);
+    //已取消但仍收款的订单，管理端点一次才原路退
+    Route::post('center/canceled_refund', [\app\adminapi\controller\order\OrderCenterController::class, 'submitCanceledRefund'])->option(['real_name' => '取消订单原路退款']);
 })->middleware([
     \app\http\middleware\AllowOriginMiddleware::class,
     \app\adminapi\middleware\AdminAuthTokenMiddleware::class,

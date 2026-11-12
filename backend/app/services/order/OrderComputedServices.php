@@ -24,6 +24,7 @@ use app\services\user\UserAddressServices;
 use app\services\activity\coupon\StoreCouponUserServices;
 use app\services\activity\coupon\StoreCouponIssueServices;
 use app\dao\activity\coupon\StoreCouponUserDao;
+use crmeb\trade\mode\TradeModeRegistry;
 use think\facade\Log;
 
 /**
@@ -109,7 +110,8 @@ class OrderComputedServices extends BaseService
         $combinationId = $this->paramData['combinationId'] ?? 0;
         $seckillId = $this->paramData['seckill_id'] ?? 0;
         $bargainId = $this->paramData['bargainId'] ?? 0;
-        $isActivity = $combinationId || $seckillId || $bargainId;
+        $isActivity = $combinationId || $seckillId || $bargainId
+            || !app()->make(TradeModeRegistry::class)->orderAllowsDiscount($cartInfo);
         $pricingPolicy = $other['pricing_policy'] ?? [];
         if (!$isActivity) {
             //促销优惠段（价格链条位[20]）：营销插件通过 OrderPromotionCompute 事件写入优惠（见 applyPromotion）
@@ -534,6 +536,7 @@ class OrderComputedServices extends BaseService
         $vipPrice = $this->getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单等级和付费会员总优惠金额
         $levelPrice = $this->getOrderSumPrice($cartInfo, 'level');//获取会员等级优惠
         $memberPrice = $this->getOrderSumPrice($cartInfo, 'member');//获取付费会员优惠
+        $allowDiscount = app()->make(TradeModeRegistry::class)->orderAllowsDiscount($cartInfo);
 
         // 判断商品包邮和固定运费
         // 直接读取 freight_config.express 节点（新双节点格式）
@@ -570,7 +573,7 @@ class OrderComputedServices extends BaseService
                     // 包邮
                     $item['postage_price'] = 0;
                 }
-                if ($sumPrice >= $storeFreePostage) {
+                if ($allowDiscount && $sumPrice >= $storeFreePostage) {
                     $item['postage_price'] = $item['origin_postage_price'] = $storePostage = 0;
                 }
             }
@@ -585,7 +588,7 @@ class OrderComputedServices extends BaseService
             $storePostage = 0;
         } elseif ($cartInfo && $addr) {
             // $storeFreePostage > 0 时检查是否满额包邮，为 0 时表示未配置满额包邮，直接按运费模板计算
-            if ($storeFreePostage > 0 && $sumPrice >= $storeFreePostage) {//如果总价大于等于满额包邮 邮费等于0
+            if ($allowDiscount && $storeFreePostage > 0 && $sumPrice >= $storeFreePostage) {//如果总价大于等于满额包邮 邮费等于0
                 $isStoreFreePostage = true;
                 $storePostage = 0;
             } else {
@@ -716,7 +719,7 @@ class OrderComputedServices extends BaseService
                 $userService = app()->make(UserServices::class);
                 $userInfo = $userService->getUserInfo($addr['uid']);
             }
-            if ($userInfo && isset($userInfo['is_money_level']) && $userInfo['is_money_level'] > 0) {
+            if ($allowDiscount && $userInfo && isset($userInfo['is_money_level']) && $userInfo['is_money_level'] > 0) {
                 //看是否开启会员折扣奖励
                 /** @var MemberCardServices $memberCardService */
                 $memberCardService = app()->make(MemberCardServices::class);

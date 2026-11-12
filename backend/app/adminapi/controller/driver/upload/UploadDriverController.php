@@ -288,7 +288,11 @@ class UploadDriverController extends AuthController
             }
         }
         // 基本信息、启用状态、凭据及图片处理配置在同一事务中提交。
-        $this->services->update((int)$id, $updateData, $configValues ?: null);
+        // 无使用中的空间时仍允许保存基础配置，仅阻止启用云存储驱动。
+        $result = $this->services->update((int)$id, $updateData, $configValues ?: null);
+        if ($result === 'config_saved_enable_blocked') {
+            return app('json')->success('配置已保存。请先在「空间配置」添加并开启存储空间后，再启用该驱动');
+        }
 
         return app('json')->success('保存成功');
     }

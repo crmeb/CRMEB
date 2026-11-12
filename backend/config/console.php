@@ -28,7 +28,6 @@ $coreCommands = [
     'npm' => \crmeb\command\Npm::class,
     'make:module' => \crmeb\command\MakeModuleCommand::class,
     'refund:sync' => \app\command\RefundSync::class,
-    'pay:recover' => \app\command\PaymentRecover::class,
     'pay:clear-cache' => \app\command\ClearPayCache::class,
     'notice:clear' => \app\command\NoticeCache::class,
     'event:check' => \app\command\EventCheck::class,

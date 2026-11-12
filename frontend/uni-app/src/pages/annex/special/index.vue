@@ -258,6 +258,31 @@ const currentDiyData = ref({});
 const isPreview = ref(false);
 const themeId = ref(0);
 
+// 移动网络下视频播放确认（promotionList emit）；具名以便 onUnload 成对解绑
+function onConfirmVideoStatus() {
+  if (confirm_video_status.value) {
+    return;
+  }
+  confirm_video_status.value = true;
+  let flag = true;
+  // #ifdef H5
+  flag = window.self == window.top;
+  // #endif
+  if (!flag) {
+    return;
+  }
+  uni.showModal({
+    content: i18n.t(`当前使用移动网络，是否继续播放视频？`),
+    success: (res) => {
+      if (res.confirm) {
+        // 监听
+        SET_AUTOPLAY(true);
+        uni.$emit('product_video_observe');
+      }
+    },
+  });
+}
+
 onLoad((options) => {
   uni.hideTabBar();
   getOptions(options);
@@ -286,34 +311,11 @@ onLoad((options) => {
     shareInfo.value = res.data;
   });
   getCopyRight();
-  uni.$on('confirm_video_status', () => {
-    if (confirm_video_status.value) {
-      return;
-    }
-    confirm_video_status.value = true;
-    let flag = true;
-    // #ifdef H5
-    flag = window.self == window.top;
-    // #endif
-    if (!flag) {
-      return;
-    }
-    uni.showModal({
-      content: i18n.t(`当前使用移动网络，是否继续播放视频？`),
-      success: (res) => {
-        if (res.confirm) {
-          // 监听
-          SET_AUTOPLAY(true);
-          uni.$emit('product_video_observe');
-        }
-      },
-    });
-  });
+  uni.$on('confirm_video_status', onConfirmVideoStatus);
 });
 
 onUnload(() => {
-  // 清除监听
-  uni.$off('activeFn');
+  uni.$off('confirm_video_status', onConfirmVideoStatus);
 });
 
 // ---------- watch ----------

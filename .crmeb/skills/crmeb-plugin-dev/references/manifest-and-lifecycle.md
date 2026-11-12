@@ -110,7 +110,7 @@ protected function cleanData(): int
 
 约束：
 
-- 页面路径必须与 `frontend/uni-app/src/pages.json` 实际注册一致（含分包，如积分商城 `pages/points_mall`）；详情页 `param` 以页面 `onLoad` 实际读取的参数为准，不要照抄旧版字典数据。
+- 页面路径必须是端上真实可打开的路径。已经写在 `frontend/uni-app/src/pages.json` 里的存量页面（如积分商城 `pages/points_mall`、秒杀 `/pages/activity/goods_seckill/index`）保持原路径。新建插件页的路径来自 `pages-modules` 扫描结果，形如 `/pages-modules/<标识>/index`，磁盘上的 `pages.json` 不含这些路径；放入后的跳转与装修用法见 [uniapp-pages.md](uniapp-pages.md)。详情页 `param` 以页面 `onLoad` 实际读取的参数为准。
 - 分类命名沿用现有惯例（`秒杀链接`/`砍价链接`/`分销链接` 等），挂在共享父分类"营销链接"下；分类名即清理边界，不要使用与其他插件可能冲突的名称。
 - `seedPageLinks()` 按 url 全局查重：旧站点预置在共享分类（如"个人中心链接"）下的插件链接不会重复插入，因此这类链接直接写在插件自己的链接配置里即可（如砍价记录、我的推广），卸载时同样按 url 清理。
 - `cleanPageLinks()` 按 url 白名单删除链接；独有分类仅在分类下已无链接时删除，避免误删商家在插件分类下自建的链接。

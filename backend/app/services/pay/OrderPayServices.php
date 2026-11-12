@@ -11,7 +11,7 @@
 
 namespace app\services\pay;
 
-use app\services\PlatformDetector;
+use app\services\channel\PlatformDetector;
 use app\services\user\MemberOrderServices;
 use app\dao\order\OrderCenterDao;
 use crmeb\exceptions\ApiException;

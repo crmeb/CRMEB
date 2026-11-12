@@ -82,8 +82,12 @@ class NoticeServices extends BaseService
         return $this->noticeDao->listForUser($uid, $type, $page, $limit);
     }
 
-    public function getDetail(int $id): array
+    public function getDetail(int $id, int $uid = 0): array
     {
+        // 用户侧（传 uid）走可见性校验查询：已发布/在发送窗口/未过期/定向含本人（安全审计 B6.1）
+        if ($uid > 0) {
+            return $this->noticeDao->getDetailForUser($id, $uid);
+        }
         return $this->noticeDao->getById($id);
     }
 
@@ -94,6 +98,10 @@ class NoticeServices extends BaseService
 
     public function markAsRead(int $noticeId, int $uid): bool
     {
+        // 已读仅允许标记可见范围内的消息，防对任意 notice 刷已读/阅读数（安全审计 B6.1）
+        if (empty($this->noticeDao->getDetailForUser($noticeId, $uid))) {
+            return false;
+        }
         $result = $this->noticeReadDao->markAsRead($noticeId, $uid);
         if ($result) {
             $this->noticeDao->incrementReadCount($noticeId);

@@ -11,7 +11,8 @@
  * uni 官方在 @dcloudio/vite-plugin-uni 内部用同样手法拦截 scss 读取实现条件编译
  * （rewriteScssReadFileSync）；@dcloudio/* 整组锁版升级后需回归验证（见 AGENTS.md）。
  *
- * 约定（详见 frontend/uni-app/AGENTS.md「pages-modules 自动分包注册」）：
+ * 约定（详见 .crmeb/scopes/uni-app.md「pages-modules 自动分包注册」；
+ * 放入后的用法见 .crmeb/skills/crmeb-plugin-dev/references/uniapp-pages.md）：
  * - src/pages-modules/<snake_case 模块名>/ = 一个独立分包，root = pages-modules/<模块名>
  * - 模块内 .vue 自动注册为页面，路径 = /pages-modules/<模块名>/<相对路径去扩展名>；
  *   排除 components/、component/、static/ 目录及 `_` 前缀的文件/目录

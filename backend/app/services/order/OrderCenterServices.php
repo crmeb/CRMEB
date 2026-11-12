@@ -21,6 +21,7 @@ use crmeb\trade\product\ProductTypeRegistry;
 use crmeb\utils\SnowflakeIdGenerator;
 use crmeb\exceptions\ApiException;
 use app\dao\driver\pay\PayChannelDao;
+use app\services\pay\PayRecordServices;
 use app\dao\user\UserBillDao;
 use think\facade\Log;
 
@@ -304,6 +305,54 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
         ]);
         $this->clearStatCache();
         return true;
+    }
+
+    /**
+     * 取消未支付订单。用户取消和到期取消都走这里。
+     * 关单在事务外；扩展表、中台状态和库存回滚在同一事务内。
+     * @param string $orderNo 订单号
+     * @param int $operatorId 操作人，用户取消为 uid，到期取消为 0
+     * @param string $operatorType 操作来源 user 或 system
+     * @return void
+     */
+    public function cancelUnpaidOrder(string $orderNo, int $operatorId = 0, string $operatorType = 'user'): void
+    {
+        $order = $this->dao->get(['order_no' => $orderNo, 'is_del' => 0]);
+        if (!$order) {
+            throw new ApiException('订单不存在');
+        }
+        $orderArr = $order->toArray();
+        if ($orderArr['status_code'] === OrderCenter::STATUS_CANCELED) {
+            return;
+        }
+        if ((int)$orderArr['pay_status'] !== 0) {
+            throw new ApiException('订单已经支付无法取消');
+        }
+
+        app()->make(PayRecordServices::class)->closeBeforeCancel($orderNo);
+
+        $this->transaction(function () use ($orderArr, $orderNo, $operatorId, $operatorType) {
+            $locked = $this->dao->getByIdForUpdate((int)$orderArr['id']);
+            if (!$locked || (int)$locked['pay_status'] !== 0
+                || in_array($locked['status_code'], ['canceled', 'deleted', 'refunded'], true)) {
+                return;
+            }
+            $row = $locked->toArray();
+            // 不按商品类型分支。实物的 is_cancel、卡密的 send_time 留在各自适配器里。
+            OrderTypeRegistry::getAdapter((string)$row['source_type'])->advance(
+                $orderNo,
+                OrderTypeAdapterInterface::EXT_STATUS_CANCELED,
+                [],
+                ['cancel_time' => time()]
+            );
+            app()->make(OrderLifecycleServices::class)->handleCancel($row, (string)$row['status_code'], $operatorId, $operatorType);
+        });
+
+        try {
+            event('OrderCancel', [$orderArr, $operatorId]);
+        } catch (\Throwable $e) {
+            Log::error('[OrderCancel] 取消后事件失败 order_no=' . $orderNo . ' ' . $e->getMessage());
+        }
     }
 
     /**
@@ -613,6 +662,12 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
 
         // 加载订单完成态权益扩展数据（积分奖励/领券入口，系统内置能力，中台自行组装）
         $this->loadOrderRewardExtension($detail);
+
+        $detail['canceled_refund_pending'] = 0;
+        if (($detail['status_code'] ?? '') === 'canceled' && !empty($detail['order_no'])) {
+            $pendingRefund = app()->make(PayRecordServices::class)->pendingCanceledRefundMap([(string)$detail['order_no']]);
+            $detail['canceled_refund_pending'] = $pendingRefund[(string)$detail['order_no']] ?? 0;
+        }
 
         // 如果没有任何插件注入数据，移除 extend 字段
         if (empty($detail['extend'])) {
@@ -2929,6 +2984,19 @@ class OrderCenterServices extends BaseService implements OrderCenterSyncInterfac
             $item['is_after_sale'] = $item['after_sale']['has_after_sale'];
             $item['is_after_sale_processing'] = $item['after_sale']['is_processing'];
         }
+        unset($item);
+
+        $canceledNos = [];
+        foreach ($list as $item) {
+            if (($item['status_code'] ?? '') === 'canceled') {
+                $canceledNos[] = $item['order_no'];
+            }
+        }
+        $pendingRefund = app()->make(PayRecordServices::class)->pendingCanceledRefundMap($canceledNos);
+        foreach ($list as &$item) {
+            $item['canceled_refund_pending'] = $pendingRefund[$item['order_no']] ?? 0;
+        }
+        unset($item);
 
         // 通过事件机制，允许扩展模块注入额外数据
         $eventData = ['list' => &$list];

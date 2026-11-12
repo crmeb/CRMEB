@@ -14,7 +14,7 @@ CRMEB v8 电商系统，三端一体：
 
 | 区域 | 目录 | 技术栈 |
 | --- | --- | --- |
-| 后端 | `backend/` | PHP 8.2-8.4 + ThinkPHP 8 + MySQL 5.7+（推荐 8.0）+ Redis，多应用入口 `adminapi` / `api` |
+| 后端 | `backend/` | PHP 8.2-8.4（默认 8.4）+ ThinkPHP 8 + MySQL 5.7+（推荐 8.0）+ Redis，多应用入口 `adminapi` / `api` |
 | 管理后台 | `frontend/admin/` | Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4 + Vite 5（纯 JS） |
 | 移动端 | `frontend/uni-app/` | uni-app 官方 CLI（Vite 5）+ Vue 3 + Pinia + Sass |
 
@@ -41,6 +41,7 @@ CRMEB v8 电商系统，三端一体：
 5. **接口契约变更要全链路同步**：后端路由/Controller/Service/DAO/Model、`frontend/admin/src/api`、`frontend/uni-app/src/api`、菜单权限、安装/升级数据。同步清单见 [.crmeb/rules/前端规范.md](rules/前端规范.md) 第三节。
 6. **Git 提交遵循 [.crmeb/rules/提交规范.md](rules/提交规范.md)**：中文描述 + 英文类型前缀、按主题分批提交、禁止提交密钥与本地环境文件。
 7. **插件二开零侵入**：插件/驱动/业务模块只能落 `backend/modules/`、`backend/driver/` 自有目录，禁止修改系统表与框架代码（`app/`、`crmeb/`、核心前端、安装 SQL、composer/config），扩展只走扩展点/事件/注册中心/Installer 标准设施。红线细则见 [.crmeb/rules/插件开发规范.md](rules/插件开发规范.md)。
+8. **编码克制**：防过度防御（极低概率边界须先讲清概率与代码量并经同意）、入口单次校验、拒绝提前抽象、控制复杂度（不滥用 try/catch、不强行拆函数）。细则见 [.crmeb/rules/编码克制规范.md](rules/编码克制规范.md)。
 
 ## 规则索引（`.crmeb/rules/`）
 
@@ -51,6 +52,7 @@ CRMEB v8 电商系统，三端一体：
 | [架构规范详解.md](rules/架构规范详解.md) | 目录结构、模块注册、消息通知、驱动后台、路由自动加载、菜单路径 | 涉及架构/扩展点时 |
 | [插件开发规范.md](rules/插件开发规范.md) | 插件二开强制边界：禁改系统表与框架代码、自有目录与自有表、扩展方式、卸载可还原、插件包与升级包交付（upgrades 脚本链、版本双源一致、自动归档）、违规判定 | 开发/修改任何插件、驱动、业务模块及配套前端资源前；发布插件包/升级包时 |
 | [代码规范.md](rules/代码规范.md) | 控制器命名、Services/DAO 属性注入、路由定义格式 | 写后端代码时 |
+| [编码克制规范.md](rules/编码克制规范.md) | 防过度防御、入口单次校验、拒绝提前抽象、控制复杂度 | 写任何业务代码时 |
 | [事件规范.md](rules/事件规范.md) | 事件机制与全量事件名清单 | 新增/修改事件时 |
 | [订单中台规范.md](rules/订单中台规范.md) | 订单中台架构规则与订单流程 | 订单相关开发 |
 | [前端规范.md](rules/前端规范.md) | 管理端/移动端强制红线、接口契约变更全链路同步清单 | 任何前端改动、接口契约变更时 |
@@ -74,11 +76,11 @@ CRMEB v8 电商系统，三端一体：
 | 技能 | 何时用 |
 | --- | --- |
 | `crmeb-project-dev` | 项目框架、`backend/app`、`backend/crmeb`、`backend/driver`、共享服务、API、数据库变更、跨端功能 |
-| `crmeb-plugin-dev` | 可安装插件、驱动与 `backend/modules/` 业务模块：`plugin.json`、Installer 生命周期、菜单、种子、打包、admin UMD 资源、领域归属、Handler 注册、事件路由、定时任务、消息通知、MCP 工具扩展 |
+| `crmeb-plugin-dev` | 可安装插件、驱动与 `backend/modules/` 业务模块：先读 `references/catalog/00-总览-类型路由与边界.md` 再读对应 `01-驱动` / `02-模块` 分册；`plugin.json`、Installer 生命周期、菜单、种子、打包、admin UMD 资源、uni-app `pages-modules` 独立页放入后的跳转与装修（`references/uniapp-pages.md`）、领域归属、Handler 注册、事件路由、定时任务、消息通知、MCP 工具扩展 |
 | `crmeb-order-dev` | 订单开发手册：交易模式、产品类型与订单中台，订单全生命周期（创建/支付/履约/收货/评价/取消/售后退款）开发说明 | 订单、交易模式、支付、售后、订单状态相关开发 |
 | `crmeb-admin-dev` | 管理后台页面/组件/接口/路由/插件页面开发 |
 | `crmeb-admin-ui` | 管理端 UI 规范：设计令牌、布局、页面骨架、组件与交互、深色模式、评审清单 |
-| `crmeb-uniapp-dev` | 移动端 `frontend/uni-app` 页面、API 封装、条件编译、分包、动态渲染 |
+| `crmeb-uniapp-dev` | 移动端 `frontend/uni-app` 页面、API 封装、条件编译、分包、`pages-modules` 插件页、动态渲染 |
 | `crmeb-dev` | 二开总览与流程导航（含 `references/` 分类子文档，如创建插件/驱动/产品类型/用户端页面） |
 | `project-standard-bootstrap` | 项目统一工程规范引导：审计/初始化/修复 `.crmeb` 规则骨架、工具入口、目录契约与文档体系（模板类技能，仅按需用于规范化治理） | 「项目规范化」「工程规范审计」「新项目初始化」 |
 

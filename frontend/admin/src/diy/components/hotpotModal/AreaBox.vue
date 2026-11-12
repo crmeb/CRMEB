@@ -38,7 +38,7 @@
         <template #footer
           ><span class="dialog-footer">
             <el-button @click.stop="editBoxShow = false">取 消</el-button>
-            <el-button type="primary" @click.stop="addURL">确 定</el-button>
+            <el-button v-db-click type="primary" @click.stop="addURL">确 定</el-button>
           </span></template
         >
       </el-dialog>

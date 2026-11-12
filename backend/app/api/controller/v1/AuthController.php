@@ -143,7 +143,7 @@ class AuthController
         if (!$verifyCode) {
             return app('json')->fail('请先获取验证码');
         }
-        if (substr($verifyCode, 0, 6) != $captcha) {
+        if (!is_string($captcha) || !hash_equals(substr((string)$verifyCode, 0, 6), $captcha)) {
             return app('json')->fail('验证码错误');
         }
         if (md5($password) == md5('123456')) {
@@ -155,6 +155,8 @@ class AuthController
         $registerStatus = $this->services->register($account, $password, $spread, $user_type);
 
         if ($registerStatus) {
+            // 验证码校验通过即销毁，防止有效期内被重复用于注册/改密（安全审计 A6）
+            CacheService::delete('code_' . $account);
             return app('json')->success('注册成功');
         }
         return app('json')->fail('注册失败');

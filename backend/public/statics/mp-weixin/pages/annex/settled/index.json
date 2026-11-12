@@ -3,6 +3,6 @@
   "usingComponents": {
     "mp-html": "../../../components/mp-html/mp-html",
     "authorize": "../../../components/Authorize",
-    "verify": "../components/verify/verify"
+    "verify": "../../../components/Verify/index"
   }
 }

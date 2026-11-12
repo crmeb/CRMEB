@@ -49,6 +49,7 @@ const resData = ref({});
 // 原代码未在 data 声明、直接挂到实例上的字段
 const pageOptions = ref({});
 const orderId = ref('');
+const friendKey = ref('');
 const couponsHidden = ref(false);
 const order_pay_info = ref({});
 
@@ -69,6 +70,7 @@ onLoad((options) => {
 		url: 1
 	});
 	orderId.value = options.order_id;
+	friendKey.value = options.key || options.friend_key || '';
 });
 onShow(() => {
 	if (isLogin.value) {
@@ -80,7 +82,8 @@ onShow(() => {
 
 // ---------- methods ----------
 function getDetail() {
-	friendDetail(orderId.value).then(res => {
+	friendDetail(orderId.value, friendKey.value).then(res => {
+		resData.value = res.data.info
 		if (resData.value.paid == 0) {
 			return util.Tips({
 				title: i18n.t(`该订单暂未支付`)
@@ -89,8 +92,6 @@ function getDetail() {
 				url: 1
 			});
 		}
-		resData.value = res.data.info
-
 	})
 }
 function openTap() {

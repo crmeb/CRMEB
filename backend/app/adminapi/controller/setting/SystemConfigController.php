@@ -16,6 +16,7 @@ use app\services\system\config\SystemConfigServices;
 use app\services\system\config\SystemConfigTabServices;
 use app\services\system\SystemPemServices;
 use crmeb\services\CacheService;
+use crmeb\utils\SafeZip;
 use think\facade\App;
 
 /**
@@ -404,17 +405,36 @@ class SystemConfigController extends AuthController
             return app('json')->fail('金额最多两位小数');
         }
 
-        if (isset($post['weixin_ckeck_file'])) {
-            $from = public_path() . $post['weixin_ckeck_file'];
-            $to = public_path() . array_reverse(explode('/', $post['weixin_ckeck_file']))[0];
-            @copy($from, $to);
+        // 仅允许从 public 目录内已上传文件复制到 Web 根固定位置，拒绝 ../ 路径穿越
+        if (!empty($post['weixin_ckeck_file'])) {
+            try {
+                $from = SafeZip::resolveUnder(public_path(), (string)$post['weixin_ckeck_file']);
+            } catch (\Throwable $e) {
+                return app('json')->fail('微信校验文件路径非法');
+            }
+            $name = basename($from);
+            if ($name === '' || $name === '.' || $name === '..') {
+                return app('json')->fail('微信校验文件名非法');
+            }
+            $to = rtrim(public_path(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $name;
+            if (!@copy($from, $to)) {
+                return app('json')->fail('微信校验文件复制失败');
+            }
         }
-        if (isset($post['ico_path'])) {
-            $from = public_path() . $post['ico_path'];
+        if (!empty($post['ico_path'])) {
+            try {
+                $from = SafeZip::resolveUnder(public_path(), (string)$post['ico_path']);
+            } catch (\Throwable $e) {
+                return app('json')->fail('ICO 图标路径非法');
+            }
+            if (strtolower(pathinfo($from, PATHINFO_EXTENSION)) !== 'ico') {
+                return app('json')->fail('ICO 图标必须是 .ico 文件');
+            }
             $toAdmin = public_path('admin') . 'favicon.ico';
-            $toPublic = public_path() . 'favicon.ico';
-            @copy($from, $toAdmin);
-            @copy($from, $toPublic);
+            $toPublic = rtrim(public_path(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'favicon.ico';
+            if (!@copy($from, $toAdmin) || !@copy($from, $toPublic)) {
+                return app('json')->fail('ICO 图标复制失败');
+            }
         }
         if (isset($post['sign_give_point'])) {
             if (!is_int($post['sign_give_point']) || $post['sign_give_point'] < 0) {
@@ -543,11 +563,20 @@ class SystemConfigController extends AuthController
         if (strstr($path, 'http://') || strstr($path, 'https://')) {
             $path = parse_url($path)['path'] ?? '';
         }
-        $path = root_path('runtime/pem') . ltrim($path, '/');
-        if (!file_exists($path)) {
-            $path = public_path('uploads') . ltrim($path, '/');
+        $path = ltrim(str_replace('\\', '/', $path), '/');
+        // realpath 归一化后限定 runtime/pem 与 public/uploads 两个白名单根目录内，防 ../../ 穿越（安全审计 C3）
+        foreach ([root_path('runtime/pem'), public_path('uploads')] as $root) {
+            $rootReal = realpath($root);
+            if ($rootReal === false) {
+                continue;
+            }
+            $candidate = realpath($root . $path);
+            if ($candidate !== false && is_file($candidate)
+                && strpos($candidate, $rootReal . DIRECTORY_SEPARATOR) === 0) {
+                return $candidate;
+            }
         }
-        return $path;
+        throw new \RuntimeException('证书文件路径不合法或文件不存在');
     }
 
     /**

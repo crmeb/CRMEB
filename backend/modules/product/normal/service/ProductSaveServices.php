@@ -519,7 +519,11 @@ class ProductSaveServices extends BaseService
 
         foreach ($detail as $index => $item) {
             $detailValues = $item['detail'] ?? [];
-            $suk = is_array($detailValues) ? json_encode($detailValues) : (string) $detailValues;
+            // 必须 UNESCAPED_UNICODE：默认 \uXXXX 会把中文规格膨胀数倍，易超出 suk 字段长度被截断，
+            // 回读 json_decode 失败后会落到「规格-默认」。
+            $suk = is_array($detailValues)
+                ? (string)json_encode($detailValues, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                : (string) $detailValues;
             $image = $item['pic'] ?? $data['image'] ?? '';
             $detailKey = is_array($detailValues) ? $this->normalizeSkuDetailKey($detailValues) : '';
             $uniqueCode = $existingSkuMap[$detailKey] ?? '';

@@ -42,6 +42,9 @@ return [
         // ============ 管理员事件 ============
         'AdminLogin' => [\app\listener\admin\AdminLoginListener::class],
 
+        // ============ 一号通短信 ============
+        'SmsBalanceCheck' => [\app\listener\sms\SmsBalanceCheckListener::class], //一号通短信余额检查事件
+
         // ============ 注册中心事件（应用启动阶段触发，各监听器向对应 Registry 注册） ============
         'OrderTypeRegister' => [\app\listener\system\OrderTypeRegisterListener::class],
         // 统一长连接网关服务注册：返回实现 WsServiceHandlerInterface 的处理器类名，插件可在各自 event.php 追加监听

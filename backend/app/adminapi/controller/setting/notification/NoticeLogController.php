@@ -73,13 +73,8 @@ class NoticeLogController extends AuthController
         if (!$id) {
             return app('json')->fail('参数错误');
         }
-        $info = $this->services->getDetail($id);
-        if (empty($info)) {
-            return app('json')->fail('记录不存在');
-        }
-
-        // 日志只有渲染后的内容，没有原始变量；重新执行会发送残缺信息。
-        return app('json')->fail('该日志未保存原始变量，无法安全重试');
+        $this->services->retry($id);
+        return app('json')->success('重试发送成功');
     }
 
     public function clean()

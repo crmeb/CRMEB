@@ -131,11 +131,12 @@ abstract class BaseOrderTypeAdapter implements OrderTypeAdapterInterface
      *
      * @param string $orderNo  订单号
      * @param string $extStatus 目标扩展状态名
-     * @param array $extra  额外数据（传递给 onEnter 回调）
+     * @param array $extra  扩展表附加字段，同时传给 onEnter
+     * @param array $centerExtra 中台附加字段，只写入订单中台
      * @return void
      * @throws \RuntimeException 当 extStatus 未在 STATUS_TREE 中定义时
      */
-    public function advance(string $orderNo, string $extStatus, array $extra = []): void
+    public function advance(string $orderNo, string $extStatus, array $extra = [], array $centerExtra = []): void
     {
         $node = $this->extStatusMap[$extStatus] ?? null;
         if (!$node) {
@@ -152,7 +153,7 @@ abstract class BaseOrderTypeAdapter implements OrderTypeAdapterInterface
         }
 
         // 3. 同步中台
-        $this->syncCenterAfterAdvance($orderNo, $extStatus);
+        $this->syncCenterAfterAdvance($orderNo, $extStatus, $centerExtra);
     }
 
     /**
@@ -208,8 +209,9 @@ abstract class BaseOrderTypeAdapter implements OrderTypeAdapterInterface
      * 推进后同步中台状态
      * @param string $orderNo
      * @param string $extStatus
+     * @param array $centerExtra 中台附加字段
      */
-    protected function syncCenterAfterAdvance(string $orderNo, string $extStatus): void
+    protected function syncCenterAfterAdvance(string $orderNo, string $extStatus, array $centerExtra = []): void
     {
         $node       = $this->extStatusMap[$extStatus];
         $centerCode = $node['center_status'] ?? '';
@@ -218,7 +220,7 @@ abstract class BaseOrderTypeAdapter implements OrderTypeAdapterInterface
         // 通过接口契约反转依赖，避免核心层反向依赖 app 层
         /** @var OrderCenterSyncInterface $centerServices */
         $centerServices = app()->make(OrderCenterSyncInterface::class);
-        $centerServices->syncStatus($orderNo, $centerCode);
+        $centerServices->syncStatus($orderNo, $centerCode, $centerExtra);
     }
 
     // ======================== 按钮能力 ========================

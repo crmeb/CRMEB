@@ -37,6 +37,7 @@ description: 开发和重构 CRMEB v8 项目基础框架、ThinkPHP 后端应用
 - 普通业务数据库访问必须经 DAO/Model；直接调用 `Db::table()`/`Db::name()` 仅限 Installer、迁移和框架生命周期代码 —— [.crmeb/rules/代码规范.md](../../rules/代码规范.md) 第三节
 - 后端事件使用业务字符串 key，例如 `event('OrderPaySuccess', [...])`；不得使用监听器类名或类常量 —— [.crmeb/rules/事件规范.md](../../rules/事件规范.md) 2.1
 - 控制器类名和文件名以 `Controller` 结尾；控制器方法使用 camelCase —— [.crmeb/rules/代码规范.md](../../rules/代码规范.md) 〇 / 一
+- 防过度防御、入口单次校验、拒绝提前抽象、控制复杂度 —— [.crmeb/rules/编码克制规范.md](../../rules/编码克制规范.md)
 - 新增 PHP 类及 public/protected 方法遵循项目的中文 PHPDoc 规范 —— [.crmeb/rules/架构规范.md](../../rules/架构规范.md)「代码注释规范」
 - 除非任务明确要求，不得修改 `backend/.env`、`backend/.constant`、凭据、生成的 `runtime/`、前端构建产物或锁文件 —— [.crmeb/rules/提交规范.md](../../rules/提交规范.md) 禁止入库清单
 

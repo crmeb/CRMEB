@@ -32,6 +32,20 @@ class JwtAuth
     protected $token;
 
     /**
+     * 获取 JWT 签名密钥（.env 的 APP_KEY）
+     * 密钥缺失时直接抛异常拒绝签发/验签，杜绝弱密钥兜底被用于伪造身份（安全审计 A2）
+     * @return string
+     */
+    public static function secretKey(): string
+    {
+        $key = (string)Env::get('app.app_key', '');
+        if ($key === '') {
+            throw new \RuntimeException('APP_KEY 未配置：请在 .env 中设置随机 APP_KEY 后重启');
+        }
+        return $key;
+    }
+
+    /**
      * 获取token
      * @param int|string $id
      * @param string $type
@@ -51,7 +65,7 @@ class JwtAuth
             'exp' => $exp_time,
         ];
         $params['jti'] = compact('id', 'type');
-        $token = JWT::encode($params, Env::get('app.app_key', 'default'));
+        $token = JWT::encode($params, self::secretKey());
 
         return compact('token', 'params');
     }
@@ -76,7 +90,7 @@ class JwtAuth
     {
         JWT::$leeway = 60;
 
-        JWT::decode($this->token, Env::get('app.app_key', 'default'), array('HS256'));
+        JWT::decode($this->token, self::secretKey(), array('HS256'));
 
         $this->token = null;
     }

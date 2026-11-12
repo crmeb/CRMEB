@@ -96,7 +96,7 @@
       <template #footer
         ><span>
           <el-button @click="uploadVisible = false">取消</el-button>
-          <el-button type="primary" :loading="uploading" @click="handleUpload">
+          <el-button v-db-click type="primary" :loading="uploading" @click="handleUpload">
             {{ uploading ? '上传中...' : '确定上传' }}
           </el-button>
         </span></template

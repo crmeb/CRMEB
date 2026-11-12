@@ -131,7 +131,8 @@ class NoticeController
     public function detail(Request $request, int $id)
     {
         $uid = (int) $request->uid();
-        $result = $this->noticeService->getDetail($id);
+        // 带当前 uid 走可见性校验：未发布/未到发送时间/过期/他人定向消息一律不可读（安全审计 B6.1）
+        $result = $this->noticeService->getDetail($id, $uid);
         if (!empty($result)) {
             $this->noticeService->markAsRead($id, $uid);
         }

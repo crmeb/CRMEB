@@ -14,7 +14,7 @@ namespace app\services\user;
 use crmeb\basic\BaseService;
 use app\dao\user\UserDao;
 use app\services\activity\coupon\StoreCouponUserServices;
-use app\services\PlatformDetector;
+use app\services\channel\PlatformDetector;
 use app\services\diy\DiyServices;
 use app\services\user\MemberOrderServices;
 use app\services\order\OrderCenterServices;

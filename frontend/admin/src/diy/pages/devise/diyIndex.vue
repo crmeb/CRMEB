@@ -1,253 +1,78 @@
 <template>
   <div class="diy-page">
-    <!-- 旧 Header 已迁移至新编辑模块顶部，移除该块 -->
     <el-card :bordered="false" shadow="never">
       <div class="diy-wrapper" :style="'height:' + clientHeight + 'px;'">
-        <!-- 左侧 -->
-        <div class="left">
-          <div class="wrapper" :style="'height:' + clientHeight + 'px;'">
-            <div class="list" v-for="(item, index) in leftMenu" :key="index">
-              <div class="tips" @click="item.isOpen = !item.isOpen">
-                {{ item.title }}
-                <div class="iconfont iconyou" v-if="!item.isOpen"></div>
-                <div class="iconfont iconxia" v-else></div>
-              </div>
-              <!-- 拖拽组件 -->
-              <draggable
-                class="dragArea list-group"
-                :list="item.list"
-                :group="{ name: 'people', pull: 'clone', put: false }"
-                :clone="cloneDog"
-                dragClass="dragClass"
-                filter=".search , .navbar , .homeComb , .service"
-                :item-key="getDraggableItemKey"
-              >
-                <template #item="{ element }">
-                  <div
-                    class="list-group-item"
-                    :class="{
-                      search: element.cname == '搜索框',
-                      navbar: element.cname == '选项卡',
-                      homeComb: element.cname == '轮播搜索',
-                      service: element.cname == '悬浮按钮',
-                    }"
-                    @click="addDom(element, 1)"
-                    v-show="item.isOpen"
-                  >
-                    <div>
-                      <div class="position" style="display: none">释放鼠标将组建添加到此处</div>
-                      <svg class="conter iconfont icon svg-icon" aria-hidden="true">
-                        <use :xlink:href="element.icon"></use>
-                      </svg>
-                      <p class="conter">{{ element.cname }}</p>
-                    </div>
-                  </div>
-                </template>
-              </draggable>
-            </div>
-          </div>
-        </div>
-        <!-- 中间自定义配置移动端页面 -->
-        <div class="wrapper-con">
-          <div class="content">
-            <div class="contxt">
-              <div class="overflowy">
-                <div class="picture"><img src="@/assets/images/electric.png" /></div>
-                <div
-                  v-if="pageType == 'home'"
-                  class="page-title"
-                  :class="{ on: activeIndex == -100 }"
-                  @click="showTitle"
-                >
-                  {{ titleTxt }}
-                  <div class="delete-box"></div>
-                  <div class="handle"></div>
-                </div>
-              </div>
-              <div class="scrollCon" :style="'height:' + rollHeight + 'px;'">
-                <div style="width: 460px; margin: 0 auto">
-                  <div
-                    class="scroll-box"
-                    :class="
-                      picTxt && tabValTxt == 2
-                        ? 'fullsize noRepeat'
-                        : picTxt && tabValTxt == 1
-                        ? 'repeat ysize'
-                        : 'noRepeat ysize'
-                    "
-                    :style="
-                      'background-color:' +
-                      (colorTxt ? colorPickerTxt : '') +
-                      ';background-image: url(' +
-                      (picTxt ? picUrlTxt : '') +
-                      ');min-height:' +
-                      rollHeight +
-                      'px;'
-                    "
-                    id="imgContainer"
-                  >
-                    <draggable
-                      class="dragArea list-group"
-                      :list="mConfig"
-                      group="people"
-                      @change="log"
-                      filter=".top"
-                      :move="onMove"
-                      animation="300"
-                      :item-key="getDraggableItemKey"
-                    >
-                      <template #item="{ element: item, index: key }">
-                        <div
-                          class="mConfig-item"
-                          :class="{
-                            on: activeIndex == key,
-                            top: item.name == 'search_box' || item.name == 'nav_bar',
-                            hide: defaultArrays[item.num] && defaultArrays[item.num].isHide,
-                          }"
-                          @click.stop="bindconfig(item, key)"
-                          :style="
-                            colorTxt
-                              ? 'background-color:' + colorPickerTxt + ';'
-                              : 'background-color: rgba(255,255,255, 0);'
-                          "
-                        >
-                          <!-- 后端判定不可用的组件仅渲染占位提示，不渲染原组件；配置数据保留在 store 中，保存时原样输出 -->
-                          <div v-if="isCompDisabled(item)" class="disabled-comp-tip">
-                            <span>「{{ item.cname }}」当前不可用，数据已保留</span>
-                          </div>
-                          <component
-                            v-else
-                            :is="resolveComp(item.name)"
-                            :configData="propsObj"
-                            :index="key"
-                            :num="item.num"
-                            :colorStyle="colorStyle"
-                          ></component>
-                          <div class="delete-box">
-                            <div class="handleType">
-                              <div
-                                class="iconfont"
-                                :class="
-                                  defaultArrays[item.num] && defaultArrays[item.num].isHide
-                                    ? 'iconyincang'
-                                    : 'iconxianshi'
-                                "
-                                @click.stop="bindHide(item)"
-                              ></div>
-                              <div class="iconfont iconshanchu3" @click.stop="bindDelete(item, key)"></div>
-                              <div class="iconfont icona-fuzhi1" @click.stop="bindAddDom(item, 0, key)"></div>
-                              <div
-                                class="iconfont iconshang"
-                                :class="key === 0 ? 'on' : ''"
-                                @click.stop="movePage(item, key, 1)"
-                              ></div>
-                              <div
-                                class="iconfont iconxia"
-                                :class="key === mConfig.length - 1 ? 'on' : ''"
-                                @click.stop="movePage(item, key, 0)"
-                              ></div>
-                            </div>
-                          </div>
-                          <div class="handle"></div>
-                          <div class="delete-name" :class="{ on: activeIndex == key }">
-                            <span
-                              v-if="
-                                item.name == 'home_custom_component' &&
-                                defaultArrays[item.num] &&
-                                defaultArrays[item.num].selectType
-                              "
-                              class="custom-badge"
-                              >{{ getBadgeText(defaultArrays[item.num].selectType.activeValue) }}</span
-                            >
-                            {{ item.cname }}
-                          </div>
-                        </div>
-                      </template>
-                    </draggable>
-                  </div>
-                </div>
-              </div>
-              <div class="overflowy" v-if="pageType == 'home' && !isMicroPage">
-                <div
-                  class="page-foot"
-                  @click="showFoot"
-                  :class="{ on: activeIndex == -101 }"
-                  :style="pageFooterType == 1 ? 'bottom:' + (50 + pageFooterBottom) + 'px' : ''"
-                >
-                  <footPage></footPage>
-                  <div class="delete-box"></div>
-                  <div class="handle"></div>
-                </div>
-              </div>
-              <div class="overflowy" v-if="pageType == 'detail'">
-                <div class="page-foot" @click="showBottomMenu" :class="{ on: activeIndex == -102 }">
-                  <home_bottom_menu :colorStyle="colorStyle"></home_bottom_menu>
-                  <div class="delete-box"></div>
-                  <div class="handle"></div>
-                </div>
-              </div>
-              <div class="defaultData" v-if="pageId !== 0">
-                <!-- <div class="data" @click="setmoren">设置默认</div>
-                <div class="data" @click="getmoren">恢复默认</div> -->
-                <el-button class="data" @click="showTitle">页面设置</el-button>
-                <el-button class="data" @click="nameModal = true">另存模板</el-button>
-                <el-button class="data" @click="reast">重置</el-button>
-                <el-button v-if="!isMicroPage" class="data" @click="saveCover">保存为封面</el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- 右侧页面设置 -->
-        <div class="right-box">
-          <div class="mConfig-item" style="background-color: #fff" v-for="(item, key) in rConfig" :key="key">
-            <!-- <div class="title-bar">{{ item.cname }}</div> -->
-            <component
-              v-if="canRenderRightConfig(item)"
-              :is="resolveComp(item.configName)"
-              :key="getRightConfigKey(item)"
-              @config="config"
-              :activeIndex="activeIndex"
-              :num="item.num"
-              :index="key"
-            ></component>
-          </div>
-        </div>
+        <DiyLeftPalette
+          :left-menu="leftMenu"
+          :height="clientHeight"
+          :clone-dog="cloneDog"
+          @pick="(el) => addDom(el, 1)"
+        />
+        <DiyCanvasPreview
+          :m-config="mConfig"
+          :roll-height="rollHeight"
+          :page-type="pageType"
+          :is-micro-page="isMicroPage"
+          :page-id="pageId"
+          :title-txt="titleTxt"
+          :active-index="activeIndex"
+          :color-style="colorStyle"
+          :props-obj="propsObj"
+          :default-arrays="defaultArrays"
+          :color-txt="colorTxt"
+          :color-picker-txt="colorPickerTxt"
+          :pic-txt="picTxt"
+          :tab-val-txt="tabValTxt"
+          :pic-url-txt="picUrlTxt"
+          :page-footer-type="pageFooterType"
+          :page-footer-bottom="pageFooterBottom"
+          :resolve-comp="resolveComp"
+          :is-comp-disabled="isCompDisabled"
+          :get-badge-text="getBadgeText"
+          :on-move="onMove"
+          @drag-change="log"
+          @select-title="showTitle"
+          @select-foot="showFoot"
+          @select-bottom-menu="showBottomMenu"
+          @select-item="bindconfig"
+          @hide-item="bindHide"
+          @delete-item="bindDelete"
+          @duplicate-item="bindAddDom"
+          @move-item="movePage"
+          @open-page-settings="showTitle"
+          @open-save-modal="nameModal = true"
+          @reset="reast"
+          @save-cover="saveCover"
+        />
+        <DiyRightConfigPanel
+          :items="rConfig"
+          :active-index="activeIndex"
+          :resolve-comp="resolveComp"
+          :get-right-config-key="getRightConfigKey"
+          :can-render-right-config="canRenderRightConfig"
+          @config="config"
+        />
       </div>
     </el-card>
-    <el-dialog v-model="modal" width="540px" title="预览">
-      <div>
-        <div v-viewer class="acea-row row-around code">
-          <div class="acea-row row-column-around row-between-wrapper">
-            <div class="QRpic" ref="qrCodeUrl"></div>
-            <span class="mt10">公众号二维码</span>
-          </div>
-          <div class="acea-row row-column-around row-between-wrapper">
-            <div class="QRpic">
-              <img v-if="qrcodeImg" v-lazy="qrcodeImg" />
-              <span v-else class="qr-empty">小程序二维码无法生成<br />请检查微信小程序配置</span>
-            </div>
-            <span class="mt10">小程序二维码</span>
-          </div>
-        </div>
-      </div>
-    </el-dialog>
-    <el-dialog v-model="nameModal" width="470px" title="设置模板名称" :show-close="true">
-      <el-input v-model="saveName" placeholder="请输入模板名称"></el-input>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="nameModal = false">取 消</el-button>
-          <el-button type="primary" v-db-click @click="saveModal">确 定</el-button>
-        </span></template
-      >
-    </el-dialog>
+    <DiyPreviewDialog ref="previewDialogRef" v-model="modal" :qrcode-img="qrcodeImg" />
+    <DiySaveNameDialog v-model="nameModal" v-model:save-name="saveName" @confirm="saveModal" />
   </div>
 </template>
-
 <script setup>
 import __asset_foot_005_0 from '@diy/assets/images/foot-005.png';
 import __asset_foot_006_1 from '@diy/assets/images/foot-006.png';
 
-import { ref, reactive, computed, watch, inject, nextTick, onBeforeUnmount, onUnmounted } from 'vue';
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onUnmounted,
+  getCurrentInstance,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -264,17 +89,31 @@ import {
   getDiyComponentStatus,
 } from '@diy/api';
 import { fileUpload } from '@/api/setting';
-import { getDraggableItemKey } from '@/utils/draggableKey';
-import draggable from 'vuedraggable';
-import mPage from '@diy/components/mobilePage/index.js';
+import mPage, { registerDiyMobilePageGlobals } from '@diy/components/mobilePage/index.js';
 import mConfigCom from '@diy/components/mobileConfig/index.js';
-import home_bottom_menu from '@diy/components/mobilePage/home_bottom_menu.vue';
-
-import footPage from '@diy/components/pagesFoot';
 import html2canvas from 'html2canvas';
 import QRCode from '@/vendor/qrcodejs2';
 import Setting from '@/setting';
 import { useMobildConfigStore } from '@diy/store/mobildConfig';
+import DiyLeftPalette from './components/DiyLeftPalette.vue';
+import DiyCanvasPreview from './components/DiyCanvasPreview.vue';
+import DiyRightConfigPanel from './components/DiyRightConfigPanel.vue';
+import DiyPreviewDialog from './components/DiyPreviewDialog.vue';
+import DiySaveNameDialog from './components/DiySaveNameDialog.vue';
+import {
+  objToArr,
+  swapArray,
+  getBadgeText,
+  cloneThemeValue,
+  cloneThemeComponent,
+  removeThemeComponent,
+  warnDuplicateDefaultNames,
+} from './utils/diyHelpers';
+import {
+  convertImagesToBase64,
+  preserveCustomTextBackgrounds,
+  flattenMonochromeGradients,
+} from './utils/coverScreenshotDom';
 
 defineOptions({ name: 'index.vue' });
 
@@ -283,6 +122,7 @@ const setDirty = inject('setDirty');
 
 const route = useRoute();
 const router = useRouter();
+registerDiyMobilePageGlobals(getCurrentInstance().appContext.app);
 const mobildConfigStore = useMobildConfigStore();
 
 const {
@@ -364,7 +204,7 @@ const diyStatus = ref(0);
 const nameModal = ref(false);
 const saveName = ref('');
 const coverUrl = ref(''); // 原 Options 里未声明的动态属性（saveCover 写入、diySaveDate 读取），显式声明
-const qrCodeUrl = ref(null);
+const previewDialogRef = ref(null);
 
 // 画布/右侧面板 :is 兜底与挂载时机防御（参照 single_admin 迁移修复）
 const allComponents = { ...mPage, ...mConfigCom };
@@ -421,7 +261,7 @@ getDiyComponentStatus()
     availableComponents.value = {};
     arraySort();
   });
-warnDuplicateDefaultNames();
+warnDuplicateDefaultNames(lConfig.value);
 let imgList = {
   imgList: [__asset_foot_005_0, __asset_foot_006_1],
   name: '购物车',
@@ -483,154 +323,6 @@ function exportView() {
   });
 }
 function importView() {}
-// 将远程图片（OSS等）转为 base64，绕过 html2canvas 跨域限制
-async function convertImagesToBase64(container) {
-  const imgs = container.querySelectorAll('img');
-  const tasks = Array.from(imgs).map((img) => {
-    return new Promise((resolve) => {
-      const src = img.getAttribute('src');
-      if (!src || src.startsWith('data:')) {
-        resolve();
-        return;
-      }
-      // 给 URL 追加时间戳，避免浏览器缓存导致丢失 CORS 响应头
-      const separator = src.includes('?') ? '&' : '?';
-      const cacheBustUrl = `${src}${separator}_t=${Date.now()}`;
-      fetch(cacheBustUrl, { mode: 'cors', cache: 'no-store' })
-        .then((res) => res.blob())
-        .then((blob) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            img.setAttribute('src', reader.result);
-            resolve();
-          };
-          reader.onerror = () => resolve(); // 转换失败则跳过，不阻塞
-          reader.readAsDataURL(blob);
-        })
-        .catch(() => resolve()); // 请求失败则跳过
-    });
-  });
-  await Promise.all(tasks);
-}
-
-// 将超级组件文本背景移动到独立背景层，避免 html2canvas 绘制背景时覆盖文本或漏掉背景。
-// 返回恢复函数，确保仅影响封面截图期间的临时 DOM。
-function preserveCustomTextBackgrounds(container) {
-  const colorRe = /(rgba?\([^)]+\)|#[0-9a-fA-F]{3,8})/g;
-  const restores = [];
-  const normalizeColor = (color) => color.replace(/\s/g, '').toLowerCase();
-  const isTransparent = (color) => {
-    const normalized = normalizeColor(color || '');
-    return (
-      !normalized ||
-      normalized === 'transparent' ||
-      normalized === 'rgba(0,0,0,0)' ||
-      normalized === '#0000' ||
-      normalized === '#00000000'
-    );
-  };
-
-  Array.from(container.querySelectorAll('[data-custom-text-bg]')).forEach((el) => {
-    const computed = window.getComputedStyle(el);
-    const backgroundImage = computed.backgroundImage;
-    const layerBackgroundStyle = {};
-
-    if (backgroundImage && backgroundImage !== 'none') {
-      const colors = backgroundImage.indexOf('gradient') > -1 ? backgroundImage.match(colorRe) : null;
-      const isMonochromeGradient =
-        colors && colors.length && colors.every((color) => normalizeColor(color) === normalizeColor(colors[0]));
-
-      if (isMonochromeGradient) {
-        if (isTransparent(colors[0])) return;
-        layerBackgroundStyle.backgroundColor = colors[0];
-      } else {
-        layerBackgroundStyle.backgroundImage = backgroundImage;
-        layerBackgroundStyle.backgroundSize = computed.backgroundSize;
-        layerBackgroundStyle.backgroundPosition = computed.backgroundPosition;
-        layerBackgroundStyle.backgroundRepeat = computed.backgroundRepeat;
-      }
-    } else if (!isTransparent(computed.backgroundColor)) {
-      layerBackgroundStyle.backgroundColor = computed.backgroundColor;
-    } else {
-      return;
-    }
-
-    const backgroundLayer = document.createElement('div');
-    backgroundLayer.setAttribute('data-custom-text-bg-layer', '');
-    Object.assign(backgroundLayer.style, {
-      position: 'absolute',
-      top: '0',
-      right: '0',
-      bottom: '0',
-      left: '0',
-      zIndex: '0',
-      pointerEvents: 'none',
-      borderRadius: computed.borderRadius,
-      ...layerBackgroundStyle,
-    });
-
-    const content = el.firstElementChild;
-    const originalPosition = el.style.position;
-    const originalBackgroundImage = el.style.backgroundImage;
-    const originalBackgroundColor = el.style.backgroundColor;
-    const originalContentPosition = content && content.style.position;
-    const originalContentZIndex = content && content.style.zIndex;
-
-    if (computed.position === 'static') {
-      el.style.position = 'relative';
-    }
-    el.style.backgroundImage = 'none';
-    el.style.backgroundColor = 'transparent';
-    el.insertBefore(backgroundLayer, el.firstChild);
-
-    if (content) {
-      content.style.position = 'relative';
-      content.style.zIndex = '1';
-    }
-
-    restores.push(() => {
-      backgroundLayer.remove();
-      el.style.position = originalPosition;
-      el.style.backgroundImage = originalBackgroundImage;
-      el.style.backgroundColor = originalBackgroundColor;
-      if (content) {
-        content.style.position = originalContentPosition;
-        content.style.zIndex = originalContentZIndex;
-      }
-    });
-  });
-
-  return () => restores.forEach((restore) => restore());
-}
-
-// 将「各停点颜色相同的退化渐变」（如 linear-gradient(#fff,#fff)）临时移除背景图，
-// 返回恢复函数。html2canvas 存在绘制顺序缺陷：此类背景会画在后代文字之后，
-// 导致保存的封面里导航组（宫格展示）等组件的文字被白色背景盖住而"消失"。
-// 注意：不能用纯色补回背景（仍会触发遮盖），去掉背景图后透出底色，视觉差异极小。
-function flattenMonochromeGradients(container) {
-  const colorRe = /(rgba?\([^)]+\)|#[0-9a-fA-F]{3,8})/g;
-  const restores = [];
-  const els = [container].concat(Array.from(container.querySelectorAll('*')));
-  els.forEach((el) => {
-    let bg;
-    try {
-      bg = window.getComputedStyle(el).backgroundImage;
-    } catch (e) {
-      return;
-    }
-    if (!bg || bg === 'none' || bg.indexOf('gradient') === -1) return;
-    const stops = bg.match(colorRe);
-    if (!stops || !stops.every((c) => c.toLowerCase() === stops[0].toLowerCase())) return;
-    if (stops[0].replace(/\s/g, '').toLowerCase() === 'rgba(0,0,0,0)') return; // 透明渐变保持原样
-    const prevImage = el.style.backgroundImage;
-    el.style.backgroundImage = 'none';
-    restores.push(() => {
-      el.style.backgroundImage = prevImage;
-    });
-  });
-  return () => restores.forEach((fn) => fn());
-}
-
 // 保存为封面 - 截取长图并上传
 function saveCover() {
   // 保存当前选中的组件索引
@@ -782,11 +474,14 @@ function routineCode(id) {
 }
 //生成二维码
 function creatQrCode() {
-  qrCodeUrl.value.innerHTML = '';
+  const raw = previewDialogRef.value?.qrCodeUrl;
+  const el = raw && raw.__v_isRef ? raw.value : raw;
+  if (!el) return;
+  el.innerHTML = '';
   // 微页面预览页与首页均通过 theme_id 场景值解析主题（见 uni-app 对应页面 onLoad）
   let path = isMicroPage.value ? 'pages/annex/special/index' : 'pages/index/index';
   let url = `${BaseURL}${path}?theme_id=${route.query.id}`;
-  var qrcode = new QRCode(qrCodeUrl.value, {
+  var qrcode = new QRCode(el, {
     text: url, // 需要转换为二维码的内容
     width: 160,
     height: 160,
@@ -911,21 +606,6 @@ function updateSpecialComponentStatus(name, status) {
     isService.value = status;
   }
 }
-function cloneThemeValue(value) {
-  return JSON.parse(JSON.stringify(value || {}));
-}
-function cloneThemeComponent(value) {
-  if (!value) return null;
-  return JSON.parse(JSON.stringify(value));
-}
-function removeThemeComponent(value, name) {
-  Object.keys(value || {}).forEach((key) => {
-    if (value[key] && value[key].name == name) {
-      delete value[key];
-    }
-  });
-  return value;
-}
 function appendBottomMenu(value) {
   let bottomMenu = cloneThemeComponent(mobildConfigStore.bottomMenu);
   if (!bottomMenu || bottomMenu.name != 'bottomMenu') return value;
@@ -1010,31 +690,6 @@ function showBottomMenu() {
   rConfig.value = [];
   rConfig.value.push(JSON.parse(JSON.stringify(obj)));
 }
-// 对象转数组
-function objToArr(data) {
-  let obj = Object.keys(data);
-  let m = obj.map((key) => data[key]);
-  return m;
-}
-function warnDuplicateDefaultNames() {
-  let defaultNameMap = {};
-  lConfig.value.forEach((item) => {
-    if (!item.defaultName) return;
-    if (!defaultNameMap[item.defaultName]) {
-      defaultNameMap[item.defaultName] = [];
-    }
-    defaultNameMap[item.defaultName].push(item.name);
-  });
-  let duplicates = Object.keys(defaultNameMap).reduce((result, defaultName) => {
-    if (defaultNameMap[defaultName].length > 1) {
-      result[defaultName] = defaultNameMap[defaultName];
-    }
-    return result;
-  }, {});
-  if (Object.keys(duplicates).length) {
-    console.error('[DIY] mobilePage 组件 defaultName 重复，保存数据无法唯一匹配组件：', duplicates);
-  }
-}
 function log(evt) {
   // 中间拖拽排序
   if (evt.moved) {
@@ -1093,10 +748,6 @@ function cloneDog(data) {
   };
 }
 //数组元素互换位置
-function swapArray(arr, index1, index2) {
-  arr[index1] = arr.splice(index2, 1, arr[index1])[0];
-  return arr;
-}
 //点击上下移动；
 function movePage(item, index, type) {
   if (type) {
@@ -1580,16 +1231,6 @@ function reast() {
     });
   }
 }
-function getBadgeText(val) {
-  const map = {
-    user: '用户',
-    article: '文章',
-    coupon: '优惠券',
-    goods: '商品',
-  };
-  return map[val] || '';
-}
-
 // ---- @diy/mixins/theme 内联实现 ----
 function getThemeInfo() {
   getColorChange('color_change')
@@ -1721,726 +1362,6 @@ onUnmounted(() => {
   font-size: 16px;
 }
 </style>
-<style scoped lang="scss">
-:deep(.el-card__body) {
-  padding: 0;
-}
-:deep() {
-  .icondel_1,
-  .upload-box {
-    cursor: pointer;
-  }
-  .el-checkbox,
-  .el-radio {
-    margin-bottom: 15px;
-    margin-right: 15px;
-  }
-}
-.c_label {
-  margin-top: 0;
-}
-:deep(.el-button--small) {
-  // border-radius: 0;
-  border-radius: 4px;
-}
-.look,
-.look:hover,
-.look:focus,
-.look:active,
-.close,
-.close:hover,
-.close:focus,
-.close:active {
-  background: var(--prev-color-primary);
-  color: #fff;
-  border-color: #fff;
-}
-
-.save,
-.save:hover,
-.save:active,
-.save:focus {
-  background: #fff;
-  color: var(--prev-color-primary);
-  border-color: var(--prev-color-primary);
-}
-// :deep(.c_row-item){
-//   margin-bottom: 10px;
-// }
-.ysize {
-  background-size: 100%;
-}
-
-.fullsize {
-  background-size: 100% 100%;
-}
-
-.repeat {
-  background-repeat: repeat;
-}
-
-.noRepeat {
-  background-repeat: no-repeat;
-}
-.fl_header {
-  color: #fff;
-  .f-title {
-    position: relative;
-  }
-  .return {
-    color: #fff;
-    margin-right: 34px;
-    margin-left: 5px;
-    &::after {
-      content: ' ';
-      position: absolute;
-      width: 1px;
-      height: 16px;
-      background-color: rgba(238, 238, 238, 0.5);
-      left: 65px;
-      top: 50%;
-      margin-top: -8px;
-    }
-  }
-  .iconfont {
-    color: #fff;
-  }
-  .f_title {
-    &:hover {
-      .return {
-        color: rgba(255, 255, 255, 0.8);
-      }
-      .iconfanhui {
-        color: rgba(255, 255, 255, 0.8);
-      }
-    }
-    .name {
-      font-size: 16px;
-    }
-    .iconfont {
-      margin-left: 10px;
-      color: #fff;
-    }
-  }
-}
-.wrapper-con {
-  position: relative;
-  flex: 1;
-  background: #f0f2f5;
-  display: flex;
-  justify-content: center;
-  padding-top: 40px;
-  height: 100%;
-  .acticons {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-    .el-button + .el-button {
-      margin-left: 0;
-    }
-  }
-  /* min-width 700px; */
-}
-.main .content-wrapper {
-  padding: 0 !important;
-}
-.defaultData {
-  /* margin-left 20px; */
-  cursor: pointer;
-  position: absolute;
-  left: 50%;
-  margin-left: 235px;
-
-  .data {
-    display: block;
-    margin-top: 20px;
-    color: #282828;
-    background-color: #fff;
-    width: 94px;
-    text-align: center;
-    height: 32px;
-    border-radius: 3px;
-    font-size: 12px;
-    margin-left: 0 !important;
-    border: none;
-  }
-
-  .data:hover {
-    color: var(--prev-color-primary);
-    border: none;
-    box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.03);
-  }
-  .data:focus {
-    color: #fff;
-    background-color: var(--prev-color-primary);
-    border: 1px solid var(--prev-color-primary);
-  }
-}
-
-.overflowy {
-  margin-right: 4px;
-
-  .picture {
-    width: 375px;
-    height: 20px;
-    margin: 0 auto;
-    background-color: #fff;
-  }
-}
-
-.bnt {
-  width: 80px !important;
-}
-
-/* 定义滑块 内阴影+圆角 */
-::-webkit-scrollbar-thumb {
-  -webkit-box-shadow: inset 0 0 6px #fff;
-  display: none;
-}
-
-.left:hover::-webkit-scrollbar-thumb,
-.right-box:hover::-webkit-scrollbar-thumb {
-  display: block;
-}
-
-.contxt:hover ::-webkit-scrollbar-thumb {
-  display: block;
-}
-
-::-webkit-scrollbar {
-  width: 4px !important; /* 对垂直流动条有效 */
-}
-
-.scrollCon {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
-.scroll-box .position {
-  display: block !important;
-  height: 40px;
-  text-align: center;
-  line-height: 40px;
-  border: 1px dashed var(--prev-color-primary);
-  color: var(--prev-color-primary);
-  background-color: #edf4fb;
-}
-
-.scroll-box .conter {
-  display: none !important;
-}
-.conter {
-  margin-top: 3px;
-}
-.dragClass {
-  background-color: #fff;
-}
-
-.ivu-mt {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.diy-wrapper {
-  max-width: 100%;
-  min-width: 1100px;
-  display: flex;
-  justify-content: space-between;
-  height: calc(100vh - 62px);
-  .left {
-    min-width: 300px;
-    max-width: 300px;
-    /* border 1px solid #DDDDDD */
-    border-radius: 4px;
-    height: 100%;
-
-    .title-bar {
-      display: flex;
-      color: #333;
-      border-bottom: 1px solid #eee;
-      border-radius: 4px;
-      cursor: pointer;
-
-      .title-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 1;
-        height: 45px;
-
-        &.on {
-          color: var(--prev-color-primary);
-          font-size: 14px;
-          border-bottom: 1px solid var(--prev-color-primary);
-        }
-      }
-    }
-
-    .wrapper {
-      padding: 15px;
-      overflow-y: scroll;
-      -webkit-overflow-scrolling: touch;
-
-      .tips {
-        display: flex;
-        justify-content: space-between;
-        padding-bottom: 15px;
-        font-size: 13px;
-        color: #000;
-        cursor: pointer;
-
-        .ivu-icon {
-          color: #000;
-        }
-      }
-    }
-
-    .link-item {
-      padding: 10px;
-      border-bottom: 1px solid #f5f5f5;
-      font-size: 12px;
-      color: #323232;
-
-      .name {
-        font-size: 14px;
-        color: var(--prev-color-primary);
-      }
-      .copy_btn {
-        cursor: pointer;
-      }
-
-      .link-txt {
-        margin-top: 2px;
-        word-break: break-all;
-      }
-
-      .params {
-        margin-top: 5px;
-        color: #1cbe6b;
-        word-break: break-all;
-
-        .txt {
-          color: #323232;
-        }
-
-        span {
-          &:last-child i {
-            display: none;
-            color: red;
-          }
-        }
-      }
-
-      .lable {
-        display: flex;
-        margin-top: 5px;
-        color: #999;
-
-        p {
-          flex: 1;
-          word-break: break-all;
-        }
-
-        button {
-          margin-left: 30px;
-          width: 38px;
-        }
-      }
-    }
-
-    .dragArea.list-group {
-      display: flex;
-      flex-wrap: wrap;
-
-      .list-group-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 74px;
-        height: 66px;
-        margin-right: 17px;
-        margin-bottom: 10px;
-        font-size: 12px;
-        color: #666;
-        cursor: pointer;
-        border-radius: 5px;
-        text-align: center;
-
-        &:hover {
-          box-shadow: 0 0 5px 0 rgba(24, 144, 255, 0.3);
-          border-radius: 5px;
-          transform: scale(1.1);
-          transition: all 0.2s;
-        }
-
-        &:nth-child(3n) {
-          margin-right: 0;
-        }
-      }
-    }
-  }
-
-  .content {
-    position: relative;
-    height: 100%;
-    width: 100%;
-
-    .page-foot {
-      position: relative;
-      width: 375px;
-      margin: 0 auto 20px auto;
-
-      .delete-box {
-        display: none;
-        position: absolute;
-        left: -2px;
-        top: 0;
-        width: 379px;
-        height: 100%;
-        border: 2px dashed var(--prev-color-primary);
-        padding: 10px 0;
-      }
-
-      &:hover,
-      &.on {
-        /* cursor: move; */
-        .delete-box {
-          /* display: block; */
-        }
-      }
-
-      &.on {
-        cursor: move;
-
-        .delete-box {
-          display: block;
-          border: 2px solid var(--prev-color-primary);
-          box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
-        }
-      }
-    }
-
-    .page-title {
-      position: relative;
-      height: 35px;
-      line-height: 35px;
-      background: #fff;
-      font-size: 15px;
-      color: #333333;
-      text-align: center;
-      width: 375px;
-      margin: 0 auto;
-
-      .delete-box {
-        display: none;
-        position: absolute;
-        left: -2px;
-        top: 0;
-        width: 379px;
-        height: 100%;
-        border: 2px dashed var(--prev-color-primary);
-        padding: 10px 0;
-
-        span {
-          position: absolute;
-          right: 0;
-          bottom: 0;
-          width: 32px;
-          height: 16px;
-          line-height: 16px;
-          display: inline-block;
-          text-align: center;
-          font-size: 10px;
-          color: #fff;
-          background: rgba(0, 0, 0, 0.4);
-          margin-left: 2px;
-          cursor: pointer;
-          z-index: 11;
-        }
-      }
-
-      &:hover,
-      &.on {
-        /* cursor: move; */
-        .delete-box {
-          /* display: block; */
-        }
-      }
-
-      &.on {
-        cursor: move;
-
-        .delete-box {
-          display: block;
-          border: 2px solid var(--prev-color-primary);
-          box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
-        }
-      }
-    }
-
-    .scroll-box {
-      flex: 1;
-      background-color: #fff;
-      width: 375px;
-      margin: 0 auto;
-      padding-top: 1px;
-    }
-
-    .dragArea.list-group {
-      width: 100%;
-      height: 100%;
-
-      .mConfig-item {
-        position: relative;
-        cursor: move;
-        // 不可用组件占位提示
-        .disabled-comp-tip {
-          min-height: 40px;
-          padding: 10px 12px;
-          background: rgba(0, 0, 0, 0.04);
-          border: 1px dashed var(--prev-color-primary-light-5);
-          color: var(--prev-color-text-secondary);
-          font-size: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          user-select: none;
-        }
-        &.hide {
-          &::before {
-            position: absolute;
-            content: '已隐藏';
-            background: rgba(0, 0, 0, 0.5);
-            width: 100%;
-            height: 100%;
-            z-index: 99;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-        }
-        .delete-name.on {
-          background: var(--prev-color-primary-light-3);
-          color: #fff;
-          &::before {
-            background: var(--prev-color-primary-light-3);
-          }
-        }
-        .delete-name {
-          position: absolute;
-          top: 6px;
-          background: #fff;
-          left: -100px;
-          width: 86px;
-          height: 32px;
-          text-align: center;
-          line-height: 32px;
-          font-size: 13px;
-          color: #666;
-          border-radius: 3px;
-
-          .custom-badge {
-            position: absolute;
-            top: -6px;
-            left: -16px;
-            background: #ffaa18;
-            color: #fff;
-            font-size: 10px;
-            padding: 0 5px;
-            border-radius: 3px;
-            line-height: 14px;
-            z-index: 10;
-          }
-
-          &::before {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #fff;
-            transform: rotate(45deg);
-            top: 50%;
-            right: -5px;
-            margin-top: -5px;
-          }
-        }
-        .delete-box {
-          display: none;
-          position: absolute;
-          left: -2px;
-          top: 0;
-          width: 379px;
-          height: 100%;
-          border: 2px dashed var(--prev-color-primary);
-
-          /* padding: 10px 0; */
-          .handleType {
-            position: absolute;
-            right: -43px;
-            top: 0;
-            width: 36px;
-            border-radius: 4px;
-            background-color: var(--prev-color-primary);
-            cursor: pointer;
-            color: #fff;
-            font-weight: bold;
-            text-align: center;
-            padding: 4px 0;
-            .el-tooltip {
-              background-color: inherit;
-              color: inherit;
-            }
-            .iconfont {
-              padding: 5px 0;
-              color: #fff;
-
-              &.on {
-                opacity: 0.4;
-              }
-            }
-          }
-        }
-
-        &.on {
-          cursor: move;
-
-          .delete-box {
-            display: block;
-            border: 2px solid var(--prev-color-primary);
-            box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
-          }
-        }
-      }
-
-      .mConfig-item:hover {
-        transform: scale(1.01);
-        box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
-        transition: all 0.2s;
-      }
-    }
-  }
-
-  .right-box {
-    max-width: 400px;
-    min-width: 400px;
-    height: 100%;
-    border-radius: 4px;
-    overflow: scroll;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-
-    :deep(.ivu-tabs-bar) {
-      margin-bottom: 16px;
-    }
-
-    .title-bar {
-      width: 100%;
-      height: 45px;
-      line-height: 45px;
-      padding-left: 24px;
-      color: #000;
-      border-radius: 4px;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
-    }
-  }
-
-  ::-webkit-scrollbar {
-    width: 6px;
-    background-color: transparent;
-  }
-
-  ::-webkit-scrollbar-track {
-    border-radius: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: #bfc1c4;
-  }
-}
-
-.foot-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 80px;
-  background: #fff;
-  box-shadow: 0px -2px 4px 0px rgba(0, 0, 0, 0.03);
-
-  button {
-    width: 100px;
-    height: 32px;
-    font-size: 13px;
-
-    &:first-child {
-      margin-right: 20px;
-    }
-  }
-}
-
-:deep(.ivu-scroll-loader) {
-  display: none;
-}
-
-:deep(.ivu-card-body) {
-  width: 100%;
-  padding: 0;
-  height: calc(100vh - 73px);
-}
-
-.rbtn {
-  position: absolute;
-  right: 20px;
-}
-
-.code {
-  position: relative;
-}
-
-.QRpic {
-  width: 160px;
-  height: 160px;
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .qr-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    font-size: 12px;
-    color: var(--prev-color-text-secondary);
-  }
-}
-
-.contxt {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
-}
-
-.contxt:hover ::-webkit-scrollbar-thumb {
-  display: block;
-}
-
-.icon {
-  width: 28px;
-  height: 28px;
-  // vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-}
+<style lang="scss">
+@import './diyIndex.scss';
 </style>

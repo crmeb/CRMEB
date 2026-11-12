@@ -40,7 +40,7 @@ install/
 |------|---------|------|
 | 1 | `step1.php` | 许可协议 — 展示用户协议，需同意后方可继续 |
 | 2 | `step2.php` | 环境检测 — 检查 PHP 版本、扩展、目录/文件读写权限（详见下文「环境检测项」） |
-| 3 | `step3.php` | 参数设置 — 填写数据库连接信息（MySQL + Redis）、管理员账号密码、表前缀、是否导入演示数据；提交前分别校验 MySQL 与 Redis 连通性（详见「连接校验错误码」） |
+| 3 | `step3.php` | 参数设置 — 填写数据库连接信息（MySQL + Redis）、管理员账号密码、表前缀；提交前分别校验 MySQL 与 Redis 连通性（详见「连接校验错误码」） |
 | 4 | `step4.php` | 安装执行 — 前端轮询接口分批执行「表结构 → 默认数据 → 插件」三个阶段（详见「安装执行三阶段」），随后写入 `.env`、创建管理员账户 |
 | 5 | `step5.php` | 安装完成 — 展示安装结果，写入 `.constant`（安装时间与序列号），生成 `install.lock` 锁文件防止重复安装 |
 
@@ -79,7 +79,7 @@ Redis 校验（前端提交 `redisdbpwd` 触发）：实际执行 `connect` → 
 | 插件安装 | `plugins` | 初始化 ThinkPHP 后调用 `ModuleInstaller::install()` 执行一个默认安装项（模块/驱动的自有表、菜单与种子数据由各自 Installer 负责） | 游标返回 `n=999999` 表示全部完成 |
 
 - 三个阶段的游标 `n` 相互独立，避免数据阶段沿用表结构的总游标。
-- 数据阶段结束后由 `finalizeBaseInstall()` 统一收尾：按需清空演示数据、替换并写入 `.env`、重建管理员账户（`truncate` 后插入 id=1 超管）、按安装域名更新 `system_config` 的 `site_url`。
+- 数据阶段结束后由 `finalizeBaseInstall()` 统一收尾：替换并写入 `.env`、重建管理员账户（`truncate` 后插入 id=1 超管）、按安装域名更新 `system_config` 的 `site_url`。
 - 每一步执行结果都追加写入 `install.log`，失败时接口返回 `n=-2` 并携带失败原因，前端停止轮询并展示错误。
 
 ## SQL 文件设计
@@ -135,27 +135,6 @@ Redis 校验（前端提交 `redisdbpwd` 触发）：实际执行 `connect` → 
 | `#RB_HOST#` / `#RB_PORT#` / `#RB_PWD#` / `#RB_SELECT#` | Redis 连接信息 |
 | `#QUEUE_NAME#` | 队列名称（自动生成唯一值） |
 
-## 演示数据控制
-
-步骤4可选择是否导入演示数据；**不导入演示数据时**，默认数据阶段收尾（`finalizeBaseInstall()`）会对库中全部数据表执行 `truncate`，仅保留以下白名单表：
-
-- 清理发生在**插件安装之前**（`tables → data → 清理 → plugins`），因此插件/驱动安装的自有表与种子数据写入在清理之后，天然不受影响。
-- 白名单按 `SHOW TABLES` 实际存在的表过滤，仅对实际存在的表执行清理。
-
-白名单（`$baseTables`，共 37 项，按默认前缀 `eb_` 列出，实际按用户配置前缀匹配）：
-
-| 分类 | 表名 |
-|------|------|
-| 系统配置 | `system_config`、`system_config_tab`、`system_group`、`system_group_data`、`system_event_data` |
-| 菜单路由与权限 | `system_menus`、`system_route`、`system_route_cate`、`system_admin`、`system_user_level` |
-| 系统任务与工单 | `system_crontab`、`system_ticket`、`system_city` |
-| 内容与页面 | `diy`、`page_categroy`、`page_link`、`agreement`、`cache` |
-| 物流配送 | `express`、`express_company`、`express_template`、`shipping_templates`、`shipping_templates_region` |
-| 多语言 | `lang_code`、`lang_country`、`lang_type` |
-| 会员与通知 | `member_right`、`member_ship`、`agent_level`、`notice_config`、`notice_channel` |
-| 支付与驱动 | `pay_channel`、`pay_channel_platform`、`driver`、`printer_channel`、`out_interface` |
-| 模块安装 | `module_install_log` |
-
 ## 运行时生成与读取的文件
 
 | 文件 | 位置 | 说明 |
@@ -174,4 +153,4 @@ Redis 校验（前端提交 `redisdbpwd` 触发）：实际执行 `connect` → 
 - **数据库不存在时自动创建**：按 `utf8mb4` / `utf8mb4_general_ci` 字符集执行 `CREATE DATABASE IF NOT EXISTS`。
 - **管理员账户**：收尾阶段清空 `system_admin` 后写入 id=1 的超级管理员（账号为步骤3填写，密码经 `PASSWORD_BCRYPT` 加密，角色 `roles=1`）。
 - **站点域名写入**：收尾阶段将安装访问域名以 JSON 字符串形式更新到 `system_config` 的 `site_url`（与系统配置读取侧 `json_decode` 约定一致）。
-- **最低要求**：PHP 8.2-8.4（不含 8.5+），MySQL ≥ 5.7（推荐 8.0；5.7 需关闭严格 sql_mode），Redis 扩展（选择 redis 缓存时必需）。
+- **最低要求**：PHP 8.2-8.4（不含 8.5+，默认 8.4），MySQL ≥ 5.7（推荐 8.0；5.7 需关闭严格 sql_mode），Redis 扩展（选择 redis 缓存时必需）。

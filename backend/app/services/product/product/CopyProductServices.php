@@ -121,17 +121,33 @@ class CopyProductServices extends BaseService
             $productInfo['protection_list'] = [];
             // 注意：`?? []` 表达式与引用遍历组合会触发写时分离（修改作用于临时副本后丢弃），
             // 必须先取变量、遍历修改后再写回，否则规格明细转换不生效
+            // 兼容两种 detail：字符串列表（一号通等）与 [{value,pic}]（99API 等带规格图）
             $copyItems = $productInfo['items'] ?? [];
             foreach ($copyItems as &$items) {
                 $details = [];
                 foreach ($items['detail'] ?? [] as $detail) {
-                    $details[] = [
-                        'value' => $detail,
-                        'pic' => '',
-                    ];
+                    if (is_array($detail)) {
+                        $details[] = [
+                            'value' => (string)($detail['value'] ?? $detail['name'] ?? ''),
+                            'pic' => (string)($detail['pic'] ?? $detail['image'] ?? ''),
+                        ];
+                    } else {
+                        $details[] = [
+                            'value' => (string)$detail,
+                            'pic' => '',
+                        ];
+                    }
                 }
                 $items['detail'] = $details;
-                $items['add_pic'] = 0;
+                $hasPic = false;
+                foreach ($details as $detailRow) {
+                    if (($detailRow['pic'] ?? '') !== '') {
+                        $hasPic = true;
+                        break;
+                    }
+                }
+                // 驱动已声明 add_pic 时保留；否则按是否带图自动开启
+                $items['add_pic'] = $hasPic ? 1 : (int)($items['add_pic'] ?? 0);
             }
             unset($items);
             $productInfo['items'] = $copyItems;

@@ -247,13 +247,26 @@ class LoginController
         $verifyCode = CacheService::get('code_' . $account);
         if (!$verifyCode)
             return app('json')->fail('请先获取验证码');
-        $verifyCode = substr($verifyCode, 0, 6);
-        if ($verifyCode != $captcha)
+        $verifyCode = substr((string)$verifyCode, 0, 6);
+        if (!is_string($captcha) || !hash_equals($verifyCode, $captcha)) {
+            // 验证码比对失败计数：连续错 5 次销毁验证码，防止 5 分钟有效期内被枚举（安全审计 A6）
+            $failKey = 'code_fail_' . $account;
+            $failNum = (int)CacheService::get($failKey, 0) + 1;
+            if ($failNum >= 5) {
+                CacheService::delete($failKey);
+                CacheService::delete('code_' . $account);
+                return app('json')->fail('验证码错误次数过多，请重新获取');
+            }
+            CacheService::set($failKey, $failNum, 300);
             return app('json')->fail('验证码错误');
+        }
         if (md5($password) == md5('123456')) return app('json')->fail('密码太过简单，请输入较为复杂的密码');
 
         $registerStatus = $this->services->register($account, $password, $spread, 'h5');
         if ($registerStatus) {
+            // 验证码校验通过即销毁，防止有效期内被重复用于注册/改密（安全审计 A6）
+            CacheService::delete('code_' . $account);
+            CacheService::delete('code_fail_' . $account);
             return app('json')->success('注册成功');
         }
         return app('json')->fail('注册失败');
@@ -281,13 +294,27 @@ class LoginController
         $verifyCode = CacheService::get('code_' . $account);
         if (!$verifyCode)
             return app('json')->fail('请先获取验证码');
-        $verifyCode = substr($verifyCode, 0, 6);
-        if ($verifyCode != $captcha) {
+        $verifyCode = substr((string)$verifyCode, 0, 6);
+        if (!is_string($captcha) || !hash_equals($verifyCode, $captcha)) {
+            // 验证码比对失败计数：连续错 5 次销毁验证码，防止 5 分钟有效期内被枚举（安全审计 A6）
+            $failKey = 'code_fail_' . $account;
+            $failNum = (int)CacheService::get($failKey, 0) + 1;
+            if ($failNum >= 5) {
+                CacheService::delete($failKey);
+                CacheService::delete('code_' . $account);
+                return app('json')->fail('验证码错误次数过多，请重新获取');
+            }
+            CacheService::set($failKey, $failNum, 300);
             return app('json')->fail('验证码错误');
         }
         if ($password == '123456') return app('json')->fail('密码太过简单，请输入较为复杂的密码');
         $resetStatus = $this->services->reset($account, $password);
-        if ($resetStatus) return app('json')->success('修改成功');
+        if ($resetStatus) {
+            // 验证码校验通过即销毁，防止有效期内被重复用于注册/改密（安全审计 A6）
+            CacheService::delete('code_' . $account);
+            CacheService::delete('code_fail_' . $account);
+            return app('json')->success('修改成功');
+        }
         return app('json')->fail('修改失败');
     }
 
@@ -317,8 +344,8 @@ class LoginController
         $verifyCode = CacheService::get('code_' . $phone);
         if (!$verifyCode)
             return app('json')->fail('请先获取验证码');
-        $verifyCode = substr($verifyCode, 0, 6);
-        if ($verifyCode != $captcha) {
+        $verifyCode = substr((string)$verifyCode, 0, 6);
+        if (!is_string($captcha) || !hash_equals($verifyCode, $captcha)) {
             return app('json')->fail('验证码错误');
         }
         $user_type = $request->getFromType() ? $request->getFromType() : 'h5';
@@ -385,8 +412,8 @@ class LoginController
         $verifyCode = CacheService::get('code_' . $phone);
         if (!$verifyCode)
             return app('json')->fail('请先获取验证码');
-        $verifyCode = substr($verifyCode, 0, 6);
-        if ($verifyCode != $captcha) {
+        $verifyCode = substr((string)$verifyCode, 0, 6);
+        if (!is_string($captcha) || !hash_equals($verifyCode, $captcha)) {
             return app('json')->fail('验证码错误');
         }
         $re = $this->services->bindind_phone($phone, $key);
@@ -424,14 +451,25 @@ class LoginController
             $verifyCode = CacheService::get('code_' . $phone);
             if (!$verifyCode)
                 return app('json')->fail('请先获取验证码');
-            $verifyCode = substr($verifyCode, 0, 6);
-            if ($verifyCode != $captcha)
+            $verifyCode = substr((string)$verifyCode, 0, 6);
+            if (!is_string($captcha) || !hash_equals($verifyCode, $captcha))
                 return app('json')->fail('验证码错误');
+            // 验证码通过后留存服务端凭证：step=1 合并确认必须凭此放行，防跳过短信验证（安全审计 B6.5）
+            CacheService::set('bind_confirm_' . (int)$request->uid(), $phone, 300);
+        } else {
+            // step=1（合并既有 H5 账号）必须先经 step=0 的短信验证，凭证与手机号一致才放行
+            $confirmedPhone = CacheService::get('bind_confirm_' . (int)$request->uid());
+            if (!$confirmedPhone || $confirmedPhone !== $phone) {
+                return app('json')->fail('请先完成短信验证');
+            }
         }
         $uid = (int)$request->uid();
         $re = $this->services->userBindindPhone($uid, $phone, $step);
         if ($re) {
             CacheService::delete('code_' . $phone);
+            if ($step) {
+                CacheService::delete('bind_confirm_' . $uid);
+            }
             return app('json')->success($re['msg'] ?? '绑定成功', $re['data'] ?? []);
         } else
             return app('json')->fail('绑定失败');
@@ -454,8 +492,8 @@ class LoginController
         $verifyCode = CacheService::get('code_' . $phone);
         if (!$verifyCode)
             return app('json')->fail('请先获取验证码');
-        $verifyCode = substr($verifyCode, 0, 6);
-        if ($verifyCode != $captcha)
+        $verifyCode = substr((string)$verifyCode, 0, 6);
+        if (!is_string($captcha) || !hash_equals($verifyCode, $captcha))
             return app('json')->fail('验证码错误');
         $uid = (int)$request->uid();
         $re = $this->services->updateBindindPhone($uid, $phone);
@@ -485,11 +523,8 @@ class LoginController
     }
 
     /**
-     * apple快捷登陆
-     *
-     * @deprecated 请使用 POST /api/auth/login（channel=wechat_mp, login_type=app_auth）
-     *             旧入口内部已转发到统一逻辑：通过 ChannelServiceProxy 调用 wechat_mp 的 appAuth
-     *             登录成功后由 LoginServices::createToken 触发 UserLogin 事件
+     * Apple 快捷登录
+     * 校验 identityToken（Apple JWKS 验签），用 JWT sub 作为 openId；不信任客户端自报 openId
      * @param Request $request
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
@@ -498,12 +533,18 @@ class LoginController
      */
     public function appleLogin(Request $request)
     {
-        [$openId, $phone, $email, $captcha] = $request->postMore([
-            ['openId', ''],
+        [$identityToken, $phone, $email, $captcha] = $request->postMore([
+            ['identityToken', ''],
             ['phone', ''],
             ['email', ''],
             ['captcha', '']
         ], true);
+        // 必须用 Apple identityToken 验签后的 sub，禁止信任客户端自报 openId
+        $appleIdentity = $this->services->verifyAppleIdentityToken((string)$identityToken);
+        $openId = $appleIdentity['openId'];
+        if ($appleIdentity['email'] !== '') {
+            $email = $appleIdentity['email'];
+        }
         if ($phone) {
             if (!$captcha) {
                 return app('json')->fail('请输入验证码');
@@ -512,16 +553,12 @@ class LoginController
             $verifyCode = CacheService::get('code_' . $phone);
             if (!$verifyCode)
                 return app('json')->fail('请先获取验证码');
-            $verifyCode = substr($verifyCode, 0, 6);
-            if ($verifyCode != $captcha) {
+            $verifyCode = substr((string)$verifyCode, 0, 6);
+            if (!is_string($captcha) || !hash_equals($verifyCode, $captcha)) {
                 CacheService::delete('code_' . $phone);
                 return app('json')->fail('验证码错误');
             }
-        } else {
-			if (!$openId) {
-				return app('json')->fail('参数错误');
-			}
-		}
+        }
         if ($email === '') $email = substr(md5($openId), 0, 12);
         $userInfo = [
             'openId' => $openId,
@@ -533,6 +570,8 @@ class LoginController
         $results = event('ChannelServiceProxy', ['endpoint' => 'wechat_mp', 'service' => 'WechatServices', 'action' => 'appAuth', 'args' => [$userInfo, $phone, 'apple']]);
         $token = proxy_event_result($results, null);
         if ($token) {
+            // 验证码校验已通过，登录成功即销毁（安全审计 A6）
+            CacheService::delete('code_' . $phone);
             return app('json')->success('登录成功', $token);
         } else if ($token === false) {
             return app('json')->success('登录成功', ['isbind' => true]);

@@ -16,7 +16,6 @@ use app\services\driver\printer\SystemTicketServices;
 use crmeb\basic\BaseJobs;
 use crmeb\utils\Str;
 use think\facade\Log;
-use think\facade\Env;
 
 /**
  * 小票打印
@@ -97,23 +96,4 @@ class PrintJob extends BaseJobs
         }
     }
 
-    /**
-     * 打印使用独立队列重试，不阻塞支付后置通知和商品日志
-     * @param string|array $action 任务方法或参数
-     * @param array $data 任务参数
-     * @return mixed
-     */
-    public static function runPaymentTask($action, array $data = [])
-    {
-        $method = is_array($action) ? 'doJob' : $action;
-        if (!is_string($method) || !method_exists(static::class, $method)) throw new \RuntimeException('打印任务方法不存在');
-        if (sys_config('queue_open', 0) == 1 && Env::get('cache.driver', 'file') === 'redis') {
-            $result = static::buildQueue($action, $data);
-            if (!$result) throw new \RuntimeException('打印任务入队失败');
-            return $result;
-        }
-        // 未开启队列时只尝试一次，失败留痕但不能卡住支付任务链。
-        static::executeSync($action, $data);
-        return true;
-    }
 }

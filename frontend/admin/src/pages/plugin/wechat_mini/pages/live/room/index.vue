@@ -36,17 +36,16 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button
-        v-auth="['setting-system_menus-add']"
-        class="action-row"
-        type="primary"
-        v-db-click
-        @click="menusAdd('添加直播间')"
-        >添加直播间</el-button
-      >
-      <el-button v-auth="['setting-system_menus-add']" v-db-click @click="syncRoom" style="margin-left: 20px"
-        >同步直播间</el-button
-      >
+      <div class="action-row">
+        <el-button
+          v-auth="['setting-system_menus-add']"
+          type="primary"
+          v-db-click
+          @click="menusAdd('添加直播间')"
+          >添加直播间</el-button
+        >
+        <el-button v-auth="['setting-system_menus-add']" v-db-click @click="syncRoom">同步直播间</el-button>
+      </div>
       <el-table
         :data="tabList"
         ref="table"

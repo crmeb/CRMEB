@@ -301,7 +301,7 @@
 </template>
 <script setup>
 	import { ref, reactive, nextTick } from 'vue';
-	import { onLoad, onShow } from '@dcloudio/uni-app';
+	import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 	import { storeToRefs } from 'pinia';
 	import {
 			centerOrderConfirm,
@@ -495,6 +495,7 @@
 	const jumpData = ref({});
 	const is_gift = ref(0); // 1 购买的礼品 2领取礼品
 	const giftData = ref(null);
+	const giftKey = ref(''); // 领取礼物令牌（来自分享链接）
 	// 中台直接购买参数
 	const isDirectBuy = ref(false); // 是否为中台直接购买模式
 	const productId = ref(0); // 中台商品ID
@@ -526,7 +527,17 @@
 	// },
 
 	// ---------- 生命周期 ----------
+	// 门店列表页选择门店回传（goods_details_store emit）；具名注册/解绑，避免全量 $off 误删其他页面的同名监听
+	function onStoreSelect(res) {
+		if (res) {
+			system_store.value = res.address
+		}
+	}
+	onUnload(() => {
+		uni.$off('handClick', onStoreSelect);
+	});
 	onLoad((options) => {
+		uni.$on('handClick', onStoreSelect);
 		// #ifdef H5
 		from.value = Auth.isWeixin() ? 'weixin' : 'weixinh5'
 		// #endif
@@ -564,6 +575,9 @@
 			if(options.is_gift){
 				is_gift.value = Number(options.is_gift);
 			}
+			if (options.gift_key) {
+				giftKey.value = options.gift_key;
+			}
 			couponId.value = options.couponId || 0;
 			noCoupon.value = Number(options.noCoupon) || 0;
 			pinkId.value = options.pinkId ? parseInt(options.pinkId) : 0;
@@ -598,13 +612,6 @@
 	 * 生命周期函数--监听页面显示
 	 */
 	onShow(() => {
-		uni.$on("handClick", res => {
-			if (res) {
-				system_store.value = res.address
-			}
-			// 清除监听
-			uni.$off('handClick');
-		})
 
 		// 如果当前是门店自提模式，重新获取定位以确保门店列表准确
 		if (shippingType.value == 1 && !system_store.value.name) {
@@ -955,8 +962,12 @@
 		mark.value = e.detail.value;
 	}
 	function getOrderDetail() {
-		getGiftOrderDetail(orderId.value).then(res => {
+		const key = giftKey.value || (giftData.value && giftData.value.gift_key) || '';
+		getGiftOrderDetail(orderId.value, key).then(res => {
 			giftData.value = res.data
+			if (res.data && res.data.gift_key) {
+				giftKey.value = res.data.gift_key;
+			}
 			cartInfo.value = res.data.cartInfo;
 			store_self_mention.value = res.data.store_self_mention
 			if (res.data.type == 0) {
@@ -1218,11 +1229,13 @@
 				couponId.value +
 				'&is_gift=' +
 				is_gift.value +
-				'&order_id=' + orderId.value
+				'&order_id=' + orderId.value +
+				(giftKey.value ? '&gift_key=' + giftKey.value : '')
 		} else {
 			let url = '/pages/users/user_address/index?cartId=' + cartId.value + '&pinkId=' +
 					pinkId.value +
-					'&couponId=' + couponId.value + '&new=' + news.value + '&is_gift=' + is_gift.value + '&order_id=' + orderId.value
+					'&couponId=' + couponId.value + '&new=' + news.value + '&is_gift=' + is_gift.value + '&order_id=' + orderId.value +
+					(giftKey.value ? '&gift_key=' + giftKey.value : '')
 			uni.navigateTo({
 				url: url
 			})

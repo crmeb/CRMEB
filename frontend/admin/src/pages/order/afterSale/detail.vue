@@ -332,7 +332,7 @@
       <template #footer
         ><div>
           <el-button @click="auditModal = false">取消</el-button>
-          <el-button type="primary" @click="submitAudit">确定</el-button>
+          <el-button v-db-click type="primary" @click="submitAudit">确定</el-button>
         </div></template
       >
     </el-dialog>
@@ -370,7 +370,7 @@
       <template #footer
         ><div>
           <el-button @click="refundModal = false">取消</el-button>
-          <el-button type="primary" @click="submitRefund">确认退款</el-button>
+          <el-button v-db-click type="primary" @click="submitRefund">确认退款</el-button>
         </div></template
       >
     </el-dialog>
@@ -393,7 +393,7 @@
       <template #footer
         ><div>
           <el-button @click="resendModal = false">取消</el-button>
-          <el-button type="primary" @click="submitResend">确认补发</el-button>
+          <el-button v-db-click type="primary" @click="submitResend">确认补发</el-button>
         </div></template
       >
     </el-dialog>
@@ -425,7 +425,7 @@
       <template #footer
         ><div>
           <el-button @click="repairModal = false">取消</el-button>
-          <el-button type="primary" @click="submitRepairComplete">确认完成</el-button>
+          <el-button v-db-click type="primary" @click="submitRepairComplete">确认完成</el-button>
         </div></template
       >
     </el-dialog>

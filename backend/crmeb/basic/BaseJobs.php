@@ -93,19 +93,6 @@ abstract class BaseJobs implements JobInterface
     }
 
     /**
-     * 可靠支付任务由持久化记录直接执行，失败不能因普通队列重试耗尽而丢失。
-     * @param string|array $action 任务方法或参数
-     * @param array $data 任务参数
-     * @return mixed
-     */
-    public static function runPaymentTask($action, array $data = [])
-    {
-        $method = is_array($action) ? 'doJob' : $action;
-        if (!is_string($method) || !method_exists(static::class, $method)) throw new \RuntimeException('支付任务方法不存在');
-        return static::executeSync($action, $data);
-    }
-
-    /**
      * 加入队列
      * @param $action
      * @param array $data
@@ -114,9 +101,6 @@ abstract class BaseJobs implements JobInterface
      */
     public static function dispatch($action, array $data = [], ?string $queueName = null)
     {
-        if (\crmeb\services\pay\PaymentDispatch::defer(['type' => 'job', 'class' => static::class,
-            'action' => $action, 'data' => $data, 'queue' => $queueName, 'secs' => null])) return true;
-        if (\crmeb\services\pay\PaymentDispatch::replaying()) return static::runPaymentTask($action, $data);
         //判断是否开启队列
         if (sys_config('queue_open', 0) == 1 && Env::get('cache.driver', 'file') == 'redis') {
             //加入队列
@@ -137,9 +121,6 @@ abstract class BaseJobs implements JobInterface
      */
     public static function dispatchSecs(int $secs, $action, array $data = [], ?string $queueName = null)
     {
-        if (\crmeb\services\pay\PaymentDispatch::defer(['type' => 'job', 'class' => static::class,
-            'action' => $action, 'data' => $data, 'queue' => $queueName, 'secs' => $secs])) return true;
-        if (\crmeb\services\pay\PaymentDispatch::replaying()) return static::runPaymentTask($action, $data);
         //判断是否开启队列
         if (sys_config('queue_open', 0) == 1 && Env::get('cache.driver', 'file') == 'redis') {
             //加入队列

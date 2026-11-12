@@ -175,7 +175,7 @@
     </div>
     <div v-if="configData.list">
       <div class="add-btn" @click="addHotTxt">
-        <el-button style="width: 100%; height: 40px">+ 添加</el-button>
+        <el-button v-db-click style="width: 100%; height: 40px">+ 添加</el-button>
       </div>
     </div>
     <!-- 商品标签 -->

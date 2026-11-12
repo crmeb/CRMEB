@@ -113,7 +113,7 @@ import { getLogo } from '@/api/public';
 import { wechatAppAuth } from '@/api/api.js';
 // #endif
 const BACK_URL = 'login_back_url';
-import Verify from '../components/verify/index.vue';
+import Verify from '@/components/Verify/index.vue';
 import Cache from '@/utils/cache';
 import { useColorTheme } from '@/composables/useColorTheme';
 import { useSendVerifyCode } from '@/composables/useSendVerifyCode';
@@ -142,7 +142,6 @@ const codeUrl = ref('');
 const codeVal = ref('');
 const isShowCode = ref(false);
 const appLoginStatus = ref(false); // 微信登录强制绑定手机号码状态
-const appUserInfo = ref({}); // 兼容旧版服务端的微信用户信息
 const appAuthCode = ref(''); // 微信登录一次性授权码
 const appBindKey = ref(''); // 微信登录绑定手机号缓存key
 const wechatLoginLoading = ref(false);
@@ -214,18 +213,33 @@ function appleLogin() {
 		provider: 'apple',
 		timeout: 10000,
 		success(loginRes) {
+			const appleInfo = loginRes.appleInfo || {};
+			const identityToken = appleInfo.identityToken || '';
+			if (!identityToken) {
+				uni.hideLoading();
+				return uni.showToast({
+					title: i18n.t(`Apple授权失败`),
+					icon: 'none',
+					duration: 2000
+				});
+			}
 			uni.getUserInfo({
 				provider: 'apple',
 				success: function (infoRes) {
-					appleUserInfo.value = infoRes.userInfo;
+					const userInfo = infoRes.userInfo || {};
+					appleUserInfo.value = {
+						identityToken,
+						email: appleInfo.email || userInfo.email || ''
+					};
 					appleLoginApi();
 				},
 				fail() {
-					uni.showToast({
-						title: i18n.t(`获取用户信息失败`),
-						icon: 'none',
-						duration: 2000
-					});
+					// 用户信息可选；有 identityToken 即可完成服务端验签登录
+					appleUserInfo.value = {
+						identityToken,
+						email: appleInfo.email || ''
+					};
+					appleLoginApi();
 				},
 				complete() {
 					uni.hideLoading();
@@ -233,6 +247,7 @@ function appleLogin() {
 			});
 		},
 		fail(error) {
+			uni.hideLoading();
 			console.log(error);
 		}
 	});
@@ -240,7 +255,7 @@ function appleLogin() {
 // 苹果登录Api
 function appleLoginApi() {
 	appleLoginRequest({
-		openId: appleUserInfo.value.openId,
+		identityToken: appleUserInfo.value.identityToken,
 		email: appleUserInfo.value.email || '',
 		phone: account.value,
 		captcha: captcha.value
@@ -331,7 +346,6 @@ function wxLogin() {
 
 function wxLoginApi() {
 	wechatAppAuth({
-		userInfo: appUserInfo.value,
 		authCode: appAuthCode.value,
 		bindKey: appBindKey.value,
 		phone: account.value,

@@ -16,7 +16,7 @@ Docker 编排入口在**仓库根目录**：
 
 | 路径 | 用途 | 是否入库 |
 |---|---|---|
-| `php/Dockerfile` | phpfpm / timer / queue / workerman 共用的 PHP 镜像构建文件（默认 8.2，支持范围 8.2-8.4，`PHP_VERSION` 构建参数可切 8.3 / 8.4） | 是（根 compose `build.context` 引用） |
+| `php/Dockerfile` | phpfpm / timer / queue / workerman 共用的 PHP 镜像构建文件（默认 8.4，支持范围 8.2-8.4，`PHP_VERSION` 构建参数可切 8.2 / 8.3） | 是（根 compose `build.context` 引用） |
 | `nginx/vhost.conf` | Nginx 站点配置（挂载进 nginx 容器） | 是 |
 | `queue-worker.sh` | 队列消费者包装脚本：前台启动 `queue:listen`、`SIGTERM` 优雅停机，并每 30 秒写 `runtime/.queue_heartbeat` 心跳。由根 compose 的 `queue` 服务**单文件只读**挂载到容器内 `/repo/docker/queue-worker.sh` 执行（只挂脚本本身，避免连带挂载 `mysql/data` 数据卷） | 是（根 compose `queue` 服务引用） |
 | `mysql/data`、`mysql/log` | MySQL 数据与日志卷 | 否（运行时生成，已 gitignore） |

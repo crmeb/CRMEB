@@ -17,7 +17,6 @@ use app\services\user\UserServices;
 use crmeb\basic\BaseService;
 use crmeb\trade\order\aftersale\AfterSaleHandlerInterface;
 use crmeb\trade\order\aftersale\RefundEffectContextInterface;
-use crmeb\services\pay\PaymentDispatch;
 use think\facade\Log;
 
 /**
@@ -241,7 +240,8 @@ class RefundEffectServices extends BaseService implements RefundEffectContextInt
                     $this->app->make(RefundExecutorServices::class)->rollbackCoupon($order);
                 });
             }
-            if ($normalOrder && !$this->effectDao->getEffect((int)$locked['id'], 'refund_success_event', 'success')) {
+            // 活动订单也要发退款成功事件，交易模式监听器据此回退销量；优惠券只在普通订单返还
+            if (!$this->effectDao->getEffect((int)$locked['id'], 'refund_success_event', 'success')) {
                 $this->effectDao->save([
                     'refund_order_id' => (int)$locked['id'], 'effect_type' => 'refund_success_event',
                     'effect_key' => 'success', 'status' => 'pending', 'payload' => [],
@@ -293,11 +293,11 @@ class RefundEffectServices extends BaseService implements RefundEffectContextInt
             $eventOrder = $order->toArray();
             $eventOrder['order_id'] = (string)$refund['order_no'];
             $eventOrder['refund_price'] = (string)$refund['amount'];
-            PaymentDispatch::replay(fn () => event('OrderRefundSuccess', [
+            event('OrderRefundSuccess', [
                 $eventOrder,
                 ['order_id' => (string)$refund['order_no'], 'refund_price' => (string)$refund['amount'],
                     'refund_no' => (string)$refund['refund_no'], 'refund_order_id' => $refundId],
-            ]));
+            ]);
             $this->effectDao->finishSuccessEvent($claimed['effect_id'], $token, [
                 'status' => 'completed', 'last_error' => '', 'update_time' => time(),
             ]);

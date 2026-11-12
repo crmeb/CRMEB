@@ -9,9 +9,9 @@ CRMEB 开源版（KY）管理后台，基于 **Vue 3.5 + element-plus 2.9 + Pini
 
 ## 常用命令
 
-- Node 需 `>=18.20.0`，npm >= 7；使用 `npm ci` 安装锁定依赖。为兼容 Node 18，`sass`、`unplugin-auto-import`、`unplugin-vue-components` 固定版本，升级时检查间接依赖并验证启动、主包及扩展构建。
+- Node 需 `>=18.20.0`，npm >= 7；使用 `npm ci` 安装锁定依赖。`xlsx` 取自 SheetJS 官方 CDN（`https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`，npm 仓库停在有漏洞的 0.18.5），安装环境需能访问该域名，升级时替换 tarball 地址。为兼容 Node 18，`sass`、`unplugin-auto-import`、`unplugin-vue-components` 固定版本，升级时检查间接依赖并验证启动、主包及扩展构建。
 - `npm run dev` — Vite dev server，端口 **1619**（被占用时自动顺延为 1620 等，以终端实际输出为准），自动开浏览器；`/adminapi` 代理到 `http://localhost:8011`（需后端在跑）。
-- `npm run build` — 生产构建到 `dist/`（`base: '/admin'`）。
+- `npm run build` — 生产构建到 `dist/`（`base: '/admin/'`）。
 - `npm run build:ext` / `npm run dev:ext` — 扩展 UMD 包（`scripts/build-extensions.js` + `scripts/vite.ext.config.js`，支持 `--ext <key>` / `--watch`）；`build:all` = build + build:ext。
 - `npm run eslint` — 检查并自动修复 `src`；`npm run prettier`。
 - **无测试套件**；ESLint 即 prettier 推荐配置，无额外规则。
@@ -19,7 +19,7 @@ CRMEB 开源版（KY）管理后台，基于 **Vue 3.5 + element-plus 2.9 + Pini
 ## 接口地址配置
 
 - `src/setting.js` 的 `apiBaseURL`：`import.meta.env.VITE_APP_API_URL` 优先（`.env`/`.env.dev`/`.env.production`），留空回退同源 `${location.origin}/adminapi`。旧版「硬编码 `||` 链短路 env」的坑已修复，切换后端地址改 `.env*` 即可。
-- `routePre: '/admin'`，与 Vite `base: '/admin'` 一致（非根路径部署，构建产物挂在 `/admin` 下）。
+- `routePre: '/admin'`，与 Vite `base: '/admin/'` 对应（非根路径部署，构建产物挂在 `/admin` 下；base 必须带结尾斜杠，否则 `%BASE_URL%` 会拼出 `/adminfavicon.ico`）。
 - `.env.production` 的 `VITE_APP_API_URL` 留空 = 同源 `/adminapi`（同域部署默认形态）；websocket 地址在 `.env` 的 `VITE_APP_WS_*`。
 
 ## 目录结构（src/）

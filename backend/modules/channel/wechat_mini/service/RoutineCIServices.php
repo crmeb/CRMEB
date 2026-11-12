@@ -365,13 +365,14 @@ class RoutineCIServices extends BaseService
         $desc = $desc ?: '版本 ' . $version;
 
         // 构建 miniprogram-ci upload 命令
+        // 全部动态参数 escapeshellarg：双引号内 addslashes 不转义 $() 与反引号，曾致命令注入（安全审计 D2）
         $command = sprintf(
-            'miniprogram-ci upload --pp "%s" --pkp "%s" --appid "%s" --uv "%s" -r 1 --desc "%s"',
-            $this->projectPath,    // 项目路径
-            $this->privateKeyPath, // 密钥文件路径
-            $this->appId,          // 小程序 AppId
-            $version,              // 版本号
-            addslashes($desc)      // 版本描述 (转义特殊字符)
+            'miniprogram-ci upload --pp %s --pkp %s --appid %s --uv %s -r 1 --desc %s',
+            escapeshellarg($this->projectPath),    // 项目路径
+            escapeshellarg($this->privateKeyPath), // 密钥文件路径
+            escapeshellarg($this->appId),          // 小程序 AppId
+            escapeshellarg($version),              // 版本号
+            escapeshellarg($desc)                  // 版本描述
         );
 
         return $command;
@@ -397,17 +398,19 @@ class RoutineCIServices extends BaseService
     protected function buildPreviewCommand(string $qrcodePath, string $pagePath = ''): string
     {
         // 构建基本的 preview 命令
+        // 全部动态参数 escapeshellarg：单引号串内反斜杠不生效，addslashes 无法防引号闭合拼接（安全审计 D1）
         $command = sprintf(
-            'miniprogram-ci preview --pp "%s" --pkp "%s" --appid "%s" --qrcode-format image --qrcode-output-dest "%s"',
-            $this->projectPath,    // 项目路径
-            $this->privateKeyPath, // 密钥文件路径
-            $this->appId,          // 小程序 AppId
-            $qrcodePath            // 二维码输出路径
+            'miniprogram-ci preview --pp %s --pkp %s --appid %s --qrcode-format image --qrcode-output-dest %s',
+            escapeshellarg($this->projectPath),
+            escapeshellarg($this->privateKeyPath),
+            escapeshellarg($this->appId),
+            escapeshellarg($qrcodePath)
         );
 
         // 如果指定了预览页面，添加编译条件参数
         if ($pagePath) {
-            $command .= sprintf(' --compile-condition \'{"pathName":"%s"}\'', addslashes($pagePath));
+            // 编译条件以 JSON 构造后整体 escapeshellarg，杜绝单引号串内拼接逃逸（安全审计 D1）
+            $command .= ' --compile-condition ' . escapeshellarg(json_encode(['pathName' => (string)$pagePath], JSON_UNESCAPED_UNICODE));
         }
 
         return $command;

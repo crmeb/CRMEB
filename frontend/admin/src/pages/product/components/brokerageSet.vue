@@ -49,7 +49,7 @@
                     </el-input>
                     <div class="acea-row row-right row-middle ml14">
                       <el-button @click="closePop">取消</el-button>
-                      <el-button type="primary" @click="brokerageOneSetUp">确认</el-button>
+                      <el-button v-db-click type="primary" @click="brokerageOneSetUp">确认</el-button>
                     </div>
                   </div>
                   <template #reference><span class="iconfont iconbianji1"></span></template>
@@ -102,7 +102,7 @@
                     </el-input>
                     <div class="acea-row row-right row-middle ml14">
                       <el-button @click="closePop">取消</el-button>
-                      <el-button type="primary" @click="brokerageTwoSetUp">确认</el-button>
+                      <el-button v-db-click type="primary" @click="brokerageTwoSetUp">确认</el-button>
                     </div>
                   </div>
 
@@ -138,7 +138,7 @@
       <template #footer
         ><div class="dialog-footer">
           <el-button @click="onCancel">取消</el-button>
-          <el-button type="primary" @click="submitForm" :disabled="disabled" class="ml-14">确认</el-button>
+          <el-button v-db-click type="primary" @click="submitForm" :disabled="disabled" class="ml-14">确认</el-button>
         </div></template
       >
     </el-dialog>

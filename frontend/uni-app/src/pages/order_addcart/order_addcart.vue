@@ -311,6 +311,10 @@ const activeRouter = ref("");
 const is_diy_set = ref(false);
 const adding = ref(false);
 const disabledChangeNumber = ref(false);
+// 已成功提交到服务端的数量。输入过程中若请求未完成，后输入的数量记在 pendingCartNum，结束后再补发。
+const confirmedCartNum = {};
+let pendingCartNum = null;
+let inflightCartNum = null;
 const isFooter = ref(false);
 const btmNum = ref(0);
 const navConfig = ref(0);
@@ -687,8 +691,8 @@ function switchSelect() {
 }
 function iptCartNum(index) {
   const item = cartList.valid[index];
-  if (item.cart_num) setCartNum(item.id, item.cart_num);
   if (!item.cart_num) item.cart_num = 1;
+  setCartNum(item.id, item.cart_num);
   switchSelect();
 }
 function blurInput(index) {
@@ -697,6 +701,8 @@ function blurInput(index) {
     item.cart_num = 1;
     cartList["valid"] = cartList.valid;
   }
+  setCartNum(item.id, item.cart_num);
+  switchSelect();
 }
 function subCart(index) {
   if (disabledChangeNumber.value) return;
@@ -771,19 +777,40 @@ function addCart(index) {
   );
 }
 function setCartNum(cartId, cartNum, successCallback, errorCallback) {
-  if (disabledChangeNumber.value) return;
+  const key = String(cartId);
+  const num = String(cartNum);
+  if (disabledChangeNumber.value) {
+    // 与正在提交的数量相同则丢掉过期的待补发；否则只保留最后一次输入
+    if (inflightCartNum && inflightCartNum.key === key && inflightCartNum.num === num)
+      pendingCartNum = null;
+    else pendingCartNum = { cartId, cartNum, successCallback, errorCallback };
+    return;
+  }
+  if (confirmedCartNum[key] === num) return;
   disabledChangeNumber.value = true;
+  inflightCartNum = { key, num };
   changeCartNum(cartId, cartNum)
     .then((res) => {
+      confirmedCartNum[key] = num;
       successCallback?.(res.data);
     })
     .catch(() => {
-      errorCallback?.();
+      if (!pendingCartNum) errorCallback?.();
     })
     .finally(() => {
       setTimeout(() => {
         disabledChangeNumber.value = false;
-      }, 0); // 原 DEBOUNCETIME 从未在 config/app.js 定义（undefined 等效 0ms）
+        inflightCartNum = null;
+        const pending = pendingCartNum;
+        pendingCartNum = null;
+        if (pending)
+          setCartNum(
+            pending.cartId,
+            pending.cartNum,
+            pending.successCallback,
+            pending.errorCallback
+          );
+      }, 0);
     });
 }
 function getCartNum() {
@@ -834,6 +861,7 @@ async function getCartList(init) {
       if (validList.length > 0) {
         for (const item of validList) {
           item.numSub = item.cart_num == 1;
+          confirmedCartNum[String(item.id)] = String(item.cart_num);
           const productInfo = item.productInfo;
           if (
             productInfo.hasOwnProperty("attrInfo") &&

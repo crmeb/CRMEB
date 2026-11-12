@@ -115,16 +115,7 @@ const ids = ref('');
 const total = ref(0);
 const loading = ref(false);
 const tab = ref('day');
-const orderList = ref([
-  {
-    id: '1',
-    order_id: '200',
-    pay_price: '200',
-    status: 1,
-    phone: '13000000000',
-    address: '100',
-  },
-]);
+const orderList = ref([]);
 const formValidate = ref({
   store_id: '',
   time: '',
@@ -141,10 +132,11 @@ const labelPosition = computed(() => {
 });
 
 onMounted(() => {
-  onClickTab(tab.value);
+  getList();
 });
 
 function onClickTab() {
+  formValidate.value.page = 1;
   getList();
 }
 function search() {
@@ -152,18 +144,25 @@ function search() {
 }
 function getList() {
   loading.value = true;
-  let data = {
+  const data = {
     type: tab.value,
     time: formValidate.value.time,
     page: formValidate.value.page,
     limit: formValidate.value.limit,
     store_id: formValidate.value.store_id,
   };
-  getRecord(data).then((res) => {
-    orderList.value = res.data.list;
-    loading.value = false;
-    total.value = res.data.count;
-  });
+  getRecord(data)
+    .then((res) => {
+      orderList.value = res.data?.list || [];
+      total.value = res.data?.count || 0;
+    })
+    .catch(() => {
+      orderList.value = [];
+      total.value = 0;
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 }
 // 选择时间
 function selectChange(tab) {

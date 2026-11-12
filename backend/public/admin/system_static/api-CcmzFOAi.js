@@ -1,0 +1,1 @@
+import{ad as a}from"./common-BjnwXDgI.js";import"./element-plus-BlM_hkkP.js";import"./form-create-wUo3gcl5.js";const d="/normal";function f(t,r={}){const e=(r.method||"get").toLowerCase(),o={url:d+t,method:e};return r.body&&(o.data=typeof r.body=="string"?JSON.parse(r.body):r.body),a(o)}export{f as normalApi};

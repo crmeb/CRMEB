@@ -1,0 +1,1 @@
+import{ad as t}from"./common-BjnwXDgI.js";function c(o){return t({url:"coupon/product/list",method:"get",params:o})}function n(o){return t({url:"coupon/product",method:"post",data:o})}function p(o,u){return t({url:`coupon/product/${o}`,method:"put",data:u})}export{p as a,n as b,c};

@@ -17,13 +17,13 @@
           <el-select v-model="item.value" placeholder="请选择" filterable clearable style="width: 220px">
             <el-option v-for="v in variableList" :key="v.key" :label="v.label" :value="v.key"> </el-option>
           </el-select>
-          <el-button v-if="keyList.length" class="deteal-btn ml10" type="text" @click="remove(index)">删除</el-button>
+          <el-button v-db-click v-if="keyList.length" class="deteal-btn ml10" type="text" @click="remove(index)">删除</el-button>
         </div>
       </template>
     </vuedraggable>
     <!-- 新增字段行 -->
     <div class="add-more">
-      <el-button class="h-33" type="primary" @click="add">新增</el-button>
+      <el-button v-db-click class="h-33" type="primary" @click="add">新增</el-button>
     </div>
   </div>
 </template>

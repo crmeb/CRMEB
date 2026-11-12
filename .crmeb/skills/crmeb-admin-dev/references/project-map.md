@@ -6,7 +6,7 @@ Admin 位于 `frontend/admin/`，使用 **Vite 5**；Node 版本与依赖安装�
 
 ```bash
 npm run dev            # Vite dev server，端口 1619（占用时顺延），/adminapi 代理到 localhost:8011
-npm run build          # 生产构建到 dist/（base: '/admin'）
+npm run build          # 生产构建到 dist/（base: '/admin/'）
 npm run build:ext      # 构建 UMD 扩展（--ext <key> 指定单个，--watch 监听）
 npm run build:all      # build + build:ext
 npm run eslint         # 检查并自动修复 src

@@ -238,6 +238,8 @@ class CommonController extends AuthController
                 'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/product/product_reply?is_reply=0'
             ];
         }
+        //一号通短信余额检查（监听器内有节流）
+        event('SmsBalanceCheck');
         return app('json')->success($this->noticeData($value));
     }
 

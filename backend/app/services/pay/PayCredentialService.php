@@ -11,7 +11,7 @@
 
 namespace app\services\pay;
 
-use app\services\PlatformDetector;
+use app\services\channel\PlatformDetector;
 
 /**
  * 支付凭证服务

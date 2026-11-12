@@ -232,6 +232,7 @@ class UserRechargeServices extends BaseService
                     $recharge = app()->make(RechargeServices::class);
                     $order_info = $recharge->recharge($rechargeOrder);
                 } catch (\Exception $e) {
+                    $this->dao->delete((int)$rechargeOrder['id']);
                     throw new ApiException($e->getMessage());
                 }
                 if ($renten) {
@@ -245,49 +246,50 @@ class UserRechargeServices extends BaseService
 
     public function rechargeSuccess($orderId, array $other = [])
     {
-        if (!\crmeb\services\pay\PaymentDispatch::collecting()) {
-            return app()->make(PayRecordServices::class)->complete((string)$orderId, 'user_recharge',
-                (string)($other['trade_no'] ?? ''), fn() => $this->rechargeSuccess($orderId, $other));
+        $rechargeEvent = null;
+        $paidOrder = null;
+        $this->transaction(function () use ($orderId, $other, &$rechargeEvent, &$paidOrder) {
+            $row = $this->dao->getDb()->where('order_id', $orderId)->lock(true)->find();
+            if (!$row) {
+                throw new ApiException('订单不存在');
+            }
+            if ((int)$row['paid'] === 1) {
+                return;
+            }
+            $order = $row->toArray();
+            $records = app()->make(PayRecordServices::class);
+            $paytype = (string)($other['pay_type'] ?? PayServices::WEIXIN_PAY);
+            $paytype = $records->validate($order, 'user_recharge', $paytype, $other);
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $user = $userServices->getUserInfo((int)$order['uid']);
+            if (!$user) {
+                throw new ApiException('用户不存在');
+            }
+            $price = bcadd((string)$order['price'], (string)$order['give_price'], 2);
+            if (!$this->dao->update($order['id'], ['paid' => 1, 'recharge_type' => $paytype, 'pay_time' => time(), 'trade_no' => $other['trade_no'] ?? ''], 'id')) {
+                throw new ApiException('修改订单失败');
+            }
+            $now_money = bcadd((string)$user['now_money'], (string)$price, 2);
+            /** @var UserMoneyServices $userMoneyServices */
+            $userMoneyServices = app()->make(UserMoneyServices::class);
+            $userMoneyServices->moneyIncome('user_recharge', $user['uid'], ['number' => $price, 'price' => $order['price'], 'give_price' => $order['give_price']], $order['id']);
+            /** @var CapitalFlowServices $capitalFlowServices */
+            $capitalFlowServices = app()->make(CapitalFlowServices::class);
+            $order['nickname'] = $user['nickname'];
+            $order['phone'] = $user['phone'];
+            $order['pay_type'] = $paytype;
+            $capitalFlowServices->setFlow($order, 'recharge');
+            $records->markCompleted((string)$orderId, (string)($other['trade_no'] ?? ''));
+            $rechargeEvent = [$order['uid'], $order, $order['price'], $order['give_price'] ?? 0, $now_money, $user['phone'] ?? ''];
+            $paidOrder = $order;
+        });
+        if (!$paidOrder) {
+            return true;
         }
-        if ($this->dao->be(['order_id' => $orderId, 'paid' => 1])) return true;
-        $order = $this->dao->getOne(['order_id' => $orderId, 'paid' => 0]);
-        if (!$order) {
-            throw new ApiException('订单不存在');
-        }
-        /** @var \app\services\user\UserServices $userServices */
-        $userServices = app()->make(\app\services\user\UserServices::class);
-        $user = $userServices->getUserInfo((int)$order['uid']);
-        if (!$user) {
-            throw new ApiException('用户不存在');
-        }
-        $price = bcadd((string)$order['price'], (string)$order['give_price'], 2);
-        if (!$this->dao->update($order['id'], ['paid' => 1, 'recharge_type' => $other['pay_type'], 'pay_time' => time(), 'trade_no' => $other['trade_no'] ?? ''], 'id')) {
-            throw new ApiException('修改订单失败');
-        }
-        $now_money = bcadd((string)$user['now_money'], (string)$price, 2);
-        /** @var \app\services\user\UserMoneyServices $userMoneyServices */
-        $userMoneyServices = app()->make(\app\services\user\UserMoneyServices::class);
-        $userMoneyServices->moneyIncome('user_recharge', $user['uid'], ['number' => $price, 'price' => $order['price'], 'give_price' => $order['give_price']], $order['id']);
-
-        /** @var CapitalFlowServices $capitalFlowServices */
-        $capitalFlowServices = app()->make(CapitalFlowServices::class);
-        $order['nickname'] = $user['nickname'];
-        $order['phone'] = $user['phone'];
-        $capitalFlowServices->setFlow($order, 'recharge');
-
-        event('UserRecharge', [
-            $order['uid'],
-            $order,
-            $order['price'],
-            $order['give_price'] ?? 0,
-            $now_money,
-            $user['phone'] ?? ''
-        ]);
-
-        $order['pay_type'] = $other['pay_type'];
-        $order['payment_context'] = app()->make(PayRecordServices::class)->find((string)$orderId)['context'] ?? [];
-        event('OrderShipping', ['recharge', $order, 3, '', '']);
-
+        $paidOrder['payment_context'] = app()->make(PayRecordServices::class)->find((string)$orderId)['context'] ?? [];
+        event('UserRecharge', $rechargeEvent);
+        event('OrderShipping', ['recharge', $paidOrder, 3, '', '']);
         return true;
     }
 

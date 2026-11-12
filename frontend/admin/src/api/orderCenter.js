@@ -52,3 +52,11 @@ export function orderCenterFilterOptions() {
     method: 'get',
   });
 }
+
+export function orderCenterCanceledRefund(data) {
+  return request({
+    url: '/order/center/canceled_refund',
+    method: 'post',
+    data,
+  });
+}

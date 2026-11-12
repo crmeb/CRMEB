@@ -288,8 +288,14 @@ class QrcodeServices extends BaseService
                 $namePath = $id . 'routine_index_code.jpg';
                 break;
             case 7:
+                // 礼物领取小程序码：scene 仅放 32 位 gift_key（微信 scene 上限 32 字符）
+                $giftKey = (string)($param['gift_key'] ?? '');
+                if ($giftKey === '' || !preg_match('/^[a-f0-9]{32}$/', $giftKey)) {
+                    return false;
+                }
                 $page = 'pages/goods/receive_gift/index';
-                $namePath = 'gift_order_' . $id . '.jpg';
+                $namePath = 'gift_order_' . $giftKey . '.jpg';
+                $data = $giftKey;
                 break;
         }
         if (!$page || !$namePath) {

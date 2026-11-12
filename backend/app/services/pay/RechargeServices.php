@@ -53,7 +53,7 @@ class RechargeServices
             throw new ApiException('订单已支付');
         }
         $payType = $recharge['recharge_type'];
-        $platform = $platform ?: \app\services\PlatformDetector::detect();
+        $platform = $platform ?: \app\services\channel\PlatformDetector::detect();
 
         // 校验支付方式是否为已启用渠道（从 eb_pay_channel 配置表动态读取，禁止硬编码）
         $payTypes = PayServices::getPayType();

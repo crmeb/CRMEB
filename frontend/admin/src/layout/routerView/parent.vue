@@ -8,7 +8,7 @@
         <keep-alive :include="keepAliveNameList">
           <component
             :is="Component"
-            :key="refreshRouterViewKey ? route.fullPath + '__r' + refreshRouterViewKey : route.fullPath"
+            :key="refreshRouterViewKey ? viewCacheKey(route) + '__r' + refreshRouterViewKey : viewCacheKey(route)"
           />
         </keep-alive>
       </transition>
@@ -59,5 +59,31 @@ function onTagsViewRefreshRouterView(path) {
 // 获取路由缓存列表（name），默认路由全部缓存
 function getKeepAliveNames() {
   return keepAliveNamesStore.keepAliveNames;
+}
+
+/**
+ * keep-alive / transition 用的视图 key。
+ * 默认 fullPath；edit_theme 的 query.type 只切换页内左侧分类，若计入 key
+ * 会整页销毁重建（侧栏+顶栏一起闪）。
+ */
+function viewCacheKey(currentRoute) {
+  const path = currentRoute.path || '';
+  if (!path.includes('/edit_theme')) {
+    return currentRoute.fullPath;
+  }
+  const query = currentRoute.query || {};
+  const params = new URLSearchParams();
+  Object.keys(query).forEach((key) => {
+    if (key === 'type') return;
+    const val = query[key];
+    if (val === undefined || val === null || val === '') return;
+    if (Array.isArray(val)) {
+      val.forEach((item) => params.append(key, String(item)));
+    } else {
+      params.set(key, String(val));
+    }
+  });
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
 }
 </script>

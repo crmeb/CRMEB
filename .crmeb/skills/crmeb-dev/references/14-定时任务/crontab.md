@@ -80,8 +80,7 @@ mark 在调度时经 `Str::camel()` 归一，**任务标识一律使用驼峰命
 | productReplay | 订单商品自动好评 | `OrderCenterServices::autoComment()` |
 | clearPoster | 清除昨日海报 | `SystemAttachmentServices::emptyYesterdayAttachment()` |
 | autoInvoice | 自动开具/冲红电子发票 | `OrderInvoiceServices::autoInvoice()/autoInvoiceRed()` |
-| refundRecover | 退款一致性恢复 | `RefundOrderServices::recover(100)` |
-| paymentRecover | 微信支付一致性恢复 | `PayRecordServices::recover()` |
+| refundRecover | 退款一致性恢复 | `RefundOrderServices::recover(100)`。只处理售后退款，不查支付合同 |
 | customTimer | 自定义定时任务 | `eval` 管理员自定义代码（仅 debug + 超管 + `filesystem.password` + 危险词校验，见 `SystemCrontabController::saveTimer()`） |
 | noticeUnpaidOrder | 未支付订单提醒 | 触发 `UnpaidOrderNotice` 事件 |
 | noticeMemberExpire | 会员到期提醒 | 预留 |

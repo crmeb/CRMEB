@@ -86,13 +86,17 @@ Route::group('system', function () {
 
     /** 数据清除 */
     Route::group(function () {
-        //清除用户数据
-        Route::get('clear/:type', [\app\adminapi\controller\system\SystemClearDataController::class, 'index'])->option(['real_name' => '清除用户数据']);
+        //清除数据（须 POST：app_debug + 超管 + 登录密码）
+        Route::post('clear/:type', [\app\adminapi\controller\system\SystemClearDataController::class, 'index'])->option(['real_name' => '清除数据']);
         //清除缓存
         Route::get('refresh_cache/cache', [\app\adminapi\controller\system\ClearController::class, 'refreshCache'])->option(['real_name' => '清除系统缓存']);
         Route::get('refresh_cache/log', [\app\adminapi\controller\system\ClearController::class, 'deleteLog'])->option(['real_name' => '清除系统日志']);
+        //当前网站域名（更换域名弹窗默认值）
+        Route::get('replace_site_url', [\app\adminapi\controller\system\SystemClearDataController::class, 'getSiteUrl'])->option(['real_name' => '获取当前网站域名']);
         //域名替换接口
         Route::post('replace_site_url', [\app\adminapi\controller\system\SystemClearDataController::class, 'replaceSiteUrl'])->option(['real_name' => '域名替换']);
+        //恢复出厂设置（须 app_debug + 超管）
+        Route::post('factory_reset', [\app\adminapi\controller\system\SystemClearDataController::class, 'factoryReset'])->option(['real_name' => '恢复出厂设置']);
         //获取APP版本列表
         Route::get('version_list', [\app\adminapi\controller\system\AppVersionController::class, 'list'])->option(['real_name' => '获取APP版本列表']);
         //添加版本信息

@@ -100,8 +100,7 @@ class OrderOfflineServices extends BaseService
         $orderInfo['pay_type'] = 'offline';
         $capitalFlowServices->setFlow($orderInfo, 'order');
 
-        // 统一走 paySuccess：内部完成 syncStatus + 拼团创建 + OrderPaySuccess 事件触发
-        // cardkey/virtual/hotel 等产品类型监听器通过 OrderPaySuccess 事件完成自动履约（发卡/发货等）
+        // 统一走 paySuccess：事务内改已支付，提交后再按产品类型履约并广播。
         /** @var OrderSuccessServices $successServices */
         $successServices = app()->make(OrderSuccessServices::class);
         $result = $successServices->paySuccess($orderInfo, 'offline');

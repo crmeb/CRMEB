@@ -119,7 +119,7 @@ class PayServices
 
             // 从 eb_pay_channel_platform 读取当前端的支付类型，传入驱动
             // 驱动不再自行判断平台，由数据库配置决定
-            $platform = $options['platform'] ?? \app\services\PlatformDetector::detect();
+            $platform = $options['platform'] ?? \app\services\channel\PlatformDetector::detect();
             $options['pay_type'] = $this->resolvePayType($channelKey, $platform);
             $options['platform'] = $platform;
 

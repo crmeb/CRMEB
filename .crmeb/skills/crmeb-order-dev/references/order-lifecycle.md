@@ -50,7 +50,7 @@ public function advance(string $orderNo, string $extStatus, array $extra = []): 
 | 阶段 | 事件 | 触发位置（app 层） | 模块监听器典型职责 |
 | --- | --- | --- | --- |
 | 创建后 | `OrderCreateAfter` | [CenterOrderController.php](../../../../backend/app/api/controller/v1/order/CenterOrderController.php)（create 末尾） | 下单通知；调度超时取消；分销快照 |
-| 支付成功 | `OrderPaySuccess` | [OrderSuccessServices.php](../../../../backend/app/services/order/OrderSuccessServices.php)（`paySuccess` 内，先 `syncStatus('processing')` 再触发） | 推进扩展表待发货/自动履约；返佣；拼团推进；支付通知 |
+| 支付成功 | `OrderPaySuccess` | [OrderSuccessServices.php](../../../../backend/app/services/order/OrderSuccessServices.php)（`paySuccess` 内，先 `syncStatus('processing')` 再触发） | 推进扩展表待发货/自动履约；返佣；支付通知。拼团成团不走这个事件，由 `CombinationActivityHandler::afterOrderPay` 直接处理 |
 | 支付成功（旁路） | `OrderPayLottery`、`OrderPaySuccessCustomerNotice`、`OutPush` | 同上及 [app/jobs/OrderJob.php](../../../../backend/app/jobs/OrderJob.php) | 抽奖次数、客服/模板消息、外部推送 |
 | 发货 | `OrderDelivery` | [OrderDeliveryServices.php](../../../../backend/app/services/order/OrderDeliveryServices.php) | 推进待收货；发货通知；微信发货管理 |
 | 收货 | `OrderTake` | [OrderTakeServices.php](../../../../backend/app/services/order/OrderTakeServices.php)（`takeOrder`） | 推进待评价/待安装；收货奖励（返佣/积分/经验在服务层统一处理） |
@@ -93,7 +93,7 @@ public function advance(string $orderNo, string $extStatus, array $extra = []): 
 | --- | --- |
 | 中台与扩展表状态不一致 | 详情接口会经 Adapter 实时重新推导；不一致通常是推进时漏调 `advance()` 直接改了扩展表，或 `defineStatusTree` 未定义该节点 |
 | 支付后状态没推进 | 1) `OrderSuccessServices::paySuccess` 是否触发 `OrderPaySuccess`；2) 模块监听器是否校验了 `product_type` 导致被过滤；3) 监听器幂等短路条件是否过宽 |
-| 订单卡在待支付但钱已扣 | 查 `PayRecordServices::complete()` 幂等回调与 `paySuccess` 链路日志（支付回调可能异步重试） |
+| 订单卡在待支付但钱已扣 | 查对应业务的 `paySuccess` 日志。付款通知按支付记录上的 `business_type` 进入核心服务，不再由定时任务查单补记 |
 | 取消后库存没回滚 | 用户取消走 `OrderCancel` 事件、超时取消走 `UnpaidOrderCancelJob` 直调适配器，两条路径最终都应经过 `OrderLifecycleServices::handleCancel()`，确认监听器/Job 是否漏接 |
 | 详情无进度条/按钮 | Adapter 的 `getProgress()`/状态树按钮是否实现；中台组装是否调用 `getProgressFromHandler` |
 

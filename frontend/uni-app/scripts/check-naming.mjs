@@ -21,10 +21,8 @@ const EXEMPT_PREFIXES = [
   'components/mp-html',
   'components/easy-loadimage',
   'components/zb-code',
-  'pages/annex/components/verify',
-  'pages/users/components/verify',
   'static/plugin',
-  'static/fonts',
+  'styles/fonts',
 ];
 
 const VUE_RE = /^[A-Z][a-zA-Z0-9]*$/;

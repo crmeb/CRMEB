@@ -6,7 +6,6 @@ use app\services\order\OrderCenterServices;
 use app\services\order\OrderInvoiceServices;
 use app\services\order\OrderTakeServices;
 use app\services\order\RefundOrderServices;
-use app\services\pay\PayRecordServices;
 use app\services\product\CenterProductServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use think\facade\Log;
@@ -52,10 +51,6 @@ class CrontabRunServices
             'refundRecover' => [
                 'name' => '退款一致性恢复',
                 'description' => '查询支付渠道未决退款，并重试渠道成功后的本地产品效果',
-            ],
-            'paymentRecover' => [
-                'name' => '微信支付一致性恢复',
-                'description' => '查询既有支付合同并恢复充值退款、取消补偿及后置任务',
             ],
             'customTimer' => [
                 'name' => '自定义定时任务',
@@ -206,17 +201,6 @@ class CrontabRunServices
             $this->crontabLog('退款一致性恢复失败,失败原因:' . $e->getMessage());
             throw $e;
         }
-    }
-
-    /**
-     * 每分钟分批恢复微信支付任务。
-     * @return void
-     */
-    public function paymentRecover(): void
-    {
-        $result = app()->make(PayRecordServices::class)->recover();
-        $this->crontabLog('微信支付恢复结果：' . json_encode($result, JSON_UNESCAPED_UNICODE));
-        if ($result['failed']) throw new \RuntimeException('微信支付恢复存在失败任务，请检查脱敏支付日志');
     }
 
     public function customTimer($customCode = '')

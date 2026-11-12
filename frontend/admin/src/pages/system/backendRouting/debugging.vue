@@ -223,7 +223,6 @@ import { ElMessage } from 'element-plus';
 import request from './request';
 import MonacoEditor from './components/MonacoEditor.vue';
 import { getCookies } from '@/libs/util';
-
 const props = defineProps({
   formValidate: {
     type: Object,

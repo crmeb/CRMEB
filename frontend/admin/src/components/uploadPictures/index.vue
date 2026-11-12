@@ -94,7 +94,7 @@
               style="width: 150px"
               @change="searchFile"
             >
-              <template #suffix><i class="el-icon-search el-input__icon" v-db-click @click="getFileList"></i></template>
+              <template #suffix><i class="el-icon-search" v-db-click @click="getFileList"></i></template>
             </el-input>
             <el-radio-group class="mr10" v-if="isPage" v-model="lietStyle" @change="radioChange">
               <el-radio-button label="list" value="list">

@@ -98,4 +98,18 @@ class RoutineSchemeServices extends BaseService
         if ($res) return true;
         throw new AdminException('小程序链接生成失败');
     }
+
+    /**
+     * 外链跳转页 HTML。短链 /surl/:id 与 /api/get_scheme_url/:id 共用。
+     * @param mixed $id 外链 id
+     * @return string
+     */
+    public function redirectHtml($id): string
+    {
+        $url = (string)$this->dao->value($id, 'url');
+        if ($url !== '') {
+            return '<script>window.location.href="' . $url . '";</script>';
+        }
+        return '<h1>未找到跳转路径</h1>';
+    }
 }

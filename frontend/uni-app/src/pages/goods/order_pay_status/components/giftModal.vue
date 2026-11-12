@@ -121,13 +121,16 @@ watch(() => props.aleartStatus, (status) => {
     posterImageStatus.value = false;
     posterImage.value = "";
   } else {
+    const giftKey = props.giftData.gift_key || props.giftData.key || "";
+    const keyQuery = giftKey ? "&key=" + giftKey : "";
     // #ifdef H5
     codeVal.value =
       window.location.origin +
       "/pages/goods/receive_gift/index?id=" +
       props.giftData.id +
       "&spid=" +
-      uid.value;
+      uid.value +
+      keyQuery;
     // #endif
     // #ifdef APP-PLUS
     codeVal.value =
@@ -135,7 +138,8 @@ watch(() => props.aleartStatus, (status) => {
       "/pages/goods/receive_gift/index?id=" +
       props.giftData.id +
       "&spid=" +
-      uid.value;
+      uid.value +
+      keyQuery;
     // #endif
     // #ifdef MP
     PromotionCode.value = props.giftData.code;

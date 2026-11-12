@@ -39,10 +39,10 @@ services:
     build:
       context: ./docker/php
       dockerfile: Dockerfile
-      # 默认构建支持范围下限 8.2；验证其它版本：PHP_VERSION=8.4 docker compose up -d --build
+      # 默认构建 8.4；支持范围 8.2-8.4。验证其它版本：PHP_VERSION=8.2 docker compose up -d --build
       args:
-        PHP_VERSION: "${PHP_VERSION:-8.2}"
-    image: crmeb_php:${PHP_VERSION:-8.2}
+        PHP_VERSION: "${PHP_VERSION:-8.4}"
+    image: crmeb_php:${PHP_VERSION:-8.4}
     restart: always
     ports:
       - "9000:9000"
@@ -78,7 +78,7 @@ services:
   # 定时任务进程：以前台模式运行，由 Docker 负责开机启动和异常重启
   timer:
     container_name: crmeb_timer
-    image: crmeb_php:${PHP_VERSION:-8.2}
+    image: crmeb_php:${PHP_VERSION:-8.4}
     restart: always
     command: ["php", "think", "timer", "start"]
     environment:
@@ -108,7 +108,7 @@ services:
   # Redis 队列消费者：以前台模式运行，由 Docker 负责异常重启
   queue:
     container_name: crmeb_queue
-    image: crmeb_php:${PHP_VERSION:-8.2}
+    image: crmeb_php:${PHP_VERSION:-8.4}
     restart: always
     # queue:listen 自身不写心跳文件，由包装脚本负责优雅停机与 runtime/.queue_heartbeat
     command: ["sh", "/repo/docker/queue-worker.sh"]
@@ -140,7 +140,7 @@ services:
   # 统一 WebSocket 网关及内部 Channel 服务
   workerman:
     container_name: crmeb_workerman
-    image: crmeb_php:${PHP_VERSION:-8.2}
+    image: crmeb_php:${PHP_VERSION:-8.4}
     restart: always
     command: ["php", "think", "workerman", "start"]
     environment:

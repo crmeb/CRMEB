@@ -31,7 +31,7 @@
                 <el-input v-model="batchWord" type="textarea" :autosize="{ minRows: 3, maxRows: 5 }" />
                 <div class="batchBnt acea-row row-right">
                   <el-button @click.stop="cancel(1)">取消</el-button>
-                  <el-button type="primary" class="ml10" @click.stop="cancel(2)">确定</el-button>
+                  <el-button v-db-click type="primary" class="ml10" @click.stop="cancel(2)">确定</el-button>
                 </div>
               </div></template
             >

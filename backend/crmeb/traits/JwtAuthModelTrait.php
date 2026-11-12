@@ -11,8 +11,8 @@
 
 namespace crmeb\traits;
 
+use crmeb\utils\JwtAuth;
 use Firebase\JWT\JWT;
-use think\facade\Env;
 
 /**
  * Trait JwtAuthModelTrait
@@ -39,7 +39,7 @@ trait JwtAuthModelTrait
             'exp' => strtotime('+30 days'),
         ];
         $params['jti'] = compact('id', 'type');
-        $token = JWT::encode($params, Env::get('app.app_key', 'default'));
+        $token = JWT::encode($params, JwtAuth::secretKey());
 
         return compact('token', 'params');
     }
@@ -56,7 +56,7 @@ trait JwtAuthModelTrait
     {
         JWT::$leeway = 60;
 
-        $data = JWT::decode($jwt, Env::get('app.app_key', 'default'), array('HS256'));
+        $data = JWT::decode($jwt, JwtAuth::secretKey(), array('HS256'));
 
         $model = new self();
         return [$model->where($model->getPk(), $data->jti->id)->find(), $data->jti->type];

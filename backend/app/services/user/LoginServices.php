@@ -17,7 +17,9 @@ use crmeb\basic\BaseService;
 use app\services\message\channel\SmsChannel;
 use crmeb\exceptions\ApiException;
 use crmeb\services\CacheService;
+use crmeb\utils\Http;
 use crmeb\utils\JwtAuth;
+use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 
 /**
@@ -61,7 +63,9 @@ class LoginServices extends BaseService
         }
         if ($type == 'api') {
             $user = $this->dao->get($id);
-            $user = $user->toArray();
+            // pwd 在 User::$hidden 中，toArray()/toJson 会丢弃；必须读模型属性，
+            // 否则指纹变成 md5('')，parseToken 比对必失败并提示「登录状态已变更」
+            $pwd = (string)($user->pwd ?? '');
         }
         $token = $jwtAuth->createToken($id, $type, ['pwd' => md5($pwd)]);
         // 传入渠道才触发登录事件，避免内部 token 刷新等场景误触发
@@ -582,48 +586,115 @@ class LoginServices extends BaseService
      */
     public function remoteRegister(string $out_token = '')
     {
-        $info = JWT::jsonDecode(JWT::urlsafeB64Decode($out_token));
-        $userInfo = $this->dao->get(['uid' => $info->uid]);
-        $data = [];
-        if (!$userInfo) {
-            $data['uid'] = $info->uid;
-            $data['account'] = $info->phone !== '' ? $info->phone : 'out_' . $info->uid;
-            $data['phone'] = $info->phone;
-            $data['pwd'] = md5('123456');
-            $data['real_name'] = $info->nickname;
-            $data['birthday'] = 0;
-            $data['card_id'] = '';
-            $data['mark'] = '';
-            $data['addres'] = '';
-            $data['user_type'] = 'h5';
-            $data['add_time'] = time();
-            $data['add_ip'] = app('request')->ip();
-            $data['last_time'] = time();
-            $data['last_ip'] = app('request')->ip();
-            $data['nickname'] = $info->nickname;
-            $data['avatar'] = $info->avatar;
-            $data['city'] = '';
-            $data['language'] = '';
-            $data['province'] = '';
-            $data['country'] = '';
-            $data['status'] = 1;
-            $data['now_money'] = $info->now_money;
-            $data['integral'] = $info->integral;
-            $data['exp'] = $info->exp;
-            $this->dao->save($data);
-        } else {
-            $data['nickname'] = $info->nickname;
-            $data['avatar'] = $info->avatar;
-            $data['now_money'] = $info->now_money;
-            $data['integral'] = $info->integral;
-            $data['exp'] = $info->exp;
-            $this->dao->update($info->uid, $data);
+        // 远程登录令牌格式：urlsafe_base64(json) + '.' + hash_hmac('sha256', urlsafe_base64(json), APP_KEY)
+        // 仅接受持有本站 APP_KEY 的可信系统签发，杜绝伪造 uid 登录/注册（安全审计 A3）
+        $parts = explode('.', $out_token);
+        if (count($parts) !== 2 || $parts[0] === '' || $parts[1] === '') {
+            throw new ApiException('远程登录令牌无效');
         }
+        [$payloadB64, $remoteSign] = $parts;
+        $expected = hash_hmac('sha256', $payloadB64, JwtAuth::secretKey());
+        if (!hash_equals($expected, (string)$remoteSign)) {
+            throw new ApiException('远程登录令牌无效');
+        }
+        try {
+            $info = JWT::jsonDecode(JWT::urlsafeB64Decode($payloadB64));
+        } catch (\Throwable $e) {
+            throw new ApiException('远程登录令牌无效');
+        }
+        if (!$info instanceof \stdClass || !isset($info->uid) || (int)$info->uid <= 0) {
+            throw new ApiException('远程登录令牌无效');
+        }
+        // 仅允许「注册新用户」：已存在 uid 一律拒绝，避免 debug 下凭 HMAC 冒充任意账号登录
+        $userInfo = $this->dao->get(['uid' => $info->uid]);
+        if ($userInfo) {
+            throw new ApiException('远程登录仅支持注册新用户，禁止登录已有账号');
+        }
+        $data = [];
+        $data['uid'] = $info->uid;
+        $data['account'] = ($info->phone ?? '') !== '' ? $info->phone : 'out_' . $info->uid;
+        $data['phone'] = $info->phone ?? '';
+        $data['pwd'] = md5('123456');
+        $data['real_name'] = $info->nickname ?? '';
+        $data['birthday'] = 0;
+        $data['card_id'] = '';
+        $data['mark'] = '';
+        $data['addres'] = '';
+        $data['user_type'] = 'h5';
+        $data['add_time'] = time();
+        $data['add_ip'] = app('request')->ip();
+        $data['last_time'] = time();
+        $data['last_ip'] = app('request')->ip();
+        $data['nickname'] = $info->nickname ?? '';
+        $data['avatar'] = $info->avatar ?? '';
+        $data['city'] = '';
+        $data['language'] = '';
+        $data['province'] = '';
+        $data['country'] = '';
+        $data['status'] = 1;
+        $data['now_money'] = $info->now_money ?? 0;
+        $data['integral'] = $info->integral ?? 0;
+        $data['exp'] = $info->exp ?? 0;
+        $this->dao->save($data);
         $token = $this->createToken((int)$info->uid, 'api', '', 'h5', 'remote_register');
         if ($token) {
             return ['token' => $token['token'], 'expires_time' => $token['params']['exp']];
         } else {
             throw new ApiException('登录失败');
         }
+    }
+
+    /**
+     * 校验 Apple identityToken，返回经 Apple 公钥验签后的用户身份
+     * 仅信任 JWT 中的 sub，禁止使用客户端自报 openId
+     * @param string $identityToken Apple 授权返回的 identityToken（JWT）
+     * @return array{openId:string,email:string}
+     */
+    public function verifyAppleIdentityToken(string $identityToken): array
+    {
+        $identityToken = trim($identityToken);
+        if ($identityToken === '') {
+            throw new ApiException('缺少 Apple 授权凭证');
+        }
+
+        $clientId = trim((string)sys_config('apple_client_id'));
+        if ($clientId === '') {
+            throw new ApiException('请先在后台「应用 → APP → APP配置」填写 Apple Client ID（iOS Bundle ID）');
+        }
+
+        $jwks = CacheService::get('apple_auth_jwks');
+        if (!is_array($jwks) || empty($jwks['keys'])) {
+            $body = Http::getRequest('https://appleid.apple.com/auth/keys');
+            if (!is_string($body) || $body === '') {
+                throw new ApiException('获取 Apple 公钥失败');
+            }
+            $jwks = json_decode($body, true);
+            if (!is_array($jwks) || empty($jwks['keys'])) {
+                throw new ApiException('Apple 公钥无效');
+            }
+            CacheService::set('apple_auth_jwks', $jwks, 86400);
+        }
+
+        $prevLeeway = JWT::$leeway;
+        try {
+            JWT::$leeway = 60;
+            $payload = JWT::decode($identityToken, JWK::parseKeySet($jwks), ['RS256']);
+        } catch (\Throwable $e) {
+            throw new ApiException('Apple 授权校验失败，请重新登录');
+        } finally {
+            JWT::$leeway = $prevLeeway;
+        }
+
+        $iss = (string)($payload->iss ?? '');
+        $aud = (string)($payload->aud ?? '');
+        $sub = trim((string)($payload->sub ?? ''));
+        if ($iss !== 'https://appleid.apple.com' || $aud !== $clientId || $sub === '') {
+            throw new ApiException('Apple 授权校验失败，请重新登录');
+        }
+
+        return [
+            'openId' => $sub,
+            'email' => trim((string)($payload->email ?? '')),
+        ];
     }
 }

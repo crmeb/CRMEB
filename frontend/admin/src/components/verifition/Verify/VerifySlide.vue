@@ -70,7 +70,7 @@
  * VerifySlide
  * @description 滑块
  * */
-import { computed, getCurrentInstance, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { aesEncrypt } from './../utils/ase';
 import { resetSize } from './../utils/util';
 import { ajCaptcha, ajCaptchaCheck } from '../../../api/common';
@@ -197,38 +197,22 @@ function init() {
     proxy.$parent.$emit('ready', proxy);
   });
 
-  var _this = proxy;
-
-  window.removeEventListener('touchmove', function (e) {
-    _this.move(e);
-  });
-  window.removeEventListener('mousemove', function (e) {
-    _this.move(e);
-  });
-
+  // move/end 为具名函数，重复 init 时先解绑再绑定，避免监听叠加（原匿名函数 remove 无效）
+  unbindDragEvents();
+  window.addEventListener('touchmove', move);
+  window.addEventListener('mousemove', move);
   // 鼠标松开
-  window.removeEventListener('touchend', function () {
-    _this.end();
-  });
-  window.removeEventListener('mouseup', function () {
-    _this.end();
-  });
-
-  window.addEventListener('touchmove', function (e) {
-    move(e);
-  });
-  window.addEventListener('mousemove', function (e) {
-    move(e);
-  });
-
-  // 鼠标松开
-  window.addEventListener('touchend', function () {
-    end();
-  });
-  window.addEventListener('mouseup', function () {
-    end();
-  });
+  window.addEventListener('touchend', end);
+  window.addEventListener('mouseup', end);
 }
+
+function unbindDragEvents() {
+  window.removeEventListener('touchmove', move);
+  window.removeEventListener('mousemove', move);
+  window.removeEventListener('touchend', end);
+  window.removeEventListener('mouseup', end);
+}
+onBeforeUnmount(unbindDragEvents);
 
 // 鼠标按下
 function start(e) {

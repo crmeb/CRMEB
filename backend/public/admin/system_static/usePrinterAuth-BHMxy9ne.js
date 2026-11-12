@@ -1,0 +1,1 @@
+import{c as o,e as u}from"./common-BjnwXDgI.js";function a(){const r=o();function n(t){var s;const e=(s=r.userInfo)==null?void 0:s.level;return e===0||e==="0"?!0:Array.isArray(r.access)&&u([t],r.access)}return{hasPermission:n}}export{a as u};

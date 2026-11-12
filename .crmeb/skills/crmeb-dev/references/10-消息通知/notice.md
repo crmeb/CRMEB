@@ -261,12 +261,13 @@ class DingTalkChannel extends AbstractNoticeChannel
 | `channel_name` | varchar(100) | 渠道中文名 |
 | `title` | varchar(255) | 标题 |
 | `content` | text | 实际发送内容（变量替换后） |
+| `variables` | json | 原始业务变量（失败重试用；旧日志可能为空） |
 | `status` | tinyint | 0=待发送 1=成功 2=失败 |
 | `error_msg` | varchar(500) | 失败原因 |
 | `send_time` | int unsigned | 发送时间 |
 | `created_at` | int unsigned | 创建时间 |
 
-索引：`mark`/`uid`/`channel_key`/`status`/`send_time`。状态常量定义在 `NoticeLog` model 中：`STATUS_PENDING=0`/`STATUS_SUCCESS=1`/`STATUS_FAILED=2`。
+索引：`mark`/`uid`/`channel_key`/`status`/`send_time`。状态常量定义在 `NoticeLog` model 中：`STATUS_PENDING=0`/`STATUS_SUCCESS=1`/`STATUS_FAILED=2`。失败重试要求日志已保存 `variables`，经 `Notice::to($uid)->channel($channel_key)->sendMsg(...)` 仅重投该渠道。
 
 ### 4.5 eb_notice —— 站内信内容表
 

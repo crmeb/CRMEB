@@ -52,7 +52,7 @@
         </div>
       </template>
     </draggable>
-    <el-button class="add-btn" @click="addMenu" v-if="footConfig.length < 5">+ 添加板块</el-button>
+    <el-button v-db-click class="add-btn" @click="addMenu" v-if="footConfig.length < 5">+ 添加板块</el-button>
     <div>
       <el-dialog v-model="modalPic" width="960px" title="上传底部菜单" :mask-closable="false">
         <uploadPictures

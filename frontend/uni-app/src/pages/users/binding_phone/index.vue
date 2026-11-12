@@ -86,7 +86,7 @@ import {
 	wechatBindingPhone
 } from '@/api/public.js'
 import Routine from '@/libs/routine';
-import Verify from '../components/verify/index.vue';
+import Verify from '@/components/Verify/index.vue';
 import Cache from '@/utils/cache';
 import { useColorTheme } from '@/composables/useColorTheme';
 import { useSendVerifyCode } from '@/composables/useSendVerifyCode';

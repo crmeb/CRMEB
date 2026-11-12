@@ -30,7 +30,7 @@
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { storeToRefs } from 'pinia';
-import Verify from '../components/verify/index.vue';
+import Verify from '@/components/Verify/index.vue';
 import {
 	registerVerify,
 	bindingUserPhone,

@@ -1,6 +1,6 @@
 # 支持范围 PHP 8.2-8.4（以 backend/composer.json 的 php 约束为准）。
-# 默认构建支持范围下限 8.2；验证其它版本：PHP_VERSION=8.4 docker compose up -d --build
-ARG PHP_VERSION=8.2
+# 默认构建 8.4；验证其它版本：PHP_VERSION=8.2 docker compose up -d --build
+ARG PHP_VERSION=8.4
 FROM docker.1ms.run/php:${PHP_VERSION}-fpm
 
 ARG NODE_MAJOR=20

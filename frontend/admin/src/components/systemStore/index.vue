@@ -161,7 +161,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, onBeforeUnmount } from 'vue';
 import { ElMessage } from 'element-plus';
 import { storeApi, keyApi, storeAddApi, storeGetInfoApi } from '@/api/setting';
 import uploadPictures from '@/components/uploadPictures';
@@ -284,20 +284,22 @@ function oblongImageUpload(rule, value, callback) {
 // created
 getCityList();
 
+// 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+function onLocationMessage(event) {
+  var loc = event.data;
+  if (loc && loc.module === 'locationPicker') {
+    // 防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+    window.parent.selectAdderss(loc);
+  }
+}
 onMounted(function () {
-  window.addEventListener(
-    'message',
-    function (event) {
-      // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
-      var loc = event.data;
-      if (loc && loc.module === 'locationPicker') {
-        // 防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
-        window.parent.selectAdderss(loc);
-      }
-    },
-    false,
-  );
+  window.addEventListener('message', onLocationMessage, false);
   window.selectAdderss = selectAdderss;
+});
+// 具名解绑，避免反复打开后监听叠加；全局回调仍指向本实例时一并清理
+onBeforeUnmount(function () {
+  window.removeEventListener('message', onLocationMessage, false);
+  if (window.selectAdderss === selectAdderss) delete window.selectAdderss;
 });
 
 function getCityList() {

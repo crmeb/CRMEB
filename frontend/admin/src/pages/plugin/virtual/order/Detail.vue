@@ -239,6 +239,12 @@
                   ><span class="value">{{ orderInfo.invoice.drawer_phone || '--' }}</span>
                 </div></el-col
               >
+              <el-col :span="8" v-if="orderInfo.invoice.header_type === 1 && orderInfo.invoice.type === 1"
+                ><div class="detail-item">
+                  <span class="label">联系邮箱：</span
+                  ><span class="value">{{ orderInfo.invoice.email || '--' }}</span>
+                </div></el-col
+              >
               <el-col :span="8" v-if="orderInfo.invoice.header_type === 2 && orderInfo.invoice.type === 1"
                 ><div class="detail-item">
                   <span class="label">联系电话：</span

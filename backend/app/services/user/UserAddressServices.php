@@ -148,7 +148,9 @@ class UserAddressServices extends BaseService
      */
     public function setDefault(int $uid, int $id)
     {
-        if (!$this->getAddress($id)) {
+        $addressInfo = $this->getAddress($id);
+        // 地址必须归属当前用户，防止越权将他人地址设为默认（安全审计 B6.3）
+        if (!$addressInfo || $addressInfo['is_del'] == 1 || (int)$addressInfo['uid'] !== $uid) {
             throw new ApiException('地址不存在');
         }
         if (!$this->dao->update($uid, ['is_default' => 0], 'uid'))
@@ -227,7 +229,8 @@ class UserAddressServices extends BaseService
             //通过事件代理更新微信用户省份，避免 app 层直接引用 modules
             event('ChannelServiceProxy', ['endpoint' => 'wechat_mp', 'service' => 'WechatUserServices', 'action' => 'update', 'args' => [['uid' => $uid], ['province' => $addressInfo['province']]]]);
         }
-        if ($address_check && $address_check['is_del'] == 0 && $address_check['uid'] = $uid) {
+        // 归属校验必须为比较而非赋值（== 误写为 = 曾致校验恒真，构成越权改他人地址，安全审计 B1）
+        if ($address_check && $address_check['is_del'] == 0 && $address_check['uid'] == $uid) {
             $id = (int)$addressInfo['id'];
             unset($addressInfo['id']);
             if (!$this->dao->update($id, $addressInfo, 'id')) {

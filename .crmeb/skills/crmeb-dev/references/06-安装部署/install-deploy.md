@@ -9,14 +9,14 @@
 | 容器名 | 镜像 | 宿主机端口 → 容器端口 | 说明 |
 |--------|------|----------------------|------|
 | `crmeb_nginx` | nginx:v1.29.6 | `8011` → 80 | Web 入口，vhost 配置 `docker/nginx/vhost.conf`（已入库） |
-| `crmeb_php` | crmeb_php:8.2 | `9000` | PHP-FPM，代码挂载 `backend/` → `/var/www`；镜像由 `docker/php/Dockerfile` 构建（已入库） |
-| `crmeb_timer` | crmeb_php:8.2 | — | 定时任务（`php think timer start`） |
-| `crmeb_queue` | crmeb_php:8.2 | — | Redis 队列消费（`docker/queue-worker.sh`，只读挂载为容器内 `/repo/docker/queue-worker.sh`） |
-| `crmeb_workerman` | crmeb_php:8.2 | `40001` | WebSocket 网关与 Channel 服务 |
+| `crmeb_php` | crmeb_php:8.4 | `9000` | PHP-FPM，代码挂载 `backend/` → `/var/www`；镜像由 `docker/php/Dockerfile` 构建（已入库） |
+| `crmeb_timer` | crmeb_php:8.4 | — | 定时任务（`php think timer start`） |
+| `crmeb_queue` | crmeb_php:8.4 | — | Redis 队列消费（`docker/queue-worker.sh`，只读挂载为容器内 `/repo/docker/queue-worker.sh`） |
+| `crmeb_workerman` | crmeb_php:8.4 | `40001` | WebSocket 网关与 Channel 服务 |
 | `crmeb_mysql` | mysql:v8.0.45 | `33061` → 3306 | Docker 默认 MySQL 8.0；代码/安装 SQL 兼容 MySQL 5.7+，数据目录 `docker/mysql/data/` |
 | `crmeb_redis` | redis:v8.6.1 | `63791` → 6379 | Redis，密码 `123456`（本地默认） |
 
-> PHP 支持范围 **8.2-8.4**，四个 PHP 容器共用同一镜像，镜像标签默认取支持范围下限 `crmeb_php:8.2`。验证其它版本：`PHP_VERSION=8.3 docker compose up -d --build`（8.4 同理），构建参数见 `docker/php/Dockerfile`。
+> PHP 支持范围 **8.2-8.4**，四个 PHP 容器共用同一镜像，镜像标签默认 `crmeb_php:8.4`。验证其它版本：`PHP_VERSION=8.2 docker compose up -d --build`（8.3 同理），构建参数见 `docker/php/Dockerfile`。
 
 **关键经验**：容器主机名（`crmeb_mysql`、`crmeb_redis`）**仅在 Docker 网络内可解析**（PHP 应用内连接数据库用它们），宿主机工具（Navicat、redis-cli 等）必须用 `localhost + 映射端口`（`33061`/`63791`）。
 

@@ -189,6 +189,7 @@
           <div class="layout-breadcrumb-seting-bar-flex-value">
             <el-radio-group
               v-model="getThemeConfig.tagsStyle"
+              size="small"
               :disabled="!getThemeConfig.isTagsview"
               @change="setLocalThemeConfig"
             >
@@ -201,7 +202,7 @@
         <div class="layout-breadcrumb-seting-bar-flex mt15">
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveAnimation') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-radio-group v-model="getThemeConfig.animation" @change="setLocalThemeConfig">
+            <el-radio-group v-model="getThemeConfig.animation" size="small" @change="setLocalThemeConfig">
               <el-radio-button label="slide-left" value="slide-left">左滑</el-radio-button>
               <el-radio-button label="opacitys" value="opacitys">透明</el-radio-button>
               <el-radio-button label="slide-right" value="slide-right">右滑</el-radio-button>
@@ -215,7 +216,7 @@
         >
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideStyle') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-radio-group v-model="getThemeConfig.columnsAsideStyle" @change="setLocalThemeConfig">
+            <el-radio-group v-model="getThemeConfig.columnsAsideStyle" size="small" @change="setLocalThemeConfig">
               <el-radio-button label="columns-round" value="columns-round">圆角</el-radio-button>
               <el-radio-button label="columns-card" value="columns-card">卡片</el-radio-button>
             </el-radio-group>
@@ -227,7 +228,7 @@
         >
           <div class="layout-breadcrumb-seting-bar-flex-label">{{ $t('message.layout.fiveColumnsAsideLayout') }}</div>
           <div class="layout-breadcrumb-seting-bar-flex-value">
-            <el-radio-group v-model="getThemeConfig.columnsAsideLayout" @change="setLocalThemeConfig">
+            <el-radio-group v-model="getThemeConfig.columnsAsideLayout" size="small" @change="setLocalThemeConfig">
               <el-radio-button label="columns-horizontal" value="columns-horizontal">水平</el-radio-button>
               <el-radio-button label="columns-vertical" value="columns-vertical">垂直</el-radio-button>
             </el-radio-group>
@@ -575,9 +576,6 @@ body .v-modal {
 :deep(.el-drawer__header) {
   margin-bottom: 0;
 }
-:deep(.el-radio-button--mini .el-radio-button__inner) {
-  padding: 7px 8px;
-}
 :deep(.el-drawer__body) {
   padding: 0;
 }
@@ -593,6 +591,7 @@ body .v-modal {
     align-items: center;
     &-label {
       flex: 1;
+      font-size: 12px;
       color: var(--prev-color-text-primary);
     }
   }

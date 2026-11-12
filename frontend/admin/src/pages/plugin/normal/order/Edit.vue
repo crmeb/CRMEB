@@ -97,7 +97,7 @@
     <template #footer
       ><div>
         <el-button @click="visible = false">取 消</el-button>
-        <el-button type="primary" :loading="saving" @click="saveAll">保 存</el-button>
+        <el-button v-db-click type="primary" :loading="saving" @click="saveAll">保 存</el-button>
       </div></template
     >
   </el-dialog>

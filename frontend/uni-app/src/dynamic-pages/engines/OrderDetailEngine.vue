@@ -189,14 +189,16 @@ const giftShareData = computed(() => {
   var productObj = (sectionPropsMap.value['product'] && sectionPropsMap.value['product'].product) || {};
   var productItems = productObj.items || [];
   var first = productItems[0] || {};
+  var giftSection = (sectionPropsMap.value['gift'] && sectionPropsMap.value['gift'].gift) || {};
   return {
     id: orderInfoFields.value.id || 0,
     image: first.image || productObj.image || '',
     title: first.store_name || first.title || productObj.title || '',
-    message: orderInfoFields.value.gift_mark || '',
-    avatar: '',
-    nickname: '',
-    code: '',
+    message: orderInfoFields.value.gift_mark || giftSection.gift_mark || '',
+    avatar: (giftSection.sender && giftSection.sender.avatar) || '',
+    nickname: (giftSection.sender && giftSection.sender.nickname) || '',
+    gift_key: giftSection.gift_key || '',
+    code: giftSection.gift_code || '',
   };
 });
 

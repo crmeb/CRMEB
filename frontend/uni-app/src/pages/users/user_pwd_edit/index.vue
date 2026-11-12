@@ -50,7 +50,7 @@ import {
 import { useColorTheme } from '@/composables/useColorTheme';
 import { useSendVerifyCode } from '@/composables/useSendVerifyCode';
 import { useAppStore } from '@/store/modules/app';
-import Verify from '../components/verify/index.vue';
+import Verify from '@/components/Verify/index.vue';
 import util from '@/utils/util.js';
 import i18n from '@/utils/lang.js';
 // #ifdef MP

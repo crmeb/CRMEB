@@ -8,8 +8,8 @@
       </div>
       <div class="center"></div>
       <div class="right">
-        <el-button @click="save(false)">保存</el-button>
-        <el-button type="primary" @click="save(true)">保存关闭</el-button>
+        <el-button v-db-click @click="save(false)">保存</el-button>
+        <el-button v-db-click type="primary" @click="save(true)">保存关闭</el-button>
       </div>
     </div>
 
