@@ -2,13 +2,11 @@
   <div class="goodList" :class="{ 'is-compact': compact }">
     <el-form :model="formValidate" label-width="80px" label-position="right" inline class="tabform">
       <el-form-item label="商品分类：" v-if="!liveStatus">
-        <el-cascader
-          v-model="formValidate.cate_id"
+        <el-cascader v-model="formValidate.cate_id"
           :options="treeSelect"
           :props="{ checkStrictly: true, emitPath: false, multiple: true }"
           clearable
-          class="form_content_width"
-        ></el-cascader>
+          class="form_content_width"></el-cascader>
       </el-form-item>
       <el-form-item label="商品类型：" v-if="!type && diy">
         <el-select v-model="goodType" clearable @change="userSearchs" class="form_content_width">
@@ -17,35 +15,28 @@
         </el-select>
       </el-form-item>
       <el-form-item label="商品搜索：">
-        <el-input
-          clearable
+        <el-input clearable
           placeholder="请输入商品名称/关键字/ID"
           v-model="formValidate.store_name"
-          class="form_content_width"
-        />
-        <el-button type="primary" v-db-click @click="userSearchs" class="ml15">查询</el-button>
+          class="form_content_width" />
+        <el-button type="primary" @click="userSearchs" class="ml15">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table
-      ref="table"
+    <el-table ref="table"
       empty-text="暂无数据"
       max-height="400"
       :highlight-current-row="many !== 'many'"
       :data="tableList"
       v-loading="loading"
       @select="changeCheckbox"
-      @select-all="changeCheckbox"
-    >
+      @select-all="changeCheckbox">
       <el-table-column v-if="many == 'many'" type="selection" width="55"> </el-table-column>
       <el-table-column v-else width="50">
         <template #default="scope">
-          <el-radio
-            v-model="templateRadio"
+          <el-radio v-model="templateRadio"
             :label="scope.row.id"
             :value="scope.row.id"
-            @change="getTemplateRow(scope.row)"
-            >&nbsp;</el-radio
-          >
+            @change="getTemplateRow(scope.row)">&nbsp;</el-radio>
         </template>
       </el-table-column>
 
@@ -73,13 +64,11 @@
       </el-table-column>
     </el-table>
     <div class="acea-row row-right page">
-      <pagination
-        v-if="total"
+      <pagination v-if="total"
         :total="total"
         v-model:page="formValidate.page"
         v-model:limit="formValidate.limit"
-        @pagination="pageChange"
-      />
+        @pagination="pageChange" />
       <el-button type="primary" v-db-click @click="ok" v-if="many === 'many' && !diy" class="ml15">提交</el-button>
     </div>
   </div>
@@ -355,7 +344,7 @@ function getList() {
   }
 }
 function ok() {
-  if (images.value.length > 0) {
+  if (images.value.length> 0) {
     if (route.query.fodder === 'image') {
       let imageValue = form_create_helper.get('image');
       form_create_helper.set('image', imageValue.concat(images.value));

@@ -29,7 +29,7 @@
             :max="canvasWidth"
             :min="10"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>
@@ -47,7 +47,7 @@
             :max="100"
             :min="1"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>

@@ -3,17 +3,12 @@
     <div class="mt20 ml20">
       <el-input class="perW35" v-model="videoLink" placeholder="请输入视频链接" />
       <input type="file" ref="refid" style="display: none" @change="zh_uploadFile_change" />
-      <el-button
-        v-if="upload_type !== '1' || videoLink"
+      <el-button v-if="upload_type !== '1' || videoLink"
         type="primary"
         icon="ios-cloud-upload-outline"
         class="ml10"
-        v-db-click
-        @click="zh_uploadFile"
-        >{{ videoLink ? '确认添加' : '上传视频' }}</el-button
-      >
-      <el-upload
-        v-if="upload_type === '1' && !videoLink"
+        @click="zh_uploadFile">{{ videoLink ? '确认添加' : '上传视频' }}</el-button>
+      <el-upload v-if="upload_type === '1' && !videoLink"
         :show-file-list="false"
         :action="fileUrl"
         class="ml10"
@@ -22,21 +17,18 @@
         :headers="header"
         :multiple="true"
         style="display: inline-block"
-        accept=".mp4"
-      >
+        accept=".mp4">
         <el-button type="primary" icon="ios-cloud-upload-outline">上传视频</el-button>
       </el-upload>
       <Progress :percent="progress" :stroke-width="5" v-if="upload.videoIng" />
       <div class="video-style" v-if="formValidate.video_link">
-        <video
-          style="width: 100%; height: 100% !important; border-radius: 10px"
+        <video style="width: 100%; height: 100% !important; border-radius: 10px"
           :src="formValidate.video_link"
-          controls="controls"
-        >
+          controls="controls">
           您的浏览器不支持 video 标签。
         </video>
         <div class="mark"></div>
-        <i class="el-icon-delete iconv" v-db-click @click="delVideo"></i>
+        <i class="el-icon-delete iconv" @click="delVideo"></i>
       </div>
     </div>
     <div class="mt50 ml20">

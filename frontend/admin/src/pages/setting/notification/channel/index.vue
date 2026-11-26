@@ -1,20 +1,16 @@
 <template>
   <div class="notice-channel">
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="管理站内信、短信、公众号等通知渠道的启停与适用端，可发送测试消息验证配置。"
-    ></pages-header>
+      description="管理站内信、短信、公众号等通知渠道的启停与适用端，可发送测试消息验证配置。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '0 20px 20px' }">
-      <el-table
-        :data="channelList"
+      <el-table :data="channelList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -32,14 +28,12 @@
         </el-table-column>
         <el-table-column label="状态" min-width="100">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               :disabled="scope.row.channel_key === 'is_sms' && scope.row.status === 1"
               @change="changeStatus(scope.row)"
-              size="large"
-            />
+              size="large" />
           </template>
         </el-table-column>
         <el-table-column label="支持范围" min-width="150">
@@ -58,9 +52,9 @@
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
             <div class="channel-actions">
-              <a v-db-click @click="edit(scope.row)">配置</a>
+              <a @click="edit(scope.row)">配置</a>
               <el-divider direction="vertical"></el-divider>
-              <a v-db-click @click="test(scope.row)">测试</a>
+              <a @click="test(scope.row)">测试</a>
             </div>
           </template>
         </el-table-column>
@@ -76,23 +70,19 @@
           <el-input v-model="formData.channel_key" readonly />
         </el-form-item>
         <el-form-item label="状态">
-          <el-switch
-            :active-value="1"
+          <el-switch :active-value="1"
             :inactive-value="0"
             v-model="formData.status"
-            :disabled="formData.channel_key === 'is_sms' && formData.status === 1"
-          />
+            :disabled="formData.channel_key === 'is_sms' && formData.status === 1" />
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="formData.sort" :min="0" />
         </el-form-item>
         <el-form-item label="支持用户端">
-          <el-switch
-            :active-value="1"
+          <el-switch :active-value="1"
             :inactive-value="0"
             v-model="formData.support_user"
-            :disabled="formData.channel_key === 'is_sms' && formData.support_user === 1"
-          />
+            :disabled="formData.channel_key === 'is_sms' && formData.support_user === 1" />
         </el-form-item>
         <el-form-item label="支持平台端">
           <el-switch :active-value="1" :inactive-value="0" v-model="formData.support_platform" />
@@ -101,12 +91,10 @@
           <el-input v-model="formData.description" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div class="dialog-footer">
+      <template #footer><div class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
           <el-button v-db-click type="primary" @click="save">保存</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
   </div>
 </template>

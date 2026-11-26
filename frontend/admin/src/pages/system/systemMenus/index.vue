@@ -2,22 +2,18 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="roleDataRef"
+        <el-form ref="roleDataRef"
           :model="roleData"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="规则状态：">
-            <el-select
-              v-model="roleData.is_show"
+            <el-select v-model="roleData.is_show"
               placeholder="请选择"
               clearable
               @change="getData"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
@@ -26,23 +22,21 @@
             <el-input clearable v-model="roleData.keyword" placeholder="请输入按钮名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="getData">查询</el-button>
+            <el-button type="primary" @click="getData">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button class="action-row" type="primary" v-db-click @click="menusAdd('添加规则')">添加规则 </el-button>
-      <vxe-table
-        :border="false"
+      <el-button class="action-row" type="primary" @click="menusAdd('添加规则')">添加规则 </el-button>
+      <vxe-table :border="false"
         class="vxeTable mt14"
         :loading="loading"
         ref="xTable"
         header-row-class-name="false"
         :tree-config="tabconfig"
         :data="tableData"
-        :row-config="{ keyField: 'id', isCurrent: true, isHover: true }"
-      >
+        :row-config="{ keyField: 'id', isCurrent: true, isHover: true }">
         <vxe-table-column field="menu_name" tree-node title="按钮名称" min-width="100"></vxe-table-column>
         <vxe-table-column field="unique_auth" title="前端权限" min-width="200"></vxe-table-column>
         <vxe-table-column field="menu_path" title="路由" min-width="240" tooltip="true">
@@ -54,14 +48,12 @@
         </vxe-table-column>
         <vxe-table-column field="flag" title="规则状态" min-width="120">
           <template v-slot="{ row }">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="row.is_show"
               :value="row.is_show"
               @change="onchangeIsShow(row)"
-              size="large"
-            >
+              size="large">
             </el-switch>
           </template>
         </vxe-table-column>
@@ -69,30 +61,26 @@
         <vxe-table-column field="date" title="操作" width="230" fixed="right">
           <template v-slot="{ row }">
             <span>
-              <a v-db-click @click="addRoute(row)" v-if="row.auth_type === 1 || row.auth_type === 3">选择权限</a>
+              <a @click="addRoute(row)" v-if="row.auth_type === 1 || row.auth_type === 3">选择权限</a>
               <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3" />
-              <a v-db-click @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1 || row.auth_type === 3"
-                >添加下级</a
-              >
-              <!-- <a v-db-click @click="addE(row, '添加规则')" v-else>添加规则</a> -->
+              <a @click="addE(row, '添加子菜单')" v-if="row.auth_type === 1 || row.auth_type === 3">添加下级</a>
+              <!-- <a @click="addE(row, '添加规则')" v-else>添加规则</a> -->
             </span>
             <el-divider direction="vertical" v-if="row.auth_type === 1 || row.auth_type === 3"></el-divider>
-            <a v-db-click @click="edit(row, '编辑')">编辑</a>
+            <a @click="edit(row, '编辑')">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(row, '删除规则')">删除</a>
           </template>
         </vxe-table-column>
       </vxe-table>
     </el-card>
-    <menus-from
-      :formVal="formValidate"
+    <menus-from :formVal="formValidate"
       :titleFrom="titleFrom"
       @getList="getList"
       @changeMenu="getMenusUnique"
       ref="menusFromRef"
       @clearFrom="clearFrom"
-      @updateRow="handleUpdateRow"
-    ></menus-from>
+      @updateRow="handleUpdateRow"></menus-from>
     <el-dialog v-model="ruleModal" width="1100px" title="权限列表" @closed="modalchange">
       <div class="search-rule">
         <el-alert>
@@ -100,51 +88,42 @@
             1.接口可多选，可重复添加；<br />2.添加路由按照路由规则进行添加，即可在开发工具->接口管理里面点击同步；<br />3.同步完成即可在此选择对应的接口；
           </template>
         </el-alert>
-        <el-input
-          class="mr10 mt10 form_content_width"
+        <el-input class="mr10 mt10 form_content_width"
           v-model="searchRule"
           placeholder="输入关键词搜索"
           clearable
-          ref="search"
-        />
-        <el-button type="primary" v-db-click @click="searchRules">搜索</el-button>
-        <el-button v-db-click @click="init">重置</el-button>
+          ref="search" />
+        <el-button type="primary" @click="searchRules">搜索</el-button>
+        <el-button @click="init">重置</el-button>
       </div>
       <div class="route-list">
         <div class="tree">
-          <el-tree
-            ref="treeBox"
+          <el-tree ref="treeBox"
             :data="ruleCateList"
             :highlight-current="true"
             :props="defaultProps"
             node-key="id"
             :default-expanded-keys="expandedKeys"
             :current-node-key="nodeKey"
-            @node-click="handleNodeClick"
-          ></el-tree>
+            @node-click="handleNodeClick"></el-tree>
         </div>
         <div class="rule">
-          <div
-            class="rule-list"
+          <div class="rule-list"
             v-show="!arrs.length || arrs.includes(item.id)"
             :class="{ 'select-rule': seletRouteIds.includes(item.id) }"
             v-for="(item, index) in children"
             :key="index"
-            v-db-click
-            @click="selectRule(item)"
-          >
+            @click="selectRule(item)">
             <div>接口名称：{{ item.name }}</div>
             <div>请求方式：{{ item.method }}</div>
             <div>接口地址：{{ item.path }}</div>
           </div>
         </div>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="ruleModal = false">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="ruleModal = false">取 消</el-button>
           <el-button type="primary" v-db-click @click="addRouters">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -552,8 +531,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.vxeTable {
-  > .vxe-table--header-wrapper {
+.vxeTable {> .vxe-table--header-wrapper {
     background: var(--prev-bg-white) !important;
   }
   .icon {

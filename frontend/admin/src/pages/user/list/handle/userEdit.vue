@@ -2,21 +2,17 @@
   <div class="pb-50">
     <el-form :rules="ruleValidate" :model="formItem" label-width="100px" @submit.prevent>
       <el-form-item label="用户ID：" v-if="formItem.uid">
-        <el-input
-          class="form-sty"
+        <el-input class="form-sty"
           disabled
           v-model="formItem.uid"
           placeholder="请输入编号"
-          style="width: 80%"
-        ></el-input>
+          style="width: 80%"></el-input>
       </el-form-item>
       <el-form-item label="真实姓名：" prop="real_name">
-        <el-input
-          class="form-sty"
+        <el-input class="form-sty"
           v-model.trim="formItem.real_name"
           placeholder="请输入真实姓名"
-          style="width: 80%"
-        ></el-input>
+          style="width: 80%"></el-input>
       </el-form-item>
       <el-form-item label="手机号码：" prop="phone">
         <el-input class="form-sty" v-model="formItem.phone" placeholder="请输入手机号码" style="width: 80%"></el-input>
@@ -25,23 +21,19 @@
         <el-input class="form-sty" v-model.trim="formItem.email" placeholder="请输入邮箱" style="width: 80%"></el-input>
       </el-form-item>
       <el-form-item label="生日：">
-        <el-date-picker
-          clearable
+        <el-date-picker clearable
           class="form-sty"
           type="date"
           v-model="formItem.birthday"
           placeholder="请选择生日"
           format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-        ></el-date-picker>
+          value-format="YYYY-MM-DD"></el-date-picker>
       </el-form-item>
       <el-form-item label="身份证号：">
-        <el-input
-          class="form-sty"
+        <el-input class="form-sty"
           v-model.trim="formItem.card_id"
           placeholder="请输入身份证号"
-          style="width: 80%"
-        ></el-input>
+          style="width: 80%"></el-input>
       </el-form-item>
       <el-form-item label="用户地址：">
         <el-input class="form-sty" v-model="formItem.addres" placeholder="请输入用户地址" style="width: 80%"></el-input>
@@ -50,71 +42,57 @@
         <el-input class="form-sty" v-model="formItem.mark" placeholder="请输入用户备注" style="width: 80%"></el-input>
       </el-form-item>
       <el-form-item label="登录密码：" prop="pwd">
-        <el-input
-          class="form-sty"
+        <el-input class="form-sty"
           type="password"
           v-model="formItem.pwd"
           placeholder="请输入登录密码（修改用户可不填写，不填写不修改原密码）"
-          style="width: 80%"
-        ></el-input>
+          style="width: 80%"></el-input>
       </el-form-item>
       <el-form-item label="确认密码：" prop="true_pwd">
-        <el-input
-          class="form-sty"
+        <el-input class="form-sty"
           type="password"
           v-model="formItem.true_pwd"
           placeholder="请输入确认密码（修改用户可不填写，不填写不修改原密码）"
-          style="width: 80%"
-        ></el-input>
+          style="width: 80%"></el-input>
       </el-form-item>
 
       <el-form-item label="用户等级：">
         <el-select v-model="formItem.level" class="form-sty" clearable>
-          <el-option
-            v-for="(item, index) in infoData.levelInfo"
+          <el-option v-for="(item, index) in infoData.levelInfo"
             :key="index"
             :value="item.id"
-            :label="item.name"
-          ></el-option>
+            :label="item.name"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="用户分组：">
         <el-select v-model="formItem.group_id" class="form-sty" clearable>
-          <el-option
-            v-for="(item, index) in infoData.groupInfo"
+          <el-option v-for="(item, index) in infoData.groupInfo"
             :key="index"
             :value="item.id"
-            :label="item.group_name"
-          ></el-option>
+            :label="item.group_name"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="用户标签：">
         <!-- <el-select v-model="formItem.label_id">
-          <el-option
-            v-for="(item, index) in infoData.labelInfo"
+          <el-option v-for="(item, index) in infoData.labelInfo"
             :key="index"
-            :value="item.value"
-            >{{ item.label }}</el-option
-          >
+            :value="item.value">{{ item.label }}</el-option>
         </el-select> -->
         <div style="display: flex">
-          <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
+          <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
             <div style="width: 90%">
               <div v-if="dataLabel.length">
-                <el-tag
-                  closable
+                <el-tag closable
                   v-for="(item, index) in dataLabel"
                   :key="index"
                   @close="closeLabel(item)"
-                  class="mr10"
-                  >{{ item.label_name }}</el-tag
-                >
+                  class="mr10">{{ item.label_name }}</el-tag>
               </div>
               <span class="span" v-else>选择用户关联标签</span>
             </div>
             <div class="ivu-icon ivu-icon-ios-arrow-down"></div>
           </div>
-          <span class="addfont" v-db-click @click="addLabel">新增标签</span>
+          <span class="addfont" @click="addLabel">新增标签</span>
         </div>
       </el-form-item>
       <el-form-item label="用户状态：">
@@ -126,14 +104,12 @@
     </el-form>
 
     <el-dialog v-model="labelShow" scrollable title="请选择用户标签" :show-close="true" width="540px">
-      <userLabel
-        v-if="labelShow"
+      <userLabel v-if="labelShow"
         ref="userLabelRef"
         :only_get="true"
         :uid="formItem.uid"
         @close="labelClose"
-        @activeData="activeData"
-      ></userLabel>
+        @activeData="activeData"></userLabel>
     </el-dialog>
   </div>
 </template>

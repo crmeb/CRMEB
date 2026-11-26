@@ -7,40 +7,32 @@
         <el-input v-model="editForm.driver_name" placeholder="请输入驱动名称" />
       </el-form-item>
 
-      <template v-if="configGroups.length > 0">
+      <template v-if="configGroups.length> 0">
         <template v-for="(group, groupIndex) in configGroups" :key="'group-' + groupIndex">
           <el-divider content-position="left" style="margin-top: 20px">
             {{ group.name }}
           </el-divider>
           <template v-for="(field, fieldIndex) in group.fields" :key="'field-' + groupIndex + '-' + fieldIndex">
             <el-form-item :label="field.label">
-              <el-input
-                v-if="field.type === 'text'"
+              <el-input v-if="field.type === 'text'"
                 v-model="field.value"
                 :disabled="field.readonly"
-                :placeholder="field.placeholder || '请输入' + field.label"
-              />
-              <el-input
-                v-else-if="field.type === 'password'"
+                :placeholder="field.placeholder || '请输入' + field.label" />
+              <el-input v-else-if="field.type === 'password'"
                 v-model="field.value"
                 type="text"
                 :disabled="field.readonly"
-                :placeholder="field.placeholder || '请输入' + field.label"
-              />
-              <el-input
-                v-else-if="field.type === 'textarea'"
+                :placeholder="field.placeholder || '请输入' + field.label" />
+              <el-input v-else-if="field.type === 'textarea'"
                 v-model="field.value"
                 type="textarea"
                 :rows="3"
                 :disabled="field.readonly"
-                :placeholder="field.placeholder || '请输入' + field.label"
-              />
-              <el-select
-                v-else-if="field.type === 'select'"
+                :placeholder="field.placeholder || '请输入' + field.label" />
+              <el-select v-else-if="field.type === 'select'"
                 v-model="field.value"
                 :disabled="field.readonly"
-                :placeholder="'请选择' + field.label"
-              >
+                :placeholder="'请选择' + field.label">
                 <el-option v-for="opt in field.options" :key="opt.value" :label="opt.label" :value="opt.value" />
               </el-select>
               <el-radio-group v-else-if="field.type === 'radio'" v-model="field.value" :disabled="field.readonly">
@@ -48,14 +40,12 @@
                   opt.label
                 }}</el-radio>
               </el-radio-group>
-              <el-switch
-                v-else-if="field.type === 'switch'"
+              <el-switch v-else-if="field.type === 'switch'"
                 v-model="field.value"
                 :disabled="field.readonly"
                 active-value="1"
                 inactive-value="0"
-                class="defineSwitch"
-              />
+                class="defineSwitch" />
               <el-input v-else v-model="field.value" :disabled="field.readonly" :placeholder="'请输入' + field.label" />
               <div v-if="field.tip" class="form-tip">{{ field.tip }}</div>
             </el-form-item>
@@ -64,25 +54,23 @@
       </template>
       <el-divider content-position="left">其它设置</el-divider>
       <el-form-item label="状态" prop="status">
-        <el-switch
-          :active-value="1"
+        <el-switch :active-value="1"
           :inactive-value="0"
           v-model="editForm.status"
           active-text="开启"
           inactive-text="关闭"
-          class="defineSwitch"
-        />
+          class="defineSwitch" />
         <div class="form-tip">短信驱动为互斥模式，启用当前驱动将自动禁用其他驱动</div>
       </el-form-item>
       <el-form-item label="排序" prop="sort">
         <el-input-number v-model="editForm.sort" :min="0" :max="9999" />
       </el-form-item>
-      <template v-if="helpDocList.length > 0">
+      <template v-if="helpDocList.length> 0">
         <el-divider content-position="left">帮助文档</el-divider>
         <div v-for="(doc, index) in helpDocList" :key="index" class="help-doc-module">
           <div class="help-doc-title">{{ doc.title || '参考文档' }}</div>
           <div class="help-doc-content">
-            <ol v-if="doc.steps && doc.steps.length > 0" class="help-doc-steps">
+            <ol v-if="doc.steps && doc.steps.length> 0" class="help-doc-steps">
               <li v-for="(step, stepIndex) in doc.steps" :key="stepIndex">{{ step }}</li>
             </ol>
             <el-tag v-if="doc.link" type="info" class="help-doc-tag">
@@ -94,7 +82,7 @@
 
       <div class="form-actions">
         <el-button type="primary" v-db-click @click="handleSubmit"> 保存 </el-button>
-        <el-button v-db-click @click="$emit('close')"> 取消 </el-button>
+        <el-button @click="$emit('close')"> 取消 </el-button>
       </div>
     </el-form>
   </div>
@@ -172,7 +160,7 @@ function getDetail() {
       }));
       // 从 driver_info 中获取帮助文档
       const doc = data.driver_info?.help_doc;
-      if (doc && ((doc.steps && doc.steps.length > 0) || doc.link)) {
+      if (doc && ((doc.steps && doc.steps.length> 0) || doc.link)) {
         helpDocList.value = [doc];
       } else {
         helpDocList.value = [];
@@ -250,7 +238,7 @@ function handleSubmit() {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 14px;
 }
 .form-actions .el-button + .el-button {
   margin-left: 0;

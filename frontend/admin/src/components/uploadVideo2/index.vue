@@ -3,27 +3,23 @@
     <div class="colLeft">
       <div class="Nav">
         <div class="trees-coadd">
-          <div v-if="isPage" class="tree_tit" v-db-click @click="addSort">
+          <div v-if="isPage" class="tree_tit" @click="addSort">
             <i class="el-icon-circle-plus"></i>
             添加分类
           </div>
           <div class="scollhide">
             <div :class="isPage ? 'tree' : 'isTree'">
-              <el-tree
-                :data="treeData"
+              <el-tree :data="treeData"
                 node-key="id"
                 default-expand-all
                 highlight-current
                 :expand-on-click-node="false"
                 @node-click="appendBtn"
-                :current-node-key="treeId"
-              >
-                <template #default="{ data }"
-                  ><span class="custom-tree-node">
+                :current-node-key="treeId">
+                <template #default="{ data }"><span class="custom-tree-node">
                     <!-- <span class="file-name">
                     <i class="icon el-icon-folder-remove"></i>
-                    {{ data.title }}</span
-                  > -->
+                    {{ data.title }}</span> -->
                     <!-- <span class="file-name">
                     <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
                     <span class="name line1">{{ data.title }}</span>
@@ -48,31 +44,19 @@
                         </template>
                       </el-dropdown>
                     </span>
-                  </span></template
-                >
+                  </span></template>
               </el-tree>
             </div>
           </div>
         </div>
       </div>
       <div class="conter">
-        <div class="bnt acea-row row-middle df-jcsb">
+        <div class="media-toolbar acea-row row-middle df-jcsb">
           <div class="">
-            <el-button
-              class="mr8"
-              type="primary"
-              :disabled="checkPicList.length === 0"
-              v-db-click
-              @click="checkPics"
-              v-if="isShow !== 0"
-              >使用选中视频</el-button
-            >
-            <!-- <el-button type="primary" v-db-click @click="uploadModal">上传视频</el-button> -->
-            <el-button class="mr8" v-if="upload_type !== '1'" type="primary" v-db-click @click="zh_uploadFile"
-              >上传视频</el-button
-            >
-            <el-upload
-              v-if="upload_type === '1'"
+            <el-button type="primary" :disabled="checkPicList.length === 0" @click="checkPics" v-if="isShow !== 0">使用选中视频</el-button>
+            <!-- <el-button type="primary" @click="uploadModal">上传视频</el-button> -->
+            <el-button class="mr8" v-if="upload_type !== '1'" type="primary" @click="zh_uploadFile">上传视频</el-button>
+            <el-upload v-if="upload_type === '1'"
               :show-file-list="false"
               :action="fileUrl"
               :before-upload="videoSaveToUrl"
@@ -80,21 +64,16 @@
               :headers="header"
               :multiple="true"
               style="display: inline-block"
-              accept=".mp4"
-            >
-              <el-button class="mr8" type="primary">上传视频</el-button>
+              accept=".mp4">
+              <el-button type="primary">上传视频</el-button>
             </el-upload>
             <!-- 输入链接 -->
-            <el-button class="mr8" type="primary" :icon="Link" @click="openInputModal"></el-button>
-            <el-button
-              class="mr8"
+            <el-button type="primary" :icon="Link" @click="openInputModal"></el-button>
+            <el-button class="mr8"
               :disabled="!checkPicList.length && !ids.length"
               v-db-click
-              @click.stop="editPicList()"
-              >删除视频</el-button
-            >
-            <el-cascader
-              v-model="pids"
+              @click.stop="editPicList()">删除视频</el-button>
+            <el-cascader v-model="pids"
               placeholder="视频移动至"
               style="width: 150px"
               class="treeSel"
@@ -102,18 +81,15 @@
               :props="{ checkStrictly: true, emitPath: false, label: 'title', value: 'id' }"
               clearable
               @visible-change="moveImg"
-              @change="moveChange"
-            ></el-cascader>
+              @change="moveChange"></el-cascader>
           </div>
           <div>
-            <el-input
-              class="mr8"
+            <el-input class="mr8"
               v-model="fileData.real_name"
               placeholder="请输入视频名"
               style="width: 150px"
-              @change="searchFile"
-            >
-              <template #suffix><i class="el-icon-search" v-db-click @click="getFileList"></i></template>
+              @change="searchFile">
+              <template #suffix><i class="el-icon-search" @click="getFileList"></i></template>
             </el-input>
             <el-radio-group class="mr10" v-if="isPage" v-model="lietStyle" @change="radioChange">
               <el-radio-button label="list" value="list">
@@ -133,25 +109,20 @@
               <span class="imagesNo_sp">视频库为空</span>
             </div>
             <div ref="imgListBox" class="acea-row mb10">
-              <div
-                class="pictrueList_pic mb10 mt10"
+              <div class="pictrueList_pic mb10 mt10"
                 v-for="(item, index) in pictrueList"
                 :key="index"
                 :style="{ margin: picmargin }"
                 @mouseenter="enterMouse(item)"
-                @mouseleave="enterMouse(item)"
-              >
-                <p class="number" v-if="item.num > 0">
+                @mouseleave="enterMouse(item)">
+                <p class="number" v-if="item.num> 0">
                   <el-badge :value="item.num" type="primary">
                     <a href="#" class="demo-badge"></a>
                   </el-badge>
                 </p>
-                <div
-                  class="img"
+                <div class="img"
                   :class="item.isSelect ? 'on' : ''"
-                  v-db-click
-                  @click.stop="changImage(item, index, pictrueList)"
-                >
+                  @click.stop="changImage(item, index, pictrueList)">
                   <video :src="item.satt_dir" />
                 </div>
 
@@ -161,20 +132,15 @@
                   </p>
                   <el-input type="text" v-model="item.real_name" v-else @blur="bindTxt(item)" />
                   <div class="operate-height">
-                    <span class="operate mr10" v-db-click @click="editPicList(item.att_id)" v-if="item.isShowEdit"
-                      >删除</span
-                    >
-                    <span class="operate mr10" v-db-click @click="item.isEdit = !item.isEdit" v-if="item.isShowEdit"
-                      >改名</span
-                    >
-                    <span class="operate" v-db-click @click="lookImg(item)" v-if="item.isShowEdit">查看</span>
+                    <span class="operate mr10" v-db-click @click="editPicList(item.att_id)" v-if="item.isShowEdit">删除</span>
+                    <span class="operate mr10" @click="item.isEdit = !item.isEdit" v-if="item.isShowEdit">改名</span>
+                    <span class="operate" @click="lookImg(item)" v-if="item.isShowEdit">查看</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <el-table
-            v-if="lietStyle == 'table'"
+          <el-table v-if="lietStyle == 'table'"
             ref="table"
             :data="pictrueList"
             v-loading="loading"
@@ -182,8 +148,7 @@
             :row-key="getRowKey"
             @selection-change="handleSelectRow"
             no-data-text="暂无数据"
-            no-filtered-data-text="暂无筛选结果"
-          >
+            no-filtered-data-text="暂无筛选结果">
             <el-table-column type="selection" width="60" :reserve-selection="true"> </el-table-column>
             <el-table-column label="视频名称" min-width="190">
               <template #default="scope">
@@ -192,13 +157,11 @@
                     <video :src="scope.row.att_dir" @click="lookImg(scope.row)" />
                   </div>
                   <span v-if="!scope.row.isEdit" class="line2 real-name">{{ scope.row.real_name }}</span>
-                  <el-input
-                    type="text"
+                  <el-input type="text"
                     style="width: 90%"
                     v-model="scope.row.real_name"
                     v-else
-                    @blur="bindTxt(scope.row)"
-                  />
+                    @blur="bindTxt(scope.row)" />
                 </div>
               </template>
             </el-table-column>
@@ -211,36 +174,32 @@
               <template #default="scope">
                 <a v-db-click @click="editPicList(scope.row)">删除</a>
                 <el-divider direction="vertical"></el-divider>
-                <a v-db-click @click="scope.row.isEdit = !scope.row.isEdit">{{
+                <a @click="scope.row.isEdit = !scope.row.isEdit">{{
                   scope.row.isEdit ? '确定' : '重命名'
                 }}</a>
                 <el-divider direction="vertical"></el-divider>
-                <a v-db-click @click="lookImg(scope.row)">查看</a>
+                <a @click="lookImg(scope.row)">查看</a>
               </template>
             </el-table-column>
           </el-table>
         </div>
         <div class="footer acea-row row-right">
-          <pagination
-            v-if="total"
+          <pagination v-if="total"
             :total="total"
             :pageCount="9"
             layout="total, prev, pager, next"
             v-model:page="fileData.page"
             @pagination="pageChange"
-            v-model:limit="fileData.limit"
-          ></pagination>
+            v-model:limit="fileData.limit"></pagination>
         </div>
       </div>
     </div>
-    <uploadImg
-      ref="upload"
+    <uploadImg ref="upload"
       :isPage="isPage"
       :isIframe="isIframe"
       :categoryId="treeId"
       :categoryList="treeData"
-      @uploadSuccess="uploadSuccess"
-    ></uploadImg>
+      @uploadSuccess="uploadSuccess"></uploadImg>
     <el-dialog title="查看视频" append-to-body v-model="videoModal" width="1024px">
       <video :src="imageUrl" controls />
     </el-dialog>
@@ -750,7 +709,7 @@ function getFileList() {
     });
 }
 function showSelectData() {
-  if (multipleSelection.value.length > 0) {
+  if (multipleSelection.value.length> 0) {
     // 判断是否存在勾选过的数据
     pictrueList.value.forEach((row) => {
       // 获取数据列表接口请求到的数据
@@ -806,7 +765,7 @@ function getFrom() {
 }
 // 上传之前
 function beforeUpload2(file) {
-  // if (file.size > 2097152) {
+  // if (file.size> 2097152) {
   //   ElMessage.error(file.name + "大小超过2M!");
   // } else
   if (!/image\/\w+/.test(file.type)) {
@@ -872,11 +831,11 @@ function changImage(item, index, row) {
 // 点击使用选中视频
 function checkPics() {
   if (props.isChoice === 'one') {
-    if (checkPicList.value.length > 1) return ElMessage.warning('最多只能选一张视频');
+    if (checkPicList.value.length> 1) return ElMessage.warning('最多只能选一张视频');
     emit('getVideo', checkPicList.value[0].att_dir);
   } else {
     let maxLength = route.query.maxLength;
-    if (maxLength != undefined && checkPicList.value.length > Number(maxLength))
+    if (maxLength != undefined && checkPicList.value.length> Number(maxLength))
       return ElMessage.warning('最多只能选' + maxLength + '张视频');
     emit('getPicD', checkPicList.value);
     emit('getVideo', checkPicList.value);
@@ -1124,10 +1083,11 @@ function bindTxt(item) {
   }
 }
 
-.conter .bnt {
+.conter .media-toolbar {
   width: 100%;
   padding: 0 0px 20px 0px;
   box-sizing: border-box;
+  flex-wrap: nowrap;
 }
 
 .conter .pictrueList {
@@ -1175,7 +1135,7 @@ function bindTxt(item) {
   display: inline-block;
 }
 
-.bnt :deep(.ivu-tree-children) {
+.media-toolbar :deep(.ivu-tree-children) {
   padding: 5px 0;
 }
 

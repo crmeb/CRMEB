@@ -226,14 +226,13 @@ function savePic() {
   });
   // #endif
   //#ifdef APP-PLUS
-  // 遗留 bug：原 this.posterImageClose() 方法本组件从未定义（运行时必然报错），保持原语义不再补造方法
   uni.downloadFile({
     url: props.dataConfig.codeConfig.url, //图片地址
     success: function (response) {
       uni.saveImageToPhotosAlbum({
         filePath: response.tempFilePath,
         success: function (res) {
-          posterImageClose();
+          closeFollowCode();
           util.Tips({
             title: "保存成功",
             icon: "success",

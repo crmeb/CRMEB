@@ -51,7 +51,10 @@ class SystemAdminController extends AuthController
             ['is_del', 1],
             ['status', '']
         ]);
-        $where['level'] = $this->adminInfo['level'] + 1;
+        // 超管(level=0)看全部管理员；其他账号仍只看下一级
+        if ((int)$this->adminInfo['level'] !== 0) {
+            $where['level'] = $this->adminInfo['level'] + 1;
+        }
         return app('json')->success($this->services->getAdminList($where));
     }
 

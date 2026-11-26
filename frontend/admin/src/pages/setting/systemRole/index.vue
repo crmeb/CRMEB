@@ -2,53 +2,43 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="状态：" label-for="status">
-            <el-select
-              v-model="formValidate.status"
+            <el-select v-model="formValidate.status"
               placeholder="请选择"
               @change="userSearchs"
               clearable
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="身份昵称：" label-for="role_name">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入身份昵称"
               v-model="formValidate.role_name"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" v-loading="spinShow">
-      <el-button v-auth="['setting-system_role-add']" class="action-row" type="primary" v-db-click @click="add('添加')"
-        >添加身份</el-button
-      >
-      <el-table
-        :data="tableList"
+      <el-button v-auth="['setting-system_role-add']" class="action-row" type="primary" @click="add('添加')">添加身份</el-button>
+      <el-table :data="tableList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" min-width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -66,8 +56,7 @@
         </el-table-column> -->
         <el-table-column label="状态" min-width="120">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -75,46 +64,39 @@
               @change="onchangeIsShow(scope.row)"
               size="large"
               active-text="显示"
-              inactive-text="隐藏"
-            >
+              inactive-text="隐藏">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
+            <a @click="edit(scope.row, '编辑')">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 新增编辑-->
-    <el-dialog
-      v-model="modals"
+    <el-dialog v-model="modals"
       :title="`${modelTit}身份`"
       :close-on-click-modal="false"
       :show-close="true"
       width="540px"
-      @closed="closed"
-    >
-      <el-form
-        ref="formInlineRef"
+      @closed="closed">
+      <el-form ref="formInlineRef"
         :model="formInline"
         :rules="ruleValidate"
         label-width="100px"
         :label-position="labelPosition2"
-        @submit.prevent
-      >
+        @submit.prevent>
         <el-form-item label="身份名称：" label-for="role_name" prop="role_name">
           <el-input placeholder="请输入身份昵称" v-model="formInline.role_name" />
         </el-form-item>
@@ -128,8 +110,7 @@
           <div class="trees-coadd">
             <div class="scollhide">
               <div class="iconlist">
-                <el-tree
-                  :data="menusList"
+                <el-tree :data="menusList"
                   node-key="id"
                   check-strictly
                   show-checkbox
@@ -138,20 +119,17 @@
                   :default-checked-keys="selectIds"
                   :props="defaultProps"
                   @check="clickDeal"
-                  :default-expand-all="defaultExpandAll"
-                ></el-tree>
+                  :default-expand-all="defaultExpandAll"></el-tree>
               </div>
             </div>
             <span class="iconlist-btn" @click="changeExpandAll">{{ defaultExpandAll ? '折叠' : '展开' }}</span>
           </div>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="onCancel">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="onCancel">取 消</el-button>
           <el-button type="primary" v-db-click @click="handleSubmit()">提 交</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -442,7 +420,7 @@ function initMenu(menu) {
   data.children = menu.children;
   data.checked = menu.checked;
 
-  if (menu.children && menu.children.length > 0) {
+  if (menu.children && menu.children.length> 0) {
     data.children = [];
     menu.children.map((child) => {
       data.children.push(initMenu(child));

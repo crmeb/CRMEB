@@ -64,11 +64,10 @@ class LoginController
      */
     public function login(Request $request)
     {
-        [$account, $password, $spread, $agent_id] = $request->postMore([
+        [$account, $password, $spread] = $request->postMore([
             'account',
             'password',
-            'spread',
-            ['agent_id', 0]
+            'spid',
         ], true);
         if (!$account || !$password) {
             return app('json')->fail('请输入账号和密码');
@@ -76,7 +75,7 @@ class LoginController
         if (strlen(trim($password)) < 6 || strlen(trim($password)) > 32) {
             return app('json')->fail('账号密码必须是在6到32位之间');
         }
-        return app('json')->success('登录成功', $this->services->login($account, $password, $spread, $agent_id));
+        return app('json')->success('登录成功', $this->services->login($account, $password, $spread));
     }
 
     /**
@@ -235,7 +234,7 @@ class LoginController
      */
     public function register(Request $request)
     {
-        [$account, $captcha, $password, $spread] = $request->postMore([['account', ''], ['captcha', ''], ['password', ''], ['spread', 0]], true);
+        [$account, $captcha, $password, $spread] = $request->postMore([['account', ''], ['captcha', ''], ['password', ''], ['spid', 0]], true);
         try {
             validate(RegisterValidates::class)->scene('register')->check(['account' => $account, 'captcha' => $captcha, 'password' => $password]);
         } catch (ValidateException $e) {
@@ -331,7 +330,7 @@ class LoginController
      */
     public function mobile(Request $request)
     {
-        [$phone, $captcha, $spread, $agent_id] = $request->postMore([['phone', ''], ['captcha', ''], ['spread', 0], ['agent_id', 0]], true);
+        [$phone, $captcha, $spread] = $request->postMore([['phone', ''], ['captcha', ''], ['spid', 0]], true);
 
         //验证手机号
         try {
@@ -349,7 +348,7 @@ class LoginController
             return app('json')->fail('验证码错误');
         }
         $user_type = $request->getFromType() ? $request->getFromType() : 'h5';
-        $token = $this->services->mobile($phone, $spread, $user_type, $agent_id);
+        $token = $this->services->mobile($phone, $spread, $user_type);
         if ($token) {
             CacheService::delete('code_' . $phone);
             return app('json')->success('登录成功', $token);

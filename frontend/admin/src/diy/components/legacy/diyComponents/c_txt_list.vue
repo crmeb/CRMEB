@@ -2,13 +2,11 @@
   <div class="c_product" v-if="datas">
     <div class="title">{{ datas[name].title }}</div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="datas[name].list"
         group="peoples"
         handle=".move-icon"
-        :item-key="txtListItemKey"
-      >
+        :item-key="txtListItemKey">
         <template #item="{ element: item, index }">
           <div class="item">
             <div class="move-icon">
@@ -21,7 +19,7 @@
                     <span>{{ list.title }}</span>
                   </el-col>
                   <el-col class="slider-box">
-                    <div class="input-box" v-db-click>
+                    <div class="input-box">
                       <el-input v-model="list.val" :placeholder="list.pla" :maxlength="list.max">
                         <template #suffix><i class="el-icon-link" @click="getLink(index, key)" /></template>
                       </el-input>
@@ -33,34 +31,28 @@
                     <span>{{ list.title }}</span>
                   </el-col>
                   <el-col :span="19" class="slider-box">
-                    <el-input
-                      v-model="list.val"
+                    <el-input v-model="list.val"
                       :placeholder="list.pla"
                       :maxlength="list.max"
-                      style="text-align: right"
-                    />
+                      style="text-align: right" />
                   </el-col>
                 </div>
                 <!-- <span>{{ list.title }}</span>
-              <el-input
-                v-model="list.val"
+              <el-input v-model="list.val"
                 :placeholder="list.pla"
-                :maxlength="list.max"
-              /> -->
+                :maxlength="list.max" /> -->
               </div>
               <div class="con-item" v-if="item.link">
                 <span>{{ item.link.title }}</span>
                 <el-select v-model="item.link.activeVal" style="">
-                  <el-option
-                    v-for="(item, j) in item.link.optiops"
+                  <el-option v-for="(item, j) in item.link.optiops"
                     :value="item.value"
                     :key="j"
-                    :label="item.label"
-                  ></el-option>
+                    :label="item.label"></el-option>
                 </el-select>
               </div>
             </div>
-            <div class="delete" v-db-click @click.stop="bindDelete(index)" v-if="datas[name].max > 1">
+            <div class="delete" @click.stop="bindDelete(index)" v-if="datas[name].max> 1">
               <i class="el-icon-circle-close" style="font-size: 24px"></i>
             </div>
           </div>
@@ -68,13 +60,10 @@
       </draggable>
     </div>
     <div v-if="datas[name]">
-      <div class="add-btn" v-db-click @click="addHotTxt" v-if="datas[name].list.length < datas[name].max">
-        <el-button
-          type="primary"
+      <div class="add-btn" @click="addHotTxt" v-if="datas[name].list.length < datas[name].max">
+        <el-button type="primary"
           ghost
-          style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-          >添加模块</el-button
-        >
+          style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)">添加模块</el-button>
       </div>
     </div>
     <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>

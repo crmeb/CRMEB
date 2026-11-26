@@ -4,17 +4,15 @@
       <el-input v-model="interfaceData.path">
         <template #prepend>
           <el-select v-model="interfaceData.method" style="width: 120px">
-            <el-option
-              v-for="(item, index) in requestTypeList"
+            <el-option v-for="(item, index) in requestTypeList"
               :key="index"
               :value="item.value"
-              :label="item.label"
-            ></el-option>
+              :label="item.label"></el-option>
           </el-select>
         </template>
       </el-input>
-      <el-button class="ml20" type="primary" v-db-click @click="requestData">请求</el-button>
-      <el-button v-if="codes" class="ml10 copy-btn" type="success" v-db-click @click="insertCopy()">复制结果</el-button>
+      <el-button type="primary" @click="requestData">请求</el-button>
+      <el-button v-if="codes" class="ml10 copy-btn" type="success" @click="insertCopy()">复制结果</el-button>
     </div>
     <div class="params">
       <el-tabs class="mt10" v-model="paramsType" @tab-click="changeTab">
@@ -23,8 +21,7 @@
         <el-tab-pane label="Header" name="Header"> </el-tab-pane>
       </el-tabs>
       <div v-show="paramsType === 'Params'">
-        <vxe-table
-          class="mt10"
+        <vxe-table class="mt10"
           show-overflow
           keep-source
           ref="xTable"
@@ -33,8 +30,7 @@
           :tree-config="{ transform: true, rowField: 'id', parentField: 'parentId' }"
           :data="interfaceData.query"
           :row-config="{ keyField: 'id' }"
-          :column-config="{ resizable: true }"
-        >
+          :column-config="{ resizable: true }">
           <vxe-column field="attribute" width="150" title="属性" tree-node :edit-render="{}">
             <template #default="{ row }">
               <vxe-input v-model="row.attribute" type="text"></vxe-input>
@@ -47,21 +43,17 @@
           </vxe-column>
           <vxe-column field="type" title="类型" width="120" :edit-render="{}">
             <template #default="{ row }">
-              <vxe-select
-                v-model="row.type"
+              <vxe-select v-model="row.type"
                 transfer
                 @change="
                   (val) => {
                     handleChange(val, row, 'xTable');
                   }
-                "
-              >
-                <vxe-option
-                  v-for="item in typeList"
+                ">
+                <vxe-option v-for="item in typeList"
                   :key="item.value"
                   :value="item.value"
-                  :label="item.label"
-                ></vxe-option>
+                  :label="item.label"></vxe-option>
               </vxe-select>
             </template>
           </vxe-column>
@@ -77,27 +69,22 @@
           </vxe-column> -->
           <vxe-column title="操作" width="120">
             <template #default="{ row }">
-              <vxe-button
-                type="text"
+              <vxe-button type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                v-db-click
-                @click="insertRow(row, 'xTable')"
-                >插入</vxe-button
-              >
+                @click="insertRow(row, 'xTable')">插入</vxe-button>
               <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'xTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
-        <el-button class="mt10" type="primary" v-db-click @click="insertEvent('xTable')">添加参数</el-button>
+        <el-button class="mt10" type="primary" @click="insertEvent('xTable')">添加参数</el-button>
       </div>
       <div v-show="paramsType === 'Body'">
         <el-radio-group v-model="bodyType" class="mt10">
           <el-radio label="form-data" value="form-data"></el-radio>
           <el-radio label="json" value="json"></el-radio>
         </el-radio-group>
-        <vxe-table
-          v-if="bodyType == 'form-data'"
+        <vxe-table v-if="bodyType == 'form-data'"
           class="mt10"
           show-overflow
           keep-source
@@ -107,8 +94,7 @@
           :tree-config="{ transform: true, rowField: 'id', parentField: 'parentId' }"
           :data="interfaceData.request_body"
           :row-config="{ keyField: 'id' }"
-          :column-config="{ resizable: true }"
-        >
+          :column-config="{ resizable: true }">
           <vxe-column field="attribute" width="150" title="属性" tree-node :edit-render="{}">
             <template #default="{ row }">
               <vxe-input v-model="row.attribute" type="text"></vxe-input>
@@ -121,21 +107,17 @@
           </vxe-column>
           <vxe-column field="type" title="类型" width="120" :edit-render="{}">
             <template #default="{ row }">
-              <vxe-select
-                v-model="row.type"
+              <vxe-select v-model="row.type"
                 transfer
                 @change="
                   (val) => {
                     handleChange(val, row, 'yTable');
                   }
-                "
-              >
-                <vxe-option
-                  v-for="item in typeList"
+                ">
+                <vxe-option v-for="item in typeList"
                   :key="item.value"
                   :value="item.value"
-                  :label="item.label"
-                ></vxe-option>
+                  :label="item.label"></vxe-option>
               </vxe-select>
             </template>
           </vxe-column>
@@ -151,14 +133,10 @@
           </vxe-column> -->
           <vxe-column title="操作" width="120">
             <template #default="{ row }">
-              <vxe-button
-                type="text"
+              <vxe-button type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                v-db-click
-                @click="insertRow(row, 'yTable')"
-                >插入</vxe-button
-              >
+                @click="insertRow(row, 'yTable')">插入</vxe-button>
               <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'yTable')">删除</vxe-button>
             </template>
           </vxe-column>
@@ -166,14 +144,11 @@
         <div v-else>
           <el-input v-model="jsonBody" type="textarea" :rows="8" placeholder="请求数据" />
         </div>
-        <el-button v-if="bodyType == 'form-data'" class="mt10" type="primary" v-db-click @click="insertEvent('yTable')"
-          >添加参数</el-button
-        >
+        <el-button v-if="bodyType == 'form-data'" class="mt10" type="primary" @click="insertEvent('yTable')">添加参数</el-button>
       </div>
 
       <div v-show="paramsType === 'Header'">
-        <vxe-table
-          class="mt10"
+        <vxe-table class="mt10"
           show-overflow
           keep-source
           ref="zTable"
@@ -182,8 +157,7 @@
           :tree-config="{ transform: true, rowField: 'id', parentField: 'parentId' }"
           :data="interfaceData.headerData"
           :row-config="{ keyField: 'id' }"
-          :column-config="{ resizable: true }"
-        >
+          :column-config="{ resizable: true }">
           <vxe-column field="attribute" width="300" title="属性" tree-node :edit-render="{}">
             <template #default="{ row }">
               <vxe-input v-model="row.attribute" type="text"></vxe-input>
@@ -196,19 +170,15 @@
           </vxe-column>
           <vxe-column title="操作" width="100">
             <template #default="{ row }">
-              <vxe-button
-                type="text"
+              <vxe-button type="text"
                 v-if="['array', 'object'].includes(row.type)"
                 status="primary"
-                v-db-click
-                @click="insertRow(row, 'zTable')"
-                >插入</vxe-button
-              >
+                @click="insertRow(row, 'zTable')">插入</vxe-button>
               <vxe-button type="text" status="primary" v-db-click @click="removeRow(row, 'zTable')">删除</vxe-button>
             </template>
           </vxe-column>
         </vxe-table>
-        <el-button class="mt10" type="primary" v-db-click @click="insertEvent('zTable')">添加参数</el-button>
+        <el-button class="mt10" type="primary" @click="insertEvent('zTable')">添加参数</el-button>
       </div>
     </div>
     <div class="res mt10 mb10" v-if="codes">

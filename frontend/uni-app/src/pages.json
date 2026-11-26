@@ -1292,6 +1292,18 @@
 		{
 			"root": "pages/annex",
 			"pages": [{
+					"path": "plugin_web_view/index",
+					"style": {
+						"navigationBarTitleText": "插件页面",
+						"app-plus": {
+							// #ifdef APP-PLUS
+							"titleNView": {
+								"type": "default"
+							}
+							// #endif
+						}
+					}
+				}, {
 					"path": "web_view/index",
 					"style": {
 						"navigationBarTitleText": "",

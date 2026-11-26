@@ -1,32 +1,27 @@
 <template>
   <div>
-    <el-dialog title="编辑热区" v-model="dialogVisible" @opened="openModal" fullscreen>
+    <el-dialog class="hot-area-dialog" title="编辑热区" v-model="dialogVisible" @opened="openModal" fullscreen append-to-body>
       <div class="operationFloor">
         <div class="imgBox" @mouseup.left.stop="changeStop()">
           <div ref="container" id="img-box-container" class="container">
-            <img
-              ref="backgroundImg"
+            <img ref="backgroundImg"
               :src="imgs"
               ondragstart="return false;"
               oncontextmenu="return false;"
               onselect="document.selection.empty();"
               alt="img"
-              @mousedown.left.stop="mouseDown($event)"
-            />
+              @mousedown.left.stop="mouseDown($event)" />
             <!--draw hotpot-->
-            <div
-              v-show="caseShow"
+            <div v-show="caseShow"
               :style="{
                 width: areaWidth + 'px',
                 height: areaHeight + 'px',
                 left: starX + 'px',
                 top: starY + 'px',
               }"
-              class="area"
-            />
+              class="area" />
             <!--be hotpot-->
-            <AreaBox
-              v-for="(item, index) in areaData"
+            <AreaBox v-for="(item, index) in areaData"
               :key="'area' + index"
               :area-data-index="index"
               :link="item.link"
@@ -36,8 +31,7 @@
               :parent-width="parentWidth"
               :parent-height="parentHeight"
               @delAreaBox="delAreaBox"
-              @addURL="addURL"
-            />
+              @addURL="addURL" />
           </div>
         </div>
         <!-- 热区链接配置 -->
@@ -51,12 +45,10 @@
             </div>
             <div class="form-item label">
               <div>
-                <el-input
-                  icon="ios-arrow-forward"
+                <el-input icon="ios-arrow-forward"
                   v-model="item.link"
                   :style="linkInputStyle"
-                  placeholder="选择跳转链接"
-                >
+                  placeholder="选择跳转链接">
                   <template #suffix><i class="el-icon-link" @click="getLink(index)" /></template>
                 </el-input>
               </div>
@@ -65,11 +57,9 @@
           </div>
         </div>
       </div>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button v-db-click class="mr20" type="primary" @click="saveAreaData"> 完成 </el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
     <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
   </div>
@@ -199,7 +189,7 @@ function mouseDown(e) {
 function changeStop() {
   document.onmousemove = null;
   imgNum.value = areaData.value.length + 1;
-  if (caseShow.value && areaWidth.value > 10 && areaHeight.value > 10) {
+  if (caseShow.value && areaWidth.value> 10 && areaHeight.value> 10) {
     const data = {
       number: imgNum.value,
       starX: starX.value,
@@ -225,7 +215,7 @@ function delAreaBox(index) {
   emit('delAreaData', areaData.value);
   /* 删除后 每个热区按顺序重新编号 */
   if (areaData.value) {
-    const arr = areaData.value.filter((i) => i.number > index);
+    const arr = areaData.value.filter((i) => i.number> index);
     if (!arr) return;
     arr.forEach((i) => i.number--);
     if (areaData.value[areaData.value.length - 1]) {
@@ -290,16 +280,6 @@ defineExpose({ dialogVisible });
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-dialog) {
-  border-radius: 0px !important;
-  .el-alert__icon.is-big {
-    font-size: 14px;
-    width: 16px;
-  }
-  .el-alert .el-alert__description {
-    margin: 0;
-  }
-}
 .btn {
   display: flex;
   justify-content: center;
@@ -391,6 +371,22 @@ defineExpose({ dialogVisible });
   .el-icon-delete {
     font-size: 16px;
     cursor: pointer;
+  }
+}
+</style>
+
+<style lang="scss">
+/* append-to-body 后弹窗挂到 body，scoped 无法命中壳层 */
+.hot-area-dialog.el-dialog {
+  border-radius: 0 !important;
+
+  .el-alert__icon.is-big {
+    font-size: 14px;
+    width: 16px;
+  }
+
+  .el-alert .el-alert__description {
+    margin: 0;
   }
 }
 </style>

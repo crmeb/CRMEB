@@ -81,89 +81,64 @@ const { colorStyle } = useColorTheme();
 
 // ---------- data ----------
 const imgHost = HTTP_REQUEST_URL;
-const topImage = ref('');
 const seckillList = ref([]);
 const timeList = ref([]);
 const active = ref(5);
 const scrollLeft = ref(0);
-const interval = ref(0);
 const status = ref(1);
-const countDownHour = ref('00');
-const countDownMinute = ref('00');
-const countDownSecond = ref('00');
 const page = ref(1);
 const limit = ref(8);
-const loading = ref(false);
 const loadend = ref(false);
 const pageloading = ref(false);
 const intoindex = ref('');
-const time_id = ref(0);
 
 // ---------- methods ----------
 function getSeckillConfig() {
 	getSeckillIndexTime().then((res) => {
-		topImage.value = res.data.lovely;
 		timeList.value = res.data.seckillTime;
 		active.value = res.data.seckillTimeIndex;
 		nextTick(() => {
 			intoindex.value = 'sort' + res.data.seckillTimeIndex;
 		});
 		if (timeList.value.length) {
-			// wxh.time(that.data.timeList[that.data.active].stop, that);
 			scrollLeft.value = (active.value - 1.37) * 100;
-			setTimeout(function () {
-				loading.value = true;
-			}, 2000);
-			(seckillList.value = []), (page.value = 1);
+			seckillList.value = [];
+			page.value = 1;
 			status.value = timeList.value[active.value].status;
 			getSeckillList();
 		}
 	}).catch((err) => {
-		// 秒杀插件未安装/未启用时接口报错，给出提示并结束 loading，避免页面空白
 		uni.showToast({
 			title: typeof err === 'string' ? err : (err && err.msg) || i18n.t(`请求失败`),
 			icon: 'none',
 			duration: 2500
 		});
-		loading.value = true;
 	});
 }
 function getSeckillList() {
-	var data = {
+	if (loadend.value || pageloading.value) return;
+	pageloading.value = true;
+	getSeckillListApi(timeList.value[active.value].id, {
 		page: page.value,
 		limit: limit.value
-	};
-	if (loadend.value) return;
-	if (pageloading.value) return;
-	pageloading.value = true;
-	getSeckillListApi(timeList.value[active.value].id, data)
+	})
 		.then((res) => {
-			var newseckillList = res.data;
-			var isLoadend = newseckillList.length < limit.value;
+			const list = res.data;
+			seckillList.value = seckillList.value.concat(list);
 			page.value++;
-			(seckillList.value = seckillList.value.concat(newseckillList)), (page.value = page.value);
 			pageloading.value = false;
-			loadend.value = isLoadend;
+			loadend.value = list.length < limit.value;
 		})
-		.catch((err) => {
+		.catch(() => {
 			pageloading.value = false;
 		});
 }
 function settimeList(item, index) {
 	active.value = index;
-	if (interval.value) {
-		clearInterval(interval.value);
-		interval.value = null;
-	}
-	interval.value = 0;
-	countDownHour.value = '00';
-	countDownMinute.value = '00';
-	countDownSecond.value = '00';
-	status.value = timeList.value[active.value].status;
+	status.value = item.status;
 	loadend.value = false;
 	page.value = 1;
 	seckillList.value = [];
-	// wxh.time(e.currentTarget.dataset.stop, that);
 	getSeckillList();
 }
 function goDetails(item) {

@@ -212,7 +212,7 @@ class UserBillController
                 }
             } else if ($type == 2) {
                 //公众号
-                $name = $user['uid'] . '_user_wap.jpg';
+                $name = $user['uid'] . '_user_wap_spid.jpg';
                 $imageInfo = $systemAttachment->getInfo(['real_name' => $name, 'module_type' => 2]);
                 //检测远程文件是否存在
                 if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
@@ -220,7 +220,7 @@ class UserBillController
                     $systemAttachment->delete(['real_name' => $name, 'module_type' => 2]);
                 }
                 if (!$imageInfo) {
-                    $codeUrl = set_http_type($siteUrl . '?spread=' . $user['uid'], $request->isSsl() ? 0 : 1);//二维码链接
+                    $codeUrl = set_http_type($siteUrl . '?spid=' . $user['uid'], $request->isSsl() ? 0 : 1);//二维码链接
                     $imageInfo = PosterServices::getQRCodePath($codeUrl, $name);
                     if (is_string($imageInfo)) return app('json')->fail('二维码生成失败', ['error' => $imageInfo]);
                     $systemAttachment->attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
@@ -300,16 +300,18 @@ class UserBillController
     {
         /** @var SystemConfigServices $systemConfigServices */
         $systemConfigServices = app()->make(SystemConfigServices::class);
-        // 底图优先取「用户注册设置 - 邀新海报背景图」；未配置时回退组合数据里的海报组
+        // 底图优先取「用户注册设置 - 邀新海报背景图」；未配置时回退分销海报组
         $posterBg = trim((string)sys_config('invite_poster_bg', ''));
         if ($posterBg !== '') {
-            $spreadBanner = [set_file_url($posterBg, sys_config('site_url'))];
+            $spreadBanner = [$posterBg];
         } else {
             $spreadBanner = $systemConfigServices->getSpreadBanner() ?? [];
         }
+        $siteUrl = (string)sys_config('site_url');
         $routineSpreadBanner = [];
         foreach ($spreadBanner as $item) {
-            $routineSpreadBanner[] = ['pic' => $item];
+            // 必须绝对地址：相对路径进 image_base64 会被域名白名单判失败
+            $routineSpreadBanner[] = ['pic' => set_file_url($item, $siteUrl)];
         }
         //公众号环境返回带邀请人标识的临时二维码，其它端由前端自行生成（?spid=uid）
         if (sys_config('share_qrcode', 0) && $request->isWechat()) {

@@ -157,13 +157,12 @@ class UserController
      */
     public function spread(Request $request)
     {
-        [$spreadUid, $code, $agent_id] = $request->postMore([
+        [$spreadUid, $code] = $request->postMore([
             ['puid', 0],
             ['code', 0],
-            ['agent_id', 0]
         ], true);
         $uid = (int)$request->uid();
-        $res = $this->services->spread($uid, (int)$spreadUid, $code, $agent_id);
+        $res = $this->services->spread($uid, (int)$spreadUid, $code);
         return app('json')->success($res);
     }
 

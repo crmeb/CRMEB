@@ -4,17 +4,15 @@
     <div class="select-icon">
       <div class="toolbar">
         <span class="toolbar__count">共 {{ displayList.length }} 项</span>
-        <el-input
-          v-model="keyword"
+        <el-input v-model="keyword"
           class="toolbar__search"
           placeholder="请输入图标名称"
           :prefix-icon="Search"
-          clearable
-        />
+          clearable />
         <el-select v-model="source" class="toolbar__source">
           <el-option v-for="opt in sourceOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
         </el-select>
-        <el-button class="toolbar__reset" :disabled="!hasFilter" v-db-click @click="resetFilter">
+        <el-button class="toolbar__reset" :disabled="!hasFilter" @click="resetFilter">
           <el-icon><RefreshLeft /></el-icon>
         </el-button>
         <el-radio-group v-if="source === 'crmeb'" v-model="iconType" class="toolbar__segmented">
@@ -24,13 +22,10 @@
       </div>
       <div class="icons-container">
         <div class="grid">
-          <div
-            v-for="item in displayList"
+          <div v-for="item in displayList"
             :key="item.value"
             class="icon-item"
-            v-db-click
-            @click="selectIcon(item.value)"
-          >
+            @click="selectIcon(item.value)">
             <el-icon v-if="item.source === 'element'" :size="26"><component :is="item.value" /></el-icon>
             <i v-else class="crmeb-icon" :class="item.value" />
             <span class="line1" :title="item.name">{{ item.name }}</span>

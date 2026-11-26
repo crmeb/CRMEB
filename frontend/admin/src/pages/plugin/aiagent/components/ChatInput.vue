@@ -10,8 +10,7 @@
 
     <!-- 输入卡片 -->
     <div class="input-card">
-      <el-input
-        ref="inputRef"
+      <el-input ref="inputRef"
         v-model="input"
         type="textarea"
         :rows="2"
@@ -19,34 +18,27 @@
         resize="none"
         class="input-textarea"
         placeholder="输入问题，按 Enter 发送，Shift+Enter 换行"
-        @keydown.enter="handleEnterKey"
-      />
+        @keydown.enter="handleEnterKey" />
       <div class="input-card-toolbar">
         <div class="toolbar-left">
           <!-- 连接器选择：多选弹出面板，空=默认挂载全部可用项 -->
-          <el-popover
-            v-if="mcpServers.length"
+          <el-popover v-if="mcpServers.length"
             placement="top-start"
             trigger="click"
             :width="280"
-            popper-class="model-popover"
-          >
+            popper-class="model-popover">
             <div class="model-panel">
               <div class="panel-tip">未勾选时默认挂载全部可用连接器</div>
-              <div
-                v-for="server in mcpServers"
+              <div v-for="server in mcpServers"
                 :key="server.id"
                 :class="['model-item', { active: serverIds.includes(server.id) }]"
-                @click="toggleInList(serverIds, server.id)"
-              >
+                @click="toggleInList(serverIds, server.id)">
                 <span class="model-name">{{ server.name }}</span>
                 <i v-if="serverIds.includes(server.id)" class="el-icon-check" />
               </div>
               <div class="model-item model-manage" @click="emit('manage', 'mcp')">
                 <div class="model-info">
-                  <span class="model-name"
-                    ><el-icon><EditPen /></el-icon> 管理 MCP 连接器</span
-                  >
+                  <span class="model-name"><el-icon><EditPen /></el-icon> 管理 MCP 连接器</span>
                 </div>
               </div>
             </div>
@@ -59,29 +51,23 @@
             </template>
           </el-popover>
           <!-- Skill 选择：显式选中的 Skill 全文注入，空=按目录按需加载 -->
-          <el-popover
-            v-if="skills.length"
+          <el-popover v-if="skills.length"
             placement="top-start"
             trigger="click"
             :width="280"
-            popper-class="model-popover"
-          >
+            popper-class="model-popover">
             <div class="model-panel">
               <div class="panel-tip">未勾选时按需加载：AI 判断问题相关后自动加载规则</div>
-              <div
-                v-for="skill in skills"
+              <div v-for="skill in skills"
                 :key="skill.key"
                 :class="['model-item', { active: skillKeys.includes(skill.key) }]"
-                @click="toggleInList(skillKeys, skill.key)"
-              >
+                @click="toggleInList(skillKeys, skill.key)">
                 <span class="model-name">{{ skill.name }}</span>
                 <i v-if="skillKeys.includes(skill.key)" class="el-icon-check" />
               </div>
               <div class="model-item model-manage" @click="emit('manage', 'skill')">
                 <div class="model-info">
-                  <span class="model-name"
-                    ><el-icon><EditPen /></el-icon> 管理 Skill</span
-                  >
+                  <span class="model-name"><el-icon><EditPen /></el-icon> 管理 Skill</span>
                 </div>
               </div>
             </div>
@@ -98,20 +84,16 @@
           <!-- 模型选择：弹出面板（当前模型名 + 列表勾选 + 配置入口） -->
           <el-popover placement="top-end" trigger="click" :width="300" popper-class="model-popover">
             <div class="model-panel">
-              <div
-                v-for="model in models"
+              <div v-for="model in models"
                 :key="model.id"
                 :class="['model-item', { active: modelId === model.id }]"
-                @click="emit('select-model', model)"
-              >
+                @click="emit('select-model', model)">
                 <span class="model-name">{{ model.name }}</span>
                 <i v-if="modelId === model.id" class="el-icon-check" />
               </div>
               <div class="model-item model-manage" @click="emit('manage', 'model')">
                 <div class="model-info">
-                  <span class="model-name"
-                    ><el-icon><EditPen /></el-icon> 配置自定义模型</span
-                  >
+                  <span class="model-name"><el-icon><EditPen /></el-icon> 配置自定义模型</span>
                 </div>
               </div>
             </div>
@@ -124,10 +106,10 @@
             </template>
           </el-popover>
           <!-- 发送 / 停止：流式输出进行中按钮变为红色停止态，点击终止输出 -->
-          <button v-if="chatting" class="send-btn stop" type="button" v-db-click @click="emit('stop')">
+          <button v-if="chatting" class="send-btn stop" type="button" @click="emit('stop')">
             <el-icon><VideoPause /></el-icon>
           </button>
-          <button v-else class="send-btn" type="button" :disabled="!input.trim()" v-db-click @click="emit('send')">
+          <button v-else class="send-btn" type="button" :disabled="!input.trim()" @click="emit('send')">
             <el-icon><Top /></el-icon>
           </button>
         </div>

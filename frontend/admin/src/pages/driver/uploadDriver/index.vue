@@ -1,10 +1,8 @@
 <template>
   <div>
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="管理本地与云存储驱动并切换启用，图片附件将上传至启用的存储平台。"
-    ></pages-header>
+      description="管理本地与云存储驱动并切换启用，图片附件将上传至启用的存储平台。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-table :data="list" ref="table" v-loading="loading" highlight-current-row row-key="id">
         <el-table-column label="排序" width="80" prop="sort">
@@ -35,8 +33,7 @@
 
         <el-table-column label="状态" width="80">
           <template #default="scope">
-            <el-switch
-              v-auth="['driver-upload-status']"
+            <el-switch v-auth="['driver-upload-status']"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -44,32 +41,27 @@
               @change="handleStatusChange(scope.row)"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            />
+              class="defineSwitch" />
           </template>
         </el-table-column>
 
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="scope">
-            <a v-auth="['driver-upload-save-config']" v-db-click @click="openEditDrawer(scope.row)">设置</a>
+            <a v-auth="['driver-upload-save-config']" @click="openEditDrawer(scope.row)">设置</a>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <el-drawer
-      class="upload-driver-drawer"
+    <el-drawer class="upload-driver-drawer"
       :title="'编辑 - ' + (currentDriver ? currentDriver.driver_name : '')"
       v-model="showEditDrawer"
       direction="rtl"
-      size="min(1100px, 100%)"
-    >
-      <UploadDriverEdit
-        v-if="showEditDrawer"
+      size="min(1100px, 100%)">
+      <UploadDriverEdit v-if="showEditDrawer"
         :driver-id="currentDriverId"
         @close="showEditDrawer = false"
-        @success="handleEditSuccess"
-      />
+        @success="handleEditSuccess" />
     </el-drawer>
   </div>
 </template>

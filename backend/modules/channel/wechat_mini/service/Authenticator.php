@@ -149,12 +149,11 @@ class Authenticator extends BaseChannelAuthenticator
         }
 
         $wechatInfo = [];
-        $agent_id = 0;
         $userType = $login_type = 'routine';
         // 若有缓存 key，从缓存恢复已授权数据
         if ($key) {
             $cachedData = $this->getAuthCache($key);
-            [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType] = $cachedData;
+            [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $cachedData;
         }
 
         // 用 code 换 session + 解密手机号
@@ -182,7 +181,7 @@ class Authenticator extends BaseChannelAuthenticator
         $wechatInfo['session_key'] = $userInfoCong['session_key'];
         $wechatInfo['phone'] = $userInfo['purePhoneNumber'];
 
-        $user = $this->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType]);
+        $user = $this->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
         return $this->authResult((int)$user['uid'], $user, false, '', [
             'bindName' => (int)sys_config('get_avatar') && $user['avatar'] == sys_config('h5_avatar'),
         ]);
@@ -190,7 +189,7 @@ class Authenticator extends BaseChannelAuthenticator
 
     /**
      * 手机号登录（验证码）
-     * @param array $credentials ['key'=>string, 'phone'=>string, 'spread'=>int, 'agent_id'=>int, 'spid'=>string, 'code'=>string]
+     * @param array $credentials ['key'=>string, 'phone'=>string, 'spread'=>int, 'spid'=>string, 'code'=>string]
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
@@ -199,7 +198,6 @@ class Authenticator extends BaseChannelAuthenticator
         $key = $credentials['key'] ?? '';
         $phone = $credentials['phone'] ?? '';
         $spread = $credentials['spread'] ?? '';
-        $agent_id = $credentials['agent_id'] ?? '';
         $spid = $credentials['spid'] ?? '';
         $code = $credentials['code'] ?? '';
 
@@ -213,9 +211,9 @@ class Authenticator extends BaseChannelAuthenticator
                 throw new ApiException('缺少缓存key或授权code');
             }
             $cachedData = $this->getAuthCache($key);
-            [$openid, $routineInfo, $spid, $agent_id, $login_type, $userType] = $cachedData;
+            [$openid, $routineInfo, $spid, $login_type, $userType] = $cachedData;
             $routineInfo['phone'] = $phone;
-            $createData = [$openid, $routineInfo, $spid, $agent_id, $login_type, $userType];
+            $createData = [$openid, $routineInfo, $spid, $login_type, $userType];
         } else {
             // 用 code 重新换 session
             $userInfoConfig = app()->make(MiniProgram::class)->oauth($code, ['silence' => true]);
@@ -234,7 +232,7 @@ class Authenticator extends BaseChannelAuthenticator
             $routineInfo['session_key'] = $userInfoConfig['session_key'];
             $routineInfo['headimgurl'] = sys_config('h5_avatar');
             $routineInfo['phone'] = $phone;
-            $createData = [$openid, $routineInfo, $spid, $agent_id, 'routine', 'routine'];
+            $createData = [$openid, $routineInfo, $spid, 'routine', 'routine'];
         }
 
         $user = $this->wechatOauthAfter($createData);
@@ -245,7 +243,7 @@ class Authenticator extends BaseChannelAuthenticator
 
     /**
      * 完成小程序用户创建/更新，返回 user 数组。
-     * @param array $createData [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType]
+     * @param array $createData [$openid, $wechatInfo, $spreadId, $login_type, $userType]
      * @return array
      */
     protected function wechatOauthAfter(array $createData): array

@@ -2,22 +2,18 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="tableFromRef"
+        <el-form ref="tableFromRef"
           :model="tableFrom"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="是否有效：">
-            <el-select
-              placeholder="请选择"
+            <el-select placeholder="请选择"
               clearable
               v-model="tableFrom.status"
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="已使用"></el-option>
               <el-option value="0" label="未使用"></el-option>
               <el-option value="2" label="已过期"></el-option>
@@ -27,15 +23,13 @@
             <el-input placeholder="请输入领取人" v-model="tableFrom.nickname" clearable class="form_content_width" />
           </el-form-item>
           <el-form-item label="优惠券搜索：" label-for="coupon_title">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入优惠券名称"
               v-model="tableFrom.coupon_title"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -95,13 +89,11 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="tableFrom.page"
           v-model:limit="tableFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

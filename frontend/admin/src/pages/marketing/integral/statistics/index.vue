@@ -4,20 +4,18 @@
       <div class="padding-add">
         <el-form :model="formValidate" label-width="80px" @submit.prevent inline>
           <el-form-item label="时间选择：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
-              value-format="YYYY/MM/DD"
-            ></date-range-picker>
+              value-format="YYYY/MM/DD"></date-range-picker>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
-    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length>= 0"></cards-data>
     <el-card :bordered="false" shadow="never">
       <h4 class="statics-header-title">积分使用趋势</h4>
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
@@ -26,18 +24,16 @@
       <el-card :bordered="false" shadow="never">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">积分来源分析</h4>
-          <div class="change-style" v-db-click @click="echartLeft = !echartLeft">切换样式</div>
+          <div class="change-style" @click="echartLeft = !echartLeft">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartLeft" :infoList="infoList" echartsTitle="circle"></echarts-from>
-          <el-table
-            v-show="!echartLeft"
+          <el-table v-show="!echartLeft"
             ref="selection"
             :data="tabList"
             v-loading="loading"
             empty-text="暂无数据"
-            highlight-current-row
-          >
+            highlight-current-row>
             <el-table-column type="index" width="60"></el-table-column>
             <el-table-column label="来源" min-width="80">
               <template #default="scope">
@@ -66,18 +62,16 @@
       <el-card :bordered="false" shadow="never">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">积分消耗</h4>
-          <div class="change-style" v-db-click @click="echartRight = !echartRight">切换样式</div>
+          <div class="change-style" @click="echartRight = !echartRight">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartRight" :infoList="infoList2" echartsTitle="circle"></echarts-from>
-          <el-table
-            v-show="!echartRight"
+          <el-table v-show="!echartRight"
             ref="selection"
             :data="tabList2"
             v-loading="loading"
             empty-text="暂无数据"
-            highlight-current-row
-          >
+            highlight-current-row>
             <el-table-column type="index" width="60"></el-table-column>
             <el-table-column label="来源" min-width="80">
               <template #default="scope">
@@ -229,7 +223,7 @@ function getPointTrendFn() {
   gap: 16px;
   margin-top: 16px;
 }
-.code-row-bg > .el-card {
+.code-row-bg> .el-card {
   flex: 1;
   min-width: 0;
 }

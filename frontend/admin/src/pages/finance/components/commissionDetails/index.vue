@@ -1,35 +1,29 @@
 <template>
   <div>
-    <el-form
-      ref="formRef"
+    <el-form ref="formRef"
       :label-width="labelWidth"
       :label-position="labelPosition"
       class="tabform"
       @submit.prevent
-      inline
-    >
+      inline>
       <el-form-item label="订单搜索：" label-for="status1">
-        <el-input
-          v-model="formValidate.keywords"
+        <el-input v-model="formValidate.keywords"
           placeholder="请输入交易单号/交易人"
-          class="form_content_width"
-        ></el-input>
+          class="form_content_width"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" v-db-click @click="searchs">搜索</el-button>
+        <el-button type="primary" @click="searchs">搜索</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button v-db-click @click="reset">重置</el-button>
+        <el-button @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table
-      :data="tabList"
+    <el-table :data="tabList"
       ref="table"
       v-loading="loading"
       no-userFrom-text="暂无数据"
       no-filtered-userFrom-text="暂无筛选结果"
-      class="table"
-    >
+      class="table">
       <el-table-column label="交易单号" width="180">
         <template #default="scope">
           <span>{{ scope.row.flow_id }}</span>
@@ -47,7 +41,7 @@
       </el-table-column>
       <el-table-column label="交易金额" min-width="130">
         <template #default="scope">
-          <div v-if="scope.row.price >= 0" class="z-price">+{{ scope.row.price }}</div>
+          <div v-if="scope.row.price>= 0" class="z-price">+{{ scope.row.price }}</div>
           <div v-if="scope.row.price < 0" class="f-price">{{ scope.row.price }}</div>
         </template>
       </el-table-column>
@@ -73,13 +67,11 @@
       </el-table-column>
     </el-table>
     <div class="acea-row row-right page">
-      <pagination
-        v-if="total"
+      <pagination v-if="total"
         :total="total"
         v-model:page="formValidate.page"
         v-model:limit="formValidate.limit"
-        @pagination="getList"
-      />
+        @pagination="getList" />
     </div>
   </div>
 </template>

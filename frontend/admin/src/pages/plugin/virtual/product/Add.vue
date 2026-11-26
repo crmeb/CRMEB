@@ -1,27 +1,22 @@
 <template>
   <div class="" id="shopp-manager" v-loading="spinShow">
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       :title="editId ? '编辑网盘商品' : '添加网盘商品'"
       :backUrl="routePre + '/product/virtual/list'"
-      description="分步完成基础信息、规格库存与详情设置，保存后可上架销售。"
-    ></pages-header>
+      description="分步完成基础信息、规格库存与详情设置，保存后可上架销售。"></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0px 20px' }">
       <el-tabs v-model="currentTab">
         <el-tab-pane v-for="(item, index) in headTab" :key="index" :label="item.tit" :name="item.name"></el-tab-pane>
       </el-tabs>
-      <el-form
-        class="formValidate mt20"
+      <el-form class="formValidate mt20"
         ref="formValidateRef"
         :rules="ruleValidate"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
-        @submit.prevent
-      >
+        @submit.prevent>
         <!-- 基础信息 -->
-        <basic-info
-          v-show="currentTab === '1'"
+        <basic-info v-show="currentTab === '1'"
           :isCai="type"
           :formValidate="formValidate"
           :goodsType="goodsType"
@@ -40,12 +35,10 @@
           @addVideo="addVideo"
           @delVideo="delVideo"
           @addCate="addCate"
-          @addGoodsTag="addGoodsTag"
-        ></basic-info>
+          @addGoodsTag="addGoodsTag"></basic-info>
 
         <!-- 规格库存 -->
-        <spec-stock
-          ref="specStock"
+        <spec-stock ref="specStock"
           v-show="currentTab === '2'"
           :formValidate="formValidate"
           :ruleList="ruleList"
@@ -79,21 +72,17 @@
           @changeDefaultShow="changeDefaultShow"
           @addGoodsCoupon="addGoodsCoupon"
           @see="see"
-          @addVirtual="addVirtual"
-        ></spec-stock>
+          @addVirtual="addVirtual"></spec-stock>
 
         <!-- 商品详情 -->
-        <product-detail
-          v-show="currentTab === '3'"
+        <product-detail v-show="currentTab === '3'"
           :contents="contents"
           :content="content"
           :store-name="formValidate.store_name"
-          @getEditorContent="getEditorContent"
-        ></product-detail>
+          @getEditorContent="getEditorContent"></product-detail>
 
         <!-- 会员价 -->
-        <price-commission
-          v-show="currentTab === '4'"
+        <price-commission v-show="currentTab === '4'"
           :formValidate="formValidate"
           :oneFormValidate="oneFormValidate"
           v-model:manyFormValidate="manyFormValidate"
@@ -101,12 +90,10 @@
           :columnsInstal2="columnsInstal2"
           v-model:manyVipPrice="manyVipPrice"
           @checkAllGroupChange="checkAllGroupChange"
-          @brokerageSetUp="brokerageSetUp"
-        ></price-commission>
+          @brokerageSetUp="brokerageSetUp"></price-commission>
 
         <!-- 营销设置 -->
-        <marketing-setting
-          v-show="currentTab === '5'"
+        <marketing-setting v-show="currentTab === '5'"
           :formValidate="formValidate"
           :couponName="couponName"
           :dataLabel="dataLabel"
@@ -118,12 +105,10 @@
           @addLabel="addLabel"
           @onchangeTime="onchangeTime"
           @handleRemoveRecommend="handleRemoveRecommend"
-          @changeGoods="changeGoods"
-        ></marketing-setting>
+          @changeGoods="changeGoods"></marketing-setting>
 
         <!-- 其他设置 -->
-        <other-setting
-          v-show="currentTab === '6'"
+        <other-setting v-show="currentTab === '6'"
           :formValidate="formValidate"
           v-model:customBtn="customBtn"
           :paramsType="paramsType"
@@ -137,8 +122,7 @@
           @addProtection="addProtection"
           @customMessBtn="customMessBtn"
           @delcustom="delcustom"
-          @addcustom="addcustom"
-        ></other-setting>
+          @addcustom="addcustom"></other-setting>
 
         <el-form-item class="mt20">
           <el-button v-if="currentTab !== '1'" @click="upTab">上一项</el-button>
@@ -150,33 +134,27 @@
 
     <!-- 图片选择组件 -->
     <el-dialog v-model="modalPic" width="950px" scrollable title="上传商品图" :close-on-click-modal="false">
-      <uploadPictures
-        :isChoice="isChoice"
+      <uploadPictures :isChoice="isChoice"
         @getPic="getPic"
         @getPicD="getPicD"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        v-if="modalPic"
-      />
+        v-if="modalPic" />
     </el-dialog>
 
     <!-- 优惠券列表 -->
-    <coupon-list
-      ref="couponTemplates"
+    <coupon-list ref="couponTemplates"
       @nameId="nameId"
       :couponids="formValidate.coupon_ids"
       :updateIds="updateIds"
-      :updateName="updateName"
-    />
+      :updateName="updateName" />
 
     <!-- 用户标签 -->
-    <el-dialog
-      v-model="labelShow"
+    <el-dialog v-model="labelShow"
       title="请选择用户标签"
       :show-close="true"
       width="540px"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <userLabel @activeData="activeData" @close="labelClose" />
     </el-dialog>
 
@@ -191,12 +169,10 @@
     </el-dialog>
 
     <!-- 运费模板 -->
-    <freightTemplate
-      :template="template"
+    <freightTemplate :template="template"
       v-on:changeTemplate="changeTemplate"
       @addSuccess="productGetTemplate"
-      ref="templates"
-    />
+      ref="templates" />
 
     <!-- 属性模板 -->
     <add-attr ref="addattr" @getList="userSearchs" />
@@ -305,7 +281,6 @@ const formValidate = ref({
   is_vip_admin: 0,
   vip_product: 0,
   spec_type: 0,
-  is_sub: 0,
   coupon_ids: [],
   couponName: [],
   label_list: [],
@@ -355,8 +330,6 @@ const oneFormValidate = ref([
     bar_code_number: '',
     weight: 0,
     volume: 0,
-    brokerage: 0,
-    brokerage_two: 0,
     vip_price: 0,
     // 网盘信息（SKU 级，单规格时仅一条）
     download_url: '',
@@ -469,14 +442,13 @@ async function loadProduct() {
     formValidate.value.give_integral = data.give_integral || 0;
     formValidate.value.is_auto_send = data.is_auto_send !== undefined ? data.is_auto_send : 1;
     formValidate.value.spec_type = data.spec_type !== undefined ? data.spec_type : 0;
-    formValidate.value.is_sub = data.is_sub ?? 0;
     formValidate.value.recommend = data.recommend || [];
     formValidate.value.recommend_list = data.recommend_list || [];
     formValidate.value.label_list = data.label_list || [];
     formValidate.value.params_list = data.params_list || [];
     formValidate.value.protection_list = data.protection_list || [];
     formValidate.value.custom_form = data.custom_form || [];
-    customBtn.value = data.custom_form && data.custom_form.length > 0 ? 1 : 0;
+    customBtn.value = data.custom_form && data.custom_form.length> 0 ? 1 : 0;
     formValidate.value.logistics = data.logistics || ['1'];
     formValidate.value.freight = data.freight !== undefined ? data.freight : 2;
     formValidate.value.postage = data.postage || 0;
@@ -499,7 +471,7 @@ async function loadProduct() {
     // 分类回显：级联选项的 value 是数字，字符串 ID 无法命中节点，这里统一转成数字
     const cate = data.cate_id;
     const cateArr = Array.isArray(cate) ? cate : cate ? String(cate).split(',') : [];
-    formValidate.value.cate_id = cateArr.map((v) => Number(v)).filter((v) => !Number.isNaN(v) && v > 0);
+    formValidate.value.cate_id = cateArr.map((v) => Number(v)).filter((v) => !Number.isNaN(v) && v> 0);
     // 规格回显（优先使用 attr/attrs 中的数据）
     if (data.attr && typeof data.attr === 'object') {
       oneFormValidate.value[0].price = parseFloat(data.attr.price) || 0;
@@ -508,8 +480,6 @@ async function loadProduct() {
       oneFormValidate.value[0].stock = parseInt(data.attr.stock) || 0;
       oneFormValidate.value[0].pic = data.attr.pic || formValidate.value.image;
       oneFormValidate.value[0].vip_price = parseFloat(data.attr.vip_price) || 0;
-      oneFormValidate.value[0].brokerage = parseFloat(data.attr.brokerage) || 0;
-      oneFormValidate.value[0].brokerage_two = parseFloat(data.attr.brokerage_two) || 0;
       // 单规格网盘信息（SKU 级）
       oneFormValidate.value[0].download_url = data.attr.download_url || '';
       oneFormValidate.value[0].download_password = data.attr.download_password || '';
@@ -521,7 +491,7 @@ async function loadProduct() {
       oneFormValidate.value[0].pic = formValidate.value.image;
     }
     // 多规格回显：重建规格组与表格数据（含各 SKU 网盘信息）；单规格值也会只有一条 SKU，不设下限会漏回显
-    if (data.spec_type === 1 && Array.isArray(data.attrs) && data.attrs.length >= 1) {
+    if (data.spec_type === 1 && Array.isArray(data.attrs) && data.attrs.length>= 1) {
       restoreManySku(data.attrs);
     }
     // 商品详情回显
@@ -670,7 +640,6 @@ function getPicD(pc) {
 }
 // ----- 规格库存事件 -----
 function changeSpec() {
-  formValidate.value.is_sub = 0;
 }
 function confirm(name) {
   formValidate.value.selectRule = name;
@@ -703,7 +672,7 @@ function attrChangeValue(i, val) {
     generateHeader(attrs.value);
     if (manyFormValidate.value.length) {
       manyFormValidate.value.map((item, i) => {
-        if (i > 0) {
+        if (i> 0) {
           if (Object.keys(item.detail).includes(changeAttrValue.value)) {
             item.detail[val] = item.detail[changeAttrValue.value];
             item[val] = item[changeAttrValue.value];
@@ -809,7 +778,7 @@ function attrDetailChangeValue(val, i) {
   if (manyFormValidate.value.length) {
     let key = attrs.value[i].value;
     manyFormValidate.value.map((item, i) => {
-      if (i > 0) {
+      if (i> 0) {
         if (Object.keys(item.detail).includes(key) && item.detail[key] === changeAttrValue.value) {
           item.detail[key] = val;
           let index = item.attr_arr.findIndex((item) => item === changeAttrValue.value);
@@ -883,7 +852,7 @@ function generateAttr(data, val) {
   let arr = data;
   const combinations = generateCombinations(arr);
   let rows = [];
-  if (combinations.length > 500) {
+  if (combinations.length> 500) {
     const batchSize = Math.ceil(combinations.length / 500);
     for (let i = 0; i < combinations.length; i += batchSize) {
       setTimeout(() => {
@@ -915,8 +884,6 @@ function generateAttrBatch(data, combinations, val) {
       unique: '',
       weight: '',
       volume: '',
-      brokerage: 0,
-      brokerage_two: 0,
       vip_price: 0,
       vip_proportion: 0,
       download_url: '',
@@ -941,8 +908,6 @@ function generateAttrBatch(data, combinations, val) {
           volume: matchedItem.volume || '',
           is_show: matchedItem.is_show || 1,
           is_default_select: matchedItem.is_default_select || 0,
-          brokerage: matchedItem.brokerage,
-          brokerage_two: matchedItem.brokerage_two,
           vip_price: matchedItem.vip_price,
           vip_proportion: matchedItem.vip_proportion,
           download_url: matchedItem.download_url || '',
@@ -1002,7 +967,7 @@ function restoreManySku(skuRows) {
   formValidate.value.spec_type = 1;
   formValidate.value.is_copy = 1;
   // 默认选中第一条 SKU
-  if (manyFormValidate.value.length > 1) {
+  if (manyFormValidate.value.length> 1) {
     manyFormValidate.value[1].is_default_select = 1;
   }
 }
@@ -1080,7 +1045,7 @@ function checkAllGroup() {
   }
 }
 function brokerageSetUp() {
-  if (!(manyVipPrice.value > 0)) {
+  if (!(manyVipPrice.value> 0)) {
     return ElMessage.error('请填写会员价后进行批量添加');
   }
   for (let val of manyFormValidate.value) {
@@ -1166,7 +1131,7 @@ function customMessBtn(e) {
   customBtn.value = e;
 }
 function addcustom() {
-  if (formValidate.value.custom_form.length > 9) ElMessage.warning('最多添加10条');
+  if (formValidate.value.custom_form.length> 9) ElMessage.warning('最多添加10条');
   else formValidate.value.custom_form.push({ title: '', label: 'text', value: '', status: false });
 }
 function delcustom(index) {
@@ -1279,8 +1244,6 @@ function handleSubmit() {
     custom_form: formValidate.value.custom_form || [],
     coupon_ids: formValidate.value.coupon_ids || [],
     label_list: formValidate.value.label_list || [],
-    // 网盘商品页不再设置分销，保存时统一关闭
-    is_sub: 0,
     presale_time: formValidate.value.presale_time || [],
     // 会员价
     oneFormValidate: oneFormValidate.value || [],
@@ -1371,7 +1334,6 @@ function resetAddForm() {
     is_show: 1,
     keyword: '',
     give_integral: 0,
-    is_sub: 0,
     spec_type: 0,
     cate_id: [],
     label_list: [],
@@ -1398,8 +1360,6 @@ function resetAddForm() {
       bar_code_number: '',
       weight: 0,
       volume: 0,
-      brokerage: 0,
-      brokerage_two: 0,
       vip_price: 0,
       download_url: '',
       download_password: '',

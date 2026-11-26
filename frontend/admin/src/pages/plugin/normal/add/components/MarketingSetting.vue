@@ -3,15 +3,13 @@
   <el-row>
     <el-col :span="24">
       <el-form-item label="购买送积分：" prop="give_integral">
-        <el-input-number
-          :controls="false"
+        <el-input-number :controls="false"
           v-model="formValidate.give_integral"
           :min="0"
           :max="9999999999"
           placeholder="请输入积分"
           class="input_width input-number-unit-class"
-          class-unit="积分"
-        />
+          class-unit="积分" />
       </el-form-item>
     </el-col>
     <el-col :span="24">
@@ -21,13 +19,13 @@
             item.title
           }}</el-tag>
         </div>
-        <el-button type="primary" v-db-click @click="addCoupon">选择优惠券</el-button>
+        <el-button type="primary" @click="addCoupon">选择优惠券</el-button>
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="关联用户标签：" prop="label_id">
         <div style="display: flex">
-          <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
+          <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
             <div style="width: 90%">
               <div v-if="dataLabel.length">
                 <el-tag closable v-for="(item, index) in dataLabel" @close="closeLabel(item)" :key="index">{{
@@ -38,7 +36,7 @@
             </div>
             <div class="iconfont iconxiayi"></div>
           </div>
-          <span class="addfont" v-db-click @click="addLabel">新增标签</span>
+          <span class="addfont" @click="addLabel">新增标签</span>
         </div>
       </el-form-item>
     </el-col>
@@ -47,29 +45,25 @@
     </el-col>
     <el-col :span="24">
       <el-form-item label="起购数量：">
-        <el-input-number
-          :controls="false"
+        <el-input-number :controls="false"
           :min="1"
           :max="9999999999"
           :precision="0"
           v-model="formValidate.min_qty"
           placeholder="请输入起购数量"
           class="input_width input-number-unit-class"
-          :class-unit="formValidate.unit_name || '件'"
-        />
+          :class-unit="formValidate.unit_name || '件'" />
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="是否限购：">
-        <el-switch
-          v-model="formValidate.is_limit"
+        <el-switch v-model="formValidate.is_limit"
           class="defineSwitch"
           active-text="开启"
           inactive-text="关闭"
           :active-value="1"
           :inactive-value="0"
-          size="large"
-        >
+          size="large">
         </el-switch>
       </el-form-item>
     </el-col>
@@ -85,15 +79,13 @@
     <el-col :span="24" v-if="formValidate.is_limit">
       <el-form-item label="限购数量：" prop="limit_num">
         <div class="acea-row row-middle">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             placeholder="请输入限购数量"
             :precision="0"
             :min="1"
             v-model="formValidate.limit_num"
             class="input_width input-number-unit-class"
-            :class-unit="formValidate.unit_name || '件'"
-          />
+            :class-unit="formValidate.unit_name || '件'" />
         </div>
       </el-form-item>
     </el-col>
@@ -102,23 +94,20 @@
     </el-col>
     <el-col :span="24">
       <el-form-item label="预售商品：">
-        <el-switch
-          v-model="formValidate.presale"
+        <el-switch v-model="formValidate.presale"
           class="defineSwitch"
           active-text="开启"
           inactive-text="关闭"
           :active-value="1"
           :inactive-value="0"
-          size="large"
-        >
+          size="large">
         </el-switch>
       </el-form-item>
     </el-col>
     <el-col :span="24" v-if="formValidate.presale">
       <el-form-item label="预售活动时间：" prop="presale_time">
         <div class="acea-row row-middle">
-          <el-date-picker
-            clearable
+          <el-date-picker clearable
             :editable="false"
             type="datetimerange"
             format="YYYY-MM-DD HH:mm"
@@ -127,8 +116,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             @change="onchangeTime"
-            v-model="formValidate.presale_time"
-          ></el-date-picker>
+            v-model="formValidate.presale_time"></el-date-picker>
         </div>
         <div class="tip">设置活动开启结束时间，用户可以在设置时间内发起参与预售</div>
       </el-form-item>
@@ -137,15 +125,13 @@
       <el-form-item label="发货时间：" prop="presale_day">
         <div class="acea-row row-middle">
           <span class="mr10">预售活动结束后</span>
-          <el-input-number
-            class="w-80 input-number-unit-class"
+          <el-input-number class="w-80 input-number-unit-class"
             :controls="false"
             placeholder="请输入发货时间"
             :precision="0"
             :min="1"
             class-unit="天"
-            v-model="formValidate.presale_day"
-          />
+            v-model="formValidate.presale_day" />
           <span class="ml10"> 之内 </span>
         </div>
       </el-form-item>
@@ -154,14 +140,12 @@
       <div class="line"></div>
     </el-col>
     <!-- 仅剩"默认"（秒杀/砍价/拼团插件均未安装启用）时隐藏活动优先级 -->
-    <el-col :span="24" v-if="formValidate.activity.length > 1">
+    <el-col :span="24" v-if="formValidate.activity.length> 1">
       <el-form-item label="活动优先级：">
-        <draggable
-          class="color-list acea-row row-middle"
+        <draggable class="color-list acea-row row-middle"
           :list="formValidate.activity"
           group="color"
-          :item-key="activityItemKey"
-        >
+          :item-key="activityItemKey">
           <template #item="{ element: color }">
             <div class="color-item" :class="activity[color]">{{ color }}</div>
           </template>
@@ -176,7 +160,7 @@
             <img :src="item.image || ''" @error="onImgError($event)" />
             <i class="el-icon-error btndel" v-db-click @click="handleRemoveRecommend(index)"></i>
           </div>
-          <div class="upLoad acea-row row-center-wrapper" v-db-click @click="changeGoods">
+          <div class="upLoad acea-row row-center-wrapper" @click="changeGoods">
             <i class="el-icon-picture-outline" style="font-size: 24px"></i>
           </div>
         </div>
@@ -187,27 +171,23 @@
     </el-col>
     <el-col :span="24">
       <el-form-item label="已售数量：">
-        <el-input-number
-          :controls="false"
+        <el-input-number :controls="false"
           :min="0"
           :max="9999999999"
           v-model="formValidate.ficti"
           placeholder="请输入虚拟销量"
           class="input_width input-number-unit-class"
-          :class-unit="formValidate.unit_name || '件'"
-        />
+          :class-unit="formValidate.unit_name || '件'" />
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="排序：">
-        <el-input-number
-          :controls="false"
+        <el-input-number :controls="false"
           :min="0"
           :max="9999999999"
           v-model="formValidate.sort"
           placeholder="请输入数字越大越靠前"
-          class="input_width"
-        />
+          class="input_width" />
       </el-form-item>
     </el-col>
     <el-col :span="24">
@@ -215,30 +195,26 @@
     </el-col>
     <el-col :span="24">
       <el-form-item label="开启送礼：">
-        <el-switch
-          v-model="formValidate.is_gift"
+        <el-switch v-model="formValidate.is_gift"
           class="defineSwitch"
           active-text="开启"
           inactive-text="关闭"
           :active-value="1"
           :inactive-value="0"
-          size="large"
-        >
+          size="large">
         </el-switch>
         <div class="tip">开启送礼后，移动端商品详情的底部菜单显示送礼按钮</div>
       </el-form-item>
     </el-col>
     <el-col :span="24" v-if="formValidate.is_gift">
       <el-form-item label="礼品附加费：">
-        <el-input-number
-          :controls="false"
+        <el-input-number :controls="false"
           :min="0"
           :max="100000"
           v-model="formValidate.gift_price"
           placeholder="请输入礼品附加费"
           class="input_width input-number-unit-class"
-          class-unit="元"
-        />
+          class-unit="元" />
         <div class="tip">送礼下单时，订单默认无运费，此费用可用于负担商品运费、产品包装等附加费用</div>
       </el-form-item>
     </el-col>

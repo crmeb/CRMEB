@@ -2,26 +2,22 @@
   <div>
     <el-card :bordered="false" shadow="never" class="mb10" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           label-position="right"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="搜索：">
             <div class="acea-row row-middle">
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="请输入语言Code"
                 v-model="formValidate.keyword"
-                class="form_content_width"
-              />
+                class="form_content_width" />
             </div>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="selChange">搜索</el-button>
+            <el-button type="primary" @click="selChange">搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -29,7 +25,7 @@
     <el-card :bordered="false" shadow="never">
       <el-row class="action-row">
         <el-col v-bind="grid">
-          <el-button type="primary" v-db-click @click="add">添加语言地区</el-button>
+          <el-button type="primary" @click="add">添加语言地区</el-button>
         </el-col>
       </el-row>
       <el-table ref="table" :data="tabList" class="mt14" v-loading="loading" empty-text="暂无数据">
@@ -55,20 +51,18 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除地区语言', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

@@ -3,14 +3,11 @@
     <el-card class="h100" :bordered="false" shadow="never">
       <!-- <div class="title">页面设置</div> -->
       <div class="list acea-row row-top">
-        <div
-          class="item"
+        <div class="item"
           :class="activeStyle == index ? 'on' : ''"
           v-for="(item, index) in classList"
           :key="index"
-          v-db-click
-          @click="selectTap(index)"
-        >
+          @click="selectTap(index)">
           <div class="pictrue"><img :src="item.image" /></div>
           <div class="name">{{ item.name }}</div>
         </div>

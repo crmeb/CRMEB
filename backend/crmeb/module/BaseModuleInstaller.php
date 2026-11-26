@@ -1193,7 +1193,8 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
      *
      * 页面链接分类树（eb_page_categroy）是共享核心数据，插件只拥有自己的末级分类。
      * 按"名称路径"逐级定位，缺失时创建，全程不硬编码分类 id。
-     * 例：['商城页面', '营销链接', '秒杀链接'] → 返回"秒杀链接"分类 id
+     * 例：['商城页面', '营销链接', '秒杀链接'] → 返回"秒杀链接"分类 id。
+     * 新建插件独立页不要挂在"营销链接"下，用 ensurePluginPageCategory()。
      *
      * @param array $pathNames 从顶层到末级的分类名路径
      * @param int $sort 末级分类排序（仅创建时生效）
@@ -1236,6 +1237,50 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
         }
 
         return $cateId;
+    }
+
+    /**
+     * 插件独立页的一级分类名。各插件在其下各建一个子分类。
+     */
+    protected const PLUGIN_PAGE_CATEGORY = '插件页面';
+
+    /**
+     * 确保"插件页面 / 本插件"分类存在，返回本插件子分类 id
+     *
+     * 营销活动链接继续挂在"商城页面 / 营销链接"下。新建插件页面走这里，
+     * 避免再写进营销链接。
+     *
+     * @param string $name 本插件子分类名，同时是卸载时的清理边界
+     * @param int $sort 子分类排序（仅创建时生效）
+     * @param string $type 子分类类型（仅创建时生效）
+     * @return int
+     */
+    protected function ensurePluginPageCategory(string $name, int $sort = 0, string $type = 'link'): int
+    {
+        // 单独创建一级分类，才能带上排序；作为路径中间节点时排序会被写成 0
+        $this->ensurePageLinkCategory([self::PLUGIN_PAGE_CATEGORY], 80);
+        return $this->ensurePageLinkCategory([self::PLUGIN_PAGE_CATEGORY, $name], $sort, $type);
+    }
+
+    /**
+     * 把本插件已有链接归到指定分类（按 url 白名单）
+     *
+     * seedPageLinks() 对已存在的 url 不会改分类。插件页从其他分类迁过来时调用。
+     *
+     * @param int $cateId
+     * @param array $urls
+     * @return int 实际改动条数
+     */
+    protected function claimPageLinks(int $cateId, array $urls): int
+    {
+        if ($cateId <= 0 || empty($urls) || !$this->hasTable('page_link')) {
+            return 0;
+        }
+
+        return (int) Db::table($this->table('page_link'))
+            ->whereIn('url', $urls)
+            ->where('cate_id', '<>', $cateId)
+            ->update(['cate_id' => $cateId]);
     }
 
     /**
@@ -1332,6 +1377,44 @@ abstract class BaseModuleInstaller implements ModuleInstallerInterface
                 ->delete();
         }
 
+        return $count;
+    }
+
+    /**
+     * 清理插件页面链接，并在"插件页面"下已无插件时删掉这个一级分类
+     *
+     * @param array $categoryNames 本插件子分类名，可带上迁走前的旧分类名
+     * @param array $urls 本插件链接 url
+     * @return int
+     */
+    protected function cleanPluginPageLinks(array $categoryNames, array $urls): int
+    {
+        $count = $this->cleanPageLinks($categoryNames, $urls);
+        if (!$this->hasTable('page_categroy')) {
+            return $count;
+        }
+
+        $root = Db::table($this->table('page_categroy'))
+            ->where('pid', 0)
+            ->where('name', self::PLUGIN_PAGE_CATEGORY)
+            ->find();
+        if (!$root) {
+            return $count;
+        }
+
+        $rootId = (int) $root['id'];
+        $childCount = (int) Db::table($this->table('page_categroy'))->where('pid', $rootId)->count();
+        if ($childCount > 0) {
+            return $count;
+        }
+        if ($this->hasTable('page_link')) {
+            $linkCount = (int) Db::table($this->table('page_link'))->where('cate_id', $rootId)->count();
+            if ($linkCount > 0) {
+                return $count;
+            }
+        }
+
+        $count += (int) Db::table($this->table('page_categroy'))->where('id', $rootId)->delete();
         return $count;
     }
 

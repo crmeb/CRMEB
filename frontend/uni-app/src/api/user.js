@@ -249,6 +249,13 @@ export function extractCash(data) {
 }
 
 /**
+ * 佣金提现到余额
+ */
+export function extractBalance(data) {
+	return request.post('extract/balance', data)
+}
+
+/**
  * 提现银行/提现最低金额
  * 
  */
@@ -737,6 +744,14 @@ export function setClerkPercent(data) {
  */
 export function delClerkPercent(id) {
 	return request.get(`distribution/del_staff/${id}`);
+}
+
+/**
+ * 代理商按手机号或用户ID绑定员工
+ * @param {{account: string, division_percent: string|number}} data
+ */
+export function bindStaff(data) {
+	return request.post('distribution/bind_staff', data);
 }
 
 /**

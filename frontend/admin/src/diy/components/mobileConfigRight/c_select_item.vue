@@ -6,13 +6,11 @@
       </el-col>
       <el-col :span="19" class="slider-box">
         <div class="inputs" v-for="(item, index) in configData.list" :key="index">
-          <el-input
-            :icon="index > 1 ? 'ios-trash-outline' : ''"
+          <el-input :icon="index> 1 ? 'ios-trash-outline' : ''"
             v-model="item.val"
             maxlength="10"
             placeholder="选填，不超过十个字"
-            @on-click="bindDelete(index)"
-          />
+            @on-click="bindDelete(index)" />
         </div>
         <div class="button acea-row row-between-wrapper" :class="configData.list.length == 0 ? 'on' : ''">
           <div class="bnt acea-row row-center-wrapper" @click="addHotTxt">
@@ -24,8 +22,7 @@
               <span class="iconfont iconjia"></span>
               批量添加选项
             </div>
-            <template #content
-              ><div class="batchItem on">
+            <template #content><div class="batchItem on">
                 <div class="title">批量添加选项</div>
                 <div class="tips">可按回车键添加多个选项</div>
                 <el-input v-model="batchWord" type="textarea" :autosize="{ minRows: 3, maxRows: 5 }" />
@@ -33,8 +30,7 @@
                   <el-button @click.stop="cancel(1)">取消</el-button>
                   <el-button v-db-click type="primary" class="ml10" @click.stop="cancel(2)">确定</el-button>
                 </div>
-              </div></template
-            >
+              </div></template>
           </Poptip>
         </div>
       </el-col>

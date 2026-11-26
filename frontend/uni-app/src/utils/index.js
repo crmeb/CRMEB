@@ -10,6 +10,7 @@
 
 import { spread } from "@/api/user";
 import Cache from "@/utils/cache";
+import { SPID } from "@/config/cache";
 import { getCustomerType } from "@/api/api.js";
 import { getWorkermanUrl } from "@/api/kefu.js";
 import { useAppStore } from '@/store/modules/app';
@@ -19,30 +20,27 @@ import { useAppStore } from '@/store/modules/app';
  */
 export function silenceBindingSpread(app) {
   //#ifdef H5
-  let puid = Cache.get("spread"),
-    code = 0,
-    agent_id = Cache.get("agent_id");
+  let puid = Cache.get(SPID),
+    code = 0;
   //#endif
 
   //#ifdef MP || APP-PLUS
   let puid = app.spid,
-    code = app.code,
-    agent_id = 0;
+    code = app.code;
   //#endif
 
   puid = parseInt(puid);
   if (Number.isNaN(puid)) {
     puid = 0;
   }
-  if ((code || puid || agent_id) && useAppStore().token) {
+  if ((code || puid) && useAppStore().token) {
     spread({
       puid,
       code,
-      agent_id,
     })
       .then((res) => {
         //#ifdef H5
-        Cache.clear("spread");
+        Cache.clear(SPID);
         //#endif
         //#ifdef MP || APP-PLUS
         app.spid = 0;
@@ -105,30 +103,37 @@ export function getCustomer(url) {
 
 export function parseQuery() {
   const res = {};
-
-  const query = (location.href.split("?")[1] || "")
-    .trim()
-    .replace(/^(\?|#|&)/, "");
-
-  if (!query) {
-    return res;
-  }
-
-  query.split("&").forEach((param) => {
-    const parts = param.replace(/\+/g, " ").split("=");
-    const key = decodeURIComponent(parts.shift());
-    const val = parts.length > 0 ? decodeURIComponent(parts.join("=")) : null;
-
-    if (res[key] === undefined) {
-      res[key] = val;
-    } else if (Array.isArray(res[key])) {
-      res[key].push(val);
-    } else {
-      res[key] = [res[key], val];
-    }
-  });
-
+  String(location.href)
+    .split("?")
+    .slice(1)
+    .forEach((segment) => {
+      segment
+        .split("#")[0]
+        .replace(/^(\?|#|&)/, "")
+        .split("&")
+        .forEach((param) => {
+          if (!param) return;
+          const parts = param.replace(/\+/g, " ").split("=");
+          const key = decodeURIComponent(parts.shift() || "");
+          const val = parts.length > 0 ? decodeURIComponent(parts.join("=")) : null;
+          if (!key || res[key] !== undefined) return;
+          res[key] = val;
+        });
+    });
   return res;
+}
+
+/** 分享链接带上当前用户 spid。已有 spid / spread 时改成 spid，避免重复拼接。 */
+export function appendSpid(url, uid) {
+  const id = parseInt(uid, 10) || 0;
+  if (!url || !id) return url;
+  const hashAt = url.indexOf("#");
+  if (hashAt > 0) {
+    return url.slice(0, hashAt) + appendSpid(url.slice(hashAt), id);
+  }
+  const replaced = url.replace(/([?&])(spid|spread)=[^&#]*/g, `$1spid=${id}`);
+  if (replaced !== url) return replaced;
+  return url + (url.includes("?") ? "&" : "?") + "spid=" + id;
 }
 export function updateURLParameter(url, param, paramVal) {
   var newAdditionalURL = "";

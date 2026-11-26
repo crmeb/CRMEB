@@ -8,7 +8,7 @@
             Skill 以 Markdown 文件存储，Agent 对话时按选择注入上下文（Markdown 指南、流程说明等）。
           </div>
         </div>
-        <el-button type="primary" icon="Plus" v-db-click @click="openEditor()">新建 Skill</el-button>
+        <el-button type="primary" icon="Plus" @click="openEditor()">新建 Skill</el-button>
       </div>
 
       <el-table :data="list" v-loading="loading" row-key="key">
@@ -26,19 +26,17 @@
         </el-table-column>
         <el-table-column label="状态" width="100">
           <template #default="scope">
-            <el-switch
-              v-model="scope.row.status"
+            <el-switch v-model="scope.row.status"
               :active-value="1"
               :inactive-value="0"
-              @change="changeStatus(scope.row)"
-            />
+              @change="changeStatus(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="190">
           <template #default="scope">
-            <a v-db-click @click="openEditor(scope.row)">编辑</a>
+            <a @click="openEditor(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="openAttachments(scope.row)">附件</a>
+            <a @click="openAttachments(scope.row)">附件</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="removeSkill(scope.row)">删除</a>
           </template>
@@ -48,26 +46,22 @@
     </el-card>
 
     <!-- Skill 编辑抽屉（右侧） -->
-    <el-drawer
-      :title="editing ? '编辑 Skill' : '新建 Skill'"
+    <el-drawer :title="editing ? '编辑 Skill' : '新建 Skill'"
       v-model="editorVisible"
       direction="rtl"
       size="60%"
       append-to-body
       class="ai-skill-drawer"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <div class="drawer-body">
         <el-form ref="skillForm" :model="form" :rules="rules" label-width="90px">
           <el-row :gutter="16">
             <el-col :span="12">
               <el-form-item label="标识" prop="key">
-                <el-input
-                  v-model.trim="form.key"
+                <el-input v-model.trim="form.key"
                   :disabled="editing"
                   maxlength="64"
-                  placeholder="小写字母开头，可含数字、-、_"
-                />
+                  placeholder="小写字母开头，可含数字、-、_" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -79,12 +73,12 @@
           <el-form-item label="描述">
             <el-input v-model.trim="form.description" maxlength="300" placeholder="一句话说明该 Skill 的用途">
               <template #append>
-                <el-button :loading="descGenerating" v-db-click @click="generateDescription">AI 生成</el-button>
+                <el-button :loading="descGenerating" @click="generateDescription">AI 生成</el-button>
               </template>
             </el-input>
           </el-form-item>
           <el-form-item label="AI 写作">
-            <el-button type="primary" plain v-db-click @click="openAiWrite('skill')">
+            <el-button type="primary" plain @click="openAiWrite('skill')">
               {{ form.content.trim() ? 'AI 优化正文' : 'AI 生成正文' }}
             </el-button>
             <span class="ai-inline-tip">
@@ -96,12 +90,10 @@
             </span>
           </el-form-item>
           <el-form-item label="正文" prop="content">
-            <el-input
-              v-model="form.content"
+            <el-input v-model="form.content"
               type="textarea"
               placeholder="Markdown 正文，将作为上下文注入选择了该 Skill 的 Agent 对话"
-              class="content-editor"
-            />
+              class="content-editor" />
           </el-form-item>
           <el-form-item label="状态">
             <el-radio-group v-model="form.status">
@@ -120,15 +112,13 @@
     </el-drawer>
 
     <!-- 附属资料管理：技能目录下随 SKILL.md 存储的 .md 文件，Agent 经 crmeb_skill_load 按需加载 -->
-    <el-drawer
-      :title="`附属资料 - ${currentSkill.name}`"
+    <el-drawer :title="`附属资料 - ${currentSkill.name}`"
       v-model="attachmentsVisible"
       direction="rtl"
       size="60%"
       append-to-body
       class="ai-skill-drawer"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <div class="drawer-body">
         <div class="attach-tip">
           附属资料不随对话注入，Agent 判断需要更完整资料时按需加载；文件为 .md 格式（SKILL.md 与 EXAMPLES.md
@@ -136,7 +126,7 @@
         </div>
         <div class="attach-toolbar">
           <span class="attach-count">共 {{ attachmentList.length }} 个文件</span>
-          <el-button type="primary" icon="Plus" v-db-click @click="openAttachmentEditor()">新建附件</el-button>
+          <el-button type="primary" icon="Plus" @click="openAttachmentEditor()">新建附件</el-button>
         </div>
         <el-table :data="attachmentList" v-loading="attachmentLoading" row-key="file">
           <el-table-column label="文件名" min-width="200">
@@ -155,7 +145,7 @@
           </el-table-column>
           <el-table-column label="操作" width="110" fixed="right">
             <template #default="scope">
-              <a v-db-click @click="openAttachmentEditor(scope.row)">编辑</a>
+              <a @click="openAttachmentEditor(scope.row)">编辑</a>
               <el-divider direction="vertical"></el-divider>
               <a v-db-click @click="removeAttachment(scope.row)">删除</a>
             </template>
@@ -171,27 +161,23 @@
     </el-drawer>
 
     <!-- 附属资料编辑抽屉（右侧） -->
-    <el-drawer
-      :title="attachmentEditing ? '编辑附件' : '新建附件'"
+    <el-drawer :title="attachmentEditing ? '编辑附件' : '新建附件'"
       v-model="attachmentEditorVisible"
       direction="rtl"
       size="60%"
       append-to-body
       class="ai-skill-drawer"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <div class="drawer-body">
         <el-form ref="attachmentFormRef" :model="attachmentForm" :rules="attachmentRules" label-width="90px">
           <el-form-item label="文件名" prop="file">
-            <el-input
-              v-model.trim="attachmentForm.file"
+            <el-input v-model.trim="attachmentForm.file"
               :disabled="attachmentEditing"
               maxlength="100"
-              placeholder="如：功能索引（.md 后缀自动添加，不含路径分隔符）"
-            />
+              placeholder="如：功能索引（.md 后缀自动添加，不含路径分隔符）" />
           </el-form-item>
           <el-form-item label="AI 写作">
-            <el-button type="primary" plain v-db-click @click="openAiWrite('attachment')">
+            <el-button type="primary" plain @click="openAiWrite('attachment')">
               {{ attachmentForm.content.trim() ? 'AI 优化内容' : 'AI 生成内容' }}
             </el-button>
             <span class="ai-inline-tip">
@@ -203,12 +189,10 @@
             </span>
           </el-form-item>
           <el-form-item label="内容" prop="content">
-            <el-input
-              v-model="attachmentForm.content"
+            <el-input v-model="attachmentForm.content"
               type="textarea"
               placeholder="Markdown 全文；Agent 加载后以原文为准"
-              class="content-editor"
-            />
+              class="content-editor" />
           </el-form-item>
         </el-form>
       </div>
@@ -221,14 +205,12 @@
     </el-drawer>
 
     <!-- AI 写作弹窗：提示词一律留空由用户直接输入需求（格式文体要求由系统提示词约束）；rewrite=基于现有内容 + 用户修改意见改写（结果整体替换） -->
-    <AiWriteModal
-      v-model="aiWriteVisible"
+    <AiWriteModal v-model="aiWriteVisible"
       :target-label="aiWriteTarget === 'skill' ? 'Skill 正文' : '附件内容'"
       :mode="aiWriteMode"
       :source-text="aiWriteTarget === 'skill' ? form.content : attachmentForm.content"
       :context-text="aiWriteContext"
-      @insert="onAiInsert"
-    />
+      @insert="onAiInsert" />
   </div>
 </template>
 
@@ -345,7 +327,7 @@ const sanitizeDesc = (text) => {
     .replace(/^["'「『]+|["'」』]+$/g, '')
     .replace(/\s+/g, ' ');
   const idx = t.search(/[：:]/);
-  if (idx > -1) {
+  if (idx> -1) {
     const head = t.slice(0, idx);
     if (head.length <= 30 && /生成|要求|输出|描述|表述|撰写/.test(head)) {
       t = t.slice(idx + 1).trim();

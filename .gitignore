@@ -16,7 +16,10 @@
 !/backend/public/static/
 !/backend/public/index.html
 /backend/public/theme/
-/backend/public/uploads/
+# 忽略 uploads 运行期内容，放行安装演示图 uploads/demo
+/backend/public/uploads/*
+!/backend/public/uploads/demo/
+!/backend/public/uploads/demo/**
 /backend/public/install.lock
 /backend/public/install/install.log
 /backend/runtime/

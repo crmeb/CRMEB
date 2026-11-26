@@ -9,39 +9,32 @@
         <div class="name">当前：样式{{ configData.tabVal + 1 }}</div>
       </div>
     </div>
-    <el-dialog
-      v-model="modals"
+    <el-dialog v-model="modals"
+      append-to-body
       title="风格选择器"
       height="500"
-      :width="configData.type == 'signIn' || configData.type == 'ranking' ? '630px' : '910px'"
-    >
+      :width="configData.type == 'signIn' || configData.type == 'ranking' ? '630px' : '910px'">
       <div class="list acea-row row-middle">
-        <div
-          class="item"
+        <div class="item"
           :class="current == index ? 'on' : ''"
           v-for="(item, index) in list"
           :key="index"
-          @click="tap(index)"
-        >
+          @click="tap(index)">
           <div class="pictrue acea-row row-center-wrapper">
-            <img
-              :src="item.url"
+            <img :src="item.url"
               :style="{
                 width: item.width + 'px',
                 height: item.height + 'px',
-              }"
-            />
+              }" />
             <span class="iconfont icona-zu80222" v-if="current == index"></span>
           </div>
           <div class="name">风格{{ index + 1 }}</div>
         </div>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="cancel">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
           <el-button type="primary" v-db-click @click="ok">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

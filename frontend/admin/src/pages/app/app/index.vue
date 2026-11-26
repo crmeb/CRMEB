@@ -34,21 +34,17 @@
             </div>
           </div>
           <div>
-            <el-form
-              class="form"
+            <el-form class="form"
               ref="formValidateRef"
               :model="formValidate"
               :rules="ruleValidate"
               :label-position="labelPosition"
-              @submit.prevent
-            >
+              @submit.prevent>
               <div class="goodsTitle acea-row"></div>
               <el-form-item label="" style="margin: 0px">
-                <WangEditor
-                  style="width: 90%"
+                <WangEditor style="width: 90%"
                   :content="formValidate.content"
-                  @editorContent="getEditorContent"
-                ></WangEditor>
+                  @editorContent="getEditorContent"></WangEditor>
               </el-form-item>
             </el-form>
           </div>

@@ -5,30 +5,26 @@
         {{ item.title || `ID:${item.id}` }}
       </el-tag>
       <span v-if="!tags.length" class="schema-coupon__empty">未选择</span>
-      <el-button type="primary" plain size="small" v-db-click @click="open">选择优惠券</el-button>
+      <el-button type="primary" plain size="small" @click="open">选择优惠券</el-button>
     </div>
 
-    <el-dialog
-      v-model="visible"
+    <el-dialog v-model="visible"
       title="选择优惠券"
       width="980px"
       append-to-body
       destroy-on-close
       class="schema-coupon-dialog"
       align-center
-      @closed="onClosed"
-    >
-      <iframe
-        v-if="visible"
+      @closed="onClosed">
+      <iframe v-if="visible"
         ref="frameRef"
         :src="iframeSrc"
         frameborder="0"
         class="schema-coupon__frame"
         :style="{ height: `${frameHeight}px` }"
-        @load="onFrameLoad"
-      ></iframe>
+        @load="onFrameLoad"></iframe>
       <template #footer>
-        <el-button v-db-click @click="visible = false">取消</el-button>
+        <el-button @click="visible = false">取消</el-button>
         <el-button type="primary" v-db-click @click="onOk">确定</el-button>
       </template>
     </el-dialog>

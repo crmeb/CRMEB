@@ -7,7 +7,7 @@
 | 区域 | 当前实现 |
 |---|---|
 | 后端 | PHP 8.2-8.4（默认 8.4）、ThinkPHP 8、MySQL 5.7+（推荐 8.0）、Redis |
-| Admin | Vue 3.5、Vue Router 4、Pinia 2、Element Plus 2.9、Vite 5 |
+| Admin | Vue 3.5、Vue Router 4、Pinia 2、Element Plus 2.9、Vite 8 |
 | 用户端 | uni-app CLI（Vite 5）工程，Vue 3 + `<script setup>`、Pinia 2、Sass |
 | 本地默认运行环境 | 宿主机 PHP 8.2-8.4（默认 8.4）+ MySQL 5.7+（推荐 8.0）+ Redis；HTTP 端口 `8011`，数据服务按 `backend/.env` 实际配置 |
 | 可选容器环境 | Docker Compose：Nginx `8011`、MySQL `33061`、Redis `63791` |

@@ -3,18 +3,16 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row class="action-row">
         <el-col v-bind="grid">
-          <el-button type="primary" v-db-click @click="add">添加语言</el-button>
+          <el-button type="primary" @click="add">添加语言</el-button>
         </el-col>
       </el-row>
-      <el-table
-        :data="list"
+      <el-table :data="list"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -35,8 +33,7 @@
         </el-table-column>
         <el-table-column label="状态" min-width="150">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -44,27 +41,24 @@
               @change="changeSwitch(scope.row)"
               size="large"
               active-text="开启"
-              inactive-text="关闭"
-            >
+              inactive-text="关闭">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row, '编辑语言', index)">编辑</a>
+            <a @click="edit(scope.row, '编辑语言', index)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除语言', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="langFrom.page"
           v-model:limit="langFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

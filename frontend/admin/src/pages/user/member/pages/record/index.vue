@@ -2,14 +2,12 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          :model="formValidate"
+        <el-form :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           inline
           @submit.prevent
-          class="tabform"
-        >
+          class="tabform">
           <el-form-item label="会员类型：">
             <el-select v-model="formValidate.member_type" clearable @change="userSearchs" class="form_content_width">
               <el-option v-for="item in treeSelect" :value="item.id" :key="item.id" :label="item.label"></el-option>
@@ -21,26 +19,22 @@
             </el-select>
           </el-form-item>
           <el-form-item label="购买时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
-              value-format="YYYY/MM/DD"
-            ></date-range-picker>
+              value-format="YYYY/MM/DD"></date-range-picker>
           </el-form-item>
           <el-form-item label="搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入用户名称搜索"
               v-model="formValidate.name"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -48,54 +42,36 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-table :data="tbody" ref="table" v-loading="loading">
         <el-table-column label="订单号" width="170">
-          <template #default="scope"
-            ><span>{{ scope.row.order_id }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.order_id }}</span></template>
         </el-table-column>
         <el-table-column label="用户名" min-width="80">
-          <template #default="scope"
-            ><span>{{ scope.row.user.nickname }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.user.nickname }}</span></template>
         </el-table-column>
         <el-table-column label="手机号码" min-width="80">
-          <template #default="scope"
-            ><span>{{ scope.row.user.phone || '--' }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.user.phone || '--' }}</span></template>
         </el-table-column>
         <el-table-column label="会员类型" min-width="80">
-          <template #default="scope"
-            ><span>{{ scope.row.member_type }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.member_type }}</span></template>
         </el-table-column>
         <el-table-column label="有效期限（天）" min-width="80">
-          <template #default="scope"
-            ><span>{{ scope.row.vip_day === -1 ? '永久' : scope.row.vip_day }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.vip_day === -1 ? '永久' : scope.row.vip_day }}</span></template>
         </el-table-column>
         <el-table-column label="支付金额（元）" min-width="50">
-          <template #default="scope"
-            ><span>{{ scope.row.pay_price }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.pay_price }}</span></template>
         </el-table-column>
         <el-table-column label="支付方式" min-width="30">
-          <template #default="scope"
-            ><span>{{ scope.row.pay_type }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.pay_type }}</span></template>
         </el-table-column>
         <el-table-column label="购买时间" min-width="80">
-          <template #default="scope"
-            ><span>{{ scope.row.pay_time }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.pay_time }}</span></template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="tablePage.page"
           v-model:limit="tablePage.limit"
-          @pagination="getMemberRecord"
-        />
+          @pagination="getMemberRecord" />
       </div>
     </el-card>
   </div>

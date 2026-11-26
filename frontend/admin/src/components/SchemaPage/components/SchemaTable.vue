@@ -1,16 +1,13 @@
 <template>
-  <el-table
-    v-loading="loading"
+  <el-table v-loading="loading"
     :data="data"
     row-key="id"
     stripe
     @sort-change="onSortChange"
-    @selection-change="onSelectionChange"
-  >
+    @selection-change="onSelectionChange">
     <!-- 多选列：仅声明批量操作时显示 -->
     <el-table-column v-if="batchActions.length" type="selection" width="46" />
-    <el-table-column
-      v-for="column in columns"
+    <el-table-column v-for="column in columns"
       :key="column.prop"
       :prop="column.prop"
       :label="column.label"
@@ -19,8 +16,7 @@
       :align="column.align"
       :fixed="column.fixed"
       :show-overflow-tooltip="column.type === 'ellipsis' ? overflowTooltipOptions : false"
-      :sortable="column.sortable ? 'custom' : false"
-    >
+      :sortable="column.sortable ? 'custom' : false">
       <template #default="{ row }">
         <SchemaTableCell :column="column" :row="row" @switch-change="onSwitchChange" />
       </template>
@@ -29,8 +25,8 @@
     <el-table-column v-if="rowActions.length" label="操作" :width="actionColumnWidth" fixed="right">
       <template #default="{ row }">
         <template v-for="(actionItem, index) in visibleRowActions(row)" :key="actionItem.action">
-          <el-divider v-if="index > 0" direction="vertical"></el-divider>
-          <a v-db-click @click="emit('row-action', { actionItem, row })">{{ actionItem.label }}</a>
+          <el-divider v-if="index> 0" direction="vertical"></el-divider>
+          <a @click="emit('row-action', { actionItem, row })">{{ actionItem.label }}</a>
         </template>
       </template>
     </el-table-column>
@@ -108,11 +104,11 @@ function isActionVisible(actionItem, row) {
       case 'neq':
         return String(rowValue) !== String(value);
       case 'gt':
-        return Number(rowValue) > Number(value);
+        return Number(rowValue)> Number(value);
       case 'lt':
         return Number(rowValue) < Number(value);
       case 'gte':
-        return Number(rowValue) >= Number(value);
+        return Number(rowValue)>= Number(value);
       case 'lte':
         return Number(rowValue) <= Number(value);
       case 'empty':

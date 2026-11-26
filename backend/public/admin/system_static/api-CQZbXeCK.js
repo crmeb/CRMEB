@@ -1,0 +1,1 @@
+import{r as e}from"./rolldown-runtime-BCiCTKAo.js";import{Cl as t}from"./common-Cyt99CNL.js";var n=e({virtualApi:()=>i}),r=`/virtual`;function i(e,n={}){let i=(n.method||`get`).toLowerCase(),a={url:r+e,method:i};return n.body&&(a.data=typeof n.body==`string`?JSON.parse(n.body):n.body),t(a)}export{i as n,n as t};

@@ -101,14 +101,13 @@
         @goBuy="goBuy"
         @share="listenerActionSheet"
       ></productBottom>
-      <!-- 分销佣金悬浮窗已随主程序分销功能下线（后端不再返回 priceName），如启用分销插件需恢复 -->
-      <!-- <shareRedPackets
+      <shareRedPackets
         :sharePacket="sharePacket"
         @listenerActionSheet="listenerActionSheet"
         @closeChange="closeChange"
         :showAnimate="showAnimate"
         @boxStatus="boxStatus"
-      ></shareRedPackets> -->
+      ></shareRedPackets>
       <!-- 组件 -->
       <productWindow
         :attr="attr"
@@ -305,7 +304,7 @@ import productWindow from "@/components/productWindow";
 import shareRedPackets from "@/components/shareRedPackets";
 import kefuIcon from "@/components/kefuIcon";
 import menuIcon from "@/components/menuIcon.vue";
-import { updateURLParameter } from "@/utils";
+import { appendSpid } from "@/utils";
 import ClipboardJS from "@/plugin/clipboard/clipboard.js";
 // #ifdef MP
 import authorize from "@/components/Authorize";
@@ -538,6 +537,8 @@ const coupon = reactive({
   count: [],
 });
 const showAnimate = ref(false);
+/** 用户手动收起后，停留在顶部时不再自动展开，直到再次点开或滑走再回顶 */
+const shareManualFolded = ref(false);
 const showMenuIcon = ref(false);
 const attrTxt = ref(i18n.t(`请选择`)); //属性页面提示
 const attrValue = ref(""); //已选属性
@@ -554,8 +555,9 @@ const isShowAuth = ref(false); //是否隐藏授权
 const isOpen = ref(false); //是否打开属性组件
 const posterbackgd = ref("/static/images/posterbackgd.png");
 const sharePacket = reactive({
-  isState: false, // 分销佣金已下线，默认不显示
-}); //分销商详细
+  isState: false,
+  priceName: "",
+}); //分销佣金悬浮窗
 const uid = ref(0); //用户uid
 const good_list = ref([]);
 const replyChance = ref(0);
@@ -734,7 +736,7 @@ onLoad((options) => {
     let value = util.getUrlParams(decodeURIComponent(options.scene));
     if (value.id) options.id = value.id;
     //记录推广人uid
-    if (value.pid) app.globalData.spid = value.pid;
+    if (value.spid) app.globalData.spid = value.spid;
   }
   if (!options.id) {
     showSkeleton.value = false;
@@ -813,7 +815,15 @@ onPageScroll((e) => {
   opacityVal = opacityVal > 1 ? 1 : opacityVal;
   opacity.value = opacityVal;
   scrollY.value = scrollYPos;
-  showAnimate.value = false;
+  // 佣金悬浮窗：下滑贴边收起；回到顶部自动展开（手动收起中则保持贴边）
+  if (sharePacket.isState) {
+    if (scrollYPos > 40) {
+      showAnimate.value = false;
+      shareManualFolded.value = false;
+    } else if (!shareManualFolded.value) {
+      showAnimate.value = true;
+    }
+  }
   showMenuIcon.value = false;
   currentPage.value = false;
   uni.$emit("scroll");
@@ -898,7 +908,7 @@ function appShare(scene) {
     provider: "weixin",
     scene: scene,
     type: 0,
-    href: `${HTTP_REQUEST_URL}${curRoute}&spread=${uid.value}`,
+    href: appendSpid(`${HTTP_REQUEST_URL}${curRoute}`, uid.value),
     title: storeInfo.value.store_name,
     summary: storeInfo.value.store_info,
     imageUrl: storeInfo.value.small_image,
@@ -921,10 +931,15 @@ function appShare(scene) {
 }
 // #endif
 function closeChange() {
-  sharePacket["isState"] = false;
+  // 右上角收起：贴边隐藏，不销毁悬浮窗
+  showAnimate.value = false;
+  shareManualFolded.value = true;
 }
 function boxStatus(data) {
   showAnimate.value = data;
+  if (data) {
+    shareManualFolded.value = false;
+  }
 }
 /**
  * 购物车手动填写
@@ -1135,8 +1150,11 @@ function getGoodsDetails() {
       attr["productAttr"] = res.data.productAttr;
       productValue.value = res.data.productValue;
       is_vip.value = res.data.storeInfo.is_vip;
-      // 后端已随分销下线不再返回 priceName；undefined != 0 恒真会导致佣金悬浮窗误显示，直接关闭
-      sharePacket["isState"] = false;
+      // 仅当分销插件返回 priceName（插件启用且 brokerage_window_switch=1）时展示悬浮窗
+      const priceName = storeInfoRes.priceName ?? res.data.priceName ?? "";
+      sharePacket["priceName"] = priceName;
+      sharePacket["isState"] = Number(priceName) > 0;
+      shareManualFolded.value = false;
       storeSelfMention.value = res.data.store_self_mention;
       good_list.value = goodList;
       // 透传后端 display_sections（产品类型/营销监听器输出的展示块）
@@ -1996,10 +2014,7 @@ function ShareInfo() {
   let href = location.href;
   if (wechat.isWeixin()) {
     getUserInfoApi().then((res) => {
-      href =
-        href.indexOf("?") === -1
-          ? href + "?spread=" + res.data.uid
-          : updateURLParameter(href, "spread", res.data.uid);
+      href = appendSpid(href, res.data.uid);
       let configAppMessage = {
         desc: data.store_info,
         title: data.store_name,

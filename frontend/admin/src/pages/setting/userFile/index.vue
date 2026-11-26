@@ -1,13 +1,11 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-form
-        ref="formValidateRef"
+      <el-form ref="formValidateRef"
         :model="formValidate"
         :rules="ruleValidate"
         label-width="160px"
-        label-position="right"
-      >
+        label-position="right">
         <el-form-item label="账号：" prop="">
           <el-input type="text" v-model="account" :disabled="true" class="input"></el-input>
         </el-form-item>

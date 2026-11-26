@@ -10,14 +10,12 @@
       </div>
     </div>
     <el-card shadow="never" class="ivu-mt">
-      <el-form
-        ref="formRef"
+      <el-form ref="formRef"
         :model="form"
         :rules="rules"
         :label-width="labelWidth"
         :label-position="labelPosition"
-        v-loading="loading"
-      >
+        v-loading="loading">
         <el-divider content-position="left">发票功能</el-divider>
         <el-form-item label="发票功能启用：">
           <el-radio-group v-model="form.invoice_func_status">
@@ -42,8 +40,7 @@
           <div class="tip">是否开启电子发票</div>
         </el-form-item>
         <el-form-item label="电子发票分类：" prop="elec_invoice_cate" v-if="form.elec_invoice == 1">
-          <el-select
-            v-model="form.elec_invoice_cate"
+          <el-select v-model="form.elec_invoice_cate"
             class="input-width"
             filterable
             remote
@@ -51,20 +48,17 @@
             :remote-method="remoteMethod"
             :loading="cateLoading"
             placeholder="请输入并选择电子发票的商品分类"
-            @change="onCateChange"
-          >
+            @change="onCateChange">
             <el-option v-for="item in cateOptions" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
           <div class="tip">电子发票需输入搜索并选择商品分类，如：电子产品、电子服务等</div>
         </el-form-item>
         <el-form-item label="电子发票税率：" prop="elec_invoice_tax_rate" v-if="form.elec_invoice == 1">
-          <el-input-number
-            v-model="form.elec_invoice_tax_rate"
+          <el-input-number v-model="form.elec_invoice_tax_rate"
             :min="0"
             :max="100"
             :precision="0"
-            controls-position="right"
-          />
+            controls-position="right" />
           <span class="ml10">%</span>
           <div class="tip">
             默认填充税率可能存在误差，请确认无误后再保存；填写0-100之间的整数，如：13%的税率请填写13
@@ -121,7 +115,7 @@ const rules = {
       required: true,
       message: '请输入电子发票税率',
       validator: (rule, value, callback) => {
-        form.elec_invoice == 1 && (value === null || value === undefined || value < 0 || value > 100)
+        form.elec_invoice == 1 && (value === null || value === undefined || value < 0 || value> 100)
           ? callback(new Error('税率必须在0-100之间'))
           : callback();
       },
@@ -139,7 +133,7 @@ function remoteMethod(query) {
         cateLoading.value = false;
         // 接口返回分页结构 { list, count }，与 v6 原版一致取 list 并按名称二次过滤
         const list = (res.data && res.data.list) || [];
-        cateOptions.value = list.filter((item) => item.name.toLowerCase().indexOf(query.toLowerCase()) > -1);
+        cateOptions.value = list.filter((item) => item.name.toLowerCase().indexOf(query.toLowerCase())> -1);
       })
       .catch(() => {
         cateLoading.value = false;

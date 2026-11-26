@@ -2,80 +2,66 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="tableFromRef"
+        <el-form ref="tableFromRef"
           :model="tableFrom"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="优惠券名称：" label-for="coupon_title">
-            <el-input
-              v-model="tableFrom.coupon_title"
+            <el-input v-model="tableFrom.coupon_title"
               placeholder="请输入优惠券名称"
               class="form_content_width"
               show-word-limit
-              clearable
-            />
+              clearable />
           </el-form-item>
           <el-form-item label="优惠券类型：" label-for="coupon_type">
-            <el-select
-              v-model="tableFrom.coupon_type"
+            <el-select v-model="tableFrom.coupon_type"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="0" label="通用券"></el-option>
               <el-option value="1" label="品类券"></el-option>
               <el-option value="2" label="商品券"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="是否开启：" label-for="status">
-            <el-select
-              v-model="tableFrom.status"
+            <el-select v-model="tableFrom.status"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="正常"></el-option>
               <el-option value="0" label="未开启"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="发放方式：" label-for="status">
-            <el-select
-              v-model="receive_type"
+            <el-select v-model="receive_type"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="all" label="全部"></el-option>
               <el-option value="1" label="用户领取"></el-option>
               <el-option value="2" label="系统赠送"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['admin-marketing-store_coupon-add']" type="primary" v-db-click @click="add" class="action-row"
-        >添加优惠券</el-button
-      >
-      <el-table
-        :data="tableList"
+      <el-button v-auth="['admin-marketing-store_coupon-add']" type="primary" @click="add" class="action-row">添加优惠券</el-button>
+      <el-table :data="tableList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -132,50 +118,44 @@
         </el-table-column>
         <el-table-column label="是否开启" min-width="100">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               :value="scope.row.status"
               size="large"
-              @change="openChange(scope.row)"
-            >
+              @change="openChange(scope.row)">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <a v-db-click @click="receive(scope.row)">领取记录</a>
+            <a @click="receive(scope.row)">领取记录</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="copy(scope.row)">复制</a>
+            <a @click="copy(scope.row)">复制</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="couponDel(scope.row, '删除发布的优惠券', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="tableFrom.page"
           v-model:limit="tableFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 领取记录 -->
     <el-dialog v-model="modals2" title="领取记录" :close-on-click-modal="false" width="720px">
-      <el-table
-        :data="receiveList"
+      <el-table :data="receiveList"
         ref="table"
         v-loading="loading2"
         highlight-current-row
         height="500"
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" min-width="150">
           <template #default="scope">
             <span>{{ scope.row.uid }}</span>
@@ -274,7 +254,7 @@ function formatDay(data) {
   if (!Number.isFinite(ts)) {
     return '';
   }
-  if (ts > 0 && ts < 1e12) {
+  if (ts> 0 && ts < 1e12) {
     ts *= 1000;
   }
   const date = new Date(ts);

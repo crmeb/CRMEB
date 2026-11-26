@@ -28,11 +28,11 @@
 										<view class="title">
 											<view class="name acea-row line1">
 												<view
-													v-if="child.pm != 1 && child.type == 'extract'"
+													v-if="child.pm != 1 && (child.type == 'extract' || child.type == 'extract_money') && extractStatusText(child.extract_status)"
 													class="extract-tag"
-													:class="{ 'bg-success': child.extract_status == 1, 'bg-ing': child.extract_status == 0, 'bg-fail': child.extract_status == -1 }"
+													:class="extractStatusClass(child.extract_status)"
 												>
-													{{ child.extract_status == 1 ? $t(`成功`) : child.extract_status == 0 ? $t(`提现中`) : $t(`失败`) }}
+													{{ extractStatusText(child.extract_status) }}
 												</view>
 												<view v-if="type == 2 && child.is_frozen == 1" class="extract-tag bg-ing">{{ $t(`冻结中`) }}</view>
 												{{ type == 1 ? $t(child.mark) : $t(child.title) }}
@@ -175,6 +175,35 @@ function jumpPath(url) {
 	uni.navigateTo({
 		url
 	});
+}
+function extractStatusText(status) {
+	if (status === null || status === undefined || status === '') {
+		return '';
+	}
+	const value = Number(status);
+	if (value === 1) {
+		return i18n.t(`成功`);
+	}
+	if (value === 0) {
+		return i18n.t(`提现中`);
+	}
+	if (value === -1) {
+		return i18n.t(`失败`);
+	}
+	return '';
+}
+function extractStatusClass(status) {
+	const value = Number(status);
+	if (value === 1) {
+		return 'bg-success';
+	}
+	if (value === 0) {
+		return 'bg-ing';
+	}
+	if (value === -1) {
+		return 'bg-fail';
+	}
+	return '';
 }
 function getRecordList() {
 	if (loading.value) return;

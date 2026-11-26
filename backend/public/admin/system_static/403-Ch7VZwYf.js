@@ -1,0 +1,1 @@
+import{Eu as e,Hu as t,Md as n,pd as r}from"./common-Cyt99CNL.js";import{t as i}from"./error-content-Be4DZJmJ.js";e();var a=`/admin/system_static/error-401-CftDfKTV.svg`,o=Object.assign({name:`error_403`},{__name:`index`,setup(e){let o=a;return(e,a)=>(r(),t(i,{code:`403`,desc:`抱歉，你无权访问该页面`,src:n(o)},null,8,[`src`]))}});export{o as default};

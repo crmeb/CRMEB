@@ -1,7 +1,6 @@
 <template>
   <div>
-    <el-dialog v-model="visible" title="自定义会员价" width="900"
-      ><el-form :model="formData" label-width="120px">
+    <el-dialog v-model="visible" title="自定义会员价" width="900"><el-form :model="formData" label-width="120px">
         <el-form-item label="会员专属：">
           <el-radio-group v-model="formData.vip_product">
             <el-radio :label="0" :value="0">不限制（所有人可见可买）</el-radio>
@@ -10,16 +9,14 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="付费会员价：">
-          <el-switch
-            v-model="formData.is_vip"
+          <el-switch v-model="formData.is_vip"
             :active-value="1"
             :inactive-value="0"
             active-text="开启"
             inactive-text="关闭"
             size="large"
             class="defineSwitch"
-            @change="changeVip"
-          >
+            @change="changeVip">
           </el-switch>
         </el-form-item>
         <el-form-item label-width="0px">
@@ -38,13 +35,11 @@
             <el-table-column min-width="140" align="center" v-if="formData.is_vip == 1">
               <template #header="scope">
                 <span>付费会员价</span>
-                <el-popover
-                  ref="vipSetPopover"
+                <el-popover ref="vipSetPopover"
                   v-model:visible="vipSetPopoverPopver"
                   placement="top"
                   width="290"
-                  trigger="click"
-                >
+                  trigger="click">
                   <div class="pop-title">批量修改本列</div>
                   <div class="mt-14">
                     <el-radio-group v-model="vipSetType">
@@ -78,7 +73,7 @@
                   </template>
                 </el-input>
                 <div class="flex-x-center red" v-show="scope.row.vip_price == 0">会员价不可为0</div>
-                <div class="flex-x-center red" v-show="Number(scope.row.vip_price) > Number(scope.row.price)">
+                <div class="flex-x-center red" v-show="Number(scope.row.vip_price)> Number(scope.row.price)">
                   会员价不可大于售价
                 </div>
               </template>
@@ -86,12 +81,10 @@
           </el-table>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div class="dialog-footer">
+      <template #footer><div class="dialog-footer">
           <el-button @click="onCancel">取消</el-button>
           <el-button v-db-click type="primary" @click="submitForm" :disabled="disabled" class="ml-14">确认</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
   </div>
 </template>
@@ -115,8 +108,6 @@ const formData = reactive({
   is_vip: 0,
   vip_product: 0,
 });
-const brokerage = ref('');
-const brokerage_two = ref('');
 const loading = ref(false);
 const attrData = ref([]);
 const disabled = ref(false);
@@ -166,7 +157,7 @@ function submitForm() {
       if (item.vip_price == 0 && formData.is_vip) {
         isSuccess = false;
       }
-      if (Number(item.vip_price) > Number(item.price) && formData.is_vip) {
+      if (Number(item.vip_price)> Number(item.price) && formData.is_vip) {
         step = false;
       }
     });
@@ -204,7 +195,7 @@ function closeLevelSet(i) {
 }
 function vipSetConfirm() {
   if (vipSetNum.value == 0) return ElMessage.error('会员价不可为0');
-  if (vipSetType.value == 1 && vipSetNum.value > 100) return ElMessage.error('折扣不可超过100');
+  if (vipSetType.value == 1 && vipSetNum.value> 100) return ElMessage.error('折扣不可超过100');
   attrData.value.map((item) => {
     if (vipSetType.value == 0) {
       item.vip_price = vipSetNum.value;
@@ -218,7 +209,7 @@ function vipSetConfirm() {
 }
 function levelSetConfirm(index) {
   if (levelSetNum.value == 0) return ElMessage.error('等级会员价不可为0');
-  if (levelSetType.value == 1 && levelSetNum.value > 100) return ElMessage.error('折扣不可超过100');
+  if (levelSetType.value == 1 && levelSetNum.value> 100) return ElMessage.error('折扣不可超过100');
   attrData.value.map((item) => {
     if (levelSetType.value == 0) {
       item.level_price[index].price = levelSetNum.value;

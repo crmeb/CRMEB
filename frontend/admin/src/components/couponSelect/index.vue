@@ -2,20 +2,17 @@
   <div ref="rootRef" class="coupon-select" :class="{ 'is-embed': isEmbed }">
     <el-form :inline="true" @submit.prevent>
       <el-form-item label="优惠券名称：">
-        <el-input
-          v-model="tableFrom.coupon_title"
+        <el-input v-model="tableFrom.coupon_title"
           placeholder="请输入优惠券名称"
           clearable
           class="form_content_width"
-          @keyup.enter="userSearchs"
-        ></el-input>
+          @keyup.enter="userSearchs"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+        <el-button type="primary" @click="userSearchs">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table
-      ref="couponTable"
+    <el-table ref="couponTable"
       v-loading="loading"
       class="mt15 coupon-select__table"
       :data="couponList"
@@ -24,8 +21,7 @@
       no-userFrom-text="暂无数据"
       no-filtered-userFrom-text="暂无筛选结果"
       :max-height="tableMaxHeight"
-      @selection-change="changeCheckbox"
-    >
+      @selection-change="changeCheckbox">
       <el-table-column type="selection" width="42" :selectable="checkSelectable" :reserve-selection="true" />
       <el-table-column label="ID" width="54" prop="id" />
       <el-table-column label="优惠券名称" min-width="96" show-overflow-tooltip>
@@ -76,20 +72,16 @@
       </el-table-column>
     </el-table>
     <div class="acea-row row-right page">
-      <pagination
-        v-if="total"
+      <pagination v-if="total"
         :total="total"
         v-model:page="tableFrom.page"
         v-model:limit="tableFrom.limit"
-        @pagination="getList"
-      />
+        @pagination="getList" />
     </div>
     <!-- 嵌入 SchemaCoupon 弹窗时由外层页脚确认，避免重复按钮与高度浪费 -->
     <div v-if="!isEmbed" class="footer">
-      <el-button v-db-click @click="cancel">取 消</el-button>
-      <el-button type="primary" v-db-click @click="confirm"
-        >确认选择{{ selectedRows.length ? `（${selectedRows.length}）` : '' }}</el-button
-      >
+      <el-button @click="cancel">取 消</el-button>
+      <el-button type="primary" v-db-click @click="confirm">确认选择{{ selectedRows.length ? `（${selectedRows.length}）` : '' }}</el-button>
     </div>
   </div>
 </template>
@@ -141,7 +133,7 @@ function formatDay(data) {
   if (!Number.isFinite(ts)) {
     return '';
   }
-  if (ts > 0 && ts < 1e12) {
+  if (ts> 0 && ts < 1e12) {
     ts *= 1000;
   }
   const date = new Date(ts);
@@ -158,13 +150,13 @@ function formatDay(data) {
  * 余量充足且在领取期内的券才允许勾选（与后端发券查询 getGiveCoupon 条件一致）
  */
 function checkSelectable(row) {
-  const hasStock = row.is_permanent || row.remain_count > 0;
+  const hasStock = row.is_permanent || row.remain_count> 0;
   const now = Math.floor(Date.now() / 1000);
   const inPeriod =
     (!row.start_time && !row.end_time) ||
-    (!row.start_time && row.end_time > now) ||
+    (!row.start_time && row.end_time> now) ||
     (row.start_time < now && !row.end_time) ||
-    (row.start_time < now && row.end_time > now);
+    (row.start_time < now && row.end_time> now);
   return hasStock && inPeriod;
 }
 
@@ -257,7 +249,7 @@ function waitHelper(timeout = 5000) {
       if (window.form_create_helper) {
         clearInterval(timer);
         resolve(window.form_create_helper);
-      } else if (Date.now() - started > timeout) {
+      } else if (Date.now() - started> timeout) {
         clearInterval(timer);
         resolve(null);
       }

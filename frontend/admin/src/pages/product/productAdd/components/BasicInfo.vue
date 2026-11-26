@@ -3,19 +3,16 @@
   <el-row :gutter="24">
     <el-col :span="24">
       <el-form-item label="商品类型：" props="is_virtual">
-        <div
-          class="virtual"
+        <div class="virtual"
           :class="formValidate.virtual_type == item.id ? 'virtual_boder' : 'virtual_boder2'"
           v-for="(item, index) in goodsType"
           :key="index"
-          v-db-click
           @click="virtualbtn(item.id, 2)"
           v-show="
             (formValidate.id && formValidate.virtual_type == item.id) ||
             (isCai == -1 && index == 0 && !formValidate.id) ||
             (isCai == 0 && !formValidate.id)
-          "
-        >
+          ">
           <div class="virtual_top">{{ item.tit }}</div>
           <div class="virtual_bottom">({{ item.tit2 }})</div>
           <div v-if="formValidate.virtual_type == item.id" class="virtual_san"></div>
@@ -26,49 +23,40 @@
 
     <el-col :span="24">
       <el-form-item label="商品名称：" prop="store_name">
-        <el-input
-          class="content_width"
+        <el-input class="content_width"
           v-model="formValidate.store_name"
           placeholder="请输入商品名称"
           maxlength="80"
-          show-word-limit
-        />
+          show-word-limit />
       </el-form-item>
     </el-col>
 
     <el-col :span="24">
       <el-form-item label="单位：" prop="unit_name">
-        <el-input
-          class="input_width"
+        <el-input class="input_width"
           v-model="formValidate.unit_name"
           placeholder="请输入单位"
           maxlength="5"
-          show-word-limit
-        />
+          show-word-limit />
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="商品轮播图：" prop="slider_image">
         <div class="acea-row">
-          <div
-            class="pictrue"
+          <div class="pictrue"
             v-for="(item, index) in formValidate.slider_image"
             :key="index"
             draggable="true"
             @dragstart="handleDragStart($event, item)"
             @dragover.prevent="handleDragOver($event, item)"
             @dragenter="handleDragEnter($event, item)"
-            @dragend="handleDragEnd($event, item)"
-          >
+            @dragend="handleDragEnd($event, item)">
             <img v-lazy="item" />
             <i class="el-icon-error btndel" v-db-click @click="handleRemove(index)"></i>
           </div>
-          <div
-            v-if="formValidate.slider_image.length < 10"
+          <div v-if="formValidate.slider_image.length < 10"
             class="upLoad acea-row row-center-wrapper"
-            v-db-click
-            @click="modalPicTap('duo')"
-          >
+            @click="modalPicTap('duo')">
             <i class="el-icon-picture-outline" style="font-size: 24px"></i>
           </div>
           <el-input v-model="formValidate.slider_image[0]" style="display: none"></el-input>
@@ -89,7 +77,7 @@
             您的浏览器不支持 video 标签。
           </video>
           <div class="mark"></div>
-          <i class="el-icon-delete iconv" v-db-click @click.stop="delVideo"></i>
+          <i class="el-icon-delete iconv" @click.stop="delVideo"></i>
         </div>
         <el-progress class="progress" :percentage="progress" :stroke-width="5" v-if="upload.videoIng" />
         <div class="tip">建议时长：9～30秒，视频宽高比16:9</div>
@@ -97,26 +85,22 @@
     </el-col>
     <el-col :span="24">
       <el-form-item label="商品分类：" prop="cate_id">
-        <el-cascader
-          class="content_width"
+        <el-cascader class="content_width"
           v-model="formValidate.cate_id"
           filterable
           :options="treeSelect"
           :props="{ multiple: true, checkStrictly: true, emitPath: false }"
-          clearable
-        ></el-cascader>
-        <span class="addfont" v-db-click @click="addCate">新增分类</span>
+          clearable></el-cascader>
+        <span class="addfont" @click="addCate">新增分类</span>
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="商品标签：">
         <div class="flex">
-          <useLabel
-            v-if="tileLabelList.length"
+          <useLabel v-if="tileLabelList.length"
             v-model:activeId="formValidate.label_list"
-            :listData="tileLabelList"
-          ></useLabel>
-          <el-button v-db-click @click="addGoodsTag">选择标签</el-button>
+            :listData="tileLabelList"></useLabel>
+          <el-button @click="addGoodsTag">选择标签</el-button>
         </div>
       </el-form-item>
     </el-col>

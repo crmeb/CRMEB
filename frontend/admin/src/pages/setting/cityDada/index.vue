@@ -5,20 +5,18 @@
         <el-row>
           <el-col v-bind="grid">
             <div class="button acea-row row-middle">
-              <el-button type="primary" v-db-click @click="add(0)">添加省份</el-button>
-              <el-button v-db-click @click="cleanCache">清除缓存</el-button>
+              <el-button type="primary" @click="add(0)">添加省份</el-button>
+              <el-button @click="cleanCache">清除缓存</el-button>
             </div>
           </el-col>
         </el-row>
       </div>
-      <el-table
-        class="mt14"
+      <el-table class="mt14"
         row-key="id"
         :load="handleLoadData"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         :data="cityLists"
-        lazy
-      >
+        lazy>
         <el-table-column label="编号" width="120">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -36,9 +34,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-if="scope.row.hasOwnProperty('children')" v-db-click @click="add(scope.row.city_id)">添加</a>
+            <a v-if="scope.row.hasOwnProperty('children')" @click="add(scope.row.city_id)">添加</a>
             <el-divider direction="vertical" v-if="scope.row.hasOwnProperty('children')" />
-            <a v-db-click @click="edit(scope.row.id)">编辑</a>
+            <a @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除城市', scope.$index)">删除</a>
           </template>

@@ -192,8 +192,6 @@ class Handler extends BaseProductTypeHandler
                 'image'         => $skuInfo['image'] ?? '',
                 'suk'           => $suk,
                 'vip_price'     => $skuInfo['vip_price'] ?? 0,
-                'brokerage'     => $skuInfo['brokerage'] ?? 0,
-                'brokerage_two' => $skuInfo['brokerage_two'] ?? 0,
                 'weight'        => $skuInfo['weight'] ?? 0,
                 'volume'        => $skuInfo['volume'] ?? 0,
                 'bar_code'      => $skuInfo['bar_code'] ?? '',
@@ -560,9 +558,12 @@ class Handler extends BaseProductTypeHandler
                         }
                     }
 
+                    // 规格键仍用逗号拼接供前端/购物车兼容；detail 保留原始 KV，
+                    // 供活动后台规格表按属性列拆分展示（否则会整串塞进第一列）。
                     $sukKey = implode(',', array_values($detail));
                     $productValue[$sukKey] = [
                         'suk'       => $sukKey,
+                        'detail'    => $detail,
                         'price'     => $sku['price'] ?? '0.00',
                         'vip_price' => $sku['vip_price'] ?? '0.00',
                         'stock'     => $sku['stock'] ?? 0,
@@ -571,6 +572,9 @@ class Handler extends BaseProductTypeHandler
                         'cost'      => $sku['cost'] ?? '0.00',
                         'ot_price'  => $sku['original_price'] ?? '0.00',
                         'bar_code'  => $sku['bar_code'] ?? '',
+                        'bar_code_number' => $sku['bar_code_number'] ?? '',
+                        'weight'    => $sku['weight'] ?? 0,
+                        'volume'    => $sku['volume'] ?? 0,
                         'is_show'   => $sku['is_show'] ?? 1,
                     ];
                 }

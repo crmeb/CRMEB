@@ -2,22 +2,19 @@
   <div>
     <el-row class="ivu-mt box-wrapper">
       <el-col v-bind="grid1" class="left-wrapper">
-        <div class="tree_tit" v-db-click @click="addSort">
+        <div class="tree_tit" @click="addSort">
           <i class="el-icon-circle-plus"></i>
           添加分类
         </div>
         <div class="tree">
-          <el-tree
-            :data="labelSort"
+          <el-tree :data="labelSort"
             node-key="id"
             default-expand-all
             highlight-current
             :expand-on-click-node="false"
             @node-click="bindMenuItem"
-            :current-node-key="treeId"
-          >
-            <template #default="{ data }"
-              ><span class="custom-tree-node">
+            :current-node-key="treeId">
+            <template #default="{ data }"><span class="custom-tree-node">
                 <div class="file-name">
                   <img v-if="!data.pid" class="icon" src="@/assets/images/file.jpg" />
                   <el-tooltip class="item" effect="dark" :content="data.name" placement="top">
@@ -37,8 +34,7 @@
                     </template>
                   </el-dropdown>
                 </span>
-              </span></template
-            >
+              </span></template>
           </el-tree>
         </div>
       </el-col>
@@ -46,19 +42,17 @@
         <el-card :bordered="false" shadow="never" class="left-radius-none">
           <el-row class="action-row">
             <el-col>
-              <el-button v-auth="['admin-user-label_add']" type="primary" v-db-click @click="add">添加标签</el-button>
-              <!-- <el-button v-auth="['admin-user-label_add']" type="success" v-db-click @click="addSort">添加分类</el-button> -->
+              <el-button v-auth="['admin-user-label_add']" type="primary" @click="add">添加标签</el-button>
+              <!-- <el-button v-auth="['admin-user-label_add']" type="success" @click="addSort">添加分类</el-button> -->
             </el-col>
           </el-row>
-          <el-table
-            :data="labelLists"
+          <el-table :data="labelLists"
             ref="table"
             class="mt14"
             v-loading="loading"
             highlight-current-row
             no-userFrom-text="暂无数据"
-            no-filtered-userFrom-text="暂无筛选结果"
-          >
+            no-filtered-userFrom-text="暂无筛选结果">
             <el-table-column label="ID" width="80">
               <template #default="scope">
                 <span>{{ scope.row.id }}</span>
@@ -76,20 +70,18 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
               <template #default="scope">
-                <a v-db-click @click="edit(scope.row.id)">修改</a>
+                <a @click="edit(scope.row.id)">修改</a>
                 <el-divider direction="vertical"></el-divider>
                 <a v-db-click @click="del(scope.row, '删除分类', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>
           <div class="acea-row row-right page">
-            <pagination
-              v-if="total"
+            <pagination v-if="total"
               :total="total"
               v-model:page="labelFrom.page"
               v-model:limit="labelFrom.limit"
-              @pagination="getList"
-            />
+              @pagination="getList" />
           </div>
         </el-card>
       </el-col>

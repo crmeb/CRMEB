@@ -40,7 +40,7 @@
             :max="50"
             :min="-50"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>
@@ -58,7 +58,7 @@
             :max="50"
             :min="-50"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>
@@ -76,7 +76,7 @@
             :max="50"
             :min="0"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>
@@ -94,7 +94,7 @@
             :max="50"
             :min="-50"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>

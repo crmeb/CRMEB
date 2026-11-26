@@ -7,22 +7,20 @@
             <el-input clearable v-model="levelFrom.name" placeholder="请输入模板名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" class="action-row" v-db-click @click="freight">添加运费模板</el-button>
-      <el-table
-        :data="levelLists"
+      <el-button type="primary" class="action-row" @click="freight">添加运费模板</el-button>
+      <el-table :data="levelLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -55,33 +53,29 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row.id)">修改</a>
+            <a @click="edit(scope.row.id)">修改</a>
             <el-divider direction="vertical" v-if="scope.row.id !== 1" />
             <a v-db-click @click="del(scope.row, '删除模板', index)" v-if="scope.row.id !== 1">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="levelFrom.page"
           v-model:limit="levelFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 运费模板-->
-    <freight-template
-      v-if="isTemplate"
+    <freight-template v-if="isTemplate"
       ref="template"
       @addSuccess="getList"
       @close="
         () => {
           isTemplate = false;
         }
-      "
-    ></freight-template>
+      "></freight-template>
   </div>
 </template>
 

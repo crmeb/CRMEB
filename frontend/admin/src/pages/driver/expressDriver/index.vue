@@ -1,18 +1,14 @@
 <template>
   <div>
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="配置电子面单服务商账号并启停驱动，面单模板与寄件信息在电子面单设置中维护。"
-    ></pages-header>
+      description="配置电子面单服务商账号并启停驱动，面单模板与寄件信息在电子面单设置中维护。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-alert
-        title="这里仅管理电子面单服务商驱动；物流公司、打印机编号和寄件信息请到“设置 > 电子面单设置”配置。"
+      <el-alert title="这里仅管理电子面单服务商驱动；物流公司、打印机编号和寄件信息请到“设置> 电子面单设置”配置。"
         type="info"
         show-icon
         :closable="false"
-        class="mb20"
-      />
+        class="mb20" />
 
       <el-table :data="driverList" v-loading="driverLoading" row-key="id">
         <el-table-column label="排序" width="80" prop="sort" />
@@ -35,37 +31,31 @@
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template #default="scope">
-            <el-switch
-              v-model="scope.row.status"
+            <el-switch v-model="scope.row.status"
               :active-value="1"
               :inactive-value="0"
               active-text="开启"
               inactive-text="关闭"
               class="defineSwitch"
-              @change="handleStatusChange(scope.row)"
-            />
+              @change="handleStatusChange(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <a v-db-click @click="openEditDrawer(scope.row)">配置</a>
+            <a @click="openEditDrawer(scope.row)">配置</a>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <el-drawer
-      :title="'配置 - ' + (currentDriver ? currentDriver.driver_name : '')"
+    <el-drawer :title="'配置 - ' + (currentDriver ? currentDriver.driver_name : '')"
       v-model="showEditDrawer"
       direction="rtl"
-      size="50%"
-    >
-      <ExpressDriverEdit
-        v-if="showEditDrawer"
+      size="50%">
+      <ExpressDriverEdit v-if="showEditDrawer"
         :driver-id="currentDriverId"
         @close="showEditDrawer = false"
-        @success="handleEditSuccess"
-      />
+        @success="handleEditSuccess" />
     </el-drawer>
   </div>
 </template>

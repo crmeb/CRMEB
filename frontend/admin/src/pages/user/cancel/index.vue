@@ -15,26 +15,22 @@
           </el-col>
           <el-col v-bind="grid">
             <el-form-item label="用户搜索：" label-for="title">
-              <el-input
-                search
+              <el-input search
                 enter-button
                 v-model="levelFrom.keywords"
                 placeholder="请输入用户昵称/ID/手机号"
-                @on-search="userSearchs"
-              />
+                @on-search="userSearchs" />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <el-table
-        :data="levelLists"
+      <el-table :data="levelLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -72,22 +68,20 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="agree(scope.row)">同意</a>
+            <a @click="agree(scope.row)">同意</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="refuse(scope.row)">拒绝</a>
+            <a @click="refuse(scope.row)">拒绝</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="remarkFn(scope.row)">备注</a>
+            <a @click="remarkFn(scope.row)">备注</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="levelFrom.page"
           v-model:limit="levelFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 等级任务-->

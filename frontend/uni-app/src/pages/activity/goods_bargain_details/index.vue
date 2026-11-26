@@ -226,19 +226,31 @@
 		<canvas class="canvas posters" canvas-id="myCanvas"></canvas>
 		<!-- #endif -->
 		<div class="posters" v-if="bargainPosterModal">
-			<bargainPoster v-if="bargainPosterModal" ref="bargainPoster" comType="1" :comId="id" :comBargain="bargainUid" @getPosterImgae="getPosterImgae"></bargainPoster>
+			<bargainPoster
+				:key="posterMountKey"
+				ref="bargainPoster"
+				comType="1"
+				:comId="id"
+				:comBargain="bargainUid"
+				@getPosterImgae="getPosterImgae"
+			></bargainPoster>
 		</div>
-		<!-- 海报展示 -->
-		<view class="mask" v-if="posterImageModal" @click="listenerActionClose"></view>
-		<view class="poster-pop" v-if="posterImageModal">
-			<image src="/static/images/poster-close.png" class="close" @click="listenerActionClose"></image>
-			<image class="poster-img" :src="posterImage"></image>
-			<!-- #ifndef H5  -->
-			<view class="save-poster" @click="savePosterPath">{{ $t(`保存到手机`) }}</view>
-			<!-- #endif -->
-			<!-- #ifdef H5 -->
-			<view class="keep">{{ $t(`长按图片可以保存到手机`) }}</view>
-			<!-- #endif -->
+		<!-- 海报全屏预览 -->
+		<view class="poster-preview" v-if="posterImageModal" @click="listenerActionClose">
+			<view class="poster-preview__panel" @click.stop>
+				<view class="poster-preview__close" @click="listenerActionClose">×</view>
+				<scroll-view scroll-y class="poster-preview__scroll">
+					<image class="poster-preview__img" :src="posterImage" mode="widthFix" show-menu-by-longpress></image>
+				</scroll-view>
+				<view class="poster-preview__footer">
+					<!-- #ifdef H5 -->
+					<view class="poster-preview__tip">{{ $t(`长按图片可以保存到手机`) }}</view>
+					<!-- #endif -->
+					<!-- #ifndef H5 -->
+					<view class="poster-preview__btn" @click="savePosterPath">{{ $t(`保存到手机`) }}</view>
+					<!-- #endif -->
+				</view>
+			</view>
 		</view>
 		<!-- 分享按钮 -->
 		<view class="generate-posters acea-row row-middle" :class="posters ? 'on' : ''">
@@ -291,9 +303,20 @@ import { useColorTheme } from '@/composables/useColorTheme';
 import wechat from '@/libs/wechat.js';
 // #endif
 import i18n from '@/utils/lang.js';
-import { ref, watch } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { storeToRefs } from 'pinia';
 import { onLoad, onHide, onUnload, onShareAppMessage } from '@dcloudio/uni-app';
+// 弹窗/花边图走 import，避免 H5 把 '../static/xxx' 相对路径解析成 SPA 路由（返回 HTML）
+import popupBlue from '../static/bulet.jpg';
+import popupGreen from '../static/greent.jpg';
+import popupRed from '../static/redt.jpg';
+import popupPink from '../static/pinkt.jpg';
+import popupOrange from '../static/oranget.jpg';
+import laceBlue from '../static/buled.png';
+import laceGreen from '../static/greend.png';
+import laceRed from '../static/redd.png';
+import lacePink from '../static/pinkd.png';
+import laceOrange from '../static/oranged.png';
 
 const { colorStyle } = useColorTheme();
 // useColorTheme 不提供 colorStatus（主题档位），读缓存并在 colorChange 成功后更新
@@ -375,36 +398,36 @@ const codeSrc = ref('');
 const picUrl = ref({});
 const picList = [
 	{
-		popup: '../static/bulet.jpg',
+		popup: popupBlue,
 		barga: '/statics/system_images/bargain_dt_bg_0.jpeg',
 		support: '/statics/system_images/bargain_dt2_bg_0.jpeg',
 		lock: '/statics/system_images/bargain_dt_lock_0.png',
-		lace: '../static/buled.png'
+		lace: laceBlue
 	},
 	{
-		popup: '../static/greent.jpg',
+		popup: popupGreen,
 		barga: '/statics/system_images/bargain_dt_bg_1.jpeg',
 		support: '/statics/system_images/bargain_dt2_bg_1.jpeg',
 		lock: '/statics/system_images/bargain_dt_lock_1.png',
-		lace: '../static/greend.png'
+		lace: laceGreen
 	},
 	{
-		popup: '../static/redt.jpg',
-		lace: '../static/redd.png',
+		popup: popupRed,
+		lace: laceRed,
 		barga: '/statics/system_images/bargain_dt_bg_2.jpeg',
 		support: '/statics/system_images/bargain_dt2_bg_2.jpeg',
 		lock: '/statics/system_images/bargain_dt_lock_2.png'
 	},
 	{
-		popup: '../static/pinkt.jpg',
-		lace: '../static/pinkd.png',
+		popup: popupPink,
+		lace: lacePink,
 		barga: '/statics/system_images/bargain_dt_bg_3.jpeg',
 		support: '/statics/system_images/bargain_dt2_bg_3.jpeg',
 		lock: '/statics/system_images/bargain_dt_lock_3.png'
 	},
 	{
-		popup: '../static/oranget.jpg',
-		lace: '../static/oranged.png',
+		popup: popupOrange,
+		lace: laceOrange,
 		barga: '/statics/system_images/bargain_dt_bg_4.jpeg',
 		support: '/statics/system_images/bargain_dt2_bg_4.jpeg',
 		lock: '/statics/system_images/bargain_dt_lock_4.png'
@@ -413,6 +436,7 @@ const picList = [
 const bargainPosterModal = ref(false);
 const posterImageModal = ref(false);
 const posterImage = ref('');
+const posterMountKey = ref(0);
 
 // ---------- watch ----------
 watch(isLogin, {
@@ -513,21 +537,24 @@ function shareModal() {
 	posters.value = true;
 }
 function getBargainUserBargainPricePoster() {
-	if (!posterImage.value) {
+	// 先卸载再挂载，确保二次生成会重新走 onMounted
+	posterImage.value = '';
+	posterImageModal.value = false;
+	posters.value = false;
+	bargainPosterModal.value = false;
+	nextTick(() => {
+		posterMountKey.value += 1;
 		bargainPosterModal.value = true;
-		posters.value = false;
-	} else {
-		bargainPosterModal.value = false;
-		posterImageModal.value = true;
-	}
-	// uni.navigateTo({
-	// 	url: '/pages/activity/poster-poster/index?type=1&id=' + this.id + '&bargain=' + this.bargainUid
-	// });
+	});
 }
 // 分享关闭
 function listenerActionClose() {
 	posters.value = false;
 	posterImageModal.value = false;
+	bargainPosterModal.value = false;
+}
+function posterImageClose() {
+	listenerActionClose();
 }
 // 小程序关闭分享弹窗；
 function goFriend() {
@@ -835,7 +862,7 @@ onLoad((options) => {
 			if (value.id) options.id = value.id;
 			if (value.bargain) options.bargain = value.bargain;
 			//记录推广人uid
-			if (value.pid) app.globalData.spid = value.pid;
+			if (value.spid) app.globalData.spid = value.spid;
 		} else {
 			app.globalData.spid = value;
 		}
@@ -899,7 +926,9 @@ page {
 
 .generate-posters {
 	width: 100%;
-	height: 170rpx;
+	height: 200rpx;
+	padding: 24rpx 0 calc(24rpx + env(safe-area-inset-bottom));
+	box-sizing: border-box;
 	background-color: #fff;
 	position: fixed;
 	left: 0;
@@ -916,12 +945,28 @@ page {
 
 .generate-posters .item {
 	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: auto;
+	padding: 0;
+	margin: 0;
+	line-height: 1.2;
+	overflow: visible;
+	background: transparent;
 	text-align: center;
-	font-size: 30rpx;
+	font-size: 28rpx;
+	color: #333;
+}
+
+.generate-posters .item::after {
+	border: 0;
 }
 
 .generate-posters .item .iconfont {
-	font-size: 80rpx;
+	font-size: 72rpx;
+	line-height: 1;
 	color: #5eae72;
 }
 
@@ -1406,60 +1451,101 @@ page {
 		position: static;
 	}
 }
+/* H5 canvas 移出视口会导致 canvasToTempFilePath 失败/空白，改为同屏透明绘制 */
 .posters {
 	position: fixed;
-	bottom: -5000px;
-	left: -5000px;
-}
-
-.poster-pop {
-	width: 450rpx;
-	height: 714rpx;
-	position: fixed;
-	left: 50%;
-	transform: translateX(-50%);
-	z-index: 399;
-	top: 50%;
-	margin-top: -377rpx;
-	.poster-img{
-		border-radius: 6px;
-	}
-}
-
-.poster-pop image {
+	left: 0;
+	top: 0;
 	width: 100%;
 	height: 100%;
-	display: block;
+	opacity: 0;
+	pointer-events: none;
+	z-index: -1;
+	overflow: hidden;
 }
 
-.poster-pop .close {
-	width: 46rpx;
-	height: 75rpx;
+.poster-preview {
 	position: fixed;
-	right: 0;
-	top: -73rpx;
-	display: block;
+	inset: 0;
+	z-index: 999;
+	background: rgba(8, 8, 10, 0.92);
+	display: flex;
+	align-items: stretch;
+	justify-content: center;
+	padding: calc(20rpx + env(safe-area-inset-top)) 40rpx calc(28rpx + env(safe-area-inset-bottom));
+	box-sizing: border-box;
 }
 
-.poster-pop .save-poster {
-	background-color: #df2d0a;
-	font-size: ：22rpx;
-	color: #fff;
-	text-align: center;
-	height: 76rpx;
-	line-height: 76rpx;
+.poster-preview__panel {
+	position: relative;
 	width: 100%;
-	margin-top: 20rpx;
+	max-width: 680rpx;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
 }
 
-.poster-pop .keep {
+.poster-preview__close {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 2;
+	width: 60rpx;
+	height: 60rpx;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.16);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	color: #fff;
-	text-align: center;
-	font-size: 25rpx;
-	margin-top: 10rpx;
+	font-size: 36rpx;
+	line-height: 1;
 }
+
+.poster-preview__scroll {
+	flex: 1;
+	min-height: 0;
+	width: 100%;
+	margin-top: 68rpx;
+	display: flex;
+	justify-content: center;
+}
+
+.poster-preview__img {
+	width: 100%;
+	max-width: 620rpx;
+	margin: 0 auto;
+	border-radius: 20rpx;
+	display: block;
+	overflow: hidden;
+	box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.45);
+}
+
+.poster-preview__footer {
+	flex-shrink: 0;
+	padding-top: 24rpx;
+}
+
+.poster-preview__tip {
+	color: rgba(255, 255, 255, 0.72);
+	text-align: center;
+	font-size: 24rpx;
+	line-height: 1.5;
+}
+
+.poster-preview__btn {
+	height: 84rpx;
+	line-height: 84rpx;
+	border-radius: 42rpx;
+	background: linear-gradient(90deg, #ff6034 0%, #e93323 100%);
+	color: #fff;
+	font-size: 30rpx;
+	font-weight: 500;
+	text-align: center;
+}
+
 .canvas {
-	width: 700rpx;
-	height: 1100rpx;
+	width: 750rpx;
+	height: 1334rpx;
 }
 </style>

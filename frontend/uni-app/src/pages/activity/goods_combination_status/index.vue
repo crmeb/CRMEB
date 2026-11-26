@@ -639,7 +639,7 @@
 			if (typeof value === 'object') {
 				if (value.id) options.id = value.id;
 				//记录推广人uid
-				if (value.pid) app.globalData.spid = value.pid;
+				if (value.spid) app.globalData.spid = value.spid;
 			}
 		}
 		// #endif
@@ -659,7 +659,7 @@
 	onShareAppMessage(() => {
 		return {
 			title: i18n.t(`您的好友`) + userInfo.value.nickname + i18n.t(`邀请您参团`) + storeCombination.value.title,
-			path: '/pages/activity/goods_combination_status/index?id=' + pinkId.value,
+			path: '/pages/activity/goods_combination_status/index?id=' + pinkId.value + ((userInfo.value.uid || appStore.uid) ? '&spid=' + (userInfo.value.uid || appStore.uid) : ''),
 			imageUrl: storeCombination.value.image
 		};
 	});

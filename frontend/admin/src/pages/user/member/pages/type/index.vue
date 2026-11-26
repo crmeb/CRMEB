@@ -3,50 +3,36 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-table class="mt14" :data="tbody" v-loading="loading" highlight-current-row>
         <el-table-column label="ID" width="80">
-          <template #default="scope"
-            ><span>{{ scope.row.id }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.id }}</span></template>
         </el-table-column>
         <el-table-column label="会员名" min-width="130">
-          <template #default="scope"
-            ><span>{{ scope.row.title }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.title }}</span></template>
         </el-table-column>
         <el-table-column label="有限期（天）" min-width="130">
-          <template #default="scope"
-            ><span>{{ scope.row.vip_day === -1 ? '永久' : scope.row.vip_day }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.vip_day === -1 ? '永久' : scope.row.vip_day }}</span></template>
         </el-table-column>
         <el-table-column label="原价" min-width="90">
-          <template #default="scope"
-            ><span>{{ scope.row.price }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.price }}</span></template>
         </el-table-column>
         <el-table-column label="优惠价" min-width="90">
-          <template #default="scope"
-            ><span>{{ scope.row.pre_price }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.pre_price }}</span></template>
         </el-table-column>
         <el-table-column label="是否开启" min-width="100">
           <template #default="scope">
-            <el-switch
-              :active-value="0"
+            <el-switch :active-value="0"
               :inactive-value="1"
               v-model="scope.row.is_del"
               :value="scope.row.is_del"
               @change="onchangeIsShow(scope.row)"
-              size="large"
-            ></el-switch>
+              size="large"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="排序" min-width="90">
-          <template #default="scope"
-            ><span>{{ scope.row.sort }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.sort }}</span></template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a href="javascript:" v-db-click @click="editType(scope.row)">编辑</a>
+            <a href="javascript:" @click="editType(scope.row)">编辑</a>
           </template>
         </el-table-column>
       </el-table>

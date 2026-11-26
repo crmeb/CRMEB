@@ -1,4 +1,4 @@
--- eb_system_attachment_category default data
+-- eb_system_attachment_category default demo data
 
 INSERT INTO `eb_system_attachment_category` (`id`, `pid`, `name`, `enname`, `type`) VALUES
 (1, 0, '分类图标', '', 0),

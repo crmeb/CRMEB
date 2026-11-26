@@ -10,24 +10,18 @@
         <div class="step-label">环境配置</div>
       </div>
       <div class="step-line" :class="{ completed: envStatus.ready }"></div>
-      <div
-        class="step"
+      <div class="step"
         :class="{
           active: envStatus.ready,
           completed: uploadConfig.app_id_configured && uploadConfig.private_key_exists,
-        }"
-      >
+        }">
         <div class="step-number">2</div>
         <div class="step-label">上传配置</div>
       </div>
-      <div
-        class="step-line"
-        :class="{ completed: uploadConfig.app_id_configured && uploadConfig.private_key_exists }"
-      ></div>
-      <div
-        class="step"
-        :class="{ active: envStatus.ready && uploadConfig.app_id_configured && uploadConfig.private_key_exists }"
-      >
+      <div class="step-line"
+        :class="{ completed: uploadConfig.app_id_configured && uploadConfig.private_key_exists }"></div>
+      <div class="step"
+        :class="{ active: envStatus.ready && uploadConfig.app_id_configured && uploadConfig.private_key_exists }">
         <div class="step-number">3</div>
         <div class="step-label">上传代码</div>
       </div>
@@ -74,7 +68,7 @@
             <i class="el-icon-cpu"></i>
             <span>运行环境</span>
           </div>
-          <el-button v-db-click class="refresh-btn" :disabled="loading.environment" @click="checkEnvironment">
+          <el-button class="refresh-btn" :disabled="loading.environment" @click="checkEnvironment">
             <i :class="loading.environment ? 'el-icon-loading' : 'el-icon-refresh'"></i>
           </el-button>
         </div>
@@ -135,7 +129,7 @@
 
           <!-- 安装按钮 -->
           <div v-if="!envStatus.ready && envStatus.exec_enabled !== false" class="action-buttons">
-            <el-button v-db-click @click="showGuide = true">
+            <el-button @click="showGuide = true">
               <i class="el-icon-document"></i>
               <span>手动安装指南</span>
             </el-button>
@@ -168,10 +162,8 @@
                   </template>
                   <template v-else>
                     <span class="value-text text-muted">未配置</span>
-                    <router-link
-                      :to="{ path: $routeProStr + '/setting/system_config/' + uploadConfig.config_tab_id }"
-                      class="config-link"
-                    >
+                    <router-link :to="{ path: $routeProStr + '/setting/system_config/' + uploadConfig.config_tab_id }"
+                      class="config-link">
                       去配置 <i class="el-icon-arrow-right"></i>
                     </router-link>
                   </template>
@@ -190,11 +182,11 @@
                   <template v-if="uploadConfig.private_key_exists">
                     <span class="value-text">已配置</span>
                     <span class="status-dot success"></span>
-                    <a v-db-click class="link-btn" @click="showKeyUpload = true">重新上传</a>
+                    <a class="link-btn" @click="showKeyUpload = true">重新上传</a>
                   </template>
                   <template v-else>
                     <span class="value-text text-muted">未配置</span>
-                    <el-button v-db-click type="primary" @click="showKeyUpload = true">
+                    <el-button type="primary" @click="showKeyUpload = true">
                       <i class="el-icon-upload2"></i> 上传密钥
                     </el-button>
                   </template>
@@ -209,10 +201,8 @@
       </div>
 
       <!-- 一键上传卡片 -->
-      <div
-        v-if="envStatus.ready && uploadConfig.app_id_configured && uploadConfig.private_key_exists"
-        class="card upload-card"
-      >
+      <div v-if="envStatus.ready && uploadConfig.app_id_configured && uploadConfig.private_key_exists"
+        class="card upload-card">
         <div class="card-header">
           <div class="card-title">
             <i class="el-icon-upload"></i>
@@ -229,13 +219,11 @@
           </div>
 
           <!-- 上传表单 -->
-          <el-form
-            :model="uploadForm"
+          <el-form :model="uploadForm"
             :rules="uploadRules"
             ref="uploadFormRef"
             class="upload-form"
-            label-position="top"
-          >
+            label-position="top">
             <div class="form-row">
               <el-form-item label="版本号" prop="version" class="form-item-half">
                 <el-input v-model="uploadForm.version" placeholder="例如：1.0.0">
@@ -248,16 +236,14 @@
                   <el-radio-button :label="0" :value="0">未开通</el-radio-button>
                   <el-radio-button :label="1" :value="1">已开通</el-radio-button>
                 </el-radio-group> -->
-                <el-switch
-                  v-model="uploadForm.is_live"
+                <el-switch v-model="uploadForm.is_live"
                   :active-value="1"
                   :inactive-value="0"
                   class="defineSwitch"
                   size="large"
                   width="200"
                   active-text="已开通"
-                  inactive-text="未开通"
-                />
+                  inactive-text="未开通" />
               </el-form-item>
             </div>
 
@@ -267,11 +253,11 @@
             </el-form-item>
 
             <div class="form-actions">
-              <el-button type="primary" v-db-click :loading="loading.upload" @click="handleUpload">
+              <el-button type="primary" :loading="loading.upload" @click="handleUpload">
                 <i v-if="!loading.upload" class="el-icon-upload2"></i>
                 <span>上传到微信</span>
               </el-button>
-              <el-button v-db-click :loading="loading.preview" @click="handlePreview">
+              <el-button :loading="loading.preview" @click="handlePreview">
                 <i v-if="!loading.preview" class="el-icon-mobile-phone"></i>
                 <span>获取预览码</span>
               </el-button>
@@ -336,20 +322,16 @@
               <span class="code-prompt">$</span>
               <code>curl -fsSL {{ installGuide.script_url }} | bash</code>
             </div>
-            <button
-              class="copy-btn"
+            <button class="copy-btn"
               @click="copyToClipboard(`curl -fsSL ${installGuide.script_url} | bash`)"
-              title="复制命令"
-            >
+              title="复制命令">
               <i class="el-icon-document-copy"></i>
               <span class="copy-text">复制</span>
             </button>
           </div>
           <div class="section-footer">
             <i class="el-icon-download"></i>
-            <span
-              >或 <a :href="installGuide.script_url" target="_blank" rel="noopener">下载脚本文件</a> 后手动执行</span
-            >
+            <span>或 <a :href="installGuide.script_url" target="_blank" rel="noopener">下载脚本文件</a> 后手动执行</span>
           </div>
         </div>
 
@@ -383,7 +365,7 @@
         </div>
       </div>
       <template #footer>
-        <el-button v-db-click @click="showGuide = false">关闭</el-button>
+        <el-button @click="showGuide = false">关闭</el-button>
       </template>
     </el-dialog>
 
@@ -413,20 +395,18 @@
 
         <div class="key-input-section">
           <label>密钥内容</label>
-          <el-input
-            v-model="keyContent"
+          <el-input v-model="keyContent"
             type="textarea"
             :rows="10"
             class="key-textarea"
             placeholder="请粘贴 private.key 文件的完整内容
 -----BEGIN RSA PRIVATE KEY-----
 ...
------END RSA PRIVATE KEY-----"
-          />
+-----END RSA PRIVATE KEY-----" />
         </div>
       </div>
       <template #footer>
-        <el-button v-db-click @click="showKeyUpload = false">取消</el-button>
+        <el-button @click="showKeyUpload = false">取消</el-button>
         <el-button type="primary" v-db-click :loading="loading.saveKey" @click="savePrivateKey">
           <i v-if="!loading.saveKey" class="el-icon-check"></i>
           <span>保存密钥</span>
@@ -720,9 +700,7 @@ async function handlePreview() {
           color: var(--prev-color-warning);
           font-size: 18px;
         }
-      }
-
-      > i {
+      }> i {
         color: var(--prev-color-text-secondary);
         transition: transform 0.2s ease;
       }
@@ -965,9 +943,7 @@ async function handlePreview() {
     gap: 14px;
     padding: 16px 20px;
     border-radius: 4px;
-    margin-top: 20px;
-
-    > i {
+    margin-top: 20px;> i {
       font-size: 22px;
       flex-shrink: 0;
       color: var(--prev-color-danger);

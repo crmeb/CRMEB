@@ -42,7 +42,32 @@
 .el-button.is-loading {
 }
 
-.el-button + .el-button {
+/* 相邻按钮左右间距统一 14px（覆盖 EP 默认 12px） */
+.el-button + .el-button,
+.el-dialog__footer .el-button + .el-button,
+.el-drawer__footer .el-button + .el-button,
+.el-message-box__btns .el-button + .el-button {
+  margin-left: 14px !important;
+}
+
+/* flex 按钮组用 gap，避免与 margin-left 叠成双倍间距 */
+.form-actions,
+.create-footer,
+.drawer-footer,
+.demo-drawer-footer,
+.common-form-create-footer {
+  display: flex;
+  gap: 14px;
+}
+.form-actions .el-button + .el-button,
+.create-footer .el-button + .el-button,
+.drawer-footer .el-button + .el-button,
+.demo-drawer-footer .el-button + .el-button,
+.common-form-create-footer .el-button + .el-button {
+  margin-left: 0 !important;
+}
+/* 底部固定操作条内相邻按钮 */
+.fixed-card .el-button + .el-button {
   margin-left: 14px !important;
 }
 
@@ -146,9 +171,11 @@
 /* Table 表格
 ------------------------------- */
 
+/* 表格勾选列：抵御业务页异步 CSS 对 .el-checkbox 的 margin 污染（单元格 overflow 会裁成半个） */
 .el-table-column--selection {
   .el-checkbox {
-    margin-right: unset !important;
+    margin: 0 !important;
+    height: auto;
   }
 }
 
@@ -343,9 +370,8 @@
 
 // 菜单层级对齐：带图标嵌套项（二级菜单/子分组）回到 EP 原生级差缩进（padding-left 40px，
 // 图标起点 45px，与一级图标起点 25px 拉开层级差，避免图标同轴分不清级数）；
-// 无图标叶子项（三级页面）文字对齐直接上级带图标项的文字起点（padding + 图标 16px + 间距 10px）：
-// 一层嵌套（分栏第二列，上级 padding 20px）→ 46px；两层嵌套（默认/经典侧栏，上级 padding 40px）→ 66px。
-// EP 原生按级数递增缩进且不区分有无图标，此处统一覆盖。
+// 无菜单图标时：叶子与同层分组标题文字起点一致（一层嵌套 46px / 两层嵌套 66px）。
+// 判定不能用 :has(i)——分组标题里的展开箭头也是 i/el-icon，会误判为「有图标」。
 // 注意：规则全部限定在侧栏容器 .layout-aside 内——弹出层（el-menu--popup-container，
 // 含横向顶栏「···」ellipsis 收纳层、侧栏收起悬停层）由 EP 原生样式管理，弹层内各项
 // 原生统一 padding 20px 天然对齐，若被内联规则命中会出现 title 与叶子错位。
@@ -359,17 +385,19 @@
   padding-left: 20px !important;
 }
 
-// 深层分组标题（有父级分组的组菜单，即二级分组）：与二级叶子同缩进（40px）
+// 深层分组标题（有父级分组的组菜单）：与同层带图标叶子同缩进（40px）
 .layout-aside .el-menu .el-sub-menu .el-sub-menu > .el-sub-menu__title {
   padding-left: 40px !important;
 }
 
-// 无图标叶子：模板中不含任何 <i> 图标元素，用 :has() 与带图标项区分
-.layout-aside .el-menu .el-sub-menu .el-menu-item:not(:has(i)) {
+// 无菜单图标（排除展开箭头）：叶子与同层分组标题统一文字起点
+.layout-aside .el-menu .el-sub-menu .el-menu-item:not(:has(.menu-icon, .ivu-icon, .el-icon:not(.el-sub-menu__icon-arrow))),
+.layout-aside .el-menu .el-sub-menu .el-sub-menu > .el-sub-menu__title:not(:has(.menu-icon, .ivu-icon, .el-icon:not(.el-sub-menu__icon-arrow))) {
   padding-left: 46px !important;
 }
 
-.layout-aside .el-menu .el-sub-menu .el-sub-menu .el-menu-item:not(:has(i)) {
+.layout-aside .el-menu .el-sub-menu .el-sub-menu .el-menu-item:not(:has(.menu-icon, .ivu-icon, .el-icon:not(.el-sub-menu__icon-arrow))),
+.layout-aside .el-menu .el-sub-menu .el-sub-menu .el-sub-menu > .el-sub-menu__title:not(:has(.menu-icon, .ivu-icon, .el-icon:not(.el-sub-menu__icon-arrow))) {
   padding-left: 66px !important;
 }
 

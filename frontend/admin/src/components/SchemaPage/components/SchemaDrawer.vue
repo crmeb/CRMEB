@@ -1,20 +1,18 @@
 <template>
-  <el-drawer
-    v-model="visible"
+  <el-drawer v-model="visible"
     :title="title"
     direction="rtl"
     size="720"
     :wrapper-closable="false"
     class="schema-drawer"
-    @closed="emit('closed')"
-  >
+    @closed="emit('closed')">
     <div class="schema-drawer__content">
       <slot />
     </div>
     <template #footer>
       <div v-if="showFooter" class="schema-drawer__footer">
         <slot name="footer">
-          <el-button v-db-click @click="visible = false">取消</el-button>
+          <el-button @click="visible = false">取消</el-button>
           <el-button type="primary" :loading="submitting" v-db-click @click="emit('submit')">确定</el-button>
         </slot>
       </div>

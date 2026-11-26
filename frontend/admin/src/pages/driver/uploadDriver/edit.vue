@@ -19,14 +19,12 @@
         <el-form ref="formRef" :model="editForm" :rules="editRules" label-width="120px" v-loading="editLoading">
           <el-divider content-position="left">基本信息</el-divider>
           <el-form-item label="状态" prop="status">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="editForm.status"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            />
+              class="defineSwitch" />
           </el-form-item>
           <el-form-item label="驱动名称" prop="driver_name">
             <el-input v-model="editForm.driver_name" placeholder="请输入驱动名称" />
@@ -36,30 +34,24 @@
           </el-form-item>
 
           <template v-if="!editForm.is_builtin">
-            <template v-if="configGroups.length > 0">
+            <template v-if="configGroups.length> 0">
               <template v-for="(group, groupIndex) in configGroups" :key="'group-' + groupIndex">
                 <el-divider content-position="left" style="margin-top: 20px">
                   {{ group.name }}
                 </el-divider>
                 <template v-for="(field, fieldIndex) in group.fields" :key="'field-' + groupIndex + '-' + fieldIndex">
                   <el-form-item :label="field.label">
-                    <el-input
-                      v-if="field.type === 'text'"
+                    <el-input v-if="field.type === 'text'"
                       v-model="field.value"
-                      :placeholder="field.placeholder || '请输入' + field.label"
-                    />
-                    <el-input
-                      v-else-if="field.type === 'password'"
+                      :placeholder="field.placeholder || '请输入' + field.label" />
+                    <el-input v-else-if="field.type === 'password'"
                       v-model="field.value"
                       type="password"
                       show-password
-                      :placeholder="field.placeholder || '请输入' + field.label"
-                    />
-                    <el-select
-                      v-else-if="field.type === 'select'"
+                      :placeholder="field.placeholder || '请输入' + field.label" />
+                    <el-select v-else-if="field.type === 'select'"
                       v-model="field.value"
-                      :placeholder="'请选择' + field.label"
-                    >
+                      :placeholder="'请选择' + field.label">
                       <el-option v-for="opt in field.options" :key="opt.value" :label="opt.label" :value="opt.value" />
                     </el-select>
                     <div v-if="field.tip" class="form-tip">{{ field.tip }}</div>
@@ -73,15 +65,13 @@
           </template>
           <el-divider content-position="left">缩略图和水印设置</el-divider>
           <el-form-item label="是否开启缩略图：" label-width="120px">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="commonConfig.image_thumb_status"
               size="large"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            >
+              class="defineSwitch">
             </el-switch>
           </el-form-item>
           <el-alert closable type="info" class="mb20">
@@ -148,15 +138,13 @@
           </div>
 
           <el-form-item label="是否开启水印：" label-width="120px">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="commonConfig.image_watermark_status"
               size="large"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            >
+              class="defineSwitch">
             </el-switch>
           </el-form-item>
           <el-alert closable type="info" class="mb20">
@@ -171,13 +159,11 @@
                 <el-form-item label="位置：" label-width="120px">
                   <div class="position-container">
                     <div class="positionBox">
-                      <div
-                        class="position-item"
+                      <div class="position-item"
                         :class="commonConfig.watermark_position == item.id ? 'active' : ''"
                         v-for="item in positionList"
                         :key="item.id"
-                        @click="setPosition(item)"
-                      ></div>
+                        @click="setPosition(item)"></div>
                     </div>
                     <div class="position-label">{{ positionLabel }}</div>
                   </div>
@@ -244,11 +230,9 @@
               </div>
               <div class="watermark-row">
                 <el-form-item label="字体旋转角度：" label-width="120px">
-                  <el-input
-                    type="number"
+                  <el-input type="number"
                     v-model="commonConfig.watermark_text_angle"
-                    placeholder="请输入水印字体旋转角度"
-                  />
+                    placeholder="请输入水印字体旋转角度" />
                 </el-form-item>
               </div>
             </div>
@@ -261,27 +245,23 @@
     </el-tabs>
 
     <div class="form-footer">
-      <el-button v-db-click @click="handleClose">返回</el-button>
-      <el-button
-        v-auth="['driver-upload-save-config']"
+      <el-button @click="handleClose">返回</el-button>
+      <el-button v-auth="['driver-upload-save-config']"
         type="primary"
         v-db-click
         @click="handleSubmit"
         :loading="submitLoading"
-        :disabled="editLoading || loadFailed"
-      >
+        :disabled="editLoading || loadFailed">
         保存
       </el-button>
     </div>
 
     <el-dialog v-model="modalPic" width="min(950px, calc(100% - 32px))" title="上传图片" :close-on-click-modal="false">
-      <uploadPictures
-        :isChoice="isChoice"
+      <uploadPictures :isChoice="isChoice"
         @getPic="getPic"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        v-if="modalPic"
-      ></uploadPictures>
+        v-if="modalPic"></uploadPictures>
     </el-dialog>
   </div>
 </template>

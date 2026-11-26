@@ -19,26 +19,21 @@
           <div class="clear_box">
             <span class="clear_box_sp1" v-text="item.title"></span>
             <span class="clear_box_sp2" v-text="item.tlt"></span>
-            <el-button
-              :type="item.typeName"
+            <el-button :type="item.typeName"
               v-text="item.typeName === 'primary' ? '立即更换' : item.type === 'factory' ? '立即恢复' : '立即清理'"
-              v-db-click
-              @click="openDangerDialog(item)"
-            ></el-button>
+              @click="openDangerDialog(item)"></el-button>
           </div>
         </el-col>
       </el-row>
     </el-card>
 
-    <el-dialog
-      v-model="danger.visible"
+    <el-dialog v-model="danger.visible"
       class="cleardata-factory-dialog"
       width="640px"
       align-center
       :close-on-click-modal="false"
       :show-close="!danger.submitting"
-      @closed="resetDangerForm"
-    >
+      @closed="resetDangerForm">
       <template #header>
         <div class="factory-dialog-header">
           <div class="factory-dialog-icon" :class="{ 'is-primary': danger.type === 'domain' }">
@@ -85,30 +80,24 @@
           </template>
         </div>
 
-        <el-form
-          v-if="danger.type === 'domain'"
+        <el-form v-if="danger.type === 'domain'"
           ref="domainFormRef"
           class="domain-form"
           :model="domainForm"
           :rules="domainRules"
           label-width="120px"
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="要被替换的域名" prop="old_url">
-            <el-input
-              v-model="domainForm.old_url"
+            <el-input v-model="domainForm.old_url"
               clearable
               placeholder="默认读取系统网站域名，可修改"
-              :disabled="danger.submitting"
-            />
+              :disabled="danger.submitting" />
           </el-form-item>
           <el-form-item label="新域名" prop="url">
-            <el-input
-              v-model="domainForm.url"
+            <el-input v-model="domainForm.url"
               clearable
               placeholder="请输入新域名，如 https://www.example.com"
-              :disabled="danger.submitting"
-            />
+              :disabled="danger.submitting" />
           </el-form-item>
           <p class="domain-tip">格式要求：以 http:// 或 https:// 开头，不要以 / 结尾。</p>
         </el-form>
@@ -119,15 +108,12 @@
             <em>登录密码</em>
             以确认身份：
           </div>
-          <el-form
-            ref="dangerFormRef"
+          <el-form ref="dangerFormRef"
             :model="dangerForm"
             :rules="dangerRules"
-            @submit.prevent
-          >
+            @submit.prevent>
             <el-form-item prop="pwd" class="factory-confirm-item">
-              <el-input
-                v-model="dangerForm.pwd"
+              <el-input v-model="dangerForm.pwd"
                 type="password"
                 show-password
                 clearable
@@ -135,8 +121,7 @@
                 autocomplete="current-password"
                 placeholder="请输入登录密码"
                 :disabled="danger.submitting"
-                @keyup.enter="submitDangerAction"
-              >
+                @keyup.enter="submitDangerAction">
                 <template #prefix>
                   <el-icon class="factory-input-icon"><Lock /></el-icon>
                 </template>
@@ -148,14 +133,12 @@
 
       <template #footer>
         <div class="factory-dialog-footer">
-          <el-button v-db-click :disabled="danger.submitting" @click="danger.visible = false">取 消</el-button>
-          <el-button
-            :type="danger.type === 'domain' ? 'primary' : 'danger'"
+          <el-button :disabled="danger.submitting" @click="danger.visible = false">取 消</el-button>
+          <el-button :type="danger.type === 'domain' ? 'primary' : 'danger'"
             :loading="danger.submitting"
             :disabled="!dangerPwdReady"
             v-db-click
-            @click="submitDangerAction"
-          >
+            @click="submitDangerAction">
             {{ submitButtonText }}
           </el-button>
         </div>
@@ -299,7 +282,7 @@ const danger = reactive({
 });
 const dangerFormRef = ref(null);
 const dangerForm = reactive({ pwd: '' });
-const dangerPwdReady = computed(() => dangerForm.pwd.length > 0);
+const dangerPwdReady = computed(() => dangerForm.pwd.length> 0);
 const dangerRules = {
   pwd: [{ required: true, message: '请输入登录密码', trigger: 'blur' }],
 };
@@ -621,7 +604,7 @@ function forceRelogin() {
 .factory-dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 14px;
   width: 100%;
 }
 

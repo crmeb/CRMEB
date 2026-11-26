@@ -2,13 +2,11 @@
   <div class="hot_imgs">
     <div class="title">最多可添加4个版块，图片建议尺寸140 * 140px；鼠标拖拽左侧圆点可 调整版块顺序</div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="defaults.menu"
         group="people"
         handle=".move-icon"
-        :item-key="hotImgsItemKey"
-      >
+        :item-key="hotImgsItemKey">
         <template #item="{ element: item, index }">
           <div class="item">
             <div class="move-icon">
@@ -18,14 +16,12 @@
               <img :src="item.img" alt="" v-if="item.img" />
               <div class="upload-box" v-else><Icon type="ios-camera-outline" size="36" /></div>
               <div>
-                <el-dialog v-model="modalPic" width="960px" title="上传图片">
-                  <uploadPictures
-                    :isChoice="isChoice"
+                <el-dialog v-model="modalPic" width="960px" title="上传图片" append-to-body>
+                  <uploadPictures :isChoice="isChoice"
                     @getPic="getPic"
                     :gridBtn="gridBtn"
                     :gridPic="gridPic"
-                    v-if="modalPic"
-                  ></uploadPictures>
+                    v-if="modalPic"></uploadPictures>
                 </el-dialog>
               </div>
             </div>
@@ -42,7 +38,7 @@
       </draggable>
     </div>
     <div class="add-btn" v-if="defaults.menu.length < 4">
-      <el-button v-db-click style="width: 100%; height: 40px" @click="addBox">添加板块</el-button>
+      <el-button style="width: 100%; height: 40px" @click="addBox">添加板块</el-button>
     </div>
   </div>
 </template>

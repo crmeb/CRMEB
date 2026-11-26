@@ -113,7 +113,6 @@ class ProductSaveServices extends BaseService
             'give_integral'   => 0,
             'description'     => '',
             'is_show'         => 0,
-            'is_sub'          => 0,
             'is_vip'          => 0,
             'vip_product'     => 0,
             'presale'         => 0,
@@ -250,14 +249,7 @@ class ProductSaveServices extends BaseService
         // 处理 recommend_list
         $recommendList = !empty($data['recommend_list']) ? implode(',', array_column($data['recommend_list'], 'product_id')) : '';
 
-        // 兼容前端两种提交格式：主商品管理使用 is_sub 数组（1=分销，0=会员价），插件管理使用 is_sub/is_vip 标量
-        if (is_array($data['is_sub'] ?? [])) {
-            $isSub = in_array(1, $data['is_sub']) ? 1 : 0;
-            $isVip = in_array(0, $data['is_sub']) ? 1 : 0;
-        } else {
-            $isSub = intval($data['is_sub'] ?? 0);
-            $isVip = intval($data['is_vip'] ?? 0);
-        }
+        $isVip = intval($data['is_vip'] ?? 0);
 
         // 处理预售时间
         $presale = intval($data['presale'] ?? 0);
@@ -293,8 +285,7 @@ class ProductSaveServices extends BaseService
             'unit_name'          => $data['unit_name'] ?? '件',
             'is_show'            => $data['is_show'] ?? 0,
             'is_del'             => 0,
-            // 会员价/佣金
-            'is_sub'             => $isSub,
+            // 会员价
             'is_vip'             => $isVip,
             'vip_product'        => intval($data['vip_product'] ?? 0),
             // 预售

@@ -110,7 +110,7 @@ abstract class BaseChannel
      * 微信用户创建/绑定（写入 User 表 + WechatUser 表）
      * 通用流程：处理推广关系 → 处理昵称 → 查找已有用户 → 创建或更新
      * 通过事件解耦：由 modules/channel/wechat_mp 监听器处理，避免 app 层直接引用 modules
-     * @param array $data [openid, wechatInfo, spreadId, agent_id, login_type, userType]
+     * @param array $data [openid, wechatInfo, spreadId, login_type, userType]
      * @return mixed
      */
     protected function wechatOauthAfter(array $data)

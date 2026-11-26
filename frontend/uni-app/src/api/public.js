@@ -31,12 +31,12 @@ export function getWechatConfig() {
  * 获取微信sdk配置
  * @returns {*}
  */
-export function wechatAuth(code, spread, login_type) {
+export function wechatAuth(code, spid, login_type) {
   return request.get(
     "wechat/auth",
     {
       code,
-      spread,
+      spid,
       login_type,
     },
     {
@@ -230,12 +230,12 @@ export function routineLogin(data) {
  * 获取微信sdk配置
  * @returns {*}
  */
-export function wechatAuthV2(code, spread) {
+export function wechatAuthV2(code, spid) {
   return request.get(
     "v2/wechat/auth",
     {
       code,
-      spread,
+      spid,
     },
     {
       noAuth: true,

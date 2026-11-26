@@ -338,6 +338,8 @@ class MemberOrderServices extends BaseService
         }
         OfflineReceiptJob::dispatch([$paidOrder]);
         event('OrderShipping', ['member', $paidOrder, 3, '', '']);
+        // 分销插件：购买付费会员返佣
+        event('MemberOrderPaySuccess', [$paidOrder]);
         return true;
     }
 

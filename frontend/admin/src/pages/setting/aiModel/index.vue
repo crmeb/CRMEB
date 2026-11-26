@@ -1,17 +1,15 @@
 <template>
   <div class="model-manage">
     <!-- 页面说明头 -->
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       title="模型管理"
-      description="填写接口地址与密钥即可接入 DeepSeek、通义、Kimi 等厂商，同协议厂商无需重复开发。"
-    />
+      description="填写接口地址与密钥即可接入 DeepSeek、通义、Kimi 等厂商，同协议厂商无需重复开发。" />
 
     <!-- 数据卡 -->
     <el-card shadow="never" class="ivu-mt mt16" :body-style="{ padding: '0 20px 20px' }">
       <!-- 不用 el-row：全局样式将 .el-row:first-child 的 margin-top 强制为 0，会吃掉顶部间距 -->
       <div class="mt14">
-        <el-button type="primary" v-db-click @click="openEditor()">新增模型</el-button>
+        <el-button type="primary" @click="openEditor()">新增模型</el-button>
       </div>
 
       <el-table :data="tableRows" v-loading="loading" row-key="id" class="mt14">
@@ -39,42 +37,37 @@
             <el-tag v-if="scope.row.supports_tools === 1" size="small" type="success">工具调用</el-tag>
             <el-tag v-if="scope.row.supports_vision === 1" size="small" type="info">视觉</el-tag>
             <el-tag v-if="scope.row.supports_embedding === 1" size="small" type="warning">向量化</el-tag>
-            <span
-              v-if="
+            <span v-if="
                 scope.row.supports_tools !== 1 && scope.row.supports_vision !== 1 && scope.row.supports_embedding !== 1
               "
-              class="muted"
-              >-</span
-            >
+              class="muted">-</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template #default="scope">
             <span v-if="scope.row.virtual" class="muted">-</span>
-            <el-switch
-              v-else
+            <el-switch v-else
               v-model="scope.row.status"
               :active-value="1"
               :inactive-value="0"
               active-text="开启"
               inactive-text="关闭"
               class="defineSwitch"
-              @change="changeStatus(scope.row)"
-            />
+              @change="changeStatus(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
             <template v-if="scope.row.virtual">
-              <a v-if="!scope.row.configured" v-db-click @click="goYihaotongConfig">一键配置</a>
+              <a v-if="!scope.row.configured" @click="goYihaotongConfig">一键配置</a>
               <span v-else-if="scope.row.is_default === 1" class="muted">内置模型</span>
-              <a v-else v-db-click @click="setDefault(scope.row)">设为默认</a>
+              <a v-else @click="setDefault(scope.row)">设为默认</a>
             </template>
             <template v-else>
               <span v-if="scope.row.is_default === 1 || scope.row.status !== 1" class="muted">设为默认</span>
-              <a v-else v-db-click @click="setDefault(scope.row)">设为默认</a>
+              <a v-else @click="setDefault(scope.row)">设为默认</a>
               <el-divider direction="vertical"></el-divider>
-              <a v-db-click @click="openEditor(scope.row)">编辑</a>
+              <a @click="openEditor(scope.row)">编辑</a>
               <el-divider direction="vertical"></el-divider>
               <a v-db-click @click="removeModel(scope.row)">删除</a>
             </template>
@@ -87,14 +80,12 @@
       </div>
     </el-card>
 
-    <el-dialog
-      v-model="editorVisible"
+    <el-dialog v-model="editorVisible"
       :title="form.id ? '编辑 AI 模型' : '新增 AI 模型'"
       width="640px"
       top="8vh"
       append-to-body
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <el-form ref="modelForm" :model="form" :rules="rules" label-position="top">
         <el-form-item prop="base_url">
           <div class="base-url-head">
@@ -112,45 +103,37 @@
                 : '请填写兼容 OpenAI API 的服务端点地址，不要以斜杠结尾。/chat/completions 将会被补全到你填写的地址末尾。'
             }}
           </div>
-          <el-input
-            v-model.trim="form.base_url"
+          <el-input v-model.trim="form.base_url"
             maxlength="255"
             :placeholder="
               form.full_url === 1 ? '例如 https://api.openai.com/v1/chat/completions' : '例如 https://api.openai.com/v1'
-            "
-          />
+            " />
         </el-form-item>
         <el-form-item label="API 密钥">
-          <el-input
-            v-model.trim="form.api_key"
+          <el-input v-model.trim="form.api_key"
             maxlength="255"
             show-password
-            :placeholder="form.id ? '留空保持原密钥不变' : '厂商控制台签发的 API Key'"
-          />
+            :placeholder="form.id ? '留空保持原密钥不变' : '厂商控制台签发的 API Key'" />
         </el-form-item>
         <el-form-item label="模型 ID" prop="model">
           <div class="model-id-row">
             <!-- 拉取到厂商模型列表后切换为可搜索下拉，仍允许手动输入其他模型 ID -->
-            <el-select
-              v-if="remoteOptions.length"
+            <el-select v-if="remoteOptions.length"
               v-model="form.model"
               filterable
               allow-create
               default-first-option
               placeholder="下拉选择或输入模型 ID"
-              class="model-id-main"
-            >
+              class="model-id-main">
               <el-option v-for="item in remoteOptions" :key="item" :label="item" :value="item" />
             </el-select>
-            <el-input
-              v-else
+            <el-input v-else
               v-model.trim="form.model"
               maxlength="100"
               placeholder="输入模型 ID，例如 deepseek-chat、qwen-plus"
-              class="model-id-main"
-            />
+              class="model-id-main" />
             <el-tooltip content="获取模型" placement="top">
-              <el-button class="fetch-model-btn" :loading="remoteLoading" v-db-click @click="fetchRemoteModels">
+              <el-button class="fetch-model-btn" :loading="remoteLoading" @click="fetchRemoteModels">
                 <i v-if="!remoteLoading" class="el-icon-refresh" />
               </el-button>
             </el-tooltip>
@@ -158,13 +141,11 @@
           <div class="field-tip">填写接口地址与 API 密钥后，点击右侧按钮获取厂商可用模型，成功后可直接下拉选择。</div>
         </el-form-item>
         <el-form-item label="模型名称" prop="name">
-          <el-input
-            v-model.trim="form.name"
+          <el-input v-model.trim="form.name"
             maxlength="32"
             placeholder="请输入模型名称"
             show-word-limit
-            @input="nameTouched = true"
-          />
+            @input="nameTouched = true" />
           <div class="field-tip">在模型列表中展示的名称，未设置时默认显示模型 ID。</div>
         </el-form-item>
         
@@ -173,19 +154,15 @@
             <el-form-item label="模型能力">
               <el-checkbox v-model="form.supports_tools" :true-value="1" :false-value="0">支持工具调用</el-checkbox>
               <el-checkbox v-model="form.supports_vision" :true-value="1" :false-value="0">支持视觉输入</el-checkbox>
-              <el-checkbox v-model="form.supports_embedding" :true-value="1" :false-value="0"
-                >支持文本向量化</el-checkbox
-              >
+              <el-checkbox v-model="form.supports_embedding" :true-value="1" :false-value="0">支持文本向量化</el-checkbox>
             </el-form-item>
             <el-form-item label="采样温度">
-              <el-slider
-                v-model="form.temperature"
+              <el-slider v-model="form.temperature"
                 :min="0"
                 :max="2"
                 :step="0.1"
                 show-input
-                :show-input-controls="false"
-              />
+                :show-input-controls="false" />
             </el-form-item>
             <el-form-item label="最大输出 Token">
               <el-input-number v-model="form.max_tokens" :min="1" :max="128000" :step="256" />
@@ -218,7 +195,7 @@
         <div class="dialog-footer">
           <span class="footer-tip"><i class="el-icon-info" /> 连通性测试会发起一次真实请求，会消耗少量模型 Token</span>
           <span>
-            <el-button v-db-click @click="resetForm">重置</el-button>
+            <el-button @click="resetForm">重置</el-button>
             <el-button type="primary" :loading="!!savingPhase" v-db-click @click="saveModel">{{
               savingText
             }}</el-button>

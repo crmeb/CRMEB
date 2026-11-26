@@ -1,12 +1,10 @@
 <template>
   <div class="edit">
-    <pages-header
-      v-if="!props.drawerMode"
+    <pages-header v-if="!props.drawerMode"
       ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="backUrl"
-      description="按渠道填写模板内容与模板 ID，保存后即可针对该渠道启用此通知。"
-    ></pages-header>
+      description="按渠道填写模板内容与模板 ID，保存后即可针对该渠道启用此通知。"></pages-header>
     <div class="tabs mt16">
       <el-row :gutter="32">
         <el-col :span="32" class="demo-tabs-style1" style="padding: 16px">
@@ -22,23 +20,19 @@
                 </el-form-item>
                 <div v-if="item.slot === 'is_system' && !loading">
                   <el-form-item label="通知标题：">
-                    <el-input
-                      v-model="formData.system_title"
+                    <el-input v-model="formData.system_title"
                       placeholder="请输入通知标题"
-                      style="width: 500px"
-                    ></el-input>
+                      style="width: 500px"></el-input>
                   </el-form-item>
                   <el-form-item label="通知内容：">
                     <div class="content">
-                      <el-input
-                        ref="contentInput"
+                      <el-input ref="contentInput"
                         id="system_text"
                         v-model="formData.system_text"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
                         placeholder="请输入通知内容"
-                        style="width: 500px"
-                      >
+                        style="width: 500px">
                       </el-input>
                       <variable-picker :list="variableList" @select="insertVariable" />
                     </div>
@@ -57,15 +51,13 @@
                   </el-form-item>
                   <el-form-item label="通知内容：">
                     <div class="content">
-                      <el-input
-                        ref="contentInput"
+                      <el-input ref="contentInput"
                         id="sms_text"
                         v-model="formData.sms_text"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
                         placeholder="请输入通知内容"
-                        style="width: 500px"
-                      ></el-input>
+                        style="width: 500px"></el-input>
                       <variable-picker :list="variableList" @select="insertVariable" />
                     </div>
                     <div class="tip" v-if="variableList.length">可点击右下角 { } 图标插入自定义变量</div>
@@ -79,46 +71,38 @@
                 </div>
                 <div v-else-if="item.slot === 'is_wechat' && !loading">
                   <el-form-item label="模板编号：">
-                    <el-input
-                      v-model="formData.tempkey"
+                    <el-input v-model="formData.tempkey"
                       placeholder="请输入通模板编号"
                       style="width: 500px"
-                      disabled
-                    ></el-input>
+                      disabled></el-input>
                   </el-form-item>
                   <el-form-item label="模板ID：">
                     <el-input v-model="formData.tempid" placeholder="请输入模板ID" style="width: 500px"></el-input>
                   </el-form-item>
                   <el-form-item label="模板：">
                     <div class="content">
-                      <el-input
-                        ref="contentInput"
+                      <el-input ref="contentInput"
                         v-model="formData.content"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
                         placeholder="请输入模板"
                         style="width: 500px"
-                        @input="handleContentChange"
-                      ></el-input>
+                        @input="handleContentChange"></el-input>
                     </div>
                     <div class="tip">复制微信模板详情内容进来，会自动解析出下方字段</div>
                   </el-form-item>
                   <el-form-item label="字段：">
-                    <keys-list
-                      :key-list="keyList"
+                    <keys-list :key-list="keyList"
                       :variableList="variableList"
                       @add="handleAdd"
-                      @remove="handleRemove"
-                    />
+                      @remove="handleRemove" />
                   </el-form-item>
                   <el-form-item label="跳转链接：">
                     <div class="content">
-                      <el-input
-                        v-model="formData.wechat_link"
+                      <el-input v-model="formData.wechat_link"
                         placeholder="请输入模板跳转链接，可携带参数"
-                        style="width: 500px"
-                      ></el-input>
-                      <el-button class="ml10" v-db-click @click="openLinkPicker('wechat_link')">选择链接</el-button>
+                        style="width: 500px"></el-input>
+                      <el-button class="ml10" @click="openLinkPicker('wechat_link')">选择链接</el-button>
                     </div>
                   </el-form-item>
                   <el-form-item label="跳转小程序：" prop="wechat_to_routine">
@@ -137,46 +121,38 @@
                 </div>
                 <div v-else-if="item.slot === 'is_routine' && !loading">
                   <el-form-item label="模板编号：">
-                    <el-input
-                      v-model="formData.tempkey"
+                    <el-input v-model="formData.tempkey"
                       placeholder="请输入通模板编号"
                       style="width: 500px"
-                      disabled
-                    ></el-input>
+                      disabled></el-input>
                   </el-form-item>
                   <el-form-item label="模板ID：">
                     <el-input v-model="formData.tempid" placeholder="请输入模板ID" style="width: 500px"></el-input>
                   </el-form-item>
                   <el-form-item label="模板：">
                     <div class="content">
-                      <el-input
-                        ref="contentInput"
+                      <el-input ref="contentInput"
                         v-model="formData.content"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
                         placeholder="请输入模板"
                         style="width: 500px"
-                        @input="handleContentChange"
-                      ></el-input>
+                        @input="handleContentChange"></el-input>
                     </div>
                     <div class="tip">复制小程序模板详情内容进来，会自动解析出下方字段</div>
                   </el-form-item>
                   <el-form-item label="字段：">
-                    <keys-list
-                      :key-list="keyList"
+                    <keys-list :key-list="keyList"
                       :variableList="variableList"
                       @add="handleAdd"
-                      @remove="handleRemove"
-                    />
+                      @remove="handleRemove" />
                   </el-form-item>
                   <el-form-item label="跳转链接：">
                     <div class="content">
-                      <el-input
-                        v-model="formData.routine_link"
+                      <el-input v-model="formData.routine_link"
                         placeholder="请输入模板跳转链接，可携带参数"
-                        style="width: 500px"
-                      ></el-input>
-                      <el-button class="ml10" v-db-click @click="openLinkPicker('routine_link')">选择链接</el-button>
+                        style="width: 500px"></el-input>
+                      <el-button class="ml10" @click="openLinkPicker('routine_link')">选择链接</el-button>
                     </div>
                   </el-form-item>
                   <el-form-item label="状态：" prop="is_routine">
@@ -190,15 +166,13 @@
                 <div v-else-if="item.slot === 'is_ent_wechat' && !loading">
                   <el-form-item label="通知内容：">
                     <div class="content">
-                      <el-input
-                        ref="contentInput"
+                      <el-input ref="contentInput"
                         id="ent_wechat_text"
                         v-model="formData.ent_wechat_text"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
                         placeholder="请输入通知内容"
-                        style="width: 500px"
-                      ></el-input>
+                        style="width: 500px"></el-input>
                       <variable-picker :list="variableList" @select="insertVariable" />
                     </div>
                     <div class="tip" v-if="variableList.length">可点击右下角 { } 图标插入自定义变量</div>
@@ -218,25 +192,21 @@
                 <div v-else-if="item.slot === 'is_dingtalk' && !loading">
                   <el-form-item label="通知内容：">
                     <div class="content">
-                      <el-input
-                        ref="contentInput"
+                      <el-input ref="contentInput"
                         id="dingtalk_text"
                         v-model="formData.dingtalk_text"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
                         placeholder="请输入通知内容"
-                        style="width: 500px"
-                      ></el-input>
+                        style="width: 500px"></el-input>
                       <variable-picker :list="variableList" @select="insertVariable" />
                     </div>
                     <div class="tip" v-if="variableList.length">可点击右下角 { } 图标插入自定义变量</div>
                   </el-form-item>
                   <el-form-item label="Webhook地址：">
-                    <el-input
-                      v-model="formData.webhook"
+                    <el-input v-model="formData.webhook"
                       placeholder="请输入钉钉机器人 Webhook 地址"
-                      style="width: 500px"
-                    ></el-input>
+                      style="width: 500px"></el-input>
                   </el-form-item>
                   <el-form-item label="状态：" prop="is_dingtalk">
                     <el-radio-group v-model="formData.is_dingtalk">
@@ -247,23 +217,19 @@
                 </div>
                 <div v-else-if="item.slot === 'is_email' && !loading">
                   <el-form-item label="邮件标题：">
-                    <el-input
-                      v-model="formData.email_title"
+                    <el-input v-model="formData.email_title"
                       placeholder="请输入邮件标题"
-                      style="width: 500px"
-                    ></el-input>
+                      style="width: 500px"></el-input>
                   </el-form-item>
                   <el-form-item label="邮件内容：">
                     <div class="content">
-                      <el-input
-                        ref="contentInput"
+                      <el-input ref="contentInput"
                         id="email_text"
                         v-model="formData.email_text"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 8 }"
                         placeholder="请输入邮件内容"
-                        style="width: 500px"
-                      ></el-input>
+                        style="width: 500px"></el-input>
                       <variable-picker :list="variableList" @select="insertVariable" />
                     </div>
                     <div class="tip" v-if="variableList.length">可点击右下角 { } 图标插入自定义变量</div>
@@ -577,21 +543,21 @@ if (!id.value) {
 .header_top {
   margin-bottom: 10px;
 }
-.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content {
+.demo-tabs-style1> .ivu-tabs-card> .ivu-tabs-content {
   height: 120px;
   margin-top: -16px;
 }
 
-.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content > .ivu-tabs-tabpane {
+.demo-tabs-style1> .ivu-tabs-card> .ivu-tabs-content> .ivu-tabs-tabpane {
   background: var(--prev-bg-white);
   padding: 16px;
 }
 
-.demo-tabs-style1 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+.demo-tabs-style1> .ivu-tabs.ivu-tabs-card> .ivu-tabs-bar .ivu-tabs-tab {
   border-color: transparent;
 }
 
-.demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+.demo-tabs-style1> .ivu-tabs-card> .ivu-tabs-bar .ivu-tabs-tab-active {
   border-color: #fff;
 }
 

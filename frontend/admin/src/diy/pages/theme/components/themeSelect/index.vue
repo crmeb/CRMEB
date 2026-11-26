@@ -1,6 +1,5 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
+  <el-dialog v-model="dialogVisible"
     width="1188px"
     top="5vh"
     class="theme-dialog"
@@ -8,8 +7,7 @@
     append-to-body
     :modal="true"
     :lock-scroll="true"
-    @close="handleClose"
-  >
+    @close="handleClose">
     <template #header>
       <div v-if="!showDetail" class="dialog-header">
         <div class="dialog-header-tabs">
@@ -30,29 +28,25 @@
           <div class="filters-header">
             <div v-if="type != 'mall'" class="filter-left">
               <el-select v-model="currentFilter" placeholder="首页" style="width: 204px">
-                <el-option
-                  v-for="item in filterOptions"
+                <el-option v-for="item in filterOptions"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value"
-                ></el-option>
+                  :value="item.value"></el-option>
               </el-select>
             </div>
             <div class="search-box">
-              <el-input
-                v-model="searchKeyword"
+              <el-input v-model="searchKeyword"
                 placeholder="请输入主题名称"
                 suffix-icon="Search"
                 clearable
                 @clear="searchTheme"
-                @change="searchTheme"
-              ></el-input>
+                @change="searchTheme"></el-input>
             </div>
           </div>
 
           <div class="theme-grid" v-loading="loading">
             <!-- 新建空白主题 -->
-            <div class="theme-item create-new" v-if="activeTab === 'my'" v-db-click @click="createNewTheme">
+            <div class="theme-item create-new" v-if="activeTab === 'my'" @click="createNewTheme">
               <div class="create-icon">
                 <div class="iconfont iconic_brush"></div>
               </div>
@@ -68,11 +62,9 @@
                 <!-- 背景模糊层 -->
                 <div class="blur-bg" :style="{ backgroundImage: `url(${theme[currentFilter]})` }"></div>
                 <div class="phone-preview">
-                  <img
-                    v-if="theme[currentFilter] || theme.home_image"
+                  <img v-if="theme[currentFilter] || theme.home_image"
                     :src="theme[currentFilter] || theme.home_image"
-                    alt="theme"
-                  />
+                    alt="theme" />
                   <div class="no-poster" v-else>
                     <img :src="noThemePoster" class="preview-image" alt="no poster" />
                     <div>暂无封面</div>
@@ -89,21 +81,19 @@
                 <div class="theme-time">修改时间：{{ theme.up_time }}</div>
 
                 <div class="theme-hover-actions">
-                  <div class="button default" v-db-click @click="viewThemeDetail(theme)">查看详情</div>
-                  <div class="button primary" v-db-click @click="selectTheme(theme)">使用主题</div>
+                  <div class="button default" @click="viewThemeDetail(theme)">查看详情</div>
+                  <div class="button primary" @click="selectTheme(theme)">使用主题</div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="acea-row row-right page" v-if="total > limit">
-            <pagination
-              v-if="total"
+          <div class="acea-row row-right page" v-if="total> limit">
+            <pagination v-if="total"
               :total="total"
               v-model:page="page"
               v-model:limit="limit"
               layout="total, prev, pager, next, jumper"
-              @pagination="handlePageChange"
-            />
+              @pagination="handlePageChange" />
           </div>
         </div>
       </div>
@@ -121,11 +111,9 @@
       <div class="detail-body">
         <div class="detail-top">
           <div class="detail-preview-main">
-            <img
-              v-if="currentTheme[currentFilter] || currentTheme.home_image"
+            <img v-if="currentTheme[currentFilter] || currentTheme.home_image"
               :src="currentTheme[currentFilter] || currentTheme.home_image"
-              alt="preview"
-            />
+              alt="preview" />
             <div class="no-poster" v-else>
               <img :src="noThemePoster" class="preview-image" alt="no poster" />
             </div>
@@ -138,7 +126,7 @@
               </div>
             </div>
             <div class="info-btn">
-              <el-button type="primary" v-db-click @click="selectTheme(currentTheme)">使用主题</el-button>
+              <el-button type="primary" @click="selectTheme(currentTheme)">使用主题</el-button>
             </div>
           </div>
         </div>
@@ -149,13 +137,11 @@
             <div class="image-item" v-for="(opt, index) in filterOptions" :key="index">
               <div class="image-label">{{ opt.label }}</div>
               <div class="phone-mockup">
-                <img
-                  v-if="currentTheme[opt.value]"
+                <img v-if="currentTheme[opt.value]"
                   v-viewer
                   v-lazy="currentTheme[opt.value]"
                   :src="currentTheme[opt.value]"
-                  class="preview-image"
-                />
+                  class="preview-image" />
                 <div class="no-poster" v-else>
                   <img :src="noThemePoster" class="preview-image" alt="no poster" />
                   <div>暂无封面</div>

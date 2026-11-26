@@ -2,14 +2,12 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           label-width="80px"
           label-position="right"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="状态：" label-for="status1">
             <el-select v-model="status" placeholder="请选择" @change="userSearchs" clearable class="form_content_width">
               <el-option value="all" label="全部"></el-option>
@@ -18,31 +16,25 @@
             </el-select>
           </el-form-item>
           <el-form-item label="搜索：" label-for="status2">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入姓名或者账号"
               v-model="formValidate.name"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button v-auth="['setting-system_admin-add']" type="primary" class="action-row" v-db-click @click="add"
-        >添加管理员</el-button
-      >
-      <el-table
-        :data="list"
+      <el-button v-auth="['setting-system_admin-add']" type="primary" class="action-row" @click="add">添加管理员</el-button>
+      <el-table :data="list"
         class="mt14"
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
         v-loading="loading"
-        highlight-current-row
-      >
+        highlight-current-row>
         <el-table-column label="姓名" width="120">
           <template #default="scope">
             <span>{{ scope.row.real_name }}</span>
@@ -72,8 +64,7 @@
         </el-table-column>
         <el-table-column label="开启" min-width="70">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -81,27 +72,24 @@
               @change="onchangeIsShow(scope.row)"
               size="large"
               active-text="开启"
-              inactive-text="关闭"
-            >
+              inactive-text="关闭">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除管理员', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 添加 编辑 -->

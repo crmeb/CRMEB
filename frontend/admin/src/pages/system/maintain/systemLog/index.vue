@@ -2,48 +2,40 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
           inline
-          class="tabform"
-        >
+          class="tabform">
           <el-form-item :label="fromList.title + '：'">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               :editable="false"
               @change="onchangeTime"
               v-model="timeVal"
               format="YYYY/MM/DD"
-              value-format="YYYY/MM/DD"
-            ></date-range-picker>
+              value-format="YYYY/MM/DD"></date-range-picker>
           </el-form-item>
           <el-form-item label="名称：">
             <el-select v-model="formValidate.admin_id" clearable @change="userSearchs" class="form_content_width">
-              <el-option
-                :value="item.id"
+              <el-option :value="item.id"
                 v-for="(item, index) in dataList"
                 :key="index"
-                :label="item.real_name"
-              ></el-option>
+                :label="item.real_name"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="链接：">
-            <el-input
-              placeholder="请输入链接"
+            <el-input placeholder="请输入链接"
               v-model="formValidate.path"
               class="form_content_width"
-              clearable
-            ></el-input>
+              clearable></el-input>
           </el-form-item>
           <el-form-item label="IP：">
             <el-input placeholder="请输入IP" v-model="formValidate.ip" clearable class="form_content_width"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="userSearch" v-db-click @click="userSearchs">搜索</el-button>
+            <el-button type="primary" class="userSearch" @click="userSearchs">搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -87,13 +79,11 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

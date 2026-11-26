@@ -1,8 +1,7 @@
 <template>
   <div>
     <el-dialog v-model="isTemplate" title="优惠券列表" append-to-body width="1000px">
-      <el-table
-        :data="couponList"
+      <el-table :data="couponList"
         ref="couponTable"
         class="mt20"
         v-loading="loading"
@@ -10,18 +9,14 @@
         :row-key="getRowKey"
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
-        @selection-change="changeCheckbox"
-      >
+        @selection-change="changeCheckbox">
         <el-table-column v-if="!luckDraw" type="selection" width="55" :reserve-selection="true"> </el-table-column>
         <el-table-column v-else width="50">
           <template #default="scope">
-            <el-radio
-              v-model="templateRadio"
+            <el-radio v-model="templateRadio"
               :label="scope.row.id"
               :value="scope.row.id"
-              @change="getTemplateRow(scope.row)"
-              >&nbsp;</el-radio
-            >
+              @change="getTemplateRow(scope.row)">&nbsp;</el-radio>
           </template>
         </el-table-column>
         <el-table-column label="ID" width="70">
@@ -78,20 +73,16 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="tableFrom.page"
           v-model:limit="tableFrom.limit"
-          @pagination="tableList"
-        />
+          @pagination="tableList" />
       </div>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="cancel">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
           <el-button type="primary" v-db-click @click="ok">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -257,7 +248,7 @@ function limitChange(limit) {
   tableList();
 }
 function showSelectData() {
-  if (multipleSelection.value.length > 0) {
+  if (multipleSelection.value.length> 0) {
     // 判断是否存在勾选过的数据
     couponList.value.forEach((row) => {
       // 获取数据列表接口请求到的数据

@@ -2,14 +2,12 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="是否显示：">
             <el-select v-model="formValidate.status" clearable @change="search" class="form_content_width">
               <el-option value="" label="全部"></el-option>
@@ -18,30 +16,26 @@
             </el-select>
           </el-form-item>
           <el-form-item label="等级名称：">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入等级名称"
               v-model="formValidate.keyword"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="search">查询</el-button>
+            <el-button type="primary" @click="search">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button type="primary" class="action-row" v-db-click @click="groupAdd">添加等级</el-button>
-      <el-table
-        class="mt14"
+      <el-button type="primary" class="action-row" @click="groupAdd">添加等级</el-button>
+      <el-table class="mt14"
         :data="tabList"
         ref="table"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="50">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -66,24 +60,20 @@
         </el-table-column>
         <el-table-column label="一级分佣比例" min-width="150">
           <template #default="scope">
-            <span
-              >{{
+            <span>{{
                 scope.row.one_brokerage_percent == '0.00'
                   ? scope.row.one_brokerage_ratio
                   : scope.row.one_brokerage_percent
-              }}%</span
-            >
+              }}%</span>
           </template>
         </el-table-column>
         <el-table-column label="二级分佣比例" min-width="150">
           <template #default="scope">
-            <span
-              >{{
+            <span>{{
                 scope.row.two_brokerage_percent == '0.00'
                   ? scope.row.two_brokerage_ratio
                   : scope.row.two_brokerage_percent
-              }}%</span
-            >
+              }}%</span>
           </template>
         </el-table-column>
         <el-table-column label="任务总数" min-width="150">
@@ -118,8 +108,7 @@
         </el-table-column> -->
         <el-table-column label="是否显示" min-width="130">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -127,29 +116,26 @@
               @change="onchangeIsShow(scope.row)"
               size="large"
               active-text="显示"
-              inactive-text="隐藏"
-            >
+              inactive-text="隐藏">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="addTask(scope.row)">等级任务</a>
+            <a @click="addTask(scope.row)">等级任务</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
+            <a @click="edit(scope.row, '编辑')">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <div class="task-modal">
@@ -165,24 +151,22 @@
             <el-input v-model="taskData.keyword" placeholder="请输入任务名称" clearable class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="searchTask">查询</el-button>
+            <el-button type="primary" @click="searchTask">查询</el-button>
           </el-form-item>
         </el-form>
         <div>
           <div class="add-task">
-            <el-button type="primary" v-db-click @click="taskAdd()">添加等级任务</el-button>
-            <el-button type="primary" v-db-click @click="taskEdit()">设置完成数量</el-button>
+            <el-button type="primary" @click="taskAdd()">添加等级任务</el-button>
+            <el-button type="primary" @click="taskEdit()">设置完成数量</el-button>
           </div>
           <div>
-            <el-table
-              :data="taskTabList"
+            <el-table :data="taskTabList"
               ref="table"
               class="mt14"
               v-loading="taskLoading"
               highlight-current-row
               no-userFrom-text="暂无数据"
-              no-filtered-userFrom-text="暂无筛选结果"
-            >
+              no-filtered-userFrom-text="暂无筛选结果">
               <el-table-column label="ID" width="80">
                 <template #default="scope">
                   <span>{{ scope.row.id }}</span>
@@ -205,16 +189,14 @@
               </el-table-column>
               <el-table-column label="是否显示" min-width="80">
                 <template #default="scope">
-                  <el-switch
-                    class="defineSwitch"
+                  <el-switch class="defineSwitch"
                     :active-value="1"
                     :inactive-value="0"
                     v-model="scope.row.status"
                     :value="scope.row.status"
                     @change="onchangeTaskIsShow(scope.row)"
                     active-text="开启"
-                    inactive-text="关闭"
-                  >
+                    inactive-text="关闭">
                     <template #open><span>开启</span></template>
                     <template #close><span>关闭</span></template>
                   </el-switch>
@@ -227,7 +209,7 @@
               </el-table-column>
               <el-table-column label="操作" fixed="right" width="170">
                 <template #default="scope">
-                  <a v-db-click @click="editTask(scope.row, '编辑')">编辑</a>
+                  <a @click="editTask(scope.row, '编辑')">编辑</a>
                   <el-divider direction="vertical"></el-divider>
                   <a v-db-click @click="delTask(scope.row, '删除这条信息', scope.$index)">删除</a>
                 </template>
@@ -607,8 +589,7 @@ onMounted(() => {
   padding: 8px;
   .search {
     display: flex;
-    align-items: center;
-    > div {
+    align-items: center;> div {
       margin-right: 10px;
     }
   }

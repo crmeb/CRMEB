@@ -1,64 +1,52 @@
 <template>
   <div class="article-manager">
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       :title="route.params.id ? '编辑文章' : '添加文章'"
       :backUrl="Setting.routePre + '/cms/article/index'"
-      description="填写文章标题、分类、封面与正文，保存后在前台文章模块展示。"
-    ></pages-header>
+      description="填写文章标题、分类、封面与正文，保存后在前台文章模块展示。"></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
-      <el-form
-        class="form"
+      <el-form class="form"
         ref="formValidateRef"
         :model="formValidate"
         :rules="ruleValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
-        @submit.prevent
-      >
+        @submit.prevent>
         <div class="goodsTitle acea-row">
           <div class="title">文章信息</div>
         </div>
         <div class="grid_box">
           <el-form-item label="标题：" prop="title" label-for="title">
-            <el-input
-              v-model="formValidate.title"
+            <el-input v-model="formValidate.title"
               placeholder="请输入"
               class="content_width"
               maxlength="80"
-              show-word-limit
-            />
+              show-word-limit />
           </el-form-item>
           <el-form-item label="作者：" prop="author" label-for="author">
-            <el-input
-              v-model="formValidate.author"
+            <el-input v-model="formValidate.author"
               placeholder="请输入"
               class="content_width"
               maxlength="10"
-              show-word-limit
-            />
+              show-word-limit />
           </el-form-item>
           <el-form-item label="文章分类：" label-for="cid" prop="cid">
-            <el-cascader
-              class="content_width"
+            <el-cascader class="content_width"
               v-model="formValidate.cid"
               :options="treeData"
               :props="{ multiple: false, checkStrictly: true, emitPath: false }"
-              clearable
-            ></el-cascader>
+              clearable></el-cascader>
           </el-form-item>
           <el-form-item label="文章简介：" prop="synopsis" label-for="synopsis">
-            <el-input
-              v-model="formValidate.synopsis"
+            <el-input v-model="formValidate.synopsis"
               type="textarea"
               placeholder="请输入"
               class="content_width"
               maxlength="300"
-              show-word-limit
-            />
+              show-word-limit />
           </el-form-item>
           <el-form-item label="图文封面：" prop="image_input">
-            <div class="picBox" v-db-click @click="modalPicTap('单选')">
+            <div class="picBox" @click="modalPicTap('单选')">
               <div class="pictrue" v-if="formValidate.image_input">
                 <img :src="formValidate.image_input" />
               </div>
@@ -73,12 +61,10 @@
           <div class="title">文章内容</div>
         </div>
         <el-form-item label="文章内容：" prop="content">
-          <WangEditor
-            style="width: 90%"
+          <WangEditor style="width: 90%"
             :content="formValidate.content"
             :ai-default-prompt="aiDefaultPrompt"
-            @editorContent="getEditorContent"
-          ></WangEditor>
+            @editorContent="getEditorContent"></WangEditor>
         </el-form-item>
         <div class="goodsTitle acea-row">
           <div class="title">其他设置</div>
@@ -113,13 +99,11 @@
         </el-row>
       </el-form>
       <el-dialog v-model="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false">
-        <uploadPictures
-          :isChoice="isChoice"
+        <uploadPictures :isChoice="isChoice"
           @getPic="getPic"
           :gridBtn="gridBtn"
           :gridPic="gridPic"
-          v-if="modalPic"
-        ></uploadPictures>
+          v-if="modalPic"></uploadPictures>
       </el-dialog>
     </el-card>
   </div>

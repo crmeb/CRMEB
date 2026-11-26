@@ -1,7 +1,9 @@
-:deep(.el-card__body) {
-  padding: 0;
-}
-:deep() {
+/* diyIndex.scss 由非 scoped style 引入：EP 组件选择器必须挂在 .diy-page 下，
+   否则异步 chunk 注入后会污染全站（如商品列表首列复选框被 margin 裁成半个）。 */
+.diy-page {
+  .el-card__body {
+    padding: 0;
+  }
   .icondel_1,
   .upload-box {
     cursor: pointer;
@@ -11,13 +13,12 @@
     margin-bottom: 15px;
     margin-right: 15px;
   }
-}
-.c_label {
-  margin-top: 0;
-}
-:deep(.el-button--small) {
-  // border-radius: 0;
-  border-radius: 4px;
+  .c_label {
+    margin-top: 0;
+  }
+  .el-button--small {
+    border-radius: 4px;
+  }
 }
 .look,
 .look:hover,
@@ -102,10 +103,15 @@
 .wrapper-con {
   position: relative;
   flex: 1;
-  background: #f0f2f5;
+  min-width: 0;
+  background-color: var(--prev-bg-main-color);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--prev-color-text-primary) 22%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 16px 16px;
   display: flex;
   justify-content: center;
-  padding-top: 40px;
   height: 100%;
   .acticons {
     position: absolute;
@@ -118,41 +124,32 @@
       margin-left: 0;
     }
   }
-  /* min-width 700px; */
 }
 .main .content-wrapper {
   padding: 0 !important;
 }
-.defaultData {
-  /* margin-left 20px; */
-  cursor: pointer;
-  position: absolute;
-  left: 50%;
-  margin-left: 235px;
+.canvas-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
 
   .data {
-    display: block;
-    margin-top: 20px;
-    color: #282828;
-    background-color: #fff;
-    width: 94px;
-    text-align: center;
     height: 32px;
-    border-radius: 3px;
+    margin-left: 0;
+    padding: 0 10px;
+    border-radius: 4px;
     font-size: 12px;
-    margin-left: 0 !important;
-    border: none;
+    color: var(--prev-color-text-regular);
+    background: var(--prev-bg-white);
+    border: 1px solid var(--prev-border-color-base);
   }
 
-  .data:hover {
-    color: var(--prev-color-primary);
-    border: none;
-    box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.03);
-  }
+  .data:hover,
   .data:focus {
-    color: #fff;
-    background-color: var(--prev-color-primary);
-    border: 1px solid var(--prev-color-primary);
+    color: var(--prev-color-primary);
+    background: var(--prev-bg-white);
+    border-color: var(--prev-color-primary);
   }
 }
 
@@ -165,10 +162,6 @@
     margin: 0 auto;
     background-color: #fff;
   }
-}
-
-.bnt {
-  width: 80px !important;
 }
 
 /* 定义滑块 内阴影+圆角 */
@@ -227,11 +220,12 @@
   display: flex;
   justify-content: space-between;
   height: calc(100vh - 62px);
-  .left {
+  /* 必须用直接子选择器：画布内优惠券等组件也有 .left，后代选择器会污染其布局 */
+  > .left {
     min-width: 300px;
     max-width: 300px;
-    /* border 1px solid #DDDDDD */
-    border-radius: 4px;
+    border-right: 1px solid var(--prev-border-color-lighter);
+    background: var(--prev-bg-white);
     height: 100%;
 
     .title-bar {
@@ -374,12 +368,13 @@
       .delete-box {
         display: none;
         position: absolute;
-        left: -2px;
-        top: 0;
-        width: 379px;
-        height: 100%;
-        border: 2px dashed var(--prev-color-primary);
-        padding: 10px 0;
+        inset: 0;
+        box-sizing: border-box;
+        border: none;
+        pointer-events: none;
+        box-shadow:
+          0 0 0 1px color-mix(in srgb, var(--prev-color-primary) 70%, transparent),
+          0 0 12px color-mix(in srgb, var(--prev-color-primary) 40%, transparent);
       }
 
       &:hover,
@@ -395,8 +390,10 @@
 
         .delete-box {
           display: block;
-          border: 2px solid var(--prev-color-primary);
-          box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
+          border: none;
+          box-shadow:
+            0 0 0 2px var(--prev-color-primary),
+            0 0 16px color-mix(in srgb, var(--prev-color-primary) 65%, transparent);
         }
       }
     }
@@ -415,12 +412,13 @@
       .delete-box {
         display: none;
         position: absolute;
-        left: -2px;
-        top: 0;
-        width: 379px;
-        height: 100%;
-        border: 2px dashed var(--prev-color-primary);
-        padding: 10px 0;
+        inset: 0;
+        box-sizing: border-box;
+        border: none;
+        pointer-events: none;
+        box-shadow:
+          0 0 0 1px color-mix(in srgb, var(--prev-color-primary) 70%, transparent),
+          0 0 12px color-mix(in srgb, var(--prev-color-primary) 40%, transparent);
 
         span {
           position: absolute;
@@ -453,18 +451,23 @@
 
         .delete-box {
           display: block;
-          border: 2px solid var(--prev-color-primary);
-          box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
+          border: none;
+          box-shadow:
+            0 0 0 2px var(--prev-color-primary),
+            0 0 16px color-mix(in srgb, var(--prev-color-primary) 65%, transparent);
         }
       }
     }
 
     .scroll-box {
+      position: relative;
       flex: 1;
-      background-color: #fff;
+      background-color: var(--prev-bg-white);
       width: 375px;
       margin: 0 auto;
-      padding-top: 1px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      min-height: 100%;
     }
 
     .dragArea.list-group {
@@ -502,24 +505,27 @@
           }
         }
         .delete-name.on {
-          background: var(--prev-color-primary-light-3);
-          color: #fff;
+          background: var(--prev-color-primary);
+          color: var(--prev-bg-white);
           &::before {
-            background: var(--prev-color-primary-light-3);
+            background: var(--prev-color-primary);
           }
         }
         .delete-name {
+          display: none;
           position: absolute;
           top: 6px;
-          background: #fff;
-          left: -100px;
+          background: var(--prev-bg-white);
+          left: -108px;
           width: 86px;
           height: 32px;
           text-align: center;
           line-height: 32px;
-          font-size: 13px;
-          color: #666;
-          border-radius: 3px;
+          font-size: 12px;
+          color: var(--prev-color-text-primary);
+          border-radius: 4px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          z-index: 5;
 
           .custom-badge {
             position: absolute;
@@ -539,7 +545,7 @@
             position: absolute;
             width: 10px;
             height: 10px;
-            background: #fff;
+            background: var(--prev-bg-white);
             transform: rotate(45deg);
             top: 50%;
             right: -5px;
@@ -549,25 +555,28 @@
         .delete-box {
           display: none;
           position: absolute;
-          left: -2px;
-          top: 0;
-          width: 379px;
-          height: 100%;
-          border: 2px dashed var(--prev-color-primary);
+          inset: 0;
+          box-sizing: border-box;
+          border: none;
+          pointer-events: none;
+          box-shadow:
+            0 0 0 1px color-mix(in srgb, var(--prev-color-primary) 70%, transparent),
+            0 0 12px color-mix(in srgb, var(--prev-color-primary) 40%, transparent);
 
-          /* padding: 10px 0; */
           .handleType {
             position: absolute;
-            right: -43px;
+            right: -52px;
             top: 0;
             width: 36px;
+            pointer-events: auto;
             border-radius: 4px;
             background-color: var(--prev-color-primary);
             cursor: pointer;
-            color: #fff;
+            color: var(--prev-bg-white);
             font-weight: bold;
             text-align: center;
             padding: 4px 0;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
             .el-tooltip {
               background-color: inherit;
               color: inherit;
@@ -583,35 +592,56 @@
           }
         }
 
+        &:hover {
+          .delete-box {
+            display: block;
+          }
+
+          .delete-name {
+            display: block;
+          }
+
+          .handleType {
+            display: none;
+          }
+        }
+
         &.on {
           cursor: move;
+          z-index: 3;
 
           .delete-box {
             display: block;
-            border: 2px solid var(--prev-color-primary);
-            box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
+            border: none;
+            box-shadow:
+              0 0 0 2px var(--prev-color-primary),
+              0 0 16px color-mix(in srgb, var(--prev-color-primary) 65%, transparent);
+          }
+
+          .delete-name,
+          .handleType {
+            display: block;
           }
         }
       }
 
       .mConfig-item:hover {
-        transform: scale(1.01);
-        box-shadow: 0 0 10px 0 rgba(24, 144, 255, 0.3);
-        transition: all 0.2s;
+        transition: box-shadow 0.2s;
       }
     }
   }
 
-  .right-box {
+  > .right-box {
     max-width: 400px;
     min-width: 400px;
     height: 100%;
-    border-radius: 4px;
+    border-left: 1px solid var(--prev-border-color-lighter);
+    background: var(--prev-bg-white);
     overflow: scroll;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
 
-    :deep(.ivu-tabs-bar) {
+    .ivu-tabs-bar {
       margin-bottom: 16px;
     }
 
@@ -661,11 +691,11 @@
   }
 }
 
-:deep(.ivu-scroll-loader) {
+.ivu-scroll-loader {
   display: none;
 }
 
-:deep(.ivu-card-body) {
+.ivu-card-body {
   width: 100%;
   padding: 0;
   height: calc(100vh - 73px);
@@ -718,4 +748,232 @@
   // vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+}
+
+.diy-wrapper {
+  min-height: 0;
+
+  .content {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  > .left,
+  > .right-box {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.wrapper-con {
+  z-index: 2;
+}
+
+.design-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  padding: 16px 8px 18px;
+  box-sizing: border-box;
+}
+
+.device {
+  width: min(760px, 100%);
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.device-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.device-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.device-meta__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--prev-color-text-regular);
+  white-space: nowrap;
+}
+
+.device-meta__size {
+  font-size: 12px;
+  line-height: 20px;
+  padding: 0 8px;
+  border-radius: 4px;
+  color: var(--prev-color-primary);
+  background: var(--prev-color-primary-light-9);
+  white-space: nowrap;
+}
+
+.canvas-actions {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
+
+  .el-button + .el-button {
+    margin-left: 8px;
+  }
+}
+
+.device-frame {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 399px;
+  max-width: 100%;
+  padding: 12px 12px 8px;
+  border-radius: 32px;
+  background: rgb(29, 31, 36);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 12%),
+    0 18px 40px rgba(0, 0, 0, 0.16);
+}
+
+.device-screen {
+  flex: 1;
+  align-self: stretch;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  background: rgb(255, 255, 255);
+
+  .contxt {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+  }
+
+  .device-head,
+  .device-foot {
+    margin-right: 0;
+    flex-shrink: 0;
+  }
+
+  .picture,
+  .page-title,
+  .page-foot {
+    width: 100%;
+  }
+
+  .device-head {
+    position: relative;
+    z-index: 2;
+    border-radius: 18px 18px 0 0;
+    overflow: visible;
+    background: transparent;
+
+    .picture {
+      border-radius: 18px 18px 0 0;
+      overflow: hidden;
+      background: transparent;
+
+      img {
+        display: block;
+        width: 100%;
+        height: 20px;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .device-foot .page-foot {
+    margin-bottom: 0;
+    overflow: visible;
+  }
+
+  .device-foot .page-foot > :not(.delete-box):not(.handle) {
+    border-radius: 0 0 18px 18px;
+    overflow: hidden;
+  }
+
+  &:not(.has-foot) .scroll-box {
+    border-radius: 0 0 18px 18px;
+  }
+}
+
+.device-screen .scrollCon {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  align-self: flex-start;
+  width: calc(100% + 240px);
+  margin-left: -120px;
+  padding: 0 120px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.device-screen .scroll-box {
+  width: 100%;
+  pointer-events: auto;
+}
+
+.device-screen .delete-name,
+.device-screen .handleType {
+  pointer-events: auto;
+}
+
+.device-bar {
+  width: 96px;
+  height: 4px;
+  margin: 8px auto 0;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 42%);
+  flex-shrink: 0;
+}
+
+.canvas-empty {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 28px;
+  bottom: 28px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px dashed var(--prev-border-color-base);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--prev-bg-white) 72%, transparent);
+  text-align: center;
+  pointer-events: none;
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--prev-color-text-regular);
+  }
+
+  span {
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--prev-color-text-secondary);
+  }
 }

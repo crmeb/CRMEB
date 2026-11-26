@@ -1,20 +1,18 @@
 <template>
   <div class="layout-navbars-breadcrumb-user" :style="{ flex: layoutUserFlexNum }">
-    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="refresh">
+    <div class="layout-navbars-breadcrumb-user-icon" @click="refresh">
       <i class="el-icon-refresh-right" :title="$t('message.user.title7')"></i>
     </div>
-    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onSearchClick">
+    <div class="layout-navbars-breadcrumb-user-icon" @click="onSearchClick">
       <i class="el-icon-search" :title="$t('message.user.title2')"></i>
     </div>
 
     <div class="layout-navbars-breadcrumb-user-icon">
-      <el-popover
-        placement="bottom"
+      <el-popover placement="bottom"
         :width="300"
         trigger="click"
         popper-class="user-news-popover"
-        @show="isDot = false"
-      >
+        @show="isDot = false">
         <UserNews @haveNews="initIsDot" />
         <template #reference>
           <el-badge :is-dot="isDot">
@@ -23,13 +21,11 @@
         </template>
       </el-popover>
     </div>
-    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onScreenfullClick">
-      <i
-        :title="isScreenfull ? $t('message.user.title6') : $t('message.user.title5')"
-        :class="!isScreenfull ? 'el-icon-full-screen' : 'el-icon-crop'"
-      ></i>
+    <div class="layout-navbars-breadcrumb-user-icon" @click="onScreenfullClick">
+      <i :title="isScreenfull ? $t('message.user.title6') : $t('message.user.title5')"
+        :class="!isScreenfull ? 'el-icon-full-screen' : 'el-icon-crop'"></i>
     </div>
-    <div class="layout-navbars-breadcrumb-user-icon mr10" v-db-click @click="openMobelPage">
+    <div class="layout-navbars-breadcrumb-user-icon mr10" @click="openMobelPage">
       <i title="商城页面" class="el-icon-mobile-phone"></i>
     </div>
     <el-dropdown :show-timeout="70" @command="onDropdownCommand">
@@ -38,14 +34,12 @@
         {{ getUserInfos.account === '' ? 'test' : getUserInfos.account }}
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
-      <template #dropdown
-        ><el-dropdown-menu>
+      <template #dropdown><el-dropdown-menu>
           <el-dropdown-item command="user">{{ $t('message.user.dropdown6') }}</el-dropdown-item>
           <el-dropdown-item divided command="logOut">{{ $t('message.user.dropdown5') }}</el-dropdown-item>
-        </el-dropdown-menu></template
-      >
+        </el-dropdown-menu></template>
     </el-dropdown>
-    <div class="layout-navbars-breadcrumb-user-icon" v-db-click @click="onLayoutSetingClick">
+    <div class="layout-navbars-breadcrumb-user-icon" @click="onLayoutSetingClick">
       <i class="el-icon-setting" :title="$t('message.user.title3')"></i>
     </div>
     <Search ref="searchRef" />

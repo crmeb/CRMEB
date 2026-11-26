@@ -29,30 +29,24 @@
           <el-col :span="24" v-for="(item, index) in formValidate.typelist" :key="index">
             <el-row :gutter="20">
               <el-col v-bind="grid">
-                <el-form-item
-                  :label="'字段' + (index + 1) + '：'"
+                <el-form-item :label="'字段' + (index + 1) + '：'"
                   label-width="90px"
                   :prop="'typelist.' + index + '.name.value'"
-                  :rules="{ required: true, message: '请输入字段名称：姓名', trigger: 'blur' }"
-                >
+                  :rules="{ required: true, message: '请输入字段名称：姓名', trigger: 'blur' }">
                   <el-input v-model="item.name.value" placeholder="字段名称：姓名"></el-input>
                 </el-form-item>
               </el-col>
               <el-col v-bind="grid">
-                <el-form-item
-                  label-width="0"
+                <el-form-item label-width="0"
                   :prop="'typelist.' + index + '.title.value'"
-                  :rules="{ required: true, message: '请输入字段配置名', trigger: 'blur' }"
-                >
+                  :rules="{ required: true, message: '请输入字段配置名', trigger: 'blur' }">
                   <el-input v-model="item.title.value" placeholder="字段配置名：name"></el-input>
                 </el-form-item>
               </el-col>
               <el-col v-bind="grid">
-                <el-form-item
-                  label-width="0"
+                <el-form-item label-width="0"
                   :prop="'typelist.' + index + '.type.value'"
-                  :rules="{ required: true, message: '请选择字段类型', trigger: 'change' }"
-                >
+                  :rules="{ required: true, message: '请选择字段类型', trigger: 'change' }">
                   <el-select placeholder="字段类型" v-model="item.type.value">
                     <el-option value="input">文本框</el-option>
                     <el-option value="textarea">多行文本框</el-option>
@@ -66,41 +60,33 @@
               </el-col>
               <el-col v-bind="gridBtn">
                 <el-form-item label-width="0">
-                  <el-button icon="Delete" v-db-click @click="delGroup(index)"></el-button>
+                  <el-button icon="Delete" @click="delGroup(index)"></el-button>
                 </el-form-item>
               </el-col>
-              <el-col
-                v-if="item.type.value === 'radio' || item.type.value === 'checkbox' || item.type.value === 'select'"
-                :span="24"
-              >
-                <el-form-item
-                  :prop="'typelist.' + index + '.param.value'"
-                  :rules="{ required: true, message: '请输入参数方式', trigger: 'blur' }"
-                >
-                  <el-input
-                    type="textarea"
+              <el-col v-if="item.type.value === 'radio' || item.type.value === 'checkbox' || item.type.value === 'select'"
+                :span="24">
+                <el-form-item :prop="'typelist.' + index + '.param.value'"
+                  :rules="{ required: true, message: '请输入参数方式', trigger: 'blur' }">
+                  <el-input type="textarea"
                     :rows="4"
                     :placeholder="item.param.placeholder"
                     v-model="item.param.value"
-                    style="width: 90%"
-                  ></el-input>
+                    style="width: 90%"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
           </el-col>
           <el-col>
             <el-form-item>
-              <el-button type="primary" v-db-click @click="addType">添加字段</el-button>
+              <el-button type="primary" @click="addType">添加字段</el-button>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="handleReset">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="handleReset">取 消</el-button>
           <el-button type="primary" v-db-click @click="handleSubmit()" :disabled="valids">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

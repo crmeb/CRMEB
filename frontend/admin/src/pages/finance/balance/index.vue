@@ -2,34 +2,28 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formRef"
+        <el-form ref="formRef"
           :model="formValidate"
           :label-width="labelWidth"
           label-position="right"
           inline
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="订单时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
               value-format="YYYY/MM/DD"
-              class="mr20"
-            ></date-range-picker>
+              class="mr20"></date-range-picker>
           </el-form-item>
           <el-form-item label="交易类型：">
             <el-select clearable v-model="formValidate.trading_type" @change="selChange" class="form_content_width">
-              <el-option
-                :label="item"
+              <el-option :label="item"
                 :value="Object.keys(withdrawal)[index]"
                 v-for="(item, index) in Object.values(withdrawal)"
-                :key="index"
-              ></el-option>
+                :key="index"></el-option>
             </el-select>
           </el-form-item>
         </el-form>
@@ -75,28 +69,24 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="70">
           <template #default="scope">
-            <a v-db-click @click="setMark(scope.row)">备注</a>
+            <a @click="setMark(scope.row)">备注</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 拒绝通过-->
     <el-dialog v-model="modals" title="备注" :close-on-click-modal="false" width="540px">
       <el-input v-model="mark_msg.mark" type="textarea" :rows="4" placeholder="请输入备注" />
-      <template #footer
-        ><span class="dialog-footer">
+      <template #footer><span class="dialog-footer">
           <el-button type="primary" v-db-click @click="oks">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

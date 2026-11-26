@@ -3,18 +3,16 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row>
         <el-col v-bind="grid">
-          <el-button v-auth="['admin-template']" type="primary" v-db-click @click="add">添加模板</el-button>
+          <el-button v-auth="['admin-template']" type="primary" @click="add">添加模板</el-button>
         </el-col>
       </el-row>
-      <el-table
-        :data="list"
+      <el-table :data="list"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="页面ID" width="90">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -47,40 +45,34 @@
             </div>
             <el-divider direction="vertical" v-if="scope.row.status != 1" />
             <div style="display: inline-block" v-if="scope.row.status || scope.row.type">
-              <a v-db-click @click="edit(scope.row)">编辑</a>
+              <a @click="edit(scope.row)">编辑</a>
             </div>
             <el-divider direction="vertical" v-if="scope.row.status || scope.row.type" />
             <el-dropdown @command="changeMenu(scope.row, index, $event)" :transfer="true">
               <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
-              <template #dropdown
-                ><el-dropdown-menu>
+              <template #dropdown><el-dropdown-menu>
                   <el-dropdown-item command="1" v-show="!scope.row.type">设置默认数据</el-dropdown-item>
                   <el-dropdown-item command="2" v-show="!scope.row.type">恢复默认数据</el-dropdown-item>
                   <el-dropdown-item command="3" v-show="scope.row.id != 1">删除模板</el-dropdown-item>
-                </el-dropdown-menu></template
-              >
+                </el-dropdown-menu></template>
             </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <el-dialog
-      v-model="isTemplate"
+    <el-dialog v-model="isTemplate"
       title="开发移动端链接"
       width="470px"
       :show-close="true"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <div class="article-manager">
         <el-card :bordered="false" shadow="never" class="ivu-mt">
-          <el-form
-            ref="formItemRef"
+          <el-form ref="formItemRef"
             :model="formItem"
             label-width="120px"
             label-position="right"
             :rules="ruleValidate"
-            @submit.prevent
-          >
+            @submit.prevent>
             <el-row :gutter="24">
               <el-col :span="24">
                 <el-col v-bind="grid">
@@ -93,12 +85,10 @@
           </el-form>
         </el-card>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="cancel">取消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="cancel">取消</el-button>
           <el-button type="primary" v-db-click @click="handleSubmit()">提交</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

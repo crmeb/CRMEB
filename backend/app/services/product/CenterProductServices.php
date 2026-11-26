@@ -333,8 +333,6 @@ class CenterProductServices extends BaseService
                 'weight'         => floatval($attr['weight'] ?? 0),
                 'volume'         => floatval($attr['volume'] ?? 0),
                 'vip_price'      => floatval($attr['vip_price'] ?? 0),
-                'brokerage'      => floatval($attr['brokerage'] ?? 0),
-                'brokerage_two'  => floatval($attr['brokerage_two'] ?? 0),
                 'cart_num'       => 0,
                 'product_stock'  => intval($attr['stock'] ?? 0),
             ];
@@ -414,8 +412,6 @@ class CenterProductServices extends BaseService
         }
 
         $couponIds = array_column($productInfo['coupons'], 'issue_coupon_id');
-        // is_sub（分销开关）和 is_vip（会员价开关）是独立标量字段，前端对应两个独立表单控件
-        $productInfo['is_sub'] = (int) ($productInfo['is_sub'] ?? 0);
         $productInfo['is_vip'] = (int) ($productInfo['is_vip'] ?? 0);
         $recommend = [];
 
@@ -530,8 +526,6 @@ class CenterProductServices extends BaseService
                     'unique'   => $sku['unique'] ?? '',
                     'weight'   => floatval($sku['weight'] ?? 0),
                     'volume'   => floatval($sku['volume'] ?? 0),
-                    'brokerage' => floatval($sku['brokerage'] ?? 0),
-                    'brokerage_two' => floatval($sku['brokerage_two'] ?? 0),
                     'vip_price' => floatval($sku['vip_price'] ?? 0),
                     'is_show'  => $sku['is_show'] ?? 1,
                 ];
@@ -548,7 +542,7 @@ class CenterProductServices extends BaseService
             $productInfo['attr'] = [
                 'pic' => '', 'vip_price' => 0, 'price' => 0, 'cost' => 0, 'ot_price' => 0,
                 'stock' => 0, 'bar_code' => '', 'bar_code_number' => '', 'weight' => 0,
-                'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0,
+                'volume' => 0,
             ];
         } else {
             // 单规格：直接使用 Handler 返回的默认 SKU 信息
@@ -566,8 +560,6 @@ class CenterProductServices extends BaseService
                 'virtual_list'    => [],
                 'weight'          => floatval($skuInfo['weight'] ?? 0),
                 'volume'          => floatval($skuInfo['volume'] ?? 0),
-                'brokerage'       => floatval($skuInfo['brokerage'] ?? 0),
-                'brokerage_two'   => floatval($skuInfo['brokerage_two'] ?? 0),
                 'coupon_id'       => 0,
                 'coupon_name'     => '',
                 'disk_info'       => '',
@@ -700,7 +692,6 @@ class CenterProductServices extends BaseService
             'is_seckill'       => (int)($info['is_seckill'] ?? 0),
             'is_bargain'       => $info['is_bargain'] ?? null,
             'is_good'          => (int)($info['is_good'] ?? 0),
-            'is_sub'           => (int)($info['is_sub'] ?? 0),
             'is_vip'           => (int)($info['is_vip'] ?? 0),
             'is_gift'          => (int)($info['is_gift'] ?? 0),
             'gift_price'       => $info['gift_price'] ?? '0.00',
@@ -1189,8 +1180,6 @@ class CenterProductServices extends BaseService
                     }
                     $sukValue[$suk]['weight'] = 0;
                     $sukValue[$suk]['volume'] = 0;
-                    $sukValue[$suk]['brokerage'] = 0;
-                    $sukValue[$suk]['brokerage_two'] = 0;
                 } else {
                     $sukValue[$suk] = [
                         'pic'             => $sku['image'] ?? '',
@@ -1203,8 +1192,6 @@ class CenterProductServices extends BaseService
                         'unique'          => $sku['unique'] ?? '',
                         'weight'          => $sku['weight'] ?? 0,
                         'volume'          => $sku['volume'] ?? 0,
-                        'brokerage'       => $sku['brokerage'] ?? 0,
-                        'brokerage_two'   => $sku['brokerage_two'] ?? 0,
                         'vip_price'       => $sku['vip_price'] ?? 0,
                     ];
                     if ($is_virtual) {
@@ -1229,8 +1216,6 @@ class CenterProductServices extends BaseService
                 }
                 $sukValue[$suk]['weight'] = 0;
                 $sukValue[$suk]['volume'] = 0;
-                $sukValue[$suk]['brokerage'] = 0;
-                $sukValue[$suk]['brokerage_two'] = 0;
             }
             if ($types) { //编辑商品时，将没有规格的数据不生成默认值
                 foreach ($head as $k => $title) {
@@ -1262,8 +1247,6 @@ class CenterProductServices extends BaseService
                 }
                 $valueNew[$count]['weight'] = floatval($sukValue[$suk]['weight'] ?? 0);
                 $valueNew[$count]['volume'] = floatval($sukValue[$suk]['volume'] ?? 0);
-                $valueNew[$count]['brokerage'] = floatval($sukValue[$suk]['brokerage'] ?? 0);
-                $valueNew[$count]['brokerage_two'] = floatval($sukValue[$suk]['brokerage_two'] ?? 0);
                 $count++;
             }
         }
@@ -1308,11 +1291,7 @@ class CenterProductServices extends BaseService
             $data['label_list'] = is_array($data['label_id']) ? $data['label_id'] : explode(',', $data['label_id']);
         }
 
-        // is_sub（分销开关）和 is_vip（会员价开关）是独立标量字段，兼容旧版数组格式
-        
         $data['is_vip'] = intval($data['is_vip'] ?? 0);
-        $data['is_sub'] = intval($data['is_sub'] ?? 0);
-        
 
         // 已迁移商品类型（普通/卡密/虚拟）通过产品类型 Handler 转发到对应模块的保存服务
         if (!$fromModule) {
@@ -1377,14 +1356,6 @@ class CenterProductServices extends BaseService
             $data['postage'] = 0;
         }
         foreach ($detail as &$item) {
-            // 未开启分销时清空 SKU 返佣字段
-            if (!$data['is_sub']) {
-                $item['brokerage'] = 0;
-                $item['brokerage_two'] = 0;
-            }
-            if (($item['brokerage'] + $item['brokerage_two']) > $item['price']) {
-                throw new AdminException('一二级返佣相加不能大于商品售价');
-            }
             if (isset($item['detail'])) {
                 foreach ($item['detail'] as $detail_k => $detail_v) {
                     if (preg_match('/[=;]/', $detail_k) === 1 || preg_match('/[=;]/', $detail_v) === 1) {
@@ -1764,8 +1735,6 @@ class CenterProductServices extends BaseService
                 'bar_code_number' => $value['bar_code_number'] ?? '',
                 'weight' => $value['weight'] ?? 0,
                 'volume' => $value['volume'] ?? 0,
-                'brokerage' => $value['brokerage'] ?? 0,
-                'brokerage_two' => $value['brokerage_two'] ?? 0,
                 'type' => $type,
                 'quota' => $value['quota'] ?? 0,
                 'quota_show' => $value['quota'] ?? 0,
@@ -2054,8 +2023,6 @@ class CenterProductServices extends BaseService
             $entry['unique']          = $sku['unique'] ?? '';
             $entry['weight']          = floatval($sku['weight'] ?? 0);
             $entry['volume']          = floatval($sku['volume'] ?? 0);
-            $entry['brokerage']       = floatval($sku['brokerage'] ?? 0);
-            $entry['brokerage_two']   = floatval($sku['brokerage_two'] ?? 0);
             $entry['vip_price']       = floatval($sku['vip_price'] ?? 0);
             if ($type == 2) {
                 $entry['min_price'] = 0;
@@ -2191,8 +2158,6 @@ class CenterProductServices extends BaseService
             $entry['unique']        = $sku['unique_code'] ?? '';
             $entry['weight']        = floatval($sku['weight'] ?? 0);
             $entry['volume']        = floatval($sku['volume'] ?? 0);
-            $entry['brokerage']     = floatval($sku['brokerage'] ?? 0);
-            $entry['brokerage_two'] = floatval($sku['brokerage_two'] ?? 0);
             $entry['vip_price']     = floatval($sku['vip_price'] ?? 0);
             $valueNew[] = $entry;
         }
@@ -2286,8 +2251,6 @@ class CenterProductServices extends BaseService
                 'unique'          => '',
                 'weight'          => 0.0,
                 'volume'          => 0.0,
-                'brokerage'       => 0.0,
-                'brokerage_two'   => 0.0,
                 'vip_price'       => 0.0,
             ],
         ];
@@ -2989,7 +2952,7 @@ class CenterProductServices extends BaseService
     public function getProductColumn(array $ids, string $field = '')
     {
         $productData = [];
-        $productInfoField = 'id,image,price,original_price as ot_price,vip_price,postage,give_integral,sales,stock,store_name,unit_name,is_show,is_del,is_postage,cost,is_sub,is_vip,temp_id';
+        $productInfoField = 'id,image,price,original_price as ot_price,vip_price,postage,give_integral,sales,stock,store_name,unit_name,is_show,is_del,is_postage,cost,is_vip,temp_id';
         if (!empty($ids)) {
             $productAll = $this->dao->idByProductList($ids, $field ?: $productInfoField);
             if (!empty($productAll))
@@ -3668,7 +3631,6 @@ class CenterProductServices extends BaseService
                 $productData[$sku['id']]['sort'] = 0;
                 $productData[$sku['id']]['is_show'] = 0;
                 $productData[$sku['id']]['is_postage'] = 0;
-                $productData[$sku['id']]['is_sub'] = 0;
                 $productData[$sku['id']]['is_vip'] = 0;
                 $productData[$sku['id']]['recommend_list'] = [];
                 $productData[$sku['id']]['product_type'] = $resolveProductType($sku['product_type'] ?? 'normal');
@@ -3712,8 +3674,6 @@ class CenterProductServices extends BaseService
                 'is_show' => 1,
                 'is_default_select' => 0,
                 'is_virtual' => 0,
-                'brokerage' => 0,
-                'brokerage_two' => 0,
                 'vip_price' => 0,
                 'vip_proportion' => 0,
                 'unique' => '',
@@ -3768,11 +3728,9 @@ class CenterProductServices extends BaseService
 
     public function otherInfo($id, $type)
     {
-        $storeInfo = $this->dao->get($id, ['id', 'is_sub', 'is_vip', 'vip_product']);
+        $storeInfo = $this->dao->get($id, ['id', 'is_vip', 'vip_product']);
         if (!$storeInfo) throw new AdminException('商品不存在');
         $storeInfo = $storeInfo->toArray();
-        $storeInfo['store_brokerage_ratio'] = sys_config('store_brokerage_ratio');
-        $storeInfo['store_brokerage_two'] = sys_config('store_brokerage_two');
         // 已迁移到实物商品独立 SKU 表 eb_pt_normal_sku
         //通过事件代理查询商品启用的 SKU 列表，避免 app 层直接引用 modules
         $attrValueResults = event('ProductTypeDataProxy', ['product_type' => 'normal', 'action' => 'getShowListByProductId', 'args' => [(int)$id]]);
@@ -3795,7 +3753,6 @@ class CenterProductServices extends BaseService
         $upProductData = [];
         if ($type == 2) {
             $upProductData = [
-                'is_sub' => intval($data['is_sub'] ?? 0),
                 'is_vip' => intval($data['is_vip'] ?? 0),
                 'vip_product' => $data['vip_product'],
             ];

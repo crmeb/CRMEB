@@ -111,7 +111,7 @@ protected function cleanData(): int
 约束：
 
 - 页面路径必须是端上真实可打开的路径。已经写在 `frontend/uni-app/src/pages.json` 里的存量页面（如积分商城 `pages/points_mall`、秒杀 `/pages/activity/goods_seckill/index`）保持原路径。新建插件页的路径来自 `pages-modules` 扫描结果，形如 `/pages-modules/<标识>/index`，磁盘上的 `pages.json` 不含这些路径；放入后的跳转与装修用法见 [uniapp-pages.md](uniapp-pages.md)。详情页 `param` 以页面 `onLoad` 实际读取的参数为准。
-- 分类命名沿用现有惯例（`秒杀链接`/`砍价链接`/`分销链接` 等），挂在共享父分类"营销链接"下；分类名即清理边界，不要使用与其他插件可能冲突的名称。
+- 新建插件独立页挂在一级分类「插件页面」下，用 `ensurePluginPageCategory('本插件名')` 建子分类，卸载用 `cleanPluginPageLinks()`。子分类名即清理边界，不要和其他插件重名。已经挂在「商城页面 / 营销链接」下的存量活动链接（秒杀、砍价、拼团、积分、抽奖、分销等）保持原位。上面的秒杀示例只说明这组存量分类，新页面不要再写进「营销链接」。webview 模式的 `url` 写壳页面地址，不直接写 `pages-modules` 路径，见 [webview-plugin.md](webview-plugin.md)。
 - `seedPageLinks()` 按 url 全局查重：旧站点预置在共享分类（如"个人中心链接"）下的插件链接不会重复插入，因此这类链接直接写在插件自己的链接配置里即可（如砍价记录、我的推广），卸载时同样按 url 清理。
 - `cleanPageLinks()` 按 url 白名单删除链接；独有分类仅在分类下已无链接时删除，避免误删商家在插件分类下自建的链接。
 - 基类 `onEnable()` 默认幂等补跑 `seed()`：存量站点升级新增链接数据时，对已安装插件执行一次禁用/启用即可落库，无需重装。

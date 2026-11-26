@@ -6,24 +6,22 @@
       <template #item="{ element: item, index }">
         <div class="virtual-data mb10">
           <el-icon class="drag-handle mr10"><Rank /></el-icon>
-          <el-input
-            class="mr10"
+          <el-input class="mr10"
             type="text"
             v-model.trim="item.key"
             style="width: 150px"
-            placeholder="请输入字段名称"
-          ></el-input>
+            placeholder="请输入字段名称"></el-input>
           <span class="mr10 virtual-title">-></span>
           <el-select v-model="item.value" placeholder="请选择" filterable clearable style="width: 220px">
             <el-option v-for="v in variableList" :key="v.key" :label="v.label" :value="v.key"> </el-option>
           </el-select>
-          <el-button v-db-click v-if="keyList.length" class="deteal-btn ml10" type="text" @click="remove(index)">删除</el-button>
+          <el-button v-db-click v-if="keyList.length" class="deteal-btn" type="text" @click="remove(index)">删除</el-button>
         </div>
       </template>
     </vuedraggable>
     <!-- 新增字段行 -->
     <div class="add-more">
-      <el-button v-db-click class="h-33" type="primary" @click="add">新增</el-button>
+      <el-button class="h-33" type="primary" @click="add">新增</el-button>
     </div>
   </div>
 </template>

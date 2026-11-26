@@ -33,17 +33,15 @@
         </el-tooltip>
       </div>
       <div class="acea-row row-middle panel-actions">
-        <date-range-picker
-          width="250px"
+        <date-range-picker width="250px"
           clearable
           v-model="timeVal"
           :editable="false"
           @change="onchangeTime"
           format="YYYY/MM/DD"
-          value-format="YYYY/MM/DD"
-        />
-        <el-button type="primary" v-db-click @click="onSeach">查询</el-button>
-        <el-button v-db-click @click="excel">导出</el-button>
+          value-format="YYYY/MM/DD" />
+        <el-button type="primary" @click="onSeach">查询</el-button>
+        <el-button @click="excel">导出</el-button>
       </div>
     </div>
 
@@ -57,10 +55,10 @@
           <div class="stat-card__value">
             {{ formatMoney(item.money, index === list.length - 1) }}
           </div>
-          <div class="stat-card__ratio" :class="Number(item.rate) >= 0 ? 'is-up' : 'is-down'">
+          <div class="stat-card__ratio" :class="Number(item.rate)>= 0 ? 'is-up' : 'is-down'">
             环比增长 {{ item.rate }}%
             <el-icon>
-              <CaretTop v-if="Number(item.rate) >= 0" />
+              <CaretTop v-if="Number(item.rate)>= 0" />
               <CaretBottom v-else />
             </el-icon>
           </div>
@@ -68,13 +66,11 @@
       </div>
     </div>
 
-    <echarts-new
-      v-if="optionData"
+    <echarts-new v-if="optionData"
       :option-data="optionData"
       :styles="style"
       height="100%"
-      width="100%"
-    />
+      width="100%" />
   </el-card>
 </template>
 
@@ -155,7 +151,7 @@ function get(extract) {
   const textSecondary = token('--prev-color-text-secondary', '#909399');
   const border = token('--prev-border-color-extra-light', '#f2f6fc');
   const xLen = (extract.x || []).length;
-  const interval = xLen > 14 ? Math.ceil(xLen / 7) - 1 : 0;
+  const interval = xLen> 14 ? Math.ceil(xLen / 7) - 1 : 0;
 
   const seriesData = dataList.map((item, index) => {
     const series = Object.keys(item.value || {}).map((key) => Number(item.value[key]));
@@ -288,7 +284,7 @@ onMounted(() => {
 }
 
 .panel-actions {
-  gap: 12px;
+  gap: 14px;
 }
 
 .tip-box {

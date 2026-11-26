@@ -125,7 +125,7 @@ class AuthController
             ['account', ''],
             ['captcha', ''],
             ['password', ''],
-            ['spread', 0]
+            ['spid', 0]
         ], true);
 
         // 验证账号密码格式

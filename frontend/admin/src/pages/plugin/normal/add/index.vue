@@ -1,27 +1,22 @@
 <template>
   <div class="" id="shopp-manager" v-loading="spinShow">
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       :title="route.params.id ? '编辑实物商品' : '添加实物商品'"
       :backUrl="routeProStr + '/product/normal/list'"
-      description="分步完成基础信息、规格库存与详情设置，保存后可上架销售。"
-    ></pages-header>
+      description="分步完成基础信息、规格库存与详情设置，保存后可上架销售。"></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16" :body-style="{ padding: '0px 20px' }">
       <el-tabs v-model="currentTab">
         <el-tab-pane v-for="(item, index) in headTab" :key="index" :label="item.tit" :name="item.name"></el-tab-pane>
       </el-tabs>
-      <el-form
-        class="formValidate mt20"
+      <el-form class="formValidate mt20"
         ref="formValidateRef"
         :rules="ruleValidate"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
-        @submit.prevent
-      >
+        @submit.prevent>
         <!-- 基础信息-->
-        <basic-info
-          v-show="currentTab === '1'"
+        <basic-info v-show="currentTab === '1'"
           :isCai="type"
           :formValidate="formValidate"
           :treeSelect="treeSelect"
@@ -38,12 +33,10 @@
           @addVideo="addVideo"
           @delVideo="delVideo"
           @addCate="addCate"
-          @addGoodsTag="addGoodsTag"
-        ></basic-info>
+          @addGoodsTag="addGoodsTag"></basic-info>
 
         <!-- 规格库存-->
-        <spec-stock
-          ref="specStock"
+        <spec-stock ref="specStock"
           v-show="currentTab === '2'"
           :formValidate="formValidate"
           :ruleList="ruleList"
@@ -75,31 +68,25 @@
           @modalPicTap="modalPicTap"
           @changeDefaultSelect="changeDefaultSelect"
           @changeDefaultShow="changeDefaultShow"
-          @see="see"
-        ></spec-stock>
+          @see="see"></spec-stock>
 
         <!-- 商品详情-->
-        <product-detail
-          v-show="currentTab === '3'"
+        <product-detail v-show="currentTab === '3'"
           :contents="contents"
           :content="content"
           :store-name="formValidate.store_name"
-          @getEditorContent="getEditorContent"
-        ></product-detail>
+          @getEditorContent="getEditorContent"></product-detail>
 
         <!-- 物流设置-->
-        <logistics-setting
-          v-show="currentTab === '4'"
+        <logistics-setting v-show="currentTab === '4'"
           :formValidate="formValidate"
           :templateList="templateList"
           @deliveryMethodsChange="onDeliveryMethodsChange"
           @freightConfigChange="onFreightConfigChange"
-          @addTemp="addTemp"
-        ></logistics-setting>
+          @addTemp="addTemp"></logistics-setting>
 
         <!-- 会员价 -->
-        <price-commission
-          v-show="currentTab === '5'"
+        <price-commission v-show="currentTab === '5'"
           :formValidate="formValidate"
           :oneFormValidate="oneFormValidate"
           v-model:manyFormValidate="manyFormValidate"
@@ -107,12 +94,10 @@
           :columnsInstal2="columnsInstal2"
           v-model:manyVipPrice="manyVipPrice"
           @checkAllGroupChange="checkAllGroupChange"
-          @brokerageSetUp="brokerageSetUp"
-        ></price-commission>
+          @brokerageSetUp="brokerageSetUp"></price-commission>
 
         <!-- 营销设置-->
-        <marketing-setting
-          v-show="currentTab === '6'"
+        <marketing-setting v-show="currentTab === '6'"
           :formValidate="formValidate"
           :couponName="couponName"
           :dataLabel="dataLabel"
@@ -124,12 +109,10 @@
           @addLabel="addLabel"
           @onchangeTime="onchangeTime"
           @handleRemoveRecommend="handleRemoveRecommend"
-          @changeGoods="changeGoods"
-        ></marketing-setting>
+          @changeGoods="changeGoods"></marketing-setting>
 
         <!-- 其他设置-->
-        <other-setting
-          v-show="currentTab === '7'"
+        <other-setting v-show="currentTab === '7'"
           :formValidate="formValidate"
           v-model:customBtn="customBtn"
           :paramsType="paramsType"
@@ -143,85 +126,67 @@
           @addProtection="addProtection"
           @customMessBtn="customMessBtn"
           @delcustom="delcustom"
-          @addcustom="addcustom"
-        ></other-setting>
+          @addcustom="addcustom"></other-setting>
 
         <el-form-item>
-          <el-button v-if="currentTab !== '1'" v-db-click @click="upTab">上一步</el-button>
-          <el-button class="submission" v-if="currentTab !== '7'" v-db-click @click="downTab">下一步</el-button>
-          <el-button
-            type="primary"
+          <el-button v-if="currentTab !== '1'" @click="upTab">上一步</el-button>
+          <el-button class="submission" v-if="currentTab !== '7'" @click="downTab">下一步</el-button>
+          <el-button type="primary"
             class="submission"
             v-db-click
             @click="handleSubmit()"
-            v-if="route.params.id || currentTab !== '1'"
-            >保存</el-button
-          >
+            v-if="route.params.id || currentTab !== '1'">保存</el-button>
         </el-form-item>
       </el-form>
     </el-card>
     <el-dialog v-model="modalPic" width="950px" scrollable title="上传商品图" :close-on-click-modal="false">
-      <uploadPictures
-        :isChoice="isChoice"
+      <uploadPictures :isChoice="isChoice"
         @getPic="getPic"
         @getPicD="getPicD"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        v-if="modalPic"
-      ></uploadPictures>
+        v-if="modalPic"></uploadPictures>
     </el-dialog>
-    <freightTemplate
-      :template="template"
+    <freightTemplate :template="template"
       v-on:changeTemplate="changeTemplate"
       @addSuccess="productGetTemplate"
-      ref="templates"
-    ></freightTemplate>
+      ref="templates"></freightTemplate>
     <add-attr ref="addattr" @getList="userSearchs"></add-attr>
-    <coupon-list
-      ref="couponTemplates"
+    <coupon-list ref="couponTemplates"
       @nameId="nameId"
       :couponids="formValidate.coupon_ids"
       :updateIds="updateIds"
-      :updateName="updateName"
-    ></coupon-list>
+      :updateName="updateName"></coupon-list>
     <coupon-list ref="goodsCoupon" many="one" :luckDraw="true" @getCouponId="goodsCouponId"></coupon-list>
     <!-- 生成淘宝京东表单-->
-    <el-dialog
-      v-model="modals"
+    <el-dialog v-model="modals"
       @closed="cancel"
       class="Box"
       :title="copyTitle"
       :close-on-click-modal="false"
-      width="720px"
-    >
-      <product-collect
-        ref="productCollectRef"
+      width="720px">
+      <product-collect ref="productCollectRef"
         v-if="modals"
         @on-close="onClose"
-        @get-platforms="onGetPlatforms"
-      ></product-collect>
+        @get-platforms="onGetPlatforms"></product-collect>
     </el-dialog>
     <el-dialog v-model="goods_modals" title="商品列表" footerHide class="paymentFooter" scrollable width="1000px">
       <goods-list v-if="goods_modals" ref="goodslist" :ischeckbox="true" @getProductId="getProductId"></goods-list>
     </el-dialog>
     <!-- 用户标签 -->
-    <el-dialog
-      v-model="labelShow"
+    <el-dialog v-model="labelShow"
       title="请选择用户标签"
       :show-close="true"
       width="540px"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <userLabel ref="userLabelRef" @activeData="activeData" @close="labelClose"></userLabel>
     </el-dialog>
     <!-- 商品标签 -->
     <el-dialog v-model="tagShow" title="请选择商品标签" :show-close="true" width="540px" :close-on-click-modal="false">
-      <goodsLabel
-        ref="goodsLabelRef"
+      <goodsLabel ref="goodsLabelRef"
         :defaultLabelList="labelList"
         @activeLabel="activeLabel"
-        @close="labelClose"
-      ></goodsLabel>
+        @close="labelClose"></goodsLabel>
     </el-dialog>
   </div>
 </template>
@@ -397,7 +362,6 @@ const formValidate = ref({
   is_gift: 0, // 开启送礼品
   gift_price: 0,
   is_postage: 0,
-  is_sub: 0,
   is_vip: 0,
   recommend_list: [],
   params_list: [], //商品参数
@@ -444,8 +408,6 @@ const oneFormValidate = ref([
     bar_code_number: '',
     weight: 0,
     volume: 0,
-    brokerage: 0,
-    brokerage_two: 0,
     vip_price: 0,
   },
 ]);
@@ -604,8 +566,6 @@ function getProductCache() {
               bar_code_number: '',
               weight: 0,
               volume: 0,
-              brokerage: 0,
-              brokerage_two: 0,
               vip_price: 0,
             },
           ];
@@ -705,7 +665,7 @@ function customMessBtn(e) {
 }
 // 自定义留言 新增表单
 function addcustom() {
-  if (formValidate.value.custom_form.length > 9) {
+  if (formValidate.value.custom_form.length> 9) {
     ElMessage.warning('最多添加10条');
   } else {
     formValidate.value.custom_form.push({
@@ -756,7 +716,7 @@ function mapCopyItems(list) {
       ...item,
       detail: item.detail.filter((d) => String(d.value || '').trim() !== ''),
     }))
-    .filter((item) => item.value !== '' && item.detail.length > 0);
+    .filter((item) => item.value !== '' && item.detail.length> 0);
 }
 
 function isPlaceholderSpec(list) {
@@ -765,7 +725,7 @@ function isPlaceholderSpec(list) {
   const name = String(list[0].value || '').trim();
   if (!['默认', '规格', ''].includes(name)) return false;
   const detail = list[0].detail || [];
-  if (detail.length > 1) return false;
+  if (detail.length> 1) return false;
   const val = String((detail[0] && detail[0].value) || '').trim();
   return val === '' || val === '默认' || val === '规格';
 }
@@ -798,7 +758,7 @@ function rebuildAttrsFromSkuMap(skuMap) {
       if (pic) dims[i].add_pic = 1;
     });
   });
-  return dims.filter((d) => d.detail.length > 0);
+  return dims.filter((d) => d.detail.length> 0);
 }
 
 function rebuildAttrsFromSkuRows(skuRows) {
@@ -819,7 +779,7 @@ function rebuildAttrsFromSkuRows(skuRows) {
       if (row.pic) map[name].add_pic = 1;
     });
   });
-  return Object.values(map).filter((i) => i.detail.length > 0);
+  return Object.values(map).filter((i) => i.detail.length> 0);
 }
 
 function mergeCrawlSkuIntoMany(skuRows, skuMap) {
@@ -899,7 +859,6 @@ function infoData(data, isCopy) {
   if (typeof formValidate.value.recommend_list === 'string') {
     formValidate.value.recommend_list = [];
   }
-  formValidate.value.is_sub = Number(data.is_sub) || 0;
   // give_integral 为 decimal 字段，接口返回的是 "0.00" 这类字符串，归一化为数字以免整型校验误报
   formValidate.value.give_integral = Number(data.give_integral) || 0;
   formValidate.value.activity = data.activity || ['默认', '秒杀', '砍价', '拼团'];
@@ -928,10 +887,10 @@ function infoData(data, isCopy) {
   // 采集回填：多规格值 / 多 SKU 时强制多规格，避免 radio 仍停在默认单规格
   if (isCopy) {
     const hasMulti =
-      attrs.value.length > 1 ||
-      attrs.value.some((item) => (item.detail || []).length > 1) ||
-      copyAttrs.length > 1 ||
-      (data.sku && Object.keys(data.sku).length > 1);
+      attrs.value.length> 1 ||
+      attrs.value.some((item) => (item.detail || []).length> 1) ||
+      copyAttrs.length> 1 ||
+      (data.sku && Object.keys(data.sku).length> 1);
     if (hasMulti) {
       specType = 1;
     }
@@ -956,8 +915,6 @@ function infoData(data, isCopy) {
         bar_code_number: '',
         weight: 0,
         volume: 0,
-        brokerage: 0,
-        brokerage_two: 0,
         vip_price: 0,
       },
     ];
@@ -1148,7 +1105,7 @@ function addRule() {
 }
 // 批量设置会员价（商品页已不再设置佣金/会员折扣）
 function brokerageSetUp() {
-  if (!(manyVipPrice.value > 0)) {
+  if (!(manyVipPrice.value> 0)) {
     return ElMessage.error('请填写会员价后进行批量添加');
   }
   for (let val of manyFormValidate.value) {
@@ -1418,7 +1375,7 @@ function attrChangeValue(i, val) {
     generateHeader(attrs.value);
     if (manyFormValidate.value.length) {
       manyFormValidate.value.map((item, i) => {
-        if (i > 0) {
+        if (i> 0) {
           if (Object.keys(item.detail).includes(changeAttrValue.value)) {
             item.detail[val] = item.detail[changeAttrValue.value];
             item[val] = item[changeAttrValue.value];
@@ -1438,7 +1395,7 @@ function attrDetailChangeValue(val, i) {
   if (manyFormValidate.value.length) {
     let key = attrs.value[i].value;
     manyFormValidate.value.map((item, i) => {
-      if (i > 0) {
+      if (i> 0) {
         if (Object.keys(item.detail).includes(key) && item.detail[key] === changeAttrValue.value) {
           item.detail[key] = val;
           let index = item.attr_arr.findIndex((item) => item === changeAttrValue.value);
@@ -1493,7 +1450,7 @@ function generateAttr(data, val) {
   const combinations = generateCombinations(data);
   // 如果combinations数量超过 500，则分批次生成属性
   let rows = [];
-  if (combinations.length > 500) {
+  if (combinations.length> 500) {
     const batchSize = Math.ceil(combinations.length / 500);
     for (let i = 0; i < combinations.length; i += batchSize) {
       setTimeout((e) => {
@@ -1534,8 +1491,6 @@ function generateAttrBatch(data, combinations, val) {
       unique: '',
       weight: null,
       volume: null,
-      brokerage: 0,
-      brokerage_two: 0,
       vip_price: 0,
       vip_proportion: 0,
     };
@@ -1564,8 +1519,6 @@ function generateAttrBatch(data, combinations, val) {
           is_show: matchedItem.is_show || 1,
           is_default_select: matchedItem.is_default_select || 0,
           bar_code_number: matchedItem.bar_code_number || 0,
-          brokerage: normalizeNumber(matchedItem.brokerage, 0),
-          brokerage_two: normalizeNumber(matchedItem.brokerage_two, 0),
           vip_price: normalizeNumber(matchedItem.vip_price),
           vip_proportion: normalizeNumber(matchedItem.vip_proportion),
         });
@@ -1634,7 +1587,6 @@ function goodsCategory() {
 }
 // 改变规格
 function changeSpec(val) {
-  formValidate.value.is_sub = 0;
 }
 // 详情
 function getInfo() {
@@ -1714,8 +1666,6 @@ function handleSubmit() {
   formValidateRef.value.validate((valid) => {
     if (valid) {
       formValidate.value.type = type.value;
-      // 商品页不再单独设置佣金，保存时统一关闭分销开关
-      formValidate.value.is_sub = 0;
       let arr = formValidate.value.spec_type === 0 ? oneFormValidate.value : manyFormValidate.value;
       let item = JSON.parse(JSON.stringify(arr));
       if (formValidate.value.spec_type === 1) {
@@ -1724,7 +1674,7 @@ function handleSubmit() {
         item.shift();
       }
       for (let i = 0; i < item.length; i++) {
-        if (item[i].stock > 1000000) {
+        if (item[i].stock> 1000000) {
           return ElMessage.error('规格库存-库存超出系统范围(1000000)');
         }
       }
@@ -1762,7 +1712,7 @@ function handleSubmit() {
         formValidate.value.is_copy = 1;
       }
       formValidate.value.product_type = 'normal';
-      if (formValidate.value.spec_type === 0 && oneFormValidate.value.length > 0) {
+      if (formValidate.value.spec_type === 0 && oneFormValidate.value.length> 0) {
         formValidate.value.weight = oneFormValidate.value[0].weight ?? 0;
         formValidate.value.volume = oneFormValidate.value[0].volume ?? 0;
       }

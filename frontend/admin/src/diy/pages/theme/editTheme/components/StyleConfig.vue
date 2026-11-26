@@ -64,8 +64,7 @@
     </div>
 
     <!-- 风格选择弹窗 -->
-    <el-dialog
-      v-model="styleDialogVisible"
+    <el-dialog v-model="styleDialogVisible"
       width="1188px"
       top="9vh"
       class="theme-dialog"
@@ -73,19 +72,16 @@
       append-to-body
       :modal="true"
       :lock-scroll="true"
-      @close="handleClose"
-    >
+      @close="handleClose">
       <template #header>
         <div v-if="!showDetail" class="dialog-header">
           <div class="dialog-header-tabs">
             <div class="tabs">
               <span class="title">我的主题</span>
-              <img
-                class="title-icon"
+              <img class="title-icon"
                 src="https://www.crmeb.com/static/images/zhutishichang.png"
                 alt=""
-                @click="toTheme"
-              />
+                @click="toTheme" />
             </div>
           </div>
           <i class="el-icon-close" @click="handleClose"></i>
@@ -127,20 +123,18 @@
                     </div>
                     <div class="hover-actions">
                       <el-button plain @click="viewStyleDetail(item)">查看详情</el-button>
-                      <el-button v-db-click type="primary" @click="handleStyleSelect(item)">使用风格</el-button>
+                      <el-button type="primary" @click="handleStyleSelect(item)">使用风格</el-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="pagination-wrapper">
-                <el-pagination
-                  background
+                <el-pagination background
                   layout="prev, pager, next"
                   :total="total"
                   :page-size="limit"
                   v-model:current-page="page"
-                  @current-change="handlePageChange"
-                >
+                  @current-change="handlePageChange">
                 </el-pagination>
               </div>
             </div>

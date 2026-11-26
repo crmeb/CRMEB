@@ -2,13 +2,11 @@
   <div class="c_product" v-if="configData">
     <div class="title" v-if="configData.title">{{ configData.title }}</div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="configData.list"
         group="peoples"
         handle=".move-icon"
-        :item-key="productItemKey"
-      >
+        :item-key="productItemKey">
         <template #item="{ element: item, index }">
           <div class="item" @click="activeBtn(index)">
             <!-- v-model="configData.tabCur" -->
@@ -20,9 +18,7 @@
                 <span>{{ list.title }}</span>
                 <div style="width: 100%">
                   <el-input v-model="list.val" :placeholder="list.pla">
-                    <template #suffix
-                      ><i v-if="list.title == '链接'" class="el-icon-link" @click="getLink(index, key, item)"
-                    /></template>
+                    <template #suffix><i v-if="list.title == '链接'" class="el-icon-link" @click="getLink(index, key, item)" /></template>
                   </el-input>
                 </div>
               </div>
@@ -33,12 +29,10 @@
               <div class="con-item" v-if="item.link">
                 <span>{{ item.link.title }}</span>
                 <el-select v-model="item.link.activeVal" style="" @change="(e) => sliderChange(index, e)">
-                  <el-option
-                    v-for="(item, j) in item.link.optiops"
+                  <el-option v-for="(item, j) in item.link.optiops"
                     :value="item.value"
                     :key="j"
-                    :label="item.label"
-                  ></el-option>
+                    :label="item.label"></el-option>
                 </el-select>
               </div>
             </div>
@@ -51,7 +45,7 @@
     </div>
     <div v-if="configData.list">
       <div class="add-btn" @click="addHotTxt" v-if="configData.list.length < configData.max">
-        <el-button v-db-click class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
+        <el-button class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
       </div>
     </div>
     <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>

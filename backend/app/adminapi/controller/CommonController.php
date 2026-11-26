@@ -211,31 +211,33 @@ class CommonController extends AuthController
         if ($store_stock < 0) $store_stock = 2;
         /** @var CenterProductServices $storeServices */
         $storeServices = app()->make(CenterProductServices::class);
-        $data['inventory'] = $storeServices->count(['type' => 5, 'store_stock' => $store_stock]);//警戒库存
+        // 中台 type=5 为警戒库存；实物商品列表 Tab 对应 type=4
+        $data['inventory'] = $storeServices->count(['type' => 5, 'store_stock' => $store_stock]);
         /** @var StoreProductReplyServices $replyServices */
         $replyServices = app()->make(StoreProductReplyServices::class);
         $data['commentnum'] = $replyServices->replyCount();
         $data['msgcount'] = intval($data['ordernum']) + intval($data['inventory']) + intval($data['commentnum']);
+        $adminPrefix = Config::get('app.admin_prefix', 'admin');
         $value = [];
         if ($data['ordernum'] != 0) {
             $value[] = [
                 'title' => "您有$data[ordernum]个待发货的订单",
                 'type' => 1,
-                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/order/list?status=1'
+                'url' => '/' . $adminPrefix . '/product/normal/order/list?status=pending_shipped',
             ];
         }
         if ($data['inventory'] != 0) {
             $value[] = [
                 'title' => "您有$data[inventory]个商品库存预警",
                 'type' => 2,
-                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/product/product_list?type=5',
+                'url' => '/' . $adminPrefix . '/product/normal/list?type=4',
             ];
         }
         if ($data['commentnum'] != 0) {
             $value[] = [
                 'title' => "您有$data[commentnum]条评论待回复",
                 'type' => 3,
-                'url' => '/' . Config::get('app.admin_prefix', 'admin') . '/product/product_reply?is_reply=0'
+                'url' => '/' . $adminPrefix . '/product/product_reply?is_reply=0',
             ];
         }
         //一号通短信余额检查（监听器内有节流）

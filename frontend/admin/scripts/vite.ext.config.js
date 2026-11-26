@@ -37,15 +37,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern-compiler',
-        silenceDeprecations: [
-          'legacy-js-api',
-          'import',
-          'global-builtin',
-          'mixed-decls',
-          'color-functions',
-          'slash-div',
-        ],
+        silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'slash-div'],
       },
     },
   },
@@ -59,10 +51,14 @@ export default defineConfig({
       name: process.env.EXT_NAME,
       formats: ['umd'],
       fileName: () => 'app.umd.js',
+      // Vite 6+ lib CSS 默认跟包名；扩展产物约定仍为 app.umd.css
+      cssFileName: 'app.umd',
     },
-    rollupOptions: {
+    rolldownOptions: {
       external: ['vue', 'element-plus'],
       output: {
+        // 入口同时有 default 与 named export（routes），避免 MIXED_EXPORTS 警告
+        exports: 'named',
         globals: { vue: 'Vue', 'element-plus': 'ElementPlus' },
         assetFileNames: 'app.umd[extname]',
       },

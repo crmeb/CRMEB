@@ -90,16 +90,16 @@ class UserWechatAuthServices extends BaseService
     /**
      * 微信授权成功后创建或更新商城用户及渠道身份映射。
      *
-     * @param array $data [$openid, $wechatInfo, $spreadId, $agentId, $loginType, $userType]
+     * @param array $data [$openid, $wechatInfo, $spreadId, $loginType, $userType]
      * @return array
      */
     public function wechatOauthAfter(array $data): array
     {
-        if (count($data) < 6) {
+        if (count($data) < 5) {
             throw new ApiException('用户信息获取失败，请刷新页面重试');
         }
 
-        [$openid, $wechatInfo, $spreadId, $agentId, $loginType, $userType] = $data;
+        [$openid, $wechatInfo, $spreadId, $loginType, $userType] = $data;
         if (!is_array($wechatInfo)) {
             $wechatInfo = [];
         }
@@ -152,13 +152,8 @@ class UserWechatAuthServices extends BaseService
                 return is_object($userInfo) ? $userInfo->toArray() : $userInfo;
             }
 
-            $this->transaction(function () use ($userServices, $wechatInfo, $userInfo, $uid, $spreadId, $agentId, $wechatUser) {
-                if ($agentId) {
-                    $wechatInfo['code'] = $agentId;
-                    $wechatInfo['is_staff'] = 1;
-                } else {
-                    $wechatInfo['code'] = $spreadId;
-                }
+            $this->transaction(function () use ($userServices, $wechatInfo, $userInfo, $uid, $spreadId, $wechatUser) {
+                $wechatInfo['code'] = $spreadId;
                 app()->make(LoginServices::class)->updateUserInfo($wechatInfo, $userInfo);
                 if ($wechatUser) {
                     if (!$this->dao->update($wechatUser['id'], $wechatInfo, 'id')) {

@@ -137,7 +137,6 @@ class ProductController extends AuthController
             ['give_integral', 0],
             ['description', ''],
             ['is_show', 0],
-            ['is_sub', 0],
             ['is_vip', 0],
             ['vip_product', 0],
             ['spec_type', 0],

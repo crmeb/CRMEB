@@ -174,7 +174,6 @@ class Installer extends BaseModuleInstaller
                 `service_address` varchar(500) NOT NULL DEFAULT '' COMMENT '服务地址',
                 `is_show` tinyint NOT NULL DEFAULT '0' COMMENT '是否上架(0否/1是)',
                 `is_del` tinyint NOT NULL DEFAULT '0' COMMENT '是否删除（0否/1是）',
-                `is_sub` tinyint NOT NULL DEFAULT '0' COMMENT '是否开启分销（0否/1是）',
                 `is_vip` tinyint NOT NULL DEFAULT '0' COMMENT '是否开启会员价（0否/1是）',
                 `vip_product` tinyint NOT NULL DEFAULT '0' COMMENT '会员专属（0不限制/1仅会员可见可买/2所有人可见仅会员可买）',
                 `add_time` int NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -252,7 +251,6 @@ class Installer extends BaseModuleInstaller
         $tableName = $this->table('product_center');
         $columns = [
             'is_show' => "tinyint NOT NULL DEFAULT '0' COMMENT '是否上架（0否/1是）'",
-            'is_sub' => "tinyint NOT NULL DEFAULT '0' COMMENT '是否开启分销（0否/1是）'",
             'is_vip' => "tinyint NOT NULL DEFAULT '0' COMMENT '是否开启会员价（0否/1是）'",
             'vip_product' => "tinyint NOT NULL DEFAULT '0' COMMENT '会员专属（0不限制/1仅会员可见可买/2所有人可见仅会员可买）'",
             'presale_day' => "int NOT NULL DEFAULT '1' COMMENT '预售发货时间（预售活动结束后N天内发货）'",
@@ -392,7 +390,7 @@ class Installer extends BaseModuleInstaller
                             'tempkey' => '48089',
                             'tempid' => '',
                             'key_list' => [
-                                'short_thing6' => 'order_id',
+                                'short_thing6' => 'order_type',
                                 'character_string1' => 'order_id',
                                 'time2' => 'order_time'
                             ]
@@ -701,7 +699,7 @@ class Installer extends BaseModuleInstaller
                     ],
                     'is_wechat' => [
                         'title' => '退款成功',
-                        'content' => '订单编号{{character_string1.DATA}}\商品名称{{thing2.DATA}}\n退款金额{{amount3.DATA}}',
+                        'content' => "订单编号{{character_string1.DATA}}\n商品名称{{thing2.DATA}}\n退款金额{{amount3.DATA}}",
                         'extra' => [
                             'tempkey' => '46622',
                             'tempid' => '',
@@ -875,6 +873,7 @@ class Installer extends BaseModuleInstaller
     protected function seed(): int
     {
         $noticeCount = app()->make(\app\services\message\pipeline\NoticeSeedServices::class)->seed($this->getOwnerPluginId(), $this->getNoticeDefinitions());
+        $demoCount = $this->seedDemoProducts();
         $normalRootId = (int)Db::table($this->table('system_menus'))
             ->where('unique_auth', 'admin-normal-product')
             ->where('auth_type', 1)
@@ -886,7 +885,7 @@ class Installer extends BaseModuleInstaller
             ->where('is_del', 0)
             ->value('id');
         if (!$normalRootId || !$normalMenuId) {
-            return $noticeCount;
+            return $noticeCount + $demoCount;
         }
 
         $productRootId = $this->getMenuPidByKey('core:admin-product');
@@ -957,7 +956,70 @@ class Installer extends BaseModuleInstaller
                 ]);
         }
 
-        return $count + $noticeCount;
+        return $count + $noticeCount + $demoCount;
+    }
+
+    /**
+     * 写入安装包附带的演示实物商品扩展/SKU（幂等：表中已有数据则跳过）。
+     * SQL 使用 http://demo.crmeb.com 占位，执行前替换为当前站点域名。
+     */
+    private function seedDemoProducts(): int
+    {
+        if (!$this->hasTable('pt_normal') || !$this->hasTable('pt_normal_sku')) {
+            return 0;
+        }
+        if ((int)Db::table($this->table('pt_normal'))->count() > 0) {
+            return 0;
+        }
+
+        $dataDir = __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
+        $files = [
+            $dataDir . 'pt_normal_data.sql',
+            $dataDir . 'pt_normal_sku_data.sql',
+        ];
+        $siteUrl = rtrim((string)sys_config('site_url'), '/');
+        if ($siteUrl === '') {
+            $siteUrl = 'http://demo.crmeb.com';
+        }
+        $parts = parse_url($siteUrl);
+        $scheme = $parts['scheme'] ?? 'http';
+        $host = $parts['host'] ?? 'demo.crmeb.com';
+        if (!empty($parts['port'])) {
+            $host .= ':' . $parts['port'];
+        }
+
+        $count = 0;
+        foreach ($files as $file) {
+            if (!is_file($file)) {
+                continue;
+            }
+            $sql = (string)file_get_contents($file);
+            $sql = str_replace('`eb_', '`' . $this->prefix, $sql);
+            $sql = str_replace('http://demo.crmeb.com', $scheme . '://' . $host, $sql);
+            $sql = str_replace(
+                'http:\\\\/\\\\/demo.crmeb.com',
+                $scheme . ':\\\\/\\\\/' . $host,
+                $sql
+            );
+            $statements = preg_split('/;\s*\n/', $sql) ?: [];
+            foreach ($statements as $statement) {
+                $lines = [];
+                foreach (explode("\n", $statement) as $line) {
+                    $trim = ltrim($line);
+                    if ($trim === '' || str_starts_with($trim, '--') || str_starts_with($trim, '#')) {
+                        continue;
+                    }
+                    $lines[] = $line;
+                }
+                $statement = trim(implode("\n", $lines));
+                if ($statement === '' || !preg_match('/^INSERT\s+INTO/i', $statement)) {
+                    continue;
+                }
+                $this->exec($statement);
+                $count++;
+            }
+        }
+        return $count;
     }
 
     /**

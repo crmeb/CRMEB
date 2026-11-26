@@ -5,40 +5,34 @@
         <el-form :model="userFrom" label-width="80px" label-position="right" @submit.prevent inline>
           <el-form-item label="用户搜索：" label-for="nickname">
             <el-input v-model="userFrom.nickname" placeholder="请输入用户" clearable class="form_content_width">
-              <template #prepend
-                ><el-select v-model="field_key" style="width: 100px">
+              <template #prepend><el-select v-model="field_key" style="width: 100px">
                   <el-option value="all" label="全部"></el-option>
                   <el-option value="uid" label="UID"></el-option>
                   <el-option value="phone" label="手机号"></el-option>
-                  <el-option value="nickname" label="用户昵称"></el-option> </el-select
-              ></template>
+                  <el-option value="nickname" label="用户昵称"></el-option> </el-select></template>
             </el-input>
           </el-form-item>
           <el-form-item label="用户等级：" label-for="level">
             <el-select v-model="level" placeholder="请选择用户等级" clearable class="form_content_width">
               <el-option value="all" label="全部">全部</el-option>
-              <el-option
-                :value="item.id"
+              <el-option :value="item.id"
                 v-for="(item, index) in levelList"
                 :key="index"
-                :label="item.name"
-              ></el-option>
+                :label="item.name"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="用户分组：">
             <el-select v-model="group_id" placeholder="请选择用户分组" clearable class="form_content_width">
               <el-option value="all" label="全部"></el-option>
-              <el-option
-                :value="item.id"
+              <el-option :value="item.id"
                 v-for="(item, index) in groupList"
                 :key="index"
-                :label="item.group_name"
-              ></el-option>
+                :label="item.group_name"></el-option>
             </el-select>
           </el-form-item>
           <template v-if="collapse">
             <el-form-item label="用户标签：" label-for="label_id">
-              <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openSelectLabel">
+              <div class="labelInput acea-row row-between-wrapper" @click="openSelectLabel">
                 <div style="width: 222px">
                   <div v-if="selectDataLabel.length">
                     <el-tag :closable="false" v-for="(item, index) in selectDataLabel" :key="index" class="mr10">{{
@@ -63,60 +57,46 @@
               <el-input clearable placeholder="最大值" v-model="userFrom.balance[1]" class="form_range_content_width" />
             </el-form-item>
             <el-form-item label="积分剩余：" label-for="integral">
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="最小值"
                 v-model="userFrom.integral[0]"
-                class="form_range_content_width"
-              />
+                class="form_range_content_width" />
               <span class="ml5 mr5">~</span>
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="最大值"
                 v-model="userFrom.integral[1]"
-                class="form_range_content_width"
-              />
+                class="form_range_content_width" />
             </el-form-item>
             <el-form-item label="上次消费：" label-for="before_pay_time">
-              <date-range-picker
-                clearable
+              <date-range-picker clearable
                 width="250px"
                 v-model="before_pay_time"
                 :editable="false"
                 @change="(e) => onchangeTime(e, 'before_pay_time')"
                 format="YYYY/MM/DD"
-                value-format="YYYY/MM/DD"
-              ></date-range-picker>
+                value-format="YYYY/MM/DD"></date-range-picker>
             </el-form-item>
             <el-form-item label="下单次数：" label-for="pay_count">
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="最小值"
                 v-model="userFrom.pay_count_num[0]"
-                class="form_range_content_width"
-              />
+                class="form_range_content_width" />
               <span class="ml5 mr5">~</span>
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="最大值"
                 v-model="userFrom.pay_count_num[1]"
-                class="form_range_content_width"
-              />
+                class="form_range_content_width" />
             </el-form-item>
             <el-form-item label="消费金额：" label-for="store_name">
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="最小值"
                 v-model="userFrom.pay_count_money[0]"
-                class="form_range_content_width"
-              />
+                class="form_range_content_width" />
               <span class="ml5 mr5">~</span>
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="最大值"
                 v-model="userFrom.pay_count_money[1]"
-                class="form_range_content_width"
-              />
+                class="form_range_content_width" />
             </el-form-item>
             <el-form-item label="访问情况：" label-for="user_time_type">
               <el-select v-model="user_time_type" placeholder="请选择访问情况" clearable class="form_content_width">
@@ -127,44 +107,38 @@
               </el-select>
             </el-form-item>
             <el-form-item label="访问时间：" label-for="user_time" v-if="user_time_type">
-              <date-range-picker
-                clearable
+              <date-range-picker clearable
                 width="250px"
                 v-model="timeVal"
                 :editable="false"
                 @change="(e) => onchangeTime(e, 'user_time')"
                 format="YYYY/MM/DD"
-                value-format="YYYY/MM/DD"
-              ></date-range-picker>
+                value-format="YYYY/MM/DD"></date-range-picker>
             </el-form-item>
             <!-- <el-form-item label="地区：" label-for="country">
-                <el-select
-                  v-model="userFrom.country"
+                <el-select v-model="userFrom.country"
                   placeholder="请选择国家"
                   clearable
                   @change="changeCountry"
-                  class="form_content_width"
-                >
+                  class="form_content_width">
                   <el-option value="domestic" label="中国"></el-option>
                   <el-option value="abroad" label="外国"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="省份：" v-if="userFrom.country === 'domestic'">
-                <el-cascader
-                  :options="addresData"
+                <el-cascader :options="addresData"
                   :value="address"
                   v-model="address"
                   @change="handleChange"
                   clearable
-                  style="width: 250px"
-                ></el-cascader>
+                  style="width: 250px"></el-cascader>
               </el-form-item> -->
           </template>
 
           <el-form-item class="search-form-sub">
-            <el-button type="primary" label="default" v-db-click @click="userSearchs">查询</el-button>
-            <el-button class="ResetSearch" v-db-click @click="reset('userFrom')">重置</el-button>
-            <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
+            <el-button type="primary" label="default" @click="userSearchs">查询</el-button>
+            <el-button class="ResetSearch" @click="reset('userFrom')">重置</el-button>
+            <a class="ivu-ml-8 font12 ml10" @click="collapse = !collapse">
               <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
               <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
             </a>
@@ -179,24 +153,16 @@
       </el-tabs>
       <el-row :gutter="24" justify="space-between">
         <el-col :span="24">
-          <el-button v-auth="['admin-user-save']" type="primary" v-db-click @click="edit({ uid: 0 })"
-            >添加用户</el-button
-          >
-          <el-button v-auth="['admin-user-coupon']" v-db-click @click="onSend">发送优惠券</el-button>
-          <el-button
-            v-auth="['admin-wechat-news']"
-            class="greens mr10"
-            v-db-click
-            @click="onSendPic"
-            v-if="userFrom.user_type === 'wechat'"
-          >
+          <el-button v-auth="['admin-user-save']" type="primary" @click="edit({ uid: 0 })">添加用户</el-button>
+          <el-button v-auth="['admin-user-coupon']" @click="onSend">发送优惠券</el-button>
+          <el-button v-auth="['admin-wechat-news']" class="greens" @click="onSendPic" v-if="userFrom.user_type === 'wechat'">
             发送图文消息
           </el-button>
-          <el-button v-auth="['admin-user-group_set']" v-db-click @click="setGroup">批量设置分组</el-button>
-          <el-button v-auth="['admin-user-set_label']" v-db-click @click="setLabel">批量设置标签</el-button>
-          <el-button class="mr10" v-db-click @click="exportList">导出</el-button>
+          <el-button v-auth="['admin-user-group_set']" @click="setGroup">批量设置分组</el-button>
+          <el-button v-auth="['admin-user-set_label']" @click="setLabel">批量设置标签</el-button>
+          <el-button @click="exportList">导出</el-button>
 
-          <!-- <el-button v-auth="['admin-user-synchro']" class="mr20" v-db-click @click="synchro">同步公众号用户</el-button> -->
+          <!-- <el-button v-auth="['admin-user-synchro']" class="mr20" @click="synchro">同步公众号用户</el-button> -->
         </el-col>
         <el-col :span="24" class="userAlert" v-if="selectionList.length">
           <el-alert show-icon>
@@ -206,8 +172,7 @@
           </el-alert>
         </el-col>
       </el-row>
-      <el-table
-        :data="userLists"
+      <el-table :data="userLists"
         class="mt16"
         ref="table"
         highlight-current-row
@@ -216,8 +181,7 @@
         no-filtered-userFrom-text="暂无筛选结果"
         @sort-change="sortChanged"
         @select="handleSelectRow"
-        @select-all="handleSelectAll"
-      >
+        @select-all="handleSelectAll">
         <el-table-column type="expand">
           <template #default="scope">
             <expandRow :row="scope.row"></expandRow>
@@ -279,13 +243,12 @@
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="scope">
             <template v-if="scope.row.is_del != 1">
-              <a v-db-click @click="userDetail(scope.row)">详情</a>
+              <a @click="userDetail(scope.row)">详情</a>
 
               <el-divider direction="vertical"></el-divider>
               <el-dropdown @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
                 <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
-                <template #dropdown
-                  ><el-dropdown-menu>
+                <template #dropdown><el-dropdown-menu>
                     <!-- <el-dropdown-item command="1">编辑</el-dropdown-item> -->
                     <el-dropdown-item command="2">修改余额</el-dropdown-item>
                     <el-dropdown-item command="8">修改积分</el-dropdown-item>
@@ -294,25 +257,22 @@
                     <el-dropdown-item command="5">设置分组</el-dropdown-item>
                     <el-dropdown-item command="6">设置标签</el-dropdown-item>
                     <el-dropdown-item command="99" v-if="scope.row.spread_uid">清除上级推广人</el-dropdown-item>
-                  </el-dropdown-menu></template
-                >
+                  </el-dropdown-menu></template>
               </el-dropdown>
             </template>
             <template v-else>
-              <a v-db-click @click="userDetail(scope.row)">详情</a>
+              <a @click="userDetail(scope.row)">详情</a>
             </template>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="userFrom.page"
           v-model:limit="userFrom.limit"
-          @pagination="pageChange"
-        />
+          @pagination="pageChange" />
       </div>
     </el-card>
     <!-- 编辑表单 积分余额-->
@@ -323,53 +283,45 @@
     <user-details ref="userDetailsRef"></user-details>
     <!--发送图文消息 -->
     <el-dialog v-model="modal13" title="发送消息" width="1200px" class="modelBox">
-      <news-category
-        v-if="modal13"
+      <news-category v-if="modal13"
         :isShowSend="isShowSend"
         :userIds="ids.toString()"
         :scrollerHeight="scrollerHeight"
         :contentTop="contentTop"
         :contentWidth="contentWidth"
-        :maxCols="maxCols"
-      ></news-category>
+        :maxCols="maxCols"></news-category>
     </el-dialog>
     <el-dialog v-model="labelShow" append-to-body title="请选择用户标签" width="540px" :show-close="true">
-      <userLabel
-        v-if="labelShow"
+      <userLabel v-if="labelShow"
         :uid="labelActive.uid"
         :only_get="!labelActive.uid"
         :is_batch="is_batch"
         @close="labelClose"
         @activeData="activeData"
-        @onceGetList="onceGetList"
-      ></userLabel>
+        @onceGetList="onceGetList"></userLabel>
     </el-dialog>
-    <el-drawer class="demo-drawer" v-model="modals" :wrapperClosable="false" size="720" title="用户信息填写">
+    <el-drawer class="demo-drawer" v-model="modals" :close-on-click-modal="false" size="720" title="用户信息填写">
       <div class="demo-drawer__content">
         <UserEdit ref="userEditRef" v-if="modals" :userData="userData"></UserEdit>
         <div class="fix_footer acea-row row-center">
-          <el-button v-db-click @click="modals = false">取消</el-button>
+          <el-button @click="modals = false">取消</el-button>
           <el-button type="primary" v-db-click @click="setUser">提交</el-button>
         </div>
       </div>
     </el-drawer>
     <!-- 用户标签 -->
-    <el-dialog
-      v-model="selectLabelShow"
+    <el-dialog v-model="selectLabelShow"
       append-to-body
       title="请选择用户标签"
       width="540px"
       :show-close="true"
-      :close-on-click-modal="false"
-    >
-      <userLabel
-        v-if="selectLabelShow"
+      :close-on-click-modal="false">
+      <userLabel v-if="selectLabelShow"
         :uid="0"
         :only_get="true"
         :selectDataLabel="selectDataLabel"
         @activeData="activeSelectData"
-        @close="labelClose"
-      ></userLabel>
+        @close="labelClose"></userLabel>
     </el-dialog>
   </div>
 </template>
@@ -808,7 +760,7 @@ function changeMenu(row, name, index) {
 }
 
 function tenText(str) {
-  if (str.length > 10) {
+  if (str.length> 10) {
     //如果字符长度超过10，后面的字符就变成...可自行调整长度和代替字符
     str = str.substr(0, 10) + '...'; //截取从第一个字符开始，往后取10个字符，剩余的用...代替
   }

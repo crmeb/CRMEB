@@ -2,14 +2,12 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="是否显示：" label-for="status">
             <el-select v-model="status" placeholder="请选择" clearable @change="userSearchs" class="form_content_width">
               <el-option value="all" label="全部"></el-option>
@@ -21,23 +19,19 @@
             <el-input clearable placeholder="请输入分类名称" v-model="formValidate.title" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never">
-      <el-button v-auth="['cms-category-create']" type="primary" class="action-row" v-db-click @click="add"
-        >添加文章分类</el-button
-      >
-      <vxe-table
-        class="vxeTable mt14"
+      <el-button v-auth="['cms-category-create']" type="primary" class="action-row" @click="add">添加文章分类</el-button>
+      <vxe-table class="vxeTable mt14"
         :loading="loading"
         header-row-class-name="false"
         :tree-config="{ childrenField: 'children' }"
         :data="categoryList"
-        :row-config="{ isHover: true }"
-      >
+        :row-config="{ isHover: true }">
         <vxe-table-column field="id" title="ID" tooltip width="80"></vxe-table-column>
         <vxe-table-column field="title" tree-node title="分类名称" min-width="130">
           <template v-slot="{ row }">
@@ -54,35 +48,31 @@
         </vxe-table-column>
         <vxe-table-column field="status" title="状态" min-width="120">
           <template v-slot="{ row }">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="row.status"
               :value="row.status"
               @change="onchangeIsShow(row)"
-              size="large"
-            >
+              size="large">
             </el-switch>
           </template>
         </vxe-table-column>
         <vxe-table-column field="date" title="操作" width="160" fixed="right">
           <template v-slot="{ row }">
-            <a v-db-click @click="edit(row)">编辑</a>
+            <a @click="edit(row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(row, '删除文章分类')">删除</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="lookUp(row)">查看文章</a>
+            <a @click="lookUp(row)">查看文章</a>
           </template>
         </vxe-table-column>
       </vxe-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

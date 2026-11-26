@@ -6,22 +6,18 @@
           <el-button type="primary" v-db-click @click="add" class="mr10">发布版本</el-button>
         </el-col>
       </el-row>
-      <el-table
-        :data="tableList"
+      <el-table :data="tableList"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="版本号" width="80">
           <template #default="scope">
-            <el-tooltip
-              effect="light"
+            <el-tooltip effect="light"
               v-if="scope.row.is_new"
               trigger="hover"
               placement="top-start"
-              content="当前为最新线上版本!"
-            >
+              content="当前为最新线上版本!">
               <i class="el-icon-s-promotion" style="font-size: 16px; color: red"></i>
             </el-tooltip>
             {{ scope.row.version }}
@@ -56,20 +52,18 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除版本', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="tableFrom.page"
           v-model:limit="tableFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

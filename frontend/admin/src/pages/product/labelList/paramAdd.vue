@@ -1,14 +1,12 @@
 <template>
   <el-dialog v-model="modal" @closed="onCancel" title="商品参数" width="1000px">
-    <el-form
-      v-loading="spinShow"
+    <el-form v-loading="spinShow"
       ref="formDynamicRef"
       :model="formDynamic"
       class="attrFrom"
       label-position="right"
       label-width="auto"
-      @submit.prevent
-    >
+      @submit.prevent>
       <el-row :gutter="24">
         <el-col :span="24">
           <el-col :span="8">
@@ -52,27 +50,16 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <el-button
-                v-if="formDynamic.value.length < 8"
-                type="primary"
-                class="submission mr15 mt20"
-                v-db-click
-                @click="handleAddRole"
-                >添加参数</el-button
-              >
+              <el-button v-if="formDynamic.value.length < 8" type="primary" class="submission mt20" @click="handleAddRole">添加参数</el-button>
             </div>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <template #footer
-      ><span class="dialog-footer">
-        <el-button v-db-click @click="onClose">取消</el-button>
-        <el-button type="primary" :loading="modal_loading" v-db-click @click="handleSubmit('formDynamic')"
-          >确定</el-button
-        >
-      </span></template
-    >
+    <template #footer><span class="dialog-footer">
+        <el-button @click="onClose">取消</el-button>
+        <el-button type="primary" :loading="modal_loading" v-db-click @click="handleSubmit('formDynamic')">确定</el-button>
+      </span></template>
   </el-dialog>
 </template>
 
@@ -129,7 +116,7 @@ watch(modal, (val) => {
 
 function setSort() {
   // ref一定跟table上面的ref一致
-  const el = selectionRef.value.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0];
+  const el = selectionRef.value.$el.querySelectorAll('.el-table__body-wrapper> table> tbody')[0];
   sortable = Sortable.create(el, {
     ghostClass: 'sortable-ghost',
     handle: '.handle',

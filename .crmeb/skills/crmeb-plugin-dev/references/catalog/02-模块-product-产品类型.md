@@ -330,7 +330,7 @@ Adapter 只翻译**已有源表**记录，不要在 Adapter 里创建订单；�
 
 - 管理端：仅改 `frontend/admin/src/pages/plugin/product_{type}/`（`ext.json` + 页面 + `npm run build` 产出 UMD）。见 [admin-extension.md](../admin-extension.md)。
 - 移动端：优先消费 Handler 的 `getPageConfig`、`display_sections`、订单 Adapter 的 `page_config.sections`；**不要改** uni-app 核心订单页 type 分支。
-- 独立页：源码放 `pages-modules/<标识>/`，用法见 [uniapp-pages.md](../uniapp-pages.md)；Installer `ensurePageLinkCategory` + `seedPageLinks` 登记同一条路径。DIY 组件写 `plugin.json` → `diy.components`。
+- 独立页：源码放 `pages-modules/<标识>/`，用法见 [uniapp-pages.md](../uniapp-pages.md)。小程序 webview 打开见 [webview-plugin.md](../webview-plugin.md)。DIY 组件写 `plugin.json` → `diy.components`。
 
 ---
 

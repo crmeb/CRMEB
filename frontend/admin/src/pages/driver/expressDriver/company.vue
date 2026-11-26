@@ -2,7 +2,7 @@
   <div>
     <el-row class="mb14">
       <el-col :span="24">
-        <el-button type="primary" v-db-click @click="openAddDialog"> 新增物流公司 </el-button>
+        <el-button type="primary" @click="openAddDialog"> 新增物流公司 </el-button>
       </el-col>
     </el-row>
 
@@ -42,47 +42,41 @@
 
       <el-table-column label="展示" width="90">
         <template #default="scope">
-          <el-switch
-            :active-value="1"
+          <el-switch :active-value="1"
             :inactive-value="0"
             v-model="scope.row.is_show"
             @change="handleIsShowChange(scope.row)"
             active-text="展示"
             inactive-text="隐藏"
-            class="defineSwitch"
-          />
+            class="defineSwitch" />
         </template>
       </el-table-column>
 
       <el-table-column label="状态" width="90">
         <template #default="scope">
-          <el-switch
-            :active-value="1"
+          <el-switch :active-value="1"
             :inactive-value="0"
             v-model="scope.row.status"
             @change="handleStatusChange(scope.row)"
             active-text="启用"
             inactive-text="禁用"
-            class="defineSwitch"
-          />
+            class="defineSwitch" />
         </template>
       </el-table-column>
 
       <el-table-column label="操作" fixed="right" width="120" align="center">
         <template #default="scope">
-          <a v-db-click @click="openEditDialog(scope.row)"> 编辑 </a>
+          <a @click="openEditDialog(scope.row)"> 编辑 </a>
           <el-divider direction="vertical" />
           <a v-db-click class="text-danger" @click="handleDelete(scope.row)"> 删除 </a>
         </template>
       </el-table-column>
     </el-table>
 
-    <companyEdit
-      v-if="showEditDialog"
+    <companyEdit v-if="showEditDialog"
       :company-id="currentCompanyId"
       @close="showEditDialog = false"
-      @success="handleEditSuccess"
-    />
+      @success="handleEditSuccess" />
   </div>
 </template>
 

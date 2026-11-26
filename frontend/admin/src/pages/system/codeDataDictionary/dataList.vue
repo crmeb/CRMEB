@@ -2,7 +2,7 @@
   <div>
     <div class="i-layout-page-header header-title">
       <div class="header-main">
-        <el-button class="btn-back" icon="ArrowLeft" type="text" v-db-click @click="$router.go(-1)">返回</el-button>
+        <el-button class="btn-back" icon="ArrowLeft" type="text" @click="$router.go(-1)">返回</el-button>
         <el-divider direction="vertical"></el-divider>
         <span class="ivu-page-header-title">{{ $route.meta.title }}</span>
         <span class="header-description">
@@ -12,11 +12,8 @@
       </div>
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['system-crud-data_dictionary']" type="primary" v-db-click @click="add" class="action-row"
-        >添加数据字典</el-button
-      >
-      <el-table
-        :data="dictionaryList"
+      <el-button v-auth="['system-crud-data_dictionary']" type="primary" @click="add" class="action-row">添加数据字典</el-button>
+      <el-table :data="dictionaryList"
         ref="table"
         class="mt14"
         v-loading="loading"
@@ -24,8 +21,7 @@
         no-userFrom-text="暂无数据"
         no-filtered-userFrom-text="暂无筛选结果"
         row-key="id"
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-      >
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
         <el-table-column label="ID" min-width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -37,22 +33,20 @@
         <el-table-column prop="add_time" label="添加时间" min-width="200"> </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
-            <a v-db-click @click="addSub(scope.row.id)">添加下级</a>
+            <a @click="addSub(scope.row.id)">添加下级</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="eidtOptions(scope.row.id)">编辑</a>
+            <a @click="eidtOptions(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="from.page"
           v-model:limit="from.limit"
-          @pagination="getCrudDataDictionary"
-        />
+          @pagination="getCrudDataDictionary" />
       </div>
     </el-card>
   </div>

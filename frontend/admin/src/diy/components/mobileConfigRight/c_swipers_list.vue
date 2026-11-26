@@ -4,13 +4,11 @@
       {{ configData.title }}
     </div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="configData.list"
         group="peoples"
         handle=".move-icon"
-        :item-key="swipersItemKey"
-      >
+        :item-key="swipersItemKey">
         <template #item="{ element: item, index }">
           <div class="item">
             <div class="delect-btn" @click.stop="bindDelete(item, index)" v-if="!configData.isCube">
@@ -44,20 +42,18 @@
         </template>
       </draggable>
       <div>
-        <el-dialog v-model="modalPic" width="960px" title="上传图片">
-          <uploadPictures
-            :isChoice="isChoice"
+        <el-dialog v-model="modalPic" width="960px" title="上传图片" append-to-body>
+          <uploadPictures :isChoice="isChoice"
             @getPic="getPic"
             :gridBtn="gridBtn"
             :gridPic="gridPic"
-            v-if="modalPic"
-          ></uploadPictures>
+            v-if="modalPic"></uploadPictures>
         </el-dialog>
       </div>
     </div>
     <template v-if="configData.list">
       <div class="add-btn" v-if="configData.list.length < configData.maxList">
-        <el-button v-db-click class="btn" type="primary" ghost @click="addBox">
+        <el-button class="btn" type="primary" ghost @click="addBox">
           <span class="iconfont iconjiahao"></span>添加
         </el-button>
       </div>

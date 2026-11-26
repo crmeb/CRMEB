@@ -2,7 +2,7 @@
 
 ## 运行与构建
 
-Admin 位于 `frontend/admin/`，使用 **Vite 5**；Node 版本与依赖安装约定见 [admin 端约定](../../../scopes/admin.md)。
+Admin 位于 `frontend/admin/`，使用 **Vite 8**；Node 版本与依赖安装约定见 [admin 端约定](../../../scopes/admin.md)。
 
 ```bash
 npm run dev            # Vite dev server，端口 1619（占用时顺延），/adminapi 代理到 localhost:8011

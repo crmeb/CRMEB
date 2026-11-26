@@ -11,12 +11,10 @@
       <div class="ask-question">{{ form.question }}</div>
       <template v-if="form.type !== 'text'">
         <div class="ask-options">
-          <div
-            v-for="option in form.options"
+          <div v-for="option in form.options"
             :key="option.value"
             :class="['ask-option', { selected: isSelected(option.value) }]"
-            @click="toggleOption(option.value)"
-          >
+            @click="toggleOption(option.value)">
             <span :class="['ask-mark', form.type]">
               <i v-if="isSelected(option.value)" class="el-icon-check" />
             </span>
@@ -30,14 +28,12 @@
           </div>
         </div>
         <div v-if="useCustom" class="ask-custom">
-          <el-input
-            v-model="customText"
+          <el-input v-model="customText"
             type="textarea"
             :rows="2"
             maxlength="500"
             resize="none"
-            placeholder="请输入你的想法"
-          />
+            placeholder="请输入你的想法" />
         </div>
       </template>
       <div v-else class="ask-custom">
@@ -99,7 +95,7 @@ function toggleOption(value) {
   if (props.message.status !== 'pending') return;
   if (form.value.type === 'multi') {
     const index = selected.value.indexOf(value);
-    if (index > -1) {
+    if (index> -1) {
       selected.value.splice(index, 1);
     } else {
       selected.value.push(value);
@@ -123,7 +119,7 @@ function toggleCustom() {
 const answerReady = computed(() => {
   if (form.value.type === 'text') return customText.value.trim() !== '';
   const hasCustom = useCustom.value && customText.value.trim() !== '';
-  return selected.value.length > 0 || hasCustom;
+  return selected.value.length> 0 || hasCustom;
 });
 
 /** 提交问询答案 */
@@ -259,7 +255,7 @@ function submit() {
 }
 .confirm-actions {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   justify-content: flex-end;
   margin-top: 12px;
 }

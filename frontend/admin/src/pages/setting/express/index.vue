@@ -6,21 +6,17 @@
           <el-form :model="configForm" label-width="140px" v-loading="configLoading" class="tab-content">
             <el-divider content-position="left">打印设置</el-divider>
             <el-form-item label="电子面单打印：">
-              <el-switch
-                v-model="configForm.open"
+              <el-switch v-model="configForm.open"
                 :active-value="1"
                 :inactive-value="0"
                 active-text="开启"
                 inactive-text="关闭"
-                class="defineSwitch"
-              />
+                class="defineSwitch" />
             </el-form-item>
             <el-form-item label="云打印机编号：">
-              <el-input
-                v-model="configForm.siid"
+              <el-input v-model="configForm.siid"
                 placeholder="不填写时返回面单图片，由管理员手动打印。"
-                class="field-lg"
-              />
+                class="field-lg" />
             </el-form-item>
 
             <el-divider content-position="left">默认快递公司</el-divider>
@@ -65,7 +61,7 @@
                   <el-option label="失败" :value="0" />
                 </el-select>
               </el-col>
-              <el-col :span="6"><el-button type="primary" v-db-click @click="getLogList">查询</el-button></el-col>
+              <el-col :span="6"><el-button type="primary" @click="getLogList">查询</el-button></el-col>
             </el-row>
             <el-table :data="logList" v-loading="logLoading" row-key="id">
               <el-table-column label="订单编号" min-width="160" prop="order_sn" />
@@ -87,7 +83,7 @@
               <el-table-column label="打印时间" min-width="160" prop="add_time" />
               <el-table-column label="操作" fixed="right" width="100">
                 <template #default="scope">
-                  <a v-db-click @click="viewLogDetail(scope.row)">详情</a>
+                  <a @click="viewLogDetail(scope.row)">详情</a>
                 </template>
               </el-table-column>
             </el-table>

@@ -2,43 +2,35 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="保障名称：">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入保障名称"
               v-model="formValidate.title"
               class="form_content_width"
-              @change="userSearchs"
-            />
+              @change="userSearchs" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never">
-      <el-button v-auth="['cms-category-create']" type="primary" class="action-row" v-db-click @click="add"
-        >添加保障</el-button
-      >
+      <el-button v-auth="['cms-category-create']" type="primary" class="action-row" @click="add">添加保障</el-button>
 
-      <el-table
-        :data="categoryList"
+      <el-table :data="categoryList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         row-key="id"
-        :tree-props="{ children: 'children' }"
-      >
+        :tree-props="{ children: 'children' }">
         <el-table-column label="ID" prop="id" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -59,8 +51,7 @@
         </el-table-column>
         <el-table-column label="状态" prop="status" min-width="120">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -68,8 +59,7 @@
               @change="onchangeIsShow(scope.row)"
               size="large"
               active-text="开启"
-              inactive-text="关闭"
-            >
+              inactive-text="关闭">
             </el-switch>
           </template>
         </el-table-column>
@@ -80,20 +70,18 @@
         </el-table-column>
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除保障')">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

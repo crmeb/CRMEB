@@ -4,69 +4,57 @@
       <div class="padding-add">
         <el-form :model="searchForm" label-width="80px" label-position="right" inline @submit.prevent>
           <el-form-item label="售后类型：">
-            <el-select
-              v-model="searchForm.type"
+            <el-select v-model="searchForm.type"
               clearable
               @change="getList(1)"
               placeholder="全部"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option label="全部" value="" />
               <el-option v-for="item in typeOptions" :key="item.key" :value="item.key" :label="item.label" />
             </el-select>
           </el-form-item>
           <el-form-item label="产品类型：">
-            <el-select
-              v-model="searchForm.product_type"
+            <el-select v-model="searchForm.product_type"
               clearable
               @change="getList(1)"
               placeholder="全部"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option label="全部" value="" />
               <el-option v-for="item in productTypeOptions" :key="item.key" :value="item.key" :label="item.label" />
             </el-select>
           </el-form-item>
           <el-form-item label="订单大类：">
-            <el-select
-              v-model="searchForm.order_category"
+            <el-select v-model="searchForm.order_category"
               clearable
               @change="getList(1)"
               placeholder="全部"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option label="全部" value="" />
               <el-option v-for="item in categoryOptions" :key="item.key" :value="item.key" :label="item.label" />
             </el-select>
           </el-form-item>
           <el-form-item label="申请时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               @change="onchangeTime"
               format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD"
-            ></date-range-picker>
+              value-format="YYYY-MM-DD"></date-range-picker>
           </el-form-item>
           <el-form-item label="单号搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               v-model="searchForm.keyword"
               placeholder="请输入售后单号/订单号"
               class="form_content_width"
-              @keyup.enter="getList(1)"
-            >
-              <template #prepend
-                ><el-select v-model="searchForm.search_field" style="width: 110px">
+              @keyup.enter="getList(1)">
+              <template #prepend><el-select v-model="searchForm.search_field" style="width: 110px">
                   <el-option value="after_sale_no" label="售后单号"></el-option>
-                  <el-option value="order_no" label="订单号"></el-option> </el-select
-              ></template>
+                  <el-option value="order_no" label="订单号"></el-option> </el-select></template>
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="getList(1)">查询</el-button>
-            <el-button v-db-click @click="handleReset">重置</el-button>
+            <el-button type="primary" @click="getList(1)">查询</el-button>
+            <el-button @click="handleReset">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -117,26 +105,24 @@
           </el-table-column>
           <el-table-column label="操作" fixed="right" width="140">
             <template #default="scope">
-              <a v-db-click @click="viewDetail(scope.row)">详情</a>
+              <a @click="viewDetail(scope.row)">详情</a>
               <template v-if="scope.row.status === 'pending_audit'">
                 <el-divider direction="vertical" />
-                <a v-db-click @click="goAudit(scope.row)" v-auth="['admin-order-afterSale-audit']">审核</a>
+                <a @click="goAudit(scope.row)" v-auth="['admin-order-afterSale-audit']">审核</a>
               </template>
               <template v-if="canRemark(scope.row.status)">
                 <el-divider direction="vertical" />
-                <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-afterSale-remark']">备注</a>
+                <a @click="editRemark(scope.row)" v-auth="['admin-order-afterSale-remark']">备注</a>
               </template>
             </template>
           </el-table-column>
         </el-table>
         <div class="acea-row row-right page">
-          <pagination
-            v-if="total"
+          <pagination v-if="total"
             :total="total"
             v-model:page="page.page"
             v-model:limit="page.limit"
-            @pagination="getList"
-          />
+            @pagination="getList" />
         </div>
       </div>
     </el-card>
@@ -144,31 +130,25 @@
     <el-dialog v-model="remarkModal" title="售后管理备注" width="500px">
       <el-form :model="remarkForm" label-width="80px">
         <el-form-item label="备注内容">
-          <el-input
-            type="textarea"
+          <el-input type="textarea"
             v-model="remarkForm.remark"
             :rows="4"
             placeholder="请输入备注内容"
             maxlength="500"
-            show-word-limit
-          ></el-input>
+            show-word-limit></el-input>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="remarkModal = false">取消</el-button>
           <el-button v-db-click type="primary" @click="saveRemark">保存</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
     <!-- 审核弹窗 -->
-    <el-dialog
-      v-model="auditModal"
+    <el-dialog v-model="auditModal"
       :title="auditForm.result === 'pass' ? '审核通过' : '审核拒绝'"
       width="500px"
       :close-on-click-modal="false"
-      @close="resetAuditForm"
-    >
+      @close="resetAuditForm">
       <el-form :model="auditForm" label-width="100px">
         <el-form-item label="审核结果">
           <el-radio-group v-model="auditForm.result">
@@ -180,20 +160,16 @@
           <el-input type="textarea" v-model="auditForm.reject_reason" :rows="3" placeholder="请填写拒绝原因"></el-input>
         </el-form-item>
         <el-form-item label="审核备注">
-          <el-input
-            type="textarea"
+          <el-input type="textarea"
             v-model="auditForm.audit_remark"
             :rows="3"
-            placeholder="审核备注（选填）"
-          ></el-input>
+            placeholder="审核备注（选填）"></el-input>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="auditModal = false">取消</el-button>
           <el-button type="primary" v-db-click @click="submitAudit">确定</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
   </div>
 </template>

@@ -1,0 +1,1 @@
+var e=`/admin/system_static/notice-vbAwL7Jt.mp3`;export{e as t};

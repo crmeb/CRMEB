@@ -1,10 +1,8 @@
 <template>
   <div>
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="查看各支付方式的支持端与驱动状态并启停，支付参数在各驱动的配置中维护。"
-    ></pages-header>
+      description="查看各支付方式的支持端与驱动状态并启停，支付参数在各驱动的配置中维护。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-table :data="list" ref="table" v-loading="loading" highlight-current-row row-key="id">
         <el-table-column label="排序" width="80" prop="sort">
@@ -64,21 +62,19 @@
 
         <el-table-column label="状态" width="80">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               @change="handleStatusChange(scope.row)"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            />
+              class="defineSwitch" />
           </template>
         </el-table-column>
 
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="scope">
-            <a v-db-click @click="handleEdit(scope.row)">设置</a>
+            <a @click="handleEdit(scope.row)">设置</a>
           </template>
         </el-table-column>
       </el-table>
@@ -90,20 +86,18 @@
         <!-- 基本信息 -->
         <el-divider content-position="left">基本信息</el-divider>
         <el-form-item label="状态" prop="status">
-          <el-switch
-            class="defineSwitch"
+          <el-switch class="defineSwitch"
             :active-value="1"
             :inactive-value="0"
             v-model="editForm.status"
             active-text="开启"
-            inactive-text="关闭"
-          />
+            inactive-text="关闭" />
         </el-form-item>
         <el-form-item label="支付名称" prop="channel_name">
           <el-input v-model="editForm.channel_name" placeholder="请输入支付名称" />
         </el-form-item>
         <el-form-item label="支付图标" prop="icon">
-          <div class="picBox" v-db-click @click="modalPicTap">
+          <div class="picBox" @click="modalPicTap">
             <div class="pictrue" v-if="isImageUrl(editForm.icon)">
               <img v-lazy="editForm.icon" />
             </div>
@@ -128,7 +122,7 @@
         </el-form-item>
 
         <!-- 动态配置字段 -->
-        <template v-if="configGroups.length > 0">
+        <template v-if="configGroups.length> 0">
           <template v-for="(group, groupIndex) in configGroups" :key="'group-' + groupIndex">
             <el-divider content-position="left">
               {{ group.name }}
@@ -136,37 +130,29 @@
             <template v-for="(field, fieldIndex) in group.fields" :key="'field-' + groupIndex + '-' + fieldIndex">
               <el-form-item v-if="showField(field)" :label="field.label">
                 <!-- Switch 类型 -->
-                <el-switch
-                  v-if="field.type === 'switch'"
+                <el-switch v-if="field.type === 'switch'"
                   :active-value="'1'"
                   :inactive-value="'0'"
-                  v-model="field.value"
-                />
+                  v-model="field.value" />
 
                 <!-- 文本类型 -->
-                <el-input
-                  v-else-if="field.type === 'text'"
+                <el-input v-else-if="field.type === 'text'"
                   v-model="field.value"
-                  :placeholder="field.placeholder || '请输入' + field.label"
-                />
+                  :placeholder="field.placeholder || '请输入' + field.label" />
 
                 <!-- 密码类型 -->
-                <el-input
-                  v-else-if="field.type === 'password'"
+                <el-input v-else-if="field.type === 'password'"
                   v-model="field.value"
                   type="password"
                   :placeholder="field.placeholder || '请输入' + field.label"
-                  show-password
-                />
+                  show-password />
 
                 <!-- 多行文本 -->
-                <el-input
-                  v-else-if="field.type === 'textarea'"
+                <el-input v-else-if="field.type === 'textarea'"
                   v-model="field.value"
                   type="textarea"
                   :rows="3"
-                  :placeholder="field.placeholder || '请输入' + field.label"
-                />
+                  :placeholder="field.placeholder || '请输入' + field.label" />
 
                 <!-- 单选 -->
                 <el-radio-group v-else-if="field.type === 'radio'" v-model="field.value">
@@ -176,17 +162,14 @@
                 </el-radio-group>
 
                 <!-- 下拉选择 -->
-                <el-select
-                  v-else-if="field.type === 'select'"
+                <el-select v-else-if="field.type === 'select'"
                   v-model="field.value"
-                  :placeholder="'请选择' + field.label"
-                >
+                  :placeholder="'请选择' + field.label">
                   <el-option v-for="opt in field.options" :key="opt.value" :label="opt.label" :value="opt.value" />
                 </el-select>
 
                 <!-- 文件上传 -->
-                <el-upload
-                  v-else-if="field.type === 'upload'"
+                <el-upload v-else-if="field.type === 'upload'"
                   :action="uploadUrl"
                   :headers="uploadHeaders"
                   :on-success="(res) => handleUploadSuccess(res, field.field)"
@@ -194,8 +177,7 @@
                   :on-exceed="handleUploadExceed"
                   :on-remove="() => handleUploadRemove(field.field)"
                   :file-list="getFileList(field.field)"
-                  :limit="1"
-                >
+                  :limit="1">
                   <el-button type="primary">点击上传</el-button>
                 </el-upload>
 
@@ -214,13 +196,11 @@
 
     <!-- 图片选择弹窗 -->
     <el-dialog v-model="modalPic" title="选择图片" width="1024px" :close-on-click-modal="false">
-      <uploadPictures
-        :isChoice="isChoice"
+      <uploadPictures :isChoice="isChoice"
         @getPic="getPic"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        v-if="modalPic"
-      ></uploadPictures>
+        v-if="modalPic"></uploadPictures>
     </el-dialog>
   </div>
 </template>
@@ -574,7 +554,7 @@ function showField(field) {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 14px;
 }
 .drawer-footer .el-button + .el-button {
   margin-left: 0;

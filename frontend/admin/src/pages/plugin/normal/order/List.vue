@@ -10,8 +10,7 @@
       </div>
 
       <!-- 订单表格组件（tabs + table + 分页 + 操作按钮） -->
-      <OrderTable
-        ref="tableRef"
+      <OrderTable ref="tableRef"
         :table-data="list"
         :total="total"
         :loading="loading"
@@ -34,52 +33,41 @@
         @batch-delete="handleBatchDelete"
         @logistics="openLogistics"
         @export="handleExport"
-        @page-change="onPageChange"
-      />
+        @page-change="onPageChange" />
 
       <!-- 发货弹窗组件（不可加 v-if：挂载时 visible 已为 true 会因 EP 弹窗非立即监听而无法打开） -->
-      <OrderSend
-        :visible="sendVisible"
+      <OrderSend :visible="sendVisible"
         :order-no="currentOrderNo"
         @success="onShipmentSuccess"
-        @close="sendVisible = false"
-      />
+        @close="sendVisible = false" />
 
       <!-- 备注弹窗组件（同上，禁用 v-if 挂载式写法） -->
-      <OrderRemark
-        :visible="remarkVisible"
+      <OrderRemark :visible="remarkVisible"
         :order-id="remarkOrderId"
         :remark="remarkContent"
         @success="onRemarkSuccess"
-        @close="remarkVisible = false"
-      />
+        @close="remarkVisible = false" />
 
       <!-- 修改地址弹窗组件（同上，禁用 v-if 挂载式写法） -->
-      <OrderAddress
-        :visible="addressVisible"
+      <OrderAddress :visible="addressVisible"
         :order-no="addressOrderNo"
         :contact-name="addressName"
         :contact-phone="addressPhone"
         :contact-address="addressDetail"
         @success="onAddressSuccess"
-        @close="addressVisible = false"
-      />
+        @close="addressVisible = false" />
 
       <!-- 退款弹窗组件（同上，禁用 v-if 挂载式写法） -->
-      <OrderRefund
-        :visible="refundVisible"
+      <OrderRefund :visible="refundVisible"
         :order-no="refundOrderNo"
         @success="onRefundSuccess"
-        @close="refundVisible = false"
-      />
+        @close="refundVisible = false" />
 
       <!-- 操作记录弹窗组件（drawer） -->
-      <OrderRecord
-        :visible="recordVisible"
+      <OrderRecord :visible="recordVisible"
         :order-no="recordOrderNo"
         :order-id="recordOrderId"
-        @close="recordVisible = false"
-      />
+        @close="recordVisible = false" />
 
       <!-- 物流查询对话框 -->
       <el-dialog v-model="logisticsVisible" title="物流查询" width="500px" @close="logisticsVisible = false">
@@ -122,15 +110,13 @@
       </el-dialog>
 
       <!-- 批量发货对话框 -->
-      <el-dialog
-        v-model="batchShipmentModal"
+      <el-dialog v-model="batchShipmentModal"
         title="批量发货"
         width="560px"
         append-to-body
         :close-on-click-modal="false"
         class="normal-batch-shipment-dialog"
-        @closed="onBatchDialogClosed"
-      >
+        @closed="onBatchDialogClosed">
         <div class="batch-shipment">
           <div class="batch-shipment__tip">
             请按下方格式编辑 Excel（<b>xls / xlsx</b>）后上传，系统将按行完成发货。
@@ -152,8 +138,7 @@
             <div class="batch-shipment__format-note">第一行为表头，从第二行开始填写数据</div>
           </div>
 
-          <el-upload
-            ref="batchUploadRef"
+          <el-upload ref="batchUploadRef"
             class="batch-shipment__upload"
             drag
             :action="batchUploadUrl"
@@ -163,8 +148,7 @@
             :on-error="onBatchUploadError"
             :before-upload="onBeforeUpload"
             accept=".xls,.xlsx"
-            :show-file-list="false"
-          >
+            :show-file-list="false">
             <div class="batch-shipment__upload-inner">
               <i class="el-icon-upload batch-shipment__upload-icon"></i>
               <div class="batch-shipment__upload-text">
@@ -177,11 +161,9 @@
 
           <div v-if="batchResult" class="batch-shipment__result">
             <div class="batch-shipment__result-msg">{{ batchResult.msg }}</div>
-            <div
-              v-if="batchResult.data && batchResult.data.errors && batchResult.data.errors.length"
-              class="batch-shipment__result-toggle"
-            >
-              <a v-db-click href="javascript:;" @click="showBatchErrors = !showBatchErrors">
+            <div v-if="batchResult.data && batchResult.data.errors && batchResult.data.errors.length"
+              class="batch-shipment__result-toggle">
+              <a href="javascript:;" @click="showBatchErrors = !showBatchErrors">
                 {{ showBatchErrors ? '收起' : '查看' }}失败详情（{{ batchResult.data.errors.length }}条）
               </a>
             </div>
@@ -197,13 +179,11 @@
     <OrderEdit ref="editRef" @saved="onEditSuccess" />
 
     <!-- 订单详情抽屉 -->
-    <el-drawer
-      v-model="detailDrawerVisible"
+    <el-drawer v-model="detailDrawerVisible"
       title="订单详情"
       size="720px"
       class="order-detail-drawer"
-      @opened="onDetailDrawerOpened"
-    >
+      @opened="onDetailDrawerOpened">
       <OrderDetail :orderNo="detailOrderNo" ref="detailRef" />
     </el-drawer>
   </div>
@@ -211,6 +191,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import logisticsIcon from '@/assets/images/expressi.jpg';
 
@@ -241,6 +222,7 @@ import OrderDetail from './Detail.vue';
 
 defineOptions({ name: 'normalOrderList' });
 
+const route = useRoute();
 const routePre = setting.routePre;
 
 const tableRef = ref(null);
@@ -585,7 +567,7 @@ function openPrintWindow(data, type) {
     }
     html += '</tbody></table>';
     html += '<div class="total">实付金额：¥' + data.pay_price + '</div>';
-    if (data.pay_postage && parseFloat(data.pay_postage) > 0) {
+    if (data.pay_postage && parseFloat(data.pay_postage)> 0) {
       html += '<div style="text-align:right">含运费：¥' + data.pay_postage + '</div>';
     }
   } else {
@@ -852,6 +834,11 @@ function doExport(params) {
 }
 
 onMounted(() => {
+  const status = route.query.status || route.query.business_status || '';
+  if (status) {
+    statusTab.value = String(status);
+    nextTick(() => tableRef.value?.setTab?.(String(status)));
+  }
   getList();
   getStatistics();
 });

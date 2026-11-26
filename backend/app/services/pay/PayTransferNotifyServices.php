@@ -13,8 +13,35 @@ namespace app\services\pay;
 class PayTransferNotifyServices
 {
     /**
+     * 提现转账通知：转发给分销插件处理。
+     */
+    public function wechatTx(?string $order_id = null, ?string $trade_no = null, ?string $state = null, ?string $fail_reason = null, array $other = [])
+    {
+        try {
+            return (bool)proxy_event_result(event('DistributionServiceProxy', [
+                'service' => 'DistributionExtractTransferServices',
+                'action' => 'handleTransferNotify',
+                'args' => [$order_id, $trade_no, $state, $fail_reason, $other],
+            ]), false);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 按商户单号查微信转账终态，交给分销插件落库。
+     */
+    public function sync(string $orderNo): bool
+    {
+        return (bool)proxy_event_result(event('DistributionServiceProxy', [
+            'service' => 'DistributionExtractTransferServices',
+            'action' => 'sync',
+            'args' => [$orderNo],
+        ]), false);
+    }
+
+    /**
      * 红包
-     * 提现转账通知（wechatTx/sync）已随佣金提现功能下线，由分销插件自行处理。
      * @param string|null $order_id 订单id
      * @return bool
      */

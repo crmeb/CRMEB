@@ -1,0 +1,1 @@
+import{Cl as e}from"./common-Cyt99CNL.js";var t=`/normal`;function n(n,r={}){let i=(r.method||`get`).toLowerCase(),a={url:t+n,method:i};return r.body&&(a.data=typeof r.body==`string`?JSON.parse(r.body):r.body),e(a)}export{n as normalApi};

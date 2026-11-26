@@ -1,15 +1,13 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-form
-        ref="formValidateRef"
+      <el-form ref="formValidateRef"
         :model="formValidate"
         :rules="ruleValidate"
         label-width="160px"
-        label-position="right"
-      >
+        label-position="right">
         <el-form-item label="头像：">
-          <div class="avatar" v-db-click @click="avatarMoadl = true">
+          <div class="avatar" @click="avatarMoadl = true">
             <img v-if="formValidate.head_pic" :src="formValidate.head_pic" alt="" />
             <img v-else src="../../../assets/images/f.png" alt="" />
           </div>

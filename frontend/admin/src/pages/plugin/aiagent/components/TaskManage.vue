@@ -9,7 +9,7 @@
           <div class="task-hero-title">自动化任务</div>
           <div class="task-hero-sub">让 AI 按计划无人值守执行指令并推送结果（如每日经营日报）</div>
         </div>
-        <el-button type="primary" icon="Plus" v-db-click @click="openEditor()">新建任务</el-button>
+        <el-button type="primary" icon="Plus" @click="openEditor()">新建任务</el-button>
       </div>
 
       <div class="task-section">
@@ -40,11 +40,9 @@
                 <i class="task-action-icon el-icon-tickets" @click="openRuns(row)" />
               </el-tooltip>
               <el-tooltip content="测试运行：立即执行一次并打开运行历史查看结果" placement="top">
-                <i
-                  class="task-action-icon el-icon-video-play"
+                <i class="task-action-icon el-icon-video-play"
                   :class="{ 'is-loading': triggeringId === row.id }"
-                  @click="triggerTask(row)"
-                />
+                  @click="triggerTask(row)" />
               </el-tooltip>
               <el-tooltip content="编辑" placement="top">
                 <i class="task-action-icon el-icon-edit" @click="openEditor(row)" />
@@ -52,13 +50,11 @@
               <el-tooltip content="删除" placement="top">
                 <i class="task-action-icon el-icon-delete danger" @click="removeTask(row)" />
               </el-tooltip>
-              <el-switch
-                v-model="row.status"
+              <el-switch v-model="row.status"
                 :active-value="1"
                 :inactive-value="0"
                 class="task-switch"
-                @change="changeStatus(row)"
-              />
+                @change="changeStatus(row)" />
             </div>
           </div>
 
@@ -66,14 +62,12 @@
             <div class="task-instruction" :title="row.instruction">{{ row.instruction }}</div>
             <div class="task-channel-row">
               <template v-if="row.notify_channels && row.notify_channels.length">
-                <el-tag
-                  v-for="channel in row.notify_channels"
+                <el-tag v-for="channel in row.notify_channels"
                   :key="channel"
                   size="small"
                   type="info"
                   effect="plain"
-                  class="channel-tag"
-                >
+                  class="channel-tag">
                   {{ channelLabel(channel) }}
                 </el-tag>
                 <!-- 收件邮箱展示在 v-for 之外，channel 变量在标签循环外不可用 -->
@@ -97,14 +91,12 @@
     </el-card>
 
     <!-- 新建/编辑任务 -->
-    <el-dialog
-      :title="editId ? '编辑任务' : '新建任务'"
+    <el-dialog :title="editId ? '编辑任务' : '新建任务'"
       v-model="editorVisible"
       width="680px"
       top="6vh"
       append-to-body
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <el-alert type="info" :closable="false" class="editor-tip">
         任务指令是 AI 每次无人值守执行时收到的完整说明，请写明数据范围、分析要求与交付动作（如生成日报并发送到邮箱）。
       </el-alert>
@@ -113,14 +105,12 @@
           <el-input v-model="form.name" maxlength="100" placeholder="如：每日经营日报" />
         </el-form-item>
         <el-form-item label="任务指令" prop="instruction">
-          <el-input
-            v-model="form.instruction"
+          <el-input v-model="form.instruction"
             type="textarea"
             :rows="5"
             maxlength="4000"
             show-word-limit
-            placeholder="如：查询昨天的订单数、销售额、退款金额、新增用户数与商品销量 Top5，生成经营日报（含环比分析）；完成后调用邮件工具把日报发送到登记的邮箱，并调用企业微信工具推送简版"
-          />
+            placeholder="如：查询昨天的订单数、销售额、退款金额、新增用户数与商品销量 Top5，生成经营日报（含环比分析）；完成后调用邮件工具把日报发送到登记的邮箱，并调用企业微信工具推送简版" />
         </el-form-item>
         <el-form-item label="执行时间" prop="schedule_value">
           <el-radio-group v-model="form.schedule_type" @change="onScheduleTypeChange">
@@ -131,79 +121,65 @@
             <el-radio :value="1">间隔循环</el-radio>
           </el-radio-group>
           <div class="schedule-input">
-            <el-time-select
-              v-if="form.schedule_type === 2"
+            <el-time-select v-if="form.schedule_type === 2"
               v-model="form.schedule_value"
               start="00:00"
               end="23:30"
               step="00:30"
               placeholder="选择每天执行时刻"
-              class="schedule-field"
-            />
+              class="schedule-field" />
             <template v-else-if="form.schedule_type === 3">
               <el-select v-model="form.schedule_week" class="schedule-field">
                 <el-option v-for="(label, week) in WEEK_LABELS" :key="week" :label="label" :value="Number(week)" />
               </el-select>
-              <el-time-select
-                v-model="form.schedule_value"
+              <el-time-select v-model="form.schedule_value"
                 start="00:00"
                 end="23:30"
                 step="00:30"
                 placeholder="选择执行时刻"
-                class="schedule-field"
-              />
+                class="schedule-field" />
             </template>
             <template v-else-if="form.schedule_type === 4">
               <span class="muted">每月</span>
-              <el-input-number
-                v-model="form.schedule_day"
+              <el-input-number v-model="form.schedule_day"
                 :min="1"
                 :max="28"
                 :controls="false"
                 placeholder="几日"
-                class="schedule-day-field"
-              />
+                class="schedule-day-field" />
               <span class="muted">日</span>
-              <el-time-select
-                v-model="form.schedule_value"
+              <el-time-select v-model="form.schedule_value"
                 start="00:00"
                 end="23:30"
                 step="00:30"
                 placeholder="选择执行时刻"
-                class="schedule-field"
-              />
+                class="schedule-field" />
             </template>
             <template v-else-if="form.schedule_type === 5">
               <el-select v-model="form.schedule_month" class="schedule-month-field">
                 <el-option v-for="(label, month) in MONTH_LABELS" :key="month" :label="label" :value="Number(month)" />
               </el-select>
-              <el-input-number
-                v-model="form.schedule_day"
+              <el-input-number v-model="form.schedule_day"
                 :min="1"
                 :max="28"
                 :controls="false"
                 placeholder="几日"
-                class="schedule-day-field"
-              />
+                class="schedule-day-field" />
               <span class="muted">日</span>
-              <el-time-select
-                v-model="form.schedule_value"
+              <el-time-select v-model="form.schedule_value"
                 start="00:00"
                 end="23:30"
                 step="00:30"
                 placeholder="选择执行时刻"
-                class="schedule-field"
-              />
+                class="schedule-field" />
             </template>
             <template v-else>
-              <el-input-number
-                v-model="scheduleMinutes"
+              <el-input-number v-model="scheduleMinutes"
                 :min="1"
                 :max="43200"
                 :controls="false"
                 placeholder="间隔分钟"
-                class="schedule-field"
-              />
+                class="schedule-field" />
               <span class="muted">分钟（1-43200，即最多 30 天）</span>
             </template>
           </div>
@@ -227,13 +203,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Skill">
-          <el-select
-            v-model="form.skill_keys"
+          <el-select v-model="form.skill_keys"
             multiple
             collapse-tags
             placeholder="可选：挂载领域规则"
-            class="task-field"
-          >
+            class="task-field">
             <el-option v-for="item in options.skills" :key="item.key" :label="item.name" :value="item.key" />
           </el-select>
         </el-form-item>
@@ -242,26 +216,22 @@
             <el-checkbox value="is_email">邮件</el-checkbox>
             <el-checkbox value="is_ent_wechat">企业微信机器人</el-checkbox>
           </el-checkbox-group>
-          <el-input
-            v-if="form.notify_channels.includes('is_email')"
+          <el-input v-if="form.notify_channels.includes('is_email')"
             v-model="form.notify_email"
             placeholder="收件邮箱"
-            class="task-field email-field"
-          />
+            class="task-field email-field" />
         </el-form-item>
         <el-form-item label="高级参数">
           <div class="advanced-row">
             <span class="muted">工具轮数上限</span>
             <el-input-number v-model="form.max_steps" :min="3" :max="30" :controls="false" class="advanced-field" />
             <span class="muted">软超时（秒）</span>
-            <el-input-number
-              v-model="form.timeout"
+            <el-input-number v-model="form.timeout"
               :min="60"
               :max="1800"
               :step="30"
               :controls="false"
-              class="advanced-field"
-            />
+              class="advanced-field" />
           </div>
         </el-form-item>
       </el-form>
@@ -272,13 +242,11 @@
     </el-dialog>
 
     <!-- 运行历史 -->
-    <el-dialog
-      :title="`运行历史 · ${currentTask?.name || ''}`"
+    <el-dialog :title="`运行历史 · ${currentTask?.name || ''}`"
       v-model="runsVisible"
       width="860px"
       top="6vh"
-      append-to-body
-    >
+      append-to-body>
       <el-table v-loading="runsLoading" :data="runs" size="small">
         <el-table-column label="状态" width="90">
           <template #default="{ row }">
@@ -306,30 +274,26 @@
         </el-table-column>
         <el-table-column label="操作" width="70" fixed="right">
           <template #default="{ row }">
-            <a v-db-click @click="openRunDetail(row)">详情</a>
+            <a @click="openRunDetail(row)">详情</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="runsTotal"
+        <pagination v-if="runsTotal"
           :total="runsTotal"
           v-model:page="runsPage"
           v-model:limit="runsLimit"
-          @pagination="loadRuns"
-        />
+          @pagination="loadRuns" />
       </div>
     </el-dialog>
 
     <!-- 运行详情（过程回放） -->
-    <el-dialog
-      title="运行详情"
+    <el-dialog title="运行详情"
       v-model="detailVisible"
       width="760px"
       top="5vh"
       append-to-body
-      class="run-detail-dialog"
-    >
+      class="run-detail-dialog">
       <div v-loading="detailLoading" class="run-detail">
         <template v-if="runDetail">
           <div class="run-detail-head">
@@ -658,7 +622,7 @@ function toolSummary(message) {
   if (!result) return '';
   if (result.error) return `失败：${result.message || '未知错误'}`;
   const text = typeof result === 'string' ? result : JSON.stringify(result);
-  return text.length > 260 ? text.slice(0, 260) + '…' : text;
+  return text.length> 260 ? text.slice(0, 260) + '…' : text;
 }
 
 function scheduleText(row) {
@@ -695,7 +659,7 @@ function avatarColor(row) {
   const key = String(row.name || row.id || '');
   let hash = 0;
   for (let i = 0; i < key.length; i++) {
-    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    hash = (hash * 31 + key.charCodeAt(i))>>> 0;
   }
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }

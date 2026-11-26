@@ -62,8 +62,9 @@ class ModuleRouteLoader
     /**
      * 未激活模块提示
      *
-     * miss 路由兜底：URL 第一段若匹配某个模块目录名（modules/{name} 或 modules/{type}/{name}），
+     * miss 路由兜底：URL 每一段若匹配某个模块目录名（modules/{name} 或 modules/{type}/{name}），
      * 且该模块存在 {scene} 路由文件但未安装/未启用，则返回模块标识，用于向客户端友好提示"插件未安装"。
+     * 插件路由常挂在 v2 等版本前缀下，不能只看第一段。
      *
      * 基于目录扫描 + ModuleStateChecker 安装状态校验，不硬编码任何模块清单，
      * 模块安装/卸载/启用/禁用后提示自动跟随，符合插件可插拔设计。
@@ -73,20 +74,22 @@ class ModuleRouteLoader
      */
     public static function inactiveModuleHint(string $scene): ?array
     {
-        // 取 URL 第一段作为模块目录名候选（MultiApp 已剥离应用名前缀）
-        $prefix = strtolower((string)strtok((string)request()->pathinfo(), '/'));
-        if ($prefix === '') {
-            return null;
-        }
-        // 一级模块：modules/{prefix}/route/{scene}.php
-        $files = glob(root_path() . "modules/{$prefix}/route/{$scene}.php") ?: [];
-        // 二级模块：modules/*/{prefix}/route/{scene}.php
-        $files = array_merge($files, glob(root_path() . "modules/*/{$prefix}/route/{$scene}.php") ?: []);
-        foreach ($files as $file) {
-            $meta = self::readModuleMeta(dirname(dirname($file)));
-            // 路由文件存在但模块未激活 => 说明该接口属于未安装/未启用的插件
-            if ($meta !== null && !ModuleStateChecker::isActive($meta['key'])) {
-                return $meta;
+        // MultiApp 已剥离应用名前缀。v2/插件名/… 这类地址里，模块目录名不在第一段。
+        $segments = explode('/', strtolower((string)request()->pathinfo()));
+        foreach ($segments as $prefix) {
+            if (!preg_match('/^[a-z0-9_]+$/', $prefix)) {
+                continue;
+            }
+            // 一级模块：modules/{prefix}/route/{scene}.php
+            $files = glob(root_path() . "modules/{$prefix}/route/{$scene}.php") ?: [];
+            // 二级模块：modules/*/{prefix}/route/{scene}.php
+            $files = array_merge($files, glob(root_path() . "modules/*/{$prefix}/route/{$scene}.php") ?: []);
+            foreach ($files as $file) {
+                $meta = self::readModuleMeta(dirname(dirname($file)));
+                // 路由文件存在但模块未激活 => 说明该接口属于未安装/未启用的插件
+                if ($meta !== null && !ModuleStateChecker::isActive($meta['key'])) {
+                    return $meta;
+                }
             }
         }
         return null;

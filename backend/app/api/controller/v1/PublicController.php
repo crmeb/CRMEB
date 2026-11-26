@@ -143,11 +143,13 @@ class PublicController
 
         //用户等级开关
         $vipOpen = sys_config('member_func_status');
+        //分销功能开关
+        $brokerageFuncStatus = sys_config('brokerage_func_status');
         //余额功能开关
         $balanceFuncStatus = sys_config('balance_func_status');
         //付费会员开关
         $svipOpen = sys_config('member_card_status');
-        $userService = $userOrder = $userVerifyStatus = $deliveryUser = $invoiceStatus = false;
+        $userService = $userOrder = $userVerifyStatus = $deliveryUser = $invoiceStatus = $isUserPromoter = false;
         if ($uid && $userInfo) {
             //是否客服
             $userService = (bool)(event('KefuConfigQuery', ['uid' => $uid, 'customer' => 0])[0] ?? false);
@@ -157,15 +159,24 @@ class PublicController
             $deliveryUser = app()->make(ServicePersonnelServices::class)->checkoutIsService($uid);
             //发票功能开关
             $invoiceStatus = app()->make(UserInvoiceServices::class)->invoiceFuncStatus(false);
+            //是否分销员（档案由分销插件维护）
+            $agentProfile = event('DistributionServiceProxy', [
+                'service' => 'DistributionUserServices',
+                'action' => 'profile',
+                'args' => [$uid, is_object($userInfo) && method_exists($userInfo, 'toArray') ? $userInfo->toArray() : (array)$userInfo],
+            ]);
+            if (is_array($agentProfile[0] ?? null)) {
+                $isUserPromoter = (int)($agentProfile[0]['is_promoter'] ?? 0) === 1
+                    && (int)($agentProfile[0]['spread_open'] ?? 0) === 1;
+            }
         }
         $auth = [];
         $auth['/pages/users/user_vip/index'] = $vipOpen;
+        $auth['/pages/users/user_spread_user/index'] = $brokerageFuncStatus && $isUserPromoter;
+        $auth['/pages/annex/settled/index'] = $brokerageFuncStatus && sys_config('store_brokerage_statu') == 1 && !$isUserPromoter;
         $auth['/pages/users/user_money/index'] = $balanceFuncStatus;
         $auth['/pages/users/user_invoice_list/index'] = $invoiceStatus;
         $auth['/pages/annex/vip_paid/index'] = $svipOpen;
-        // 分销中心/代理商入驻已下线，强制隐藏
-        $auth['/pages/users/user_spread_user/index'] = false;
-        $auth['/pages/annex/settled/index'] = false;
         $auth['/kefu/mobile_list'] = $userService;
         // 移动端核销页仅对核销员/配送员开放；已删除的商家管理页强制隐藏
         $auth['/pages/admin/order_cancellation/index'] = $userVerifyStatus || $deliveryUser;
@@ -175,6 +186,11 @@ class PublicController
             if (isset($value['is_show']) && $value['is_show'] == 0) {
                 unset($menusInfo[$key]);
                 continue;
+            }
+            // 指定分销且非推广员：个人中心「我的推广」入口改为「分销申请」
+            if ($value['url'] == '/pages/users/user_spread_user/index' && $auth['/pages/annex/settled/index']) {
+                $value['name'] = '分销申请';
+                $value['url'] = '/pages/annex/settled/index';
             }
             if (isset($auth[$value['url']]) && !$auth[$value['url']]) {
                 unset($menusInfo[$key]);
@@ -322,6 +338,15 @@ class PublicController
             }, $domainArr);
         }
         $domainArr[] = 'mp.weixin.qq.com';
+        // 相对路径视为本站资源，补全 site_url 后再做域名白名单与拉取
+        $siteUrl = rtrim((string)sys_config('site_url'), '/');
+        if ($imageUrl !== '' && !preg_match('#^https?://#i', $imageUrl)) {
+            $imageUrl = $siteUrl . '/' . ltrim($imageUrl, '/');
+        }
+        if ($codeUrl !== '' && !preg_match('#^https?://#i', $codeUrl)
+            && strpos($codeUrl, 'https://mp.weixin.qq.com/cgi-bin/showqrcode') !== 0) {
+            $codeUrl = $siteUrl . '/' . ltrim($codeUrl, '/');
+        }
         $imageUrlHost = $imageUrl ? (parse_url($imageUrl)['host'] ?? $imageUrl) : $imageUrl;
         $codeUrlHost = $codeUrl ? (parse_url($codeUrl)['host'] ?? $codeUrl) : $codeUrl;
         if ($domainArr && (($imageUrl && !in_array($imageUrlHost, $domainArr)) || ($codeUrl && !in_array($codeUrlHost, $domainArr)))) {
@@ -817,8 +842,15 @@ class PublicController
     {
         $uid = (int)$request->uid();
         if ($type == 1) {
-            // 提现已由分销插件接管，主程序不再提供提现转账详情
-            return app('json')->fail('提现功能已下线');
+            $info = proxy_event_result(event('DistributionServiceProxy', [
+                'service' => 'DistributionExtractTransferServices',
+                'action' => 'transferInfo',
+                'args' => [$uid, (string)$order_id, false],
+            ]), null);
+            if (!$info) {
+                return app('json')->fail('提现记录不存在');
+            }
+            return app('json')->success($info);
         }
         //通过事件代理查询抽奖记录，避免 app 层直接引用 modules
         $results = event('MarketingServiceProxy', ['module' => 'lottery', 'service' => 'LuckLotteryRecordServices', 'action' => 'getRecordByOrderId', 'args' => [$uid, $order_id]]);
@@ -895,6 +927,7 @@ class PublicController
             //用户等级开关
             $levelOpen = (bool)sys_config('member_func_status');
             //分销功能开关
+            $brokerageOpen = (bool)sys_config('brokerage_func_status');
             //余额功能开关
             $balanceOpen = (bool)sys_config('balance_func_status');
             //付费会员开关
@@ -903,7 +936,7 @@ class PublicController
             $invoiceOpen = (bool)sys_config('invoice_func_status');
 
             // 初始化用户角色标识
-            $userIsService = $userIsOrder = $userIsVerify = $userIsDelivery = false;
+            $userIsService = $userIsOrder = $userIsVerify = $userIsDelivery = $userIsPromoter = false;
 
             if ($uid && $userInfo) {
                 /** @var OrderCenterDao $orderCenterDao */
@@ -918,6 +951,16 @@ class PublicController
                 $userIsVerify = (bool)app()->make(SystemStoreStaffServices::class)->verifyStatus($uid);
                 //是否配送员
                 $userIsDelivery = (bool)app()->make(ServicePersonnelServices::class)->checkoutIsService($uid);
+                //是否分销员（档案由分销插件维护）
+                $agentProfile = event('DistributionServiceProxy', [
+                    'service' => 'DistributionUserServices',
+                    'action' => 'profile',
+                    'args' => [$uid, is_object($userInfo) && method_exists($userInfo, 'toArray') ? $userInfo->toArray() : (array)$userInfo],
+                ]);
+                if (is_array($agentProfile[0] ?? null)) {
+                    $userIsPromoter = (int)($agentProfile[0]['is_promoter'] ?? 0) === 1
+                        && (int)($agentProfile[0]['spread_open'] ?? 0) === 1;
+                }
 
                 // 统计各状态订单数量，用于菜单角标显示（基于 eb_order_center 表，口径与订单列表 tab 一致）
                 $orderAuth = [];
@@ -949,9 +992,8 @@ class PublicController
             // 配置各页面的访问权限
             $auth = [];
             $auth['/pages/users/user_vip/index'] = $levelOpen;
-            // 分销中心/代理商入驻已下线，强制隐藏
-            $auth['/pages/users/user_spread_user/index'] = false;
-            $auth['/pages/annex/settled/index'] = false;
+            $auth['/pages/users/user_spread_user/index'] = $brokerageOpen && $userIsPromoter;
+            $auth['/pages/annex/settled/index'] = $brokerageOpen && sys_config('store_brokerage_statu') == 1 && !$userIsPromoter;
             $auth['/pages/users/user_money/index'] = $balanceOpen;
             $auth['/pages/users/user_invoice_list/index'] = $invoiceOpen;
             $auth['/pages/annex/vip_paid/index'] = $sVipOpen;
@@ -966,6 +1008,13 @@ class PublicController
                 foreach ($themeInfo['value'] as &$userDataItem) {
                     if ($userDataItem['name'] == 'menus') {
                         foreach ($userDataItem['menuConfig']['list'] as &$menuDataItem) {
+                            // 指定分销且非推广员：主题「我的推广」入口改为「分销申请」
+                            if ($menuDataItem['info'][1]['value'] == '/pages/users/user_spread_user/index'
+                                && $brokerageOpen && sys_config('store_brokerage_statu') == 1 && !$userIsPromoter) {
+                                $menuDataItem['info'][0]['value'] = '分销申请';
+                                $menuDataItem['info'][1]['value'] = '/pages/annex/settled/index';
+                                $menuDataItem['show'] = true;
+                            }
                             // 设置菜单显示权限和角标数量
                             $menuDataItem['show'] = ($auth[$menuDataItem['info'][1]['value']] ?? true) && $menuDataItem['show'];
                             $menuDataItem['num'] = $orderAuth[$menuDataItem['info'][1]['value']] ?? 0;

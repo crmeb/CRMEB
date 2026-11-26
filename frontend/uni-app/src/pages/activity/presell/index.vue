@@ -90,8 +90,10 @@
 	import { ref } from 'vue';
 	import { onLoad, onReachBottom, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
 	import i18n from '@/utils/lang.js';
+	import { useAppStore } from '@/store/modules/app';
 
 	const { colorStyle } = useColorTheme();
+	const appStore = useAppStore();
 
 	// ---------- data ----------
 	const imgHost = HTTP_REQUEST_URL;
@@ -172,17 +174,17 @@
 			withShareTicket: true,
 			menus: ['shareAppMessage', 'shareTimeline']
 		})
+		const spid = appStore.uid || 0;
 		return {
 			title: i18n.t(`预售活动`),
-			path: 'pages/activity/presell/index',
+			path: 'pages/activity/presell/index' + (spid ? '?spid=' + spid : ''),
 		}
 	});
 	onShareTimeline(() => {
+		const spid = appStore.uid || 0;
 		return {
 			title: i18n.t(`预售活动`),
-			query: {
-				key: ''
-			},
+			query: spid ? { spid } : {},
 			imageUrl: ''
 		}
 	});

@@ -1310,7 +1310,7 @@ onLoad((options) => {
       );
     }
     //记录推广人uid
-    if (value.pid) app.globalData.spid = value.pid;
+    if (value.spid) app.globalData.spid = value.spid;
   }
   // #endif
 

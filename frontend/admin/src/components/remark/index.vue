@@ -2,22 +2,18 @@
   <el-dialog v-model="modals" title="备注" class="order_box" width="470px" :show-close="true">
     <el-form ref="formValidateRef" :model="formValidate" :rules="ruleValidate" label-width="85px" @submit.prevent>
       <el-form-item label="备注：" prop="remark">
-        <el-input
-          v-model="formValidate.remark"
+        <el-input v-model="formValidate.remark"
           :maxlength="200"
           show-word-limit
           type="textarea"
           placeholder="请输入备注信息"
-          style="width: 100%"
-        />
+          style="width: 100%" />
       </el-form-item>
     </el-form>
-    <template #footer
-      ><div>
+    <template #footer><div>
         <el-button type="primary" v-db-click @click="putRemark('formValidate')">提交</el-button>
-        <el-button v-db-click @click="cancel('formValidate')">取消</el-button>
-      </div></template
-    >
+        <el-button @click="cancel('formValidate')">取消</el-button>
+      </div></template>
   </el-dialog>
 </template>
 

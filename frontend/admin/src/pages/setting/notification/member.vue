@@ -1,52 +1,40 @@
 <template>
   <div class="message">
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="按场景配置会员端消息通知的渠道开关与模板，支持一键同步微信订阅消息/模板消息。"
-    ></pages-header>
+      description="按场景配置会员端消息通知的渠道开关与模板，支持一键同步微信订阅消息/模板消息。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '20px 20px 20px' }">
       <el-row class="action-row mb14">
         <el-col>
-          <el-button
-            v-if="isRoutineAvailable"
+          <el-button v-if="isRoutineAvailable"
             v-auth="['app-wechat-template-sync']"
             type="primary"
-            v-db-click
-            @click="routineTemplate"
-            >同步小程序订阅消息</el-button
-          >
-          <el-button
-            v-if="isWechatAvailable"
+            @click="routineTemplate">同步小程序订阅消息</el-button>
+          <el-button v-if="isWechatAvailable"
             v-auth="['app-wechat-template-sync']"
             type="primary"
-            v-db-click
-            @click="wechatTemplate"
-            >同步微信模板消息</el-button
-          >
+            @click="wechatTemplate">同步微信模板消息</el-button>
         </el-col>
       </el-row>
       <el-alert type="warning" :closable="false">
         <template #title>
           <p class="alert_title">小程序订阅消息</p>
-          登录微信小程序后台，基本设置，服务类目增加《生活服务 > 百货/超市/便利店》 (否则同步小程序订阅消息会报错)<br />
+          登录微信小程序后台，基本设置，服务类目增加《生活服务> 百货/超市/便利店》 (否则同步小程序订阅消息会报错)<br />
           同步小程序订阅消息，是在小程序后台未添加订阅消息模板的前提下使用的，会新增一个模板消息并把信息同步过来，并新本项目数据库。<br />
           <br />
           <p class="alert_title">微信模板消息</p>
-          登录微信公众号后台，选择模板消息，在账号详情下的服务类目中手动设置服务类目，《生活服务 >
+          登录微信公众号后台，选择模板消息，在账号详情下的服务类目中手动设置服务类目，《生活服务>
           百货/超市/便利店》(否则同步模板消息不成功)<br />
           同步公众号模板消息，同步公众号模板会删除公众号后台现有的模板，并重新添加新的模板，然后同步信息到数据库，如果多个项目使用同一个公众号的模板，请谨慎操作。
         </template>
       </el-alert>
-      <el-table
-        :data="levelLists"
+      <el-table :data="levelLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -62,15 +50,12 @@
             <span>{{ scope.row.title }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          v-for="channel in channelList"
+        <el-table-column v-for="channel in channelList"
           :key="channel.channel_key"
           :label="channel.channel_name"
-          min-width="130"
-        >
+          min-width="130">
           <template #default="scope">
-            <el-switch
-              v-if="getChannelStatus(scope.row, channel.channel_key) !== undefined"
+            <el-switch v-if="getChannelStatus(scope.row, channel.channel_key) !== undefined"
               :active-value="1"
               :inactive-value="2"
               :model-value="getChannelStatus(scope.row, channel.channel_key)"
@@ -80,34 +65,29 @@
                 getChannelStatus(scope.row, channel.channel_key) === 1
               "
               @change="changeSwitch($event, scope.row, channel.channel_key)"
-              size="large"
-            >
+              size="large">
             </el-switch>
             <div v-else>--</div>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" :width="70">
           <template #default="scope">
-            <a v-db-click @click="setting(scope.row)">设置</a>
+            <a @click="setting(scope.row)">设置</a>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <el-drawer
-      v-model="settingVisible"
+    <el-drawer v-model="settingVisible"
       title="通知设置"
       size="800px"
       @closed="closeSetting"
-      class="notification-edit-drawer"
-    >
-      <notification-edit
-        v-if="settingVisible && selectedNotificationId"
+      class="notification-edit-drawer">
+      <notification-edit v-if="settingVisible && selectedNotificationId"
         drawer-mode
         :notification-id="selectedNotificationId"
         from="member"
         @close="closeSetting"
-        @saved="handleSettingSaved"
-      />
+        @saved="handleSettingSaved" />
     </el-drawer>
   </div>
 </template>

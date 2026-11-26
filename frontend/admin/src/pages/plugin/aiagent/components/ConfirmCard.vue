@@ -24,13 +24,11 @@
       </div>
       <div v-if="message.status === 'pending'" class="confirm-actions">
         <button class="confirm-btn cancel" type="button" @click="emit('resolve', message, 'reject')">取消</button>
-        <button
-          class="confirm-btn ok"
+        <button class="confirm-btn ok"
           type="button"
           :disabled="chatting"
           v-db-click
-          @click="emit('resolve', message, 'approve')"
-        >
+          @click="emit('resolve', message, 'approve')">
           确认执行
         </button>
       </div>
@@ -100,7 +98,7 @@ const cardParamList = computed(() => {
   return entries
     .map(([key, value], i) => {
       const text = formatValue(value);
-      const long = text.length > VALUE_LIMIT;
+      const long = text.length> VALUE_LIMIT;
       return {
         key: key === undefined || key === null ? '' : String(key),
         full: text,
@@ -226,7 +224,7 @@ function formatValue(value) {
 }
 .confirm-actions {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   justify-content: flex-end;
   margin-top: 12px;
 }

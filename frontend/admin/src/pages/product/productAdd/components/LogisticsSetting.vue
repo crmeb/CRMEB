@@ -23,15 +23,13 @@
       <el-col :span="24" v-if="expressType === 'fixed'">
         <el-form-item label="">
           <div class="acea-row">
-            <el-input-number
-              :controls="false"
+            <el-input-number :controls="false"
               :min="0"
               :value="expressPostage"
               @change="onExpressPostageChange"
               placeholder="请输入金额"
               class="input_width maxW input-number-unit-class"
-              class-unit="元"
-            />
+              class-unit="元" />
           </div>
         </el-form-item>
       </el-col>
@@ -41,7 +39,7 @@
             <el-select v-model="computedExpressTempId" clearable placeholder="请选择运费模板" class="input_width maxW">
               <el-option v-for="(item, index) in templateList" :value="item.id" :key="index" :label="item.name" />
             </el-select>
-            <span class="addfont" v-db-click @click="addTemp">新增运费模板</span>
+            <span class="addfont" @click="addTemp">新增运费模板</span>
           </div>
         </el-form-item>
       </el-col>
@@ -58,8 +56,7 @@
       <el-col :span="24" v-if="doorServiceType === 'fixed'">
         <el-form-item label="">
           <div class="acea-row">
-            <el-input-number
-              :controls="false"
+            <el-input-number :controls="false"
               :min="0"
               :step="1"
               :precision="2"
@@ -67,8 +64,7 @@
               @change="onDoorServicePostageChange"
               placeholder="请输入上门服务费金额"
               class="input_width maxW input-number-unit-class"
-              class-unit="元"
-            />
+              class-unit="元" />
           </div>
         </el-form-item>
       </el-col>

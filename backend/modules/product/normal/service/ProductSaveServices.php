@@ -122,7 +122,6 @@ class ProductSaveServices extends BaseService
             'give_integral'   => 0,
             'description'     => '',
             'is_show'         => 0,
-            'is_sub'          => 0,
             'is_vip'          => 0,
             'vip_product'     => 0,
             'presale'         => 0,
@@ -394,14 +393,7 @@ class ProductSaveServices extends BaseService
             $intro = mb_substr($intro, 0, 256);
         }
 
-        // 兼容前端两种提交格式：主商品管理使用 is_sub 数组（1=分销，0=会员价），插件管理使用 is_sub 标量 + is_vip 标量
-        if (is_array($data['is_sub'] ?? [])) {
-            $isSub = in_array(1, $data['is_sub']) ? 1 : 0;
-            $isVip = in_array(0, $data['is_sub']) ? 1 : 0;
-        } else {
-            $isSub = intval($data['is_sub'] ?? 0);
-            $isVip = intval($data['is_vip'] ?? 0);
-        }
+        $isVip = intval($data['is_vip'] ?? 0);
 
         // 预售时间（用于写入中台表）
         $presale = intval($data['presale'] ?? 0);
@@ -427,8 +419,7 @@ class ProductSaveServices extends BaseService
             'spec_type'       => $data['spec_type'] ?? 0,
             'is_show'         => $data['is_show'] ?? 0,
             'is_del'          => 0,
-            // 会员价/分销/会员专属字段统一写入中台主表
-            'is_sub'          => $isSub,
+            // 会员价/会员专属字段统一写入中台主表
             'is_vip'          => $isVip,
             'vip_product'     => intval($data['vip_product'] ?? 0),
             // 商品通用展示字段统一写入中台主表，避免与扩展表重复存储

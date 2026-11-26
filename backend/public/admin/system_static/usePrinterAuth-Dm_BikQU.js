@@ -1,0 +1,1 @@
+import{Nc as e,Pc as t}from"./common-Cyt99CNL.js";function n(){let n=t();function r(t){let r=n.userInfo?.level;return r===0||r===`0`||Array.isArray(n.access)&&e([t],n.access)}return{hasPermission:r}}export{n as t};

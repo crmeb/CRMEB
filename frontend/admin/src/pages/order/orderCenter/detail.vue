@@ -15,18 +15,13 @@
               <div class="title">订单状态</div>
               <div>
                 <el-tag :type="getStatusClass(detailData)">{{ getStatusLabel(detailData) }}</el-tag>
-                <a
-                  v-if="detailData.canceled_refund_pending"
+                <a v-if="detailData.canceled_refund_pending"
                   v-db-click
                   class="refund-link"
                   @click="submitCanceledRefund"
-                  v-auth="['admin-order-orderCenter-canceled-refund']"
-                  >原路退款</a
-                >
-                <span
-                  v-if="Number(detailData.is_del) !== 1 && detailData.refund_status == 1"
-                  style="color: #ed4014; margin-left: 4px"
-                >
+                  v-auth="['admin-order-orderCenter-canceled-refund']">原路退款</a>
+                <span v-if="Number(detailData.is_del) !== 1 && detailData.refund_status == 1"
+                  style="color: #ed4014; margin-left: 4px">
                   退款中
                 </span>
               </div>
@@ -248,7 +243,7 @@ defineExpose({ loadDetail });
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item.is-active) {
   border-bottom: none;
 }
 
@@ -331,18 +326,18 @@ defineExpose({ loadDetail });
   }
 }
 
-:deep(.el-tabs--border-card > .el-tabs__content) {
+:deep(.el-tabs--border-card> .el-tabs__content) {
   /* 独立路由详情页：与 .head 的 30px 左右缩进对齐 */
   padding: 0 30px;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header),
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:active) {
+:deep(.el-tabs--border-card> .el-tabs__header),
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item:active) {
   border: none;
   height: 40px;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item.is-active) {
   border: none;
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
@@ -351,11 +346,11 @@ defineExpose({ loadDetail });
   line-height: 16px;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item) {
   border: none;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item) {
   margin-top: 0;
   transition: none;
   height: 40px !important;

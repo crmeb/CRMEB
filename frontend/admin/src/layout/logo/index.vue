@@ -1,13 +1,10 @@
 <template>
-  <div
-    class="layout-logo"
+  <div class="layout-logo"
     v-if="getThemeConfig.layout !== 'columns' && !getThemeConfig.isCollapse"
-    v-db-click
-    @click="onThemeConfigChange"
-  >
+    @click="onThemeConfigChange">
     <img v-if="maxLogo" class="layout-logo-medium-img" :src="maxLogo" />
   </div>
-  <div class="layout-logo-size" v-else v-db-click @click="onThemeConfigChange">
+  <div class="layout-logo-size" v-else @click="onThemeConfigChange">
     <img v-if="minLogo" class="layout-logo-size-img" :src="minLogo" />
   </div>
 </template>

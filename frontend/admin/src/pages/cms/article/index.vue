@@ -4,39 +4,33 @@
       <div class="padding-add">
         <el-form :model="artFrom" :label-width="labelWidth" label-position="right" @submit.prevent inline>
           <el-form-item label="文章分类：" label-for="pid">
-            <el-cascader
-              v-model="artFrom.pid"
+            <el-cascader v-model="artFrom.pid"
               placeholder="请选择"
               class="treeSel"
               @change="handleCheckChange"
               :options="treeData"
               :props="cascaderProps"
-              style="width: 250px"
-            >
+              style="width: 250px">
             </el-cascader>
           </el-form-item>
           <el-form-item label="文章搜索：" label-for="title">
             <el-input clearable placeholder="请输入" v-model="artFrom.title" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <router-link :to="Setting.routePre + '/cms/article/add_article'" v-auth="['cms-article-creat']"
-        ><el-button v-db-click type="primary" class="action-row bnt">添加文章</el-button></router-link
-      >
-      <el-table
-        :data="cmsList"
+      <router-link :to="Setting.routePre + '/cms/article/add_article'" v-auth="['cms-article-creat']"><el-button type="primary" class="action-row bnt">添加文章</el-button></router-link>
+      <el-table :data="cmsList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -54,9 +48,7 @@
         <el-table-column label="文章名称" min-width="130">
           <template #default="scope">
             <el-tooltip placement="top" :open-delay="600">
-              <template #content
-                ><div>{{ ' [ ' + scope.row.catename + ' ] ' + scope.row.title }}</div></template
-              >
+              <template #content><div>{{ ' [ ' + scope.row.catename + ' ] ' + scope.row.title }}</div></template>
               <span class="line2">{{ scope.row.title }}</span>
             </el-tooltip>
           </template>
@@ -78,9 +70,9 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="300">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="artRelation(scope.row, '取消关联', index)">{{
+            <a @click="artRelation(scope.row, '取消关联', index)">{{
               scope.row.product_id === 0 ? '关联' : '取消关联'
             }}</a>
             <el-divider direction="vertical"></el-divider>
@@ -88,23 +80,19 @@
             <el-divider direction="vertical"></el-divider>
             <el-dropdown @command="onCopy(scope.row, $event)" :transfer="true">
               <span class="el-dropdown-link">复制链接<i class="el-icon-arrow-down el-icon--right"></i></span>
-              <template #dropdown
-                ><el-dropdown-menu>
+              <template #dropdown><el-dropdown-menu>
                   <el-dropdown-item command="1">移动端链接</el-dropdown-item>
-                </el-dropdown-menu></template
-              >
+                </el-dropdown-menu></template>
             </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="artFrom.page"
           v-model:limit="artFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!--关联-->

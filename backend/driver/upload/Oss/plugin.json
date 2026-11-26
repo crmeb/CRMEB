@@ -2,7 +2,7 @@
     "key": "oss",
     "name": "阿里云OSS",
     "description": "阿里云OSS驱动",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "CRMEB",
     "type": "driver",
     "path": "driver/upload/Oss",

@@ -16,7 +16,7 @@
             :max="canvasWidth - curComponent.style.width"
             :min="0"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>
@@ -34,7 +34,7 @@
             :max="canvasHeight - curComponent.style.height"
             :min="0"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>
@@ -52,7 +52,7 @@
             :max="360"
             :min="0"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>

@@ -55,6 +55,7 @@ import { userShare } from "@/api/user.js";
 import { useAppStore } from '@/store/modules/app';
 // #ifdef H5
 import wechat from "@/libs/wechat";
+import { appendSpid } from "@/utils";
 // #endif
 
 defineOptions({ name: 'newsDetails' });
@@ -142,7 +143,7 @@ function setShareInfoStatus() {
 	shareInfoStatus.value = false
 }
 function setShareInfo() {
-	let href = location.href + '&spid=' + appStore.uid;
+	let href = appendSpid(location.href, appStore.uid);
 	let configAppMessage = {
 		title: articleInfo.value.title,
 		desc: articleInfo.value.synopsis,

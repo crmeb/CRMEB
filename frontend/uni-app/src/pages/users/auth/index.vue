@@ -82,11 +82,11 @@ onLoad((options) => {
 	} = options;
 	if (scope === 'snsapi_base') {
 		url.value = options.url || options.back_url || '';
-		let spread = Cache.get("spread");
+		let spid = Cache.get("spid");
 		let loginType = Cache.get(LOGINTYPE);
 		// silenceAuth({
 		// 	code: options.code || '',
-		// 	spread: spread
+		// 	spid: spid
 		// }).then(res => {
 		// 	if (res.data.key !== undefined) {
 		// 		this.bindPhone = true;

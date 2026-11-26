@@ -30,10 +30,8 @@
                       <el-input v-model="templateList[scope.$index].regionName" />
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    :label="formData.type === 2 ? '首件重量(KG)' : formData.type === 3 ? '首件体积(m³)' : '首件'"
-                    minWidth="100"
-                  >
+                  <el-table-column :label="formData.type === 2 ? '首件重量(KG)' : formData.type === 3 ? '首件体积(m³)' : '首件'"
+                    minWidth="100">
                     <template #default="scope">
                       <el-input type="number" v-model="templateList[scope.$index].first" />
                     </template>
@@ -43,10 +41,8 @@
                       <el-input type="number" v-model="templateList[scope.$index].price" />
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    :label="formData.type === 2 ? '续件重量(KG)' : formData.type === 3 ? '续件体积(m³)' : '续件'"
-                    minWidth="100"
-                  >
+                  <el-table-column :label="formData.type === 2 ? '续件重量(KG)' : formData.type === 3 ? '续件体积(m³)' : '续件'"
+                    minWidth="100">
                     <template #default="scope">
                       <el-input type="number" v-model="templateList[scope.$index].continue" />
                     </template>
@@ -58,18 +54,15 @@
                   </el-table-column>
                   <el-table-column label="操作" fixed="right" width="100">
                     <template #default="scope">
-                      <a
-                        v-if="scope.row.regionName !== '默认全国'"
+                      <a v-if="scope.row.regionName !== '默认全国'"
                         v-db-click
-                        @click="delCity(scope.row, '配送区域', scope.$index, 1)"
-                        >删除</a
-                      >
+                        @click="delCity(scope.row, '配送区域', scope.$index, 1)">删除</a>
                     </template>
                   </el-table-column>
                 </el-table>
                 <el-row class="addTop">
                   <el-col>
-                    <el-button type="primary" v-db-click @click="addCity(1)">添加配送区域</el-button>
+                    <el-button type="primary" @click="addCity(1)">添加配送区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -82,23 +75,19 @@
                   <el-radio :label="1" :value="1">开启</el-radio>
                   <el-radio :label="0" :value="0">关闭</el-radio>
                 </el-radio-group>
-                <el-table
-                  ref="table"
+                <el-table ref="table"
                   :data="appointList"
                   class="addTop mt10"
                   empty-text="暂无数据"
                   border
-                  v-if="formData.appoint_check === 1"
-                >
+                  v-if="formData.appoint_check === 1">
                   <el-table-column label="选择区域" minWidth="100">
                     <template #default="scope">
                       <el-input v-model="appointList[scope.$index].placeName" />
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    :label="formData.type === 2 ? '包邮重量' : formData.type === 3 ? '包邮体积(m³)' : '包邮件数'"
-                    minWidth="100"
-                  >
+                  <el-table-column :label="formData.type === 2 ? '包邮重量' : formData.type === 3 ? '包邮体积(m³)' : '包邮件数'"
+                    minWidth="100">
                     <template #default="scope">
                       <el-input type="number" v-model="appointList[scope.$index].a_num" />
                     </template>
@@ -110,12 +99,9 @@
                   </el-table-column>
                   <el-table-column label="操作" fixed="right" width="100">
                     <template #default="scope">
-                      <a
-                        v-if="scope.row.regionName !== '默认全国'"
+                      <a v-if="scope.row.regionName !== '默认全国'"
                         v-db-click
-                        @click="delCity(scope.row, '配送区域', scope.$index, 2)"
-                        >删除</a
-                      >
+                        @click="delCity(scope.row, '配送区域', scope.$index, 2)">删除</a>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -124,7 +110,7 @@
                 </div>
                 <el-row class="addTop mt5" v-if="formData.appoint_check === 1">
                   <el-col>
-                    <el-button type="primary" v-db-click @click="addCity(2)">添加包邮区域</el-button>
+                    <el-button type="primary" @click="addCity(2)">添加包邮区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -137,14 +123,12 @@
                   <el-radio :label="1" :value="1">开启</el-radio>
                   <el-radio :label="0" :value="0">关闭</el-radio>
                 </el-radio-group>
-                <el-table
-                  ref="table"
+                <el-table ref="table"
                   :data="noDeliveryList"
                   class="addTop mt10"
                   empty-text="暂无数据"
                   border
-                  v-if="formData.no_delivery_check === 1"
-                >
+                  v-if="formData.no_delivery_check === 1">
                   <el-table-column label="选择区域" minWidth="100">
                     <template #default="scope">
                       <el-input v-model="noDeliveryList[scope.$index].placeName" />
@@ -152,18 +136,15 @@
                   </el-table-column>
                   <el-table-column label="操作" fixed="right" width="100">
                     <template #default="scope">
-                      <a
-                        v-if="scope.row.regionName !== '默认全国'"
+                      <a v-if="scope.row.regionName !== '默认全国'"
                         v-db-click
-                        @click="delCity(scope.row, '配送区域', scope.$index, 3)"
-                        >删除</a
-                      >
+                        @click="delCity(scope.row, '配送区域', scope.$index, 3)">删除</a>
                     </template>
                   </el-table-column>
                 </el-table>
                 <el-row class="addTop" v-if="formData.no_delivery_check === 1">
                   <el-col>
-                    <el-button type="primary" v-db-click @click="addCity(3)">添加不送达区域</el-button>
+                    <el-button type="primary" @click="addCity(3)">添加不送达区域</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -172,12 +153,10 @@
           <el-row :gutter="24">
             <el-col :xl="18" :lg="18" :md="18" :sm="24" :xs="24">
               <el-form-item label="排序：" prop="store_name" label-for="store_name">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   :min="0"
                   placeholder="输入值越大越靠前"
-                  v-model="formData.sort"
-                ></el-input-number>
+                  v-model="formData.sort"></el-input-number>
               </el-form-item>
             </el-col>
           </el-row>

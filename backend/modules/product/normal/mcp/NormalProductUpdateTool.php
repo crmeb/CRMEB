@@ -275,7 +275,6 @@ class NormalProductUpdateTool implements McpToolInterface
             'ficti'            => (int)($current['ficti'] ?? 0),
             'sort'             => (int)($current['sort'] ?? 0),
             'is_show'          => (int)($current['is_show'] ?? 0),
-            'is_sub'           => (int)($current['is_sub'] ?? 0),
             'is_vip'           => (int)($current['is_vip'] ?? 0),
             'vip_product'      => (int)($current['vip_product'] ?? 0),
             'presale'          => (int)($current['presale'] ?? 0),

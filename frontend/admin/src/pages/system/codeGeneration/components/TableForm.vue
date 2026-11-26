@@ -10,19 +10,17 @@
       <p>4、添加字段id、create_time、update_time、delete_time为不可用字段</p>
     </el-alert>
     <div class="df mb14">
-      <el-button class="mr20" type="primary" v-db-click @click="addRow">添加一行</el-button>
+      <el-button class="mr20" type="primary" @click="addRow">添加一行</el-button>
       <el-checkbox class="mr10" v-model="isCreate" @change="addCreate">添加与修改时间</el-checkbox>
       <el-checkbox class="mr10" v-model="isDelete" @change="addDelete">伪删除</el-checkbox>
     </div>
     <div>
-      <el-table
-        ref="selection"
+      <el-table ref="selection"
         :data="tableField"
         empty-text="暂无数据"
         highlight-current-row
         v-loading="loading"
-        max-height="600"
-      >
+        max-height="600">
         <el-table-column label="" min-width="40">
           <template #default="scope">
             <div class="drag" v-if="!disabledInput(scope.$index)">
@@ -32,27 +30,21 @@
         </el-table-column>
         <el-table-column label="表单名" min-width="130">
           <template #default="scope">
-            <el-input
-              v-model="scope.row.table_name"
+            <el-input v-model="scope.row.table_name"
               :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
-              @change="(e) => changeComment(e, scope.$index)"
-            ></el-input>
+              @change="(e) => changeComment(e, scope.$index)"></el-input>
           </template>
         </el-table-column>
         <el-table-column label="表单类型" min-width="130">
           <template #default="scope">
-            <el-select
-              clearable
+            <el-select clearable
               v-model="scope.row.from_type"
               :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
-              @change="(e) => fromTypeChange(e, scope.$index)"
-            >
-              <el-option
-                v-for="item in fromTypeList"
+              @change="(e) => fromTypeChange(e, scope.$index)">
+              <el-option v-for="item in fromTypeList"
                 :value="item.value"
                 :key="item.value"
-                :label="item.label"
-              ></el-option>
+                :label="item.label"></el-option>
             </el-select>
           </template>
         </el-table-column>
@@ -60,115 +52,89 @@
           <template #default="scope">
             <div class="table-options" v-if="['select', 'radio', 'checkbox'].includes(scope.row.from_type)">
               <el-select clearable v-model="scope.row.dictionary_id">
-                <el-option
-                  v-for="item in dictionaryList"
+                <el-option v-for="item in dictionaryList"
                   :value="item.id"
                   :key="item.id"
-                  :label="item.name"
-                ></el-option>
+                  :label="item.name"></el-option>
               </el-select>
-              <!-- <i class="el-icon-edit create" v-db-click @click="eidtOptions(scope.$index)" /> -->
+              <!-- <i class="el-icon-edit create" @click="eidtOptions(scope.$index)" /> -->
             </div>
             <div v-else>--</div>
           </template>
         </el-table-column>
         <el-table-column label="必填" width="50">
           <template #default="scope">
-            <el-checkbox
-              v-model="scope.row.required"
-              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
-            ></el-checkbox>
+            <el-checkbox v-model="scope.row.required"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"></el-checkbox>
           </template>
         </el-table-column>
 
         <el-table-column label="查询方式" min-width="130">
           <template #default="scope">
-            <el-select
-              clearable
+            <el-select clearable
               v-model="scope.row.search"
               :disabled="disabledInput(scope.$index)"
-              placeholder="请选择"
-            >
-              <el-option
-                :label="item.label"
+              placeholder="请选择">
+              <el-option :label="item.label"
                 :value="item.value"
                 v-for="item in searchType"
-                :key="item.value"
-              ></el-option>
+                :key="item.value"></el-option>
             </el-select>
           </template>
         </el-table-column>
         <el-table-column label="列表" width="50">
           <template #default="scope">
-            <el-checkbox
-              v-model="scope.row.is_table"
-              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
-            ></el-checkbox>
+            <el-checkbox v-model="scope.row.is_table"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column label="字段名称" min-width="120">
           <template #default="scope">
-            <el-input
-              :disabled="disabledInput(scope.$index)"
+            <el-input :disabled="disabledInput(scope.$index)"
               v-model="scope.row.field"
-              @blur="changeField(scope.$index)"
-            ></el-input>
+              @blur="changeField(scope.$index)"></el-input>
           </template>
         </el-table-column>
         <el-table-column label="字段类型" min-width="130">
           <template #default="scope">
-            <el-select
-              v-model="scope.row.field_type"
+            <el-select v-model="scope.row.field_type"
               :disabled="disabledInput(scope.$index)"
               clearable
-              @change="changeItemField($event, scope.$index)"
-            >
+              @change="changeItemField($event, scope.$index)">
               <el-option v-for="item in columnTypeList" :value="item" :key="item" :label="item"></el-option>
             </el-select>
           </template>
         </el-table-column>
         <el-table-column label="长度" min-width="80">
           <template #default="scope">
-            <el-input
-              v-if="scope.row.field_type !== 'enum'"
+            <el-input v-if="scope.row.field_type !== 'enum'"
               v-model="scope.row.limit"
-              :disabled="disabledInput(scope.$index)"
-            ></el-input>
-            <el-select
-              v-else
+              :disabled="disabledInput(scope.$index)"></el-input>
+            <el-select v-else
               v-model="scope.row.limit"
               multiple
               filterable
               allow-create
               clearable
               default-first-option
-              placeholder="请添加"
-            />
+              placeholder="请添加" />
           </template>
         </el-table-column>
         <el-table-column label="默认值" min-width="180">
           <template #default="scope">
-            <el-input
-              class="input-with-select"
+            <el-input class="input-with-select"
               v-model="scope.row.default"
-              :disabled="disabledInput(scope.$index) || scope.row.default_type !== '1'"
-            >
-              <template #prepend
-                ><el-select
-                  class="code-table-sel"
+              :disabled="disabledInput(scope.$index) || scope.row.default_type !== '1'">
+              <template #prepend><el-select class="code-table-sel"
                   clearable
                   v-model="scope.row.default_type"
                   :disabled="disabledInput(scope.$index)"
                   placeholder="请选择"
-                  style="width: 100px"
-                >
-                  <el-option
-                    :label="item.label"
+                  style="width: 100px">
+                  <el-option :label="item.label"
                     :value="item.value"
                     v-for="item in defaultType"
-                    :key="item.value"
-                  ></el-option> </el-select
-              ></template>
+                    :key="item.value"></el-option> </el-select></template>
             </el-input>
             <!-- <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> -->
           </template>
@@ -181,41 +147,33 @@
 
         <el-table-column label="关联表" min-width="130">
           <template #default="scope">
-            <el-cascader
-              clearable
+            <el-cascader clearable
               filterable
               v-model="scope.row.hasOne"
               :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
               :options="associationTable"
-              :props="props2"
-            ></el-cascader>
+              :props="props2"></el-cascader>
           </template>
         </el-table-column>
         <el-table-column label="索引" width="50">
           <template #default="scope">
-            <el-checkbox
-              v-model="scope.row.index"
-              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"
-            ></el-checkbox>
+            <el-checkbox v-model="scope.row.index"
+              :disabled="disabledInput(scope.$index) && scope.row.field == 'id'"></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <a v-if="!scope.row.primaryKey && !disabledInput(scope.$index)" v-db-click @click="del(row, scope.$index)"
-              >删除</a
-            >
+            <a v-if="!scope.row.primaryKey && !disabledInput(scope.$index)" v-db-click @click="del(row, scope.$index)">删除</a>
             <span v-else>--</span>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog
-      v-model="optionsModal"
+    <el-dialog v-model="optionsModal"
       title="字典配置"
       @close="beforeChange"
       :close-on-click-modal="false"
-      width="600px"
-    >
+      width="600px">
       <div class="options-list">
         <el-form ref="form" :inline="true" label-width="80px">
           <div class="mb10">
@@ -231,30 +189,23 @@
               <el-input class="mr10" v-model="item.value" placeholder="value" style="width: 150px" />
             </el-form-item>
             <div style="display: inline-block; margin-bottom: 14px">
-              <i
-                v-if="index == optionsList.length - 1"
+              <i v-if="index == optionsList.length - 1"
                 class="el-icon-circle-plus-outline add"
                 title="新增"
-                v-db-click
-                @click="addOneOptions"
-              />
-              <i
-                v-if="index > 0"
+                @click="addOneOptions" />
+              <i v-if="index> 0"
                 class="el-icon-remove-outline delete"
                 title="删除"
                 v-db-click
-                @click="delOneOptions(index)"
-              />
+                @click="delOneOptions(index)" />
             </div>
           </div>
         </el-form>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="optionsModal = false">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="optionsModal = false">取 消</el-button>
           <el-button type="primary" v-db-click @click="addOptions">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -329,7 +280,7 @@ function beforeChange() {
 }
 function setSort() {
   // ref一定跟table上面的ref一致
-  const el = selection.value.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0];
+  const el = selection.value.$el.querySelectorAll('.el-table__body-wrapper> table> tbody')[0];
   sortable = Sortable.create(el, {
     ghostClass: 'sortable-ghost',
     handle: '.handle',
@@ -472,7 +423,7 @@ function addCreate(status) {
   if (status) {
     let haveCre = tableField.value.findIndex((e) => e.field === 'create_time');
     let haveUp = tableField.value.findIndex((e) => e.field === 'update_time');
-    if (haveCre > 0 || haveUp > 0) {
+    if (haveCre> 0 || haveUp> 0) {
       nextTick((e) => {
         isCreate.value = false;
       });
@@ -523,7 +474,7 @@ function addCreate(status) {
 function addDelete(status) {
   if (status) {
     let haveDel = tableField.value.findIndex((e) => e.field === 'delete_time');
-    if (haveDel > 0) {
+    if (haveDel> 0) {
       isDelete.value = false;
       return ElMessage.warning('已存在 delete_time');
     }

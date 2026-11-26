@@ -28,73 +28,49 @@
       </span>
       <div class="plugin-card__actions">
         <!-- 未安装 -->
-        <el-button
-          v-if="!item.installed"
+        <el-button v-if="!item.installed"
           v-auth="['plugin-plugin-install']"
           type="primary"
           size="small"
-          v-db-click
-          @click="emit('install', item)"
-          >安装</el-button
-        >
+          @click="emit('install', item)">安装</el-button>
 
         <!-- 已安装未启用 -->
         <template v-if="item.installed && !item.enabled">
-          <el-button
-            v-if="!item.required"
+          <el-button v-if="!item.required"
             v-auth="['plugin-plugin-enable']"
             type="success"
             size="small"
-            v-db-click
-            @click="emit('enable', item)"
-            >启用</el-button
-          >
-          <el-button
-            v-if="!item.required"
+            @click="emit('enable', item)">启用</el-button>
+          <el-button v-if="!item.required"
             v-auth="['plugin-plugin-uninstall']"
             type="danger"
             plain
             size="small"
-            v-db-click
-            @click="emit('uninstall', item)"
-            >卸载</el-button
-          >
+            @click="emit('uninstall', item)">卸载</el-button>
         </template>
 
         <!-- 已启用（核心模块不允许禁用/卸载） -->
         <template v-if="item.enabled">
-          <el-button
-            v-if="!item.required"
+          <el-button v-if="!item.required"
             v-auth="['plugin-plugin-disable']"
             type="warning"
             size="small"
-            v-db-click
-            @click="emit('disable', item)"
-            >禁用</el-button
-          >
-          <el-button
-            v-if="!item.required"
+            @click="emit('disable', item)">禁用</el-button>
+          <el-button v-if="!item.required"
             v-auth="['plugin-plugin-uninstall']"
             type="danger"
             plain
             size="small"
-            v-db-click
-            @click="emit('uninstall', item)"
-            >卸载</el-button
-          >
+            @click="emit('uninstall', item)">卸载</el-button>
         </template>
 
         <!-- 在线版本高于当前版本时显示升级按钮（升级包上传后自动执行迁移） -->
-        <el-button
-          v-if="hasUpdate"
+        <el-button v-if="hasUpdate"
           v-auth="['plugin-plugin-upload']"
           type="primary"
           plain
           size="small"
-          v-db-click
-          @click="emit('upgrade', item)"
-          >升级</el-button
-        >
+          @click="emit('upgrade', item)">升级</el-button>
       </div>
     </div>
   </div>
@@ -120,7 +96,7 @@ const emit = defineEmits(['install', 'uninstall', 'enable', 'disable', 'upgrade'
 const hasUpdate = computed(() => {
   const online = String(props.item.online_version || '').trim();
   if (!online) return false;
-  return compareVersion(online, props.item.version) > 0;
+  return compareVersion(online, props.item.version)> 0;
 });
 
 /**
@@ -136,7 +112,7 @@ function compareVersion(a, b) {
   for (let i = 0; i < len; i++) {
     const na = parseInt(pa[i], 10) || 0;
     const nb = parseInt(pb[i], 10) || 0;
-    if (na > nb) return 1;
+    if (na> nb) return 1;
     if (na < nb) return -1;
   }
   return 0;
@@ -211,7 +187,7 @@ function compareVersion(a, b) {
   border-top: 1px solid var(--prev-border-color-lighter);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
 }
 .plugin-card__version {
   flex: 1;
@@ -226,7 +202,7 @@ function compareVersion(a, b) {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 14px;
 }
 .plugin-card__actions .el-button {
   margin-left: 0;

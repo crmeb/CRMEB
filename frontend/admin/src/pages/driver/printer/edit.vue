@@ -1,14 +1,12 @@
 <template>
-  <el-form
-    ref="formRef"
+  <el-form ref="formRef"
     :model="editForm"
     :rules="editRules"
     :disabled="editLoading || !loaded || submitLoading || !hasPermission(saveAuth)"
     :label-width="labelWidth"
     :label-position="labelPosition"
     v-loading="editLoading"
-    @submit.prevent
-  >
+    @submit.prevent>
     <el-divider content-position="left">基本信息</el-divider>
 
     <el-form-item label="打印机名称" prop="print_name">
@@ -18,12 +16,10 @@
     <!-- 新增时选择驱动 -->
     <el-form-item label="选择驱动" prop="driver" v-if="isAdd">
       <el-select v-model="editForm.driver" placeholder="请选择打印机驱动" style="width: 100%">
-        <el-option
-          v-for="item in driverOptions"
+        <el-option v-for="item in driverOptions"
           :key="item.name"
           :label="item.description || item.name"
-          :value="item.name"
-        >
+          :value="item.name">
           <span>{{ item.description || item.name }}</span>
           <span class="driver-name-tag">[{{ item.name }}]</span>
         </el-option>
@@ -37,7 +33,7 @@
 
     <el-form-item :label="deviceIdMeta.label" prop="printer_id">
       <el-input v-model="editForm.printer_id" :placeholder="deviceIdMeta.tip" />
-      <div class="tips-info">服务商账号和密钥请在“扩展管理 > 打印机驱动管理”中配置</div>
+      <div class="tips-info">服务商账号和密钥请在“扩展管理> 打印机驱动管理”中配置</div>
     </el-form-item>
 
     <el-divider content-position="left">打印设置</el-divider>
@@ -56,14 +52,12 @@
     <el-divider content-position="left">其他设置</el-divider>
 
     <el-form-item label="状态">
-      <el-switch
-        class="defineSwitch"
+      <el-switch class="defineSwitch"
         :active-value="1"
         :inactive-value="0"
         v-model="editForm.status"
         active-text="开启"
-        inactive-text="关闭"
-      />
+        inactive-text="关闭" />
     </el-form-item>
 
     <el-form-item label="排序" prop="sort">
@@ -71,18 +65,16 @@
     </el-form-item>
 
     <div class="form-actions">
-      <el-button
-        v-if="hasPermission(saveAuth)"
+      <el-button v-if="hasPermission(saveAuth)"
         v-auth="[saveAuth]"
         type="primary"
         v-db-click
         :disabled="editLoading || !loaded"
         @click="handleSubmit"
-        :loading="submitLoading"
-      >
+        :loading="submitLoading">
         保存
       </el-button>
-      <el-button v-db-click :disabled="submitLoading" @click="$emit('close')"> 取消 </el-button>
+      <el-button :disabled="submitLoading" @click="$emit('close')"> 取消 </el-button>
     </div>
   </el-form>
 </template>
@@ -219,7 +211,7 @@ async function handleSubmit() {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 14px;
 }
 .form-actions .el-button + .el-button {
   margin-left: 0;

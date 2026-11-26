@@ -2,13 +2,11 @@
   <div class="article-box" v-if="defaults[configNme]">
     <div class="title-bar">文章列表</div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="defaults[configNme].list"
         group="peoples"
         handle=".move-icon"
-        :item-key="articleItemKey"
-      >
+        :item-key="articleItemKey">
         <template #item="{ element: item, index }">
           <div class="item">
             <div class="move-icon">
@@ -28,32 +26,29 @@
         </template>
       </draggable>
       <div class="add-btn" @click="modals = true">
-        <el-button v-db-click class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
+        <el-button class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
       </div>
     </div>
 
-    <el-dialog
-      v-model="modals"
+    <el-dialog v-model="modals"
+      append-to-body
       title="文章列表"
       class="paymentFooter"
       width="900px"
       :destroy-on-close="true"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <div class="article-manager">
         <div class="padding-add">
           <el-form :model="artFrom" label-width="80px" label-position="right" @submit.prevent inline>
             <el-form-item label="文章分类：" label-for="pid">
-              <el-cascader
-                v-model="artFrom.pid"
+              <el-cascader v-model="artFrom.pid"
                 placeholder="请选择"
                 class="treeSel"
                 @change="handleCheckChange"
                 :options="treeData"
                 :props="cascaderProps"
                 style="width: 250px"
-                clearable
-              >
+                clearable>
               </el-cascader>
             </el-form-item>
             <el-form-item label="文章搜索：" label-for="title">
@@ -64,8 +59,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <el-table
-          :data="cmsList"
+        <el-table :data="cmsList"
           ref="table"
           class="mt14"
           v-loading="loading"
@@ -73,8 +67,7 @@
           no-userFrom-text="暂无数据"
           no-filtered-userFrom-text="暂无筛选结果"
           height="400"
-          @selection-change="handleSelectionChange"
-        >
+          @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55"> </el-table-column>
           <el-table-column label="ID" width="80" prop="id"> </el-table-column>
           <el-table-column label="文章图片" min-width="90">
@@ -93,22 +86,18 @@
           </el-table-column>
         </el-table>
         <div class="acea-row row-right page" style="margin-top: 20px">
-          <el-pagination
-            v-if="total"
+          <el-pagination v-if="total"
             :total="total"
             v-model:current-page="artFrom.page"
             v-model:page-size="artFrom.limit"
             layout="prev, pager, next"
-            @current-change="pageChange"
-          />
+            @current-change="pageChange" />
         </div>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
+      <template #footer><span class="dialog-footer">
           <el-button @click="modals = false">取 消</el-button>
           <el-button v-db-click type="primary" @click="addSelectedArticles">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

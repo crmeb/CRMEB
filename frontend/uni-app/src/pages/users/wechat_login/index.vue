@@ -199,14 +199,12 @@ onLoad((options) => {
   // #ifdef H5
   const { code, state } = options;
   if (code) {
-    let spread = Cache.get("spread") || "";
-    let agent_id = Cache.get("agent_id") || "";
+    let spid = Cache.get("spid") || "";
     let backUrl = state ? decodeURIComponent(state) : "";
     wechatAuthLogin(
       {
         code,
-        spread,
-        agent_id,
+        spid,
       },
       backUrl
     );
@@ -442,7 +440,6 @@ function getUserPhoneNumber(encryptedData, iv, code) {
     code: code,
     spread_spid: globalData.spid || 0,
     spread_code: globalData.code || 0,
-    agent_id: globalData.agent_id || 0,
     key: authKey.value,
   })
     .then((res) => {

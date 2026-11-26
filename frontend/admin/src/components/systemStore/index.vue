@@ -1,21 +1,17 @@
 <template>
   <div>
-    <el-dialog
-      v-model="isTemplate"
+    <el-dialog v-model="isTemplate"
       :title="formItem.id ? '编辑门店' : '添加门店'"
       width="720px"
       @closed="cancel"
-      append-to-body
-    >
+      append-to-body>
       <div class="article-manager" v-loading="spinShow">
-        <el-form
-          ref="formItemRef"
+        <el-form ref="formItemRef"
           :model="formItem"
           label-width="110px"
           label-position="right"
           :rules="ruleValidate"
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-row :gutter="24">
             <el-col :span="24">
               <el-col v-bind="grid">
@@ -55,15 +51,14 @@
             <!--<el-col :span="24">-->
             <!--<el-col v-bind="grid">-->
             <!--<el-form-item label="核销时效：" label-for="valid_time">-->
-            <!--<DatePicker @change="onchangeDate" :value="formItem.valid_time" v-model="formItem.valid_time" format="YYYY/MM/DD" type="daterange" split-panels placeholder="请选择核销时效" ></DatePicker>-->
+            <!--<DatePicker @change="onchangeDate" :value="formItem.valid_time" v-model="formItem.valid_time" format="YYYY/MM/DD" type="daterange" split-panels placeholder="请选择核销时效"></DatePicker>-->
             <!--</el-form-item>-->
             <!--</el-col>-->
             <!--</el-col>-->
             <el-col :span="24">
               <el-col v-bind="grid">
                 <el-form-item label="门店营业：" label-for="day_time" prop="day_time">
-                  <el-time-picker
-                    is-range
+                  <el-time-picker is-range
                     @change="onchangeTime"
                     v-model="formItem.day_time"
                     format="HH:mm:ss"
@@ -72,15 +67,14 @@
                     start-placeholder="开始时间"
                     end-placeholder="结束时间"
                     placeholder="选择时间范围"
-                    style="width: 100%"
-                  ></el-time-picker>
+                    style="width: 100%"></el-time-picker>
                 </el-form-item>
               </el-col>
             </el-col>
             <el-col :span="24">
               <el-col v-bind="grid">
                 <el-form-item label="门店logo：" prop="image">
-                  <div class="picBox" v-db-click @click="modalPicTap('单选', 'logo')">
+                  <div class="picBox" @click="modalPicTap('单选', 'logo')">
                     <div class="pictrue" v-if="formItem.image">
                       <img v-lazy="formItem.image" />
                     </div>
@@ -94,7 +88,7 @@
             <el-col :span="24">
               <el-col v-bind="grid">
                 <el-form-item label="门店大图：" prop="oblong_image">
-                  <div class="picBox" v-db-click @click="modalPicTap('单选', 'oblong')">
+                  <div class="picBox" @click="modalPicTap('单选', 'oblong')">
                     <div class="pictrue" v-if="formItem.oblong_image">
                       <img v-lazy="formItem.oblong_image" />
                     </div>
@@ -110,9 +104,7 @@
                 <el-form-item label="经纬度：" label-for="status2" prop="latlng">
                   <el-tooltip>
                     <el-input v-model="formItem.latlng" style="width: 100%" placeholder="请查找位置">
-                      <template #append
-                        ><el-button type="primary" v-db-click @click="onSearch">查找位置</el-button></template
-                      >
+                      <template #append><el-button type="primary" @click="onSearch">查找位置</el-button></template>
                     </el-input>
                     <template #content><div>请点击查找位置选择位置</div></template>
                   </el-tooltip>
@@ -130,31 +122,25 @@
         </el-form>
 
         <el-dialog v-model="modalPic" width="1024px" :title="modalTitle" :close-on-click-modal="false" append-to-body>
-          <uploadPictures
-            :isChoice="isChoice"
+          <uploadPictures :isChoice="isChoice"
             @getPic="getPic"
             :gridBtn="gridBtn"
             :gridPic="gridPic"
-            v-if="modalPic"
-          ></uploadPictures>
+            v-if="modalPic"></uploadPictures>
         </el-dialog>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
+      <template #footer><span class="dialog-footer">
           <el-button type="primary" long v-db-click @click="handleSubmit('formItem')">{{
             formItem.id ? '修改' : '提交'
           }}</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
-    <el-dialog
-      v-model="modalMap"
+    <el-dialog v-model="modalMap"
       title="请选择地址"
       append-to-body
       :close-on-click-modal="false"
       width="720px"
-      class="mapBox"
-    >
+      class="mapBox">
       <iframe id="mapPage" width="100%" height="600px" frameborder="0" v-bind:src="keyUrl"></iframe>
     </el-dialog>
   </div>

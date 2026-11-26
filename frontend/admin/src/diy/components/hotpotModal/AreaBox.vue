@@ -1,6 +1,5 @@
 <template>
-  <div
-    :style="{
+  <div :style="{
       width: areaInit.areaWidth + 'px',
       height: areaInit.areaHeight + 'px',
       left: areaInit.starX + 'px',
@@ -9,8 +8,7 @@
     class="areaBox"
     @dblclick="editBoxShow = true"
     @mousedown.left.stop="mouseDownLint($event)"
-    @mouseup.left.stop="mouseUp($event)"
-  >
+    @mouseup.left.stop="mouseUp($event)">
     <div class="prompt-text">
       <div class="prompt-item num">热区 {{ areaInit.number }}</div>
       <div class="prompt-item" :style="{ color: isSet ? '#2d8cf0' : '#f00' }">
@@ -35,12 +33,10 @@
             </el-input>
           </div>
         </div>
-        <template #footer
-          ><span class="dialog-footer">
+        <template #footer><span class="dialog-footer">
             <el-button @click.stop="editBoxShow = false">取 消</el-button>
             <el-button v-db-click type="primary" @click.stop="addURL">确 定</el-button>
-          </span></template
-        >
+          </span></template>
       </el-dialog>
       <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>
     </div>
@@ -161,11 +157,11 @@ function mouseDownLint(e) {
       let nRight = nLeft + childrenWidth;
       let nBottom = nTop + childrenHight;
       // 判断右边是否越界
-      if (nRight >= props.parentWidth) {
+      if (nRight>= props.parentWidth) {
         nLeft = props.parentWidth - childrenWidth;
       }
       // 判断下边是否越界
-      if (nBottom >= props.parentHeight) {
+      if (nBottom>= props.parentHeight) {
         nTop = props.parentHeight - childrenHight;
       }
       props.areaInit.starX = nLeft;

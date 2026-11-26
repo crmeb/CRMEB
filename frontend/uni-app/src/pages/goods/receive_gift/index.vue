@@ -69,7 +69,7 @@ onLoad((options) => {
 				if (value.id) order_id.value = value.id;
 				if (value.key) gift_key.value = value.key;
 				// 记录推广人 uid
-				if (value.pid) app.globalData.spid = value.pid;
+				if (value.spid) app.globalData.spid = value.spid;
 			}
 		}
 		// #endif

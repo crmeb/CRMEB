@@ -15,7 +15,7 @@ CRMEB v8 电商系统，三端一体：
 | 区域 | 目录 | 技术栈 |
 | --- | --- | --- |
 | 后端 | `backend/` | PHP 8.2-8.4（默认 8.4）+ ThinkPHP 8 + MySQL 5.7+（推荐 8.0）+ Redis，多应用入口 `adminapi` / `api` |
-| 管理后台 | `frontend/admin/` | Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4 + Vite 5（纯 JS） |
+| 管理后台 | `frontend/admin/` | Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4 + Vite 8（纯 JS） |
 | 移动端 | `frontend/uni-app/` | uni-app 官方 CLI（Vite 5）+ Vue 3 + Pinia + Sass |
 
 本地开发默认使用宿主机环境：PHP/ThinkPHP HTTP `8011`、MySQL/Redis 按 `backend/.env` 的实际配置连接（常见为 `3306` / `6379`）。Docker Compose 是可选兼容环境（Nginx `8011`、MySQL `33061`、Redis `63791`），不作为默认或优先选项。
@@ -37,7 +37,7 @@ CRMEB v8 电商系统，三端一体：
 1. **后端依赖单向**：`modules → app → crmeb → driver`。`crmeb/` 不得依赖 `app/` 或 `modules/`；同级模块不得互相引用，跨模块走核心契约或字符串事件。
 2. **分层与命名**：`route → Controller → Services → Dao → Model`；控制器类名/文件名以 `Controller` 结尾；构造函数注入 Service/DAO 时先声明属性并写 `@var`。
 3. **事件用字符串 key**（不带 `Listener` 后缀），核心监听器在 `backend/app/event.php`，模块监听器在各模块 `event.php`。
-4. **管理端样式只用 `--prev-*` 令牌**，禁止硬编码主题色；页面用卡片分块（搜索卡 + 数据卡），按钮带 `v-db-click`，权限按钮带 `v-auth`。前端红线细则见 [.crmeb/rules/前端规范.md](rules/前端规范.md)。
+4. **管理端样式只用 `--prev-*` 令牌**，禁止硬编码主题色；页面用卡片分块（搜索卡 + 数据卡），**写数据按钮**带 `v-db-click`（提交/保存/确定/删除；非查询/下一步等），权限按钮带 `v-auth`。前端红线细则见 [.crmeb/rules/前端规范.md](rules/前端规范.md)。
 5. **接口契约变更要全链路同步**：后端路由/Controller/Service/DAO/Model、`frontend/admin/src/api`、`frontend/uni-app/src/api`、菜单权限、安装/升级数据。同步清单见 [.crmeb/rules/前端规范.md](rules/前端规范.md) 第三节。
 6. **Git 提交遵循 [.crmeb/rules/提交规范.md](rules/提交规范.md)**：中文描述 + 英文类型前缀、按主题分批提交、禁止提交密钥与本地环境文件。
 7. **插件二开零侵入**：插件/驱动/业务模块只能落 `backend/modules/`、`backend/driver/` 自有目录，禁止修改系统表与框架代码（`app/`、`crmeb/`、核心前端、安装 SQL、composer/config），扩展只走扩展点/事件/注册中心/Installer 标准设施。红线细则见 [.crmeb/rules/插件开发规范.md](rules/插件开发规范.md)。

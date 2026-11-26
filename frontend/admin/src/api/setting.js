@@ -1139,10 +1139,15 @@ export function scanUploadGet(scan_token) {
 }
 /**
  * @description 图片上传
+ * @param {FormData} data
+ * @param {Record<string, string|number>} [query] 查询参数；传 type=1 时仅落盘不写素材管理表（与主题导入包一致）
  */
-export function fileUpload(data) {
+export function fileUpload(data, query = {}) {
+  const qs = Object.keys(query).length
+    ? '?' + new URLSearchParams(query).toString()
+    : '';
   return request({
-    url: `file/upload`,
+    url: `file/upload${qs}`,
     method: 'post',
     file: true,
     data,

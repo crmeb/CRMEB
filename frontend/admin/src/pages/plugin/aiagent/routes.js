@@ -1,11 +1,12 @@
 import setting from '@/setting';
+import Layout from '@/layout';
 
 const routePre = setting.routePre;
 
 export default [
   {
     path: routePre + '/aiagent',
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: 'index',

@@ -2,36 +2,30 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="levelFrom"
+        <el-form ref="levelFrom"
           :model="from"
           :label-width="labelWidth"
           :label-position="labelPosition"
           inline
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="字典名称：" label-for="name">
             <el-input clearable v-model="from.name" placeholder="请输入字典名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="searchs">查询</el-button>
+            <el-button type="primary" @click="searchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['system-crud-data_dictionary']" type="primary" v-db-click @click="add" class="action-row"
-        >添加数据字典</el-button
-      >
-      <el-table
-        :data="dictionaryList"
+      <el-button v-auth="['system-crud-data_dictionary']" type="primary" @click="add" class="action-row">添加数据字典</el-button>
+      <el-table :data="dictionaryList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -47,22 +41,20 @@
         <el-table-column prop="add_time" label="添加时间" min-width="200"> </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
-            <a v-db-click @click="eidtOptions(scope.row.id)">编辑</a>
+            <a @click="eidtOptions(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="dataOptions(scope.row.id)">数据管理</a>
+            <a @click="dataOptions(scope.row.id)">数据管理</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="from.page"
           v-model:limit="from.limit"
-          @pagination="getCrudDataDictionary"
-        />
+          @pagination="getCrudDataDictionary" />
       </div>
     </el-card>
   </div>

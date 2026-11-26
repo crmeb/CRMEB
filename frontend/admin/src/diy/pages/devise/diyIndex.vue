@@ -10,7 +10,6 @@
         />
         <DiyCanvasPreview
           :m-config="mConfig"
-          :roll-height="rollHeight"
           :page-type="pageType"
           :is-micro-page="isMicroPage"
           :page-id="pageId"
@@ -113,6 +112,7 @@ import {
   convertImagesToBase64,
   preserveCustomTextBackgrounds,
   flattenMonochromeGradients,
+  rewriteUnsupportedColors,
 } from './utils/coverScreenshotDom';
 
 defineOptions({ name: 'index.vue' });
@@ -153,7 +153,7 @@ const BaseURL = Setting.apiBaseURL.replace(/adminapi/, '');
 const qrcodeImg = ref('');
 const modal = ref(false);
 const clientHeight = ref(''); //页面动态高度
-const rollHeight = ref('');
+let canvasResizeObserver;
 const leftMenu = ref([]); // 左侧菜单
 const lConfig = ref([]); // 左侧组件
 // 后端下发的可用组件白名单（组件数据名 => 组件标题），由 diy/component_status 提供；
@@ -279,15 +279,31 @@ nextTick(() => {
     mobildConfigStore.SETEMPTY();
     mobildConfigStore.RESET_BOTTOM_MENU();
   }
-  clientHeight.value = `${document.documentElement.clientHeight}` - 65.81; //获取浏览器可视区域高度
-  let H = `${document.documentElement.clientHeight}` - 180;
-  rollHeight.value = H > 650 ? 650 : H;
-  window.onresize = function () {
-    clientHeight.value = `${document.documentElement.clientHeight}` - 65.81;
-    let H = `${document.documentElement.clientHeight}` - 180;
-    rollHeight.value = H > 650 ? 650 : H;
-  };
+  bindCanvasSize();
 });
+
+// 主题设计页套在自有顶栏里，按中间区域高度撑满；独立设计页仍用视口高度
+function measureCanvas() {
+  const host = document.querySelector('.edit-theme-layout .layout-content');
+  if (host && host.clientHeight > 0) {
+    const body = host.querySelector('.el-card__body');
+    const style = body ? getComputedStyle(body) : null;
+    const pad = style ? parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) : 0;
+    clientHeight.value = host.clientHeight - pad;
+    return;
+  }
+  clientHeight.value = document.documentElement.clientHeight - 65.81;
+}
+
+function bindCanvasSize() {
+  measureCanvas();
+  const host = document.querySelector('.edit-theme-layout .layout-content');
+  if (host && typeof ResizeObserver !== 'undefined') {
+    canvasResizeObserver = new ResizeObserver(() => measureCanvas());
+    canvasResizeObserver.observe(host);
+  }
+  window.addEventListener('resize', measureCanvas);
+}
 
 watch(
   mConfig,
@@ -350,7 +366,9 @@ function saveCover() {
       }
 
       // 将容器内所有远程图片（含OSS）预先转为 base64，解决 html2canvas 跨域白图问题
-      await convertImagesToBase64(container);
+      const restoreImages = await convertImagesToBase64(container);
+      // 选中框 box-shadow 使用 color-mix，计算值是 color(srgb)，html2canvas 会因此抛错
+      const restoreColors = rewriteUnsupportedColors(container);
 
       const restoreTextBackgrounds = preserveCustomTextBackgrounds(container);
 
@@ -362,6 +380,8 @@ function saveCover() {
       restoreScreenshotStyles = () => {
         restoreGradients();
         restoreTextBackgrounds();
+        restoreColors();
+        restoreImages();
         restoreScreenshotStyles = () => {};
       };
 
@@ -391,16 +411,18 @@ function saveCover() {
             return;
           }
 
-          // 创建 FormData 上传
+          // 后缀必须跟文件头一致，后端会用 finfo 核对，对不上就拒绝
+          const header = new Uint8Array(await blob.slice(0, 3).arrayBuffer());
+          const isJpeg = header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff;
           const formData = new FormData();
-          const fileName = `cover_${Date.now()}.png`;
-          const file = new File([blob], fileName, { type: 'image/png' });
+          const file = new File([blob], `cover_${Date.now()}.${isJpeg ? 'jpg' : 'png'}`, {
+            type: isJpeg ? 'image/jpeg' : 'image/png',
+          });
           formData.append('file', file);
-          formData.append('type', 1);
 
           try {
-            // 上传到后端
-            const res = await fileUpload(formData);
+            // type=1：只上传文件，不写入素材管理表（须走 query，POST 字段不会绑定到控制器 $type）
+            const res = await fileUpload(formData, { type: 1 });
             if (res.status === 200) {
               ElMessage.success('封面保存成功！');
               // 这里可以根据需要将图片URL保存到页面配置中
@@ -419,8 +441,8 @@ function saveCover() {
             restoreActiveComponent(previousActiveIndex);
           }
         },
-        'image/png',
-        0.95,
+        'image/jpeg',
+        0.85,
       ); // 图片质量 0.95
     } catch (error) {
       restoreScreenshotStyles();
@@ -1339,17 +1361,14 @@ function resetPageConfig() {
 }
 
 onBeforeUnmount(() => {
+  window.removeEventListener('resize', measureCanvas);
+  if (canvasResizeObserver) canvasResizeObserver.disconnect();
   resetPageConfig();
 });
 onUnmounted(() => {
   resetPageConfig();
 });
 </script>
-<style>
-.el-main {
-  padding: 0px !important;
-}
-</style>
 <style scoped>
 .header-title {
   background: var(--prev-color-primary);

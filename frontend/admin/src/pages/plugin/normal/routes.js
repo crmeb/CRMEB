@@ -3,6 +3,7 @@
  * 兼容模式：既是 Vue Router 路由配置，也包含 section/action 元数据供扩展机制使用
  */
 import setting from '@/setting';
+import Layout from '@/layout';
 const routePre = setting.routePre;
 const pre = 'product_';
 
@@ -14,7 +15,7 @@ export default [
       title: '商品管理',
       keepAlive: true,
     },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -37,7 +38,7 @@ export default [
       auth: ['admin-normal-product-add'],
       title: '实物商品添加',
     },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -64,7 +65,7 @@ export default [
       auth: ['admin-normal-statistics'],
       title: '商品统计',
     },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -86,7 +87,7 @@ export default [
       auth: ['admin-normal-order-list'],
       title: '实物订单',
     },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -108,7 +109,7 @@ export default [
       auth: ['admin-normal-order-list'],
       title: '订单详情',
     },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',

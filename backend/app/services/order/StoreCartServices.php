@@ -230,13 +230,13 @@ class StoreCartServices extends BaseService
      * @param int $bargainId 砍价活动ID
      * @param int $combinationId 拼团活动ID
      * @param int $advanceId 预售活动ID
-     * @return array 返回 [attrInfo, unique, bargainPriceMin, cartNum, productInfo]
+     * @return array 返回 [attrInfo, unique, activityUnitPrice, cartNum, productInfo]
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function checkProductStock(int $uid, int $cartNum, string $unique, int $type = 0, $productId = 0, int $seckillId = 0, int $bargainId = 0, int $combinationId = 0, int $advanceId = 0)
+    public function checkProductStock(int $uid, int $cartNum, string $unique, int $type = 0, int $productId = 0, int $seckillId = 0, int $bargainId = 0, int $combinationId = 0, int $advanceId = 0)
     {
         // 通过注册中心按旧版数字 type 解析交易模式处理器，避免中台直接引用扩展层服务
         /** @var TradeModeRegistry $registry */
@@ -271,7 +271,9 @@ class StoreCartServices extends BaseService
                     $productInfo['delivery_methods'] = ['express'];
                 }
             }
-            return [$attrInfo, $unique, $activityInfo['bargain_price_min'] ?? 0, $cartNum, $productInfo];
+            // 活动单价由各交易模式 Handler 在 activityInfo.unit_price 给出
+            $activityUnitPrice = is_array($activityInfo) ? ($activityInfo['unit_price'] ?? 0) : 0;
+            return [$attrInfo, $unique, $activityUnitPrice, $cartNum, $productInfo];
         }
         $productInfo = $productServices->isValidProduct($productId);
         if (!$productInfo) {
@@ -292,8 +294,6 @@ class StoreCartServices extends BaseService
             'ot_price' => $skuInfo['ot_price'] ?? 0,
             'cost'   => $skuInfo['cost'] ?? 0,
             'vip_price' => $skuInfo['vip_price'] ?? 0,
-            'brokerage' => $skuInfo['brokerage'] ?? 0,
-            'brokerage_two' => $skuInfo['brokerage_two'] ?? 0,
             'bar_code' => $skuInfo['bar_code'] ?? '',
             'image' => $skuInfo['image'] ?? '',
         ];
@@ -358,15 +358,20 @@ class StoreCartServices extends BaseService
             }
         }
         //检测库存限量
-        [$attrInfo, $product_attr_unique, $bargainPriceMin, $cart_num, $productInfo] = $this->checkProductStock($uid, $cart_num, $product_attr_unique, $type, $product_id, $seckill_id, $bargain_id, $combination_id, $advance_id);
+        [$attrInfo, $product_attr_unique, $activityUnitPrice, $cart_num, $productInfo] = $this->checkProductStock($uid, $cart_num, $product_attr_unique, $type, $product_id, $seckill_id, $bargain_id, $combination_id, $advance_id);
         if ($new) {
             // 购物车缓存 key 走中台雪花单号生成（同命名空间无需 use）
             $key = app()->make(OrderCenterServices::class)->getNewOrderId((string)$uid);
+            /** @var TradeModeRegistry $tradeModeRegistry */
+            $tradeModeRegistry = app()->make(TradeModeRegistry::class);
+            $modeHandler = $tradeModeRegistry->getByLegacyType($type);
+            // 同一请求只会带一种活动 ID，与 checkProductStock 口径一致
+            $activityId = (int)($seckill_id ?: $bargain_id ?: $combination_id ?: $advance_id ?: 0);
             $info['id'] = $key;
             $info['type'] = $type;
             $info['seckill_id'] = $seckill_id;
-            $info['activity_type'] = $seckill_id ? 'seckill' : 'normal';
-            $info['activity_id'] = $seckill_id;
+            $info['activity_type'] = $activityId > 0 ? $modeHandler->getType() : 'normal';
+            $info['activity_id'] = $activityId;
             $info['bargain_id'] = $bargain_id;
             $info['combination_id'] = $combination_id;
             $info['advance_id'] = $advance_id;
@@ -377,15 +382,15 @@ class StoreCartServices extends BaseService
             $info['productInfo']['attrInfo'] = is_object($attrInfo) ? $attrInfo->toArray() : (array)$attrInfo;
             $info['attrInfo'] = is_object($attrInfo) ? $attrInfo->toArray() : (array)$attrInfo;
             $info['sum_price'] = $info['productInfo']['attrInfo']['price'];
-            //砍价
-            if ($bargain_id) {
-                $info['truePrice'] = $bargainPriceMin;
-                $info['productInfo']['attrInfo']['price'] = $bargainPriceMin;
+            // 交易模式若返回活动单价（如砍价底价），优先写入快照
+            if ($activityUnitPrice) {
+                $info['truePrice'] = $activityUnitPrice;
+                $info['productInfo']['attrInfo']['price'] = $activityUnitPrice;
             } else {
                 $info['truePrice'] = $info['productInfo']['attrInfo']['price'] ?? $info['productInfo']['price'] ?? 0;
             }
-            //拼团砍价秒杀不参与会员价
-            if ($bargain_id || $combination_id || $seckill_id || $advance_id) {
+            // 营销交易模式不参与会员价
+            if ($modeHandler->isMarketingActivity()) {
                 $info['truePrice'] = $info['productInfo']['attrInfo']['price'] ?? 0;
                 $info['vip_truePrice'] = 0;
             }

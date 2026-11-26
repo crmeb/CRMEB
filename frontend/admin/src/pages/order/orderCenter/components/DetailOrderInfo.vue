@@ -110,7 +110,7 @@
           <div>付费会员优惠：</div>
           <div class="value">¥{{ data.vip_discount || '0.00' }}</div>
         </li>
-        <li class="item" v-if="Number(data.gift_price) > 0">
+        <li class="item" v-if="Number(data.gift_price)> 0">
           <div>礼品附加费：</div>
           <div class="value">¥{{ data.gift_price || '0.00' }}</div>
         </li>
@@ -120,16 +120,14 @@
         </li>
       </ul>
     </div>
-    <div
-      class="section"
+    <div class="section"
       v-if="
         data.one_brokerage ||
         data.two_brokerage ||
         data.staff_brokerage ||
         data.agent_brokerage ||
         data.division_brokerage
-      "
-    >
+      ">
       <div class="title">返佣信息(金额｜用户UID)</div>
       <ul class="list">
         <li class="item">
@@ -165,7 +163,7 @@
           <div>{{ isExpress ? '物流单号：' : deliveryType === 'send' ? '送货人电话：' : '发货备注：' }}</div>
           <div class="value">
             {{ data.delivery_id || '--' }}
-            <a v-if="isExpress" v-db-click @click="$emit('openLogistics')">物流查询</a>
+            <a v-if="isExpress" @click="$emit('openLogistics')">物流查询</a>
           </div>
         </li>
       </ul>
@@ -287,7 +285,7 @@ const storeInfo = computed(
 
 /** 送礼订单且尚未领取：无收货人/电话/地址，不应展示空 JSON */
 const isUnclaimedGift = computed(() => {
-  const isGift = Number(props.data.is_gift) === 1 || Number(props.data.gift_price) > 0;
+  const isGift = Number(props.data.is_gift) === 1 || Number(props.data.gift_price)> 0;
   const giftUid = Number(props.data.gift_uid || props.data.gift?.gift_uid || 0);
   return isGift && giftUid <= 0;
 });
@@ -373,7 +371,7 @@ function isImageItem(item) {
   if (item.type === 'img') return true;
   if (item.type) return false;
   const urls = formImageUrls(item);
-  return urls.length > 0 && urls.every((v) => IMAGE_EXT_RE.test(v) || v.indexOf('/uploads/') !== -1);
+  return urls.length> 0 && urls.every((v) => IMAGE_EXT_RE.test(v) || v.indexOf('/uploads/') !== -1);
 }
 </script>
 

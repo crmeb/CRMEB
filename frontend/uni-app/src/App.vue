@@ -30,6 +30,7 @@ import { useAppStore } from "@/store/modules/app";
 import { useIndexDataStore } from "@/store/modules/indexData";
 import util from "@/utils/util.js";
 import Cache from "@/utils/cache";
+import { SPID } from "@/config/cache";
 import i18n from "@/utils/lang.js";
 import { applyTheme } from "@/utils/theme.js";
 // #ifdef MP-WEIXIN
@@ -49,7 +50,6 @@ const globalData = () => {
     spid: 0,
     pid: 0,
     code: 0,
-    agent_id: 0,
     isLogin: false,
     userInfo: {},
     MyMenus: [],
@@ -112,21 +112,9 @@ onShow(() => {
   refreshSubscribeTemplateIds(getTempIds);
   // #endif
   const queryData = uni.getEnterOptionsSync(); // uni-app版本 3.5.1+ 支持
-  if (queryData.query.spread) {
-    Cache.set("spread", queryData.query.spread);
-    globalData().spid = queryData.query.spread;
-    globalData().pid = queryData.query.spread;
-    silenceBindingSpread(globalData());
-  }
   if (queryData.query.spid) {
-    Cache.set("spread", queryData.query.spid);
+    Cache.set(SPID, queryData.query.spid);
     globalData().spid = queryData.query.spid;
-    globalData().pid = queryData.query.spid;
-    silenceBindingSpread(globalData());
-  }
-  if (queryData.query.agent_id) {
-    Cache.set("agent_id", queryData.query.agent_id);
-    globalData().agent_id = queryData.query.agent_id;
     silenceBindingSpread(globalData());
   }
   // #ifdef MP
@@ -134,10 +122,9 @@ onShow(() => {
     let param = util.getUrlParams(
       decodeURIComponent(queryData.query.scene)
     );
-    if (param.pid) {
-      Cache.set("spread", param.pid);
-      globalData().spid = param.pid;
-      globalData().pid = param.pid;
+    if (param.spid) {
+      Cache.set(SPID, param.spid);
+      globalData().spid = param.spid;
     } else {
       switch (queryData.scene) {
         //扫描小程序码

@@ -2,45 +2,37 @@
   <div>
     <el-card shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          v-if="search.length"
+        <el-form v-if="search.length"
           ref="curlFrom"
           :model="from"
           :label-width="labelWidth"
           :label-position="labelPosition"
           inline
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item :label="item.name + ':'" v-for="(item, index) in search" :key="index">
-            <el-input
-              v-if="item.type === 'input'"
+            <el-input v-if="item.type === 'input'"
               v-model="from[item.field]"
               :placeholder="'请输入' + item.name"
-              class="form_content_width"
-            />
-            <date-range-picker
-              width="250px"
+              class="form_content_width" />
+            <date-range-picker width="250px"
               v-else-if="item.type === 'date-picker'"
               :editable="false"
               clearabl
               @change="searchs"
               v-model="from[item.field]"
               format="YYYY/MM/DD"
-              value-format="YYYY/MM/DD"
-            ></date-range-picker>
-            <el-select
-              v-else-if="item.type === 'select'"
+              value-format="YYYY/MM/DD"></date-range-picker>
+            <el-select v-else-if="item.type === 'select'"
               v-model="from[item.field]"
               placeholder="请选择"
               clearable
               @change="searchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option v-for="(val, i) in item.option" :value="val.value" :label="val.label" :key="i"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="searchs">查询</el-button>
+            <el-button type="primary" @click="searchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -48,17 +40,15 @@
     <el-card shadow="never" class="ivu-mt" :class="search.length ? 'mt16' : ''">
       <el-row class="action-row">
         <el-col v-bind="grid">
-          <el-button type="primary" v-db-click @click="add">添加</el-button>
+          <el-button type="primary" @click="add">添加</el-button>
         </el-col>
       </el-row>
-      <el-table
-        :data="dataList"
+      <el-table :data="dataList"
         ref="table"
         class="mt14"
         v-loading="loading"
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column :label="item.title" :min-width="item.minWidth" v-for="(item, index) in columns" :key="index">
           <template #default="scope">
             <template v-if="item.key">
@@ -80,34 +70,30 @@
               <span>{{ scope.row[item.slot][0] }}--{{ scope.row[item.slot][1] }}</span>
             </template>
             <template v-else-if="item.slot === 'action'">
-              <a v-db-click @click="show(scope.row)">详情</a>
+              <a @click="show(scope.row)">详情</a>
               <el-divider direction="vertical" />
-              <a v-db-click @click="edit(scope.row)">修改</a>
+              <a @click="edit(scope.row)">修改</a>
               <el-divider direction="vertical"></el-divider>
               <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
             </template>
             <template v-else-if="item.from_type === 'switches'">
-              <el-switch
-                :active-value="1"
+              <el-switch :active-value="1"
                 :inactive-value="0"
                 v-model="scope.row[item.slot]"
                 :value="scope.row[item.slot]"
                 size="large"
-                @change="onchangeIsShow(scope.row, item.slot)"
-              >
+                @change="onchangeIsShow(scope.row, item.slot)">
               </el-switch>
             </template>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="from.page"
           v-model:limit="from.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
 

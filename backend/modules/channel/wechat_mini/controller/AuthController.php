@@ -225,7 +225,7 @@ class AuthController
             return app('json')->fail('验证码错误');
         }
         CacheService::delete('code_' . $phone);
-        $data = $this->services->phoneLogin($key, $phone, $spread_code, 0, $spread_spid, $code);
+        $data = $this->services->phoneLogin($key, $phone, $spread_code, $spread_spid, $code);
         return app('json')->success($data);
     }
 

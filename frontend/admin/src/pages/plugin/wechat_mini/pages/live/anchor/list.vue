@@ -3,18 +3,16 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row class="action-row">
         <el-col v-bind="grid">
-          <el-button v-auth="['admin-user-label_add']" type="primary" v-db-click @click="add">添加主播</el-button>
+          <el-button v-auth="['admin-user-label_add']" type="primary" @click="add">添加主播</el-button>
         </el-col>
       </el-row>
-      <el-table
-        :data="labelLists"
+      <el-table :data="labelLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -37,20 +35,18 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row.id)">修改</a>
+            <a @click="edit(scope.row.id)">修改</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除主播', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="labelFrom.page"
           v-model:limit="labelFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

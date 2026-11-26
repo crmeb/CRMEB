@@ -1,13 +1,11 @@
 <template>
   <div class="page-account">
-    <div class="container" :class="[fullWidth > 768 ? 'containerSamll' : 'containerBig']">
-      <swiper
-        :modules="[Autoplay, Pagination]"
+    <div class="container" :class="[fullWidth> 768 ? 'containerSamll' : 'containerBig']">
+      <swiper :modules="[Autoplay, Pagination]"
         :pagination="{ clickable: true }"
         :autoplay="true"
         class="swiperPross"
-        v-if="fullWidth > 768"
-      >
+        v-if="fullWidth> 768">
         <swiper-slide class="swiperPic" v-for="(item, index) in swiperList" :key="index">
           <img :src="item.slide" alt="" />
         </swiper-slide>
@@ -21,51 +19,41 @@
         </div>
         <el-form ref="formInlineRef" :model="formInline" :rules="ruleInline" @keyup.enter="handleSubmit()">
           <el-form-item prop="username">
-            <el-input
-              type="text"
+            <el-input type="text"
               v-model="formInline.username"
               prefix="ios-contact-outline"
               placeholder="请输入用户名"
-              size="large"
-            />
+              size="large" />
           </el-form-item>
           <el-form-item prop="password">
-            <el-input
-              type="password"
+            <el-input type="password"
               v-model="formInline.password"
               prefix="ios-lock-outline"
               placeholder="请输入密码"
               size="large"
-              show-password
-            />
+              show-password />
           </el-form-item>
           <!-- <el-form-item prop="code">
             <div class="code">
-              <el-input
-                type="text"
+              <el-input type="text"
                 v-model="formInline.code"
                 prefix="ios-keypad-outline"
                 placeholder="请输入验证码"
-                size="large"
-              />
-              <img :src="imgcode" class="pictrue" v-db-click @click="captchas" />
+                size="large" />
+              <img :src="imgcode" class="pictrue" @click="captchas" />
             </div>
           </el-form-item> -->
           <el-form-item class="pt10">
-            <el-button type="primary" :loading="loading" size="large" v-db-click @click="handleSubmit()" class="btn"
-              >登录</el-button
-            >
+            <el-button type="primary" :loading="loading" size="large" v-db-click @click="handleSubmit()" class="btn">登录</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
 
-    <Verify
-      @success="success"
+    <Verify @success="success"
       captchaType="blockPuzzle"
       :imgSize="{ width: '330px', height: '155px' }"
-      ref="verifyRef"
-    ></Verify>
+      ref="verifyRef"></Verify>
     <div class="footer">
       <div class="pull-right" v-if="copyright">{{ copyright }}</div>
       <div class="pull-right" v-else>
@@ -181,7 +169,7 @@ function success(params) {
   closeModel(params);
 }
 function closeModel(params) {
-  // 防重复提交：按钮有 v-db-click 拦截，回车提交路径无拦截，并发两次登录会导致提示弹窗成对出现
+  // 防重复提交：按钮有 拦截，回车提交路径无拦截，并发两次登录会导致提示弹窗成对出现
   if (loading.value) return;
   isShow.value = false;
   loading.value = true;

@@ -35,13 +35,13 @@
 						<image src='../static/sort2.png'></image>
 					</view>
 					<view class="sortItem" @click='setSort("numberCount ASC")' v-if="sort == 'numberCount DESC'">
-						{{$t(`金额排序`)}}
+						{{$t(`数量排序`)}}
 						<image src='../static/sort1.png'></image>
 					</view>
-					<view class="sortItem" @click='setSort("")' v-else-if="sort == 'numberCount ASC'">{{$t(`金额排序`)}}
+					<view class="sortItem" @click='setSort("")' v-else-if="sort == 'numberCount ASC'">{{$t(`数量排序`)}}
 						<image src='../static/sort3.png'></image>
 					</view>
-					<view class="sortItem" @click='setSort("numberCount DESC")' v-else>{{$t(`金额排序`)}}
+					<view class="sortItem" @click='setSort("numberCount DESC")' v-else>{{$t(`数量排序`)}}
 						<image src='../static/sort2.png'></image>
 					</view>
 					<view class="sortItem" @click='setSort("orderCount ASC")' v-if="sort == 'orderCount DESC'">
@@ -70,7 +70,7 @@
 							<view><text class='num font-num'>{{item.childCount ? item.childCount : 0}}</text>{{$t(`人`)}}
 							</view>
 							<view><text class="num">{{item.orderCount ? item.orderCount : 0}}</text>{{$t(`单`)}}</view>
-							<view><text class="num">{{item.numberCount ? item.numberCount : 0}}</text>{{$t(`元`)}}</view>
+							<view><text class="num">{{item.numberCount ? item.numberCount : 0}}</text>{{$t(`件`)}}</view>
 						</view>
 					</view>
 				</block>

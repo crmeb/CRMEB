@@ -9,28 +9,23 @@
     <!-- 加载失败 -->
     <el-result v-else-if="loadError" icon="error" title="内容加载失败" :sub-title="loadError">
       <template #extra>
-        <el-button type="primary" v-db-click @click="loadDetail">重试</el-button>
+        <el-button type="primary" @click="loadDetail">重试</el-button>
       </template>
     </el-result>
     <!-- 内容卡片：信息提示条 + 页面级动作 + 字段描述列表（json 字段自带一键复制） -->
     <el-card v-else shadow="never">
       <!-- 卡片顶部信息提示条 -->
-      <el-alert
-        v-if="config.tip"
+      <el-alert v-if="config.tip"
         :title="config.tip"
         type="info"
         show-icon
         :closable="false"
-        class="schema-detail-page__tip"
-      />
+        class="schema-detail-page__tip" />
       <div v-if="pageActions.length" class="schema-detail-page__actions">
-        <el-button
-          v-for="actionItem in pageActions"
+        <el-button v-for="actionItem in pageActions"
           :key="actionItem.action"
           :type="actionItem.theme || 'primary'"
-          v-db-click
-          @click="onAction(actionItem)"
-        >
+          @click="onAction(actionItem)">
           {{ actionItem.label }}
         </el-button>
       </div>
@@ -156,7 +151,7 @@ watch(
   &__actions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: 14px;
     margin-bottom: 12px;
   }
 }

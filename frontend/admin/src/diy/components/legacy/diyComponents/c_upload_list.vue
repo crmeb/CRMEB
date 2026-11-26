@@ -4,24 +4,22 @@
       {{ datas[name].title }}
     </div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="datas[name].list"
         group="peoples"
         handle=".move-icon"
-        :item-key="uploadListItemKey"
-      >
+        :item-key="uploadListItemKey">
         <template #item="{ element: item, index }">
           <div class="item">
             <div class="move-icon">
               <span class="iconfont icondrag2"></span>
             </div>
-            <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
+            <div class="img-box" @click="modalPicTap('单选', index)">
               <img :src="item.img" alt="" v-if="item.img" />
               <div class="upload-box" v-else>
                 <i class="el-icon-picture-outline" style="font-size: 24px"></i>
               </div>
-              <div v-if="!datas[name].isDelete" class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
+              <div v-if="!datas[name].isDelete" class="delect-btn" @click.stop="bindDelete(item, index)">
                 <i class="el-icon-circle-close" style="font-size: 24px"></i>
               </div>
             </div>
@@ -29,7 +27,7 @@
               <div class="info-item" v-for="(infos, key) in item.info" :key="key">
                 <div class="info-item" v-if="infos.title === '链接'">
                   <span>{{ infos.title }}</span>
-                  <div class="input-box" v-db-click>
+                  <div class="input-box">
                     <el-input v-model="infos.value" :placeholder="infos.tips" :maxlength="infos.maxlength">
                       <template #suffix><i class="el-icon-link" @click="getLink(index, key)" /></template>
                     </el-input>
@@ -38,12 +36,10 @@
                 <div v-else class="info-item">
                   <span>{{ infos.title }}</span>
                   <div class="input-box">
-                    <el-input
-                      v-model="infos.value"
+                    <el-input v-model="infos.value"
                       :placeholder="infos.tips"
                       :maxlength="infos.maxlength"
-                      width="250px"
-                    />
+                      width="250px" />
                   </div>
                 </div>
               </div>
@@ -53,25 +49,20 @@
       </draggable>
       <div>
         <el-dialog v-model="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false" :z-index="888">
-          <uploadPictures
-            :isChoice="isChoice"
+          <uploadPictures :isChoice="isChoice"
             @getPic="getPic"
             :gridBtn="gridBtn"
             :gridPic="gridPic"
-            v-if="modalPic"
-          ></uploadPictures>
+            v-if="modalPic"></uploadPictures>
         </el-dialog>
       </div>
     </div>
     <template v-if="datas[name]">
       <div class="add-btn" v-if="datas[name].list.length < datas[name].max || datas[name].max == ''">
-        <el-button
-          type="primary"
+        <el-button type="primary"
           ghost
           style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-          v-db-click
-          @click="addBox"
-          >添加图片
+          @click="addBox">添加图片
         </el-button>
       </div>
     </template>

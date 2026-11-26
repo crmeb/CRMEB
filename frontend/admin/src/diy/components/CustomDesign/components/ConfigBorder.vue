@@ -26,7 +26,7 @@
             v-model="curComponent.propValue.borderWidth"
             :max="20"
             @change="onChange"
-            style="width: 90px"
+            style="width: 105px"
           ></el-input-number>
         </div>
       </el-form-item>

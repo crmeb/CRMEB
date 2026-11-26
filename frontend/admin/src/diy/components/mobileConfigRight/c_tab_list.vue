@@ -2,13 +2,11 @@
   <div class="c_product" v-if="configData">
     <div class="title">{{ configData.title }}</div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="configData.list"
         group="peoples"
         handle=".move-icon"
-        :item-key="tabItemKey"
-      >
+        :item-key="tabItemKey">
         <template #item="{ element: item, index }">
           <div class="item">
             <div class="move-icon">
@@ -18,12 +16,10 @@
               <div class="con-item">
                 <span>{{ item.text.title }}</span>
                 <div>
-                  <el-input
-                    v-model="item.text.val"
+                  <el-input v-model="item.text.val"
                     :placeholder="item.text.pla"
                     :maxlength="item.text.max"
-                    show-word-limit
-                  />
+                    show-word-limit />
                 </div>
               </div>
               <div class="con-item">
@@ -42,8 +38,7 @@
                   <el-input v-if="item.dataType.tabVal == 0" v-model="item.microPage.name" placeholder="选择页面">
                     <template #suffix><i class="el-icon-link" @click="getLink(index)" /></template>
                   </el-input>
-                  <el-cascader
-                    v-else-if="item.dataType.tabVal == 1"
+                  <el-cascader v-else-if="item.dataType.tabVal == 1"
                     @change="sliderChange"
                     @focus="
                       (e) => {
@@ -55,8 +50,7 @@
                     :options="treeSelect"
                     :props="cascaderProps"
                     filterable
-                    clearable
-                  >
+                    clearable>
                   </el-cascader>
                 </div>
               </div>
@@ -70,23 +64,19 @@
     </div>
     <div v-if="configData.list">
       <div class="add-btn" @click="addHotTxt" v-if="configData.list.length < configData.max">
-        <el-button v-db-click class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
+        <el-button class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
       </div>
     </div>
-    <!-- <linkaddress
-      ref="linkaddres"
+    <!-- <linkaddress ref="linkaddres"
       :linkType="1"
       :fromType="'diyPage'"
       :isCateTree="!['homeComb', 'tabNav'].includes(defaults.name)"
-      @linkUrl="linkUrl"
-    ></linkaddress> -->
-    <linkaddress
-      ref="linkaddres"
+      @linkUrl="linkUrl"></linkaddress> -->
+    <linkaddress ref="linkaddres"
       :linkType="1"
       :fromType="'diyPage'"
       :isCateTree="!['homeComb', 'tabNav'].includes(defaults.name)"
-      @linkUrl="linkUrl"
-    ></linkaddress>
+      @linkUrl="linkUrl"></linkaddress>
   </div>
 </template>
 

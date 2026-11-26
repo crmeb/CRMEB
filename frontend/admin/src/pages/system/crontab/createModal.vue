@@ -1,11 +1,9 @@
 <template>
   <div>
-    <el-drawer
-      v-model="modal"
+    <el-drawer v-model="modal"
       :title="formValidate.id ? '编辑定时任务' : '添加定时任务'"
       size="1000px"
-      @closed="initData"
-    >
+      @closed="initData">
       <el-form v-if="modal" class="pb-20" ref="formValidateRef" :model="formValidate" label-width="97px" label-colon>
         <el-form-item label="任务名称：" v-if="currentTab === '1'">
           <el-input v-model="formValidate.name" type="text" placeholder="请输入任务名称"></el-input>
@@ -23,12 +21,10 @@
               <span class="suffix">月</span>
             </div>
             <div v-if="[4, 7, 8].includes(formValidate.type)" class="input-number-wrapper">
-              <el-input-number
-                :controls="false"
+              <el-input-number :controls="false"
                 v-model="formValidate.day"
                 :max="formValidate.type === 4 ? 10000 : 31"
-                :min="1"
-              ></el-input-number>
+                :min="1"></el-input-number>
               <span class="suffix">日</span>
             </div>
             <div v-if="[3, 4, 5, 6, 7, 8].includes(formValidate.type)" class="input-number-wrapper">
@@ -36,43 +32,35 @@
               <span class="suffix">时</span>
             </div>
             <div v-if="[2, 3, 4, 5, 6, 7, 8].includes(formValidate.type)" class="input-number-wrapper">
-              <el-input-number
-                :controls="false"
+              <el-input-number :controls="false"
                 v-model="formValidate.minute"
                 :max="formValidate.type === 2 ? 36000 : 59"
-                :min="0"
-              ></el-input-number>
+                :min="0"></el-input-number>
               <span class="suffix">分</span>
             </div>
             <div v-if="[1, 5, 6, 7].includes(formValidate.type)" class="input-number-wrapper">
-              <el-input-number
-                :controls="false"
+              <el-input-number :controls="false"
                 v-model="formValidate.second"
                 :max="formValidate.type === 1 ? 36000 : 59"
-                :min="0"
-              ></el-input-number>
+                :min="0"></el-input-number>
               <span class="suffix">秒</span>
             </div>
             <div class="trip">{{ trip }}</div>
           </div>
         </el-form-item>
         <el-form-item label="任务说明：">
-          <el-input
-            v-model="formValidate.content"
+          <el-input v-model="formValidate.content"
             type="textarea"
             :autosize="{ minRows: 3, maxRows: 5 }"
-            placeholder="请输入任务说明"
-          ></el-input>
+            placeholder="请输入任务说明"></el-input>
         </el-form-item>
         <el-form-item label="执行代码：" v-if="currentTab === '1'">
           <div ref="container" id="container" class="monaco-editor"></div>
         </el-form-item>
         <el-form-item label="开发密码：" v-if="currentTab === '1'">
-          <el-input
-            v-model="formValidate.password"
+          <el-input v-model="formValidate.password"
             type="password"
-            placeholder="请输入系统开发密码，开发密码在crmeb/config/filesystem.php中修改password"
-          ></el-input>
+            placeholder="请输入系统开发密码，开发密码在crmeb/config/filesystem.php中修改password"></el-input>
         </el-form-item>
         <el-form-item label="是否开启：">
           <el-switch :active-value="1" :inactive-value="0" v-model="formValidate.is_open" size="large">
@@ -82,7 +70,7 @@
         </el-form-item>
       </el-form>
       <span class="dialog-footer">
-        <el-button v-db-click @click="modal = false">取 消</el-button>
+        <el-button @click="modal = false">取 消</el-button>
         <el-button type="primary" v-db-click @click="handleSubmit">提 交</el-button>
       </span>
     </el-drawer>

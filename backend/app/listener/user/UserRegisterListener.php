@@ -35,23 +35,41 @@ class UserRegisterListener implements ListenerInterface
     {
         [$spreadUid, $userType, $name, $uid, $isNew] = $event;
 
-        if ($spreadUid) {
-            if ($isNew) {
-                /** @var UserBillServices $userBill */
-                $userBill = app()->make(UserBillServices::class);
-                $userBill->inviteUserIncExp((int)$spreadUid);
-
-                event('UserRegisterDistributionJob', ['uid' => $uid]);
-            }
-            $handled = event('DistributionServiceProxy', [
+        $spreadUid = (int)$spreadUid;
+        $uid = (int)$uid;
+        if ($spreadUid > 0 && $uid > 0) {
+            /** @var UserServices $userServices */
+            $userServices = app()->make(UserServices::class);
+            $userInfo = $userServices->getUserInfo($uid);
+            $legacy = $userInfo ? (is_object($userInfo) ? $userInfo->toArray() : (array)$userInfo) : [];
+            $relation = event('DistributionServiceProxy', [
                 'service' => 'DistributionRelationServices',
-                'action' => 'bind',
-                'args' => [(int)$uid, (int)$spreadUid, time()],
+                'action' => 'relation',
+                'args' => [$uid, $legacy],
             ]);
-            if (!is_array($handled) || ($handled[0] ?? null) === null) {
-                /** @var UserSpreadServices $userSpreadServices */
-                $userSpreadServices = app()->make(UserSpreadServices::class);
-                $userSpreadServices->setSpread($uid, $spreadUid);
+            $relationRow = is_array($relation[0] ?? null) ? $relation[0] : [];
+            $decision = $userServices->decideSpreadBind($uid, $spreadUid, [
+                'is_new' => (bool)$isNew,
+                'current_spread_uid' => (int)($relationRow['spread_uid'] ?? ($legacy['spread_uid'] ?? 0)),
+                'current_spread_time' => (int)($relationRow['spread_time'] ?? ($legacy['spread_time'] ?? 0)),
+            ]);
+            if ($decision['allow']) {
+                if ($isNew) {
+                    /** @var UserBillServices $userBill */
+                    $userBill = app()->make(UserBillServices::class);
+                    $userBill->inviteUserIncExp($spreadUid);
+                    event('UserRegisterDistributionJob', ['uid' => $uid]);
+                }
+                $handled = event('DistributionServiceProxy', [
+                    'service' => 'DistributionRelationServices',
+                    'action' => 'bind',
+                    'args' => [$uid, $spreadUid, time()],
+                ]);
+                if (!is_array($handled) || ($handled[0] ?? null) === null) {
+                    /** @var UserSpreadServices $userSpreadServices */
+                    $userSpreadServices = app()->make(UserSpreadServices::class);
+                    $userSpreadServices->setSpread($uid, $spreadUid);
+                }
             }
         }
 

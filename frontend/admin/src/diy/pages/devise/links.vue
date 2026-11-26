@@ -5,16 +5,14 @@
       <div class="txt"><span>地址：</span>{{ item.url }}</div>
       <div class="txt" v-if="item.parameter">
         <p><span>参数：</span></p>
-        <span v-for="(val, key, index) in item.parameter" :key="index"
-          >{{ key + '=' + val }}<i style="font-style: normal">&</i></span
-        >
+        <span v-for="(val, key, index) in item.parameter" :key="index">{{ key + '=' + val }}<i style="font-style: normal">&</i></span>
       </div>
       <div class="tips">
         例如：{{ item.example }}
-        <!--<el-button style="margin-left: 10px" v-clipboard:copy="item.example"-->
+        <!--<el-button style="margin-left: 14px" v-clipboard:copy="item.example"-->
         <!--v-clipboard:success="onCopy"-->
         <!--v-clipboard:error="onError">复制</el-button>-->
-        <span class="copy copy-data" v-db-click @click="onCopy(item.example)">复制</span>
+        <span class="copy copy-data" @click="onCopy(item.example)">复制</span>
       </div>
     </div>
   </div>

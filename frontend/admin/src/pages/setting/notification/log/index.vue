@@ -1,10 +1,8 @@
 <template>
   <div class="notice-log">
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="查看各渠道消息发送结果与成功率，按渠道、状态筛选排查发送失败原因。"
-    ></pages-header>
+      description="查看各渠道消息发送结果与成功率，按渠道、状态筛选排查发送失败原因。"></pages-header>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
         <el-form :model="filter" :label-width="labelWidth" :label-position="labelPosition" inline @submit.prevent>
@@ -33,8 +31,8 @@
             <el-input v-model="filter.mark" placeholder="请输入消息标识" clearable class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="searchList">搜索</el-button>
-            <el-button v-db-click @click="resetFilter">重置</el-button>
+            <el-button type="primary" @click="searchList">搜索</el-button>
+            <el-button @click="resetFilter">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -76,15 +74,13 @@
         </el-col>
       </el-row>
 
-      <el-table
-        :data="logList"
+      <el-table :data="logList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -130,25 +126,23 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="scope">
-            <a v-db-click @click="detail(scope.row)">详情</a>
+            <a @click="detail(scope.row)">详情</a>
             <el-divider direction="vertical" v-if="scope.row.status === 2" />
-            <a v-db-click v-if="scope.row.status === 2" @click="retry(scope.row)">重试</a>
+            <a v-if="scope.row.status === 2" @click="retry(scope.row)">重试</a>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="acea-row row-right page">
-        <pagination
-          v-if="list.total"
+        <pagination v-if="list.total"
           :total="list.total"
           v-model:page="list.page"
           v-model:limit="list.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
 
       <el-row class="mt14" style="text-align: right">
-        <el-button type="danger" v-db-click @click="clean">清理历史日志</el-button>
+        <el-button type="danger" @click="clean">清理历史日志</el-button>
       </el-row>
     </el-card>
 
@@ -192,12 +186,10 @@
           <span class="warning-text">注意：此操作不可恢复，请谨慎操作！</span>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div class="dialog-footer">
+      <template #footer><div class="dialog-footer">
           <el-button @click="cleanVisible = false">取消</el-button>
           <el-button v-db-click type="danger" @click="doClean">确定清理</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
   </div>
 </template>

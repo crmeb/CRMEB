@@ -3,13 +3,10 @@
     <div class="c_row-item" v-if="configData[configNum]">
       <el-col :span="8" class="c_label">{{ configData[configNum][name].title }}</el-col>
       <el-col :span="14" class="color-box">
-        <div
-          class="color-item acea-row row-middle"
+        <div class="color-item acea-row row-middle"
           v-for="(color, key) in configData[configNum][name].color"
-          :key="key"
-        >
-          <el-color-picker v-model="color.item" @change="changeColor($event, color)"></el-color-picker
-          ><span class="white-space-nowrap" v-db-click @click="resetBgA(color, index, key)">重置</span>
+          :key="key">
+          <el-color-picker v-model="color.item" @change="changeColor($event, color)"></el-color-picker><span class="white-space-nowrap" @click="resetBgA(color, index, key)">重置</span>
         </div>
       </el-col>
     </div>

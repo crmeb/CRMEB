@@ -1,20 +1,16 @@
 <template>
   <div class="message">
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="按场景配置平台端消息通知的渠道开关与模板，管理员接收通知从这里开启。"
-    ></pages-header>
+      description="按场景配置平台端消息通知的渠道开关与模板，管理员接收通知从这里开启。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: '0 20px 20px' }">
-      <el-table
-        :data="levelLists"
+      <el-table :data="levelLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -30,28 +26,24 @@
             <span>{{ scope.row.title }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          v-for="channel in channelList"
+        <el-table-column v-for="channel in channelList"
           :key="channel.channel_key"
           :label="channel.channel_name"
-          min-width="130"
-        >
+          min-width="130">
           <template #default="scope">
-            <el-switch
-              v-if="getChannelStatus(scope.row, channel.channel_key) !== undefined"
+            <el-switch v-if="getChannelStatus(scope.row, channel.channel_key) !== undefined"
               :active-value="1"
               :inactive-value="2"
               :model-value="getChannelStatus(scope.row, channel.channel_key)"
               @change="changeSwitch($event, scope.row, channel.channel_key)"
-              size="large"
-            >
+              size="large">
             </el-switch>
             <div v-else>--</div>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" :width="70">
           <template #default="scope">
-            <a v-db-click @click="setting(scope.row)">设置</a>
+            <a @click="setting(scope.row)">设置</a>
           </template>
         </el-table-column>
       </el-table>

@@ -192,7 +192,8 @@ class ExpressServices extends BaseService
     public function expressList($where = [])
     {
         if (empty($where)) $where = ['is_show' => 1];
-        return $this->dao->getExpressList($where, 'id,name,code,partner_id,partner_key,net,account,key,net_name', 0, 0);
+        // 未授权/选择类接口仅返回公开字段，禁止透出月结账号与密码（account/key/net_name）
+        return $this->dao->getExpressList($where, 'id,name,code', 0, 0);
     }
 
     /**

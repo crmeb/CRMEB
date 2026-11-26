@@ -10,15 +10,13 @@
 
     <el-row v-loading="spinShow" class="content">
       <el-col :span="16">
-        <WangEditor
-          v-if="currentAgreement"
+        <WangEditor v-if="currentAgreement"
           :key="currentAgreement.id"
           style="width: 100%"
           :content="formValidate.content"
           :ai-default-prompt="aiDefaultPrompt"
           :ai-default-system-prompt="aiDefaultSystemPrompt"
-          @editorContent="getEditorContent"
-        ></WangEditor>
+          @editorContent="getEditorContent"></WangEditor>
       </el-col>
       <el-col :span="6" style="width: 33%">
         <div class="ifam">
@@ -29,15 +27,12 @@
 
     <el-card :bordered="false" shadow="never" class="fixed-card" :style="{ left: `${fixBottomWidth}` }">
       <div class="acea-row row-center">
-        <el-button
-          class="bnt"
+        <el-button class="bnt"
           type="primary"
           v-db-click
           @click="save"
           :loading="loadingExist"
-          :disabled="spinShow || !formValidate.id"
-          >保存</el-button
-        >
+          :disabled="spinShow || !formValidate.id">保存</el-button>
       </div>
     </el-card>
   </div>

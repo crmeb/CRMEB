@@ -4,70 +4,58 @@
       <div class="padding-add">
         <el-form :model="searchForm" label-width="80px" label-position="right" inline @submit.prevent>
           <el-form-item label="订单分类：">
-            <el-select
-              v-model="searchForm.order_category"
+            <el-select v-model="searchForm.order_category"
               clearable
               @change="getList"
               placeholder="全部"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option label="全部" value="" />
               <el-option v-for="item in categoryOptions" :key="item.key" :value="item.key" :label="item.label" />
             </el-select>
           </el-form-item>
           <el-form-item label="产品类型：">
-            <el-select
-              v-model="searchForm.product_type"
+            <el-select v-model="searchForm.product_type"
               clearable
               @change="getList"
               placeholder="全部"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option label="全部" value="" />
               <el-option v-for="item in productTypeOptions" :key="item.key" :value="item.key" :label="item.label" />
             </el-select>
           </el-form-item>
           <el-form-item label="支付方式：">
-            <el-select
-              v-model="searchForm.pay_type"
+            <el-select v-model="searchForm.pay_type"
               clearable
               @change="getList"
               placeholder="全部"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option label="全部" value="" />
               <el-option v-for="item in payTypeOptions" :key="item.key" :value="item.key" :label="item.label" />
             </el-select>
           </el-form-item>
           <el-form-item label="创建时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               @change="onchangeTime"
               format="YYYY/MM/DD"
-              value-format="YYYY-MM-DD"
-            ></date-range-picker>
+              value-format="YYYY-MM-DD"></date-range-picker>
           </el-form-item>
           <el-form-item label="订单搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               v-model="searchForm.keyword"
               placeholder="请输入订单号/联系人/联系电话"
               class="form_content_width"
-              @keyup.enter="getList"
-            >
-              <template #prepend
-                ><el-select v-model="searchForm.search_field" style="width: 100px">
+              @keyup.enter="getList">
+              <template #prepend><el-select v-model="searchForm.search_field" style="width: 100px">
                   <el-option value="order_no" label="订单号"></el-option>
                   <el-option value="contact_name" label="联系人"></el-option>
-                  <el-option value="contact_phone" label="联系电话"></el-option> </el-select
-              ></template>
+                  <el-option value="contact_phone" label="联系电话"></el-option> </el-select></template>
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="getList">查询</el-button>
-            <el-button v-db-click @click="handleReset">重置</el-button>
+            <el-button type="primary" @click="getList">查询</el-button>
+            <el-button @click="handleReset">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -168,16 +156,14 @@
               <div class="tab">
                 <img v-lazy="scope.row.image" />
                 <el-tooltip placement="top" :open-delay="300">
-                  <template #content
-                    ><div>
+                  <template #content><div>
                       <div>
                         <span>商品名称：</span><span>{{ scope.row.title }}</span>
                       </div>
                       <div>
                         <span>购买数量：</span><span>{{ scope.row.total_num }}</span>
                       </div>
-                    </div></template
-                  >
+                    </div></template>
                   <span class="line2 w-250">{{ scope.row.title }}</span>
                 </el-tooltip>
               </div>
@@ -218,17 +204,14 @@
           </el-table-column>
           <el-table-column label="操作" fixed="right" width="220">
             <template #default="scope">
-              <a v-db-click @click="viewDetail(scope.row)">详情</a>
+              <a @click="viewDetail(scope.row)">详情</a>
               <el-divider direction="vertical" />
-              <a v-db-click @click="editRemark(scope.row)" v-auth="['admin-order-orderCenter-remark']">备注</a>
+              <a @click="editRemark(scope.row)" v-auth="['admin-order-orderCenter-remark']">备注</a>
               <template v-if="scope.row.canceled_refund_pending">
                 <el-divider direction="vertical" />
-                <a
-                  v-db-click
+                <a v-db-click
                   @click="submitCanceledRefund(scope.row)"
-                  v-auth="['admin-order-orderCenter-canceled-refund']"
-                  >原路退款</a
-                >
+                  v-auth="['admin-order-orderCenter-canceled-refund']">原路退款</a>
               </template>
               <template v-if="statusTab === 'deleted'">
                 <el-divider direction="vertical" />
@@ -238,13 +221,11 @@
           </el-table-column>
         </el-table>
         <div class="acea-row row-right page">
-          <pagination
-            v-if="total"
+          <pagination v-if="total"
             :total="total"
             v-model:page="page.page"
             v-model:limit="page.limit"
-            @pagination="getList"
-          />
+            @pagination="getList" />
         </div>
       </div>
     </el-card>
@@ -254,20 +235,16 @@
           <el-input type="textarea" v-model="remarkForm.remark" :rows="4" placeholder="请输入备注内容"></el-input>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="remarkModal = false">取消</el-button>
           <el-button v-db-click type="primary" @click="saveRemark">保存</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
-    <el-drawer
-      v-model="detailDrawerVisible"
+    <el-drawer v-model="detailDrawerVisible"
       title="订单详情"
       size="720px"
       class="order-detail-drawer"
-      @opened="onDetailDrawerOpened"
-    >
+      @opened="onDetailDrawerOpened">
       <OrderCenterDetail :id="detailOrderId" ref="orderDetailRef" @refunded="getList" />
     </el-drawer>
   </div>

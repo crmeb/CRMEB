@@ -4,21 +4,17 @@
       <div class="padding-add">
         <el-form ref="artFromRef" :model="artFrom" label-width="80px" label-position="right" inline @submit.prevent>
           <el-form-item label="商品搜索：" label-for="store_name">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入商品名称/关键字/ID"
               v-model="artFrom.store_name"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item label="商品分类：" label-for="pid">
-            <el-cascader
-              v-model="artFrom.cate_id"
+            <el-cascader v-model="artFrom.cate_id"
               :options="treeSelect"
               :props="{ multiple: false, emitPath: false, checkStrictly: true }"
               clearable
-              class="form_content_width"
-            ></el-cascader>
+              class="form_content_width"></el-cascader>
           </el-form-item>
           <template v-if="collapse">
             <el-form-item label="商品规格：">
@@ -44,36 +40,34 @@
               </el-select>
             </el-form-item>
             <el-form-item label="添加时间：">
-              <date-range-picker
-                width="250px"
+              <date-range-picker width="250px"
                 clearable
                 v-model="timeVal"
                 :editable="false"
                 @change="onchangeTime"
                 format="YYYY/MM/DD"
-                value-format="YYYY/MM/DD"
-              ></date-range-picker>
+                value-format="YYYY/MM/DD"></date-range-picker>
             </el-form-item>
             <el-form-item label="库存：" label-for="store_name">
               <el-input clearable placeholder="最小值" v-model="artFrom.stock_s[0]" class="form_range_content_width" />
-              ~
+              <span class="ml5 mr5">~</span>
               <el-input clearable placeholder="最大值" v-model="artFrom.stock_s[1]" class="form_range_content_width" />
             </el-form-item>
             <el-form-item label="价格：" label-for="store_name">
               <el-input clearable placeholder="最小值" v-model="artFrom.price_s[0]" class="form_range_content_width" />
-              ~
+              <span class="ml5 mr5">~</span>
               <el-input clearable placeholder="最大值" v-model="artFrom.price_s[1]" class="form_range_content_width" />
             </el-form-item>
             <el-form-item label="销量：" label-for="store_name">
               <el-input clearable placeholder="最小值" v-model="artFrom.sales_s[0]" class="form_range_content_width" />
-              ~
+              <span class="ml5 mr5">~</span>
               <el-input clearable placeholder="最大值" v-model="artFrom.sales_s[1]" class="form_range_content_width" />
             </el-form-item>
           </template>
           <el-form-item class="search-form-sub">
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
-            <el-button class="ResetSearch" v-db-click @click="reset">重置</el-button>
-            <a class="ivu-ml-8 font12 ml10" v-db-click @click="collapse = !collapse">
+            <el-button type="primary" @click="userSearchs">查询</el-button>
+            <el-button class="ResetSearch" @click="reset">重置</el-button>
+            <a class="ivu-ml-8 font12 ml10" @click="collapse = !collapse">
               <template v-if="!collapse"> 展开 <i class="el-icon-arrow-down" /> </template>
               <template v-else> 收起 <i class="el-icon-arrow-up" /> </template>
             </a>
@@ -83,24 +77,17 @@
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16" :body-style="{ padding: '0 20px 20px' }">
       <el-tabs v-model="artFrom.type" @tab-change="onClickTab">
-        <el-tab-pane
-          :label="item.name + '(' + item.count + ')'"
+        <el-tab-pane :label="item.name + '(' + item.count + ')'"
           :name="item.type.toString()"
           v-for="(item, index) in headeNum"
-          :key="index"
-        />
+          :key="index" />
       </el-tabs>
       <div class="Button">
-        <router-link v-auth="['admin-normal-product-add']" :to="routeProStr + '/product/normal/add'"
-          ><el-button v-db-click type="primary" class="mr14">添加商品</el-button></router-link
-        >
-        <el-button v-auth="['product-crawl-save']" type="success" class="mr14" v-db-click @click="onCopy"
-          >商品采集</el-button
-        >
+        <router-link v-auth="['admin-normal-product-add']" :to="routeProStr + '/product/normal/add'"><el-button type="primary" class="mr14">添加商品</el-button></router-link>
+        <el-button v-auth="['product-crawl-save']" type="success" class="mr14" @click="onCopy">商品采集</el-button>
         <el-dropdown class="bnt mr14" @command="batchSelect">
           <el-button>批量修改<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-          <template #dropdown
-            ><el-dropdown-menu>
+          <template #dropdown><el-dropdown-menu>
               <el-dropdown-item :command="1">商品分类</el-dropdown-item>
               <el-dropdown-item :command="2">物流设置</el-dropdown-item>
               <el-dropdown-item :command="3">购买送积分</el-dropdown-item>
@@ -112,32 +99,25 @@
               <el-dropdown-item :command="10">是否支持送礼</el-dropdown-item>
               <el-dropdown-item v-if="artFrom.type !== '5'" :command="11">移到回收站</el-dropdown-item>
               <el-dropdown-item v-if="artFrom.type === '5'" :command="12">恢复商品</el-dropdown-item>
-            </el-dropdown-menu></template
-          >
+            </el-dropdown-menu></template>
         </el-dropdown>
         <el-dropdown class="bnt mr14" @command="goodsMove">
           <el-button>商品迁移<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-          <template #dropdown
-            ><el-dropdown-menu>
+          <template #dropdown><el-dropdown-menu>
               <el-dropdown-item :command="1">商品导入</el-dropdown-item>
               <el-dropdown-item :command="2">商品导出</el-dropdown-item>
-            </el-dropdown-menu></template
-          >
+            </el-dropdown-menu></template>
         </el-dropdown>
-        <el-button v-auth="['export-product_list']" class="export" v-db-click @click="onExports(0)"
-          >商品数据导出</el-button
-        >
+        <el-button v-auth="['export-product_list']" class="export" @click="onExports(0)">商品数据导出</el-button>
       </div>
-      <el-table
-        ref="table"
+      <el-table ref="table"
         :data="tableList"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         :row-key="getRowKey"
         @selection-change="handleSelectRow"
-        empty-text="暂无数据"
-      >
+        empty-text="暂无数据">
         <el-table-column type="selection" width="60" :reserve-selection="true"> </el-table-column>
         <el-table-column label="商品ID" width="80">
           <template #default="scope">
@@ -178,8 +158,7 @@
         </el-table-column>
         <el-table-column label="状态" min-width="100">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.is_show"
@@ -188,83 +167,61 @@
               @change="changeSwitch(scope.row)"
               size="large"
               active-text="上架"
-              inactive-text="下架"
-            >
+              inactive-text="下架">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" minWidth="100">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <el-dropdown>
               <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
-              <template #dropdown
-                ><el-dropdown-menu>
+              <template #dropdown><el-dropdown-menu>
                   <el-dropdown-item v-if="artFrom.type !== '5'">
-                    <router-link :to="{ path: routeProStr + '/product/product_reply/' + scope.row.id }"
-                      ><a>查看评论</a></router-link
-                    >
+                    <router-link :to="{ path: routeProStr + '/product/product_reply/' + scope.row.id }"><a>查看评论</a></router-link>
                   </el-dropdown-item>
-                  <el-dropdown-item v-if="artFrom.type !== '5'" @click="openModal(scope.row, 'vipPriceSet')"
-                    >会员价管理</el-dropdown-item
-                  >
+                  <el-dropdown-item v-if="artFrom.type !== '5'" @click="openModal(scope.row, 'vipPriceSet')">会员价管理</el-dropdown-item>
                   <!-- 回收站 tab（type=5）：仅保留 恢复商品 / 彻底删除 -->
-                  <el-dropdown-item v-if="artFrom.type === '5'" @click="recover(scope.row, scope.$index)"
-                    >恢复商品</el-dropdown-item
-                  >
-                  <el-dropdown-item v-if="artFrom.type === '5'" @click="fullDel(scope.row, '彻底删除', scope.$index)"
-                    >彻底删除</el-dropdown-item
-                  >
-                  <el-dropdown-item v-else @click="del(scope.row, '移入回收站', scope.$index)"
-                    >移到回收站</el-dropdown-item
-                  >
-                </el-dropdown-menu></template
-              >
+                  <el-dropdown-item v-if="artFrom.type === '5'" @click="recover(scope.row, scope.$index)">恢复商品</el-dropdown-item>
+                  <el-dropdown-item v-if="artFrom.type === '5'" @click="fullDel(scope.row, '彻底删除', scope.$index)">彻底删除</el-dropdown-item>
+                  <el-dropdown-item v-else @click="del(scope.row, '移入回收站', scope.$index)">移到回收站</el-dropdown-item>
+                </el-dropdown-menu></template>
             </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="artFrom.page"
           v-model:limit="artFrom.limit"
-          @pagination="getDataList"
-        />
+          @pagination="getDataList" />
       </div>
     </el-card>
-    <brokerageSet ref="brokerageSetRef" :productId="productId"></brokerageSet>
     <vipPriceSet ref="vipPriceSetRef" :productId="productId"></vipPriceSet>
     <!-- 批量设置弹窗 -->
-    <el-dialog
-      v-model="batchModal"
+    <el-dialog v-model="batchModal"
       class="batch-box"
       title="批量设置"
       :show-close="true"
       :close-on-click-modal="false"
-      width="540px"
-    >
-      <el-form
-        class="batchFormData"
+      width="540px">
+      <el-form class="batchFormData"
         ref="batchFormDataRef"
         :rules="ruleBatch"
         :model="batchFormData"
         label-width="90px"
         label-position="right"
-        @submit.prevent
-      >
+        @submit.prevent>
         <el-row :gutter="24">
           <el-col :span="24" v-if="batchType == 1">
             <el-form-item label="商品分类：" prop="cate_id">
-              <el-cascader
-                v-model="batchFormData.cate_id"
+              <el-cascader v-model="batchFormData.cate_id"
                 :options="treeSelect"
                 :props="{ multiple: true, emitPath: false, checkStrictly: true }"
                 clearable
-                style="width: 400px"
-              ></el-cascader>
+                style="width: 400px"></el-cascader>
             </el-form-item>
           </el-col>
           <el-col :span="24" v-if="batchType == 2">
@@ -283,46 +240,38 @@
             </el-form-item>
             <el-form-item label="" v-if="freightType === 'fixed'">
               <div class="acea-row">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   :min="0"
                   :value="fixedPostage"
                   @change="onFixedPostageChange"
                   placeholder="请输入金额"
                   class="input_width maxW input-number-unit-class"
-                  class-unit="元"
-                />
+                  class-unit="元" />
               </div>
             </el-form-item>
             <el-form-item label="" v-if="freightType === 'template'" prop="templateId">
               <div class="acea-row">
-                <el-select
-                  :value="templateId"
+                <el-select :value="templateId"
                   @change="onTemplateIdChange"
                   clearable
                   placeholder="请选择运费模板"
-                  style="width: 414px"
-                >
-                  <el-option
-                    v-for="(item, index) in templateList"
+                  style="width: 414px">
+                  <el-option v-for="(item, index) in templateList"
                     :value="item.id"
                     :key="index"
-                    :label="item.name"
-                  ></el-option>
+                    :label="item.name"></el-option>
                 </el-select>
               </div>
             </el-form-item>
           </el-col>
           <el-col :span="24" v-if="[3, 4, 5].includes(batchType)">
             <el-form-item label="赠送积分：" prop="give_integral" v-if="batchType == 3">
-              <el-input-number
-                :controls="false"
+              <el-input-number :controls="false"
                 v-model="batchFormData.give_integral"
                 :min="0"
                 :max="9999999999"
                 placeholder="请输入积分"
-                style="width: 100%"
-              />
+                style="width: 100%" />
             </el-form-item>
             <el-form-item label="赠送优惠券：" v-if="batchType == 4">
               <div v-if="couponName.length" class="mb20">
@@ -330,21 +279,18 @@
                   item.title
                 }}</el-tag>
               </div>
-              <el-button type="primary" v-db-click @click="addCoupon">添加优惠券</el-button>
+              <el-button type="primary" @click="addCoupon">添加优惠券</el-button>
             </el-form-item>
             <el-form-item label="关联标签：" prop="label_id" v-if="batchType == 5">
               <div class="acea-row label_width">
-                <div class="labelInput acea-row row-between-wrapper" v-db-click @click="openLabel">
+                <div class="labelInput acea-row row-between-wrapper" @click="openLabel">
                   <div style="width: auto">
                     <div v-if="dataLabel.length">
-                      <el-tag
-                        class="m-r-2"
+                      <el-tag class="m-r-2"
                         closable
                         v-for="(item, index) in dataLabel"
                         @close="closeLabel(item)"
-                        :key="index"
-                        >{{ item.label_name }}</el-tag
-                      >
+                        :key="index">{{ item.label_name }}</el-tag>
                     </div>
                     <span class="span" v-else>选择用户关联标签</span>
                   </div>
@@ -355,58 +301,48 @@
           </el-col>
           <el-col :span="24" v-if="batchType == 10">
             <el-form-item label="开启送礼：">
-              <el-switch
-                v-model="batchFormData.is_gift"
+              <el-switch v-model="batchFormData.is_gift"
                 class="defineSwitch"
                 active-text="开启"
                 inactive-text="关闭"
                 :active-value="1"
                 :inactive-value="0"
-                size="large"
-              >
+                size="large">
               </el-switch>
               <div class="tip">开启送礼后，移动端商品详情的底部菜单显示送礼按钮</div>
             </el-form-item>
             <el-form-item v-if="batchFormData.is_gift" label="礼品附加费：">
-              <el-input-number
-                :controls="false"
+              <el-input-number :controls="false"
                 :min="0"
                 :max="100000"
                 v-model="batchFormData.gift_price"
                 placeholder="礼品附加费"
                 class="input-number-unit-class"
-                class-unit="元"
-              />
+                class-unit="元" />
               <div class="tip">送礼下单时，订单默认无运费，此费用可用于负担商品运费、产品包装等附加费用</div>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="clearBatchData">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="clearBatchData">取 消</el-button>
           <el-button type="primary" v-db-click @click="batchSub">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
     <!-- 用户标签 -->
-    <el-dialog
-      v-model="labelShow"
+    <el-dialog v-model="labelShow"
       title="请选择用户标签"
       width="540px"
       :show-close="true"
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <userLabel ref="userLabelRef" @activeData="activeData" @close="labelClose"></userLabel>
     </el-dialog>
     <!-- 商品标签 -->
     <el-dialog v-model="tagShow" title="请选择商品标签" :show-close="true" width="540px" :close-on-click-modal="false">
-      <goodsLabel
-        ref="goodsLabelRef"
+      <goodsLabel ref="goodsLabelRef"
         :defaultLabelList="goodsLabelList"
         @activeLabel="activeGoodsLabel"
-        @close="labelClose"
-      ></goodsLabel>
+        @close="labelClose"></goodsLabel>
     </el-dialog>
     <coupon-list ref="couponTemplates" @nameId="nameId" :couponids="batchFormData.coupon_ids"></coupon-list>
     <!-- 商品导入 -->
@@ -418,7 +354,7 @@
 
 <script setup>
 import { ref, computed, onActivated, nextTick } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import {
   normalProductList,
@@ -432,7 +368,6 @@ import { cascaderListApi, productGetTemplateApi, productLabelUseListApi } from '
 import userLabel from '@/components/labelList';
 import goodsLabel from '@/components/goodsLabel';
 import couponList from '@/components/couponList';
-import brokerageSet from '../../../product/components/brokerageSet.vue';
 import vipPriceSet from '../../../product/components/vipPriceSet.vue';
 import goodsImport from './goodsImport.vue';
 import { exportProductList, exportProductExport } from '@/api/export';
@@ -449,6 +384,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const route = useRoute();
 const routeProStr = Setting.routePre;
 
 const artFromRef = ref(null);
@@ -457,7 +393,6 @@ const batchFormDataRef = ref(null);
 const couponTemplates = ref(null);
 const userLabelRef = ref(null);
 const goodsLabelRef = ref(null);
-const brokerageSetRef = ref(null);
 const vipPriceSetRef = ref(null);
 
 const modals = ref(false);
@@ -595,8 +530,6 @@ function openModal(row, type) {
   productId.value = row.id;
   if (type === 'vipPriceSet') {
     vipPriceSetRef.value.visible = true;
-  } else if (type === 'brokerageSet') {
-    brokerageSetRef.value.visible = true;
   }
 }
 function batchSub() {
@@ -872,7 +805,7 @@ function getDataList() {
     });
 }
 function showSelectData() {
-  if (multipleSelection.value.length > 0) {
+  if (multipleSelection.value.length> 0) {
     tableList.value.forEach((row) => {
       multipleSelection.value.forEach((item) => {
         if (row.id === item.id) {
@@ -967,13 +900,21 @@ function reset() {
   getDataList();
 }
 
+function applyTypeFromQuery() {
+  if (route.query.type !== undefined && route.query.type !== null && route.query.type !== '') {
+    artFrom.value.type = String(route.query.type);
+  }
+}
+
 // created
+applyTypeFromQuery();
 goodsCategory();
 getLabelList();
 getDataList();
 goodHeade();
 
 onActivated(() => {
+  applyTypeFromQuery();
   goodsCategory();
   getLabelList();
   getDataList();

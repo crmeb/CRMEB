@@ -2,14 +2,12 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="artFromRef"
+        <el-form ref="artFromRef"
           :model="artFrom"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="门店名称：">
             <el-select v-model="artFrom.store_id" clearable @change="userSearchs" class="form_content_width">
               <el-option v-for="item in storeSelectList" :value="item.id" :key="item.id" :label="item.name"></el-option>
@@ -19,18 +17,14 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button v-auth="['merchant-store_staff-create']" type="primary" class="action-row" v-db-click @click="add"
-        >添加核销员</el-button
-      >
-      <el-table
-        :data="storeLists"
+      <el-button v-auth="['merchant-store_staff-create']" type="primary" class="action-row" @click="add">添加核销员</el-button>
+      <el-table :data="storeLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -65,8 +59,7 @@
         </el-table-column>
         <el-table-column label="状态" min-width="150">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -74,27 +67,24 @@
               @change="onchangeIsShow(scope.row.id, scope.row.status)"
               size="large"
               active-text="开启"
-              inactive-text="关闭"
-            >
+              inactive-text="关闭">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row.id)">编辑</a>
+            <a @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除核销员', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="artFrom.page"
           v-model:limit="artFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

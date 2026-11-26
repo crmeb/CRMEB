@@ -24,11 +24,7 @@
             </div>
             <el-alert v-if="!pageData.appId && !pageData.code">
               <template #title>
-                您尚未配置小程序信息，请<router-link
-                  :to="{ path: $routeProStr + '/setting/system_config/' + pageData.config_tab_id }"
-                  >立即设置</router-link
-                ></template
-              >
+                您尚未配置小程序信息，请<router-link :to="{ path: $routeProStr + '/setting/system_config/' + pageData.config_tab_id }">立即设置</router-link></template>
             </el-alert>
             <div class="content-box">
               <div class="left">小程序名称：</div>
@@ -37,7 +33,7 @@
             <div class="content-box">
               <div class="left">小程序码：</div>
               <div class="right">
-                <el-button type="primary" v-db-click @click="downLoadCode(pageData.code)">下载小程序码</el-button>
+                <el-button type="primary" @click="downLoadCode(pageData.code)">下载小程序码</el-button>
               </div>
             </div>
             <div class="content-box">
@@ -59,7 +55,7 @@
                   查看如何开通直播功能
                 </div>
 
-                <el-button class="mt10" type="primary" v-db-click @click="downLoad()">下载小程序包</el-button>
+                <el-button class="mt10" type="primary" @click="downLoad()">下载小程序包</el-button>
               </div>
             </div>
           </div>
@@ -173,7 +169,7 @@ function downLoadCode(url) {
 .content {
   padding: 0 20px;
 }
-.content > .title {
+.content> .title {
   padding-bottom: 26px;
 }
 .content-box {
@@ -196,7 +192,7 @@ function downLoadCode(url) {
   font-size: 16px;
   font-weight: bold;
 }
-.content-box > span {
+.content-box> span {
   color: #f5222d;
   font-size: 20px;
 }

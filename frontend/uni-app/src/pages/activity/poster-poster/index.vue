@@ -8,7 +8,14 @@
 			<view class="pictrue">
 				<!-- <image :src='image' mode="widthFix"></image> -->
 				<image class="canvas" :src="posterImage" v-if="posterImage" @click="savePosterPathMp(posterImage)"></image>
-				<canvas class="canvas" canvas-id="myCanvas" v-else></canvas>
+				<canvas
+					v-else
+					class="canvas"
+					canvas-id="myCanvas"
+					:width="canvasW"
+					:height="canvasH"
+					:style="{ width: canvasW + 'px', height: canvasH + 'px' }"
+				></canvas>
 			</view>
 		</view>
 		<!-- #ifdef H5 || APP-PLUS -->
@@ -35,7 +42,10 @@
 <script setup>
 import zbCode from '@/components/zb-code/zb-code.vue';
 import { getBargainPoster, getCombinationPoster, getBargainPosterData, getCombinationPosterData } from '@/api/activity.js';
-import { getUserInfo, imgToBase as imgToBaseApi, routineCode as routineCodeApi } from '@/api/user.js';
+import { getUserInfo, imgToBase as imgToBaseApi } from '@/api/user.js';
+// #ifdef MP
+import { routineCode as routineCodeApi } from '@/api/user.js';
+// #endif
 // #ifdef APP-PLUS
 import { TOKENNAME, HTTP_REQUEST_URL } from '@/config/app.js';
 // #endif
@@ -45,6 +55,8 @@ import { ref, nextTick, onMounted, getCurrentInstance } from 'vue';
 import { onLoad, onReady } from '@dcloudio/uni-app';
 import util from '@/utils/util.js';
 import i18n from '@/utils/lang.js';
+// H5 下相对路径会被当成路由返回 HTML，导致 getImageInfo 失败
+import posterBagImg from '../static/posterBag.png';
 
 // 组件使用 props 传参
 const props = defineProps({
@@ -53,11 +65,11 @@ const props = defineProps({
 		default: '0'
 	},
 	comId: {
-		type: String,
+		type: [String, Number],
 		default: '0'
 	},
 	comBargain: {
-		type: String,
+		type: [String, Number],
 		default: '0'
 	}
 });
@@ -89,7 +101,8 @@ const from = ref('');
 const uid = ref('');
 //二维码参数
 const codeShow = ref(false);
-const cid = ref('1');
+// 与详情页 zb-code 的 cid 区分开，避免 H5 canvas-id 冲突导致二维码生成失败
+const cid = ref('bargainPosterQr');
 const ifShow = ref(true);
 const val = ref(''); // 要生成的二维码值
 const size = ref(200); // 二维码大小
@@ -104,69 +117,103 @@ const onval = ref(true); // val值变化时自动重新生成二维码
 const loadMake = ref(true); // 组件加载完成后自动生成二维码
 const src = ref(''); // 二维码生成后的图片地址或base64
 const codeSrc = ref('');
-const wd = ref(0);
-const hg = ref(0);
-const posterBag = '../static/posterBag.png';
+const canvasW = 750;
+const canvasH = 1334;
+const wd = ref(canvasW);
+const hg = ref(canvasH);
+const posterBag = posterBagImg;
 const mpUrl = ref('');
 
 // ---------- methods ----------
+function waitCodeSrc(timeout = 8000) {
+	return new Promise((resolve) => {
+		if (codeSrc.value) {
+			resolve(codeSrc.value);
+			return;
+		}
+		const start = Date.now();
+		const timer = setInterval(() => {
+			if (codeSrc.value || Date.now() - start > timeout) {
+				clearInterval(timer);
+				resolve(codeSrc.value || '');
+			}
+		}, 100);
+	});
+}
+
+function ensurePosterSize() {
+	// 固定设计稿像素，与 canvas width/height 一致，避免 upx 换算导致只画在左上角
+	wd.value = canvasW;
+	hg.value = canvasH;
+	return Promise.resolve();
+}
+
 async function getPosterInfo() {
-	var url = '';
-	let data = {
-		id: id.value,
-		from: from.value
-	};
-	let userData = await getUserInfo();
-	uid.value = userData.data.uid;
-	let goods_img, mp_code, resData, arr, mpUrlTmp;
+	let resData, arr, mpUrlTmp;
 	uni.showLoading({
 		title: i18n.t(`海报生成中`),
 		mask: true
 	});
-	if (type.value == 1) {
-		await getBargainPosterData(id.value)
-			.then((res) => {
-				resData = res.data;
-			})
-			.catch((err) => {
-				util.Tips({
-					title: i18n.t(`海报图片获取失败`)
-				});
-				return;
-			});
-	} else {
-		await getCombinationPosterData(id.value)
-			.then((res) => {
-				resData = res.data;
-			})
-			.catch((err) => {
-				util.Tips({
-					title: i18n.t(`海报图片获取失败`)
-				});
-				return;
-			});
-	}
+	try {
+		let userData = await getUserInfo();
+		uid.value = userData.data.uid;
+		if (type.value == 1) {
+			const res = await getBargainPosterData(id.value);
+			resData = res.data;
+		} else {
+			const res = await getCombinationPosterData(id.value);
+			resData = res.data;
+		}
+		if (!resData) {
+			throw new Error(i18n.t(`海报图片获取失败`));
+		}
 
-	// #ifdef H5 || APP-PLUS
-	let imgData = await imgToBase(resData.image, resData.url);
-	arr = [posterBag, imgData.image, imgData.code || codeSrc.value];
-	// #endif
-	// #ifdef MP
-	resData.image = setDomain(resData.image);
-	mpUrlTmp = resData.url ? await downloadFilestoreImage(resData.url) : await downloadFilestoreImage(mpUrl.value);
-	arr = [posterBag, await downloadFilestoreImage(resData.image), mpUrlTmp];
-	// #endif
-	nextTick((e) => {
-		util.bargainPosterCanvas(arr, resData.title, resData.label, resData.msg, resData.price, wd.value, hg.value, (tempFilePath) => {
-			posterImage.value = tempFilePath;
-			emit('getPosterImgae', tempFilePath);
+		// #ifdef H5 || APP-PLUS
+		let imgData = await imgToBase(resData.image, resData.url || '');
+		if (!imgData || !imgData.image) {
+			throw new Error(i18n.t(`海报图片获取失败`));
+		}
+		// H5 端 poster_info 通常不返回二维码，需等本地 zb-code 生成
+		const qr = imgData.code || (await waitCodeSrc());
+		if (!qr) {
+			throw new Error(i18n.t(`二维码生成失败`));
+		}
+		arr = [posterBag, imgData.image, qr];
+		// #endif
+		// #ifdef MP
+		resData.image = setDomain(resData.image);
+		mpUrlTmp = resData.url ? await downloadFilestoreImage(resData.url) : await downloadFilestoreImage(mpUrl.value);
+		arr = [posterBag, await downloadFilestoreImage(resData.image), mpUrlTmp];
+		// #endif
+		await ensurePosterSize();
+		await nextTick();
+		util.bargainPosterCanvas(
+			arr,
+			resData.title,
+			resData.label,
+			resData.msg,
+			resData.price,
+			wd.value,
+			hg.value,
+			(tempFilePath) => {
+				posterImage.value = tempFilePath;
+				emit('getPosterImgae', tempFilePath);
+			},
+			instance.proxy
+		);
+	} catch (err) {
+		uni.hideLoading();
+		util.Tips({
+			title: (err && err.message) || i18n.t(`海报生成失败`)
 		});
-	});
+	}
 }
+// #ifdef MP
 async function routineCode() {
 	let res = await routineCodeApi();
 	mpUrl.value = res.data.url;
 }
+// #endif
 //图片转符合安全域名路径
 function downloadFilestoreImage(url) {
 	return new Promise((resolve, reject) => {
@@ -379,27 +426,21 @@ onMounted(() => {
 
 		// #ifdef H5
 		val.value =
-			window.location.origin + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spread=' + uidFromStore();
+			window.location.origin + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spid=' + uidFromStore();
 		// #endif
 		// #ifdef APP-PLUS
-		val.value = HTTP_REQUEST_URL + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spread=' + uidFromStore();
+		val.value = HTTP_REQUEST_URL + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spid=' + uidFromStore();
 		// #endif
 
-		nextTick(() => {
-			uni
-				.createSelectorQuery()
-				.in(instance.proxy)
-				.select('.pictrue')
-				.boundingClientRect((data) => {
-					wd.value = data.width;
-					hg.value = data.height;
-				})
-				.exec();
-		});
+		// H5/APP 用 zb-code 生成链接二维码；小程序码仅 MP 需要
+		// #ifdef MP
 		routineCode();
-		setTimeout((e) => {
-			getPosterInfo();
-		}, 200);
+		// #endif
+		nextTick(() => {
+			setTimeout(() => {
+				getPosterInfo();
+			}, 500);
+		});
 	}
 });
 
@@ -408,17 +449,17 @@ onReady(() => {
 		// #ifdef H5
 		if (type.value == 1) {
 			val.value =
-				window.location.origin + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spread=' + uidFromStore();
+				window.location.origin + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spid=' + uidFromStore();
 		} else if (type.value == 2) {
-			val.value = window.location.origin + '/pages/activity/goods_combination_status/index?id=' + id.value + '&spread=' + uidFromStore();
+			val.value = window.location.origin + '/pages/activity/goods_combination_status/index?id=' + id.value + '&spid=' + uidFromStore();
 		}
 		// #endif
 		// #ifdef APP-PLUS
 		if (type.value == 1) {
 			val.value =
-				HTTP_REQUEST_URL + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spread=' + uidFromStore();
+				HTTP_REQUEST_URL + '/pages/activity/goods_bargain_details/index?id=' + id.value + '&bargain=' + uidFromStore() + '&spid=' + uidFromStore();
 		} else if (type.value == 2) {
-			val.value = HTTP_REQUEST_URL + '/pages/activity/goods_combination_status/index?id=' + id.value + '&spread=' + uidFromStore();
+			val.value = HTTP_REQUEST_URL + '/pages/activity/goods_combination_status/index?id=' + id.value + '&spid=' + uidFromStore();
 		}
 		// #endif
 		setTimeout((e) => {}, 200);
@@ -437,7 +478,9 @@ onReady(() => {
 				)
 				.exec();
 		});
+		// #ifdef MP
 		routineCode();
+		// #endif
 	}
 });
 </script>
@@ -470,14 +513,14 @@ onReady(() => {
 }
 
 .canvas {
-	width: 100%;
-	height: 1100rpx;
+	width: 750px;
+	height: 1334px;
 }
 
 .poster-poster .pictrue {
-	width: 700rpx;
-	/* height: 100%; */
-	margin: 0 auto 50rpx auto;
+	width: 750px;
+	height: 1334px;
+	margin: 0 auto;
 	display: flex;
 	justify-content: center;
 }

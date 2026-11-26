@@ -1,13 +1,11 @@
 <template>
   <div class="line-box" v-if="configData">
     <div class="input-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="configData.list"
         group="peoples"
         handle=".icon"
-        :item-key="hotWordItemKey"
-      >
+        :item-key="hotWordItemKey">
         <template #item="{ element: item, index }">
           <div class="input-item">
             <div class="icon">
@@ -24,7 +22,7 @@
         </template>
       </draggable>
       <div class="add-btn" @click="addHotTxt" v-if="configData.list.length < 20">
-        <el-button v-db-click class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
+        <el-button class="btn" type="primary" ghost> <span class="iconfont iconjiahao"></span>添加 </el-button>
       </div>
     </div>
   </div>

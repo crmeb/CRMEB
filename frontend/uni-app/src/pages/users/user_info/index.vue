@@ -366,15 +366,63 @@ function clearCache() {
 				}
 			}, function(e) {});
 		}
-	} else { // ios暂时未找到清理缓存的方法，以下是官方提供的方法，但是无效，会报错
-		plus.cache.clear(function() {
-			uni.showToast({
-				title: i18n.t(`缓存清理完成`),
-				duration: 2000
-			});
-			formatSize();
-		});
+	} else {
+		clearIosCache();
 	}
+}
+// iOS 的 plus.cache.clear 对 WKWebView 无效且会报错。清 NSURLCache，并删除 Library/Caches 下的内容。
+function clearIosCache() {
+	const done = () => {
+		uni.showToast({
+			title: i18n.t(`缓存清理完成`),
+			duration: 2000
+		});
+		formatSize();
+	};
+	try {
+		const NSURLCache = plus.ios.import('NSURLCache');
+		const sharedCache = NSURLCache.sharedURLCache();
+		sharedCache.removeAllCachedResponses();
+		plus.ios.deleteObject(sharedCache);
+		plus.ios.deleteObject(NSURLCache);
+	} catch (e) {}
+	let cachePath = '';
+	try {
+		const NSFileManager = plus.ios.import('NSFileManager');
+		const fileManager = NSFileManager.defaultManager();
+		const urls = fileManager.URLsForDirectoryinDomains(13, 1);
+		if (urls && urls.count() > 0) {
+			const cacheUrl = urls.objectAtIndex(0);
+			cachePath = cacheUrl.path();
+			plus.ios.deleteObject(cacheUrl);
+		}
+		plus.ios.deleteObject(urls);
+		plus.ios.deleteObject(fileManager);
+		plus.ios.deleteObject(NSFileManager);
+	} catch (e) {
+		cachePath = '';
+	}
+	if (!cachePath) {
+		done();
+		return;
+	}
+	plus.io.resolveLocalFileSystemURL(cachePath, (entry) => {
+		entry.createReader().readEntries((entries) => {
+			if (!entries.length) {
+				done();
+				return;
+			}
+			let pending = entries.length;
+			const finishOne = () => {
+				pending -= 1;
+				if (pending === 0) done();
+			};
+			entries.forEach((item) => {
+				if (item.isDirectory) item.removeRecursively(finishOne, finishOne);
+				else item.remove(finishOne, finishOne);
+			});
+		}, done);
+	}, done);
 }
 /**
  * 授权回调

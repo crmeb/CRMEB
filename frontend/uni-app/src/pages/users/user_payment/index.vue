@@ -8,11 +8,7 @@
 				</view>
 			</view>
 			<view class="payment">
-				<view class="nav acea-row row-around row-middle" v-if="navRecharge.length > 1">
-					<view class="item" :class="active==index?'on':''" v-for="(item,index) in navRecharge" :key="index"
-						@click="navRecharges(index)">{{$t(item)}}</view>
-				</view>
-				<view class='tip picList' v-if='!active'>
+				<view class='tip picList'>
 					<template v-for="(item, index) in picList" :key="index">
 						<view class="pic-box pic-box-color acea-row row-center-wrapper row-column"
 							:class="activePic == index ? 'pic-box-color-active' : ''" v-if="item.price"
@@ -37,23 +33,7 @@
 					</view>
 
 				</view>
-				<view class="tip" v-else>
-					<view class='input'><text>{{$t(`￥`)}}</text><input v-model="number" placeholder="0.00" type='number'
-							placeholder-class='placeholder' name="number"></input></view>
-					<view class="tips-title">
-						<view style="font-weight: bold; font-size: 26rpx;">{{$t(`提示`)}}：</view>
-						<view style="margin-top: 10rpx;">{{$t(`当前可转入佣金为`)}} <text
-								class='font-color'>{{$t(`￥`)}}{{userinfo.commissionCount || 0}}</text>{{$t(`冻结佣金为`)}}<text
-								class='font-color'>{{$t(`￥`)}}{{userinfo.broken_commission}}</text></view>
-					</view>
-					<view class="tips-box">
-						<view class="tips mt-30">{{$t(`注意事项`)}}：</view>
-						<view class="tips-samll" v-for="item in rechargeAttention" :key="item">
-							{{ $t(item) }}
-						</view>
-					</view>
-				</view>
-				<button class='but bg-color' @click="submitSub"> {{active ? $t(`立即转入`): $t(`立即充值`) }}</button>
+				<button class='but bg-color' @click="submitSub">{{$t(`立即充值`)}}</button>
 			</view>
 		</form>
 		<payment :payMode="payMode" :pay_close="pay_close" :is-call="true" @onChangeFun="onChangeFun"
@@ -103,8 +83,6 @@ const { isLogin } = storeToRefs(appStore);
 
 // ---------- data ----------
 const now_money = ref(0);
-const navRecharge = ref([i18n.t(`账户充值`), i18n.t(`佣金转入`)]);
-const active = ref(0);
 const number = ref('');
 const formContent = ref('');
 const userinfo = ref({});
@@ -226,18 +204,12 @@ function onLoadFun() {
 function authColse(e) {
 	isShowAuth.value = e
 }
-function navRecharges(index) {
-	active.value = index;
-}
 /**
  * 获取用户信息
  */
 function getUserInfo() {
 	getUserInfoApi().then(res => {
 		userinfo.value = res.data;
-		if (!res.data.extract_type.includes('3')) {
-			navRecharge.value = [i18n.t(`账户充值`)]
-		}
 	})
 }
 /**
@@ -429,13 +401,8 @@ function payCheck(type) {
 				break;
 			case 'PAY_DEFICIENCY':
 				uni.hideLoading();
-				//余额不足
-				// 原代码此处引用了未定义的 goPages，保持原样
 				return util.Tips({
 					title: res.msg
-				}, {
-					tab: 5,
-					url: goPages + '&status=1'
 				});
 				break;
 
@@ -520,48 +487,8 @@ function pay() {
  * 用户充值
  */
 function submitSub() {
-	let value = number.value;
-	// 转入余额
-	if (active.value) {
-		if (parseFloat(value) < 0 || parseFloat(value) == NaN || value == undefined || value == "") {
-			return util.Tips({
-				title: i18n.t(`请输入金额`)
-			});
-		}
-		uni.showModal({
-			title: i18n.t(`转入余额`),
-			content: i18n.t(`转入余额后无法再次转出，确认是否转入余额`),
-			success(res) {
-				if (res.confirm) {
-					recharge({
-							price: parseFloat(value),
-							type: 1
-						})
-						.then(res => {
-							// userinfo.value['userinfo.now_money'] = util.$h.Add(value, userinfo.value.now_money)
-							return util.Tips({
-								title: i18n.t(`转入成功`),
-								icon: 'success'
-							}, {
-								tab: 5,
-								url: '/pages/users/user_money/index'
-							});
-						}).catch(err => {
-							return util.Tips({
-								title: err
-							})
-						});
-				} else if (res.cancel) {
-					return util.Tips({
-						title: i18n.t(`已取消`)
-					});
-				}
-			},
-		})
-	} else {
-		if (numberPic.value == '') numberPic.value = money.value;
-		pay()
-	}
+	if (numberPic.value == '') numberPic.value = money.value;
+	pay()
 }
 </script>
 <style lang="scss">
@@ -589,53 +516,6 @@ function submitSub() {
 		padding-top: 1rpx;
 		border-top-right-radius: 39rpx;
 		border-top-left-radius: 39rpx;
-	}
-
-	.payment .nav {
-		height: 75rpx;
-		line-height: 75rpx;
-		padding: 8rpx 100rpx;
-	}
-
-	.payment .nav .item {
-		font-size: 30rpx;
-		color: #333;
-	}
-
-	.payment .nav .item.on {
-		font-weight: bold;
-		border-bottom: 4rpx solid var(--view-theme);
-	}
-
-	.payment .input {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-bottom: 1px dashed #dddddd;
-		margin: 60rpx auto 0 auto;
-		padding-bottom: 20rpx;
-		font-size: 56rpx;
-		color: #333333;
-		flex-wrap: nowrap;
-
-	}
-
-	.payment .input text {
-		padding-left: 106rpx;
-	}
-
-	.payment .input input {
-		padding-right: 106rpx;
-		width: 300rpx;
-		height: 94rpx;
-		text-align: center;
-		font-size: 70rpx;
-	}
-
-	.payment .placeholder {
-		color: #d0d0d0;
-		height: 100%;
-		line-height: 94rpx;
 	}
 
 	.payment .tip {
@@ -748,11 +628,5 @@ function submitSub() {
 		.tip-box {
 			margin-top: 30rpx;
 		}
-	}
-
-	.tips-title {
-		margin-top: 20rpx;
-		font-size: 24rpx;
-		color: #333;
 	}
 </style>

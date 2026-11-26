@@ -13,21 +13,18 @@
       <div class="label-box" v-for="(item, index) in labelList" :key="index">
         <div class="title">{{ item.name }}</div>
         <div class="list">
-          <div
-            class="label-item"
+          <div class="label-item"
             :class="{ on: label.disabled }"
             v-for="(label, j) in item.label"
             :key="j"
-            v-db-click
-            @click="selectLabel(label)"
-          >
+            @click="selectLabel(label)">
             {{ label.label_name }}
           </div>
         </div>
       </div>
     </template>
     <div class="acea-row row-right mt20">
-      <el-button v-db-click @click="cancel">取 消</el-button>
+      <el-button @click="cancel">取 消</el-button>
       <el-button type="primary" v-db-click @click="subBtn">确 定</el-button>
     </div>
   </div>
@@ -194,7 +191,7 @@ function cancel() {
     margin-top: 40px;
 
     button {
-      margin-left: 10px;
+      margin-left: 14px;
     }
   }
 }

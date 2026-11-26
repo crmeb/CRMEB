@@ -93,50 +93,6 @@
 						<button formType="submit" class='bnt bg-color'>{{$t(`提现`)}}</button>
 					</form>
 				</view>
-				<view :hidden='currentTab != 2' class='list'>
-					<form @submit="subCash">
-						<view class='item acea-row row-between-wrapper'>
-							<view class='name'><text class='red'>*</text> {{$t(`账号`)}}</view>
-							<view class='input'><input :placeholder='$t(`请填写您的支付宝账号`)' placeholder-class='placeholder'
-									name="name"></input></view>
-						</view>
-						<view class='item acea-row row-between-wrapper'>
-							<view class='name'><text class='red'>*</text> {{$t(`姓名`)}}</view>
-							<view class='input'><input :placeholder='$t(`请填写支付宝绑定的真实姓名`)' placeholder-class='placeholder'
-									name="user_name"></input></view>
-						</view>
-						<view class='item acea-row row-between-wrapper'>
-							<view class='name'><text class='red'>*</text> {{$t(`提现`)}}</view>
-							<view class='input'><input @input='inputNum' :placeholder='$t(`最低提现金额`)+minPrice'
-									placeholder-class='placeholder' name="money" type='digit'></input></view>
-						</view>
-						<view class='item acea-row row-top row-between'>
-							<view class='name pos'>{{$t(`收款码`)}}</view>
-							<view class="input acea-row">
-								<view class="picEwm" v-if="qrcodeUrlZ">
-									<image :src="qrcodeUrlZ"></image>
-									<text class='iconfont icon-guanbi1 fontcolor' @click='DelPicZ'></text>
-								</view>
-								<view class='pictrue acea-row row-center-wrapper row-column' @click='uploadpic("Z")' v-else>
-									<text class='iconfont icon-icon25201'></text>
-									<view>{{$t(`上传图片`)}}</view>
-								</view>
-							</view>
-						</view>
-						<view class='tip'>
-							{{$t(`当前可提现金额`)}}: <text class="price">{{$t(`￥`)}}{{userInfo.commissionCount}}</text>，{{$t(`冻结佣金`)}}:
-							{{$t(`￥`)}}{{userInfo.broken_commission}}
-						</view>
-						<view class='tip'>
-							{{$t(`提现手续费: `)}}<text class="price">{{withdrawal_fee}}%</text>，{{$t(`实际到账: `)}}<text
-								class="price">{{$t(`￥`)}}{{true_money}}</text>
-						</view>
-						<view class='tip'>
-							{{$t(`说明: 每笔佣金的冻结期为`)}}{{userInfo.broken_day}}{{$t(`天，到期后可提现`)}}
-						</view>
-						<button formType="submit" class='bnt bg-color'>{{$t(`提现`)}}</button>
-					</form>
-				</view>
 				<view :hidden='currentTab != 3' class='list'>
 					<form @submit="importNowMoney">
 						<view class='item acea-row row-between-wrapper'>
@@ -166,8 +122,8 @@ import { storeToRefs } from 'pinia';
 import {
 	extractCash,
 	extractBank,
-	getUserInfo as getUserInfoApi,
-	recharge
+	extractBalance,
+	getUserInfo as getUserInfoApi
 } from '@/api/user.js';
 import {
 	toLogin
@@ -198,10 +154,8 @@ const isClone = ref(false);
 const isAuto = ref(false); //没有授权的不会自动授权
 const isShowAuth = ref(false); //是否隐藏授权
 const qrcodeUrlW = ref("");
-const qrcodeUrlZ = ref("");
 const prevent = ref(false); //避免重复提交成功多次
 const weixinExtractType = ref(0); // 佣金到账方式
-const alipayExtractType = ref(0); // 佣金到账方式
 const withdrawal_fee = ref(0); //提现手续费
 const true_money = ref(0);
 // 原代码未在 data 声明、直接挂到实例上的字段
@@ -234,7 +188,18 @@ function inputNum(e) {
 	} else {
 		moneyMaxLeng.value = 8
 	}
-	true_money.value = Math.floor((util.$h.Mul(val, util.$h.Div(util.$h.Sub(100, withdrawal_fee.value), 100))) * 100) / 100 || 0;
+	true_money.value = arrivalMoney(val, withdrawal_fee.value);
+}
+// 手续费按分截断，到账 = 申请金额 - 手续费。与后端 bcmul 保留两位的截断一致。
+function arrivalMoney(amount, rate) {
+	const price = parseFloat(amount);
+	if (!price || price < 0) {
+		return 0;
+	}
+	const percent = Math.round((parseFloat(rate) || 0) * 100) / 100;
+	const cents = Math.round(price * 100);
+	const feeCents = Math.floor(cents * percent / 100);
+	return (cents - feeCents) / 100;
 }
 // uploadpicW(){
 // 	uploadpic(qrcodeUrlW.value);
@@ -250,8 +215,6 @@ function uploadpic(type) {
 	util.uploadImageOne('upload/image', function(res) {
 		if (type === 'W') {
 			qrcodeUrlW.value = res.data.url;
-		} else {
-			qrcodeUrlZ.value = res.data.url;
 		}
 	});
 }
@@ -261,9 +224,6 @@ function uploadpic(type) {
  */
 function DelPicW() {
 	qrcodeUrlW.value = "";
-}
-function DelPicZ() {
-	qrcodeUrlZ.value = "";
 }
 function onLoadFun() {
 	getUserInfo();
@@ -283,7 +243,6 @@ function getUserExtractBank() {
 		array.value = arrayNew;
 		minPrice.value = res.data.minPrice;
 		withdrawal_fee.value = res.data.withdrawal_fee;
-		alipayExtractType.value = res.data.alipayExtractType ? parseInt(res.data.alipayExtractType) : 0;
 		weixinExtractType.value = res.data.weixinExtractType ? parseInt(res.data.weixinExtractType) : 0;
 	});
 }
@@ -301,11 +260,6 @@ function getUserInfo() {
 				'name': i18n.t(`微信`),
 				'icon': 'icon-weixin2',
 				'id': 1
-			},
-			{
-				'name': i18n.t(`支付宝`),
-				'icon': 'icon-icon34',
-				'id': 2
 			},
 			{
 				'name': i18n.t(`余额`),
@@ -357,14 +311,6 @@ function subCash(e) {
 		});
 		value.weixin = value.name;
 		value.qrcode_url = qrcodeUrlW.value;
-
-	} else if (currentTab.value == 2) { //支付宝
-		value.extract_type = 'alipay';
-		if (value.name.length == 0) return util.Tips({
-			title: i18n.t(`请填写支付宝号`)
-		});
-		value.alipay_code = value.name;
-		value.qrcode_url = qrcodeUrlZ.value;
 	}
 	if (!value.money.trim()) return util.Tips({
 		title: i18n.t(`请填写提现金额`)
@@ -430,9 +376,8 @@ function importNowMoney(e) {
 		content: i18n.t(`提现到余额后无法再次转出，确认是否提现到余额`),
 		success(res) {
 			if (res.confirm) {
-				recharge({
-						price: parseFloat(value),
-						type: 1
+				extractBalance({
+						money: parseFloat(value)
 					})
 					.then(res => {
 						return util.Tips({

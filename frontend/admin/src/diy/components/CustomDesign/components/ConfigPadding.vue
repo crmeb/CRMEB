@@ -143,13 +143,16 @@ function handlePaddingMainChange(val) {
       flex: 1;
       margin-right: 0;
       min-width: 0;
-      /* 表单内容区仅约 220px：收窄 EP 默认的滑轨-输入框间距(30px)、输入框取 90px 并去掉 +/- 控件，
+      /* 表单内容区仅约 220px：收窄 EP 默认的滑轨-输入框间距(30px)、输入框取 105px 并去掉 +/- 控件，
          保证滑轨有足够可拖动宽度，且数值不被控件或裁切挤没 */
       .el-slider__runway.show-input {
         margin-right: 8px;
       }
       .el-slider__input {
-        width: 90px;
+        width: 105px;
+      }
+      .el-slider__input .el-input__inner {
+        text-align: center;
       }
     }
   }
@@ -183,7 +186,7 @@ function handlePaddingMainChange(val) {
           .el-input__inner {
             border: none;
             padding-left: 5px;
-            text-align: left;
+            text-align: center;
           }
         }
         :deep(.el-input__wrapper) {

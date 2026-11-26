@@ -3,13 +3,11 @@
     <div class="acea-row">
       <div class="title">选择优惠券</div>
       <div class="wrapper">
-        <draggable
-          class="dragArea list-group"
+        <draggable class="dragArea list-group"
           :list="defaults.couponList.list"
           group="coupons"
           handle=".move-icon"
-          :item-key="couponItemKey"
-        >
+          :item-key="couponItemKey">
           <template #item="{ element: item, index }">
             <div class="item">
               <div class="move-icon">
@@ -23,7 +21,7 @@
           </template>
         </draggable>
         <div class="add-item" @click="openModal">
-          <el-button v-db-click class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
+          <el-button class="btn"><span class="iconfont iconaddto"></span>添加</el-button>
         </div>
       </div>
     </div>

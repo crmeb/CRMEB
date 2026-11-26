@@ -15,21 +15,17 @@
     </el-col>
     <el-col :span="8">
       <el-form-item label="付费会员价：">
-        <el-checkbox :true-value="1" :false-value="0" v-model="formValidate.is_vip" @change="onVipChange"
-          >开启单独设置</el-checkbox
-        >
+        <el-checkbox :true-value="1" :false-value="0" v-model="formValidate.is_vip" @change="onVipChange">开启单独设置</el-checkbox>
       </el-form-item>
     </el-col>
     <el-col :span="24" v-if="formValidate.is_vip == 1">
       <!--单规格会员价-->
       <el-form-item label="商品属性：" v-if="formValidate.spec_type === 0">
         <el-table :data="oneFormValidate">
-          <el-table-column
-            :label="item.title"
+          <el-table-column :label="item.title"
             :min-width="item.minWidth"
             v-for="(item, index) in columnsInstall"
-            :key="index"
-          >
+            :key="index">
             <template #default="scope">
               <template v-if="item.key">
                 <div>
@@ -63,14 +59,12 @@
                 <span>{{ oneFormValidate[0].weight }}</span>
               </template>
               <template v-else-if="item.slot === 'vip_price'">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   v-model="oneFormValidate[0].vip_price"
                   :min="0"
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
-                  class-unit="元"
-                ></el-input-number>
+                  class-unit="元"></el-input-number>
               </template>
             </template>
           </el-table-column>
@@ -79,30 +73,24 @@
       <!--多规格会员价-->
       <el-form-item label="批量设置：" v-if="formValidate.spec_type === 1">
         <span class="brokerage" v-if="formValidate.is_vip == 1">
-          会员价：<el-input-number
-            :controls="false"
+          会员价：<el-input-number :controls="false"
             placeholder="请输入会员价"
             :min="0"
             :max="9999999999"
             class="columnsBox input_width input-number-unit-class"
             class-unit="元"
             :model-value="manyVipPrice"
-            @update:model-value="(val) => emit('update:manyVipPrice', val)"
-          ></el-input-number>
+            @update:model-value="(val) => emit('update:manyVipPrice', val)"></el-input-number>
         </span>
-        <el-button type="primary" v-db-click @click="brokerageSetUp">批量设置</el-button>
+        <el-button type="primary" @click="brokerageSetUp">批量设置</el-button>
       </el-form-item>
-      <el-form-item
-        label="商品属性："
-        v-if="formValidate.spec_type == 1 && formValidate.is_vip && manyFormValidate.length && columnsInstal2"
-      >
+      <el-form-item label="商品属性："
+        v-if="formValidate.spec_type == 1 && formValidate.is_vip && manyFormValidate.length && columnsInstal2">
         <el-table :data="manyFormValidate.slice(1)">
-          <el-table-column
-            :label="item.title"
+          <el-table-column :label="item.title"
             :min-width="item.minWidth"
             v-for="(item, index) in columnsInstal2"
-            :key="index"
-          >
+            :key="index">
             <template #default="scope">
               <template v-if="item.key">
                 <div>
@@ -139,8 +127,7 @@
                 <span>{{ manyFormValidate[scope.$index + 1].volume }}</span>
               </template>
               <template v-else-if="item.slot === 'vip_price'">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   :model-value="manyFormValidate[scope.$index + 1].vip_price"
                   :min="0"
                   :max="9999999999"
@@ -150,8 +137,7 @@
                     (val) => {
                       updateManyFormValue(scope.$index + 1, 'vip_price', val);
                     }
-                  "
-                ></el-input-number>
+                  "></el-input-number>
               </template>
             </template>
           </el-table-column>

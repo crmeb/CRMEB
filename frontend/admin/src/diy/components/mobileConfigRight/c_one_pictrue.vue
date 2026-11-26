@@ -20,7 +20,7 @@
     </div>
     <div class="bnt" @click="openFloorModal">+ 编辑热区</div>
     <div>
-      <el-dialog v-model="modalPic" width="960px" :title="'上传图片'">
+      <el-dialog v-model="modalPic" width="960px" :title="'上传图片'" append-to-body>
         <uploadPictures
           :isChoice="isChoice"
           @getPic="getPic"

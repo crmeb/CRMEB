@@ -1,21 +1,16 @@
 <template>
   <div>
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="添加并维护打印机设备，绑定驱动、设置打印时机与打印联数。"
-    ></pages-header>
+      description="添加并维护打印机设备，绑定驱动、设置打印时机与打印联数。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-row class="action-row mb14">
         <el-col :span="24">
-          <el-button
-            v-if="hasPermission('admin-printer-create')"
+          <el-button v-if="hasPermission('admin-printer-create')"
             v-auth="['admin-printer-create']"
             type="primary"
-            v-db-click
             :loading="driverLoading"
-            @click="handleAdd"
-          >
+            @click="handleAdd">
             添加打印机
           </el-button>
         </el-col>
@@ -66,8 +61,7 @@
 
         <el-table-column label="状态" width="120">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               v-auth="['admin-printer-status']"
@@ -76,46 +70,33 @@
               @change="handleStatusChange(scope.row)"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            />
+              class="defineSwitch" />
           </template>
         </el-table-column>
 
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <a
-              v-if="hasPermission('admin-printer-content-read')"
+            <a v-if="hasPermission('admin-printer-content-read')"
               v-auth="['admin-printer-content-read']"
-              v-db-click
-              @click="handleDesign(scope.row)"
-            >
+              @click="handleDesign(scope.row)">
               设计
             </a>
-            <el-divider
-              v-if="hasPermission('admin-printer-content-read') && hasPermission('admin-printer-detail')"
-              direction="vertical"
-            ></el-divider>
-            <a
-              v-if="hasPermission('admin-printer-detail')"
+            <el-divider v-if="hasPermission('admin-printer-content-read') && hasPermission('admin-printer-detail')"
+              direction="vertical"></el-divider>
+            <a v-if="hasPermission('admin-printer-detail')"
               v-auth="['admin-printer-detail']"
-              v-db-click
-              @click="handleEdit(scope.row)"
-            >
+              @click="handleEdit(scope.row)">
               设置
             </a>
-            <el-divider
-              v-if="
+            <el-divider v-if="
                 hasPermission('admin-printer-delete') &&
                 (hasPermission('admin-printer-detail') || hasPermission('admin-printer-content-read'))
               "
-              direction="vertical"
-            ></el-divider>
-            <a
-              v-if="hasPermission('admin-printer-delete')"
+              direction="vertical"></el-divider>
+            <a v-if="hasPermission('admin-printer-delete')"
               v-auth="['admin-printer-delete']"
               v-db-click
-              @click="handleDelete(scope.row, scope.$index)"
-            >
+              @click="handleDelete(scope.row, scope.$index)">
               删除
             </a>
           </template>
@@ -124,24 +105,20 @@
     </el-card>
 
     <!-- 添加/编辑抽屉 -->
-    <el-drawer
-      v-model="drawerVisible"
+    <el-drawer v-model="drawerVisible"
       :title="drawerTitle"
       :size="drawerSize"
       direction="rtl"
       :close-on-click-modal="false"
       :show-close="!drawerSubmitting"
-      :close-on-press-escape="!drawerSubmitting"
-    >
-      <PrinterEdit
-        v-if="drawerVisible"
+      :close-on-press-escape="!drawerSubmitting">
+      <PrinterEdit v-if="drawerVisible"
         :driver-id="currentDriverId"
         :is-add="isAddMode"
         :driver-options="driverOptions"
         @close="drawerVisible = false"
         @success="handleEditSuccess"
-        @submitting="drawerSubmitting = $event"
-      />
+        @submitting="drawerSubmitting = $event" />
     </el-drawer>
   </div>
 </template>

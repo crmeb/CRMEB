@@ -1,72 +1,60 @@
 <template>
   <el-dialog v-model="modals" title="选择商品" :close-on-click-modal="false" width="1000px" @closed="handleReset">
-    <el-form
-      ref="levelFrom"
+    <el-form ref="levelFrom"
       :model="levelFrom"
       :label-width="labelWidth"
       :label-position="labelPosition"
-      @submit.prevent
-    >
+      @submit.prevent>
       <el-row :gutter="24">
         <el-col v-bind="grid">
           <el-form-item label="商品名称：" prop="status2" label-for="status2">
-            <el-input
-              search
+            <el-input search
               enter-button
               v-model="levelFrom.name"
               placeholder="请输入商品名称"
               @on-search="userSearchs"
-              style="width: 100%"
-            />
+              style="width: 100%" />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <el-divider direction="vertical" dashed />
-    <el-table
-      :data="levelLists"
+    <el-table :data="levelLists"
       ref="table"
       v-loading="loading"
       no-userFrom-text="暂无数据"
-      no-filtered-userFrom-text="暂无筛选结果"
-    >
+      no-filtered-userFrom-text="暂无筛选结果">
       <template #is_shows="{ row, index }">
-        <el-switch
-          :active-value="1"
+        <el-switch :active-value="1"
           :inactive-value="0"
           v-model="row.is_show"
           :value="row.is_show"
           size="large"
-          @change="onchangeIsShow(row)"
-        >
+          @change="onchangeIsShow(row)">
         </el-switch>
       </template>
       <template #is_musts="{ row, index }">
-        <el-switch
-          :active-value="1"
+        <el-switch :active-value="1"
           :inactive-value="0"
           v-model="row.is_must"
           :value="row.is_must"
           size="large"
           @change="onchangeIsMust(row)"
           active-text="全部完成"
-          inactive-text="达成其一"
-        >
+          inactive-text="达成其一">
         </el-switch>
       </template>
       <template #action="{ row, index }">
-        <a v-db-click @click="edit(row)">编辑 | </a>
+        <a @click="edit(row)">编辑 | </a>
         <a v-db-click @click="del(row, '删除任务')"> 删除</a>
       </template>
     </el-table>
     <div class="acea-row row-right page">
-      <pagination
-        v-if="total"
+      <pagination v-if="total"
         :total="total"
         v-model:page="levelFrom.page"
         v-model:limit="levelFrom.limit"
-        @pagination="getList"
-      />
+        @pagination="getList" />
     </div>
     <!-- 新建 编辑表单-->
     <edit-from ref="edits" :FromData="FromData" @submitFail="submitFail" :titleType="titleType"></edit-from>

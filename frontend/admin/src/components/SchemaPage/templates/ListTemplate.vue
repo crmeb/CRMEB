@@ -23,29 +23,22 @@
       </el-tabs>
       <!-- 顶部操作区（与表格同卡：有分类头时在其下方，无分类头时在表格上方，还原常规后台页布局） -->
       <div v-if="topActions.length || batchActions.length" class="schema-list__actions">
-        <el-button
-          v-for="actionItem in topActions"
+        <el-button v-for="actionItem in topActions"
           :key="'top-' + actionItem.action"
           :type="actionItem.theme || 'primary'"
-          v-db-click
-          @click="onTopAction(actionItem)"
-        >
+          @click="onTopAction(actionItem)">
           {{ actionLabel(actionItem) }}
         </el-button>
         <el-divider v-if="topActions.length && batchActions.length" direction="vertical" />
-        <el-button
-          v-for="actionItem in batchActions"
+        <el-button v-for="actionItem in batchActions"
           :key="'batch-' + actionItem.action"
           :type="actionItem.theme || (actionItem.action === 'delete' ? 'danger' : 'primary')"
           plain
-          v-db-click
-          @click="onBatchAction(actionItem)"
-        >
+          @click="onBatchAction(actionItem)">
           {{ actionLabel(actionItem) }}
         </el-button>
       </div>
-      <SchemaTable
-        :columns="config.columns || []"
+      <SchemaTable :columns="config.columns || []"
         :data="tableData"
         :row-actions="config.row_actions || []"
         :batch-actions="batchActions"
@@ -53,20 +46,17 @@
         @row-action="onRowAction"
         @switch-change="onSwitchChange"
         @sort-change="onSortChange"
-        @selection-change="onSelectionChange"
-      />
+        @selection-change="onSelectionChange" />
       <div class="schema-list__page">
         <pagination :total="total" v-model:page="page" v-model:limit="limit" @pagination="loadList" />
       </div>
     </el-card>
 
     <!-- 表单抽屉（新增/编辑） -->
-    <SchemaDrawer
-      v-model="formDrawer.visible"
+    <SchemaDrawer v-model="formDrawer.visible"
       :title="formDrawer.title"
       :submitting="formDrawer.submitting"
-      @submit="onFormSubmit"
-    >
+      @submit="onFormSubmit">
       <SchemaForm v-if="formDrawer.schema" :schema="formDrawer.schema" ref="schemaFormRef" />
     </SchemaDrawer>
 
@@ -140,7 +130,7 @@ const tabsCount = ref({});
 const searchFirst = computed(() => !!props.config.search_first);
 
 /** 是否有搜索项 */
-const hasSearch = computed(() => Array.isArray(props.config.search) && props.config.search.length > 0);
+const hasSearch = computed(() => Array.isArray(props.config.search) && props.config.search.length> 0);
 
 /** 状态分类头配置（未声明或 options 为空时为 null；后端未声明时下发空数组，JS 中为真值需显式排除） */
 const tabsConfig = computed(() => {
@@ -199,7 +189,7 @@ const detailDrawer = reactive({
 /**
  * 加载列表数据
  *
- * 排序优先级：列头排序事件 > config.default_order 声明 > 提供者自行决定
+ * 排序优先级：列头排序事件> config.default_order 声明> 提供者自行决定
  * @returns {Promise<void>}
  */
 async function loadList() {

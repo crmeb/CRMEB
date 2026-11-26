@@ -1,11 +1,9 @@
 <template>
   <div class="code-wapper">
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="routePre + '/system/code_generation_list'"
-      description="按基础信息、字段配置、存放位置三步生成标准 CRUD 代码，减少重复开发。"
-    ></pages-header>
+      description="按基础信息、字段配置、存放位置三步生成标准 CRUD 代码，减少重复开发。"></pages-header>
     <div class="message mt10">
       <el-card :bordered="false" shadow="never" class="">
         <steps :stepList="headerList" :isActive="currentTab"></steps>
@@ -13,23 +11,19 @@
     </div>
     <div class="pt10 tab-1" v-show="currentTab == '0'" v-loading="isLoading">
       <el-card :bordered="false" shadow="never" class="ivu-mt">
-        <FoundationForm
-          ref="Foundation"
+        <FoundationForm ref="Foundation"
           :foundation="formItem.foundation"
           :tableField="tableField"
-          @storageData="storageData"
-        />
+          @storageData="storageData" />
       </el-card>
     </div>
     <div class="pt10" v-show="currentTab == '1'">
       <el-card :bordered="false" shadow="never" class="ivu-mt">
-        <TableForm
-          ref="TableFormRef"
+        <TableForm ref="TableFormRef"
           :foundation="formItem.foundation"
           :tableField="tableField"
           :id="id"
-          @storageData="storageData"
-        />
+          @storageData="storageData" />
       </el-card>
     </div>
     <div class="pt10" v-show="currentTab == '2'">
@@ -38,8 +32,8 @@
       </el-card>
     </div>
     <el-card :bordered="false" class="fixed-card" :style="{ left: `${fixBottomWidth}` }" shadow="never">
-      <el-button :disabled="!currentTab" class="mr20" v-db-click @click="beforeTab">上一步</el-button>
-      <el-button type="primary" v-db-click @click="nextTab">{{ currentTab == 2 ? '提交' : '下一步' }}</el-button>
+      <el-button :disabled="!currentTab" @click="beforeTab">上一步</el-button>
+      <el-button type="primary" v-db-click="currentTab == 2" @click="nextTab">{{ currentTab == 2 ? '提交' : '下一步' }}</el-button>
     </el-card>
   </div>
 </template>

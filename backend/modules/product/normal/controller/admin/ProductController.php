@@ -264,7 +264,6 @@ class ProductController extends AuthController
             ['min_qty', 1],
             ['limit_type', 0],
             ['limit_num', 0],
-            ['is_sub', 0],
             ['is_vip', 0],
             ['vip_product', 0],
             ['presale', 0],

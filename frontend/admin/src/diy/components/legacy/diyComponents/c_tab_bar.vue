@@ -1,13 +1,11 @@
 <template>
   <div class="tabBars">
     <div class="title">{{ datas[name].title }}</div>
-    <draggable
-      class="dragArea list-group"
+    <draggable class="dragArea list-group"
       :list="datas[name].list"
       group="peoples"
       handle=".iconfont"
-      :item-key="tabBarItemKey"
-    >
+      :item-key="tabBarItemKey">
       <template #item="{ element: item, index }">
         <div class="box-item">
           <div class="left-tool">
@@ -15,7 +13,7 @@
           </div>
           <div class="right-wrapper">
             <div class="img-wrapper">
-              <div class="img-item" v-for="(img, j) in item.imgList" v-db-click @click="modalPicTap('单选', index, j)">
+              <div class="img-item" v-for="(img, j) in item.imgList" @click="modalPicTap('单选', index, j)">
                 <img :src="img" alt="" v-if="img" />
                 <p class="txt" v-if="img">{{ j == 0 ? '选中' : '未选中' }}</p>
                 <div class="empty-img" v-else>
@@ -44,33 +42,26 @@
       </template>
     </draggable>
     <div class="add-btn" v-if="datas[name].list.length < 5">
-      <el-button
-        type="primary"
+      <el-button type="primary"
         ghost
         style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-        v-db-click
-        @click="addMenu"
-        >添加图文导航
+        @click="addMenu">添加图文导航
       </el-button>
     </div>
     <div>
-      <el-dialog
-        v-model="modalPic"
+      <el-dialog v-model="modalPic"
         width="950px"
         scrollable
         footer-hide
         :show-close="true"
         title="上传商品图"
         :mask-closable="false"
-        :z-index="888"
-      >
-        <uploadPictures
-          :isChoice="isChoice"
+        :z-index="888">
+        <uploadPictures :isChoice="isChoice"
           @getPic="getPic"
           :gridBtn="gridBtn"
           :gridPic="gridPic"
-          v-if="modalPic"
-        ></uploadPictures>
+          v-if="modalPic"></uploadPictures>
       </el-dialog>
     </div>
   </div>

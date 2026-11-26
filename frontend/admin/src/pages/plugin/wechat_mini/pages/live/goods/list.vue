@@ -2,57 +2,46 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           label-position="right"
           inline
           class="tabform"
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="审核状态：">
             <el-select v-model="formValidate.status" clearable @change="selChange" class="form_content_width">
-              <el-option
-                v-for="(item, index) in treeData.withdrawal"
+              <el-option v-for="(item, index) in treeData.withdrawal"
                 :value="item.value"
                 :key="index"
-                :label="item.title"
-              ></el-option>
+                :label="item.title"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入商品名称/ID"
               v-model="formValidate.kerword"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="selChange">查询</el-button>
+            <el-button type="primary" @click="selChange">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button
-        v-auth="['setting-system_menus-add']"
+      <el-button v-auth="['setting-system_menus-add']"
         class="action-row"
         type="primary"
-        v-db-click
-        @click="menusAdd('添加商品')"
-        >添加商品
+        @click="menusAdd('添加商品')">添加商品
       </el-button>
-      <el-table
-        :data="tabList"
+      <el-table :data="tabList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="商品ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.product_id }}</span>
@@ -90,8 +79,7 @@
         </el-table-column>
         <el-table-column label="是否显示" min-width="80">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.is_show"
@@ -100,27 +88,24 @@
               size="large"
               :disabled="scope.row.audit_status != 2"
               active-text="显示"
-              inactive-text="隐藏"
-            >
+              inactive-text="隐藏">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row, '编辑')">详情</a>
+            <a @click="edit(scope.row, '编辑')">详情</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 详情 -->

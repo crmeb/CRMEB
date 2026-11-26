@@ -3,46 +3,40 @@
   <el-row>
     <el-col :span="24">
       <el-form-item label="商品关键字：">
-        <el-input
-          class="content_width"
+        <el-input class="content_width"
           v-model.trim="formValidate.keyword"
           placeholder="请输入商品关键字"
           maxlength="100"
-          show-word-limit
-        />
+          show-word-limit />
         <div class="tip">SEO优化以及可以根据关键字进行商品搜索</div>
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="商品简介：">
-        <el-input
-          class="content_width"
+        <el-input class="content_width"
           v-model.trim="formValidate.intro"
           type="textarea"
           :rows="3"
           placeholder="请输入商品简介"
           maxlength="100"
-          show-word-limit
-        />
+          show-word-limit />
         <div class="tip">公众号分享商品以及SEO优化使用</div>
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="商品口令：">
-        <el-input
-          v-model.trim="formValidate.command_word"
+        <el-input v-model.trim="formValidate.command_word"
           placeholder="请输入商品口令"
           type="textarea"
           :rows="3"
-          class="content_width"
-        />
+          class="content_width" />
         <div class="tip">将其他平台的商品口令填写保存，移动端进入商品详情的时候自动复制</div>
       </el-form-item>
     </el-col>
 
     <el-col :span="24">
       <el-form-item label="商品推荐图：">
-        <div class="pictrueBox" v-db-click @click="modalPicTap('dan', 'recommend_image')">
+        <div class="pictrueBox" @click="modalPicTap('dan', 'recommend_image')">
           <div class="pictrue" v-if="formValidate.recommend_image">
             <img v-lazy="formValidate.recommend_image" />
             <el-input v-model.trim="formValidate.recommend_image" style="display: none"></el-input>
@@ -62,18 +56,16 @@
             item.title
           }}</el-checkbox>
         </el-checkbox-group>
-        <el-button v-else type="primary" v-db-click @click="addProtection">添加保障</el-button>
+        <el-button v-else type="primary" @click="addProtection">添加保障</el-button>
         <div class="tip">商品详情中显示的服务保障信息，可多选</div>
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="商品参数：">
-        <el-select
-          :model-value="paramsType"
+        <el-select :model-value="paramsType"
           clearable
           style="width: 200px; margin-right: 10px"
-          @change="changeParamsType"
-        >
+          @change="changeParamsType">
           <el-option v-for="items in paramsTypeList" :value="items.id" :key="items.id" :label="items.name"></el-option>
         </el-select>
         <div class="specifications">
@@ -94,51 +86,41 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-button
-            v-if="formValidate.params_list.length < 8"
+          <el-button v-if="formValidate.params_list.length < 8"
             type="primary"
             class="submission mr15 mt20"
-            v-db-click
-            @click="handleAddParams"
-            >添加参数</el-button
-          >
+            @click="handleAddParams">添加参数</el-button>
         </div>
       </el-form-item>
     </el-col>
     <el-col :span="24">
       <el-form-item label="自定义表单：">
-        <el-switch
-          v-model="innerCustomBtn"
+        <el-switch v-model="innerCustomBtn"
           class="defineSwitch"
           active-text="开启"
           inactive-text="关闭"
           :active-value="1"
           :inactive-value="0"
-          size="large"
-        />
+          size="large" />
         <div class="addCustom_content" v-if="customBtn">
           <div v-for="(item, index) in formValidate.custom_form" :key="index" class="custom_box">
-            <el-input
-              v-model.trim="item.title"
+            <el-input v-model.trim="item.title"
               :placeholder="'表单标题' + (index + 1)"
               style="width: 150px; margin-right: 10px"
               maxlength="10"
-              show-word-limit
-            />
+              show-word-limit />
             <el-select v-model="item.label" style="width: 200px; margin-left: 6px; margin-right: 10px">
-              <el-option
-                v-for="items in CustomList"
+              <el-option v-for="items in CustomList"
                 :value="items.value"
                 :key="items.value"
-                :label="items.label"
-              ></el-option>
+                :label="items.label"></el-option>
             </el-select>
             <el-checkbox v-model="item.status">必填</el-checkbox>
             <div class="addfont" v-db-click @click="delcustom(index)">删除</div>
           </div>
         </div>
         <div class="addCustomBox" v-show="customBtn">
-          <div class="btn" v-db-click @click="addcustom">+ 添加表单</div>
+          <div class="btn" @click="addcustom">+ 添加表单</div>
           <div class="tip">用户下单时需填写的信息，最多可设置10条，设置了自定义表单的商品不能加入购物车</div>
         </div>
       </el-form-item>

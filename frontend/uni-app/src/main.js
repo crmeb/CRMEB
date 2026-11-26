@@ -28,22 +28,22 @@ import { Debounce } from '@/utils/validate.js'
 // #ifdef H5
 import { parseQuery } from './utils'
 import Auth from './libs/wechat'
-import { SPREAD } from './config/cache'
+import { SPID } from './config/cache'
 
 let cookieName = "VCONSOLE",
 	query = parseQuery(),
-	urlSpread = query["spread"],
+	urlSpread = query["spid"],
 	vconsole = query[cookieName.toLowerCase()],
 	md5Crmeb = "b14d1e9baeced9bb7525ab19ee35f2d2", //CRMEB MD5 加密开启vconsole模式
 	md5UnCrmeb = "3dca2162c4e101b7656793a1af20295c"; //UN_CREMB MD5 加密关闭vconsole模式
 
 if (urlSpread !== undefined) {
-	var spread = Cache.get(SPREAD);
+	var cached = Cache.get(SPID);
 	urlSpread = parseInt(urlSpread);
-	if (!Number.isNaN(urlSpread) && spread !== urlSpread) {
-		Cache.set("spread", urlSpread || 0);
-	} else if (spread === 0 || typeof spread !== "number") {
-		Cache.set("spread", urlSpread || 0);
+	if (!Number.isNaN(urlSpread) && cached !== urlSpread) {
+		Cache.set(SPID, urlSpread || 0);
+	} else if (cached === 0 || typeof cached !== "number") {
+		Cache.set(SPID, urlSpread || 0);
 	}
 }
 

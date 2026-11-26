@@ -145,6 +145,7 @@ import { HTTP_REQUEST_URL, LIMIT } from '@/config/app';
 import pageFooter from '@/components/pageFooter/index.vue';
 import Loading from '@/components/Loading/index.vue';
 import Cache from '@/utils/cache';
+import { appendSpid } from '@/utils';
 import appUpdate from '@/components/update/app-update.vue';
 import { applyTheme } from '@/utils/theme.js';
 import PageDesign from '@/subpackage/diyComponents/pageDesign.vue';
@@ -803,7 +804,7 @@ function setOpenShare() {
       let configAppMessage = {
         desc: data.synopsis,
         title: data.title,
-        link: location.href + '?spid=' + uidParam,
+        link: appendSpid(location.href, uidParam),
         imgUrl: data.img,
       };
       Auth.wechatEvevt(
@@ -873,9 +874,10 @@ onShareAppMessage(() => {
 });
 //分享到朋友圈
 onShareTimeline(() => {
+  let uidParam = uid.value ? uid.value : 0;
   return {
     title: shareInfo.value.title,
-    path: '/pages/index/index',
+    query: uidParam ? { spid: uidParam } : {},
     imageUrl: shareInfo.value.img,
     desc: shareInfo.value.synopsis,
   };

@@ -1,0 +1,1 @@
+import{Eu as e,Hu as t,pd as n}from"./common-Cyt99CNL.js";import r from"./uploadDriver-karjfhop.js";e();var i=Object.assign({name:`storageConfig`},{__name:`index`,setup(e){return(e,i)=>(n(),t(r))}});export{i as default};

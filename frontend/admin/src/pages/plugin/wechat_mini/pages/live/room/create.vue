@@ -1,70 +1,57 @@
 <template>
   <div class="live-room-create">
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/marketing/live/room'"
-      description="填写直播间名称、主播与背景图等信息，提交微信审核通过后开播。"
-    ></pages-header>
+      description="填写直播间名称、主播与背景图等信息，提交微信审核通过后开播。"></pages-header>
 
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-alert class="live-room-create__alert" type="warning" show-icon :closable="false">
         <template #title>
           须先在微信小程序官方后台开通直播权限；关注
-          <a class="live-room-create__link" href="javascript:;" v-db-click @click="codeImg">【小程序直播】</a>
+          <a class="live-room-create__link" href="javascript:;" @click="codeImg">【小程序直播】</a>
           了解直播状态须知。
         </template>
       </el-alert>
 
-      <el-form
-        ref="formValidateRef"
+      <el-form ref="formValidateRef"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
         class="live-room-create__form"
         :rules="ruleValidate"
-        @submit.prevent
-      >
+        @submit.prevent>
         <div class="live-room-create__section">
           <div class="live-room-create__section-title">基本信息</div>
           <el-form-item label="选择主播：" prop="anchor_wechat">
-            <el-select
-              v-model="formValidate.anchor_wechat"
+            <el-select v-model="formValidate.anchor_wechat"
               filterable
               clearable
               placeholder="请选择主播微信号"
               class="live-room-create__control"
-              @change="anchorName"
-            >
-              <el-option
-                v-for="(item, index) in liveList"
+              @change="anchorName">
+              <el-option v-for="(item, index) in liveList"
                 :key="index"
                 :value="item.wechat"
-                :label="item.wechat"
-              ></el-option>
+                :label="item.wechat"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="直播间名称：" prop="name">
-            <el-input
-              v-model="formValidate.name"
+            <el-input v-model="formValidate.name"
               class="live-room-create__control"
               placeholder="请输入直播间名称"
               maxlength="80"
-              show-word-limit
-            />
+              show-word-limit />
           </el-form-item>
           <el-form-item label="联系电话：">
-            <el-input
-              v-model="formValidate.phone"
+            <el-input v-model="formValidate.phone"
               class="live-room-create__control"
               placeholder="请输入主播联系电话"
               maxlength="11"
-              show-word-limit
-            />
+              show-word-limit />
           </el-form-item>
           <el-form-item label="直播时间：" prop="start_time">
-            <el-date-picker
-              v-model="timeVal"
+            <el-date-picker v-model="timeVal"
               clearable
               type="datetimerange"
               format="YYYY-MM-DD HH:mm"
@@ -73,8 +60,7 @@
               range-separator="-"
               start-placeholder="开始时间"
               end-placeholder="结束时间"
-              @change="selectDate"
-            />
+              @change="selectDate" />
           </el-form-item>
           <el-form-item label="排序：">
             <el-input-number v-model="formValidate.sort" :min="0" :controls="false" class="live-room-create__number" />
@@ -86,7 +72,7 @@
           <el-form-item label="背景图：" prop="cover_img" class="live-room-create__cover-item">
             <div class="live-room-create__uploads">
               <div class="live-room-create__upload-block">
-                <div class="live-room-create__upload live-room-create__upload--cover" v-db-click @click="modalPicTap(0)">
+                <div class="live-room-create__upload live-room-create__upload--cover" @click="modalPicTap(0)">
                   <img v-if="formValidate.cover_img" :src="formValidate.cover_img" alt="" />
                   <div v-else class="live-room-create__upload-empty">
                     <el-icon :size="22"><Picture /></el-icon>
@@ -97,7 +83,7 @@
               </div>
               <el-form-item label="分享图：" prop="share_img" class="live-room-create__share-item">
                 <div class="live-room-create__upload-block">
-                  <div class="live-room-create__upload live-room-create__upload--share" v-db-click @click="modalPicTap(1)">
+                  <div class="live-room-create__upload live-room-create__upload--share" @click="modalPicTap(1)">
                     <img v-if="formValidate.share_img" :src="formValidate.share_img" alt="" />
                     <div v-else class="live-room-create__upload-empty">
                       <el-icon :size="22"><Picture /></el-icon>
@@ -119,49 +105,41 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="直播间点赞：">
-            <el-switch
-              v-model="formValidate.close_like"
+            <el-switch v-model="formValidate.close_like"
               :active-value="1"
               :inactive-value="0"
               active-text="开启"
-              inactive-text="关闭"
-            />
+              inactive-text="关闭" />
           </el-form-item>
           <el-form-item label="直播卖货：">
-            <el-switch
-              v-model="formValidate.close_goods"
+            <el-switch v-model="formValidate.close_goods"
               :active-value="1"
               :inactive-value="0"
               active-text="开启"
-              inactive-text="关闭"
-            />
+              inactive-text="关闭" />
           </el-form-item>
           <el-form-item label="直播间评论：">
-            <el-switch
-              v-model="formValidate.close_comment"
+            <el-switch v-model="formValidate.close_comment"
               :active-value="1"
               :inactive-value="0"
               active-text="开启"
-              inactive-text="关闭"
-            />
+              inactive-text="关闭" />
           </el-form-item>
         </div>
 
         <el-form-item>
           <el-button :loading="loading" type="primary" v-db-click @click="handleSubmit">提交</el-button>
-          <el-button v-db-click @click="goBack">取消</el-button>
+          <el-button @click="goBack">取消</el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
     <el-dialog v-model="modalPic" width="950px" title="选择图片" :close-on-click-modal="false" :z-index="888">
-      <uploadPictures
-        v-if="modalPic"
+      <uploadPictures v-if="modalPic"
         :isChoice="isChoice"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        @getPic="getPic"
-      ></uploadPictures>
+        @getPic="getPic"></uploadPictures>
     </el-dialog>
 
     <el-dialog v-model="modal3" title="小程序直播二维码" width="360px">

@@ -18,6 +18,8 @@
   用心做开源，我们也很需要你的鼓励！右上角Star🌟，等你点亮
 </div>
 
+**历史版本**：[下载 v6.0.0](https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/v6.0.0.zip)
+
 ---
 
 ### 📝 **项目介绍**

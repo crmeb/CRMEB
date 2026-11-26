@@ -71,8 +71,6 @@ class ProductServices
         $product['original_price'] = $product['original_price'] ?? 0;
         $product['cost'] = 0; // 默认值，下面从SKU覆盖
 
-        // is_sub（分销开关）和 is_vip（会员价开关）是独立标量字段
-        $product['is_sub'] = (int) ($product['is_sub'] ?? 0);
         $product['is_vip'] = (int) ($product['is_vip'] ?? 0);
 
         // 扩展表（eb_pt_normal）仅保留实物专属字段
@@ -184,7 +182,6 @@ class ProductServices
         // SKU字段名反向映射：内部命名 → 前端期望字段名
         foreach ($product['attrs'] as &$attr) {
             $attr['is_vip_price'] = $attr['vip_price'] ?? 0;
-            $attr['is_sub_price'] = $attr['brokerage'] ?? 0;
             $attr['pic'] = set_file_url($attr['pic'] ?? '', $siteUrl);
         }
         unset($attr);
@@ -255,8 +252,6 @@ class ProductServices
                     'stock'              => (int)($sku['stock'] ?? $product['stock'] ?? 0),
                     'bar_code'           => $sku['bar_code'] ?? '',
                     'bar_code_number'    => $sku['bar_code_number'] ?? '',
-                    'brokerage'          => (float)($sku['brokerage'] ?? 0),
-                    'brokerage_two'      => (float)($sku['brokerage_two'] ?? 0),
                     'vip_price'          => (float)($sku['vip_price'] ?? 0),
                     'weight'             => (float)($sku['weight'] ?? 0),
                     'volume'             => (float)($sku['volume'] ?? 0),
@@ -281,8 +276,6 @@ class ProductServices
             'stock'              => (int)($product['stock'] ?? 0),
             'bar_code'           => '',
             'bar_code_number'    => '',
-            'brokerage'          => 0,
-            'brokerage_two'      => 0,
             'vip_price'          => 0,
             'weight'             => 0,
             'volume'             => 0,

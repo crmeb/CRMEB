@@ -1,7 +1,6 @@
 <template>
   <div>
-    <el-dialog
-      title="上传图片"
+    <el-dialog title="上传图片"
       v-model="uploadModal"
       :append-to-body="true"
       :width="isIframe ? '100%' : 'min(1024px, calc(100vw - 24px))'"
@@ -10,63 +9,52 @@
       :close-on-press-escape="!loading && !preparing"
       :show-close="!loading && !preparing"
       :before-close="beforeClose"
-      @close="closed"
-    >
-      <div class="main" v-loading="loading || preparing > 0">
+      @close="closed">
+      <div class="main" v-loading="loading || preparing> 0">
         <el-form :model="ruleForm" :rules="rules" ref="formRef" label-width="100px" class="demo-ruleForm">
           <el-form-item label="上传方式：" prop="type">
-            <el-radio-group
-              v-model="ruleForm.type"
-              :disabled="loading || preparing > 0"
-              @change="radioChange(ruleForm.type)"
-            >
+            <el-radio-group v-model="ruleForm.type"
+              :disabled="loading || preparing> 0"
+              @change="radioChange(ruleForm.type)">
               <el-radio :label="0" :value="0">本地上传</el-radio>
               <el-radio :label="1" :value="1">网络上传</el-radio>
               <el-radio :label="2" :value="2">扫码上传</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="上传至分组：" prop="region" v-show="ruleForm.type == 0 || ruleForm.type == 1">
-            <el-cascader
-              class="form-width"
+            <el-cascader class="form-width"
               v-model="ruleForm.region"
               :props="cascaderProps"
               :options="categoryList"
-              :disabled="loading || preparing > 0"
-              @change="handleChange"
-            ></el-cascader>
+              :disabled="loading || preparing> 0"
+              @change="handleChange"></el-cascader>
           </el-form-item>
           <el-form-item label="网络图片：" prop="region" v-if="ruleForm.type == 1">
             <el-input class="form-width" v-model="webImgUrl" placeholder="请网络图片地址"></el-input>
-            <span class="tq-text" v-db-click @click="getImg">提取照片</span>
+            <span class="tq-text" @click="getImg">提取照片</span>
           </el-form-item>
           <el-form-item label="上传图片：" prop="region" v-if="ruleForm.type == 0">
             <div class="acea-row">
               <div class="uploadCont">
-                <el-upload
-                  ref="upload"
+                <el-upload ref="upload"
                   :action="fileUrl"
                   list-type="picture-card"
                   :on-change="fileChange"
                   :file-list="ruleForm.imgList"
                   :auto-upload="false"
-                  :disabled="loading || preparing > 0"
+                  :disabled="loading || preparing> 0"
                   :data="uploadData"
                   :headers="header"
                   :multiple="true"
-                  :limit="limit"
-                >
+                  :limit="limit">
                   <template #default><i class="el-icon-plus"></i></template>
-                  <template #file="{ file }"
-                    ><div
-                      draggable="false"
+                  <template #file="{ file }"><div draggable="false"
                       @dragstart="handleDragStart($event, file)"
                       @dragover="handleDragOver($event, file)"
                       @dragenter="handleDragEnter($event, file)"
-                      @dragend="handleDragEnd($event, file)"
-                    >
+                      @dragend="handleDragEnd($event, file)">
                       <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                      <i class="el-icon-error btndel" v-db-click @click="handleWebRemove(file)" /></div
-                  ></template>
+                      <i class="el-icon-error btndel" v-db-click @click="handleWebRemove(file)" /></div></template>
                 </el-upload>
                 <div class="tips">
                   建议上传图片最大宽度750px，不超过3MB；仅支持jpeg、jpg、png格式，可拖拽调整上传顺序
@@ -76,16 +64,14 @@
           </el-form-item>
           <template v-if="ruleForm.type == 1">
             <div class="img-box pl100">
-              <div
-                v-for="(item, index) in ruleForm.imgList"
+              <div v-for="(item, index) in ruleForm.imgList"
                 :key="index"
                 class="pictrue"
                 draggable="false"
                 @dragstart="handleDragStart($event, item)"
                 @dragover.prevent="handleDragOver($event, item)"
                 @dragenter="handleDragEnter($event, item)"
-                @dragend="handleDragEnd($event, item)"
-              >
+                @dragend="handleDragEnd($event, item)">
                 <img :src="item.url" />
                 <i class="el-icon-error btndel" v-db-click @click="handleRemove(index)" />
               </div>
@@ -94,14 +80,12 @@
           <div class="code-image" v-if="ruleForm.type == 2">
             <div class="left">
               <el-form-item label="上传至分组：" prop="region">
-                <el-cascader
-                  class="form-width"
+                <el-cascader class="form-width"
                   v-model="ruleForm.region"
                   :props="cascaderProps"
                   :options="categoryList"
-                  :disabled="loading || preparing > 0"
-                  @change="handleChange"
-                ></el-cascader>
+                  :disabled="loading || preparing> 0"
+                  @change="handleChange"></el-cascader>
               </el-form-item>
               <el-form-item label="二维码：" prop="region">
                 <div class="code" ref="qrCodeUrl"></div>
@@ -110,19 +94,17 @@
               </el-form-item>
             </div>
             <div class="right">
-              <el-button v-db-click @click="scanUploadGetFn">刷新图库</el-button>
+              <el-button @click="scanUploadGetFn">刷新图库</el-button>
               <div class="tip">刷新图库按钮，可显示移动端上传成功的图片</div>
               <div class="img-box">
-                <div
-                  v-for="(item, index) in ruleForm.imgList"
+                <div v-for="(item, index) in ruleForm.imgList"
                   :key="index"
                   class="pictrue"
                   draggable="false"
                   @dragstart="handleDragStart($event, item)"
                   @dragover.prevent="handleDragOver($event, item)"
                   @dragenter="handleDragEnter($event, item)"
-                  @dragend="handleDragEnd($event, item)"
-                >
+                  @dragend="handleDragEnd($event, item)">
                   <img :src="item.att_dir" />
                   <i class="el-icon-error btndel" v-db-click @click="handleWebRemove(item)" />
                 </div>
@@ -132,19 +114,14 @@
         </el-form>
       </div>
 
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button :disabled="loading || preparing > 0" v-db-click @click="clear">取 消</el-button>
-          <el-button
-            type="primary"
-            :loading="loading || preparing > 0"
+      <template #footer><span class="dialog-footer">
+          <el-button :disabled="loading || preparing> 0" @click="clear">取 消</el-button>
+          <el-button type="primary"
+            :loading="loading || preparing> 0"
             :disabled="!ruleForm.imgList.length"
             v-db-click
-            @click="submitUpload"
-            >确 定</el-button
-          >
-        </span></template
-      >
+            @click="submitUpload">确 定</el-button>
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -393,7 +370,7 @@ async function fileChange(file, fileList) {
   if (loading.value) return;
   if (isPicUpload(file)) {
     ruleForm.imgList = [...fileList];
-    if (file.size >= 2097152) {
+    if (file.size>= 2097152) {
       preparing.value++;
       try {
         const compressed = await compressImg(file.raw);

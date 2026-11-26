@@ -413,6 +413,10 @@ function linkUrl(e) {
   :deep(.el-checkbox) {
     margin-bottom: 0;
   }
+  /* 覆盖全局 style.scss 的数字框左对齐，配置区 105px 宽输入框内数字居中 */
+  :deep(.el-input-number .el-input__inner) {
+    text-align: center;
+  }
   :deep(.el-form-item__content) {
     margin-left: 80px !important;
     line-height: 36px !important;

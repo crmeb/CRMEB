@@ -11,16 +11,13 @@
       <el-card shadow="never" class="outapi-doc__aside">
         <div class="outapi-doc__aside-head">
           <div class="outapi-doc__aside-title">接口目录</div>
-          <el-input
-            v-model="keyword"
+          <el-input v-model="keyword"
             clearable
             placeholder="搜索接口名称 / 路径"
-            class="outapi-doc__search"
-          />
+            class="outapi-doc__search" />
         </div>
         <el-scrollbar v-loading="treeLoading" class="outapi-doc__tree-scroll">
-          <el-tree
-            v-if="treeData.length"
+          <el-tree v-if="treeData.length"
             ref="treeRef"
             :data="treeData"
             node-key="treeKey"
@@ -29,15 +26,12 @@
             :default-expanded-keys="expandedKeys"
             :filter-node-method="filterNode"
             :props="treeProps"
-            @node-click="onNodeClick"
-          >
+            @node-click="onNodeClick">
             <template #default="{ data }">
               <div class="outapi-doc__tree-node" :class="{ 'is-api': data.isLeaf }">
-                <span
-                  v-if="data.isLeaf"
+                <span v-if="data.isLeaf"
                   class="outapi-doc__method"
-                  :class="'is-' + methodClass(data.method)"
-                >{{ methodLabel(data.method) }}</span>
+                  :class="'is-' + methodClass(data.method)">{{ methodLabel(data.method) }}</span>
                 <span class="outapi-doc__tree-name" :title="data.name">{{ data.name }}</span>
               </div>
             </template>
@@ -57,7 +51,7 @@
             </div>
             <div class="outapi-doc__url">
               <code>{{ fullUrl }}</code>
-              <el-button link type="primary" v-db-click @click="copyText(fullUrl)">复制</el-button>
+              <el-button link type="primary" @click="copyText(fullUrl)">复制</el-button>
             </div>
             <p v-if="detail.describe" class="outapi-doc__desc">{{ detail.describe }}</p>
           </div>
@@ -91,14 +85,12 @@
 
           <section class="outapi-doc__section">
             <div class="outapi-doc__section-title">返回参数</div>
-            <el-table
-              :data="returnParamsTree"
+            <el-table :data="returnParamsTree"
               row-key="id"
               border
               default-expand-all
               :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-              empty-text="无返回参数说明"
-            >
+              empty-text="无返回参数说明">
               <el-table-column prop="attribute" label="字段名" min-width="160" />
               <el-table-column prop="type" label="类型" width="120" />
               <el-table-column prop="trip" label="说明" min-width="220" show-overflow-tooltip />
@@ -108,7 +100,7 @@
           <section class="outapi-doc__section">
             <div class="outapi-doc__section-title">
               <span>请求示例</span>
-              <el-button link type="primary" v-db-click @click="copyText(requestExample)">复制</el-button>
+              <el-button link type="primary" @click="copyText(requestExample)">复制</el-button>
             </div>
             <pre class="outapi-doc__code">{{ requestExample }}</pre>
           </section>
@@ -116,7 +108,7 @@
           <section class="outapi-doc__section">
             <div class="outapi-doc__section-title">
               <span>返回示例</span>
-              <el-button link type="primary" v-db-click @click="copyText(returnExample)">复制</el-button>
+              <el-button link type="primary" @click="copyText(returnExample)">复制</el-button>
             </div>
             <pre class="outapi-doc__code">{{ returnExample }}</pre>
           </section>

@@ -1,13 +1,11 @@
 <template>
   <!-- 立即退款弹窗 -->
-  <el-dialog
-    title="立即退款"
+  <el-dialog title="立即退款"
     width="500px"
     v-model="dialogVisible"
     @close="handleClose"
     :close-on-click-modal="false"
-    :destroy-on-close="true"
-  >
+    :destroy-on-close="true">
     <el-form ref="refundFormRef" :model="formData" label-width="100px" v-loading="formLoading">
       <el-form-item label="订单号：">
         <span>{{ formData.order_no }}</span>
@@ -19,25 +17,19 @@
         <span style="color: #ed4014; font-weight: bold">¥{{ formData.max_refund }}</span>
       </el-form-item>
       <el-form-item label="退款金额：">
-        <el-input-number
-          v-model="formData.refund_price"
+        <el-input-number v-model="formData.refund_price"
           :min="0.01"
           :max="parseFloat(formData.max_refund) || 0"
           :precision="2"
           :step="0.01"
-          style="width: 200px"
-        ></el-input-number>
-        <span style="margin-left: 8px; color: var(--prev-color-text-secondary); font-size: 12px"
-          >输入0~{{ formData.max_refund }}</span
-        >
+          style="width: 200px"></el-input-number>
+        <span style="margin-left: 8px; color: var(--prev-color-text-secondary); font-size: 12px">输入0~{{ formData.max_refund }}</span>
       </el-form-item>
     </el-form>
-    <template #footer
-      ><div>
+    <template #footer><div>
         <el-button @click="handleClose">取消</el-button>
         <el-button v-db-click type="danger" @click="submitRefund" :loading="submitLoading">确认退款</el-button>
-      </div></template
-    >
+      </div></template>
   </el-dialog>
 </template>
 
@@ -114,7 +106,7 @@ function submitRefund() {
     ElMessage.error('请输入退款金额');
     return;
   }
-  if (parseFloat(formData.value.refund_price) > parseFloat(formData.value.max_refund)) {
+  if (parseFloat(formData.value.refund_price)> parseFloat(formData.value.max_refund)) {
     ElMessage.error('退款金额不能超过可退金额');
     return;
   }

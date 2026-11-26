@@ -11,7 +11,7 @@
       <div>
         <div style="float: right" v-if="cardShow == 1 || cardShow == 2">
           <el-button class="bnt" type="primary" v-db-click @click="submit" :loading="loadingExist">保存</el-button>
-          <el-button v-if="cardShow == 1" class="bnt ml20" v-db-click @click="reast">重置</el-button>
+          <el-button v-if="cardShow == 1" class="bnt ml20" @click="reast">重置</el-button>
         </div>
       </div>
     </div>
@@ -24,30 +24,26 @@
         <div class="table-box">
           <div class="acea-row row-between-wrapper">
             <div class="button acea-row row-middle">
-              <el-button v-db-click class="m-r-10" type="primary" @click="createdPage">添加页面</el-button>
-              <el-upload
-                :action="UploadPath"
+              <el-button class="m-r-10" type="primary" @click="createdPage">添加页面</el-button>
+              <el-upload :action="UploadPath"
                 :before-upload="beforeUpload"
                 :on-success="handleSuccess"
                 :on-error="handleError"
                 :limit="1"
                 :show-file-list="false"
                 accept=".txt"
-                :headers="header"
-              >
+                :headers="header">
                 <el-button type="primary">导入模板</el-button>
               </el-upload>
             </div>
           </div>
-          <el-table
-            :data="list"
+          <el-table :data="list"
             ref="table"
             class="mt14"
             v-loading="loading"
             highlight-current-row
             no-userFrom-text="暂无数据"
-            no-filtered-userFrom-text="暂无筛选结果"
-          >
+            no-filtered-userFrom-text="暂无筛选结果">
             <el-table-column label="页面ID" width="80">
               <template #default="scope">
                 <span>{{ scope.row.id }}</span>
@@ -76,37 +72,27 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="210">
               <template #default="scope">
-                <div
-                  style="display: inline-block"
+                <div style="display: inline-block"
                   v-if="scope.row.status || scope.row.is_diy"
-                  v-db-click
-                  @click="edit(scope.row)"
-                >
-                  <a
-                    v-if="scope.row.is_diy === 1"
+                  @click="edit(scope.row)">
+                  <a v-if="scope.row.is_diy === 1"
                     ref="target"
                     :href="`${url}${$routeProStr}/setting/pages/diy_index?id=${scope.row.id}&name=${
                       scope.row.template_name || 'moren'
-                    }`"
-                  >
-                    编辑</a
-                  >
+                    }`">
+                    编辑</a>
                   <a v-else>编辑</a>
                 </div>
-                <el-divider
-                  direction="vertical"
-                  v-if="(scope.row.status || scope.row.is_diy) && scope.row.id != 1 && scope.row.status != 1"
-                />
+                <el-divider direction="vertical"
+                  v-if="(scope.row.status || scope.row.is_diy) && scope.row.id != 1 && scope.row.status != 1" />
 
                 <div style="display: inline-block" v-if="scope.row.id != 1 && scope.row.status != 1">
                   <a v-db-click @click="del(scope.row, '删除此模板', scope.$index)">删除</a>
                 </div>
-                <el-divider
-                  direction="vertical"
-                  v-if="(scope.row.id != 1 && scope.row.status != 1) || scope.row.is_diy"
-                />
+                <el-divider direction="vertical"
+                  v-if="(scope.row.id != 1 && scope.row.status != 1) || scope.row.is_diy" />
                 <div style="display: inline-block" v-if="scope.row.is_diy">
-                  <a v-db-click @click="preview(scope.row, scope.$index)">预览</a>
+                  <a @click="preview(scope.row, scope.$index)">预览</a>
                 </div>
                 <el-divider direction="vertical" v-if="scope.row.is_diy && scope.row.status != 1" />
                 <div style="display: inline-block" v-if="scope.row.status != 1">
@@ -114,19 +100,17 @@
                 </div>
                 <el-divider direction="vertical" />
                 <div style="display: inline-block">
-                  <a v-db-click @click="exportView(scope.row.id)">导出模板</a>
+                  <a @click="exportView(scope.row.id)">导出模板</a>
                 </div>
               </template>
             </el-table-column>
           </el-table>
           <div class="acea-row row-right page">
-            <pagination
-              v-if="total"
+            <pagination v-if="total"
               :total="total"
               v-model:page="diyFrom.page"
               v-model:limit="diyFrom.limit"
-              @pagination="diyProList"
-            />
+              @pagination="diyProList" />
           </div>
         </div>
       </div>
@@ -136,14 +120,12 @@
     <el-dialog v-model="isTemplate" title="开发移动端链接" :z-index="1" width="540px" @closed="cancel">
       <div class="article-manager">
         <el-card :bordered="false" shadow="never" class="ivu-mt">
-          <el-form
-            ref="formItemRef"
+          <el-form ref="formItemRef"
             :model="formItem"
             label-width="120px"
             label-position="right"
             :rules="ruleValidate"
-            @submit.prevent
-          >
+            @submit.prevent>
             <el-row :gutter="24">
               <el-col :span="24">
                 <el-col>
@@ -156,11 +138,9 @@
           </el-form>
         </el-card>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
+      <template #footer><span class="dialog-footer">
           <el-button type="primary" v-db-click @click="handleSubmit">提交</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
     <el-dialog v-model="modal" width="540px" title="预览">
       <div>

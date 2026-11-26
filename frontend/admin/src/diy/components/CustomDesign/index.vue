@@ -21,20 +21,16 @@
         <div class="height-setting">
           <div class="label">内容高度</div>
           <div class="control">
-            <el-slider
-              v-model="canvasHeight"
+            <el-slider v-model="canvasHeight"
               :min="10"
               :max="1000"
               input-size="small"
-              style="flex: 1; margin-right: 10px"
-            ></el-slider>
-            <el-input-number
-              v-model="canvasHeight"
+              style="flex: 1; margin-right: 10px"></el-slider>
+            <el-input-number v-model="canvasHeight"
               :min="10"
               :max="1000"
               controls-position="right"
-              style="width: 100px"
-            ></el-input-number>
+              style="width: 105px"></el-input-number>
           </div>
         </div>
 
@@ -43,21 +39,17 @@
           <el-scrollbar style="height: calc(100% - 40px)">
             <draggable v-model="reversedComponentData" handle=".handle" animation="200" item-key="id">
               <template #item="{ element: item }">
-                <div
-                  class="layer-item"
+                <div class="layer-item"
                   :class="{ active: curComponent && curComponent.id === item.id }"
-                  @click="setCurComponent(item, componentData.indexOf(item))"
-                >
+                  @click="setCurComponent(item, componentData.indexOf(item))">
                   <span class="handle iconfont iconxingzhuangjiehe"></span>
                   <span class="name">{{ item.label || item.component }}</span>
                   <div class="actions">
                     <span class="iconfont iconic_edit2" @click.stop="editName(item)"></span>
                     <span class="iconfont iconic_Eyes" v-if="!item.isHidden" @click.stop="toggleHide(item)"></span>
                     <span class="iconfont iconic_eye" v-else style="color: #ccc" @click.stop="toggleHide(item)"></span>
-                    <span
-                      class="iconfont iconshanchu3"
-                      @click.stop="deleteComponent(componentData.indexOf(item))"
-                    ></span>
+                    <span class="iconfont iconshanchu3"
+                      @click.stop="deleteComponent(componentData.indexOf(item))"></span>
                   </div>
                 </div>
               </template>
@@ -68,25 +60,21 @@
 
       <!-- Center Canvas -->
       <div class="center-panel" @contextmenu="handleContextMenu" @mousedown="handleBackgroundClick">
-        <ContextMenu
-          v-if="menuVisible"
+        <ContextMenu v-if="menuVisible"
           :visible="menuVisible"
           :top="menuTop"
           :left="menuLeft"
           :curComponent="curComponent"
           @action="handleMenuAction"
-          @close="closeMenu"
-        />
+          @close="closeMenu" />
         <div class="history-controls">
           <div class="operation-bar">
-            <div class="operation-item" :class="{ disabled: snapshotIndex <= 0 }" @click="snapshotIndex > 0 && undo()">
+            <div class="operation-item" :class="{ disabled: snapshotIndex <= 0 }" @click="snapshotIndex> 0 && undo()">
               <span class="iconfont iconshangyibu1"></span>
             </div>
-            <div
-              class="operation-item"
+            <div class="operation-item"
               :class="{ disabled: snapshotIndex === snapshotData.length - 1 }"
-              @click="snapshotIndex < snapshotData.length - 1 && redo()"
-            >
+              @click="snapshotIndex < snapshotData.length - 1 && redo()">
               <span class="iconfont iconshangyibu"></span>
             </div>
             <div class="divider"></div>
@@ -99,13 +87,11 @@
             <i class="el-icon-close close-icon" @click.stop="historyVisible = false"></i>
           </div>
           <div class="history-content">
-            <div
-              class="history-item"
+            <div class="history-item"
               v-for="(item, index) in snapshotData"
               :key="index"
               :class="{ active: index === snapshotIndex }"
-              @click="handleHistorySelect(index)"
-            >
+              @click="handleHistorySelect(index)">
               <span class="type">{{ item.type || '操作' }}</span>
               <div class="right-info">
                 <span class="time">{{ item.time }}</span>
@@ -124,42 +110,33 @@
           <div class="action-item" title="复制" @click="copyComponent(curComponent)">
             <i class="el-icon-document-copy"></i>
           </div>
-          <div
-            class="action-item"
+          <div class="action-item"
             :class="{ disabled: isTop }"
             title="上移一层"
-            @click="moveComponent({ index: curComponentIndex, type: 'up' })"
-          >
+            @click="moveComponent({ index: curComponentIndex, type: 'up' })">
             <i class="el-icon-arrow-up"></i>
           </div>
-          <div
-            class="action-item"
+          <div class="action-item"
             :class="{ disabled: isBottom }"
             title="下移一层"
-            @click="moveComponent({ index: curComponentIndex, type: 'down' })"
-          >
+            @click="moveComponent({ index: curComponentIndex, type: 'down' })">
             <i class="el-icon-arrow-down"></i>
           </div>
-          <div
-            class="action-item"
+          <div class="action-item"
             :class="{ disabled: isTop }"
             title="置顶"
-            @click="moveComponent({ index: curComponentIndex, type: 'top' })"
-          >
+            @click="moveComponent({ index: curComponentIndex, type: 'top' })">
             <span class="iconfont iconzhiding"></span>
           </div>
-          <div
-            class="action-item"
+          <div class="action-item"
             :class="{ disabled: isBottom }"
             title="置底"
-            @click="moveComponent({ index: curComponentIndex, type: 'bottom' })"
-          >
+            @click="moveComponent({ index: curComponentIndex, type: 'bottom' })">
             <span class="iconfont iconzhidi"></span>
           </div>
         </div>
         <div class="canvas-container">
-          <Editor
-            ref="editor"
+          <Editor ref="editor"
             :componentData="componentData"
             :canvasStyle="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
             :curComponent="curComponent"
@@ -171,15 +148,13 @@
             @delete="deleteComponent"
             @copy="copyComponent"
             @move="moveComponent"
-            @multi-select="handleMultiSelect"
-          />
+            @multi-select="handleMultiSelect" />
         </div>
       </div>
 
       <!-- Right Panel -->
       <div class="right-panel">
-        <AttrList
-          v-if="curComponent || activeComponentIds.length > 1"
+        <AttrList v-if="curComponent || activeComponentIds.length> 1"
           :curComponent="curComponent"
           :activeComponentIds="activeComponentIds"
           :componentData="componentData"
@@ -188,8 +163,7 @@
           :type="type"
           :fieldList="fieldList"
           @change="handleAttrChange"
-          @update-group="handleUpdateGroup"
-        />
+          @update-group="handleUpdateGroup" />
         <div v-else class="empty-tip">
           <img src="@/assets/images/no-sel-cum.png" alt="" />
           <p>暂未选中任何组件～</p>
@@ -248,9 +222,9 @@ const menuTop = ref(0);
 const menuLeft = ref(0);
 
 const canvasWidth = computed(() => {
-  // Default 375, divided by columns if > 1
+  // Default 375, divided by columns if> 1
   const base = 375;
-  return props.columnNum > 1 ? base / props.columnNum : base;
+  return props.columnNum> 1 ? base / props.columnNum : base;
 });
 const actionBarStyle = computed(() => {
   return {
@@ -357,14 +331,14 @@ function recordSnapshot(type = '操作') {
 
   // Limit to 15 records
   const limit = 15;
-  if (snapshotData.value.length > limit) {
+  if (snapshotData.value.length> limit) {
     const diff = snapshotData.value.length - limit;
     snapshotData.value.splice(0, diff);
     snapshotIndex.value -= diff;
   }
 }
 function undo() {
-  if (snapshotIndex.value > 0) {
+  if (snapshotIndex.value> 0) {
     snapshotIndex.value--;
     const data = deepCopy(snapshotData.value[snapshotIndex.value]);
     componentData.value = data.componentData;
@@ -401,7 +375,7 @@ function moveComponent({ index, type }) {
       ElMessage.warning('已经到顶了');
     }
   } else if (type === 'down') {
-    if (index > 0) {
+    if (index> 0) {
       componentData.value.splice(index, 1);
       componentData.value.splice(index - 1, 0, component);
       curComponentIndex.value = index - 1;
@@ -419,7 +393,7 @@ function moveComponent({ index, type }) {
       ElMessage.warning('已经到顶了');
     }
   } else if (type === 'bottom') {
-    if (index > 0) {
+    if (index> 0) {
       componentData.value.splice(index, 1);
       componentData.value.unshift(component);
       curComponentIndex.value = 0;
@@ -476,7 +450,7 @@ function handleKeydown(e) {
   }
 }
 function handleDeleteKey() {
-  if (activeComponentIds.value && activeComponentIds.value.length > 0) {
+  if (activeComponentIds.value && activeComponentIds.value.length> 0) {
     componentData.value = componentData.value.filter((item) => !activeComponentIds.value.includes(item.id));
     curComponent.value = null;
     curComponentIndex.value = -1;
@@ -536,7 +510,8 @@ function handleMenuAction(action) {
 
 <style scoped lang="scss">
 .custom-design {
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
@@ -593,6 +568,9 @@ function handleMenuAction(action) {
         .control {
           display: flex;
           align-items: center;
+          :deep(.el-input-number .el-input__inner) {
+            text-align: center;
+          }
         }
       }
 

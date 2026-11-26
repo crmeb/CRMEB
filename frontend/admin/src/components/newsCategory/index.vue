@@ -1,21 +1,19 @@
 <template>
   <div :style="{ height: scrollerHeight + 'px' || '' }">
     <div>
-      <el-form
-        ref="formValidate"
+      <el-form ref="formValidate"
         inline
         :model="formValidate"
         label-width="80px"
         label-position="right"
-        class="tabform"
-      >
+        class="tabform">
         <el-form-item label="图文搜索：" prop="cate_name">
           <el-input clearable placeholder="请输入" v-model="formValidate.cate_name" class="form_content_width" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+          <el-button type="primary" @click="userSearchs">查询</el-button>
           <router-link :to="routePre + '/app/wechat/news_category/save/0'">
-            <el-button v-db-click type="primary" class="bnt ml15">添加图文消息</el-button>
+            <el-button type="primary" class="bnt ml15">添加图文消息</el-button>
           </router-link>
         </el-form-item>
       </el-form>
@@ -25,48 +23,34 @@
         <!-- 原 vue-waterfall-easy（Vue2-only）改为 CSS 多列瀑布流 + 触底加载 -->
         <div ref="scrollBox" class="waterfall-scroll" @scroll="onScroll">
           <div class="waterfall-cols" :style="{ columnCount: colCount }">
-            <div
-              class="img-info waterfall-item"
+            <div class="img-info waterfall-item"
               v-for="(item, idx) in imgsArr"
               :key="item.id !== undefined ? item.id : idx"
-              v-db-click
-              @click="clickFn($event, { index: idx, value: item })"
-            >
+              @click="clickFn($event, { index: idx, value: item })">
               <template v-if="item.new && item.new.length !== 0">
                 <div v-for="(j, i) in item.new" :key="i">
                   <div v-if="i === 0">
-                    <div
-                      class="news_pic"
+                    <div class="news_pic"
                       :style="{
                         backgroundImage: 'url(' + j.image_input[0] + ')',
                         backgroundSize: '100% 100%',
                       }"
                       @mouseenter="mouseenterOut(j)"
-                      @mouseleave="mouseenterOver(j)"
-                    >
-                      <el-button
-                        type="success"
+                      @mouseleave="mouseenterOver(j)">
+                      <el-button type="success"
                         icon="Edit"
                         v-show="item.new[i].isDel && isShow"
-                        v-db-click
-                        @click="clkk(item)"
-                      ></el-button>
-                      <el-button
-                        type="error"
+                        @click="clkk(item)"></el-button>
+                      <el-button type="error"
                         icon="Delete"
                         v-show="item.new[i].isDel && isShow"
                         v-db-click
                         @click="del(item, '删除图文', i)"
-                        style="margin-top: 5px"
-                      ></el-button>
-                      <el-button
-                        type="primary"
+                        style="margin-top: 5px"></el-button>
+                      <el-button type="primary"
                         icon="Promotion"
                         v-show="item.new[i].isDel && isShowSend"
-                        v-db-click
-                        @click="send(item, '发送', i)"
-                        >推送</el-button
-                      >
+                        @click="send(item, '发送', i)">推送</el-button>
                     </div>
                     <span class="news_sp">{{ j.title }}</span>
                   </div>
@@ -260,7 +244,7 @@ function userSearchs() {
 function onScroll() {
   const box = scrollBox.value;
   if (!box || over.value || loading.value) return;
-  if (box.scrollTop + box.clientHeight >= box.scrollHeight - 30) {
+  if (box.scrollTop + box.clientHeight>= box.scrollHeight - 30) {
     getData();
   }
 }

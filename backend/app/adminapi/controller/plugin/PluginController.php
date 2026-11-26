@@ -121,8 +121,8 @@ class PluginController extends AuthController
      * 上传并安装插件 ZIP 包
      *
      * 接收 multipart/form-data，字段名 plugin_package
-     * 验证 ZIP → 提取到 plugin.json 中 path 字段对应的目录 → 返回插件元数据
-     * 例：path="modules/distribution" → 解压到 backend/modules/distribution/
+     * 验证 ZIP → 按 plugin.json 的 path 落盘 → 返回插件元数据
+     * 例：path="modules/service/outapi" → 解压到 backend/modules/service/outapi/
      *
      * @return \think\response\Json
      */
@@ -182,37 +182,39 @@ class PluginController extends AuthController
                 return app('json')->fail('plugin.json 格式不完整，缺少 path 或 type 字段');
             }
 
-            // 根据 type 字段确定目标父目录
-            // type=product/product_type → modules/product/{name}/（商品域：产品类型）
-            // type=activity/mode        → modules/trade/{name}/（交易域：交易模式）
-            // type=user     → modules/user/{name}/
-            // type=channel  → modules/channel/{name}/
-            // type=driver   → 按 plugin.json 的 path 安装到 driver/{category}/{name}/
-            //                 （驱动发现服务只扫描 driver/pay|sms|upload|express|logistics|
-            //                  invoice|email|bot|copyproduct|printer 目录，
-            //                  安装到 modules/drivers 将导致驱动无法被扫描发现）
-            // 其他类型      → modules/{name}/
+            // 安装目标以 plugin.json 的 path 为准（与 PluginManifest 校验一致），
+            // type 仅用于驱动类别与常见域目录约束，禁止再按 type 改写为 modules/{name}。
+            // type=product/product_type → path 须落在 modules/product/
+            // type=activity/mode        → path 须落在 modules/trade/
+            // type=user/channel/marketing → path 须落在同名 modules/{type}/
+            // type=driver               → path 须为 driver/{category}/{name}
+            // 其他（如 service）         → 允许 modules/{name} 或 modules/{category}/{name}
             $typeDirMap = [
-            'product'      => 'modules' . DIRECTORY_SEPARATOR . 'product',
-            'product_type' => 'modules' . DIRECTORY_SEPARATOR . 'product',
-            'activity'     => 'modules' . DIRECTORY_SEPARATOR . 'trade',
-            'mode'         => 'modules' . DIRECTORY_SEPARATOR . 'trade',
-            'user'         => 'modules' . DIRECTORY_SEPARATOR . 'user',
-            'channel'      => 'modules' . DIRECTORY_SEPARATOR . 'channel',
-            'marketing'    => 'modules' . DIRECTORY_SEPARATOR . 'marketing',
-        ];
+                'product'      => 'modules/product',
+                'product_type' => 'modules/product',
+                'activity'     => 'modules/trade',
+                'mode'         => 'modules/trade',
+                'user'         => 'modules/user',
+                'channel'      => 'modules/channel',
+                'marketing'    => 'modules/marketing',
+            ];
 
-            $type = $meta['type'];
-            // 从 path 中提取插件目录名（最后一段）
-            $pluginName = basename($meta['path']);
+            $type = (string) $meta['type'];
+            $pathNormalized = trim(str_replace('\\', '/', (string) $meta['path']), '/');
+            if (str_contains($pathNormalized, '..')
+                || !preg_match('#^(modules|driver)/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+){0,2}$#', $pathNormalized)) {
+                $this->cleanTempDir($tmpDir);
+                return app('json')->fail('插件清单 path 非法: ' . $pathNormalized);
+            }
+
+            $pluginName = basename($pathNormalized);
+            $relativePath = str_replace('/', DIRECTORY_SEPARATOR, $pathNormalized);
 
             if ($type === 'driver') {
                 // 驱动插件：path 形如 driver/{category}/{name}，必须安装到对应驱动目录
                 // 命名空间与 autoload（driver\ → driver/）及各 DriverServices 扫描路径保持一致
-                $driverPath = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, trim((string)$meta['path'], '/'));
-                $segments = explode(DIRECTORY_SEPARATOR, $driverPath);
-                if (count($segments) !== 3 || $segments[0] !== 'driver'
-                    || in_array('..', $segments, true) || in_array('.', $segments, true)) {
+                $segments = explode('/', $pathNormalized);
+                if (count($segments) !== 3 || $segments[0] !== 'driver') {
                     $this->cleanTempDir($tmpDir);
                     return app('json')->fail('驱动插件 path 格式错误，应为 driver/{category}/{name}（如 driver/sms/yunxin）');
                 }
@@ -222,11 +224,12 @@ class PluginController extends AuthController
                     $this->cleanTempDir($tmpDir);
                     return app('json')->fail('不支持的驱动类别「' . $segments[1] . '」，支持：' . implode('/', $allowedCategories));
                 }
-                $relativePath = $driverPath;
             } elseif (isset($typeDirMap[$type])) {
-                $relativePath = $typeDirMap[$type] . DIRECTORY_SEPARATOR . $pluginName;
-            } else {
-                $relativePath = 'modules' . DIRECTORY_SEPARATOR . $pluginName;
+                $expectedParent = $typeDirMap[$type];
+                if (dirname($pathNormalized) !== $expectedParent) {
+                    $this->cleanTempDir($tmpDir);
+                    return app('json')->fail("插件 path 与 type 约定目录不一致，期望 {$expectedParent}/{$pluginName}");
+                }
             }
 
             $destDir = $targetDir . $relativePath . DIRECTORY_SEPARATOR;

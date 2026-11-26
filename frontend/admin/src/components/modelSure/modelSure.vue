@@ -1,21 +1,17 @@
 <template>
   <el-dialog v-model="modals" class="paymentFooter" width="470px" :destroy-on-close="true">
-    <template #header
-      ><p style="color: #f60">
+    <template #header><p style="color: #f60">
         <i class="el-icon-warning"></i>
         <span>{{ `${delfromData.title}` }}</span>
-      </p></template
-    >
+      </p></template>
     <div>
       <p>{{ `您确定要${delfromData.title}吗?` }}</p>
       <p v-if="delfromData.info !== undefined">{{ `${delfromData.info}` }}</p>
     </div>
-    <template #footer
-      ><div class="acea-row row-right">
-        <el-button type="primary" v-db-click @click="cancel">取消</el-button>
+    <template #footer><div class="acea-row row-right">
+        <el-button type="primary" @click="cancel">取消</el-button>
         <el-button type="warning" v-db-click @click="ok">确定</el-button>
-      </div></template
-    >
+      </div></template>
   </el-dialog>
 </template>
 

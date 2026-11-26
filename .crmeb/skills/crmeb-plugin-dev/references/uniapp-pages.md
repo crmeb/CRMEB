@@ -95,7 +95,7 @@ onLoad((options) => {
 新页面的 `url` 与 `routes.js` 逐字相同：
 
 ```php
-$cateId = $this->ensurePageLinkCategory(['商城页面', '营销链接', '示例链接']);
+$cateId = $this->ensurePluginPageCategory('示例插件');
 $count += $this->seedPageLinks($cateId, [
     ['name' => '示例首页', 'url' => '/pages-modules/example/index'],
     [
@@ -107,7 +107,11 @@ $count += $this->seedPageLinks($cateId, [
 ]);
 ```
 
-`cleanData()` 里用同一组 url 调用 `cleanPageLinks(['示例链接'], [...])`。分类名用本插件自己的名字。`抽奖链接`、`秒杀链接` 已经由现役模块占用。
+链接选择器里会多出一级分类「插件页面」，本插件用自己的名字作为它的子分类。`cleanData()` 用 `cleanPluginPageLinks(['示例插件'], [...])`，分类下没有其他插件时会一并去掉这个一级分类。子分类名不要和别的插件重名。
+
+秒杀、砍价、拼团、积分、抽奖、分销这些存量活动链接仍挂在「商城页面 / 营销链接」下，不要改到「插件页面」。
+
+插件页要在已经发布的小程序里打开，且以后新增插件不再发小程序包时，不要把上面的 `pages-modules` 路径直接写进装修。装修链接写成壳页面 `/pages/annex/plugin_web_view/index?path=` 加编码后的插件路径。登录票据、主题色、页内跳转和验收见 [webview-plugin.md](webview-plugin.md)。
 
 订阅消息、分享、支付回跳要打开插件页时，下发同一条路径。路径由插件自己的代码或种子数据产生。
 

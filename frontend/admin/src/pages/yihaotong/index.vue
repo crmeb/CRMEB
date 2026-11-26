@@ -16,19 +16,17 @@
           <div class="tip">一号通平台账号，建议通过「点击登录一号通」自动回填</div>
         </el-form-item>
         <el-form-item label="AppSecret：">
-          <el-input
-            v-model="form.yihaotong_appsecret"
+          <el-input v-model="form.yihaotong_appsecret"
             type="password"
             show-password
             autocomplete="new-password"
             placeholder="请输入一号通 AppSecret"
-            class="input-width"
-          />
+            class="input-width" />
           <div class="tip">一号通平台密钥，建议通过「点击登录一号通」自动回填</div>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="saveLoading" v-db-click @click="onSave">保存配置</el-button>
-          <el-button v-db-click @click="openLoginDialog">点击登录一号通</el-button>
+          <el-button @click="openLoginDialog">点击登录一号通</el-button>
         </el-form-item>
       </el-form>
     </el-card>

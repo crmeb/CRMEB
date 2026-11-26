@@ -129,7 +129,7 @@ $moduleRegistry->registerAll($basePath . 'modules/');          // 扫描 App.php
 - 扫描 `modules/*/route/{scene}.php` 与 `modules/*/*/route/{scene}.php`；
 - 逐文件经 `ModuleStateChecker::isModuleRouteActive()` 过滤——**禁用/未安装模块的路由不加载**，避免"路由在、Handler 全缺"的脑裂；
 - 单个路由文件抛错仅记日志跳过，不阻断全站；
-- [inactiveModuleHint()](../../../../../backend/crmeb/plugin/ModuleRouteLoader.php#L74-L93) 供 miss 路由兜底：URL 首段命中某模块目录、模块有路由文件但未激活时，返回插件 key 与名称，向客户端提示"插件未安装"。
+- [inactiveModuleHint()](../../../../../backend/crmeb/plugin/ModuleRouteLoader.php#L74-L93) 供 miss 路由兜底：URL 任意一段命中某模块目录、模块有路由文件但未激活时，返回插件 key 与名称，向客户端提示"插件未安装"。插件接口挂在 `v2` 等前缀下时，模块名不在第一段。
 
 ## 五、后台生命周期管理
 
@@ -258,17 +258,19 @@ $moduleRegistry->registerAll($basePath . 'modules/');          // 扫描 App.php
 - 禁止目录穿越（`..`）、绝对路径、盘符、`"\0"`、符号链接；
 - 必须且只能包含一个 `plugin.json`，且只能位于 ZIP 根目录或一级插件目录。
 
-### 目标目录按 type 决定
+### 目标目录以 plugin.json 的 path 为准
 
-| type | 目标目录 |
+上传落盘目录直接取清单 `path`（与 `PluginManifest` 校验一致）；`type` 只做域约束，不再改写为 `modules/{name}`。
+
+| type | path 约束 |
 | --- | --- |
-| `product` / `product_type` | `modules/product/{name}` |
-| `activity` / `mode` | `modules/trade/{name}` |
-| `user` | `modules/user/{name}` |
-| `channel` | `modules/channel/{name}` |
-| `marketing` | `modules/marketing/{name}` |
-| `driver` | `driver/{category}/{name}`，类别仅允许 `pay/sms/upload/express/logistics/invoice/email/bot/copyproduct/printer`（有对应发现服务才会被扫描） |
-| 其他 | `modules/{name}` |
+| `product` / `product_type` | 须在 `modules/product/{name}` |
+| `activity` / `mode` | 须在 `modules/trade/{name}` |
+| `user` | 须在 `modules/user/{name}` |
+| `channel` | 须在 `modules/channel/{name}` |
+| `marketing` | 须在 `modules/marketing/{name}` |
+| `driver` | 须为 `driver/{category}/{name}`，类别仅允许 `pay/sms/upload/express/logistics/invoice/email/bot/copyproduct/printer`（有对应发现服务才会被扫描） |
+| 其他（如 `service`） | 以清单 `path` 为准，允许 `modules/{name}` 或 `modules/{category}/{name}`（如 `modules/service/outapi`） |
 
 ### 首次安装
 
@@ -308,7 +310,7 @@ php think plugin:required-check --manifest-only   # 仅校验清单与 Installer
 | 卸载/禁用报「核心模块不允许」 | `plugin.json` 的 `required=true` 保护 |
 | 启用/卸载报「仍被已启用/已安装插件依赖」 | [PluginDependencyResolver](../../../../../backend/crmeb/plugin/PluginDependencyResolver.php) 反向依赖保护，先处理依赖方 |
 | 安装报「请先安装/启用依赖插件」 | 正向依赖校验，先装依赖并核对版本约束（支持 `^` `~` `>=` 等比较符） |
-| 访问插件接口提示未安装 | `ModuleRouteLoader::inactiveModuleHint()` 命中；确认模块已安装启用，或 URL 首段与模块目录名一致 |
+| 访问插件接口提示未安装 | `ModuleRouteLoader::inactiveModuleHint()` 命中；确认模块已安装启用，或 URL 中有一段与模块目录名一致 |
 | 菜单错挂/残留 | `menu_key`/`parent_key` 稳定标识机制；旧数据按 auth_type 唯一键认领，`removeMenus()` 按 `owner_plugin_id` 清理 |
 | 共享表 DROP 失败/拒绝 | `dropSharedTableIfUnclaimed()` 仲裁：`eb_shared_table_registry` 中仍有其他插件占用 |
 

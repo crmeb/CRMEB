@@ -1,12 +1,10 @@
 <template>
-  <el-dialog
-    v-model="dialogVisible"
+  <el-dialog v-model="dialogVisible"
     title="订单发送货"
     class="order-send-dialog"
     :show-close="true"
     width="1000px"
-    @closed="handleClosed"
-  >
+    @closed="handleClosed">
     <template v-if="dialogVisible">
       <!-- 用户信息提示 -->
       <el-alert class="mb20" type="warning" :closable="false">
@@ -23,14 +21,12 @@
       </el-alert>
 
       <!-- 发货表单 -->
-      <el-form
-        ref="formRef"
+      <el-form ref="formRef"
         :model="formData"
         :rules="formRules"
         label-width="100px"
         @submit.prevent
-        v-loading="pageLoading"
-      >
+        v-loading="pageLoading">
         <!-- 配送类型 -->
         <el-form-item label="选择类型：">
           <el-radio-group v-model="formData.delivery_type" @change="handleDeliveryTypeChange">
@@ -49,36 +45,28 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="快递公司：" prop="delivery_name">
-            <el-select
-              v-model="formData.delivery_name"
+            <el-select v-model="formData.delivery_name"
               filterable
               placeholder="请选择快递公司"
               style="width: 60%"
-              @change="handleExpressCompanyChange"
-            >
-              <el-option
-                v-for="item in expressList"
+              @change="handleExpressCompanyChange">
+              <el-option v-for="item in expressList"
                 :key="item.code || item.id"
                 :label="item.value || item.name"
-                :value="item.value || item.name"
-              ></el-option>
+                :value="item.value || item.name"></el-option>
             </el-select>
           </el-form-item>
           <template v-if="formData.express_record_type === 2">
             <el-form-item label="面单模板：" prop="express_temp_id">
-              <el-select
-                v-model="formData.express_temp_id"
+              <el-select v-model="formData.express_temp_id"
                 filterable
                 placeholder="请选择电子面单模板"
                 style="width: 60%"
-                v-loading="tempLoading"
-              >
-                <el-option
-                  v-for="item in expressTempList"
+                v-loading="tempLoading">
+                <el-option v-for="item in expressTempList"
                   :key="item.temp_id"
                   :label="item.temp_name"
-                  :value="item.temp_id"
-                ></el-option>
+                  :value="item.temp_id"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="寄件人姓名：" prop="to_name">
@@ -99,18 +87,14 @@
         <!-- 送货 -->
         <template v-if="formData.delivery_type === 'send'">
           <el-form-item label="送货人：" prop="sh_delivery">
-            <el-select
-              v-model="formData.sh_delivery"
+            <el-select v-model="formData.sh_delivery"
               placeholder="请选择送货人"
               style="width: 60%"
-              @change="handleDeliveryPersonChange"
-            >
-              <el-option
-                v-for="(item, i) in deliveryPersonList"
+              @change="handleDeliveryPersonChange">
+              <el-option v-for="(item, i) in deliveryPersonList"
                 :key="i"
                 :value="item.id"
-                :label="item.wx_name + '（' + item.phone + '）'"
-              ></el-option>
+                :label="item.wx_name + '（' + item.phone + '）'"></el-option>
             </el-select>
           </el-form-item>
         </template>
@@ -118,13 +102,11 @@
         <!-- 无需配送 -->
         <template v-if="formData.delivery_type === 'fictitious'">
           <el-form-item label="备注：">
-            <el-input
-              v-model="formData.fictitious_content"
+            <el-input v-model="formData.fictitious_content"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
               placeholder="请输入发货备注（选填）"
-              style="width: 60%"
-            ></el-input>
+              style="width: 60%"></el-input>
           </el-form-item>
         </template>
 
@@ -147,21 +129,17 @@
             </el-table-column>
             <el-table-column label="数量" width="80" prop="cart_num" />
             <el-table-column label="小计" width="120">
-              <template #default="{ row }"
-                >¥{{ (parseFloat(row.true_price || row.price || 0) * (row.cart_num || 1)).toFixed(2) }}</template
-              >
+              <template #default="{ row }">¥{{ (parseFloat(row.true_price || row.price || 0) * (row.cart_num || 1)).toFixed(2) }}</template>
             </el-table-column>
           </el-table>
         </el-form-item>
       </el-form>
     </template>
 
-    <template #footer
-      ><div>
+    <template #footer><div>
         <el-button @click="handleCancel">取消</el-button>
         <el-button v-db-click type="primary" @click="handleSubmit" :loading="submitLoading">提交</el-button>
-      </div></template
-    >
+      </div></template>
   </el-dialog>
 </template>
 

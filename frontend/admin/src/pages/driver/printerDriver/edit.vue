@@ -1,37 +1,29 @@
 <template>
-  <el-form
-    ref="formRef"
+  <el-form ref="formRef"
     v-loading="loading"
     :disabled="loading || !loaded || submitLoading || !hasPermission('admin-printer-driver-edit')"
     :model="form"
     :label-width="labelWidth"
     :label-position="labelPosition"
     class="form-wrap"
-    @submit.prevent
-  >
+    @submit.prevent>
     <el-divider content-position="left">服务商配置</el-divider>
-    <el-form-item
-      v-for="field in fields"
+    <el-form-item v-for="field in fields"
       :key="field.field"
       :label="field.label"
       :prop="field.field"
-      :rules="configRules(field)"
-    >
-      <el-switch
-        v-if="field.type === 'switch'"
+      :rules="configRules(field)">
+      <el-switch v-if="field.type === 'switch'"
         v-model="form[field.field]"
         active-value="1"
         inactive-value="0"
-        :disabled="field.readonly"
-      />
-      <el-input
-        v-else
+        :disabled="field.readonly" />
+      <el-input v-else
         v-model="form[field.field]"
         :type="field.type === 'password' ? 'password' : 'text'"
         :show-password="field.type === 'password'"
         :disabled="field.readonly"
-        :placeholder="field.tip || '请输入' + field.label"
-      />
+        :placeholder="field.tip || '请输入' + field.label" />
       <div v-if="field.tip" class="tips-info">{{ field.tip }}</div>
     </el-form-item>
     <el-divider content-position="left">其他设置</el-divider>
@@ -39,18 +31,16 @@
       <el-switch v-model="form.status" :active-value="1" :inactive-value="0" />
     </el-form-item>
     <div class="form-actions">
-      <el-button
-        v-if="hasPermission('admin-printer-driver-edit')"
+      <el-button v-if="hasPermission('admin-printer-driver-edit')"
         v-auth="['admin-printer-driver-edit']"
         type="primary"
         v-db-click
         :loading="submitLoading"
         :disabled="loading || !loaded"
-        @click="submit"
-      >
+        @click="submit">
         保存
       </el-button>
-      <el-button v-db-click :disabled="submitLoading" @click="$emit('close')">取消</el-button>
+      <el-button :disabled="submitLoading" @click="$emit('close')">取消</el-button>
     </div>
   </el-form>
 </template>
@@ -151,7 +141,7 @@ async function submit() {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 14px;
 }
 .form-actions .el-button + .el-button {
   margin-left: 0;

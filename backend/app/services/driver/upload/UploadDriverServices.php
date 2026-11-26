@@ -323,14 +323,14 @@ class UploadDriverServices extends BaseService
     protected function getDefaultCommonConfig(): array
     {
         return [
-            'image_thumb_status' => 1,
+            'image_thumb_status' => 0,
             'thumb_big_width' => 800,
             'thumb_big_height' => 800,
             'thumb_mid_width' => 300,
             'thumb_mid_height' => 300,
             'thumb_small_width' => 150,
             'thumb_small_height' => 150,
-            'image_watermark_status' => 1,
+            'image_watermark_status' => 0,
             'watermark_type' => 2,
             'watermark_opacity' => '',
             'watermark_rotate' => '',

@@ -26,15 +26,6 @@
 						<view class='money'>{{userInfo.extractTotalPrice}}</view>
 					</view>
 				</view>
-				<view class="apply"
-					v-if="userInfo.division_open && userInfo.agent_apply_open && ((userInfo.is_division && userInfo.division_invite && userInfo.division_status) || (!userInfo.is_division && !userInfo.is_agent))">
-					<view v-if="userInfo.is_division">{{$t(`邀请码`)}}：{{userInfo.division_invite}}</view>
-					<view v-if="!userInfo.is_division && !userInfo.is_agent">
-						<navigator :render-link="false" url='/pages/annex/settled/index?type=agent' hover-class="none">
-							<view>{{$t(`代理商申请`)}}</view>
-						</navigator>
-					</view>
-				</view>
 			</view>
 			<!-- #ifdef APP-PLUS || H5 -->
 			<navigator :render-link="false" url="/pages/users/user_cash/index" hover-class="none" class='bnt bg-color'>{{$t(`立即提现`)}}</navigator>

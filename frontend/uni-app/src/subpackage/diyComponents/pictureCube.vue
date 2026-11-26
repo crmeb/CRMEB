@@ -361,6 +361,7 @@
 <script setup>
 import { ref, computed, nextTick, onMounted } from "vue";
 import commonWrapper from "./commonWrapper.vue";
+import util from "@/utils/util.js";
 
 defineOptions({ name: "pictureCube" });
 
@@ -469,15 +470,10 @@ function setDomain(url) {
   if (url.indexOf("https://") > -1) return url;
   else return url.replace("http://", "https://");
 }
-function goDetail(url) {
-  let urls = url.link;
-  uni.navigateTo({
-    url: urls,
-    fail: (e) => {
-      uni.switchTab({ url: urls });
-    },
-  });
-  // this.$util.JumpPath(urls);
+function goDetail(item) {
+  const urls = item && item.link;
+  if (!urls) return;
+  util.JumpPath(urls);
 }
 function computedHeight() {
   if (picList.value.length) {

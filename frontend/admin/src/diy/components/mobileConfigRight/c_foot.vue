@@ -1,13 +1,11 @@
 <template>
   <div class="footer" v-if="footConfig">
     <p class="tips">图片建议宽度81*81px；鼠标拖拽左侧圆点可调整导航顺序</p>
-    <draggable
-      class="dragArea list-group"
+    <draggable class="dragArea list-group"
       :list="footConfig"
       group="peoples"
       handle=".iconfont"
-      :item-key="footItemKey"
-    >
+      :item-key="footItemKey">
       <template #item="{ element: item, index }">
         <div class="box-item">
           <div class="left-tool">
@@ -52,16 +50,14 @@
         </div>
       </template>
     </draggable>
-    <el-button v-db-click class="add-btn" @click="addMenu" v-if="footConfig.length < 5">+ 添加板块</el-button>
+    <el-button class="add-btn" @click="addMenu" v-if="footConfig.length < 5">+ 添加板块</el-button>
     <div>
-      <el-dialog v-model="modalPic" width="960px" title="上传底部菜单" :mask-closable="false">
-        <uploadPictures
-          :isChoice="isChoice"
+      <el-dialog v-model="modalPic" width="960px" title="上传底部菜单" :mask-closable="false" append-to-body>
+        <uploadPictures :isChoice="isChoice"
           @getPic="getPic"
           :gridBtn="gridBtn"
           :gridPic="gridPic"
-          v-if="modalPic"
-        ></uploadPictures>
+          v-if="modalPic"></uploadPictures>
       </el-dialog>
     </div>
     <linkaddress ref="linkaddres" @linkUrl="linkUrl"></linkaddress>

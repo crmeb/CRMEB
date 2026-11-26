@@ -214,6 +214,7 @@ import homeList from "@/components/homeList";
 import wechat from "@/libs/wechat.js";
 // #endif
 import util from "@/utils/util.js";
+import { appendSpid } from "@/utils";
 import i18n from "@/utils/lang.js";
 import { ref, watch, nextTick, getCurrentInstance } from "vue";
 import { storeToRefs } from "pinia";
@@ -426,6 +427,7 @@ function getIntegralProductDetail() {
       // #ifdef H5
       PromotionCode.value = res.data.storeInfo.code_base;
       storeImage.value = storeInfo.value.image;
+      setShare();
       // #endif
       DefaultSelect();
     })
@@ -477,7 +479,7 @@ function setShare() {
         {
           desc: storeInfo.value.info,
           title: storeInfo.value.title,
-          link: location.href,
+          link: appendSpid(location.href, appStore.uid),
           imgUrl: storeInfo.value.image,
         }
       )
@@ -882,7 +884,7 @@ onLoad((options) => {
       );
     }
     //记录推广人uid
-    if (value.pid) app.globalData.spid = value.pid;
+    if (value.spid) app.globalData.spid = value.spid;
     if (value.time) datatime.value = value.time;
   }
   // #endif

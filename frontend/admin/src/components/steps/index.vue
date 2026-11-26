@@ -1,13 +1,10 @@
 <template>
   <div class="steps df-cc">
-    <div
-      class="steps-item"
+    <div class="steps-item"
       :class="index <= isActive ? 'active' : ''"
       v-for="(step, index) in stepList"
       :key="index"
-      v-db-click
-      @click="stepActive(index)"
-    >
+      @click="stepActive(index)">
       <div class="dot df-cc">{{ index + 1 }}</div>
       <span class="title">{{ step }}</span>
       <div class="line" :class="lineWidth()" v-if="index < stepList.length - 1"></div>

@@ -1,20 +1,15 @@
 <template>
   <div>
     <transition name="el-zoom-in-center">
-      <ul
-        class="el-dropdown-menu el-popper el-dropdown-menu--medium custom-contextmenu"
+      <ul class="el-dropdown-menu el-popper el-dropdown-menu--medium custom-contextmenu"
         :style="`top: ${dropdowns.y}px;left: ${dropdowns.x}px;`"
         x-placement="bottom-end"
         id="contextmenu"
-        v-show="isShow"
-      >
-        <li
-          class="el-dropdown-menu__item"
+        v-show="isShow">
+        <li class="el-dropdown-menu__item"
           v-for="(v, k) in dropdownList"
           :key="k"
-          v-db-click
-          @click="onCurrentContextmenuClick(v.id)"
-        >
+          @click="onCurrentContextmenuClick(v.id)">
           <template v-if="!v.affix">
             <i :class="v.icon"></i>
             <span>{{ $t(v.txt) }}</span>
@@ -51,7 +46,7 @@ const arrowLeft = ref(5);
 
 const dropdowns = computed(() => {
   // 99 为 `Dropdown 下拉菜单` 的宽度
-  if (props.dropdown.x + 99 > document.documentElement.clientWidth) {
+  if (props.dropdown.x + 99> document.documentElement.clientWidth) {
     return {
       x: document.documentElement.clientWidth - 99 - 5,
       y: props.dropdown.y,
@@ -95,7 +90,7 @@ function closeContextmenu() {
 watch(
   () => props.dropdown,
   ({ x }) => {
-    if (x + 99 > document.documentElement.clientWidth)
+    if (x + 99> document.documentElement.clientWidth)
       arrowLeft.value = 99 - (document.documentElement.clientWidth - x);
     else arrowLeft.value = 10;
   },

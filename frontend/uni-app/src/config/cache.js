@@ -33,7 +33,7 @@ export const SUBSCRIBE_MESSAGE = 'SUBSCRIBE_MESSAGE';
 
 export const TIPS_KEY = 'TIPS_KEY';
 
-export const SPREAD = 'spread';
+export const SPID = 'spid';
 //缓存经度
 export const CACHE_LONGITUDE = 'LONGITUDE';
 //缓存纬度
@@ -52,7 +52,7 @@ export default {
 	LOGO_URL,
 	SUBSCRIBE_MESSAGE,
 	TIPS_KEY,
-	SPREAD,
+	SPID,
 	CACHE_LONGITUDE,
 	CACHE_LATITUDE
 };

@@ -2,13 +2,11 @@
   <div class="c_product" v-if="configData">
     <div class="title">{{ configData.title }}</div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="configData.list"
         group="peoples"
         handle=".move-icon"
-        :item-key="promotionItemKey"
-      >
+        :item-key="promotionItemKey">
         <template #item="{ element: item, index }">
           <div class="item" @click="activeBtn(index)">
             <!-- v-model="configData.tabCur" -->
@@ -45,24 +43,20 @@
                   <div class="title">选择方式</div>
                   <div class="flex-1">
                     <el-select v-model="item.tabVal" placeholder="请选择" @change="tabChange" style="width: 100%">
-                      <el-option
-                        v-for="(itemn, indexn) in typeList"
+                      <el-option v-for="(itemn, indexn) in typeList"
                         :value="itemn.activeValue"
                         :key="indexn"
-                        :label="itemn.title"
-                      ></el-option>
+                        :label="itemn.title"></el-option>
                     </el-select>
                   </div>
                 </div>
                 <div class="goods-box acea-row" v-if="item.tabVal == 1">
                   <div class="title">选择商品</div>
                   <div class="list">
-                    <draggable
-                      class="dragArea list-group"
+                    <draggable class="dragArea list-group"
                       :list="item.goodsList.list"
                       group="peoples"
-                      :item-key="(element) => item.goodsList.list.indexOf(element)"
-                    >
+                      :item-key="(element) => item.goodsList.list.indexOf(element)">
                       <template #item="{ element: goods, index: gIndex }">
                         <div class="items" v-if="item.goodsList.list.length">
                           <img :src="goods.image" alt="" />
@@ -81,48 +75,39 @@
                   <div class="c_row-item" v-if="item.tabVal == 2">
                     <el-col class="label" :span="4">品牌名称</el-col>
                     <el-col :span="19" class="slider-box">
-                      <el-cascader
-                        @change="brandChange"
+                      <el-cascader @change="brandChange"
                         placeholder="请选择品牌"
                         v-model="item.brandConfig.brandVal"
                         :options="brandData"
                         :props="cascaderProps"
                         filterable
-                        clearable
-                      >
+                        clearable>
                       </el-cascader>
                     </el-col>
                   </div>
                   <div class="c_row-item" v-else-if="item.tabVal == 3">
                     <el-col class="label" :span="4">商品分类</el-col>
                     <el-col :span="19" class="slider-box">
-                      <el-cascader
-                        @change="sliderChange"
+                      <el-cascader @change="sliderChange"
                         placeholder="请选择分类"
                         v-model="item.selectConfig.activeValue"
                         :options="treeSelect"
                         :props="cascaderProps"
                         filterable
-                        clearable
-                      >
+                        clearable>
                       </el-cascader>
                     </el-col>
                   </div>
                   <div class="c_row-item" v-else>
                     <el-col class="label" :span="4">商品标签</el-col>
                     <el-col :span="19" class="slider-box">
-                      <div
-                        class="labelInput acea-row row-between-wrapper"
-                        @click="openStoreLabel(item.goodsLabel.list, index)"
-                      >
+                      <div class="labelInput acea-row row-between-wrapper"
+                        @click="openStoreLabel(item.goodsLabel.list, index)">
                         <div style="width: 90%">
                           <div v-if="item.goodsLabel.list.length">
-                            <el-tag
-                              v-for="(j, jindex) in item.goodsLabel.list"
+                            <el-tag v-for="(j, jindex) in item.goodsLabel.list"
                               :key="jindex"
-                              @on-close="closeStoreLabel(j)"
-                              >{{ j.label_name }}</el-tag
-                            >
+                              @on-close="closeStoreLabel(j)">{{ j.label_name }}</el-tag>
                           </div>
                           <span class="span" v-else>选择商品标签</span>
                         </div>
@@ -135,14 +120,12 @@
                       <span>商品数量</span>
                     </el-col>
                     <el-col :span="19" class="slider-box on">
-                      <c_slider_deferred
-                        v-model="item.numConfig.val"
+                      <c_slider_deferred v-model="item.numConfig.val"
                         show-input
                         @change="radioChange"
                         :max="100"
                         :min="1"
-                        :step="1"
-                      />
+                        :step="1" />
                     </el-col>
                   </div>
                   <div class="c_row-item">
@@ -175,45 +158,38 @@
     </div>
     <div v-if="configData.list">
       <div class="add-btn" @click="addHotTxt">
-        <el-button v-db-click style="width: 100%; height: 40px">+ 添加</el-button>
+        <el-button style="width: 100%; height: 40px">+ 添加</el-button>
       </div>
     </div>
     <!-- 商品标签 -->
-    <el-dialog
-      v-model="storeLabelShow"
+    <el-dialog v-model="storeLabelShow"
+      append-to-body
       scrollable
       title="选择商品标签"
       :closable="true"
       width="540"
       :footer-hide="true"
-      :mask-closable="false"
-    >
-      <storeLabelList
-        v-if="storeLabelShow"
+      :mask-closable="false">
+      <storeLabelList v-if="storeLabelShow"
         ref="storeLabel"
         @activeData="activeStoreData"
-        @close="storeLabelClose"
-      ></storeLabelList>
+        @close="storeLabelClose"></storeLabelList>
     </el-dialog>
-    <el-dialog v-model="modals" title="商品列表" class="paymentFooter" width="900">
-      <goods-list
-        ref="goodslist"
+    <el-dialog v-model="modals" title="商品列表" class="paymentFooter" width="900" append-to-body>
+      <goods-list ref="goodslist"
         :ischeckbox="true"
         :isdiy="true"
         isType
         :selectIds="selectIds"
         @getProductId="getProductId"
-        v-if="modals"
-      ></goods-list>
+        v-if="modals"></goods-list>
     </el-dialog>
-    <el-dialog v-model="modalPic" width="960px" :title="configData.header ? configData.header : '上传图片'">
-      <uploadPictures
-        :isChoice="isChoice"
+    <el-dialog v-model="modalPic" append-to-body width="960px" :title="configData.header ? configData.header : '上传图片'">
+      <uploadPictures :isChoice="isChoice"
         @getPic="getPic"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        v-if="modalPic"
-      ></uploadPictures>
+        v-if="modalPic"></uploadPictures>
     </el-dialog>
   </div>
 </template>

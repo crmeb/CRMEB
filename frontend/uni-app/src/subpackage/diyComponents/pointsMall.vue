@@ -1,5 +1,6 @@
 <template>
-  <view v-show="!isSortType">
+  <!-- 积分商城：无商品时整块不渲染，避免仅剩标题头+边距留白 -->
+  <view v-show="!isSortType && goodsList.length">
     <common-wrapper :config="configData">
       <view class="pointsMall" :style="[pointsMallStyle, goodsWrapperStyle]">
         <view

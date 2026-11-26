@@ -4,16 +4,14 @@
       <div class="padding-add">
         <el-form :model="pagination" :label-width="labelWidth" :label-position="labelPosition" @submit.prevent inline>
           <el-form-item label="创建时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
               value-format="YYYY/MM/DD"
-              class="mr20"
-            ></date-range-picker>
+              class="mr20"></date-range-picker>
           </el-form-item>
           <el-form-item label="订单号：" label-for="title">
             <el-input clearable v-model="pagination.order_id" placeholder="请输入订单号" class="form_content_width" />
@@ -22,22 +20,20 @@
             <el-input clearable v-model="pagination.name" placeholder="请输入用户名" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="orderSearch">查询</el-button>
+            <el-button type="primary" @click="orderSearch">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button type="primary" v-db-click @click="qrcodeShow">查看收款二维码</el-button>
-      <el-table
-        :data="tbody"
+      <el-button type="primary" @click="qrcodeShow">查看收款二维码</el-button>
+      <el-table :data="tbody"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="订单号" min-width="180">
           <template #default="scope">
             <span>{{ scope.row.order_id }}</span>
@@ -65,13 +61,11 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="pagination.page"
           v-model:limit="pagination.limit"
-          @pagination="getOrderList"
-        />
+          @pagination="getOrderList" />
       </div>
     </el-card>
     <el-dialog v-model="modal" title="收款码" width="540px">

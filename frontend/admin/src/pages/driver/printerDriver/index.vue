@@ -1,18 +1,14 @@
 <template>
   <div>
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="配置打印服务商账号并启停驱动，具体打印机设备在打印设置中维护。"
-    ></pages-header>
+      description="配置打印服务商账号并启停驱动，具体打印机设备在打印设置中维护。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-alert
-        title="在这里配置打印服务商账号和密钥；具体设备只在“设置 > 打印设置”中填写打印机 ID。"
+      <el-alert title="在这里配置打印服务商账号和密钥；具体设备只在“设置> 打印设置”中填写打印机 ID。"
         type="info"
         show-icon
         :closable="false"
-        class="mb20"
-      />
+        class="mb20" />
 
       <el-table ref="table" v-loading="loading" :data="list" row-key="name">
         <el-table-column label="驱动名称" min-width="160">
@@ -41,8 +37,7 @@
 
         <el-table-column label="状态" width="120">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               v-auth="['admin-printer-driver-status']"
@@ -53,8 +48,7 @@
               @change="changeStatus(scope.row)"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            />
+              class="defineSwitch" />
           </template>
         </el-table-column>
 
@@ -66,14 +60,11 @@
 
         <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <a
-              v-if="hasPermission('admin-printer-driver-detail')"
+            <a v-if="hasPermission('admin-printer-driver-detail')"
               v-auth="['admin-printer-driver-detail']"
-              v-db-click
               :disabled="!scope.row.id"
               :style="scope.row.id ? '' : 'color: var(--prev-color-text-placeholder); cursor: not-allowed;'"
-              @click="showDetail(scope.row)"
-            >
+              @click="showDetail(scope.row)">
               配置
             </a>
           </template>
@@ -81,22 +72,18 @@
       </el-table>
     </el-card>
 
-    <el-drawer
-      :title="currentDriver ? '配置 - ' + currentDriver.driver_name : '驱动配置'"
+    <el-drawer :title="currentDriver ? '配置 - ' + currentDriver.driver_name : '驱动配置'"
       v-model="drawerVisible"
       direction="rtl"
       :size="drawerSize"
       :close-on-click-modal="!drawerSubmitting"
       :show-close="!drawerSubmitting"
-      :close-on-press-escape="!drawerSubmitting"
-    >
-      <PrinterDriverEdit
-        v-if="drawerVisible && currentDriver"
+      :close-on-press-escape="!drawerSubmitting">
+      <PrinterDriverEdit v-if="drawerVisible && currentDriver"
         :driver-id="currentDriver.id"
         @close="drawerVisible = false"
         @success="saved"
-        @submitting="drawerSubmitting = $event"
-      />
+        @submitting="drawerSubmitting = $event" />
     </el-drawer>
   </div>
 </template>

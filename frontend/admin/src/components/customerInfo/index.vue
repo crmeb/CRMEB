@@ -2,37 +2,30 @@
   <div class="customer">
     <el-form :model="formValidate" label-width="80px" inline @submit.prevent>
       <el-form-item label="搜索用户：">
-        <el-input
-          clearable
+        <el-input clearable
           placeholder="请输入用户UID、昵称或手机号"
           v-model="formValidate.nickname"
-          class="form_content_width"
-        ></el-input>
+          class="form_content_width"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+        <el-button type="primary" @click="userSearchs">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-table
-      class="mt15"
+    <el-table class="mt15"
       v-loading="loading2"
       highlight-current-row
       no-userFrom-text="暂无数据"
       no-filtered-userFrom-text="暂无筛选结果"
       ref="selection"
       :data="tableList2"
-      height="450"
-    >
+      height="450">
       <el-table-column width="50">
         <template #default="scope">
-          <el-radio
-            v-model="currentid"
+          <el-radio v-model="currentid"
             :disabled="!!scope.row.is_del"
             :label="scope.row.uid"
             :value="scope.row.uid"
-            @input="() => currentidRadio(scope.row)"
-            >&nbsp;</el-radio
-          >
+            @input="() => currentidRadio(scope.row)">&nbsp;</el-radio>
         </template>
       </el-table-column>
       <el-table-column label="UID" width="80">
@@ -70,13 +63,11 @@
       </el-table-column>
     </el-table>
     <div class="acea-row row-right page">
-      <pagination
-        v-if="total2"
+      <pagination v-if="total2"
         :total="total2"
         v-model:page="formValidate.page"
         v-model:limit="formValidate.limit"
-        @pagination="getListService"
-      />
+        @pagination="getListService" />
     </div>
   </div>
 </template>

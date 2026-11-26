@@ -488,7 +488,7 @@ class Driver extends BaseUpload
                     $height = 'thumb_' . $v . '_height';
                     $width = 'thumb_' . $v . '_width';
                     $key = 'filePath' . ucfirst($v);
-                    if (($config['image_thumb_status'] ?? 1) && isset($config[$height]) && isset($config[$width]) && $config[$height] && $config[$width]) {
+                    if (($config['image_thumb_status'] ?? 0) && isset($config[$height]) && isset($config[$width]) && $config[$height] && $config[$width]) {
                         $this->fileInfo->$key = $this->appendOssImageProcess($filePath, 'resize,h_' . (int)$config[$height] . ',w_' . (int)$config[$width]);
                         $this->fileInfo->$key = $this->water($this->fileInfo->$key);
                         $data[$v] = $this->fileInfo->$key;

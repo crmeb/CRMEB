@@ -260,8 +260,7 @@
 		if (paytype == 'friend' && orderId.value) {
 			uni.hideLoading();
 			return uni.navigateTo({
-				url: routes.paymentOnBehalf + '?oid=' + oid.value + '&spread=' +
-					uid.value,
+				url: routes.paymentOnBehalf + '?oid=' + oid.value + (uid.value ? '&spid=' + uid.value : ''),
 				success: res => {},
 				fail: () => {},
 				complete: () => {}
@@ -294,8 +293,7 @@
 				jsConfig = res.data.result.jsConfig,
 				goPages = goPage,
 				friendPayUrl = routes.paymentOnBehalf + '?order_no=' + orderId.value +
-				'&spread=' +
-				uid.value
+				(uid.value ? '&spid=' + uid.value : '')
 			switch (status) {
 				case 'ORDER_EXIST':
 				case 'EXTEND_ORDER':

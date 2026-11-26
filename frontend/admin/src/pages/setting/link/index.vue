@@ -4,14 +4,13 @@
       <div class="colLeft">
         <div class="Nav">
           <div class="trees-coadd">
-            <div class="tree_tit" v-db-click @click="append">
+            <div class="tree_tit" @click="append">
               <i class="el-icon-circle-plus"></i>
               添加分类
             </div>
             <div class="scollhide">
               <div class="tree" v-if="treeData.length">
-                <el-tree
-                  ref="tree"
+                <el-tree ref="tree"
                   :data="treeData"
                   node-key="id"
                   default-expand-all
@@ -20,10 +19,8 @@
                   :check-on-click-node="false"
                   @node-click="appendBtn"
                   @node-expand="nodeExpand"
-                  :current-node-key="treeId"
-                >
-                  <template #default="{ data }"
-                    ><span class="custom-tree-node">
+                  :current-node-key="treeId">
+                  <template #default="{ data }"><span class="custom-tree-node">
                       <div class="file-name">
                         <img v-if="data.pid == 1" class="icon" src="@/assets/images/file.jpg" />
                         <el-tooltip class="item" effect="dark" :content="data.title" placement="top">
@@ -44,24 +41,21 @@
                           </template>
                         </el-dropdown>
                       </span>
-                    </span></template
-                  >
+                    </span></template>
                 </el-tree>
               </div>
             </div>
           </div>
         </div>
         <div class="conter">
-          <el-button v-db-click type="primary" @click="addLink">添加链接</el-button>
-          <el-table
-            :data="linkList"
+          <el-button type="primary" @click="addLink">添加链接</el-button>
+          <el-table :data="linkList"
             ref="couponTable"
             class="mt14"
             v-loading="loading"
             highlight-current-row
             no-userFrom-text="暂无数据"
-            no-filtered-userFrom-text="暂无筛选结果"
-          >
+            no-filtered-userFrom-text="暂无筛选结果">
             <el-table-column label="ID" width="70">
               <template #default="scope">
                 <span>{{ scope.row.id }}</span>
@@ -75,14 +69,14 @@
             <el-table-column label="H5链接" minWidth="170">
               <template #default="scope">
                 <el-tooltip class="item pointer" content="点击复制">
-                  <span v-db-click @click="onCopy(scope.row.h5_url)">{{ scope.row.h5_url }}</span>
+                  <span @click="onCopy(scope.row.h5_url)">{{ scope.row.h5_url }}</span>
                 </el-tooltip>
               </template>
             </el-table-column>
             <el-table-column label="小程序链接" minWidth="140">
               <template #default="scope">
                 <el-tooltip class="item pointer" content="点击复制">
-                  <span v-db-click @click="onCopy(scope.row.url)">{{ scope.row.url }}</span>
+                  <span @click="onCopy(scope.row.url)">{{ scope.row.url }}</span>
                 </el-tooltip>
               </template>
             </el-table-column>
@@ -93,20 +87,18 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="90">
               <template #default="scope">
-                <a v-db-click @click="edit(scope.row)">编辑</a>
+                <a @click="edit(scope.row)">编辑</a>
                 <el-divider direction="vertical"></el-divider>
                 <a v-db-click @click="del(scope.row, '删除链接', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>
           <div class="acea-row row-right page">
-            <pagination
-              v-if="total"
+            <pagination v-if="total"
               :total="total"
               v-model:page="fileData.page"
               v-model:limit="fileData.limit"
-              @pagination="getLinkList"
-            />
+              @pagination="getLinkList" />
           </div>
         </div>
       </div>
@@ -277,7 +269,7 @@ function editLinkCategory(data, type) {
 function getList(type) {
   diyLinkCategoryListApi(uploadName)
     .then((res) => {
-      treeId.value = res.data.length > 0 ? res.data[0]?.children[0]?.id : '';
+      treeId.value = res.data.length> 0 ? res.data[0]?.children[0]?.id : '';
       treeData.value = res.data;
       getLinkList();
     })

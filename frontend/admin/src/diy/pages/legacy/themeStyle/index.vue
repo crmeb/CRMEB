@@ -16,14 +16,11 @@
     </div>
     <el-card :bordered="false" shadow="never" class="ivu-mt p20 h100">
       <div class="acea-row">
-        <div
-          class="tab_color"
+        <div class="tab_color"
           v-for="(item, index) in tabList"
           :key="index"
           :class="current === index + 1 ? 'active' : ''"
-          v-db-click
-          @click="selected(index)"
-        >
+          @click="selected(index)">
           <div class="color_cont flex align-center">
             <div class="main_c mr-2" :class="item.class">
               <span class="iconfont iconxuanzhong6" v-show="current == index + 1"></span>
@@ -33,12 +30,10 @@
         </div>
       </div>
       <div class="acea-row row-top position-relative">
-        <div
-          class="pictrue position-absolute"
+        <div class="pictrue position-absolute"
           :class="{ sel: current == index + 1 }"
           v-for="(item, index) in picList"
-          :key="index"
-        >
+          :key="index">
           <img :src="item.image" />
         </div>
       </div>

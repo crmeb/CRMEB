@@ -3,45 +3,38 @@
     <el-dialog v-model="modals" title="选择链接" :close-on-click-modal="false" append-to-body width="1000px">
       <div class="table_box">
         <div class="left_box" v-if="fromType !== 'diyPage'">
-          <el-tree
-            :data="categoryData"
+          <el-tree :data="categoryData"
             node-key="id"
             default-expand-all
             :props="treeProps"
             highlight-current
             @node-click="handleCheckChange"
-            :current-node-key="treeId"
-          ></el-tree>
+            :current-node-key="treeId"></el-tree>
         </div>
         <div class="right_box" v-if="currenType == 'link'">
           <div v-if="tableList.length">
             <div class="cont">请选择链接</div>
             <div class="Box">
-              <div
-                class="cont_box"
+              <div class="cont_box"
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in tableList"
                 :key="index"
-                v-db-click
-                @click="getUrl(item)"
-              >
+                @click="getUrl(item)">
                 {{ item.name }}
               </div>
             </div>
           </div>
+          <div v-else class="cont">暂无链接</div>
         </div>
         <div class="right_box" v-if="currenType == 'marketing_link' && coupon.length">
           <div>
             <div class="cont">优惠券</div>
             <div class="Box">
-              <div
-                class="cont_box"
+              <div class="cont_box"
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in coupon"
                 :key="index"
-                v-db-click
-                @click="getUrl(item)"
-              >
+                @click="getUrl(item)">
                 {{ item.name }}
               </div>
             </div>
@@ -50,14 +43,11 @@
             <div v-permission="'seckill'" v-if="basicsList.length">
               <div class="cont">秒杀</div>
               <div class="Box">
-                <div
-                  class="cont_box"
+                <div class="cont_box"
                   :class="currenId == item.id ? 'on' : ''"
                   v-for="(item, index) in basicsList"
                   :key="index"
-                  v-db-click
-                  @click="getUrl(item)"
-                >
+                  @click="getUrl(item)">
                   {{ item.name }}
                 </div>
               </div>
@@ -67,14 +57,11 @@
             <div v-permission="'bargain'" v-if="distributionList.length">
               <div class="cont">砍价</div>
               <div class="Box">
-                <div
-                  class="cont_box"
+                <div class="cont_box"
                   :class="currenId == item.id ? 'on' : ''"
                   v-for="(item, index) in distributionList"
                   :key="index"
-                  v-db-click
-                  @click="getUrl(item)"
-                >
+                  @click="getUrl(item)">
                   {{ item.name }}
                 </div>
               </div>
@@ -84,14 +71,11 @@
             <div v-permission="'combination'" v-if="userList.length">
               <div class="cont">拼团</div>
               <div class="Box">
-                <div
-                  class="cont_box"
+                <div class="cont_box"
                   :class="currenId == item.id ? 'on' : ''"
                   v-for="(item, index) in userList"
                   :key="index"
-                  v-db-click
-                  @click="getUrl(item)"
-                >
+                  @click="getUrl(item)">
                   {{ item.name }}
                 </div>
               </div>
@@ -100,14 +84,11 @@
           <div v-if="integral.length">
             <div class="cont">积分</div>
             <div class="Box">
-              <div
-                class="cont_box"
+              <div class="cont_box"
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in integral"
                 :key="index"
-                v-db-click
-                @click="getUrl(item)"
-              >
+                @click="getUrl(item)">
                 {{ item.name }}
               </div>
             </div>
@@ -115,21 +96,17 @@
           <div v-if="luckDraw.length">
             <div class="cont">抽奖</div>
             <div class="Box">
-              <div
-                class="cont_box"
+              <div class="cont_box"
                 :class="currenId == item.id ? 'on' : ''"
                 v-for="(item, index) in luckDraw"
                 :key="index"
-                v-db-click
-                @click="getUrl(item)"
-              >
+                @click="getUrl(item)">
                 {{ item.name }}
               </div>
             </div>
           </div>
         </div>
-        <div
-          class="right_box"
+        <div class="right_box"
           :class="fromType == 'diyPage' ? 'diy' : ''"
           v-if="
             currenType == 'special' ||
@@ -141,48 +118,40 @@
             currenType == 'news' ||
             currenType == 'integral' ||
             currenType == 'lottery_list'
-          "
-        >
+          ">
           <el-form :model="formValidate" class="tabform" v-if="currenType == 'product'">
             <el-row :gutter="24">
               <el-col :span="8">
                 <el-form-item label="" label-for="pid">
                   <!-- <el-select v-model="formValidate.cate_id" style="width: 180px" clearable @change="userSearchs">
-                    <el-option
-                      v-for="item in treeSelect"
+                    <el-option v-for="item in treeSelect"
                       :value="item.id"
                       :key="item.id"
-                      :label="item.html + item.cate_name"
-                    >
+                      :label="item.html + item.cate_name">
                     </el-option>
                   </el-select> -->
-                  <el-cascader
-                    style="width: 180px"
+                  <el-cascader style="width: 180px"
                     v-model="formValidate.cate_id"
                     :options="treeSelect"
                     :props="{ multiple: true, checkStrictly: true, emitPath: false }"
                     filterable
                     clearable
-                    @change="userSearchs"
-                  ></el-cascader>
+                    @change="userSearchs"></el-cascader>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="" label-for="store_name">
-                  <el-input
-                    search
+                  <el-input search
                     enter-button
                     placeholder="请输入商品名称,关键字,编号"
                     v-model="formValidate.store_name"
                     style="width: 200px"
-                    @change="userSearchs"
-                  />
+                    @change="userSearchs" />
                 </el-form-item>
               </el-col>
             </el-row>
           </el-form>
-          <el-table
-            row-key="id"
+          <el-table row-key="id"
             ref="table"
             empty-text="暂无数据"
             :data="tableList"
@@ -198,10 +167,8 @@
                   currenType == 'integral'
                 ? '428'
                 : ''
-            "
-          >
-            <el-table-column
-              :width="currenType != 'product_category' ? 50 : 80"
+            ">
+            <el-table-column :width="currenType != 'product_category' ? 50 : 80"
               v-if="
                 [
                   'special',
@@ -215,20 +182,15 @@
                   'lottery_list',
                   'link',
                 ].includes(currenType)
-              "
-            >
+              ">
               <template #default="scope">
-                <el-radio
-                  v-model="templateRadio"
+                <el-radio v-model="templateRadio"
                   :label="scope.row.id"
                   :value="scope.row.id"
-                  @change="getTemplateRow(scope.row)"
-                  >&nbsp;</el-radio
-                >
+                  @change="getTemplateRow(scope.row)">&nbsp;</el-radio>
               </template>
             </el-table-column>
-            <el-table-column
-              :label="item.title"
+            <el-table-column :label="item.title"
               :width="item.width"
               :min-width="item.minWidth"
               v-for="(item, index) in currenType == 'special'
@@ -244,8 +206,7 @@
                 : currenType == 'link'
                 ? diyLink
                 : columns8"
-              :key="index"
-            >
+              :key="index">
               <template #default="scope">
                 <template v-if="item.key">
                   <div>
@@ -279,7 +240,7 @@
         </div>
         <div class="right_box" v-if="currenType == 'custom'">
           <!--<div v-if="!tableList.length || customNum==2">-->
-          <!--<el-button type="primary" v-db-click @click="customList" v-if="tableList.length">自定义列表</el-button>-->
+          <!--<el-button type="primary" @click="customList" v-if="tableList.length">自定义列表</el-button>-->
           <div style="width: 340px; margin: 150px 100px 0 120px">
             <el-form ref="customdateRef" :model="customdate" :rules="ruleValidate" :label-width="100">
               <!--<el-form-item label="链接名称：" prop="name">-->
@@ -315,15 +276,11 @@
           </div>
         </div>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="cancel">取 消</el-button>
-          <el-button type="primary" v-db-click @click="handleSubmit('customdate')" v-if="currenType == 'custom'"
-            >确 定</el-button
-          >
+      <template #footer><span class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" v-db-click @click="handleSubmit('customdate')" v-if="currenType == 'custom'">确 定</el-button>
           <el-button type="primary" v-db-click @click="ok" v-else>确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -766,6 +723,12 @@ function handleCheckChange(data) {
   }
   loading.value = true;
   currenType.value = data.type;
+  // 普通链接（含插件页）直接用 get_page_category 附在分类上的 links，不再依赖二次列表接口
+  if (currenType.value == 'link' && Array.isArray(data.links)) {
+    loading.value = false;
+    tableList.value = data.links.filter((item) => item.status === undefined || item.status === null || Number(item.status) === 1);
+    return;
+  }
   if (
     currenType.value == 'product' ||
     currenType.value == 'seckill' ||
@@ -826,7 +789,7 @@ defineExpose({ modals, handleCheckChange });
   height: 30px;
 }
 
-:deep(.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
+:deep(.el-tree--highlight-current .el-tree-node.is-current> .el-tree-node__content) {
   background-color: var(--prev-bg-menu-hover-ba-color) !important;
   border-right: 2px solid var(--prev-color-primary);
 }

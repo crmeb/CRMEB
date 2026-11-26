@@ -59,6 +59,8 @@ Route::group(function () {
     // ============ 统一认证接口（跨渠道统一登录/注册入口）============
     Route::post('auth/login', [\app\api\controller\v1\AuthController::class, 'login'])->name('authLogin')->option(['real_name' => '统一登录']);
     Route::post('auth/register', [\app\api\controller\v1\AuthController::class, 'register'])->name('authRegister')->option(['real_name' => '统一注册']);
+    // 插件 H5 用一次性票据换登录 token，票据本身即凭证
+    Route::post('webview/ticket/exchange', [\app\api\controller\v1\WebviewTicketController::class, 'exchange'])->name('webviewTicketExchange')->option(['real_name' => '兑换插件webview票据']);
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)
     ->middleware(\app\api\middleware\StationOpenMiddleware::class)
@@ -84,6 +86,8 @@ Route::group(function () {
         Route::post('upload/image', [\app\api\controller\v1\PublicController::class, 'uploadImage'])->name('uploadImage')->option(['real_name' => '图片上传']);//图片上传
         // 用户微信转账详情接口（提现已由分销插件接管，type=1 仅返回下线提示）
         Route::get('transfer/info', [\app\api\controller\v1\PublicController::class, 'getTransferInfo'])->name('getTransferInfo')->option(['real_name' => '用户微信转账详情接口']);// 用户微信转账详情接口
+        // 插件 webview：已登录端签发一次性票据，H5 再用票据换 token
+        Route::post('webview/ticket', [\app\api\controller\v1\WebviewTicketController::class, 'issue'])->name('webviewTicket')->option(['real_name' => '签发插件webview票据']);
 
     })->option(['mark' => 'common', 'mark_name' => '公共接口']);
 

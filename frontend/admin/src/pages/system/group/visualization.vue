@@ -17,17 +17,14 @@
     <div class="box-wrapper h100">
       <div class="left-wrapper" v-if="!$route.params.id && groupAll.length">
         <div class="tree-vis">
-          <div
-            class="tab-item"
+          <div class="tab-item"
             :class="{ active: item.id == pageId }"
             v-for="(item, index) in groupAll"
             :key="index"
-            v-db-click
-            @click="edits(item)"
-          >
+            @click="edits(item)">
             {{ item.name }}
           </div>
-          <div class="tab-item" :class="{ active: pageId == 1617 }" v-db-click @click="edits(2)">开屏广告</div>
+          <div class="tab-item" :class="{ active: pageId == 1617 }" @click="edits(2)">开屏广告</div>
         </div>
       </div>
       <div v-if="name == 'user_recharge_quota'" class="iframe">
@@ -68,7 +65,7 @@
         <img src="../../../assets/images/pclogin.png" class="pciframe-box" />
         <div class="pcmoddile_goods">
           <div class="nofont" v-if="tabList.list == ''">暂无照片，请添加~</div>
-          <swiper v-else :options="swiperOption" class="pcswiperimg_goods">
+          <swiper v-else v-bind="swiperProps" class="pcswiperimg_goods">
             <swiper-slide class="spcwiperimg_goods" v-for="(item, index) in tabList.list" :key="index">
               <img :src="item.slide" />
             </swiper-slide>
@@ -82,7 +79,7 @@
             <div class="nofonts" v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">
               暂无照片，请添加~
             </div>
-            <swiper v-else :options="swiperOption" class="pcswiperimg_goods">
+            <swiper v-else v-bind="swiperProps" class="pcswiperimg_goods">
               <swiper-slide class="swiperimg_goods" v-for="(item, index) in tabList.list" :key="index">
                 <img :src="item.img" />
               </swiper-slide>
@@ -90,8 +87,7 @@
           </div>
         </div>
       </div>
-      <div
-        v-if="
+      <div v-if="
           name != 'sign_day_num' &&
           name != 'admin_login_slide' &&
           name != 'user_recharge_quota' &&
@@ -101,13 +97,12 @@
         "
         class="iframe"
         :bordered="false"
-        shadow="never"
-      >
+        shadow="never">
         <iframe :src="url" class="iframe-box" frameborder="0"></iframe>
         <div class="moddile"></div>
         <div v-if="name == 'combination_banner'" class="moddile_goods">
           <div class="nofonts" v-if="tabList.list == ''">暂无照片，请添加~</div>
-          <swiper v-else :options="swiperOption" class="swiperimg_goods">
+          <swiper v-else v-bind="swiperProps" class="swiperimg_goods">
             <swiper-slide class="swiperimg_goods" v-for="(item, index) in tabList.list" :key="index">
               <img :src="item.img" />
             </swiper-slide>
@@ -144,22 +139,18 @@
             </div>
           </div>
           <div>
-            <el-form
-              class="form"
+            <el-form class="form"
               ref="formValidateRef"
               :model="formValidate"
               :rules="ruleValidate"
               :label-width="labelWidth"
               :label-position="labelPosition"
-              @submit.prevent
-            >
+              @submit.prevent>
               <div class="goodsTitle acea-row"></div>
               <el-form-item label="" prop="content" style="margin: 0px">
-                <WangEditor
-                  style="width: 90%"
+                <WangEditor style="width: 90%"
                   :content="formValidate.content"
-                  @editorContent="getEditorContent"
-                ></WangEditor>
+                  @editorContent="getEditorContent"></WangEditor>
               </el-form-item>
             </el-form>
           </div>
@@ -169,7 +160,7 @@
         <div class="nofonts" v-if="tabList.list == '' || !tabList.list.length || !tabList.list[0].img">
           暂无照片，请添加~
         </div>
-        <swiper :options="swiperOption" class="swiperimgs" v-else>
+        <swiper v-bind="swiperProps" class="swiperimgs" v-else>
           <swiper-slide class="swiperimgs" v-for="(item, index) in tabList.list" :key="index">
             <img :src="item.img" />
           </swiper-slide>
@@ -180,25 +171,19 @@
           <div>
             <div v-bind="grid">
               <div class="title">签到天数设置</div>
-              <el-button
-                type="primary"
-                v-db-click
+              <el-button type="primary"
                 @click="groupAdd('添加数据')"
-                style="margin-left: 14px; margin-top: 30px"
-                >添加数据</el-button
-              >
+                style="margin-left: 14px; margin-top: 30px">添加数据</el-button>
             </div>
           </div>
           <div class="table">
-            <el-table
-              :data="cmsList"
+            <el-table :data="cmsList"
               ref="table"
               class="mt14"
               v-loading="loading"
               highlight-current-row
               no-userFrom-text="暂无数据"
-              no-filtered-userFrom-text="暂无筛选结果"
-            >
+              no-filtered-userFrom-text="暂无筛选结果">
               <el-table-column label="编号" width="80">
                 <template #default="scope">
                   <span>{{ scope.row.id }}</span>
@@ -218,8 +203,7 @@
               <el-table-column label="是否可用" min-width="80">
                 <template #default="scope">
                   <!-- 后端 status 为字符串，Number 归一化避免 ElSwitch 类型不匹配报错 -->
-                  <el-switch
-                    :active-value="1"
+                  <el-switch :active-value="1"
                     :inactive-value="0"
                     :model-value="Number(scope.row.status)"
                     @change="
@@ -228,8 +212,7 @@
                         onchangeIsShow(scope.row);
                       }
                     "
-                    size="large"
-                  >
+                    size="large">
                   </el-switch>
                 </template>
               </el-table-column>
@@ -240,7 +223,7 @@
               </el-table-column>
               <el-table-column label="操作" fixed="right" width="150">
                 <template #default="scope">
-                  <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
+                  <a @click="edit(scope.row, '编辑')">编辑</a>
                   <el-divider direction="vertical"></el-divider>
                   <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
                 </template>
@@ -254,31 +237,23 @@
           <div>
             <div v-bind="grid">
               <div class="title">充值金额设置</div>
-              <el-button
-                type="primary"
-                v-db-click
+              <el-button type="primary"
                 @click="groupAdd('添加数据')"
-                style="margin-left: 14px; margin-top: 30px"
-                >添加数据</el-button
-              >
+                style="margin-left: 14px; margin-top: 30px">添加数据</el-button>
             </div>
           </div>
           <div class="table">
-            <el-table
-              :data="sginList.list"
+            <el-table :data="sginList.list"
               ref="table"
               class="mt14"
               v-loading="loading"
               highlight-current-row
               no-userFrom-text="暂无数据"
-              no-filtered-userFrom-text="暂无筛选结果"
-            >
-              <el-table-column
-                :label="item.title"
+              no-filtered-userFrom-text="暂无筛选结果">
+              <el-table-column :label="item.title"
                 :min-width="item.minWidth"
                 v-for="(item, index) in columns1"
-                :key="index"
-              >
+                :key="index">
                 <template #default="scope">
                   <template v-if="item.key">
                     <div>
@@ -287,8 +262,7 @@
                   </template>
                   <template v-else-if="item.slot === 'status'">
                     <!-- 后端 status 为字符串，Number 归一化避免 ElSwitch 类型不匹配报错 -->
-                    <el-switch
-                      :active-value="1"
+                    <el-switch :active-value="1"
                       :inactive-value="0"
                       :model-value="Number(scope.row.status)"
                       @change="
@@ -297,12 +271,11 @@
                           onchangeIsShow(scope.row);
                         }
                       "
-                      size="large"
-                    >
+                      size="large">
                     </el-switch>
                   </template>
                   <template v-else-if="item.slot === 'action'">
-                    <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
+                    <a @click="edit(scope.row, '编辑')">编辑</a>
                     <el-divider direction="vertical"></el-divider>
                     <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
                   </template>
@@ -313,61 +286,60 @@
         </div>
       </div>
       <div v-else>
-        <div
-          v-if="name != 'sign_day_num' && a != 1 && guide != 2"
-          :class="name != 'admin_login_slide' ? 'content' : 'contents'"
-        >
+        <div v-if="name != 'sign_day_num' && a != 1 && guide != 2"
+          :class="name != 'admin_login_slide' ? 'content' : 'contents'">
           <div class="right-box">
             <div class="hot_imgs">
               <div class="title" v-if="name == 'admin_login_slide'">幻灯片设置</div>
               <div class="title" v-else>轮播图设置</div>
               <div class="title-text">建议尺寸：690 * 240px，拖拽图片可调整图片顺序哦，最多添加五张</div>
               <div class="list-box">
-                <draggable
-                  v-if="name == 'admin_login_slide'"
+                <draggable v-if="name == 'admin_login_slide'"
                   class="dragArea list-group Bbox"
                   :list="tabList.list"
                   group="peoples"
                   handle=".move-icon"
-                  :item-key="dragItemKey"
-                >
+                  :item-key="dragItemKey">
                   <template #item="{ element: item, index }">
                     <div class="items">
                       <div class="move-icon">
                         <span class="iconfont icondrag2"></span>
                       </div>
-                      <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
+                      <div
+                        class="img-box"
+                        :class="{ 'is-filled': item.slide }"
+                        @click="modalPicTap('单选', index)"
+                      >
                         <img :src="item.slide" alt="" v-if="item.slide" />
                         <div class="upload-box" v-else>
-                          <i class="el-icon-picture-outline" style="font-size: 24px"></i>
+                          <el-icon><Plus /></el-icon>
+                          <span>选择图片</span>
                         </div>
-                        <div class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
-                          <i class="el-icon-circle-close" style="font-size: 24px" />
-                        </div>
+                        <div class="img-hover" v-if="item.slide">更换图片</div>
                       </div>
-                      <div class="info"></div>
+                      <div class="delect-btn" @click.stop="bindDelete(item, index)">
+                        <el-icon><Close /></el-icon>
+                      </div>
                     </div>
                   </template>
                 </draggable>
-                <draggable
-                  v-else
+                <draggable v-else
                   class="dragArea list-group"
                   :list="tabList.list"
                   group="peoples"
                   handle=".move-icon"
-                  :item-key="dragItemKey"
-                >
+                  :item-key="dragItemKey">
                   <template #item="{ element: item, index }">
                     <div class="item">
                       <div class="move-icon">
                         <span class="iconfont icondrag2"></span>
                       </div>
-                      <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
+                      <div class="img-box" @click="modalPicTap('单选', index)">
                         <img :src="item.img" alt="" v-if="item.img" />
                         <div class="upload-box" v-else>
                           <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                         </div>
-                        <div class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
+                        <div class="delect-btn" @click.stop="bindDelete(item, index)">
                           <i class="el-icon-circle-close" style="font-size: 24px" />
                         </div>
                       </div>
@@ -380,7 +352,7 @@
                         </div>
                         <div class="info-item">
                           <span>链接地址：</span>
-                          <div class="input-box" v-db-click>
+                          <div class="input-box">
                             <el-input v-model="item.link" placeholder="选择链接">
                               <template #suffix><i class="el-icon-link" @click="getLink(index)" /></template>
                             </el-input>
@@ -391,31 +363,30 @@
                   </template>
                 </draggable>
                 <div>
-                  <el-dialog
-                    v-model="modalPic"
+                  <el-dialog v-model="modalPic"
                     width="950px"
                     title="上传商品图"
                     :close-on-click-modal="false"
-                    :show-close="true"
-                  >
-                    <uploadPictures
-                      :isChoice="isChoice"
+                    :show-close="true">
+                    <uploadPictures :isChoice="isChoice"
                       @getPic="getPic"
                       :gridBtn="gridBtn"
                       :gridPic="gridPic"
-                      v-if="modalPic"
-                    ></uploadPictures>
+                      v-if="modalPic"></uploadPictures>
                   </el-dialog>
                 </div>
               </div>
               <div class="add-btn">
+                <div v-if="name == 'admin_login_slide'" class="slide-pick" @click="addBox">
+                  <el-icon><Plus /></el-icon>
+                  <span>添加图片</span>
+                </div>
                 <el-button
+                  v-else
                   type="primary"
                   ghost
                   style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
-                  v-db-click
-                  @click="addBox"
-                  >添加图片
+                  @click="addBox">添加图片
                 </el-button>
               </div>
             </div>
@@ -433,44 +404,38 @@
                   <el-form-item label="开屏广告:">
                     <!-- 后端/本地初始值的 status 类型不稳定（数字或字符串），Number 归一化后
                          再传入，避免 model-value 与 active-value 类型不一致触发 ElSwitch 报错 -->
-                    <el-switch
-                      :active-value="1"
+                    <el-switch :active-value="1"
                       :inactive-value="0"
                       :model-value="Number(formItem.status)"
                       @change="(val) => (formItem.status = val)"
-                      size="large"
-                    >
+                      size="large">
                     </el-switch>
                   </el-form-item>
                   <el-form-item label="广告时间:">
-                    <el-input
-                      v-model.number="formItem.time"
+                    <el-input v-model.number="formItem.time"
                       type="number"
                       placeholder="请输入开屏广告时间"
-                      style="width: 150px"
-                    ></el-input>
+                      style="width: 150px"></el-input>
                     单位(秒)
                   </el-form-item>
                 </el-form>
               </div>
-              <draggable
-                class="dragArea list-group"
+              <draggable class="dragArea list-group"
                 :list="tabList.list"
                 group="peoples"
                 handle=".move-icon"
-                :item-key="dragItemKey"
-              >
+                :item-key="dragItemKey">
                 <template #item="{ element: item, index }">
                   <div class="item">
                     <div class="move-icon">
                       <span class="iconfont icondrag2"></span>
                     </div>
-                    <div class="img-box" v-db-click @click="modalPicTap('单选', index)">
+                    <div class="img-box" @click="modalPicTap('单选', index)">
                       <img :src="item.img" alt="" v-if="item.img" />
                       <div class="upload-box" v-else>
                         <i class="el-icon-picture-outline" style="font-size: 24px"></i>
                       </div>
-                      <div class="delect-btn" v-db-click @click.stop="bindDelete(item, index)">
+                      <div class="delect-btn" @click.stop="bindDelete(item, index)">
                         <i class="el-icon-circle-close" style="font-size: 24px" />
                       </div>
                     </div>
@@ -483,7 +448,7 @@
                       </div>
                       <div class="info-item">
                         <span>链接地址：</span>
-                        <div class="input-box" v-db-click>
+                        <div class="input-box">
                           <el-input v-model="item.link" placeholder="选择链接">
                             <template #suffix><i class="el-icon-link" @click="getLink(index)" /></template>
                           </el-input>
@@ -495,25 +460,20 @@
               </draggable>
               <div>
                 <el-dialog v-model="modalPic" width="950px" title="上传商品图" :close-on-click-modal="false">
-                  <uploadPictures
-                    :isChoice="isChoice"
+                  <uploadPictures :isChoice="isChoice"
                     @getPic="getPic"
                     :gridBtn="gridBtn"
                     :gridPic="gridPic"
-                    v-if="modalPic"
-                  ></uploadPictures>
+                    v-if="modalPic"></uploadPictures>
                 </el-dialog>
               </div>
             </div>
             <template v-if="tabList.list.length < 5">
               <div class="add-btn">
-                <el-button
-                  type="primary"
+                <el-button type="primary"
                   ghost
                   style="width: 100px; height: 35px; background-color: var(--prev-color-primary); color: #ffffff"
-                  v-db-click
-                  @click="addBox"
-                  >添加图片
+                  @click="addBox">添加图片
                 </el-button>
               </div>
             </template>
@@ -526,7 +486,6 @@
 </template>
 
 <script setup>
-// TODO(vue3): swiper 仍为旧模板写法（:options 在 swiper/vue 组件上不生效），如需轮播参数需迁移为组件 props
 import { ref, reactive, computed, nextTick, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import WangEditor from '@/components/wangEditor/index.vue';
@@ -555,7 +514,10 @@ import videoCloud from '@/utils/videoCloud';
 import modalForm from '@/utils/modalForm';
 import { modalSure } from '@/utils/public';
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import { useLayoutStore } from '@/store/module/layout';
 import { useMediaStore } from '@/store/module/media';
 
@@ -607,19 +569,12 @@ const grid = {
 const loading = ref(false);
 const sginList = ref([]);
 const progress = ref(0); // 进度条默认0
-const swiperOption = {
-  //显示分页
-  pagination: {
-    el: '.swiper-pagination',
-  },
-  //设置点击箭头
-  navigation: {
-    nextEl: '.swiper-button-next',
-    prevEl: '.swiper-button-prev',
-  },
-  //自动轮播
+// Swiper 11 用组件 props，不再接受 :options
+const swiperProps = {
+  modules: [Navigation, Pagination],
+  pagination: { clickable: true },
+  navigation: true,
   autoplay: false,
-  //开启循环模式
   loop: false,
 };
 const url = ref('');

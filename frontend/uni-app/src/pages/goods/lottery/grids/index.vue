@@ -83,6 +83,7 @@ import { toLogin } from '@/libs/login.js';
 import { useAppStore } from '@/store/modules/app';
 import { useColorTheme } from '@/composables/useColorTheme';
 import util from '@/utils/util.js';
+import { appendSpid } from '@/utils';
 import i18n from '@/utils/lang.js';
 import { HTTP_REQUEST_URL } from '@/config/app';
 // #ifdef H5
@@ -168,7 +169,7 @@ onLoad((option) => {
 onShareAppMessage(() => {
 	return {
 		title: i18n.t(`积分抽奖`),
-		path: '/pages/goods/lottery/grids/index?type=' + type.value + '&lottery_id=' + lottery_id.value + '&spread=' + uid.value,
+		path: '/pages/goods/lottery/grids/index?type=' + type.value + '&lottery_id=' + lottery_id.value + (uid.value ? '&spid=' + uid.value : ''),
 		imageUrl: image.value
 	}
 });
@@ -178,7 +179,7 @@ function ShareInfo(data) {
 	let href = location.href;
 	if (Auth.isWeixin()) {
 		getUserInfo().then((res) => {
-			href = href.indexOf('?') === -1 ? href + '?spread=' + res.data.uid : href + '&spread=' + res.data.uid;
+			href = appendSpid(href, res.data.uid);
 			let configAppMessage = {
 				desc: data.name,
 				title: data.name,

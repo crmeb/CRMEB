@@ -28,7 +28,7 @@
       </div>
     </div>
     <div>
-      <el-dialog v-model="modalPic" width="960px" :title="configData.name ? configData.name : '上传图片'">
+      <el-dialog v-model="modalPic" width="960px" :title="configData.name ? configData.name : '上传图片'" append-to-body>
         <uploadPictures
           :isChoice="isChoice"
           @getPic="getPic"

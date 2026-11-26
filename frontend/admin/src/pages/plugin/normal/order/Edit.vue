@@ -32,31 +32,25 @@
         <div class="section-title">改价</div>
         <el-form ref="priceFormRef" :model="priceData" :rules="priceRules" label-width="120px">
           <el-form-item label="商品总价" prop="total_price">
-            <el-input-number
-              v-model="priceData.total_price"
+            <el-input-number v-model="priceData.total_price"
               :precision="2"
               :min="0"
               :max="999999.99"
-              style="width: 240px"
-            />
+              style="width: 240px" />
           </el-form-item>
           <el-form-item label="配送邮费" prop="pay_postage">
-            <el-input-number
-              v-model="priceData.pay_postage"
+            <el-input-number v-model="priceData.pay_postage"
               :precision="2"
               :min="0"
               :max="999999.99"
-              style="width: 240px"
-            />
+              style="width: 240px" />
           </el-form-item>
           <el-form-item label="实际支付" prop="pay_price">
-            <el-input-number
-              v-model="priceData.pay_price"
+            <el-input-number v-model="priceData.pay_price"
               :precision="2"
               :min="0"
               :max="999999.99"
-              style="width: 240px"
-            />
+              style="width: 240px" />
           </el-form-item>
         </el-form>
       </div>
@@ -68,38 +62,30 @@
         <div class="section-title">积分管理</div>
         <el-form ref="integralFormRef" :model="integralData" label-width="120px">
           <el-form-item label="赠送积分">
-            <el-input-number
-              v-model="integralData.give_integral"
+            <el-input-number v-model="integralData.give_integral"
               :precision="0"
               :min="0"
               :max="999999"
-              style="width: 240px"
-            />
+              style="width: 240px" />
             <span class="tip">给购买该订单的用户赠送积分</span>
           </el-form-item>
-          <el-form-item v-if="orderInfo && orderInfo.use_integral > 0" label="退回积分">
-            <el-input-number
-              v-model="integralData.back_integral"
+          <el-form-item v-if="orderInfo && orderInfo.use_integral> 0" label="退回积分">
+            <el-input-number v-model="integralData.back_integral"
               :precision="0"
               :min="0"
               :max="orderInfo.use_integral"
-              style="width: 240px"
-            />
-            <span class="tip"
-              >退还用户下单时使用的积分（已退 {{ orderInfo.backed_integral || 0 }}，最多可退
-              {{ orderInfo.use_integral }}）</span
-            >
+              style="width: 240px" />
+            <span class="tip">退还用户下单时使用的积分（已退 {{ orderInfo.backed_integral || 0 }}，最多可退
+              {{ orderInfo.use_integral }}）</span>
           </el-form-item>
         </el-form>
       </div>
     </div>
 
-    <template #footer
-      ><div>
+    <template #footer><div>
         <el-button @click="visible = false">取 消</el-button>
         <el-button v-db-click type="primary" :loading="saving" @click="saveAll">保 存</el-button>
-      </div></template
-    >
+      </div></template>
   </el-dialog>
 </template>
 

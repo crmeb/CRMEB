@@ -275,6 +275,7 @@
 	import {HTTP_REQUEST_URL} from '@/config/app';
 	import cusPreviewImg from "@/components/cusPreviewImg/index.vue";
 	import util from '@/utils/util.js';
+	import { appendSpid } from '@/utils';
 	import i18n from '@/utils/lang.js';
 	import { ref, watch, nextTick, getCurrentInstance } from 'vue';
 	import { storeToRefs } from 'pinia';
@@ -1176,8 +1177,7 @@
 		let href = location.href;
 		if (wechat.isWeixin()) {
 			getUserInfoApi().then(res => {
-				href = href.indexOf('?') === -1 ? href + '?spread=' + res.data.uid : href + '&spread=' +
-					res.data.uid;
+				href = appendSpid(href, res.data.uid);
 
 				let configAppMessage = {
 					desc: data.store_info,
@@ -1261,7 +1261,7 @@
 			let value = util.getUrlParams(decodeURIComponent(options.scene));
 			if (value.id) options.id = value.id;
 			//记录推广人uid
-			if (value.pid) app.globalData.spid = value.pid;
+			if (value.spid) app.globalData.spid = value.spid;
 		}
 		if (!options.id) {
 			return util.Tips({
@@ -1274,7 +1274,6 @@
 			id.value = options.id;
 		}
 		//记录推广人uid
-		if (options.pid) app.globalData.spid = options.pid;
 		if (options.spid) app.globalData.spid = options.spid;
 		// #endif
 		getGoodsDetails();
@@ -1313,7 +1312,7 @@
 		return {
 			title: storeInfo.value.store_name || '',
 			imageUrl: storeInfo.value.image || '',
-			path: '/pages/goods_details/index?id=' + id.value + '&pid=' + uid.value
+			path: '/pages/goods_details/index?id=' + id.value + (uid.value ? '&spid=' + uid.value : '')
 		};
 	});
 	// #endif

@@ -94,7 +94,7 @@
 							<view class="acea-row row-middle row-between">
 								<!-- <i class="icon iconfont icon-yonghu3"></i> -->
 								<text class="item-name">{{$t(`用户ID`)}}</text>
-								<view class="fs-28 text-right">{{ form.uid }}123</view>
+								<view class="fs-28 text-right">{{ form.uid }}</view>
 							</view>
 						</view>
 						<view class="item">
@@ -280,7 +280,8 @@
 		uid: '',
 		phone: '',
 		code: '',
-		real_name: ''
+		real_name: '',
+		content: ''
 	});
 	const validate = ref(false);
 	const successful = ref(false);
@@ -318,14 +319,21 @@
 	});
 
 	onLoad((options) => {
+		if (options.type === 'agent') {
+			util.Tips({
+				title: i18n.t(`代理商由后台添加`)
+			}, {
+				tab: 3
+			});
+			return;
+		}
 		if (options.id) {
-			id.value = id
+			id.value = options.id
 			uni.showLoading({
 				title: i18n.t(`正在加载中`),
 			});
 		}
 		if (isLogin.value) {
-			if (options.type) isAgent.value = true
 			nextTick(() => {
 				if (!isAgent.value) {
 					getInfo()
@@ -527,8 +535,17 @@
 			});
 	}
 	function formSpeadSubmit() {
-		if (!isAgree.value) return that.$util.Tips({
-			title: that.$t(`请阅读并同意分销员协议`)
+		if (!isAgree.value) return util.Tips({
+			title: i18n.t(`请阅读并同意分销员协议`)
+		});
+		if (!form.value.real_name) return util.Tips({
+			title: i18n.t(`请输入分销员姓名`)
+		});
+		if (!form.value.phone) return util.Tips({
+			title: i18n.t(`请输入手机号`)
+		});
+		if (!form.value.code) return util.Tips({
+			title: i18n.t(`请填写验证码`)
 		});
 		spreadCreateApi(id.value, form.value)
 			.then((res) => {

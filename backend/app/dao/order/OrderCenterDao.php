@@ -205,12 +205,16 @@ class OrderCenterDao extends BaseDao
 
     /**
      * 获取订单总数量
+     * 无额外条件时默认统计实物待发货（扩展表 pending_shipped，对齐旧版 status=1）
      * @param array $where 查询条件
      * @return int 返回订单总数
      */
     public function storeOrderCount(array $where = []): int
     {
-        return $this->getModel()->where($where)->count();
+        if ($where !== []) {
+            return $this->getModel()->where($where)->count();
+        }
+        return (int) \think\facade\Db::name('pt_normal_order')->where('status', 'pending_shipped')->count();
     }
 
     /**

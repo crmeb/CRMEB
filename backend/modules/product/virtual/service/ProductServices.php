@@ -123,8 +123,6 @@ class ProductServices
         $extendInfo = $this->dao->getOne(['product_id' => $productId]);
         $product['is_auto_send'] = $extendInfo ? (int)($extendInfo['is_auto_send'] ?? 1) : 1;
 
-        // is_sub（分销开关）和 is_vip（会员价开关）是独立标量字段
-        $product['is_sub'] = (int) ($product['is_sub'] ?? 0);
         $product['is_vip'] = (int) ($product['is_vip'] ?? 0);
         $product['recommend'] = [];
 
@@ -219,8 +217,6 @@ class ProductServices
                         'stock'             => (int)($sku['stock'] ?? $product['stock'] ?? 0),
                         'bar_code'          => $sku['bar_code'] ?? '',
                         'bar_code_number'   => $sku['bar_code_number'] ?? '',
-                        'brokerage'         => (float)($sku['brokerage'] ?? 0),
-                        'brokerage_two'     => (float)($sku['brokerage_two'] ?? 0),
                         'vip_price'         => (float)($sku['vip_price'] ?? 0),
                         'unique'            => (string)($sku['id'] ?? ''),
                         'download_url'      => $sku['download_url'] ?? '',
@@ -240,8 +236,6 @@ class ProductServices
             'stock'             => (int)($product['stock'] ?? 0),
             'bar_code'          => '',
             'bar_code_number'   => '',
-            'brokerage'         => 0,
-            'brokerage_two'     => 0,
             'vip_price'         => 0,
             'unique'            => '',
             'download_url'      => '',

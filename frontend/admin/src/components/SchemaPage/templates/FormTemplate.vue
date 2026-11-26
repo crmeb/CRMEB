@@ -5,7 +5,7 @@
     <!-- 表单规则加载失败 -->
     <el-result v-else-if="loadError" icon="error" title="表单加载失败" :sub-title="loadError">
       <template #extra>
-        <el-button type="primary" v-db-click @click="loadForm">重试</el-button>
+        <el-button type="primary" @click="loadForm">重试</el-button>
       </template>
     </el-result>
     <!-- 整页表单 -->
@@ -19,7 +19,7 @@
           <el-button type="primary" :loading="submitting" v-db-click @click="onSubmit">
             {{ config.submit_text || '保存' }}
           </el-button>
-          <el-button v-db-click @click="onReset">重置</el-button>
+          <el-button @click="onReset">重置</el-button>
         </div>
       </div>
     </el-card>

@@ -2,43 +2,39 @@
   <el-dialog v-model="visibleModal" title="添加自评" width="720px" :close-on-click-modal="false" @close="onCancel">
     <el-form :model="formData" label-width="100px" label-position="right">
       <el-form-item label="商品：">
-        <div class="upload-box" v-db-click @click="callGoods">
+        <div class="upload-box" @click="callGoods">
           <img v-if="goods.id" :src="goods.image" class="image" />
           <i v-else class="el-icon-goods"></i>
         </div>
       </el-form-item>
       <el-form-item v-if="goods.id" label="商品规格：">
-        <div class="upload-box" v-db-click @click="callAttr">
+        <div class="upload-box" @click="callAttr">
           <img v-if="attr.pic" :src="attr.pic" class="image" />
           <i v-else class="el-icon-plus" />
         </div>
         <div>{{ attr.suk }}</div>
       </el-form-item>
       <el-form-item label="用户头像：">
-        <div class="upload-box" v-db-click @click="callPicture('单选')">
+        <div class="upload-box" @click="callPicture('单选')">
           <img v-if="avatar.att_dir" :src="avatar.att_dir" class="image" />
-          <i v-if="avatar.att_dir" class="el-icon-error btn" v-db-click @click.stop="removeUser"></i>
+          <i v-if="avatar.att_dir" class="el-icon-error btn" @click.stop="removeUser"></i>
           <i v-else class="el-icon-user" />
         </div>
       </el-form-item>
       <el-form-item label="用户名称：">
-        <el-input
-          v-model="formData.nickname"
+        <el-input v-model="formData.nickname"
           placeholder="请输入用户名称"
           class="w100"
           maxlength="20"
-          show-word-limit
-        ></el-input>
+          show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="评价文字：">
-        <el-input
-          v-model="formData.comment"
+        <el-input v-model="formData.comment"
           type="textarea"
           placeholder="请输入评价文字"
           class="w100"
           maxlength="200"
-          show-word-limit
-        ></el-input>
+          show-word-limit></el-input>
       </el-form-item>
       <el-form-item label="商品分数：">
         <el-rate v-model="product_score" />
@@ -50,32 +46,28 @@
         <div class="df-aic">
           <div v-for="item in picture" :key="item.att_id" class="upload-box">
             <img :src="item.att_dir" class="image" />
-            <i class="el-icon-error btn" v-db-click @click.stop="removePicture(item.att_id)"></i>
+            <i class="el-icon-error btn" @click.stop="removePicture(item.att_id)"></i>
           </div>
-          <div v-if="picture.length < 8" class="upload-box" v-db-click @click="callPicture('多选')">
+          <div v-if="picture.length < 8" class="upload-box" @click="callPicture('多选')">
             <i class="el-icon-picture-outline"></i>
           </div>
         </div>
       </el-form-item>
       <el-form-item label="评价时间：">
-        <el-date-picker
-          clearable
+        <el-date-picker clearable
           v-model="add_time"
           type="datetime"
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           @change="onChange"
-          style="width: 414px"
-        />
+          style="width: 414px" />
       </el-form-item>
     </el-form>
-    <template #footer
-      ><span class="dialog-footer">
-        <el-button v-db-click @click="onCancel">取 消</el-button>
+    <template #footer><span class="dialog-footer">
+        <el-button @click="onCancel">取 消</el-button>
         <el-button type="primary" v-db-click @click="onOk">确 定</el-button>
-      </span></template
-    >
+      </span></template>
   </el-dialog>
 </template>
 

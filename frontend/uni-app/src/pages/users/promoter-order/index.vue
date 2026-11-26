@@ -27,10 +27,11 @@
 											</view>
 											<view class='text line1'>{{child.nickname}}</view>
 										</view>
-										<view class='money' v-if="child.type == 'brokerage'">{{$t(`返佣`)}}：<text
-												class='font-color'>{{$t(`￥`)}}{{child.number}}</text></view>
-										<view class='money' v-else>{{$t(`暂未返佣`)}}：<text
-												class='font-color'>{{$t(`￥`)}}{{child.number}}</text></view>
+										<view class='money'>
+											<text v-if="child.order_refunded">{{$t(`订单已退款`)}} </text>
+											{{$t(commissionLabel(child))}}：<text
+												class='font-color'>{{$t(`￥`)}}{{child.number}}</text>
+										</view>
 									</view>
 									<view class='bottom'>
 										<view><text class='name'>{{$t(`订单编号`)}}：</text>{{child.order_id}}</view>
@@ -47,10 +48,11 @@
 											:key="indexs">
 											<view class="more-record-box">
 												<view><text class='name'>{{$t(`单号`)}}：</text>{{sp.order_id}}</view>
-												<view class='money' v-if="sp.type == 'brokerage'">{{$t(`返佣`)}}：<text
-														class='font-color'>{{$t(`￥`)}}{{sp.number}}</text></view>
-												<view class='money' v-else>{{$t(`暂未返佣`)}}：<text
-														class='font-color'>{{$t(`￥`)}}{{sp.number}}</text></view>
+												<view class='money'>
+													<text v-if="sp.order_refunded">{{$t(`订单已退款`)}} </text>
+													{{$t(commissionLabel(sp))}}：<text
+														class='font-color'>{{$t(`￥`)}}{{sp.number}}</text>
+												</view>
 											</view>
 										</view>
 									</view>
@@ -125,6 +127,13 @@ onReachBottom(() => {
 // ---------- methods ----------
 function open(item) {
 	item.open = !item.open
+}
+function commissionLabel(row) {
+	const issued = row.commission_status
+		? row.commission_status === 'brokerage'
+		: row.type === 'brokerage'
+	if (!issued) return '暂未返佣'
+	return row.brokerage_role ? row.brokerage_role + '返佣' : '返佣'
 }
 function onLoadFun() {
 	getRecordOrderList();

@@ -4,23 +4,18 @@
     <div v-else class="label-box" v-for="(item, index) in labelList" :key="index">
       <div class="title">{{ item.cate_name }}</div>
       <div class="list">
-        <div
-          class="label"
+        <div class="label"
           :class="{ on: label.active }"
           v-for="(label, j) in item.list"
           :key="j"
-          v-db-click
-          @click="selectLabel(label)"
-        >
-          <div
-            class="label-item"
+          @click="selectLabel(label)">
+          <div class="label-item"
             :style="{
               backgroundColor: label.bg_color,
               color: label.font_color,
               border: label.border_color ? '1px solid ' + label.border_color : 'none',
             }"
-            v-if="!label.image"
-          >
+            v-if="!label.image">
             {{ label.name }}
           </div>
           <img :src="label.image" class="img-tag" v-else />
@@ -31,7 +26,7 @@
       </div>
     </div>
     <div class="acea-row row-right mt20">
-      <el-button v-db-click @click="cancel">取 消</el-button>
+      <el-button @click="cancel">取 消</el-button>
       <el-button type="primary" v-db-click @click="subBtn">确 定</el-button>
     </div>
   </div>
@@ -162,7 +157,7 @@ function cancel() {
     margin-top: 40px;
 
     button {
-      margin-left: 10px;
+      margin-left: 14px;
     }
   }
 }

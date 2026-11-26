@@ -1,5 +1,6 @@
 <template>
-  <view v-show="!isSortType">
+  <!-- 无视频地址时整块不渲染，避免 common-wrapper 边距留白 -->
+  <view v-show="!isSortType && dataConfig.videoConfig && dataConfig.videoConfig.url">
     <common-wrapper :config="configData">
       <view class="video-box" id="myVideo" :style="[videoStyle]">
         <video

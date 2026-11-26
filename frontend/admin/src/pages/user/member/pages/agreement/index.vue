@@ -6,12 +6,10 @@
           <el-input v-model="agreement.title"></el-input>
         </el-form-item>
         <el-form-item label="协议内容：">
-          <WangEditor
-            :content="agreement.content"
+          <WangEditor :content="agreement.content"
             :ai-default-prompt="aiDefaultPrompt"
             :ai-default-system-prompt="aiDefaultSystemPrompt"
-            @editorContent="getEditorContent"
-          ></WangEditor>
+            @editorContent="getEditorContent"></WangEditor>
         </el-form-item>
         <el-form-item label="开启状态：">
           <el-switch :active-value="1" :inactive-value="0" v-model="agreement.status" size="large"></el-switch>

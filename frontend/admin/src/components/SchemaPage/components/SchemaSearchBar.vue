@@ -3,28 +3,23 @@
     <template v-for="field in fields" :key="field.field">
       <!-- 文本输入 -->
       <el-form-item v-if="field.type === 'input'" :label="field.label">
-        <el-input
-          v-model="model[field.field]"
+        <el-input v-model="model[field.field]"
           :placeholder="field.placeholder || '请输入' + field.label"
           clearable
           class="schema-search-item"
-          @keyup.enter="onSearch"
-        />
+          @keyup.enter="onSearch" />
       </el-form-item>
       <!-- 数值输入 -->
       <el-form-item v-else-if="field.type === 'number'" :label="field.label">
-        <el-input-number
-          v-model="model[field.field]"
+        <el-input-number v-model="model[field.field]"
           :placeholder="field.placeholder || '请输入' + field.label"
           :controls="false"
           class="schema-search-item"
-          @keyup.enter="onSearch"
-        />
+          @keyup.enter="onSearch" />
       </el-form-item>
       <!-- 下拉选择（支持 options_url 远程加载；remote 声明时按关键字远程搜索） -->
       <el-form-item v-else-if="field.type === 'select'" :label="field.label">
-        <el-select
-          v-model="model[field.field]"
+        <el-select v-model="model[field.field]"
           :placeholder="field.placeholder || '请选择' + field.label"
           :multiple="!!field.multiple"
           collapse-tags
@@ -33,20 +28,17 @@
           :remote="!!field.remote"
           :remote-method="field.remote ? (query) => loadRemoteOptions(field, query) : undefined"
           :loading="!!remoteLoading[field.field]"
-          class="schema-search-item"
-        >
+          class="schema-search-item">
           <el-option v-for="opt in getOptions(field)" :key="String(opt.value)" :label="opt.label" :value="opt.value" />
         </el-select>
       </el-form-item>
       <!-- 单日期 -->
       <el-form-item v-else-if="field.type === 'date'" :label="field.label">
-        <el-date-picker
-          v-model="model[field.field]"
+        <el-date-picker v-model="model[field.field]"
           type="date"
           value-format="YYYY-MM-DD"
           :placeholder="field.placeholder || '请选择' + field.label"
-          class="schema-search-item"
-        />
+          class="schema-search-item" />
       </el-form-item>
       <!-- 日期范围（提交时拆分为 {field}_start / {field}_end；统一走全局 dateRangePicker，内置快捷项） -->
       <el-form-item v-else-if="field.type === 'daterange'" :label="field.label">
@@ -58,8 +50,8 @@
       </el-form-item>
     </template>
     <el-form-item>
-      <el-button type="primary" v-db-click @click="onSearch">搜索</el-button>
-      <el-button v-db-click @click="onReset">重置</el-button>
+      <el-button type="primary" @click="onSearch">搜索</el-button>
+      <el-button @click="onReset">重置</el-button>
     </el-form-item>
   </el-form>
 </template>

@@ -4,14 +4,12 @@
       <div class="padding-add">
         <el-form :model="levelFrom" :label-width="labelWidth" :label-position="labelPosition" inline @submit.prevent>
           <el-form-item label="等级状态：" label-for="status1">
-            <el-select
-              v-model="levelFrom.is_show"
+            <el-select v-model="levelFrom.is_show"
               placeholder="请选择"
               clearable
               element-id="status1"
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
@@ -20,24 +18,20 @@
             <el-input clearable v-model="levelFrom.title" placeholder="请输入等级名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['admin-user-level_add']" type="primary" class="action-row" v-db-click @click="add"
-        >添加用户等级</el-button
-      >
-      <el-table
-        :data="levelLists"
+      <el-button v-auth="['admin-user-level_add']" type="primary" class="action-row" @click="add">添加用户等级</el-button>
+      <el-table :data="levelLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -79,33 +73,29 @@
         </el-table-column>
         <el-table-column label="是否显示" min-width="100">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.is_show"
               :value="scope.row.is_show"
               size="large"
-              @change="onchangeIsShow(scope.row)"
-            >
+              @change="onchangeIsShow(scope.row)">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="100">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除等级', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="levelFrom.page"
           v-model:limit="levelFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

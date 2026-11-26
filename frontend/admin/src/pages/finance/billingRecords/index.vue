@@ -2,25 +2,21 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formRef"
+        <el-form ref="formRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           inline
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="创建时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
               value-format="YYYY/MM/DD"
-              class="mr20"
-            ></date-range-picker>
+              class="mr20"></date-range-picker>
           </el-form-item>
         </el-form>
       </div>
@@ -34,14 +30,12 @@
         </el-tabs>
       </div>
       <div class="table">
-        <el-table
-          :data="orderList"
+        <el-table :data="orderList"
           ref="table"
           v-loading="loading"
           highlight-current-row
           no-userFrom-text="暂无数据"
-          no-filtered-userFrom-text="暂无筛选结果"
-        >
+          no-filtered-userFrom-text="暂无筛选结果">
           <el-table-column label="ID" width="80">
             <template #default="scope">
               <span>{{ scope.row.id }}</span>
@@ -74,20 +68,18 @@
           </el-table-column>
           <el-table-column label="操作" fixed="right" width="170">
             <template #default="scope">
-              <a v-db-click @click="Info(scope.row)">账单详情</a>
+              <a @click="Info(scope.row)">账单详情</a>
               <el-divider direction="vertical"></el-divider>
-              <a v-db-click @click="download(scope.row)">下载</a>
+              <a @click="download(scope.row)">下载</a>
             </template>
           </el-table-column>
         </el-table>
         <div class="acea-row row-right page">
-          <pagination
-            v-if="total"
+          <pagination v-if="total"
             :total="total"
             v-model:page="formValidate.page"
             v-model:limit="formValidate.limit"
-            @pagination="getList"
-          />
+            @pagination="getList" />
         </div>
       </div>
     </el-card>

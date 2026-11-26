@@ -5,7 +5,7 @@
         <el-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24" class="item">
           <div class="acea-row row-right row-middle">
             <el-checkbox v-model="iSselect" @change="allCheckbox">全选</el-checkbox>
-            <div class="empty" v-db-click @click="empty">清空</div>
+            <div class="empty" @click="empty">清空</div>
           </div>
         </el-col>
       </el-row>
@@ -18,35 +18,28 @@
                   <div class="checkBox">
                     <div class="arrow"></div>
                     <div>
-                      <el-checkbox
-                        v-model="city.checked"
+                      <el-checkbox v-model="city.checked"
                         :label="city.name"
                         @change="primary(index, indexn)"
                         class="itemn"
                         v-for="(city, indexn) in item.children"
                         :key="indexn"
-                        v-show="city.isShow"
-                        >{{ city.name }}</el-checkbox
-                      >
+                        v-show="city.isShow">{{ city.name }}</el-checkbox>
                     </div>
                   </div>
                 </div>
               </div>
-              <template #reference
-                ><el-checkbox v-model="item.checked" :label="item.name" @change="checkedClick(index)">{{
+              <template #reference><el-checkbox v-model="item.checked" :label="item.name" @change="checkedClick(index)">{{
                   item.name
-                }}</el-checkbox></template
-              ><span class="red">({{ (item.count || 0) + '/' + item.childNum }})</span>
+                }}</el-checkbox></template><span class="red">({{ (item.count || 0) + '/' + item.childNum }})</span>
             </el-popover>
           </el-col>
         </template>
       </el-row>
-      <template #footer
-        ><div>
-          <el-button v-db-click @click="close">取消</el-button>
+      <template #footer><div>
+          <el-button @click="close">取消</el-button>
           <el-button type="primary" v-db-click @click="confirm">确定</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
   </div>
 </template>
@@ -92,7 +85,7 @@ function getCityList() {
       el.isShow = true;
       el.children.forEach((child, j) => {
         child.isShow = true;
-        if (selectArr.length > 0) {
+        if (selectArr.length> 0) {
           selectArr.forEach((sel, sindex) => {
             sel.children.forEach((sitem, sj) => {
               if (child.city_id == sitem.city_id) {

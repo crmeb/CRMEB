@@ -353,8 +353,7 @@
 		if (paytype == 'friend' && orderId.value) {
 			uni.hideLoading();
 			return uni.navigateTo({
-				url: '/pages/users/payment_on_behalf/index?oid=' + oid.value + '&spread=' +
-					uid.value,
+				url: '/pages/users/payment_on_behalf/index?oid=' + oid.value + (uid.value ? '&spid=' + uid.value : ''),
 				success: res => {},
 				fail: () => {},
 				complete: () => {}
@@ -385,8 +384,7 @@
 				goPages = goPage,
 				// 局部变量重命名 friendPayUrl：避免与同名 ref（friendPay）在回调内遮蔽
 				friendPayUrl = '/pages/users/payment_on_behalf/index?order_id=' + orderId.value +
-				'&spread=' +
-				uid.value
+				(uid.value ? '&spid=' + uid.value : '')
 			switch (status) {
 				case 'ORDER_EXIST':
 				case 'EXTEND_ORDER':

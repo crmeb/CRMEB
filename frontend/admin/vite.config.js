@@ -10,7 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
@@ -75,7 +75,18 @@ function devExtLoaderStubPlugin(command) {
   };
 }
 
-export default defineConfig(({ command }) => ({
+// 封面截图在开发态把跨域图片改到当前源再拉。图片在接口所在站点，不在本地 PHP 端口。
+function devAssetTarget(mode) {
+  const apiUrl = loadEnv(mode, process.cwd(), '').VITE_APP_API_URL || '';
+  try {
+    if (apiUrl) return new URL(apiUrl).origin;
+  } catch {
+    /* 地址非法时回退到本地 PHP */
+  }
+  return 'http://localhost:8011';
+}
+
+export default defineConfig(({ command, mode }) => ({
   // 与 publicPath / routePre 一致：非根路径部署
   base: '/admin/',
   plugins: [
@@ -119,9 +130,8 @@ export default defineConfig(({ command }) => ({
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern-compiler',
-        // mixed-decls 已在 sass 1.92+ 撤销弃用（混用声明合法化），再列入会触发 "obsolete" 元警告，勿加回
-        silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions', 'slash-div'],
+        // Vite 6+ 默认 modern API；Vite 7 已移除 legacy。mixed-decls 勿再列入 silenceDeprecations
+        silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'slash-div'],
       },
     },
   },
@@ -134,12 +144,23 @@ export default defineConfig(({ command }) => ({
         target: 'http://localhost:8011',
         changeOrigin: true,
       },
+      // 封面截图把站点上的 /uploads、/statics 改写成当前源再拉取，避免跨域 Failed to fetch
+      '/uploads': {
+        target: devAssetTarget(mode),
+        changeOrigin: true,
+      },
+      '/statics': {
+        target: devAssetTarget(mode),
+        changeOrigin: true,
+      },
     },
   },
   build: {
     outDir: 'dist',
     assetsDir: 'system_static',
     sourcemap: false,
+    // Vite 8 默认 lightningcss 会把遗留 ::v-deep 当非法伪元素告警；esbuild 更宽容（已装 esbuild 供 monaco 插件）
+    cssMinify: 'esbuild',
     chunkSizeWarningLimit: 1500,
     // 入口静态依赖被异步页反向引用时，Vite 默认会把其依赖链全部 modulepreload；
     // monaco / vxe 仅少数页需要，禁止挂到首屏 preload。
@@ -148,8 +169,19 @@ export default defineConfig(({ command }) => ({
         return deps.filter((dep) => !/monaco-editor|[/\\]vxe-|xlsx-/.test(dep));
       },
     },
-    rollupOptions: {
+    // Vite 8：Rolldown 替代 Rollup；仍兼容 rollupOptions，显式用 rolldownOptions
+    rolldownOptions: {
       output: {
+        // 生产等价于原 Uglify/esbuild：去掉 debugger；console.log 标为 pure 以便 DCE（保留 error/warn）
+        // 勿用 dropConsole（会删掉全部 console.*）
+        minify: {
+          compress: {
+            dropDebugger: true,
+            treeshake: {
+              manualPureFunctions: ['console.log'],
+            },
+          },
+        },
         // 大依赖拆独立 chunk：长缓存友好。
         // monaco 不进 manualChunks：强制单包会与入口形成循环依赖，导致几乎所有异步页都静态 import monaco。
         // 公共 src 抽到 common，避免异步页 from"./index-*.js"（入口）反引并拖入 vxe/monaco。
@@ -185,10 +217,5 @@ export default defineConfig(({ command }) => ({
         },
       },
     },
-  },
-  // 生产等价于原 UglifyJsPlugin drop_console/drop_debugger（保留 error/warn）
-  esbuild: {
-    drop: ['debugger'],
-    pure: ['console.log'],
   },
 }));

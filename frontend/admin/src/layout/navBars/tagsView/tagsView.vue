@@ -1,50 +1,36 @@
 <template>
   <div ref="tagsViews" class="layout-navbars-tagsview">
-    <i v-if="scrollTagIcon" class="direction el-icon-arrow-left" v-db-click @click="scrollTag('left')"></i>
+    <i v-if="scrollTagIcon" class="direction el-icon-arrow-left" @click="scrollTag('left')"></i>
     <el-scrollbar ref="scrollbarRef" @wheel.prevent="onHandleScroll">
       <ul class="layout-navbars-tagsview-ul" :class="setTagsStyle" ref="tagsUlRef">
-        <li
-          v-for="(v, k) in tagsViewList"
+        <li v-for="(v, k) in tagsViewList"
           :key="k"
           class="layout-navbars-tagsview-ul-li"
           :data-name="v.name"
           :class="{ 'is-active': v.path === tagsRoutePath }"
           @contextmenu.prevent="onContextmenu(v, $event)"
-          v-db-click
           @click="onTagsClick(v, k)"
-          ref="tagsRefs"
-        >
-          <i
-            class="layout-navbars-tagsview-ul-li-iconfont font14 is-tagsview-icon"
+          ref="tagsRefs">
+          <i class="layout-navbars-tagsview-ul-li-iconfont font14 is-tagsview-icon"
             :class="v.icon"
-            v-if="v.path !== tagsRoutePath && getThemeConfig.isTagsviewIcon"
-          ></i>
+            v-if="v.path !== tagsRoutePath && getThemeConfig.isTagsviewIcon"></i>
           <span>{{ $t(v.meta.title) }}</span>
-          <!-- <i
-            class="el-icon-refresh-right layout-navbars-tagsview-ul-li-icon ml5"
-            v-if="v.path === tagsRoutePath"
-            v-db-click @click.stop="refreshCurrentTagsView(v.path)"
-          ></i> -->
-          <i
-            class="el-icon-close layout-navbars-tagsview-ul-li-icon ml5"
+          <!-- <i class="el-icon-refresh-right layout-navbars-tagsview-ul-li-icon ml5"
+            v-if="v.path === tagsRoutePath" @click.stop="refreshCurrentTagsView(v.path)"></i> -->
+          <i class="el-icon-close layout-navbars-tagsview-ul-li-icon ml5"
             v-if="!v.isAffix"
-            v-db-click
-            @click.stop="closeCurrentTagsView(v.path)"
-          ></i>
+            @click.stop="closeCurrentTagsView(v.path)"></i>
         </li>
       </ul>
     </el-scrollbar>
-    <i v-if="scrollTagIcon" class="direction el-icon-arrow-right" v-db-click @click="scrollTag('right')"></i>
-    <el-dropdown @command="clickDropdown" v-if="tagsViewList.length > 2">
+    <i v-if="scrollTagIcon" class="direction el-icon-arrow-right" @click="scrollTag('right')"></i>
+    <el-dropdown @command="clickDropdown" v-if="tagsViewList.length> 2">
       <span class="setting-tag el-dropdown-link"><i class="el-icon-menu"></i></span>
-      <template #dropdown
-        ><el-dropdown-menu>
+      <template #dropdown><el-dropdown-menu>
           <el-dropdown-item v-for="item in dropdownList" :command="item.id" :key="item.id">
             <i :class="item.icon"></i>
-            {{ $t(item.txt) }}</el-dropdown-item
-          >
-        </el-dropdown-menu></template
-      >
+            {{ $t(item.txt) }}</el-dropdown-item>
+        </el-dropdown-menu></template>
     </el-dropdown>
     <Contextmenu :dropdown="tagsDropdown" ref="tagsContextmenu" @currentContextmenuClick="onCurrentContextmenuClick" />
   </div>
@@ -151,7 +137,7 @@ function onTagsClick(v, k) {
 
 // 获取 tagsView 的下标：用于处理 tagsView 点击时的横向滚动
 function getTagsRefsIndex(path) {
-  if (tagsViewList.value.length > 0) {
+  if (tagsViewList.value.length> 0) {
     tagsRefsIndex.value = tagsViewList.value.findIndex((item) => item.path === path);
   }
 }
@@ -167,7 +153,7 @@ function scrollTag(production) {
   if (production === 'left') {
     scrollbarRef.value.wrapRef.scrollLeft = scrollLeft - 300 <= 0 ? 0 : scrollLeft - 300;
   } else {
-    scrollbarRef.value.wrapRef.scrollLeft = scrollLeft + 300 >= scrollRefs ? scrollRefs : scrollLeft + 300;
+    scrollbarRef.value.wrapRef.scrollLeft = scrollLeft + 300>= scrollRefs ? scrollRefs : scrollLeft + 300;
   }
 }
 
@@ -215,7 +201,7 @@ function tagsViewmoveToCurrentTag() {
       else beforePrevL = liPrevTag?.offsetLeft - 5;
       if (liIndex === liLength) afterNextL = liLast?.offsetLeft + liLast.offsetWidth + 5;
       else afterNextL = liNextTag?.offsetLeft + liNextTag.offsetWidth + 5;
-      if (afterNextL > scrollL + offsetW) {
+      if (afterNextL> scrollL + offsetW) {
         scrollRefs.scrollLeft = afterNextL - offsetW;
       } else if (beforePrevL < scrollL) {
         scrollRefs.scrollLeft = beforePrevL;

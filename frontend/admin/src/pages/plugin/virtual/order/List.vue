@@ -4,13 +4,11 @@
       <div class="padding-add">
         <el-form label-width="80px" label-position="right" inline @submit.prevent="onSearch">
           <el-form-item label="订单号：">
-            <el-input
-              v-model="search.order_no"
+            <el-input v-model="search.order_no"
               placeholder="订单号"
               clearable
               @keyup.enter="onSearch"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item label="状态：">
             <el-select v-model="search.status" clearable placeholder="全部" class="form_content_width">
@@ -20,8 +18,8 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="onSearch">查询</el-button>
-            <el-button v-db-click @click="onReset">重置</el-button>
+            <el-button type="primary" @click="onSearch">查询</el-button>
+            <el-button @click="onReset">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -54,18 +52,16 @@
         </el-table-column>
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <a v-db-click @click="openDetail(row.order_no)">详情</a>
+            <a @click="openDetail(row.order_no)">详情</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="search.page"
           v-model:limit="search.limit"
-          @pagination="loadList"
-        />
+          @pagination="loadList" />
       </div>
     </el-card>
 

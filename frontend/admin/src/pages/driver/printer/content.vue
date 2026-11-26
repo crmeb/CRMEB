@@ -1,21 +1,17 @@
 <template>
   <div class="printer-content-page">
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       title="小票配置"
       :backUrl="$routeProStr + '/setting/printer'"
-      description="勾选小票需打印的商家、商品、支付等信息项，保存后打印即时生效。"
-    ></pages-header>
+      description="勾选小票需打印的商家、商品、支付等信息项，保存后打印即时生效。"></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <div class="flex justify-between warpper" v-loading="loading">
-        <el-form
-          class="content-form"
+        <el-form class="content-form"
           :model="formItem"
           :label-width="labelWidth"
           :label-position="labelPosition"
           :disabled="!loaded || submitLoading || !hasPermission('admin-printer-content')"
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="小票头部：">
             <el-checkbox v-model="formItem.header" :true-label="1" :false-label="0">商家名称</el-checkbox>
           </el-form-item>
@@ -57,15 +53,12 @@
               <div v-if="formItem.code" class="link">
                 <div class="select-link">
                   链接：{{ formItem.code_url }}
-                  <el-button
-                    v-if="hasPermission('admin-printer-content')"
+                  <el-button v-if="hasPermission('admin-printer-content')"
                     v-auth="['admin-printer-content']"
                     link
                     type="primary"
-                    v-db-click
                     :disabled="!loaded || submitLoading"
-                    @click="getLink"
-                  >
+                    @click="getLink">
                     {{ formItem.code_url ? '修改' : '选择' }}
                   </el-button>
                 </div>
@@ -76,14 +69,12 @@
             <div class="form-item-content">
               <el-checkbox v-model="formItem.show_notice" :true-label="1" :false-label="0">底部公告</el-checkbox>
               <div v-if="formItem.show_notice" class="notice-field">
-                <el-input
-                  v-model="formItem.notice_content"
+                <el-input v-model="formItem.notice_content"
                   maxlength="80"
                   show-word-limit
                   type="textarea"
                   placeholder="请输入公告内容"
-                  class="notice-input"
-                />
+                  class="notice-input" />
               </div>
             </div>
           </el-form-item>
@@ -172,23 +163,21 @@
               </div>
             </div>
             <!-- 运费优惠 -->
-            <div
-              class="pay flex flex-col align-end btn-line"
-              v-if="formItem.freight === 1 || formItem.preferential === 1"
-            >
+            <div class="pay flex flex-col align-end btn-line"
+              v-if="formItem.freight === 1 || formItem.preferential === 1">
               <div v-if="formItem.freight === 1">运费：+30.00元</div>
               <div v-if="formItem.preferential === 1">优惠：-80.00元</div>
               <div v-if="formItem.preferential === 1">抵扣：-20.00元</div>
             </div>
             <!-- 支付信息 -->
 
-            <div class="pay flex flex-col align-end btn-line" v-if="formItem.pay.length > 0">
+            <div class="pay flex flex-col align-end btn-line" v-if="formItem.pay.length> 0">
               <div v-if="formItem.pay.includes(0)">支付方式：微信支付</div>
               <div v-if="formItem.pay.includes(1)" class="fw-500">实际支付：330.00元</div>
             </div>
             <!-- 订单信息 -->
 
-            <div class="order pt-10 btn-line" v-if="formItem.order.length > 0">
+            <div class="order pt-10 btn-line" v-if="formItem.order.length> 0">
               <div v-if="formItem.order.includes(0)">订单编号：wx1234567890</div>
               <div v-if="formItem.order.includes(1)">下单时间：2022/06/18 12:00:00</div>
               <div v-if="formItem.order.includes(2)">支付时间：2022/06/18 12:00:00</div>
@@ -208,15 +197,13 @@
         </div>
       </div>
       <div class="content-actions">
-        <el-button
-          v-if="hasPermission('admin-printer-content')"
+        <el-button v-if="hasPermission('admin-printer-content')"
           v-auth="['admin-printer-content']"
           type="primary"
           v-db-click
           :loading="submitLoading"
           :disabled="loading || !loaded"
-          @click="save"
-        >
+          @click="save">
           保存
         </el-button>
       </div>

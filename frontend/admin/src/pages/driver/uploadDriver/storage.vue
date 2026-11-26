@@ -11,37 +11,29 @@
       </el-alert>
       <el-row style="margin-bottom: 16px">
         <el-col :span="24" class="storage-toolbar">
-          <el-button
-            v-auth="['driver-storage-save']"
+          <el-button v-auth="['driver-storage-save']"
             type="primary"
-            v-db-click
             :disabled="!driverInfo"
-            @click="showAddStorageModal = true"
-          >
+            @click="showAddStorageModal = true">
             添加存储空间
           </el-button>
-          <el-button
-            v-auth="['driver-storage-sync']"
+          <el-button v-auth="['driver-storage-sync']"
             type="success"
-            v-db-click
             :loading="syncSaving"
             :disabled="!driverInfo"
-            @click="synchro"
-          >
+            @click="synchro">
             同步存储空间
           </el-button>
         </el-col>
       </el-row>
 
-      <el-table
-        :data="storageList"
+      <el-table :data="storageList"
         ref="table"
         v-loading="loading"
         highlight-current-row
         row-key="id"
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="存储空间名称" min-width="120">
           <template #default="scope">
             <span>{{ scope.row.name }}</span>
@@ -62,8 +54,7 @@
 
         <el-table-column label="使用状态" min-width="80">
           <template #default="scope">
-            <el-switch
-              v-auth="['driver-storage-status']"
+            <el-switch v-auth="['driver-storage-status']"
               class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
@@ -73,8 +64,7 @@
               @change="changeSwitch(scope.row)"
               size="large"
               active-text="开启"
-              inactive-text="关闭"
-            />
+              inactive-text="关闭" />
           </template>
         </el-table-column>
 
@@ -93,10 +83,10 @@
         <el-table-column label="操作" fixed="right" width="220">
           <template #default="scope">
             <template v-if="canConfigureCname(scope.row)">
-              <a v-db-click @click="config(scope.row)">CNAME配置</a>
+              <a @click="config(scope.row)">CNAME配置</a>
               <el-divider direction="vertical"></el-divider>
             </template>
-            <a v-auth="['driver-storage-domain']" v-db-click @click="edit(scope.row)">修改空间域名</a>
+            <a v-auth="['driver-storage-domain']" @click="edit(scope.row)">修改空间域名</a>
             <el-divider direction="vertical"></el-divider>
             <a v-auth="['driver-storage-delete']" v-db-click @click="del(scope.row, '删除该数据', scope.$index)">
               删除
@@ -106,23 +96,19 @@
       </el-table>
 
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="list.page"
           v-model:limit="list.limit"
-          @pagination="getlist"
-        />
+          @pagination="getlist" />
       </div>
     </el-card>
 
-    <el-dialog
-      v-model="configuModal"
+    <el-dialog v-model="configuModal"
       class="storage-dialog"
       title="CNAME配置"
       width="min(570px, calc(100% - 32px))"
-      append-to-body
-    >
+      append-to-body>
       <el-alert closable type="info" style="margin-bottom: 16px">
         <template #title>
           <p>请将以下记录值复制后，到您的域名DNS解析管理平台添加CNAME解析记录。</p>
@@ -133,51 +119,39 @@
         <div class="confignv"><span class="configtit">记录类型：</span>CNAME</div>
         <div class="confignv">
           <span class="configtit">记录值：</span>{{ configData.cname }}
-          <span class="copy copy-data" v-db-click @click="insertCopy(configData.cname)">复制</span>
+          <span class="copy copy-data" @click="insertCopy(configData.cname)">复制</span>
         </div>
       </div>
     </el-dialog>
 
-    <el-dialog
-      v-model="showAddStorageModal"
+    <el-dialog v-model="showAddStorageModal"
       class="storage-dialog"
       title="添加云空间"
       width="min(570px, calc(100% - 32px))"
       :close-on-click-modal="false"
-      append-to-body
-    >
-      <el-form
-        class="storage-form"
+      append-to-body>
+      <el-form class="storage-form"
         ref="addStorageFormRef"
         :model="addStorageFormData"
         :rules="addStorageRules"
-        label-width="140px"
-      >
+        label-width="140px">
         <template v-for="(field, index) in bucketFields" :key="index">
           <el-form-item :label="field.label + ':'" :prop="field.field">
-            <el-input
-              v-if="field.type === 'text'"
+            <el-input v-if="field.type === 'text'"
               v-model="addStorageFormData[field.field]"
-              :placeholder="'请输入' + field.label"
-            ></el-input>
-            <el-input
-              v-else-if="field.type === 'password'"
+              :placeholder="'请输入' + field.label"></el-input>
+            <el-input v-else-if="field.type === 'password'"
               v-model="addStorageFormData[field.field]"
               :placeholder="'请输入' + field.label"
               type="password"
-              show-password
-            ></el-input>
-            <el-select
-              v-else-if="field.type === 'select'"
+              show-password></el-input>
+            <el-select v-else-if="field.type === 'select'"
               v-model="addStorageFormData[field.field]"
-              :placeholder="'请选择' + field.label"
-            >
-              <el-option
-                v-for="opt in field.options"
+              :placeholder="'请选择' + field.label">
+              <el-option v-for="opt in field.options"
                 :key="opt.value"
                 :label="opt.label"
-                :value="opt.value"
-              ></el-option>
+                :value="opt.value"></el-option>
             </el-select>
             <el-radio-group v-else-if="field.type === 'radio'" v-model="addStorageFormData[field.field]">
               <el-radio v-for="opt in field.options" :key="opt.value" :label="opt.value" :value="opt.value">{{
@@ -187,12 +161,10 @@
           </el-form-item>
         </template>
       </el-form>
-      <template #footer
-        ><div class="dialog-footer">
-          <el-button v-db-click @click="showAddStorageModal = false">取消</el-button>
+      <template #footer><div class="dialog-footer">
+          <el-button @click="showAddStorageModal = false">取消</el-button>
           <el-button type="primary" v-db-click :loading="addSaving" @click="submitAddStorageForm">确定</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
   </div>
 </template>

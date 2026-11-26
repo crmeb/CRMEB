@@ -1,9 +1,8 @@
 <template>
-  <div class="main" v-loading="loading || preparing > 0">
+  <div class="main" v-loading="loading || preparing> 0">
     <div v-if="uploading">
       <div class="img-list" :class="{ 'none-card': imgList.length }">
-        <el-upload
-          ref="uploadRef"
+        <el-upload ref="uploadRef"
           :action="fileUrl"
           list-type="picture-card"
           :on-change="fileChange"
@@ -11,22 +10,17 @@
           :before-upload="beforeUpload"
           :file-list="imgList"
           :auto-upload="false"
-          :disabled="loading || preparing > 0"
+          :disabled="loading || preparing> 0"
           :multiple="true"
           :limit="limit"
-          accept="image/*"
-        >
-          <template #default
-            ><div class="upload-card" v-if="!imgList.length">
+          accept="image/*">
+          <template #default><div class="upload-card" v-if="!imgList.length">
               <i class="el-icon-plus"></i>
               <p class="text">点击选择图片</p>
-            </div></template
-          >
-          <template #file="{ file }"
-            ><div>
+            </div></template>
+          <template #file="{ file }"><div>
               <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-              <i class="el-icon-error btndel" v-db-click @click="handleRemove(file)" /></div
-          ></template>
+              <i class="el-icon-error btndel" v-db-click @click="handleRemove(file)" /></div></template>
         </el-upload>
       </div>
 
@@ -34,7 +28,7 @@
         <div v-if="imgList.length">共{{ imgList.length }}/{{ limit }}张，{{ (allSize / 1000000).toFixed(2) }} M</div>
         <div v-else></div>
         <div class="upload-btn">
-          <div v-if="imgList.length < limit" class="btn" v-db-click @click="selectImgs">
+          <div v-if="imgList.length < limit" class="btn" @click="selectImgs">
             {{ imgList.length ? '继续选择' : '选择图片' }}
           </div>
           <div class="btn upload" :class="{ 'no-pic': !imgList.length }" v-db-click @click="submitUpload">确认上传</div>
@@ -46,7 +40,7 @@
         <img class="image" src="../../../assets/images/success.jpg" alt="" />
       </div>
       <div class="text">图片上传成功</div>
-      <div class="again" v-db-click @click="again">继续上传</div>
+      <div class="again" @click="again">继续上传</div>
     </div>
   </div>
 </template>
@@ -141,7 +135,7 @@ function beforeUpload(file) {
 async function fileChange(file, fileList) {
   if (loading.value) return;
   imgList.value = [...fileList];
-  if (file.size >= 2097152) {
+  if (file.size>= 2097152) {
     preparing.value++;
     try {
       const compressed = await compressImg(file.raw);
@@ -195,7 +189,7 @@ function loadData(item, callback) {
   padding: 0;
   aspect-ratio: 1 / 1;
 }
-:deep(.el-upload-list--picture-card .el-upload-list__item > div) {
+:deep(.el-upload-list--picture-card .el-upload-list__item> div) {
   // position: relative;
   width: 100%;
   height: 100%;
@@ -253,8 +247,7 @@ function loadData(item, callback) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  > div:first-child {
+  gap: 8px;> div:first-child {
     min-width: 0;
     line-height: 18px;
     overflow-wrap: anywhere;

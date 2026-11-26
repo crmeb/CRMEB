@@ -9,7 +9,7 @@
 
     <div class="header-right">
       <el-button icon="View" @click="$emit('preview')">预览</el-button>
-      <el-button v-db-click v-if="!isMicroPage" @click="$emit('save-template')">另存主题</el-button>
+      <el-button v-if="!isMicroPage" @click="$emit('save-template')">另存主题</el-button>
       <el-button v-db-click @click="$emit('save')">保存</el-button>
       <el-button v-db-click type="primary" @click="$emit('save-close')">保存并关闭</el-button>
     </div>
@@ -20,30 +20,24 @@
            预填与 v-model 全部写到组件实例上，输入框无法键入（受控值不更新） -->
       <el-form :model="form" label-width="80px">
         <el-form-item :label="`${isMicroPage ? '专题' : '主题'}名称：`">
-          <el-input
-            v-model="form.title"
+          <el-input v-model="form.title"
             :maxlength="20"
             show-word-limit
-            :placeholder="`请输入${isMicroPage ? '专题' : '主题'}名称`"
-          ></el-input>
+            :placeholder="`请输入${isMicroPage ? '专题' : '主题'}名称`"></el-input>
         </el-form-item>
         <el-form-item :label="`${isMicroPage ? '专题' : '主题'}简介：`">
-          <el-input
-            type="textarea"
+          <el-input type="textarea"
             v-model="form.info"
             :maxlength="200"
             show-word-limit
             :placeholder="`请输入${isMicroPage ? '专题' : '主题'}简介`"
-            :rows="4"
-          ></el-input>
+            :rows="4"></el-input>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div class="dialog-footer">
+      <template #footer><div class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button v-db-click type="primary" @click="handleConfirm">确 定</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
   </div>
 </template>

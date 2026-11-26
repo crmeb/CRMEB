@@ -54,12 +54,9 @@
             </div>
             <div class="bnt">立即续费</div>
           </div>
-          <div
-            class="orderCenter on dotted p-y-15"
+          <div class="orderCenter on dotted p-y-15"
             :class="current == 4 ? 'solid' : ''"
-            v-db-click
-            @click="currentShow(4)"
-          >
+            @click="currentShow(4)">
             <div class="title acea-row row-between-wrapper">
               <div>订单中心</div>
               <div class="all">查看全部<span class="iconfont iconjinru"></span></div>
@@ -87,16 +84,14 @@
               </div>
             </div>
           </div>
-          <div class="carousel dotted" :class="current == 5 ? 'solid' : ''" v-db-click @click="currentShow(5)">
+          <div class="carousel dotted" :class="current == 5 ? 'solid' : ''" @click="currentShow(5)">
             <!-- 原 vue-awesome-swiper :options 写法，迁移 swiper11 后改为组件 props 传递 -->
-            <swiper
-              v-if="userData.routine_my_banner.length"
+            <swiper v-if="userData.routine_my_banner.length"
               class="swiperimg"
               :modules="[Autoplay, Pagination]"
               :pagination="{ clickable: true }"
               :autoplay="{ delay: 2000, disableOnInteraction: false }"
-              :loop="false"
-            >
+              :loop="false">
               <swiper-slide class="swiperimg" v-for="(item, index) in userData.routine_my_banner" :key="index">
                 <img :src="item.pic" />
               </swiper-slide>
@@ -104,12 +99,9 @@
             </swiper>
             <div v-else class="default">暂无广告数据</div>
           </div>
-          <div
-            class="orderCenter service dotted"
+          <div class="orderCenter service dotted"
             :class="current == 2 ? 'solid' : ''"
-            v-db-click
-            @click="currentShow(2)"
-          >
+            @click="currentShow(2)">
             <div class="title acea-row row-between-wrapper" v-if="userData.my_menus_status == 1">
               <div>我的服务</div>
             </div>
@@ -135,12 +127,9 @@
               </template>
             </div>
           </div>
-          <div
-            class="orderCenter service dotted"
+          <div class="orderCenter service dotted"
             :class="current == 3 ? 'solid' : ''"
-            v-db-click
-            @click="currentShow(3)"
-          >
+            @click="currentShow(3)">
             <div class="title acea-row row-between-wrapper" v-if="userData.business_status == 1">
               <div>商家管理</div>
             </div>
@@ -235,12 +224,10 @@
           <div class="c_row-item acea-row row-top" v-if="current == 5">
             <el-col class="label" :span="4"> 广告位： </el-col>
             <el-col :span="20" class="slider-box">
-              <el-switch
-                :active-value="true"
+              <el-switch :active-value="true"
                 :inactive-value="false"
                 v-model="userData.my_banner_status"
-                style="margin-bottom: 12px"
-              />
+                style="margin-bottom: 12px" />
               <div class="tip">建议尺寸：375 * 65px，拖拽图片可调整图片显示顺序哦，最多添加五张</div>
               <uploadPic :listData="userData.routine_my_banner" :type="5"></uploadPic>
             </el-col>
@@ -584,7 +571,7 @@ defineExpose({ getInfo, onSubmit });
 }
 .swiper-pagination-fraction,
 .swiper-pagination-custom,
-.swiper-container-horizontal > .swiper-pagination-bullets {
+.swiper-container-horizontal> .swiper-pagination-bullets {
   bottom: 2px;
 }
 :deep(.swiper-pagination-bullet) {

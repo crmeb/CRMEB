@@ -140,7 +140,7 @@ class UploadService
 
         return [
             'thumb' => [
-                'image_thumb_status' => $config['image_thumb_status'] ?? 1,
+                'image_thumb_status' => $config['image_thumb_status'] ?? 0,
                 'thumb_big_height' => $config['thumb_big_height'] ?? 800,
                 'thumb_big_width' => $config['thumb_big_width'] ?? 800,
                 'thumb_mid_height' => $config['thumb_mid_height'] ?? 300,
@@ -149,7 +149,7 @@ class UploadService
                 'thumb_small_width' => $config['thumb_small_width'] ?? 150,
             ],
             'water' => [
-                'image_watermark_status' => $config['image_watermark_status'] ?? 1,
+                'image_watermark_status' => $config['image_watermark_status'] ?? 0,
                 'watermark_type' => $config['watermark_type'] ?? 2,
                 'watermark_image' => $config['watermark_image'] ?? '',
                 'watermark_opacity' => $config['watermark_opacity'] ?? '',

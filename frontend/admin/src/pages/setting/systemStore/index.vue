@@ -1,14 +1,12 @@
 <template>
   <div class="article-manager" v-loading="spinShow">
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-form
-        ref="formItemRef"
+      <el-form ref="formItemRef"
         :model="formItem"
         :label-width="labelWidth"
         :label-position="labelPosition"
         :rules="ruleValidate"
-        @submit.prevent
-      >
+        @submit.prevent>
         <el-row :gutter="24">
           <el-col :span="24">
             <el-col v-bind="grid">
@@ -34,12 +32,10 @@
           <el-col :span="24">
             <el-col v-bind="grid">
               <el-form-item label="门店地址：" label-for="address" prop="address">
-                <el-cascader
-                  :options="addresData"
+                <el-cascader :options="addresData"
                   :value="formItem.address"
                   v-model="formItem.address"
-                  @change="handleChange"
-                ></el-cascader>
+                  @change="handleChange"></el-cascader>
               </el-form-item>
             </el-col>
           </el-col>
@@ -53,8 +49,7 @@
           <el-col :span="24">
             <el-col v-bind="grid">
               <el-form-item label="核销时效：" label-for="valid_time">
-                <el-date-picker
-                  clearable
+                <el-date-picker clearable
                   :editable="false"
                   @change="onchangeDate"
                   v-model="formItem.valid_time"
@@ -63,31 +58,28 @@
                   value-format="YYYY/MM/DD"
                   range-separator="-"
                   start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                ></el-date-picker>
+                  end-placeholder="结束日期"></el-date-picker>
               </el-form-item>
             </el-col>
           </el-col>
           <el-col :span="24">
             <el-col v-bind="grid">
               <el-form-item label="门店营业：" label-for="day_time">
-                <el-time-picker
-                  @change="onchangeTime"
+                <el-time-picker @change="onchangeTime"
                   v-model="formItem.day_time"
                   format="HH:mm:ss"
                   value-format="HH:mm:ss"
                   range-separator="-"
                   start-placeholder="开始时间"
                   end-placeholder="结束时间"
-                  placeholder="选择时间范围"
-                ></el-time-picker>
+                  placeholder="选择时间范围"></el-time-picker>
               </el-form-item>
             </el-col>
           </el-col>
           <el-col :span="24">
             <el-col v-bind="grid">
               <el-form-item label="门店logo：" prop="image">
-                <div class="picBox" v-db-click @click="modalPicTap('单选')">
+                <div class="picBox" @click="modalPicTap('单选')">
                   <div class="pictrue" v-if="formItem.image"><img v-lazy="formItem.image" /></div>
                   <div class="upLoad acea-row row-center-wrapper" v-else>
                     <i class="el-icon-picture-outline" style="font-size: 24px"></i>
@@ -101,9 +93,7 @@
               <el-form-item label="经纬度：" label-for="status2" prop="latlng">
                 <el-tooltip>
                   <el-input v-model="formItem.latlng" style="width: 100%" placeholder="请查找位置">
-                    <template #append
-                      ><el-button type="primary" v-db-click @click="onSearch">查找位置</el-button></template
-                    >
+                    <template #append><el-button type="primary" @click="onSearch">查找位置</el-button></template>
                   </el-input>
                   <template #content><div>请点击查找位置选择位置</div></template>
                 </el-tooltip>
@@ -120,13 +110,11 @@
     </el-card>
 
     <el-dialog v-model="modalPic" width="1024px" title="上传商品图" :close-on-click-modal="false" :show-close="true">
-      <uploadPictures
-        :isChoice="isChoice"
+      <uploadPictures :isChoice="isChoice"
         @getPic="getPic"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        v-if="modalPic"
-      ></uploadPictures>
+        v-if="modalPic"></uploadPictures>
     </el-dialog>
 
     <el-dialog v-model="modalMap" title="上传商品图" :show-close="true" :close-on-click-modal="false" class="mapBox">

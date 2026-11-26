@@ -48,7 +48,7 @@ class PosterJob extends BaseJobs
             if (!count($routineSpreadBanner)) return false;
             //小程序
             $name_routine      = $user['uid'] . '_user_routine.jpg';
-            $name_wap          = $user['uid'] . '_user_wap.jpg';
+            $name_wap          = $user['uid'] . '_user_wap_spid.jpg';
             $imageInfo_routine = $attachment->getInfo(['real_name' => $name_routine, 'module_type' => 2]);
             $imageInfo_wap     = $attachment->getInfo(['real_name' => $name_wap, 'module_type' => 2]);
             if (isset($imageInfo_routine['att_dir']) && strstr($imageInfo_routine['att_dir'], 'http') !== false && curl_file_exist($imageInfo_routine['att_dir']) === false) {
@@ -91,7 +91,7 @@ class PosterJob extends BaseJobs
             } else $urlCode_routine = $imageInfo_routine['att_dir'];
             if ($imageInfo_routine['image_type'] == 1) $urlCode_routine = $siteUrl . $urlCode_routine;
             if (!$imageInfo_wap) {
-                $codeUrl       = set_http_type($siteUrl . '?spread=' . $user['uid'], $isSsl ? 0 : 1);//二维码链接
+                $codeUrl       = set_http_type($siteUrl . '?spid=' . $user['uid'], $isSsl ? 0 : 1);//二维码链接
                 $imageInfo_wap = PosterServices::getQRCodePath($codeUrl, $name_wap);
                 if (is_string($imageInfo_wap)) return false;
                 $attachment->attachmentAdd($imageInfo_wap['name'], $imageInfo_wap['size'], $imageInfo_wap['type'], $imageInfo_wap['dir'], $imageInfo_wap['thumb_path'], 1, $imageInfo_wap['image_type'], $imageInfo_wap['time'], 2);

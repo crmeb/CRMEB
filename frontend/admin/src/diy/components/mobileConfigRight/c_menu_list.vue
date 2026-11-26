@@ -3,8 +3,7 @@
     <div class="title" v-if="configData.title">
       {{ configData.title }}
     </div>
-    <div
-      class="type-switch"
+    <div class="type-switch"
       style="margin-bottom: 15px"
       v-if="
         (defaults.name == 'menus' ||
@@ -12,8 +11,7 @@
           configNme == 'menuConfig' ||
           configNme == 'shortcutConfig') &&
         configNme != 'assetConfig'
-      "
-    >
+      ">
       <div class="type-title">{{ configData.listStyleName || '图文内容' }}</div>
       <el-radio-group v-if="configData.listStyle != -1" v-model="configData.listStyle">
         <el-radio :label="0" :value="0">图片</el-radio>
@@ -30,13 +28,11 @@
       </el-radio-group>
     </div>
     <div class="list-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="configData.list"
         group="peoples"
         handle=".move-icon"
-        :item-key="menuItemKey"
-      >
+        :item-key="menuItemKey">
         <template #item="{ element: item, index }">
           <div class="item">
             <div class="delect-btn" @click.stop="bindDelete(item, index)" v-if="!configData.isCube">
@@ -45,11 +41,9 @@
             <div class="move-icon">
               <span class="iconfont iconxingzhuangjiehe"></span>
             </div>
-            <div
-              class="img-box"
+            <div class="img-box"
               @click="modalPicTap('单选', index)"
-              v-if="configData.listStyle == 0 || configData.listStyle == -1"
-            >
+              v-if="configData.listStyle == 0 || configData.listStyle == -1">
               <img :src="item.img" alt="" v-if="item.img" />
               <div class="upload-box" v-else>
                 <i class="el-icon-plus"></i>
@@ -59,8 +53,7 @@
               <div class="upload-box" v-if="!item.icon">
                 <i class="el-icon-plus"></i>
               </div>
-              <div
-                style="
+              <div style="
                   width: 100%;
                   height: 100%;
                   display: flex;
@@ -70,8 +63,7 @@
                   border: 1px solid #eee;
                   border-radius: 4px;
                 "
-                v-else
-              >
+                v-else>
                 <span :class="['mb-iconfont', item.icon]" style="font-size: 30px; color: #666"></span>
               </div>
             </div>
@@ -80,13 +72,10 @@
                 <span class="span">{{ infos.title }}</span>
                 <div class="input-box">
                   <el-input v-model="infos.value" :placeholder="infos.tips" :maxlength="infos.max">
-                    <template #suffix
-                      ><i
-                        v-if="infos.title == '链接'"
+                    <template #suffix><i v-if="infos.title == '链接'"
                         class="el-icon-link"
                         @blur="onBlur"
-                        @click="getLink(index, key, item.info)"
-                    /></template>
+                        @click="getLink(index, key, item.info)" /></template>
                   </el-input>
                 </div>
               </div>
@@ -99,20 +88,18 @@
         </template>
       </draggable>
       <div>
-        <el-dialog v-model="modalPic" width="960px" title="上传图片">
-          <uploadPictures
-            :isChoice="isChoice"
+        <el-dialog v-model="modalPic" width="960px" title="上传图片" append-to-body>
+          <uploadPictures :isChoice="isChoice"
             @getPic="getPic"
             :gridBtn="gridBtn"
             :gridPic="gridPic"
-            v-if="modalPic"
-          ></uploadPictures>
+            v-if="modalPic"></uploadPictures>
         </el-dialog>
       </div>
     </div>
     <template v-if="configData.list">
       <div class="add-btn" v-if="configData.list.length < configData.maxList">
-        <el-button v-db-click class="btn" type="primary" ghost @click="addBox">
+        <el-button class="btn" type="primary" ghost @click="addBox">
           <span class="iconfont iconjiahao"></span>{{ configData.bnt }}
         </el-button>
       </div>
@@ -124,10 +111,11 @@
 
 <script setup>
 import iconsPng from '@/assets/images/icons.png';
-import { ref, watch, onMounted, nextTick, defineAsyncComponent } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import draggable from 'vuedraggable';
 import uploadPictures from '@/components/uploadPictures';
 import linkaddress from '@/components/linkaddress';
+import c_icon_select from './c_icon_select.vue';
 
 defineOptions({ name: 'c_menu_list' });
 
@@ -150,8 +138,6 @@ const props = defineProps({
     default: null,
   },
 });
-
-const c_icon_select = defineAsyncComponent(() => import('./c_icon_select'));
 
 const defaults = ref({});
 const configData = ref({});

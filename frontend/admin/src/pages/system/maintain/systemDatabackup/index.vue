@@ -6,20 +6,18 @@
           <!--          <el-card :bordered="false" shadow="never" class="tableBox">-->
           <div class="mb10">
             <!--              <span class="ivu-pl-8 mr10">数据库表列表</span>-->
-            <el-button v-db-click @click="getBackup">备份</el-button>
-            <el-button v-db-click @click="getOptimize">优化表</el-button>
-            <el-button v-db-click @click="getRepair">修复表</el-button>
-            <el-button v-db-click @click="exportData(1)">导出文件</el-button>
+            <el-button @click="getBackup">备份</el-button>
+            <el-button @click="getOptimize">优化表</el-button>
+            <el-button @click="getRepair">修复表</el-button>
+            <el-button @click="exportData(1)">导出文件</el-button>
           </div>
           <el-table
-            ref="selection"
             :data="tabList2"
             v-loading="loading"
             empty-text="暂无数据"
             @select="onSelectTab"
             @select-all="onSelectTab"
-            class="mt14"
-          >
+            class="mt14">
             <el-table-column type="selection" width="55"> </el-table-column>
             <el-table-column label="表名称" min-width="100">
               <template #default="scope">
@@ -29,15 +27,13 @@
             <el-table-column label="备注" min-width="100">
               <template #default="scope">
                 <div class="mark">
-                  <div v-if="scope.row.is_edit" class="table-mark" v-db-click @click="isEditMark(scope.row)">
+                  <div v-if="scope.row.is_edit" class="table-mark" @click="isEditMark(scope.row)">
                     {{ scope.row.comment }}
                   </div>
-                  <el-input
-                    ref="markRef"
+                  <el-input ref="markRef"
                     v-else
                     v-model="scope.row.comment"
-                    @blur="isEditBlur(scope.row, 0)"
-                  ></el-input>
+                    @blur="isEditBlur(scope.row, 0)"></el-input>
                 </div>
               </template>
             </el-table-column>
@@ -63,20 +59,18 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="70">
               <template #default="scope">
-                <a v-db-click @click="Info(scope.row)">详情</a>
+                <a @click="Info(scope.row)">详情</a>
               </template>
             </el-table-column>
           </el-table>
           <!--          </el-card>-->
           <!-- 详情模态框-->
-          <el-drawer
-            v-model="modals"
+          <el-drawer v-model="modals"
             :wrapperClosable="false"
             :size="1000"
-            :title="'[ ' + rows.name + ' ]' + rows.comment"
-          >
+            :title="'[ ' + rows.name + ' ]' + rows.comment">
             <!-- 详情为纯表格，内边距收窄对齐 header 的 15px；滚动交给抽屉 body（全局 overflow:auto），滚动条贴边 -->
-            <el-table ref="selection" :data="tabList3" v-loading="loading2" empty-text="暂无数据">
+            <el-table :data="tabList3" v-loading="loading2" empty-text="暂无数据">
               <el-table-column label="字段名" min-width="100">
                 <template #default="scope">
                   <span>{{ scope.row.COLUMN_NAME }}</span>
@@ -105,15 +99,13 @@
               <el-table-column label="备注" min-width="100">
                 <template #default="scope">
                   <div class="mark">
-                    <div v-if="scope.row.is_edit" class="table-mark" v-db-click @click="isEditMark(scope.row)">
+                    <div v-if="scope.row.is_edit" class="table-mark" @click="isEditMark(scope.row)">
                       {{ scope.row.COLUMN_COMMENT }}
                     </div>
-                    <el-input
-                      ref="markRef"
+                    <el-input ref="markRef"
                       v-else
                       v-model="scope.row.COLUMN_COMMENT"
-                      @blur="isEditBlur(scope.row, 1)"
-                    ></el-input>
+                      @blur="isEditBlur(scope.row, 1)"></el-input>
                   </div>
                 </template>
               </el-table-column>
@@ -121,7 +113,7 @@
           </el-drawer>
         </el-tab-pane>
         <el-tab-pane label="备份列表">
-          <el-table ref="selection" :data="tabList" v-loading="loading3" empty-text="暂无数据" highlight-current-row>
+          <el-table :data="tabList" v-loading="loading3" empty-text="暂无数据" highlight-current-row>
             <el-table-column label="备份名称" min-width="200">
               <template #default="scope">
                 <span>{{ scope.row.filename }}</span>
@@ -149,11 +141,11 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="140">
               <template #default="scope">
-                <a v-db-click @click="ImportFile(scope.row)">导入</a>
+                <a @click="ImportFile(scope.row)">导入</a>
                 <el-divider direction="vertical"></el-divider>
                 <a v-db-click @click="del(scope.row, '删除该备份', scope.$index)">删除</a>
                 <el-divider direction="vertical"></el-divider>
-                <a v-db-click @click="download(scope.row)">下载</a>
+                <a @click="download(scope.row)">下载</a>
               </template>
             </el-table-column>
           </el-table>
@@ -162,12 +154,10 @@
     </el-card>
     <el-dialog v-model="markModal" width="470px" title="修改备注" @closed="cancel">
       <el-input v-model="mark"></el-input>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="cancel">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
           <el-button type="primary" v-db-click @click="ok">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -189,10 +179,10 @@ import {
 import Setting from '@/setting';
 import { getCookies } from '@/libs/util';
 import { modalSure } from '@/utils/public';
+import exportExcel from '@/utils/newToExcel.js';
 
 defineOptions({ name: 'systemDatabackup' });
 
-const selection = ref(null);
 const markRef = ref(null);
 
 const modals = ref(false);
@@ -296,15 +286,18 @@ function download(row) {
       ElMessage.error(res);
     });
 }
-// 导出备份记录表
-// TODO(vue3): 原实现依赖 iview 表格的 exportCsv 与未定义的 this.columns，element-plus 下需重写导出逻辑
+// 导出数据库表清单（表名称、备注、类型、大小、更新时间、行数）
 function exportData() {
-  const columns = undefined.slice(1, 7);
-  selection.value.exportCsv({
-    filename: '导出',
-    columns: columns,
-    data: tabList2.value,
-  });
+  if (!tabList2.value.length) {
+    ElMessage.warning('暂无数据');
+    return;
+  }
+  exportExcel(
+    ['表名称', '备注', '类型', '大小', '更新时间', '行数'],
+    ['name', 'comment', 'engine', 'data_length', 'update_time', 'rows'],
+    '数据库列表',
+    tabList2.value,
+  );
 }
 // 全选
 function onSelectTab(sel) {

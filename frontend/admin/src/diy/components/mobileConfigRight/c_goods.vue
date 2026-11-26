@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <el-dialog v-model="modals" title="商品列表" class="paymentFooter" width="900">
+    <el-dialog v-model="modals" title="商品列表" class="paymentFooter" width="900" append-to-body>
       <goods-list
         ref="goodslist"
         :ischeckbox="true"

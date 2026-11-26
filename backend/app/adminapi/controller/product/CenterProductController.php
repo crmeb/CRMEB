@@ -82,7 +82,6 @@ class CenterProductController extends AuthController
             ['recommend_image', ''],
             ['slider_image', []],
             ['postage', 0],
-            ['is_sub', 0],//佣金是单独还是默认
             ['is_vip',0],
             ['sort', 0],
             ['sales', 0],
@@ -240,7 +239,6 @@ class CenterProductController extends AuthController
             ['presale_time', 0],//预售时间
             ['presale_day', 0],//预售发货日
             ['vip_product', 0],//会员专属（0不限制/1仅会员可见可买/2所有人可见仅会员可买）
-            ['is_sub', 0],//佣金是单独还是默认
             ['recommend', []],//商品推荐
             ['activity', []],//活动优先级
             ['recommend_list', []],//优品推荐商品
@@ -606,7 +604,6 @@ class CenterProductController extends AuthController
     public function otherSave($id, $type)
     {
         $data = $this->request->postMore([
-            ['is_sub', 0],
             ['is_vip', 0],
             ['vip_product', 0],//会员专属（0不限制/1仅会员可见可买/2所有人可见仅会员可买）
             ['attr_value', []],

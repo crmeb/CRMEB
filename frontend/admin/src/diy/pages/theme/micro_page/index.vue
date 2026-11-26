@@ -12,23 +12,21 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <div class="acea-row row-between-wrapper mb20">
         <div class="acea-row row-middle">
-          <el-button v-db-click type="primary" @click="add">添加微页面</el-button>
+          <el-button type="primary" @click="add">添加微页面</el-button>
         </div>
       </div>
-      <el-table
-        :data="tableList"
+      <el-table :data="tableList"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="编号" min-width="80" prop="id"></el-table-column>
         <el-table-column label="名称" min-width="150" prop="title"></el-table-column>
         <el-table-column label="添加时间" min-width="150" prop="add_time"></el-table-column>
         <el-table-column label="更新时间" min-width="150" prop="up_time"></el-table-column>
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除微页面', scope.$index)">删除</a>
           </template>
@@ -101,7 +99,7 @@ function del(row, title, num) {
     .then((res) => {
       ElMessage.success(res.msg);
       tableList.value.splice(num, 1);
-      if (!tableList.value.length && page.value > 1) {
+      if (!tableList.value.length && page.value> 1) {
         page.value = page.value - 1;
         getList();
       }

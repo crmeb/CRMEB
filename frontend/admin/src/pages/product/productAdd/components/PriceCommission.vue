@@ -1,5 +1,5 @@
 <template>
-  <!-- 会员价/佣金 -->
+  <!-- 会员价 -->
   <el-row>
     <el-col :span="24">
       <el-form-item label="付费会员专属：">
@@ -11,29 +11,18 @@
       </el-form-item>
     </el-col>
     <el-col :span="24">
-      <el-form-item label="分销设置：">
-        <el-checkbox v-model="formValidate.is_sub" :true-value="1" :false-value="0" @change="checkAllGroupChange"
-          >佣金设置（数字即返佣金额）</el-checkbox
-        >
-      </el-form-item>
-    </el-col>
-    <el-col :span="24">
       <el-form-item label="会员价设置：">
-        <el-checkbox v-model="formValidate.is_vip" :true-value="1" :false-value="0" @change="checkAllGroupChange"
-          >付费会员价</el-checkbox
-        >
+        <el-checkbox v-model="formValidate.is_vip" :true-value="1" :false-value="0" @change="checkAllGroupChange">付费会员价</el-checkbox>
       </el-form-item>
     </el-col>
-    <el-col :span="24" v-if="formValidate.is_sub == 1 || formValidate.is_vip == 1">
-      <!--单规格返佣-->
+    <el-col :span="24" v-if="formValidate.is_vip == 1">
+      <!--单规格会员价-->
       <el-form-item label="商品属性：" v-if="formValidate.spec_type === 0">
         <el-table :data="oneFormValidate">
-          <el-table-column
-            :label="item.title"
+          <el-table-column :label="item.title"
             :min-width="item.minWidth"
             v-for="(item, index) in columnsInstall"
-            :key="index"
-          >
+            :key="index">
             <template #default="scope">
               <template v-if="item.key">
                 <div>
@@ -66,106 +55,32 @@
               <template v-else-if="item.slot === 'weight'">
                 <span>{{ oneFormValidate[0].weight }}</span>
               </template>
-              <template v-else-if="item.slot === 'fictitious'">
-                <el-button
-                  v-if="!row.coupon_id && formValidate.virtual_type == 2"
-                  v-db-click
-                  @click="addGoodsCoupon(scope.$index, 'oneFormValidate')"
-                  >选择优惠券</el-button
-                >
-                <span
-                  class="see"
-                  v-else-if="row.coupon_id && formValidate.virtual_type == 2"
-                  v-db-click
-                  @click="see(row, 'manyFormValidate', scope.$index)"
-                  >{{ row.coupon_name }}</span
-                >
-                <el-button
-                  v-else-if="!(row.virtual_list || []).length && !row.stock && formValidate.virtual_type == 1"
-                  v-db-click
-                  @click="addVirtual(scope.$index, 'oneFormValidate')"
-                  >添加卡密</el-button
-                >
-                <span
-                  class="see"
-                  v-else-if="((row.virtual_list || []).length || row.stock) && formValidate.virtual_type == 1"
-                  v-db-click
-                  @click="see(row, 'oneFormValidate', scope.$index)"
-                  >已设置</span
-                >
-              </template>
-              <template v-else-if="item.slot === 'brokerage'">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].brokerage"
-                  :min="0"
-                  :max="9999999999"
-                  class="priceBox input-number-unit-class"
-                  class-unit="元"
-                ></el-input-number>
-              </template>
-              <template v-else-if="item.slot === 'brokerage_two'">
-                <el-input-number
-                  :controls="false"
-                  v-model="oneFormValidate[0].brokerage_two"
-                  :min="0"
-                  :max="9999999999"
-                  class="priceBox input-number-unit-class"
-                  class-unit="元"
-                ></el-input-number>
-              </template>
               <template v-else-if="item.slot === 'vip_price'">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   v-model="oneFormValidate[0].vip_price"
                   :min="0"
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
                   class-unit="元"
-                  @change="changeVipPrice(0, 'oneFormValidate')"
-                ></el-input-number>
+                  @change="changeVipPrice(0, 'oneFormValidate')"></el-input-number>
               </template>
               <template v-else-if="item.slot === 'vip_proportion'">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   v-model="oneFormValidate[0].vip_proportion"
                   :min="0"
                   :max="9999999999"
                   class="priceBox input-number-unit-class"
                   class-unit="%"
-                  @change="changeDiscount(0, 'oneFormValidate')"
-                ></el-input-number>
+                  @change="changeDiscount(0, 'oneFormValidate')"></el-input-number>
               </template>
             </template>
           </el-table-column>
         </el-table>
       </el-form-item>
-      <!--多规格返佣-->
+      <!--多规格会员价-->
       <el-form-item label="批量设置：" v-if="formValidate.spec_type === 1">
-        <span v-if="formValidate.is_sub == 1">
-          <span class="brokerage">一级返佣：</span
-          ><el-input-number
-            :controls="false"
-            placeholder="请输入一级返佣"
-            class="columnsBox input_width input-number-unit-class"
-            class-unit="元"
-            :value="manyBrokerage"
-            @input="(val) => $emit('update:manyBrokerage', val)"
-          >
-          </el-input-number>
-          <span class="brokerage">二级返佣：</span
-          ><el-input-number
-            :controls="false"
-            placeholder="请输入二级返佣"
-            class="columnsBox input_width input-number-unit-class"
-            class-unit="元"
-            :value="manyBrokerageTwo"
-            @input="(val) => $emit('update:manyBrokerageTwo', val)"
-          ></el-input-number>
-        </span>
         <span class="brokerage" v-if="formValidate.is_vip == 1">
-          会员价：<el-input-number
-            :controls="false"
+          会员价：<el-input-number :controls="false"
             placeholder="请输入会员价"
             :min="0"
             :max="9999999999"
@@ -173,12 +88,10 @@
             class-unit="元"
             :value="manyVipPrice"
             @input="(val) => $emit('update:manyVipPrice', val)"
-            @focus="$emit('update:manyVipDiscount', undefined)"
-          ></el-input-number>
+            @focus="$emit('update:manyVipDiscount', undefined)"></el-input-number>
         </span>
         <span class="brokerage" v-if="formValidate.is_vip == 1">
-          会员折扣：<el-input-number
-            :controls="false"
+          会员折扣：<el-input-number :controls="false"
             placeholder="请输入折扣比例"
             :min="0"
             :max="9999999999"
@@ -186,27 +99,22 @@
             class-unit="%"
             :value="manyVipDiscount"
             @input="(val) => $emit('update:manyVipDiscount', val)"
-            @focus="$emit('update:manyVipPrice', undefined)"
-          ></el-input-number>
+            @focus="$emit('update:manyVipPrice', undefined)"></el-input-number>
         </span>
-        <el-button type="primary" v-db-click @click="brokerageSetUp">批量设置</el-button>
+        <el-button type="primary" @click="brokerageSetUp">批量设置</el-button>
       </el-form-item>
-      <el-form-item
-        label="商品属性："
+      <el-form-item label="商品属性："
         v-if="
           formValidate.spec_type == 1 &&
-          (formValidate.is_sub == 1 || formValidate.is_vip == 1) &&
+          formValidate.is_vip == 1 &&
           manyFormValidate.length &&
           columnsInstal2
-        "
-      >
+        ">
         <el-table :data="manyFormValidate.slice(1)">
-          <el-table-column
-            :label="item.title"
+          <el-table-column :label="item.title"
             :min-width="item.minWidth"
             v-for="(item, index) in columnsInstal2"
-            :key="index"
-          >
+            :key="index">
             <template #default="scope">
               <template v-if="item.key">
                 <div>
@@ -239,74 +147,11 @@
               <template v-else-if="item.slot === 'weight'">
                 <span>{{ manyFormValidate[scope.$index + 1].weight }}</span>
               </template>
-              <template v-else-if="item.slot === 'fictitious'">
-                <el-button
-                  v-if="!row.coupon_id && formValidate.virtual_type == 2"
-                  v-db-click
-                  @click="addGoodsCoupon(scope.$index + 1, 'manyFormValidate')"
-                  >选择优惠券</el-button
-                >
-                <span
-                  class="see"
-                  v-else-if="row.coupon_id && formValidate.virtual_type == 2"
-                  v-db-click
-                  @click="see(row, 'manyFormValidate', scope.$index + 1)"
-                  >{{ row.coupon_name }}</span
-                >
-                <el-button
-                  v-else-if="!(row.virtual_list || []).length && !row.stock && formValidate.virtual_type == 1"
-                  v-db-click
-                  @click="addVirtual(scope.$index + 1, 'manyFormValidate')"
-                  >添加卡密</el-button
-                >
-                <span
-                  class="see"
-                  v-else-if="((row.virtual_list || []).length || row.stock) && formValidate.virtual_type == 1"
-                  v-db-click
-                  @click="see(row, 'manyFormValidate', scope.$index + 1)"
-                  >已设置</span
-                >
-              </template>
               <template v-else-if="item.slot === 'volume'">
                 <span>{{ manyFormValidate[scope.$index + 1].volume }}</span>
               </template>
-              <template v-else-if="item.slot === 'brokerage'">
-                <el-input-number
-                  :controls="false"
-                  :value="manyFormValidate[scope.$index + 1].brokerage"
-                  :min="0"
-                  :max="9999999999"
-                  class="priceBox input-number-unit-class"
-                  class-unit="元"
-                  @input="
-                    (val) => {
-                      const newData = [...manyFormValidate];
-                      newData[scope.$index + 1].brokerage = val;
-                      $emit('update:manyFormValidate', newData);
-                    }
-                  "
-                ></el-input-number>
-              </template>
-              <template v-else-if="item.slot === 'brokerage_two'">
-                <el-input-number
-                  :controls="false"
-                  :value="manyFormValidate[scope.$index + 1].brokerage_two"
-                  :min="0"
-                  :max="9999999999"
-                  class="priceBox input-number-unit-class"
-                  class-unit="元"
-                  @input="
-                    (val) => {
-                      const newData = [...manyFormValidate];
-                      newData[scope.$index + 1].brokerage_two = val;
-                      $emit('update:manyFormValidate', newData);
-                    }
-                  "
-                ></el-input-number>
-              </template>
               <template v-else-if="item.slot === 'vip_price'">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   :value="manyFormValidate[scope.$index + 1].vip_price"
                   :min="0"
                   :max="9999999999"
@@ -319,12 +164,10 @@
                       $emit('update:manyFormValidate', newData);
                     }
                   "
-                  @change="changeVipPrice(scope.$index + 1)"
-                ></el-input-number>
+                  @change="changeVipPrice(scope.$index + 1)"></el-input-number>
               </template>
               <template v-else-if="item.slot === 'vip_proportion'">
-                <el-input-number
-                  :controls="false"
+                <el-input-number :controls="false"
                   :value="manyFormValidate[scope.$index + 1].vip_proportion"
                   :min="0"
                   :max="9999999999"
@@ -337,8 +180,7 @@
                       $emit('update:manyFormValidate', newData);
                     }
                   "
-                  @change="changeDiscount(scope.$index + 1)"
-                ></el-input-number>
+                  @change="changeDiscount(scope.$index + 1)"></el-input-number>
               </template>
             </template>
           </el-table-column>
@@ -372,7 +214,6 @@ defineProps({
     type: Array,
     required: true,
   },
-  // 批量设置的金额/折扣，undefined 表示未填写（会员价与折扣互斥清空时也会置为 undefined），不可声明 required
   manyBrokerage: {
     type: Number,
     default: undefined,

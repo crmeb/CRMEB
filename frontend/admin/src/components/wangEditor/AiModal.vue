@@ -1,27 +1,23 @@
 <template>
   <el-dialog v-model="modal" width="720px" title="AI 写作" :close-on-click-modal="false" :before-close="beforeClose">
-    <el-input
-      v-model="prompt"
+    <el-input v-model="prompt"
       type="textarea"
       :rows="4"
       maxlength="2000"
       show-word-limit
       placeholder="请输入写作提示词，例如：写一篇关于秋季新品发布会的推广文章，介绍新品亮点与上市优惠，800字左右"
-      :disabled="generating"
-    ></el-input>
+      :disabled="generating"></el-input>
     <!-- 系统提示词（可自定义，默认保留内置提示词；可通过 ai-show-system-prompt 配置显隐） -->
     <template v-if="aiShowSystemPrompt">
       <div class="ai-prompt-head">
         <span class="ai-prompt-label">系统提示词（决定 AI 的角色与输出要求，每行一条）</span>
-        <el-button type="text" class="ai-reset-btn" v-db-click @click="resetSystemPrompt">恢复默认</el-button>
+        <el-button type="text" class="ai-reset-btn" @click="resetSystemPrompt">恢复默认</el-button>
       </div>
-      <el-input
-        v-model="systemPrompt"
+      <el-input v-model="systemPrompt"
         type="textarea"
         :rows="3"
         placeholder="定义 AI 的角色与输出要求，每行一条"
-        :disabled="generating"
-      ></el-input>
+        :disabled="generating"></el-input>
     </template>
     <div class="ai-status">
       <span v-if="generating" class="ai-status-text"> AI 正在写作，已生成 {{ text.length }} 字… </span>
@@ -31,17 +27,15 @@
     </div>
     <!-- 流式输出预览区 -->
     <div v-if="text || generating" ref="previewRef" class="ai-preview" v-html="previewHtml"></div>
-    <template #footer
-      ><div>
+    <template #footer><div>
         <template v-if="!generating">
-          <el-button v-db-click @click="modal = false">{{ text ? '关闭' : '取消' }}</el-button>
-          <el-button v-if="text" v-db-click @click="startGenerate">重新生成</el-button>
-          <el-button v-if="text" type="primary" v-db-click @click="insertToEditor">插入编辑器</el-button>
-          <el-button v-else type="primary" :loading="submitting" v-db-click @click="startGenerate">开始生成</el-button>
+          <el-button @click="modal = false">{{ text ? '关闭' : '取消' }}</el-button>
+          <el-button v-if="text" @click="startGenerate">重新生成</el-button>
+          <el-button v-if="text" type="primary" @click="insertToEditor">插入编辑器</el-button>
+          <el-button v-else type="primary" :loading="submitting" @click="startGenerate">开始生成</el-button>
         </template>
-        <el-button v-else type="danger" v-db-click @click="stopGenerate">停止生成</el-button>
-      </div></template
-    >
+        <el-button v-else type="danger" @click="stopGenerate">停止生成</el-button>
+      </div></template>
   </el-dialog>
 </template>
 
@@ -366,32 +360,30 @@ defineExpose({ open });
   background: var(--prev-bg-color);
   font-size: 14px;
   line-height: 1.7;
-  :deep() {
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      margin: 10px 0 6px;
-    }
-    p {
-      margin: 6px 0;
-    }
-    ul,
-    ol {
-      margin: 6px 0;
-      padding-left: 20px;
-    }
-    blockquote {
-      margin: 6px 0;
-      padding: 4px 10px;
-      border-left: 3px solid var(--prev-border-color-base);
-      color: var(--prev-color-text-primary);
-    }
-    hr {
-      border: none;
-      border-top: 1px solid var(--prev-border-color-light);
-    }
+  :deep(h2),
+  :deep(h3),
+  :deep(h4),
+  :deep(h5),
+  :deep(h6) {
+    margin: 10px 0 6px;
+  }
+  :deep(p) {
+    margin: 6px 0;
+  }
+  :deep(ul),
+  :deep(ol) {
+    margin: 6px 0;
+    padding-left: 20px;
+  }
+  :deep(blockquote) {
+    margin: 6px 0;
+    padding: 4px 10px;
+    border-left: 3px solid var(--prev-border-color-base);
+    color: var(--prev-color-text-primary);
+  }
+  :deep(hr) {
+    border: none;
+    border-top: 1px solid var(--prev-border-color-light);
   }
 }
 </style>

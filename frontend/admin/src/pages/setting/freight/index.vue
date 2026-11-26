@@ -2,22 +2,18 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="levelFromRef"
+        <el-form ref="levelFromRef"
           :model="levelFrom"
           :label-width="labelWidth"
           label-position="right"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="是否显示：">
-            <el-select
-              v-model="levelFrom.is_show"
+            <el-select v-model="levelFrom.is_show"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="" label="全部"></el-option>
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
@@ -27,21 +23,19 @@
             <el-input class="form_content_width" v-model="levelFrom.keyword" placeholder="请输入物流公司名称或者编码" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" class="action-row" v-db-click @click="syncExpress">同步物流公司</el-button>
-      <el-table
-        :data="levelLists"
+      <el-button type="primary" class="action-row" @click="syncExpress">同步物流公司</el-button>
+      <el-table :data="levelLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -64,31 +58,27 @@
         </el-table-column>
         <el-table-column label="是否显示" min-width="100">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.is_show"
               :value="scope.row.is_show"
               @change="onchangeIsShow(scope.row)"
-              size="large"
-            >
+              size="large">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="80">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="levelFrom.page"
           v-model:limit="levelFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

@@ -2,19 +2,16 @@
   <div>
     <el-dialog v-model="modals" :z-index="100" title="发送优惠券" :close-on-click-modal="false" width="1000px">
       <div class="acea-row">
-        <span class="sp">优惠券名称：</span
-        ><el-input clearable v-model="page.coupon_title" placeholder="请输入优惠券名称" class="form_content_width" />
-        <el-button type="primary" v-db-click @click="userSearchs" class="ml15">查询</el-button>
+        <span class="sp">优惠券名称：</span><el-input clearable v-model="page.coupon_title" placeholder="请输入优惠券名称" class="form_content_width" />
+        <el-button type="primary" @click="userSearchs" class="ml15">查询</el-button>
       </div>
-      <el-table
-        :data="couponList"
+      <el-table :data="couponList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="优惠券名称" min-width="130">
           <template #default="scope">
             <span>{{ scope.row.title }}</span>
@@ -38,18 +35,16 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="90">
           <template #default="scope">
-            <a v-db-click @click="sendGrant(scope.row, '发送优惠券', index)">发送</a>
+            <a @click="sendGrant(scope.row, '发送优惠券', index)">发送</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="page.page"
           v-model:limit="page.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-dialog>
   </div>

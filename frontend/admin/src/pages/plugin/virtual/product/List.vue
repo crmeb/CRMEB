@@ -4,23 +4,19 @@
       <div class="padding-add">
         <el-form :inline="true" @submit.prevent="onSearch">
           <el-form-item label="商品名称">
-            <el-input
-              v-model="search.store_name"
+            <el-input v-model="search.store_name"
               placeholder="商品名称/ID"
               clearable
               @keyup.enter="onSearch"
-              style="width: 220px"
-            />
+              style="width: 220px" />
           </el-form-item>
           <el-form-item label="分类">
-            <el-cascader
-              v-model="search.cate_id"
+            <el-cascader v-model="search.cate_id"
               :options="categoryTree"
               :props="{ multiple: false, emitPath: false, checkStrictly: true }"
               clearable
               placeholder="全部"
-              style="width: 180px"
-            />
+              style="width: 180px" />
           </el-form-item>
           <template v-if="collapse">
             <el-form-item label="售价">
@@ -34,20 +30,18 @@
               <el-input v-model="search.stock_max" placeholder="最大值" style="width: 120px" />
             </el-form-item>
             <el-form-item label="添加时间">
-              <date-range-picker
-                v-model="timeRange"
+              <date-range-picker v-model="timeRange"
                 width="220px"
                 format="YYYY-MM-DD"
                 value-format="YYYY-MM-DD"
                 range-separator="~"
-                @change="onTimeChange"
-              />
+                @change="onTimeChange" />
             </el-form-item>
           </template>
           <el-form-item>
             <el-button type="primary" @click="onSearch">查询</el-button>
             <el-button @click="onReset">重置</el-button>
-            <a class="ml10 font12" v-db-click @click="collapse = !collapse">
+            <a class="ml10 font12" @click="collapse = !collapse">
               <template v-if="!collapse">展开<i class="el-icon-arrow-down" /></template>
               <template v-else>收起<i class="el-icon-arrow-up" /></template>
             </a>
@@ -65,18 +59,16 @@
       </el-tabs>
 
       <div class="mb12">
-        <el-button v-db-click type="primary" @click="goAdd">添加网盘商品</el-button>
+        <el-button type="primary" @click="goAdd">添加网盘商品</el-button>
         <el-button v-db-click :disabled="!selectedIds.length" @click="onBatchDelete">批量删除</el-button>
       </div>
 
-      <el-table
-        :data="list"
+      <el-table :data="list"
         v-loading="loading"
         stripe
         empty-text="暂无数据"
         @selection-change="onSelectionChange"
-        row-key="id"
-      >
+        row-key="id">
         <el-table-column type="selection" width="50" :reserve-selection="true" />
         <el-table-column label="ID" width="70" prop="id" />
         <el-table-column label="商品图" width="80">
@@ -94,15 +86,13 @@
         <el-table-column label="排序" width="70" prop="sort_order" />
         <el-table-column label="状态" width="110">
           <template #default="{ row }">
-            <el-switch
-              :model-value="row.is_show"
+            <el-switch :model-value="row.is_show"
               :active-value="1"
               :inactive-value="0"
               @change="(val) => onToggleStatus(row, val)"
               active-text="上架"
               inactive-text="下架"
-              class="defineSwitch"
-            />
+              class="defineSwitch" />
           </template>
         </el-table-column>
         <el-table-column label="添加时间" width="160">
@@ -110,32 +100,26 @@
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
-            <a v-db-click @click="goEdit(row.id)">编辑</a>
+            <a @click="goEdit(row.id)">编辑</a>
             <el-divider direction="vertical" />
             <el-dropdown @command="(cmd) => onMoreAction(cmd, row)">
               <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right" /></span>
-              <template #dropdown
-                ><el-dropdown-menu>
+              <template #dropdown><el-dropdown-menu>
                   <el-dropdown-item command="delete" v-if="search.type !== '-1'">移到回收站</el-dropdown-item>
                   <el-dropdown-item command="restore" v-if="search.type === '-1'">恢复商品</el-dropdown-item>
-                  <el-dropdown-item command="forceDelete" v-if="search.type === '-1'" divided
-                    >彻底删除</el-dropdown-item
-                  >
-                </el-dropdown-menu></template
-              >
+                  <el-dropdown-item command="forceDelete" v-if="search.type === '-1'" divided>彻底删除</el-dropdown-item>
+                </el-dropdown-menu></template>
             </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="search.page"
           v-model:limit="search.limit"
-          @pagination="loadList"
-        />
+          @pagination="loadList" />
       </div>
     </el-card>
   </div>

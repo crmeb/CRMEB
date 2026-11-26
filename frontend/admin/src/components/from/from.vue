@@ -3,12 +3,10 @@
     <el-dialog v-model="modals" :title="FromData.title" width="720px" @closed="cancel">
       <slot name="before-form"></slot>
       <form-create v-model:api="fapi" :option="config" :rule="FromData.rules" @submit="onSubmit" class="formBox" />
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="modals = false">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="modals = false">取 消</el-button>
           <el-button type="primary" v-db-click @click="formSubmit">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

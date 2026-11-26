@@ -101,8 +101,7 @@ class OutCenterProductServices extends BaseService
             $data['activity'] = '0,1,2,3';
         }
 
-        // is_hot/is_benefit/is_new/is_good/is_best 推荐位字段已删除；is_sub/is_vip/vip_product 已迁移到 eb_product_center 保留
-        $data['is_sub'] = intval($data['is_sub'] ?? 0);
+        // is_hot/is_benefit/is_new/is_good/is_best 推荐位字段已删除；is_vip/vip_product 保留在 eb_product_center
         $data['is_vip'] = intval($data['is_vip'] ?? 0);
         $data['vip_product'] = intval($data['vip_product']);
 
@@ -138,16 +137,6 @@ class OutCenterProductServices extends BaseService
                 $item['vip_price'] = sprintf("%.2f", $item['vip_price'] ?? '0.00');
             }
 
-            if ($data['is_sub'] == 0) {
-                $item['brokerage'] = '0.00';
-                $item['brokerage_two'] = '0.00';
-            } else {
-                $item['brokerage'] = sprintf("%.2f", $item['brokerage'] ?? '0.00');
-                $item['brokerage_two'] = sprintf("%.2f", $item['brokerage_two'] ?? '0.00');
-                if (bccomp(bcadd($item['brokerage'], $item['brokerage_two']), $item['price']) == 1) {
-                    throw new AdminException('一二级返佣相加不能大于商品售价');
-                }
-            }
         }
 
         $data['price'] = min(array_column($detail, 'price'));
@@ -297,8 +286,6 @@ class OutCenterProductServices extends BaseService
                     $attrs[$k]['vip_price'] = sprintf("%.2f", $v['vip_price'] ?? '0.00');
                     $attrs[$k]['weight'] = sprintf("%.2f", $v['weight'] ?? '0.00');
                     $attrs[$k]['volume'] = sprintf("%.2f", $v['volume'] ?? '0.00');
-                    $attrs[$k]['brokerage'] = sprintf("%.2f", $v['brokerage'] ?? '0.00');
-                    $attrs[$k]['brokerage_two'] = sprintf("%.2f", $v['brokerage_two'] ?? '0.00');
                 }
                 $productInfo['items'] = $items;
                 $productInfo['attrs'] = $attrs;
@@ -314,8 +301,6 @@ class OutCenterProductServices extends BaseService
                     'bar_code_number' => '',
                     'weight' => '0.00',
                     'volume' => '0.00',
-                    'brokerage' => '0.00',
-                    'brokerage_two' => '0.00',
                     'vip_price' => sprintf("%.2f", $productInfo['vip_price'] ?? '0.00'),
                 ]];
             }
@@ -331,8 +316,6 @@ class OutCenterProductServices extends BaseService
                 'bar_code_number' => '',
                 'weight' => '0.00',
                 'volume' => '0.00',
-                'brokerage' => '0.00',
-                'brokerage_two' => '0.00',
                 'vip_price' => sprintf("%.2f", $productInfo['vip_price'] ?? '0.00'),
             ]];
         }

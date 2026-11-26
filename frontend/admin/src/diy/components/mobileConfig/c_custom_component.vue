@@ -19,6 +19,7 @@
       v-model="modals"
       width="100%"
       fullscreen
+      append-to-body
       :close-on-click-modal="false"
       :show-close="false"
     >
@@ -634,16 +635,35 @@ function handleSave(data) {
 .mobile-config {
   padding-bottom: 20px;
 }
-:deep(.custom-design-dialog) {
-  border-radius: 0px !important;
+</style>
+
+<style lang="scss">
+/* append-to-body 后弹窗挂到 body，脱离右侧配置栏的层叠上下文。
+   scoped :deep 无法命中 teleport 后的壳层。 */
+.custom-design-dialog.el-dialog.is-fullscreen {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0 !important;
+
   .el-dialog__header {
     display: none;
   }
+
   .el-dialog__body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     padding: 0 !important;
-    height: 100%;
+    max-height: none !important;
     overflow: hidden;
-    max-height: 100vh !important;
+  }
+
+  .custom-design {
+    flex: 1;
+    min-height: 0;
+    height: auto;
   }
 }
 </style>

@@ -3,33 +3,137 @@
  * 无 Vue 依赖，仅操作传入的 container。
  */
 
-/** 将远程图片转为 base64，绕过 html2canvas 跨域限制 */
+/**
+ * 开发态页面在 Vite，上传图在接口所在站点。
+ * 静态图没有 CORS 头，浏览器不能直接拉绝对地址。
+ * 仅开发态把 /uploads、/statics 改到当前源，由 Vite 转到接口站点。
+ * 线上继续用原地址：页面与图片同源时可以直接读取。
+ */
+function screenshotAssetUrl(src) {
+  if (!import.meta.env.DEV || !/^https?:/i.test(src)) return src;
+  const url = new URL(src);
+  if (url.origin === location.origin) return src;
+  if (url.pathname.startsWith('/uploads/') || url.pathname.startsWith('/statics/')) {
+    return `${url.pathname}${url.search}`;
+  }
+  return src;
+}
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '');
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function readImageDataUrl(src) {
+  const requestUrl = screenshotAssetUrl(src);
+  const separator = requestUrl.includes('?') ? '&' : '?';
+  const res = await fetch(`${requestUrl}${separator}_t=${Date.now()}`, { cache: 'no-store' });
+  if (!res.ok) return '';
+  const blob = await res.blob();
+  if (!blob.type.startsWith('image/')) return '';
+  return blobToDataUrl(blob);
+}
+
+/** 将远程图片转为 base64，绕过 html2canvas 跨域限制。返回恢复函数。 */
 export async function convertImagesToBase64(container) {
-  const imgs = container.querySelectorAll('img');
-  const tasks = Array.from(imgs).map((img) => {
-    return new Promise((resolve) => {
+  const restores = [];
+  const imgs = Array.from(container.querySelectorAll('img'));
+  await Promise.all(
+    imgs.map(async (img) => {
       const src = img.getAttribute('src');
-      if (!src || src.startsWith('data:')) {
-        resolve();
-        return;
+      if (!src || src.startsWith('data:')) return;
+      const dataUrl = await readImageDataUrl(src).catch(() => '');
+      if (!dataUrl) return;
+      img.setAttribute('src', dataUrl);
+      restores.push(() => img.setAttribute('src', src));
+    }),
+  );
+
+  const nodes = [container].concat(Array.from(container.querySelectorAll('*')));
+  await Promise.all(
+    nodes.map(async (el) => {
+      const backgroundImage = getComputedStyle(el).backgroundImage;
+      if (!backgroundImage || backgroundImage === 'none' || backgroundImage.indexOf('url(') === -1) return;
+      const urls = Array.from(backgroundImage.matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/g))
+        .map((match) => match[2])
+        .filter((url) => url && !url.startsWith('data:'));
+      if (!urls.length) return;
+      let next = backgroundImage;
+      for (const url of urls) {
+        const dataUrl = await readImageDataUrl(url).catch(() => '');
+        if (!dataUrl) continue;
+        next = next.split(url).join(dataUrl);
       }
-      const separator = src.includes('?') ? '&' : '?';
-      const cacheBustUrl = `${src}${separator}_t=${Date.now()}`;
-      fetch(cacheBustUrl, { mode: 'cors', cache: 'no-store' })
-        .then((res) => res.blob())
-        .then((blob) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            img.setAttribute('src', reader.result);
-            resolve();
-          };
-          reader.onerror = () => resolve();
-          reader.readAsDataURL(blob);
-        })
-        .catch(() => resolve());
+      if (next === backgroundImage) return;
+      const previous = el.style.backgroundImage;
+      el.style.backgroundImage = next;
+      restores.push(() => {
+        el.style.backgroundImage = previous;
+      });
+    }),
+  );
+
+  return () => restores.forEach((restore) => restore());
+}
+
+/**
+ * Chrome 把 color-mix(in srgb, ...) 算成 color(srgb ...)。
+ * html2canvas 1.4 只认识 rgb/rgba/hsl/hsla，碰到 color() 会中断整张封面。
+ * 截图前把计算值改写成 rgba，截完恢复。
+ */
+const UNSUPPORTED_COLOR_PROPS = [
+  'color',
+  'backgroundColor',
+  'backgroundImage',
+  'borderTopColor',
+  'borderRightColor',
+  'borderBottomColor',
+  'borderLeftColor',
+  'outlineColor',
+  'textDecorationColor',
+  'boxShadow',
+  'textShadow',
+  'caretColor',
+  'columnRuleColor',
+  'webkitTextFillColor',
+  'webkitTextStrokeColor',
+];
+
+function srgbColorToRgba(value) {
+  return value.replace(
+    /color\(\s*srgb\s+([0-9.]+%?)[,\s]+([0-9.]+%?)[,\s]+([0-9.]+%?)(?:\s*\/\s*([0-9.]+%?))?\s*\)/gi,
+    (_, r, g, b, a) => {
+      const channel = (part) => {
+        if (part.endsWith('%')) return Math.round(parseFloat(part) * 2.55);
+        const n = parseFloat(part);
+        return Math.round(n <= 1 ? n * 255 : n);
+      };
+      const alpha = a == null ? 1 : a.endsWith('%') ? parseFloat(a) / 100 : parseFloat(a);
+      return `rgba(${channel(r)}, ${channel(g)}, ${channel(b)}, ${alpha})`;
+    },
+  );
+}
+
+export function rewriteUnsupportedColors(container) {
+  const restores = [];
+  const els = [container].concat(Array.from(container.querySelectorAll('*')));
+  els.forEach((el) => {
+    const computed = getComputedStyle(el);
+    UNSUPPORTED_COLOR_PROPS.forEach((prop) => {
+      const value = computed[prop];
+      if (!value || value.indexOf('color(') === -1) return;
+      const previous = el.style[prop];
+      el.style[prop] = srgbColorToRgba(value);
+      restores.push(() => {
+        el.style[prop] = previous;
+      });
     });
   });
-  await Promise.all(tasks);
+  return () => restores.forEach((restore) => restore());
 }
 
 /**

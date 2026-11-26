@@ -46,5 +46,25 @@ export default {
       component: () => import('@/pages/system/plugin/PageContainer'),
       props: { typeKey: 'distribution', section: 'distribution', action: 'apply' },
     },
+    {
+      path: 'extract/index',
+      name: `${pre}extract`,
+      meta: {
+        auth: ['distribution-extract'],
+        title: '提现列表',
+      },
+      component: () => import('@/pages/system/plugin/PageContainer'),
+      props: { typeKey: 'distribution', section: 'distribution', action: 'extract' },
+    },
+    {
+      path: 'brokerage/index',
+      name: `${pre}brokerage`,
+      meta: {
+        auth: ['distribution-brokerage'],
+        title: '佣金记录',
+      },
+      component: () => import('@/pages/system/plugin/PageContainer'),
+      props: { typeKey: 'distribution', section: 'distribution', action: 'brokerage' },
+    },
   ],
 };

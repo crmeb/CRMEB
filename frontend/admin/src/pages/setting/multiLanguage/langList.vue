@@ -5,34 +5,28 @@
         <el-form :model="formValidate" :label-width="labelWidth" label-position="right" @submit.prevent inline>
           <el-form-item label="语言分类：">
             <el-select v-model="formValidate.is_admin" clearable @change="selChange" class="form_content_width">
-              <el-option
-                v-for="(item, index) in langType.isAdmin"
+              <el-option v-for="(item, index) in langType.isAdmin"
                 :key="index"
                 :label="item.title"
-                :value="item.value"
-              ></el-option>
+                :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="语言类型：">
             <el-select v-model="formValidate.type_id" clearable @change="selChange" class="form_content_width">
-              <el-option
-                v-for="(item, index) in langType.langType"
+              <el-option v-for="(item, index) in langType.langType"
                 :key="index"
                 :label="item.title"
-                :value="item.value"
-              ></el-option>
+                :value="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入语言备注"
               v-model="formValidate.remarks"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" class="userSearch" v-db-click @click="selChange">搜索</el-button>
+            <el-button type="primary" class="userSearch" @click="selChange">搜索</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -50,7 +44,7 @@
     <el-card class="mt14" :bordered="false" shadow="never">
       <el-row class="action-row mb14">
         <el-col>
-          <el-button type="primary" v-db-click @click="add">添加语句</el-button>
+          <el-button type="primary" @click="add">添加语句</el-button>
         </el-col>
       </el-row>
       <el-table ref="table" :data="tabList" class="ivu-mt" v-loading="loading" empty-text="暂无数据">
@@ -81,20 +75,18 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除语言', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <el-dialog v-model="addlangModal" width="720px" title="添加需要翻译的语句" @closed="modalChange">
@@ -108,14 +100,12 @@
         </el-form-item>
         <el-input v-model="langFormData.edit" v-show="false"></el-input>
         <el-form-item label="需要翻译的语句：" prop="remarks" class="mb20">
-          <el-input
-            v-model="langFormData.remarks"
+          <el-input v-model="langFormData.remarks"
             placeholder="请输入需要添加翻译的语句"
             style="width: 330px"
             search
-            @on-search="translate"
-          >
-            <template #append><el-button type="primary" v-db-click @click="translate">翻译</el-button></template>
+            @on-search="translate">
+            <template #append><el-button type="primary" @click="translate">翻译</el-button></template>
           </el-input>
         </el-form-item>
         <el-form-item prop="remark" class="mb20">
@@ -133,12 +123,10 @@
           </el-table>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="addlangModal = false">取消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="addlangModal = false">取消</el-button>
           <el-button type="primary" v-db-click @click="ok">确定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -361,7 +349,7 @@ onMounted(() => {
     height: 100%;
   }
 }
-.mb20 :deep(.ivu-table-wrapper > .ivu-spin-fix) {
+.mb20 :deep(.ivu-table-wrapper> .ivu-spin-fix) {
   border: none;
 }
 </style>

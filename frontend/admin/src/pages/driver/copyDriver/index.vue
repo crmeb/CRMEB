@@ -1,10 +1,8 @@
 <template>
   <div>
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       :title="$route.meta.title"
-      description="接入商品采集服务商，按支持平台启用并填写账号密钥，采集商品时自动调用。"
-    ></pages-header>
+      description="接入商品采集服务商，按支持平台启用并填写账号密钥，采集商品时自动调用。"></pages-header>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-table :data="list" ref="table" v-loading="loading" highlight-current-row row-key="id">
         <el-table-column label="排序" width="80" prop="sort">
@@ -33,32 +31,28 @@
 
         <el-table-column label="状态" width="80">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               @change="handleStatusChange(scope.row)"
               active-text="开启"
               inactive-text="关闭"
-              class="defineSwitch"
-            />
+              class="defineSwitch" />
           </template>
         </el-table-column>
 
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="scope">
-            <a v-db-click @click="openEditDrawer(scope.row)">设置</a>
+            <a @click="openEditDrawer(scope.row)">设置</a>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <el-drawer
-      :title="'编辑 - ' + (currentDriver ? currentDriver.driver_name : '')"
+    <el-drawer :title="'编辑 - ' + (currentDriver ? currentDriver.driver_name : '')"
       v-model="showEditDrawer"
       direction="rtl"
-      size="600px"
-    >
+      size="600px">
       <CopyDriverEdit :driver-id="currentDriverId" @close="showEditDrawer = false" @success="handleEditSuccess" />
     </el-drawer>
   </div>

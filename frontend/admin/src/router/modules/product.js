@@ -29,9 +29,13 @@ export default {
   component: LayoutMain,
   children: [
     {
-      // 兼容旧版（v4/v5）路径：商品列表已重构至 normal 插件
+      // 兼容旧版路径：商品列表已迁到 normal 插件；旧 type=5 为警戒库存，现对应 type=4
       path: 'product_list',
-      redirect: routePre + '/product/normal/list',
+      redirect: (to) => {
+        const query = { ...to.query };
+        if (String(query.type) === '5') query.type = '4';
+        return { path: routePre + '/product/normal/list', query };
+      },
     },
     {
       path: 'product_classify',

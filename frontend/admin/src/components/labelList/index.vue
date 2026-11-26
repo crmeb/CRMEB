@@ -5,14 +5,11 @@
         <div class="label-box" v-for="(item, index) in labelList" :key="index">
           <div class="title" v-if="item.children">{{ item.label_name }}</div>
           <div class="list" v-if="item.children && item.children.length">
-            <div
-              class="label-item"
+            <div class="label-item"
               :class="{ on: label.disabled }"
               v-for="(label, j) in item.children"
               :key="j"
-              v-db-click
-              @click="selectLabel(label)"
-            >
+              @click="selectLabel(label)">
               {{ label.label_name }}
             </div>
           </div>
@@ -21,7 +18,7 @@
       <div v-if="!isUser">暂无标签</div>
     </div>
     <div class="footer">
-      <el-button class="btns" ghost v-db-click @click="cancel">取消</el-button>
+      <el-button class="btns" ghost @click="cancel">取消</el-button>
       <el-button type="primary" class="btns" v-db-click @click="subBtn">确定</el-button>
     </div>
   </div>
@@ -119,7 +116,7 @@ setLabel();
     justify-content: flex-end;
     margin-top: 40px;
     button {
-      margin-left: 10px;
+      margin-left: 14px;
     }
   }
 }

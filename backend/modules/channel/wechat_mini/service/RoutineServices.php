@@ -43,19 +43,14 @@ class RoutineServices extends BaseService
      */
     public function authType($code, $spread, $spid)
     {
-        $agent_id = 0;
         $userInfoConfig = app()->make(MiniProgram::class)->oauth($code, ['silence' => true]);
         if (!isset($userInfoConfig['openid'])) {
             throw new ApiException('静默授权失败');
         }
         $routineInfo = ['unionid' => $userInfoConfig['unionid'] ?? ''];
         $info = app()->make(QrcodeServices::class)->getOne(['id' => $spread, 'status' => 1]);
-        if ($spread && $info) {
-            if ($info['third_type'] == 'agent') {
-                $agent_id = $info['third_id'];
-            } else {
-                $spid = $info['third_id'];
-            }
+        if ($spread && $info && ($info['third_type'] ?? '') != 'agent') {
+            $spid = $info['third_id'];
         }
         $openid = $userInfoConfig['openid'];
         $routineInfo['openid'] = $openid;
@@ -63,7 +58,7 @@ class RoutineServices extends BaseService
         $routineInfo['code'] = $spread;
         $routineInfo['session_key'] = $userInfoConfig['session_key'];
         $routineInfo['headimgurl'] = sys_config('h5_avatar');
-        $createData = [$openid, $routineInfo, $spid, $agent_id, 'routine', 'routine'];
+        $createData = [$openid, $routineInfo, $spid, 'routine', 'routine'];
         // 登录票据改服务端随机串：md5(openid+时间戳) 可按 openid+7200 个时间戳候选枚举接管（安全审计 D4）
         $userInfoKey = 'routine_ticket_' . bin2hex(random_bytes(32));
         // 票据窗口 7200s → 600s，缩小被冒用的窗口
@@ -99,7 +94,7 @@ class RoutineServices extends BaseService
         CacheService::set($rateKey, $rateNum + 1, 60);
 
         $createData = CacheService::get((string)$key);
-        if (!is_array($createData) || count($createData) < 6) {
+        if (!is_array($createData) || count($createData) < 5) {
             throw new ApiException('授权已过期，请重新登录');
         }
         //写入用户信息
@@ -138,14 +133,13 @@ class RoutineServices extends BaseService
     public function authBindingPhone($code, $iv, $encryptedData, $spread, $spid, $key = '')
     {
         $wechatInfo = [];
-        $agent_id = 0;
         $userType = $login_type = 'routine';
         if ($key) {
             $cachedData = CacheService::get($key);
-            if (!is_array($cachedData) || count($cachedData) < 6) {
+            if (!is_array($cachedData) || count($cachedData) < 5) {
                 throw new ApiException('授权已过期，请重新登录');
             }
-            [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType] = $cachedData;
+            [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $cachedData;
         }
 
         /** @var MiniProgram $oauth */
@@ -174,7 +168,7 @@ class RoutineServices extends BaseService
         $wechatInfo['phone'] = $userInfo['purePhoneNumber'];
         /** @var UserWechatAuthServices $wechatAuthServices */
         $wechatAuthServices = app()->make(UserWechatAuthServices::class);
-        $user = $wechatAuthServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType]);
+        $user = $wechatAuthServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
         if (!$user || !isset($user['uid'])) {
             throw new ApiException('用户认证失败，请重新登录');
         }
@@ -207,16 +201,16 @@ class RoutineServices extends BaseService
      * @email: 442384644@qq.com
      * @date: 2023/8/12
      */
-    public function phoneLogin($key, $phone, $spread = '', $agent_id = '', $spid = '', $code = '')
+    public function phoneLogin($key, $phone, $spread = '', $spid = '', $code = '')
     {
         if ($code === '') {
             $cachedData = CacheService::get($key);
-            if (!is_array($cachedData) || count($cachedData) < 6) {
+            if (!is_array($cachedData) || count($cachedData) < 5) {
                 throw new ApiException('授权已过期，请重新登录');
             }
-            [$openid, $routineInfo, $spid, $agent_id, $login_type, $userType] = $cachedData;
+            [$openid, $routineInfo, $spid, $login_type, $userType] = $cachedData;
             $routineInfo['phone'] = $phone;
-            $createData = [$openid, $routineInfo, $spid, $agent_id, $login_type, $userType];
+            $createData = [$openid, $routineInfo, $spid, $login_type, $userType];
         } else {
             $userInfoConfig = app()->make(MiniProgram::class)->oauth($code, ['silence' => true]);
             if (!isset($userInfoConfig['openid'])) {
@@ -234,7 +228,7 @@ class RoutineServices extends BaseService
             $routineInfo['session_key'] = $userInfoConfig['session_key'];
             $routineInfo['headimgurl'] = sys_config('h5_avatar');
             $routineInfo['phone'] = $phone;
-            $createData = [$openid, $routineInfo, $spid, $agent_id, 'routine', 'routine'];
+            $createData = [$openid, $routineInfo, $spid, 'routine', 'routine'];
         }
         //写入用户信息
         /** @var UserWechatAuthServices $wechatAuthServices */

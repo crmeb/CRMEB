@@ -6,7 +6,7 @@
 					<view>
 						<view class="name">
 							{{ $t(`员工人数`) }}
-							<view class="invitation" @click="showCode">{{ $t(`邀请`) }}</view>
+							<view class="invitation" @click="openAdd">{{ $t(`添加`) }}</view>
 						</view>
 						<view>
 							<text class="num">{{ teamCount }}</text>
@@ -74,39 +74,22 @@
 			</view>
 		</view>
 		<view class="mask invoice-mask" v-if="refund_close" @click="refund_close = false"></view>
-		<view class="mask invoice-mask" v-if="codeModal" @click="codeModal = false"></view>
-		<view class="poster-pop" v-if="codeModal">
-			<image src="/static/images/poster-close.png" class="close" @click="posterImageClose"></image>
-			<!-- #ifdef MP -->
-			<image :src="codeSrc"></image>
-			<!-- #endif -->
-
-			<!-- #ifndef MP -->
-			<zb-code
-				ref="qrcode"
-				:show="codeModal"
-				:cid="cid"
-				:val="val"
-				:size="size"
-				:unit="unit"
-				:background="background"
-				:foreground="foreground"
-				:pdground="pdground"
-				:icon="icon"
-				:iconSize="iconsize"
-				:onval="onval"
-				:loadMake="loadMake"
-				@result="qrR"
-			/>
-			<!-- #endif -->
-
-			<!-- #ifndef H5  -->
-			<view class="save-poster" @click="savePosterPath">{{ $t(`保存到手机`) }}</view>
-			<!-- #endif -->
-			<!-- #ifdef H5 -->
-			<view class="keep">{{ $t(`长按图片可以保存到手机`) }}</view>
-			<!-- #endif -->
+		<view class="refund-input" :class="addClose ? 'on' : ''">
+			<view class="input-msg">
+				<text class="iconfont icon-guanbi5" @tap="addClose = false"></text>
+				<view class="refund-input-title">{{ $t(`添加员工`) }}</view>
+				<view class="refund-input-sty">
+					<input v-model="account" :placeholder="$t(`请输入手机号或用户ID`)" />
+				</view>
+				<view class="refund-input-sty">
+					<input type="digit" v-model="addPercent" :placeholder="$t(`请输入佣金比例`)" />
+				</view>
+				<view class="refund-bth">
+					<view class="submit-refund" @click="addSubmit()">{{ $t(`提交`) }}</view>
+				</view>
+			</view>
 		</view>
+		<view class="mask invoice-mask" v-if="addClose" @click="addClose = false"></view>
 	</view>
 </template>
 
@@ -114,15 +97,13 @@
 import { ref } from 'vue';
 import { onLoad, onShow, onHide, onReachBottom } from '@dcloudio/uni-app';
 import { storeToRefs } from 'pinia';
-import { clerkPeople, setClerkPercent, delClerkPercent } from '@/api/user.js';
+import { clerkPeople, setClerkPercent, delClerkPercent, bindStaff } from '@/api/user.js';
 import { toLogin } from '@/libs/login.js';
 import home from '@/components/home';
 import { useColorTheme } from '@/composables/useColorTheme';
 import { useAppStore } from '@/store/modules/app';
 import util from '@/utils/util.js';
 import i18n from '@/utils/lang.js';
-import zbCode from '@/components/zb-code/zb-code.vue';
-import { HTTP_REQUEST_URL } from '@/config/app.js';
 // #ifdef MP
 import authorize from '@/components/Authorize';
 // #endif
@@ -146,26 +127,11 @@ const uid = ref(0);
 const status = ref(false);
 const recordList = ref([]);
 const refund_close = ref(false);
+const addClose = ref(false);
+const account = ref('');
+const addPercent = ref('');
 const isAuto = ref(false); //没有授权的不会自动授权
 const isShowAuth = ref(false); //是否隐藏授权
-//二维码参数
-const codeShow = ref(false);
-const cid = ref('1');
-const ifShow = ref(true);
-const val = HTTP_REQUEST_URL + '/pages/index/index?agent_id=' + appStore.uid; // 要生成的二维码值
-const size = ref(430); // 二维码大小
-const unit = ref('upx'); // 单位
-const background = ref('#FFF'); // 背景色
-const foreground = ref('#000'); // 前景色
-const pdground = ref('#000'); // 角标色
-const icon = ref(''); // 二维码图标
-const iconsize = ref(70); // 二维码图标大小
-const lv = ref(3); // 二维码容错级别 ， 一般不用设置，默认就行
-const onval = ref(true); // val值变化时自动重新生成二维码
-const loadMake = ref(true); // 组件加载完成后自动生成二维码
-const src = ref(''); // 二维码生成后的图片地址或base64
-const codeSrc = ref('');
-const codeModal = ref(false);
 // 原代码未在 data 声明、直接挂到实例上的字段
 const is_show = ref(false);
 
@@ -189,14 +155,48 @@ onReachBottom(() => {
 });
 
 // ---------- methods ----------
-function qrR(res) {
-	codeSrc.value = res;
+function openAdd() {
+	account.value = '';
+	addPercent.value = '';
+	addClose.value = true;
 }
-function showCode() {
-	codeModal.value = true;
-}
-function posterImageClose() {
-	codeModal.value = false;
+function addSubmit() {
+	const target = (account.value || '').trim();
+	if (!target) {
+		return util.Tips({
+			title: i18n.t(`请输入手机号或用户ID`)
+		});
+	}
+	if (addPercent.value === '' || Number(addPercent.value) < 0) {
+		return util.Tips({
+			title: i18n.t(`请输入佣金比例`)
+		});
+	}
+	bindStaff({
+		account: target,
+		division_percent: addPercent.value
+	})
+		.then((res) => {
+			util.Tips(
+				{
+					title: res.msg,
+					icon: 'success'
+				},
+				() => {
+					addClose.value = false;
+					page.value = 1;
+					limit.value = 20;
+					status.value = false;
+					recordList.value = [];
+					userSpreadNewList();
+				}
+			);
+		})
+		.catch((err) => {
+			util.Tips({
+				title: err
+			});
+		});
 }
 function onLoadFun(e) {
 	userSpreadNewList();
@@ -318,71 +318,9 @@ function userSpreadNewList() {
 		total.value = res.data.total;
 		totalLevel.value = res.data.totalLevel;
 		teamCount.value = res.data.count;
-		codeSrc.value = res.data.codeUrl;
 		status.value = limit.value > len;
 		page.value = page.value + 1;
 		recordList.value = recordListNew;
-	});
-}
-function downloadFilestoreImage(url) {
-	return new Promise((resolve, reject) => {
-		uni.downloadFile({
-			url: url,
-			success: function(res) {
-				resolve(res.tempFilePath);
-			},
-			fail: function() {
-				return util.Tips({
-					title: ''
-				});
-			}
-		});
-	});
-}
-function savePosterPath() {
-	downloadFilestoreImage(codeSrc.value).then((url) => {
-		uni.getSetting({
-			success(res) {
-				if (!res.authSetting['scope.writePhotosAlbum']) {
-					uni.authorize({
-						scope: 'scope.writePhotosAlbum',
-						success() {
-							uni.saveImageToPhotosAlbum({
-								filePath: url,
-								success: function(res) {
-									posterImageClose();
-									util.Tips({
-										title: i18n.t(`保存成功`),
-										icon: 'success'
-									});
-								},
-								fail: function(res) {
-									util.Tips({
-										title: i18n.t(`保存失败`)
-									});
-								}
-							});
-						}
-					});
-				} else {
-					uni.saveImageToPhotosAlbum({
-						filePath: url,
-						success: function(res) {
-							posterImageClose();
-							util.Tips({
-								title: i18n.t(`保存成功`),
-								icon: 'success'
-							});
-								},
-						fail: function(res) {
-							util.Tips({
-								title: i18n.t(`保存失败`)
-							});
-						}
-					});
-				}
-			}
-		});
 	});
 }
 </script>

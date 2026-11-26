@@ -2,22 +2,18 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="是否显示：">
-            <el-select
-              v-model="formValidate.status"
+            <el-select v-model="formValidate.status"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
@@ -26,64 +22,58 @@
             <el-input clearable placeholder="请输入分类名称" v-model="formValidate.title" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询分类</el-button>
+            <el-button type="primary" @click="userSearchs">查询分类</el-button>
           </el-form-item>
           <div>
             <el-form-item label="配置名称：" label-for="status2">
               <el-input clearable placeholder="请输入配置名称" v-model="config_name" class="form_content_width" />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" v-db-click @click="searchConfig">查询配置</el-button>
+              <el-button type="primary" @click="searchConfig">查询配置</el-button>
             </el-form-item>
           </div>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" v-db-click @click="classAdd" class="action-row mr20">添加配置分类</el-button>
-      <vxe-table
-        :border="false"
+      <el-button type="primary" @click="classAdd" class="action-row mr20">添加配置分类</el-button>
+      <vxe-table :border="false"
         class="vxeTable mt14"
         :loading="loading"
         ref="xTable"
         :tree-config="tabconfig"
         :data="classList"
-        :row-config="{ keyField: 'id', isCurrent: true, isHover: true }"
-      >
+        :row-config="{ keyField: 'id', isCurrent: true, isHover: true }">
         <vxe-table-column field="id" title="ID" tooltip width="85"></vxe-table-column>
         <vxe-table-column field="title" tree-node title="分类名称" min-width="150"></vxe-table-column>
         <vxe-table-column field="eng_title" title="分类字段" min-width="150"></vxe-table-column>
         <vxe-table-column field="statuss" title="状态" width="250">
           <template v-slot="{ row }">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="row.status"
               :value="row.status"
               @change="onchangeIsShow(row)"
-              size="large"
-            >
+              size="large">
             </el-switch>
           </template>
         </vxe-table-column>
         <vxe-table-column field="action" title="操作" width="160" fixed="right">
           <template v-slot="{ row, index }">
-            <a v-db-click @click="goList(row)">配置列表</a>
+            <a @click="goList(row)">配置列表</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="edit(row)">编辑</a>
+            <a @click="edit(row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(row, '删除分类', index)">删除</a>
           </template>
         </vxe-table-column>
       </vxe-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
 

@@ -102,7 +102,7 @@ class LoginServices extends BaseService
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function login($account, $password, $spread, $agent_id)
+    public function login($account, $password, $spread)
     {
         $user = $this->dao->getOne(['account|phone' => $account, 'is_del' => 0]);
         if ($user) {
@@ -117,11 +117,7 @@ class LoginServices extends BaseService
             throw new ApiException('您已被禁止登录，请联系管理员');
 
         //更新用户信息
-        if ($agent_id) {
-            $this->updateUserInfo(['code' => $agent_id, 'is_staff' => 1], $user);
-        } else {
-            $this->updateUserInfo(['code' => $spread], $user);
-        }
+        $this->updateUserInfo(['code' => $spread], $user);
         $token = $this->createToken((int)$user['uid'], 'api', '', 'h5', 'password');
         if ($token) {
             return ['token' => $token['token'], 'expires_time' => $token['params']['exp']];
@@ -205,8 +201,17 @@ class LoginServices extends BaseService
             event('UserRegister', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], $is_new]);
 
         } else {
-            if ($is_new) {
-                if ($spreadUid) {
+            // 分销开启时按分销绑定规则；未开启时没有上级才绑定
+            $spreadUid = (int)$spreadUid;
+            if ($spreadUid > 0) {
+                /** @var UserServices $userServices */
+                $userServices = app()->make(UserServices::class);
+                $decision = $userServices->decideSpreadBind((int)$userInfo['uid'], $spreadUid, [
+                    'is_new' => (bool)$is_new,
+                    'current_spread_uid' => (int)($agentUserInfo['spread_uid'] ?? 0),
+                    'current_spread_time' => (int)($agentUserInfo['spread_time'] ?? 0),
+                ]);
+                if ($decision['allow']) {
                     $spreadInfo = $this->dao->get($spreadUid);
                     $spreadProfile = event('DistributionServiceProxy', [
                         'service' => 'DistributionUserServices',
@@ -214,43 +219,14 @@ class LoginServices extends BaseService
                         'args' => [$spreadUid, $spreadInfo ? $spreadInfo->toArray() : []],
                     ]);
                     $spreadData = is_array($spreadProfile[0] ?? null) ? $spreadProfile[0] : ($spreadInfo ? $spreadInfo->toArray() : []);
-                    $spreadUid = (int)$spreadUid;
                     $data['spread_uid'] = $spreadUid;
                     $data['spread_time'] = time();
                     $data['agent_id'] = $spreadData['agent_id'] ?? 0;
                     $data['division_id'] = $spreadData['division_id'] ?? 0;
                     $data['staff_id'] = $spreadData['staff_id'] ?? 0;
-                    //绑定用户后置事件（包含消息通知和绑定关系记录）
-                    event('UserRegister', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 1]);
-                }
-            } else {
-                // 已有上级时保持原关系；没有上级时允许建立一次推广关系。
-                if ($agentUserInfo['spread_uid'] && !isset($user['is_staff'])) {
+                    event('UserRegister', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], $is_new ? 1 : 0]);
+                } elseif ((int)($agentUserInfo['spread_uid'] ?? 0) > 0 && !isset($user['is_staff'])) {
                     $data['login_type'] = $user['login_type'] ?? $userInfo->login_type;
-                } else {
-                    $upperRelation = event('DistributionServiceProxy', [
-                        'service' => 'DistributionRelationServices',
-                        'action' => 'relation',
-                        'args' => [(int)$spreadUid, []],
-                    ]);
-                    $upperSpreadUid = (int)($upperRelation[0]['spread_uid'] ?? $this->dao->value(['uid' => $spreadUid], 'spread_uid'));
-                    if ($spreadUid && $user['code'] != $userInfo->uid && $userInfo->uid != $upperSpreadUid) {
-                        $spreadInfo = $this->dao->get($spreadUid);
-                        $spreadProfile = event('DistributionServiceProxy', [
-                            'service' => 'DistributionUserServices',
-                            'action' => 'profile',
-                            'args' => [(int)$spreadUid, $spreadInfo ? $spreadInfo->toArray() : []],
-                        ]);
-                        $spreadData = is_array($spreadProfile[0] ?? null) ? $spreadProfile[0] : ($spreadInfo ? $spreadInfo->toArray() : []);
-                        $spreadUid = (int)$spreadUid;
-                        $data['spread_uid'] = $spreadUid;
-                        $data['spread_time'] = time();
-                        $data['agent_id'] = $spreadData['agent_id'] ?? 0;
-                        $data['division_id'] = $spreadData['division_id'] ?? 0;
-                        $data['staff_id'] = $spreadData['staff_id'] ?? 0;
-                        //绑定用户后置事件（包含消息通知和绑定关系记录）
-                        event('UserRegister', [$spreadUid, $userInfo['user_type'], $userInfo['nickname'], $userInfo['uid'], 0]);
-                    }
                 }
             }
         }
@@ -403,7 +379,7 @@ class LoginServices extends BaseService
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function mobile($phone, $spread, string $user_type = 'h5', $agent_id = 0)
+    public function mobile($phone, $spread, string $user_type = 'h5')
     {
         //数据库查询
         $user = $this->dao->getOne(['account|phone' => $phone, 'is_del' => 0]);
@@ -418,11 +394,7 @@ class LoginServices extends BaseService
             throw new ApiException('您已被禁止登录，请联系管理员');
 
         // 设置推广关系
-        if ($agent_id) {
-            $this->updateUserInfo(['code' => $agent_id, 'is_staff' => 1], $user);
-        } else {
-            $this->updateUserInfo(['code' => $spread], $user);
-        }
+        $this->updateUserInfo(['code' => $spread], $user);
 
         $token = $this->createToken((int)$user['uid'], 'api', '', $user_type, 'mobile');
         if ($token) {
@@ -485,14 +457,14 @@ class LoginServices extends BaseService
             throw new ApiException('请刷新页面或者重新授权');
         }
         $createData = CacheService::get($key);
-        if (!is_array($createData) || count($createData) < 6) {
+        if (!is_array($createData) || count($createData) < 5) {
             throw new ApiException('请刷新页面或者重新授权');
         }
-        [$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType] = $createData;
+        [$openid, $wechatInfo, $spreadId, $login_type, $userType] = $createData;
         $wechatInfo['phone'] = $phone;
         /** @var UserWechatAuthServices $wechatAuthServices */
         $wechatAuthServices = app()->make(UserWechatAuthServices::class);
-        $user = $wechatAuthServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $agent_id, $login_type, $userType]);
+        $user = $wechatAuthServices->wechatOauthAfter([$openid, $wechatInfo, $spreadId, $login_type, $userType]);
         if (!$user || !isset($user['uid'])) {
             throw new ApiException('用户认证失败，请重新登录');
         }

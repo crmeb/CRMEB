@@ -1654,6 +1654,64 @@ class UserServices extends BaseService
     }
 
     /**
+     * 判定是否允许绑定上级。
+     * 分销未开启：没有上级就绑定，已有上级不改。
+     * 分销已开启：按分销模块的绑定人群和绑定模式判定。
+     * @param int $uid
+     * @param int $spreadUid
+     * @param array $context is_new / current_spread_uid / current_spread_time
+     * @return array{allow:bool,message:string}
+     */
+    public function decideSpreadBind(int $uid, int $spreadUid, array $context = []): array
+    {
+        if ($uid <= 0 || $spreadUid <= 0 || $uid === $spreadUid) {
+            return ['allow' => false, 'message' => '不绑定'];
+        }
+        // 从待绑定上级往上追溯，碰到自己就成环。分销模块未接管时读用户表。
+        $chain = event('DistributionServiceProxy', [
+            'service' => 'DistributionRelationServices',
+            'action' => 'inSpreadChain',
+            'args' => [$uid, $spreadUid],
+        ]);
+        $wouldCycle = is_bool($chain[0] ?? null) ? $chain[0] : false;
+        if (!is_bool($chain[0] ?? null)) {
+            $cursor = $spreadUid;
+            $seen = [];
+            while ($cursor > 0 && !isset($seen[$cursor])) {
+                if ($cursor === $uid) {
+                    $wouldCycle = true;
+                    break;
+                }
+                $seen[$cursor] = true;
+                $cursor = (int)$this->dao->value(['uid' => $cursor], 'spread_uid');
+            }
+        }
+        if ($wouldCycle) {
+            return ['allow' => false, 'message' => '不绑定'];
+        }
+
+        if ((int)sys_config('brokerage_func_status', 0) === 1) {
+            $proxy = event('DistributionServiceProxy', [
+                'service' => 'DistributionRelationServices',
+                'action' => 'decideBind',
+                'args' => [$uid, $spreadUid, $context],
+            ]);
+            if (is_array($proxy[0] ?? null) && array_key_exists('allow', $proxy[0])) {
+                return [
+                    'allow' => (bool)$proxy[0]['allow'],
+                    'message' => (string)($proxy[0]['message'] ?? '不绑定'),
+                ];
+            }
+        }
+
+        // 分销未开启，或分销模块未接管判定：没有上级才绑定
+        if ((int)($context['current_spread_uid'] ?? 0) > 0) {
+            return ['allow' => false, 'message' => '不绑定'];
+        }
+        return ['allow' => true, 'message' => 'ok'];
+    }
+
+    /**
      * 静默绑定推广人
      * @param int $uid
      * @param int $spreadUid
@@ -1663,7 +1721,7 @@ class UserServices extends BaseService
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function spread(int $uid, int $spreadUid, $code, $agent_id)
+    public function spread(int $uid, int $spreadUid, $code)
     {
         $userInfo = $this->dao->getOne(['uid' => $uid]);
         if (!$userInfo) {
@@ -1680,32 +1738,12 @@ class UserServices extends BaseService
             /** @var QrcodeServices $qrCode */
             $qrCode = app()->make(QrcodeServices::class);
             if ($info = $qrCode->getOne(['id' => $code, 'status' => 1])) {
-                if ($info['third_type'] == 'agent') {
-                    $agent_id = $info['third_id'];
-                } else {
+                if ($info['third_type'] != 'agent') {
                     $spreadUid = $info['third_id'];
                 }
             }
         }
-        if ($agent_id) {
-            $spreadInfo = $this->dao->getOne(['uid' => $agent_id]);
-            if ($agent_id == $uid) {
-                return '自己不能推荐自己';
-            } else if (!$userInfo) {
-                return '用户不存在';
-            } else if (!$spreadInfo) {
-                return '上级用户不存在';
-            } else if (!empty($userArray['is_division'])) {
-                return '您是事业部,不能绑定成为别人的员工';
-            } else if (!empty($userArray['is_agent'])) {
-                return '您是代理商,不能绑定成为别人的员工';
-            } else if (app()->make(LoginServices::class)->updateUserInfo(['code' => $agent_id, 'is_staff' => 1], $userInfo, false)) {
-                return '绑定店员成功!';
-            }
-        }
         if ($spreadUid == 0) return '不绑定';
-        $upperRelation = event('DistributionServiceProxy', ['service' => 'DistributionRelationServices', 'action' => 'relation', 'args' => [$spreadUid, []]]);
-        $userSpreadUid = (int)($upperRelation[0]['spread_uid'] ?? $this->dao->value(['uid' => $spreadUid], 'spread_uid'));
         //记录好友关系
         if ($spreadUid && $uid && $spreadUid != $uid) {
             /** @var UserFriendsServices $serviceFriend */
@@ -1715,32 +1753,33 @@ class UserServices extends BaseService
                 'friends_uid' => $spreadUid,
             ]);
         }
-        // 仅允许没有上级的用户建立推广关系，不受分销配置开关和时间窗影响。
-        $check = empty($userArray['spread_uid']);
-        if ($userArray['uid'] == $spreadUid || $userArray['uid'] == $userSpreadUid) $check = false;
-        if ($check) {
-            $spreadLegacy = $this->dao->get($spreadUid);
-            $spreadProfile = event('DistributionServiceProxy', ['service' => 'DistributionUserServices', 'action' => 'profile', 'args' => [$spreadUid, $spreadLegacy ? $spreadLegacy->toArray() : []]]);
-            $spreadInfo = is_array($spreadProfile[0] ?? null) ? $spreadProfile[0] : ($spreadLegacy ? $spreadLegacy->toArray() : []);
-            $data = [];
-            $data['spread_uid'] = $spreadUid;
-            $data['spread_time'] = time();
-            // 事业部/代理/员工归属由分销插件档案接管，不再写用户表
-            $handledProfile = event('DistributionServiceProxy', ['service' => 'DistributionUserServices', 'action' => 'saveProfile', 'args' => [$uid, [
-                'division_id' => (int)($spreadInfo['division_id'] ?? 0),
-                'agent_id' => (int)($spreadInfo['agent_id'] ?? 0),
-                'staff_id' => (int)($spreadInfo['staff_id'] ?? 0),
-            ]] ]);
-            $handledRelation = event('DistributionServiceProxy', ['service' => 'DistributionRelationServices', 'action' => 'bind', 'args' => [$uid, $spreadUid, $data['spread_time']]]);
-            if ((!is_array($handledProfile) || ($handledProfile[0] ?? null) === null
-                    || !is_array($handledRelation) || ($handledRelation[0] ?? null) === null)
-                && !$this->dao->update($uid, $data, 'uid')) {
-                throw new ApiException('绑定推广关系失败');
-            }
-            return '绑定上级成功，上级uid为' . $spreadUid;
-        } else {
+        $decision = $this->decideSpreadBind($uid, (int)$spreadUid, [
+            'is_new' => false,
+            'current_spread_uid' => (int)($userArray['spread_uid'] ?? 0),
+            'current_spread_time' => (int)($userArray['spread_time'] ?? 0),
+        ]);
+        if (!$decision['allow']) {
             return '不绑定';
         }
+        $spreadLegacy = $this->dao->get($spreadUid);
+        $spreadProfile = event('DistributionServiceProxy', ['service' => 'DistributionUserServices', 'action' => 'profile', 'args' => [$spreadUid, $spreadLegacy ? $spreadLegacy->toArray() : []]]);
+        $spreadInfo = is_array($spreadProfile[0] ?? null) ? $spreadProfile[0] : ($spreadLegacy ? $spreadLegacy->toArray() : []);
+        $data = [];
+        $data['spread_uid'] = $spreadUid;
+        $data['spread_time'] = time();
+        // 事业部/代理/员工归属由分销插件档案接管，不再写用户表
+        $handledProfile = event('DistributionServiceProxy', ['service' => 'DistributionUserServices', 'action' => 'saveProfile', 'args' => [$uid, [
+            'division_id' => (int)($spreadInfo['division_id'] ?? 0),
+            'agent_id' => (int)($spreadInfo['agent_id'] ?? 0),
+            'staff_id' => (int)($spreadInfo['staff_id'] ?? 0),
+        ]] ]);
+        $handledRelation = event('DistributionServiceProxy', ['service' => 'DistributionRelationServices', 'action' => 'bind', 'args' => [$uid, $spreadUid, $data['spread_time']]]);
+        if ((!is_array($handledProfile) || ($handledProfile[0] ?? null) === null
+                || !is_array($handledRelation) || ($handledRelation[0] ?? null) === null)
+            && !$this->dao->update($uid, $data, 'uid')) {
+            throw new ApiException('绑定推广关系失败');
+        }
+        return '绑定上级成功，上级uid为' . $spreadUid;
     }
 
     /**

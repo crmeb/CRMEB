@@ -1,13 +1,11 @@
 <template>
   <div style="width: 100%">
-    <el-drawer
-      class="user-details-drawer"
+    <el-drawer class="user-details-drawer"
       v-model="modals"
       title="用户详情"
-      :wrapperClosable="false"
+      :close-on-click-modal="false"
       :size="1100"
-      @closed="draChange"
-    >
+      @closed="draChange">
       <div class="user-details-body">
         <div class="acea-row head">
           <div class="avatar mr15"><img :src="psInfo.avatar" /></div>
@@ -20,8 +18,8 @@
             </div>
           </div>
           <div class="edit-btn" v-if="!psInfo.is_del">
-            <el-button v-if="!isEdit" type="primary" v-db-click @click="edit">编辑</el-button>
-            <el-button v-if="isEdit" v-db-click @click="edit">取消</el-button>
+            <el-button v-if="!isEdit" type="primary" @click="edit">编辑</el-button>
+            <el-button v-if="isEdit" @click="edit">取消</el-button>
             <el-button v-if="isEdit" type="primary" v-db-click @click="editSave">保存</el-button>
           </div>
         </div>
@@ -36,14 +34,12 @@
           <el-tab-pane :name="item.val" v-for="(item, index) in list" :key="index" :label="item.label" lazy>
             <div class="tab-pane-body">
               <div class="tab-table-wrap">
-                <el-table
-                  :data="userLists"
+                <el-table :data="userLists"
                   height="100%"
                   ref="table"
                   v-loading="loading"
                   no-userFrom-text="暂无数据"
-                  no-filtered-userFrom-text="暂无筛选结果"
-                >
+                  no-filtered-userFrom-text="暂无筛选结果">
                   <el-table-column :label="item.title" min-width="120" v-for="(item, index) in columns" :key="index">
                     <template #default="scope">
                       <template v-if="item.format === 'time'">
@@ -66,13 +62,11 @@
                 </el-table>
               </div>
               <div class="acea-row row-right page">
-                <pagination
-                  v-if="total"
+                <pagination v-if="total"
                   :total="total"
                   v-model:page="userFrom.page"
                   v-model:limit="userFrom.limit"
-                  @pagination="changeType"
-                />
+                  @pagination="changeType" />
               </div>
             </div>
           </el-tab-pane>
@@ -427,12 +421,12 @@ defineExpose({ modals, getDetails });
     padding-top: 12px;
   }
 }
-:deep(.el-tabs--border-card > .el-tabs__header),
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:active) {
+:deep(.el-tabs--border-card> .el-tabs__header),
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item:active) {
   border: none;
   height: 40px;
 }
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item.is-active) {
   border: none;
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
@@ -440,10 +434,10 @@ defineExpose({ modals, getDetails });
   color: var(--prev-color-text-regular);
   line-height: 16px;
 }
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item) {
   border: none;
 }
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item) {
   margin-top: 0;
   transition: none;
   height: 40px !important;

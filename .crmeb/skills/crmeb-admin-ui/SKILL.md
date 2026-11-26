@@ -5,7 +5,7 @@ description: CRMEB v8 管理后台（frontend/admin）UI 规范技能 - 设计 T
 
 # CRMEB v8 管理后台 UI 规范
 
-> 提炼自 `frontend/admin/src` 真实代码（2026-09），技术栈：**Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4 + Vite 5，纯 JS（不用 TS），全部 `<script setup>`**。
+> 提炼自 `frontend/admin/src` 真实代码（2026-09），技术栈：**Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4 + Vite 8，纯 JS（不用 TS），全部 `<script setup>`**。
 > 设计验收值以 [前端规范第四节](../../rules/前端规范.md#四管理端-ui-设计验收标准) 为准；本技能维护实现方法与代码现状。存量业务修复不做无差别风格迁移。
 
 ## 设计落地流程（先读）
@@ -319,7 +319,7 @@ onMounted(() => { getList(); });
 
 ## 五、按钮与指令
 
-- **`v-db-click` 所有按钮/可点击元素几乎必带**（点击后 1 秒内禁用，防重复提交）。
+- **`v-db-click` 只用于写数据按钮**（提交/保存/确定/删除等；点击后 1 秒内禁用，防重复提交）。查询、重置、取消、上一步/下一步、编辑入口等不要加；「下一步/提交」共用按钮用 `v-db-click="isSubmitStep"`。
 - 权限按钮：`<el-button v-auth="['admin-user-save']" type="primary" v-db-click @click="...">添加</el-button>`。
 - 按钮规格（全局已定制，见 1.6）：12px 字号、`9px 15px` 内边距、4px 圆角；**按钮组间距由 `.el-button + .el-button` 统一 14px**，不要手写 margin。
 - 行内操作：新写法统一 `<el-button link>`（primary=编辑/详情，danger=删除），不再用旧 `<a> + el-divider` 与已废弃的 `type="text"`。
@@ -497,7 +497,7 @@ function del(row, tit, num) {
 
 先按 [前端规范第四节](../../rules/前端规范.md#四管理端-ui-设计验收标准) 验收设计参数，再检查以下实现项；公共类存在不等于其尺寸已合规：
 
-- [ ] `defineOptions({ name })` 已写；按钮带 `v-db-click`；权限按钮带 `v-auth`
+- [ ] `defineOptions({ name })` 已写；写数据按钮带 `v-db-click`；权限按钮带 `v-auth`
 - [ ] 搜索卡、数据卡、分页区职责清楚；卡片 `shadow="never"`，旧 `:bordered="false"` 是无效历史属性，新示例无需添加
 - [ ] 页面标题头用 `<pages-header>` 或 `.i-layout-page-header.header-title` 紧凑结构（52px），未用 el-card 包标题
 - [ ] 表格默认 el-table（树形才 vxe-table）；状态列 `defineSwitch` + 失败回滚；图片列 `tabBox_img + v-viewer + v-lazy`；超长文本 `line1/line2`

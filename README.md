@@ -20,6 +20,8 @@
   Built with care for open source — a Star 🌟 in the top-right corner means a lot to us.
 </div>
 
+**Previous version**: [Download v6.0.0](https://gitee.com/ZhongBangKeJi/CRMEB/repository/archive/v6.0.0.zip)
+
 ---
 
 ### 📝 **Project Overview**

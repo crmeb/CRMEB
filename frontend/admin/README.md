@@ -1,6 +1,6 @@
 # CRMEB 管理后台（frontend/admin）
 
-CRMEB 开源版管理端，基于 **Vue 3.5 + Element Plus 2.9 + Pinia 2 + Vue Router 4 + Vite 5**（纯 JS）构建。
+CRMEB 开源版管理端，基于 **Vue 3.5 + Element Plus 2.9 + Pinia 2 + Vue Router 4 + Vite 8**（纯 JS）构建。
 
 - 页面路由前缀 `base: /admin`；开发服务端口 `1619`
 - 开发期 `/adminapi` 请求自动代理到后端 `http://localhost:8011`（见 `vite.config.js`），需先启动后端
@@ -67,7 +67,7 @@ npm run build:all   # 主应用 + 插件扩展
 
 ```
 ├── index.html                 # HTML 模板
-├── package.json               # 依赖与脚本（engines: node >=18.20）
+├── package.json               # 依赖与脚本（engines: node ^20.19 || >=22.12）
 ├── vite.config.js             # Vite 配置（base /admin、/adminapi 代理、扩展静态服务、Monaco）
 ├── scripts/
 │   └── build-extensions.js    # 插件扩展 UMD 构建入口

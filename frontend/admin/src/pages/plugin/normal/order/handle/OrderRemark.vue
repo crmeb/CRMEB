@@ -1,31 +1,25 @@
 <template>
   <!-- 订单备注弹窗 -->
-  <el-dialog
-    title="订单备注"
+  <el-dialog title="订单备注"
     width="540px"
     v-model="dialogVisible"
     @close="handleClose"
     :close-on-click-modal="false"
-    :destroy-on-close="true"
-  >
+    :destroy-on-close="true">
     <el-form ref="remarkFormRef" :model="formData" label-width="80px">
       <el-form-item label="备注：">
-        <el-input
-          type="textarea"
+        <el-input type="textarea"
           v-model="formData.remark"
           :rows="4"
           maxlength="200"
           show-word-limit
-          placeholder="请输入备注内容"
-        ></el-input>
+          placeholder="请输入备注内容"></el-input>
       </el-form-item>
     </el-form>
-    <template #footer
-      ><div>
+    <template #footer><div>
         <el-button @click="handleClose">取消</el-button>
         <el-button v-db-click type="primary" @click="submitRemark" :loading="submitLoading">保存</el-button>
-      </div></template
-    >
+      </div></template>
   </el-dialog>
 </template>
 

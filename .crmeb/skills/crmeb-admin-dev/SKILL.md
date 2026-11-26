@@ -5,7 +5,7 @@ description: 开发和修改 frontend/admin 下的 CRMEB Admin 管理端：Vue 3
 
 # CRMEB Admin 开发
 
-本管理端使用 **Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4**，**Vite 5** 构建，纯 JavaScript 不用 TS。不得引入 Vue 2 Options API 或 element-ui 写法。
+本管理端使用 **Vue 3.5 + Element Plus 2.9 + Pinia 2 + vue-router 4**，**Vite 8** 构建，纯 JavaScript 不用 TS。不得引入 Vue 2 Options API 或 element-ui 写法。
 
 > 2026-09 已从 Vue 2.7 / vue-cli / Vuex / element-ui 整体迁移。若看到 `this.$xxx`、`Vuex`、`element-ui`、`require.context`、`npm run serve`，那是迁移前写法，不要照抄。
 > 设计验收标准见 [前端规范第四节](../../rules/前端规范.md#四管理端-ui-设计验收标准)，实现方法与存量差异见 [crmeb-admin-ui](../crmeb-admin-ui/SKILL.md)。

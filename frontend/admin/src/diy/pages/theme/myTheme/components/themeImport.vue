@@ -1,8 +1,7 @@
 <template>
   <div class="theme-import">
     <div class="goods-upload">
-      <el-upload
-        v-show="!fileUrl && !importStatus"
+      <el-upload v-show="!fileUrl && !importStatus"
         ref="upload"
         class="upload-demo"
         :drag="!fileUrl"
@@ -12,8 +11,7 @@
         :before-upload="fileChange"
         :on-success="handleSuccess"
         :on-error="handleError"
-        accept=".zip"
-      >
+        accept=".zip">
         <div v-if="uploadLoading" class="flex-column">
           <i class="el-icon-loading" style="font-size: 40px; color: #ccc"></i>
           <div class="el-upload__text">正在上传中...</div>
@@ -35,13 +33,13 @@
           正在导入，您可关闭当前弹窗，稍候可在列表查看导入结果
           <i class="el-icon-loading"></i>
         </div>
-        <el-button v-db-click v-else class="btn-import" type="primary" @click="importThemePkg">立即导入</el-button>
+        <el-button v-else class="btn-import" type="primary" @click="importThemePkg">立即导入</el-button>
       </div>
       <div v-show="fileUrl && importStatus" class="file-info">
         <img class="el-upload-dragger__icon mb20" :src="statusImage" alt="" />
         <div class="el-upload__text">导入成功</div>
         <div>
-          <el-button v-db-click class="btn-import" @click="selectFile">再次导入</el-button>
+          <el-button class="btn-import" @click="selectFile">再次导入</el-button>
           <el-button type="primary" class="btn-import" @click="close">完成</el-button>
         </div>
       </div>
@@ -81,7 +79,7 @@ function fileChange(file, fileList) {
     return false;
   }
   // 限制50M
-  if (file.size >= 52428800) {
+  if (file.size>= 52428800) {
     ElMessage.error('文件大小不能超过50MB');
     return false;
   } else {

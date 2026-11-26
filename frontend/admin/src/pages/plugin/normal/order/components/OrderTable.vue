@@ -14,24 +14,20 @@
 
     <!-- 工具栏 -->
     <div class="toolbar">
-      <el-button v-db-click type="primary" v-if="currentTab !== 'deleted'" @click="emit('batch-shipment')"
-        >批量发货</el-button
-      >
+      <el-button type="primary" v-if="currentTab !== 'deleted'" @click="emit('batch-shipment')">批量发货</el-button>
       <el-button v-db-click v-if="currentTab === 'deleted'" @click="emit('batch-delete')">批量删除</el-button>
-      <el-button v-db-click @click="exportList">订单导出</el-button>
+      <el-button @click="exportList">订单导出</el-button>
     </div>
 
     <!-- 订单列表 -->
     <div class="table-content">
-      <el-table
-        :data="tableData"
+      <el-table :data="tableData"
         v-loading="loading"
         stripe
         empty-text="暂无数据"
         class="orderData"
         @select="onSelectRow"
-        @select-all="onSelectAll"
-      >
+        @select-all="onSelectAll">
         <el-table-column type="expand" width="50">
           <template #default="scope">
             <OrderExpand :row="scope.row" />
@@ -47,9 +43,7 @@
                 [{{ scope.row.activity_type_text }}]</template>
             </div>
             <span v-if="scope.row.is_del === 1" style="color: #ed4014; font-size: 12px">用户已删除</span>
-            <span v-if="scope.row.is_cancel === 1 && scope.row.is_del === 0" style="color: #ed4014; font-size: 12px"
-              >用户已取消</span
-            >
+            <span v-if="scope.row.is_cancel === 1 && scope.row.is_del === 0" style="color: #ed4014; font-size: 12px">用户已取消</span>
           </template>
         </el-table-column>
         <el-table-column label="商品信息" min-width="240">
@@ -57,8 +51,7 @@
             <div class="tab">
               <img v-lazy="scope.row.image" />
               <el-tooltip placement="top" :open-delay="300">
-                <template #content
-                  ><div>
+                <template #content><div>
                     <div>
                       <span>商品名称：</span><span>{{ scope.row.title }}</span>
                     </div>
@@ -68,8 +61,7 @@
                     <div>
                       <span>购买数量：</span><span>{{ scope.row.total_num }}</span>
                     </div>
-                  </div></template
-                >
+                  </div></template>
                 <span class="line2 w-250">{{ scope.row.title }}</span>
               </el-tooltip>
             </div>
@@ -112,18 +104,14 @@
         </el-table-column>
         <el-table-column label="售后" width="100">
           <template #default="scope">
-            <el-tooltip
-              v-if="scope.row.after_sale && scope.row.after_sale.has_after_sale"
+            <el-tooltip v-if="scope.row.after_sale && scope.row.after_sale.has_after_sale"
               placement="top"
-              :open-delay="300"
-            >
-              <template #content
-                ><div>
+              :open-delay="300">
+              <template #content><div>
                   <div>售后单数：{{ scope.row.after_sale.count }}</div>
                   <div>售后类型：{{ formatAfterSaleTypes(scope.row.after_sale.types) }}</div>
                   <div>售后状态：{{ formatAfterSaleStatuses(scope.row.after_sale.statuses) }}</div>
-                </div></template
-              >
+                </div></template>
               <el-tag :type="scope.row.after_sale.is_processing ? 'warning' : 'info'">
                 {{ scope.row.after_sale.is_processing ? '售后中' : '有售后' }}
               </el-tag>
@@ -136,13 +124,9 @@
             <template v-if="scope.row.delivery_name">
               <div>{{ scope.row.delivery_name || '--' }}</div>
               <div class="delivery-no">{{ scope.row.delivery_id || '--' }}</div>
-              <a
-                v-if="scope.row.delivery_type === 'express' && scope.row.delivery_id"
-                v-db-click
+              <a v-if="scope.row.delivery_type === 'express' && scope.row.delivery_id"
                 @click="onLogistics(scope.row)"
-                style="font-size: 12px"
-                >物流查询</a
-              >
+                style="font-size: 12px">物流查询</a>
             </template>
             <span v-else style="color: var(--prev-color-text-secondary)">{{
               isPickupOrder(scope.row) ? '--' : '未发货'
@@ -156,12 +140,11 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <a v-db-click @click="onDetail(scope.row)">详情</a>
+            <a @click="onDetail(scope.row)">详情</a>
             <el-divider direction="vertical" />
             <el-dropdown @command="(cmd) => handleCommand(scope.row, cmd)" :transfer="true">
               <span class="el-dropdown-link"> 更多<i class="el-icon-arrow-down el-icon--right"></i> </span>
-              <template #dropdown
-                ><el-dropdown-menu>
+              <template #dropdown><el-dropdown-menu>
                   <!-- 确认付款（线下支付待支付） -->
                   <el-dropdown-item command="confirmPay" v-if="canConfirmPay(scope.row)">确认付款</el-dropdown-item>
                   <!-- 发货 -->
@@ -183,13 +166,10 @@
                   <!-- 立即退款 -->
                   <el-dropdown-item command="refund" v-if="canRefund(scope.row)">立即退款</el-dropdown-item>
                   <!-- 配送信息 -->
-                  <el-dropdown-item command="deliveryInfo" v-if="canShowDeliveryInfo(scope.row)"
-                    >配送信息</el-dropdown-item
-                  >
+                  <el-dropdown-item command="deliveryInfo" v-if="canShowDeliveryInfo(scope.row)">配送信息</el-dropdown-item>
                   <!-- 删除订单 -->
                   <el-dropdown-item command="delete" v-if="canDelete()">删除订单</el-dropdown-item>
-                </el-dropdown-menu></template
-              >
+                </el-dropdown-menu></template>
             </el-dropdown>
           </template>
         </el-table-column>
@@ -398,7 +378,7 @@ function getConfirmLabel(row) {
  * 判断是否可显示配送信息（已发货且有物流单号）
  */
 function canShowDeliveryInfo(row) {
-  return row.delivery_time > 0 && row.delivery_name && row.delivery_id;
+  return row.delivery_time> 0 && row.delivery_name && row.delivery_id;
 }
 
 /**
@@ -610,7 +590,13 @@ function resetTab() {
   page.page = 1;
 }
 
-defineExpose({ selectedIds, page, resetTab });
+/** 外部设置 Tab（如铃铛通知带 query 进入） */
+function setTab(tab) {
+  currentTab.value = tab || '';
+  page.page = 1;
+}
+
+defineExpose({ selectedIds, page, resetTab, setTab });
 </script>
 
 <style lang="scss" scoped>

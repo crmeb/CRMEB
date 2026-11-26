@@ -1,12 +1,11 @@
 <template>
-  <common-wrapper v-show="!isSortType" :config="configData">
+  <common-wrapper v-show="!isSortType && articleList.length" :config="configData">
     <view
       class="articleList"
       :class="{
         large: dataConfig.styleConfig.tabVal == 0,
         small: dataConfig.styleConfig.tabVal == 2,
       }"
-      v-if="articleList.length"
     >
       <navigator :render-link="false"
         :url="'/pages/extension/news_details/index?id=' + item.id"

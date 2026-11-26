@@ -3,20 +3,18 @@
     <div v-show="!monacoBox">
       <div class="wang-editor">
         <Toolbar class="editor-toolbar" :editor="editorRef" :defaultConfig="toolbarConfig" mode="default" />
-        <Editor
-          class="editor-content"
+        <Editor class="editor-content"
           v-model="valueHtml"
           :defaultConfig="editorConfig"
           mode="default"
           style="height: 600px; overflow-y: hidden"
           @onCreated="handleCreated"
           @onChange="handleChange"
-          @onDestroyed="handleDestroyed"
-        />
+          @onDestroyed="handleDestroyed" />
       </div>
     </div>
     <div v-if="monacoBox">
-      <el-button type="primary" class="bottom" v-db-click @click="getHtmlint">可视化界面</el-button>
+      <el-button type="primary" class="bottom" @click="getHtmlint">可视化界面</el-button>
       <monaco class="monaco-box" @change="changeValue" :value="newHtml" />
     </div>
 
@@ -28,13 +26,11 @@
     </el-dialog>
 
     <!-- AI 写作弹窗（公共组件，供 SchemaEditor 复用） -->
-    <AiModal
-      ref="aiModalRef"
+    <AiModal ref="aiModalRef"
       :ai-default-prompt="aiDefaultPrompt"
       :ai-default-system-prompt="aiDefaultSystemPrompt"
       :ai-show-system-prompt="aiShowSystemPrompt"
-      @insert="insertAiContent"
-    />
+      @insert="insertAiContent" />
   </div>
 </template>
 <script setup>

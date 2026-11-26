@@ -1,7 +1,7 @@
 <template>
-  <!-- 秒杀列表 -->
-  <common-wrapper v-show="!isSortType" :config="configData">
-    <view class="seckill" v-if="spikeList.length > 0">
+  <!-- 秒杀列表：无活动时整块不渲染，避免 common-wrapper 边距留白 -->
+  <common-wrapper v-show="!isSortType && spikeList.length > 0" :config="configData">
+    <view class="seckill">
       <view>
         <!-- 秒杀头部 -->
         <view

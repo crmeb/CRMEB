@@ -3,6 +3,7 @@
  * 自动被 router/routers.js 扫描加载（pages/plugin 目录下 routes.js 文件）
  */
 import setting from '@/setting';
+import Layout from '@/layout';
 const routePre = setting.routePre;
 
 export default [
@@ -12,7 +13,7 @@ export default [
     section: 'wechat_mini',
     action: 'download',
     meta: { auth: ['routine-download'], title: '小程序下载' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -28,7 +29,7 @@ export default [
     section: 'wechat_mini',
     action: 'ci_upload',
     meta: { auth: ['routine-ci-upload'], title: '小程序上传' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -44,7 +45,7 @@ export default [
     section: 'wechat_mini',
     action: 'link',
     meta: { auth: ['routine-link'], title: '小程序链接' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -60,7 +61,7 @@ export default [
     section: 'live',
     action: 'room_list',
     meta: { auth: true, title: '直播间管理' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -75,7 +76,7 @@ export default [
     section: 'live',
     action: 'room_create',
     meta: { auth: true, title: '添加直播间' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -91,7 +92,7 @@ export default [
     section: 'live',
     action: 'goods_list',
     meta: { auth: true, title: '直播商品' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -106,7 +107,7 @@ export default [
     section: 'live',
     action: 'goods_add',
     meta: { auth: true, title: '添加直播商品' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',
@@ -122,7 +123,7 @@ export default [
     section: 'live',
     action: 'anchor_list',
     meta: { auth: true, title: '主播管理' },
-    component: () => import('@/layout'),
+    component: Layout,
     children: [
       {
         path: '',

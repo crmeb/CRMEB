@@ -2,17 +2,13 @@
   <div class="normal-statistic" v-loading="loading">
     <el-card shadow="never" :bordered="false" class="filter-card">
       <div class="filter-row">
-        <date-range-picker
-          width="250px"
+        <date-range-picker width="250px"
           v-model="timeValue"
           format="YYYY/MM/DD"
           value-format="YYYY/MM/DD"
-          @change="changeTime"
-        />
-        <el-button v-auth="['admin-normal-statistics-basic']" type="primary" v-db-click @click="loadData"
-          >查询</el-button
-        >
-        <el-button v-auth="['admin-normal-statistics-excel']" v-db-click @click="exportData">导出</el-button>
+          @change="changeTime" />
+        <el-button v-auth="['admin-normal-statistics-basic']" type="primary" @click="loadData">查询</el-button>
+        <el-button v-auth="['admin-normal-statistics-excel']" @click="exportData">导出</el-button>
       </div>
     </el-card>
 
@@ -23,17 +19,15 @@
           <div class="metric">
             <div class="metric-name">{{ item.name }}</div>
             <div class="metric-value">{{ item.value }}</div>
-            <div class="metric-percent" :class="item.percent >= 0 ? 'up' : 'down'">环比 {{ item.percent }}%</div>
+            <div class="metric-percent" :class="item.percent>= 0 ? 'up' : 'down'">环比 {{ item.percent }}%</div>
           </div>
         </el-col>
       </el-row>
-      <echarts-new
-        v-if="chartOption"
+      <echarts-new v-if="chartOption"
         :option-data="chartOption"
         :styles="{ height: '380px' }"
         height="100%"
-        width="100%"
-      />
+        width="100%" />
     </el-card>
 
     <el-card shadow="never" :bordered="false" class="ranking-card">

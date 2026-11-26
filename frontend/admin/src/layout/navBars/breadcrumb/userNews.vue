@@ -2,11 +2,11 @@
   <div class="layout-navbars-breadcrumb-user-news">
     <div class="head-box">
       <div class="head-box-title">系统通知</div>
-      <!-- <div class="head-box-btn" v-if="newsList.length > 0" v-db-click @click="onAllReadClick">全部已读</div> -->
+      <!-- <div class="head-box-btn" v-if="newsList.length> 0" @click="onAllReadClick">全部已读</div> -->
     </div>
     <div class="content-box">
-      <template v-if="newsList.length > 0">
-        <div class="content-box-item" v-for="(v, k) in newsList" :key="k" v-db-click @click="jumpUrl(v.url)">
+      <template v-if="newsList.length> 0">
+        <div class="content-box-item" v-for="(v, k) in newsList" :key="k" @click="jumpUrl(v.url)">
           <img class="icon" :src="icon(v.type)" alt="" />
           <div class="content-box-right">
             <div class="content-box-type">{{ msgType(v.type) }}</div>
@@ -139,24 +139,18 @@ onMounted(() => {
 
 // 1 待发货 2 库存报警  3评论回复  4提现申请（原 filters.msgType）
 function msgType(type) {
-  let typeName;
-  switch (type) {
+  switch (Number(type)) {
     case 1:
-      typeName = '待发货订单提醒';
-      break;
+      return '待发货订单提醒';
     case 2:
-      typeName = '库存报警';
-      break;
+      return '库存报警';
     case 3:
-      typeName = '评论回复';
-      break;
+      return '评论回复';
     case 4:
-      typeName = '提现申请';
-      break;
+      return '提现申请';
     default:
-      typeName = '其它';
+      return '其它';
   }
-  return typeName;
 }
 
 // 全部已读点击
@@ -184,18 +178,24 @@ function jumpUrl(path) {
     window.open(path, '_blank');
     return;
   }
-  // 兼容在弹层等特殊渲染环境下 router 可能为 undefined 的情况（原 this.$root.$router 兜底在 Vue3 下不存在）
+  // 必须用字符串形式 push，对象形式 path 带 ?query 时 Vue Router 4 会丢掉查询参数
   if (router && typeof router.push === 'function') {
-    router.push({ path });
+    router.push(path);
   } else {
-    // 兜底：直接跳转
     window.location.href = path;
   }
 }
 
 function icon(type) {
   const key = Object.keys(newsIconModules).find((k) => k.endsWith(`news-${type}.png`));
-  return key ? newsIconModules[key].default : '';
+  if (key) {
+    const mod = newsIconModules[key];
+    return (mod && mod.default) || mod || '';
+  }
+  const fallback = Object.keys(newsIconModules).find((k) => k.endsWith('news-1.png'));
+  if (!fallback) return '';
+  const mod = newsIconModules[fallback];
+  return (mod && mod.default) || mod || '';
 }
 </script>
 

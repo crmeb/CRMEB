@@ -4,26 +4,22 @@
       <div class="padding-add">
         <el-form ref="artFromRef" :model="artFrom" inline label-width="80px" label-position="right" @submit.prevent>
           <el-form-item label="商品分类：" prop="pid" label-for="pid">
-            <el-select
-              v-model="artFrom.pid"
+            <el-select v-model="artFrom.pid"
               placeholder="请选择商品分类"
               @change="userSearchs"
               clearable
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option v-for="item in treeSelect" :value="item.id" :label="item.cate_name" :key="item.id">{{
                 item.cate_name
               }}</el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="分类状态：" label-for="is_show">
-            <el-select
-              v-model="artFrom.is_show"
+            <el-select v-model="artFrom.is_show"
               placeholder="请选择分类状态"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="开启"></el-option>
               <el-option value="0" label="关闭"></el-option>
             </el-select>
@@ -32,23 +28,19 @@
             <el-input clearable placeholder="请输入分类名称" v-model="artFrom.cate_name" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['product-save-cate']" type="primary" class="action-row bnt" v-db-click @click="addClass"
-        >添加分类</el-button
-      >
-      <vxe-table
-        class="mt14"
+      <el-button v-auth="['product-save-cate']" type="primary" class="action-row bnt" @click="addClass">添加分类</el-button>
+      <vxe-table class="mt14"
         :loading="loading"
         header-row-class-name="false"
         :tree-config="{ childrenField: 'children' }"
         :data="tableData"
-        :row-config="{ isHover: true }"
-      >
+        :row-config="{ isHover: true }">
         <vxe-table-column field="id" title="ID" tooltip width="80"></vxe-table-column>
         <vxe-table-column field="cate_name" tree-node title="分类名称" min-width="250"></vxe-table-column>
         <vxe-table-column field="pic" title="分类图标" min-width="100">
@@ -62,8 +54,7 @@
         <vxe-table-column field="sort" title="排序" min-width="100" tooltip="true"></vxe-table-column>
         <vxe-table-column field="is_show" title="状态" min-width="120">
           <template v-slot="{ row }">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="row.is_show"
@@ -71,14 +62,13 @@
               @change="onchangeIsShow(row)"
               size="large"
               active-text="开启"
-              inactive-text="关闭"
-            >
+              inactive-text="关闭">
             </el-switch>
           </template>
         </vxe-table-column>
         <vxe-table-column field="date" title="操作" width="120" fixed="right">
           <template v-slot="{ row, index }">
-            <a v-db-click @click="edit(row)">编辑</a>
+            <a @click="edit(row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(row, '删除商品分类', index)">删除</a>
           </template>

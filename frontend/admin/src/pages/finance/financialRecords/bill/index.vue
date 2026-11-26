@@ -10,13 +10,11 @@
       </div>
     </div>
     <el-card :bordered="false" shadow="never">
-      <el-form
-        ref="formRef"
+      <el-form ref="formRef"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
-        @submit.prevent
-      >
+        @submit.prevent>
         <el-row :gutter="24">
           <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
             <el-form-item label="关键字：">
@@ -25,33 +23,29 @@
           </el-col>
           <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
             <el-form-item label="时间范围：" class="tab_data">
-              <date-range-picker
-                width="250px"
+              <date-range-picker width="250px"
                 clearable
                 :editable="false"
                 @change="onchangeTime"
                 format="YYYY/MM/DD"
                 value-format="YYYY/MM/DD"
-                range-separator="-"
-              ></date-range-picker>
+                range-separator="-"></date-range-picker>
             </el-form-item>
           </el-col>
           <el-col :xl="6" :lg="12" :md="13" :sm="12" :xs="24">
             <el-form-item label="筛选类型：" class="tab_data">
               <el-select v-model="formValidate.type" style="width: 200px; height: 32px" clearable>
-                <el-option
-                  v-for="(item, index) in billList"
+                <el-option v-for="(item, index) in billList"
                   :key="index"
                   :value="item.type"
-                  :label="item.title"
-                ></el-option>
+                  :label="item.title"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item>
-              <el-button type="primary" v-db-click @click="userSearchs">搜索</el-button>
-              <el-button v-auth="['export-userFinance']" class="export" v-db-click @click="exports">导出 </el-button>
+              <el-button type="primary" @click="userSearchs">搜索</el-button>
+              <el-button v-auth="['export-userFinance']" class="export" @click="exports">导出 </el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -91,13 +85,11 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

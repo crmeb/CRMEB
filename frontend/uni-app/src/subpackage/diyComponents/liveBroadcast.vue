@@ -1,7 +1,7 @@
 <template>
-  <!-- 小程序直播 -->
+  <!-- 小程序直播：无直播间时整块不渲染，避免 common-wrapper 边距留白 -->
   <!-- #ifdef MP -->
-  <view v-show="!isSortType">
+  <view v-show="!isSortType && liveList.length">
     <common-wrapper :config="configData">
       <view class="mb-config" :style="[liveStyle]">
         <template v-if="dataConfig.styleConfig.tabVal == 0">

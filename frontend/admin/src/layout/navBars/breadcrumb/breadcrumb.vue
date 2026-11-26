@@ -1,29 +1,22 @@
 <template>
   <div class="layout-navbars-breadcrumb">
     <!-- {{[...breadCrumbList,...crumbPast]}} -->
-    <i
-      v-if="collapseShow"
+    <i v-if="collapseShow"
       class="layout-navbars-breadcrumb-icon"
       :class="getThemeConfig.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-      v-db-click
-      @click="onThemeConfigChange"
-    ></i>
+      @click="onThemeConfigChange"></i>
     <el-breadcrumb class="layout-navbars-breadcrumb-hide" v-if="isShowcrumb" :style="{ display: isShowBreadcrumb }">
       <transition-group name="breadcrumb">
         <el-breadcrumb-item v-for="(v, k) in crumbList" :key="v.path">
           <span v-if="k == 1" class="layout-navbars-breadcrumb-span">
-            <Icon
-              :type="v.icon"
+            <Icon :type="v.icon"
               class="ivu-icon layout-navbars-breadcrumb-iconfont"
-              v-if="getThemeConfig.isBreadcrumbIcon"
-            />{{ $t(v.title) }}
+              v-if="getThemeConfig.isBreadcrumbIcon" />{{ $t(v.title) }}
           </span>
-          <a v-else v-db-click @click.prevent="onBreadcrumbClick(v)">
-            <Icon
-              :type="v.icon"
+          <a v-else @click.prevent="onBreadcrumbClick(v)">
+            <Icon :type="v.icon"
               class="ivu-icon layout-navbars-breadcrumb-iconfont"
-              v-if="getThemeConfig.isBreadcrumbIcon"
-            />{{ $t(v.title) }}
+              v-if="getThemeConfig.isBreadcrumbIcon" />{{ $t(v.title) }}
           </a>
         </el-breadcrumb-item>
       </transition-group>

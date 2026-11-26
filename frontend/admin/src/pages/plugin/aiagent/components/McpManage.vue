@@ -8,7 +8,7 @@
           <div class="mcp-hero-sub">安装 MCP 服务，为 AI Agent 扩展更多工具能力</div>
         </div>
         <!-- icon prop 需传全局注册的 EP 图标名（PascalCase）；el-icon-* 字符串不会解析成组件 -->
-        <el-button type="primary" icon="Setting" v-db-click @click="openEditor()">配置 MCP</el-button>
+        <el-button type="primary" icon="Setting" @click="openEditor()">配置 MCP</el-button>
       </div>
 
       <div class="mcp-toolbar">
@@ -37,18 +37,14 @@
             </div>
             <div class="mcp-actions">
               <el-tooltip content="测试连接" placement="top">
-                <i
-                  class="mcp-action-icon el-icon-link"
+                <i class="mcp-action-icon el-icon-link"
                   :class="{ 'is-loading': testingId === row.id }"
-                  @click="testServer(row)"
-                />
+                  @click="testServer(row)" />
               </el-tooltip>
               <el-tooltip content="同步工具" placement="top">
-                <i
-                  class="mcp-action-icon el-icon-refresh"
+                <i class="mcp-action-icon el-icon-refresh"
                   :class="{ 'is-loading': syncingId === row.id }"
-                  @click="syncTools(row)"
-                />
+                  @click="syncTools(row)" />
               </el-tooltip>
               <el-tooltip content="编辑" placement="top">
                 <i class="mcp-action-icon el-icon-edit" @click="openEditor(row)" />
@@ -56,13 +52,11 @@
               <el-tooltip content="删除" placement="top">
                 <i class="mcp-action-icon el-icon-delete danger" @click="removeServer(row)" />
               </el-tooltip>
-              <el-switch
-                v-model="row.status"
+              <el-switch v-model="row.status"
                 :active-value="1"
                 :inactive-value="0"
                 class="mcp-switch"
-                @change="changeStatus(row)"
-              />
+                @change="changeStatus(row)" />
             </div>
           </div>
 
@@ -76,13 +70,11 @@
               尚未同步工具，点击 <i class="el-icon-refresh" /> 拉取远端工具清单。
             </div>
             <div v-else class="mcp-tools">
-              <el-tooltip
-                v-for="tool in row.tools"
+              <el-tooltip v-for="tool in row.tools"
                 :key="tool.name"
                 :content="toolTip(tool)"
                 placement="top"
-                popper-class="ai-mcp-tool-tip"
-              >
+                popper-class="ai-mcp-tool-tip">
                 <span class="tool-chip mono">{{ tool.label || tool.name }}</span>
               </el-tooltip>
             </div>
@@ -96,29 +88,23 @@
       </div>
     </el-card>
 
-    <el-dialog
-      :title="editId ? '编辑 MCP Server' : '新增 MCP Server'"
+    <el-dialog :title="editId ? '编辑 MCP Server' : '新增 MCP Server'"
       v-model="editorVisible"
       width="720px"
       top="8vh"
       append-to-body
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <div class="dialog-tip">
         直接粘贴 mcpServers JSON 配置即可，url 需支持 Streamable HTTP。
-        <template v-if="editId"
-          >编辑时配置中只能包含一条记录，<span class="mono">__KEEP__</span> 或留空表示保持原密钥。</template
-        >
+        <template v-if="editId">编辑时配置中只能包含一条记录，<span class="mono">__KEEP__</span> 或留空表示保持原密钥。</template>
         <template v-else>支持一次粘贴多个 Server，本地进程（command）类型暂不支持。</template>
         <el-button v-if="!editId" link type="primary" @click="loadExample">加载示例</el-button>
       </div>
-      <el-input
-        v-model="jsonText"
+      <el-input v-model="jsonText"
         type="textarea"
         :rows="16"
         class="json-input"
-        placeholder='{"mcpServers":{"example":{"url":"https://example.com/mcp","headers":{"Authorization":"Bearer xxx"}}}}'
-      />
+        placeholder='{"mcpServers":{"example":{"url":"https://example.com/mcp","headers":{"Authorization":"Bearer xxx"}}}}' />
       <template #footer>
         <el-button @click="editorVisible = false">取消</el-button>
         <el-button type="primary" :loading="saving" v-db-click @click="saveServer">保存</el-button>
@@ -188,7 +174,7 @@ function loadList() {
 const isExpanded = (id) => keyword.value.trim() !== '' || expandedIds.value.includes(id);
 function toggleExpand(id) {
   const idx = expandedIds.value.indexOf(id);
-  if (idx >= 0) expandedIds.value.splice(idx, 1);
+  if (idx>= 0) expandedIds.value.splice(idx, 1);
   else expandedIds.value.push(id);
 }
 const avatarText = (row) => {
@@ -199,7 +185,7 @@ function avatarColor(row) {
   const key = String(row.server_key || row.name || '');
   let hash = 0;
   for (let i = 0; i < key.length; i++) {
-    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    hash = (hash * 31 + key.charCodeAt(i))>>> 0;
   }
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }

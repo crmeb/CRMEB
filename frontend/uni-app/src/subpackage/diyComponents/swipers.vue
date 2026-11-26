@@ -1,11 +1,11 @@
 <template>
-  <!-- 轮播图 -->
-  <view v-show="!isSortType">
+  <!-- 轮播图：无图片时整块不渲染，避免 common-wrapper 边距留白 -->
+  <view v-show="!isSortType && imgUrls.length">
     <common-wrapper :config="configData">
       <view
         class="swipers"
         :class="[docConfig ? 'square' : 'circular', imgConfig ? '' : 'fillet']"
-        v-if="imgUrls.length && tabConfig"
+        v-if="tabConfig"
       >
         <swiper
           :style="'height:' + (imageH + 10) + 'rpx;'"

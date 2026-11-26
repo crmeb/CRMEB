@@ -1,13 +1,11 @@
 <template>
   <div class="upgrade-dialog">
-    <el-dialog
-      v-model="isUpgrade"
+    <el-dialog v-model="isUpgrade"
       width="470px"
       destroy-on-close
       :show-close="true"
       :close-on-click-modal="false"
-      :close-on-press-escape="false"
-    >
+      :close-on-press-escape="false">
       <div class="upgrade-title">
         <div class="upgrade-title-warp">
           <span class="upgrade-title-warp-txt">{{ $t('message.upgrade.title') }}</span>
@@ -22,8 +20,8 @@
         <div class="upgrade-content-desc mt5">{{ $t('message.upgrade.desc') }}</div>
       </div>
       <div class="upgrade-btn">
-        <el-button round v-db-click @click="onCancel">{{ $t('message.upgrade.btnOne') }}</el-button>
-        <el-button type="primary" round v-db-click @click="onUpgrade" :loading="isLoading">{{ btnTxt }}</el-button>
+        <el-button round @click="onCancel">{{ $t('message.upgrade.btnOne') }}</el-button>
+        <el-button type="primary" round @click="onUpgrade" :loading="isLoading">{{ btnTxt }}</el-button>
       </div>
     </el-dialog>
   </div>

@@ -16,8 +16,8 @@
       <!-- 顶部操作栏 -->
       <div class="action-bar">
         <div class="left-actions">
-          <el-button v-db-click type="primary" @click="handleAdd">新建主题</el-button>
-          <el-button v-db-click @click="handleImport">导入主题</el-button>
+          <el-button type="primary" @click="handleAdd">新建主题</el-button>
+          <el-button @click="handleImport">导入主题</el-button>
           <img class="theme-in" src="https://www.crmeb.com/static/images/zhutishichang.png" alt="" @click="toTheme" />
         </div>
         <div class="right-actions flex">
@@ -57,7 +57,7 @@
               <!-- 底部按钮 -->
               <div class="bottom-buttons">
                 <el-button @click="handleEdit(item)">编辑主题</el-button>
-                <el-button v-db-click type="primary" @click="handleUse(item)">使用主题</el-button>
+                <el-button type="primary" @click="handleUse(item)">使用主题</el-button>
               </div>
             </div>
           </div>
@@ -87,27 +87,23 @@
           </div>
         </div>
       </div>
-      <div class="acea-row row-right page" v-if="total / limit > 1">
-        <pagination
-          v-if="total"
+      <div class="acea-row row-right page" v-if="total / limit> 1">
+        <pagination v-if="total"
           :total="total"
           v-model:page="page"
           v-model:limit="limit"
           layout="total, prev, pager, next, jumper"
-          @pagination="handlePageChange"
-        />
+          @pagination="handlePageChange" />
       </div>
     </div>
 
     <!-- 导入主题弹窗 -->
-    <el-dialog
-      title="导入主题"
+    <el-dialog title="导入主题"
       v-model="importVisible"
       width="1188px"
       top="10vh"
       destroy-on-close
-      :close-on-click-modal="false"
-    >
+      :close-on-click-modal="false">
       <theme-import @close="closeImport" @success="handleImportSuccess"></theme-import>
     </el-dialog>
 
@@ -156,7 +152,7 @@ function calcLimit() {
   const cardWidth = 206;
   const gap = 20;
   const n = Math.floor((width + gap) / (cardWidth + gap));
-  const newLimit = n * 2 > 0 ? n * 2 : 2;
+  const newLimit = n * 2> 0 ? n * 2 : 2;
   if (limit.value !== newLimit) {
     limit.value = newLimit;
     page.value = 1;
@@ -222,7 +218,7 @@ function handleExport(item) {
               loadingMsg.close();
               ElMessage.success('导出成功，正在下载…');
               window.location.href = url;
-            } else if (attempts >= maxAttempts) {
+            } else if (attempts>= maxAttempts) {
               clearInterval(timer);
               loadingMsg.close();
               ElMessage.warning('打包超时，请稍后到下载记录中查看');
@@ -252,7 +248,7 @@ function handleDelete(item) {
             themeList.value.splice(index, 1);
           }
           total.value = total.value - 1;
-          if (themeList.value.length === 0 && page.value > 1) {
+          if (themeList.value.length === 0 && page.value> 1) {
             page.value = page.value - 1;
           }
           getList();

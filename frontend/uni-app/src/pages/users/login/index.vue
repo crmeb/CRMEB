@@ -484,8 +484,7 @@ async function loginMobile() {
 		loginMobileApi({
 			phone: account.value,
 			captcha: captcha.value,
-			spread: Cache.get('spread'),
-			agent_id: Cache.get('agent_id') || 0
+			spid: Cache.get('spid')
 		})
 			.then((res) => {
 				let data = res.data;
@@ -549,7 +548,7 @@ async function register() {
 		account: account.value,
 		captcha: captcha.value,
 		password: password.value,
-		spread: Cache.get('spread')
+		spid: Cache.get('spid')
 	})
 		.then((res) => {
 			util.Tips({
@@ -631,8 +630,7 @@ async function submit() {
 	loginH5({
 		account: account.value,
 		password: password.value,
-		spread: Cache.get('spread'),
-		agent_id: Cache.get('agent_id') || 0
+		spid: Cache.get('spid')
 	})
 		.then(({ data }) => {
 			appStore.LOGIN({

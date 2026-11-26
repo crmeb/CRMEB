@@ -9,13 +9,11 @@
         </el-radio-group>
         <el-dropdown v-if="formValidate.spec_type == 1" class="ml20" @command="confirm" trigger="hover">
           <span class="el-dropdown-link"> 选择规格模板<i class="el-icon-arrow-down el-icon--right"></i> </span>
-          <template #dropdown
-            ><el-dropdown-menu>
+          <template #dropdown><el-dropdown-menu>
               <el-dropdown-item v-for="(item, index) in ruleList" :key="index" :command="item.rule_name">{{
                 item.rule_name
               }}</el-dropdown-item>
-            </el-dropdown-menu></template
-          >
+            </el-dropdown-menu></template>
         </el-dropdown>
       </el-form-item>
     </el-col>
@@ -23,15 +21,13 @@
     <el-col :span="24" v-if="formValidate.spec_type === 1" class="noForm">
       <el-form-item label="商品规格：" prop="">
         <div class="specifications">
-          <draggable
-            group="specifications"
+          <draggable group="specifications"
             :disabled="attrs.length < 2"
             :list="attrs"
             handle=".move-icon"
             @end="onMoveSpec"
             animation="300"
-            :item-key="attrItemKey"
-          >
+            :item-key="attrItemKey">
             <template #item="{ element: item, index }">
               <div class="specifications-item active" @click="changeCurrentIndex(index)">
                 <div class="move-icon">
@@ -41,55 +37,44 @@
                 <div class="specifications-item-box">
                   <div class="lineBox"></div>
                   <div class="specifications-item-name mb18">
-                    <el-input
-                      v-model="item.value"
+                    <el-input v-model="item.value"
                       placeholder="规格名称"
                       @change="attrChangeValue(index, item.value)"
                       @focus="handleFocus(item.value)"
                       class="specifications-item-name-input"
                       maxlength="50"
-                      show-word-limit
-                    ></el-input>
-                    <el-checkbox
-                      class="ml20"
+                      show-word-limit></el-input>
+                    <el-checkbox class="ml20"
                       v-model="item.add_pic"
                       :disabled="!item.add_pic && !canSel"
                       :true-value="1"
                       :false-value="0"
-                      @change="(e) => addPic(e, index)"
-                      >添加规格图</el-checkbox
-                    >
-                    <el-tooltip
-                      class="item"
+                      @change="(e) => addPic(e, index)">添加规格图</el-checkbox>
+                    <el-tooltip class="item"
                       effect="dark"
                       content="添加规格图片, 仅支持打开一个(建议尺寸:800*800)"
-                      placement="right"
-                    >
+                      placement="right">
                       <i class="el-icon-info"></i>
                     </el-tooltip>
                   </div>
                   <div class="rulesBox ml30">
-                    <draggable
-                      class="item"
+                    <draggable class="item"
                       :list="item.detail"
                       :disabled="item.detail.length < 2"
                       handle=".drag"
                       @end="onMoveSpec"
-                      :item-key="detailItemKey"
-                    >
+                      :item-key="detailItemKey">
                       <template #item="{ element: det, index: indexn }">
                         <div class="mr10 spec drag">
                           <i class="el-icon-error" @click="handleRemove2(item.detail, indexn, det.value)"></i>
 
-                          <el-input
-                            style="width: 120px"
+                          <el-input style="width: 120px"
                             v-model="det.value"
                             placeholder="规格值"
                             @change="attrDetailChangeValue(det.value, index)"
                             @focus="handleFocus(det.value)"
                             maxlength="100"
-                            @blur="handleBlur()"
-                          >
+                            @blur="handleBlur()">
                             <template #prefix>
                               <span class="iconfont icondrag2"></span>
                             </template>
@@ -106,17 +91,15 @@
                       </template>
                       <template #footer>
                         <div class="mr10 spec" v-if="addingIndex === index">
-                          <el-input
-                            ref="attrInputRef"
+                          <el-input ref="attrInputRef"
                             style="width: 120px"
                             placeholder="规格值"
                             v-model="formDynamic.attrsVal"
                             @keyup.enter="onAttrEnter(index)"
                             @blur="onAttrBlur(index)"
-                            maxlength="30"
-                          ></el-input>
+                            maxlength="30"></el-input>
                         </div>
-                        <div class="addfont" type="text" v-db-click v-else @click="clickAddAttr(index)">添加规格值</div>
+                        <div class="addfont" type="text" v-else @click="clickAddAttr(index)">添加规格值</div>
                       </template>
                     </draggable>
                   </div>
@@ -124,50 +107,42 @@
               </div>
             </template>
           </draggable>
-          <el-button v-if="attrs.length < 4" v-db-click @click="handleAddRole()">添加新规格</el-button>
-          <el-button v-if="attrs.length >= 1" type="text" v-db-click @click="handleSaveAsTemplate()"
-            >另存为模板</el-button
-          >
+          <el-button v-if="attrs.length < 4" @click="handleAddRole()">添加新规格</el-button>
+          <el-button v-if="attrs.length>= 1" type="text" @click="handleSaveAsTemplate()">另存为模板</el-button>
         </div>
       </el-form-item>
     </el-col>
     <el-col :span="24" v-if="formValidate.spec_type === 1">
       <el-form-item label="商品属性：" class="labeltop" v-if="manyFormValidate.length">
-        <el-table
-          row-key="index"
+        <el-table row-key="index"
           max-height="700px"
           :data="manyFormValidate"
           style="width: 100%"
           :cell-class-name="tableCellClassName"
           :span-method="objectSpanMethod"
           border
-          :key="tableKey"
-        >
-          <el-table-column
-            v-for="(item, index) in formValidate.header"
+          :key="tableKey">
+          <el-table-column v-for="(item, index) in formValidate.header"
             :key="index"
             :label="item.title"
             :min-width="item.minWidth || '100'"
-            :fixed="item.fixed"
-          >
+            :fixed="item.fixed">
             <template #default="scope">
               <!-- 批量设置 -->
               <template v-if="scope.$index == 0">
                 <template v-if="item.key">
                   <div v-if="attrs.length && attrs[scope.column.index] && manyFormValidate.length">
                     <el-select v-model="oneFormBatch[0][item.title]" :placeholder="`请选择${item.title}`" clearable>
-                      <el-option
-                        v-for="val in attrs[scope.column.index].detail"
+                      <el-option v-for="val in attrs[scope.column.index].detail"
                         :key="val.value"
                         :label="val.value"
-                        :value="val.value"
-                      >
+                        :value="val.value">
                       </el-option>
                     </el-select>
                   </div>
                 </template>
                 <template v-else-if="item.slot === 'pic'">
-                  <div class="acea-row row-middle" v-db-click @click="modalPicTap('dan', 'duopi', scope.$index)">
+                  <div class="acea-row row-middle" @click="modalPicTap('dan', 'duopi', scope.$index)">
                     <div class="pictrue pictrueTab" v-if="oneFormBatch[0].pic">
                       <img v-lazy="oneFormBatch[0].pic" />
                     </div>
@@ -177,43 +152,35 @@
                   </div>
                 </template>
                 <template v-else-if="item.slot === 'price'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="oneFormBatch[0].price"
                     :min="0"
                     :max="9999999999"
                     class="priceBox"
-                    clearable
-                  ></el-input-number>
+                    clearable></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'cost'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="oneFormBatch[0].cost"
                     :min="0"
                     :max="9999999999"
                     class="priceBox"
-                    clearable
-                  ></el-input-number>
+                    clearable></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'original_price'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="oneFormBatch[0].original_price"
                     :min="0"
                     class="priceBox"
-                    clearable
-                  ></el-input-number>
+                    clearable></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'stock'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="oneFormBatch[0].stock"
                     :min="0"
                     :max="9999999999"
                     class="priceBox"
-                    clearable
-                  ></el-input-number>
+                    clearable></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'bar_code'">
                   <el-input v-model="oneFormBatch[0].bar_code"></el-input>
@@ -222,32 +189,28 @@
                   <el-input v-model="oneFormBatch[0].bar_code_number"></el-input>
                 </template>
                 <template v-else-if="item.slot === 'weight'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="oneFormBatch[0].weight"
                     :step="0.1"
                     :min="0"
                     :max="9999999999"
                     class="priceBox"
-                    clearable
-                  ></el-input-number>
+                    clearable></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'volume'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="oneFormBatch[0].volume"
                     :step="0.1"
                     :min="0"
                     :max="9999999999"
                     class="priceBox"
-                    clearable
-                  ></el-input-number>
+                    clearable></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'selected_spec'"> -- </template>
                 <template v-else-if="item.slot === 'action'">
-                  <a v-db-click @click="batchAdd">批量修改</a>
+                  <a @click="batchAdd">批量修改</a>
                   <el-divider direction="vertical"></el-divider>
-                  <a v-db-click @click="batchDel">清空</a>
+                  <a @click="batchDel">清空</a>
                 </template>
               </template>
               <template v-else>
@@ -257,7 +220,7 @@
                   </div>
                 </template>
                 <template v-if="item.slot === 'pic'">
-                  <div class="acea-row row-middle" v-db-click @click="modalPicTap('dan', 'duoTable', scope.$index)">
+                  <div class="acea-row row-middle" @click="modalPicTap('dan', 'duoTable', scope.$index)">
                     <div class="pictrue pictrueTab" v-if="manyFormValidate[scope.$index].pic">
                       <img v-lazy="manyFormValidate[scope.$index].pic" />
                     </div>
@@ -267,41 +230,33 @@
                   </div>
                 </template>
                 <template v-if="item.slot === 'price'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="manyFormValidate[scope.$index].price"
                     :min="0"
                     :max="9999999999"
-                    class="priceBox"
-                  ></el-input-number>
+                    class="priceBox"></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'cost'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="manyFormValidate[scope.$index].cost"
                     :min="0"
                     :max="9999999999"
-                    class="priceBox"
-                  ></el-input-number>
+                    class="priceBox"></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'original_price'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="manyFormValidate[scope.$index].original_price"
                     :min="0"
                     :max="9999999999"
-                    class="priceBox"
-                  ></el-input-number>
+                    class="priceBox"></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'stock'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="manyFormValidate[scope.$index].stock"
                     :min="0"
                     :max="9999999999"
                     :precision="0"
-                    class="priceBox"
-                  ></el-input-number>
+                    class="priceBox"></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'bar_code'">
                   <el-input v-model="manyFormValidate[scope.$index].bar_code"></el-input>
@@ -310,41 +265,33 @@
                   <el-input v-model="manyFormValidate[scope.$index].bar_code_number"></el-input>
                 </template>
                 <template v-else-if="item.slot === 'weight'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="manyFormValidate[scope.$index].weight"
                     :min="0"
                     :max="9999999999"
-                    class="priceBox"
-                  ></el-input-number>
+                    class="priceBox"></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'volume'">
-                  <el-input-number
-                    :controls="false"
+                  <el-input-number :controls="false"
                     v-model="manyFormValidate[scope.$index].volume"
                     :min="0"
                     :max="9999999999"
-                    class="priceBox"
-                  ></el-input-number>
+                    class="priceBox"></el-input-number>
                 </template>
                 <template v-else-if="item.slot === 'selected_spec'">
-                  <el-switch
-                    v-model="manyFormValidate[scope.$index].is_default_select"
+                  <el-switch v-model="manyFormValidate[scope.$index].is_default_select"
                     :active-value="1"
                     :inactive-value="0"
-                    @change="(e) => changeDefaultSelect(e, scope.$index)"
-                  />
+                    @change="(e) => changeDefaultSelect(e, scope.$index)" />
                 </template>
                 <template v-else-if="item.slot === 'action'">
-                  <el-switch
-                    class="defineSwitch"
+                  <el-switch class="defineSwitch"
                     v-model="manyFormValidate[scope.$index].is_show"
                     active-text="显示"
                     inactive-text="隐藏"
                     :active-value="1"
                     :inactive-value="0"
-                    @change="changeDefaultShow(scope.$index)"
-                  />
+                    @change="changeDefaultShow(scope.$index)" />
                 </template>
               </template>
             </template>
@@ -357,7 +304,7 @@
     <div v-if="formValidate.spec_type === 0">
       <el-col :span="24">
         <el-form-item label="图片：">
-          <div class="pictrueBox" v-db-click @click="modalPicTap('dan', 'danTable', 0)">
+          <div class="pictrueBox" @click="modalPicTap('dan', 'danTable', 0)">
             <div class="pictrue" v-if="oneFormValidate[0].pic">
               <img v-lazy="oneFormValidate[0].pic" />
               <el-input v-model="oneFormValidate[0].pic" style="display: none"></el-input>
@@ -371,57 +318,49 @@
       </el-col>
       <el-col :span="24">
         <el-form-item label="售价：">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             v-model="oneFormValidate[0].price"
             :min="0"
             :precision="2"
             :max="9999999999"
             class="input_width input-number-unit-class"
             :active-change="false"
-            class-unit="元"
-          ></el-input-number>
+            class-unit="元"></el-input-number>
         </el-form-item>
       </el-col>
       <el-col :span="24">
         <el-form-item label="成本价：">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             v-model="oneFormValidate[0].cost"
             :min="0"
             :max="9999999999"
             :precision="2"
             :active-change="false"
             class="input_width input-number-unit-class"
-            class-unit="元"
-          ></el-input-number>
+            class-unit="元"></el-input-number>
         </el-form-item>
       </el-col>
       <el-col :span="24">
         <el-form-item label="划线价：">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             v-model="oneFormValidate[0].original_price"
             :min="0"
             :max="9999999999"
             :precision="2"
             :active-change="false"
             class="input_width input-number-unit-class"
-            class-unit="元"
-          ></el-input-number>
+            class-unit="元"></el-input-number>
         </el-form-item>
       </el-col>
       <el-col :span="24">
         <el-form-item label="库存：">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             v-model="oneFormValidate[0].stock"
             :min="0"
             :max="9999999999"
             :precision="0"
             class="input_width input-number-unit-class"
-            :class-unit="formValidate.unit_name || '件'"
-          ></el-input-number>
+            :class-unit="formValidate.unit_name || '件'"></el-input-number>
         </el-form-item>
       </el-col>
       <el-col :span="24">
@@ -436,26 +375,22 @@
       </el-col>
       <el-col :span="24">
         <el-form-item label="重量：">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             v-model="oneFormValidate[0].weight"
             :min="0"
             :max="9999999999"
             class="input_width input-number-unit-class"
-            class-unit="kg"
-          ></el-input-number>
+            class-unit="kg"></el-input-number>
         </el-form-item>
       </el-col>
       <el-col :span="24">
         <el-form-item label="体积：">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             v-model="oneFormValidate[0].volume"
             :min="0"
             :max="9999999999"
             class="input_width input-number-unit-class"
-            class-unit="m³"
-          ></el-input-number>
+            class-unit="m³"></el-input-number>
         </el-form-item>
       </el-col>
     </div>
@@ -529,6 +464,7 @@ const emit = defineEmits([
   'handleRemoveRole',
   'see',
   'createAttr',
+  'addPic',
 ]);
 
 // vuedraggable4 item-key（数据无唯一 id，用索引）
@@ -622,29 +558,18 @@ function tableCellClassName({ row, column, rowIndex, columnIndex }) {
   row.index = rowIndex || '';
   column.index = columnIndex;
 }
-// 规格图片添加开关
+// 规格图片添加开关：canSel 由父组件维护，子组件只派发事件
 function addPic(e, i) {
-  if (e) {
-    props.attrs.map((item, ii) => {
-      if (ii !== i) {
-        item['add_pic'] = 0;
-      }
-    });
-    // TODO(vue3): 原 Vue2 代码直接突变 prop this.canSel，Vue3 下 props 只读不生效；
-    // 父组件 index.vue 内部已有同样的 canSel 维护逻辑，此处保留原语句语义。
-    props.canSel = false;
-  } else {
-    props.canSel = true;
-  }
+  emit('addPic', e, i);
 }
 // 合并单元格
 function objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-  if (columnIndex === 0 && rowIndex > 0) {
+  if (columnIndex === 0 && rowIndex> 0) {
     let lable = column.label;
     //这里判断第几列需要合并
     const tagFamily = props.manyFormValidate[rowIndex].detail[lable];
     const index = props.manyFormValidate.findIndex((item, index) => {
-      if (index > 0) return item.detail[lable] == tagFamily;
+      if (index> 0) return item.detail[lable] == tagFamily;
     });
     if (rowIndex == index) {
       let len = 1;

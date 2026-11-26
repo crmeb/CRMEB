@@ -2,48 +2,40 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formRef"
+        <el-form ref="formRef"
           :model="formValidate"
           :label-width="labelWidth"
           label-position="right"
           inline
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="订单时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
               value-format="YYYY/MM/DD"
-              class="mr20"
-            ></date-range-picker>
+              class="mr20"></date-range-picker>
           </el-form-item>
           <el-form-item label="交易类型：">
             <el-select v-model="formValidate.trading_type" @change="selChange" class="form_content_width">
-              <el-option
-                :label="item.label"
+              <el-option :label="item.label"
                 :value="item.value"
                 v-for="item in typeOptions"
-                :key="item.value"
-              ></el-option>
+                :key="item.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="流水搜索：">
             <div class="acea-row row-middle">
-              <el-input
-                clearable
+              <el-input clearable
                 placeholder="订单号/昵称/电话/用户ID"
                 v-model="formValidate.keywords"
-                class="form_content_width"
-              />
+                class="form_content_width" />
             </div>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="selChange">查询</el-button>
+            <el-button type="primary" @click="selChange">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -67,7 +59,7 @@
         </el-table-column>
         <el-table-column label="交易金额" min-width="90">
           <template #default="scope">
-            <div v-if="scope.row.price >= 0" class="z-price">+{{ scope.row.price }}</div>
+            <div v-if="scope.row.price>= 0" class="z-price">+{{ scope.row.price }}</div>
             <div v-if="scope.row.price < 0" class="f-price">{{ scope.row.price }}</div>
           </template>
         </el-table-column>
@@ -88,28 +80,24 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="setMark(scope.row)">备注</a>
+            <a @click="setMark(scope.row)">备注</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 拒绝通过-->
     <el-dialog v-model="modals" title="备注" :close-on-click-modal="false" width="540px">
       <el-input v-model="mark_msg.mark" type="textarea" :rows="4" placeholder="请输入备注" />
-      <template #footer
-        ><span class="dialog-footer">
+      <template #footer><span class="dialog-footer">
           <el-button type="primary" v-db-click @click.prevent="oks">确定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

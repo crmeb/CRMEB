@@ -12,33 +12,25 @@
             <li>{{ upgradeStatus.title }}</li>
           </ul>
         </div>
-        <el-button
-          v-if="currentTab == 1 && upgradeStatus.status == 1"
+        <el-button v-if="currentTab == 1 && upgradeStatus.status == 1"
           type="primary"
           class="primary btn update"
-          v-db-click
-          @click="update()"
-          >立即更新</el-button
-        >
+          @click="update()">立即更新</el-button>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-tabs v-model="currentTab" @tab-change="handleClick">
-        <el-tab-pane
-          :label="item.label"
+        <el-tab-pane :label="item.label"
           :name="item.value.toString()"
           v-for="item in headerList"
-          :key="item.id"
-        ></el-tab-pane>
+          :key="item.id"></el-tab-pane>
       </el-tabs>
       <div class="contentTime" v-if="currentTab == 1">
-        <div
-          class="acea-row row-top on"
+        <div class="acea-row row-top on"
           @mouseenter="quearyEvear(item.id, index)"
           v-for="(item, index) in upgradeList"
           :key="index"
-          :class="{ active: index == dynamic }"
-        >
+          :class="{ active: index == dynamic }">
           <div class="time">{{ item.release_time }}</div>
           <el-timeline class="list">
             <el-timeline-item>
@@ -58,26 +50,20 @@
                 </el-collapse-item>
               </el-collapse>
             </el-timeline-item>
-            <el-button
-              v-if="item.client_package_link"
+            <el-button v-if="item.client_package_link"
               type="success"
               class="primary btn"
-              v-db-click
-              @click="downloadFile(item.client_package_link)"
-              >移动端源码</el-button
-            >
+              @click="downloadFile(item.client_package_link)">移动端源码</el-button>
           </el-timeline>
         </div>
       </div>
       <div v-if="currentTab == 2" height="550">
         <div class="contentTime">
-          <div
-            class="acea-row row-top off"
+          <div class="acea-row row-top off"
             @mouseenter="quearyEvear(item.id, index)"
             v-for="(item, index) in upgradeLogList"
             :key="index"
-            :class="{ active: index == dynamic }"
-          >
+            :class="{ active: index == dynamic }">
             <div class="time">
               <div v-if="index == 0">最近更新</div>
               <div>{{ item.upgrade_time }}</div>
@@ -106,50 +92,38 @@
       </div>
     </el-card>
     <!-- 免责声明 -->
-    <el-dialog
-      v-model="declaration"
+    <el-dialog v-model="declaration"
       width="470px"
       custom-clas="vertical-center-modal"
       :show-close="true"
-      :close-on-click-modal="false"
-    >
-      <template #header
-        ><p class="header-modal">
+      :close-on-click-modal="false">
+      <template #header><p class="header-modal">
           <span>{{ upgradeAgreement.title }}</span>
-        </p></template
-      >
+        </p></template>
       <div class="describe">
         <p v-html="upgradeAgreement.content"></p>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="reject">拒 绝</el-button>
-          <el-button type="primary" v-db-click @click="agree">同 意</el-button>
-        </span></template
-      >
+      <template #footer><span class="dialog-footer">
+          <el-button @click="reject">拒 绝</el-button>
+          <el-button type="primary" @click="agree">同 意</el-button>
+        </span></template>
     </el-dialog>
     <!-- 升级 -->
-    <el-dialog
-      v-model="updateModal"
+    <el-dialog v-model="updateModal"
       width="470px"
       custom-clas="vertical-center-modal"
       :show-close="true"
-      :close-on-click-modal="false"
-    >
-      <template #header
-        ><p class="header-modal2">
+      :close-on-click-modal="false">
+      <template #header><p class="header-modal2">
           <span>升级至v{{ forceVersion }}</span>
-        </p></template
-      >
+        </p></template>
       <div class="describe" v-if="upgradeProgress.speed != '100.0' || downloadStatus != '200'">
-        <i-circle
-          :size="140"
+        <i-circle :size="140"
           :trail-width="4"
           :stroke-width="5"
           :percent="Number(upgradeProgress.speed)"
           stroke-linecap="square"
-          stroke-color="#43a3fb"
-        >
+          stroke-color="#43a3fb">
           <div class="demo-i-circle-custom">
             <p>{{ upgradeProgress.tip || '升级中' }}</p>
           </div>
@@ -162,12 +136,10 @@
         <el-progress type="circle" :percentage="100" status="success"></el-progress>
         <div class="success">升级成功</div>
       </div>
-      <template #footer
-        ><span v-if="upgradeProgress.speed == '100.0'" class="dialog-footer">
-          <el-button v-db-click @click="cancel">取 消</el-button>
+      <template #footer><span v-if="upgradeProgress.speed == '100.0'" class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
           <el-button type="primary" v-db-click @click="back">确 认</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -335,7 +307,7 @@ async function getupgradeableList() {
   //     const arr2 = version2.split('.').map((e) => e * 1);
   //     const length = Math.max(arr1.length, arr2.length);
   //     for (let i = 0; i < length; i++) {
-  //       if ((arr1[i] || 0) > (arr2[i] || 0)) return 1;
+  //       if ((arr1[i] || 0)> (arr2[i] || 0)) return 1;
   //       if ((arr1[i] || 0) < (arr2[i] || 0)) return -1;
   //     }
   //     return 0;
@@ -677,7 +649,7 @@ onUnmounted(() => {
   border: 0 !important;
 }
 
-.upgrade .contentTime .ivu-collapse > .ivu-collapse-item > .ivu-collapse-header {
+.upgrade .contentTime .ivu-collapse> .ivu-collapse-item> .ivu-collapse-header {
   height: unset !important;
   line-height: 20px !important;
   border: 0 !important;
@@ -687,12 +659,12 @@ onUnmounted(() => {
   // background: #eee;
 }
 
-.upgrade .contentTime .ivu-collapse > .ivu-collapse-item > .ivu-collapse-header > i {
+.upgrade .contentTime .ivu-collapse> .ivu-collapse-item> .ivu-collapse-header> i {
   color: #bbbbbb !important;
   margin-left: 9px;
 }
 
-.upgrade .contentTime .ivu-collapse > .ivu-collapse-item.ivu-collapse-item-active > .ivu-collapse-header > i {
+.upgrade .contentTime .ivu-collapse> .ivu-collapse-item.ivu-collapse-item-active> .ivu-collapse-header> i {
   transform: rotate(180deg);
 }
 
@@ -756,10 +728,10 @@ onUnmounted(() => {
   color: var(--prev-color-primary);
   font-size: 18px;
 }
-:deep(.ivu-collapse > .ivu-collapse-item > .ivu-collapse-header) {
+:deep(.ivu-collapse> .ivu-collapse-item> .ivu-collapse-header) {
   line-height: 20px;
 }
-.upgrade .contentTimed .on .ivu-collapse > .ivu-collapse-item > .ivu-collapse-header {
+.upgrade .contentTimed .on .ivu-collapse> .ivu-collapse-item> .ivu-collapse-header {
   color: var(--prev-color-primary);
 }
 

@@ -4,31 +4,27 @@
       <div class="padding-add">
         <el-form :model="orderData" label-width="80px" label-position="right" inline @submit.prevent>
           <el-form-item label="创建时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
               value-format="YYYY/MM/DD"
-              class="mr20"
-            ></date-range-picker>
+              class="mr20"></date-range-picker>
           </el-form-item>
           <el-form-item label="搜索：" prop="real_name" label-for="real_name">
             <el-input clearable v-model="orderData.real_name" placeholder="请输入" class="form_content_width">
-              <template #prepend
-                ><el-select v-model="orderData.field_key" style="width: 100px">
+              <template #prepend><el-select v-model="orderData.field_key" style="width: 100px">
                   <el-option value="all" label="全部"></el-option>
                   <el-option value="order_id" label="订单号"></el-option>
                   <el-option value="uid" label="UID"></el-option>
                   <el-option value="real_name" label="用户姓名"></el-option>
-                  <el-option value="user_phone" label="用户电话"></el-option> </el-select
-              ></template>
+                  <el-option value="user_phone" label="用户电话"></el-option> </el-select></template>
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="orderSearch">查询</el-button>
+            <el-button type="primary" @click="orderSearch">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -40,14 +36,12 @@
         <el-tab-pane :label="'已开发票（' + tablists.opened + '）'" name="2" />
         <el-tab-pane :label="'退款发票（' + tablists.refund + '）'" name="3" />
       </el-tabs>
-      <el-table
-        :data="orderList"
+      <el-table :data="orderList"
         ref="table"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="订单号" min-width="140">
           <template #default="scope">
             <span>{{ scope.row.order_id }}</span>
@@ -89,58 +83,40 @@
         <el-table-column label="操作" fixed="right" width="300">
           <template #default="scope">
             <template v-if="tablists.elec_invoice && tablists.elec_invoice == 1">
-              <a
-                v-if="
+              <a v-if="
                   scope.row.is_invoice == 1 &&
                   scope.row.unique_num !== '' &&
                   scope.row.red_invoice_num == '' &&
                   scope.row.refund_status == 0
                 "
-                v-db-click
-                @click="downInvoiceFn(scope.row)"
-                >下载发票</a
-              >
-              <el-divider
-                v-if="
+                @click="downInvoiceFn(scope.row)">下载发票</a>
+              <el-divider v-if="
                   scope.row.is_invoice == 1 &&
                   scope.row.unique_num !== '' &&
                   scope.row.red_invoice_num == '' &&
                   scope.row.refund_status == 0
                 "
-                direction="vertical"
-              />
-              <a
-                v-if="scope.row.is_invoice == 1 && scope.row.unique_num !== '' && scope.row.red_invoice_num == ''"
-                v-db-click
-                @click="openNegative(scope.row)"
-                >开具负数发票</a
-              >
-              <el-divider
-                v-if="scope.row.is_invoice == 1 && scope.row.unique_num !== '' && scope.row.red_invoice_num == ''"
-                direction="vertical"
-              />
-              <a
-                v-if="scope.row.is_invoice !== 1 && scope.row.refund_status == 0"
-                v-db-click
-                @click="getInvoice(scope.row)"
-                >开具电子发票</a
-              >
+                direction="vertical" />
+              <a v-if="scope.row.is_invoice == 1 && scope.row.unique_num !== '' && scope.row.red_invoice_num == ''"
+                @click="openNegative(scope.row)">开具负数发票</a>
+              <el-divider v-if="scope.row.is_invoice == 1 && scope.row.unique_num !== '' && scope.row.red_invoice_num == ''"
+                direction="vertical" />
+              <a v-if="scope.row.is_invoice !== 1 && scope.row.refund_status == 0"
+                @click="getInvoice(scope.row)">开具电子发票</a>
               <el-divider v-if="scope.row.is_invoice !== 1 && scope.row.refund_status == 0" direction="vertical" />
             </template>
-            <a v-if="!isRefundedOrder(scope.row)" v-db-click @click="edit(scope.row)">操作</a>
+            <a v-if="!isRefundedOrder(scope.row)" @click="edit(scope.row)">操作</a>
             <el-divider v-if="!isRefundedOrder(scope.row)" direction="vertical" />
-            <a v-db-click @click="orderInfo(scope.row.id)">订单信息</a>
+            <a @click="orderInfo(scope.row.id)">订单信息</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="orderData.page"
           v-model:limit="orderData.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <el-dialog v-model="invoiceShow" title="发票详情" class="order_box" width="720px" @closed="cancel">
@@ -149,9 +125,7 @@
           <div class="list">
             <div class="title">发票信息</div>
             <el-row class="row">
-              <el-col :span="12"
-                >发票抬头: <span class="info">{{ invoiceDetails.name }}</span></el-col
-              >
+              <el-col :span="12">发票抬头: <span class="info">{{ invoiceDetails.name }}</span></el-col>
               <el-col :span="12">发票类型: <span class="info">电子普通发票</span></el-col>
             </el-row>
             <el-row class="row">
@@ -174,12 +148,8 @@
           <div class="list">
             <div class="title">发票信息</div>
             <el-row class="row">
-              <el-col :span="12"
-                >发票抬头: <span class="info">{{ invoiceDetails.name }}</span></el-col
-              >
-              <el-col :span="12"
-                >企业税号: <span class="info">{{ invoiceDetails.duty_number }}</span></el-col
-              >
+              <el-col :span="12">发票抬头: <span class="info">{{ invoiceDetails.name }}</span></el-col>
+              <el-col :span="12">企业税号: <span class="info">{{ invoiceDetails.duty_number }}</span></el-col>
             </el-row>
             <el-row class="row">
               <el-col :span="12">发票类型: 电子普通发票</el-col>
@@ -201,24 +171,16 @@
           <div class="list">
             <div class="title">发票信息</div>
             <el-row class="row">
-              <el-col :span="12"
-                >发票抬头: <span class="info">{{ invoiceDetails.name }}</span></el-col
-              >
-              <el-col :span="12"
-                >企业税号: <span class="info">{{ invoiceDetails.duty_number }}</span></el-col
-              >
+              <el-col :span="12">发票抬头: <span class="info">{{ invoiceDetails.name }}</span></el-col>
+              <el-col :span="12">企业税号: <span class="info">{{ invoiceDetails.duty_number }}</span></el-col>
             </el-row>
             <el-row class="row">
               <el-col :span="12">发票类型: 纸质专用发票</el-col>
               <el-col :span="12">发票抬头类型: 企业</el-col>
             </el-row>
             <el-row class="row">
-              <el-col :span="12"
-                >开户银行: <span class="info">{{ invoiceDetails.bank }}</span></el-col
-              >
-              <el-col :span="12"
-                >银行账号: <span class="info">{{ invoiceDetails.card_number }}</span></el-col
-              >
+              <el-col :span="12">开户银行: <span class="info">{{ invoiceDetails.bank }}</span></el-col>
+              <el-col :span="12">银行账号: <span class="info">{{ invoiceDetails.card_number }}</span></el-col>
             </el-row>
             <el-row class="row">
               <el-col :span="12">企业地址: {{ invoiceDetails.address }}</el-col>
@@ -246,12 +208,10 @@
           <el-input v-model="formInline.invoice_number" placeholder="请输入发票编号"></el-input>
         </el-form-item>
         <el-form-item label="发票备注：" v-if="formInline.is_invoice === 1">
-          <el-input
-            v-model="formInline.remark"
+          <el-input v-model="formInline.remark"
             type="textarea"
             :autosize="{ minRows: 2, maxRows: 5 }"
-            placeholder="请输入发票备注"
-          ></el-input>
+            placeholder="请输入发票备注"></el-input>
         </el-form-item>
         <div class="acea-row row-right">
           <el-button type="primary" v-db-click @click="handleSubmit()">确定</el-button>
@@ -261,14 +221,12 @@
     <el-drawer v-model="orderShow" title="订单详情" size="720px" class="order-detail-drawer">
       <OrderCenterDetail v-if="orderShow" :id="orderId" />
     </el-drawer>
-    <el-dialog
-      v-model="invoiceModalShow"
+    <el-dialog v-model="invoiceModalShow"
       title="发票信息"
       append-to-body
       :close-on-click-modal="false"
       width="1320px"
-      class="mapBox"
-    >
+      class="mapBox">
       <iframe id="invoicePage" width="100%" height="600px" frameborder="0" v-bind:src="keyUrl"></iframe>
     </el-dialog>
   </div>

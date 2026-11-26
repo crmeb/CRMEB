@@ -322,117 +322,208 @@ export default {
     wd,
     hg,
     successFn,
+    component,
   ) {
     let that = this;
-    const ctx = uni.createCanvasContext("myCanvas");
-    ctx.clearRect(0, 0, 0, 0);
-    /**
-     * 只能获取合法域名下的图片信息,本地调试无法获取
-     *
-     */
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, wd * 2, hg * 2);
-    uni.getImageInfo({
-      src: arr2[0],
-      success: function (res) {
-        const WIDTH = res.width;
-        const HEIGHT = res.height;
-        ctx.drawImage(arr2[0], 0, 0, wd, hg);
+    // 固定设计稿像素，必须与 canvas 的 width/height 一致
+    const W = wd || 750;
+    const H = hg || 1334;
+    const theme = "#E93323";
+    const themeDeep = "#C81E12";
+    const productSrc = arr2[1];
+    const qrSrc = arr2[2];
 
-        // 保证在不同机型对应坐标准确
-        let labelx = 0.65; //标签x
-        let labely = 0.166; //标签y
-        let pricex = 0.1857; //价格x
-        let pricey = 0.18; //价格x
-        let codex = 0.385; //二维码
-        let codey = 0.77;
-        let picturex = 0.1571; //商品图左上点
-        let picturey = 0.2916;
-        let picturebx = 0.6857; //商品图右下点
-        let pictureby = 0.4316;
-        let msgx = 0.1036; //msg
-        let msgy = 0.2306;
-        let codew = 0.25;
-        ctx.drawImage(
-          arr2[1],
-          wd * picturex,
-          hg * picturey,
-          wd * picturebx,
-          hg * pictureby,
-        );
-        ctx.drawImage(arr2[2], wd * codex, hg * codey, wd * codew, wd * codew);
-        ctx.save();
-        //标题
-        const CONTENT_ROW_LENGTH = 32;
-        let [contentLeng, contentArray, contentRows] = that.textByteLength(
-          title,
-          CONTENT_ROW_LENGTH,
-        );
-        if (contentRows > 2) {
-          contentRows = 2;
-          let textArray = contentArray.slice(0, 2);
-          textArray[textArray.length - 1] += "…";
-          contentArray = textArray;
+    const loadImage = (src) =>
+      new Promise((resolve) => {
+        if (!src) {
+          resolve(null);
+          return;
         }
-        ctx.setTextAlign("left");
-        ctx.setFillStyle("#000");
-        if (contentArray.length < 2) {
-          ctx.setFontSize(22);
+        uni.getImageInfo({
+          src,
+          success: (res) => resolve(res),
+          fail: () => resolve(null),
+        });
+      });
+
+    const roundPath = (ctx, x, y, w, h, r, topOnly) => {
+      const radius = Math.min(r, w / 2, h / 2);
+      const br = topOnly ? 0 : radius;
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, br);
+      ctx.arcTo(x, y + h, x, y, br);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    };
+
+    const fillRoundRect = (ctx, x, y, w, h, r, color) => {
+      roundPath(ctx, x, y, w, h, r, false);
+      ctx.setFillStyle(color);
+      ctx.fill();
+    };
+
+    const drawCoverImage = (ctx, src, info, x, y, w, h, radius, topOnly) => {
+      if (!info) {
+        roundPath(ctx, x, y, w, h, radius, topOnly);
+        ctx.setFillStyle("#F3F4F6");
+        ctx.fill();
+        return;
+      }
+      const iw = info.width || w;
+      const ih = info.height || h;
+      const scale = Math.max(w / iw, h / ih);
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const dx = x + (w - dw) / 2;
+      const dy = y + (h - dh) / 2;
+      ctx.save();
+      roundPath(ctx, x, y, w, h, radius, topOnly);
+      ctx.clip();
+      ctx.drawImage(src, dx, dy, dw, dh);
+      ctx.restore();
+    };
+
+    Promise.all([loadImage(productSrc), loadImage(qrSrc)]).then(
+      ([productInfo, qrInfo]) => {
+        const ctx = uni.createCanvasContext("myCanvas", component);
+        ctx.clearRect(0, 0, W, H);
+
+        // ===== 背景（分层过渡，避免上下硬切）=====
+        ctx.setFillStyle(theme);
+        ctx.fillRect(0, 0, W, H);
+        for (let i = 0; i < 420; i++) {
+          const a = (i / 420) * 0.28;
+          ctx.setFillStyle(`rgba(120, 10, 6, ${a})`);
+          ctx.fillRect(0, 520 + i, W, 1);
+        }
+        ctx.setFillStyle("rgba(255,255,255,0.08)");
+        ctx.beginPath();
+        ctx.arc(700, -30, 220, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(-70, 280, 180, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.setFillStyle("rgba(255,255,255,0.85)");
+        ctx.setTextAlign("center");
+        ctx.setFontSize(22);
+        ctx.fillText(i18n.t(`帮我砍一刀`), W / 2, 56);
+        ctx.setFillStyle("#FFFFFF");
+        ctx.setFontSize(40);
+        ctx.fillText(i18n.t(`邀请好友帮砍价`), W / 2, 108);
+
+        // ===== 主图 + 一体信息底栏（标题/价格/二维码，无中间白条留白）=====
+        const cardX = 42;
+        const cardW = 666;
+        const radius = 28;
+        const pad = 28;
+        const imgH = 700;
+        const qrSize = 188;
+        const infoH = 268;
+        const cardH = imgH + infoH;
+        const cardY = Math.floor((H - cardH + 36) / 2);
+
+        let [, lines] = that.textByteLength(title || "", 18);
+        if (lines.length > 2) {
+          lines = lines.slice(0, 2);
+          lines[1] = (lines[1] || "").replace(/.{0,1}$/, "…");
+        }
+
+        fillRoundRect(ctx, cardX + 5, cardY + 12, cardW, cardH, radius, "rgba(0,0,0,0.2)");
+        fillRoundRect(ctx, cardX, cardY, cardW, cardH, radius, "#FFFFFF");
+
+        drawCoverImage(ctx, productSrc, productInfo, cardX, cardY, cardW, imgH, radius, true);
+        fillRoundRect(ctx, cardX + 22, cardY + 22, 100, 38, 19, theme);
+        ctx.setFillStyle("#FFFFFF");
+        ctx.setTextAlign("center");
+        ctx.setFontSize(22);
+        ctx.fillText(i18n.t(`砍价`), cardX + 72, cardY + 48);
+
+        const infoTop = cardY + imgH;
+        ctx.setFillStyle("#FFF7F5");
+        ctx.fillRect(cardX, infoTop, cardW, infoH);
+
+        const qrX = cardX + cardW - pad - qrSize;
+        const qrY = infoTop + (infoH - qrSize) / 2;
+        fillRoundRect(ctx, qrX - 8, qrY - 8, qrSize + 16, qrSize + 16, 14, "#FFFFFF");
+        if (qrInfo) {
+          ctx.drawImage(qrSrc, qrX, qrY, qrSize, qrSize);
         } else {
-          ctx.setFontSize(20);
+          fillRoundRect(ctx, qrX, qrY, qrSize, qrSize, 8, "#EEEEEE");
         }
-        let contentHh = 8;
-        for (let m = 0; m < contentArray.length; m++) {
-          if (m) {
-            ctx.fillText(contentArray[m], 20, 35 + contentHh * m + 18, 1100);
-          } else {
-            ctx.fillText(contentArray[m], 20, 35, 1100);
-          }
-        }
-        // 标签内容
+
+        const leftX = cardX + pad;
+        const leftMax = qrX - leftX - 20;
+        ctx.setFillStyle("#1A1A1A");
         ctx.setTextAlign("left");
-        ctx.setFontSize(16);
-        ctx.setFillStyle("#FFF");
-        ctx.fillText(label, wd * labelx, hg * labely);
-        ctx.save();
-        // 价格
-        ctx.setFillStyle("red");
-        ctx.setFontSize(26);
-        ctx.fillText(price, wd * pricex, hg * pricey);
-        ctx.save();
-        // msg
-        ctx.setFillStyle("#333");
-        ctx.setFontSize(16);
-        ctx.fillText(msg, wd * msgx, hg * msgy);
-        ctx.save();
-        ctx.draw(true, () => {
-          uni.canvasToTempFilePath({
-            canvasId: "myCanvas",
-            fileType: "png",
-            quality: 1,
-            success: (res) => {
-              successFn && successFn(res.tempFilePath);
-              uni.hideLoading();
-            },
-          });
+        ctx.setFontSize(28);
+        lines.forEach((line, idx) => {
+          ctx.fillText(line, leftX, infoTop + 42 + idx * 36, leftMax);
+        });
+
+        const tagText = label || i18n.t(`已砍至`);
+        const tagW = Math.max(90, String(tagText).length * 20 + 28);
+        const priceBase = infoTop + 42 + lines.length * 36 + 18;
+        fillRoundRect(ctx, leftX, priceBase, tagW, 32, 16, theme);
+        ctx.setFillStyle("#FFFFFF");
+        ctx.setTextAlign("center");
+        ctx.setFontSize(18);
+        ctx.fillText(tagText, leftX + tagW / 2, priceBase + 22);
+
+        ctx.setFillStyle(theme);
+        ctx.setTextAlign("left");
+        ctx.setFontSize(24);
+        ctx.fillText(i18n.t(`￥`), leftX + tagW + 12, priceBase + 26);
+        ctx.setFontSize(48);
+        ctx.fillText(String(price || "0"), leftX + tagW + 40, priceBase + 30);
+
+        ctx.setFillStyle("#8F3F38");
+        ctx.setFontSize(22);
+        ctx.fillText(msg || i18n.t(`扫码帮好友砍价`), leftX, priceBase + 66, leftMax);
+        ctx.setFillStyle("#AAAAAA");
+        ctx.setFontSize(20);
+        ctx.fillText(i18n.t(`长按识别图中二维码`), leftX, priceBase + 100, leftMax);
+
+        ctx.draw(false, () => {
+          setTimeout(() => {
+            uni.canvasToTempFilePath(
+              {
+                canvasId: "myCanvas",
+                fileType: "png",
+                quality: 1,
+                destWidth: W,
+                destHeight: H,
+                success: (res) => {
+                  successFn && successFn(res.tempFilePath);
+                  uni.hideLoading();
+                },
+                fail: function () {
+                  uni.hideLoading();
+                  that.Tips({
+                    title: i18n.t(`海报生成失败`),
+                  });
+                },
+              },
+              component,
+            );
+          }, 80);
         });
       },
-      fail: function (err) {
-        uni.hideLoading();
-        that.Tips({
-          title: i18n.t(`无法获取图片信息`),
-        });
-      },
-    });
+    );
   },
   /**
-   * 用户信息分享海报
-   * @param array arr2 海报素材  1背景 0二维码
-   * @param string nickname 昵称
-   * @param string sitename 价格
-   * @param function successFn 回调函数
-   *
-   *
+   * 用户分销海报（底图 + 二维码 + 昵称）
+   * @param {string[]} arr2 [二维码, 背景图]
+   * @param {string} nickname
+   * @param {string} sitename
+   * @param {number} index 兼容旧调用；现统一画到 spreadPosterCanvas
+   * @param {number} w 设计宽，默认 750
+   * @param {number} h 设计高，默认 1334
+   * @param {Function} [successFn]
+   * @param {object} [component] 组件实例，H5/小程序自定义组件内绘制必传
+   * @returns {Promise<string>}
    */
   userPosterCanvas: function (
     arr2,
@@ -442,71 +533,94 @@ export default {
     w,
     h,
     successFn,
+    component,
   ) {
-    let that = this;
-    const ctx = uni.createCanvasContext("myCanvas" + index);
-    ctx.clearRect(0, 0, 0, 0);
-    /**
-     * 只能获取合法域名下的图片信息,本地调试无法获取
-     *
-     */
-    uni.getImageInfo({
-      src: arr2[1],
-      success: function (res) {
-        const WIDTH = res.width;
-        const HEIGHT = res.height;
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0, 0, w, h);
-        ctx.drawImage(arr2[1], 0, 0, w, h);
-        ctx.setTextAlign("left");
-        ctx.setFontSize(12);
-        ctx.setFillStyle("#333");
+    const W = w > 0 ? w : 750;
+    const H = h > 0 ? h : 1334;
+    const canvasId = "spreadPosterCanvas";
+    const qrSrc = arr2[0];
+    const bgSrc = arr2[1];
 
-        // x:240 y:426
-        let codex = 0.1906;
-        let codey = 0.7746;
-        let codeSize = 0.21666;
-        let namex = 0.4283;
-        let namey = 0.8215;
-        let markx = 0.4283;
-        let marky = 0.8685;
-        ctx.drawImage(
-          arr2[0],
-          w * codex,
-          h * codey,
-          w * codeSize,
-          w * codeSize,
+    const loadImage = (src) =>
+      new Promise((resolve) => {
+        if (!src) {
+          resolve(null);
+          return;
+        }
+        uni.getImageInfo({
+          src,
+          success: (res) => resolve(res),
+          fail: () => resolve(null),
+        });
+      });
+
+    return new Promise((resolve, reject) => {
+      Promise.all([loadImage(bgSrc), loadImage(qrSrc)]).then(([bgInfo, qrInfo]) => {
+        if (!bgInfo || !bgSrc) {
+          reject(new Error(i18n.t(`无法获取图片信息`)));
+          return;
+        }
+        if (!qrInfo || !qrSrc) {
+          reject(new Error(i18n.t(`二维码生成失败`)));
+          return;
+        }
+
+        const ctx = uni.createCanvasContext(canvasId, component);
+        ctx.clearRect(0, 0, W, H);
+        ctx.setFillStyle("#ffffff");
+        ctx.fillRect(0, 0, W, H);
+        // 底图按 cover 铺满，避免比例拉伸变形
+        const iw = bgInfo.width || W;
+        const ih = bgInfo.height || H;
+        const scale = Math.max(W / iw, H / ih);
+        const dw = iw * scale;
+        const dh = ih * scale;
+        ctx.drawImage(bgSrc, (W - dw) / 2, (H - dh) / 2, dw, dh);
+
+        // 相对设计稿比例（与历史分销海报留白区一致）
+        const codex = 0.1906;
+        const codey = 0.7746;
+        const codeSize = 0.21666;
+        const namex = 0.4283;
+        const namey = 0.8215;
+        const markx = 0.4283;
+        const marky = 0.8685;
+        const qrBox = W * codeSize;
+        ctx.drawImage(qrSrc, W * codex, H * codey, qrBox, qrBox);
+
+        const fontSize = W < 270 ? 18 : 24;
+        ctx.setTextAlign("left");
+        ctx.setFillStyle("#333333");
+        ctx.setFontSize(fontSize);
+        ctx.fillText(String(nickname || ""), W * namex, H * namey);
+        ctx.fillText(
+          i18n.t(`邀请您加入`) + String(sitename || ""),
+          W * markx,
+          H * marky,
         );
-        if (w < 270) {
-          ctx.setFontSize(8);
-        } else {
-          ctx.setFontSize(10);
-        }
-        ctx.fillText(nickname, w * namex, h * namey);
-        if (w < 270) {
-          ctx.setFontSize(8);
-        } else {
-          ctx.setFontSize(10);
-        }
-        ctx.fillText(i18n.t(`邀请您加入`) + sitename, w * markx, h * marky);
-        ctx.save();
-        ctx.draw(true, function () {
-          uni.canvasToTempFilePath({
-            canvasId: "myCanvas" + index,
-            fileType: "png",
-            quality: 1,
-            success: function (res) {
-              successFn && successFn(res.tempFilePath);
-            },
-          });
+
+        ctx.draw(false, () => {
+          setTimeout(() => {
+            uni.canvasToTempFilePath(
+              {
+                canvasId,
+                fileType: "png",
+                quality: 1,
+                destWidth: W,
+                destHeight: H,
+                success: (res) => {
+                  successFn && successFn(res.tempFilePath);
+                  resolve(res.tempFilePath);
+                },
+                fail: () => {
+                  reject(new Error(i18n.t(`海报生成失败`)));
+                },
+              },
+              component,
+            );
+          }, 80);
         });
-      },
-      fail: function (err) {
-        uni.hideLoading();
-        that.Tips({
-          title: i18n.t(`无法获取图片信息`),
-        });
-      },
+      });
     });
   },
   /*
@@ -1073,7 +1187,7 @@ export default {
     } else {
       if (url.indexOf("http") != -1) {
         uni.navigateTo({
-          url: `/pages/annex/web_view/index?url=${url}`,
+          url: `/pages/annex/web_view/index?url=${encodeURIComponent(url)}`,
         });
       } else {
         uni.navigateTo({

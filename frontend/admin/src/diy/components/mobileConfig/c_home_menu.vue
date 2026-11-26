@@ -13,7 +13,7 @@
       ></component>
     </div>
     <rightBtn :activeIndex="activeIndex" :configObj="configObj"></rightBtn>
-    <el-dialog v-model="modals" title="设计组件" width="60%">
+    <el-dialog v-model="modals" title="设计组件" width="60%" append-to-body>
       <!-- Placeholder for custom content -->
       <div>这里是设计组件内容</div>
     </el-dialog>

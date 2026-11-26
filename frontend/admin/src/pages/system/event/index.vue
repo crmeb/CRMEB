@@ -1,19 +1,15 @@
 <template>
   <div class="system-event">
-    <pages-header
-      title="系统事件"
-      description="查看框架内置核心事件及其监听器，便于排查扩展与解耦关系。点击分类可筛选。"
-    />
+    <pages-header title="系统事件"
+      description="查看框架内置核心事件及其监听器，便于排查扩展与解耦关系。点击分类可筛选。" />
 
     <div class="stat-row" v-loading="categoryLoading">
-      <el-card
-        v-for="item in categories"
+      <el-card v-for="item in categories"
         :key="item.name"
         shadow="never"
         class="stat-card"
         :class="{ 'is-active': activeCategory === item.name }"
-        @click="toggleCategory(item.name)"
-      >
+        @click="toggleCategory(item.name)">
         <div class="stat-name">{{ item.name }}</div>
         <div class="stat-value">{{ item.event_count }}</div>
         <div class="stat-unit">个事件</div>
@@ -23,12 +19,10 @@
     <el-card shadow="never" class="ivu-mt mt16">
       <div class="list-toolbar acea-row row-middle row-between">
         <div class="acea-row row-middle">
-          <el-input
-            v-model="keyword"
+          <el-input v-model="keyword"
             clearable
             placeholder="搜索事件名称 / 描述"
-            class="form_content_width"
-          >
+            class="form_content_width">
             <template #prefix>
               <el-icon><Search /></el-icon>
             </template>
@@ -42,13 +36,11 @@
         <span class="list-count">共 {{ flatEventList.length }} 个事件</span>
       </div>
 
-      <el-table
-        :data="flatEventList"
+      <el-table :data="flatEventList"
         v-loading="loading"
         highlight-current-row
         class="mt14 event-table"
-        @row-click="showDetail"
-      >
+        @row-click="showDetail">
         <el-table-column label="分类" width="120">
           <template #default="{ row }">
             <el-tag size="small" effect="plain" type="info">{{ row.category }}</el-tag>
@@ -65,16 +57,14 @@
         <el-table-column label="监听器" min-width="220">
           <template #default="{ row }">
             <div v-if="row.listeners?.length" class="listener-cell">
-              <el-tag
-                v-for="(listener, index) in row.listeners.slice(0, 5)"
+              <el-tag v-for="(listener, index) in row.listeners.slice(0, 5)"
                 :key="index"
                 :type="getListenerType(listener.source)"
                 size="small"
-                effect="plain"
-              >
+                effect="plain">
                 {{ listener.short_class }}
               </el-tag>
-              <el-tag v-if="row.listener_count > 5" size="small" type="info" effect="plain">
+              <el-tag v-if="row.listener_count> 5" size="small" type="info" effect="plain">
                 +{{ row.listener_count - 5 }}
               </el-tag>
             </div>
@@ -89,19 +79,17 @@
         </el-table-column>
         <el-table-column label="操作" width="72">
           <template #default="{ row }">
-            <el-button class="op-link" link type="primary" v-db-click @click.stop="showDetail(row)">详情</el-button>
+            <el-button class="op-link" link type="primary" @click.stop="showDetail(row)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <el-drawer
-      v-model="dialogVisible"
+    <el-drawer v-model="dialogVisible"
       :title="drawerTitle"
       direction="rtl"
       size="720"
-      @closed="closeDialog"
-    >
+      @closed="closeDialog">
       <div v-if="currentEvent" class="detail-content">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="所属分类">{{ currentEvent.category }}</el-descriptions-item>
@@ -110,7 +98,7 @@
           </el-descriptions-item>
           <el-descriptions-item label="事件描述">{{ currentEvent.description || '—' }}</el-descriptions-item>
           <el-descriptions-item label="监听器数量">
-            <el-tag :type="currentEvent.listener_count > 0 ? 'success' : 'info'" size="small">
+            <el-tag :type="currentEvent.listener_count> 0 ? 'success' : 'info'" size="small">
               {{ currentEvent.listener_count }} 个
             </el-tag>
           </el-descriptions-item>

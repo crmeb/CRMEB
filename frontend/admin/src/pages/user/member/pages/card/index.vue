@@ -7,86 +7,66 @@
             <el-input clearable v-model="gradeFrom.title" placeholder="请输入批次名称" class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="mt16">
-      <el-button type="primary" class="action-row" v-db-click @click="addBatch">添加批次</el-button>
-      <el-button class="action-row" v-db-click @click="getMemberScan">卡密使用页面二维码</el-button>
+      <el-button type="primary" class="action-row" @click="addBatch">添加批次</el-button>
+      <el-button class="action-row" @click="getMemberScan">卡密使用页面二维码</el-button>
       <el-table class="mt14" :data="tbody" v-loading="loading" highlight-current-row>
         <el-table-column label="编号" width="100">
-          <template #default="scope"
-            ><span>{{ scope.row.id }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.id }}</span></template>
         </el-table-column>
         <el-table-column label="批次名称" min-width="100">
-          <template #default="scope"
-            ><span>{{ scope.row.title }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.title }}</span></template>
         </el-table-column>
         <el-table-column label="体验天数" min-width="100">
-          <template #default="scope"
-            ><span>{{ scope.row.use_day }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.use_day }}</span></template>
         </el-table-column>
         <el-table-column label="发卡总数量" min-width="100">
-          <template #default="scope"
-            ><span>{{ scope.row.total_num }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.total_num }}</span></template>
         </el-table-column>
         <el-table-column label="使用数量" min-width="100">
-          <template #default="scope"
-            ><span>{{ scope.row.use_num }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.use_num }}</span></template>
         </el-table-column>
         <el-table-column label="是否激活" min-width="100">
           <template #default="scope">
-            <el-switch
-              :active-value="1"
+            <el-switch :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
               :value="scope.row.status"
               @change="onchangeIsShow(scope.row)"
-              size="large"
-            ></el-switch>
+              size="large"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="备注" min-width="120">
-          <template #default="scope"
-            ><span>{{ scope.row.remark || '--' }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.remark || '--' }}</span></template>
         </el-table-column>
         <el-table-column label="制卡时间" min-width="100">
-          <template #default="scope"
-            ><span>{{ scope.row.add_time }}</span></template
-          >
+          <template #default="scope"><span>{{ scope.row.add_time }}</span></template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="scope">
-            <a v-db-click @click="changeMenu(scope.row, '1')">编辑</a>
+            <a @click="changeMenu(scope.row, '1')">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <el-dropdown @command="changeMenu(scope.row, $event, scope.$index)" :transfer="true">
               <span class="el-dropdown-link">更多<i class="el-icon-arrow-down el-icon--right"></i></span>
-              <template #dropdown
-                ><el-dropdown-menu>
+              <template #dropdown><el-dropdown-menu>
                   <el-dropdown-item command="2">查看卡列表</el-dropdown-item>
                   <el-dropdown-item command="3">导出</el-dropdown-item>
-                </el-dropdown-menu></template
-              >
+                </el-dropdown-menu></template>
             </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="gradeFrom.page"
           v-model:limit="gradeFrom.limit"
-          @pagination="getMemberBatch"
-        />
+          @pagination="getMemberBatch" />
       </div>
     </el-card>
     <el-dialog v-model="modal" width="540px" :title="`${formValidate.id ? '编辑' : '添加'}批次`">
@@ -99,26 +79,22 @@
         </el-form-item>
         <template v-if="!formValidate.id">
           <el-form-item label="制卡数量：">
-            <el-input-number
-              :controls="false"
+            <el-input-number :controls="false"
               placeholder="请输入制卡数量"
               :precision="0"
               :max="100000"
               :min="1"
               v-model="formValidate.total_num"
-              class="perW10"
-            />
+              class="perW10" />
           </el-form-item>
           <el-form-item label="体验天数：">
-            <el-input-number
-              :controls="false"
+            <el-input-number :controls="false"
               placeholder="请输入体验天数"
               :precision="0"
               :max="100000"
               :min="1"
               v-model="formValidate.use_day"
-              class="perW10"
-            />
+              class="perW10" />
           </el-form-item>
           <el-form-item label="是否激活：">
             <el-radio-group v-model="formValidate.status">
@@ -132,7 +108,7 @@
         </template>
       </el-form>
       <div class="acea-row row-right">
-        <el-button v-db-click @click="modal = false">取消</el-button>
+        <el-button @click="modal = false">取消</el-button>
         <el-button type="primary" v-db-click @click="onSubmit()">提交</el-button>
       </div>
     </el-dialog>

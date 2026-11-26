@@ -1,23 +1,19 @@
 <template>
   <!-- AI 写作弹窗：Markdown 源码场景专用（与系统富文本 AI 写作同一流式接口，生成结果以纯 Markdown 回传） -->
-  <el-dialog
-    :model-value="modelValue"
+  <el-dialog :model-value="modelValue"
     width="720px"
     title="AI 写作"
     append-to-body
     :close-on-click-modal="false"
     :before-close="beforeClose"
-    @update:model-value="(v) => emit('update:modelValue', v)"
-  >
-    <el-input
-      v-model="aiPrompt"
+    @update:model-value="(v) => emit('update:modelValue', v)">
+    <el-input v-model="aiPrompt"
       type="textarea"
       :rows="4"
       maxlength="2000"
       show-word-limit
       :placeholder="promptPlaceholder"
-      :disabled="aiGenerating"
-    ></el-input>
+      :disabled="aiGenerating"></el-input>
     <div class="ai-status">
       <span v-if="aiGenerating" class="ai-status-text">
         {{
@@ -39,16 +35,16 @@
     <template #footer>
       <div>
         <template v-if="!aiGenerating">
-          <el-button v-db-click @click="close">{{ aiText ? '关闭' : '取消' }}</el-button>
-          <el-button v-if="aiText" v-db-click @click="startGenerate">重新生成</el-button>
-          <el-button v-if="aiText" type="primary" v-db-click @click="insert">{{
+          <el-button @click="close">{{ aiText ? '关闭' : '取消' }}</el-button>
+          <el-button v-if="aiText" @click="startGenerate">重新生成</el-button>
+          <el-button v-if="aiText" type="primary" @click="insert">{{
             isRewrite ? '替换' : '插入'
           }}</el-button>
-          <el-button v-else type="primary" :loading="aiSubmitting" v-db-click @click="startGenerate">{{
+          <el-button v-else type="primary" :loading="aiSubmitting" @click="startGenerate">{{
             isRewrite ? '开始优化' : '开始生成'
           }}</el-button>
         </template>
-        <el-button v-else type="danger" v-db-click @click="stopGenerate">停止生成</el-button>
+        <el-button v-else type="danger" @click="stopGenerate">停止生成</el-button>
       </div>
     </template>
   </el-dialog>
@@ -343,37 +339,35 @@ onBeforeUnmount(stopGenerate);
   background: var(--prev-bg-color);
   font-size: 14px;
   line-height: 1.7;
-  :deep() {
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      margin: 10px 0 6px;
-    }
-    p {
-      margin: 6px 0;
-    }
-    ul,
-    ol {
-      margin: 6px 0;
-      padding-left: 20px;
-    }
-    blockquote {
-      margin: 6px 0;
-      padding: 4px 10px;
-      border-left: 3px solid #ccc;
-      color: #666;
-    }
-    code {
-      background: var(--prev-bg-color);
-      padding: 1px 4px;
-      border-radius: 3px;
-    }
-    hr {
-      border: none;
-      border-top: 1px solid #ddd;
-    }
+  :deep(h2),
+  :deep(h3),
+  :deep(h4),
+  :deep(h5),
+  :deep(h6) {
+    margin: 10px 0 6px;
+  }
+  :deep(p) {
+    margin: 6px 0;
+  }
+  :deep(ul),
+  :deep(ol) {
+    margin: 6px 0;
+    padding-left: 20px;
+  }
+  :deep(blockquote) {
+    margin: 6px 0;
+    padding: 4px 10px;
+    border-left: 3px solid #ccc;
+    color: #666;
+  }
+  :deep(code) {
+    background: var(--prev-bg-color);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  :deep(hr) {
+    border: none;
+    border-top: 1px solid #ddd;
   }
 }
 </style>

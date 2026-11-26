@@ -380,7 +380,7 @@ body {
   width: 100%;
 }
 
-.el-dialog ::v-deep .form-create .el-button {
+.el-dialog .form-create .el-button {
   float: right;
 }
 
@@ -417,6 +417,10 @@ body {
 
 .mr10 {
   margin-right: 10px;
+}
+
+.mr14 {
+  margin-right: 14px;
 }
 
 .ml20 {
@@ -967,10 +971,11 @@ body {
 .common-form-create-footer {
   display: flex;
   justify-content: right;
+  gap: 14px;
 }
 
 .common-form-button {
-  margin-right: 10px;
+  margin-right: 0;
 }
 
 .pl10 {
@@ -1068,6 +1073,8 @@ a {
 
 .el-table-column--selection .cell {
   padding-left: 10px;
+  padding-right: 10px;
+  overflow: visible;
 }
 
 .tree_tit {
@@ -1188,7 +1195,7 @@ a {
   background-color: rgba(255, 255, 255, 0.6) !important;
   backdrop-filter: blur(4px);
 
-  ::v-deep .ivu-card-body {
+  .ivu-card-body {
     padding: 15px 16px 14px;
   }
 
@@ -1196,7 +1203,7 @@ a {
     margin-bottom: 0;
   }
 
-  ::v-deep .ivu-form-item-content {
+  .ivu-form-item-content {
     margin-right: 124px;
     text-align: center;
   }

@@ -96,6 +96,7 @@ import { toLogin } from '@/libs/login.js';
 import { useColorTheme } from '@/composables/useColorTheme';
 import { useAppStore } from '@/store/modules/app';
 import util from '@/utils/util.js';
+import { appendSpid } from '@/utils';
 import i18n from '@/utils/lang.js';
 // #ifdef H5
 import Auth from '@/libs/wechat';
@@ -135,7 +136,7 @@ const friendKey = ref('');
 
 function friendShareQuery() {
 	const keyPart = friendKey.value ? '&key=' + friendKey.value : '';
-	return 'oid=' + oid.value + '&spread=' + appStore.uid + keyPart;
+	return 'oid=' + oid.value + (appStore.uid ? '&spid=' + appStore.uid : '') + keyPart;
 }
 
 // ---------- watch ----------
@@ -234,7 +235,7 @@ function ShareInfo(data) {
 		let configAppMessage = {
 			desc: i18n.t(`帮我付一下这件商品了，谢谢~`),
 			title: i18n.t(`好友代付`),
-			link: href,
+			link: appendSpid(href, appStore.uid),
 			imgUrl: data.avatar
 		};
 		Auth

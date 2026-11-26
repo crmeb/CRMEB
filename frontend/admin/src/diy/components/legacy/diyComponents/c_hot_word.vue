@@ -5,32 +5,27 @@
       <span>{{ datas[name].title }}</span>
     </div>
     <div class="input-box">
-      <draggable
-        class="dragArea list-group"
+      <draggable class="dragArea list-group"
         :list="datas[name].list"
         group="peoples"
         handle=".icon"
-        :item-key="hotWordItemKey"
-      >
+        :item-key="hotWordItemKey">
         <template #item="{ element: item, index }">
           <div class="input-item">
             <div class="icon">
               <i class="el-icon-s-grid" style="font-size: 20px"></i>
             </div>
             <el-input v-model="item.val" placeholder="选填，不超过十个字" :maxlength="item.maxlength || 10" />
-            <div class="close" v-db-click @click="close(index)">
+            <div class="close" @click="close(index)">
               <i class="el-icon-close" style="color: #d8d8d8; font-size: 20px"></i>
             </div>
           </div>
         </template>
       </draggable>
-      <div class="add-btn" v-db-click @click="addHotTxt">
-        <el-button
-          type="primary"
+      <div class="add-btn" @click="addHotTxt">
+        <el-button type="primary"
           ghost
-          style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)"
-          >添加热词</el-button
-        >
+          style="width: 100%; height: 40px; border-color: var(--prev-color-primary); color: var(--prev-color-primary)">添加热词</el-button>
       </div>
     </div>
   </div>

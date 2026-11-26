@@ -3,12 +3,10 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt" :body-style="{ padding: 0 }">
       <div>
         <el-tabs v-model="currentTab" @tab-change="getList">
-          <el-tab-pane
-            :label="item.label"
+          <el-tab-pane :label="item.label"
             :name="item.value.toString()"
             v-for="(item, index) in headerList"
-            :key="index"
-          />
+            :key="index" />
         </el-tabs>
       </div>
     </el-card>
@@ -21,9 +19,7 @@
           2、使用接口触发定时任务，建议每分钟调用一次，接口地址 {{ apiBaseURL }}api/crontab/run <br />
         </template>
       </el-alert>
-      <el-button v-if="currentTab === '1'" type="primary" v-db-click @click="addTask" class="mt14"
-        >添加定时任务</el-button
-      >
+      <el-button v-if="currentTab === '1'" type="primary" @click="addTask" class="mt14">添加定时任务</el-button>
       <el-table :data="tableData" v-loading="loading" class="mt14">
         <el-table-column label="标题" min-width="150">
           <template #default="scope">
@@ -42,26 +38,22 @@
         </el-table-column>
         <el-table-column label="是否开启" min-width="130">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.is_open"
               size="large"
               @change="handleChange(scope.row)"
               active-text="开启"
-              inactive-text="关闭"
-            >
+              inactive-text="关闭">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="100" fixed="right">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row.id)">编辑</a>
+            <a @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical" v-if="currentTab === '1'"></el-divider>
-            <a v-if="currentTab === '1'" v-db-click @click="handleDelete(scope.row, '删除定时任务', scope.$index)"
-              >删除</a
-            >
+            <a v-if="currentTab === '1'" v-db-click @click="handleDelete(scope.row, '删除定时任务', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>

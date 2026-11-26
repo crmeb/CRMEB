@@ -1,20 +1,16 @@
 <template>
   <div>
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       :title="$route.meta.title"
       :backUrl="$routeProStr + '/marketing/live/goods'"
-      description="从商品库选择商品生成直播商品，提交微信审核通过后可在直播间上架。"
-    ></pages-header>
+      description="从商品库选择商品生成直播商品，提交微信审核通过后可在直播间上架。"></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
-      <el-form
-        ref="formRef"
+      <el-form ref="formRef"
         :model="formValidate"
         :label-width="labelWidth"
         :label-position="labelPosition"
         class="tabform"
-        @submit.prevent
-      >
+        @submit.prevent>
         <el-row :gutter="24">
           <el-col :span="24">
             <el-form-item label="选择商品：">
@@ -23,7 +19,7 @@
                   <img :src="item.image" alt="" />
                   <i class="el-icon-error" v-db-click @click="bindDelete(index, item)" style="font-size: 16px"></i>
                 </div>
-                <div class="upload-box acea-row row-center-wrapper" v-db-click @click="selectGoods">
+                <div class="upload-box acea-row row-center-wrapper" @click="selectGoods">
                   <i class="el-icon-goods" style="font-size: 24px"></i>
                 </div>
               </div>
@@ -31,18 +27,16 @@
           </el-col>
         </el-row>
       </el-form>
-      <div class="active-btn" v-if="goods.length > 0">
-        <el-button type="primary" v-db-click @click="liveGoods">生成直播商品</el-button>
+      <div class="active-btn" v-if="goods.length> 0">
+        <el-button type="primary" @click="liveGoods">生成直播商品</el-button>
       </div>
       <div class="table-box" v-if="isShowBox">
-        <el-table
-          :data="tabList"
+        <el-table :data="tabList"
           ref="table"
           class="mt14"
           v-loading="loading"
           no-userFrom-text="暂无数据"
-          no-filtered-userFrom-text="暂无筛选结果"
-        >
+          no-filtered-userFrom-text="暂无筛选结果">
           <el-table-column label="商品ID" width="80">
             <template #default="scope">
               <span>{{ scope.row.id }}</span>
@@ -73,15 +67,12 @@
           </el-table-column>
         </el-table>
         <div class="sub_btn">
-          <el-button
-            type="primary"
+          <el-button type="primary"
             style="width: 8%"
             v-db-click
             @click="bindSub"
             :disabled="disabled"
-            :loading="loadings"
-            >提交</el-button
-          >
+            :loading="loadings">提交</el-button>
         </div>
       </div>
     </el-card>

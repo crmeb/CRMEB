@@ -5,32 +5,28 @@
         <template #item="{ element: goods, index }">
           <div class="item" v-show="defaults.goodsList.list.length">
             <img :src="type == 1 ? goods.pic : goods.image" alt="" />
-            <span class="iconfont icondel_1" v-db-click @click.stop="bindDelete(index)"></span>
+            <span class="iconfont icondel_1" @click.stop="bindDelete(index)"></span>
           </div>
         </template>
         <template #footer>
-          <div class="add-item item" v-db-click @click="modals = true"><span class="iconfont iconaddto"></span></div>
+          <div class="add-item item" @click="modals = true"><span class="iconfont iconaddto"></span></div>
         </template>
       </draggable>
     </div>
 
     <el-dialog v-model="modals" :title="titles" class="paymentFooter" :class="type ? '' : 'middleTop'" width="900px">
       <sort-list ref="goodslist" @getProductDiy="getProductDiy" v-if="modals && type == 1"></sort-list>
-      <goods-list
-        ref="goodslist"
+      <goods-list ref="goodslist"
         @getProductDiy="getProductDiy"
         :ischeckbox="true"
         :type="type"
         :is_new="is_new"
         :diy="true"
-        v-if="modals && type != 1"
-      ></goods-list>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="cancel">取 消</el-button>
+        v-if="modals && type != 1"></goods-list>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
           <el-button type="primary" v-db-click @click="ok">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

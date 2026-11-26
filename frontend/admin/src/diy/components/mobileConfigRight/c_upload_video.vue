@@ -1,21 +1,19 @@
 <template>
   <div class="upload_img">
     <div class="title">{{ datas[name].title }}</div>
-    <div class="box" v-db-click @click="modalPicTap('单选')">
+    <div class="box" @click="modalPicTap('单选')">
       <img :src="datas[name].url" alt="" v-if="datas[name].url" />
       <div class="upload-box" v-else>
         <i class="el-icon-picture-outline" style="font-size: 24px"></i>
       </div>
     </div>
     <div>
-      <el-dialog v-model="modalPic" width="950px" title="上传商品图" :mask-closable="false" :z-index="888">
-        <uploadPictures
-          :isChoice="isChoice"
+      <el-dialog v-model="modalPic" width="950px" title="上传商品图" :mask-closable="false" append-to-body>
+        <uploadPictures :isChoice="isChoice"
           @getPic="getPic"
           :gridBtn="gridBtn"
           :gridPic="gridPic"
-          v-if="modalPic"
-        ></uploadPictures>
+          v-if="modalPic"></uploadPictures>
       </el-dialog>
     </div>
   </div>

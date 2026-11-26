@@ -2,50 +2,39 @@
   <div>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="artFromRef"
+        <el-form ref="artFromRef"
           :model="artFrom"
           label-width="80px"
           label-position="right"
           class="tabform"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="规格搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               v-model="artFrom.rule_name"
               placeholder="请输入规格名称"
-              class="form_content_width"
-            ></el-input>
+              class="form_content_width"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
-      <el-button v-auth="['product-rule-save']" type="primary" class="action-row" v-db-click @click="openAddAttr"
-        >添加商品规格</el-button
-      >
-      <el-button
-        v-auth="['product-product-rule-delete']"
+      <el-button v-auth="['product-rule-save']" type="primary" class="action-row" @click="openAddAttr">添加商品规格</el-button>
+      <el-button v-auth="['product-product-rule-delete']"
         class="action-row"
         v-db-click
-        @click="del(null, '批量删除规格')"
-        >批量删除</el-button
-      >
-      <el-table
-        ref="tableRef"
+        @click="del(null, '批量删除规格')">批量删除</el-button>
+      <el-table ref="tableRef"
         :data="tableList"
         v-loading="loading"
         highlight-current-row
         :row-key="getRowKey"
         @selection-change="handleSelectRow"
         empty-text="暂无数据"
-        class="mt14"
-      >
+        class="mt14">
         <el-table-column type="selection" width="60" :reserve-selection="true"> </el-table-column>
         <el-table-column label="ID" width="80">
           <template #default="scope">
@@ -64,30 +53,26 @@
         </el-table-column>
         <el-table-column label="商品属性" min-width="130">
           <template #default="scope">
-            <span
-              v-for="(item, index) in scope.row.attr_value"
+            <span v-for="(item, index) in scope.row.attr_value"
               :key="index"
               v-text="item"
-              style="display: block"
-            ></span>
+              style="display: block"></span>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除规格', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="artFrom.page"
           v-model:limit="artFrom.limit"
-          @pagination="getDataList"
-        />
+          @pagination="getDataList" />
       </div>
     </el-card>
     <add-attr ref="addAttrRef" @getList="userSearchs"></add-attr>

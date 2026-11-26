@@ -6,29 +6,25 @@
           <el-col v-bind="grid">
             <el-form-item :label="!authType ? '接口名称：' : '按钮名称：'" prop="menu_name">
               <div class="add">
-                <el-input
-                  v-model="formValidate.menu_name"
-                  :placeholder="!authType ? '请输入接口名称' : '请输入按钮名称'"
-                >
+                <el-input v-model="formValidate.menu_name"
+                  :placeholder="!authType ? '请输入接口名称' : '请输入按钮名称'">
                 </el-input>
               </div>
             </el-form-item>
           </el-col>
           <el-col v-bind="grid">
             <el-form-item label="父级分类：">
-              <el-cascader
-                :options="menuList"
+              <el-cascader :options="menuList"
                 :props="{ checkStrictly: true }"
                 v-model="formValidate.path"
                 filterable
-                style="width: 100%"
-              ></el-cascader>
+                style="width: 100%"></el-cascader>
             </el-form-item>
           </el-col>
           <el-col v-bind="grid" v-if="authType && !iconHidden">
             <el-form-item label="图标：">
               <el-input v-model="formValidate.icon" placeholder="请选择图标，点击右面图标">
-                <template #append><el-button :icon="Picture" v-db-click @click="iconClick"></el-button></template>
+                <template #append><el-button :icon="Picture" @click="iconClick"></el-button></template>
               </el-input>
             </el-form-item>
           </el-col>
@@ -48,37 +44,30 @@
           </el-col>
         </el-row>
       </el-form>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="handleReset">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="handleReset">取 消</el-button>
           <el-button type="primary" v-db-click @click="handleSubmit()" :disabled="valids">提 交</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
     <select-icon v-model="modal12" @select="iconChange" />
     <el-dialog v-model="ruleModal" width="1100px" title="权限列表" @closed="modalchange">
       <div class="search-rule">
-        <el-input
-          class="mr10"
+        <el-input class="mr10"
           v-model="searchRule"
           placeholder="输入关键词搜索"
           clearable
           style="width: 300px"
-          ref="searchRef"
-        />
-        <el-button type="primary" v-db-click @click="searchRules">搜索</el-button>
-        <el-button v-db-click @click="init">重置</el-button>
+          ref="searchRef" />
+        <el-button type="primary" @click="searchRules">搜索</el-button>
+        <el-button @click="init">重置</el-button>
       </div>
       <div class="rule">
-        <div
-          class="rule-list"
+        <div class="rule-list"
           v-show="!arrs.length || arrs.includes(index)"
           :class="{ 'select-rule': arrs.includes(index) }"
           v-for="(item, index) in ruleList"
           :key="index"
-          v-db-click
-          @click="selectRule(item)"
-        >
+          @click="selectRule(item)">
           <div>接口名称：{{ item.real_name }}</div>
           <div>请求方式：{{ item.method }}</div>
           <div>接口地址：{{ item.rule }}</div>
@@ -158,7 +147,7 @@ const iconHidden = computed(() => {
   const path = props.formValidate?.path;
   if (!Array.isArray(path)) return false;
   const parentDepth = path.filter((v) => Number(v) !== 0).length;
-  return parentDepth + 1 >= 3;
+  return parentDepth + 1>= 3;
 });
 watch(
   () => props.formValidate?.path,
@@ -246,7 +235,7 @@ const menuList = computed(() => {
       const item = { ...node };
       // value 0 是"顶级菜单"占位节点，始终可选
       if (Number(item.value) !== 0) {
-        if (depth >= 3) item.disabled = true;
+        if (depth>= 3) item.disabled = true;
         if (item.children?.length) item.children = markDisabled(item.children, depth + 1);
       }
       return item;

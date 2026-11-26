@@ -1,32 +1,26 @@
 <template>
   <div>
-    <pages-header
-      ref="pageHeader"
+    <pages-header ref="pageHeader"
       :title="route.params.id && isEdit ? '编辑优惠券' : '添加优惠券'"
       :backUrl="Setting.routePre + '/marketing/store_coupon_issue/index'"
-      description="设置优惠券名称、面值、领取与有效期等规则，保存后可发放给用户。"
-    ></pages-header>
+      description="设置优惠券名称、面值、领取与有效期等规则，保存后可发放给用户。"></pages-header>
     <el-card :bordered="false" shadow="never" class="mt16">
       <el-form :model="formData" label-width="160px">
         <el-form-item label="优惠券名称：">
-          <el-input
-            v-model="formData.coupon_title"
+          <el-input v-model="formData.coupon_title"
             maxlength="18"
             show-word-limit
             placeholder="请输入优惠券名称"
-            class="content_width"
-          ></el-input>
+            class="content_width"></el-input>
         </el-form-item>
         <el-form-item label="优惠券面值：">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             :min="1"
             :max="9999999999"
             v-model="formData.coupon_price"
             class="input-number-unit-class"
             class-unit="元"
-            :disabled="isEdit"
-          ></el-input-number>
+            :disabled="isEdit"></el-input-number>
         </el-form-item>
         <el-form-item label="用户类型：">
           <el-radio-group v-model="formData.user_type" :disabled="isEdit" @input="changeUserType">
@@ -60,32 +54,25 @@
           <div class="acea-row">
             <div v-for="(item, index) in productList" :key="index" class="pictrue">
               <img v-lazy="item.image" />
-              <i
-                v-if="formData.type == 2 && !formData.id"
+              <i v-if="formData.type == 2 && !formData.id"
                 class="el-icon-error btndel"
                 v-db-click
-                @click="remove(item.product_id)"
-              ></i>
+                @click="remove(item.product_id)"></i>
             </div>
-            <div
-              v-if="formData.type == 2 && !formData.id"
+            <div v-if="formData.type == 2 && !formData.id"
               class="upLoad acea-row row-center-wrapper"
-              v-db-click
-              @click="modals = true"
-            >
+              @click="modals = true">
               <i class="el-icon-goods" style="font-size: 24px"></i>
             </div>
           </div>
         </el-form-item>
         <el-form-item v-show="formData.type === 1">
-          <el-cascader
-            v-model="formData.category_id"
+          <el-cascader v-model="formData.category_id"
             :options="categoryList"
             :props="{ multiple: true, emitPath: false, checkStrictly: true }"
             clearable
             style="width: 320px"
-            :disabled="isEdit"
-          ></el-cascader>
+            :disabled="isEdit"></el-cascader>
           <div class="tip">选择商品的品类</div>
         </el-form-item>
         <el-form-item label="使用门槛：">
@@ -95,15 +82,13 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item v-if="isMinPrice">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             :min="0"
             :max="9999999999"
             v-model="formData.use_min_price"
             class="input-number-unit-class"
             :disabled="isEdit"
-            class-unit="元"
-          ></el-input-number>
+            class-unit="元"></el-input-number>
           <div class="tip">填写优惠券的最低消费金额</div>
         </el-form-item>
         <el-form-item label="有效期：">
@@ -113,20 +98,17 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item v-show="isCouponTime" label="">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             :min="0"
             v-model="formData.coupon_time"
             :precision="0"
             class="input-number-unit-class"
             :disabled="isEdit"
-            class-unit="天"
-          ></el-input-number>
+            class-unit="天"></el-input-number>
           <div class="tip">领取后多少天内有效</div>
         </el-form-item>
         <el-form-item v-show="!isCouponTime" label="">
-          <el-date-picker
-            v-model="datetime1"
+          <el-date-picker v-model="datetime1"
             :disabled="isEdit"
             clearable
             :editable="false"
@@ -136,8 +118,7 @@
             range-separator="-"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            @change="dateChange"
-          ></el-date-picker>
+            @change="dateChange"></el-date-picker>
         </el-form-item>
 
         <el-form-item label="领取时间：" v-if="formData.receive_type != 2 && formData.receive_type != 3">
@@ -147,8 +128,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item v-show="isReceiveTime && formData.receive_type != 2 && formData.receive_type != 3" label="">
-          <el-date-picker
-            clearable
+          <el-date-picker clearable
             v-model="datetime2"
             type="datetimerange"
             value-format="YYYY-MM-DD HH:mm:ss"
@@ -157,8 +137,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             @change="timeChange"
-            :disabled="isEdit"
-          ></el-date-picker>
+            :disabled="isEdit"></el-date-picker>
         </el-form-item>
         <el-form-item label="优惠券发布数量：" v-show="formData.receive_type == 1">
           <el-radio-group v-model="formData.is_permanent" :disabled="isEdit">
@@ -167,27 +146,23 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item v-show="!formData.is_permanent" label="">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             :min="isEdit ? formData.total_count : 1"
             :max="9999999999"
             v-model="formData.total_count"
             :precision="0"
             class="input-number-unit-class"
-            class-unit="张"
-          ></el-input-number>
+            class-unit="张"></el-input-number>
           <div class="tip">填写优惠券的发布数量</div>
         </el-form-item>
         <el-form-item label="用户领取数量：" v-if="formData.receive_type != 2 && formData.receive_type != 3">
-          <el-input-number
-            :controls="false"
+          <el-input-number :controls="false"
             :min="isEdit ? formData.receive_limit : 1"
             :max="9999999999"
             v-model="formData.receive_limit"
             :precision="0"
             class="input-number-unit-class"
-            class-unit="张"
-          ></el-input-number>
+            class-unit="张"></el-input-number>
           <div class="tip">填写每个用户可以领取多少张</div>
         </el-form-item>
         <el-form-item label="状态：">

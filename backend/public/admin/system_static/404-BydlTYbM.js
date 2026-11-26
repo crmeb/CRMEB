@@ -1,0 +1,1 @@
+import{Eu as e,Hu as t,Md as n,pd as r}from"./common-Cyt99CNL.js";import{t as i}from"./error-content-Be4DZJmJ.js";e();var a=`/admin/system_static/error-404-DHVJrDpZ.svg`,o=Object.assign({name:`error_404`},{__name:`index`,setup(e){let o=a;return(e,a)=>(r(),t(i,{code:`404`,desc:`抱歉，你访问的页面不存在`,src:n(o)},null,8,[`src`]))}});export{o as default};

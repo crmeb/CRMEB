@@ -1,17 +1,15 @@
 <template>
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mt" v-loading="spinShow">
-      <el-button type="primary" v-db-click @click="groupAdd()" class="action-row mr20">添加功能</el-button>
+      <el-button type="primary" @click="groupAdd()" class="action-row">添加功能</el-button>
       <!-- <el-button type="success" v-db-click @click="buildCode()" class="mr20">重新发布</el-button> -->
-      <el-table
-        :data="tabList"
+      <el-table :data="tabList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -39,83 +37,67 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row, '编辑')">查看代码</a>
+            <a @click="edit(scope.row, '编辑')">查看代码</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="editItem(scope.row)">编辑</a>
+            <a @click="editItem(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
-            <a v-db-click @click="downLoad(scope.row)">下载</a>
+            <a @click="downLoad(scope.row)">下载</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
-    <el-drawer
-      v-model="modals"
+    <el-drawer v-model="modals"
       :class="className"
       title="Create"
       size="80%"
-      :wrapperClosable="false"
+      :close-on-click-modal="false"
       :styles="styles"
-      @closed="editModalChange"
-    >
-      <template #header
-        ><p class="diy-header" ref="diyHeader">
+      @closed="editModalChange">
+      <template #header><p class="diy-header" ref="diyHeader">
           <span>{{ title }}</span>
-        </p></template
-      >
+        </p></template>
       <div class="file" style="height: 100%">
         <el-button class="save" type="primary" v-db-click @click="pwdModal = true">保存</el-button>
 
         <div class="file-box">
           <div class="file-fix"></div>
           <div class="file-content">
-            <!-- <el-tabs
-              type="card"
+            <!-- <el-tabs type="card"
               v-model="indexEditor"
               style="height: 100%"
               @on-click="toggleEditor"
               :animated="false"
               closable
-              @on-tab-remove="handleTabRemove"
-            >
-              <el-tab-pane
-                v-for="value in editorIndex"
+              @on-tab-remove="handleTabRemove">
+              <el-tab-pane v-for="value in editorIndex"
                 :key="value.index"
                 :name="value.index.toString()"
                 :label="value.title"
-                :icon="value.icon"
-              >
-                <div
-                  ref="container"
+                :icon="value.icon">
+                <div ref="container"
                   :id="'container_' + value.index"
-                  style="height: 100%; min-height: calc(100vh - 110px)"
-                ></div>
+                  style="height: 100%; min-height: calc(100vh - 110px)"></div>
               </el-tab-pane>
             </el-tabs> -->
             <el-tabs v-model="indexEditor" type="card" @tab-change="toggleEditor">
               <el-tab-pane v-for="value in editorIndex" :key="value.index">
-                <template #label
-                  ><span>
+                <template #label><span>
                     <el-tooltip effect="light" class="item" :content="value.title" placement="top">
                       <span>{{ value.file_name }}</span>
                     </el-tooltip>
-                  </span></template
-                >
-                <div
-                  ref="container"
+                  </span></template>
+                <div ref="container"
                   :id="'container_' + value.index"
-                  style="height: 100%; min-height: calc(100vh - 110px)"
-                ></div>
+                  style="height: 100%; min-height: calc(100vh - 110px)"></div>
               </el-tab-pane>
               <!-- <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
               <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
@@ -126,14 +108,12 @@
         </div>
       </div>
     </el-drawer>
-    <el-dialog
-      v-model="buildModals"
+    <el-dialog v-model="buildModals"
       title="终端"
       :show-close="true"
       :close-on-click-modal="false"
       width="720px"
-      @close="editModalChange"
-    >
+      @close="editModalChange">
       <el-alert type="warning" title="当前终端未运行于安装服务下，部分命令可能无法执行."></el-alert>
       <div>
         <div v-for="(item, index) in codeBuildList" :key="index">{{ item }}</div>
@@ -141,12 +121,10 @@
     </el-dialog>
     <el-dialog v-model="pwdModal" width="470px" title="文件管理密码" :show-close="true" :close-on-click-modal="false">
       <el-input v-model="pwd" type="password" placeholder="请输入文件管理密码"></el-input>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="pwdModal = false">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="pwdModal = false">取 消</el-button>
           <el-button type="primary" v-db-click @click="crudSaveFileLocal">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>
@@ -606,7 +584,7 @@ onBeforeUnmount(() => {
 }
 
 // 选项卡头部
-:deep(.ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-nav-container) {
+:deep(.ivu-tabs.ivu-tabs-card> .ivu-tabs-bar .ivu-tabs-nav-container) {
   background-color: var(--prev-bg-white);
 }
 .demo-drawer-footer {

@@ -1,38 +1,23 @@
 <template>
   <div>
-    <!--    <div class="i-layout-page-header header-title">-->
-    <!--      <div class="fl_header">-->
-    <!--        <router-link v-if="$route.params.id != 49" :to="{ path: $routeProStr + '/system/config/system_group/index' }"-->
-    <!--          ><el-button type="text">返回</el-button></router-link-->
-    <!--        >-->
-    <!--        <el-divider direction="vertical" v-if="$route.params.id != 49" />-->
-    <!--        <span class="ivu-page-header-title mr20" style="padding: 0" v-text="$route.meta.title"></span>-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <pages-header
-      class="mb16"
+    <pages-header class="mb16"
       ref="pageHeader"
       :title="$route.meta.title"
-      description="维护当前数据组的子项数据，支持增删改与显示开关，常用于幻灯片、热搜词等配置。"
-    ></pages-header>
+      description="维护当前数据组的子项数据，支持增删改与显示开关，常用于幻灯片、热搜词等配置。"></pages-header>
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="是否显示：">
-            <el-select
-              v-model="formValidate.status"
+            <el-select v-model="formValidate.status"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="显示"></el-option>
               <el-option value="0" label="不显示"></el-option>
             </el-select>
@@ -41,16 +26,14 @@
       </div>
     </el-card>
     <el-card :bordered="false" shadow="never" class="ivu-mt">
-      <el-button type="primary" v-db-click @click="groupAdd('添加数据')" class="action-row mr20">添加数据</el-button>
-      <el-table
-        :data="tabList"
+      <el-button type="primary" @click="groupAdd('添加数据')" class="action-row mr20">添加数据</el-button>
+      <el-table :data="tabList"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column :label="item.title" :min-width="item.minWidth" v-for="(item, index) in columns1" :key="index">
           <template #default="scope">
             <template v-if="item.key">
@@ -64,18 +47,16 @@
               </div>
             </template>
             <template v-else-if="item.slot === 'status'">
-              <el-switch
-                :active-value="1"
+              <el-switch :active-value="1"
                 :inactive-value="0"
                 v-model="scope.row.status"
                 :value="scope.row.status"
                 @change="onchangeIsShow(scope.row)"
-                size="large"
-              >
+                size="large">
               </el-switch>
             </template>
             <template v-else-if="item.slot === 'action'">
-              <a v-db-click @click="edit(scope.row, '编辑')">编辑</a>
+              <a @click="edit(scope.row, '编辑')">编辑</a>
               <el-divider direction="vertical"></el-divider>
               <a v-db-click @click="del(scope.row, '删除这条信息', scope.$index)">删除</a>
             </template>
@@ -83,13 +64,11 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
   </div>

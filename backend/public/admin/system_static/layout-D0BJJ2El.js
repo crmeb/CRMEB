@@ -1,0 +1,1 @@
+import{Eu as e,kd as t,wu as n}from"./common-Cyt99CNL.js";e();var r=n(`layout`,()=>{let e=t(!1);function n(t){e.value=t}return{menuCollapse:e,changeCol:n}},{persist:!0});export{r as t};

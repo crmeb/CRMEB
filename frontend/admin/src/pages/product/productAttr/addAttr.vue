@@ -1,15 +1,13 @@
 <template>
   <el-dialog v-model="modal" @closed="onCancel" title="商品规格" width="1000px">
-    <el-form
-      v-loading="spinShow"
+    <el-form v-loading="spinShow"
       ref="formDynamicRef"
       :model="formDynamic"
       :rules="rules"
       class="attrFrom"
       label-width="120px"
       label-position="right"
-      @submit.prevent
-    >
+      @submit.prevent>
       <el-row :gutter="24">
         <el-col :span="24">
           <el-col :span="8">
@@ -21,13 +19,11 @@
         <el-col :span="23" class="noForm" :key="index">
           <el-form-item label="">
             <div class="specifications">
-              <draggable
-                group="specifications"
+              <draggable group="specifications"
                 :list="formDynamic.spec"
                 handle=".move-icon"
                 animation="300"
-                :item-key="specItemKey"
-              >
+                :item-key="specItemKey">
                 <template #item="{ element: item, index }">
                   <div class="specifications-item active" :data-spec-idx="index">
                     <div class="move-icon">
@@ -37,13 +33,11 @@
                     <div class="specifications-item-box">
                       <div class="lineBox"></div>
                       <div class="specifications-item-name mb18">
-                        <el-input
-                          v-model="item.value"
+                        <el-input v-model="item.value"
                           placeholder="规格名称"
                           class="specifications-item-name-input"
                           maxlength="30"
-                          show-word-limit
-                        ></el-input>
+                          show-word-limit></el-input>
                       </div>
                       <div class="rulesBox ml30">
                         <draggable class="item" :list="item.detail" handle=".drag" :item-key="detailItemKey">
@@ -51,13 +45,11 @@
                             <div class="mr10 spec drag">
                               <i class="el-icon-error" @click="handleRemove2(item.detail, indexn)"></i>
 
-                              <el-input
-                                style="width: 120px"
+                              <el-input style="width: 120px"
                                 v-model="det.value"
                                 placeholder="规格值"
                                 maxlength="30"
-                                @keyup.enter="onDetailEnter(item, index, det)"
-                              >
+                                @keyup.enter="onDetailEnter(item, index, det)">
                                 <template #prefix>
                                   <span class="iconfont icondrag2"></span>
                                 </template>
@@ -65,7 +57,7 @@
                             </div>
                           </template>
                           <template #footer>
-                            <div class="addfont" type="text" v-db-click @click="addAttrValue(item, index)">
+                            <div class="addfont" type="text" @click="addAttrValue(item, index)">
                               添加规格值
                             </div>
                           </template>
@@ -75,20 +67,16 @@
                   </div>
                 </template>
               </draggable>
-              <el-button v-if="formDynamic.spec.length < 4" v-db-click @click="handleAddRole()">添加新规格</el-button>
+              <el-button v-if="formDynamic.spec.length < 4" @click="handleAddRole()">添加新规格</el-button>
             </div>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <template #footer
-      ><span class="dialog-footer">
-        <el-button v-db-click @click="onClose">取消</el-button>
-        <el-button type="primary" :loading="modal_loading" v-db-click @click="handleSubmit('formDynamic')"
-          >确定</el-button
-        >
-      </span></template
-    >
+    <template #footer><span class="dialog-footer">
+        <el-button @click="onClose">取消</el-button>
+        <el-button type="primary" :loading="modal_loading" v-db-click @click="handleSubmit('formDynamic')">确定</el-button>
+      </span></template>
   </el-dialog>
 </template>
 

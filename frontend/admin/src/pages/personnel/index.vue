@@ -3,18 +3,14 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt">
       <el-row class="action-row mb14">
         <el-col :span="24">
-          <el-button v-auth="['setting-service-personnel']" type="primary" v-db-click @click="add" class="mr10"
-            >添加服务人员</el-button
-          >
+          <el-button v-auth="['setting-service-personnel']" type="primary" @click="add" class="mr10">添加服务人员</el-button>
         </el-col>
       </el-row>
-      <el-table
-        :data="data1"
+      <el-table :data="data1"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -39,8 +35,7 @@
         </el-table-column>
         <el-table-column label="是否显示" min-width="130">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.status"
@@ -48,8 +43,7 @@
               @change="onchangeIsShow(scope.row)"
               size="large"
               active-text="显示"
-              inactive-text="隐藏"
-            >
+              inactive-text="隐藏">
             </el-switch>
           </template>
         </el-table-column>
@@ -60,20 +54,18 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="100">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-db-click @click="del(scope.row, '删除服务人员', scope.$index)">删除</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="tableOptions.page"
           v-model:limit="tableOptions.limit"
-          @pagination="getServicePersonnelList"
-        />
+          @pagination="getServicePersonnelList" />
       </div>
     </el-card>
   </div>

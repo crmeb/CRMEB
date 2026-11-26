@@ -448,6 +448,7 @@ import cusPreviewImg from "@/components/cusPreviewImg/index.vue";
 import { HTTP_REQUEST_URL } from "@/config/app";
 import homeList from "@/components/homeList";
 import util from "@/utils/util.js";
+import { appendSpid } from "@/utils";
 import i18n from "@/utils/lang.js";
 import { ref, watch, nextTick, getCurrentInstance } from "vue";
 import { storeToRefs } from "pinia";
@@ -797,7 +798,7 @@ function setShare() {
         {
           desc: storeInfo.value.info,
           title: storeInfo.value.title,
-          link: location.href,
+          link: appendSpid(location.href, appStore.uid),
           imgUrl: storeInfo.value.image,
         }
       )
@@ -1199,10 +1200,7 @@ function setShareInfoStatus() {
   if (wechat.isWeixin()) {
     posters.value = true;
     getUserInfo().then((res) => {
-      href =
-        href.indexOf("?") === -1
-          ? href + "?spread=" + res.data.uid
-          : href + "&spread=" + res.data.uid;
+      href = appendSpid(href, res.data.uid);
 
       let configAppMessage = {
         desc: data.store_info,
@@ -1261,7 +1259,7 @@ onLoad((options) => {
   if (options.id) {
     id.value = options.id;
     //记录推广人uid
-    if (options.pid) app.globalData.spid = options.pid;
+    if (options.spid) app.globalData.spid = options.spid;
     if (options.time_id) time_id.value = options.time_id;
     // if (options.time) this.datatime = Number(options.time);
   }
@@ -1306,7 +1304,7 @@ onLoad((options) => {
       );
     }
     //记录推广人uid
-    if (value.pid) app.globalData.spid = value.pid;
+    if (value.spid) app.globalData.spid = value.spid;
     if (value.time_id) time_id.value = value.time_id;
     // if (value.time) this.datatime = value.time
   }

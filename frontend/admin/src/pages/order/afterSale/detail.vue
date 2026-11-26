@@ -30,7 +30,7 @@
               <div class="title">申请退款金额</div>
               <div class="value1">¥{{ detail.refund_price || '0.00' }}</div>
             </li>
-            <li class="item" v-if="detail.actual_refund_price > 0">
+            <li class="item" v-if="detail.actual_refund_price> 0">
               <div class="title">实际退款金额</div>
               <div class="value1">¥{{ detail.actual_refund_price || '0.00' }}</div>
             </li>
@@ -47,13 +47,11 @@
         <el-tab-pane label="处理进度" name="timeline">
           <div class="tab-content">
             <el-timeline v-if="detail.timeline && detail.timeline.length">
-              <el-timeline-item
-                v-for="(item, index) in detail.timeline"
+              <el-timeline-item v-for="(item, index) in detail.timeline"
                 :key="index"
                 :timestamp="item.time ? formatDate(item.time) : '待处理'"
                 :color="item.done ? '#52c41a' : '#d9d9d9'"
-                placement="top"
-              >
+                placement="top">
                 {{ item.label }}
               </el-timeline-item>
             </el-timeline>
@@ -67,7 +65,7 @@
             <el-descriptions :column="2" border size="default">
               <el-descriptions-item label="售后单号">{{ detail.after_sale_no }}</el-descriptions-item>
               <el-descriptions-item label="订单号">
-                <a v-db-click @click="goOrderDetail">{{ detail.order_no }}</a>
+                <a @click="goOrderDetail">{{ detail.order_no }}</a>
               </el-descriptions-item>
               <el-descriptions-item label="售后类型">{{ detail.type_text }}</el-descriptions-item>
               <el-descriptions-item label="售后状态">{{ detail.status_text }}</el-descriptions-item>
@@ -77,18 +75,12 @@
               <el-descriptions-item label="订单大类">{{
                 getCategoryLabel(detail.order_category)
               }}</el-descriptions-item>
-              <el-descriptions-item label="申请退款金额"
-                ><span class="price">¥{{ detail.refund_price || '0.00' }}</span></el-descriptions-item
-              >
-              <el-descriptions-item label="实际退款金额"
-                ><span class="price">¥{{ detail.actual_refund_price || '0.00' }}</span></el-descriptions-item
-              >
-              <el-descriptions-item label="退还积分" v-if="detail.refund_integral > 0">{{
+              <el-descriptions-item label="申请退款金额"><span class="price">¥{{ detail.refund_price || '0.00' }}</span></el-descriptions-item>
+              <el-descriptions-item label="实际退款金额"><span class="price">¥{{ detail.actual_refund_price || '0.00' }}</span></el-descriptions-item>
+              <el-descriptions-item label="退还积分" v-if="detail.refund_integral> 0">{{
                 detail.refund_integral
               }}</el-descriptions-item>
-              <el-descriptions-item label="退货运费" v-if="detail.return_postage > 0"
-                >¥{{ detail.return_postage }}</el-descriptions-item
-              >
+              <el-descriptions-item label="退货运费" v-if="detail.return_postage> 0">¥{{ detail.return_postage }}</el-descriptions-item>
               <el-descriptions-item label="退款方式" v-if="detail.refund_type">{{
                 getRefundTypeLabel(detail.refund_type)
               }}</el-descriptions-item>
@@ -102,20 +94,16 @@
                 detail.add_time ? formatDate(detail.add_time) : '--'
               }}</el-descriptions-item>
               <el-descriptions-item label="申请原因" :span="2">{{ detail.reason || '--' }}</el-descriptions-item>
-              <el-descriptions-item
-                label="凭证图片"
+              <el-descriptions-item label="凭证图片"
                 :span="2"
-                v-if="detail.evidence_images && detail.evidence_images.length"
-              >
+                v-if="detail.evidence_images && detail.evidence_images.length">
                 <div class="image-list">
-                  <el-image
-                    v-for="(img, i) in detail.evidence_images"
+                  <el-image v-for="(img, i) in detail.evidence_images"
                     :key="i"
                     :src="img"
                     :preview-src-list="detail.evidence_images"
                     fit="cover"
-                    class="evidence-img"
-                  ></el-image>
+                    class="evidence-img"></el-image>
                 </div>
               </el-descriptions-item>
               <el-descriptions-item label="拒绝原因" :span="2" v-if="detail.reject_reason">
@@ -129,28 +117,21 @@
               <el-descriptions-item label="快递公司">{{ detail.return_delivery.type || '--' }}</el-descriptions-item>
               <el-descriptions-item label="快递单号">
                 {{ detail.return_delivery.no || '--' }}
-                <el-button
-                  v-if="detail.return_delivery.no"
+                <el-button v-if="detail.return_delivery.no"
                   type="text"
                   @click="openLogistics('return')"
-                  style="margin-left: 8px"
-                  >查看物流</el-button
-                >
+                  style="margin-left: 14px">查看物流</el-button>
               </el-descriptions-item>
-              <el-descriptions-item
-                label="退货凭证"
+              <el-descriptions-item label="退货凭证"
                 :span="2"
-                v-if="detail.return_delivery.images && detail.return_delivery.images.length"
-              >
+                v-if="detail.return_delivery.images && detail.return_delivery.images.length">
                 <div class="image-list">
-                  <el-image
-                    v-for="(img, i) in detail.return_delivery.images"
+                  <el-image v-for="(img, i) in detail.return_delivery.images"
                     :key="i"
                     :src="img"
                     :preview-src-list="detail.return_delivery.images"
                     fit="cover"
-                    class="evidence-img"
-                  ></el-image>
+                    class="evidence-img"></el-image>
                 </div>
               </el-descriptions-item>
             </el-descriptions>
@@ -161,19 +142,16 @@
               <el-descriptions-item label="快递公司">{{ detail.resend_delivery.type || '--' }}</el-descriptions-item>
               <el-descriptions-item label="快递单号">
                 {{ detail.resend_delivery.no || '--' }}
-                <el-button
-                  v-if="detail.resend_delivery.no"
+                <el-button v-if="detail.resend_delivery.no"
                   type="text"
                   @click="openLogistics('resend')"
-                  style="margin-left: 8px"
-                  >查看物流</el-button
-                >
+                  style="margin-left: 14px">查看物流</el-button>
               </el-descriptions-item>
             </el-descriptions>
 
             <!-- 审核信息 -->
-            <div class="section-title" v-if="detail.audit_time > 0">审核信息</div>
-            <el-descriptions v-if="detail.audit_time > 0" :column="2" border size="default">
+            <div class="section-title" v-if="detail.audit_time> 0">审核信息</div>
+            <el-descriptions v-if="detail.audit_time> 0" :column="2" border size="default">
               <el-descriptions-item label="审核结果">{{
                 detail.status === 'audit_rejected' ? '审核拒绝' : '审核通过'
               }}</el-descriptions-item>
@@ -213,18 +191,14 @@
         <!-- 管理备注 -->
         <el-tab-pane label="管理备注" name="remark">
           <div class="tab-content">
-            <el-input
-              type="textarea"
+            <el-input type="textarea"
               v-model="remarkText"
               :rows="6"
               placeholder="请输入管理备注内容"
               maxlength="500"
-              show-word-limit
-            ></el-input>
+              show-word-limit></el-input>
             <div class="mt16">
-              <el-button type="primary" v-db-click @click="saveRemark" v-auth="['admin-order-afterSale-remark']"
-                >保存备注</el-button
-              >
+              <el-button type="primary" v-db-click @click="saveRemark" v-auth="['admin-order-afterSale-remark']">保存备注</el-button>
             </div>
             <div class="remark-history mt16" v-if="detail.remark">
               <div class="section-title">当前备注</div>
@@ -244,59 +218,38 @@
           <div class="action-buttons">
             <!-- 待审核：审核通过 / 审核拒绝 -->
             <template v-if="detail.status === 'pending_audit'">
-              <el-button type="primary" v-db-click @click="openAudit('pass')" v-auth="['admin-order-afterSale-audit']"
-                >审核通过</el-button
-              >
-              <el-button type="danger" v-db-click @click="openAudit('reject')" v-auth="['admin-order-afterSale-audit']"
-                >审核拒绝</el-button
-              >
+              <el-button type="primary" @click="openAudit('pass')" v-auth="['admin-order-afterSale-audit']">审核通过</el-button>
+              <el-button type="danger" @click="openAudit('reject')" v-auth="['admin-order-afterSale-audit']">审核拒绝</el-button>
             </template>
             <!-- 仅退款审核通过：执行退款 -->
-            <el-button
-              v-if="canRefund"
+            <el-button v-if="canRefund"
               type="warning"
               v-db-click
               @click="openRefund"
-              v-auth="['admin-order-afterSale-refund']"
-              >执行退款</el-button
-            >
+              v-auth="['admin-order-afterSale-refund']">执行退款</el-button>
             <!-- 待收货（退货退款/换货）：确认收货 -->
-            <el-button
-              v-if="canReceive"
+            <el-button v-if="canReceive"
               type="primary"
               v-db-click
               @click="handleReceive"
-              v-auth="['admin-order-afterSale-receive']"
-              >确认收货</el-button
-            >
+              v-auth="['admin-order-afterSale-receive']">确认收货</el-button>
             <!-- 待收货（维修）：开始维修 -->
-            <el-button
-              v-if="canStartRepair"
+            <el-button v-if="canStartRepair"
               type="primary"
-              v-db-click
               @click="handleStartRepair"
-              v-auth="['admin-order-afterSale-start_repair']"
-              >开始维修</el-button
-            >
+              v-auth="['admin-order-afterSale-start_repair']">开始维修</el-button>
             <!-- 维修中 / 已维修完成未完结：维修完成（完结售后并恢复订单原状态） -->
-            <el-button
-              v-if="detail.status === 'repairing' || detail.status === 'repair_complete'"
+            <el-button v-if="detail.status === 'repairing' || detail.status === 'repair_complete'"
               type="success"
-              v-db-click
               @click="openRepairComplete"
-              v-auth="['admin-order-afterSale-repair_complete']"
-              >维修完成</el-button
-            >
+              v-auth="['admin-order-afterSale-repair_complete']">维修完成</el-button>
             <!-- 补发商品（补发/换货收货后/维修完成）：填写补发物流 -->
-            <el-button
-              v-if="canResend"
+            <el-button v-if="canResend"
               type="primary"
               v-db-click
               @click="openResend"
-              v-auth="['admin-order-afterSale-resend']"
-              >补发商品</el-button
-            >
-            <el-button v-db-click @click="goBack">返回列表</el-button>
+              v-auth="['admin-order-afterSale-resend']">补发商品</el-button>
+            <el-button @click="goBack">返回列表</el-button>
           </div>
         </div>
       </el-card>
@@ -304,12 +257,10 @@
     <el-empty v-else-if="!loading" description="售后单不存在或已删除" class="empty-tip"></el-empty>
 
     <!-- 审核弹窗 -->
-    <el-dialog
-      v-model="auditModal"
+    <el-dialog v-model="auditModal"
       :title="auditForm.result === 'pass' ? '审核通过' : '审核拒绝'"
       width="500px"
-      @close="auditForm = { result: 'pass', reject_reason: '', audit_remark: '' }"
-    >
+      @close="auditForm = { result: 'pass', reject_reason: '', audit_remark: '' }">
       <el-form :model="auditForm" label-width="100px">
         <el-form-item label="审核结果">
           <el-radio-group v-model="auditForm.result">
@@ -321,41 +272,33 @@
           <el-input type="textarea" v-model="auditForm.reject_reason" :rows="3" placeholder="请填写拒绝原因"></el-input>
         </el-form-item>
         <el-form-item label="审核备注">
-          <el-input
-            type="textarea"
+          <el-input type="textarea"
             v-model="auditForm.audit_remark"
             :rows="3"
-            placeholder="审核备注（选填）"
-          ></el-input>
+            placeholder="审核备注（选填）"></el-input>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="auditModal = false">取消</el-button>
           <el-button v-db-click type="primary" @click="submitAudit">确定</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
 
     <!-- 退款弹窗 -->
-    <el-dialog
-      v-model="refundModal"
+    <el-dialog v-model="refundModal"
       title="执行退款"
       width="500px"
-      @close="refundForm = { amount: 0, refund_type: 'original', refund_trade_no: '' }"
-    >
+      @close="refundForm = { amount: 0, refund_type: 'original', refund_trade_no: '' }">
       <el-form :model="refundForm" label-width="100px">
         <el-form-item label="可退金额">
           <span class="price">¥{{ detail.refund_price || '0.00' }}</span>
         </el-form-item>
-        <el-form-item label="退款金额" :required="Number(detail.refund_price) > 0">
-          <el-input-number
-            v-model="refundForm.amount"
-            :min="Number(detail.refund_price) > 0 ? 0.01 : 0"
+        <el-form-item label="退款金额" :required="Number(detail.refund_price)> 0">
+          <el-input-number v-model="refundForm.amount"
+            :min="Number(detail.refund_price)> 0 ? 0.01 : 0"
             :max="Math.max(Number(detail.refund_price) || 0, 0)"
             :precision="2"
-            style="width: 200px"
-          ></el-input-number>
+            style="width: 200px"></el-input-number>
         </el-form-item>
         <el-form-item label="退款方式">
           <el-radio-group v-model="refundForm.refund_type">
@@ -367,21 +310,17 @@
           <el-input v-model="refundForm.refund_trade_no" maxlength="64" placeholder="退款交易流水号（选填）"></el-input>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="refundModal = false">取消</el-button>
           <el-button v-db-click type="primary" @click="submitRefund">确认退款</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
 
     <!-- 补发弹窗 -->
-    <el-dialog
-      v-model="resendModal"
+    <el-dialog v-model="resendModal"
       title="补发商品"
       width="500px"
-      @close="resendForm = { delivery_type: '', delivery_no: '' }"
-    >
+      @close="resendForm = { delivery_type: '', delivery_no: '' }">
       <el-form :model="resendForm" label-width="100px">
         <el-form-item label="快递公司" required>
           <el-input v-model="resendForm.delivery_type" placeholder="请输入快递公司名称"></el-input>
@@ -390,29 +329,23 @@
           <el-input v-model="resendForm.delivery_no" placeholder="请输入快递单号"></el-input>
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="resendModal = false">取消</el-button>
           <el-button v-db-click type="primary" @click="submitResend">确认补发</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
 
     <!-- 维修完成弹窗 -->
-    <el-dialog
-      v-model="repairModal"
+    <el-dialog v-model="repairModal"
       title="维修完成"
       width="500px"
-      @close="repairForm = { repair_remark: '', delivery_type: '', delivery_no: '' }"
-    >
+      @close="repairForm = { repair_remark: '', delivery_type: '', delivery_no: '' }">
       <el-form :model="repairForm" label-width="100px">
         <el-form-item label="维修备注">
-          <el-input
-            type="textarea"
+          <el-input type="textarea"
             v-model="repairForm.repair_remark"
             :rows="4"
-            placeholder="维修过程记录（选填）"
-          ></el-input>
+            placeholder="维修过程记录（选填）"></el-input>
         </el-form-item>
         <el-form-item label="寄回快递">
           <el-input v-model="repairForm.delivery_type" placeholder="快递公司（选填）"></el-input>
@@ -422,12 +355,10 @@
         </el-form-item>
         <div class="repair-tip">填写寄回物流并确认后，售后完结，订单将变为「待收货」。</div>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="repairModal = false">取消</el-button>
           <el-button v-db-click type="primary" @click="submitRepairComplete">确认完成</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
 
     <!-- 物流进度抽屉（复用订单详情物流查询组件） -->
@@ -540,7 +471,7 @@ const hasResendDelivery = computed(() => {
  * 商家是否已确认收到退货
  * 退货退款/换货确认收货后仍沿用 receiving 状态，用 receive_time 区分收货前后动作
  */
-const isReceived = computed(() => Number((detail.value && detail.value.receive_time) || 0) > 0);
+const isReceived = computed(() => Number((detail.value && detail.value.receive_time) || 0)> 0);
 
 /**
  * 是否可执行退款
@@ -679,12 +610,12 @@ function submitRefund() {
   const amount = Number(refundForm.value.amount) || 0;
   const maxCash = Number(detail.value.refund_price) || 0;
   const refundIntegral = Number(detail.value.refund_integral) || 0;
-  // 有可退现金时金额须 > 0；0 元单（无现金、可无积分）允许实退 0
+  // 有可退现金时金额须> 0；0 元单（无现金、可无积分）允许实退 0
   if (amount < 0) {
     ElMessage.warning('退款金额不能为负数');
     return;
   }
-  if (amount <= 0 && refundIntegral <= 0 && maxCash > 0) {
+  if (amount <= 0 && refundIntegral <= 0 && maxCash> 0) {
     ElMessage.warning('退款金额必须大于0');
     return;
   }
@@ -1060,7 +991,7 @@ onMounted(() => {
 
     .action-buttons {
       display: flex;
-      gap: 10px;
+      gap: 14px;
     }
   }
 }
@@ -1080,9 +1011,7 @@ onMounted(() => {
 
 :deep(.el-tabs--border-card) {
   border: none;
-  box-shadow: none;
-
-  > .el-tabs__header {
+  box-shadow: none;> .el-tabs__header {
     border: none;
     height: 40px;
 
@@ -1097,9 +1026,7 @@ onMounted(() => {
         font-weight: 500;
       }
     }
-  }
-
-  > .el-tabs__content {
+  }> .el-tabs__content {
     padding: 0;
   }
 }

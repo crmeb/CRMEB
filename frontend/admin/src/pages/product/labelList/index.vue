@@ -2,22 +2,19 @@
   <div>
     <el-row class="ivu-mt box-wrapper">
       <el-col v-bind="grid1" class="left-wrapper">
-        <div class="tree_tit" v-db-click @click="addSort">
+        <div class="tree_tit" @click="addSort">
           <i class="el-icon-circle-plus"></i>
           添加分组
         </div>
         <div class="tree">
-          <el-tree
-            :data="labelSort"
+          <el-tree :data="labelSort"
             node-key="id"
             default-expand-all
             highlight-current
             :expand-on-click-node="false"
             @node-click="bindMenuItem"
-            :current-node-key="treeId"
-          >
-            <template #default="{ data }"
-              ><span class="custom-tree-node">
+            :current-node-key="treeId">
+            <template #default="{ data }"><span class="custom-tree-node">
                 <div class="file-name">
                   <img class="icon" src="@/assets/images/file.jpg" />
                   <el-tooltip class="item" effect="dark" :content="data.name" placement="top">
@@ -37,8 +34,7 @@
                     </template>
                   </el-dropdown>
                 </span>
-              </span></template
-            >
+              </span></template>
           </el-tree>
         </div>
       </el-col>
@@ -46,18 +42,16 @@
         <el-card :bordered="false" shadow="never">
           <el-row class="action-row">
             <el-col>
-              <el-button type="primary" v-db-click @click="add">添加标签</el-button>
+              <el-button type="primary" @click="add">添加标签</el-button>
             </el-col>
           </el-row>
-          <el-table
-            :data="labelLists"
+          <el-table :data="labelLists"
             ref="table"
             class="mt14"
             v-loading="loading"
             highlight-current-row
             no-userFrom-text="暂无数据"
-            no-filtered-userFrom-text="暂无筛选结果"
-          >
+            no-filtered-userFrom-text="暂无筛选结果">
             <el-table-column label="ID" width="80">
               <template #default="scope">
                 <span>{{ scope.row.id }}</span>
@@ -70,15 +64,13 @@
             </el-table-column> -->
             <el-table-column label="标签名称" width="180">
               <template #default="scope">
-                <div
-                  v-if="scope.row.type == 1"
+                <div v-if="scope.row.type == 1"
                   class="words-tag"
                   :style="{
                     backgroundColor: scope.row.bg_color,
                     color: scope.row.font_color,
                     border: scope.row.border_color ? '1px solid ' + scope.row.border_color : 'none',
-                  }"
-                >
+                  }">
                   <span>{{ scope.row.name }}</span>
                 </div>
                 <img :src="scope.row.image" class="tag-img" v-else />
@@ -91,8 +83,7 @@
             </el-table-column>
             <el-table-column label="状态" min-width="140">
               <template #default="scope">
-                <el-switch
-                  class="defineSwitch"
+                <el-switch class="defineSwitch"
                   :active-value="1"
                   :inactive-value="0"
                   v-model="scope.row.status"
@@ -100,15 +91,13 @@
                   @change="onchangeStatus(scope.row)"
                   size="large"
                   active-text="开启"
-                  inactive-text="关闭"
-                >
+                  inactive-text="关闭">
                 </el-switch>
               </template>
             </el-table-column>
             <el-table-column label="移动端展示" min-width="140">
               <template #default="scope">
-                <el-switch
-                  class="defineSwitch"
+                <el-switch class="defineSwitch"
                   :active-value="1"
                   :inactive-value="0"
                   v-model="scope.row.is_show"
@@ -116,27 +105,24 @@
                   @change="onchangeShow(scope.row)"
                   size="large"
                   active-text="开启"
-                  inactive-text="关闭"
-                >
+                  inactive-text="关闭">
                 </el-switch>
               </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
               <template #default="scope">
-                <a v-db-click @click="edit(scope.row.id)">修改</a>
+                <a @click="edit(scope.row.id)">修改</a>
                 <el-divider direction="vertical"></el-divider>
                 <a v-db-click @click="del(scope.row, '删除', scope.$index)">删除</a>
               </template>
             </el-table-column>
           </el-table>
           <div class="acea-row row-right page">
-            <pagination
-              v-if="total"
+            <pagination v-if="total"
               :total="total"
               v-model:page="labelFrom.page"
               v-model:limit="labelFrom.limit"
-              @pagination="getList"
-            />
+              @pagination="getList" />
           </div>
         </el-card>
         <el-dialog v-model="modals" closable :title="isEdit ? '编辑标签' : '添加标签'" width="560" @close="cancel">
@@ -147,12 +133,10 @@
               </el-form-item>
               <el-form-item label="分组选择：" prop="label_cate">
                 <el-select v-model="form.cate_id" clearable class="w-420">
-                  <el-option
-                    v-for="item in labelSort.slice(1)"
+                  <el-option v-for="item in labelSort.slice(1)"
                     :value="item.id"
                     :label="item.name"
-                    :key="item.id"
-                  ></el-option>
+                    :key="item.id"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="移动端展示：">
@@ -199,12 +183,10 @@
               </el-form-item>
             </el-form>
           </div>
-          <template #footer
-            ><span class="dialog-footer">
+          <template #footer><span class="dialog-footer">
               <el-button @click="cancel">取 消</el-button>
               <el-button type="primary" v-db-click @click="addWordsConfirm">确 定</el-button>
-            </span></template
-          >
+            </span></template>
         </el-dialog>
       </el-col>
     </el-row>

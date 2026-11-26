@@ -24,12 +24,11 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, ref } from 'vue';
+import { ref } from 'vue';
 import ConfigLink from './ConfigLink';
+import c_icon_select from '../../mobileConfigRight/c_icon_select.vue';
 
 defineOptions({ name: 'ConfigIconContent' });
-
-const c_icon_select = defineAsyncComponent(() => import('../../mobileConfigRight/c_icon_select'));
 
 const props = defineProps({
   curComponent: {

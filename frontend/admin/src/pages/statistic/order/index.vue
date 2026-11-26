@@ -3,19 +3,17 @@
     <el-card :bordered="false" shadow="never" class="ivu-mb-16">
       <div class="acea-row row-middle">
         <span class="label_text">时间选择：</span>
-        <date-range-picker
-          width="250px"
+        <date-range-picker width="250px"
           clearable
           v-model="timeVal"
           :editable="false"
           @change="onchangeTime"
           format="YYYY/MM/DD"
           value-format="YYYY/MM/DD"
-          class="mr20"
-        ></date-range-picker>
+          class="mr20"></date-range-picker>
       </div>
     </el-card>
-    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length>= 0"></cards-data>
     <el-card class="ivu-mb-16" :bordered="false" shadow="never">
       <h4 class="statics-header-title">营业趋势</h4>
       <echarts-new :option-data="optionData" :styles="style" height="100%" width="100%" v-if="optionData"></echarts-new>
@@ -24,18 +22,16 @@
       <el-card :bordered="false" shadow="never" class="ivu-mt">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">订单来源分析</h4>
-          <div class="change-style" v-db-click @click="echartLeft = !echartLeft">切换样式</div>
+          <div class="change-style" @click="echartLeft = !echartLeft">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartLeft" ref="visitChart" :infoList="infoList" echartsTitle="circle"></echarts-from>
-          <el-table
-            v-show="!echartLeft"
+          <el-table v-show="!echartLeft"
             ref="selection"
             :data="tabList"
             v-loading="loading"
             empty-text="暂无数据"
-            highlight-current-row
-          >
+            highlight-current-row>
             <el-table-column type="index" label="序号" width="80"> </el-table-column>
             <el-table-column label="来源" min-width="80">
               <template #default="scope">
@@ -64,18 +60,16 @@
       <el-card :bordered="false" shadow="never" class="ivu-mt">
         <div class="acea-row row-between-wrapper">
           <h4 class="statics-header-title">订单类型分析</h4>
-          <div class="change-style" v-db-click @click="echartRight = !echartRight">切换样式</div>
+          <div class="change-style" @click="echartRight = !echartRight">切换样式</div>
         </div>
         <div class="ech-box">
           <echarts-from v-if="echartRight" ref="visitChart" :infoList="infoList2" echartsTitle="circle"></echarts-from>
-          <el-table
-            v-show="!echartRight"
+          <el-table v-show="!echartRight"
             ref="selection"
             :data="tabList2"
             v-loading="loading2"
             empty-text="暂无数据"
-            highlight-current-row
-          >
+            highlight-current-row>
             <el-table-column type="index" label="序号" width="80"> </el-table-column>
             <el-table-column label="来源" min-width="80">
               <template #default="scope">

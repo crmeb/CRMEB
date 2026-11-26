@@ -37,7 +37,7 @@
         </div>
         <div v-if="bgPic">
           <div class="title">建议尺寸：690 * 240px</div>
-          <div class="boxs" v-db-click @click="modalPicTap('单选')">
+          <div class="boxs" @click="modalPicTap('单选')">
             <img :src="bgPicUrl" alt="" v-if="bgPicUrl" />
             <div class="upload-box" v-else><i class="el-icon-camera" /></div>
             <div class="replace" v-if="bgPicUrl">更换图片</div>
@@ -47,14 +47,12 @@
       </el-col>
     </div>
     <div>
-      <el-dialog v-model="modalPic" width="960px" title="上传背景图">
-        <uploadPictures
-          :isChoice="isChoice"
+      <el-dialog v-model="modalPic" width="960px" title="上传背景图" append-to-body>
+        <uploadPictures :isChoice="isChoice"
           @getPic="getPic"
           :gridBtn="gridBtn"
           :gridPic="gridPic"
-          v-if="modalPic"
-        ></uploadPictures>
+          v-if="modalPic"></uploadPictures>
       </el-dialog>
     </div>
   </div>

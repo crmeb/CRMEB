@@ -2,14 +2,14 @@
 
 本文件是 admin 端约定真源。代码路径相对 `frontend/admin/`；先读取仓库根 `.crmeb/AGENTS.md` 及其指定规则与技能。
 
-CRMEB 开源版（KY）管理后台，基于 **Vue 3.5 + element-plus 2.9 + Pinia 2 + vue-router 4**（**Vite 5** 构建，纯 JS 不用 TS）。
+CRMEB 开源版（KY）管理后台，基于 **Vue 3.5 + element-plus 2.9 + Pinia 2 + vue-router 4**（**Vite 8** 构建，纯 JS 不用 TS）。
 与后端 `backend/`（ThinkPHP 8，本地默认通过宿主机端口 8011 提供 `/adminapi`）、移动端 `frontend/uni-app/`（Vue 3）配套。Docker Compose 仅是可选运行方式。
 
-> 2026-09 已从 Vue 2.7 / vue-cli / Vuex / element-ui 整体迁移至 Vue3 + Vite；迁移规则沉淀在 `docs/vue3-migration/`（page-conversion-guide.md、store-mapping.md）。
+> 2026-09 已从 Vue 2.7 / vue-cli / Vuex / element-ui 整体迁移至 Vue3 + Vite；迁移规则沉淀在 `docs/vue3-migration/`（page-conversion-guide.md、store-mapping.md）。2026-11 管理端构建升级至 Vite 8（Rolldown/Oxc）；移动端仍为 uni-app CLI 自带的 Vite 5。
 
 ## 常用命令
 
-- Node 需 `>=18.20.0`，npm >= 7；使用 `npm ci` 安装锁定依赖。`xlsx` 取自 SheetJS 官方 CDN（`https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`，npm 仓库停在有漏洞的 0.18.5），安装环境需能访问该域名，升级时替换 tarball 地址。为兼容 Node 18，`sass`、`unplugin-auto-import`、`unplugin-vue-components` 固定版本，升级时检查间接依赖并验证启动、主包及扩展构建。
+- Node 需 `^20.19.0 || >=22.12.0`，npm >= 10（Vite 8 要求）；使用 `npm ci` 安装锁定依赖。`xlsx` 取自 SheetJS 官方 CDN（`https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`，npm 仓库停在有漏洞的 0.18.5），安装环境需能访问该域名，升级时替换 tarball 地址。`sass`、`unplugin-auto-import`、`unplugin-vue-components` 仍固定版本（历史兼容约束）；`esbuild` 为显式依赖（`vite-plugin-monaco-editor` 与 `build.cssMinify: 'esbuild'` 需要，Vite 8 不再自带）。升级工具链后须验证 `build` / `build:ext`。
 - `npm run dev` — Vite dev server，端口 **1619**（被占用时自动顺延为 1620 等，以终端实际输出为准），自动开浏览器；`/adminapi` 代理到 `http://localhost:8011`（需后端在跑）。
 - `npm run build` — 生产构建到 `dist/`（`base: '/admin/'`）。
 - `npm run build:ext` / `npm run dev:ext` — 扩展 UMD 包（`scripts/build-extensions.js` + `scripts/vite.ext.config.js`，支持 `--ext <key>` / `--watch`）；`build:all` = build + build:ext。

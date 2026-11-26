@@ -1,0 +1,1 @@
+import{Cl as e}from"./common-Cyt99CNL.js";function t(t){return e({url:`coupon/product/list`,method:`get`,params:t})}function n(t){return e({url:`coupon/product`,method:`post`,data:t})}function r(t,n){return e({url:`coupon/product/${t}`,method:`put`,data:n})}export{n,r,t};

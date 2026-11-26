@@ -256,36 +256,36 @@ class QrcodeServices extends BaseService
     {
         $page = '';
         $namePath = '';
-        $data = 'id=' . $id . '&pid=' . $uid;
+        $data = 'id=' . $id . '&spid=' . $uid;
         switch ($type) {
             case 0:
                 $page = 'pages/goods_details/index';
-                $namePath = $id . '_' . $uid . '_product.jpg';
+                $namePath = $id . '_' . $uid . '_product_spid.jpg';
                 break;
             case 1:
                 $page = 'pages/activity/goods_combination_details/index';
-                $namePath = 'combination_' . $id . '_' . $uid . '.jpg';
+                $namePath = 'combination_' . $id . '_' . $uid . '_spid.jpg';
                 break;
             case 2:
                 $data = $data . '&time_id=' . $param['time_id'];
                 $page = 'pages/activity/goods_seckill_details/index';
-                $namePath = 'seckill_' . $id . '_' . $uid . '.jpg';
+                $namePath = 'seckill_' . $id . '_' . $uid . '_spid.jpg';
                 break;
             case 3:
                 $page = 'pages/annex/offline_pay/index';
-                $namePath = 'routine_offline_scan.jpg';
+                $namePath = 'routine_offline_scan_spid.jpg';
                 break;
             case 4:
                 $page = 'pages/annex/vip_active/index';
-                $namePath = 'routine_member_card.jpg';
+                $namePath = 'routine_member_card_spid.jpg';
                 break;
             case 5:
                 $page = 'pages/annex/vip_paid/index';
-                $namePath = 'routine_pay_vip_code.jpg';
+                $namePath = 'routine_pay_vip_code_spid.jpg';
                 break;
             case 6:
                 $page = 'pages/annex/special/index';
-                $namePath = $id . 'routine_index_code.jpg';
+                $namePath = $id . 'routine_index_code_spid.jpg';
                 break;
             case 7:
                 // 礼物领取小程序码：scene 仅放 32 位 gift_key（微信 scene 上限 32 字符）

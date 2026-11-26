@@ -2,12 +2,10 @@
   <div style="position: relative">
     <div v-if="type === '2'" class="verify-img-out" :style="{ height: parseInt(setSize.imgHeight) + vSpace + 'px' }">
       <div class="verify-img-panel" :style="{ width: setSize.imgWidth, height: setSize.imgHeight }">
-        <img
-          :src="backImgBase ? 'data:image/png;base64,' + backImgBase : defaultImg"
+        <img :src="backImgBase ? 'data:image/png;base64,' + backImgBase : defaultImg"
           alt=""
-          style="width: 100%; height: 100%; display: block"
-        />
-        <div v-show="showRefresh" class="verify-refresh" v-db-click @click="refresh">
+          style="width: 100%; height: 100%; display: block" />
+        <div v-show="showRefresh" class="verify-refresh" @click="refresh">
           <i class="iconfont icon-refresh" />
         </div>
         <transition name="tips">
@@ -16,23 +14,18 @@
       </div>
     </div>
     <!-- 公共部分 -->
-    <div
-      class="verify-bar-area"
-      :style="{ width: setSize.imgWidth, height: barSize.height, 'line-height': barSize.height }"
-    >
+    <div class="verify-bar-area"
+      :style="{ width: setSize.imgWidth, height: barSize.height, 'line-height': barSize.height }">
       <span class="verify-msg" v-text="text" />
-      <div
-        class="verify-left-bar"
+      <div class="verify-left-bar"
         :style="{
           width: leftBarWidth !== undefined ? leftBarWidth : barSize.height,
           height: barSize.height,
           'border-color': leftBarBorderColor,
           transaction: transitionWidth,
-        }"
-      >
+        }">
         <span class="verify-msg" v-text="finishText" />
-        <div
-          class="verify-move-block"
+        <div class="verify-move-block"
           :style="{
             width: barSize.height,
             height: barSize.height,
@@ -41,24 +34,19 @@
             transition: transitionLeft,
           }"
           @touchstart="start"
-          @mousedown="start"
-        >
+          @mousedown="start">
           <i :class="['verify-icon iconfont', iconClass]" :style="{ color: iconColor }" />
-          <div
-            v-if="type === '2'"
+          <div v-if="type === '2'"
             class="verify-sub-block"
             :style="{
               width: Math.floor((parseInt(setSize.imgWidth) * 47) / 310) + 'px',
               height: setSize.imgHeight,
               top: '-' + (parseInt(setSize.imgHeight) + vSpace) + 'px',
               'background-size': setSize.imgWidth + ' ' + setSize.imgHeight,
-            }"
-          >
-            <img
-              :src="'data:image/png;base64,' + blockBackImgBase"
+            }">
+            <img :src="'data:image/png;base64,' + blockBackImgBase"
               alt=""
-              style="width: 100%; height: 100%; display: block"
-            />
+              style="width: 100%; height: 100%; display: block" />
           </div>
         </div>
       </div>
@@ -248,7 +236,7 @@ function move(e) {
     }
     var bar_area_left = barArea.value.getBoundingClientRect().left;
     var move_block_left = x - bar_area_left; // 小方块相对于父元素的left值
-    if (move_block_left >= barArea.value.offsetWidth - parseInt(parseInt(props.blockSize.width) / 2) - 2) {
+    if (move_block_left>= barArea.value.offsetWidth - parseInt(parseInt(props.blockSize.width) / 2) - 2) {
       move_block_left = barArea.value.offsetWidth - parseInt(parseInt(props.blockSize.width) / 2) - 2;
     }
     if (move_block_left <= 0) {

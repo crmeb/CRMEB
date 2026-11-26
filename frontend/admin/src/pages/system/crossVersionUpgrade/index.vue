@@ -20,16 +20,14 @@
               <a href="https://mp.weixin.qq.com" target="_blank" style="color: #409eff">点击发布</a>
             </div>
             <div class="summary-actions">
-              <el-button v-db-click type="primary" @click="handleUploadMini" :loading="uploadingMini">上传小程序</el-button>
+              <el-button type="primary" @click="handleUploadMini" :loading="uploadingMini">上传小程序</el-button>
               <el-button class="ml8" @click="handleRefreshStatus">暂不上传</el-button>
             </div>
           </div>
         </div>
         <!-- 发现新版本摘要（status = 1） -->
-        <div
-          v-if="remoteStatus.status === 1 && downloadStage === 'idle' && !showUpgradeComplete"
-          class="new-version-summary"
-        >
+        <div v-if="remoteStatus.status === 1 && downloadStage === 'idle' && !showUpgradeComplete"
+          class="new-version-summary">
           <div class="summary-header">
             <span class="summary-icon-wrap">
               <img src="@/assets/images/upgrade.png" class="summary-icon-img" alt="upgrade" />
@@ -44,12 +42,8 @@
             </div>
             <div class="summary-sub">发现可升级的新版本，点击立即升级</div>
             <div class="summary-actions">
-              <el-button v-db-click type="primary" @click="startDownload" :disabled="startingDownload" :loading="startingDownload"
-                >立即升级</el-button
-              >
-              <el-button class="ml8 check-update-btn" @click="checkRemoteUpdate" :loading="checkingRemote"
-                >检测更新</el-button
-              >
+              <el-button type="primary" @click="startDownload" :disabled="startingDownload" :loading="startingDownload">立即升级</el-button>
+              <el-button class="ml8 check-update-btn" @click="checkRemoteUpdate" :loading="checkingRemote">检测更新</el-button>
             </div>
           </div>
           <div v-if="upgradeablePackage" class="summary-content">
@@ -58,18 +52,14 @@
                 upgradeablePackage.third_version
               }}
               更新说明
-              <span class="release-time" v-if="upgradeablePackage.release_time"
-                >更新日期：{{ upgradeablePackage.release_time }}</span
-              >
+              <span class="release-time" v-if="upgradeablePackage.release_time">更新日期：{{ upgradeablePackage.release_time }}</span>
             </div>
             <div class="content-desc" v-html="upgradeablePackage.content"></div>
           </div>
         </div>
 
-        <div
-          v-if="(remoteStatus.status === 0 || remoteStatus.status === -1) && downloadStage === 'idle'"
-          class="new-version-summary"
-        >
+        <div v-if="(remoteStatus.status === 0 || remoteStatus.status === -1) && downloadStage === 'idle'"
+          class="new-version-summary">
           <div class="summary-header">
             <span class="summary-icon-wrap">
               <img src="@/assets/images/new.png" class="summary-icon-img" alt="upgrade" />
@@ -77,9 +67,7 @@
             <div class="summary-title">当前版本 {{ versionInfo.current_version_main || '-' }}</div>
             <div class="summary-sub">当前版本号为 {{ versionInfo.current_version || '-' }}</div>
             <div class="summary-actions">
-              <el-button class="check-update-btn" @click="checkRemoteUpdate" :loading="checkingRemote"
-                >检测更新</el-button
-              >
+              <el-button class="check-update-btn" @click="checkRemoteUpdate" :loading="checkingRemote">检测更新</el-button>
             </div>
           </div>
         </div>
@@ -95,103 +83,78 @@
           <!-- 分段状态行 -->
           <div class="progress-status-row">
             <div class="status-item">
-              <i
-                :class="
+              <i :class="
                   downloadSteps[0].status === 'loading'
                     ? 'el-icon-loading status-loading'
                     : downloadSteps[0].status === 'success'
                     ? 'el-icon-circle-check status-ok'
                     : 'el-icon-time status-muted'
-                "
-              ></i>
-              <span
-                :class="
+                "></i>
+              <span :class="
                   downloadSteps[0].status === 'loading'
                     ? 'status-loading'
                     : downloadSteps[0].status === 'success'
                     ? 'status-ok'
                     : 'status-muted'
-                "
-                >检测</span
-              >
+                ">检测</span>
             </div>
             <div class="status-item">
-              <i
-                :class="
+              <i :class="
                   downloadSteps[1].status === 'loading'
                     ? 'el-icon-loading status-loading'
                     : downloadSteps[1].status === 'success'
                     ? 'el-icon-circle-check status-ok'
                     : 'el-icon-time status-muted'
-                "
-              ></i>
-              <span
-                :class="
+                "></i>
+              <span :class="
                   downloadSteps[1].status === 'loading'
                     ? 'status-loading'
                     : downloadSteps[1].status === 'success'
                     ? 'status-ok'
                     : 'status-muted'
-                "
-                >备份</span
-              >
+                ">备份</span>
             </div>
             <div class="status-item">
-              <i
-                :class="
+              <i :class="
                   downloadSteps[2].status === 'loading'
                     ? 'el-icon-loading status-loading'
                     : downloadSteps[2].status === 'success'
                     ? 'el-icon-circle-check status-ok'
                     : 'el-icon-time status-muted'
-                "
-              ></i>
-              <span
-                :class="
+                "></i>
+              <span :class="
                   downloadSteps[2].status === 'loading'
                     ? 'status-loading'
                     : downloadSteps[2].status === 'success'
                     ? 'status-ok'
                     : 'status-muted'
-                "
-                >下载</span
-              >
+                ">下载</span>
             </div>
             <div class="status-item">
-              <i
-                :class="
+              <i :class="
                   downloadSteps[3].status === 'loading'
                     ? 'el-icon-loading status-loading'
                     : downloadSteps[3].status === 'success'
                     ? 'el-icon-circle-check status-ok'
                     : 'el-icon-time status-muted'
-                "
-              ></i>
-              <span
-                :class="
+                "></i>
+              <span :class="
                   downloadSteps[3].status === 'loading'
                     ? 'status-loading'
                     : downloadSteps[3].status === 'success'
                     ? 'status-ok'
                     : 'status-muted'
-                "
-                >{{ downloadType === 4 ? '完成' : '更新中' }}</span
-              >
+                ">{{ downloadType === 4 ? '完成' : '更新中' }}</span>
             </div>
             <!-- <div class="status-item">
-              <span
-                :class="downloadType === 4 ? 'status-ok' : downloadStage === 'error' ? 'status-error' : 'status-muted'"
-                >{{ downloadType === 4 ? '完成' : '更新中' }}</span
-              >
+              <span :class="downloadType === 4 ? 'status-ok' : downloadStage === 'error' ? 'status-error' : 'status-muted'">{{ downloadType === 4 ? '完成' : '更新中' }}</span>
             </div> -->
           </div>
           <div class="mt10 download-msg">{{ downloadMessage }}</div>
         </div>
         <!-- 文件校验失败提示 -->
-        <div
-          class="upgrade-section"
-          v-if="downloadType >= 0 && downloadSteps[0].status !== 'loading' && !showUpgradeComplete"
-        >
+        <div class="upgrade-section"
+          v-if="downloadType>= 0 && downloadSteps[0].status !== 'loading' && !showUpgradeComplete">
           <div class="section-title">
             <span class="step-num">1</span>
             <span>检测</span>
@@ -212,17 +175,15 @@
               </div>
             </div>
             <div class="check-error-actions mt10" v-if="downloadType === 0">
-              <el-button v-db-click type="primary" @click="cancelUpgrade">取消升级</el-button>
+              <el-button type="primary" @click="cancelUpgrade">取消升级</el-button>
               <el-button v-db-click class="ml8" @click="ignoreAndProceed(0)">忽略并执行</el-button>
             </div>
           </template>
           <div v-else class="check-success-box mt16">{{ downloadSteps[0].message || '检测完成' }}</div>
         </div>
         <!-- 步骤2: 备份 -->
-        <div
-          class="upgrade-section"
-          v-if="downloadType >= 1 && downloadSteps[1].status !== 'loading' && !showUpgradeComplete"
-        >
+        <div class="upgrade-section"
+          v-if="downloadType>= 1 && downloadSteps[1].status !== 'loading' && !showUpgradeComplete">
           <div class="section-title">
             <span class="step-num">2</span>
             <span>备份</span>
@@ -237,32 +198,28 @@
               </div>
             </div>
             <div class="check-error-actions mt10">
-              <el-button v-db-click type="primary" @click="cancelUpgrade">取消升级</el-button>
+              <el-button type="primary" @click="cancelUpgrade">取消升级</el-button>
               <el-button v-db-click class="ml8" @click="ignoreAndProceed(1)">忽略并执行</el-button>
-              <el-button v-db-click class="ml8" @click="reExecuteUpgrade">重新备份</el-button>
+              <el-button class="ml8" @click="reExecuteUpgrade">重新备份</el-button>
             </div>
           </template>
         </div>
         <!-- 步骤3: 执行数据库升级 -->
-        <div
-          class="upgrade-section"
-          v-if="downloadType >= 2 && downloadSteps[2].status !== 'loading' && !showUpgradeComplete"
-        >
+        <div class="upgrade-section"
+          v-if="downloadType>= 2 && downloadSteps[2].status !== 'loading' && !showUpgradeComplete">
           <div class="section-title">
             <span class="step-num">3</span>
             <span>下载更新</span>
           </div>
           <div class="check-success-box mt16">{{ downloadSteps[2].message || '更新文件下载完成' }}</div>
         </div>
-        <div
-          class="upgrade-section"
+        <div class="upgrade-section"
           v-if="
-            sqlExecutionLogs.length > 0 &&
-            downloadType >= 3 &&
+            sqlExecutionLogs.length> 0 &&
+            downloadType>= 3 &&
             downloadSteps[3].status !== 'loading' &&
             !showUpgradeComplete
-          "
-        >
+          ">
           <!-- 升级进度详情 -->
           <div class="section-title">
             <span class="step-num">4</span>
@@ -274,29 +231,25 @@
               <div class="logs-header">
                 <span>SQL执行详情</span>
                 <el-tag size="small" type="success">成功: {{ sqlSuccessCount }}</el-tag>
-                <el-tag size="small" type="danger" v-if="sqlFailedCount > 0">失败: {{ sqlFailedCount }}</el-tag>
-                <el-tag size="small" type="info" v-if="sqlSkippedCount > 0">跳过: {{ sqlSkippedCount }}</el-tag>
+                <el-tag size="small" type="danger" v-if="sqlFailedCount> 0">失败: {{ sqlFailedCount }}</el-tag>
+                <el-tag size="small" type="info" v-if="sqlSkippedCount> 0">跳过: {{ sqlSkippedCount }}</el-tag>
               </div>
               <div class="logs-content">
-                <div
-                  v-for="(log, index) in sqlExecutionLogs"
+                <div v-for="(log, index) in sqlExecutionLogs"
                   :key="index"
                   class="log-item"
                   :class="{
                     'log-success': log.status === 'success',
                     'log-failed': log.status === 'failed',
                     'log-skipped': log.status === 'skipped',
-                  }"
-                >
+                  }">
                   <span class="log-index">{{ index + 1 }}.</span>
                   <span class="log-version">[{{ log.version }}]</span>
                   <span class="log-type">[{{ getTypeName(log.type) }}]</span>
                   <span class="log-table">{{ log.table || '-' }}</span>
                   <span v-if="log.field" class="log-field">{{ log.field }}</span>
-                  <el-tag
-                    size="small"
-                    :type="log.status === 'success' ? 'success' : log.status === 'failed' ? 'danger' : 'info'"
-                  >
+                  <el-tag size="small"
+                    :type="log.status === 'success' ? 'success' : log.status === 'failed' ? 'danger' : 'info'">
                     {{ log.status === 'success' ? '成功' : log.status === 'failed' ? '失败' : '跳过' }}
                   </el-tag>
                   <span v-if="log.message" class="log-message">{{ log.message }}</span>
@@ -306,15 +259,13 @@
 
             <!-- 升级结果 -->
             <div class="upgrade-result">
-              <el-alert
-                :title="sqlFailedCount === 0 ? '升级成功' : '升级完成(有失败项)'"
+              <el-alert :title="sqlFailedCount === 0 ? '升级成功' : '升级完成(有失败项)'"
                 :type="sqlFailedCount === 0 ? 'success' : 'warning'"
                 :closable="false"
-                show-icon
-              >
+                show-icon>
                 <span>执行成功: {{ sqlSuccessCount }} 条；</span>
-                <span v-if="sqlFailedCount > 0"> 执行失败: {{ sqlFailedCount }} 条；</span>
-                <span v-if="sqlSkippedCount > 0"> 跳过: {{ sqlSkippedCount }} 条；</span>
+                <span v-if="sqlFailedCount> 0"> 执行失败: {{ sqlFailedCount }} 条；</span>
+                <span v-if="sqlSkippedCount> 0"> 跳过: {{ sqlSkippedCount }} 条；</span>
               </el-alert>
             </div>
           </div>
@@ -334,8 +285,7 @@
           <el-table-column label="备份状态" min-width="150">
             <template #default="scope">
               <el-tag size="small" :type="scope.row.file_status ? 'success' : 'danger'">
-                项目: {{ scope.row.file_status ? scope.row.package_link : '无' }} </el-tag
-              ><br />
+                项目: {{ scope.row.file_status ? scope.row.package_link : '无' }} </el-tag><br />
               <el-tag size="small" :type="scope.row.data_status ? 'success' : 'danger'">
                 数据库: {{ scope.row.data_status ? scope.row.data_link : '无' }}
               </el-tag>
@@ -350,58 +300,46 @@
 
         <!-- 分页 -->
         <div class="acea-row row-right page">
-          <pagination
-            v-if="logsTotal"
+          <pagination v-if="logsTotal"
             :total="logsTotal"
             v-model:page="logsPage"
             v-model:limit="logsLimit"
-            @pagination="loadUpgradeLogs"
-          />
+            @pagination="loadUpgradeLogs" />
         </div>
       </div>
     </el-card>
 
     <!-- 升级协议弹窗 -->
-    <el-dialog
-      v-model="agreementVisible"
+    <el-dialog v-model="agreementVisible"
       title="系统升级协议"
       width="800px"
       destroy-on-close
       :close-on-click-modal="false"
-      class="agreement-dialog"
-    >
+      class="agreement-dialog">
       <div class="agreement-content" v-loading="agreementLoading">
         <div v-html="agreementContent"></div>
       </div>
-      <template #footer
-        ><span class="dialog-footer">
+      <template #footer><span class="dialog-footer">
           <el-button @click="agreementVisible = false">不同意</el-button>
-          <el-button v-db-click type="primary" @click="doStartDownload" :loading="startingDownload">同意并升级</el-button>
-        </span></template
-      >
+          <el-button type="primary" @click="doStartDownload" :loading="startingDownload">同意并升级</el-button>
+        </span></template>
     </el-dialog>
     <!-- 页面本地蒙层，仅在本页显示 -->
     <div v-if="agreementVisible" class="local-mask"></div>
 
     <!-- 上传成功弹窗 -->
-    <el-dialog
-      v-model="uploadSuccessVisible"
+    <el-dialog v-model="uploadSuccessVisible"
       width="400px"
       :show-close="false"
       :close-on-click-modal="false"
-      class="upload-success-dialog"
-    >
+      class="upload-success-dialog">
       <div class="upload-success-content">
         <i class="el-icon-circle-check" style="font-size: 48px; color: #67c23a; margin-bottom: 16px"></i>
         <div class="success-title">上传成功</div>
         <div class="success-desc">
-          已上传小程序代码至微信服务器，<a href="https://mp.weixin.qq.com" target="_blank" style="color: #409eff"
-            >点击发布</a
-          >
+          已上传小程序代码至微信服务器，<a href="https://mp.weixin.qq.com" target="_blank" style="color: #409eff">点击发布</a>
         </div>
-        <el-button type="primary" @click="handleUploadSuccessClose" style="margin-top: 24px; width: 120px"
-          >我知道了</el-button
-        >
+        <el-button type="primary" @click="handleUploadSuccessClose" style="margin-top: 24px; width: 120px">我知道了</el-button>
       </div>
     </el-dialog>
   </div>
@@ -534,7 +472,7 @@ async function loadUpgradeableList() {
   try {
     const res = await upgradeableListApi();
     const list = res.data?.list || res.data || [];
-    if (list.length > 0) {
+    if (list.length> 0) {
       upgradeablePackage.value = list[0]; // 取第一个
     }
   } catch (err) {
@@ -617,7 +555,7 @@ function startDownloadProgressPolling() {
         checkErrorFiles.value = currentErrorFiles;
 
         // 更新当前步骤状态
-        if (downloadType.value >= 0 && downloadType.value < downloadSteps.value.length) {
+        if (downloadType.value>= 0 && downloadType.value < downloadSteps.value.length) {
           downloadSteps.value[downloadType.value] = {
             status: currentStage,
             progress: currentProgress,
@@ -646,7 +584,7 @@ function startDownloadProgressPolling() {
         if (['success'].includes(res.data.stage) && downloadType.value !== 4) {
           clearDownloadTimer();
           // 标记当前步骤完成
-          if (downloadType.value >= 0 && downloadType.value < downloadSteps.value.length) {
+          if (downloadType.value>= 0 && downloadType.value < downloadSteps.value.length) {
             downloadSteps.value[downloadType.value]['status'] = 'success';
           }
           downloadType.value++;
@@ -711,7 +649,7 @@ function isStageComplete(stage) {
   const stageOrder = ['idle', 'error', 'loading', 'complete', 'success'];
   const currentIndex = stageOrder.indexOf(downloadStage.value);
   const checkIndex = stageOrder.indexOf(stage);
-  return currentIndex > checkIndex;
+  return currentIndex> checkIndex;
 }
 
 // 获取步骤图标

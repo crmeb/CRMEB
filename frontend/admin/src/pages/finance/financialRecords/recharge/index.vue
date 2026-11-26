@@ -2,58 +2,49 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formRef"
+        <el-form ref="formRef"
           :model="formValidate"
           :label-width="labelWidth"
           :label-position="labelPosition"
           inline
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="时间选择：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               :editable="false"
               @change="onchangeTime"
               format="YYYY/MM/DD"
               value-format="YYYY/MM/DD"
-              class="mr20"
-            ></date-range-picker>
+              class="mr20"></date-range-picker>
           </el-form-item>
           <el-form-item label="支付类型：">
-            <el-select
-              clearable
+            <el-select clearable
               v-model="formValidate.paid"
               placeholder="请选择"
               @change="selChange"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="" label="全部"></el-option>
               <el-option value="1" label="已支付"></el-option>
               <el-option value="0" label="未支付"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入用户昵称、订单号"
               v-model="formValidate.nickname"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="selChange">查询</el-button>
+            <el-button type="primary" @click="selChange">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
     </el-card>
-    <cards-data :cardLists="cardLists" v-if="cardLists.length >= 0"></cards-data>
+    <cards-data :cardLists="cardLists" v-if="cardLists.length>= 0"></cards-data>
     <el-card :bordered="false" shadow="never">
-      <el-button v-auth="['export-userRecharge']" class="mr" v-db-click @click="exports">导出</el-button>
-      <el-table ref="table" :data="tabList" class="mt14" v-loading="loading" empty-text="暂无数据"
-        ><el-table-column label="ID" width="80">
+      <el-button v-auth="['export-userRecharge']" class="mr" @click="exports">导出</el-button>
+      <el-table ref="table" :data="tabList" class="mt14" v-loading="loading" empty-text="暂无数据"><el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
           </template>
@@ -97,33 +88,25 @@
         </el-table-column>
         <el-table-column label="操作" width="100" fixed="right">
           <template #default="scope">
-            <a
-              href="javascript:void(0);"
+            <a href="javascript:void(0);"
               v-if="scope.row.refund_price <= 0 && scope.row.paid && scope.row.recharge_type != 'system'"
               v-db-click
-              @click="refund(scope.row)"
-              >退款</a
-            >
+              @click="refund(scope.row)">退款</a>
             <!--                    <el-divider direction="vertical"  v-if="scope.row.paid"/>-->
-            <a
-              href="javascript:void(0);"
+            <a href="javascript:void(0);"
               v-if="scope.row.paid === 0"
               v-db-click
-              @click="del(scope.row, '此条充值记录', scope.$index)"
-              >删除</a
-            >
-            <span class="refund" v-if="scope.row.refund_price > 0">已退款</span>
+              @click="del(scope.row, '此条充值记录', scope.$index)">删除</a>
+            <span class="refund" v-if="scope.row.refund_price> 0">已退款</span>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <!-- 退款表单-->

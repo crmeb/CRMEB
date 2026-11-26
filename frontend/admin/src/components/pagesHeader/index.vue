@@ -1,7 +1,7 @@
 <template>
   <div class="i-layout-page-header header-title">
     <div class="header-main">
-      <div v-if="backUrl" class="font-sm after-line" v-db-click @click="goBack">
+      <div v-if="backUrl" class="font-sm after-line" @click="goBack">
         <span class="el-icon-arrow-left"></span>
         <span class="pl10">返回</span>
       </div>

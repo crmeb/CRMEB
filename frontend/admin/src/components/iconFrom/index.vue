@@ -1,19 +1,17 @@
 <template>
   <div class="iconBox">
-    <el-input
-      v-model="iconVal"
+    <el-input v-model="iconVal"
       placeholder="输入关键词搜索,注意全是英文"
       clearable
       style="width: 300px"
       @change="upIcon(iconVal)"
-      ref="search"
-    />
+      ref="search" />
     <div class="trees-coadd">
       <div class="scollhide">
         <div class="trees">
           <ul class="list-inline">
             <li class="icons-item" v-for="(item, i) in iconVal ? searchData : list" :key="i">
-              <el-icon :size="24" class="f-s-24" v-db-click @click="iconChange(item)">
+              <el-icon :size="24" class="f-s-24" @click="iconChange(item)">
                 <component :is="item" />
               </el-icon>
             </li>
@@ -40,7 +38,7 @@ const searchData = ref([]);
 
 // 搜索
 function upIcon(n) {
-  searchData.value = list.filter((item) => item.toLowerCase().indexOf(iconVal.value.toLowerCase()) > -1);
+  searchData.value = list.filter((item) => item.toLowerCase().indexOf(iconVal.value.toLowerCase())> -1);
 }
 function iconChange(n) {
   if (route.query.fodder === 'icon') {

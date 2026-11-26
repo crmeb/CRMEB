@@ -3,18 +3,14 @@
     <div class="title-bar">模块配置</div>
     <div class="mobile-config" v-if="rCom.length">
       <div v-for="(item, key) in rCom" :key="key">
-        <component
-          :is="toolCom[item.components.name]"
+        <component :is="toolCom[item.components.name]"
           :moduleName="name.name"
           :name="item.configNme"
           :configData="configData"
-          :configNum="configNum"
-        ></component>
+          :configNum="configNum"></component>
       </div>
       <div style="text-align: center" v-if="rCom.length">
-        <el-button type="primary" style="width: 100%; margin: 0 auto; height: 40px" v-db-click @click="saveConfig"
-          >保存</el-button
-        >
+        <el-button type="primary" style="width: 100%; margin: 0 auto; height: 40px" v-db-click @click="saveConfig">保存</el-button>
       </div>
     </div>
   </div>

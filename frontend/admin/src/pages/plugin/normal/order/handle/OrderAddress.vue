@@ -1,13 +1,11 @@
 <template>
   <!-- 修改收货地址弹窗 -->
-  <el-dialog
-    title="修改收货地址"
+  <el-dialog title="修改收货地址"
     width="500px"
     v-model="dialogVisible"
     @close="handleClose"
     :close-on-click-modal="false"
-    :destroy-on-close="true"
-  >
+    :destroy-on-close="true">
     <el-form ref="addressFormRef" :model="formData" label-width="100px" :rules="rules">
       <el-form-item label="订单号：">
         <span>{{ formData.order_no }}</span>
@@ -22,12 +20,10 @@
         <el-input v-model="formData.user_address" placeholder="请输入省市区详细地址" style="width: 300px"></el-input>
       </el-form-item>
     </el-form>
-    <template #footer
-      ><div>
+    <template #footer><div>
         <el-button @click="handleClose">取消</el-button>
         <el-button v-db-click type="primary" @click="submitAddress" :loading="submitLoading">保存</el-button>
-      </div></template
-    >
+      </div></template>
   </el-dialog>
 </template>
 

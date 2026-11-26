@@ -100,7 +100,7 @@ class CopyProductServices extends BaseService
             $productInfo['is_postage'] = 0;
             $productInfo['is_seckill'] = 0;
             $productInfo['is_show'] = 0;
-            // is_benefit/is_best/is_good/is_hot/is_new 推荐位字段已删除；is_sub/is_vip 已迁移到 eb_product_center 保留
+            // is_benefit/is_best/is_good/is_hot/is_new 推荐位字段已删除；is_vip 保留在 eb_product_center
             $productInfo['label_id'] = [];
             $productInfo['mer_id'] = 0;
             $productInfo['mer_use'] = 0;

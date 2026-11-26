@@ -6,12 +6,10 @@
           <div class="acea-row search-form">
             <div class="search-form-box">
               <el-form-item label="商品搜索：" label-for="keyword">
-                <el-input
-                  clearable
+                <el-input clearable
                   placeholder="请输入商品名称/关键字"
                   v-model="artFrom.keyword"
-                  class="form_content_width"
-                />
+                  class="form_content_width" />
               </el-form-item>
               <el-form-item label="产品类型：" label-for="product_type">
                 <el-select v-model="artFrom.product_type" clearable placeholder="全部" class="form_content_width">
@@ -35,8 +33,8 @@
               </el-form-item>
             </div>
             <div class="search-form-sub">
-              <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
-              <el-button class="ResetSearch" v-db-click @click="reset">重置</el-button>
+              <el-button type="primary" @click="userSearchs">查询</el-button>
+              <el-button class="ResetSearch" @click="reset">重置</el-button>
             </div>
           </div>
         </el-form>
@@ -44,15 +42,13 @@
     </el-card>
 
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16" :body-style="{ padding: '0 20px 20px' }">
-      <el-table
-        ref="table"
+      <el-table ref="table"
         :data="tableList"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         :row-key="getRowKey"
-        empty-text="暂无数据"
-      >
+        empty-text="暂无数据">
         <el-table-column label="商品ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -111,18 +107,16 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" minWidth="100">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row)">编辑</a>
+            <a @click="edit(scope.row)">编辑</a>
           </template>
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="artFrom.page"
           v-model:limit="artFrom.limit"
-          @pagination="getDataList"
-        />
+          @pagination="getDataList" />
       </div>
     </el-card>
   </div>

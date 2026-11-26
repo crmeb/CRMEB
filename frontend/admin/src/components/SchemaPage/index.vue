@@ -5,38 +5,30 @@
     <!-- 加载失败 -->
     <el-result v-else-if="error" icon="error" title="页面加载失败" :sub-title="error">
       <template #extra>
-        <el-button type="primary" v-db-click @click="loadConfig">重试</el-button>
+        <el-button type="primary" @click="loadConfig">重试</el-button>
       </template>
     </el-result>
     <!-- 列表页 -->
-    <ListTemplate
-      v-else-if="pageType === PAGE_TYPES.LIST"
+    <ListTemplate v-else-if="pageType === PAGE_TYPES.LIST"
       :plugin-key="pluginKey"
       :page-key="pageKey"
-      :config="config"
-    />
+      :config="config" />
     <!-- 整页表单 -->
-    <FormTemplate
-      v-else-if="pageType === PAGE_TYPES.FORM"
+    <FormTemplate v-else-if="pageType === PAGE_TYPES.FORM"
       :plugin-key="pluginKey"
       :page-key="pageKey"
-      :config="config"
-    />
+      :config="config" />
     <!-- 详情页 -->
-    <DetailTemplate
-      v-else-if="pageType === PAGE_TYPES.DETAIL"
+    <DetailTemplate v-else-if="pageType === PAGE_TYPES.DETAIL"
       :plugin-key="pluginKey"
       :page-key="pageKey"
       :config="config"
-      @refresh="loadConfig"
-    />
+      @refresh="loadConfig" />
     <!-- 统计页：待交付 -->
-    <el-result
-      v-else-if="pageType"
+    <el-result v-else-if="pageType"
       icon="info"
       title="页面类型开发中"
-      :sub-title="`类型 ${pageType} 将在后续版本支持`"
-    />
+      :sub-title="`类型 ${pageType} 将在后续版本支持`" />
   </div>
 </template>
 

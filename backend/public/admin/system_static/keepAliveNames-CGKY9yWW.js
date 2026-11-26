@@ -1,0 +1,1 @@
+import{Eu as e,kd as t,wu as n}from"./common-Cyt99CNL.js";e();var r=n(`keepAliveNames`,()=>{let e=t([]);function n(t){e.value=t}async function r(e){n(e)}return{keepAliveNames:e,getCacheKeepAlive:n,setCacheKeepAlive:r}},{persist:!0});export{r as t};

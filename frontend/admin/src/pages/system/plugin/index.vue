@@ -13,9 +13,16 @@
             <span class="segment-count">{{ driverTotal }}</span>
           </div>
         </div>
-        <el-button v-auth="['plugin-plugin-upload']" type="primary" v-db-click @click="openUploadDialog()">
-          上传插件
-        </el-button>
+        <div class="main-tab-actions">
+          <img
+            class="plugin-square-entry"
+            src="@/assets/images/chajianshichang.png"
+            alt="插件广场"
+            @click="openPluginSquare" />
+          <el-button v-auth="['plugin-plugin-upload']" type="primary" @click="openUploadDialog()">
+            上传插件
+          </el-button>
+        </div>
       </div>
     </el-card>
 
@@ -31,14 +38,12 @@
           </template>
           <el-row :gutter="16">
             <el-col v-for="item in group.items" :key="item.key" :xs="24" :sm="12" :md="8" :xl="6" class="mb16">
-              <PluginCard
-                :item="item"
+              <PluginCard :item="item"
                 @install="handleInstall"
                 @uninstall="handleUninstall"
                 @enable="handleEnable"
                 @disable="handleDisable"
-                @upgrade="openUploadDialog"
-              />
+                @upgrade="openUploadDialog" />
             </el-col>
           </el-row>
         </el-card>
@@ -56,14 +61,12 @@
             </template>
             <el-row :gutter="16" class="driver-pane">
               <el-col v-for="item in cat.items" :key="item.key" :xs="24" :sm="12" :md="8" :xl="6" class="mb16">
-                <PluginCard
-                  :item="item"
+                <PluginCard :item="item"
                   @install="handleInstall"
                   @uninstall="handleUninstall"
                   @enable="handleEnable"
                   @disable="handleDisable"
-                  @upgrade="openUploadDialog"
-                />
+                  @upgrade="openUploadDialog" />
               </el-col>
             </el-row>
           </el-tab-pane>
@@ -76,37 +79,59 @@
     <el-dialog
       :title="uploadTarget ? `升级插件：${uploadTarget.name}` : '上传插件'"
       v-model="uploadVisible"
-      width="450px"
+      width="470px"
+      class="plugin-upload-dialog"
       :close-on-click-modal="false"
-    >
+      destroy-on-close
+      @closed="resetUploadState">
+      <el-alert
+        v-if="uploadTarget"
+        class="plugin-upload-alert"
+        type="info"
+        :closable="false"
+        show-icon
+        :title="`将上传安装包以升级「${uploadTarget.name}」（当前 v${uploadTarget.version || '-'}）`" />
       <el-upload
         ref="upload"
+        class="plugin-upload"
         :auto-upload="false"
         :limit="1"
+        :show-file-list="false"
         :on-change="handleFileChange"
+        :on-exceed="handleExceed"
         :before-upload="handleBeforeUpload"
         accept=".zip"
         drag
-        action=""
-      >
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将插件 ZIP 包拖拽到此处，或<em>点击选择</em></div>
-        <template #tip><div class="el-upload__tip">仅支持 .zip 格式的插件安装包，大小不超过 50MB</div></template>
+        action="">
+        <div class="plugin-upload__inner">
+          <template v-if="uploadFile">
+            <i class="el-icon-document plugin-upload__icon is-file"></i>
+            <div class="plugin-upload__name" :title="uploadFileName">{{ uploadFileName }}</div>
+            <div class="plugin-upload__meta">{{ uploadFileSize }}</div>
+            <div class="plugin-upload__actions">
+              <span class="plugin-upload__link" @click.stop="reselectFile">重新选择</span>
+              <span class="plugin-upload__link is-danger" @click.stop="clearSelectedFile">移除</span>
+            </div>
+          </template>
+          <template v-else>
+            <i class="el-icon-upload plugin-upload__icon"></i>
+            <div class="plugin-upload__text">将插件 ZIP 包拖到此处，或<em>点击选择</em></div>
+            <div class="plugin-upload__hint">仅支持 .zip，大小不超过 50MB</div>
+          </template>
+        </div>
       </el-upload>
-      <template #footer
-        ><span>
-          <el-button @click="uploadVisible = false">取消</el-button>
-          <el-button v-db-click type="primary" :loading="uploading" @click="handleUpload">
-            {{ uploading ? '上传中...' : '确定上传' }}
-          </el-button>
-        </span></template
-      >
+      <template #footer>
+        <el-button @click="uploadVisible = false">取消</el-button>
+        <el-button v-db-click type="primary" :loading="uploading" :disabled="!uploadFile" @click="handleUpload">
+          {{ uploading ? '上传中...' : '确定上传' }}
+        </el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   pluginListApi,
@@ -127,6 +152,7 @@ import PluginCard from './components/PluginCard.vue';
 defineOptions({ name: 'plugin_list' });
 
 const upload = ref(null);
+const MAX_UPLOAD_SIZE = 50 * 1024 * 1024;
 
 const loading = ref(false);
 const uploading = ref(false);
@@ -134,6 +160,9 @@ const list = ref([]);
 const uploadVisible = ref(false);
 const uploadFile = ref(null);
 const uploadTarget = ref(null);
+
+const uploadFileName = computed(() => (uploadFile.value && uploadFile.value.name) || '');
+const uploadFileSize = computed(() => formatFileSize(uploadFile.value && uploadFile.value.size));
 
 // 主 Tab：应用插件 / 驱动插件
 const activeMainTab = ref('app');
@@ -223,15 +252,38 @@ function driverCategoryOf(path) {
   const parts = String(path || '')
     .split('/')
     .filter(Boolean);
-  return parts.length >= 2 ? parts[1] : 'other';
+  return parts.length>= 2 ? parts[1] : 'other';
 }
 
 getList();
+
+function openPluginSquare() {
+  window.open('https://www.crmeb.com/plugin', '_blank');
+}
 
 function openUploadDialog(row = null) {
   uploadTarget.value = row;
   uploadFile.value = null;
   uploadVisible.value = true;
+}
+
+function resetUploadState() {
+  uploadTarget.value = null;
+  uploadFile.value = null;
+  uploading.value = false;
+  if (upload.value) upload.value.clearFiles();
+}
+
+/**
+ * 格式化文件大小
+ * @param {number} size 字节数
+ * @returns {string}
+ */
+function formatFileSize(size) {
+  const bytes = Number(size) || 0;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 function getList() {
   loading.value = true;
@@ -320,18 +372,58 @@ function handleDisable(row) {
     });
   });
 }
-function handleFileChange(file) {
-  uploadFile.value = file.raw;
-}
-function handleBeforeUpload(file) {
-  const isZip = file.name.endsWith('.zip');
-  if (!isZip) {
+/**
+ * 校验 ZIP 包：后缀与大小
+ * @param {File} file
+ * @returns {boolean}
+ */
+function validateUploadFile(file) {
+  if (!file || !String(file.name || '').toLowerCase().endsWith('.zip')) {
     ElMessage.error('仅支持 ZIP 格式的插件安装包');
     return false;
   }
+  if (file.size > MAX_UPLOAD_SIZE) {
+    ElMessage.error('插件安装包大小不能超过 50MB');
+    return false;
+  }
+  return true;
+}
+
+function handleFileChange(file) {
+  const raw = file.raw || file;
+  if (!validateUploadFile(raw)) {
+    clearSelectedFile();
+    return;
+  }
+  uploadFile.value = raw;
+}
+
+function handleBeforeUpload(file) {
+  if (!validateUploadFile(file)) return false;
   uploadFile.value = file;
   return false;
 }
+
+function handleExceed(files) {
+  const file = files && files[0];
+  if (!file) return;
+  if (upload.value) upload.value.clearFiles();
+  handleFileChange({ raw: file, name: file.name });
+}
+
+function clearSelectedFile() {
+  uploadFile.value = null;
+  if (upload.value) upload.value.clearFiles();
+}
+
+function reselectFile() {
+  clearSelectedFile();
+  nextTick(() => {
+    const input = upload.value && upload.value.$el && upload.value.$el.querySelector('input[type="file"]');
+    if (input) input.click();
+  });
+}
+
 function handleUpload() {
   if (!uploadFile.value) {
     ElMessage.warning('请先选择插件安装包');
@@ -350,9 +442,6 @@ function handleUpload() {
         ElMessage.success(`插件「${data.name}」上传成功`);
       }
       uploadVisible.value = false;
-      uploadFile.value = null;
-      uploadTarget.value = null;
-      upload.value.clearFiles();
       getList();
       if (data.action === 'upgrade') refreshMenus();
     })
@@ -366,11 +455,22 @@ function handleUpload() {
 </script>
 
 <style scoped>
-/* 主 Tab 栏：分段切换器 + 上传按钮同行 */
+/* 主 Tab 栏：分段切换器 + 插件广场 / 上传按钮同行 */
 .main-tab-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.main-tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.plugin-square-entry {
+  height: 18px;
+  width: auto;
+  cursor: pointer;
+  user-select: none;
 }
 /* 分段胶囊切换器 */
 .segment-tabs {
@@ -434,5 +534,112 @@ function handleUpload() {
 /* 驱动 tab 面板顶部留白 */
 .driver-pane {
   padding-top: 8px;
+}
+
+/* 上传区：选中前后同一套居中布局 */
+.plugin-upload-alert {
+  margin-bottom: 16px;
+}
+.plugin-upload {
+  width: 100%;
+}
+.plugin-upload :deep(.el-upload) {
+  width: 100%;
+}
+.plugin-upload :deep(.el-upload-dragger) {
+  width: 100%;
+  height: auto;
+  min-height: 180px;
+  padding: 28px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border-color: var(--prev-border-color-light);
+  background: var(--prev-bg-color);
+}
+.plugin-upload :deep(.el-upload-dragger:hover) {
+  border-color: var(--prev-color-primary);
+  background: var(--prev-color-primary-light-9);
+}
+.plugin-upload__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.plugin-upload__icon {
+  font-size: 44px;
+  line-height: 1;
+  color: var(--prev-color-primary);
+  margin-bottom: 12px;
+}
+.plugin-upload__icon.is-file {
+  font-size: 40px;
+  color: var(--prev-color-text-secondary);
+}
+.plugin-upload__text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--prev-color-text-regular);
+}
+.plugin-upload__text em {
+  font-style: normal;
+  color: var(--prev-color-primary);
+}
+.plugin-upload__hint,
+.plugin-upload__meta {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--prev-color-text-secondary);
+}
+.plugin-upload__name {
+  max-width: 100%;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--prev-color-text-regular);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.plugin-upload__actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+.plugin-upload__link {
+  font-size: 12px;
+  color: var(--prev-color-primary);
+  cursor: pointer;
+  user-select: none;
+}
+.plugin-upload__link:hover {
+  opacity: 0.85;
+}
+.plugin-upload__link.is-danger {
+  color: var(--el-color-danger);
+}
+</style>
+
+<style lang="scss">
+/* dialog 传送到 body；全局 element.scss 对 padding 写了 !important，这里需同级覆盖 */
+.plugin-upload-dialog.el-dialog {
+  border-radius: 6px !important;
+}
+.plugin-upload-dialog .el-dialog__header {
+  padding: 15px 16px !important;
+}
+.plugin-upload-dialog .el-dialog__body {
+  padding: 24px 24px 8px !important;
+}
+.plugin-upload-dialog .el-dialog__footer {
+  padding: 12px 24px 20px !important;
+}
+.plugin-upload-dialog .el-alert__title {
+  font-size: 12px;
+  line-height: 1.5;
 }
 </style>

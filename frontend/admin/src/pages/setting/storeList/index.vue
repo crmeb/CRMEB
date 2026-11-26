@@ -2,24 +2,20 @@
   <div>
     <el-card :bordered="false" shadow="never" class="ivu-mb-16" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="artFromRef"
+        <el-form ref="artFromRef"
           :model="artFrom"
           :label-width="labelWidth"
           :label-position="labelPosition"
           @submit.prevent
-          inline
-        >
+          inline>
           <el-form-item label="门店搜索：">
-            <el-input
-              clearable
+            <el-input clearable
               placeholder="请输入门店名称,电话"
               v-model="artFrom.keywords"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -34,20 +30,16 @@
       </div>
       <el-row v-auth="['setting-merchant-system_store-save']">
         <el-col v-bind="grid">
-          <el-button v-auth="['setting-merchant-system_store-save']" type="primary" v-db-click @click="add"
-            >添加门店</el-button
-          >
+          <el-button v-auth="['setting-merchant-system_store-save']" type="primary" @click="add">添加门店</el-button>
         </el-col>
       </el-row>
-      <el-table
-        :data="storeLists"
+      <el-table :data="storeLists"
         ref="table"
         class="mt14"
         v-loading="loading"
         highlight-current-row
         no-userFrom-text="暂无数据"
-        no-filtered-userFrom-text="暂无筛选结果"
-      >
+        no-filtered-userFrom-text="暂无筛选结果">
         <el-table-column label="ID" width="80">
           <template #default="scope">
             <span>{{ scope.row.id }}</span>
@@ -82,8 +74,7 @@
         </el-table-column>
         <el-table-column label="是否显示" min-width="130">
           <template #default="scope">
-            <el-switch
-              class="defineSwitch"
+            <el-switch class="defineSwitch"
               :active-value="1"
               :inactive-value="0"
               v-model="scope.row.is_show"
@@ -91,14 +82,13 @@
               @change="onchangeIsShow(scope.row.id, scope.row.is_show)"
               size="large"
               active-text="显示"
-              inactive-text="隐藏"
-            >
+              inactive-text="隐藏">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="170">
           <template #default="scope">
-            <a v-db-click @click="edit(scope.row.id)">编辑</a>
+            <a @click="edit(scope.row.id)">编辑</a>
             <el-divider direction="vertical"></el-divider>
             <a v-if="scope.row.is_del == 0" v-db-click @click="del(scope.row, '删除门店', scope.$index)">删除</a>
             <a v-else v-db-click @click="del(scope.row, '恢复门店', scope.$index)">恢复</a>
@@ -106,13 +96,11 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="artFrom.page"
           v-model:limit="artFrom.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <system-store ref="template" @success="submitSuccess"></system-store>

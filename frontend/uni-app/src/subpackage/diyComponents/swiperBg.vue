@@ -1,69 +1,70 @@
 <template>
-  <!-- 带背景轮播图 -->
-  <common-wrapper :config="configData">
+  <!-- 带背景轮播图：无图片时整块不渲染，避免 common-wrapper 边距留白 -->
+  <common-wrapper
+    v-if="dataConfig.swiperConfig && dataConfig.swiperConfig.list.length"
+    :config="configData"
+  >
     <view class="swiperBg">
-      <template v-if="dataConfig.swiperConfig.list.length">
-        <view class="swiper">
-          <swiper
-            :style="'height:' + imageH + 'rpx;'"
-            :autoplay="true"
-            :previous-margin="swiperMargin"
-            :next-margin="swiperMargin"
-            :circular="circular"
-            :interval="interval"
-            :duration="duration"
-            @change="bannerfun"
-            v-if="imageH"
+      <view class="swiper">
+        <swiper
+          :style="'height:' + imageH + 'rpx;'"
+          :autoplay="true"
+          :previous-margin="swiperMargin"
+          :next-margin="swiperMargin"
+          :circular="circular"
+          :interval="interval"
+          :duration="duration"
+          @change="bannerfun"
+          v-if="imageH"
+        >
+          <swiper-item
+            v-for="(item, index) in dataConfig.swiperConfig.list"
+            :key="index"
           >
-            <swiper-item
+            <view
+              @click="goDetail(item)"
+              class="swiper-item"
+              :style="[itemStyle, active == index ? activeStyle : '']"
+            >
+              <image
+                :src="item.img"
+                mode="aspectFill"
+                class="image"
+                :style="[imageStyle]"
+              ></image>
+            </view>
+          </swiper-item>
+        </swiper>
+        <view class="noPic" v-else>{{ $t(`图片加载中`) }}...</view>
+        <view class="dot acea-row" :style="[dotStyle]">
+          <view
+            class="progress"
+            v-if="dataConfig.docConfig.tabVal == 2"
+            :style="[progressWidth, dotItemStyle]"
+          >
+            <view
+              class="inner"
+              :style="[progressValue, dotItemActiveStyle]"
+            ></view>
+          </view>
+          <view
+            class="acea-row"
+            :class="{
+              small: dataConfig.docConfig.tabVal == 1,
+              line: dataConfig.docConfig.tabVal == 3,
+            }"
+            v-else
+          >
+            <view
+              class="dot-item"
               v-for="(item, index) in dataConfig.swiperConfig.list"
               :key="index"
-            >
-              <view
-                @click="goDetail(item)"
-                class="swiper-item"
-                :style="[itemStyle, active == index ? activeStyle : '']"
-              >
-                <image
-                  :src="item.img"
-                  mode="aspectFill"
-                  class="image"
-                  :style="[imageStyle]"
-                ></image>
-              </view>
-            </swiper-item>
-          </swiper>
-          <view class="noPic" v-else>{{ $t(`图片加载中`) }}...</view>
-          <view class="dot acea-row" :style="[dotStyle]">
-            <view
-              class="progress"
-              v-if="dataConfig.docConfig.tabVal == 2"
-              :style="[progressWidth, dotItemStyle]"
-            >
-              <view
-                class="inner"
-                :style="[progressValue, dotItemActiveStyle]"
-              ></view>
-            </view>
-            <view
-              class="acea-row"
-              :class="{
-                small: dataConfig.docConfig.tabVal == 1,
-                line: dataConfig.docConfig.tabVal == 3,
-              }"
-              v-else
-            >
-              <view
-                class="dot-item"
-                v-for="(item, index) in dataConfig.swiperConfig.list"
-                :key="index"
-                :class="{ active: active == index }"
-                :style="[active == index ? dotItemActiveStyle : dotItemStyle]"
-              ></view>
-            </view>
+              :class="{ active: active == index }"
+              :style="[active == index ? dotItemActiveStyle : dotItemStyle]"
+            ></view>
           </view>
         </view>
-      </template>
+      </view>
     </view>
   </common-wrapper>
 </template>

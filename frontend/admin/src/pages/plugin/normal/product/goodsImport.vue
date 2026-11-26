@@ -9,8 +9,7 @@
     </div>
 
     <div class="goods-upload mt20">
-      <el-upload
-        v-show="!fileUrl && !importStatus"
+      <el-upload v-show="!fileUrl && !importStatus"
         ref="uploadRef"
         class="upload-demo"
         :drag="!fileUrl"
@@ -19,8 +18,7 @@
         :headers="header"
         :before-upload="fileChange"
         :on-success="handleSuccess"
-        accept=".xls, .xlsx"
-      >
+        accept=".xls, .xlsx">
         <img class="el-upload-dragger__icon mb20" src="../../../../assets/images/upload-icon.png" alt="" />
         <div class="el-upload__text">将文件拖到此处，或<em>点击添加</em></div>
         <div class="el-upload__trip">支持 .xls，.xlsx，限10M以内</div>
@@ -36,7 +34,7 @@
           正在导入，您可关闭当前弹窗，稍候可在列表查看导入结果
           <i class="el-icon-loading"></i>
         </div>
-        <el-button v-db-click v-else class="btn-import" type="primary" @click="importGoods">立即导入</el-button>
+        <el-button v-else class="btn-import" type="primary" @click="importGoods">立即导入</el-button>
       </div>
       <div v-show="fileUrl && importStatus" class="file-info">
         <img class="el-upload-dragger__icon mb20" :src="statusImage" alt="" />
@@ -44,11 +42,11 @@
           共导入 {{ resultData.all }} 个，成功 {{ resultData.success }} 个，失败 {{ resultData.fail }} 跳过
           {{ resultData.jump }} 个
         </div>
-        <div class="el-upload__trip" v-if="resultData.fail > 0">
+        <div class="el-upload__trip" v-if="resultData.fail> 0">
           您可以下载失败数据，修改后再重新导入 <span class="active-btn" @click="downloadFailData">下载失败数据</span>
         </div>
         <div>
-          <el-button v-db-click class="btn-import" @click="selectFile">再次导入</el-button>
+          <el-button class="btn-import" @click="selectFile">再次导入</el-button>
           <el-button type="primary" class="btn-import" @click="close">完成</el-button>
         </div>
       </div>
@@ -104,7 +102,7 @@ const statusImage = ref(fileSuccess);
 watch(
   resultData,
   (newValue) => {
-    if (newValue.fail > 0) {
+    if (newValue.fail> 0) {
       statusImage.value = fileFail;
     } else {
       statusImage.value = fileSuccess;
@@ -116,7 +114,7 @@ watch(
 function fileChange(file, fileList) {
   if (isXlsUpload(file)) {
     // 限制10M
-    if (file.size >= 10485760) {
+    if (file.size>= 10485760) {
       ElMessage.error('文件大小不能超过10MB');
       return false;
     } else {

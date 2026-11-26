@@ -19,7 +19,7 @@
       </el-col>
     </div>
     <!-- 商品标签 -->
-    <el-dialog v-model="storeLabelShow" title="选择商品标签" width="540">
+    <el-dialog v-model="storeLabelShow" title="选择商品标签" width="540" append-to-body>
       <storeLabelList
         v-if="storeLabelShow"
         ref="storeLabel"

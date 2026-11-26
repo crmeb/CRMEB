@@ -60,9 +60,7 @@
                 </el-table-column>
                 <el-table-column label="数量" width="80" prop="cart_num" />
                 <el-table-column label="小计" width="120">
-                  <template #default="{ row }"
-                    >¥{{ (parseFloat(row.true_price || row.price) * row.cart_num).toFixed(2) }}</template
-                  >
+                  <template #default="{ row }">¥{{ (parseFloat(row.true_price || row.price) * row.cart_num).toFixed(2) }}</template>
                 </el-table-column>
               </el-table>
             </div>
@@ -71,16 +69,12 @@
             <div class="section">
               <div class="section-title">用户信息</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="8"
-                  ><div class="detail-item">
+                <el-col :span="8"><div class="detail-item">
                     <span class="label">用户名称：</span><span class="value">{{ detailData.nickname || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
                     <span class="label">联系电话：</span><span class="value">{{ detailData.user_phone || '--' }}</span>
-                  </div></el-col
-                >
+                  </div></el-col>
               </el-row>
             </div>
 
@@ -88,12 +82,9 @@
             <div class="section">
               <div class="section-title">配送方式</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">配送方式：</span
-                    ><span class="value">{{ deliveryTypeText }}</span>
-                  </div></el-col
-                >
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">配送方式：</span><span class="value">{{ deliveryTypeText }}</span>
+                  </div></el-col>
               </el-row>
             </div>
 
@@ -101,27 +92,15 @@
             <div class="section" v-if="detailData.delivery_name">
               <div class="section-title">{{ shipInfoSectionTitle }}</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">{{ shipInfoNameLabel }}</span
-                    ><span class="value">{{ detailData.delivery_name || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="12" v-if="shipDeliveryType !== 'fictitious' || detailData.delivery_id"
-                  ><div class="detail-item">
-                    <span class="label">{{ shipInfoIdLabel }}</span
-                    ><span class="value"
-                      >{{ detailData.delivery_id || '--'
-                      }}<a
-                        v-if="shipDeliveryType === 'express'"
-                        v-db-click
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">{{ shipInfoNameLabel }}</span><span class="value">{{ detailData.delivery_name || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="12" v-if="shipDeliveryType !== 'fictitious' || detailData.delivery_id"><div class="detail-item">
+                    <span class="label">{{ shipInfoIdLabel }}</span><span class="value">{{ detailData.delivery_id || '--'
+                      }}<a v-if="shipDeliveryType === 'express'"
                         @click="toggleLogistics"
-                        class="track-link"
-                        >{{ logisticsVisible ? '收起轨迹' : '查看轨迹' }}</a
-                      ></span
-                    >
-                  </div></el-col
-                >
+                        class="track-link">{{ logisticsVisible ? '收起轨迹' : '查看轨迹' }}</a></span>
+                  </div></el-col>
               </el-row>
               <!-- 物流轨迹展开区域（仅真实快递） -->
               <div v-if="logisticsVisible && shipDeliveryType === 'express'" class="logistics-panel">
@@ -138,11 +117,9 @@
                 </div>
                 <div class="logistics-timeline">
                   <el-timeline v-if="logisticsData.length">
-                    <el-timeline-item
-                      v-for="(item, i) in logisticsData"
+                    <el-timeline-item v-for="(item, i) in logisticsData"
                       :key="i"
-                      :color="i === 0 ? '#2d8cf0' : '#c0c4cc'"
-                    >
+                      :color="i === 0 ? '#2d8cf0' : '#c0c4cc'">
                       <div class="track-item">
                         <div class="track-status" :class="{ latest: i === 0 }">{{ item.status }}</div>
                         <div class="track-time">{{ item.time }}</div>
@@ -155,36 +132,25 @@
             </div>
 
             <!-- 收货信息（仅快递配送展示） -->
-            <div
-              class="section"
+            <div class="section"
               v-if="
                 detailData.extra_info?.delivery_type !== 'pickup' && (detailData.contact || detailData.user_address)
-              "
-            >
+              ">
               <div class="section-title">收货信息</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">收货人：</span
-                    ><span class="value">{{ detailData.contact?.name || detailData.real_name || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">收货电话：</span
-                    ><span class="value">{{ detailData.contact?.phone || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">收货地址：</span
-                    ><span class="value">{{
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">收货人：</span><span class="value">{{ detailData.contact?.name || detailData.real_name || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">收货电话：</span><span class="value">{{ detailData.contact?.phone || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">收货地址：</span><span class="value">{{
                       formatAddress(detailData.user_address) ||
                       formatAddress(detailData.contact?.address) ||
                       '--'
                     }}</span>
-                  </div></el-col
-                >
+                  </div></el-col>
               </el-row>
             </div>
 
@@ -192,120 +158,65 @@
             <div class="section">
               <div class="section-title">订单信息</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">创建时间：</span
-                    ><span class="value">{{ formatDate(detailData.add_time) }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">创建时间：</span><span class="value">{{ formatDate(detailData.add_time) }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
                     <span class="label">商品总数：</span><span class="value">{{ detailData.total_num }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
                     <span class="label">商品总价：</span><span class="value">¥{{ detailData.total_price }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">优惠券金额：</span
-                    ><span class="value">-¥{{ detailData.coupon_price || '0.00' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">积分抵扣：</span
-                    ><span class="value">-¥{{ detailData.deduction_price || '0.00' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">交付邮费：</span
-                    ><span class="value">¥{{ detailData.pay_postage || '0.00' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">会员等级优惠：</span
-                    ><span class="value">-¥{{ detailData.member_level_discount || '0.00' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">付费会员优惠：</span
-                    ><span class="value">-¥{{ detailData.vip_discount || '0.00' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="Number(detailData.gift_price) > 0"
-                  ><div class="detail-item">
-                    <span class="label">礼品附加费：</span
-                    ><span class="value">¥{{ detailData.gift_price || '0.00' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label price-label">实际支付：</span
-                    ><span class="value price-value">¥{{ detailData.pay_price || '0.00' }}</span>
-                  </div></el-col
-                >
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">优惠券金额：</span><span class="value">-¥{{ detailData.coupon_price || '0.00' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">积分抵扣：</span><span class="value">-¥{{ detailData.deduction_price || '0.00' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">交付邮费：</span><span class="value">¥{{ detailData.pay_postage || '0.00' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">会员等级优惠：</span><span class="value">-¥{{ detailData.member_level_discount || '0.00' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">付费会员优惠：</span><span class="value">-¥{{ detailData.vip_discount || '0.00' }}</span>
+                  </div></el-col>
+                <el-col :span="8" v-if="Number(detailData.gift_price)> 0"><div class="detail-item">
+                    <span class="label">礼品附加费：</span><span class="value">¥{{ detailData.gift_price || '0.00' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label price-label">实际支付：</span><span class="value price-value">¥{{ detailData.pay_price || '0.00' }}</span>
+                  </div></el-col>
               </el-row>
             </div>
 
             <!-- 返佣信息 -->
-            <div
-              class="section"
+            <div class="section"
               v-if="
                 detailData.one_brokerage ||
                 detailData.two_brokerage ||
                 detailData.staff_brokerage ||
                 detailData.agent_brokerage ||
                 detailData.division_brokerage
-              "
-            >
+              ">
               <div class="section-title">返佣信息（金额|用户UID）</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">一级佣金：</span
-                    ><span class="value"
-                      >{{ detailData.one_brokerage || '0.00' }} | {{ detailData.spread_uid || '0' }}</span
-                    >
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">二级佣金：</span
-                    ><span class="value"
-                      >{{ detailData.two_brokerage || '0.00' }} | {{ detailData.spread_two_uid || '0' }}</span
-                    >
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">员工返佣：</span
-                    ><span class="value"
-                      >{{ detailData.staff_brokerage || '0.00' }} | {{ detailData.staff_id || '0' }}</span
-                    >
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">代理商佣金：</span
-                    ><span class="value"
-                      >{{ detailData.agent_brokerage || '0.00' }} | {{ detailData.agent_id || '0' }}</span
-                    >
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">事业部佣金：</span
-                    ><span class="value"
-                      >{{ detailData.division_brokerage || '0.00' }} | {{ detailData.division_id || '0' }}</span
-                    >
-                  </div></el-col
-                >
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">一级佣金：</span><span class="value">{{ detailData.one_brokerage || '0.00' }} | {{ detailData.spread_uid || '0' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">二级佣金：</span><span class="value">{{ detailData.two_brokerage || '0.00' }} | {{ detailData.spread_two_uid || '0' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">员工返佣：</span><span class="value">{{ detailData.staff_brokerage || '0.00' }} | {{ detailData.staff_id || '0' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">代理商佣金：</span><span class="value">{{ detailData.agent_brokerage || '0.00' }} | {{ detailData.agent_id || '0' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">事业部佣金：</span><span class="value">{{ detailData.division_brokerage || '0.00' }} | {{ detailData.division_id || '0' }}</span>
+                  </div></el-col>
               </el-row>
             </div>
 
@@ -313,64 +224,36 @@
             <div class="section" v-if="detailData.invoice && Object.keys(detailData.invoice).length">
               <div class="section-title">发票信息</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">发票抬头：</span
-                    ><span class="value">{{ detailData.invoice.name || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
-                    <span class="label">企业税号：</span
-                    ><span class="value">{{ detailData.invoice.duty_number || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">发票抬头：</span><span class="value">{{ detailData.invoice.name || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"><div class="detail-item">
+                    <span class="label">企业税号：</span><span class="value">{{ detailData.invoice.duty_number || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"><div class="detail-item">
                     <span class="label">发票类型：</span><span class="value">电子普通发票</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"><div class="detail-item">
                     <span class="label">发票抬头类型：</span><span class="value">企业</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 1 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
-                    <span class="label">真实姓名：</span
-                    ><span class="value">{{ detailData.invoice.name || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 1 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
-                    <span class="label">联系电话：</span
-                    ><span class="value">{{ detailData.invoice.drawer_phone || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 1 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
-                    <span class="label">联系邮箱：</span
-                    ><span class="value">{{ detailData.invoice.email || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
-                    <span class="label">联系电话：</span
-                    ><span class="value">{{ detailData.invoice.user_phone || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"
-                  ><div class="detail-item">
-                    <span class="label">联系邮箱：</span
-                    ><span class="value">{{ detailData.invoice.email || '--' }}</span>
-                  </div></el-col
-                >
-                <el-col :span="8"
-                  ><div class="detail-item">
-                    <span class="label">开票状态：</span
-                    ><span class="value">{{ detailData.invoice.is_invoice ? '已开票' : '未开票' }}</span>
-                  </div></el-col
-                >
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 1 && detailData.invoice.type === 1"><div class="detail-item">
+                    <span class="label">真实姓名：</span><span class="value">{{ detailData.invoice.name || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 1 && detailData.invoice.type === 1"><div class="detail-item">
+                    <span class="label">联系电话：</span><span class="value">{{ detailData.invoice.drawer_phone || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 1 && detailData.invoice.type === 1"><div class="detail-item">
+                    <span class="label">联系邮箱：</span><span class="value">{{ detailData.invoice.email || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"><div class="detail-item">
+                    <span class="label">联系电话：</span><span class="value">{{ detailData.invoice.user_phone || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8" v-if="detailData.invoice.header_type === 2 && detailData.invoice.type === 1"><div class="detail-item">
+                    <span class="label">联系邮箱：</span><span class="value">{{ detailData.invoice.email || '--' }}</span>
+                  </div></el-col>
+                <el-col :span="8"><div class="detail-item">
+                    <span class="label">开票状态：</span><span class="value">{{ detailData.invoice.is_invoice ? '已开票' : '未开票' }}</span>
+                  </div></el-col>
               </el-row>
             </div>
 
@@ -378,11 +261,9 @@
             <div class="section">
               <div class="section-title">买家留言</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="24"
-                  ><div class="detail-item">
+                <el-col :span="24"><div class="detail-item">
                     <span class="value">{{ detailData.mark || '--' }}</span>
-                  </div></el-col
-                >
+                  </div></el-col>
               </el-row>
             </div>
 
@@ -400,13 +281,11 @@
                     <div class="detail-item">
                       <span class="label">{{ item.title }}：</span>
                       <span class="value">
-                        <img
-                          v-for="(img, i) in formImageUrls(item)"
+                        <img v-for="(img, i) in formImageUrls(item)"
                           :key="i"
                           :src="img"
                           class="form-img"
-                          v-viewer
-                        />
+                          v-viewer />
                       </span>
                     </div>
                   </el-col>
@@ -418,11 +297,9 @@
             <div class="section">
               <div class="section-title">订单备注</div>
               <el-row :gutter="24" class="detail-grid">
-                <el-col :span="24"
-                  ><div class="detail-item">
+                <el-col :span="24"><div class="detail-item">
                     <span class="value">{{ detailData.remark || '--' }}</span>
-                  </div></el-col
-                >
+                  </div></el-col>
               </el-row>
             </div>
           </el-tab-pane>
@@ -430,16 +307,12 @@
           <el-tab-pane label="订单记录" name="timeline">
             <div class="tl-section" v-if="mergedTimeline.length">
               <el-timeline>
-                <el-timeline-item
-                  v-for="(item, index) in mergedTimeline"
+                <el-timeline-item v-for="(item, index) in mergedTimeline"
                   :key="index"
                   :timestamp="item.time"
-                  :color="item.source === 'after_sale' ? '#e6a23c' : index === 0 ? '#409eff' : '#e4e7ed'"
-                >
+                  :color="item.source === 'after_sale' ? '#e6a23c' : index === 0 ? '#409eff' : '#e4e7ed'">
                   <span class="tl-title">
-                    <el-tag v-if="item.source === 'after_sale'" type="warning" effect="plain" class="source-tag"
-                      >售后</el-tag
-                    >
+                    <el-tag v-if="item.source === 'after_sale'" type="warning" effect="plain" class="source-tag">售后</el-tag>
                     {{ item.title }}
                   </span>
                   <span class="tl-desc" v-if="item.desc">{{ item.desc }}</span>
@@ -640,7 +513,7 @@ function isImageItem(item) {
   if (item.type === 'img') return true;
   if (item.type) return false;
   const urls = formImageUrls(item);
-  return urls.length > 0 && urls.every((v) => IMAGE_EXT_RE.test(v) || v.indexOf('/uploads/') !== -1);
+  return urls.length> 0 && urls.every((v) => IMAGE_EXT_RE.test(v) || v.indexOf('/uploads/') !== -1);
 }
 
 /** 将 "Y-m-d H:i:s" 或 "Y-m-d H:i" 字符串转为时间戳，用于时间线排序 */
@@ -698,7 +571,7 @@ defineExpose({ loadDetail });
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item.is-active) {
   border-bottom: none;
 }
 
@@ -769,18 +642,18 @@ defineExpose({ loadDetail });
   }
 }
 
-:deep(.el-tabs--border-card > .el-tabs__content) {
+:deep(.el-tabs--border-card> .el-tabs__content) {
   /* 与 .head 的 30px 左右缩进对齐（body 左右已由列表页归零） */
   padding: 0 30px;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header),
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item:active) {
+:deep(.el-tabs--border-card> .el-tabs__header),
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item:active) {
   border: none;
   height: 40px;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item.is-active) {
   border: none;
   border-top: 2px solid var(--prev-color-primary);
   font-size: 13px;
@@ -789,11 +662,11 @@ defineExpose({ loadDetail });
   line-height: 16px;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item) {
   border: none;
 }
 
-:deep(.el-tabs--border-card > .el-tabs__header .el-tabs__item) {
+:deep(.el-tabs--border-card> .el-tabs__header .el-tabs__item) {
   margin-top: 0;
   transition: none;
   height: 40px !important;

@@ -2,68 +2,56 @@
   <div class="article-manager">
     <el-card :bordered="false" shadow="never" :body-style="{ padding: 0 }">
       <div class="padding-add">
-        <el-form
-          ref="formValidateRef"
+        <el-form ref="formValidateRef"
           :model="formValidate"
           inline
           label-width="80px"
           label-position="right"
-          @submit.prevent
-        >
+          @submit.prevent>
           <el-form-item label="评论时间：">
-            <date-range-picker
-              width="250px"
+            <date-range-picker width="250px"
               clearable
               v-model="timeVal"
               @change="onchangeTime"
               format="YYYY/MM/DD"
-              value-format="YYYY/MM/DD"
-            ></date-range-picker>
+              value-format="YYYY/MM/DD"></date-range-picker>
           </el-form-item>
           <el-form-item label="评价状态：">
-            <el-select
-              v-model="formValidate.is_reply"
+            <el-select v-model="formValidate.is_reply"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="1" label="已回复"></el-option>
               <el-option value="0" label="未回复"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="审核状态：">
-            <el-select
-              v-model="formValidate.status"
+            <el-select v-model="formValidate.status"
               placeholder="请选择"
               clearable
               @change="userSearchs"
-              class="form_content_width"
-            >
+              class="form_content_width">
               <el-option value="0" label="未审核"></el-option>
               <el-option value="1" label="已通过"></el-option>
               <el-option value="2" label="已拒绝"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="商品信息：" label-for="store_name">
-            <el-input
-              placeholder="请输入商品信息"
+            <el-input placeholder="请输入商品信息"
               clearable
               v-model="formValidate.store_name"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item label="用户名称：">
-            <el-input
-              enter-button
+            <el-input enter-button
               placeholder="请输入"
               clearable
               v-model="formValidate.account"
-              class="form_content_width"
-            />
+              class="form_content_width" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" v-db-click @click="userSearchs">查询</el-button>
+            <el-button type="primary" @click="userSearchs">查询</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -71,23 +59,17 @@
     <el-card :bordered="false" shadow="never" class="ivu-mt mt16">
       <el-row class="action-row">
         <el-col v-bind="grid">
-          <el-button v-auth="['product-reply-save_fictitious_reply']" type="primary" v-db-click @click="addRep"
-            >添加自评</el-button
-          >
-          <el-button v-auth="['product-reply-save_fictitious_reply']" v-db-click @click="openBatchModal"
-            >批量审核</el-button
-          >
+          <el-button v-auth="['product-reply-save_fictitious_reply']" type="primary" @click="addRep">添加自评</el-button>
+          <el-button v-auth="['product-reply-save_fictitious_reply']" @click="openBatchModal">批量审核</el-button>
         </el-col>
       </el-row>
-      <el-table
-        ref="table"
+      <el-table ref="table"
         :data="tableList"
         class="mt14"
         v-loading="loading"
         @on-sort-change="sortMethod"
         @selection-change="handleSelectRow"
-        empty-text="暂无数据"
-      >
+        empty-text="暂无数据">
         <el-table-column type="selection" width="60"> </el-table-column>
         <el-table-column label="评论ID" width="80">
           <template #default="scope">
@@ -146,12 +128,12 @@
           <template #default="scope">
             <div class="reply-actions">
               <template v-if="scope.row.status == 0">
-                <a v-db-click @click="adopt(scope.row, '审核通过', 1)">通过</a>
+                <a @click="adopt(scope.row, '审核通过', 1)">通过</a>
                 <el-divider direction="vertical"></el-divider>
-                <a v-db-click @click="adopt(scope.row, '拒绝', 2)">驳回</a>
+                <a @click="adopt(scope.row, '拒绝', 2)">驳回</a>
                 <el-divider direction="vertical"></el-divider>
               </template>
-              <a v-if="scope.row.status != 2" v-db-click @click="reply(scope.row)">回复</a>
+              <a v-if="scope.row.status != 2" @click="reply(scope.row)">回复</a>
               <el-divider v-if="scope.row.status != 2" direction="vertical"></el-divider>
               <a v-db-click @click="del(scope.row, '删除评论', scope.$index)">删除</a>
             </div>
@@ -159,13 +141,11 @@
         </el-table-column>
       </el-table>
       <div class="acea-row row-right page">
-        <pagination
-          v-if="total"
+        <pagination v-if="total"
           :total="total"
           v-model:page="formValidate.page"
           v-model:limit="formValidate.limit"
-          @pagination="getList"
-        />
+          @pagination="getList" />
       </div>
     </el-card>
     <el-dialog v-model="modals" scrollable title="回复内容" width="720px">
@@ -174,15 +154,12 @@
           <el-input v-model="contents.content" type="textarea" :rows="4" placeholder="请输入回复内容" />
         </el-form-item>
       </el-form>
-      <template #footer
-        ><div>
+      <template #footer><div>
           <el-button @click="cancels">取消</el-button>
           <el-button type="primary" v-db-click @click="oks">确定</el-button>
-        </div></template
-      >
+        </div></template>
     </el-dialog>
-    <addReply
-      @close="close"
+    <addReply @close="close"
       :visible="replyModal"
       :goods="goodsData"
       :attr="attrData"
@@ -191,8 +168,7 @@
       @callGoods="callGoods"
       @callAttr="callAttr"
       @callPicture="callPicture"
-      @removePicture="removePicture"
-    ></addReply>
+      @removePicture="removePicture"></addReply>
     <el-dialog v-model="goodsModal" title="选择商品" width="1000px">
       <goodsList v-if="replyModal" @getProductId="getProductId"></goodsList>
     </el-dialog>
@@ -200,13 +176,10 @@
       <el-table ref="table" :row-key="getRowKey" :data="goodsData.attrs" height="500">
         <el-table-column label="" width="70">
           <template #default="scope">
-            <el-radio
-              v-model="templateRadio"
+            <el-radio v-model="templateRadio"
               :label="scope.row.unique"
               :value="scope.row.unique"
-              @change="getTemplateRow(scope.row)"
-              >&nbsp;</el-radio
-            >
+              @change="getTemplateRow(scope.row)">&nbsp;</el-radio>
           </template>
         </el-table-column>
         <el-table-column label="图片" width="120">
@@ -234,23 +207,19 @@
       </el-table>
     </el-dialog>
     <el-dialog v-model="pictureModal" width="950px" title="上传商品图" :close-on-click-modal="false">
-      <uploadPictures
-        :isChoice="isChoice"
+      <uploadPictures :isChoice="isChoice"
         @getPic="getPic"
         @getPicD="getPicD"
         :gridBtn="gridBtn"
         :gridPic="gridPic"
-        v-if="pictureModal"
-      ></uploadPictures>
+        v-if="pictureModal"></uploadPictures>
     </el-dialog>
-    <el-dialog
-      v-model="batchModal"
+    <el-dialog v-model="batchModal"
       class="batch-box"
       title="审核批量设置"
       :show-close="true"
       :close-on-click-modal="false"
-      width="540px"
-    >
+      width="540px">
       <el-form ref="batchFormDataRef" :model="batchFormData" label-width="90px" label-position="right" @submit.prevent>
         <el-row :gutter="24">
           <el-col :span="24">
@@ -263,12 +232,10 @@
           </el-col>
         </el-row>
       </el-form>
-      <template #footer
-        ><span class="dialog-footer">
-          <el-button v-db-click @click="batchModal = false">取 消</el-button>
+      <template #footer><span class="dialog-footer">
+          <el-button @click="batchModal = false">取 消</el-button>
           <el-button type="primary" v-db-click @click="batchSub">确 定</el-button>
-        </span></template
-      >
+        </span></template>
     </el-dialog>
   </div>
 </template>

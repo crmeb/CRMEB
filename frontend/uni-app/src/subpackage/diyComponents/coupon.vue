@@ -1,9 +1,9 @@
 <template>
-  <!-- 优惠券 -->
-  <view v-show="!isSortType">
+  <!-- 优惠券：无券可展示时整块不渲染，避免 common-wrapper 边距留白 -->
+  <view v-show="!isSortType && couponList.length">
     <common-wrapper :config="configData">
       <view :style="[couponWrapStyle]">
-        <view class="coupon-wrap" v-if="couponList.length">
+        <view class="coupon-wrap">
           <view v-if="dataConfig.styleConfig.tabVal == 0" class="coupon1">
             <scroll-view scroll-x="true">
               <view class="list acea-row">

@@ -1,15 +1,11 @@
 <template>
-  <a
-    :href="linkUrl"
+  <a :href="linkUrl"
     :target="target"
     class="i-link"
     :class="{ 'i-link-color': !linkColor }"
-    v-db-click
     @click.exact="handleClickItem($event, false)"
     @click.ctrl="handleClickItem($event, true)"
-    @click.meta="handleClickItem($event, true)"
-    ><slot></slot
-  ></a>
+    @click.meta="handleClickItem($event, true)"><slot></slot></a>
 </template>
 <script setup>
 // view-design 的 mixins/link 在 Vue3 依赖树中已不存在，此处内联等价实现

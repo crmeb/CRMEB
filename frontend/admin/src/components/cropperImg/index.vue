@@ -2,8 +2,7 @@
   <div class="cropper-content">
     <div class="cropper-box">
       <div class="cropper">
-        <vue-cropper
-          ref="cropper"
+        <vue-cropper ref="cropper"
           :img="option.img"
           :outputSize="option.outputSize"
           :outputType="option.outputType"
@@ -26,24 +25,21 @@
           :enlarge="option.enlarge"
           :mode="option.mode"
           @realTime="realTime"
-          @imgLoad="imgLoad"
-        >
+          @imgLoad="imgLoad">
         </vue-cropper>
       </div>
       <!--底部操作工具按钮-->
       <div class="footer-btn">
         <div class="scope-btn">
-          <input
-            type="file"
+          <input type="file"
             id="uploads"
             style="position: absolute; clip: rect(0 0 0 0)"
             accept="image/png, image/jpeg, image/gif, image/jpg"
-            @change="selectImg($event)"
-          />
-          <el-button type="danger" plain icon="ZoomIn" v-db-click @click="changeScale(1)">放大</el-button>
-          <el-button type="danger" plain icon="ZoomOut" v-db-click @click="changeScale(-1)">缩小</el-button>
-          <el-button type="danger" plain v-db-click @click="rotateLeft">↺ 左旋转</el-button>
-          <el-button type="danger" plain v-db-click @click="rotateRight">↻ 右旋转</el-button>
+            @change="selectImg($event)" />
+          <el-button type="danger" plain icon="ZoomIn" @click="changeScale(1)">放大</el-button>
+          <el-button type="danger" plain icon="ZoomOut" @click="changeScale(-1)">缩小</el-button>
+          <el-button type="danger" plain @click="rotateLeft">↺ 左旋转</el-button>
+          <el-button type="danger" plain @click="rotateRight">↻ 右旋转</el-button>
         </div>
       </div>
     </div>

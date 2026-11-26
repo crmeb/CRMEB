@@ -14,61 +14,45 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" v-db-click @click="formSubmit">查询</el-button>
+        <el-button type="primary" @click="formSubmit">查询</el-button>
       </el-form-item>
     </el-form>
     <el-table :data="data1" v-loading="loading" highlight-current-row>
       <el-table-column label="编号" min-width="100">
-        <template #default="scope"
-          ><span>{{ scope.row.id }}</span></template
-        >
+        <template #default="scope"><span>{{ scope.row.id }}</span></template>
       </el-table-column>
       <el-table-column label="卡号" min-width="100">
-        <template #default="scope"
-          ><span>{{ scope.row.card_number }}</span></template
-        >
+        <template #default="scope"><span>{{ scope.row.card_number }}</span></template>
       </el-table-column>
       <el-table-column label="密码" min-width="100">
-        <template #default="scope"
-          ><span>{{ scope.row.card_password }}</span></template
-        >
+        <template #default="scope"><span>{{ scope.row.card_password }}</span></template>
       </el-table-column>
       <el-table-column label="领取人名称" min-width="100">
-        <template #default="scope"
-          ><span>{{ scope.row.username ? scope.row.username : '-' }}</span></template
-        >
+        <template #default="scope"><span>{{ scope.row.username ? scope.row.username : '-' }}</span></template>
       </el-table-column>
       <el-table-column label="领取人电话" min-width="100">
-        <template #default="scope"
-          ><span>{{ scope.row.phone ? scope.row.phone : '-' }}</span></template
-        >
+        <template #default="scope"><span>{{ scope.row.phone ? scope.row.phone : '-' }}</span></template>
       </el-table-column>
       <el-table-column label="领取时间" min-width="170" width="170">
-        <template #default="scope"
-          ><span class="use-time">{{ scope.row.use_time }}</span></template
-        >
+        <template #default="scope"><span class="use-time">{{ scope.row.use_time }}</span></template>
       </el-table-column>
       <el-table-column label="是否激活" min-width="100">
         <template #default="scope">
-          <el-switch
-            :active-value="1"
+          <el-switch :active-value="1"
             :inactive-value="0"
             v-model="scope.row.status"
             :value="scope.row.status"
             @change="onchangeIsShow(scope.row)"
-            size="large"
-          ></el-switch>
+            size="large"></el-switch>
         </template>
       </el-table-column>
     </el-table>
     <div class="acea-row row-right page">
-      <pagination
-        v-if="total"
+      <pagination v-if="total"
         :total="total"
         v-model:page="table.page"
         v-model:limit="table.limit"
-        @pagination="getMemberCard"
-      />
+        @pagination="getMemberCard" />
     </div>
   </div>
 </template>
